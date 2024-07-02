@@ -8,9 +8,10 @@ const Container = styled.div`
 
 export const ListUsers = () => {
   const COLUMNS = [
-    { label: "ID", renderCell: (item) => item.id },
-    { label: "Name", renderCell: (item) => item.name, sort: { sortKey: "NAME" } },
-    { label: "Age", renderCell: (item) => item.age, sort: { sortKey: "AGE" } },
+    { label: "Name", renderCell: (item) => item.first_name, sort: { sortKey: "NAME" } },
+    { label: "Email", renderCell: (item) => item.email, sort: { sortKey: "EMAIL" } },
+    { label: "Role", renderCell: (item) => item.type, sort: { sortKey: "TYPE" } },
+    { label: "Status", renderCell: (item) => item.is_active ? "Active" : "Inactive", sort: { sortKey: "STATUS" } },
   ];
 
   const SORT_FNS = {

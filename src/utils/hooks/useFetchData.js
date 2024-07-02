@@ -17,8 +17,8 @@ export const useFetchData = (module) => {
   const fetchData = useCallback(
     async (value) => {
       try {
-        const data = await fetchListData[module]({ search: value });
-        setData(data);
+        const response = await fetchListData[module]({ search: value });
+        setData(response.data);
       } catch (error) {
         setError(error.message || "Error fetching data");
       } finally {

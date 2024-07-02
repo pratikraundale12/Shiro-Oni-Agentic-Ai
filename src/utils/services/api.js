@@ -10,8 +10,20 @@ const API = axios.create({
 API.interceptors.request.use((config) => {
   const options = config;
   const token = localStorage.getItem(ACCESS_TOKEN);
-  if (token) options.headers.Authorization = token;
+  if (token) options.headers.Authorization = `Bearer ${token}`;
   return options;
 });
+
+// remove token when user get unauthorized status (401)
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status === 401) {
+      localStorage.removeItem(ACCESS_TOKEN);
+      window.location.replace("/login");
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default API;
