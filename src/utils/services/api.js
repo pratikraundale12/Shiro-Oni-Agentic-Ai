@@ -5,6 +5,8 @@ import { ACCESS_TOKEN, API_URL } from "../constants";
 
 const API = axios.create({
   baseURL: API_URL,
+  timeout: 5000,
+  timeoutErrorMessage: "Request timed out",
 });
 
 API.interceptors.request.use((config) => {
