@@ -9,19 +9,24 @@ const Container = styled.div`
   display: flex;
 `;
 
-const Content = styled.main`
-  width: 100%;
-`;
+// const Content = styled.main`
+//   width: 100%;
+// `;
 
 const AuthGuard = () => {
   return (
-    <Container>
-      <Sidebar />
-      <Content>
+    // <Container>
+    <>
+     {/* <Content> */}
         <Header />
+        <Container>
+        <Sidebar />
+
         <Outlet />
-      </Content>
-    </Container>
+        </Container>
+      {/* </Content> */}
+    {/* </Container> */}
+    </>
   );
 };
 

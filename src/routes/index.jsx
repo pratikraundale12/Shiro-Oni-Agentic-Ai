@@ -12,22 +12,89 @@ import {
   AddUser,
   ListClusters,
   AddCluster,
+  ListNameSpace,
+  ReadyFlowGallary,
+  GenrateFlow,
+  PermissionMatrix
 } from "../pages";
+import { ClusterIcon, DashboardIcon, GenrateFlowIcon, LockIcon, NameSpaceIcon, PeopleIcon, ReadyFlowIcon } from "../assets";
 
 export const ROUTES_MENU = [
   {
     name: "Dashboard",
     path: "dashboard",
+    icon: <DashboardIcon/>,
     pages: [
       {
-        path: "",
+        path: "/dashboard",
         component: <ListDashBoard />,
+      },
+    ],
+  },
+  {
+    name: "Cluster",
+    path: "cluster",
+    icon: <ClusterIcon/>,
+    pages: [
+      {
+        path: "/cluster",
+        component: <ListClusters />,
+      },
+      {
+        path: ["add", "edit/:id"],
+        component: <AddCluster />,
+      },
+    ],
+  },
+  {
+    name: "NameSpace",
+    path: "namespace",
+    icon: <NameSpaceIcon/>,
+    pages: [
+      {
+        path: "/namespace",
+        component: <ListNameSpace />,
+      },
+      {
+        path: ["add", "edit/:id"],
+        component: <AddCluster />,
+      },
+    ],
+  },
+  {
+    name: "ReadyFlow Gallary",
+    path: "readyFlowGallary",
+    icon: <ReadyFlowIcon/>,
+    pages: [
+      {
+        path: "/readyFlowGallary",
+        component: <ReadyFlowGallary />,
+      },
+      {
+        path: ["add", "edit/:id"],
+        component: <AddCluster />,
+      },
+    ],
+  },
+  {
+    name: "Genrate Flow",
+    path: "genrateFlow",
+    icon: <GenrateFlowIcon/>,
+    pages: [
+      {
+        path: "/genrateFlow",
+        component: <GenrateFlow />,
+      },
+      {
+        path: ["add", "edit/:id"],
+        component: <AddCluster />,
       },
     ],
   },
   {
     name: "User",
     path: "user",
+    icon: <PeopleIcon/>,
     pages: [
       {
         path: "",
@@ -39,13 +106,16 @@ export const ROUTES_MENU = [
       },
     ],
   },
+  
+  
   {
-    name: "Cluster",
-    path: "cluster",
+    name: "Permission Matrix",
+    path: "permissionMatrix",
+    icon: <LockIcon/>,
     pages: [
       {
-        path: "",
-        component: <ListClusters />,
+        path: "/permissionMatrix",
+        component: <PermissionMatrix />,
       },
       {
         path: ["add", "edit/:id"],

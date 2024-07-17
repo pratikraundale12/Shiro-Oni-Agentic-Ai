@@ -3,3 +3,13 @@ export * from './PlusCircleIcon';
 export * from "./PlusIcon"
 export * from "./OpenEyeIcon";
 export * from "./CloseEyeIcon";
+export * from './DashboardIcon';
+export * from './ClusterIcon';
+export * from './NameSpaceIcon';
+export * from './ReadyFlowIcon';
+export * from './GenrateFlowIcon';
+export * from './PeopleIcon';
+export * from './LockIcon';
+export * from './HeadphoneIcon'
+export * from './BellIcon';
+export * from './SettingSmallIcon'

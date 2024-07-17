@@ -1,0 +1,13 @@
+export const ClusterIcon = ({width = 18, height = 20,color="#444445"}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={width}
+    height={height}
+    fill="none"
+  >
+    <path
+      fill={color}
+      d="M7 0a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5v2h5V7a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-1H5v6h5v-1a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-1H4a1 1 0 0 1-1-1V6H1a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1h6Zm9 16h-4v2h4v-2Zm0-8h-4v2h4V8ZM6 2H2v2h4V2Z"
+    />
+  </svg>
+)
