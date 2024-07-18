@@ -1,71 +1,75 @@
-import React from 'react';
-import ReactSelect from 'react-select';
+import React, { useState, useRef, useEffect } from 'react';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { theme } from '../styles';
 
-export const getBorderColor = ({ isFocused, error }) => {
-  if (isFocused && !error) return theme.colors.primary;
-  if (error) return theme.colors.error;
-  return theme.colors.borderGrey;
-};
+const Container = styled.div`
+  position: relative;
+  display: inline-block;
+  align-self: self-start;
+`;
 
-export const getSelectStyles = ({ size = 'md', disabled = false }) => ({
-  indicatorSeparator: () => ({ display: 'none' }),
-  indicatorsContainer: styles => ({
-    ...styles,
-    ...(size === 'sm' && {
-      padding: 0,
-      svg: {
-        width: 16,
-        height: 16,
-      },
-    }),
-  }),
-  dropdownIndicator: styles => ({
-    ...styles,
-    ...(size === 'sm' && {
-      padding: 0,
-    }),
-  }),
-  menu: styles => ({
-    ...styles,
-    zIndex: theme.zIndex.dropdownIndex,
-  }),
-  placeholder: styles => ({
-    ...styles,
-    color: theme.colors.grey,
-    fontSize: 14,
-    fontWeight: 500,
-  }),
-  control: (styles, state) => ({
-    ...styles,
-    minHeight: 0,
-    boxShadow: 'none',
-    borderColor: getBorderColor(state),
-    backgroundColor: disabled ? theme.colors.lightGrey2 : theme.colors.white,
-  }),
-  option: styles => ({
-    ...styles,
-    fontWeight: 500,
-  }),
-  singleValue: styles => ({
-    ...styles,
-    fontWeight: 500,
-    fontSize: 14,
-  }),
-});
+const List = styled.div`
+  width: 100%;
+  position: absolute;
+  top: 104%;
+  z-index: 2;
+  display: ${props => (props.show ? 'block' : 'none')};
+  background: ${props => props.theme.colors.white};
+  box-shadow: 0px 0px 5px 0px ${props => props.theme.colors.shadow};
+`;
 
-export const Dropdown = ({ size = 'md', ...props }) => {
+const Item = styled.div`
+  position: relative;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: ${props => props.theme.size.xs};
+  color: ${props => props.theme.colors.darker};
+
+  &:hover {
+    background-color: ${props => props.theme.colors.lightGrey};
+  }
+`;
+
+const Button = styled.button`
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 4px;
+  background: ${props => props.theme.colors.lightGrey};
+  border: 1px solid ${props => props.theme.colors.border};
+`;
+
+export const Dropdown = ({ options = [] }) => {
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  const handleClickOutside = event => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setShowMenu(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <ReactSelect
-      styles={{
-        ...getSelectStyles({ size }),
-      }}
-      {...props}
-    />
+    <Container ref={menuRef}>
+      <Button type="button" onClick={() => setShowMenu(prev => !prev)}>
+        Select
+      </Button>
+      <List show={showMenu}>
+        {options.map(item => (
+          <Item key={item.value}>{item.label}</Item>
+        ))}
+      </List>
+    </Container>
   );
 };
 
 Dropdown.propTypes = {
-  size: PropTypes.oneOf(['md', 'sm']),
+  options: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };

@@ -38,14 +38,14 @@ const StyledButton = styled.button.withConfig({
   &:hover:enabled {
     background: ${props =>
       props.variant === 'primary'
-        ? props.theme.colors.primaryHover
-        : props.theme.colors.secondaryHover};
+        ? props.theme.colors.primaryActive
+        : props.theme.colors.darker};
   }
 
   &:disabled {
     cursor: not-allowed;
-    background: ${props => props.theme.colors.shadow};
-    color: ${props => props.theme.colors.grey};
+    background: ${props => props.theme.colors.primaryDisabled};
+    color: ${props => props.theme.colors.white};
     border: none;
   }
 `;

@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const KsolvesIcon = ({ width = 180, height = 65 }) => (
   <svg
     width={width}
@@ -421,3 +424,8 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
     </defs>
   </svg>
 );
+
+KsolvesIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

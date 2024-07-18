@@ -1,3 +1,5 @@
+import React from 'react';
+import PropTypes from 'prop-types';
 import { CloseEyeIcon, OpenEyeIcon } from '../../../../../assets';
 
 const TogglePassword = ({ show, onToggle }) => (
@@ -7,5 +9,10 @@ const TogglePassword = ({ show, onToggle }) => (
     </span>
   </div>
 );
+
+TogglePassword.propTypes = {
+  show: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+};
 
 export default TogglePassword;

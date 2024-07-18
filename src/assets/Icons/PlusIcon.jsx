@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const PlusIcon = ({ width = 16, height = 16 }) => (
   <svg
     width={width}
@@ -22,3 +25,8 @@ export const PlusIcon = ({ width = 16, height = 16 }) => (
     />
   </svg>
 );
+
+PlusIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

@@ -1,3 +1,4 @@
+import React from 'react';
 import { isFunction } from 'lodash';
 import styled from 'styled-components';
 import classNames from 'classnames';
@@ -46,14 +47,14 @@ const Container = styled.div`
   input:not([type='checkbox']) {
     width: 100%;
     height: 42px;
-    border: 1px solid ${props => props.theme.colors.borderGrey};
+    border: 1px solid ${props => props.theme.colors.darkGrey};
     border-radius: 4px;
     background: ${props => props.theme.colors.white};
     padding: 10px;
     font-size: 14px;
 
     &::placeholder {
-      color: ${props => props.theme.colors.grey};
+      color: ${props => props.theme.colors.darkGrey1};
       font-size: 14px;
     }
 
@@ -124,6 +125,8 @@ InputField.propTypes = {
   errors: PropTypes.shape({}),
   required: PropTypes.string,
   disabled: PropTypes.bool,
+  registerOptions: PropTypes.shape({}),
+  className: PropTypes.string,
 };
 
 export default InputField;

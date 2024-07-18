@@ -1,3 +1,4 @@
+import React from 'react';
 import { Controller } from 'react-hook-form';
 import styled, { useTheme } from 'styled-components';
 import PropTypes from 'prop-types';
@@ -12,7 +13,7 @@ export const Container = styled.div`
   margin-bottom: 1rem;
 
   path {
-    fill: ${props => props.theme.colors.grey};
+    fill: ${props => props.theme.colors.darkGrey1};
   }
 
   label {
@@ -38,7 +39,6 @@ const SelectField = ({
   disabled = false,
   required = false,
   className = '',
-  defaultValue = '',
   ...props
 }) => {
   const theme = useTheme();
@@ -47,7 +47,7 @@ const SelectField = ({
   const getBorderColor = ({ isFocused }) => {
     if (isFocused && !error) return theme.colors.primary;
     if (error) return theme.colors.error;
-    return theme.colors.borderGrey;
+    return theme.colors.darkGrey;
   };
 
   const customStyles = {
@@ -74,7 +74,7 @@ const SelectField = ({
     }),
     placeholder: styles => ({
       ...styles,
-      color: theme.colors.grey,
+      color: theme.colors.darkGrey1,
       fontSize: 14,
       fontWeight: 500,
     }),
@@ -144,7 +144,7 @@ SelectField.propTypes = {
   className: PropTypes.string,
   label: PropTypes.string,
   required: PropTypes.string,
-  defaultValue: PropTypes.string,
+  size: PropTypes.string,
 };
 
 export default SelectField;
