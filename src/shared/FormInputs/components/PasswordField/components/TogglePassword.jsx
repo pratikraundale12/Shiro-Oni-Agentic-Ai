@@ -1,4 +1,4 @@
-import { CloseEyeIcon, OpenEyeIcon } from "../../../../../assets";
+import { CloseEyeIcon, OpenEyeIcon } from '../../../../../assets';
 
 const TogglePassword = ({ show, onToggle }) => (
   <div className="eye-icon">

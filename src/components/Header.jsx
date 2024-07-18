@@ -1,20 +1,20 @@
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 
 const Container = styled.header`
   width: 100%;
   padding: 2.6rem;
-  background: ${(props) => props.theme.colors.primary};
 `;
 
 const Title = styled.h1`
   font-weight: 600;
-  color: ${(props) => props.theme.colors.white};
+  color: ${props => props.theme.colors.black};
 `;
 
-export const Header = () => {
+export const Header = ({ title }) => {
   return (
     <Container>
-      <Title>Header</Title>
+      <Title>{title}</Title>
     </Container>
   );
 };

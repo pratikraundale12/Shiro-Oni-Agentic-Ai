@@ -16,12 +16,12 @@ const Wrapper = styled.div`
   }
 `;
 
-const PasswordInputField = (props) => {
+const PasswordInputField = props => {
   const [passwordShown, setPasswordShown] = useState(false);
 
   const togglePassword = useCallback(
-    () => setPasswordShown((prevState) => !prevState),
-    [setPasswordShown],
+    () => setPasswordShown(prevState => !prevState),
+    [setPasswordShown]
   );
 
   return (

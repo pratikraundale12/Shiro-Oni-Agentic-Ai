@@ -10,7 +10,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
     <g clipPath="url(#clip0_253_890)">
       <mask
         id="mask0_253_890"
-        style={{ maskType: "luminance" }}
+        style={{ maskType: 'luminance' }}
         maskUnits="userSpaceOnUse"
         x={55}
         y={31}
@@ -25,7 +25,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       <g mask="url(#mask0_253_890)">
         <mask
           id="mask1_253_890"
-          style={{ maskType: "luminance" }}
+          style={{ maskType: 'luminance' }}
           maskUnits="userSpaceOnUse"
           x={-8}
           y={-8}
@@ -49,7 +49,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       </g>
       <mask
         id="mask2_253_890"
-        style={{ maskType: "luminance" }}
+        style={{ maskType: 'luminance' }}
         maskUnits="userSpaceOnUse"
         x={0}
         y={5}
@@ -64,7 +64,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       <g mask="url(#mask2_253_890)">
         <mask
           id="mask3_253_890"
-          style={{ maskType: "luminance" }}
+          style={{ maskType: 'luminance' }}
           maskUnits="userSpaceOnUse"
           x={-8}
           y={-8}
@@ -88,7 +88,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       </g>
       <mask
         id="mask4_253_890"
-        style={{ maskType: "luminance" }}
+        style={{ maskType: 'luminance' }}
         maskUnits="userSpaceOnUse"
         x={32}
         y={13}
@@ -103,7 +103,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       <g mask="url(#mask4_253_890)">
         <mask
           id="mask5_253_890"
-          style={{ maskType: "luminance" }}
+          style={{ maskType: 'luminance' }}
           maskUnits="userSpaceOnUse"
           x={-8}
           y={-8}
@@ -127,7 +127,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       </g>
       <mask
         id="mask6_253_890"
-        style={{ maskType: "luminance" }}
+        style={{ maskType: 'luminance' }}
         maskUnits="userSpaceOnUse"
         x={28}
         y={-1}
@@ -142,7 +142,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       <g mask="url(#mask6_253_890)">
         <mask
           id="mask7_253_890"
-          style={{ maskType: "luminance" }}
+          style={{ maskType: 'luminance' }}
           maskUnits="userSpaceOnUse"
           x={-8}
           y={-8}
@@ -166,7 +166,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       </g>
       <mask
         id="mask8_253_890"
-        style={{ maskType: "luminance" }}
+        style={{ maskType: 'luminance' }}
         maskUnits="userSpaceOnUse"
         x={28}
         y={26}
@@ -181,7 +181,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       <g mask="url(#mask8_253_890)">
         <mask
           id="mask9_253_890"
-          style={{ maskType: "luminance" }}
+          style={{ maskType: 'luminance' }}
           maskUnits="userSpaceOnUse"
           x={-8}
           y={-8}
@@ -209,7 +209,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       />
       <mask
         id="mask10_253_890"
-        style={{ maskType: "luminance" }}
+        style={{ maskType: 'luminance' }}
         maskUnits="userSpaceOnUse"
         x={55}
         y={31}
@@ -228,7 +228,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
         />
         <mask
           id="mask11_253_890"
-          style={{ maskType: "luminance" }}
+          style={{ maskType: 'luminance' }}
           maskUnits="userSpaceOnUse"
           x={-8}
           y={-8}
@@ -252,7 +252,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       </g>
       <mask
         id="mask12_253_890"
-        style={{ maskType: "luminance" }}
+        style={{ maskType: 'luminance' }}
         maskUnits="userSpaceOnUse"
         x={55}
         y={4}
@@ -267,7 +267,7 @@ export const KsolvesIcon = ({ width = 180, height = 65 }) => (
       <g mask="url(#mask12_253_890)">
         <mask
           id="mask13_253_890"
-          style={{ maskType: "luminance" }}
+          style={{ maskType: 'luminance' }}
           maskUnits="userSpaceOnUse"
           x={-8}
           y={-8}

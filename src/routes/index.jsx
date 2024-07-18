@@ -1,6 +1,6 @@
-import { Outlet, Route, Routes as Router } from "react-router-dom";
+import { Outlet, Route, Routes as Router } from 'react-router-dom';
 
-import AuthGaurd from "./AuthGuard";
+import AuthGaurd from './AuthGuard';
 import {
   NotFound,
   Login,
@@ -12,43 +12,43 @@ import {
   AddUser,
   ListClusters,
   AddCluster,
-} from "../pages";
+} from '../pages';
 
 export const ROUTES_MENU = [
   {
-    name: "Dashboard",
-    path: "dashboard",
+    name: 'Dashboard',
+    path: 'dashboard',
     pages: [
       {
-        path: "",
+        path: '',
         component: <ListDashBoard />,
       },
     ],
   },
   {
-    name: "User",
-    path: "user",
+    name: 'User',
+    path: 'user',
     pages: [
       {
-        path: "",
+        path: '',
         component: <ListUsers />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddUser />,
       },
     ],
   },
   {
-    name: "Cluster",
-    path: "cluster",
+    name: 'Cluster',
+    path: 'cluster',
     pages: [
       {
-        path: "",
+        path: '',
         component: <ListClusters />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
@@ -66,11 +66,11 @@ const Routes = () => {
 
       {/* Private Routes */}
       <Route path="/" element={<AuthGaurd />}>
-        {ROUTES_MENU.map((item) => (
+        {ROUTES_MENU.map(item => (
           <Route key={item.path} path={item.path} element={<Outlet />}>
-            {item.pages.map((page) =>
+            {item.pages.map(page =>
               Array.isArray(page.path) ? (
-                page.path.map((subPath) => (
+                page.path.map(subPath => (
                   <Route
                     key={subPath}
                     path={subPath}

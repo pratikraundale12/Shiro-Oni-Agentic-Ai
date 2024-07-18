@@ -1,17 +1,17 @@
-import { Link, useLocation } from "react-router-dom";
-import styled from "styled-components";
+import { Link, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
 
-import { ROUTES_MENU } from "../routes";
-import { KsolvesIcon } from "../assets";
+import { ROUTES_MENU } from '../routes';
+import { KsolvesIcon } from '../assets';
 
 const MenuItem = styled(Link)`
   display: block;
   padding: 10px;
   border-radius: 4px;
-  color: ${(props) =>
+  color: ${props =>
     props.active ? props.theme.colors.white : props.theme.colors.darkGrey};
-  background: ${(props) =>
-    props.active ? props.theme.colors.primary : "transparent"};
+  background: ${props =>
+    props.active ? props.theme.colors.primary : 'transparent'};
 `;
 
 const Logo = styled.div`
@@ -27,7 +27,7 @@ export const Sidebar = () => {
       <Logo>
         <KsolvesIcon />
       </Logo>
-      {ROUTES_MENU.map((item) => (
+      {ROUTES_MENU.map(item => (
         <MenuItem
           key={item.path}
           to={item.path}
