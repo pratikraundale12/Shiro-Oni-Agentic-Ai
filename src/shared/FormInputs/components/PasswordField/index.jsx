@@ -1,8 +1,9 @@
-import { useCallback, useState } from 'react';
-import styled from 'styled-components';
+import { useCallback, useState } from "react";
+import styled from "styled-components";
 
-import TogglePassword from './components/TogglePassword';
-import InputField from '../InputField';
+import TogglePassword from "./components/TogglePassword";
+import InputField from "../InputField";
+import { BagIcon } from "../../../../assets";
 
 const Wrapper = styled.div`
   position: relative;
@@ -11,7 +12,7 @@ const Wrapper = styled.div`
   .eye-icon {
     position: absolute;
     right: 12px;
-    top: 32px;
+    top: 42px;
     cursor: pointer;
   }
 `;
@@ -21,12 +22,18 @@ const PasswordInputField = (props) => {
 
   const togglePassword = useCallback(
     () => setPasswordShown((prevState) => !prevState),
-    [setPasswordShown],
+    [setPasswordShown]
   );
 
   return (
     <Wrapper>
-      <InputField type={passwordShown ? 'text' : 'password'} {...props} />
+      <InputField
+        type={passwordShown ? "text" : "password"}
+        {...props}
+        icon={<BagIcon />}
+        label="Password"
+        placeholder="Enter Your Paasword"
+      />
       <TogglePassword show={passwordShown} onToggle={togglePassword} />
     </Wrapper>
   );

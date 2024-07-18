@@ -1,6 +1,5 @@
 import { isFunction } from "lodash";
 import styled from "styled-components";
-import classNames from "classnames";
 import PropTypes from "prop-types";
 
 import FieldErrorMessage from "../FieldErrorMessage";
@@ -85,34 +84,41 @@ const InputField = ({
   disabled = false,
   registerOptions = {},
   className,
+  id,
+  icon,
   ...props
 }) => {
   const error = hasError(errors, name);
 
   return (
-    <Container
-      className={classNames({
-        error,
-        [className]: className,
-      })}
-    >
+    <div className="input-box">
       {label && (
-        <label>
+        <label htmlFor={id} className="mb-2">
           {label}
           {required && <span className="required">&nbsp;*</span>}
         </label>
       )}
+       <div className="input-group">
+      {icon && (
+        <div className="input-group-prepend">
+          <span className="input-group-text" id="basic-addon1">
+            {icon}
+          </span>
+        </div>
+      )}
       <input
         name={name}
         type={type}
+        className={`form-control ${className}`}
         aria-invalid={error}
         {...props}
         {...(isFunction(register) &&
           register(name, { required, ...registerOptions }))}
         disabled={disabled}
       />
+      </div>
       <FieldErrorMessage errors={errors} name={name} />
-    </Container>
+    </div>
   );
 };
 
@@ -124,6 +130,10 @@ InputField.propTypes = {
   errors: PropTypes.shape({}),
   required: PropTypes.string,
   disabled: PropTypes.bool,
+  id: PropTypes.string,
+  icon: PropTypes.element,
 };
 
 export default InputField;
+
+

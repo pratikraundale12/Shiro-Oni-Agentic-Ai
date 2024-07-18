@@ -13,3 +13,8 @@ export * from './LockIcon';
 export * from './HeadphoneIcon'
 export * from './BellIcon';
 export * from './SettingSmallIcon'
+export * from './BrandLogo';
+export * from './MailIcon';
+export * from './BagIcon';
+export * from './MicroSoftIcon';
+export * from './GoogleIcon';
