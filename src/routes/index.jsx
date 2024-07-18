@@ -7,7 +7,7 @@ import {
   Forgot,
   Reset,
   Success,
-  ListDashBoard,
+  Dashboard,
   ListUsers,
   AddUser,
   ListClusters,
@@ -15,26 +15,34 @@ import {
   ListNameSpace,
   ReadyFlowGallary,
   GenrateFlow,
-  PermissionMatrix
+  PermissionMatrix,
 } from "../pages";
-import { ClusterIcon, DashboardIcon, GenrateFlowIcon, LockIcon, NameSpaceIcon, PeopleIcon, ReadyFlowIcon } from "../assets";
+import {
+  ClusterIcon,
+  DashboardIcon,
+  GenrateFlowIcon,
+  LockIcon,
+  NameSpaceIcon,
+  PeopleIcon,
+  ReadyFlowIcon,
+} from "../assets";
 
 export const ROUTES_MENU = [
   {
     name: "Dashboard",
     path: "dashboard",
-    icon: <DashboardIcon/>,
+    icon: <DashboardIcon />,
     pages: [
       {
         path: "/dashboard",
-        component: <ListDashBoard />,
+        component: <Dashboard />,
       },
     ],
   },
   {
     name: "Cluster",
     path: "cluster",
-    icon: <ClusterIcon/>,
+    icon: <ClusterIcon />,
     pages: [
       {
         path: "/cluster",
@@ -49,7 +57,7 @@ export const ROUTES_MENU = [
   {
     name: "NameSpace",
     path: "namespace",
-    icon: <NameSpaceIcon/>,
+    icon: <NameSpaceIcon />,
     pages: [
       {
         path: "/namespace",
@@ -64,7 +72,7 @@ export const ROUTES_MENU = [
   {
     name: "ReadyFlow Gallary",
     path: "readyFlowGallary",
-    icon: <ReadyFlowIcon/>,
+    icon: <ReadyFlowIcon />,
     pages: [
       {
         path: "/readyFlowGallary",
@@ -79,7 +87,7 @@ export const ROUTES_MENU = [
   {
     name: "Genrate Flow",
     path: "genrateFlow",
-    icon: <GenrateFlowIcon/>,
+    icon: <GenrateFlowIcon />,
     pages: [
       {
         path: "/genrateFlow",
@@ -94,7 +102,7 @@ export const ROUTES_MENU = [
   {
     name: "User",
     path: "user",
-    icon: <PeopleIcon/>,
+    icon: <PeopleIcon />,
     pages: [
       {
         path: "",
@@ -106,12 +114,11 @@ export const ROUTES_MENU = [
       },
     ],
   },
-  
-  
+
   {
     name: "Permission Matrix",
     path: "permissionMatrix",
-    icon: <LockIcon/>,
+    icon: <LockIcon />,
     pages: [
       {
         path: "/permissionMatrix",
