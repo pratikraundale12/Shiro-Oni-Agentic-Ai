@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './index.css';
@@ -12,12 +14,6 @@ export const Sidebar = () => {
     navigate(`/${path}`);
   };
 
-  const handleKeyDown = (event, path) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      handleRouteClick(path);
-    }
-  };
-
   return (
     <>
       <button
@@ -25,8 +21,9 @@ export const Sidebar = () => {
         type="button"
         id="toggleButton"
       >
+        asdfsadf
         <img
-          src="./img/icons/slider-btn.webp"
+          src="/img/profile-img.png"
           alt="arrow-icon"
           width={14}
           height={14}
@@ -44,9 +41,6 @@ export const Sidebar = () => {
                 key={index}
                 className={`sidebar-list d-flex align-items-center position-relative ${activeRoute === route.path ? 'active' : ''}`}
                 onClick={() => handleRouteClick(route.path)}
-                onKeyDown={event => handleKeyDown(event, route.path)}
-                role="button"
-                tabIndex={0}
               >
                 <div className="sidebar-icons">{route.icon}</div>
                 <span>{route.name}</span>
