@@ -1,12 +1,7 @@
-import ForgotForm from "../../components/Layout/ForgotForm";
-import Layout from "../../components/Layout/Layout";
+import React from 'react';
+import Layout from '../../components/Layout/Layout';
+import ForgotForm from '../../components/Layout/ForgotForm';
 
-// import LoginForm from "../../components/Layout/LoginForm";
 export const Forgot = () => {
-  return (
-    <>
-     <Layout contentDisplay={ForgotForm}/>
-     
-    </>
-    );
+  return <Layout contentDisplay={ForgotForm} />;
 };

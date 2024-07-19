@@ -1,4 +1,7 @@
-export const LinkIcons = ({width = 18, height = 18,color="#444445"}) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const LinkIcons = ({ width = 18, height = 18, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -10,4 +13,10 @@ export const LinkIcons = ({width = 18, height = 18,color="#444445"}) => (
       d="m14.657 11.828-1.414-1.414L14.657 9A4 4 0 1 0 9 3.343L7.586 4.757 6.172 3.343 7.586 1.93a6 6 0 0 1 8.485 8.485l-1.414 1.414Zm-2.828 2.829-1.415 1.414A6 6 0 0 1 1.93 7.586l1.414-1.414 1.415 1.414L3.343 9A4 4 0 0 0 9 14.657l1.415-1.415 1.414 1.415Zm0-9.9 1.414 1.415-7.071 7.07-1.414-1.414 7.07-7.07Z"
     />
   </svg>
-)
+);
+
+LinkIcons.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

@@ -1,4 +1,11 @@
-export const SmallNotThunderIcon = ({width = 24, height = 24, color="#444445"}) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const SmallNotThunderIcon = ({
+  width = 24,
+  height = 24,
+  color = '#444445',
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -13,4 +20,10 @@ export const SmallNotThunderIcon = ({width = 24, height = 24, color="#444445"}) 
       transform="matrix(.6652 .74666 -.63981 .76853 4 3.2)"
     />
   </svg>
-)
+);
+
+SmallNotThunderIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

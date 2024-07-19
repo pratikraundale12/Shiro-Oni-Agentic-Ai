@@ -1,22 +1,22 @@
-import React from "react";
-import InputField from "../../shared/FormInputs/components/InputField";
+import React from 'react';
+import InputField from '../../shared/FormInputs/components/InputField';
 import {
   GoogleIcon,
-  LessArrow,
+  LessArrowIcon,
   MailIcon,
   MicroSoftIcon,
-  RightArrow,
+  RightArrowIcon,
   UnderLineIcon,
-} from "../../assets";
-import PasswordInputField from "../../shared/FormInputs/components/PasswordField";
-import LoginButton from "../../shared/Button/components/LoginButton";
+} from '../../assets';
+import PasswordInputField from '../../shared/FormInputs/components/PasswordField';
+import LoginButton from '../../shared/Button/components/LoginButton';
 
 const LoginForm = () => {
   return (
     <div className="left-box_form">
       <div className="d-flex align-items-center justify-content-start flex-column">
         <div className="d-flex align-items-center welcome-box">
-          <div className="wave-emoji me-3" style={{ fontSize: "36px" }}>
+          <div className="wave-emoji me-3" style={{ fontSize: '36px' }}>
             👋
           </div>
           <h1>Welcome back</h1>
@@ -31,7 +31,7 @@ const LoginForm = () => {
             id="email"
             icon={<MailIcon />}
             label="E-mail Address"
-            checkicon={<RightArrow color="#E32235"/>}
+            checkicon={<RightArrowIcon color="#E32235" />}
           />
 
           <PasswordInputField />
@@ -41,12 +41,11 @@ const LoginForm = () => {
             </a>
           </div>
           <div className="btn-box d-flex justify-content-center align-items-center flex-column">
-            
             <LoginButton
               className="signin-btn"
               text="Sign in to your Account"
-              Icon={LessArrow}
-              iconProps={{ width: 8, color: "white" }}
+              Icon={LessArrowIcon}
+              iconProps={{ width: 8, color: 'white' }}
             />
             <small className="other-login-info">
               or do it via other accounts

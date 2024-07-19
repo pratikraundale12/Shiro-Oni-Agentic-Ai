@@ -1,12 +1,14 @@
-import "./index.css";
-import { BrandLogo, ChatBoxIcon } from "../../assets";
+import React from 'react';
+import PropTypes from 'prop-types';
+import './index.css';
+import { BrandLogoIcon, ChatBoxIcon } from '../../assets';
 
-export const LeftSectionLayout = ({contentDisplay:ContentDisplay}) => {
+export const LeftSectionLayout = ({ contentDisplay: ContentDisplay }) => {
   return (
     <div className="col-xl-5 px-0 col-md-6 position-relative">
       <div className="left-box forgot-box d-flex justify-content-center align-items-center h-100 flex-column">
         <div className="brand-logo">
-          <BrandLogo />
+          <BrandLogoIcon />
         </div>
         <ContentDisplay />
         <div className="position-relative">
@@ -18,4 +20,8 @@ export const LeftSectionLayout = ({contentDisplay:ContentDisplay}) => {
       </div>
     </div>
   );
+};
+
+LeftSectionLayout.propTypes = {
+  contentDisplay: PropTypes.elementType.isRequired,
 };

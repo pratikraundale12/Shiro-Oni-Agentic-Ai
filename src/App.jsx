@@ -1,9 +1,10 @@
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
-import { ThemeProvider } from "styled-components";
-import { GlobalStyles, theme } from "./styles";
-import { GlobalProvider } from "./utils";
-import Routes from "./routes";
+import React from 'react';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+import { ThemeProvider } from 'styled-components';
+import { GlobalStyles, theme } from './styles';
+import { GlobalProvider } from './utils';
+import Routes from './routes';
 
 function App() {
   return (

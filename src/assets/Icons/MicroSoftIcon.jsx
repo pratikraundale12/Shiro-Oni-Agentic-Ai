@@ -1,4 +1,7 @@
-export const MicroSoftIcon = ({ width = 24, height = 24 }) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const MicroSoftIcon = () => (
   <svg
     width="24"
     height="24"
@@ -6,7 +9,7 @@ export const MicroSoftIcon = ({ width = 24, height = 24 }) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <g clip-path="url(#clip0_697_18172)">
+    <g clipPath="url(#clip0_697_18172)">
       <path
         d="M12.7466 11.25H23.9966V0.75C23.9966 0.336 23.6606 0 23.2466 0H12.7466V11.25Z"
         fill="#4CAF50"
@@ -36,3 +39,8 @@ export const MicroSoftIcon = ({ width = 24, height = 24 }) => (
     </defs>
   </svg>
 );
+
+MicroSoftIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

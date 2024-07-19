@@ -1,4 +1,7 @@
-export const ProfileIcon = ({width = 80, height = 80}) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const ProfileIcon = ({ width = 80, height = 80 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -14,4 +17,9 @@ export const ProfileIcon = ({width = 80, height = 80}) => (
       d="M40 0a40 40 0 1 0 0 80 40 40 0 0 0 0-80Zm0 18.462a12.308 12.308 0 1 1 0 24.615 12.308 12.308 0 0 1 0-24.615Zm0 55.384a33.845 33.845 0 0 1-24-10c2.462-8.461 12.308-14.615 24-14.615s21.538 6.154 24 14.615a33.845 33.845 0 0 1-24 10Z"
     />
   </svg>
-)
+);
+
+ProfileIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

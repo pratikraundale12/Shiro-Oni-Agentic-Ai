@@ -1,17 +1,18 @@
-import React from "react";
-import { GreaterArrow, LessArrow, UnderLineIcon } from "../../assets";
-import PasswordInputField from "../../shared/FormInputs/components/PasswordField";
-import { useNavigate } from "react-router-dom";
-import LoginButton from "../../shared/Button/components/LoginButton";
+import React from 'react';
+import { GreaterArrowIcon, LessArrowIcon, UnderLineIcon } from '../../assets';
+import PasswordInputField from '../../shared/FormInputs/components/PasswordField';
+import { useNavigate } from 'react-router-dom';
+import LoginButton from '../../shared/Button/components/LoginButton';
 
 const ResetForm = () => {
   const navigate = useNavigate();
 
   const handleSignInClick = () => {
-    navigate("/login");
+    navigate('/login');
   };
+
   const handleArrowClick = () => {
-    navigate("/forgot");
+    navigate('/forgot');
   };
 
   return (
@@ -21,9 +22,16 @@ const ResetForm = () => {
           <span
             className="mb-3"
             onClick={handleArrowClick}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: 'pointer' }}
+            role="button"
+            tabIndex={0}
+            onKeyPress={e => {
+              if (e.key === 'Enter') {
+                handleArrowClick();
+              }
+            }}
           >
-            <GreaterArrow />
+            <GreaterArrowIcon />
           </span>
           <div className="back-opt mb-3">Back</div>
         </div>
@@ -35,48 +43,57 @@ const ResetForm = () => {
         <form action="#" className="w-100">
           <PasswordInputField label="New Password" />
           <div className="password-length">
-         <div className="d-flex align-items-center justify-content-between">
-         <small className="password-strength-text mb-2">
-            Make sure your new password strong and secure
-          </small>
-          <span>Weak</span>
-         </div>
-          <div className="row me-0">
-            <div className="col-2 pe-0">
-              <div className="strendth-fill weak" />
+            <div className="d-flex align-items-center justify-content-between">
+              <small className="password-strength-text mb-2">
+                Make sure your new password is strong and secure
+              </small>
+              <span>Weak</span>
             </div>
-            <div className="col-2 px-1">
-              <div className="strendth-fill weak" />
+            <div className="row me-0">
+              <div className="col-2 pe-0">
+                <div className="strength-fill weak" />
+              </div>
+              <div className="col-2 px-1">
+                <div className="strength-fill weak" />
+              </div>
+              <div className="col-2 px-1">
+                <div className="strength-fill weak" />
+              </div>
+              <div className="col-2 px-1">
+                <div className="strength-fill" />
+              </div>
+              <div className="col-2 px-1">
+                <div className="strength-fill" />
+              </div>
+              <div className="col-2 px-1">
+                <div className="strength-fill" />
+              </div>
             </div>
-            <div className="col-2 px-1">
-              <div className="strendth-fill weak" />
-            </div>
-            <div className="col-2 px-1">
-              <div className="strendth-fill" />
-            </div>
-            <div className="col-2 px-1">
-              <div className="strendth-fill" />
-            </div>
-            <div className="col-2 px-1">
-              <div className="strendth-fill" />
-            </div>
-          </div>
           </div>
           <PasswordInputField label="Confirm New Password" />
-
           <div className="mb-42 btn-box d-flex justify-content-center align-items-center flex-column">
             <LoginButton
               className="signin-btn"
               text="Sign in to your Account"
-              Icon={LessArrow}
-              iconProps={{ width: 8, color: "white" }}
+              Icon={LessArrowIcon}
+              iconProps={{ width: 8, color: 'white' }}
             />
           </div>
         </form>
         <div className="existing-account">
           <p>
             Already have an Account?
-            <span className="sign-in ms-2" onClick={handleSignInClick}>
+            <span
+              className="sign-in ms-2"
+              onClick={handleSignInClick}
+              role="button"
+              tabIndex={0}
+              onKeyPress={e => {
+                if (e.key === 'Enter') {
+                  handleSignInClick();
+                }
+              }}
+            >
               Sign In
             </span>
           </p>

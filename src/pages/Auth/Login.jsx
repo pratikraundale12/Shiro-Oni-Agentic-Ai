@@ -1,11 +1,7 @@
-import Layout from "../../components/Layout/Layout";
-import LoginForm from "../../components/Layout/LoginForm";
-
+import React from 'react';
+import Layout from '../../components/Layout/Layout';
+import LoginForm from '../../components/Layout/LoginForm';
 
 export const Login = () => {
-  return (
-  <>
-   <Layout contentDisplay={LoginForm}/>
-  </>
-  );
+  return <Layout contentDisplay={LoginForm} />;
 };

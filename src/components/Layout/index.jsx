@@ -1,2 +1,2 @@
-export * from "./RightSectionLayout";
-export * from "./LeftSectionLayout";
+export * from './RightSectionLayout';
+export * from './LeftSectionLayout';

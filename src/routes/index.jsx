@@ -1,6 +1,7 @@
-import { Outlet, Route, Routes as Router } from "react-router-dom";
+import React from 'react';
+import { Outlet, Route, Routes as Router } from 'react-router-dom';
+import AuthGaurd from './AuthGuard';
 
-import AuthGaurd from "./AuthGuard";
 import {
   NotFound,
   Login,
@@ -15,110 +16,117 @@ import {
   ListNameSpace,
   ReadyFlowGallary,
   GenrateFlow,
-  PermissionMatrix
-} from "../pages";
-import { ClusterIcon, DashboardIcon, GenrateFlowIcon, LockIcon, NameSpaceIcon, PeopleIcon, ReadyFlowIcon } from "../assets";
+  PermissionMatrix,
+} from '../pages';
+import {
+  ClusterIcon,
+  DashboardIcon,
+  GenrateFlowIcon,
+  LockIcon,
+  NameSpaceIcon,
+  PeopleIcon,
+  ReadyFlowIcon,
+} from '../assets';
 
 export const ROUTES_MENU = [
   {
-    name: "Dashboard",
-    path: "dashboard",
-    icon: <DashboardIcon/>,
+    name: 'Dashboard',
+    path: 'dashboard',
+    icon: <DashboardIcon />,
     pages: [
       {
-        path: "/dashboard",
+        path: '/dashboard',
         component: <ListDashBoard />,
       },
     ],
   },
   {
-    name: "Cluster",
-    path: "cluster",
-    icon: <ClusterIcon/>,
+    name: 'Cluster',
+    path: 'cluster',
+    icon: <ClusterIcon />,
     pages: [
       {
-        path: "/cluster",
+        path: '/cluster',
         component: <ListClusters />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
   },
   {
-    name: "NameSpace",
-    path: "namespace",
-    icon: <NameSpaceIcon/>,
+    name: 'NameSpace',
+    path: 'namespace',
+    icon: <NameSpaceIcon />,
     pages: [
       {
-        path: "/namespace",
+        path: '/namespace',
         component: <ListNameSpace />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
   },
   {
-    name: "ReadyFlow Gallary",
-    path: "readyFlowGallary",
-    icon: <ReadyFlowIcon/>,
+    name: 'ReadyFlow Gallary',
+    path: 'readyFlowGallary',
+    icon: <ReadyFlowIcon />,
     pages: [
       {
-        path: "/readyFlowGallary",
+        path: '/readyFlowGallary',
         component: <ReadyFlowGallary />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
   },
   {
-    name: "Genrate Flow",
-    path: "genrateFlow",
-    icon: <GenrateFlowIcon/>,
+    name: 'Genrate Flow',
+    path: 'genrateFlow',
+    icon: <GenrateFlowIcon />,
     pages: [
       {
-        path: "/genrateFlow",
+        path: '/genrateFlow',
         component: <GenrateFlow />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
   },
   {
-    name: "User",
-    path: "user",
-    icon: <PeopleIcon/>,
+    name: 'User',
+    path: 'user',
+    icon: <PeopleIcon />,
     pages: [
       {
-        path: "",
+        path: '',
         component: <ListUsers />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddUser />,
       },
     ],
   },
-  
-  
+
   {
-    name: "Permission Matrix",
-    path: "permissionMatrix",
-    icon: <LockIcon/>,
+    name: 'Permission Matrix',
+    path: 'permissionMatrix',
+    icon: <LockIcon />,
     pages: [
       {
-        path: "/permissionMatrix",
+        path: '/permissionMatrix',
         component: <PermissionMatrix />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
@@ -136,11 +144,11 @@ const Routes = () => {
 
       {/* Private Routes */}
       <Route path="/" element={<AuthGaurd />}>
-        {ROUTES_MENU.map((item) => (
+        {ROUTES_MENU.map(item => (
           <Route key={item.path} path={item.path} element={<Outlet />}>
-            {item.pages.map((page) =>
+            {item.pages.map(page =>
               Array.isArray(page.path) ? (
-                page.path.map((subPath) => (
+                page.path.map(subPath => (
                   <Route
                     key={subPath}
                     path={subPath}

@@ -1,14 +1,25 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import InputField from "../../shared/FormInputs/components/InputField";
-import { GreaterArrow, LessArrow, MailIcon, UnderLineIcon } from "../../assets";
-import LoginButton from "../../shared/Button/components/LoginButton";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import InputField from '../../shared/FormInputs/components/InputField';
+import LoginButton from '../../shared/Button/components/LoginButton';
+import {
+  GreaterArrowIcon,
+  LessArrowIcon,
+  MailIcon,
+  UnderLineIcon,
+} from '../../assets';
 
 const ForgotForm = () => {
   const navigate = useNavigate();
 
   const handleSignInClick = () => {
-    navigate("/login");
+    navigate('/login');
+  };
+
+  const handleKeyPress = event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      handleSignInClick();
+    }
   };
 
   return (
@@ -18,9 +29,12 @@ const ForgotForm = () => {
           <span
             className="mb-3"
             onClick={handleSignInClick}
-            style={{ cursor: "pointer" }}
+            onKeyPress={handleKeyPress}
+            role="button"
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
           >
-            <GreaterArrow />
+            <GreaterArrowIcon />
           </span>
           <div className="back-opt mb-3">Back</div>
         </div>
@@ -44,15 +58,22 @@ const ForgotForm = () => {
             <LoginButton
               className="signin-btn"
               text="Sign in to your Account"
-              Icon={LessArrow}
-              iconProps={{ width: 8, color: "white" }}
+              Icon={LessArrowIcon}
+              iconProps={{ width: 8, color: 'white' }}
             />
           </div>
         </form>
         <div className="existing-account">
           <p>
             Already have an Account?
-            <span className="sign-in ms-2 " onClick={handleSignInClick}>
+            <span
+              className="sign-in ms-2"
+              onClick={handleSignInClick}
+              onKeyPress={handleKeyPress}
+              role="button"
+              tabIndex={0}
+              style={{ cursor: 'pointer' }}
+            >
               Sign In
             </span>
           </p>

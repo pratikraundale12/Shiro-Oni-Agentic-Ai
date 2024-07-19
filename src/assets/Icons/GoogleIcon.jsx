@@ -1,4 +1,7 @@
-export const GoogleIcon = ({ width = 24, height = 24 }) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const GoogleIcon = () => (
   <svg
     width="24"
     height="24"
@@ -6,7 +9,7 @@ export const GoogleIcon = ({ width = 24, height = 24 }) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <g clip-path="url(#clip0_697_18166)">
+    <g clipPath="url(#clip0_697_18166)">
       <path
         d="M5.55018 14.6231L4.74325 17.6355L1.79395 17.6979C0.912546 16.063 0.412598 14.1926 0.412598 12.2049C0.412598 10.2829 0.880037 8.47036 1.70861 6.87439H1.70924L4.33494 7.35577L5.48516 9.96572C5.24442 10.6676 5.11321 11.421 5.11321 12.2049C5.1133 13.0558 5.26742 13.871 5.55018 14.6231Z"
         fill="#FBBB00"
@@ -36,3 +39,8 @@ export const GoogleIcon = ({ width = 24, height = 24 }) => (
     </defs>
   </svg>
 );
+
+GoogleIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

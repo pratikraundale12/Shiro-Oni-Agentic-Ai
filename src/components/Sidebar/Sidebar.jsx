@@ -1,54 +1,15 @@
-// import { Link, useLocation } from "react-router-dom";
-// import styled from "styled-components";
-
-// import { ROUTES_MENU } from "../routes";
-// import { KsolvesIcon } from "../assets";
-
-// const MenuItem = styled(Link)`
-//   display: block;
-//   padding: 10px;
-//   border-radius: 4px;
-//   color: ${(props) =>
-//     props.active ? props.theme.colors.white : props.theme.colors.darkGrey};
-//   background: ${(props) =>
-//     props.active ? props.theme.colors.primary : "transparent"};
-// `;
-
-// const Logo = styled.div`
-//   padding: 1rem;
-//   margin-bottom: 2rem;
-// `;
-
-// export const Sidebar = () => {
-//   const location = useLocation();
-
-//   return (
-//     <div>
-//       <Logo>
-//         <KsolvesIcon />
-//       </Logo>
-//       {ROUTES_MENU.map((item) => (
-//         <MenuItem
-//           key={item.path}
-//           to={item.path}
-//           active={+location.pathname.includes(item.path)}
-//         >
-//           {item.name}
-//         </MenuItem>
-//       ))}
-//     </div>
-//   );
-// };
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./index.css";
-import { ROUTES_MENU } from "../../routes";
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './index.css';
+import { ROUTES_MENU } from '../../routes';
 
 export const Sidebar = () => {
   const [activeRoute, setActiveRoute] = useState(ROUTES_MENU[0].path);
   const navigate = useNavigate();
 
-  const handleRouteClick = (path) => {
+  const handleRouteClick = path => {
     setActiveRoute(path);
     navigate(`/${path}`);
   };
@@ -60,8 +21,9 @@ export const Sidebar = () => {
         type="button"
         id="toggleButton"
       >
+        asdfsadf
         <img
-          src="./img/icons/slider-btn.webp"
+          src="/img/profile-img.png"
           alt="arrow-icon"
           width={14}
           height={14}
@@ -90,5 +52,3 @@ export const Sidebar = () => {
     </>
   );
 };
-
-

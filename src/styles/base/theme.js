@@ -1,54 +1,64 @@
 const theme = {
+  fontFamily: 'Red Hat Display, sans-serif',
+  fontFamily2: 'Nato Sans, sans-serif',
   colors: {
-    primary: '#1F80FF',
-    success: '#5B9C79',
-    error: '#C01920',
-    primaryHover: '#1F80FFDE',
-    secondaryHover: '#1F80FF1A',
-    white: '#ffffff',
-    darkGrey: '#2e2e2b',
-    grey: '#575757',
-    fadeGrey: '#979797',
-    borderGrey: 'rgba(87, 87, 87, .5)',
-    lightGrey: 'rgba(87, 87, 87, .15)',
-    lightGrey2: '#F2F2F2',
-    background: '#F8F7F1',
-    backgroundDark: '#EDECE6',
-    backgroundDarker: '#E1E1DB',
-    shadow: 'rgba(0, 0, 0, 0.1)',
-    shadow1: 'rgba(0, 0, 0, 0.2)',
-    shadow2: 'rgba(0, 0, 0, 0.5)',
-    shadow3: 'rgba(0, 0, 0, 0.7)',
-    productCardBg: '#EEEEEE',
+    // general
+    white: '#FFFFFF',
+    background: '#FFFFFF',
+
+    // brand colors
+    primary: '#E32235',
+    darker: '#444445',
+    lighter: '#FDEEEE',
+    subtle: '#F7FAFC',
+
+    // state colors
+    error: '#FF0000',
+    warning: '#F3C652',
+    info: '#0066FF',
+    success: '#06C270',
+
+    // light colors
+    lightGrey: '#F5F7FA',
+    lightGrey1: '#EBEBF0',
+    lightGrey2: '#F3FAFF',
+
+    // dark colors
+    darkGrey: '#E0D3D3',
+    darkGrey1: '#B5B5BD',
+
+    // variants
+    primaryActive: '#C60B1D',
+    primaryDisabled: '#E3223580',
+    secondaryDisabled: '#44444580',
+
+    border: '#DDE4F0',
+    shadow: '#9C838326',
+  },
+  spacing: {
+    xs: '8px',
+    sm: '16px',
+    md: '24px',
+    lg: '32px',
+    xl: '40px',
+    xxl: '64px',
+  },
+  size: {
+    xs: '10px',
+    sm: '12px',
+    md: '14px',
+    lg: '16px',
+    xl: '20px',
+    xxl: '24px',
+    xxxl: '32px',
+    xxxxl: '48px',
   },
   breakpoint: {
-    mobileS: '330px',
-    mobileM: '400px',
-    mobileL: '480px',
-    tabletS: '650px',
+    mobile: '320px',
     tablet: '768px',
-    tabletL: '820px',
-    tabletXL: '1024px',
-    desktopXS: '900px',
-    desktopS: '1080px',
-    desktopM: '1240px',
-    desktopL: '1400px',
+    desktop: '1024px',
+    desktopHD: '1440px',
   },
-  headerSize: {
-    max: '135px',
-    min: '52px',
-    tablet: '66px',
-    mobile: '63px',
-  },
-  fontFamily: 'Mulish',
-  zIndex: {
-    tabIndex: 10,
-    header: 100,
-    footer: 100,
-    overlayIndex: 1000,
-    sideModalIndex: 1001,
-    generalModalIndex: 1002,
-    dropdownIndex: 2000,
-  },
+  zIndex: {},
 };
 export default theme;

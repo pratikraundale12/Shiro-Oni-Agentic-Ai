@@ -1,1 +1,1 @@
-export  * from './GenrateFlow'
+export * from './GenrateFlow';

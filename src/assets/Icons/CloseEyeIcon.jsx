@@ -1,4 +1,7 @@
-export const CloseEyeIcon = ({ width = 18, height = 18 }) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const CloseEyeIcon = () => (
   <svg
     width="24"
     height="24"
@@ -12,3 +15,9 @@ export const CloseEyeIcon = ({ width = 18, height = 18 }) => (
     />
   </svg>
 );
+
+CloseEyeIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

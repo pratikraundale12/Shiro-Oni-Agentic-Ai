@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext } from 'react';
+import PropTypes from 'prop-types';
 
 const GlobalContext = createContext();
 
@@ -12,4 +13,12 @@ export const GlobalProvider = ({ children }) => {
   );
 };
 
+GlobalProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 export const useGlobalContext = () => useContext(GlobalContext);
+
+GlobalProvider.propTypes = {
+  children: PropTypes.node,
+};

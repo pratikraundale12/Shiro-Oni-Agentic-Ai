@@ -1,4 +1,11 @@
-export const SmallPerfileIcon = ({width = 16, height = 21,color="#444445"}) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const SmallPerfileIcon = ({
+  width = 16,
+  height = 21,
+  color = '#444445',
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -10,4 +17,10 @@ export const SmallPerfileIcon = ({width = 16, height = 21,color="#444445"}) => (
       d="M0 21a8 8 0 1 1 16 0h-2a6 6 0 0 0-12 0H0Zm8-9c-3.315 0-6-2.685-6-6s2.685-6 6-6 6 2.685 6 6-2.685 6-6 6Zm0-2c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4Z"
     />
   </svg>
-)
+);
+
+SmallPerfileIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};
