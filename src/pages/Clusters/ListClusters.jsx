@@ -19,8 +19,6 @@ export const ListClusters = () => {
   const navigate = useNavigate();
 
   return (
- 
-
     <Container>
       <Heading>
         <h2>List Clusters</h2>

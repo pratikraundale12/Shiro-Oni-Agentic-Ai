@@ -1,4 +1,4 @@
-export const WarningIcon = ({width = 80, height = 68}) => (
+export const WarningIcon = ({ width = 80, height = 68 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -12,4 +12,4 @@ export const WarningIcon = ({width = 80, height = 68}) => (
       clipRule="evenodd"
     />
   </svg>
-)
+);

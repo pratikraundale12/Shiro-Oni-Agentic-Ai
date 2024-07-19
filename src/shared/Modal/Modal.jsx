@@ -1,7 +1,7 @@
-import React from "react";
-import Modal from "react-modal";
-import "./index.css"; // Import the CSS file
-import { CrossIconWithBorderGrey } from "../../assets/Icons/CrossIcon";
+import React from 'react';
+import Modal from 'react-modal';
+import './index.css'; // Import the CSS file
+import { CrossIconWithBorderGrey } from '../../assets/Icons/CrossIcon';
 
 const Model = ({ modalIsOpen, setModalIsOpen, children, size }) => {
   const closeModal = () => {
@@ -10,19 +10,19 @@ const Model = ({ modalIsOpen, setModalIsOpen, children, size }) => {
 
   const styleObject = {
     overlay: {
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      height: size === "lg" ? "75%" : size === "md" ? "45%" : "40%",
-      width: size === "lg" ? "70%" : size === "md" ? "45%" : "30%",
-      padding: "0",
-      borderRadius: "16px",
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      height: size === 'lg' ? '75%' : size === 'md' ? '45%' : '40%',
+      width: size === 'lg' ? '70%' : size === 'md' ? '45%' : '30%',
+      padding: '0',
+      borderRadius: '16px',
     },
   };
 

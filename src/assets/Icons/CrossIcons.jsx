@@ -1,4 +1,4 @@
-export const CrossIcons = ({width = 21, height = 21,color="#444445"}) => (
+export const CrossIcons = ({ width = 21, height = 21, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -10,4 +10,4 @@ export const CrossIcons = ({width = 21, height = 21,color="#444445"}) => (
       d="M8.293 9.707.5 1.914 1.914.499l7.793 7.793L17.5.5l1.414 1.415-7.793 7.793 7.793 7.792-1.414 1.415-7.793-7.793-7.793 7.793L.5 17.499l7.793-7.792Z"
     />
   </svg>
-)
+);

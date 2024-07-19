@@ -17,7 +17,7 @@ import {
   ReadyFlowGallary,
   GenrateFlow,
   PermissionMatrix,
-} from "../pages";
+} from '../pages';
 import {
   ClusterIcon,
   DashboardIcon,
@@ -26,83 +26,83 @@ import {
   NameSpaceIcon,
   PeopleIcon,
   ReadyFlowIcon,
-} from "../assets";
+} from '../assets';
 
 export const ROUTES_MENU = [
   {
-    name: "Dashboard",
-    path: "dashboard",
+    name: 'Dashboard',
+    path: 'dashboard',
     icon: <DashboardIcon />,
     pages: [
       {
-        path: "/dashboard",
+        path: '/dashboard',
         component: <Dashboard />,
       },
     ],
   },
   {
-    name: "Cluster",
-    path: "cluster",
+    name: 'Cluster',
+    path: 'cluster',
     icon: <ClusterIcon />,
     pages: [
       {
-        path: "/cluster",
+        path: '/cluster',
         component: <ListClusters />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
   },
   {
-    name: "NameSpace",
-    path: "namespace",
+    name: 'NameSpace',
+    path: 'namespace',
     icon: <NameSpaceIcon />,
     pages: [
       {
-        path: "/namespace",
+        path: '/namespace',
         component: <ListNameSpace />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
   },
   {
-    name: "ReadyFlow Gallary",
-    path: "readyFlowGallary",
+    name: 'ReadyFlow Gallary',
+    path: 'readyFlowGallary',
     icon: <ReadyFlowIcon />,
     pages: [
       {
-        path: "/readyFlowGallary",
+        path: '/readyFlowGallary',
         component: <ReadyFlowGallary />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
   },
   {
-    name: "Genrate Flow",
-    path: "genrateFlow",
+    name: 'Genrate Flow',
+    path: 'genrateFlow',
     icon: <GenrateFlowIcon />,
     pages: [
       {
-        path: "/genrateFlow",
+        path: '/genrateFlow',
         component: <GenrateFlow />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
   },
   {
-    name: "User",
-    path: "user",
+    name: 'User',
+    path: 'user',
     icon: <PeopleIcon />,
     pages: [
       {
@@ -117,12 +117,12 @@ export const ROUTES_MENU = [
   },
 
   {
-    name: "Permission Matrix",
-    path: "permissionMatrix",
+    name: 'Permission Matrix',
+    path: 'permissionMatrix',
     icon: <LockIcon />,
     pages: [
       {
-        path: "/permissionMatrix",
+        path: '/permissionMatrix',
         component: <PermissionMatrix />,
       },
       {

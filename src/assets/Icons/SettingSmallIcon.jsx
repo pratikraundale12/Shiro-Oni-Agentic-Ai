@@ -1,4 +1,8 @@
-export const SettingSmallIcon = ({width = 24, height = 24,color="#444445"}) => (
+export const SettingSmallIcon = ({
+  width = 24,
+  height = 24,
+  color = '#444445',
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -10,4 +14,4 @@ export const SettingSmallIcon = ({width = 24, height = 24,color="#444445"}) => (
       d="M7.686 3 10.293.393a1 1 0 0 1 1.414 0L14.314 3H18a1 1 0 0 1 1 1v3.686l2.607 2.607a1 1 0 0 1 0 1.414L19 14.314V18a1 1 0 0 1-1 1h-3.686l-2.607 2.607a1 1 0 0 1-1.414 0L7.686 19H4a1 1 0 0 1-1-1v-3.686L.393 11.707a1 1 0 0 1 0-1.414L3 7.686V4a1 1 0 0 1 1-1h3.686ZM5 5v3.515L2.515 11 5 13.485V17h3.515L11 19.485 13.485 17H17v-3.515L19.485 11 17 8.515V5h-3.515L11 2.515 8.515 5H5Zm6 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"
     />
   </svg>
-)
+);

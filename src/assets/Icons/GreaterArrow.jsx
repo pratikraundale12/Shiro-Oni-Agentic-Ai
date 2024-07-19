@@ -1,4 +1,4 @@
-export const GreaterArrow = ({width = 8, height = 14,color="#444445"}) => (
+export const GreaterArrow = ({ width = 8, height = 14, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -10,4 +10,4 @@ export const GreaterArrow = ({width = 8, height = 14,color="#444445"}) => (
       d="m2.829 7 4.95-4.95L6.363.638 0 7l6.364 6.364 1.414-1.415L2.828 7Z"
     />
   </svg>
-)
+);

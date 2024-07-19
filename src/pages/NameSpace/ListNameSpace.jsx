@@ -1,5 +1,3 @@
 export const ListNameSpace = () => {
-    return(
-        <div>NameSpace List</div>
-    )
-}
+  return <div>NameSpace List</div>;
+};

@@ -1,9 +1,9 @@
-import "./index.css";
+import './index.css';
 export const InsightContainer = ({
   backgroundCss,
   icon: Icon,
-  count = "",
-  text = "",
+  count = '',
+  text = '',
 }) => {
   return (
     <div className="col-lg-3 col-4 mb-4">

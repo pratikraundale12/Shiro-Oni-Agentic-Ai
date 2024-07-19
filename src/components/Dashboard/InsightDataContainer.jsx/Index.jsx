@@ -1,1 +1,1 @@
-export * from "./InsightContainer";
+export * from './InsightContainer';

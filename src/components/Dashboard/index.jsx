@@ -1,1 +1,1 @@
-export * from "./InsightDataContainer.jsx";
+export * from './InsightDataContainer.jsx';

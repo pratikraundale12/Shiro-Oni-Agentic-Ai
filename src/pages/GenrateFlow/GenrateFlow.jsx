@@ -1,5 +1,3 @@
 export const GenrateFlow = () => {
-    return(
-        <div>Genrate Flow</div>
-    )
-}
+  return <div>Genrate Flow</div>;
+};

@@ -1,4 +1,4 @@
-export const SettingIcon = ({width = 80, height = 80}) => (
+export const SettingIcon = ({ width = 80, height = 80 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -15,4 +15,4 @@ export const SettingIcon = ({width = 80, height = 80}) => (
       </clipPath>
     </defs>
   </svg>
-)
+);

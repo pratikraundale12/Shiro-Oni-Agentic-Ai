@@ -1,8 +1,8 @@
-import styled from "styled-components";
-import { useState } from "react";
-import { Grid } from "../../components/Grid";
-import { Model } from "../../shared";
-import { DeleteDustbinIcon } from "../../assets";
+import styled from 'styled-components';
+import { useState } from 'react';
+import { Grid } from '../../components/Grid';
+import { Model } from '../../shared';
+import { DeleteDustbinIcon } from '../../assets';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -64,7 +64,7 @@ export const ListUsers = () => {
       <Container>
         <Grid module="users" columns={COLUMNS} sortFns={SORT_FNS} />
         <button onClick={openModal}>hello</button>
-      </Container>{" "}
+      </Container>{' '}
     </>
   );
 };

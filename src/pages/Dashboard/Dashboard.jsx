@@ -8,9 +8,9 @@ import {
   StoppedProcessorIcon,
   TotalProcessorIcon,
   TotalQuedIcon,
-} from "../../assets";
-import { InvalidProcessorIcon } from "../../assets/Icons/InvalidProcessorIcon";
-import { InsightContainer } from "../../components/Dashboard/InsightDataContainer.jsx/InsightContainer";
+} from '../../assets';
+import { InvalidProcessorIcon } from '../../assets/Icons/InvalidProcessorIcon';
+import { InsightContainer } from '../../components/Dashboard/InsightDataContainer.jsx/InsightContainer';
 
 export const Dashboard = () => {
   return (
@@ -217,7 +217,7 @@ export const Dashboard = () => {
                   <InsightContainer
                     backgroundCss="col-set7"
                     icon={TotalQuedIcon}
-                    count={"11 Mb"}
+                    count={'11 Mb'}
                     text="Total Queued"
                   />
                   <InsightContainer

@@ -18,15 +18,15 @@ const AuthGuard = () => {
   return (
     // <Container>
     <>
-     {/* <Content> */}
-        <Header />
-        <Container>
+      {/* <Content> */}
+      <Header />
+      <Container>
         <Sidebar />
 
         <Outlet />
-        </Container>
+      </Container>
       {/* </Content> */}
-    {/* </Container> */}
+      {/* </Container> */}
     </>
   );
 };

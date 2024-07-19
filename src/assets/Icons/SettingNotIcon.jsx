@@ -1,5 +1,5 @@
-import * as React from "react"
-export const SettingNotIcon = ({width = 80, height = 80}) => (
+import * as React from 'react';
+export const SettingNotIcon = ({ width = 80, height = 80 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -13,4 +13,4 @@ export const SettingNotIcon = ({width = 80, height = 80}) => (
       clipRule="evenodd"
     />
   </svg>
-)
+);

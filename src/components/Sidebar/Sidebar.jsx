@@ -39,16 +39,16 @@
 //     </div>
 //   );
 // };
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./index.css";
-import { ROUTES_MENU } from "../../routes";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './index.css';
+import { ROUTES_MENU } from '../../routes';
 
 export const Sidebar = () => {
   const [activeRoute, setActiveRoute] = useState(ROUTES_MENU[0].path);
   const navigate = useNavigate();
 
-  const handleRouteClick = (path) => {
+  const handleRouteClick = path => {
     setActiveRoute(path);
     navigate(`/${path}`);
   };
@@ -90,5 +90,3 @@ export const Sidebar = () => {
     </>
   );
 };
-
-

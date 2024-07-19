@@ -1,4 +1,4 @@
-export const CircleIcon = ({width = 19, height = 18,color="#444445"}) => (
+export const CircleIcon = ({ width = 19, height = 18, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -10,4 +10,4 @@ export const CircleIcon = ({width = 19, height = 18,color="#444445"}) => (
       d="M10 20C4.477 20 0 15.523 0 10S4.477 0 10 0s10 4.477 10 10-4.477 10-10 10Zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"
     />
   </svg>
-)
+);

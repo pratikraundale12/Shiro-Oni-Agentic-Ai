@@ -1,5 +1,3 @@
 export const ReadyFlowGallary = () => {
-    return(
-        <div>Readyflow Gallary</div>
-    )
-}
+  return <div>Readyflow Gallary</div>;
+};
