@@ -23,3 +23,4 @@ export * from './TotalQuedIcon';
 export * from './FlowFilesQuedIcon';
 export * from './TotalProcessorIcon';
 export * from './DeleteDustbinIcon';
+export * from './FlowMetricHeaderIcon';

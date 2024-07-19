@@ -1,1 +1,2 @@
-export * from './InsightDataContainer.jsx';
+export * from './InsightContainer';
+export * from './FlowMetricChart';
