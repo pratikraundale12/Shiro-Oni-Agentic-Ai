@@ -34,10 +34,14 @@ const ResetForm = () => {
         </p>
         <form action="#" className="w-100">
           <PasswordInputField label="New Password" />
-          <small className="password-strength-text mb-2">
+          <div className="password-length">
+         <div className="d-flex align-items-center justify-content-between">
+         <small className="password-strength-text mb-2">
             Make sure your new password strong and secure
           </small>
-          <div className="row">
+          <span>Weak</span>
+         </div>
+          <div className="row me-0">
             <div className="col-2 pe-0">
               <div className="strendth-fill weak" />
             </div>
@@ -53,6 +57,10 @@ const ResetForm = () => {
             <div className="col-2 px-1">
               <div className="strendth-fill" />
             </div>
+            <div className="col-2 px-1">
+              <div className="strendth-fill" />
+            </div>
+          </div>
           </div>
           <PasswordInputField label="Confirm New Password" />
 

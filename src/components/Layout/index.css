@@ -438,4 +438,9 @@
     }
 }
 
+.password-length{
+    margin-bottom: 20px;
+    margin-top: -15px;
+}
+
 /* login/forget css ends */
