@@ -1,3 +1,4 @@
+import React from 'react';
 import { ErrorMessage } from '@hookform/error-message';
 import PropTypes from 'prop-types';
 import { styled } from 'styled-components';
@@ -5,7 +6,7 @@ import { styled } from 'styled-components';
 const Errors = styled.div`
   margin-top: 2px;
   margin-left: 2px;
-  color: ${(props) => props.theme.colors.error};
+  color: ${props => props.theme.colors.error};
   font-weight: 600;
   font-size: 12px;
 `;
@@ -14,7 +15,7 @@ const FieldErrorMessage = ({ errors, name, className }) => (
   <ErrorMessage
     errors={errors}
     name={name}
-    render={({ message }) => <Errors className={className}>{ message }</Errors>}
+    render={({ message }) => <Errors className={className}>{message}</Errors>}
   />
 );
 

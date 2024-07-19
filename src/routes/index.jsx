@@ -1,6 +1,7 @@
-import { Outlet, Route, Routes as Router } from "react-router-dom";
+import React from 'react';
+import { Outlet, Route, Routes as Router } from 'react-router-dom';
 
-import AuthGaurd from "./AuthGuard";
+import AuthGaurd from './AuthGuard';
 import {
   NotFound,
   Login,
@@ -105,11 +106,11 @@ export const ROUTES_MENU = [
     icon: <PeopleIcon />,
     pages: [
       {
-        path: "",
+        path: '',
         component: <ListUsers />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddUser />,
       },
     ],
@@ -125,7 +126,7 @@ export const ROUTES_MENU = [
         component: <PermissionMatrix />,
       },
       {
-        path: ["add", "edit/:id"],
+        path: ['add', 'edit/:id'],
         component: <AddCluster />,
       },
     ],
@@ -143,11 +144,11 @@ const Routes = () => {
 
       {/* Private Routes */}
       <Route path="/" element={<AuthGaurd />}>
-        {ROUTES_MENU.map((item) => (
+        {ROUTES_MENU.map(item => (
           <Route key={item.path} path={item.path} element={<Outlet />}>
-            {item.pages.map((page) =>
+            {item.pages.map(page =>
               Array.isArray(page.path) ? (
-                page.path.map((subPath) => (
+                page.path.map(subPath => (
                   <Route
                     key={subPath}
                     path={subPath}

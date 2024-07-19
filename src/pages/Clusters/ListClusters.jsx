@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
-import { Button } from "../../shared";
-import { PlusIcon } from "../../assets";
+import { Button } from '../../shared';
+import { PlusIcon } from '../../assets';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -28,7 +29,7 @@ export const ListClusters = () => {
             size="sm"
             variant="secondary"
             icon={<PlusIcon />}
-            onClick={() => navigate("add")}
+            onClick={() => navigate('add')}
           >
             add new cluster
           </Button>

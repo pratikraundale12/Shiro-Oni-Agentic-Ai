@@ -1,10 +1,11 @@
-import { isFunction } from "lodash";
-import styled from "styled-components";
-import classNames from "classnames";
-import PropTypes from "prop-types";
+import React from 'react';
+import { isFunction } from 'lodash';
+import styled from 'styled-components';
+import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
-import FieldErrorMessage from "../FieldErrorMessage";
-import { hasError } from "../../../../utils";
+import FieldErrorMessage from '../FieldErrorMessage';
+import { hasError } from '../../../../utils';
 
 const Container = styled.div`
   width: 100%;
@@ -19,13 +20,13 @@ const Container = styled.div`
   }
 
   .required {
-    color: ${(props) => props.theme.colors.error};
+    color: ${props => props.theme.colors.error};
     font-size: 1rem;
   }
 
   &.error {
     input {
-      border-color: ${(props) => props.theme.colors.error} !important;
+      border-color: ${props => props.theme.colors.error} !important;
       outline: none;
     }
   }
@@ -37,23 +38,23 @@ const Container = styled.div`
     margin-bottom: 5px;
   }
 
-  input[type="checkbox"] {
+  input[type='checkbox'] {
     width: 24px;
     height: 24px;
     min-width: 24px;
   }
 
-  input:not([type="checkbox"]) {
+  input:not([type='checkbox']) {
     width: 100%;
     height: 42px;
-    border: 1px solid ${(props) => props.theme.colors.borderGrey};
+    border: 1px solid ${props => props.theme.colors.darkGrey};
     border-radius: 4px;
-    background: ${(props) => props.theme.colors.white};
+    background: ${props => props.theme.colors.white};
     padding: 10px;
     font-size: 14px;
 
     &::placeholder {
-      color: ${(props) => props.theme.colors.grey};
+      color: ${props => props.theme.colors.darkGrey1};
       font-size: 14px;
     }
 
@@ -63,14 +64,14 @@ const Container = styled.div`
 
     &:not(:placeholder-shown),
     &:focus {
-      border: 1px solid ${(props) => props.theme.colors.primary};
+      border: 1px solid ${props => props.theme.colors.primary};
 
       &::placeholder {
         color: transparent;
       }
     }
     &:disabled {
-      background: ${(props) => props.theme.colors.lightGrey2};
+      background: ${props => props.theme.colors.lightGrey2};
     }
   }
 `;
@@ -80,7 +81,7 @@ const InputField = ({
   register = null,
   errors = {},
   label,
-  type = "text",
+  type = 'text',
   required = false,
   disabled = false,
   registerOptions = {},
@@ -124,6 +125,8 @@ InputField.propTypes = {
   errors: PropTypes.shape({}),
   required: PropTypes.string,
   disabled: PropTypes.bool,
+  registerOptions: PropTypes.shape({}),
+  className: PropTypes.string,
 };
 
 export default InputField;

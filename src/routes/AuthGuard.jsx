@@ -1,7 +1,8 @@
-import { Outlet } from "react-router-dom";
-import styled from "styled-components";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import styled from 'styled-components';
 
-import { Header, Sidebar } from "../components";
+import { Header, Sidebar } from '../components';
 
 const Container = styled.div`
   width: 100vw;
