@@ -1,4 +1,6 @@
-export const FileIcon = ({width = 65, height = 82}) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+export const FileIcon = ({ width = 65, height = 82 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -16,4 +18,9 @@ export const FileIcon = ({width = 65, height = 82}) => (
       d="M36.55 1v17.778c0 4.19 0 6.285 1.302 7.587 1.301 1.302 3.396 1.302 7.587 1.302h17.778"
     />
   </svg>
-)
+);
+
+FileIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

@@ -30,14 +30,19 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <ErrorContainer>
-          <h2 color={theme.colors.primary} className="mb-1">Something went wrong!</h2>
+          <h2 color={theme.colors.primary} className="mb-1">
+            Something went wrong!
+          </h2>
           <h5>Sorry, there was an error loading the page.</h5>
-          <h5><i>{`Error message: ${this.state.errorMessage}`}</i></h5>
+          <h5>
+            <i>{`Error message: ${this.state.errorMessage}`}</i>
+          </h5>
           <a href={window.location.href}>Retry again</a>
         </ErrorContainer>
       );
     }
 
+    // eslint-disable-next-line react/prop-types
     return this.props.children;
   }
 }

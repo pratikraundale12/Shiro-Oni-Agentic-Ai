@@ -1,4 +1,7 @@
-export const CrossIcon = ({width = 20, height = 20,color="#444445"}) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const CrossIcon = ({ width = 20, height = 20, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -10,4 +13,10 @@ export const CrossIcon = ({width = 20, height = 20,color="#444445"}) => (
       d="M10 20C4.477 20 0 15.523 0 10S4.477 0 10 0s10 4.477 10 10-4.477 10-10 10Zm0-11.414L7.172 5.757 5.757 7.172 8.586 10l-2.829 2.828 1.415 1.415L10 11.414l2.828 2.829 1.415-1.415L11.414 10l2.829-2.828-1.415-1.415L10 8.586Z"
     />
   </svg>
-)
+);
+
+CrossIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

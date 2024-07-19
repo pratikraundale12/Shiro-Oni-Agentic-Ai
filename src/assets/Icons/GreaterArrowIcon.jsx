@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const DashboardIcon = ({
-  width = 18,
-  height = 19,
+export const GreaterArrowIcon = ({
+  width = 8,
+  height = 14,
   color = '#444445',
 }) => (
   <svg
@@ -14,12 +14,12 @@ export const DashboardIcon = ({
   >
     <path
       fill={color}
-      d="M10 17h6V7.978L9 2.534 2 7.978V17h6v-6h2v6Zm8 1a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7.49a1 1 0 0 1 .386-.79l8-6.223a1 1 0 0 1 1.228 0l8 6.223a1 1 0 0 1 .386.79V18Z"
+      d="m2.829 7 4.95-4.95L6.363.638 0 7l6.364 6.364 1.414-1.415L2.828 7Z"
     />
   </svg>
 );
 
-DashboardIcon.propTypes = {
+GreaterArrowIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   color: PropTypes.string,

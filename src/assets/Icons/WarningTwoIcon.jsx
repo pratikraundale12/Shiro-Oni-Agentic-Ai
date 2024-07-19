@@ -1,4 +1,7 @@
-export const WarningTwoIcon = ({width = 80, height = 72}) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const WarningTwoIcon = ({ width = 80, height = 72 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -14,4 +17,9 @@ export const WarningTwoIcon = ({width = 80, height = 72}) => (
       d="M45.68 3.28C44.49 1.23 42.37 0 40 0c-2.37 0-4.5 1.23-5.68 3.28L.892 61.176a6.473 6.473 0 0 0 0 6.56c1.19 2.05 3.31 3.28 5.68 3.28h66.856c2.37 0 4.5-1.23 5.68-3.28a6.473 6.473 0 0 0 0-6.56L45.68 3.28Zm31.178 63.156c-.71 1.24-2 1.98-3.43 1.98H6.572c-1.43 0-2.71-.74-3.43-1.98a3.9 3.9 0 0 1 0-3.96L36.57 4.58c.71-1.24 2-1.98 3.43-1.98 1.43 0 2.71.74 3.43 1.98l33.428 57.896c.71 1.24.71 2.72 0 3.96Z"
     />
   </svg>
-)
+);
+
+WarningTwoIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

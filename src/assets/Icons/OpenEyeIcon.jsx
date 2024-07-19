@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const OpenEyeIcon = ({ width = 20, height = 20 }) => (
   <svg
     width={width}
@@ -16,3 +19,8 @@ export const OpenEyeIcon = ({ width = 20, height = 20 }) => (
     />
   </svg>
 );
+
+OpenEyeIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

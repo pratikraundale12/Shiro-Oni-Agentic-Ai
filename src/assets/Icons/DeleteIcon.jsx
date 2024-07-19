@@ -1,4 +1,7 @@
-export const DeleteIcon = ({width = 80, height = 65}) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const DeleteIcon = ({ width = 80, height = 65 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -26,4 +29,9 @@ export const DeleteIcon = ({width = 80, height = 65}) => (
       d="m18.982 17.38-8.96-6.28a.963.963 0 0 1 1.106-1.578l8.96 6.28a.964.964 0 1 1-1.107 1.577ZM16.924 20.313l-8.96-6.28a.962.962 0 0 1 .387-1.738.966.966 0 0 1 .72.16l8.96 6.28a.964.964 0 0 1-1.107 1.578ZM14.847 23.279l-8.96-6.28a.963.963 0 1 1 1.106-1.578l8.96 6.28a.963.963 0 1 1-1.106 1.578ZM18.956 11.575l-3.47-2.432a.965.965 0 0 1 .761-1.73c.124.028.24.08.344.152l3.47 2.432a.964.964 0 1 1-1.105 1.578Z"
     />
   </svg>
-)
+);
+
+DeleteIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

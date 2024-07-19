@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const DashboardIcon = ({
-  width = 18,
-  height = 19,
+export const CircleExclamationMarkIcon = ({
+  width = 20,
+  height = 20,
   color = '#444445',
 }) => (
   <svg
@@ -14,12 +14,12 @@ export const DashboardIcon = ({
   >
     <path
       fill={color}
-      d="M10 17h6V7.978L9 2.534 2 7.978V17h6v-6h2v6Zm8 1a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7.49a1 1 0 0 1 .386-.79l8-6.223a1 1 0 0 1 1.228 0l8 6.223a1 1 0 0 1 .386.79V18Z"
+      d="M10 20C4.477 20 0 15.523 0 10S4.477 0 10 0s10 4.477 10 10-4.477 10-10 10ZM9 9v6h2V9H9Zm0-4v2h2V5H9Z"
     />
   </svg>
 );
 
-DashboardIcon.propTypes = {
+CircleExclamationMarkIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   color: PropTypes.string,

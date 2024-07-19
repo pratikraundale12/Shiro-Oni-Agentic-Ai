@@ -1,56 +1,21 @@
-// import { Link, useLocation } from "react-router-dom";
-// import styled from "styled-components";
-
-// import { ROUTES_MENU } from "../routes";
-// import { KsolvesIcon } from "../assets";
-
-// const MenuItem = styled(Link)`
-//   display: block;
-//   padding: 10px;
-//   border-radius: 4px;
-//   color: ${(props) =>
-//     props.active ? props.theme.colors.white : props.theme.colors.darkGrey};
-//   background: ${(props) =>
-//     props.active ? props.theme.colors.primary : "transparent"};
-// `;
-
-// const Logo = styled.div`
-//   padding: 1rem;
-//   margin-bottom: 2rem;
-// `;
-
-// export const Sidebar = () => {
-//   const location = useLocation();
-
-//   return (
-//     <div>
-//       <Logo>
-//         <KsolvesIcon />
-//       </Logo>
-//       {ROUTES_MENU.map((item) => (
-//         <MenuItem
-//           key={item.path}
-//           to={item.path}
-//           active={+location.pathname.includes(item.path)}
-//         >
-//           {item.name}
-//         </MenuItem>
-//       ))}
-//     </div>
-//   );
-// };
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./index.css";
-import { ROUTES_MENU } from "../../routes";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './index.css';
+import { ROUTES_MENU } from '../../routes';
 
 export const Sidebar = () => {
   const [activeRoute, setActiveRoute] = useState(ROUTES_MENU[0].path);
   const navigate = useNavigate();
 
-  const handleRouteClick = (path) => {
+  const handleRouteClick = path => {
     setActiveRoute(path);
     navigate(`/${path}`);
+  };
+
+  const handleKeyDown = (event, path) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      handleRouteClick(path);
+    }
   };
 
   return (
@@ -79,6 +44,9 @@ export const Sidebar = () => {
                 key={index}
                 className={`sidebar-list d-flex align-items-center position-relative ${activeRoute === route.path ? 'active' : ''}`}
                 onClick={() => handleRouteClick(route.path)}
+                onKeyDown={event => handleKeyDown(event, route.path)}
+                role="button"
+                tabIndex={0}
               >
                 <div className="sidebar-icons">{route.icon}</div>
                 <span>{route.name}</span>
@@ -90,5 +58,3 @@ export const Sidebar = () => {
     </>
   );
 };
-
-
