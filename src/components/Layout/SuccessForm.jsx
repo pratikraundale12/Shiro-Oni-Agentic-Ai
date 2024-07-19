@@ -32,7 +32,7 @@ const SuccessForm = () => {
             className="signin-btn"
             text="Back to Login"
             Icon={LessArrowIcon}
-            iconProps={{ width: 8, color: 'white' }} // Changed to single quotes
+            iconProps={{ width: 8, color: 'white' }}
           />
         </div>
         <div className="existing-account">
@@ -41,10 +41,9 @@ const SuccessForm = () => {
             <span
               className="sign-in ms-2"
               onClick={handleSignInClick}
-              role="button" // Added role for better accessibility
-              tabIndex={0} // Added tabindex for keyboard navigation
+              role="button"
+              tabIndex={0}
               onKeyPress={e => {
-                // Added keypress event for accessibility
                 if (e.key === 'Enter') {
                   handleSignInClick();
                 }
