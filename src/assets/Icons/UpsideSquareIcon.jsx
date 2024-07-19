@@ -1,4 +1,7 @@
-export const UpsideSquare = ({
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const UpsideSquareIcon = ({
   width = 18,
   height = 21,
   color = '#444445',
@@ -15,3 +18,9 @@ export const UpsideSquare = ({
     />
   </svg>
 );
+
+UpsideSquareIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

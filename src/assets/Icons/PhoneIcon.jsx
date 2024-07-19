@@ -1,10 +1,12 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const PhoneIcon = ({ width = 18, height = 18, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
     fill="none"
-    {...props}
   >
     <path
       fill={color}
@@ -12,3 +14,9 @@ export const PhoneIcon = ({ width = 18, height = 18, color = '#444445' }) => (
     />
   </svg>
 );
+
+PhoneIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

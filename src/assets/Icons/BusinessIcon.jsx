@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const BusinessIcon = ({
   width = 21,
   height = 21,
@@ -15,3 +18,9 @@ export const BusinessIcon = ({
     />
   </svg>
 );
+
+BusinessIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

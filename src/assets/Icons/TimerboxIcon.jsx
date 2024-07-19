@@ -1,4 +1,7 @@
-export const TimerBox = ({ width = 80, height = 80 }) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const TimerBoxIcon = ({ width = 80, height = 80 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -15,3 +18,8 @@ export const TimerBox = ({ width = 80, height = 80 }) => (
     />
   </svg>
 );
+
+TimerBoxIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

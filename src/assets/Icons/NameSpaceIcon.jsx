@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const NameSpaceIcon = ({
   width = 18,
   height = 20,
@@ -15,3 +18,9 @@ export const NameSpaceIcon = ({
     />
   </svg>
 );
+
+NameSpaceIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

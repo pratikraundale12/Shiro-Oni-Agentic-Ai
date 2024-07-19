@@ -1,4 +1,7 @@
-const BagIcon = ({ width = 18, height = 21, color = '#444445' }) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const BagIcon = ({ width = 18, height = 21, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -11,3 +14,9 @@ const BagIcon = ({ width = 18, height = 21, color = '#444445' }) => (
     />
   </svg>
 );
+
+BagIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

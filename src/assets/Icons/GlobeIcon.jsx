@@ -1,4 +1,7 @@
-export const GlobeIcons = ({ width = 21, height = 21, color = '#444445' }) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const GlobeIcon = ({ width = 21, height = 21, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -11,3 +14,9 @@ export const GlobeIcons = ({ width = 21, height = 21, color = '#444445' }) => (
     />
   </svg>
 );
+
+GlobeIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

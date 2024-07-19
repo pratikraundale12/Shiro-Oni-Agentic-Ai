@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const TriangleIcons = ({
   width = 16,
   height = 20,
@@ -15,3 +18,9 @@ export const TriangleIcons = ({
     />
   </svg>
 );
+
+TriangleIcons.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

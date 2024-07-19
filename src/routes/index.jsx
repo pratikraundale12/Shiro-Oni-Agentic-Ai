@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Route, Routes as Router } from 'react-router-dom';
-
 import AuthGaurd from './AuthGuard';
+
 import {
   NotFound,
   Login,

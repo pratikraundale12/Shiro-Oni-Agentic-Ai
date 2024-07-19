@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const GoogleIcon = ({ width = 80, height = 80 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -30,3 +33,8 @@ export const GoogleIcon = ({ width = 80, height = 80 }) => (
     </defs>
   </svg>
 );
+
+GoogleIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

@@ -17,3 +17,8 @@ export const SettingTwoIcon = ({ width = 80, height = 80 }) => (
     />
   </svg>
 );
+
+SettingTwoIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

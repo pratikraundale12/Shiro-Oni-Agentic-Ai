@@ -1,4 +1,11 @@
-export const RightCircle = ({ width = 80, height = 80, color = '0CBF59' }) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const RightCircleIcon = ({
+  width = 80,
+  height = 80,
+  color = '0CBF59',
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -15,3 +22,9 @@ export const RightCircle = ({ width = 80, height = 80, color = '0CBF59' }) => (
     />
   </svg>
 );
+
+RightCircleIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

@@ -1,4 +1,7 @@
-export const DeleteIconSmall = ({
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const DeleteSmallIcon = ({
   width = 18,
   height = 19,
   color = '#444445',
@@ -15,3 +18,9 @@ export const DeleteIconSmall = ({
     />
   </svg>
 );
+
+DeleteSmallIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

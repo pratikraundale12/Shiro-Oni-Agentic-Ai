@@ -1,4 +1,11 @@
-export const TriangleExclamationMark = () => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const TriangleExclamationMarkIcon = ({
+  width = 80,
+  height = 71,
+  color = '#C52B2B',
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -11,3 +18,9 @@ export const TriangleExclamationMark = () => (
     />
   </svg>
 );
+
+TriangleExclamationMarkIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

@@ -1,4 +1,7 @@
-export const CircleExclamationMark = ({
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const CircleExclamationMarkIcon = ({
   width = 20,
   height = 20,
   color = '#444445',
@@ -15,3 +18,9 @@ export const CircleExclamationMark = ({
     />
   </svg>
 );
+
+CircleExclamationMarkIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

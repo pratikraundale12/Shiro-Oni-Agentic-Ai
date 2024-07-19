@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const HeadphoneIcon = ({
   width = 22,
   height = 22,
@@ -15,3 +18,9 @@ export const HeadphoneIcon = ({
     />
   </svg>
 );
+
+HeadphoneIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

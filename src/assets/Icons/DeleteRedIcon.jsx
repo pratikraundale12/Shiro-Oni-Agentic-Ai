@@ -1,4 +1,6 @@
-import * as React from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const DeleteRedIcon = ({ width = 80, height = 67 }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -36,3 +38,8 @@ export const DeleteRedIcon = ({ width = 80, height = 67 }) => (
     />
   </svg>
 );
+
+DeleteRedIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

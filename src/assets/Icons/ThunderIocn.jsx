@@ -1,5 +1,7 @@
-import * as React from 'react';
-export const ThunderIcon = ({ width = 80, height = 85 }) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const ThunderIcon = ({ width = 80, height = 85, color = '#787878' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -7,8 +9,14 @@ export const ThunderIcon = ({ width = 80, height = 85 }) => (
     fill="none"
   >
     <path
-      fill="#787878"
+      fill={color}
       d="M41.381 8.454v28.187a1.486 1.486 0 0 0 1.491 1.492h14.84l-5.22 10.44 2.222 2.221 6.74-13.482a1.501 1.501 0 0 0-1.327-2.162H44.364V2.131a1.507 1.507 0 0 0-2.834-.671l-12.05 24.1 2.237 2.237 9.664-19.343ZM79.556 77.283A257289.9 257289.9 0 0 0 2.718.445 1.608 1.608 0 0 0 .444 2.718l25.261 25.26-8.74 17.481a1.611 1.611 0 0 0 1.425 2.321h16.92v35.442a1.593 1.593 0 0 0 1.233 1.553 1.616 1.616 0 0 0 1.809-.833L52.79 55.064l24.492 24.492a1.608 1.608 0 0 0 2.273-2.273Z"
     />
   </svg>
 );
+
+ThunderIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

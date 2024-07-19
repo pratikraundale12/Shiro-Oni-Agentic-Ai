@@ -6,7 +6,7 @@ const GlobalStyle = createGlobalStyle`
 //     margin: 0;
 //     padding: 0;
 //     box-sizing: border-box;
-//     font-family: "${props => props.theme.fontFamily}", sans-serif !important;
+//     font-family: "{props => props.theme.fontFamily}", sans-serif !important;
 //   }
 
 //   html {
@@ -431,11 +431,11 @@ const GlobalStyle = createGlobalStyle`
 //   }
 
 //   .bg-white {
-//     background: ${props => props.theme.colors.white};
+//     background: {props => props.theme.colors.white};
 //   }
 
 //   .bg-background {
-//     background: ${props => props.theme.colors.background};
+//     background: {props => props.theme.colors.background};
 //   }
 
 //   .rotate-icon {
@@ -451,7 +451,7 @@ const GlobalStyle = createGlobalStyle`
 //   }
 
 //   .border-grey {
-//     border-color: ${props => props.theme.colors.darkGrey};
+//     border-color: {props => props.theme.colors.darkGrey};
 //   }
 
 //   .nowrap {

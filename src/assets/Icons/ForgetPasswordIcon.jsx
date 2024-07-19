@@ -1,10 +1,11 @@
-export const ForgetPasswordSymbol = props => (
+import React from 'react';
+import PropTypes from 'prop-types';
+export const ForgetPasswordIcon = ({ width = '222', height = '47' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={222}
-    height={47}
+    width={width}
+    height={height}
     fill="none"
-    {...props}
   >
     <path
       fill="#E5E5E5"
@@ -20,3 +21,8 @@ export const ForgetPasswordSymbol = props => (
     />
   </svg>
 );
+
+ForgetPasswordIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+};

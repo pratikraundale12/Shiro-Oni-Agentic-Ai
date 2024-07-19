@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const SmallThunderIcon = ({
   width = 8,
   height = 14,
@@ -12,4 +15,8 @@ export const SmallThunderIcon = ({
     <path fill={color} d="M5 0v6h3l-5 8V8H0l5-8Z" />
   </svg>
 );
-export default SvgComponent;
+SmallThunderIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

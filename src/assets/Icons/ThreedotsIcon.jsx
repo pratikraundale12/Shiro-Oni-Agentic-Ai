@@ -1,5 +1,11 @@
-import * as React from 'react';
-export const Threedots = ({ width = 4, height = 18, color = '#444445' }) => (
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const ThreedotsIcon = ({
+  width = 4,
+  height = 18,
+  color = '#444445',
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
@@ -12,3 +18,9 @@ export const Threedots = ({ width = 4, height = 18, color = '#444445' }) => (
     />
   </svg>
 );
+
+ThreedotsIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const CrossIcons = ({ width = 21, height = 21, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -11,3 +14,9 @@ export const CrossIcons = ({ width = 21, height = 21, color = '#444445' }) => (
     />
   </svg>
 );
+
+CrossIcons.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

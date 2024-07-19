@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const SmallSearchIcon = ({
   width = 21,
   height = 21,
@@ -16,3 +19,9 @@ export const SmallSearchIcon = ({
     />
   </svg>
 );
+
+SmallSearchIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

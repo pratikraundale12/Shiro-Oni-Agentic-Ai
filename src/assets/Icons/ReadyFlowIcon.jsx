@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const ReadyFlowIcon = ({
   width = 20,
   height = 18,
@@ -15,3 +18,9 @@ export const ReadyFlowIcon = ({
     />
   </svg>
 );
+
+ReadyFlowIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

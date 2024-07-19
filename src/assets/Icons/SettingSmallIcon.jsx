@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const SettingSmallIcon = ({
   width = 24,
   height = 24,
@@ -15,3 +18,9 @@ export const SettingSmallIcon = ({
     />
   </svg>
 );
+
+SettingSmallIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

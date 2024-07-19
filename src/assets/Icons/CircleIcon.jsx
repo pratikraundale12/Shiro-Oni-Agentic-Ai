@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export const CircleIcon = ({ width = 19, height = 18, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -11,3 +14,9 @@ export const CircleIcon = ({ width = 19, height = 18, color = '#444445' }) => (
     />
   </svg>
 );
+
+CircleIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};
