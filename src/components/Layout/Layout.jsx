@@ -1,4 +1,5 @@
 import React from 'react'
+import './index.css';
 import { LeftSectionLayout } from './LeftSectionLayout'
 import { RightSectionLayout } from './RightSectionLayout'
 

@@ -1,3 +1,11 @@
+import Layout from "../../components/Layout/Layout";
+import ResetForm from "../../components/Layout/ResetForm";
+
 export const Reset = () => {
-  return <div>Reset</div>;
+  return (
+    <>
+     <Layout contentDisplay={ResetForm}/>
+     
+    </>
+  );
 };

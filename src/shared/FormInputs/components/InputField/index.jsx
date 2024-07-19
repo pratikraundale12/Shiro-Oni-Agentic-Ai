@@ -86,6 +86,7 @@ const InputField = ({
   className,
   id,
   icon,
+  checkicon,
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -98,24 +99,29 @@ const InputField = ({
           {required && <span className="required">&nbsp;*</span>}
         </label>
       )}
-       <div className="input-group">
-      {icon && (
-        <div className="input-group-prepend">
-          <span className="input-group-text" id="basic-addon1">
-            {icon}
+      <div className="input-group">
+        {icon && (
+          <div className="input-group-prepend">
+            <span className="input-group-text" id="basic-addon1">
+              {icon}
+            </span>
+          </div>
+        )}
+        <input
+          name={name}
+          type={type}
+          className={`form-control ${className}`}
+          aria-invalid={error}
+          {...props}
+          {...(isFunction(register) &&
+            register(name, { required, ...registerOptions }))}
+          disabled={disabled}
+        />
+        {checkicon && (
+          <span className="validation success">
+            {checkicon}
           </span>
-        </div>
-      )}
-      <input
-        name={name}
-        type={type}
-        className={`form-control ${className}`}
-        aria-invalid={error}
-        {...props}
-        {...(isFunction(register) &&
-          register(name, { required, ...registerOptions }))}
-        disabled={disabled}
-      />
+        )}
       </div>
       <FieldErrorMessage errors={errors} name={name} />
     </div>
@@ -132,6 +138,7 @@ InputField.propTypes = {
   disabled: PropTypes.bool,
   id: PropTypes.string,
   icon: PropTypes.element,
+  checkicon:PropTypes.element,
 };
 
 export default InputField;

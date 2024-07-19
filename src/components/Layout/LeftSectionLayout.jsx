@@ -1,10 +1,10 @@
 import "./index.css";
-import { BrandLogo } from "../../assets";
+import { BrandLogo, ChatBoxIcon } from "../../assets";
 
 export const LeftSectionLayout = ({contentDisplay:ContentDisplay}) => {
   return (
     <div className="col-xl-5 px-0 col-md-6 position-relative">
-      <div className="left-box d-flex justify-content-center align-items-center h-100 flex-column">
+      <div className="left-box forgot-box d-flex justify-content-center align-items-center h-100 flex-column">
         <div className="brand-logo">
           <BrandLogo />
         </div>
@@ -12,39 +12,7 @@ export const LeftSectionLayout = ({contentDisplay:ContentDisplay}) => {
         <div className="position-relative">
           <div className="version">Version 1.5.7</div>
           <button className="chat-box-btn">
-            <svg
-              width={80}
-              height={80}
-              viewBox="0 0 80 80"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx={40}
-                cy={40}
-                r={40}
-                fill="url(#paint0_linear_693_16827)"
-              />
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M53.6171 30.6383C53.6171 28.7581 52.093 27.234 50.2128 27.234H29.7873C27.9072 27.234 26.3831 28.7581 26.3831 30.6383V44.2553C26.3831 46.1354 27.9072 47.6595 29.7873 47.6595H46.1035C46.555 47.6595 46.9879 47.8389 47.3071 48.1581L52.1642 53.0152C52.7004 53.5513 53.6171 53.1716 53.6171 52.4134V30.6383ZM34.8937 37.4468C34.8937 38.3868 34.1316 39.1489 33.1916 39.1489C32.2515 39.1489 31.4894 38.3868 31.4894 37.4468C31.4894 36.5067 32.2515 35.7446 33.1916 35.7446C34.1316 35.7446 34.8937 36.5067 34.8937 37.4468ZM41.7022 37.4468C41.7022 38.3868 40.9401 39.1489 40.0001 39.1489C39.06 39.1489 38.298 38.3868 38.298 37.4468C38.298 36.5067 39.06 35.7446 40.0001 35.7446C40.9401 35.7446 41.7022 36.5067 41.7022 37.4468ZM46.8086 39.1489C47.7486 39.1489 48.5107 38.3868 48.5107 37.4468C48.5107 36.5067 47.7486 35.7446 46.8086 35.7446C45.8685 35.7446 45.1065 36.5067 45.1065 37.4468C45.1065 38.3868 45.8685 39.1489 46.8086 39.1489Z"
-                fill="white"
-              />
-              <defs>
-                <linearGradient
-                  id="paint0_linear_693_16827"
-                  x1={80}
-                  y1={0}
-                  x2={0}
-                  y2={80}
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#29272E" />
-                  <stop offset={1} stopColor="#27272E" />
-                </linearGradient>
-              </defs>
-            </svg>
+            <ChatBoxIcon />
           </button>
         </div>
       </div>

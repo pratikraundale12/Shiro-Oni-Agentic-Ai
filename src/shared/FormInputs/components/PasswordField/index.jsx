@@ -24,14 +24,14 @@ const PasswordInputField = (props) => {
     () => setPasswordShown((prevState) => !prevState),
     [setPasswordShown]
   );
-
+const label = props.label || "Password"
   return (
     <Wrapper>
       <InputField
         type={passwordShown ? "text" : "password"}
         {...props}
         icon={<BagIcon />}
-        label="Password"
+        label={label}
         placeholder="Enter Your Paasword"
       />
       <TogglePassword show={passwordShown} onToggle={togglePassword} />

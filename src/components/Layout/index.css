@@ -238,3 +238,204 @@
     border: 1px solid transparent;
     background: transparent;
 }
+
+
+/* forgot-password-css-start */
+.left-box.forgot-box .left-box_form {
+    min-height: 625px;
+    position: relative;
+}
+.back-opt {
+    font-family: var(--col-red-hat);
+    font-size: var(--f-20);
+    font-weight: var(--fw-600);
+    line-height: 26.46px;
+    text-align: left;
+    margin-left: 12px;
+}
+.forgot-info {
+    font-family: var(--col-red-hat);
+    font-size: var(--f-16);
+    font-weight: var(--fw-500);
+    line-height: 21.17px;
+    text-align: left;
+    color: var(--col-757575);
+    margin-bottom: 48px;
+}
+.existing-account {
+    position: absolute;
+    bottom: 0;
+}
+.existing-account p {
+    font-family: var(--col-red-hat);
+    font-size: var(--f-16);
+    font-weight: var(--fw-500);
+    line-height: 21.17px;
+    text-align: left;
+    color: var(--col-757575);
+}
+.existing-account .sign-in {
+    color: var(--col-primary);
+    font-weight: var(--fw-700);
+    cursor: pointer;
+}
+
+/* reset-password-css-start */
+.mb-40 {
+    margin-bottom: 40px;
+}
+.mb-42 {
+    margin-bottom: 42px !important;
+}
+.mb-80 {
+    margin-bottom: 80px;
+}
+.password-strength {
+    font-family: var(--col-red-hat);
+    font-size: var(--f-14);
+    font-weight: var(--fw-600);
+    line-height: 14px;
+    text-align: left;
+    margin-right: 13px;
+}
+.password-strength.weak {
+    color: var(--col-warning);
+}
+.password-strength-text {
+    font-family: var(--col-red-hat);
+    font-size: var(--f-12);
+    font-weight: var(--fw-500);
+    line-height: 18px;
+    text-align: left;
+    color: var(--col-8A8A8A);
+}
+.strendth-fill {
+    width: 100%;
+    height: 6px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background-color: var(--col-EAEAEA);
+}
+.strendth-fill.weak {
+    background-color: var(--col-warning) !important;
+}
+  
+/* password-updated */
+  
+.password-updated h3 {
+    font-family: var(--col-red-hat);
+    font-size: var(--f-32);
+    font-weight: var(--fw-600);
+    line-height: 42.34px;
+    text-align: center;
+    color: var(--col-333333);
+}
+  
+.password-updated p {
+    font-family: var(--col-red-hat);
+    font-size: var(--f-16);
+    font-weight: var(--fw-500);
+    line-height: 21.17px;
+    text-align: center;
+    color: var(--col-757575);
+    margin-bottom: 42px;
+}
+  
+@media screen and (max-width: 991.8px) {
+    .left-box_form .welcome-box {
+      /* updated*/
+      margin-bottom: 12px;
+    }
+    .left-box_form h1 {
+      font-size: var(--f-26);
+    }
+    .left-box_form h2 {
+      font-size: var(--f-20);
+      margin-bottom: 18px;
+    }
+    /* updated */
+    .input-box label,
+    .form-control::placeholder,
+    .other-login-info,
+    .login-opts > div,
+    .form-control {
+      font-size: var(--f-14);
+    }
+    .forgot-password {
+      margin-bottom: 18px;
+    }
+    .left-box {
+      padding: 40px 16px 0 16px;
+    }
+    .btn-box .signin-btn {
+      margin-bottom: 18px;
+      font-size: var(--f-16);
+    }
+    .version {
+      margin-top: 20px;
+      font-size: var(--f-14);
+    }
+    .left-box .brand-logo {
+      width: 14pc;
+    }
+    .right-box {
+      background-size: cover;
+      background-position: inherit;
+    }
+    .right-text {
+      position: relative;
+    }
+    .right-text p {
+      font-size: var(--f-26) !important;
+      line-height: 34.63px;
+    }
+    .mb-40 {
+      margin-bottom: 32px;
+    }
+    /* add-user-modal */
+    .common-model.custom-two {
+      padding: 0 16px;
+    }
+}
+  
+@media screen and (max-width: 1200px) {
+    .right-text p {
+      font-size: var(--f-32);
+    }
+}
+  
+@media screen and (min-width: 1200px) and (max-width: 1500px) {
+    .right-img {
+      height: 600px;
+    }
+}
+  
+@media screen and (max-width: 1500px) {
+    .left-box .brand-logo {
+      width: 15pc;
+    }
+    .left-box {
+      padding: 38px 33px 0 33px;
+    }
+    .left-box_form .seperator,
+    .btn-box .signin-btn {
+      margin-bottom: 18px;
+    }
+    .left-box_form h2 {
+      margin-bottom: 20px;
+    }
+    .left-box_form .input-box:nth-child(1) {
+      margin-bottom: 15px;
+    }
+    .forgot-password {
+      margin-bottom: 18px;
+    }
+    .version {
+      margin-top: 20px;
+    }
+    .mb-80 {
+      margin-bottom: 60px;
+    }
+}
+
+/* login/forget css ends */
