@@ -310,14 +310,14 @@
   text-align: left;
   color: var(--col-8A8A8A);
 }
-.strendth-fill {
+.strength-fill {
   width: 100%;
   height: 6px;
   border: 1px solid transparent;
   border-radius: 8px;
   background-color: var(--col-EAEAEA);
 }
-.strendth-fill.weak {
+.strength-fill.weak {
   background-color: var(--col-warning) !important;
 }
 
