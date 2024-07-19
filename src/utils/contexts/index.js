@@ -13,6 +13,10 @@ export const GlobalProvider = ({ children }) => {
   );
 };
 
+GlobalProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 export const useGlobalContext = () => useContext(GlobalContext);
 
 GlobalProvider.propTypes = {
