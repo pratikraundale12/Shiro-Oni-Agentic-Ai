@@ -3,6 +3,7 @@ import { GreaterArrowIcon, LessArrowIcon, UnderLineIcon } from '../../assets';
 import PasswordInputField from '../../shared/FormInputs/components/PasswordField';
 import { useNavigate } from 'react-router-dom';
 import LoginButton from '../../shared/Button/components/LoginButton';
+import { LOGINPAGES } from '../../utils/constants/Login';
 
 const ResetForm = () => {
   const navigate = useNavigate();
@@ -33,12 +34,12 @@ const ResetForm = () => {
           >
             <GreaterArrowIcon />
           </span>
-          <div className="back-opt mb-3">Back</div>
+          <div className="back-opt mb-3">{LOGINPAGES.BACK}</div>
         </div>
         <UnderLineIcon />
-        <h2 className="mb-2">Reset your Password</h2>
+        <h2 className="mb-2">{LOGINPAGES.RESET_YOUR_PASSWORD}</h2>
         <p className="mt-0 forgot-info mb-40 w-100">
-          Enter your new Password to Reset.
+          {LOGINPAGES.RESET_MESSAGE}
         </p>
         <form action="#" className="w-100">
           <PasswordInputField label="New Password" />
@@ -82,7 +83,7 @@ const ResetForm = () => {
         </form>
         <div className="existing-account">
           <p>
-            Already have an Account?
+            {LOGINPAGES.ALREADY_ACCOUNT}
             <span
               className="sign-in ms-2"
               onClick={handleSignInClick}
@@ -94,7 +95,7 @@ const ResetForm = () => {
                 }
               }}
             >
-              Sign In
+              {LOGINPAGES.SIGN}
             </span>
           </p>
         </div>

@@ -1,0 +1,22 @@
+export const LOGINPAGES = {
+  GOOGLE: 'Google',
+  MICROSOFT: 'Microsoft',
+  OTHER_ACCOUNT: 'or do it via other accounts',
+  SIGN_IN: 'Sign in to your Account',
+  LOGIN_TO_YOUR_ACCOUNT: 'Login to your account',
+  FORGOT_PASSWORD: 'Forgot password?',
+  WELCOME_BACK: 'Welcome back',
+  SUCCESS_MESSAGE: 'Your password has been changed successfully.',
+  HOME: 'Back to Login',
+  MESSAGE:
+    'Please enter your registered email Id. We will send you a link to reset your password.',
+  BACK: 'Back',
+  ALREADY_ACCOUNT: 'Already have an Account?',
+  SIGN: ' Sign In',
+  VERSION: 'Version 1.5.7',
+  RESET_YOUR_PASSWORD: 'Reset Your Password',
+  RESET_MESSAGE: 'Enter your new password to reset.',
+  FLOW_MANAGEMENT_TOOL: 'Flow Management Tool!',
+  CHECK_OUT_THE_BEST_DATA: 'Check out the Best Data',
+  PASSWORD_CHANGED: 'Password Changed',
+};

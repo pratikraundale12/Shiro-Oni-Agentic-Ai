@@ -6,6 +6,7 @@ import {
 } from '../../assets';
 import LoginButton from '../../shared/Button/components/LoginButton';
 import { useNavigate } from 'react-router-dom';
+import { LOGINPAGES } from '../../utils/constants/Login';
 
 const SuccessForm = () => {
   const navigate = useNavigate();
@@ -24,8 +25,8 @@ const SuccessForm = () => {
           <ForgetPasswordIcon />
         </div>
         <div className="password-updated">
-          <h3 className="mb-2">Password Changed</h3>
-          <p>Your password has been changed successfully</p>
+          <h3 className="mb-2">{LOGINPAGES.PASSWORD_CHANGED}</h3>
+          <p>{LOGINPAGES.SUCCESS_MESSAGE}</p>
         </div>
         <div className="btn-box d-flex justify-content-center align-items-center flex-column w-100">
           <LoginButton
@@ -37,7 +38,7 @@ const SuccessForm = () => {
         </div>
         <div className="existing-account">
           <p>
-            Already have an Account?
+            {LOGINPAGES.ALREADY_ACCOUNT}
             <span
               className="sign-in ms-2"
               onClick={handleSignInClick}
@@ -49,7 +50,7 @@ const SuccessForm = () => {
                 }
               }}
             >
-              Sign In
+              {LOGINPAGES.SIGN}
             </span>
           </p>
         </div>

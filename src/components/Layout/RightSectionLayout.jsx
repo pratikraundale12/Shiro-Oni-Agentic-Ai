@@ -1,6 +1,7 @@
 import React from 'react';
 import rightBoxLogo from '../../assets/Image/right-box-logo.png';
 import './index.css';
+import { LOGINPAGES } from '../../utils/constants/Login';
 
 export const RightSectionLayout = () => {
   return (
@@ -15,8 +16,9 @@ export const RightSectionLayout = () => {
           />
           <div className="right-text">
             <p>
-              Check out the Best Data <br className="d-md-block d-none" />
-              Flow Management Tool!
+              {LOGINPAGES.CHECK_OUT_THE_BEST_DATA}{' '}
+              <br className="d-md-block d-none" />
+              {LOGINPAGES.FLOW_MANAGEMENT_TOOL}
             </p>
           </div>
         </div>

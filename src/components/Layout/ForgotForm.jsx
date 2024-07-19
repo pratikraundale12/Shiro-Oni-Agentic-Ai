@@ -8,6 +8,7 @@ import {
   MailIcon,
   UnderLineIcon,
 } from '../../assets';
+import { LOGINPAGES } from '../../utils/constants/Login';
 
 const ForgotForm = () => {
   const navigate = useNavigate();
@@ -36,14 +37,11 @@ const ForgotForm = () => {
           >
             <GreaterArrowIcon />
           </span>
-          <div className="back-opt mb-3">Back</div>
+          <div className="back-opt mb-3">{LOGINPAGES.BACK}</div>
         </div>
         <UnderLineIcon />
-        <h2 className="mb-2">Forgot Password?</h2>
-        <p className="mt-0 forgot-info">
-          Please enter your registered email Id. We will send you a link to
-          reset your password.
-        </p>
+        <h2 className="mb-2">{LOGINPAGES.FORGOT_PASSWORD}</h2>
+        <p className="mt-0 forgot-info">{LOGINPAGES.MESSAGE}</p>
         <form action="#" className="w-100">
           <InputField
             type=""
@@ -65,7 +63,7 @@ const ForgotForm = () => {
         </form>
         <div className="existing-account">
           <p>
-            Already have an Account?
+            {LOGINPAGES.ALREADY_ACCOUNT}
             <span
               className="sign-in ms-2"
               onClick={handleSignInClick}
@@ -74,7 +72,7 @@ const ForgotForm = () => {
               tabIndex={0}
               style={{ cursor: 'pointer' }}
             >
-              Sign In
+              {LOGINPAGES.SIGN}
             </span>
           </p>
         </div>
