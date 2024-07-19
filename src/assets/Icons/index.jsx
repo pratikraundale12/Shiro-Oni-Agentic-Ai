@@ -22,3 +22,4 @@ export * from "./ActiveThreadIcon";
 export * from "./TotalQuedIcon";
 export * from "./FlowFilesQuedIcon";
 export * from "./TotalProcessorIcon";
+export * from "./DeleteDustbinIcon";
