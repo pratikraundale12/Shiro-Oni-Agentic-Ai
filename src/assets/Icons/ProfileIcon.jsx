@@ -1,19 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { theme } from '../../styles';
 
-export const ProfileIcon = ({ width = 80, height = 80 }) => (
+export const ProfileIcon = ({
+  width = 20,
+  height = 20,
+  color = theme.colors.darkGrey1,
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 80 80"
   >
     <path
-      fill="#D0D5DF"
+      fill={color}
       d="M40 80A40 40 0 1 1 40-.001 40 40 0 0 1 40 80Zm0-73.846a33.846 33.846 0 1 0 0 67.692 33.846 33.846 0 0 0 0-67.692Z"
     />
     <path
-      fill="#D0D5DF"
+      fill={color}
       d="M40 0a40 40 0 1 0 0 80 40 40 0 0 0 0-80Zm0 18.462a12.308 12.308 0 1 1 0 24.615 12.308 12.308 0 0 1 0-24.615Zm0 55.384a33.845 33.845 0 0 1-24-10c2.462-8.461 12.308-14.615 24-14.615s21.538 6.154 24 14.615a33.845 33.845 0 0 1-24 10Z"
     />
   </svg>
@@ -22,4 +28,5 @@ export const ProfileIcon = ({ width = 80, height = 80 }) => (
 ProfileIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
+  color: PropTypes.string,
 };

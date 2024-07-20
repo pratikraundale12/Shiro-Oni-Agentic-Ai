@@ -1,40 +1,77 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { Grid } from '../../components/Grid';
+import {
+  Grid,
+  TextRender,
+  StatusRender,
+  ProfileRender,
+  ActionRender,
+} from '../../components';
 
 const Container = styled.div`
   padding: 1.4rem;
+  width: 100%;
+  height: 100%;
 `;
 
 export const ListUsers = () => {
   const COLUMNS = [
     {
+      label: 'Profile',
+      renderCell: item => <ProfileRender item={item} />,
+      sort: { sortKey: 'PORFILE' },
+    },
+
+    {
       label: 'Name',
-      renderCell: item => item.first_name,
+      renderCell: item => <TextRender text={item.username} />,
       sort: { sortKey: 'NAME' },
     },
     {
       label: 'Email',
-      renderCell: item => item.email,
+      renderCell: item => <TextRender text={item.email} />,
       sort: { sortKey: 'EMAIL' },
     },
-    { label: 'Role', renderCell: item => item.type, sort: { sortKey: 'TYPE' } },
+    {
+      label: 'Role',
+      renderCell: item => <TextRender text={item.type} />,
+      sort: { sortKey: 'TYPE' },
+    },
     {
       label: 'Status',
-      renderCell: item => (item.is_active ? 'Active' : 'Inactive'),
+      renderCell: item => (
+        <StatusRender status={item.is_active ? 'Active' : 'Inactive'} />
+      ),
       sort: { sortKey: 'STATUS' },
+    },
+    {
+      label: 'Actions',
+      width: 120,
+      renderCell: item => <ActionRender item={item} />,
     },
   ];
 
   const SORT_FNS = {
-    NAME: array => array.sort((a, b) => a.name.localeCompare(b.name)),
-    AGE: array => array.sort((a, b) => a.name - b.name),
+    NAME: array => array.sort((a, b) => a.username.localeCompare(b.username)),
+    EMAIL: array => array.sort((a, b) => a.email.localeCompare(b.email)),
+    TYPE: array => array.sort((a, b) => a.type.localeCompare(b.type)),
+    STATUS: array => array.sort((a, b) => a.is_active - b.is_active),
   };
 
   return (
     <Container>
-      <Grid module="users" columns={COLUMNS} sortFns={SORT_FNS} />
+      <Grid
+        module="users"
+        columns={COLUMNS}
+        sortFns={SORT_FNS}
+        options={[
+          { value: 'active', label: 'Active' },
+          { value: 'inactive', label: 'Inactive' },
+        ]}
+        title="User List"
+        buttonText="add new user"
+      />
     </Container>
   );
 };

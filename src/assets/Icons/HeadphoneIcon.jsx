@@ -11,6 +11,7 @@ export const HeadphoneIcon = ({
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 22 22"
   >
     <path
       fill={color}
