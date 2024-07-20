@@ -9,15 +9,22 @@ const fetchListData = {
 };
 
 export const useFetchData = module => {
+  const [dataCount, setDataCount] = useState(0);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
 
   const fetchData = useCallback(
-    async value => {
+    async ({ searchTerm, page }) => {
       try {
-        const response = await fetchListData[module]({ search: value });
+        setLoading(true);
+        const response = await fetchListData[module]({
+          search: searchTerm,
+          page,
+        });
+        setDataCount(response.count);
         setData(response.data);
       } catch (error) {
         setError(error.message || 'Error fetching data');
@@ -28,15 +35,26 @@ export const useFetchData = module => {
     [module]
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchData = useCallback(
-    debounce(term => fetchData(term), SEARCH_DELAY),
+    debounce(
+      ({ searchTerm, page }) => fetchData({ searchTerm, page }),
+      SEARCH_DELAY
+    ),
     [fetchData]
   );
 
   useEffect(() => {
-    debouncedFetchData(search);
-  }, [debouncedFetchData, search]);
+    debouncedFetchData({ searchTerm: search, page });
+  }, [search, page, debouncedFetchData]);
 
-  return { data, loading, error, search, setSearch };
+  return {
+    dataCount,
+    data,
+    loading,
+    error,
+    search,
+    setSearch,
+    setPage,
+    page,
+  };
 };

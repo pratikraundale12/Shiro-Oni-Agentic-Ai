@@ -1,0 +1,45 @@
+.pagination-container {
+  color: var(--col-darker);
+}
+.pagination-container .list-div {
+  font-size: var(--f-13);
+  font-weight: var(--fw-500);
+  line-height: 17.2px;
+}
+.pagination-container .page-count {
+  font-family: var(--col-Noto);
+  font-size: var(--f-14);
+  font-weight: var(--fw-600);
+  line-height: 20px;
+  gap: 8px;
+}
+.pagination-container .page-count .box-size {
+  border: 1px solid var(--col-DFE3E8);
+  border-radius: 4px;
+  height: 32px;
+  width: 32px;
+  min-height: 32px;
+  min-width: 32px;
+  max-height: 32px;
+  max-width: 32px;
+  cursor: pointer;
+}
+.pagination-container .page-count .box-size.active {
+  border: 1px solid var(--col-C52B2B);
+  color: var(--col-C52B2B);
+}
+.pagination-container .page-count .box-size:hover {
+  color: var(--col-C52B2B);
+}
+.pagination-container .page-count .box-size:hover svg path {
+  fill: var(--col-C52B2B);
+}
+.pagination-container .page-count .box-size.disabled {
+  background-color: var(--col-919EAB);
+}
+.pagination-container .page-count .box-size.disabled:hover {
+  cursor: not-allowed;
+}
+.pagination-container .page-count .box-size.disabled:hover svg path {
+  fill: var(--col-C4CDD5);
+}

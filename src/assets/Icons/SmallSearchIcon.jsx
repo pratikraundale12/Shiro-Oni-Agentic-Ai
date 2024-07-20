@@ -11,7 +11,6 @@ export const SmallSearchIcon = ({
     width={width}
     height={height}
     fill="none"
-    {...props}
   >
     <path
       fill={color}

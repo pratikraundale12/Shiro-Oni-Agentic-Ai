@@ -13,3 +13,8 @@ export * from './LockIcon';
 export * from './HeadphoneIcon';
 export * from './BellIcon';
 export * from './SettingSmallIcon';
+export * from './ProfileIcon';
+export * from './PancilIcon';
+export * from './DeleteSmallIcon';
+export * from './SmallSearchIcon';
+export * from './TodoIcon';

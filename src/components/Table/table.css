@@ -1,0 +1,95 @@
+.main-table-resposniveness-1 {
+  max-height: calc(100vh - 295px);
+  overflow: auto;
+  border-radius: 8px 8px 16px 16px;
+}
+.main-table-resposniveness-2 {
+  max-height: calc(100vh - 478px);
+  overflow: auto;
+  border-radius: 8px 8px 16px 16px;
+}
+.main-table-resposniveness-3 {
+  max-height: calc(100vh - 600px);
+  overflow: auto;
+  border-radius: 8px 8px 16px 16px;
+}
+.table-area {
+  border-radius: 8px 8px 16px 16px;
+  overflow: hidden;
+  border: 1px solid var(--col-DDE4F0);
+}
+.main-table-div table thead {
+  position: sticky;
+  top: 0px;
+  left: 0px;
+  background-color: var(--col-light1);
+  font-size: var(--f-17);
+  font-weight: var(--fw-700);
+  line-height: 17.71px;
+  letter-spacing: -0.005em;
+  color: var(--col-darker);
+  border-radius: 8px;
+  z-index: 10;
+}
+.main-table-div table thead th {
+  padding: 17px 19px;
+}
+.main-table-div table tbody tr:nth-child(even) {
+  background-color: var(--col-light1);
+}
+.main-table-div table tbody td {
+  padding: 10px 19px;
+  min-height: 66px;
+  height: 66px;
+}
+.main-table-div table tbody {
+  color: var(--col-4C5055);
+  font-size: var(--f-16);
+  font-weight: var(--fw-400);
+  line-height: 23px;
+  border: 1px solid var(--col-DDE4F0);
+  border-top: none;
+}
+.main-table-div table tbody .darker-font {
+  color: var(--col-2D343F);
+}
+.main-table-div table tbody .user-img-container {
+  border-radius: 100%;
+  border: 1px solid var(--col-D7D7D7);
+  min-height: 50px;
+  height: 50px;
+  max-height: 50px;
+  min-width: 50px;
+  width: 50px;
+  max-width: 50px;
+}
+.main-table-div table tbody .action-td {
+  gap: 8px;
+}
+.main-table-div table tbody .active-td {
+  font-weight: var(--fw-500);
+  line-height: 19.36px;
+  letter-spacing: -0.005em;
+  padding-left: 20px;
+}
+.main-table-div table tbody .active-td::after {
+  content: '';
+  position: absolute;
+  left: 0px;
+  top: 7px;
+  height: 7px;
+  width: 7px;
+  border-radius: 100%;
+}
+.main-table-div table tbody .green-activeness {
+  color: var(--col-0CBF59);
+}
+.main-table-div table tbody .green-activeness::after {
+  background-color: var(--col-0CBF59);
+}
+.main-table-div table tbody .red-inactive {
+  color: var(--col-error);
+}
+.main-table-div table tbody .red-inactive::after {
+  background-color: var(--col-error);
+}

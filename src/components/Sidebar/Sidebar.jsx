@@ -16,20 +16,6 @@ export const Sidebar = () => {
 
   return (
     <>
-      <button
-        className="slider-btn position-absolute d-flex align-items-center justify-content-center d-lg-none d-block bg-white p-1"
-        type="button"
-        id="toggleButton"
-      >
-        asdfsadf
-        <img
-          src="/img/profile-img.png"
-          alt="arrow-icon"
-          width={14}
-          height={14}
-        />
-      </button>
-
       <div
         className="sidebar-main-view flex-column d-flex align-items-start justify-content-between"
         id="MenuSidebarMobileView2"
