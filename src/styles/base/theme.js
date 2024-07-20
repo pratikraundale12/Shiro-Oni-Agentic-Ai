@@ -1,6 +1,6 @@
 const theme = {
-  fontFamily: 'Red Hat Display, sans-serif',
-  fontFamily2: 'Nato Sans, sans-serif',
+  fontRedHat: '"Red Hat Display", sans-serif',
+  fontNato: '"Nato Sans", sans-serif',
   colors: {
     // general
     white: '#FFFFFF',
@@ -29,6 +29,7 @@ const theme = {
 
     // variants
     primaryActive: '#C60B1D',
+    primaryFocus: '#C52B2B',
     primaryDisabled: '#E3223580',
     secondaryDisabled: '#44444580',
 

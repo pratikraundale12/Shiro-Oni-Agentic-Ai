@@ -10,7 +10,7 @@ const StyledButton = styled.button.withConfig({
   align-items: center;
   justify-content: center;
   font-size: ${props => (props.size === 'md' ? '16px' : '12px')};
-  padding: ${props => (props.size === 'md' ? '16px 32px' : '6px 12px')};
+  padding: ${props => (props.size === 'md' ? '8px 14px' : '6px 14px')};
   border: 1px solid ${props => props.theme.colors.primary};
   border-radius: 4px;
   font-weight: 600;
@@ -26,13 +26,11 @@ const StyledButton = styled.button.withConfig({
     props.variant === 'primary'
       ? props.theme.colors.white
       : props.theme.colors.primary};
-
-  svg {
-    fill: currentColor;
-  }
+  ${props => props.icon && 'padding: 4px 10px;'}
 
   div {
-    min-width: 100%;
+    font-weight: bold;
+    min-width: max-content;
   }
 
   &:hover:enabled {
@@ -55,10 +53,11 @@ const IconWrapper = styled.span.withConfig({
 })`
   display: inline-block;
   vertical-align: middle;
+  margin-top: 6px;
   ${props =>
     props.position === 'right'
-      ? `margin-left: ${props.size === 'md' ? 10 : 6}px;`
-      : `margin-right: ${props.size === 'md' ? 10 : 6}px;`}
+      ? `margin-left: ${props.size === 'md' ? 10 : 4}px;`
+      : `margin-right: ${props.size === 'md' ? 10 : 4}px;`}
 `;
 
 const Button = ({
@@ -70,7 +69,13 @@ const Button = ({
   children,
   ...buttonProps
 }) => (
-  <StyledButton size={size} type={type} variant={variant} {...buttonProps}>
+  <StyledButton
+    size={size}
+    type={type}
+    variant={variant}
+    icon={icon}
+    {...buttonProps}
+  >
     {icon && iconPosition === 'left' && (
       <IconWrapper position={iconPosition}>{icon}</IconWrapper>
     )}

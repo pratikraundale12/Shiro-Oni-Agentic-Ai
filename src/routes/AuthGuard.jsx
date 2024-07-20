@@ -1,53 +1,43 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-// import styled from 'styled-components';
-import { Header } from '../components/Header/Header';
-import { Sidebar } from '../components/Sidebar/Sidebar';
-// const Container = styled.div`
-//   width: 100vw;
-//   height: 100vh;
-//   display: flex;
-// `;
+import React, { useState } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
-// const Content = styled.main`
-//   width: 100%;
-// `;
+import { Header, Sidebar } from '../components';
+import { ROUTES_MENU } from '.';
+
+const Container = styled.div`
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  background-color: ${props => props.theme.colors.lighter};
+`;
+
+const Content = styled.main`
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+  background-color: ${props => props.theme.colors.white};
+`;
 
 const AuthGuard = () => {
+  const navigate = useNavigate();
+  const [route, setRoute] = useState(ROUTES_MENU[0]);
+
+  const handleRouteClick = route => {
+    setRoute(route);
+    navigate(`/${route.path}`);
+  };
+
   return (
-    // <Container>
-    <>
-      {/* <Content> */}
-
-      {/* <Header />
-      <Container>
-        <Sidebar />
-
+    <Container>
+      <Sidebar route={route} handleRouteClick={handleRouteClick} />
+      <Content>
+        <Header route={route} />
         <Outlet />
-      </Container> */}
-
-      <Header />
-
-      <div className="main-view-area d-flex align-items-start justify-content-start position-relative">
-        <button
-          className="slider-btn position-absolute d-flex align-items-center justify-content-center d-lg-none d-block bg-white p-1"
-          type="button"
-          id="toggleButton"
-        >
-          asdfsadf
-          <img
-            src="/img/profile-img.png"
-            alt="arrow-icon"
-            width={14}
-            height={14}
-          />
-        </button>
-        <Sidebar />
-        <Outlet />
-      </div>
-
-      {/* </Container>   */}
-    </>
+      </Content>
+    </Container>
   );
 };
 

@@ -18,3 +18,8 @@ export * from './PancilIcon';
 export * from './DeleteSmallIcon';
 export * from './SmallSearchIcon';
 export * from './TodoIcon';
+export * from './DownArrowIcon';
+export * from './FileIcon';
+export * from './SmallSearchIcon';
+export * from './LessArrowIcon';
+export * from './GreaterArrowIcon';

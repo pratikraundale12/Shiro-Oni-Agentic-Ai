@@ -1,16 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import debounce from 'lodash/debounce';
 
-import { getUsersList } from '../services';
+import { getClustersList, getNamespacesList, getUsersList } from '../services';
 import { SEARCH_DELAY } from '../constants';
 
 const fetchListData = {
   users: getUsersList,
+  clusters: getClustersList,
+  namespaces: getNamespacesList,
 };
 
 export const useFetchData = module => {
-  const [dataCount, setDataCount] = useState(0);
-  const [data, setData] = useState([]);
+  const [response, setResponse] = useState({
+    count: 0,
+    prev: null,
+    next: null,
+    data: [],
+    breadcrumb: [],
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
@@ -24,8 +31,7 @@ export const useFetchData = module => {
           search: searchTerm,
           page,
         });
-        setDataCount(response.count);
-        setData(response.data);
+        setResponse(response);
       } catch (error) {
         setError(error.message || 'Error fetching data');
       } finally {
@@ -48,13 +54,12 @@ export const useFetchData = module => {
   }, [search, page, debouncedFetchData]);
 
   return {
-    dataCount,
-    data,
+    response,
     loading,
     error,
     search,
     setSearch,
-    setPage,
     page,
+    setPage,
   };
 };

@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 // Styled components based on the provided CSS
 const MainTableDiv = styled.div`
+  font-family: ${props => props.theme.fontNato};
+  font-size: ${props => props.theme.size.lg};
+  font-weight: 500;
   .action-td {
     gap: 8px;
   }
@@ -26,16 +29,16 @@ const ActiveTd = styled.div`
 `;
 
 const GreenActiveness = styled(ActiveTd)`
-  color: var(--col-0CBF59);
+  color: ${props => props.theme.colors.success};
   &::after {
-    background-color: var(--col-0CBF59);
+    background-color: ${props => props.theme.colors.success};
   }
 `;
 
 const RedInactive = styled(ActiveTd)`
-  color: var(--col-error);
+  color: ${props => props.theme.colors.error};
   &::after {
-    background-color: var(--col-error);
+    background-color: ${props => props.theme.colors.error};
   }
 `;
 

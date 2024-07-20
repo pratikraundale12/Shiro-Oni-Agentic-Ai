@@ -1,12 +1,19 @@
 import React from 'react';
-import { Grid } from '../../components/Table/Grid';
-// import {Grid} from '../../components/Grid'
+import styled from 'styled-components';
+
 import {
+  Grid,
   TextRender,
   StatusRender,
   ProfileRender,
   ActionRender,
-} from '../../components/Table/tableCellRender';
+} from '../../components';
+
+const Container = styled.div`
+  padding: 1.4rem;
+  width: 100%;
+  height: 100%;
+`;
 
 export const ListUsers = () => {
   const COLUMNS = [
@@ -40,8 +47,8 @@ export const ListUsers = () => {
     },
     {
       label: 'Actions',
+      width: 120,
       renderCell: item => <ActionRender item={item} />,
-      sort: { sortKey: 'ACTIONS' },
     },
   ];
 
@@ -52,5 +59,19 @@ export const ListUsers = () => {
     STATUS: array => array.sort((a, b) => a.is_active - b.is_active),
   };
 
-  return <Grid module="users" columns={COLUMNS} sortFns={SORT_FNS} />;
+  return (
+    <Container>
+      <Grid
+        module="users"
+        columns={COLUMNS}
+        sortFns={SORT_FNS}
+        options={[
+          { value: 'active', label: 'Active' },
+          { value: 'inactive', label: 'Inactive' },
+        ]}
+        title="User List"
+        buttonText="add new user"
+      />
+    </Container>
+  );
 };

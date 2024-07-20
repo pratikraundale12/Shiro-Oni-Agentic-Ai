@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Grid, StatusRender, TextRender } from '../../components';
+import { TextRender } from '../../components';
+import { Grid } from '../../components';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -8,7 +9,7 @@ const Container = styled.div`
   height: 100%;
 `;
 
-export const ListClusters = () => {
+export const ListNamespaces = () => {
   const COLUMNS = [
     {
       label: 'Name',
@@ -16,12 +17,26 @@ export const ListClusters = () => {
       sort: { sortKey: 'NAME' },
     },
     {
-      label: 'NiFi Url',
-      renderCell: item => <TextRender text={item.nifi_url} />,
+      label: 'Namespace ID',
+      renderCell: item => <TextRender text={item.id} />,
     },
     {
-      label: 'Status',
-      renderCell: item => <StatusRender status={item.status} />,
+      label: 'Flow Name',
+      renderCell: item => <TextRender text={item.flowName} />,
+    },
+    {
+      label: 'Bucket Name',
+      renderCell: item => <TextRender text={item.bucketName} />,
+    },
+    {
+      label: 'Version',
+      width: 120,
+      renderCell: item => <TextRender text={item.version} />,
+    },
+    {
+      label: 'Actions',
+      width: 120,
+      renderCell: () => <div>Select</div>,
     },
   ];
 
@@ -32,14 +47,14 @@ export const ListClusters = () => {
   return (
     <Container>
       <Grid
-        module="clusters"
+        module="namespaces"
         columns={COLUMNS}
         sortFns={SORT_FNS}
         options={[
           { value: 'active', label: 'Active' },
           { value: 'inactive', label: 'Inactive' },
         ]}
-        title="Clusters List"
+        title="Namespaces List"
         buttonText="add new cluster"
       />
     </Container>

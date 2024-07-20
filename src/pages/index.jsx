@@ -3,7 +3,7 @@ export * from './Auth';
 export * from './Dashboard';
 export * from './Users';
 export * from './Clusters';
-export * from './NameSpace';
+export * from './Namespace';
 export * from './ReadyFlowGallary';
 export * from './GenrateFlow';
 export * from './PermissionMatrix';

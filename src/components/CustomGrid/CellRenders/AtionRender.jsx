@@ -20,10 +20,10 @@ const IconWrapper = styled.div`
 export const ActionRender = () => {
   return (
     <ActionTd>
-      <IconWrapper data-bs-toggle="modal" data-bs-target="#exampleModaltwo">
+      <IconWrapper>
         <PencilIcon />
       </IconWrapper>
-      <IconWrapper data-bs-toggle="modal" data-bs-target="#exampleModal">
+      <IconWrapper>
         <DeleteSmallIcon color="red" />
       </IconWrapper>
     </ActionTd>
