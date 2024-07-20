@@ -14,6 +14,7 @@ import { InvalidProcessorIcon } from '../../assets/Icons/InvalidProcessorIcon';
 import './index.css';
 import { FlowMetricsChart } from '../../components/Dashboard';
 import { InsightContainer } from '../../components/Dashboard/InsightContainer';
+import { Dropdown } from '../../shared';
 export const Dashboard = () => {
   return (
     <div>
@@ -29,148 +30,55 @@ export const Dashboard = () => {
               </div>
               <div className="d-flex align-items-center dropdown-div">
                 <div className="custom-dropdown-1">
-                  <div className="dropdown">
-                    <button
-                      className="dropdown-toggle d-flex align-items-center"
-                      type="button"
-                      id="dropdownMenuButton1"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <span className="floating-label position-absolute">
-                        Select Cluster
-                      </span>
-                      <div className="d-flex align-items-center text-span-set">
-                        <span>Select Cluster</span>
-                      </div>
-                      <div className="arrow-div">
-                        <svg
-                          width={16}
-                          height={17}
-                          viewBox="0 0 16 17"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M12.6668 6.1665L8.00016 10.8332L3.3335 6.1665"
-                            stroke="#58616F"
-                            strokeWidth={2}
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
-                    </button>
-                    <ul
-                      className="dropdown-menu p-0 w-100 border-0"
-                      aria-labelledby="dropdownMenuButton1"
-                    >
-                      <li className="w-100">Staging</li>
-                      <li className="w-100">Devlopment</li>
-                      <li className="w-100">Production</li>
-                    </ul>
-                  </div>
+                  <Dropdown
+                    options={[
+                      { value: 'option1', label: 'Option 1' },
+                      { value: 'option2', label: 'Option 2' },
+                      { value: 'option3', label: 'Option 3' },
+                      { value: 'option4', label: 'Option 4' },
+                      { value: 'option5', label: 'Option 5' },
+                      { value: 'option6', label: 'Option 6' },
+                      { value: 'option7', label: 'Option 7' },
+                      { value: 'option8', label: 'Option 8' },
+                      { value: 'option9', label: 'Option 9' },
+                      { value: 'option10', label: 'Option 10' },
+                    ]}
+                    title="Select Cluster"
+                  />
                 </div>
 
                 <div className="custom-dropdown-1">
-                  <div className="dropdown">
-                    <button
-                      className="dropdown-toggle d-flex align-items-center"
-                      type="button"
-                      id="dropdownMenuButton1"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <span className="floating-label position-absolute">
-                        Select Namespace
-                      </span>
-                      <div className="d-flex align-items-center text-span-set">
-                        <span>Select Namespace</span>
-                      </div>
-                      <div className="arrow-div">
-                        <svg
-                          width={16}
-                          height={17}
-                          viewBox="0 0 16 17"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M12.6668 6.1665L8.00016 10.8332L3.3335 6.1665"
-                            stroke="#58616F"
-                            strokeWidth={2}
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
-                    </button>
-                    <ul
-                      className="dropdown-menu p-0 w-100 border-0"
-                      aria-labelledby="dropdownMenuButton1"
-                    >
-                      <li className="w-100">Kafka To Postgres</li>
-                      <li className="w-100">Kafka To Hive</li>
-                      <li className="w-100">Mongo To MySql</li>
-                    </ul>
-                  </div>
+                  <Dropdown
+                    options={[
+                      { value: 'option1', label: 'Option 1' },
+                      { value: 'option2', label: 'Option 2' },
+                      { value: 'option3', label: 'Option 3' },
+                      { value: 'option4', label: 'Option 4' },
+                      { value: 'option5', label: 'Option 5' },
+                      { value: 'option6', label: 'Option 6' },
+                      { value: 'option7', label: 'Option 7' },
+                      { value: 'option8', label: 'Option 8' },
+                      { value: 'option9', label: 'Option 9' },
+                      { value: 'option10', label: 'Option 10' },
+                    ]}
+                    title="Select Namespace"
+                  />
                 </div>
-                <div className="custom-dropdown-1">
-                  <div className="dropdown">
-                    <button
-                      className="dropdown-toggle d-flex align-items-center"
-                      type="button"
-                      id="dropdownMenuButton1"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <span className="floating-label position-absolute d-none">
-                        Refresh
-                      </span>
-                      <div className="d-flex align-items-center text-span-set">
-                        <svg
-                          width={20}
-                          height={20}
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M4.55198 3.69369C6.0128 2.43057 7.91709 1.6665 9.99984 1.6665C14.6022 1.6665 18.3332 5.39746 18.3332 9.99984C18.3332 11.7799 17.775 13.4297 16.8242 14.7837L14.1665 9.99984H16.6665C16.6665 6.31794 13.6818 3.33317 9.99984 3.33317C8.20802 3.33317 6.58131 4.04006 5.38336 5.19019L4.55198 3.69369ZM15.4477 16.306C13.9868 17.5691 12.0826 18.3332 9.99984 18.3332C5.39746 18.3332 1.6665 14.6022 1.6665 9.99984C1.6665 8.21972 2.22466 6.56997 3.1755 5.21604L5.83317 9.99984H3.33317C3.33317 13.6818 6.31794 16.6665 9.99984 16.6665C11.7917 16.6665 13.4183 15.9596 14.6163 14.8095L15.4477 16.306Z"
-                            fill="#444444"
-                          />
-                        </svg>
-                        <span>Refresh</span>
-                      </div>
-                      <div className="arrow-div">
-                        <svg
-                          width={16}
-                          height={17}
-                          viewBox="0 0 16 17"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M12.6668 6.1665L8.00016 10.8332L3.3335 6.1665"
-                            stroke="#58616F"
-                            strokeWidth={2}
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
-                    </button>
-                    <ul
-                      className="dropdown-menu p-0 w-100 border-0"
-                      aria-labelledby="dropdownMenuButton1"
-                    >
-                      <li className="w-100">Off</li>
-                      <li className="w-100">Auto</li>
-                      <li className="w-100">5 Seconds</li>
-                      <li className="w-100">10 Seconds</li>
-                    </ul>
-                  </div>
-                </div>
+                <Dropdown
+                  options={[
+                    { value: 'option1', label: 'Option 1' },
+                    { value: 'option2', label: 'Option 2' },
+                    { value: 'option3', label: 'Option 3' },
+                    { value: 'option4', label: 'Option 4' },
+                    { value: 'option5', label: 'Option 5' },
+                    { value: 'option6', label: 'Option 6' },
+                    { value: 'option7', label: 'Option 7' },
+                    { value: 'option8', label: 'Option 8' },
+                    { value: 'option9', label: 'Option 9' },
+                    { value: 'option10', label: 'Option 10' },
+                  ]}
+                  title="Refresh"
+                />
               </div>
             </div>
             <div className="scroll-set-1 pe-1">

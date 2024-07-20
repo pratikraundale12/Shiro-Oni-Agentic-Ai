@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { DownArrowIcon } from '../assets/Icons/DownArrowIcon';
 
 const Container = styled.div`
   position: relative;
@@ -39,7 +40,29 @@ const Button = styled.button`
   border: 1px solid ${props => props.theme.colors.border};
 `;
 
-export const Dropdown = ({ options = [] }) => {
+const SelectedItemcontainer = styled.div`
+  display: flex;
+`;
+const SelectedTile = styled.div`
+  margin-right: 8px;
+  font-family: Noto Sans;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.01em;
+  text-align: left;
+  color: #4b5564;
+`;
+const Label = styled.div`
+  font-family: Noto Sans;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.01em;
+  text-align: left;
+`;
+
+export const Dropdown = ({ options = [], title = '' }) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
 
@@ -58,8 +81,14 @@ export const Dropdown = ({ options = [] }) => {
 
   return (
     <Container ref={menuRef}>
+      <Label>{title}</Label>
       <Button type="button" onClick={() => setShowMenu(prev => !prev)}>
-        Select
+        <SelectedItemcontainer>
+          <SelectedTile>{title}</SelectedTile>
+          <div>
+            <DownArrowIcon />
+          </div>
+        </SelectedItemcontainer>
       </Button>
       <List show={showMenu}>
         {options.map(item => (
@@ -71,5 +100,11 @@ export const Dropdown = ({ options = [] }) => {
 };
 
 Dropdown.propTypes = {
-  options: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  title: PropTypes.string,
 };
