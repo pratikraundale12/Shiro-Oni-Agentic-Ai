@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import debounce from 'lodash/debounce';
 
 import { getClustersList, getNamespacesList, getUsersList } from '../services';
@@ -41,11 +41,12 @@ export const useFetchData = module => {
     [module]
   );
 
-  const debouncedFetchData = useCallback(
-    debounce(
-      ({ searchTerm, page }) => fetchData({ searchTerm, page }),
-      SEARCH_DELAY
-    ),
+  const debouncedFetchData = useMemo(
+    () =>
+      debounce(
+        ({ searchTerm, page }) => fetchData({ searchTerm, page }),
+        SEARCH_DELAY
+      ),
     [fetchData]
   );
 

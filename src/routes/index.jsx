@@ -61,7 +61,7 @@ export const ROUTES_MENU = [
     icon: NameSpaceIcon,
     pages: [
       {
-        path: '',
+        path: '/namespace',
         component: <ListNamespaces />,
       },
       {
