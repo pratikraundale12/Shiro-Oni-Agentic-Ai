@@ -65,14 +65,14 @@ export const GridActions = ({
           <Title>{title}</Title>
         </Flex>
         <Flex>
-          {!isEmpty(clusterOptions) && (
-            <Dropdown placeholder="Clusters" options={clusterOptions} />
-          )}
           {!isEmpty(refreshOptions) && (
             <Dropdown placeholder="Refresh" options={refreshOptions} />
           )}
           {!isEmpty(statusOptions) && (
             <Dropdown placeholder="Status" options={statusOptions} />
+          )}
+          {!isEmpty(clusterOptions) && (
+            <Dropdown placeholder="Clusters" options={clusterOptions} />
           )}
           {!isEmpty(buttonText) && (
             <Button

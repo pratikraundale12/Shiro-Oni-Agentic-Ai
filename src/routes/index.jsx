@@ -57,16 +57,12 @@ export const ROUTES_MENU = [
   },
   {
     name: 'Namespace',
-    path: 'namespace',
+    path: 'namespaces',
     icon: NameSpaceIcon,
     pages: [
       {
-        path: '/namespace',
+        path: '',
         component: <ListNamespaces />,
-      },
-      {
-        path: ['add', 'edit/:id'],
-        component: <AddCluster />,
       },
     ],
   },

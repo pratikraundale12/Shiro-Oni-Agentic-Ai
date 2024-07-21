@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import debounce from 'lodash/debounce';
+import { toast } from 'react-toastify';
 
 import { getClustersList, getNamespacesList, getUsersList } from '../services';
 import { SEARCH_DELAY } from '../constants';
@@ -19,7 +20,6 @@ export const useFetchData = module => {
     breadcrumb: [],
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
 
@@ -33,7 +33,11 @@ export const useFetchData = module => {
         });
         setResponse(response);
       } catch (error) {
-        setError(error.message || 'Error fetching data');
+        toast.error(
+          error?.response?.data?.message ||
+            error?.message ||
+            'Error fetching data'
+        );
       } finally {
         setLoading(false);
       }
@@ -57,7 +61,6 @@ export const useFetchData = module => {
   return {
     response,
     loading,
-    error,
     search,
     setSearch,
     page,

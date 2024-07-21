@@ -13,7 +13,15 @@ function App() {
       <GlobalProvider>
         <Routes />
       </GlobalProvider>
-      <ToastContainer />
+      <ToastContainer
+        theme="colored"
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
     </ThemeProvider>
   );
 }
