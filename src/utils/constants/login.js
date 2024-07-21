@@ -1,0 +1,21 @@
+export const VERSION = 'Version 1.5.7';
+export const WELCOME_BACK = 'Welcome back';
+export const LOGIN_TO_YOUR_ACCOUNT = 'Login to your account';
+export const FORGOT_PASSWORD = 'Forgot password?';
+export const SIGN_IN_TO_YOUR_ACCOUNT = 'Sign in to your Account';
+export const OR_DO_IT_VIA_OTHER_ACCOUNTS = 'or do it via other accounts';
+export const GOOGLE = 'Google';
+export const MICROSOFT = 'Microsoft';
+export const BACK = 'Back';
+export const FORGOT_PASSWORD_SUBTITLE =
+  'Please enter your registered email Id. We will send you a link to reset your password.';
+export const SEND_RESET_LINK = 'Send Reset Link';
+export const SUCCESS_MESSAGE = 'Your password has been changed successfully.';
+export const ALREADY_HAVE_AN_ACCOUNT = 'Already have an Account?';
+export const SIGN_IN = ' Sign In';
+export const RESET_YOUR_PASSWORD = 'Reset Your Password';
+export const RESET_PASSWORD_SUBTITLE = 'Enter your new password to reset.';
+export const FLOW_MANAGEMENT_TOOL = 'Flow Management Tool!';
+export const CHECK_OUT_THE_BEST_DATA = 'Check out the Best Data';
+export const PASSWORD_CHANGED = 'Password Changed';
+export const RESET_PASSWORD = 'Reset Password';

@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { TextRender } from '../../components';
 import { Grid } from '../../components';
+import { REFRESH_OPTIONS } from '../../utils';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -48,14 +49,10 @@ export const ListNamespaces = () => {
     <Container>
       <Grid
         module="namespaces"
+        title="Namespaces List"
         columns={COLUMNS}
         sortFns={SORT_FNS}
-        options={[
-          { value: 'active', label: 'Active' },
-          { value: 'inactive', label: 'Inactive' },
-        ]}
-        title="Namespaces List"
-        buttonText="add new cluster"
+        refreshOptions={REFRESH_OPTIONS}
       />
     </Container>
   );

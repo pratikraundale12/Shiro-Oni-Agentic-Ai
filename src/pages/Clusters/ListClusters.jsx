@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
+
 import { Grid, StatusRender, TextRender } from '../../components';
+import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../utils';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -33,14 +35,12 @@ export const ListClusters = () => {
     <Container>
       <Grid
         module="clusters"
+        title="Clusters List"
+        buttonText="Add New Cluster"
         columns={COLUMNS}
         sortFns={SORT_FNS}
-        options={[
-          { value: 'active', label: 'Active' },
-          { value: 'inactive', label: 'Inactive' },
-        ]}
-        title="Clusters List"
-        buttonText="add new cluster"
+        statusOptions={STATUS_OPTIONS}
+        refreshOptions={REFRESH_OPTIONS}
       />
     </Container>
   );

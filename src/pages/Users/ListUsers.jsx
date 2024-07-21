@@ -8,6 +8,7 @@ import {
   ProfileRender,
   ActionRender,
 } from '../../components';
+import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../utils';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -62,15 +63,13 @@ export const ListUsers = () => {
   return (
     <Container>
       <Grid
+        title="User List"
         module="users"
+        buttonText="Add New User"
         columns={COLUMNS}
         sortFns={SORT_FNS}
-        options={[
-          { value: 'active', label: 'Active' },
-          { value: 'inactive', label: 'Inactive' },
-        ]}
-        title="User List"
-        buttonText="add new user"
+        statusOptions={STATUS_OPTIONS}
+        refreshOptions={REFRESH_OPTIONS}
       />
     </Container>
   );

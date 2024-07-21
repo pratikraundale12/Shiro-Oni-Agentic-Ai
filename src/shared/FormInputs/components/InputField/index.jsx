@@ -1,57 +1,135 @@
 import React from 'react';
 import { isFunction } from 'lodash';
+import styled from 'styled-components';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import FieldErrorMessage from '../FieldErrorMessage';
 import { hasError } from '../../../../utils';
+
+const Container = styled.div`
+  width: 100%;
+  margin-bottom: 1.4rem;
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+    margin-bottom: 6px;
+    color: ${props => props.theme.colors.darker};
+  }
+
+  .required {
+    color: ${props => props.theme.colors.error};
+    font-size: 1rem;
+  }
+
+  .wrapper {
+    position: relative;
+  }
+
+  &.error {
+    input {
+      border-color: ${props => props.theme.colors.error} !important;
+    }
+  }
+
+  .icon-placeholder {
+    position: absolute;
+    top: 2px;
+    left: 1px;
+    z-index: 1;
+    height: 48px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    padding: 0 14px;
+    background-color: ${props => props.theme.colors.lightGrey};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input {
+    width: 100%;
+    border: 1px solid ${props => props.theme.colors.border};
+    border-radius: 4px;
+    background-color: ${props => props.theme.colors.white};
+    padding: 16px 32px 16px 56px;
+    font-size: 14px;
+    color: ${props => props.theme.colors.darker};
+
+    &::placeholder {
+      color: ${props => props.theme.colors.grey};
+      font-family: ${props => props.theme.fontNato};
+      font-size: 14px;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+
+    &:focus {
+      border: 1px solid ${props => props.theme.colors.darker};
+    }
+    &:disabled {
+      background: ${props => props.theme.colors.lightGrey2};
+    }
+  }
+
+  .icon {
+    position: absolute;
+    top: 14px;
+    right: 10px;
+    color: ${props => props.theme.colors.primary};
+  }
+`;
 
 const InputField = ({
   name,
   register = null,
   errors = {},
   label,
+  icon = null,
+  rightIcon = null,
   type = 'text',
   required = false,
   disabled = false,
   registerOptions = {},
   className,
-  id,
-  icon,
-  checkicon,
+  placeholder = '',
   ...props
 }) => {
   const error = hasError(errors, name);
 
   return (
-    <div className="input-box">
+    <Container
+      className={classNames({
+        error,
+        [className]: className,
+      })}
+    >
       {label && (
-        <label htmlFor={id} className="mb-2">
+        <label>
           {label}
           {required && <span className="required">&nbsp;*</span>}
         </label>
       )}
-      <div className="input-group">
-        {icon && (
-          <div className="input-group-prepend">
-            <span className="input-group-text" id="basic-addon1">
-              {icon}
-            </span>
-          </div>
-        )}
+      <div className="wrapper">
+        <span className="icon-placeholder">{icon}</span>
         <input
           name={name}
           type={type}
-          className={`form-control ${className}`}
+          placeholder={placeholder}
           aria-invalid={error}
           {...props}
           {...(isFunction(register) &&
             register(name, { required, ...registerOptions }))}
           disabled={disabled}
         />
-        {checkicon && <span className="validation success">{checkicon}</span>}
+        <span className="icon">{rightIcon}</span>
       </div>
       <FieldErrorMessage errors={errors} name={name} />
-    </div>
+    </Container>
   );
 };
 
@@ -59,15 +137,15 @@ InputField.propTypes = {
   name: PropTypes.string.isRequired,
   register: PropTypes.func,
   label: PropTypes.string.isRequired,
+  icon: PropTypes.node,
+  rightIcon: PropTypes.node,
   type: PropTypes.string,
   errors: PropTypes.shape({}),
-  required: PropTypes.bool,
+  required: PropTypes.string,
   disabled: PropTypes.bool,
-  id: PropTypes.string,
-  icon: PropTypes.element,
-  checkicon: PropTypes.element,
   registerOptions: PropTypes.shape({}),
   className: PropTypes.string,
+  placeholder: PropTypes.string.isRequired,
 };
 
 export default InputField;

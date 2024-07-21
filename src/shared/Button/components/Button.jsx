@@ -17,7 +17,7 @@ const StyledButton = styled.button.withConfig({
   transition:
     background 0.3s ease-in-out,
     color 0.3s ease-in-out;
-  text-transform: capitalize;
+  cursor: pointer;
   background: ${props =>
     props.variant === 'primary'
       ? props.theme.colors.primary
