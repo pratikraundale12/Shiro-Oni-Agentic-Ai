@@ -7,8 +7,8 @@ const Errors = styled.div`
   margin-top: 2px;
   margin-left: 2px;
   color: ${props => props.theme.colors.error};
-  font-weight: 600;
-  font-size: 12px;
+  font-weight: 500;
+  font-size: 10px;
 `;
 
 const FieldErrorMessage = ({ errors, name, className }) => (

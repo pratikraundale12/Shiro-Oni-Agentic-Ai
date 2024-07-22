@@ -7,6 +7,7 @@ export const BellIcon = ({ width = 24, height = 24, color = '#444445' }) => (
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 24 24"
   >
     <path
       fill={color}

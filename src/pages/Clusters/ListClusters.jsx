@@ -1,38 +1,47 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { Button } from '../../shared';
-import { PlusIcon } from '../../assets';
+import { Grid, StatusRender, TextRender } from '../../components';
+import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../utils';
 
 const Container = styled.div`
   padding: 1.4rem;
-`;
-
-const Heading = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  width: 100%;
+  height: 100%;
 `;
 
 export const ListClusters = () => {
-  const navigate = useNavigate();
+  const COLUMNS = [
+    {
+      label: 'Name',
+      renderCell: item => <TextRender text={item.name} />,
+      sort: { sortKey: 'NAME' },
+    },
+    {
+      label: 'NiFi Url',
+      renderCell: item => <TextRender text={item.nifi_url} />,
+    },
+    {
+      label: 'Status',
+      renderCell: item => <StatusRender status={item.status} />,
+    },
+  ];
+
+  const SORT_FNS = {
+    NAME: array => array.sort((a, b) => a.name.localeCompare(b.name)),
+  };
 
   return (
     <Container>
-      <Heading>
-        <h2>List Clusters</h2>
-        <div>
-          <Button
-            size="sm"
-            variant="secondary"
-            icon={<PlusIcon />}
-            onClick={() => navigate('add')}
-          >
-            add new cluster
-          </Button>
-        </div>
-      </Heading>
+      <Grid
+        module="clusters"
+        title="Clusters List"
+        buttonText="Add New Cluster"
+        columns={COLUMNS}
+        sortFns={SORT_FNS}
+        statusOptions={STATUS_OPTIONS}
+        refreshOptions={REFRESH_OPTIONS}
+      />
     </Container>
   );
 };

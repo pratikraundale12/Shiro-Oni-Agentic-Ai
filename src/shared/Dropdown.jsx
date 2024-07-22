@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { DownArrowIcon } from '../assets/Icons/DownArrowIcon';
+import { DownArrowIcon } from '../assets';
 
 const Container = styled.div`
   position: relative;
   display: inline-block;
-  align-self: self-start;
+  margin-right: 1rem;
 `;
 
 const List = styled.div`
@@ -24,7 +24,7 @@ const Item = styled.div`
   cursor: pointer;
   padding: 8px;
   border-radius: 4px;
-  font-size: ${props => props.theme.size.xs};
+  font-size: ${props => props.theme.size.md};
   color: ${props => props.theme.colors.darker};
 
   &:hover {
@@ -33,11 +33,23 @@ const Item = styled.div`
 `;
 
 const Button = styled.button`
-  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 10px 12px;
   border-radius: 4px;
+  font-size: 14px;
+  font-family: ${props => props.theme.fontNato};
   background: ${props => props.theme.colors.lightGrey};
   border: 1px solid ${props => props.theme.colors.border};
+
+  span {
+    min-width: max-content;
+  }
+
+  svg {
+    margin-left: 10px;
+  }
 `;
 
 const SelectedItemcontainer = styled.div`
@@ -62,14 +74,20 @@ const Label = styled.div`
   text-align: left;
 `;
 
-export const Dropdown = ({ options = [], title = '' }) => {
+export const Dropdown = ({ options = [], label = '', placeholder }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const [selectedOption, setSelectedOption] = useState({});
   const menuRef = useRef(null);
 
   const handleClickOutside = event => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
       setShowMenu(false);
     }
+  };
+
+  const handleSelect = item => {
+    setSelectedOption(item);
+    setShowMenu(prev => !prev);
   };
 
   useEffect(() => {
@@ -81,18 +99,18 @@ export const Dropdown = ({ options = [], title = '' }) => {
 
   return (
     <Container ref={menuRef}>
-      <Label>{title}</Label>
+      {label && <Label>{label}</Label>}
       <Button type="button" onClick={() => setShowMenu(prev => !prev)}>
         <SelectedItemcontainer>
-          <SelectedTile>{title}</SelectedTile>
-          <div>
-            <DownArrowIcon />
-          </div>
+          <SelectedTile>{selectedOption.label || placeholder}</SelectedTile>
         </SelectedItemcontainer>
+        <DownArrowIcon />
       </Button>
       <List show={showMenu}>
         {options.map(item => (
-          <Item key={item.value}>{item.label}</Item>
+          <Item key={item.value} onClick={() => handleSelect(item)}>
+            {item.label}
+          </Item>
         ))}
       </List>
     </Container>
@@ -106,5 +124,6 @@ Dropdown.propTypes = {
       label: PropTypes.string.isRequired,
     })
   ).isRequired,
-  title: PropTypes.string,
+  label: PropTypes.string,
+  placeholder: PropTypes.string.isRequired,
 };

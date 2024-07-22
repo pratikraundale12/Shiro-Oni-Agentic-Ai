@@ -9,14 +9,14 @@ import { hasError } from '../../../../utils';
 
 const Container = styled.div`
   width: 100%;
-  position: relative;
-  margin-bottom: 1rem;
+  margin-bottom: 1.4rem;
 
-  svg {
-    position: absolute;
-    top: 32px;
-    right: 10px;
-    cursor: pointer;
+  label {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+    margin-bottom: 6px;
+    color: ${props => props.theme.colors.darker};
   }
 
   .required {
@@ -24,37 +24,43 @@ const Container = styled.div`
     font-size: 1rem;
   }
 
+  .wrapper {
+    position: relative;
+  }
+
   &.error {
     input {
       border-color: ${props => props.theme.colors.error} !important;
-      outline: none;
     }
   }
 
-  label {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 15.06px;
-    margin-bottom: 5px;
+  .icon-placeholder {
+    position: absolute;
+    top: 2px;
+    left: 1px;
+    z-index: 1;
+    height: 48px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    padding: 0 14px;
+    background-color: ${props => props.theme.colors.lightGrey};
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  input[type='checkbox'] {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
-  }
-
-  input:not([type='checkbox']) {
+  input {
     width: 100%;
-    height: 42px;
-    border: 1px solid ${props => props.theme.colors.darkGrey};
+    border: 1px solid ${props => props.theme.colors.border};
     border-radius: 4px;
-    background: ${props => props.theme.colors.white};
-    padding: 10px;
+    background-color: ${props => props.theme.colors.white};
+    padding: 16px 32px 16px 56px;
     font-size: 14px;
+    color: ${props => props.theme.colors.darker};
 
     &::placeholder {
-      color: ${props => props.theme.colors.darkGrey1};
+      color: ${props => props.theme.colors.grey};
+      font-family: ${props => props.theme.fontNato};
       font-size: 14px;
     }
 
@@ -62,17 +68,19 @@ const Container = styled.div`
       outline: none;
     }
 
-    &:not(:placeholder-shown),
     &:focus {
-      border: 1px solid ${props => props.theme.colors.primary};
-
-      &::placeholder {
-        color: transparent;
-      }
+      border: 1px solid ${props => props.theme.colors.darker};
     }
     &:disabled {
       background: ${props => props.theme.colors.lightGrey2};
     }
+  }
+
+  .icon {
+    position: absolute;
+    top: 14px;
+    right: 10px;
+    color: ${props => props.theme.colors.primary};
   }
 `;
 
@@ -81,11 +89,14 @@ const InputField = ({
   register = null,
   errors = {},
   label,
+  icon = null,
+  rightIcon = null,
   type = 'text',
   required = false,
   disabled = false,
   registerOptions = {},
   className,
+  placeholder = '',
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -103,15 +114,20 @@ const InputField = ({
           {required && <span className="required">&nbsp;*</span>}
         </label>
       )}
-      <input
-        name={name}
-        type={type}
-        aria-invalid={error}
-        {...props}
-        {...(isFunction(register) &&
-          register(name, { required, ...registerOptions }))}
-        disabled={disabled}
-      />
+      <div className="wrapper">
+        <span className="icon-placeholder">{icon}</span>
+        <input
+          name={name}
+          type={type}
+          placeholder={placeholder}
+          aria-invalid={error}
+          {...props}
+          {...(isFunction(register) &&
+            register(name, { required, ...registerOptions }))}
+          disabled={disabled}
+        />
+        <span className="icon">{rightIcon}</span>
+      </div>
       <FieldErrorMessage errors={errors} name={name} />
     </Container>
   );
@@ -121,12 +137,15 @@ InputField.propTypes = {
   name: PropTypes.string.isRequired,
   register: PropTypes.func,
   label: PropTypes.string.isRequired,
+  icon: PropTypes.node,
+  rightIcon: PropTypes.node,
   type: PropTypes.string,
   errors: PropTypes.shape({}),
   required: PropTypes.string,
   disabled: PropTypes.bool,
   registerOptions: PropTypes.shape({}),
   className: PropTypes.string,
+  placeholder: PropTypes.string.isRequired,
 };
 
 export default InputField;

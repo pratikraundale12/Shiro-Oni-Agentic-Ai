@@ -13,7 +13,7 @@ import {
   AddUser,
   ListClusters,
   AddCluster,
-  ListNameSpace,
+  ListNamespaces,
   ReadyFlowGallary,
   GenrateFlow,
   PermissionMatrix,
@@ -32,7 +32,7 @@ export const ROUTES_MENU = [
   {
     name: 'Dashboard',
     path: 'dashboard',
-    icon: <DashboardIcon />,
+    icon: DashboardIcon,
     pages: [
       {
         path: '/dashboard',
@@ -43,10 +43,10 @@ export const ROUTES_MENU = [
   {
     name: 'Cluster',
     path: 'cluster',
-    icon: <ClusterIcon />,
+    icon: ClusterIcon,
     pages: [
       {
-        path: '/cluster',
+        path: '',
         component: <ListClusters />,
       },
       {
@@ -56,27 +56,23 @@ export const ROUTES_MENU = [
     ],
   },
   {
-    name: 'NameSpace',
-    path: 'namespace',
-    icon: <NameSpaceIcon />,
+    name: 'Namespace',
+    path: 'namespaces',
+    icon: NameSpaceIcon,
     pages: [
       {
-        path: '/namespace',
-        component: <ListNameSpace />,
-      },
-      {
-        path: ['add', 'edit/:id'],
-        component: <AddCluster />,
+        path: '',
+        component: <ListNamespaces />,
       },
     ],
   },
   {
     name: 'ReadyFlow Gallary',
-    path: 'readyFlowGallary',
-    icon: <ReadyFlowIcon />,
+    path: 'ready-flow-gallary',
+    icon: ReadyFlowIcon,
     pages: [
       {
-        path: '/readyFlowGallary',
+        path: '',
         component: <ReadyFlowGallary />,
       },
       {
@@ -87,11 +83,11 @@ export const ROUTES_MENU = [
   },
   {
     name: 'Genrate Flow',
-    path: 'genrateFlow',
-    icon: <GenrateFlowIcon />,
+    path: 'genrate-flow',
+    icon: GenrateFlowIcon,
     pages: [
       {
-        path: '/genrateFlow',
+        path: '',
         component: <GenrateFlow />,
       },
       {
@@ -101,9 +97,9 @@ export const ROUTES_MENU = [
     ],
   },
   {
-    name: 'User',
-    path: 'user',
-    icon: <PeopleIcon />,
+    name: 'User Management',
+    path: 'user-management',
+    icon: PeopleIcon,
     pages: [
       {
         path: '',
@@ -118,11 +114,11 @@ export const ROUTES_MENU = [
 
   {
     name: 'Permission Matrix',
-    path: 'permissionMatrix',
-    icon: <LockIcon />,
+    path: 'permission-matrix',
+    icon: LockIcon,
     pages: [
       {
-        path: '/permissionMatrix',
+        path: '',
         component: <PermissionMatrix />,
       },
       {

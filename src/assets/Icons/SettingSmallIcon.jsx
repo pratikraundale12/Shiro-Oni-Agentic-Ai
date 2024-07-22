@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export const SettingSmallIcon = ({
-  width = 24,
-  height = 24,
+  width = 22,
+  height = 22,
   color = '#444445',
 }) => (
   <svg
@@ -11,6 +11,7 @@ export const SettingSmallIcon = ({
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 22 22"
   >
     <path
       fill={color}

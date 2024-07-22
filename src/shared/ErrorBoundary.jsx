@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import { theme } from '../styles';
@@ -42,9 +43,12 @@ class ErrorBoundary extends React.Component {
       );
     }
 
-    // eslint-disable-next-line react/prop-types
     return this.props.children;
   }
 }
 
-export default ErrorBoundary;
+ErrorBoundary.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+export { ErrorBoundary };

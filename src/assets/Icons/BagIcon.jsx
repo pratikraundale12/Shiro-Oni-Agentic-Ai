@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const BagIcon = ({ width = 18, height = 21, color = '#444445' }) => (
+export const BagIcon = ({ width = 20, height = 20, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 18 22"
   >
     <path
       fill={color}

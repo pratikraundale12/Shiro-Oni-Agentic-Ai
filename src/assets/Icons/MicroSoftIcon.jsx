@@ -1,28 +1,40 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const MicroSoftIcon = ({ width = 80, height = 80 }) => (
+export const MicroSoftIcon = () => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={width}
-    height={width}
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
     fill="none"
+    xmlns="http://www.w3.org/2000/svg"
   >
-    <g clipPath="url(#a)">
+    <g clipPath="url(#clip0_697_18172)">
       <path
+        d="M12.7466 11.25H23.9966V0.75C23.9966 0.336 23.6606 0 23.2466 0H12.7466V11.25Z"
         fill="#4CAF50"
-        d="M42.5 37.5H80v-35A2.5 2.5 0 0 0 77.5 0h-35v37.5Z"
       />
-      <path fill="#F44336" d="M37.5 37.5V0h-35A2.5 2.5 0 0 0 0 2.5v35h37.5Z" />
-      <path fill="#2196F3" d="M37.5 42.5H0v35A2.5 2.5 0 0 0 2.5 80h35V42.5Z" />
       <path
+        d="M11.2466 11.25V0H0.746582C0.332582 0 -0.00341797 0.336 -0.00341797 0.75V11.25H11.2466Z"
+        fill="#F44336"
+      />
+      <path
+        d="M11.2466 12.75H-0.00341797V23.25C-0.00341797 23.664 0.332582 24 0.746582 24H11.2466V12.75Z"
+        fill="#2196F3"
+      />
+      <path
+        d="M12.7466 12.75V24H23.2466C23.6606 24 23.9966 23.664 23.9966 23.25V12.75H12.7466Z"
         fill="#FFC107"
-        d="M42.5 42.5V80h35a2.5 2.5 0 0 0 2.5-2.5v-35H42.5Z"
       />
     </g>
     <defs>
-      <clipPath id="a">
-        <path fill="#fff" d="M0 0h80v80H0z" />
+      <clipPath id="clip0_697_18172">
+        <rect
+          width="24"
+          height="24"
+          fill="white"
+          transform="translate(-0.00341797)"
+        />
       </clipPath>
     </defs>
   </svg>

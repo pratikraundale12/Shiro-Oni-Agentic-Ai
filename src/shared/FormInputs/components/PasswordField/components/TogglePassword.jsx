@@ -3,10 +3,8 @@ import PropTypes from 'prop-types';
 import { CloseEyeIcon, OpenEyeIcon } from '../../../../../assets';
 
 const TogglePassword = ({ show, onToggle }) => (
-  <div className="eye-icon">
-    <span role="presentation" onClick={onToggle}>
-      {show ? <OpenEyeIcon /> : <CloseEyeIcon />}
-    </span>
+  <div className="eye-icon" role="presentation" onClick={onToggle}>
+    {show ? <OpenEyeIcon /> : <CloseEyeIcon />}
   </div>
 );
 
