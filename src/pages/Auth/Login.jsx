@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
+import { toast } from 'react-toastify';
 import { Button, TextButton, InputField, PasswordField } from '../../shared';
 import {
   GoogleIcon,
@@ -22,6 +23,7 @@ import {
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../utils';
+import { login } from '../../utils/services/auth';
 
 const Title = styled.h3`
   font-weight: 500;
@@ -87,43 +89,55 @@ export const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = data => console.log(data);
+  const onSubmit = async data => {
+    try {
+      const response = await login(data);
+      localStorage.setItem('access_token', response?.token);
+      if (response?.token) {
+        toast.success('Login successful');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      toast.error(error?.message);
+    }
+  };
 
   return (
     <Layout>
       <Title>{`👋 ${WELCOME_BACK}`}</Title>
       <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
-      <InputField
-        name="email"
-        type="email"
-        label="E-mail Address"
-        placeholder="Enter your Email Address"
-        required="Email is required"
-        register={register}
-        errors={errors}
-        icon={<MailIcon />}
-        rightIcon={<RightArrowIcon color={theme.colors.primary} />}
-      />
-      <PasswordField
-        name="password"
-        register={register}
-        errors={errors}
-        watch={watch}
-        required="Password is required"
-        label="Password"
-        helperText="Must be 8 characters at least"
-      />
-      <TextButton onClick={() => navigate('/forgot')}>
-        {FORGOT_PASSWORD}
-      </TextButton>
-      <SubmitButton
-        iconPosition="right"
-        icon={<LessArrowIcon color={theme.colors.white} />}
-        type="submit"
-        onClick={handleSubmit(onSubmit)}
-      >
-        {SIGN_IN_TO_YOUR_ACCOUNT}
-      </SubmitButton>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <InputField
+          name="username"
+          type="text"
+          label="UserName"
+          placeholder="Enter your UserName"
+          required="UserName is required"
+          register={register}
+          errors={errors}
+          icon={<MailIcon />}
+          rightIcon={<RightArrowIcon color={theme.colors.primary} />}
+        />
+        <PasswordField
+          name="password"
+          register={register}
+          errors={errors}
+          watch={watch}
+          required="Password is required"
+          label="Password"
+          helperText="Must be 8 characters at least"
+        />
+        <TextButton onClick={() => navigate('/forgot')}>
+          {FORGOT_PASSWORD}
+        </TextButton>
+        <SubmitButton
+          iconPosition="right"
+          icon={<LessArrowIcon color={theme.colors.white} />}
+          type="submit"
+        >
+          {SIGN_IN_TO_YOUR_ACCOUNT}
+        </SubmitButton>
+      </form>
       <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
       <SSOButtonsContainer>
         <SSOButton>

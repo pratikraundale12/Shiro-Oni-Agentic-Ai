@@ -17,7 +17,10 @@ API.interceptors.request.use(config => {
 API.interceptors.response.use(
   response => response,
   error => {
-    if (error.response.status === 401) {
+    if (
+      error.response.status === 401 &&
+      window.location.pathname !== '/login'
+    ) {
       localStorage.removeItem(ACCESS_TOKEN);
       window.location.replace('/login');
     }
