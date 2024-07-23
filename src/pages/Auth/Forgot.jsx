@@ -2,6 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
@@ -20,6 +23,7 @@ import {
   SEND_RESET_LINK,
   SIGN_IN,
 } from '../../utils';
+import { resetPasswordToken } from '../../utils/services/auth';
 
 const BackButtonContainer = styled.div`
   width: 100%;
@@ -87,8 +91,27 @@ export const Forgot = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-  const onSubmit = data => console.log(data);
+  } = useForm({
+    resolver: yupResolver(
+      yup.object().shape({
+        email: yup.string().required('Email is required').email(),
+      })
+    ),
+  });
+  const onSubmit = async data => {
+    try {
+      const response = await resetPasswordToken(data);
+      if (response) {
+        navigate('/reset', {
+          state: {
+            refreshToken: response?.resetToken,
+          },
+        });
+      }
+    } catch (error) {
+      toast.error('Error resetting password:');
+    }
+  };
 
   return (
     <Layout>

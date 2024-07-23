@@ -2,10 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
-import { toast } from 'react-toastify';
 import { Button, TextButton, InputField, PasswordField } from '../../shared';
 import {
   GoogleIcon,
@@ -80,7 +82,10 @@ const SSOButton = styled.div`
   background-color: ${props => props.theme.colors.white};
   box-shadow: 0px 1px 3px ${props => props.theme.colors.shadow};
 `;
-
+const loginSchema = yup.object().shape({
+  email: yup.string().email('Invalid email').required('Email is required'),
+  password: yup.string().required('Password is required'),
+});
 export const Login = () => {
   const navigate = useNavigate();
   const {
@@ -88,7 +93,10 @@ export const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+  });
+  console.log(errors, 'errors');
   const onSubmit = async data => {
     try {
       const response = await login(data);
@@ -96,6 +104,8 @@ export const Login = () => {
       if (response?.token) {
         toast.success('Login successful');
         navigate('/dashboard');
+      } else {
+        toast.error(response?.message);
       }
     } catch (error) {
       toast.error(error?.message);
@@ -108,15 +118,20 @@ export const Login = () => {
       <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <InputField
-          name="username"
+          name="email"
           type="text"
-          label="UserName"
-          placeholder="Enter your UserName"
-          required="UserName is required"
+          label="E-mail Address"
+          placeholder="Enter your Email Address"
           register={register}
           errors={errors}
           icon={<MailIcon />}
-          rightIcon={<RightArrowIcon color={theme.colors.primary} />}
+          rightIcon={
+            errors?.email ? (
+              <></>
+            ) : (
+              <RightArrowIcon color={theme.colors.primary} />
+            )
+          }
         />
         <PasswordField
           name="password"
