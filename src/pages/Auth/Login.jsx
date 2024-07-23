@@ -23,7 +23,7 @@ import {
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../utils';
-import { login } from '../../utils/services/auth';
+import { login } from '../../utils/services';
 
 const Title = styled.h3`
   font-weight: 500;
@@ -89,16 +89,17 @@ export const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const onSubmit = async data => {
     try {
       const response = await login(data);
-      localStorage.setItem('access_token', response?.token);
       if (response?.token) {
         toast.success('Login successful');
+        localStorage.setItem('access_token', response?.token);
         navigate('/dashboard');
       }
     } catch (error) {
-      toast.error(error?.message);
+      toast.error(error?.message || 'Something went wrong. Please try again');
     }
   };
 
