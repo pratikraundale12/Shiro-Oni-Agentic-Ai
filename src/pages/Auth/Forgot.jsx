@@ -102,9 +102,7 @@ export const Forgot = () => {
   } = useForm({
     resolver: yupResolver(loginSchema),
   });
-  console.log(errors, 'errors');
   const onSubmit = async data => {
-    console.log('hi');
     try {
       const response = await resetPasswordToken(data);
       if (response) {
