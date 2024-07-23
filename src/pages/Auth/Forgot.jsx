@@ -90,7 +90,6 @@ const loginSchema = yup.object().shape({
     .string()
     .matches(EMAIL_REGEX, 'Invalid email address')
     .required('Email is required'),
-  password: yup.string().required('Password is required'),
 });
 
 export const Forgot = () => {
@@ -103,7 +102,9 @@ export const Forgot = () => {
   } = useForm({
     resolver: yupResolver(loginSchema),
   });
+  console.log(errors, 'errors');
   const onSubmit = async data => {
+    console.log('hi');
     try {
       const response = await resetPasswordToken(data);
       if (response) {
