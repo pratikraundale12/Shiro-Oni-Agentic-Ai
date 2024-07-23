@@ -22,6 +22,7 @@ import {
   FORGOT_PASSWORD,
   SEND_RESET_LINK,
   SIGN_IN,
+  EMAIL_REGEX,
 } from '../../utils';
 import { resetPasswordToken } from '../../utils/services/auth';
 
@@ -84,19 +85,23 @@ const SignInContainer = styled.div`
     margin-left: 10px;
   }
 `;
+const loginSchema = yup.object().shape({
+  email: yup
+    .string()
+    .matches(EMAIL_REGEX, 'Invalid email address')
+    .required('Email is required'),
+  password: yup.string().required('Password is required'),
+});
 
 export const Forgot = () => {
   const navigate = useNavigate();
   const {
     register,
+    watch,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(
-      yup.object().shape({
-        email: yup.string().required('Email is required').email(),
-      })
-    ),
+    resolver: yupResolver(loginSchema),
   });
   const onSubmit = async data => {
     try {
@@ -132,7 +137,11 @@ export const Forgot = () => {
           register={register}
           errors={errors}
           icon={<MailIcon />}
-          rightIcon={<RightArrowIcon color={theme.colors.primary} />}
+          rightIcon={
+            watch('email') && !errors.email ? (
+              <RightArrowIcon color={theme.colors.primary} />
+            ) : null
+          }
         />
         <SubmitButton
           iconPosition="right"
