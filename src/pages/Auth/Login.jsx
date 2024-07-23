@@ -17,6 +17,7 @@ import {
   RightArrowIcon,
 } from '../../assets';
 import {
+  EMAIL_REGEX,
   FORGOT_PASSWORD,
   GOOGLE,
   LOGIN_TO_YOUR_ACCOUNT,
@@ -25,7 +26,7 @@ import {
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../utils';
-import { login } from '../../utils/services/auth';
+import { login } from '../../utils/services';
 
 const Title = styled.h3`
   font-weight: 500;
@@ -82,10 +83,15 @@ const SSOButton = styled.div`
   background-color: ${props => props.theme.colors.white};
   box-shadow: 0px 1px 3px ${props => props.theme.colors.shadow};
 `;
+
 const loginSchema = yup.object().shape({
-  email: yup.string().email('Invalid email').required('Email is required'),
+  email: yup
+    .string()
+    .matches(EMAIL_REGEX, 'Invalid email address')
+    .required('Email is required'),
   password: yup.string().required('Password is required'),
 });
+
 export const Login = () => {
   const navigate = useNavigate();
   const {
@@ -96,19 +102,19 @@ export const Login = () => {
   } = useForm({
     resolver: yupResolver(loginSchema),
   });
-  console.log(errors, 'errors');
+
   const onSubmit = async data => {
     try {
       const response = await login(data);
-      localStorage.setItem('access_token', response?.token);
       if (response?.token) {
         toast.success('Login successful');
+        localStorage.setItem('access_token', response?.token);
         navigate('/dashboard');
       } else {
         toast.error(response?.message);
       }
     } catch (error) {
-      toast.error(error?.message);
+      toast.error(error?.message || 'Something went wrong. Please try again');
     }
   };
 
@@ -126,11 +132,9 @@ export const Login = () => {
           errors={errors}
           icon={<MailIcon />}
           rightIcon={
-            errors?.email ? (
-              <></>
-            ) : (
+            watch('email') && !errors.email ? (
               <RightArrowIcon color={theme.colors.primary} />
-            )
+            ) : null
           }
         />
         <PasswordField
