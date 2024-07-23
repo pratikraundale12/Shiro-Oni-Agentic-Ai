@@ -36,7 +36,7 @@ const HeaderText = styled.h5`
   text-align: center;
   align-items: center;
 `;
-const Container = styled.div`
+const Container = styled.form`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -59,6 +59,8 @@ const Model = ({
   size,
   leftButtonText = '',
   rightButtonText = '',
+  title = '',
+  onSubmit = () => {},
 }) => {
   const closeModal = () => {
     setModalIsOpen(false);
@@ -89,9 +91,9 @@ const Model = ({
         onRequestClose={closeModal}
         style={styleObject}
       >
-        <Container>
+        <Container onSubmit={onSubmit}>
           <Header>
-            <HeaderText>Delete Cluster</HeaderText>
+            <HeaderText>{title}</HeaderText>
             <button className="cross-icon-btn" onClick={closeModal}>
               <CrossIconWithBorderGrey />
             </button>
@@ -101,7 +103,7 @@ const Model = ({
             <Button variant="secondary" onClick={closeModal} size="md">
               {leftButtonText}
             </Button>
-            <Button variant="primary" size="md">
+            <Button variant="primary" size="md" type="submit">
               {rightButtonText}
             </Button>
           </ButtonWrapper>
@@ -120,4 +122,6 @@ Model.propTypes = {
   size: PropTypes.oneOf(['lg', 'md', 'sm']),
   leftButtonText: PropTypes.string,
   rightButtonText: PropTypes.string,
+  title: PropTypes.string,
+  onSubmit: PropTypes.func.isRequired,
 };

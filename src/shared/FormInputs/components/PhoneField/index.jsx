@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import styled from 'styled-components';
-import { isValidPhoneNumber } from 'react-phone-number-input';
+// import { isValidPhoneNumber } from 'react-phone-number-input';
 import PhoneInput from 'react-phone-number-input/react-hook-form-input';
 
 import FieldErrorMessage from '../FieldErrorMessage';
@@ -54,7 +54,7 @@ const Container = styled.div`
 
     &:not(:placeholder-shown),
     &:focus {
-      border: 1px solid ${props => props.theme.colors.primary};
+      border: 1px solid ${props => props.theme.colors.darker};
 
       &::placeholder {
         color: transparent;
@@ -64,6 +64,16 @@ const Container = styled.div`
       background: ${props => props.theme.colors.lightGrey2};
     }
   }
+`;
+const Wrapper = styled.div`
+  margin-top: 10px;
+`;
+const Label = styled.label`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  margin-bottom: 6px;
+  color: #444445;
 `;
 
 const PhoneField = ({
@@ -78,26 +88,29 @@ const PhoneField = ({
 
   return (
     <Container className={className}>
-      <label>
+      <Label>
         {'Phone Number'}
         {required && <span className="required">&nbsp;*</span>}
-      </label>
-      <PhoneInput
-        name={name}
-        control={control}
-        rules={{
-          required,
-          validate: value =>
-            !isValidPhoneNumber(value) && 'Invalid phone number',
-        }}
-        aria-invalid={error}
-        className={classNames({
-          error,
-        })}
-        placeholder="Enter your phone number"
-        defaultCountry="IN"
-        {...props}
-      />
+      </Label>
+      <Wrapper>
+        <PhoneInput
+          name={name}
+          control={control}
+          rules={{
+            required,
+            // validate: value =>
+            //   !isValidPhoneNumber(value) && 'Invalid phone number',
+          }}
+          aria-invalid={error}
+          className={classNames({
+            error,
+          })}
+          placeholder="Enter your phone number"
+          defaultCountry="IN"
+          {...props}
+        />
+      </Wrapper>
+
       <FieldErrorMessage errors={errors} name={name} />
     </Container>
   );

@@ -66,7 +66,30 @@ const FlowMetricHeader = styled.div`
 const HeaderText = styled.p`
   margin-left: 10px;
 `;
+const DropdownHolder = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const GraphContainer = styled.div`
+  font-family: Noto Sans;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 25px;
+  margin-bottom: 10px;
+`;
 export const Dashboard = () => {
+  const OptionsArray = [
+    { value: 'option1', label: 'Option 1' },
+    { value: 'option2', label: 'Option 2' },
+    { value: 'option3', label: 'Option 3' },
+    { value: 'option4', label: 'Option 4' },
+    { value: 'option5', label: 'Option 5' },
+    { value: 'option6', label: 'Option 6' },
+    { value: 'option7', label: 'Option 7' },
+    { value: 'option8', label: 'Option 8' },
+    { value: 'option9', label: 'Option 9' },
+    { value: 'option10', label: 'Option 10' },
+  ];
   return (
     <Continer>
       <TopSection>
@@ -76,61 +99,28 @@ export const Dashboard = () => {
           </InsightIconContiner>
           <QuickInsightHeadingText>Quick Insight</QuickInsightHeadingText>
         </QuickInsightHeading>
-        <div className="d-flex align-items-center dropdown-div">
-          <div className="custom-dropdown-1">
+        <DropdownHolder>
+          <div>
             <Dropdown
-              options={[
-                { value: 'option1', label: 'Option 1' },
-                { value: 'option2', label: 'Option 2' },
-                { value: 'option3', label: 'Option 3' },
-                { value: 'option4', label: 'Option 4' },
-                { value: 'option5', label: 'Option 5' },
-                { value: 'option6', label: 'Option 6' },
-                { value: 'option7', label: 'Option 7' },
-                { value: 'option8', label: 'Option 8' },
-                { value: 'option9', label: 'Option 9' },
-                { value: 'option10', label: 'Option 10' },
-              ]}
+              options={OptionsArray}
               placeholder="Select Cluster"
               label="Select Cluster"
             />
           </div>
 
-          <div className="custom-dropdown-1">
+          <div>
             <Dropdown
-              options={[
-                { value: 'option1', label: 'Option 1' },
-                { value: 'option2', label: 'Option 2' },
-                { value: 'option3', label: 'Option 3' },
-                { value: 'option4', label: 'Option 4' },
-                { value: 'option5', label: 'Option 5' },
-                { value: 'option6', label: 'Option 6' },
-                { value: 'option7', label: 'Option 7' },
-                { value: 'option8', label: 'Option 8' },
-                { value: 'option9', label: 'Option 9' },
-                { value: 'option10', label: 'Option 10' },
-              ]}
+              options={OptionsArray}
               placeholder="Select Namespace"
               label="Select Namespace"
             />
           </div>
           <Dropdown
-            options={[
-              { value: 'option1', label: 'Option 1' },
-              { value: 'option2', label: 'Option 2' },
-              { value: 'option3', label: 'Option 3' },
-              { value: 'option4', label: 'Option 4' },
-              { value: 'option5', label: 'Option 5' },
-              { value: 'option6', label: 'Option 6' },
-              { value: 'option7', label: 'Option 7' },
-              { value: 'option8', label: 'Option 8' },
-              { value: 'option9', label: 'Option 9' },
-              { value: 'option10', label: 'Option 10' },
-            ]}
+            options={OptionsArray}
             placeholder="Refresh"
             label="Refresh"
           />
-        </div>
+        </DropdownHolder>
       </TopSection>
       <BottomSectionScroll>
         <InsightDataContiner>
@@ -184,15 +174,15 @@ export const Dashboard = () => {
             text="Flow Files Queued"
           />
         </InsightDataContiner>
-        <div className="dashboard-graph mb-3">
+        <GraphContainer>
           <FlowMetricHeader>
             <FlowMetricHeaderIcon />
             <HeaderText>Flow Metrics</HeaderText>
           </FlowMetricHeader>
-          <div className="bg-white p-3 graph-container">
+          <div>
             <FlowMetricsChart />
           </div>
-        </div>
+        </GraphContainer>
         {/* table with bootstrap starts */}
         <div className="dashboard-table">
           <div className="d-flex align-items-center head-title-container">
