@@ -27,6 +27,8 @@ import {
   PeopleIcon,
   ReadyFlowIcon,
 } from '../assets';
+import Deploy from '../pages/Namespaces/Deploy';
+import Upgrade from '../pages/Namespaces/Upgrade';
 
 export const ROUTES_MENU = [
   {
@@ -63,6 +65,14 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ListNamespaces />,
+      },
+      {
+        path: 'deploy',
+        component: <Deploy />,
+      },
+      {
+        path: 'Upgrade',
+        component: <Upgrade />,
       },
     ],
   },
