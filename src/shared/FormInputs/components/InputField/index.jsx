@@ -127,7 +127,7 @@ const InputField = ({
             register(name, { required, ...registerOptions }))}
           disabled={disabled}
         />
-        <span className="icon">{rightIcon}</span>
+        {rightIcon && <span className="icon">{rightIcon}</span>}
       </div>
       <FieldErrorMessage errors={errors} name={name} />
     </Container>
