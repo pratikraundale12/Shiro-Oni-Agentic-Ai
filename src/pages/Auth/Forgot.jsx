@@ -111,17 +111,17 @@ export const Forgot = () => {
   });
 
   const onSubmit = async data => {
-    try {
-      const response = await resetPasswordToken(data);
-      if (response) {
-        navigate('/reset', {
-          state: {
-            refreshToken: response?.resetToken,
-          },
-        });
-      }
-    } catch (error) {
-      toast.error('Error resetting password.');
+    const response = await resetPasswordToken(data);
+    if (response.data) {
+      navigate('/reset', {
+        state: {
+          refreshToken: response.data?.resetToken,
+        },
+      });
+    } else {
+      toast.error(
+        response?.message || 'Something went wrong. Please try again'
+      );
     }
   };
 

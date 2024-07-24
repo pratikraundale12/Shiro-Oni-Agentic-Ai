@@ -106,17 +106,15 @@ export const Login = () => {
   });
 
   const onSubmit = async data => {
-    try {
-      const response = await login(data);
-      if (response?.token) {
-        toast.success('Login successful');
-        localStorage.setItem(ACCESS_TOKEN, response?.token);
-        navigate('/dashboard');
-      } else {
-        toast.error(response?.message);
-      }
-    } catch (error) {
-      toast.error(error?.message || 'Something went wrong. Please try again');
+    const response = await login(data);
+    if (response.data?.token) {
+      toast.success('Login successful');
+      localStorage.setItem(ACCESS_TOKEN, response.data?.token);
+      navigate('/dashboard');
+    } else {
+      toast.error(
+        response?.message || 'Something went wrong. Please try again'
+      );
     }
   };
 

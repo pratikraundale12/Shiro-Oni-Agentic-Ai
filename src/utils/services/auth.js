@@ -1,25 +1,34 @@
 import API from './api';
 
 export const login = async payload => {
-  const { data } = await API.post('/login', payload);
-  return data;
+  try {
+    return await API.post('/login', payload);
+  } catch (error) {
+    return error.response.data;
+  }
 };
 
 export const resetPasswordToken = async email => {
-  const { data } = await API.post('/reset-password-request', email);
-  return data;
+  try {
+    return await API.post('/reset-password-request', email);
+  } catch (error) {
+    return error.response.data;
+  }
 };
 
-export const resetPassword = async (password, resetToken) => {
-  const requestBody = {
-    password: password,
-    resetToken: resetToken,
-  };
-  const { data } = await API.post('/reset-password', requestBody);
-  return data;
+export const resetPassword = async payload => {
+  try {
+    return await API.post('/reset-password', payload);
+  } catch (error) {
+    console.log(error);
+    return error.response.data;
+  }
 };
 
 export const currentUser = async () => {
-  const { data } = await API.get('/current-user');
-  return data;
+  try {
+    return await API.get('/current-user');
+  } catch (error) {
+    return error.response.data;
+  }
 };
