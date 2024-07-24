@@ -16,7 +16,6 @@ import {
   RESET_PASSWORD,
   RESET_YOUR_PASSWORD,
   SIGN_IN,
-  ACCESS_TOKEN,
 } from '../../utils';
 import { resetPassword } from '../../utils/services/auth';
 
@@ -109,15 +108,16 @@ export const Reset = () => {
   });
 
   const onSubmit = async data => {
-    try {
-      const response = await resetPassword(data.password, state.refreshToken);
-      if (response?.token) {
-        localStorage.setItem(ACCESS_TOKEN, response?.token);
-        toast.success('Reset Password successful');
-        navigate('/dashboard');
-      }
-    } catch (error) {
-      toast.error('Password reset error:', error?.message);
+    const response = await resetPassword({
+      password: data.password,
+      resetToken: state.refreshToken,
+    });
+    if (response.status === 204) {
+      navigate('/success');
+    } else {
+      toast.error(
+        response?.message || 'Something went wrong. Please try again'
+      );
     }
   };
 
