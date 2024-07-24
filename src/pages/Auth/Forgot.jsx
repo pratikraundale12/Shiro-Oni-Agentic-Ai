@@ -9,6 +9,7 @@ import * as yup from 'yup';
 import { theme } from '../../styles';
 import { Layout } from '../../components';
 import { Button, TextButton, InputField } from '../../shared';
+import { resetPasswordToken } from '../../utils/services';
 import {
   GreaterArrowIcon,
   LessArrowIcon,
@@ -24,7 +25,6 @@ import {
   SIGN_IN,
   EMAIL_REGEX,
 } from '../../utils';
-import { resetPasswordToken } from '../../utils/services/auth';
 
 const BackButtonContainer = styled.div`
   width: 100%;
@@ -85,12 +85,19 @@ const SignInContainer = styled.div`
     margin-left: 10px;
   }
 `;
-const loginSchema = yup.object().shape({
+
+const resetSchema = yup.object().shape({
   email: yup
     .string()
     .matches(EMAIL_REGEX, 'Invalid email address')
     .required('Email is required'),
 });
+
+export const getRightIcon = (watch, errors) => {
+  return watch('email') && !errors.email ? (
+    <RightArrowIcon color={theme.colors.primary} />
+  ) : null;
+};
 
 export const Forgot = () => {
   const navigate = useNavigate();
@@ -100,8 +107,9 @@ export const Forgot = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(loginSchema),
+    resolver: yupResolver(resetSchema),
   });
+
   const onSubmit = async data => {
     try {
       const response = await resetPasswordToken(data);
@@ -113,7 +121,7 @@ export const Forgot = () => {
         });
       }
     } catch (error) {
-      toast.error('Error resetting password:');
+      toast.error('Error resetting password.');
     }
   };
 
@@ -136,11 +144,7 @@ export const Forgot = () => {
           register={register}
           errors={errors}
           icon={<MailIcon />}
-          rightIcon={
-            watch('email') && !errors.email ? (
-              <RightArrowIcon color={theme.colors.primary} />
-            ) : null
-          }
+          rightIcon={getRightIcon(watch, errors)}
         />
         <SubmitButton
           iconPosition="right"

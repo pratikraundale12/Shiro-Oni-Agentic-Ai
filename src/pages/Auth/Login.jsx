@@ -14,7 +14,6 @@ import {
   LessArrowIcon,
   MailIcon,
   MicroSoftIcon,
-  RightArrowIcon,
 } from '../../assets';
 import {
   ACCESS_TOKEN,
@@ -28,6 +27,7 @@ import {
   WELCOME_BACK,
 } from '../../utils';
 import { login } from '../../utils/services';
+import { getRightIcon } from '.';
 
 const Title = styled.h3`
   font-weight: 500;
@@ -133,11 +133,7 @@ export const Login = () => {
           register={register}
           errors={errors}
           icon={<MailIcon />}
-          rightIcon={
-            watch('email') && !errors.email ? (
-              <RightArrowIcon color={theme.colors.primary} />
-            ) : null
-          }
+          rightIcon={getRightIcon(watch, errors)}
         />
         <PasswordField
           name="password"
