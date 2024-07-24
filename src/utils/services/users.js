@@ -5,7 +5,11 @@ export const getUsersList = async params => {
   return data;
 };
 
-export const createUserApi = async data => {
-  const { datas } = await API.post('/users', data);
-  return datas;
+export const createUserApi = async payload => {
+  try {
+    const response = await API.post('/users', payload);
+    return [response, null];
+  } catch (error) {
+    return [null, error];
+  }
 };

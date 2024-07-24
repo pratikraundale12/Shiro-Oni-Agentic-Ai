@@ -46,3 +46,4 @@ export * from './GreaterArrowIcon';
 export * from './UserIcon';
 export * from './UserImageUploadIcon';
 export * from './AddIcon';
+export * from './UpArrowImageIcon';

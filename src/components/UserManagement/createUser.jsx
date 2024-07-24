@@ -1,14 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Dropdown, InputField, PasswordField, PhoneField } from '../../shared';
-import { MailIcon, UserIcon } from '../../assets';
+import {
+  InputField,
+  PasswordField,
+  PhoneField,
+  SelectField,
+} from '../../shared';
+import { MailIcon, UpArrowImageIcon, UserIcon } from '../../assets';
 import UserIconUploadIcon from '../../assets/Icons/UserImageUploadIcon';
 import PropTypes from 'prop-types';
 
 const Content = styled.div`
   padding: 35px 16px 25px;
   width: 100%;
-  height: 100%;
 `;
 const Continer = styled.div`
   display: flex;
@@ -17,11 +21,12 @@ const Continer = styled.div`
   flex-direction: column !important;
 `;
 const UploadImageContainer = styled.div`
-    background: #F5F7FA;
-    border: 1px solid transparent;
-    border-radius: 50%;
-    padding: 28px;
-}`;
+  background: #f5f7fa;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  padding: 28px;
+  position: relative;
+`;
 const DropDownContainer = styled.div`
   display: flex;
   width: 100%;
@@ -29,7 +34,7 @@ const DropDownContainer = styled.div`
   align-items: center !important;
   margin-bottom: 11px;
 `;
-const FormWrapper = styled.form`
+const FormWrapper = styled.div`
   width: 100%;
 `;
 const FormHeader = styled.div`
@@ -54,7 +59,7 @@ const FormBody = styled.div`
   border-radius: 0 0 16px 16px;
   background-color: transparent;
   padding: 12px 16px;
-  max-height: 217px;
+  max-height: 295px;
   overflow: auto;
 `;
 const FormInnerSection = styled.div`
@@ -67,30 +72,100 @@ const InputContainer = styled.div`
   padding-left: calc(1.5rem * 0.5);
 `;
 
-const CreateUser = ({ watch, register, control, errors }) => {
-  const option = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
-    { value: 'option4', label: 'Option 4' },
-    { value: 'option5', label: 'Option 5' },
-    { value: 'option6', label: 'Option 6' },
-    { value: 'option7', label: 'Option 7' },
-    { value: 'option8', label: 'Option 8' },
-    { value: 'option9', label: 'Option 9' },
-    { value: 'option10', label: 'Option 10' },
+const FileInputLabel = styled.label``;
+
+const FileInputField = styled.input`
+  display: none;
+`;
+const ImageContainer = styled.div`
+  height: 115px;
+  width: 115px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const StyledImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  height: 115px;
+  width: 115px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+const UpArrowIcon = styled.div`
+  position: absolute;
+  bottom: 20px;
+  right: 15px;
+`;
+const DropDownWrapper = styled.div`
+  width: 15%;
+  margin-right: 10px;
+`;
+
+const CreateUser = ({ watch, register, control, errors, setPhoto, photo }) => {
+  const statusOption = [
+    { value: 'true', label: 'Active' },
+    { value: 'false', label: 'Inactive' },
   ];
+  const roleOption = [{ value: 'admin', label: 'Admin' }];
+  const handleFileChange = event => {
+    const selectedFile = event.target.files[0];
+    event.target.value = null;
+    setPhoto(selectedFile);
+  };
+  const removeUploadedImage = () => {
+    setPhoto(null);
+  };
 
   return (
     <Content>
       <Continer>
-        <UploadImageContainer>
-          <UserIconUploadIcon />
-        </UploadImageContainer>
+        {!photo && (
+          <UploadImageContainer>
+            <FileInputLabel htmlFor="file-input">
+              <UserIconUploadIcon />
+            </FileInputLabel>
+            <FileInputField
+              id="file-input"
+              type="file"
+              onChange={handleFileChange}
+            />
+          </UploadImageContainer>
+        )}
+        {photo && (
+          <UploadImageContainer>
+            <ImageContainer>
+              <StyledImage src={URL.createObjectURL(photo)} alt="img" />{' '}
+            </ImageContainer>{' '}
+            <UpArrowIcon onClick={removeUploadedImage}>
+              <UpArrowImageIcon />
+            </UpArrowIcon>
+          </UploadImageContainer>
+        )}
+
         <DropDownContainer>
-          {' '}
-          <Dropdown options={option} placeholder="Status" label="Status" />
-          <Dropdown options={option} placeholder="Status" label="Status" />
+          <DropDownWrapper>
+            <SelectField
+              options={statusOption}
+              name="is_active"
+              errors={errors}
+              control={control}
+              label="Status"
+            />
+          </DropDownWrapper>
+          <DropDownWrapper>
+            <SelectField
+              options={roleOption}
+              name="type"
+              errors={errors}
+              control={control}
+              label="Role"
+            />
+          </DropDownWrapper>
         </DropDownContainer>
         <FormWrapper>
           <FormHeader>
@@ -116,7 +191,6 @@ const CreateUser = ({ watch, register, control, errors }) => {
                   type="text"
                   label="Middle Name"
                   placeholder="Enter your Middle Name"
-                  required="Middle Name is required"
                   register={register}
                   errors={errors}
                   icon={<UserIcon />}
@@ -129,6 +203,18 @@ const CreateUser = ({ watch, register, control, errors }) => {
                   label="Last Name"
                   placeholder="Enter your Last Name"
                   required="Last Name is required"
+                  register={register}
+                  errors={errors}
+                  icon={<UserIcon />}
+                />{' '}
+              </InputContainer>
+              <InputContainer>
+                <InputField
+                  name="username"
+                  type="text"
+                  label="User Name"
+                  placeholder="Enter your User Name"
+                  required="User Name is required"
                   register={register}
                   errors={errors}
                   icon={<UserIcon />}
@@ -154,7 +240,6 @@ const CreateUser = ({ watch, register, control, errors }) => {
                   watch={watch}
                   required="Password is required"
                   label="Password"
-                  // helperText="Must be 8 characters at least"
                 />
               </InputContainer>
               <InputContainer>
@@ -165,7 +250,6 @@ const CreateUser = ({ watch, register, control, errors }) => {
                   watch={watch}
                   required="Password is required"
                   label="Confirm Password"
-                  // helperText="Must be 8 characters at least"
                 />
               </InputContainer>
               <InputContainer>
@@ -190,4 +274,7 @@ CreateUser.propTypes = {
   errors: PropTypes.object.isRequired,
   watch: PropTypes.func,
   register: PropTypes.func,
+  setValue: PropTypes.func,
+  setPhoto: PropTypes.func,
+  photo: PropTypes.object,
 };

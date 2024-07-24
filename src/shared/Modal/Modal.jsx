@@ -9,11 +9,12 @@ import styled from 'styled-components';
 const ButtonWrapper = styled.div`
   border: 0;
   gap: 36px;
-  // padding: 0 0 42px 0;
   display: flex;
-  justify-content: center;
+  justify-content: start;
   height: 53px;
   margin: 0 0 30px 0;
+  width: 100%;
+  padding-left: 16px;
 `;
 const Header = styled.div`
   background-color: #f5f7fa;
@@ -54,18 +55,14 @@ const Container = styled.form`
 
 const Model = ({
   modalIsOpen,
-  setModalIsOpen,
   children,
   size,
   leftButtonText = '',
   rightButtonText = '',
   title = '',
   onSubmit = () => {},
+  closeModal = () => {},
 }) => {
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
   const styleObject = {
     overlay: {
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -124,4 +121,6 @@ Model.propTypes = {
   rightButtonText: PropTypes.string,
   title: PropTypes.string,
   onSubmit: PropTypes.func.isRequired,
+  reset: PropTypes.func,
+  closeModal: PropTypes.func.isRequired,
 };

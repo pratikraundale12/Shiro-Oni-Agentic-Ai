@@ -5,7 +5,7 @@ import styled from 'styled-components';
 const StyledButton = styled.button.withConfig({
   shouldForwardProp: prop => !['variant'].includes(prop),
 })`
-  width: 100%;
+  width: auto;
   display: flex;
   align-items: center;
   justify-content: center;
