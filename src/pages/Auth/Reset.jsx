@@ -1,7 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
@@ -14,6 +17,7 @@ import {
   RESET_YOUR_PASSWORD,
   SIGN_IN,
 } from '../../utils';
+import { resetPassword } from '../../utils/services/auth';
 
 const BackButtonContainer = styled.div`
   width: 100%;
@@ -73,18 +77,48 @@ const SignInContainer = styled.div`
     margin-left: 10px;
   }
 `;
+const validationSchema = yup.object().shape({
+  password: yup
+    .string()
+    .required('Password is required')
+    .min(8, 'Password must be at least 8 characters')
+    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .matches(/[0-9]/, 'Password must contain at least one number')
+    .matches(
+      /[@$!%*?&]/,
+      'Password must contain at least one special character'
+    ),
+  confirmPassword: yup
+    .string()
+    .required('Confirm password is required')
+    .oneOf([yup.ref('password')], 'Passwords must match'),
+});
 
 export const Reset = () => {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const {
     formState: { errors },
     watch,
     register,
     handleSubmit,
-  } = useForm();
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
 
-  const onSubmit = data => {
-    console.log(data);
+  const onSubmit = async data => {
+    const response = await resetPassword({
+      password: data.password,
+      resetToken: state.refreshToken,
+    });
+    if (response.status === 204) {
+      navigate('/success');
+    } else {
+      toast.error(
+        response?.message || 'Something went wrong. Please try again'
+      );
+    }
   };
 
   return (
@@ -97,34 +131,37 @@ export const Reset = () => {
         </BackButtonContainer>
         <Title>{RESET_YOUR_PASSWORD}</Title>
         <SubTitle>{RESET_PASSWORD_SUBTITLE}</SubTitle>
-        <PasswordField
-          name="password"
-          label="New Password"
-          placeholder="Enter your New Password"
-          required="Password is required"
-          register={register}
-          errors={errors}
-          watch={watch}
-          helperText="Make sure your new password is strong and secure."
-        />
-        <PasswordField
-          name="confirmPassword"
-          label="Confirm New Password"
-          placeholder="Confirm your New Password"
-          required="Password is required"
-          register={register}
-          errors={errors}
-          watch={watch}
-        />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <PasswordField
+            name="password"
+            label="New Password"
+            placeholder="Enter your New Password"
+            required="Password is required"
+            register={register}
+            errors={errors}
+            watch={watch}
+            helperText="Make sure your new password is strong and secure."
+            showStrengthMeter
+          />
+          <PasswordField
+            name="confirmPassword"
+            label="Confirm New Password"
+            placeholder="Confirm your New Password"
+            required="Password is required"
+            register={register}
+            errors={errors}
+            watch={watch}
+            showStrengthMeter
+          />
+          <SubmitButton
+            iconPosition="right"
+            icon={<LessArrowIcon color={theme.colors.white} />}
+            type="submit"
+          >
+            {RESET_PASSWORD}
+          </SubmitButton>
+        </form>
       </div>
-      <SubmitButton
-        iconPosition="right"
-        icon={<LessArrowIcon color={theme.colors.white} />}
-        type="submit"
-        onClick={handleSubmit(onSubmit)}
-      >
-        {RESET_PASSWORD}
-      </SubmitButton>
       <SignInContainer>
         {ALREADY_HAVE_AN_ACCOUNT}
         <TextButton onClick={() => navigate('/login')}>{SIGN_IN}</TextButton>

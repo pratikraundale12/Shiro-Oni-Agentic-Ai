@@ -2,10 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
 import { Button, TextButton, InputField } from '../../shared';
+import { resetPasswordToken } from '../../utils/services';
 import {
   GreaterArrowIcon,
   LessArrowIcon,
@@ -19,6 +23,7 @@ import {
   FORGOT_PASSWORD,
   SEND_RESET_LINK,
   SIGN_IN,
+  EMAIL_REGEX,
 } from '../../utils';
 
 const BackButtonContainer = styled.div`
@@ -81,15 +86,43 @@ const SignInContainer = styled.div`
   }
 `;
 
+const resetSchema = yup.object().shape({
+  email: yup
+    .string()
+    .matches(EMAIL_REGEX, 'Invalid email address')
+    .required('Email is required'),
+});
+
+export const getRightIcon = (watch, errors) => {
+  return watch('email') && !errors.email ? (
+    <RightArrowIcon color={theme.colors.primary} />
+  ) : null;
+};
+
 export const Forgot = () => {
   const navigate = useNavigate();
   const {
     register,
+    watch,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-  const onSubmit = data => {
-    console.log(data);
+  } = useForm({
+    resolver: yupResolver(resetSchema),
+  });
+
+  const onSubmit = async data => {
+    const response = await resetPasswordToken(data);
+    if (response.data) {
+      navigate('/reset', {
+        state: {
+          refreshToken: response.data?.resetToken,
+        },
+      });
+    } else {
+      toast.error(
+        response?.message || 'Something went wrong. Please try again'
+      );
+    }
   };
 
   return (
@@ -111,7 +144,7 @@ export const Forgot = () => {
           register={register}
           errors={errors}
           icon={<MailIcon />}
-          rightIcon={<RightArrowIcon color={theme.colors.primary} />}
+          rightIcon={getRightIcon(watch, errors)}
         />
         <SubmitButton
           iconPosition="right"
