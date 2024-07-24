@@ -17,6 +17,7 @@ import {
   RightArrowIcon,
 } from '../../assets';
 import {
+  ACCESS_TOKEN,
   EMAIL_REGEX,
   FORGOT_PASSWORD,
   GOOGLE,
@@ -76,7 +77,8 @@ const SSOButton = styled.div`
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  cursor: pointer;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  opacity: 0.35;
   padding: 1rem 1.4rem;
   border-radius: 8px;
   border: 1px solid ${props => props.theme.colors.border};
@@ -108,7 +110,7 @@ export const Login = () => {
       const response = await login(data);
       if (response?.token) {
         toast.success('Login successful');
-        localStorage.setItem('access_token', response?.token);
+        localStorage.setItem(ACCESS_TOKEN, response?.token);
         navigate('/dashboard');
       } else {
         toast.error(response?.message);
@@ -159,11 +161,11 @@ export const Login = () => {
       </form>
       <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
       <SSOButtonsContainer>
-        <SSOButton>
+        <SSOButton disabled>
           <GoogleIcon />
           <span>{GOOGLE}</span>
         </SSOButton>
-        <SSOButton>
+        <SSOButton disabled>
           <MicroSoftIcon />
           <span>{MICROSOFT}</span>
         </SSOButton>
