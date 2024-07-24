@@ -13,10 +13,10 @@ const PageHeading = styled.div`
   gap: 10px;
   align-items: center !important;
   display: flex !important;
-  p{
-  font-size: 18px;
-  font-weight: 600; 
-  margin: 0; 
+  p {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
   }
 `;
 

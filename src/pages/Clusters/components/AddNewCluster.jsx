@@ -210,10 +210,8 @@ export const AddNewCluster = () => {
       <CertificateContainer>
         <CertificateHeader>
           <div>
-            <label>
-              NiFi Certificate
-              <CircleExclamationMarkIcon color="#DDE4F0" />
-            </label>
+            NiFi Certificate
+            <CircleExclamationMarkIcon color="#DDE4F0" />
           </div>
         </CertificateHeader>
         <CertificateDetails>

@@ -146,10 +146,11 @@ export const AddRegistry = ({ setNewRegistry }) => {
         <SelectField control={control} label="Registry Name" />
 
         <ORText>OR</ORText>
-        <div
+        <button
           onClick={() => {
             setNewRegistry(true);
           }}
+          style={{ border: 'none', background: 'none', padding: 0 }}
         >
           <Button
             variant="secondary"
@@ -158,7 +159,7 @@ export const AddRegistry = ({ setNewRegistry }) => {
             <PlusCircleIcon width={20} height={20} color="red" />
             Add New Registry
           </Button>
-        </div>
+        </button>
       </FlexContainer>
       <Container>
         <RegistryDetailsDiv>
@@ -235,4 +236,3 @@ export const AddRegistry = ({ setNewRegistry }) => {
 AddRegistry.propTypes = {
   setNewRegistry: PropTypes.func,
 };
-
