@@ -37,7 +37,7 @@ const StyledButton = styled.button.withConfig({
     background: ${props =>
       props.variant === 'primary'
         ? props.theme.colors.primaryActive
-        : props.theme.colors.darker};
+        : props.theme.colors.white};
   }
 
   &:disabled {

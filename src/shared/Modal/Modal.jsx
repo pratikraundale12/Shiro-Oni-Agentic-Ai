@@ -10,7 +10,7 @@ const ButtonWrapper = styled.div`
   border: 0;
   gap: 36px;
   display: flex;
-  justify-content: start;
+  justify-content: ${props => (props.size == 'lg' ? 'start' : 'center')};
   height: 53px;
   margin: 0 0 30px 0;
   width: 100%;
@@ -98,7 +98,7 @@ const Model = ({
             </button>
           </Header>
           {children}
-          <ButtonWrapper>
+          <ButtonWrapper size={size}>
             <Button variant="secondary" onClick={closeModal} size="md">
               {leftButtonText}
             </Button>
