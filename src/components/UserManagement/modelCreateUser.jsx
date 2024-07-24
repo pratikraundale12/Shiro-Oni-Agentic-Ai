@@ -1,21 +1,16 @@
 import React, { useState } from 'react';
 import CreateUser from './createUser';
-import { Button, Model } from '../../shared';
-import styled from 'styled-components';
-import { AddIcon } from '../../assets';
 import { useForm } from 'react-hook-form';
 import { createUserApi } from '../../utils/services';
+import { yupResolver } from '@hookform/resolvers/yup';
+import PropTypes from 'prop-types';
+import { userSchema } from './userValidation';
+import { Model } from '../../shared';
 
-const ButtonWrapper = styled.div`
-  width: 135px;
-`;
-const ModelCreateUser = () => {
-  const [addUserModel, setAddUserModel] = useState(false);
+const ModelCreateUser = ({ addUserModel, setAddUserModel, editUserData }) => {
   const [photo, setPhoto] = useState(null);
-  const openAddUserModal = () => {
-    setAddUserModel(true);
-  };
 
+  console.log(editUserData, 'editUserData>>>>>');
   const {
     watch,
     register,
@@ -24,7 +19,10 @@ const ModelCreateUser = () => {
     formState: { errors },
     setValue,
     reset,
-  } = useForm();
+  } = useForm({
+    resolver: yupResolver(userSchema),
+    defaultValues: {},
+  });
   const closeModal = () => {
     setAddUserModel(false);
     reset();
@@ -44,7 +42,7 @@ const ModelCreateUser = () => {
     } else {
       formData.append('is_active', true);
     }
-    formData.append('type', data.type || 'admin');
+    formData.append('type', data.type || 'user');
     formData.append('username', data.first_name);
 
     if (photo) {
@@ -58,40 +56,39 @@ const ModelCreateUser = () => {
   };
 
   return (
-    <>
-      <ButtonWrapper>
-        <Button
-          variant="primary"
-          size="md"
-          iconPosition="left"
-          icon={<AddIcon />}
-          onClick={openAddUserModal}
-        >
-          Add User
-        </Button>
-      </ButtonWrapper>
-      <Model
-        setModalIsOpen={setAddUserModel}
-        modalIsOpen={addUserModel}
-        size="lg"
-        leftButtonText="Cancel"
-        rightButtonText="Submit"
-        title="Add New User"
-        onSubmit={handleSubmit(onSubmit)}
-        reset={reset}
-        closeModal={closeModal}
-      >
-        <CreateUser
-          watch={watch}
-          register={register}
-          control={control}
-          errors={errors}
-          setValue={setValue}
-          setPhoto={setPhoto}
-          photo={photo}
-        />
-      </Model>
-    </>
+    <Model
+      setModalIsOpen={setAddUserModel}
+      modalIsOpen={addUserModel}
+      size="lg"
+      leftButtonText="Cancel"
+      rightButtonText="Submit"
+      title="Add New User"
+      onSubmit={handleSubmit(onSubmit)}
+      reset={reset}
+      closeModal={closeModal}
+    >
+      <CreateUser
+        watch={watch}
+        register={register}
+        control={control}
+        errors={errors}
+        setValue={setValue}
+        setPhoto={setPhoto}
+        photo={photo}
+      />
+    </Model>
   );
 };
 export default ModelCreateUser;
+ModelCreateUser.propTypes = {
+  control: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired,
+  watch: PropTypes.func,
+  register: PropTypes.func,
+  setValue: PropTypes.func,
+  setPhoto: PropTypes.func,
+  photo: PropTypes.object,
+  addUserModel: PropTypes.object,
+  setAddUserModel: PropTypes.func,
+  editUserData: PropTypes.object,
+};

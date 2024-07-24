@@ -62,6 +62,7 @@ const Model = ({
   title = '',
   onSubmit = () => {},
   closeModal = () => {},
+  rightButtonAction = () => {},
 }) => {
   const styleObject = {
     overlay: {
@@ -78,6 +79,7 @@ const Model = ({
       width: size === 'lg' ? '70%' : size === 'md' ? '45%' : '30%',
       padding: '0',
       borderRadius: '16px',
+      zIndex: 9,
     },
   };
 
@@ -100,7 +102,12 @@ const Model = ({
             <Button variant="secondary" onClick={closeModal} size="md">
               {leftButtonText}
             </Button>
-            <Button variant="primary" size="md" type="submit">
+            <Button
+              variant="primary"
+              size="md"
+              type="submit"
+              onClick={rightButtonAction}
+            >
               {rightButtonText}
             </Button>
           </ButtonWrapper>
@@ -123,4 +130,5 @@ Model.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   reset: PropTypes.func,
   closeModal: PropTypes.func.isRequired,
+  rightButtonAction: PropTypes.func.isRequired,
 };

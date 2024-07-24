@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import { theme } from '../../styles';
 import { Button, Dropdown } from '../../shared';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
@@ -54,9 +53,8 @@ export const GridActions = ({
   search,
   setSearch,
   buttonText,
+  buttonAction = () => {},
 }) => {
-  const navigate = useNavigate();
-
   return (
     <>
       <Flex>
@@ -77,7 +75,7 @@ export const GridActions = ({
           {!isEmpty(buttonText) && (
             <Button
               icon={<PlusCircleIcon width={20} height={20} color="white" />}
-              onClick={() => navigate('add')}
+              onClick={buttonAction}
             >
               {buttonText}
             </Button>
@@ -109,4 +107,5 @@ GridActions.propTypes = {
   search: PropTypes.string,
   setSearch: PropTypes.func,
   buttonText: PropTypes.string,
+  buttonAction: PropTypes.func,
 };

@@ -13,3 +13,20 @@ export const createUserApi = async payload => {
     return [null, error];
   }
 };
+
+export const deleteUserApi = async id => {
+  try {
+    const response = await API.delete(`/users/${id}`);
+    return [response, null];
+  } catch (error) {
+    return [null, error];
+  }
+};
+export const getSingleUserData = async id => {
+  try {
+    const response = await API.get(`/users/${id}`);
+    return [response, null];
+  } catch (error) {
+    return [null, error];
+  }
+};

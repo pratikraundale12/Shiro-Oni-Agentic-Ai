@@ -256,7 +256,6 @@ const CreateUser = ({ watch, register, control, errors, setPhoto, photo }) => {
                 <PhoneField
                   name="phone_number"
                   errors={errors}
-                  required="Phone Number is required"
                   control={control}
                 />
               </InputContainer>

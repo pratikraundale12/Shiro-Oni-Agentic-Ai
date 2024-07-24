@@ -34,6 +34,7 @@ export const Grid = ({
   statusOptions = [],
   title = '',
   buttonText = '',
+  buttonAction = () => {},
 }) => {
   const {
     response: { count, prev, next, data },
@@ -58,6 +59,7 @@ export const Grid = ({
 
         th {
           height: 50px;
+          z-index:0 !important;
         }
 
         td {
@@ -101,6 +103,7 @@ export const Grid = ({
         search={search}
         setSearch={setSearch}
         buttonText={buttonText}
+        buttonAction={buttonAction}
       />
       {/* Breadcrumb */}
       <TableContainer>
@@ -132,4 +135,5 @@ Grid.propTypes = {
   statusOptions: PropTypes.arrayOf(PropTypes.shape({})),
   title: PropTypes.string,
   buttonText: PropTypes.string,
+  buttonAction: PropTypes.func,
 };
