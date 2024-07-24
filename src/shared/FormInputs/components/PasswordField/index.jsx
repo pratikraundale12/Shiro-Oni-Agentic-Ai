@@ -74,6 +74,7 @@ const PasswordInputField = ({
   errors,
   watch,
   helperText = '',
+  showStrengthMeter = false,
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -106,7 +107,7 @@ const PasswordInputField = ({
         errors={errors}
       />
       {!error && helperText && <HelperText>{helperText}</HelperText>}
-      {value && (
+      {showStrengthMeter && value && (
         <StrengthMeter>
           {[1, 2, 3, 4, 5].map(index => (
             <Indicator
@@ -125,6 +126,7 @@ PasswordInputField.propTypes = {
   watch: PropTypes.func.isRequired,
   errors: PropTypes.shape({}),
   helperText: PropTypes.string,
+  showStrengthMeter: PropTypes.boolean,
 };
 
 export default PasswordInputField;
