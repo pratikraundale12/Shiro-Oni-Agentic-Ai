@@ -35,7 +35,7 @@ const AuthGuard = () => {
   };
   const getLicenseData = async () => {
     const response = await getLicenseExpiresData();
-    if (response.status >= 200 && response.status < 300) {
+    if (response.status == 200) {
       const date = new Date(response?.data?.license);
       const istTime = date.toLocaleString('en-US', {
         timeZone: 'Asia/Kolkata',
