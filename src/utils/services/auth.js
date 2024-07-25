@@ -32,3 +32,12 @@ export const currentUser = async () => {
     return error.response.data;
   }
 };
+
+export const checkLicense = async () => {
+  try {
+    const response = await API.get('/licence-info');
+    return [response, null];
+  } catch (error) {
+    return [null, error];
+  }
+};

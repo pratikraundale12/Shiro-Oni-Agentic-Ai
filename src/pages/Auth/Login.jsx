@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +26,7 @@ import {
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../utils';
-import { login } from '../../utils/services';
+import { checkLicense, login } from '../../utils/services';
 import { getRightIcon } from '.';
 
 const Title = styled.h3`
@@ -86,6 +86,41 @@ const SSOButton = styled.div`
   box-shadow: 0px 1px 3px ${props => props.theme.colors.shadow};
 `;
 
+const SessionExpiry = styled.div`
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const SessionContainer = styled.div`
+  max-width: 700px;
+  width: 100%;
+  border: 1px solid #dde4f0;
+  border-radius: 8px;
+`;
+
+const SessionHeaderTitle = styled.div`
+  display: flex;
+  background-color: #c52b2b;
+  color: #fff;
+  font-weight: 600;
+  font-size: 28px;
+  padding: 10px 14px;
+  border-radius: 8px 8px 0 0;
+  text-align: center;
+`;
+
+const TxtContainerDiv = styled.div`
+  font-weight: 500;
+  font-size: 26px;
+  color: var(--col-444445);
+  padding: 36px 20px;
+  text-align: center;
+`;
+
 const loginSchema = yup.object().shape({
   email: yup
     .string()
@@ -95,6 +130,7 @@ const loginSchema = yup.object().shape({
 });
 
 export const Login = () => {
+  const [licensePageDisplay, setLicensePageDisplay] = useState(false);
   const navigate = useNavigate();
   const {
     watch,
@@ -118,52 +154,73 @@ export const Login = () => {
     }
   };
 
+  const callApi = async () => {
+    const [response, error] = await checkLicense();
+    response;
+    if (error) {
+      setLicensePageDisplay(true);
+    }
+  };
+  useEffect(() => {
+    callApi();
+  }, []);
   return (
-    <Layout>
-      <Title>{`👋 ${WELCOME_BACK}`}</Title>
-      <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <InputField
-          name="email"
-          type="text"
-          label="E-mail Address"
-          placeholder="Enter your Email Address"
-          register={register}
-          errors={errors}
-          icon={<MailIcon />}
-          rightIcon={getRightIcon(watch, errors)}
-        />
-        <PasswordField
-          name="password"
-          register={register}
-          errors={errors}
-          watch={watch}
-          required="Password is required"
-          label="Password"
-          helperText="Must be 8 characters at least"
-        />
-        <TextButton onClick={() => navigate('/forgot')}>
-          {FORGOT_PASSWORD}
-        </TextButton>
-        <SubmitButton
-          iconPosition="right"
-          icon={<LessArrowIcon color={theme.colors.white} />}
-          type="submit"
-        >
-          {SIGN_IN_TO_YOUR_ACCOUNT}
-        </SubmitButton>
-      </form>
-      <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
-      <SSOButtonsContainer>
-        <SSOButton disabled>
-          <GoogleIcon />
-          <span>{GOOGLE}</span>
-        </SSOButton>
-        <SSOButton disabled>
-          <MicroSoftIcon />
-          <span>{MICROSOFT}</span>
-        </SSOButton>
-      </SSOButtonsContainer>
-    </Layout>
+    <>
+      {licensePageDisplay ? (
+        <SessionExpiry>
+          <SessionContainer>
+            <SessionHeaderTitle>Session Expired</SessionHeaderTitle>
+            <TxtContainerDiv>Your session has expired.</TxtContainerDiv>
+          </SessionContainer>
+        </SessionExpiry>
+      ) : (
+        <Layout>
+          <Title>{`👋 ${WELCOME_BACK}`}</Title>
+          <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <InputField
+              name="email"
+              type="text"
+              label="E-mail Address"
+              placeholder="Enter your Email Address"
+              register={register}
+              errors={errors}
+              icon={<MailIcon />}
+              rightIcon={getRightIcon(watch, errors)}
+            />
+            <PasswordField
+              name="password"
+              register={register}
+              errors={errors}
+              watch={watch}
+              required="Password is required"
+              label="Password"
+              helperText="Must be 8 characters at least"
+            />
+            <TextButton onClick={() => navigate('/forgot')}>
+              {FORGOT_PASSWORD}
+            </TextButton>
+            <SubmitButton
+              iconPosition="right"
+              icon={<LessArrowIcon color={theme.colors.white} />}
+              type="submit"
+            >
+              {SIGN_IN_TO_YOUR_ACCOUNT}
+            </SubmitButton>
+          </form>
+          <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
+          <SSOButtonsContainer>
+            <SSOButton disabled>
+              <GoogleIcon />
+              <span>{GOOGLE}</span>
+            </SSOButton>
+            <SSOButton disabled>
+              <MicroSoftIcon />
+              <span>{MICROSOFT}</span>
+            </SSOButton>
+          </SSOButtonsContainer>
+        </Layout>
+      )}
+    </>
   );
 };
