@@ -10,12 +10,13 @@ import {
 
 const Container = styled.header`
   width: 100%;
-  padding: 16px 32px;
+  padding: 14px 50px 14px 23px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: ${props => props.theme.colors.white};
   border-bottom: 1px solid ${props => props.theme.colors.border};
+  header: 78px;
 `;
 
 const IconButton = styled.button`

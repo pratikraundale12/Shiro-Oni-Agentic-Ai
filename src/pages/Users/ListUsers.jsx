@@ -1,4 +1,4 @@
-import React from 'react';
+import { React } from 'react';
 import styled from 'styled-components';
 
 import {
@@ -8,6 +8,7 @@ import {
   ProfileRender,
   ActionRender,
 } from '../../components';
+import { AddUserModal } from './AddUserModal';
 import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../utils';
 
 const Container = styled.div`
@@ -63,13 +64,13 @@ export const ListUsers = () => {
   return (
     <Container>
       <Grid
-        title="User List"
         module="users"
-        buttonText="Add New User"
+        title="User List"
         columns={COLUMNS}
         sortFns={SORT_FNS}
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
+        addModal={AddUserModal}
       />
     </Container>
   );

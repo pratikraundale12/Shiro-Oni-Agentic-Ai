@@ -8,9 +8,8 @@ import {
   Forgot,
   Reset,
   Success,
-  ListDashBoard,
+  Dashboard,
   ListUsers,
-  AddUser,
   ListClusters,
   AddCluster,
   ListNamespaces,
@@ -30,6 +29,7 @@ import {
 import Deploy from '../pages/Namespaces/Deploy';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import Summary from '../pages/Namespaces/Summary';
+// import { currentUser } from '../utils/services/auth';
 
 export const ROUTES_MENU = [
   {
@@ -38,8 +38,8 @@ export const ROUTES_MENU = [
     icon: DashboardIcon,
     pages: [
       {
-        path: '',
-        component: <ListDashBoard />,
+        path: '/dashboard',
+        component: <Dashboard />,
       },
     ],
   },
@@ -120,10 +120,6 @@ export const ROUTES_MENU = [
         path: '',
         component: <ListUsers />,
       },
-      {
-        path: ['add', 'edit/:id'],
-        component: <AddUser />,
-      },
     ],
   },
 
@@ -145,6 +141,19 @@ export const ROUTES_MENU = [
 ];
 
 const Routes = () => {
+  // useEffect(() => {
+  //   const fetchCurrentUser = async () => {
+  //     try {
+  //       const response = await currentUser();
+  //       if (response) {
+  //         console.log(response?.data, 'data');
+  //       }
+  //     } catch (error) {
+  //       console.error('Failed to fetch user data', error);
+  //     }
+  //   };
+  //   fetchCurrentUser();
+  // }, []);
   return (
     <Router>
       {/* Public Routes */}
