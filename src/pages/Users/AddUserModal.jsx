@@ -119,6 +119,7 @@ export const AddUserModal = () => {
     formState: { errors },
     control,
     watch,
+    reset,
   } = useForm();
 
   const statusOption = [
@@ -133,6 +134,11 @@ export const AddUserModal = () => {
   };
   const removeUploadedImage = () => {
     setPhoto(null);
+  };
+  const closePopup = () => {
+    setIsOpen(false);
+    setPhoto(null);
+    reset();
   };
   const onSubmit = async data => {
     const formData = new FormData();
@@ -175,7 +181,7 @@ export const AddUserModal = () => {
       <Modal
         title="Add User"
         isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)}
+        onRequestClose={closePopup}
         size="lg"
         secondaryButtonText="Cancel"
         primaryButtonText="Add"

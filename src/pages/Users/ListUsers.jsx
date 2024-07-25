@@ -9,28 +9,12 @@ import {
 } from '../../components';
 import { AddUserModal } from './AddUserModal';
 import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../utils';
-// import { deleteUserApi, getSingleUserData } from '../../utils/services';
-// import { toast } from 'react-toastify';
 
 const Container = styled.div`
   padding: 1.4rem;
   width: 100%;
   height: 100%;
 `;
-
-// const ActionTd = styled.div`
-//   display: flex;
-//   align-items: center;
-//   justify-content: start;
-//   gap: 15px;
-// `;
-
-// const IconWrapper = styled.div`
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   cursor: pointer;
-// `;
 
 export const ListUsers = () => {
   const COLUMNS = [
