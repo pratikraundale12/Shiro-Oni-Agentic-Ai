@@ -19,7 +19,7 @@ export const useFetchData = module => {
     data: [],
     breadcrumb: [],
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
 

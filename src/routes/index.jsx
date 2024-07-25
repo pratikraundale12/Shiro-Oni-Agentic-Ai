@@ -8,9 +8,8 @@ import {
   Forgot,
   Reset,
   Success,
-  ListDashBoard,
+  Dashboard,
   ListUsers,
-  AddUser,
   ListClusters,
   AddCluster,
   ListNamespaces,
@@ -36,8 +35,8 @@ export const ROUTES_MENU = [
     icon: DashboardIcon,
     pages: [
       {
-        path: '',
-        component: <ListDashBoard />,
+        path: '/dashboard',
+        component: <Dashboard />,
       },
     ],
   },
@@ -105,10 +104,6 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ListUsers />,
-      },
-      {
-        path: ['add', 'edit/:id'],
-        component: <AddUser />,
       },
     ],
   },
