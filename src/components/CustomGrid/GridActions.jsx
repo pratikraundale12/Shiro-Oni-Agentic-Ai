@@ -54,6 +54,7 @@ export const GridActions = ({
   search,
   setSearch,
   buttonText,
+  addModal: Modal,
 }) => {
   const navigate = useNavigate();
 
@@ -82,6 +83,7 @@ export const GridActions = ({
               {buttonText}
             </Button>
           )}
+          <Modal />
         </Flex>
       </Flex>
       <SearchContainer>
@@ -109,4 +111,5 @@ GridActions.propTypes = {
   search: PropTypes.string,
   setSearch: PropTypes.func,
   buttonText: PropTypes.string,
+  addModal: PropTypes.func,
 };

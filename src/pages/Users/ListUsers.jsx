@@ -1,8 +1,5 @@
-import { React, useState } from 'react';
+import { React } from 'react';
 import styled from 'styled-components';
-// import { Grid } from '../../components/Grid';
-import { Model } from '../../shared';
-import DeleteModalContent from '../../shared/Modal/DeleteModelContent';
 
 import {
   Grid,
@@ -11,6 +8,7 @@ import {
   ProfileRender,
   ActionRender,
 } from '../../components';
+import { AddUserModal } from './AddUserModal';
 import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../utils';
 
 const Container = styled.div`
@@ -20,14 +18,6 @@ const Container = styled.div`
 `;
 
 export const ListUsers = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [addUserModel, setAddUserModel] = useState(false);
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
-  const openAddUserModal = () => {
-    setAddUserModel(true);
-  };
   const COLUMNS = [
     {
       label: 'Profile',
@@ -72,38 +62,16 @@ export const ListUsers = () => {
   };
 
   return (
-    <>
-      <Model
-        setModalIsOpen={setModalIsOpen}
-        modalIsOpen={modalIsOpen}
-        size="sm"
-        leftButtonText="Cancel"
-        rightButtonText="Delete"
-      >
-        <DeleteModalContent />
-      </Model>
-      <Model
-        setModalIsOpen={setAddUserModel}
-        modalIsOpen={addUserModel}
-        size="lg"
-        leftButtonText="Cancel"
-        rightButtonText="Add"
-      >
-        ADD
-      </Model>
-      <button onClick={openModal}>hello</button>
-      <button onClick={openAddUserModal}>ADD User</button>
-      <Container>
-        <Grid
-          title="User List"
-          module="users"
-          buttonText="Add New User"
-          columns={COLUMNS}
-          sortFns={SORT_FNS}
-          statusOptions={STATUS_OPTIONS}
-          refreshOptions={REFRESH_OPTIONS}
-        />
-      </Container>{' '}
-    </>
+    <Container>
+      <Grid
+        module="users"
+        title="User List"
+        columns={COLUMNS}
+        sortFns={SORT_FNS}
+        statusOptions={STATUS_OPTIONS}
+        refreshOptions={REFRESH_OPTIONS}
+        addModal={AddUserModal}
+      />
+    </Container>
   );
 };
