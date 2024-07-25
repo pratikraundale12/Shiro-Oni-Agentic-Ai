@@ -1,4 +1,9 @@
 import React from 'react';
+import styled from 'styled-components';
+
+import { Dropdown } from '../../shared';
+import { FlowMetricsChart } from '../../components/Dashboard';
+import { InsightContainer } from '../../components/Dashboard/InsightContainer';
 import {
   ActiveThreadIcon,
   DisabledProcessorIcon,
@@ -9,29 +14,27 @@ import {
   StoppedProcessorIcon,
   TotalProcessorIcon,
   TotalQuedIcon,
+  InvalidProcessorIcon,
 } from '../../assets';
-import { InvalidProcessorIcon } from '../../assets/Icons/InvalidProcessorIcon';
-// import './index.css';
-import { FlowMetricsChart } from '../../components/Dashboard';
-import { InsightContainer } from '../../components/Dashboard/InsightContainer';
-import { Dropdown } from '../../shared';
-import styled from 'styled-components';
 
 const TopSection = styled.div`
   display: flex;
   justify-content: space-between;
 `;
+
 const QuickInsightHeading = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
 `;
+
 const Continer = styled.div`
   height: calc(100vh - 78px);
   width: calc(100vw - 250px);
   overflow: hidden;
   padding: 20px 50px 22px 20px;
 `;
+
 const QuickInsightHeadingText = styled.h4`
   font-family: Noto Sans;
   font-size: 20px;
@@ -40,20 +43,24 @@ const QuickInsightHeadingText = styled.h4`
   text-align: left;
   padding-botton: 5px;
 `;
+
 const InsightIconContiner = styled.div`
   padding-top: 5px;
 `;
+
 const BottomSectionScroll = styled.div`
   max-height: calc(100vh - 180px);
   overflow-y: auto;
   overflow-x: hidden;
 `;
+
 const InsightDataContiner = styled.div`
   margin: 25px 0;
   display: flex;
   flex-wrap: wrap;
   row-gap: 25px;
 `;
+
 const FlowMetricHeader = styled.div`
   background-color: #f5f7fa;
   padding: 10px 11px;
@@ -63,6 +70,7 @@ const FlowMetricHeader = styled.div`
   line-height: 25px;
   display: flex;
 `;
+
 const HeaderText = styled.p`
   margin-left: 10px;
 `;

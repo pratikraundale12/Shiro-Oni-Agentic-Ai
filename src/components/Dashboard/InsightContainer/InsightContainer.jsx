@@ -1,16 +1,15 @@
 import React from 'react';
-import './index.css';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const Container = styled.div`
-    flex: 0 0 auto;
-    width: 25%;
-    height: fit-content;
-    padding-left: 8px;
-    padding-right: 8px;
- 
-}`;
+  flex: 0 0 auto;
+  width: 25%;
+  height: fit-content;
+  padding-left: 8px;
+  padding-right: 8px;
+`;
+
 const InnerContainer = styled.div`
   border-radius: 15px;
   border: 1px solid #e9e0e0;
@@ -21,6 +20,7 @@ const InnerContainer = styled.div`
   background-color: ${props => props.backgroundCss || 'white'};
   position: relative;
 `;
+
 const IconContainer = styled.div`
   width: 70px;
   height: 70px;
@@ -33,11 +33,13 @@ const IconContainer = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
 const CountDisplay = styled.div`
   display: flex;
   justify-content: start;
   align-items: center;
 `;
+
 const CountNumber = styled.h5`
   font-size: 28px;
   font-weight: 500;
@@ -45,6 +47,7 @@ const CountNumber = styled.h5`
   margin-left: 77px;
   margin-top: -10px !important;
 `;
+
 const InsightText = styled.p`
   margin-top: 20px;
 `;

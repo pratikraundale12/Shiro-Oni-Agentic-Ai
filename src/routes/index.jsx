@@ -10,7 +10,6 @@ import {
   Success,
   Dashboard,
   ListUsers,
-  AddUser,
   ListClusters,
   AddCluster,
   ListNamespaces,
@@ -105,10 +104,6 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ListUsers />,
-      },
-      {
-        path: ['add', 'edit/:id'],
-        component: <AddUser />,
       },
     ],
   },

@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { theme } from '../../styles';
 import { Button, Dropdown } from '../../shared';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
+import { useNavigate } from 'react-router-dom';
 
 const Flex = styled.div`
   display: flex;
@@ -53,8 +54,9 @@ export const GridActions = ({
   search,
   setSearch,
   buttonText,
-  buttonAction = () => {},
+  addModal: Modal,
 }) => {
+  const navigate = useNavigate();
   return (
     <>
       <Flex>
@@ -75,11 +77,12 @@ export const GridActions = ({
           {!isEmpty(buttonText) && (
             <Button
               icon={<PlusCircleIcon width={20} height={20} color="white" />}
-              onClick={buttonAction}
+              onClick={() => navigate('add')}
             >
               {buttonText}
             </Button>
           )}
+          <Modal />
         </Flex>
       </Flex>
       <SearchContainer>
@@ -107,5 +110,5 @@ GridActions.propTypes = {
   search: PropTypes.string,
   setSearch: PropTypes.func,
   buttonText: PropTypes.string,
-  buttonAction: PropTypes.func,
+  addModal: PropTypes.func,
 };

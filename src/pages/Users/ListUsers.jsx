@@ -1,10 +1,5 @@
-import { React, useState } from 'react';
+import { React } from 'react';
 import styled from 'styled-components';
-// import { Grid } from '../../components/Grid';
-import { Model } from '../../shared';
-import DeleteModalContent from '../../shared/Modal/DeleteModelContent';
-import ModelCreateUser from '../../components/UserManagement/modelCreateUser';
-import { DeleteSmallIcon, PencilIcon } from '../../assets';
 
 import {
   Grid,
@@ -12,6 +7,7 @@ import {
   StatusRender,
   ProfileRender,
 } from '../../components';
+import { AddUserModal } from './AddUserModal';
 import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../utils';
 import { deleteUserApi, getSingleUserData } from '../../utils/services';
 import { toast } from 'react-toastify';
@@ -37,57 +33,6 @@ const IconWrapper = styled.div`
 `;
 
 export const ListUsers = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [addUserModel, setAddUserModel] = useState(false);
-  const [editUserData, setEditUserData] = useState({});
-  const [deleteUserId, setDeleteUserId] = useState(null);
-
-  const openModal = id => {
-    setDeleteUserId(id);
-    setModalIsOpen(true);
-  };
-  const openAddUserModal = () => {
-    setAddUserModel(true);
-  };
-  const closeDeleteModel = () => {
-    setModalIsOpen(false);
-  };
-
-  const deleteUser = async event => {
-    event.preventDefault();
-    const [response, error] = await deleteUserApi(deleteUserId);
-    if (response) {
-      toast.success('User Deleted Sucessfully');
-    } else if (error) {
-      toast.error('Error Occured');
-    }
-    setDeleteUserId(null);
-    closeDeleteModel(false);
-  };
-
-  const editUser = async item => {
-    const [response, error] = await getSingleUserData(item?.id);
-    if (response) {
-      console.log(response.data);
-      setEditUserData(response?.data);
-      openAddUserModal();
-    } else if (error) {
-      toast.error('Error Occured');
-    }
-  };
-  const getActionsMenu = item => (
-    <div>
-      <ActionTd>
-        <IconWrapper onClick={() => editUser(item)}>
-          <PencilIcon color="white" />
-        </IconWrapper>
-        <IconWrapper onClick={() => openModal(item?.id)}>
-          <DeleteSmallIcon color="white" />
-        </IconWrapper>
-      </ActionTd>
-    </div>
-  );
-
   const COLUMNS = [
     {
       label: 'Profile',
@@ -132,36 +77,16 @@ export const ListUsers = () => {
   };
 
   return (
-    <>
-      <Model
-        setModalIsOpen={setModalIsOpen}
-        modalIsOpen={modalIsOpen}
-        size="sm"
-        leftButtonText="Cancel"
-        rightButtonText="Delete"
-        title="Delete User"
-        closeModal={closeDeleteModel}
-        rightButtonAction={deleteUser}
-      >
-        <DeleteModalContent />
-      </Model>
-      <ModelCreateUser
-        addUserModel={addUserModel}
-        setAddUserModel={setAddUserModel}
-        editUserData={editUserData}
+    <Container>
+      <Grid
+        module="users"
+        title="User List"
+        columns={COLUMNS}
+        sortFns={SORT_FNS}
+        statusOptions={STATUS_OPTIONS}
+        refreshOptions={REFRESH_OPTIONS}
+        addModal={AddUserModal}
       />
-      <Container>
-        <Grid
-          title="User List"
-          module="users"
-          buttonText="Add New User"
-          columns={COLUMNS}
-          sortFns={SORT_FNS}
-          statusOptions={STATUS_OPTIONS}
-          refreshOptions={REFRESH_OPTIONS}
-          buttonAction={openAddUserModal}
-        />
-      </Container>{' '}
-    </>
+    </Container>
   );
 };

@@ -34,7 +34,7 @@ export const Grid = ({
   statusOptions = [],
   title = '',
   buttonText = '',
-  buttonAction = () => {},
+  addModal = () => {},
 }) => {
   const {
     response: { count, prev, next, data },
@@ -87,7 +87,7 @@ export const Grid = ({
   );
 
   const getLoader = () => {
-    if (loading) return <Loader />;
+    if (loading) return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
       return <LoaderContainer>No data found</LoaderContainer>;
     return null;
@@ -103,7 +103,7 @@ export const Grid = ({
         search={search}
         setSearch={setSearch}
         buttonText={buttonText}
-        buttonAction={buttonAction}
+        addModal={addModal}
       />
       {/* Breadcrumb */}
       <TableContainer>
@@ -135,5 +135,5 @@ Grid.propTypes = {
   statusOptions: PropTypes.arrayOf(PropTypes.shape({})),
   title: PropTypes.string,
   buttonText: PropTypes.string,
-  buttonAction: PropTypes.func,
+  addModal: PropTypes.func,
 };

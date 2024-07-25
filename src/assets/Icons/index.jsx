@@ -47,3 +47,5 @@ export * from './UserIcon';
 export * from './UserImageUploadIcon';
 export * from './AddIcon';
 export * from './UpArrowImageIcon';
+export * from './CrossWithCircleIcon';
+export * from './InvalidProcessorIcon';
