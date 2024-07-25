@@ -37,14 +37,16 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   margin: 10px;
+  position: fixed;
+  z-index: 10;
 `;
 
-const SessionExpiredLabel = ({ closeTab }) => {
+const SessionExpiredLabel = ({ closeTab, expireData }) => {
   return (
     <Container>
       <FloatingAlertBox>
         <AlertContent>
-          <AlertText>Your session will expire within 7 days.</AlertText>
+          <AlertText>Your license will expire on {expireData}.</AlertText>
           <IconContainer onClick={closeTab}>
             <svg
               width="33"
@@ -76,4 +78,5 @@ export default SessionExpiredLabel;
 
 SessionExpiredLabel.propTypes = {
   closeTab: PropTypes.func,
+  expireData: PropTypes.string,
 };

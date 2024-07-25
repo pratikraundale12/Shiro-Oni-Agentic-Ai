@@ -169,8 +169,12 @@ export const Login = () => {
       {licensePageDisplay ? (
         <SessionExpiry>
           <SessionContainer>
-            <SessionHeaderTitle>Session Expired</SessionHeaderTitle>
-            <TxtContainerDiv>Your session has expired.</TxtContainerDiv>
+            <SessionHeaderTitle>License Expired</SessionHeaderTitle>
+            <TxtContainerDiv>
+              {' '}
+              Please contact to Administrator to renew your license and restore
+              access.
+            </TxtContainerDiv>
           </SessionContainer>
         </SessionExpiry>
       ) : (
