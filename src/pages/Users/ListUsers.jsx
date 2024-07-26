@@ -49,11 +49,12 @@ const ProfileImage = styled.img`
   object-fit: contain;
   height: 40px;
   width: 40px;
+  border-radius: 50%;
 `;
 export const ListUsers = () => {
   const [openDeleteModel, setOpenDeleteModel] = useState(false);
   const [deleteUserData, setDeleteUserData] = useState(null);
-  const { setModalState, setEditUserData } = useGlobalContext();
+  const { state, setState } = useGlobalContext();
 
   const getActionsMenu = item => (
     <div>
@@ -121,8 +122,11 @@ export const ListUsers = () => {
   };
 
   const editUser = async item => {
-    setModalState(true);
-    setEditUserData(item);
+    setState({
+      ...state,
+      userModal: true,
+      selectedItem: item,
+    });
   };
   const openDeleteModal = id => {
     setOpenDeleteModel(true);

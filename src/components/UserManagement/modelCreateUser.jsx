@@ -7,10 +7,9 @@ import PropTypes from 'prop-types';
 import { userSchema } from './userValidation';
 import { Model } from '../../shared';
 
-const ModelCreateUser = ({ addUserModel, setAddUserModel, editUserData }) => {
+const ModelCreateUser = ({ addUserModel, setAddUserModel }) => {
   const [photo, setPhoto] = useState(null);
 
-  console.log(editUserData, 'editUserData>>>>>');
   const {
     watch,
     register,

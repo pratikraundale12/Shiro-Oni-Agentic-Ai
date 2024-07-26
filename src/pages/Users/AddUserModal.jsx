@@ -19,6 +19,21 @@ import {
   userSchema,
   editUserSchema,
 } from '../../components/UserManagement/userValidation';
+import { isEmpty } from 'lodash';
+
+const DEFAULT_VALUES = {
+  username: '',
+  email: '',
+  first_name: '',
+  middle_name: '',
+  last_name: '',
+  password: '',
+  is_active: '',
+  type: '',
+  photo: '',
+  phone: '',
+  confirm_password: '',
+};
 
 const Content = styled.div`
   padding: 35px 16px 25px;
@@ -116,25 +131,34 @@ const DropDownWrapper = styled.div`
   margin-right: 10px;
 `;
 export const AddUserModal = () => {
-  const { modalState, setModalState, editUserData } = useGlobalContext();
-  const [photo, setPhoto] = useState(
-    _.isEmpty(editUserData) ? null : `media/users/${editUserData?.id}.png`
-  );
+  const [photo, setPhoto] = useState(null);
   const [photoUpdate, setPhotoUpdated] = useState(false);
-
+  const { state, setState } = useGlobalContext();
   const {
     register,
-    handleSubmit,
-    formState: { errors },
-    control,
-    watch,
     reset,
+    handleSubmit,
+    watch,
+    control,
+    formState: { errors },
   } = useForm({
+    defaultValues: DEFAULT_VALUES,
     resolver: yupResolver(
-      _.isEmpty(editUserData) ? userSchema : editUserSchema
+      _.isEmpty(state?.selectedItem) ? userSchema : editUserSchema
     ),
-    defaultValues: { editUserData },
   });
+
+  const openModal = () => setState({ ...state, userModal: true });
+  const closeModal = () => {
+    setState({
+      ...state,
+      userModal: false,
+      selectedItem: null,
+    });
+    setPhoto(null);
+    setPhotoUpdated(false);
+  };
+
   const password = watch('password');
   const statusOption = [
     { value: 'true', label: 'Active' },
@@ -152,11 +176,6 @@ export const AddUserModal = () => {
   const removeUploadedImage = () => {
     setPhoto(null);
     setPhotoUpdated(true);
-  };
-  const closePopup = () => {
-    setModalState(false);
-    setPhoto(null);
-    reset();
   };
 
   const addUserAPIcall = async data => {
@@ -182,7 +201,11 @@ export const AddUserModal = () => {
 
     const response = await createUserApi(formData);
     if (response.status == 201) {
-      setModalState(false);
+      setState({
+        ...state,
+        userModal: false,
+        selectedItem: null,
+      });
       toast.success('User Created Successfully');
     } else {
       toast.error('error occured');
@@ -207,47 +230,65 @@ export const AddUserModal = () => {
     }
     formData.append('type', data.type || 'user');
     formData.append('username', data.username);
-
-    if (photo) {
-      formData.append('photo', photo);
-    }
-
-    const response = await editUserDataApi(editUserData?.id, formData);
+    formData.append('photo', photo);
+    const response = await editUserDataApi(state.selectedItem?.id, formData);
     if (response.status == 200) {
-      setModalState(false);
+      setState({
+        ...state,
+        userModal: false,
+        selectedItem: null,
+      });
       toast.success('User Updated Successfully');
     } else {
       toast.error('error occured');
     }
+    setPhoto(null);
+    setPhotoUpdated(false);
   };
 
   const onSubmit = async data => {
-    if (_.isEmpty(editUserData)) {
+    if (_.isEmpty(state.selectedItem)) {
       addUserAPIcall(data);
     } else {
       editUserAPIcall(data);
     }
   };
-  useEffect(() => {
-    if (!_.isEmpty(editUserData)) {
-      reset(editUserData);
+  const getImageSource = () => {
+    if (_.isEmpty(state?.selectedItem) && photo) {
+      return URL.createObjectURL(photo);
     }
-  }, []);
+
+    if (!_.isEmpty(state?.selectedItem) && photoUpdate) {
+      return URL.createObjectURL(photo);
+    }
+
+    return `${photo}`;
+  };
+
+  useEffect(() => {
+    if (state.userModal) {
+      if (isEmpty(state.selectedItem)) reset(DEFAULT_VALUES);
+      else reset(state.selectedItem);
+    }
+    if (state?.selectedItem && state?.selectedItem?.photo) {
+      setPhoto(`media/users/${state?.selectedItem?.id}.png`);
+    }
+  }, [reset, state.userModal, state.selectedItem]);
   return (
     <div>
       <Button
         icon={<PlusCircleIcon width={20} height={20} color="white" />}
-        onClick={() => setModalState(true)}
+        onClick={openModal}
       >
         Add New User
       </Button>
       <Modal
-        title="Add User"
-        isOpen={modalState}
-        onRequestClose={closePopup}
+        title={state.selectedItem ? 'Edit User' : 'Add User'}
+        isOpen={state.userModal}
+        onRequestClose={closeModal}
         size="lg"
         secondaryButtonText="Cancel"
-        primaryButtonText="Add"
+        primaryButtonText={state.selectedItem ? 'Edit' : 'Add'}
         onSubmit={handleSubmit(onSubmit)}
       >
         <Content>
@@ -267,17 +308,7 @@ export const AddUserModal = () => {
             {photo && (
               <UploadImageContainer>
                 <ImageContainer>
-                  <StyledImage
-                    src={
-                      _.isEmpty(editUserData)
-                        ? URL.createObjectURL(photo)
-                        : !_.isEmpty(editUserData) && photoUpdate
-                          ? URL.createObjectURL(photo)
-                          : `${photo}`
-                    }
-                    // src={URL.createObjectURL(photo)}
-                    alt="img"
-                  />{' '}
+                  <StyledImage src={getImageSource()} alt="img" />{' '}
                 </ImageContainer>{' '}
                 <UpArrowIcon onClick={removeUploadedImage}>
                   <UpArrowImageIcon />
@@ -380,7 +411,8 @@ export const AddUserModal = () => {
                       label="Password"
                     />
                   </InputContainer>
-                  {password && (
+
+                  {(!state?.selectedItem || password) && (
                     <InputContainer>
                       <PasswordField
                         name="confirm_password"
@@ -392,6 +424,7 @@ export const AddUserModal = () => {
                       />
                     </InputContainer>
                   )}
+
                   <InputContainer>
                     <PhoneField
                       name="phone_number"
