@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import _ from 'lodash';
 import { Button, InputField, Modal } from '../../shared';
 import {
   PlusCircleIcon,
@@ -11,8 +12,13 @@ import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import UserIconUploadIcon from '../../assets/Icons/UserImageUploadIcon';
 import { SelectField, PasswordField, PhoneField } from '../../shared';
-import { createUserApi } from '../../utils/services';
+import { createUserApi, editUserDataApi } from '../../utils/services';
 import { toast } from 'react-toastify';
+import { useGlobalContext } from '../../utils';
+import {
+  userSchema,
+  editUserSchema,
+} from '../../components/UserManagement/userValidation';
 
 const Content = styled.div`
   padding: 35px 16px 25px;
@@ -110,8 +116,11 @@ const DropDownWrapper = styled.div`
   margin-right: 10px;
 `;
 export const AddUserModal = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [photo, setPhoto] = useState(null);
+  const { modalState, setModalState, editUserData } = useGlobalContext();
+  const [photo, setPhoto] = useState(
+    _.isEmpty(editUserData) ? null : `media/users/${editUserData?.id}.png`
+  );
+  const [photoUpdate, setPhotoUpdated] = useState(false);
 
   const {
     register,
@@ -120,13 +129,21 @@ export const AddUserModal = () => {
     control,
     watch,
     reset,
-  } = useForm();
-
+  } = useForm({
+    resolver: yupResolver(
+      _.isEmpty(editUserData) ? userSchema : editUserSchema
+    ),
+    defaultValues: { editUserData },
+  });
+  const password = watch('password');
   const statusOption = [
     { value: 'true', label: 'Active' },
     { value: 'false', label: 'Inactive' },
   ];
-  const roleOption = [{ value: 'admin', label: 'Admin' }];
+  const roleOption = [
+    { value: 'admin', label: 'Admin' },
+    { value: 'user', label: 'User' },
+  ];
   const handleFileChange = event => {
     const selectedFile = event.target.files[0];
     event.target.value = null;
@@ -134,13 +151,15 @@ export const AddUserModal = () => {
   };
   const removeUploadedImage = () => {
     setPhoto(null);
+    setPhotoUpdated(true);
   };
   const closePopup = () => {
-    setIsOpen(false);
+    setModalState(false);
     setPhoto(null);
     reset();
   };
-  const onSubmit = async data => {
+
+  const addUserAPIcall = async data => {
     const formData = new FormData();
 
     formData.append('first_name', data.first_name);
@@ -154,33 +173,77 @@ export const AddUserModal = () => {
     } else {
       formData.append('is_active', true);
     }
-    formData.append('type', data.type || 'user');
-    formData.append('username', data.first_name);
+    formData.append('type', data?.type || 'user');
+    formData.append('username', data.username);
 
     if (photo) {
       formData.append('photo', photo);
     }
 
-    const [response, error] = await createUserApi(formData);
-    if (response) {
-      setIsOpen(false);
-      toast.success('Created');
-    } else if (error) {
+    const response = await createUserApi(formData);
+    if (response.status == 201) {
+      setModalState(false);
+      toast.success('User Created Successfully');
+    } else {
       toast.error('error occured');
     }
   };
 
+  const editUserAPIcall = async data => {
+    const formData = new FormData();
+
+    formData.append('first_name', data.first_name);
+    formData.append('middle_name', data.middle_name);
+    formData.append('last_name', data.last_name);
+    formData.append('email', data.email);
+    formData.append('phone', data.phone_number);
+    if (data?.password) {
+      formData.append('password', data.password);
+    }
+    if (data?.is_active) {
+      formData.append('is_active', JSON.parse(data?.is_active));
+    } else {
+      formData.append('is_active', true);
+    }
+    formData.append('type', data.type || 'user');
+    formData.append('username', data.username);
+
+    if (photo) {
+      formData.append('photo', photo);
+    }
+
+    const response = await editUserDataApi(editUserData?.id, formData);
+    if (response.status == 200) {
+      setModalState(false);
+      toast.success('User Updated Successfully');
+    } else {
+      toast.error('error occured');
+    }
+  };
+
+  const onSubmit = async data => {
+    if (_.isEmpty(editUserData)) {
+      addUserAPIcall(data);
+    } else {
+      editUserAPIcall(data);
+    }
+  };
+  useEffect(() => {
+    if (!_.isEmpty(editUserData)) {
+      reset(editUserData);
+    }
+  }, []);
   return (
     <div>
       <Button
         icon={<PlusCircleIcon width={20} height={20} color="white" />}
-        onClick={() => setIsOpen(true)}
+        onClick={() => setModalState(true)}
       >
         Add New User
       </Button>
       <Modal
         title="Add User"
-        isOpen={isOpen}
+        isOpen={modalState}
         onRequestClose={closePopup}
         size="lg"
         secondaryButtonText="Cancel"
@@ -204,7 +267,17 @@ export const AddUserModal = () => {
             {photo && (
               <UploadImageContainer>
                 <ImageContainer>
-                  <StyledImage src={URL.createObjectURL(photo)} alt="img" />{' '}
+                  <StyledImage
+                    src={
+                      _.isEmpty(editUserData)
+                        ? URL.createObjectURL(photo)
+                        : !_.isEmpty(editUserData) && photoUpdate
+                          ? URL.createObjectURL(photo)
+                          : `${photo}`
+                    }
+                    // src={URL.createObjectURL(photo)}
+                    alt="img"
+                  />{' '}
                 </ImageContainer>{' '}
                 <UpArrowIcon onClick={removeUploadedImage}>
                   <UpArrowImageIcon />
@@ -303,20 +376,22 @@ export const AddUserModal = () => {
                       register={register}
                       errors={errors}
                       watch={watch}
-                      required="Password is required"
+                      // required="Password is required"
                       label="Password"
                     />
                   </InputContainer>
-                  <InputContainer>
-                    <PasswordField
-                      name="confirm_password"
-                      register={register}
-                      errors={errors}
-                      watch={watch}
-                      required="Password is required"
-                      label="Confirm Password"
-                    />
-                  </InputContainer>
+                  {password && (
+                    <InputContainer>
+                      <PasswordField
+                        name="confirm_password"
+                        register={register}
+                        errors={errors}
+                        watch={watch}
+                        required="Password is required"
+                        label="Confirm Password"
+                      />
+                    </InputContainer>
+                  )}
                   <InputContainer>
                     <PhoneField
                       name="phone_number"

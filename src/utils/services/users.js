@@ -7,26 +7,31 @@ export const getUsersList = async params => {
 
 export const createUserApi = async payload => {
   try {
-    const response = await API.post('/users', payload);
-    return [response, null];
+    return await API.post('/users', payload);
   } catch (error) {
-    return [null, error];
+    return error.response.data;
   }
 };
 
 export const deleteUserApi = async id => {
   try {
-    const response = await API.delete(`/users/${id}`);
-    return [response, null];
+    return await API.delete(`/users/${id}`);
   } catch (error) {
-    return [null, error];
+    return error.response.data;
   }
 };
+
 export const getSingleUserData = async id => {
   try {
-    const response = await API.get(`/users/${id}`);
-    return [response, null];
+    return await API.get(`/users/${id}`);
   } catch (error) {
-    return [null, error];
+    return error.response.data;
+  }
+};
+export const editUserDataApi = async (id, payload) => {
+  try {
+    return await API.patch(`/users/${id}`, payload);
+  } catch (error) {
+    return error.response.data;
   }
 };

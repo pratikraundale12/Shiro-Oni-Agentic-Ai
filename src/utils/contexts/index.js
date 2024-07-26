@@ -5,9 +5,19 @@ const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
   const [state, setState] = useState({});
-
+  const [modalState, setModalState] = useState(false);
+  const [editUserData, setEditUserData] = useState({});
   return (
-    <GlobalContext.Provider value={{ state, setState }}>
+    <GlobalContext.Provider
+      value={{
+        state,
+        setState,
+        modalState,
+        setModalState,
+        editUserData,
+        setEditUserData,
+      }}
+    >
       {children}
     </GlobalContext.Provider>
   );
