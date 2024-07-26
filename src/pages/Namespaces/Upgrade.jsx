@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { LinkIcons, QRIcons, TodoIcon } from '../../assets';
 import { Button, InputField } from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
 
 const Container = styled.div`
   height: calc(100vh - 78px);
@@ -127,8 +128,21 @@ const ColXlSix = styled.div`
     }
   }
 `;
+const BreadcrumbContainer = styled.div`
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: -0.01em;
+  color: #444445;
+  align-items: center;
+`;
 
 const Upgrade = () => {
+  const breadcrumbData = [
+    { id: '1', name: 'Namespace List' },
+    { id: '2', name: 'Select Namespace' },
+    { id: '3', name: 'Configuration Details' },
+  ];
   return (
     <Container>
       <TopTitleBar className=" d-flex  mb-3">
@@ -139,39 +153,9 @@ const Upgrade = () => {
           <MainTitleHfour className="mb-0">Deploy Namespace</MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
-      <div className="d-flex align-items-center breadcrumb-container mb-3">
-        <span className="cursor-pointer">Namespace List</span>
-        <span>
-          <svg
-            width={16}
-            height={16}
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M8.78105 8.00047L5.4812 4.70062L6.42401 3.75781L10.6667 8.00047L6.42401 12.2431L5.4812 11.3003L8.78105 8.00047Z"
-              fill="#444445"
-            />
-          </svg>
-        </span>
-        <span className="cursor-pointer">Select Namespace</span>
-        <span>
-          <svg
-            width={16}
-            height={16}
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M8.78105 8.00047L5.4812 4.70062L6.42401 3.75781L10.6667 8.00047L6.42401 12.2431L5.4812 11.3003L8.78105 8.00047Z"
-              fill="#444445"
-            />
-          </svg>
-        </span>
-        <span className="cursor-pointer active">Configuration Details</span>
-      </div>
+      <BreadcrumbContainer className="d-flex  mb-3">
+        <Breadcrumb breadcrumbs={breadcrumbData} />
+      </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
           <RowConfig>

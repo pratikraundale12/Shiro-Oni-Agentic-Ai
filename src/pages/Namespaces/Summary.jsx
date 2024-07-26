@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets/Icons/TodoIcon';
-import { LessArrowIcon } from '../../assets';
 import { Button } from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
+import NamespaceDeploy from './NamespaceDeploy';
+import AddParameterContext from './AddParameterContext';
 
 const MainContainer = styled.div`
   height: calc(100vh - 78px);
@@ -37,13 +39,6 @@ const BreadcrumbContainer = styled.div`
   align-items: center;
 `;
 
-const BreadcrumbItem = styled.span`
-  cursor: pointer;
-
-  &.active {
-    color: #c52b2b;
-  }
-`;
 const GreyBoxNamespace = styled.div`
   background-color: #f5f7fa;
   padding: 22px 19px;
@@ -141,7 +136,6 @@ const ActiveButtonDiv = styled.div`
   min-width: 48px;
   border: 1px solid #dde4f0;
   border-radius: 8px;
-  // background-color: #f5f7fa;
   cursor: pointer;
   background-color: white !important;
 
@@ -181,6 +175,30 @@ const ProgressBar = styled.div`
 `;
 
 const Summary = () => {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
+  const breadcrumbData = [
+    { id: '1', name: 'Namespace List' },
+    { id: '2', name: 'Select Namespace' },
+    { id: '3', name: 'Configuration Details' },
+  ];
+
+  const handleUpgradeClick = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+  const openParameterContext = () => {
+    setIsParameterContextOpen(true);
+    setModalOpen(false);
+  };
+
+  const closeParameterContext = () => {
+    setIsParameterContextOpen(false);
+  };
+
   return (
     <MainContainer className="main-space bg-white">
       <TopTitleBar className="d-flex mb-3">
@@ -192,15 +210,7 @@ const Summary = () => {
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex mb-3">
-        <BreadcrumbItem className="cursor-pointer">
-          Namespace List
-        </BreadcrumbItem>
-        <LessArrowIcon />
-        <BreadcrumbItem className="cursor-pointer">
-          Select Namespace
-        </BreadcrumbItem>
-        <LessArrowIcon />
-        <BreadcrumbItem>Configuration Details</BreadcrumbItem>
+        <Breadcrumb breadcrumbs={breadcrumbData} />
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className=" pe-1">
@@ -380,9 +390,8 @@ const Summary = () => {
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button variant="secondary">Back</Button>
-          <Button>Upgrade</Button>
+          <Button onClick={handleUpgradeClick}>Upgrade</Button>
         </BottomButtonDiv>
-        {/* progress-bar */}
         <Progressox className="w-100">
           <ProgressLabel className="progress-label">
             Updating Flow
@@ -401,6 +410,16 @@ const Summary = () => {
           </CustomRedProgress>
         </Progressox>
       </BottomButton>
+      <NamespaceDeploy
+        isOpen={isModalOpen}
+        closePopup={handleCloseModal}
+        setModalOpen={setModalOpen}
+        openParameterContext={openParameterContext}
+      />
+      <AddParameterContext
+        isOpen={isParameterContextOpen}
+        closePopup={closeParameterContext}
+      />
     </MainContainer>
   );
 };
