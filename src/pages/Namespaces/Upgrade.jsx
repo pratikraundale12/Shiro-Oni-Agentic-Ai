@@ -143,6 +143,10 @@ const Upgrade = () => {
     { id: '2', name: 'Select Namespace' },
     { id: '3', name: 'Configuration Details' },
   ];
+  const handleBreadcrumbClick = breadcrumb => {
+    console.log('Breadcrumb clicked:', breadcrumb);
+    // Perform your navigation or other actions here
+  };
   return (
     <Container>
       <TopTitleBar className=" d-flex  mb-3">
@@ -154,7 +158,10 @@ const Upgrade = () => {
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex  mb-3">
-        <Breadcrumb breadcrumbs={breadcrumbData} />
+        <Breadcrumb
+          breadcrumbs={breadcrumbData}
+          onBreadcrumbClick={handleBreadcrumbClick}
+        />
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">

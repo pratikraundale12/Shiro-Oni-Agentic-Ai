@@ -9,6 +9,8 @@ const BreadcrumbContainer = styled.div`
 `;
 
 const BreadcrumbItem = styled.span`
+  cursor: pointer;
+
   &::after {
     content: ' > ';
     padding: 0 8px;
@@ -17,13 +19,29 @@ const BreadcrumbItem = styled.span`
   &:last-child::after {
     content: '';
   }
+
+  &:last-child {
+    color: #c52b2b;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
-const Breadcrumb = ({ breadcrumbs }) => {
+const Breadcrumb = ({ breadcrumbs, onBreadcrumbClick }) => {
+  const handleClick = breadcrumb => {
+    if (onBreadcrumbClick) {
+      onBreadcrumbClick(breadcrumb);
+    }
+  };
+
   return (
     <BreadcrumbContainer>
       {breadcrumbs.map((breadcrumb, index) => (
-        <BreadcrumbItem key={index}>{breadcrumb.name}</BreadcrumbItem>
+        <BreadcrumbItem key={index} onClick={() => handleClick(breadcrumb)}>
+          {breadcrumb.name}
+        </BreadcrumbItem>
       ))}
     </BreadcrumbContainer>
   );
@@ -36,6 +54,11 @@ Breadcrumb.propTypes = {
       name: PropTypes.string.isRequired,
     })
   ).isRequired,
+  onBreadcrumbClick: PropTypes.func,
+};
+
+Breadcrumb.defaultProps = {
+  onBreadcrumbClick: () => {},
 };
 
 export default Breadcrumb;

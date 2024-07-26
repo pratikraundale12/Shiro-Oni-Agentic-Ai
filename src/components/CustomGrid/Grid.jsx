@@ -12,6 +12,7 @@ import { GridActions } from './GridActions';
 import { useFetchData } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
 import Pagination from './Pagination';
+import Breadcrumb from '../../shared/Breadcrumb';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -35,15 +36,18 @@ export const Grid = ({
   title = '',
   buttonText = '',
   addModal = () => {},
+  onBreadcrumbClick = () => {},
 }) => {
   const {
-    response: { count, prev, next, data },
+    response: { count, prev, next, data, breadcrumb },
     page,
     setPage,
     search,
     setSearch,
     loading,
   } = useFetchData(module);
+  console.log('breadcrumb', breadcrumb);
+
   const DATA = { nodes: loading ? [] : data };
   const tableTheme = useTheme([
     getTheme(),
@@ -105,6 +109,10 @@ export const Grid = ({
         addModal={addModal}
       />
       {/* Breadcrumb */}
+      <Breadcrumb
+        breadcrumbs={breadcrumb}
+        onBreadcrumbClick={onBreadcrumbClick}
+      />
       <TableContainer>
         <CompactTable
           data={DATA}
@@ -135,4 +143,11 @@ Grid.propTypes = {
   title: PropTypes.string,
   buttonText: PropTypes.string,
   addModal: PropTypes.func,
+  breadcrumbs: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    })
+  ),
+  onBreadcrumbClick: PropTypes.func,
 };

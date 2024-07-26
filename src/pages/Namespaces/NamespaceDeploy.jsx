@@ -2,6 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from '../../shared';
 import styled from 'styled-components';
+import {
+  SmallNotThunderIcon,
+  SmallThunderIcon,
+  SquareBoxIcon,
+  TriangleExclamationMarkIcon,
+  TriangleIcons,
+} from '../../assets';
 
 const ModalBody = styled.div`
   padding: 35px 16px 25px;
@@ -174,69 +181,19 @@ const NamespaceDeploy = ({ isOpen, closePopup, openParameterContext }) => {
           <CustomNine className="col-9 mb-3">
             <ActiveButtonContainer className="d-flex ">
               <ActiveButtonDiv className="div-btn-1">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M4 13.4645V2.53687C4 2.01325 4.57597 1.69402 5.02 1.97154L13.7621 7.4354C14.1799 7.69647 14.1799 8.30493 13.7621 8.56607L5.02 14.0299C4.57597 14.3074 4 13.9882 4 13.4645Z"
-                    fill="#B5BDC8"
-                  />
-                </svg>
+                <TriangleIcons color="#B5BDC8" />
                 <span>2</span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-2">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2 2.66667C2 2.29848 2.29848 2 2.66667 2H13.3333C13.7015 2 14 2.29848 14 2.66667V13.3333C14 13.7015 13.7015 14 13.3333 14H2.66667C2.29848 14 2 13.7015 2 13.3333V2.66667Z"
-                    fill="#B5BDC8"
-                  />
-                </svg>
+                <SquareBoxIcon color="#B5BDC8" />
                 <span>2</span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-3">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8.57727 1.99946L14.9281 12.9995C15.1123 13.3183 15.003 13.7261 14.6841 13.9101C14.5828 13.9687 14.4678 13.9995 14.3508 13.9995H1.64909C1.2809 13.9995 0.982422 13.701 0.982422 13.3328C0.982422 13.2157 1.01323 13.1008 1.07174 12.9995L7.4226 1.99946C7.60667 1.6806 8.0144 1.57135 8.33327 1.75544C8.4346 1.81396 8.5188 1.89812 8.57727 1.99946ZM7.33327 10.6661V11.9995H8.6666V10.6661H7.33327ZM7.33327 5.99946V9.33282H8.6666V5.99946H7.33327Z"
-                    fill="#B5BDC8"
-                  />
-                </svg>
+                <TriangleExclamationMarkIcon color="#B5BDC8" />
                 <span>2</span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-4">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect width="24" height="24" fill="white" />
-                  <path d="M13 5V11H16L11 19V13H8L13 5Z" fill="#B5BDC8" />
-                  <line
-                    y1="-0.25"
-                    x2="18.4889"
-                    y2="-0.25"
-                    transform="matrix(0.487754 0.872981 -0.462814 0.886455 7.62793 3.19922)"
-                    stroke="#B5BDC8"
-                    strokeWidth="0.5"
-                  />
-                </svg>
+                <SmallNotThunderIcon color="#B5BDC8" />
                 <span>2</span>
               </ActiveButtonDiv>
             </ActiveButtonContainer>
@@ -250,67 +207,16 @@ const NamespaceDeploy = ({ isOpen, closePopup, openParameterContext }) => {
           <CustomNine className="col-9 mb-3">
             <ActiveButtonContainer className="d-flex ">
               <ActiveButtonDiv className="div-btn-1">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M4 13.4645V2.53687C4 2.01325 4.57597 1.69402 5.02 1.97154L13.7621 7.4354C14.1799 7.69647 14.1799 8.30493 13.7621 8.56607L5.02 14.0299C4.57597 14.3074 4 13.9882 4 13.4645Z"
-                    fill="#B5BDC8"
-                  />
-                </svg>
+                <TriangleIcons color="#B5BDC8" />
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-2">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2 2.66667C2 2.29848 2.29848 2 2.66667 2H13.3333C13.7015 2 14 2.29848 14 2.66667V13.3333C14 13.7015 13.7015 14 13.3333 14H2.66667C2.29848 14 2 13.7015 2 13.3333V2.66667Z"
-                    fill="#B5BDC8"
-                  />
-                </svg>
+                <SquareBoxIcon color="#B5BDC8" />
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-3">
-                <svg
-                  width="30"
-                  height="30"
-                  viewBox="0 0 30 30"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect width="30" height="30" fill="#F5F7FA" />
-                  <path
-                    d="M16.25 6.25V13.75H20L13.75 23.75V16.25H10L16.25 6.25Z"
-                    fill="#B5BDC8"
-                  />
-                </svg>
+                <SmallThunderIcon color="#B5BDC8" />
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-4">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect width="24" height="24" fill="white" />
-                  <path d="M13 5V11H16L11 19V13H8L13 5Z" fill="#B5BDC8" />
-                  <line
-                    y1="-0.25"
-                    x2="18.4889"
-                    y2="-0.25"
-                    transform="matrix(0.487754 0.872981 -0.462814 0.886455 7.62793 3.19922)"
-                    stroke="#B5BDC8"
-                    strokeWidth="0.5"
-                  />
-                </svg>
+                <SmallNotThunderIcon color="#B5BDC8" />
               </ActiveButtonDiv>
             </ActiveButtonContainer>
           </CustomNine>

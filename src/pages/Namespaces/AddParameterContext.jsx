@@ -83,10 +83,10 @@ const AddParameterContext = ({ isOpen, closePopup }) => {
             <ColumnOneTwo className="col-12">
               <InputBox>
                 <InputField
-                  name="name"
+                  name="description"
                   type="text"
-                  label="Name"
-                  placeholder="User"
+                  label="Description"
+                  placeholder="Description"
                   icon={<QRIcons />}
                 />
               </InputBox>

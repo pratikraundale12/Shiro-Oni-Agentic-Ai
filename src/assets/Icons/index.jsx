@@ -53,3 +53,6 @@ export * from './SquareBoxIcon';
 export * from './ThunderIocn';
 export * from './CrossWithCircleIcon';
 export * from './InvalidProcessorIcon';
+export * from './SmallNotThunderIcon';
+export * from './SmallThunderIcon';
+export * from './TriangleExclamationMarkIcon';

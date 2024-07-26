@@ -57,6 +57,13 @@ export const ListNamespaces = () => {
           { label: 'Dev', value: '403ca918-331f-48ba-ae08-7de17489b6b8' },
           { label: 'Prod', value: 'd8dd9461-53d5-4f69-94a9-5e9f6c734d64' },
         ]}
+        breadcrumbs={[
+          { id: '1', name: 'Namespace1' },
+          { id: '2', name: 'Namespace2' },
+        ]}
+        onBreadcrumbClick={breadcrumb => {
+          console.log('Breadcrumb clicked:', breadcrumb);
+        }}
       />
     </Container>
   );
