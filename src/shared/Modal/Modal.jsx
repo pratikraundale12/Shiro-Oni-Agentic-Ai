@@ -101,6 +101,7 @@ export const Modal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={styleObject}
+      ariaHideApp={false}
     >
       <Header>
         <HeaderText>{title}</HeaderText>
