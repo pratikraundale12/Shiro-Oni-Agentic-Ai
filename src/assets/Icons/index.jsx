@@ -57,3 +57,11 @@ export * from './ExclamationFailedTestingIcon';
 export * from './CrossWithCircleIcon';
 export * from './KeyIcons';
 export * from './CrossIcon';
+export * from './UserIcon';
+export * from './UserImageUploadIcon';
+export * from './AddIcon';
+export * from './UpArrowImageIcon';
+export * from './CrossWithCircleIcon';
+export * from './InvalidProcessorIcon';
+export * from './PhoneIcon';
+export * from './Cross

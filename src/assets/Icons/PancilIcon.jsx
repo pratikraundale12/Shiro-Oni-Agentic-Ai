@@ -3,22 +3,25 @@ import PropTypes from 'prop-types';
 import { theme } from '../../styles';
 
 export const PencilIcon = ({
-  width = 18,
-  height = 18,
+  width = 33,
+  height = 33,
   color = theme.colors.darker,
 }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={width}
-    height={height}
-    fill="none"
-    viewBox="0 0 20 20"
-  >
-    <path
-      fill={color}
-      d="M2 16.89h1.414l9.314-9.314-1.414-1.414L2 15.476v1.414Zm16 2H0v-4.243L13.435 1.212a1 1 0 0 1 1.414 0l2.829 2.829a1 1 0 0 1 0 1.414L6.243 16.89H18v2ZM12.728 4.748l1.414 1.414 1.414-1.414-1.414-1.414-1.414 1.414Z"
-    />
-  </svg>
+  <>
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 33 33"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="16.5" cy="16.5" r={16} fill={color} stroke="#DDE4F0" />
+      <path
+        d="M10.1667 21.7414H11.3452L19.1066 13.98L17.9281 12.8015L10.1667 20.5629V21.7414ZM23.5 23.4081H8.5V19.8725L19.6958 8.67669C20.0213 8.35126 20.5489 8.35126 20.8743 8.67669L23.2314 11.0337C23.5568 11.3592 23.5568 11.8868 23.2314 12.2122L13.7022 21.7414H23.5V23.4081ZM19.1066 11.623L20.2851 12.8015L21.4636 11.623L20.2851 10.4445L19.1066 11.623Z"
+        fill="#444445"
+      />
+    </svg>
+  </>
 );
 
 PencilIcon.propTypes = {

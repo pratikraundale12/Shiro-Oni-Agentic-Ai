@@ -1,7 +1,7 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-export const FlowMetricsChart = () => {
+export const FlowMetrics = () => {
   const flowMetricsData = [
     {
       name: 'Flow Files Qued',

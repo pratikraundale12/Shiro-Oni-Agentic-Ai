@@ -1,6 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { DeleteSmallIcon, PencilIcon } from '../../../assets';
+import { useGlobalContext } from '../../../utils';
 
 // Styled components based on the provided CSS
 const ActionTd = styled.div`
@@ -17,10 +19,20 @@ const IconWrapper = styled.div`
   cursor: pointer;
 `;
 
-export const ActionRender = () => {
+export const ActionRender = ({ item }) => {
+  const { state, setState } = useGlobalContext();
+
   return (
     <ActionTd>
-      <IconWrapper>
+      <IconWrapper
+        onClick={() =>
+          setState({
+            ...state,
+            userModal: true,
+            selectedItem: item,
+          })
+        }
+      >
         <PencilIcon />
       </IconWrapper>
       <IconWrapper>
@@ -28,4 +40,8 @@ export const ActionRender = () => {
       </IconWrapper>
     </ActionTd>
   );
+};
+
+ActionRender.propTypes = {
+  item: PropTypes.object.isRequired,
 };

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+
 import { theme } from '../../styles';
 import { Button, Dropdown } from '../../shared';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
@@ -57,7 +58,6 @@ export const GridActions = ({
   addModal: Modal,
 }) => {
   const navigate = useNavigate();
-
   return (
     <>
       <Flex>

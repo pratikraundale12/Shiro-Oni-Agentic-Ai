@@ -26,6 +26,7 @@ const Container = styled.div`
 
   .wrapper {
     position: relative;
+    margin-top: 10px;
   }
 
   &.error {
