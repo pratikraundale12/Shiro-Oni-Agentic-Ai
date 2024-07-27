@@ -1,15 +1,23 @@
-import React from 'react';
+/* eslint-disable */
+
+import React, { useEffect, useState } from 'react';
+import { Modal } from '../../../shared';
 import styled from 'styled-components';
 import { FileIcon, PlusCircleIcon } from '../../../assets';
 import { Button, SelectField } from '../../../shared';
 import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
+import { getOneRegistry, getRegistryList } from '../../../utils/services';
+import { SummaryModal } from './SummaryModal';
+import { WhiteBoradIcon } from '../../../assets';
+import { testRegistry } from '../../../utils/services';
+import { RightCircleIcon, ExclamationFailedTestingIcon } from '../../../assets';
 
 const FlexContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Distribute space evenly */
-  gap: 90px; /* Adjust the value as needed */
+  justify-content: space-between;
+  gap: 90px;
 `;
 
 const ORText = styled.p`
@@ -116,7 +124,7 @@ const FileType = styled.div`
   font-weight: 500;
 
   & > svg {
-    margin-left: 8px; /* Adjust the margin value as needed */
+    margin-left: 8px;
   }
 `;
 
@@ -138,98 +146,268 @@ const ParentDiv = styled.div`
   background: #f5f7fa;
 `;
 
-export const AddRegistry = ({ setNewRegistry }) => {
-  const { control } = useForm();
-  return (
-    <ParentDiv>
-      <FlexContainer>
-        <SelectField control={control} label="Registry Name" />
+const NoDataContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+`;
 
-        <ORText>OR</ORText>
-        <button
-          onClick={() => {
-            setNewRegistry(true);
-          }}
-          style={{ border: 'none', background: 'none', padding: 0 }}
-        >
-          <Button
-            variant="secondary"
-            //  size="large"
+const NoDataText = styled.div`
+  margin-top: 10px;
+  font-size: 16px;
+  color: #666;
+`;
+
+export const AddRegistry = ({
+  setNewRegistry,
+  clusterData,
+  registryData,
+  setRegistryData,
+  setActiveTab,
+}) => {
+  const [successTest, setSuccessTest] = useState(false);
+  const [failedTest, setFailedTest]  = useState(false);
+  const [continueStatus, setContinueStatus] = useState(false);
+  const { control, watch } = useForm();
+  const [registries, setRegistries] = useState([]);
+  const selectedRegistryId = watch('registry');
+  const [openSummary, setOpenSummary] = useState(false);
+  const [testMessage, setTestMessage] = useState('');
+
+  // const [ selectedRegistryData,setSelectedRegistryData] = useState()
+
+  const fetchRegistry = async () => {
+    try {
+      const response = await getRegistryList();
+      const names = response.data.map(item => ({
+        label: item.name,
+        value: item.id,
+      }));
+      setRegistries(names);
+    } catch (error) {
+      console.error('Failed to fetch registries:', error);
+    }
+  };
+
+  console.log(registryData, 'selected');
+  useEffect(() => {
+    fetchRegistry();
+  }, []);
+
+  useEffect(() => {
+    console.log('Updated registries:', registries);
+    console.log('Selected registry:', selectedRegistryId);
+    if (selectedRegistryId) {
+      fetchRegistryDetails(selectedRegistryId);
+    }
+  }, [registries, selectedRegistryId]);
+
+  const fetchRegistryDetails = async id => {
+    try {
+      const response = await getOneRegistry(selectedRegistryId);
+      console.log(response, 'ressss');
+      setRegistryData(response); // Update state with fetched details
+    } catch (error) {
+      console.error('Failed to fetch registry details:', error);
+    }
+  };
+
+   
+  const testRegistryData = async ()=> {
+    // setRegistryData({
+    //   name: registryData.name,
+    //   registry_url: registryData.registry_url,
+    //   username: registryData?.username,
+    //   password: registryData?.password,
+    //   file: registryData?.file,
+    //   passphrase: registryData?.passphrase,
+    // })
+    // console.log("datasssssss",data)
+    const payload = new FormData();
+    payload.append('name', registryData?.name);
+    payload.append('nifi_url', registryData?.registry_url);
+    registryData?.password && payload.append('password', registryData?.password);
+    registryData?.username &&
+      payload.append('username', registryData?.username) &&
+      payload.append('username', registryData?.username);
+      registryData?.file &&
+      payload.append('file', registryData?.file);
+      registryData?.passphrase &&
+      payload.append('passphrase', registryData?.passphrase );
+    const response = await testRegistry(payload);
+    console.log('RESPONSE', response);
+    if (response.status === 204) {
+     
+      setSuccessTest(true);
+      setContinueStatus(true);
+     
+    // setClusterData(clusterFormData);
+      console.log('tested');
+    } else {
+      setContinueStatus(false);
+      setTestMessage(response.message);
+      setFailedTest(true);
+      console.log('errorr');
+    }
+  };
+
+
+  return (
+    <>
+      <ParentDiv>
+        <FlexContainer>
+          <SelectField
+            control={control}
+            name="registry"
+            label="Registry Name"
+            options={registries}
+          />
+          <ORText>OR</ORText>
+          <button
+            onClick={() => setNewRegistry(true)}
+            style={{ border: 'none', background: 'none', padding: 0 }}
           >
-            <PlusCircleIcon width={20} height={20} color="red" />
-            Add New Registry
-          </Button>
-        </button>
-      </FlexContainer>
-      <Container>
-        <RegistryDetailsDiv>
-          <Title>Registry Details</Title>
-          <Row>
-            <Column size={33.33}>
-              <BoxContentArea>
-                <p>Registry Name</p>
-                <span>DevNiFi</span>
-              </BoxContentArea>
-              <BoxContentArea>
-                <p>Registry URL</p>
-                <span>URL: https://172.31.47.210/9443</span>
-              </BoxContentArea>
-              <BoxContentArea>
-                <p>Username</p>
-                <span>N/A</span>
-              </BoxContentArea>
-              <BoxContentArea>
-                <p>Password</p>
-                <span>N/A</span>
-              </BoxContentArea>
-            </Column>
-            <Column size={66.66}>
-              <BoxContentArea>
-                <p>Nifi Certificate</p>
-              </BoxContentArea>
-              <CertificateAddedDiv>
-                <div>
-                  <FileIcon width={25} height={35} />
-                </div>
-                <FileInfo>
-                  <FileDetails>
-                    <FileTypeContainer>
-                      <FileType>
-                        PFX file
-                        {/* <CircleExclamationMarkIcon color='#DDE4F0' /> */}
-                      </FileType>
-                      <FileSize>20MB</FileSize>
-                    </FileTypeContainer>
-                    <FilePath>
-                      /home/rahulksi184/Softwares/NIFI_Dev_Certificates/nifi-certificate
-                    </FilePath>
-                  </FileDetails>
-                </FileInfo>
-              </CertificateAddedDiv>
-              <div className="d-flex align-items-center justify-content-start">
-                <p className="txt me-4">PFX Paraphrase:</p>
-                <PasswordText>********************</PasswordText>
-              </div>
-            </Column>
-          </Row>
-          <BottomButtonDiv>
-            <ButtonDiv>
-              <Button variant="secondary">Edit</Button>
-              <Button>Delete</Button>
-            </ButtonDiv>
-          </BottomButtonDiv>
-        </RegistryDetailsDiv>
-      </Container>
-      <BottomButtonDivs>
-        <BtnDiv>
-          <Button variant="secondary">Back</Button>
-          <Button>Continue</Button>
-        </BtnDiv>
-        <BtnDiv>
-          <Button>Test Cluster</Button>
-        </BtnDiv>
-      </BottomButtonDivs>
-    </ParentDiv>
+            <Button variant="secondary">
+              <PlusCircleIcon width={20} height={20} color="red" />
+              Add New Registry
+            </Button>
+          </button>
+        </FlexContainer>
+        <Container>
+          {selectedRegistryId ? (
+            <RegistryDetailsDiv>
+              <Title>Registry Details</Title>
+              <Row>
+                <Column size={33.33}>
+                  <BoxContentArea>
+                    <p>Registry Name</p>
+                    <span>{registryData.name}</span>
+                  </BoxContentArea>
+                  <BoxContentArea>
+                    <p>Registry URL</p>
+                    <span>{registryData.registry_url}</span>
+                  </BoxContentArea>
+                  <BoxContentArea>
+                    <p>Username</p>
+                    <span>N/A</span>
+                  </BoxContentArea>
+                  <BoxContentArea>
+                    <p>Password</p>
+                    <span>N/A</span>
+                  </BoxContentArea>
+                </Column>
+                <Column size={66.66}>
+                  <BoxContentArea>
+                    <p>Nifi Certificate</p>
+                  </BoxContentArea>
+                  <CertificateAddedDiv>
+                    <div>
+                      <FileIcon width={25} height={35} />
+                    </div>
+                    <FileInfo>
+                      <FileDetails>
+                        <FileTypeContainer>
+                          <FileType>PFX file</FileType>
+                          <FileSize>20MB</FileSize>
+                        </FileTypeContainer>
+                        <FilePath>{registryData.file}</FilePath>
+                      </FileDetails>
+                    </FileInfo>
+                  </CertificateAddedDiv>
+                  <div className="d-flex align-items-center justify-content-start">
+                    <p className="txt me-4">PFX Paraphrase:</p>
+                    <PasswordText>***********</PasswordText>
+                  </div>
+                </Column>
+              </Row>
+              <BottomButtonDiv>
+                <ButtonDiv>
+                  <Button variant="secondary">Edit</Button>
+                  <Button>Delete</Button>
+                </ButtonDiv>
+              </BottomButtonDiv>
+            </RegistryDetailsDiv>
+          ) : (
+            <NoDataContainer>
+              <WhiteBoradIcon />
+              <NoDataText>No data found</NoDataText>
+            </NoDataContainer>
+          )}
+        </Container>
+        <BottomButtonDivs>
+          <BtnDiv>
+            <Button variant="secondary" onClick={()=>{setActiveTab('cluster')}}>Back</Button>
+            <Button
+            disabled={!continueStatus}
+              onClick={() => {
+                setOpenSummary(true);
+              }}
+            >
+              Continue
+            </Button>
+          </BtnDiv>
+          <BtnDiv>
+            <Button onClick={()=>{testRegistryData()}}>Test Cluster</Button>
+          </BtnDiv>
+        </BottomButtonDivs>
+      </ParentDiv>
+
+      {/* <SummaryModal openSummary={openSummary} setOpenSummary={setOpenSummary} selectedRegistry={selectedRegistryId}/> */}
+      <SummaryModal
+        clusterData={clusterData}
+        registryData={registryData}
+        openSummary={openSummary}
+        setOpenSummary={setOpenSummary}
+      />
+
+<Modal
+        title="Testing Successfull"
+        isOpen={successTest}
+        onRequestClose={() => setSuccessTest(false)}
+        size="sm"
+        // secondaryButtonText="Cancel"
+        primaryButtonText="Continue"
+        onSubmit={() => setSuccessTest(false)}
+      >
+        <>
+          <div className="text-center">
+            <RightCircleIcon color='#0CBF59' />
+          </div>
+          <h5 className="pt-4 mt-2 mb-0 text-center">
+          registry Test Successful
+          </h5>
+          <p className="pt-3 mb-0 text-center">
+            Your registry Test was successful. You <br /> can now proceed to the
+            next steps.
+          </p>
+        </>
+      </Modal>
+
+
+      <Modal
+        title="Testing Successfull"
+        isOpen={failedTest}
+        onRequestClose={() => setFailedTest(false)}
+        size="sm"
+        primaryButtonText="Continue"
+        onSubmit={() => setFailedTest(false)}
+      >
+        <>
+          <div className="text-center">
+            <ExclamationFailedTestingIcon width={90} height={65}/>
+          </div>
+          <h5 className="pt-4 mt-2 mb-0 text-center">
+            Cluster Test Failed
+          </h5>
+          {testMessage!= '' ?  <p className="pt-3 mb-0 text-center">{testMessage}</p> :  <p className="pt-3 mb-0 text-center">
+          We encountered an issue while testing your cluster. Please check if your File is Correct
+          </p>}
+        </>
+      </Modal>
+    </>
   );
 };
 

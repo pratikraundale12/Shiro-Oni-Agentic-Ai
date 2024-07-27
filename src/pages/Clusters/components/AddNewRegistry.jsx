@@ -1,8 +1,15 @@
-import React from 'react';
-import styled from 'styled-components';
-import { InputField } from '../../../shared';
-import { Button } from '../../../shared';
+/*eslint-disable*/
 
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { InputField, Button,PasswordField } from '../../../shared';
+import { RegexConst } from '../../../utils';
+import { Modal } from '../../../shared';
+import { AddCertificate } from './AddCertificate';
+import { SummaryModal } from './SummaryModal';
 import {
   LinkIcons,
   SmallPerfileIcon,
@@ -13,7 +20,10 @@ import {
   WhiteBoradIcon,
   PencilIcon,
   DeleteSmallIcon,
+  RightCircleIcon,
+  ExclamationFailedTestingIcon,
 } from '../../../assets';
+import { testRegistry } from '../../../utils/services';
 
 const InputContainer = styled.div`
   display: flex;
@@ -30,7 +40,6 @@ const FlexContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
 `;
 
 const CertificateContainer = styled.div`
@@ -41,6 +50,14 @@ const CertificateContainer = styled.div`
   padding: 20px;
   margin-top: 20px;
   border-radius: 8px;
+
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16px;
+    margin-bottom: 6px;
+    color: ${props => props.theme.colors.darker};
+  }
 `;
 
 const CertificateHeader = styled.div`
@@ -81,16 +98,15 @@ const FileTypeContainer = styled.div`
 `;
 
 const FileType = styled.div`
+  font-weight: 500; /* Make the text bold */
   display: flex;
   align-items: center;
-
-  & > svg {
-    margin-left: 8px;
-  }
+  gap: 8px; /* Add some space between the text and the icon */
 `;
 
 const FileSize = styled.span`
   margin-left: auto;
+  font-weight: 500;
 `;
 
 const CertificateFooter = styled.div`
@@ -100,6 +116,7 @@ const CertificateFooter = styled.div`
 
 const ParaphraseLabel = styled.div`
   margin-right: 20px;
+  font-weight: 500;
 `;
 
 const ParaphraseValue = styled.div`
@@ -148,117 +165,308 @@ const BtnDiv = styled.div`
 `;
 
 const ParentDiv = styled.div`
-  height: 80vh; /* Adjust the height as needed */
-  overflow-y: auto; /* Enable vertical scrolling */
   padding: 20px;
   background: #f5f7fa;
   padding-bottom: 60px; /* Add padding bottom to ensure buttons are not cut off */
 `;
+const NoDataContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+`;
 
-export const AddNewRegistry = () => {
+const NoDataText = styled.div`
+  margin-top: 10px;
+  font-size: 16px;
+  color: #666;
+`;
+
+const registrySchema = yup.object().shape({
+  name: yup
+    .string()
+    .matches(
+      RegexConst.REGESTRY_NAME,
+      'Registry Name must be at least 3 characters long'
+    )
+    .required('Registry Name is required'),
+    registry_url: yup
+    .string()
+    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
+    .required('registry URL is required'),
+});
+
+export const AddNewRegistry = ({setRegistryData,registryData,clusterData,setActiveTab}) => {
+  const [successTest, setSuccessTest] = useState(false);
+  const [failedTest, setFailedTest]  = useState(false);
+  const [continueStatus, setContinueStatus] = useState(false);
+  const [addCertificate , setAddCertificate] = useState(false);
+  const [registryCertificate, setRegistryCertificate] = useState();
+  const [openSummary, setOpenSummary] = useState(false);
+  const [testMessage, setTestMessage] = useState('');
+  const [registryFormData, setRegistryFormData] = useState({
+    name: registryData?.name || '',
+    registry_url: registryData?.registry_url || '',
+    username: registryData?.username || '',
+    password: registryData?.password || '',
+  });
+
+
+  console.log(registryCertificate,"clsutercertificate")
+  console.log(registryFormData,"registryFormData");
+  console.log("registryData........",registryData);
+
+  const {
+    watch,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(registrySchema),
+  });
+
+  const testRegistryData = async data => {
+    setRegistryData({
+      name: data.name,
+      registry_url: data.registry_url,
+      username: data?.username,
+      password: data?.password,
+      file: registryCertificate?.file,
+      passphrase: registryCertificate?.passphrase,
+    })
+    console.log("datasssssss",data)
+    const payload = new FormData();
+    payload.append('name', data?.name);
+    payload.append('nifi_url', data?.registry_url);
+    data?.password && payload.append('password', data?.password);
+    data?.username &&
+      payload.append('username', data?.username) &&
+      payload.append('username', data?.username);
+      registryCertificate?.file &&
+      payload.append('file', registryCertificate?.file);
+      registryCertificate?.passphrase &&
+      payload.append('passphrase', registryCertificate?.passphrase );
+    const response = await testRegistry(payload);
+    console.log('RESPONSE', response);
+    if (response.status === 204) {
+     
+      setSuccessTest(true);
+      setContinueStatus(true);
+     
+      // setClusterData(clusterFormData);
+      console.log('tested');
+    } else {
+      setContinueStatus(false);
+      setTestMessage(response.message);
+      setFailedTest(true);
+      console.log('errorr');
+    }
+  };
+
+  const onSubmit = data => {
+
+    console.log('cl', data);
+    setRegistryFormData({
+      name: data.name,
+      registry_url: data.registry_url,
+      username: data.username,
+      password: data.password
+    })
+    testRegistryData(data);
+  };
+
+  const handleInputChange = e => {
+    console.log("hhhhhhhhh")
+    const { name, value } = e.target;
+    setRegistryFormData(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
   return (
-    <ParentDiv>
-      <InputField
-        type="text"
-        placeholder="Enter your Registry Name"
-        name="registryName"
-        id="registry-name"
-        icon={<QRIcons />}
-        label="Registry Name"
-      />
-      <InputField
-        type="text"
-        placeholder="Enter your NiFi URL"
-        name="nifiUrl"
-        id="nifiUrl"
-        icon={<LinkIcons />}
-        label="NifiUrl"
-      />
-      <InputContainer>
-        <StyledInputField
-          type="text"
-          placeholder="Enter Your UserName"
-          name="username"
-          id="username"
-          icon={<SmallPerfileIcon />}
-          label="Username"
-        />
-        <StyledInputField
-          type="password"
-          placeholder="Enter Your Password"
-          name="password"
-          id="password"
-          icon={<LinkIcons />}
-          label="Password"
-        />
-        <FlexContainer>
-          <p>OR</p>
-          <Button
-            icon={<PlusCircleIcon width={20} height={20} color="white" />}
-          >
-            Add Certificate
-          </Button>
-        </FlexContainer>
-      </InputContainer>
+    <>
+      <ParentDiv>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <InputField
+            type="text"
+            placeholder="Enter your Registry Name"
+            name="name"
+            icon={<QRIcons />}
+            label="Registry Name"
+            register={register}
+            errors={errors}
+            onChange={handleInputChange}
+          />
+          {errors.name && <p>{errors.name.message}</p>}
+          <InputField
+            type="text"
+            placeholder="Enter your registry URL"
+            name="registry_url"
+            icon={<LinkIcons />}
+            label="registryUrl"
+            register={register}
+            errors={errors}
+            onChange={handleInputChange}
+          />
+          {errors.registry_url && <p>{errors.registry_url.message}</p>}
+          <InputContainer>
+            <InputField
+              type="text"
+              placeholder="Enter Your UserName"
+              name="username"
+              icon={<SmallPerfileIcon />}
+              label="Username"
+              register={register}
+              errors={errors}
+              onChange={handleInputChange}
+            />
+            {/* <StyledInputField
+              type="password"
+              placeholder="Enter Your Password"
+              name="password"
+              icon={<LinkIcons />}
+              label="Password"
+              register={register}
+              errors={errors}
+              onChange={handleInputChange}
+            /> */}
+              <PasswordField
+            name="password"
+            register={register}
+            errors={errors}
+            watch={watch}
+            label="Password"
+            helperText="Must be 8 characters at least"
+            />
+            <FlexContainer>
+              <p>OR</p>
+              <Button
+                onClick={()=>setAddCertificate(true)}
+                icon={<PlusCircleIcon width={20} height={20} color="white" />}
+              >
+                Add Certificate
+              </Button>
+            </FlexContainer>
+          </InputContainer>
+          {registryCertificate ? <>
+          <CertificateContainer>
+            <CertificateHeader>
+              <div>
+                NiFi Certificate
+                <CircleExclamationMarkIcon color="#DDE4F0" />
+              </div>
+            </CertificateHeader>
+            <CertificateDetails>
+              <FileIcon width={25} height={35} />
+              <FileInfo>
+                <FileDetails>
+                  <FileTypeContainer>
+                    <FileType>
+                      PFX file
+                      <CircleExclamationMarkIcon color="#DDE4F0" />
+                    </FileType>
+                    <FileSize>20MB</FileSize>
+                  </FileTypeContainer>
+                  <FilePath>
+                  {registryCertificate?.file.name}
+                  </FilePath>
+                </FileDetails>
+              </FileInfo>
+            </CertificateDetails>
+            <CertificateFooter>
+              <ParaphraseLabel>PFX Paraphrase:</ParaphraseLabel>
+              <ParaphraseValue>********************</ParaphraseValue>
+            </CertificateFooter>
+          </CertificateContainer>
 
-      <CertificateContainer>
-        <CertificateHeader>
-          <div>
-            <label
-              htmlFor="first-name"
-              className="mb-2 d-flex align-items-center"
-            >
-              NiFi Certificate
-              <CircleExclamationMarkIcon />
-            </label>
-          </div>
-        </CertificateHeader>
-        <CertificateDetails>
-          <FileIcon width={25} height={35} />
-          <FileInfo>
-            <FileDetails>
-              <FileTypeContainer>
-                <FileType>
-                  PFX file
-                  <CircleExclamationMarkIcon color="#DDE4F0" />
-                </FileType>
-                <FileSize>20MB</FileSize>
-              </FileTypeContainer>
-              <FilePath>
-                /home/rahulksi184/Softwares/NIFI_Dev_Certificates/nifi-certificate
-              </FilePath>
-            </FileDetails>
-          </FileInfo>
-        </CertificateDetails>
-        <CertificateFooter>
-          <ParaphraseLabel>PFX Paraphrase:</ParaphraseLabel>
-          <ParaphraseValue>********************</ParaphraseValue>
-        </CertificateFooter>
-      </CertificateContainer>
-
-      <UploadCertificateContainer>
-        <CertificateMessage>
+          <UploadCertificateContainer>
+            <CertificateMessage>
+              <WhiteBoradIcon />
+              registry Certificate Added!!
+            </CertificateMessage>
+            <EditDeleteContainer>
+              <IconButton>
+                <PencilIcon />
+              </IconButton>
+              <IconButton>
+                <DeleteSmallIcon color="#FF0000" />
+              </IconButton>
+            </EditDeleteContainer>
+          </UploadCertificateContainer>
+          </> :  
+          <NoDataContainer>
           <WhiteBoradIcon />
-          Registry Certificate Added!!
-        </CertificateMessage>
-        <EditDeleteContainer>
-          <IconButton>
-            <PencilIcon />
-          </IconButton>
-          <IconButton>
-            <DeleteSmallIcon />
-          </IconButton>
-        </EditDeleteContainer>
-      </UploadCertificateContainer>
-      <BottomButtonDivs>
-        <BtnDiv>
-          <Button variant="secondary">Back</Button>
-          <Button>Continue</Button>
-        </BtnDiv>
-        <BtnDiv>
-          <Button>Test Cluster</Button>
-        </BtnDiv>
-      </BottomButtonDivs>
-    </ParentDiv>
+          <NoDataText>No data found</NoDataText>
+        </NoDataContainer>
+}
+
+          <BottomButtonDivs>
+            <BtnDiv>
+              <Button variant="secondary" onClick={()=>setActiveTab('cluster')}>Back</Button>
+              <Button type="submit" onClick={()=>{setOpenSummary(true)}} disabled={!continueStatus}>Continue</Button>
+              {/* <Button type="submit" onClick={()=>setOpenSummary(true)}>Continue</Button> */}
+      
+            </BtnDiv>
+            <BtnDiv>
+              <Button onClick={handleSubmit(onSubmit)}>Test registry</Button>
+            </BtnDiv>
+          </BottomButtonDivs>
+        </form>
+      </ParentDiv>
+      {/* //testing Modal */}
+      <Modal
+        title="Testing Successfull"
+        isOpen={successTest}
+        onRequestClose={() => setSuccessTest(false)}
+        size="sm"
+        // secondaryButtonText="Cancel"
+        primaryButtonText="Continue"
+        onSubmit={() => setSuccessTest(false)}
+      >
+        <>
+          <div className="text-center">
+            <RightCircleIcon color='#0CBF59' />
+          </div>
+          <h5 className="pt-4 mt-2 mb-0 text-center">
+          registry Test Successful
+          </h5>
+          <p className="pt-3 mb-0 text-center">
+            Your registry Test was successful. You <br /> can now proceed to the
+            next steps.
+          </p>
+        </>
+      </Modal>
+
+
+      <Modal
+        title="Testing Successfull"
+        isOpen={failedTest}
+        onRequestClose={() => setFailedTest(false)}
+        size="sm"
+        primaryButtonText="Continue"
+        onSubmit={() => setFailedTest(false)}
+      >
+        <>
+          <div className="text-center">
+            <ExclamationFailedTestingIcon width={90} height={65}/>
+          </div>
+          <h5 className="pt-4 mt-2 mb-0 text-center">
+            Cluster Test Failed
+          </h5>
+          {testMessage!= '' ?  <p className="pt-3 mb-0 text-center">{testMessage}</p> :  <p className="pt-3 mb-0 text-center">
+          We encountered an issue while testing your cluster. Please check if your File is Correct
+          </p>}
+        </>
+      </Modal>
+
+
+   
+       <AddCertificate addCertificate={addCertificate} setAddCertificate={setAddCertificate} setCertificate={setRegistryCertificate}/>
+       <SummaryModal clusterData={clusterData} registryData={registryData} openSummary={openSummary} setOpenSummary={setOpenSummary}/>
+     
+    </>
   );
 };

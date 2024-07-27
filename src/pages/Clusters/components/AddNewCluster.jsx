@@ -1,8 +1,14 @@
-import React from 'react';
-import styled from 'styled-components';
-import { InputField } from '../../../shared';
-import { Button } from '../../../shared';
+/*eslint-disable*/
 
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { InputField, Button, PasswordField } from '../../../shared';
+import { RegexConst } from '../../../utils';
+import { Modal } from '../../../shared';
+import { AddCertificate } from './AddCertificate';
 import {
   LinkIcons,
   SmallPerfileIcon,
@@ -13,7 +19,10 @@ import {
   WhiteBoradIcon,
   PencilIcon,
   DeleteSmallIcon,
+  RightCircleIcon,
+  ExclamationFailedTestingIcon,
 } from '../../../assets';
+import { testCluster } from '../../../utils/services';
 
 const InputContainer = styled.div`
   display: flex;
@@ -22,9 +31,14 @@ const InputContainer = styled.div`
   gap: 16px;
 `;
 
-const StyledInputField = styled(InputField)`
-  flex: 1;
-`;
+// const StyledInputField = styled(InputField)`
+//   // flex: 1;
+// `;
+
+// const StyledInputFieldpassword = styled(PasswordField)`
+//   // flex: 1;
+// `;
+
 
 const FlexContainer = styled.div`
   display: flex;
@@ -159,107 +173,300 @@ const ParentDiv = styled.div`
   background: #f5f7fa;
   padding-bottom: 60px; /* Add padding bottom to ensure buttons are not cut off */
 `;
+const NoDataContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+`;
 
-// Component
-export const AddNewCluster = () => {
+const NoDataText = styled.div`
+  margin-top: 10px;
+  font-size: 16px;
+  color: #666;
+`;
+
+const clusterSchema = yup.object().shape({
+  name: yup
+    .string()
+    .matches(
+      RegexConst.CLUSTER_NAME,
+      'Cluster Name must be at least 3 characters long'
+    )
+    .required('Cluster Name is required'),
+  nifi_url: yup
+    .string()
+    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
+    .required('NiFi URL is required'),
+});
+
+export const AddNewCluster = ({setActiveTab,setClusterData,clusterData}) => {
+  const [successTest, setSuccessTest] = useState(false);
+  const [failedTest, setFailedTest]  = useState(false);
+  const [continueStatus, setContinueStatus] = useState(false);
+  const [addCertificate , setAddCertificate] = useState(false);
+  const [clusterCertificate, setClusterCertificate] = useState();
+  const [testMessage, setTestMessage] = useState('');
+  // const [testStatus, setTestStatus] = useState(false)
+  const [clusterFormData, setClusterFormData] = useState({
+    name: clusterData?.name|| '',
+    nifi_url: clusterData?.nifi_url || '',
+    username: clusterData.username || '',
+    password: clusterData.password || '',
+  });
+
+
+  console.log(clusterCertificate,"clsutercertificate")
+  console.log(clusterFormData,"clusterFormData");
+  console.log("clusterData........",clusterData);
+
+  const {
+    watch,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(clusterSchema),
+  });
+
+  const testClusterData = async data => {
+    setClusterData({
+      name: data.name,
+      nifi_url: data.nifi_url,
+      username: data.username,
+      password: data.password,
+      file: clusterCertificate?.file,
+      passphrase: clusterCertificate?.passphrase,
+    })
+    console.log("datasssssss",data)
+    const payload = new FormData();
+    payload.append('name', data?.name);
+    payload.append('nifi_url', data?.nifi_url);
+    data?.password && payload.append('password', data?.password);
+    data?.username &&
+      payload.append('username', data?.username);
+      clusterCertificate?.file &&
+      payload.append('file', clusterCertificate?.file);
+      clusterCertificate?.passphrase &&
+      payload.append('passphrase', clusterCertificate?.passphrase );
+    const response = await testCluster(payload);
+    if (response.status === 204) {
+      setSuccessTest(true);
+      setContinueStatus(true);
+      // setClusterData(clusterFocontinueStatus`
+    } else {
+      console.log(response.message,"ERROR RESPONSE")
+      setTestMessage(response.message);
+      setContinueStatus(false);
+      setFailedTest(true);
+      console.log('errorr');
+    }
+  };
+
+  const onSubmit = data => {
+    console.log('cl', data);
+    setClusterFormData({
+      name: data.name,
+      nifi_url: data.nifi_url,
+      username: data.username,
+      password: data.password
+    })
+    testClusterData(data);
+  };
+
+  // const handleInputChange = e => {
+  //   console.log("hhhhhhhhh");
+  //   const { name, value } = e.target;
+  //   setClusterFormData(prevState => ({
+  //     ...prevState,
+  //     [name]: value,
+  //   }));
+  // };
+
   return (
-    <ParentDiv>
-      <InputField
-        type="text"
-        placeholder="Enter your Cluster Name"
-        name="clusterName"
-        id="cluster-name"
-        icon={<QRIcons />}
-        label="Cluster Name"
-      />
-      <InputField
-        type="text"
-        placeholder="Enter your NiFi URL"
-        name="nifiUrl"
-        id="nifiUrl"
-        icon={<LinkIcons />}
-        label="NifiUrl"
-      />
-      <InputContainer>
-        <StyledInputField
-          type="text"
-          placeholder="Enter Your UserName"
-          name="username"
-          id="username"
-          icon={<SmallPerfileIcon />}
-          label="Username"
-        />
-        <StyledInputField
-          type="password"
-          placeholder="Enter Your Password"
-          name="password"
-          id="password"
-          icon={<LinkIcons />}
-          label="Password"
-        />
-        <FlexContainer>
-          <p>OR</p>
-          <Button
-            icon={<PlusCircleIcon width={20} height={20} color="white" />}
-          >
-            Add Certificate
-          </Button>
-        </FlexContainer>
-      </InputContainer>
+    <>
+      <ParentDiv>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <InputField
+            type="text"
+            placeholder="Enter your Cluster Name"
+            name="name"
+            icon={<QRIcons />}
+            label="Cluster Name"
+            register={register}
+            errors={errors}
+            // onChange={handleInputChange}
+          />
+          {errors.name && <p>{errors.name.message}</p>}
+          <InputField
+            type="text"
+            placeholder="Enter your NiFi URL"
+            name="nifi_url"
+            icon={<LinkIcons />}
+            label="NifiUrl"
+            register={register}
+            errors={errors}
+            // onChange={handleInputChange}
+          />
+          {errors.nifi_url && <p>{errors.nifi_url.message}</p>}
+          <InputContainer>
+            <InputField
+              type="text"
+              placeholder="Enter Your UserName"
+              name="username"
+              icon={<SmallPerfileIcon />}
+              label="Username"
+              register={register}
+              errors={errors}
+              // onChange={handleInputChange}
+            />
+            {/* <StyledInputField
+              type="password"
+              placeholder="Enter Your Password"
+              name="password"
+              icon={<LinkIcons />}
+              label="Password"
+              register={register}
+              errors={errors}
+              onChange={handleInputChange}
+            /> */}
+             
+            <PasswordField
+            name="password"
+            register={register}
+            errors={errors}
+            watch={watch}
+            label="Password"
+            helperText="Must be 8 characters at least"
+            />
 
-      <CertificateContainer>
-        <CertificateHeader>
-          <div>
-            NiFi Certificate
-            <CircleExclamationMarkIcon color="#DDE4F0" />
-          </div>
-        </CertificateHeader>
-        <CertificateDetails>
-          <FileIcon width={25} height={35} />
-          <FileInfo>
-            <FileDetails>
-              <FileTypeContainer>
-                <FileType>
-                  PFX file
-                  <CircleExclamationMarkIcon color="#DDE4F0" />
-                </FileType>
-                <FileSize>20MB</FileSize>
-              </FileTypeContainer>
-              <FilePath>
-                /home/rahulksi184/Softwares/NIFI_Dev_Certificates/nifi-certificate
-              </FilePath>
-            </FileDetails>
-          </FileInfo>
-        </CertificateDetails>
-        <CertificateFooter>
-          <ParaphraseLabel>PFX Paraphrase:</ParaphraseLabel>
-          <ParaphraseValue>********************</ParaphraseValue>
-        </CertificateFooter>
-      </CertificateContainer>
+            <FlexContainer>
+              <p>OR</p>
+              <Button
+                onClick={()=>setAddCertificate(true)}
+                icon={<PlusCircleIcon width={20} height={20} color="white" />}
+              >
+                Add Certificate
+              </Button>
+            </FlexContainer>
+          </InputContainer>
+          {clusterCertificate ? <>
+          <CertificateContainer>
+            <CertificateHeader>
+              <div>
+                NiFi Certificate
+                <CircleExclamationMarkIcon color="#DDE4F0" />
+              </div>
+            </CertificateHeader>
+            <CertificateDetails>
+              <FileIcon width={25} height={35} />
+              <FileInfo>
+                <FileDetails>
+                  <FileTypeContainer>
+                    <FileType>
+                      PFX file
+                      <CircleExclamationMarkIcon color="#DDE4F0" />
+                    </FileType>
+                    <FileSize>20MB</FileSize>
+                  </FileTypeContainer>
+                  <FilePath>
+                    {clusterCertificate?.file.name}
+                  </FilePath>
+                </FileDetails>
+              </FileInfo>
+            </CertificateDetails>
+            <CertificateFooter>
+              <ParaphraseLabel>PFX Paraphrase:</ParaphraseLabel>
+              <ParaphraseValue>************</ParaphraseValue>
+            </CertificateFooter>
+          </CertificateContainer>
 
-      <UploadCertificateContainer>
-        <CertificateMessage>
+          <UploadCertificateContainer>
+            <CertificateMessage>
+              <WhiteBoradIcon />
+              Cluster Certificate Added!!
+            </CertificateMessage>
+            <EditDeleteContainer>
+              <IconButton onClick={()=>{setAddCertificate(true)}}>
+                <PencilIcon />
+              </IconButton>
+              <IconButton onClick={()=>{setClusterCertificate('')}}>
+                <DeleteSmallIcon color="#FF0000" />
+              </IconButton>
+            </EditDeleteContainer>
+          </UploadCertificateContainer>
+          </> :  
+          <NoDataContainer>
           <WhiteBoradIcon />
-          Cluster Certificate Added!!
-        </CertificateMessage>
-        <EditDeleteContainer>
-          <IconButton>
-            <PencilIcon />
-          </IconButton>
-          <IconButton>
-            <DeleteSmallIcon color="#FF0000" />
-          </IconButton>
-        </EditDeleteContainer>
-      </UploadCertificateContainer>
-      <BottomButtonDivs>
-        <BtnDiv>
-          <Button variant="secondary">Back</Button>
-          <Button>Continue</Button>
-        </BtnDiv>
-        <BtnDiv>
-          <Button>Test Cluster</Button>
-        </BtnDiv>
-      </BottomButtonDivs>
-    </ParentDiv>
+          <NoDataText>No data found</NoDataText>
+        </NoDataContainer>
+}
+
+          <BottomButtonDivs>
+            <BtnDiv>
+              <Button variant="secondary">Back</Button>
+              <Button type="submit" disabled={!continueStatus} onClick={()=>setActiveTab("registry")}>Continue</Button>
+              {/* <Button type="submit" onClick={()=>setActiveTab("registry")}>Continue</Button> */}
+
+            </BtnDiv>
+            <BtnDiv>
+              <Button  onClick={handleSubmit(onSubmit)}>Test Cluster</Button>
+            </BtnDiv>
+          </BottomButtonDivs>
+        </form>
+      </ParentDiv>
+      {/* //testing Success Modal */}
+      <Modal
+        title="Testing Successfull"
+        isOpen={successTest}
+        onRequestClose={() => setSuccessTest(false)}
+        size="sm"
+        primaryButtonText="Continue"
+        onSubmit={() => setSuccessTest(false)}
+      >
+        <>
+          <div className="text-center">
+            <RightCircleIcon color='#0CBF59' />
+          </div>
+          <h5 className="pt-4 mt-2 mb-0 text-center">
+            Cluster Test Successful
+          </h5>
+          <p className="pt-3 mb-0 text-center">
+            Your Cluster Test was successful. You <br /> can now proceed to the
+            next steps.
+          </p>
+        </>
+      </Modal>
+
+    {/* //testing failed Modal */}
+      <Modal
+        title="Testing Successfull"
+        isOpen={failedTest}
+        onRequestClose={() => setFailedTest(false)}
+        size="sm"
+        primaryButtonText="Continue"
+        onSubmit={() => setFailedTest(false)}
+      >
+        <>
+          <div className="text-center">
+            <ExclamationFailedTestingIcon width={90} height={65}/>
+          </div>
+          <h5 className="pt-4 mt-2 mb-0 text-center">
+            Cluster Test Failed
+          </h5>
+          {testMessage!= '' ?  <p className="pt-3 mb-0 text-center">{testMessage}</p> :  <p className="pt-3 mb-0 text-center">
+          We encountered an issue while testing your cluster. Please check if your File is Correct
+          </p>}
+        </>
+      </Modal>
+
+
+   
+       <AddCertificate addCertificate={addCertificate} setAddCertificate={setAddCertificate} setCertificate={setClusterCertificate}/>
+      
+     
+    </>
   );
 };

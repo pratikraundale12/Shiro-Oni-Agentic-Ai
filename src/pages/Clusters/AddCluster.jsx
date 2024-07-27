@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useState } from 'react';
 // import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -71,10 +73,29 @@ export const AddCluster = () => {
   // const { id } = useParams();
   const [activeTab, setActiveTab] = useState('cluster');
   const [newRegistry, setNewRegistry] = useState(false);
+  const [clusterData, setClusterData] = useState({
+    name: '',
+    nifi_url: '',
+    username: '',
+    password: '',
+    file: '',
+    passphrase: '',
+  });
+  const [registryData, setRegistryData] = useState({
+    name: '',
+    regsitry_url: '',
+    username: '',
+    password: '',
+    file: '',
+    passphrase: '',
+  });
 
-  const handleTabClick = tab => {
-    setActiveTab(tab);
-  };
+  // const handleTabClick = tab => {
+  //   setActiveTab(tab);
+  // };
+
+  console.log('CLUSTERDATA.....................?????????????', clusterData);
+  console.log('REGISTRYDATA.....................?????????????', registryData);
 
   return (
     <AddClusterContainer>
@@ -90,7 +111,7 @@ export const AddCluster = () => {
             role="tab"
             aria-controls="nav-cluster"
             aria-selected={activeTab === 'cluster'}
-            onClick={() => handleTabClick('cluster')}
+            // onClick={() => handleTabClick('cluster')}
           >
             Cluster Details
           </NavButton>
@@ -103,18 +124,40 @@ export const AddCluster = () => {
             role="tab"
             aria-controls="nav-registry"
             aria-selected={activeTab === 'registry'}
-            onClick={() => handleTabClick('registry')}
+            // onClick={() => handleTabClick('registry')}
           >
             Registry Details
           </NavButton>
         </NavTabs>
       </ToptabsContainer>
 
-      {activeTab === 'cluster' && !newRegistry && <AddNewCluster />}
-      {activeTab === 'registry' && !newRegistry && (
-        <AddRegistry setNewRegistry={setNewRegistry} />
+      {activeTab === 'cluster' && !newRegistry && (
+        <AddNewCluster
+          setActiveTab={setActiveTab}
+          setClusterData={setClusterData}
+          clusterData={clusterData}
+        />
       )}
-      {newRegistry && <AddNewRegistry newRegistry={newRegistry} />}
+      {activeTab === 'registry' && !newRegistry && (
+        <AddRegistry
+          setNewRegistry={setNewRegistry}
+          registryData={registryData}
+          clusterData={clusterData}
+          setRegistryData={setRegistryData}
+          setActiveTab={setActiveTab}
+
+        />
+      )}
+      {newRegistry && (
+        <AddNewRegistry
+          setActiveTab={setActiveTab}
+          setRegistryData={setRegistryData}
+          registryData={registryData}
+          newRegistry={newRegistry}
+          clusterData={clusterData}
+          setActiveTab={setActiveTab}
+        />
+      )}
     </AddClusterContainer>
   );
 };

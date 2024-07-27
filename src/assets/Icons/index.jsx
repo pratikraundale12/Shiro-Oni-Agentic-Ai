@@ -52,3 +52,8 @@ export * from './FileIcon';
 export * from './WhiteBoradIcon';
 export * from './CrossWithCircleIcon';
 export * from './InvalidProcessorIcon';
+export * from './RightCircleIcon';
+export * from './ExclamationFailedTestingIcon';
+export * from './CrossWithCircleIcon';
+export * from './KeyIcons';
+export * from './CrossIcon';
