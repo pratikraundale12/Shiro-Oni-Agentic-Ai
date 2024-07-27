@@ -74,7 +74,7 @@ const FormSection = styled.div`
   gap: 1%;
   grid-template-columns: 32% 32% 32%;
   justify-content: center;
-  padding: 0.4rem;
+  padding: 0.8rem 0;
   border: 1px solid ${props => props.theme.colors.border};
   border-top: none;
   border-bottom-left-radius: 16px;
