@@ -10,7 +10,7 @@ import { hasError } from '../../../../utils';
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
-  margin-bottom: 1.4rem;
+  margin-bottom: 0.4rem;
 
   > div {
     margin-bottom: 0;

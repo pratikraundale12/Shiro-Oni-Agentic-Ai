@@ -6,7 +6,7 @@ import { Loader } from '../../../components/Loader';
 const StyledButton = styled.button.withConfig({
   shouldForwardProp: prop => !['variant'].includes(prop),
 })`
-  width: auto;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;

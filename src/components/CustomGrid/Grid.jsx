@@ -59,7 +59,6 @@ export const Grid = ({
 
         th {
           height: 50px;
-          z-index:0 !important;
         }
 
         td {

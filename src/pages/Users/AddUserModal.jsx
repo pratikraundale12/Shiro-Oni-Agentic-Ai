@@ -1,12 +1,14 @@
+/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import { Button, InputField, Modal } from '../../shared';
 import {
   PlusCircleIcon,
   UserIcon,
   MailIcon,
   UpArrowImageIcon,
+  PhoneIcon,
 } from '../../assets';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
@@ -19,7 +21,6 @@ import {
   userSchema,
   editUserSchema,
 } from '../../components/UserManagement/userValidation';
-import { isEmpty } from 'lodash';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -35,69 +36,66 @@ const DEFAULT_VALUES = {
   confirm_password: '',
 };
 
-const Content = styled.div`
-  padding: 35px 16px 25px;
-  width: 100%;
-`;
 const Continer = styled.div`
   display: flex;
-  justify-content: center !important;
-  align-items: center !important;
-  flex-direction: column !important;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `;
+
 const UploadImageContainer = styled.div`
-  background: #f5f7fa;
-  border: 1px solid transparent;
+  background: ${props => props.theme.colors.lightGrey};
   border-radius: 50%;
-  padding: 28px;
-  position: relative;
+  padding: 14px;
 `;
-const DropDownContainer = styled.div`
-  display: flex;
+
+const FieldsWrapper = styled.div`
   width: 100%;
-  justify-content: flex-end !important;
-  align-items: center !important;
-  margin-bottom: 11px;
+  display: flex;
+  justify-content: flex-end;
 `;
+
 const FormWrapper = styled.div`
   width: 100%;
 `;
-const FormHeader = styled.div`
-  background-color: #f5f7fa;
-  border-radius: 16px 16px 0 0;
-  border: 1px solid transparent;
-  padding: 18px 15px;
-`;
+
 const FormTitle = styled.h3`
-  ont-family: 'Red Hat Display', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 21.17px;
-  letter-spacing: -0.005em;
-  text-align: left;
-  color: #444445;
-`;
-const FormBody = styled.div`
-  border-width: 0px 1px 1px 1px;
-  border-style: solid;
-  border-color: #dde4f0;
-  border-radius: 0 0 16px 16px;
-  background-color: transparent;
-  padding: 12px 16px;
-  max-height: 295px;
-  overflow: auto;
-`;
-const FormInnerSection = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-`;
-const InputContainer = styled.div`
-  width: 33.33%;
-  padding-right: calc(1.5rem * 0.5);
-  padding-left: calc(1.5rem * 0.5);
+  background-color: ${props => props.theme.colors.lightGrey};
+  color: ${props => props.theme.colors.darker};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 14px;
+  font-weight: 600;
+  height: 44px;
+  padding: 16px;
 `;
 
-const FileInputLabel = styled.label``;
+const FormSection = styled.div`
+  display: grid;
+  gap: 1%;
+  grid-template-columns: 32% 32% 32%;
+  justify-content: center;
+  padding: 0.4rem;
+  border: 1px solid ${props => props.theme.colors.border};
+  border-top: none;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+`;
+
+const StyledInputField = styled(InputField)`
+  margin-bottom: 0.4rem;
+`;
+
+const StyledSelectField = styled(SelectField)`
+  margin-bottom: 0.6rem;
+`;
+
+const StyledPasswordField = styled(PasswordField)`
+  margin-bottom: 0.4rem;
+`;
+
+const StyledPhoneField = styled(PhoneField)`
+  margin-bottom: 0.4rem;
+`;
 
 const FileInputField = styled.input`
   display: none;
@@ -144,7 +142,7 @@ export const AddUserModal = () => {
   } = useForm({
     defaultValues: DEFAULT_VALUES,
     resolver: yupResolver(
-      _.isEmpty(state?.selectedItem) ? userSchema : editUserSchema
+      isEmpty(state?.selectedItem) ? userSchema : editUserSchema
     ),
   });
 
@@ -247,18 +245,18 @@ export const AddUserModal = () => {
   };
 
   const onSubmit = async data => {
-    if (_.isEmpty(state.selectedItem)) {
+    if (isEmpty(state.selectedItem)) {
       addUserAPIcall(data);
     } else {
       editUserAPIcall(data);
     }
   };
   const getImageSource = () => {
-    if (_.isEmpty(state?.selectedItem) && photo) {
+    if (isEmpty(state?.selectedItem) && photo) {
       return URL.createObjectURL(photo);
     }
 
-    if (!_.isEmpty(state?.selectedItem) && photoUpdate) {
+    if (!isEmpty(state?.selectedItem) && photoUpdate) {
       return URL.createObjectURL(photo);
     }
 
@@ -283,160 +281,139 @@ export const AddUserModal = () => {
         Add New User
       </Button>
       <Modal
-        title={state.selectedItem ? 'Edit User' : 'Add User'}
+        title={state.selectedItem ? 'Edit User' : 'Add New User'}
         isOpen={state.userModal}
         onRequestClose={closeModal}
         size="lg"
         secondaryButtonText="Cancel"
-        primaryButtonText={state.selectedItem ? 'Edit' : 'Add'}
+        primaryButtonText="Submit"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <Content>
-          <Continer>
-            {!photo && (
-              <UploadImageContainer>
-                <FileInputLabel htmlFor="file-input">
-                  <UserIconUploadIcon />
-                </FileInputLabel>
-                <FileInputField
-                  id="file-input"
-                  type="file"
-                  onChange={handleFileChange}
-                />
-              </UploadImageContainer>
-            )}
-            {photo && (
-              <UploadImageContainer>
-                <ImageContainer>
-                  <StyledImage src={getImageSource()} alt="img" />{' '}
-                </ImageContainer>{' '}
-                <UpArrowIcon onClick={removeUploadedImage}>
-                  <UpArrowImageIcon />
-                </UpArrowIcon>
-              </UploadImageContainer>
-            )}
+        <Continer>
+          {!photo && (
+            <UploadImageContainer>
+              <label htmlFor="file-input">
+                <UserIconUploadIcon />
+              </label>
+              <FileInputField
+                id="file-input"
+                type="file"
+                onChange={handleFileChange}
+              />
+            </UploadImageContainer>
+          )}
+          {photo && (
+            <UploadImageContainer>
+              <ImageContainer>
+                <StyledImage src={getImageSource()} alt="img" />{' '}
+              </ImageContainer>{' '}
+              <UpArrowIcon onClick={removeUploadedImage}>
+                <UpArrowImageIcon />
+              </UpArrowIcon>
+            </UploadImageContainer>
+          )}
 
-            <DropDownContainer>
-              <DropDownWrapper>
-                <SelectField
-                  options={statusOption}
-                  name="is_active"
+          <FieldsWrapper>
+            <DropDownWrapper>
+              <StyledSelectField
+                options={statusOption}
+                name="is_active"
+                errors={errors}
+                control={control}
+                label="Status"
+              />
+            </DropDownWrapper>
+            <DropDownWrapper>
+              <StyledSelectField
+                options={roleOption}
+                name="type"
+                errors={errors}
+                control={control}
+                label="Role"
+              />
+            </DropDownWrapper>
+          </FieldsWrapper>
+          <FormWrapper>
+            <FormTitle>User Information</FormTitle>
+            <FormSection>
+              <StyledInputField
+                name="first_name"
+                type="text"
+                label="First Name"
+                placeholder="Enter your First Name"
+                required="First Name is required"
+                register={register}
+                errors={errors}
+                icon={<UserIcon />}
+              />
+              <StyledInputField
+                name="middle_name"
+                type="text"
+                label="Middle Name"
+                placeholder="Enter your Middle Name"
+                register={register}
+                errors={errors}
+                icon={<UserIcon />}
+              />
+              <StyledInputField
+                name="last_name"
+                type="text"
+                label="Last Name"
+                placeholder="Enter your Last Name"
+                required="Last Name is required"
+                register={register}
+                errors={errors}
+                icon={<UserIcon />}
+              />
+              <StyledInputField
+                name="username"
+                type="text"
+                label="User Name"
+                placeholder="Enter your User Name"
+                required="User Name is required"
+                register={register}
+                errors={errors}
+                icon={<UserIcon />}
+              />
+              <StyledInputField
+                name="email"
+                type="email"
+                label="E-mail Address"
+                placeholder="Enter your First Name"
+                required="Email is required"
+                register={register}
+                errors={errors}
+                icon={<MailIcon />}
+              />
+              <StyledPasswordField
+                name="password"
+                register={register}
+                errors={errors}
+                watch={watch}
+                // required="Password is required"
+                label="Password"
+              />
+
+              {(!state?.selectedItem || password) && (
+                <StyledPasswordField
+                  name="confirm_password"
+                  register={register}
                   errors={errors}
-                  control={control}
-                  label="Status"
+                  watch={watch}
+                  required="Password is required"
+                  label="Confirm Password"
                 />
-              </DropDownWrapper>
-              <DropDownWrapper>
-                <SelectField
-                  options={roleOption}
-                  name="type"
-                  errors={errors}
-                  control={control}
-                  label="Role"
-                />
-              </DropDownWrapper>
-            </DropDownContainer>
-            <FormWrapper>
-              <FormHeader>
-                <FormTitle>User Information</FormTitle>
-              </FormHeader>
-              <FormBody>
-                <FormInnerSection>
-                  <InputContainer>
-                    <InputField
-                      name="first_name"
-                      type="text"
-                      label="First Name"
-                      placeholder="Enter your First Name"
-                      required="First Name is required"
-                      register={register}
-                      errors={errors}
-                      icon={<UserIcon />}
-                    />{' '}
-                  </InputContainer>
-                  <InputContainer>
-                    <InputField
-                      name="middle_name"
-                      type="text"
-                      label="Middle Name"
-                      placeholder="Enter your Middle Name"
-                      register={register}
-                      errors={errors}
-                      icon={<UserIcon />}
-                    />{' '}
-                  </InputContainer>
-                  <InputContainer>
-                    <InputField
-                      name="last_name"
-                      type="text"
-                      label="Last Name"
-                      placeholder="Enter your Last Name"
-                      required="Last Name is required"
-                      register={register}
-                      errors={errors}
-                      icon={<UserIcon />}
-                    />{' '}
-                  </InputContainer>
-                  <InputContainer>
-                    <InputField
-                      name="username"
-                      type="text"
-                      label="User Name"
-                      placeholder="Enter your User Name"
-                      required="User Name is required"
-                      register={register}
-                      errors={errors}
-                      icon={<UserIcon />}
-                    />{' '}
-                  </InputContainer>
-                  <InputContainer>
-                    <InputField
-                      name="email"
-                      type="email"
-                      label="E-mail Address"
-                      placeholder="Enter your First Name"
-                      required="Email is required"
-                      register={register}
-                      errors={errors}
-                      icon={<MailIcon />}
-                    />{' '}
-                  </InputContainer>
-                  <InputContainer>
-                    <PasswordField
-                      name="password"
-                      register={register}
-                      errors={errors}
-                      watch={watch}
-                      // required="Password is required"
-                      label="Password"
-                    />
-                  </InputContainer>
+              )}
 
-                  {(!state?.selectedItem || password) && (
-                    <InputContainer>
-                      <PasswordField
-                        name="confirm_password"
-                        register={register}
-                        errors={errors}
-                        watch={watch}
-                        required="Password is required"
-                        label="Confirm Password"
-                      />
-                    </InputContainer>
-                  )}
-
-                  <InputContainer>
-                    <PhoneField
-                      name="phone_number"
-                      errors={errors}
-                      control={control}
-                    />
-                  </InputContainer>
-                </FormInnerSection>
-              </FormBody>
-            </FormWrapper>
-          </Continer>
-        </Content>
+              <StyledPhoneField
+                name="phone_number"
+                errors={errors}
+                control={control}
+                icon={<PhoneIcon />}
+              />
+            </FormSection>
+          </FormWrapper>
+        </Continer>
       </Modal>
     </div>
   );

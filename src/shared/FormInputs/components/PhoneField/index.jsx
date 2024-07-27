@@ -10,17 +10,14 @@ import { hasError } from '../../../../utils';
 
 const Container = styled.div`
   width: 100%;
-  position: relative;
-  margin-bottom: 1rem;
+  margin-bottom: 1.4rem;
 
   path {
-    fill: ${props => props.theme.colors.darkGrey1};
+    fill: ${props => props.theme.colors.darker};
   }
 
   label {
     font-size: 14px;
-    font-weight: 600;
-    line-height: 15.06px;
     margin-bottom: 5px;
   }
 
@@ -29,13 +26,32 @@ const Container = styled.div`
     font-size: 1rem;
   }
 
+  .wrapper {
+    position: relative;
+    margin-top: 10px;
+  }
+
+  .icon-placeholder {
+    position: absolute;
+    top: 2px;
+    left: 1px;
+    z-index: 1;
+    height: 48px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    padding: 0 14px;
+    background-color: ${props => props.theme.colors.lightGrey};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   input {
     width: 100%;
-    height: 42px;
-    border: 1px solid ${props => props.theme.colors.darkGrey};
+    border: 1px solid ${props => props.theme.colors.border};
     border-radius: 4px;
     background: ${props => props.theme.colors.white};
-    padding: 10px;
+    padding: 16px 32px 16px 56px;
     font-size: 14px;
 
     &.error {
@@ -44,7 +60,8 @@ const Container = styled.div`
     }
 
     &::placeholder {
-      color: ${props => props.theme.colors.darkGrey1};
+      color: ${props => props.theme.colors.grey};
+      font-family: ${props => props.theme.fontNato};
       font-size: 14px;
     }
 
@@ -52,10 +69,8 @@ const Container = styled.div`
       outline: none;
     }
 
-    &:not(:placeholder-shown),
     &:focus {
       border: 1px solid ${props => props.theme.colors.darker};
-
       &::placeholder {
         color: transparent;
       }
@@ -65,21 +80,12 @@ const Container = styled.div`
     }
   }
 `;
-const Wrapper = styled.div`
-  margin-top: 10px;
-`;
-const Label = styled.label`
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 16px;
-  margin-bottom: 6px;
-  color: #444445;
-`;
 
 const PhoneField = ({
   name,
   control,
   errors,
+  icon = null,
   required,
   className,
   ...props
@@ -88,11 +94,12 @@ const PhoneField = ({
 
   return (
     <Container className={className}>
-      <Label>
+      <label>
         {'Phone Number'}
         {required && <span className="required">&nbsp;*</span>}
-      </Label>
-      <Wrapper>
+      </label>
+      <div className="wrapper">
+        <span className="icon-placeholder">{icon}</span>
         <PhoneInput
           name={name}
           control={control}
@@ -109,7 +116,7 @@ const PhoneField = ({
           defaultCountry="IN"
           {...props}
         />
-      </Wrapper>
+      </div>
 
       <FieldErrorMessage errors={errors} name={name} />
     </Container>
@@ -120,6 +127,7 @@ PhoneField.propTypes = {
   name: PropTypes.string.isRequired,
   control: PropTypes.shape({}).isRequired,
   errors: PropTypes.shape({}),
+  icon: PropTypes.node,
   required: PropTypes.string,
   className: PropTypes.string,
 };

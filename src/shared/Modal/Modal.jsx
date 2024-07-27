@@ -5,17 +5,13 @@ import styled from 'styled-components';
 
 import { theme } from '../../styles';
 import { Button, SvgButton } from '../Button';
-import { CrossWithCircleIcon } from '../../assets';
+import { CrossIcons } from '../../assets';
 
-const HeaderText = styled.h5`
-  font-family: 'Noto Sans', sans-serif;
-  font-size: 16px;
+const Title = styled.h5`
+  color: ${props => props.theme.colors.darker};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 14px;
   font-weight: 600;
-  color: #2d343f;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-  text-align: center;
-  align-items: center;
 `;
 
 const Header = styled.div`
@@ -23,22 +19,30 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 54px;
+  height: 44px;
   padding: 16px;
   background-color: ${theme.colors.lightGrey};
 `;
 
 const Body = styled.div`
+  overflow: auto;
   padding: 16px;
 `;
 
 const Footer = styled.div`
+  padding: 16px;
   display: flex;
   gap: 1rem;
   height: 80px;
-  width: ${props => (props.size === 'sm' ? '50%' : '30%')};
-  padding: 16px;
+  width: ${props => (props.size === 'sm' ? '50%' : '25%')};
   ${props => props.size === 'sm' && 'align-self: center;'}
+`;
+
+const CloseIcon = styled(CrossIcons)`
+  padding: 5px;
+  border-radius: 50%;
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.white};
 `;
 
 export const Modal = ({
@@ -72,8 +76,8 @@ export const Modal = ({
       position: 'fixed',
       top: 0,
       left: 0,
-      backgroundColor: theme.colors.shadow,
       zIndex: 9,
+      backgroundColor: theme.colors.shadow,
     },
     content: {
       padding: 0,
@@ -83,9 +87,11 @@ export const Modal = ({
       bottom: 'auto',
       border: 'none',
       overflow: 'hidden',
-      borderRadius: '0.5rem',
+      borderRadius: 16,
       minWidth: sizes[size].width,
       minHeight: sizes[size].height,
+      maxWidth: sizes[size].width,
+      maxHeight: sizes[size].height,
       transform: 'translate(-50%, -50%)',
       backgroundColor: theme.colors.white,
       boxShadow: `0px 4px 18px 0px ${theme.colors.shadow}`,
@@ -103,8 +109,8 @@ export const Modal = ({
       ariaHideApp={false}
     >
       <Header>
-        <HeaderText>{title}</HeaderText>
-        <SvgButton icon={<CrossWithCircleIcon />} onClick={onRequestClose} />
+        <Title>{title}</Title>
+        <SvgButton icon={<CloseIcon />} onClick={onRequestClose} />
       </Header>
       <Body>{children}</Body>
       <Footer size={size}>

@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+
 import { theme } from '../../styles';
 import { Button, Dropdown } from '../../shared';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
-import { useNavigate } from 'react-router-dom';
 
 const Flex = styled.div`
   display: flex;
