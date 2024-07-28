@@ -6,7 +6,6 @@ import { Table } from '../../components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
 
 const ModalBody = styled.div`
-  padding: 35px 16px 25px;
   position: relative;
   flex: 1 1 auto;
 `;

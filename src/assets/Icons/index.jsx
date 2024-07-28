@@ -64,3 +64,4 @@ export * from './CrossWithCircleIcon';
 export * from './InvalidProcessorIcon';
 export * from './PhoneIcon';
 export * from './CrossIcons';
+export * from './GreenRightCircleIcon';

@@ -11,7 +11,6 @@ import { QRIcons } from '../../assets';
 import { useForm } from 'react-hook-form';
 
 const ModalBody = styled.div`
-  padding: 35px 16px 25px;
   position: relative;
   flex: 1 1 auto;
 `;

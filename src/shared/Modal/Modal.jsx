@@ -33,8 +33,8 @@ const Footer = styled.div`
   display: flex;
   gap: 1rem;
   height: 80px;
-  width: ${props => getWidthBySize(props.size)}
-    ${props => props.size === 'sm' && 'align-self: center;'};
+  width: ${props => getWidthBySize(props.size)};
+  ${props => props.size === 'sm' && 'align-self: center;'};
 `;
 
 const CloseIcon = styled(CrossIcons)`
@@ -67,6 +67,7 @@ export const Modal = ({
   onSubmit = () => null,
   onSecondarySubmit,
   secondaryButtonProps = {},
+  contentStyles,
 }) => {
   const sizes = {
     lg: {
@@ -110,6 +111,7 @@ export const Modal = ({
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
+      ...contentStyles,
     },
   };
 
@@ -153,4 +155,5 @@ Modal.propTypes = {
   isLoading: PropTypes.bool,
   onSecondarySubmit: PropTypes.func,
   secondaryButtonProps: PropTypes.object,
+  contentStyles: PropTypes.object,
 };
