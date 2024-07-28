@@ -25,7 +25,6 @@ const Header = styled.div`
 `;
 
 const Body = styled.div`
-  overflow: auto;
   padding: 16px;
 `;
 

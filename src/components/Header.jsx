@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+
 import {
   BellIcon,
   DownArrowIcon,
@@ -59,41 +60,40 @@ const Title = styled.h2`
   color: ${props => props.theme.colors.darker};
   font-size: 24px;
   font-weight: 500;
+  text-transform: capitalize;
 `;
 
-export const Header = ({ route = {} }) => {
-  return (
-    <Container>
-      <Title>{route.name}</Title>
-      <ButtonContainer>
-        <IconButton>
-          <HeadphoneIcon />
-        </IconButton>
-        <IconButton>
-          <BellIcon />
-        </IconButton>
-        <IconButton>
-          <SettingSmallIcon />
-        </IconButton>
-        <ProfileButton>
-          <img
-            src="./img/profile-img.png"
-            alt="img"
-            width={40}
-            height={40}
-            className="img-fluid"
-          />
-          <ProfileInfo>
-            <span style={{ fontSize: 18 }}>Adam Smith</span>
-            <span style={{ fontSize: 10 }}>Admin</span>
-          </ProfileInfo>
-          <DownArrowIcon />
-        </ProfileButton>
-      </ButtonContainer>
-    </Container>
-  );
-};
+export const Header = ({ route }) => (
+  <Container>
+    <Title>{route}</Title>
+    <ButtonContainer>
+      <IconButton>
+        <HeadphoneIcon />
+      </IconButton>
+      <IconButton>
+        <BellIcon />
+      </IconButton>
+      <IconButton>
+        <SettingSmallIcon />
+      </IconButton>
+      <ProfileButton>
+        <img
+          src="./img/profile-img.png"
+          alt="img"
+          width={40}
+          height={40}
+          className="img-fluid"
+        />
+        <ProfileInfo>
+          <span style={{ fontSize: 18 }}>Adam Smith</span>
+          <span style={{ fontSize: 10 }}>Admin</span>
+        </ProfileInfo>
+        <DownArrowIcon />
+      </ProfileButton>
+    </ButtonContainer>
+  </Container>
+);
 
 Header.propTypes = {
-  route: PropTypes.shape({}),
+  route: PropTypes.string,
 };

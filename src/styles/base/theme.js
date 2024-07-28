@@ -4,6 +4,7 @@ const theme = {
   colors: {
     // general
     white: '#FFFFFF',
+    black: '#000000',
     background: '#FFFFFF',
 
     // brand colors

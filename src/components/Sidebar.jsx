@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { ROUTES_MENU } from '../routes';
+import { useNavigate } from 'react-router-dom';
+
 import { theme } from '../styles';
+import { ROUTES_MENU } from '../routes';
 import { KsolvesIcon } from '../assets';
+import { useGlobalContext } from '../utils';
 
 const Container = styled.div`
   height: 100%;
@@ -49,19 +52,29 @@ const Item = styled.li`
   }
 `;
 
-export const Sidebar = ({ route = {}, handleRouteClick }) => {
-  const activeRoute = ROUTES_MENU.find(r => r.path === route.path);
+export const Sidebar = () => {
+  const navigate = useNavigate();
+  const {
+    state: { activeRoute: route },
+    setState,
+  } = useGlobalContext();
+
+  const handleRoute = path => {
+    setState(prev => ({ ...prev, activeRoute: path }));
+    navigate(path);
+  };
+
   return (
     <Container>
       <KsolvesIcon />
       <List>
         {ROUTES_MENU.map(item => {
-          const active = item.path === activeRoute.path;
+          const active = item.path === route;
           return (
             <Item
               key={item.path}
               active={active}
-              onClick={() => handleRouteClick(item)}
+              onClick={() => handleRoute(item.path)}
             >
               <item.icon
                 color={active ? theme.colors.white : theme.colors.darker}
@@ -76,6 +89,6 @@ export const Sidebar = ({ route = {}, handleRouteClick }) => {
 };
 
 Sidebar.propTypes = {
-  route: PropTypes.object,
-  handleRouteClick: PropTypes.func,
+  route: PropTypes.string,
+  handleRoute: PropTypes.func,
 };

@@ -44,7 +44,7 @@ export * from './SmallSearchIcon';
 export * from './LessArrowIcon';
 export * from './GreaterArrowIcon';
 export * from './UserIcon';
-export * from './UserImageUploadIcon';
+export * from './UserUploadIcon';
 export * from './AddIcon';
 export * from './UpArrowImageIcon';
 export * from './CrossWithCircleIcon';

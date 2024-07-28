@@ -6,8 +6,12 @@ import {
   PhoneField,
   SelectField,
 } from '../../shared';
-import { MailIcon, UpArrowImageIcon, UserIcon } from '../../assets';
-import UserIconUploadIcon from '../../assets/Icons/UserImageUploadIcon';
+import {
+  MailIcon,
+  UpArrowImageIcon,
+  UserIcon,
+  UserUploadIcon,
+} from '../../assets';
 import PropTypes from 'prop-types';
 
 const Content = styled.div`
@@ -127,7 +131,7 @@ const CreateUser = ({ watch, register, control, errors, setPhoto, photo }) => {
         {!photo && (
           <UploadImageContainer>
             <FileInputLabel htmlFor="file-input">
-              <UserIconUploadIcon />
+              <UserUploadIcon />
             </FileInputLabel>
             <FileInputField
               id="file-input"

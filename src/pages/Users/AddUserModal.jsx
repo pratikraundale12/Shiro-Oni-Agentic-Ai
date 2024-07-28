@@ -1,26 +1,27 @@
-/* eslint-disable */
-import React, { useEffect, useState } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
-import { Button, InputField, Modal } from '../../shared';
-import {
-  PlusCircleIcon,
-  UserIcon,
-  MailIcon,
-  UpArrowImageIcon,
-  PhoneIcon,
-} from '../../assets';
+import React, { useEffect } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
-import UserIconUploadIcon from '../../assets/Icons/UserImageUploadIcon';
-import { SelectField, PasswordField, PhoneField } from '../../shared';
-import { createUserApi, editUserDataApi } from '../../utils/services';
 import { toast } from 'react-toastify';
-import { useGlobalContext } from '../../utils';
+
+import {
+  Button,
+  InputField,
+  Modal,
+  SelectField,
+  PasswordField,
+  PhoneField,
+} from '../../shared';
+import { PlusCircleIcon, UserIcon, MailIcon, PhoneIcon } from '../../assets';
+import { createUserApi, editUserDataApi } from '../../utils/services';
+import { API_URL, useGlobalContext } from '../../utils';
 import {
   userSchema,
   editUserSchema,
 } from '../../components/UserManagement/userValidation';
+import { ProfileUpload } from './ProfileUpload';
+import { theme } from '../../styles';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -43,13 +44,12 @@ const Continer = styled.div`
   flex-direction: column;
 `;
 
-const UploadImageContainer = styled.div`
-  background: ${props => props.theme.colors.lightGrey};
-  border-radius: 50%;
-  padding: 14px;
+const ImageContainer = styled.div`
+  display: flex;
+  justify-content: center;
 `;
 
-const FieldsWrapper = styled.div`
+const SelectFieldWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: flex-end;
@@ -86,7 +86,7 @@ const StyledInputField = styled(InputField)`
 `;
 
 const StyledSelectField = styled(SelectField)`
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.4rem;
 `;
 
 const StyledPasswordField = styled(PasswordField)`
@@ -97,46 +97,19 @@ const StyledPhoneField = styled(PhoneField)`
   margin-bottom: 0.4rem;
 `;
 
-const FileInputField = styled.input`
-  display: none;
-`;
-const ImageContainer = styled.div`
-  height: 115px;
-  width: 115px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const StyledImage = styled.img`
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  height: 115px;
-  width: 115px;
-  border-radius: 50%;
-  object-fit: cover;
-`;
-const UpArrowIcon = styled.div`
-  position: absolute;
-  bottom: 20px;
-  right: 15px;
-`;
 const DropDownWrapper = styled.div`
   width: 15%;
   margin-right: 10px;
 `;
+
 export const AddUserModal = () => {
-  const [photo, setPhoto] = useState(null);
-  const [photoUpdate, setPhotoUpdated] = useState(false);
   const { state, setState } = useGlobalContext();
   const {
     register,
     reset,
     handleSubmit,
     watch,
+    setValue,
     control,
     formState: { errors },
   } = useForm({
@@ -153,30 +126,19 @@ export const AddUserModal = () => {
       userModal: false,
       selectedItem: null,
     });
-    setPhoto(null);
-    setPhotoUpdated(false);
   };
 
   const password = watch('password');
   const statusOption = [
-    { value: 'true', label: 'Active' },
-    { value: 'false', label: 'Inactive' },
+    { value: true, label: 'Active' },
+    { value: false, label: 'Inactive' },
   ];
   const roleOption = [
     { value: 'admin', label: 'Admin' },
     { value: 'user', label: 'User' },
   ];
-  const handleFileChange = event => {
-    const selectedFile = event.target.files[0];
-    event.target.value = null;
-    setPhoto(selectedFile);
-  };
-  const removeUploadedImage = () => {
-    setPhoto(null);
-    setPhotoUpdated(true);
-  };
 
-  const addUserAPIcall = async data => {
+  const onSubmit = async data => {
     const formData = new FormData();
 
     formData.append('first_name', data.first_name);
@@ -185,82 +147,38 @@ export const AddUserModal = () => {
     formData.append('email', data.email);
     formData.append('password', data.password);
     formData.append('phone', data.phone_number);
-    if (data?.is_active) {
-      formData.append('is_active', JSON.parse(data?.is_active));
-    } else {
-      formData.append('is_active', true);
-    }
+    formData.append('is_active', data.is_active || false);
     formData.append('type', data?.type || 'user');
     formData.append('username', data.username);
-
-    if (photo) {
-      formData.append('photo', photo);
+    if (data.photo && data.photo.size > 0) {
+      formData.append('photo', data.photo);
     }
 
-    const response = await createUserApi(formData);
-    if (response.status == 201) {
-      setState({
-        ...state,
-        userModal: false,
-        selectedItem: null,
-      });
-      toast.success('User Created Successfully');
-    } else {
-      toast.error('error occured');
-    }
-  };
-
-  const editUserAPIcall = async data => {
-    const formData = new FormData();
-
-    formData.append('first_name', data.first_name);
-    formData.append('middle_name', data.middle_name);
-    formData.append('last_name', data.last_name);
-    formData.append('email', data.email);
-    formData.append('phone', data.phone_number);
-    if (data?.password) {
-      formData.append('password', data.password);
-    }
-    if (data?.is_active) {
-      formData.append('is_active', JSON.parse(data?.is_active));
-    } else {
-      formData.append('is_active', true);
-    }
-    formData.append('type', data.type || 'user');
-    formData.append('username', data.username);
-    formData.append('photo', photo);
-    const response = await editUserDataApi(state.selectedItem?.id, formData);
-    if (response.status == 200) {
-      setState({
-        ...state,
-        userModal: false,
-        selectedItem: null,
-      });
-      toast.success('User Updated Successfully');
-    } else {
-      toast.error('error occured');
-    }
-    setPhoto(null);
-    setPhotoUpdated(false);
-  };
-
-  const onSubmit = async data => {
     if (isEmpty(state.selectedItem)) {
-      addUserAPIcall(data);
+      const response = await createUserApi(formData);
+      if (response.status == 201) {
+        setState({
+          ...state,
+          userModal: false,
+          selectedItem: null,
+        });
+        toast.success('User Created Successfully');
+      } else {
+        toast.error('error occured');
+      }
     } else {
-      editUserAPIcall(data);
+      const response = await editUserDataApi(state.selectedItem?.id, formData);
+      if (response.status == 200) {
+        setState({
+          ...state,
+          userModal: false,
+          selectedItem: null,
+        });
+        toast.success('User Updated Successfully');
+      } else {
+        toast.error('error occured');
+      }
     }
-  };
-  const getImageSource = () => {
-    if (isEmpty(state?.selectedItem) && photo) {
-      return URL.createObjectURL(photo);
-    }
-
-    if (!isEmpty(state?.selectedItem) && photoUpdate) {
-      return URL.createObjectURL(photo);
-    }
-
-    return `${photo}`;
   };
 
   useEffect(() => {
@@ -268,10 +186,8 @@ export const AddUserModal = () => {
       if (isEmpty(state.selectedItem)) reset(DEFAULT_VALUES);
       else reset(state.selectedItem);
     }
-    if (state?.selectedItem && state?.selectedItem?.photo) {
-      setPhoto(`media/users/${state?.selectedItem?.id}.png`);
-    }
   }, [reset, state.userModal, state.selectedItem]);
+
   return (
     <div>
       <Button
@@ -281,58 +197,49 @@ export const AddUserModal = () => {
         Add New User
       </Button>
       <Modal
+        size="lg"
         title={state.selectedItem ? 'Edit User' : 'Add New User'}
         isOpen={state.userModal}
         onRequestClose={closeModal}
-        size="lg"
         secondaryButtonText="Cancel"
         primaryButtonText="Submit"
         onSubmit={handleSubmit(onSubmit)}
       >
+        <ImageContainer>
+          <ProfileUpload
+            name="photo"
+            control={control}
+            watch={watch}
+            setValue={setValue}
+            errors={errors}
+            url={`${API_URL}${state.selectedItem?.photo}`}
+          />
+        </ImageContainer>
         <Continer>
-          {!photo && (
-            <UploadImageContainer>
-              <label htmlFor="file-input">
-                <UserIconUploadIcon />
-              </label>
-              <FileInputField
-                id="file-input"
-                type="file"
-                onChange={handleFileChange}
-              />
-            </UploadImageContainer>
-          )}
-          {photo && (
-            <UploadImageContainer>
-              <ImageContainer>
-                <StyledImage src={getImageSource()} alt="img" />{' '}
-              </ImageContainer>{' '}
-              <UpArrowIcon onClick={removeUploadedImage}>
-                <UpArrowImageIcon />
-              </UpArrowIcon>
-            </UploadImageContainer>
-          )}
-
-          <FieldsWrapper>
+          <SelectFieldWrapper>
             <DropDownWrapper>
               <StyledSelectField
-                options={statusOption}
                 name="is_active"
+                size="sm"
+                options={statusOption}
                 errors={errors}
                 control={control}
-                label="Status"
+                placeholder="Status"
+                backgroundColor={theme.colors.lightGrey}
               />
             </DropDownWrapper>
             <DropDownWrapper>
               <StyledSelectField
-                options={roleOption}
                 name="type"
+                size="sm"
+                options={roleOption}
                 errors={errors}
                 control={control}
-                label="Role"
+                placeholder="Role"
+                backgroundColor={theme.colors.lightGrey}
               />
             </DropDownWrapper>
-          </FieldsWrapper>
+          </SelectFieldWrapper>
           <FormWrapper>
             <FormTitle>User Information</FormTitle>
             <FormSection>
@@ -390,10 +297,8 @@ export const AddUserModal = () => {
                 register={register}
                 errors={errors}
                 watch={watch}
-                // required="Password is required"
                 label="Password"
               />
-
               {(!state?.selectedItem || password) && (
                 <StyledPasswordField
                   name="confirm_password"
@@ -404,7 +309,6 @@ export const AddUserModal = () => {
                   label="Confirm Password"
                 />
               )}
-
               <StyledPhoneField
                 name="phone_number"
                 errors={errors}
