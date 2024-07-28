@@ -4,13 +4,15 @@ import { TodoIcon } from '../../assets/Icons/TodoIcon';
 import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import NamespaceDeploy from './NamespaceDeploy';
-import AddParameterContext from './AddParameterContext';
+// import AddParameterContext from './AddParameterContext';
 import {
   SmallNotThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import ParameterContext from './ParameterContext';
+import AddParameterContext from './AddParameterContext';
 
 const MainContainer = styled.div`
   height: calc(100vh - 78px);
@@ -184,6 +186,8 @@ const ProgressBar = styled.div`
 const Summary = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
+  const [isAddParameterContextOpen, setIsAddParameterContextOpen] =
+    useState(false);
   const breadcrumbData = [
     { id: '1', name: 'Namespace List' },
     { id: '2', name: 'Select Namespace' },
@@ -206,6 +210,15 @@ const Summary = () => {
 
   const closeParameterContext = () => {
     setIsParameterContextOpen(false);
+  };
+
+  const openAddParameterContext = () => {
+    setIsAddParameterContextOpen(true);
+    setIsParameterContextOpen(false);
+  };
+
+  const closeAddParameterContext = () => {
+    setIsAddParameterContextOpen(false);
   };
 
   return (
@@ -378,9 +391,14 @@ const Summary = () => {
         setModalOpen={setModalOpen}
         openParameterContext={openParameterContext}
       />
-      <AddParameterContext
+      <ParameterContext
         isOpen={isParameterContextOpen}
         closePopup={closeParameterContext}
+        openAddParameterContext={openAddParameterContext}
+      />
+      <AddParameterContext
+        isOpen={isAddParameterContextOpen}
+        closePopup={closeAddParameterContext}
       />
     </MainContainer>
   );

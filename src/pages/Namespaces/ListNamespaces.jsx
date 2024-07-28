@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { TextRender } from '../../components';
 import { Grid } from '../../components';
 import { REFRESH_OPTIONS } from '../../utils';
+import { fetchClustersList } from '../../utils/services';
+import Deploy from './Deploy';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -11,6 +13,28 @@ const Container = styled.div`
 `;
 
 export const ListNamespaces = () => {
+  const [clusterOptions, setClusterOptions] = useState([]);
+
+  useEffect(() => {
+    const getClusterOptions = async () => {
+      try {
+        const clusters = await fetchClustersList();
+        if (clusters) {
+          const options = clusters?.data?.map(cluster => ({
+            label: cluster?.name,
+            value: cluster?.id,
+          }));
+
+          setClusterOptions(options);
+        }
+      } catch (error) {
+        console.error('Failed to fetch cluster options:', error);
+      }
+    };
+
+    getClusterOptions();
+  }, []);
+
   const COLUMNS = [
     {
       label: 'Name',
@@ -53,10 +77,7 @@ export const ListNamespaces = () => {
         columns={COLUMNS}
         sortFns={SORT_FNS}
         refreshOptions={REFRESH_OPTIONS}
-        clusterOptions={[
-          { label: 'Dev', value: '403ca918-331f-48ba-ae08-7de17489b6b8' },
-          { label: 'Prod', value: 'd8dd9461-53d5-4f69-94a9-5e9f6c734d64' },
-        ]}
+        clusterOptions={clusterOptions}
         breadcrumbs={[
           { id: '1', name: 'Namespace1' },
           { id: '2', name: 'Namespace2' },
@@ -65,6 +86,8 @@ export const ListNamespaces = () => {
           console.log('Breadcrumb clicked:', breadcrumb);
         }}
       />
+      {/* Pass clusterOptions to Deploy component */}
+      <Deploy clusterOptions={clusterOptions} />
     </Container>
   );
 };

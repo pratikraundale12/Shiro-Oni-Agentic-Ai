@@ -1,8 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { InputField, Modal } from '../../shared';
+import {
+  CheckboxField,
+  InputField,
+  Modal,
+  RadioSelectField,
+} from '../../shared';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
+import { useForm } from 'react-hook-form';
 
 const ModalBody = styled.div`
   padding: 35px 16px 25px;
@@ -43,8 +49,20 @@ const ColumnOneTwo = styled.div`
     width: 100%;
   }
 `;
+const RedioButtonDiv = styled.div`
+  margin-top: 30px;
+`;
 
 const AddParameterContext = ({ isOpen, closePopup }) => {
+  const { register, handleSubmit } = useForm();
+  const OPTIONS = [
+    { name: 'Yes', value: true },
+    { name: 'No', value: false },
+  ];
+
+  const onSubmit = data => {
+    console.log(data);
+  };
   return (
     <Modal
       title="Add Parameter Context"
@@ -53,7 +71,7 @@ const AddParameterContext = ({ isOpen, closePopup }) => {
       size="sm"
       secondaryButtonText="Back"
       primaryButtonText="Save"
-      //   onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <ModalBody className="modal-body">
         <ModalBodyDiv className="d-flex">
@@ -80,6 +98,21 @@ const AddParameterContext = ({ isOpen, closePopup }) => {
                 />
               </InputBox>
             </ColumnSix>
+            <ColumnOneTwo className="col-12 mb-4">
+              <CheckboxField
+                name="is_admin"
+                label="Set Empty String"
+                register={register}
+              />
+              <RedioButtonDiv>
+                <RadioSelectField
+                  name="is_active"
+                  label="Sensitive value"
+                  options={OPTIONS}
+                  register={register}
+                />
+              </RedioButtonDiv>
+            </ColumnOneTwo>
             <ColumnOneTwo className="col-12">
               <InputBox>
                 <InputField

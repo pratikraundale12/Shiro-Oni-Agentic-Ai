@@ -52,6 +52,7 @@ export const Modal = ({
   primaryButtonText = '',
   onSubmit = () => null,
   onSecondarySubmit,
+  secondaryButtonProps = {},
 }) => {
   const sizes = {
     lg: {
@@ -112,6 +113,7 @@ export const Modal = ({
         <Button
           variant="secondary"
           onClick={onSecondarySubmit || onRequestClose}
+          {...secondaryButtonProps}
         >
           {secondaryButtonText}
         </Button>
@@ -134,4 +136,5 @@ Modal.propTypes = {
   primaryButtonText: PropTypes.string,
   isLoading: PropTypes.bool,
   onSecondarySubmit: PropTypes.func,
+  secondaryButtonProps: PropTypes.object,
 };

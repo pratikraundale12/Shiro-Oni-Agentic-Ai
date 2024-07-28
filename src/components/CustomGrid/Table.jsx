@@ -3,7 +3,16 @@ import PropTypes from 'prop-types';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import { getTheme } from '@table-library/react-table-library/baseline';
+import styled from 'styled-components';
+import { theme } from '../../styles';
 // import { useSort } from '@table-library/react-table-library/sort';
+
+const TableContainer = styled.div`
+  height: 73%;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid ${theme.colors.darkGrey};
+`;
 
 export const Table = ({ data, columns }) => {
   const DATA = { nodes: data || [] };
@@ -28,7 +37,8 @@ export const Table = ({ data, columns }) => {
         }
       `,
       HeaderRow: `
-        background-color: #F5F7FA;
+         background: #DDE4F0;
+        ;
         color: #444445;
       `,
       Row: `
@@ -39,7 +49,11 @@ export const Table = ({ data, columns }) => {
     },
   ]);
 
-  return <CompactTable data={DATA} columns={columns} theme={tableTheme} />;
+  return (
+    <TableContainer>
+      <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+    </TableContainer>
+  );
 };
 
 Table.propTypes = {
