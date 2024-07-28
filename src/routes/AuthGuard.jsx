@@ -32,12 +32,13 @@ const AuthGuard = () => {
   } = useGlobalContext();
 
   async function fetchCurrentUser() {
-    const pathname = window.location.pathname;
+    let pathname = window.location.pathname;
+    pathname = pathname.split('/')[1];
     const response = await currentUser();
     if (response.status === 200) {
       setState(prev => ({
         ...prev,
-        activeRoute: pathname.slice(1, pathname.length) || 'dashboard',
+        activeRoute: pathname || 'dashboard',
         currentUser: response.data,
       }));
     } else {

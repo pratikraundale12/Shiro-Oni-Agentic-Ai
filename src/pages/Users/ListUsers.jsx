@@ -10,7 +10,12 @@ import {
 } from '../../components';
 import { AddUserModal } from './AddUserModal';
 import { PencilIcon, DeleteSmallIcon, DeleteDustbinIcon } from '../../assets';
-import { REFRESH_OPTIONS, STATUS_OPTIONS, useGlobalContext } from '../../utils';
+import {
+  fetchGridData,
+  REFRESH_OPTIONS,
+  STATUS_OPTIONS,
+  useGlobalContext,
+} from '../../utils';
 import { deleteUserApi } from '../../utils/services';
 import { ModalWithIcon } from '../../shared';
 
@@ -110,6 +115,7 @@ export const ListUsers = () => {
   const deleteUserConfirmed = async () => {
     const response = await deleteUserApi(state.selectedItem.id);
     if (response.status == 204) {
+      fetchGridData({ setState, module: 'users' });
       toast.success('User Deleted Successfully');
       setState({ ...state, userDeleteModal: false });
     } else {
@@ -119,7 +125,6 @@ export const ListUsers = () => {
 
   return (
     <>
-      {' '}
       <Container>
         <ModalWithIcon
           primaryButtonText="Delete"

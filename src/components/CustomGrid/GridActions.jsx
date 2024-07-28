@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
 import { theme } from '../../styles';
-import { Button, Dropdown, SelectField } from '../../shared';
+import { Button, SelectField } from '../../shared';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { useForm } from 'react-hook-form';
+import { fetchGridData, useGlobalContext } from '../../utils';
 
 const Flex = styled.div`
   display: flex;
@@ -59,21 +60,41 @@ const StyledSelectField = styled(SelectField)`
 
 export const GridActions = ({
   title,
+  module,
   clusterOptions,
   refreshOptions,
   statusOptions,
   search,
-  setSearch,
   buttonText,
   addModal: Modal,
 }) => {
+  const { setState } = useGlobalContext();
   const navigate = useNavigate();
-  const { control } = useForm();
+  const { watch, control } = useForm();
+
+  const watchStatus = watch('is_active');
+  const watchCluster = watch('cluster');
 
   const statusOption = [
-    { value: true, label: 'Active' },
-    { value: false, label: 'Inactive' },
+    { value: 'true', label: 'Active' },
+    { value: 'false', label: 'Inactive' },
   ];
+
+  useEffect(() => {
+    if (watchCluster || watchStatus) {
+      setState(prev => ({
+        ...prev,
+        ...(watchStatus && { is_active: watchStatus }),
+        ...(watchCluster && { selectedSourceClusterId: watchCluster }),
+      }));
+      fetchGridData({
+        setState,
+        module,
+        ...(watchStatus && { is_active: watchStatus }),
+        ...(watchCluster && { selectedSourceClusterId: watchCluster }),
+      });
+    }
+  }, [watchStatus, watchCluster]);
 
   return (
     <>
@@ -103,8 +124,15 @@ export const GridActions = ({
               backgroundColor={theme.colors.lightGrey}
             />
           )}
-          {!isEmpty(clusterOptions) && (
-            <Dropdown placeholder="Clusters" options={clusterOptions} />
+          {window.location.pathname.includes('namespaces') && (
+            <StyledSelectField
+              size="sm"
+              name="cluster"
+              control={control}
+              placeholder="Clusters"
+              options={clusterOptions}
+              backgroundColor={theme.colors.lightGrey}
+            />
           )}
           {!isEmpty(buttonText) && (
             <Button
@@ -127,7 +155,9 @@ export const GridActions = ({
           type="search"
           value={search}
           placeholder="Search User Name, Email, Status"
-          onChange={e => setSearch(e.target.value)}
+          onChange={e =>
+            setState(prev => ({ ...prev, search: e.target.value }))
+          }
         />
       </SearchContainer>
     </>
@@ -136,11 +166,11 @@ export const GridActions = ({
 
 GridActions.propTypes = {
   title: PropTypes.string,
+  module: PropTypes.string,
   clusterOptions: PropTypes.array,
   refreshOptions: PropTypes.array,
   statusOptions: PropTypes.array,
   search: PropTypes.string,
-  setSearch: PropTypes.func,
   buttonText: PropTypes.string,
   addModal: PropTypes.func,
 };
