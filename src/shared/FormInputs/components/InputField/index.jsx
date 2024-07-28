@@ -15,7 +15,6 @@ const Container = styled.div`
     font-size: 14px;
     font-weight: 600;
     line-height: 16px;
-    margin-bottom: 6px;
     color: ${props => props.theme.colors.darker};
   }
 
@@ -26,6 +25,7 @@ const Container = styled.div`
 
   .wrapper {
     position: relative;
+    margin-top: 10px;
   }
 
   &.error {
@@ -39,14 +39,13 @@ const Container = styled.div`
     top: 2px;
     left: 1px;
     z-index: 1;
-    height: 48px;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
-    padding: 0 14px;
-    background-color: ${props => props.theme.colors.lightGrey};
+    padding: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: ${props => props.theme.colors.lightGrey};
   }
 
   input {
@@ -57,6 +56,7 @@ const Container = styled.div`
     padding: 16px 32px 16px 56px;
     font-size: 14px;
     color: ${props => props.theme.colors.darker};
+    font-family: ${props => props.theme.fontNato};
 
     &::placeholder {
       color: ${props => props.theme.colors.grey};

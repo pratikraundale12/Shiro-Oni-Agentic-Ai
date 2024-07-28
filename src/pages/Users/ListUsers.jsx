@@ -1,27 +1,73 @@
-import React from 'react';
+import { React } from 'react';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
 
 import {
   Grid,
   TextRender,
   StatusRender,
   ProfileRender,
-  ActionRender,
 } from '../../components';
 import { AddUserModal } from './AddUserModal';
-import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../utils';
+import { PencilIcon, DeleteSmallIcon, DeleteDustbinIcon } from '../../assets';
+import { REFRESH_OPTIONS, STATUS_OPTIONS, useGlobalContext } from '../../utils';
+import { deleteUserApi } from '../../utils/services';
+import { ModalWithIcon } from '../../shared';
 
 const Container = styled.div`
   padding: 1.4rem;
   width: 100%;
   height: 100%;
 `;
+const ActionTd = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 15px;
+`;
+const IconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
 
 export const ListUsers = () => {
+  const { state, setState } = useGlobalContext();
+
+  const getActionsMenu = item => (
+    <div>
+      <ActionTd>
+        <IconWrapper
+          onClick={() =>
+            setState({
+              ...state,
+              userModal: true,
+              selectedItem: item,
+            })
+          }
+        >
+          <PencilIcon color="white" />
+        </IconWrapper>
+        <IconWrapper
+          onClick={() =>
+            setState({
+              ...state,
+              userDeleteModal: true,
+              selectedItem: item,
+            })
+          }
+        >
+          <DeleteSmallIcon color="white" />
+        </IconWrapper>
+      </ActionTd>
+    </div>
+  );
+
   const COLUMNS = [
     {
       label: 'Profile',
-      renderCell: item => <ProfileRender item={item} />,
+      renderCell: item => <ProfileRender url={item.photo} />,
       sort: { sortKey: 'PORFILE' },
     },
 
@@ -50,7 +96,7 @@ export const ListUsers = () => {
     {
       label: 'Actions',
       width: 120,
-      renderCell: item => <ActionRender item={item} />,
+      renderCell: item => getActionsMenu(item),
     },
   ];
 
@@ -61,17 +107,40 @@ export const ListUsers = () => {
     STATUS: array => array.sort((a, b) => a.is_active - b.is_active),
   };
 
+  const deleteUserConfirmed = async () => {
+    const response = await deleteUserApi(state.selectedItem.id);
+    if (response.status == 204) {
+      toast.success('User Deleted Successfully');
+      setState({ ...state, userDeleteModal: false });
+    } else {
+      toast.error('error occured');
+    }
+  };
+
   return (
-    <Container>
-      <Grid
-        module="users"
-        title="User List"
-        columns={COLUMNS}
-        sortFns={SORT_FNS}
-        statusOptions={STATUS_OPTIONS}
-        refreshOptions={REFRESH_OPTIONS}
-        addModal={AddUserModal}
-      />
-    </Container>
+    <>
+      {' '}
+      <Container>
+        <ModalWithIcon
+          primaryButtonText="Delete"
+          secondaryButtonText="Cancel"
+          icon={<DeleteDustbinIcon />}
+          isOpen={state.userDeleteModal}
+          onSubmit={deleteUserConfirmed}
+          onRequestClose={() => setState({ ...state, userDeleteModal: false })}
+          primaryText="Are You Sure You Want to Delete This User"
+          secondaryText="It Will Temporary Remove the User"
+        />
+        <Grid
+          module="users"
+          title="User List"
+          columns={COLUMNS}
+          sortFns={SORT_FNS}
+          statusOptions={STATUS_OPTIONS}
+          refreshOptions={REFRESH_OPTIONS}
+          addModal={AddUserModal}
+        />
+      </Container>
+    </>
   );
 };
