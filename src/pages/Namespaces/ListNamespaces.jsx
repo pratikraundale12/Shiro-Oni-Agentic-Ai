@@ -5,6 +5,10 @@ import { Grid } from '../../components';
 import { REFRESH_OPTIONS } from '../../utils';
 import { fetchClustersList } from '../../utils/services';
 import Deploy from './Deploy';
+import { Button } from '../../shared';
+import { useNavigate } from 'react-router-dom';
+import { OpenEyeIcon } from '../../assets';
+import AuditLog from './AuditLog';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -14,6 +18,9 @@ const Container = styled.div`
 
 export const ListNamespaces = () => {
   const [clusterOptions, setClusterOptions] = useState([]);
+  const [selectedNamespace, setSelectedNamespace] = useState(null);
+  const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getClusterOptions = async () => {
@@ -34,6 +41,20 @@ export const ListNamespaces = () => {
 
     getClusterOptions();
   }, []);
+
+  const handleSelect = namespace => {
+    setSelectedNamespace(namespace);
+    navigate('/namespaces/deploy');
+  };
+
+  const handleOpenAuditLog = () => {
+    console.log('hi');
+    setIsAuditLogOpen(true);
+  };
+
+  const handleCloseAuditLog = () => {
+    setIsAuditLogOpen(false);
+  };
 
   const COLUMNS = [
     {
@@ -59,9 +80,28 @@ export const ListNamespaces = () => {
       renderCell: item => <TextRender text={item.version} />,
     },
     {
+      width: 120,
+      renderCell: () => (
+        <button
+          onClick={handleOpenAuditLog}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+          }}
+          aria-label="Open Audit Log"
+        >
+          <OpenEyeIcon />
+        </button>
+      ),
+    },
+    {
       label: 'Actions',
       width: 120,
-      renderCell: () => <div>Select</div>,
+      renderCell: item => (
+        <Button onClick={() => handleSelect(item)}>Select</Button>
+      ),
     },
   ];
 
@@ -86,8 +126,8 @@ export const ListNamespaces = () => {
           console.log('Breadcrumb clicked:', breadcrumb);
         }}
       />
-      {/* Pass clusterOptions to Deploy component */}
-      <Deploy clusterOptions={clusterOptions} />
+      {selectedNamespace && <Deploy selectedNamespace={selectedNamespace} />}
+      <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} />
     </Container>
   );
 };

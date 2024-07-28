@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { LinkIcons, QRIcons, TodoIcon } from '../../assets';
-import { Button, InputField } from '../../shared';
+import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
+import { useNavigate } from 'react-router-dom';
+import { Table } from '../../components';
 
 const Container = styled.div`
   height: calc(100vh - 78px);
@@ -137,7 +139,50 @@ const BreadcrumbContainer = styled.div`
   align-items: center;
 `;
 
+const COLUMNS = [
+  {
+    label: 'Version',
+    renderCell: item => <div>{item.version}</div>,
+  },
+  {
+    label: 'Created',
+    renderCell: item => <div>{item.created}</div>,
+  },
+  {
+    label: 'Comment',
+    renderCell: item => <div>{item.comment}</div>,
+  },
+  {
+    label: '',
+    renderCell: item => (
+      <RadioField
+        name="select"
+        onChange={() => console.log('Changed', item.id)}
+      />
+    ),
+    width: '10%',
+  },
+];
+
+const dummyData = [
+  { id: 1, version: 'v1.0', created: '2024-07-01', comment: 'Initial version' },
+  { id: 2, version: 'v1.1', created: '2024-07-05', comment: 'Bug fixes' },
+  {
+    id: 3,
+    version: 'v1.2',
+    created: '2024-07-10',
+    comment: 'Added new features',
+  },
+  {
+    id: 4,
+    version: 'v1.3',
+    created: '2024-07-15',
+    comment: 'Performance improvements',
+  },
+];
+
 const Upgrade = () => {
+  const navigate = useNavigate();
   const breadcrumbData = [
     { id: '1', name: 'Namespace List' },
     { id: '2', name: 'Select Namespace' },
@@ -146,6 +191,12 @@ const Upgrade = () => {
   const handleBreadcrumbClick = breadcrumb => {
     console.log('Breadcrumb clicked:', breadcrumb);
     // Perform your navigation or other actions here
+  };
+  const handleClick = () => {
+    navigate('/namespaces/summary');
+  };
+  const handleBackClick = () => {
+    navigate('/namespaces/deploy');
   };
   return (
     <Container>
@@ -259,57 +310,17 @@ const Upgrade = () => {
             <span className="cursor-pointer version-title">
               Version Control
             </span>
-          </div>
-          <div className="table-area position-relative mb-3">
-            <div className="main-table-div main-table-resposniveness-2">
-              <table className="w-100">
-                <thead>
-                  <tr>
-                    <th>Version</th>
-                    <th>Created</th>
-                    <th>Comments</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <span className="position-relative">Version 5</span>
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="darker-font">
-                          06/26/2024 17:14: 32: 276
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="darker-font">5th Version Updated</span>
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center justify-content-end">
-                        <div className="custom-checkbox-red form-check d-flex align-items-center">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            defaultValue=""
-                            id="flexCheckChecked"
-                            defaultChecked=""
-                          />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
           </div> */}
+
+          <Table data={dummyData} columns={COLUMNS} />
         </ScrollSetGrey>
       </GreyBoxNamespace>
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
-          <Button variant="secondary">Back</Button>
-          <Button>Upgrade</Button>
+          <Button variant="secondary" onClick={handleBackClick}>
+            Back
+          </Button>
+          <Button onClick={handleClick}>Upgrade</Button>
         </BottomButtonDiv>
       </BottomButton>
     </Container>

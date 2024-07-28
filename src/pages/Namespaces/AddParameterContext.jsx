@@ -68,7 +68,7 @@ const AddParameterContext = ({ isOpen, closePopup }) => {
       title="Add Parameter Context"
       isOpen={isOpen}
       onRequestClose={closePopup}
-      size="sm"
+      size="md"
       secondaryButtonText="Back"
       primaryButtonText="Save"
       onSubmit={handleSubmit(onSubmit)}

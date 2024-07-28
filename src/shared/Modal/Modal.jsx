@@ -33,8 +33,8 @@ const Footer = styled.div`
   display: flex;
   gap: 1rem;
   height: 80px;
-  width: ${props => (props.size === 'sm' ? '50%' : '25%')};
-  ${props => props.size === 'sm' && 'align-self: center;'}
+  width: ${props => getWidthBySize(props.size)}
+    ${props => props.size === 'sm' && 'align-self: center;'};
 `;
 
 const CloseIcon = styled(CrossIcons)`
@@ -43,6 +43,17 @@ const CloseIcon = styled(CrossIcons)`
   border: 1px solid ${props => props.theme.colors.border};
   background-color: ${props => props.theme.colors.white};
 `;
+
+const getWidthBySize = size => {
+  switch (size) {
+    case 'sm':
+      return '50%';
+    case 'md':
+      return '35%';
+    default:
+      return '25%';
+  }
+};
 
 export const Modal = ({
   title,
@@ -63,8 +74,8 @@ export const Modal = ({
       height: '80%',
     },
     md: {
-      width: '45%',
-      height: '45%',
+      width: '50%',
+      height: '60%',
     },
     sm: {
       width: '30%',

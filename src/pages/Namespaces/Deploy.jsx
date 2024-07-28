@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { Button, RadioField, SelectField } from '../../shared';
 import { Table } from '../../components';
 import styled from 'styled-components';
@@ -186,10 +187,11 @@ const handleBreadcrumbClick = breadcrumb => {
 const Deploy = () => {
   const {
     control,
-    handleSubmit,
     formState: { errors },
   } = useForm();
   const [search, setSearch] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
+  const navigate = useNavigate();
 
   const filteredData = DATA.filter(
     item =>
@@ -205,8 +207,11 @@ const Deploy = () => {
     { value: 'option3', label: 'Option 3' },
   ];
 
-  const onSubmit = data => {
-    console.log('Form Data:', data);
+  const handleClick = () => {
+    navigate('/namespaces/upgrade');
+  };
+  const handleBackClick = () => {
+    navigate('/namespaces');
   };
 
   return (
@@ -227,39 +232,42 @@ const Deploy = () => {
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100 mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form>
             <SelectField
               name="selectOption"
               label="Select Cluster"
               control={control}
               options={options}
               errors={errors}
+              onChange={value => setSelectedOption(value)}
             />
           </form>
-          <SearchContainer>
-            <SmallSearchIcon
-              width={18}
-              height={18}
-              color={theme.colors.darkGrey1}
-            />
-            <Search
-              type="search"
-              value={search}
-              placeholder="Search Namespace, Flow Name, Bucket Name, Version"
-              onChange={e => setSearch(e.target.value)}
-            />
-          </SearchContainer>
-          <Breadcrumb
-            breadcrumbs={breadcrumbData}
-            onBreadcrumbClick={handleBreadcrumbClick}
-          />
-          <Table data={filteredData} columns={COLUMNS} />
+          {selectedOption && (
+            <>
+              <SearchContainer>
+                <SmallSearchIcon
+                  width={18}
+                  height={18}
+                  color={theme.colors.darkGrey1}
+                />
+                <Search
+                  type="search"
+                  value={search}
+                  placeholder="Search Namespace, Flow Name, Bucket Name, Version"
+                  onChange={e => setSearch(e.target.value)}
+                />
+              </SearchContainer>
+              <Table data={filteredData} columns={COLUMNS} />
+            </>
+          )}
         </ScrollSetGrey>
       </GreyBoxNamespace>
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
-          <Button variant="secondary">Back</Button>
-          <Button onClick={handleSubmit(onSubmit)}>Deploy</Button>
+          <Button variant="secondary" onClick={handleBackClick}>
+            Back
+          </Button>
+          <Button onClick={handleClick}>Deploy</Button>
         </BottomButtonDiv>
       </BottomButton>
     </Container>

@@ -21,7 +21,7 @@ const COLUMNS = [
     renderCell: item => <div>{item.id}</div>,
   },
   {
-    renderCell: () => <PencilIcon />,
+    renderCell: () => <PencilIcon color="white" />,
   },
 ];
 
@@ -45,7 +45,7 @@ const ParameterContext = ({ isOpen, closePopup, openAddParameterContext }) => {
       title="Parameter Context"
       isOpen={isOpen}
       onRequestClose={closePopup}
-      size="sm"
+      size="md"
       onSecondarySubmit={openAddParameterContext}
       secondaryButtonText="Add Parameter Context"
       primaryButtonText="Navigate"

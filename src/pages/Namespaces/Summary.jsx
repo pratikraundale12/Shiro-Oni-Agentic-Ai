@@ -13,6 +13,7 @@ import {
 } from '../../assets';
 import ParameterContext from './ParameterContext';
 import AddParameterContext from './AddParameterContext';
+import { useNavigate } from 'react-router-dom';
 
 const MainContainer = styled.div`
   height: calc(100vh - 78px);
@@ -188,6 +189,7 @@ const Summary = () => {
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] =
     useState(false);
+  const navigate = useNavigate();
   const breadcrumbData = [
     { id: '1', name: 'Namespace List' },
     { id: '2', name: 'Select Namespace' },
@@ -219,6 +221,9 @@ const Summary = () => {
 
   const closeAddParameterContext = () => {
     setIsAddParameterContextOpen(false);
+  };
+  const handleBackClick = () => {
+    navigate('/namespaces/upgrade');
   };
 
   return (
@@ -364,7 +369,9 @@ const Summary = () => {
       </GreyBoxNamespace>
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
-          <Button variant="secondary">Back</Button>
+          <Button variant="secondary" onClick={handleBackClick}>
+            Back
+          </Button>
           <Button onClick={handleUpgradeClick}>Upgrade</Button>
         </BottomButtonDiv>
         <Progressox className="w-100">

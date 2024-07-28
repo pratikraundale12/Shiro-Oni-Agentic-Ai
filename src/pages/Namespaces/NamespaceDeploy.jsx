@@ -143,7 +143,7 @@ const NamespaceDeploy = ({ isOpen, closePopup, openParameterContext }) => {
       title="Namespace Deployed"
       isOpen={isOpen}
       onRequestClose={closePopup}
-      size="sm"
+      size="md"
       onSecondarySubmit={openParameterContext}
       secondaryButtonText="ParaMeter Context"
       primaryButtonText="Navigate"
