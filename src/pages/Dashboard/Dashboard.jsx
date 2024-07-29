@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { Dropdown } from '../../shared';
+import { SelectField } from '../../shared';
 import { Table } from '../../components';
 import { InsightContainer, FlowMetrics } from './components';
 import {
@@ -16,7 +16,12 @@ import {
   TotalQuedIcon,
   InvalidProcessorIcon,
   DownArrowIcon,
+  ErrorIcon,
 } from '../../assets';
+import { CrossIcon } from '../../assets/Icons/CrossIcon';
+import { getAllClustersApi, getInitialClusterData } from '../../utils/services';
+import { toast } from 'react-toastify';
+import { useForm } from 'react-hook-form';
 
 const TopSection = styled.div`
   display: flex;
@@ -72,6 +77,17 @@ const FlowMetricHeader = styled.div`
   display: flex;
 `;
 
+const ErrorsHeader = styled.div`
+  background-color: #fff;
+  padding: 10px 11px;
+  font-family: Noto Sans;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 25px;
+  display: flex;
+  align-items: center;
+`;
+
 const HeaderText = styled.p`
   margin-left: 10px;
 `;
@@ -80,9 +96,26 @@ const TextEllipses = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  width: 100%;
+  align-items: center;
 `;
-
+const ErrorTexts = styled.div`
+  width: 90%;
+  margin-left: 4px;
+`;
+const DropdoenContainer = styled.div`
+  margin-left: 10px;
+`;
+const DropdownWrapper = styled.div`
+  display: flex;
+`;
 export const Dashboard = () => {
+  const [clusterArray, setClusterArray] = useState([]);
+  const [clusterDetails, setClusterDetails] = useState([]);
+  const [namespaceArray, setNamespaceArray] = useState([]);
+  const { control } = useForm();
+
   const COLUMNS = [
     {
       label: 'Process Group',
@@ -99,7 +132,12 @@ export const Dashboard = () => {
     },
     {
       label: 'Error Message',
-      renderCell: item => <TextEllipses>{item.message}</TextEllipses>,
+      renderCell: item => (
+        <TextEllipses>
+          <CrossIcon color="red" />
+          <ErrorTexts>{item.message}</ErrorTexts>
+        </TextEllipses>
+      ),
       width: '50%',
     },
     {
@@ -161,7 +199,113 @@ export const Dashboard = () => {
         </div>
       ),
     },
+    {
+      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
+      name: 'Group 1',
+      message: (
+        <div>
+          <div>Error Code: 404 - File Not Found</div>
+          <TextEllipses>
+            Description: The requested resource could not be found on the
+            server. The requested resource could not be found on the server.
+          </TextEllipses>
+        </div>
+      ),
+    },
+    {
+      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
+      name: 'Group 2',
+      message: (
+        <div>
+          <div>Error Code: 404 - File Not Found</div>
+          <TextEllipses>
+            Description: The requested resource could not be found on the
+            server. The requested resource could not be found on the server.
+          </TextEllipses>
+        </div>
+      ),
+    },
+    {
+      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
+      name: 'Group 3',
+      message: (
+        <div>
+          <div>Error Code: 404 - File Not Found</div>
+          <TextEllipses>
+            Description: The requested resource could not be found on the
+            server. The requested resource could not be found on the server.
+          </TextEllipses>
+        </div>
+      ),
+    },
+    {
+      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
+      name: 'Group 4',
+      message: (
+        <div>
+          <div>Error Code: 404 - File Not Found</div>
+          <TextEllipses>
+            Description: The requested resource could not be found on the
+            server. The requested resource could not be found on the server.
+          </TextEllipses>
+        </div>
+      ),
+    },
   ];
+
+  const getClusterDetalis = async id => {
+    const response = await getInitialClusterData(id);
+    if (response.status == 200) {
+      setClusterDetails(response.data);
+      const filteredNamespaceArray = response.data.namespaces.data.map(
+        ({ id, name }) => ({
+          value: id,
+          label: name,
+        })
+      );
+      setNamespaceArray(filteredNamespaceArray);
+    } else {
+      toast.error('error occured');
+    }
+  };
+
+  const getAllCluster = async () => {
+    const response = await getAllClustersApi();
+    if (response.status == 200) {
+      const filteredArray = response.data.data.map(({ id, name }) => ({
+        value: id,
+        label: name,
+      }));
+      getClusterDetalis(filteredArray[0].value);
+      setClusterArray(filteredArray);
+    } else {
+      toast.error('error occured');
+    }
+  };
+
+  useEffect(() => {
+    getAllCluster();
+  }, []);
+
+  const onClusterSelect = async selectedItem => {
+    try {
+      if (selectedItem) {
+        getClusterDetalis(selectedItem?.value);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const onNamespaceSelect = async selectedItem => {
+    try {
+      if (selectedItem) {
+        console.log(selectedItem);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
   return (
     <Continer>
       <TopSection>
@@ -171,69 +315,80 @@ export const Dashboard = () => {
           </InsightIconContiner>
           <QuickInsightHeadingText>Quick Insight</QuickInsightHeadingText>
         </QuickInsightHeading>
-        <div>
-          <Dropdown
-            options={[]}
-            placeholder="Select Cluster"
-            label="Select Cluster"
-          />
-          <Dropdown
-            options={[]}
-            placeholder="Select Namespace"
-            label="Select Namespace"
-          />
-          <Dropdown options={[]} placeholder="Refresh" label="Refresh" />
-        </div>
+        <DropdownWrapper>
+          <DropdoenContainer>
+            <form>
+              <SelectField
+                name="selectedItem"
+                control={control}
+                options={clusterArray}
+                label="Select Cluster"
+                onChange={onClusterSelect}
+              />
+            </form>
+          </DropdoenContainer>
+          <DropdoenContainer>
+            <form>
+              <SelectField
+                name="selectedItem"
+                control={control}
+                options={namespaceArray || []}
+                label="Select Namespace"
+                onChange={onNamespaceSelect}
+              />
+            </form>
+          </DropdoenContainer>
+        </DropdownWrapper>
       </TopSection>
       <BottomSectionScroll>
         <InsightDataContiner>
           <InsightContainer
             backgroundCss="#F1F5FF"
             icon={TotalProcessorIcon}
-            count={2604}
+            count={clusterDetails?.total_processors || ' '}
             text="Total Processor"
           />
           <InsightContainer
             backgroundCss="#FEFBEC"
             icon={RunnigProcessorIcon}
-            count={24}
+            count={clusterDetails?.running_processors}
             text="Running Processor"
           />
 
           <InsightContainer
             backgroundCss="#EEF9FB"
             icon={StoppedProcessorIcon}
-            count={240}
+            count={clusterDetails?.stopped_processors}
             text="Stopped Processor"
           />
           <InsightContainer
             backgroundCss="#FDF3FC"
             icon={DisabledProcessorIcon}
-            count={126}
+            count={clusterDetails?.disabled_processors}
             text="Disabled Processor"
           />
           <InsightContainer
             backgroundCss="#FFF7ED"
             icon={InvalidProcessorIcon}
-            count={26}
+            count={clusterDetails?.invalid_count}
             text="Invalid Processor"
           />
           <InsightContainer
             backgroundCss="#F0F0F2"
             icon={ActiveThreadIcon}
-            count={260}
+            count={clusterDetails?.active_thread_count}
             text="Active Thread"
           />
           <InsightContainer
             backgroundCss="#EEF8FF"
             icon={TotalQuedIcon}
-            count={'11 Mb'}
+            count={clusterDetails?.total_queued}
             text="Total Queued"
           />
           <InsightContainer
             backgroundCss="#EEF0F4"
             icon={FlowFiledQuedIcon}
-            count={26}
+            count={clusterDetails?.flow_files_queued}
             text="Flow Files Queued"
           />
         </InsightDataContiner>
@@ -242,29 +397,11 @@ export const Dashboard = () => {
           <HeaderText>Flow Metrics</HeaderText>
         </FlowMetricHeader>
         <FlowMetrics />
-        <FlowMetricHeader>
-          <svg
-            width={20}
-            height={18}
-            viewBox="0 0 20 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M9.99993 4.96973C9.18498 4.96973 8.52002 5.49969 8.52002 6.18465L9.04249 11.7593C9.04249 12.2868 9.47246 12.7167 9.99993 12.7167C10.5274 12.7167 10.9574 12.2868 10.9549 11.7893L11.4798 6.15465C11.4798 5.49969 10.8149 4.96973 9.99993 4.96973ZM10.3049 11.7568C10.3049 11.9243 10.1674 12.0618 9.99993 12.0618C9.83244 12.0618 9.69495 11.9243 9.69245 11.7268L9.16998 6.15215C9.16998 5.86717 9.55745 5.61969 9.99993 5.61969C10.4424 5.61969 10.8299 5.86967 10.8299 6.12215L10.3049 11.7568Z"
-              fill="#C52B2B"
-            />
-            <path
-              d="M9.99995 13.0566C9.38999 13.0566 8.89502 13.5516 8.89502 14.1616C8.89502 14.7715 9.38999 15.2665 9.99995 15.2665C10.6099 15.2665 11.1049 14.7715 11.1049 14.1616C11.1049 13.5516 10.6099 13.0566 9.99995 13.0566ZM9.99995 14.614C9.74997 14.614 9.54498 14.4116 9.54498 14.1591C9.54498 13.9091 9.74747 13.7041 9.99995 13.7041C10.2524 13.7041 10.4549 13.9066 10.4549 14.1591C10.4549 14.4116 10.2499 14.614 9.99995 14.614Z"
-              fill="#C52B2B"
-            />
-            <path
-              d="M11.4199 0.819949C11.1224 0.307481 10.5925 0 10 0C9.40754 0 8.87507 0.307481 8.58009 0.819949L0.223111 15.294C-0.0743704 15.8065 -0.0743704 16.4215 0.223111 16.9339C0.520593 17.4464 1.05056 17.7539 1.64302 17.7539H18.357C18.9494 17.7539 19.4819 17.4464 19.7769 16.9339C20.0744 16.4215 20.0744 15.8065 19.7769 15.294L11.4199 0.819949ZM19.2144 16.609C19.0369 16.9189 18.7145 17.1039 18.357 17.1039H1.64302C1.28554 17.1039 0.965565 16.9189 0.785576 16.609C0.605587 16.299 0.605587 15.929 0.785576 15.619L9.14255 1.14493C9.32004 0.834948 9.64252 0.64996 10 0.64996C10.3575 0.64996 10.6775 0.834948 10.8574 1.14493L19.2144 15.619C19.3919 15.929 19.3919 16.299 19.2144 16.609Z"
-              fill="#C52B2B"
-            />
-          </svg>
+        <ErrorsHeader>
+          <ErrorIcon />
+
           <HeaderText>Errors</HeaderText>
-        </FlowMetricHeader>
+        </ErrorsHeader>
         <Table data={data} columns={COLUMNS} />
       </BottomSectionScroll>
     </Continer>

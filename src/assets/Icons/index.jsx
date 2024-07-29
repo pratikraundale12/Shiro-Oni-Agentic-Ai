@@ -45,3 +45,4 @@ export * from './LessArrowIcon';
 export * from './GreaterArrowIcon';
 export * from './CrossWithCircleIcon';
 export * from './InvalidProcessorIcon';
+export * from './ErrorIcon';
