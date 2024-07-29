@@ -10,14 +10,19 @@ const StyledButton = styled.button.withConfig({
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: ${props => (props.size === 'md' ? '16px' : '12px')};
-  padding: ${props => (props.size === 'md' ? '8px 14px' : '6px 14px')};
+  font-size: ${props => (props.size === 'md' ? '14px' : '12px')};
+  padding: ${props =>
+    props.size === 'md'
+      ? '4px 12px'
+      : props.size === 'lg'
+        ? '20px 32px'
+        : '6px 14px'};
   border: 1px solid
     ${props =>
       props.variant === 'primary'
         ? props.theme.colors.primary
         : props.theme.colors.darker};
-  border-radius: 4px;
+  border-radius: 8px;
   font-weight: 600;
   transition:
     background 0.3s ease-in-out,
@@ -31,11 +36,19 @@ const StyledButton = styled.button.withConfig({
     props.variant === 'primary'
       ? props.theme.colors.white
       : props.theme.colors.darker};
-  ${props => props.icon && 'padding: 4px 10px;'}
+  // ${props => props.icon && 'padding: 4px 10px;'}
 
   div {
     font-weight: bold;
     min-width: max-content;
+    ${props =>
+      props.size === 'lg' &&
+      `
+      font-family: ${props.theme.fontNato};
+      font-size: 18px;
+      line-height: 24px;
+      margin-left: 16px;
+      `}
   }
 
   &:hover:enabled {

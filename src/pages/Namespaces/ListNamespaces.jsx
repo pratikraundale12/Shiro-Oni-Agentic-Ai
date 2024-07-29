@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { TextRender } from '../../components';
 import { Grid } from '../../components';
-import { REFRESH_OPTIONS } from '../../utils';
+import { fetchGridData, REFRESH_OPTIONS, useGlobalContext } from '../../utils';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -11,10 +11,15 @@ const Container = styled.div`
 `;
 
 export const ListNamespaces = () => {
+  const { state, setState } = useGlobalContext();
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => <TextRender text={item.name} />,
+      renderCell: item => (
+        <button onClick={() => handleSelectNamespace(item.id)}>
+          {item.name}
+        </button>
+      ),
       sort: { sortKey: 'NAME' },
     },
     {
@@ -45,6 +50,28 @@ export const ListNamespaces = () => {
     NAME: array => array.sort((a, b) => a.name.localeCompare(b.name)),
   };
 
+  const clusterOptions = state.clusterList.map(item => ({
+    label: item.name,
+    value: item.id,
+  }));
+
+  function handleSelectNamespace(id) {
+    setState(prev => ({ ...prev, selectedNamespaceId: id }));
+    fetchGridData({
+      setState,
+      module: 'namespaces',
+      selectedSourceClusterId: state.selectedSourceClusterId,
+      selectedNamespaceId: 'asdf',
+    });
+  }
+
+  useEffect(() => {
+    fetchGridData({
+      setState,
+      module: 'clusters',
+    });
+  }, [setState]);
+
   return (
     <Container>
       <Grid
@@ -53,10 +80,7 @@ export const ListNamespaces = () => {
         columns={COLUMNS}
         sortFns={SORT_FNS}
         refreshOptions={REFRESH_OPTIONS}
-        clusterOptions={[
-          { label: 'Dev', value: '403ca918-331f-48ba-ae08-7de17489b6b8' },
-          { label: 'Prod', value: 'd8dd9461-53d5-4f69-94a9-5e9f6c734d64' },
-        ]}
+        clusterOptions={clusterOptions}
       />
     </Container>
   );

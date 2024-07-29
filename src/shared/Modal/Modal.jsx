@@ -25,7 +25,6 @@ const Header = styled.div`
 `;
 
 const Body = styled.div`
-  overflow: auto;
   padding: 16px;
 `;
 
@@ -114,9 +113,11 @@ export const Modal = ({
       </Header>
       <Body>{children}</Body>
       <Footer size={size}>
-        <Button variant="secondary" onClick={onRequestClose}>
-          {secondaryButtonText}
-        </Button>
+        {secondaryButtonText && (
+          <Button variant="secondary" onClick={onRequestClose}>
+            {secondaryButtonText}
+          </Button>
+        )}
         <Button isLoading={isLoading} onClick={onSubmit}>
           {primaryButtonText}
         </Button>

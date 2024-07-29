@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Outlet, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { isEmpty } from 'lodash';
 
 import { Header, Sidebar } from '../components';
-import { ROUTES_MENU } from '.';
+import { useGlobalContext } from '../utils';
+import { currentUser } from '../utils/services';
 
 const Container = styled.div`
   width: 100vw;
@@ -23,22 +26,49 @@ const Content = styled.main`
 
 const AuthGuard = () => {
   const navigate = useNavigate();
-  const [route, setRoute] = useState(ROUTES_MENU[0]);
+  const {
+    state: { currentUser: user, activeRoute: route },
+    setState,
+  } = useGlobalContext();
 
-  const handleRouteClick = route => {
-    setRoute(route);
-    navigate(`/${route.path}`);
-  };
+  async function fetchCurrentUser() {
+    let pathname = window.location.pathname;
+    pathname = pathname.split('/')[1];
+    const response = await currentUser();
+    if (response.status === 200) {
+      setState(prev => ({
+        ...prev,
+        activeRoute: pathname || 'dashboard',
+        currentUser: response.data,
+      }));
+    } else {
+      setState(prev => ({ ...prev, activeRoute: 'login', currentUser: null }));
+    }
+  }
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
+
+  if (isEmpty(user)) {
+    navigate('login');
+  }
 
   return (
     <Container>
-      <Sidebar route={route} handleRouteClick={handleRouteClick} />
+      <Sidebar />
       <Content>
         <Header route={route} />
         <Outlet />
       </Content>
     </Container>
   );
+};
+
+AuthGuard.propTypes = {
+  state: PropTypes.shape({
+    currentUser: PropTypes.shape({}),
+  }),
 };
 
 export default AuthGuard;
