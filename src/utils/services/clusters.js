@@ -53,3 +53,12 @@ export const getOneRegistry = async params => {
   return data;
 };
 
+export const updateCluster = async (id,payload) => {
+  const {data} = await API.patch(`http://localhost:8000/api/clusters/${id}`,payload);
+  return data;
+}
+
+export const updateRegistry = async (id,payload) => {
+  const {data} = await API.patch(`http://localhost:8000/api/registries/${id}`,payload);
+  return data;
+}

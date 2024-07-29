@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 import React from 'react';
 import styled from 'styled-components';
 import { TodoIcon } from '../../../assets';
@@ -20,14 +22,14 @@ const PageHeading = styled.div`
   }
 `;
 
-export const Title = () => {
+export const Title = ({ title }) => {
   return (
     <Container>
       <PageHeading>
         <div>
           <TodoIcon height="22" width="27" />
         </div>
-        <p>Add New Cluster Details</p>
+        <p>{title}</p>
       </PageHeading>
     </Container>
   );

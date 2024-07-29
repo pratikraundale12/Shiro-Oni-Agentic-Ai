@@ -3,6 +3,8 @@ import styled from 'styled-components';
 
 import { Grid, StatusRender, TextRender } from '../../components';
 import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../utils';
+import { PencilIcon, DeleteSmallIcon } from '../../assets';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -10,7 +12,40 @@ const Container = styled.div`
   height: 100%;
 `;
 
+const ActionTd = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 15px;
+`;
+const IconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
+
 export const ListClusters = () => {
+  const navigate = useNavigate();
+
+  const getActionsMenu = item => (
+    <div>
+      <ActionTd>
+        <IconWrapper
+          onClick={() => {
+            navigate('/cluster/edit', { state: item });
+          }}
+        >
+          <PencilIcon color="white" />
+        </IconWrapper>
+        {/* <IconWrapper onClick={() => openDeleteModal(item?.id)}> */}
+        <IconWrapper>
+          <DeleteSmallIcon color="white" />
+        </IconWrapper>
+      </ActionTd>
+    </div>
+  );
+
   const COLUMNS = [
     {
       label: 'Name',
@@ -24,6 +59,11 @@ export const ListClusters = () => {
     {
       label: 'Status',
       renderCell: item => <StatusRender status={item.status} />,
+    },
+    {
+      label: 'Actions',
+      width: 120,
+      renderCell: item => getActionsMenu(item),
     },
   ];
 

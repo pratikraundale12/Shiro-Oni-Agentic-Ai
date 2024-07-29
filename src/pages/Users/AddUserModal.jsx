@@ -118,7 +118,7 @@ export const AddUserModal = props => {
       isEmpty(state?.selectedItem) ? userSchema : editUserSchema
     ),
   });
-
+  console.log(state.selectedItem, 'itessssssss');
   const openModal = () => setState({ ...state, userModal: true });
   const closeModal = () => {
     setState({

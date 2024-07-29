@@ -1,11 +1,16 @@
 /* eslint-disable */
 
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Modal } from '../../../shared';
-import { createCluster, createRegistry } from '../../../utils/services';
-import { useNavigate } from 'react-router-dom';
-
+import {
+  createCluster,
+  createRegistry,
+  updateCluster,
+  updateRegistry,
+} from '../../../utils/services';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 
 const ClusterDetailsContainer = styled.div`
   margin-bottom: 20px;
@@ -78,17 +83,20 @@ export const SummaryModal = ({
   openSummary,
   setOpenSummary,
   selectedRegistry = '',
+  isEdit = false,
+  clusterId,
+  registry_id,
 }) => {
-  console.log('DATA..........', clusterData, registryData);
-  const navigate = useNavigate();
+  console.log('DATA..........', registry_id);
 
+  const navigate = useNavigate();
+  const [loadingPost, setLoadingPost] = useState(false);
   const addRegistry = async () => {
     const payload = new FormData();
     if (registryData?.registry_url)
       payload.append('registry_url', registryData.registry_url);
 
-    if (registryData?.name)
-      payload.append('name', registryData.name);
+    if (registryData?.name) payload.append('name', registryData.name);
 
     if (registryData?.username)
       payload.append('username', registryData.username);
@@ -108,7 +116,8 @@ export const SummaryModal = ({
       console.log('SUCCESS', response);
       addCluster({ registry_id: response?.data.id });
     } else {
-      console.log('error');
+      setLoadingPost(false);
+      toast.error(response.message);
     }
   };
 
@@ -116,9 +125,8 @@ export const SummaryModal = ({
     // setLoading(true);
     const payload = new FormData();
 
-    if (clusterData?.name)
-      payload.append('name', clusterData.name);
-    if (clusterData?. nifi_url) payload.append('nifi_url', clusterData. nifi_url);
+    if (clusterData?.name) payload.append('name', clusterData.name);
+    if (clusterData?.nifi_url) payload.append('nifi_url', clusterData.nifi_url);
     if (clusterData?.username) payload.append('username', clusterData.username);
     if (clusterData?.password) payload.append('password', clusterData.password);
 
@@ -128,20 +136,86 @@ export const SummaryModal = ({
     if (registry_id) payload.append('registry_id', registry_id);
 
     const response = await createCluster(payload);
-    // setLoading(false);
     if (response?.status === 201) {
-      console.log('clsuterResoponse', response);
-      navigate('/cluster')
+      navigate('/cluster');
+      setLoadingPost(false);
+      toast.success(response.message);
     } else {
-      console.log('error');
+      setLoadingPost(false);
+      toast.error(response.message);
+    }
+  };
+
+  const editRegistryData = async () => {
+    // setLoading(true);
+    console.log('reeeeeeeeeeee', registryData);
+    const payload = new FormData();
+    if (registryData?.name) payload.append('name', registryData.name);
+
+    if (registryData?.username)
+      payload.append('username', registryData.username);
+
+    if (registryData?.passphrase)
+      payload.append('passphrase', registryData.passphrase);
+
+    if (registryData?.password)
+      payload.append('password', registryData.password);
+
+    registryData?.file.name && payload.append('file', registryData.file);
+
+    const id = registry_id;
+    const response = await updateRegistry(id, payload);
+    console.log(response);
+    if (response?.id) {
+      console.log('rrrrrrrrrrrrrrrrrrrrrrrrr');
+      setLoadingPost(false);
+      toast.success(response.message);
+      navigate('/cluster');
+    } else {
+      setLoadingPost(false);
+      toast.error(response.message);
+    }
+  };
+
+  const editClusterData = async () => {
+    console.log('clusteredit');
+    // setLoading(true);
+    const payload = new FormData();
+    if (clusterData?.name) payload.append('name', clusterData.name);
+
+    if (clusterData?.username) payload.append('username', clusterData.username);
+
+    if (clusterData?.passphrase)
+      payload.append('passphrase', clusterData.passphrase);
+
+    if (clusterData?.password) payload.append('password', clusterData.password);
+
+    clusterData?.file.name && payload.append('file', clusterData.file);
+
+    const id = clusterId;
+    const response = await updateCluster(id, payload);
+    // setLoading(false);
+    if (response?.id) {
+      editRegistryData();
+      console.log('succcccc');
+    } else {
+      console.log('errror');
+      setLoadingPost(false);
+      toast.error(response.message);
+      // popup('error', error.data.message);
     }
   };
 
   const handleSubmit = () => {
-    console.log(registryData,"mmmmmmmmmmmmmmmmmmmmmmmm")
-    if (registryData.id) {
+    console.log(isEdit, 'editt');
+    if (isEdit) {
+      setLoadingPost(true);
+      editClusterData();
+    } else if (registryData.id) {
+      setLoadingPost(true);
       addCluster({ registry_id: registryData.id });
     } else {
+      setLoadingPost(true);
       addRegistry();
     }
   };
@@ -155,6 +229,7 @@ export const SummaryModal = ({
       secondaryButtonText="Cancel"
       primaryButtonText="Continue"
       onSubmit={handleSubmit}
+      isLoading={loadingPost}
     >
       <>
         <ClusterDetailsContainer>
@@ -168,13 +243,13 @@ export const SummaryModal = ({
                 </Info>
                 <Info width="40%">
                   <Title>Cluster URL</Title>
-                  <ClusterLink href="#">{clusterData. nifi_url}</ClusterLink>
+                  <ClusterLink href="#">{clusterData.nifi_url}</ClusterLink>
                 </Info>
               </Row>
               <Row>
                 <Info width="60%">
                   <Title>Username</Title>
-                  <ClusterName>{clusterData?.username || "N/A"}</ClusterName>
+                  <ClusterName>{clusterData?.username || 'N/A'}</ClusterName>
                 </Info>
                 <Info width="40%">
                   <Title>Password</Title>
@@ -184,7 +259,7 @@ export const SummaryModal = ({
               <Row>
                 <Info width="60%">
                   <Title>PFX Passphrase</Title>
-                  <ClusterName>{clusterData?.passphrase ||"N/A"}</ClusterName>
+                  <ClusterName>{clusterData?.passphrase || 'N/A'}</ClusterName>
                 </Info>
                 <Info width="40%">
                   <Title>Nifi Certificate</Title>
@@ -229,7 +304,9 @@ export const SummaryModal = ({
                       <FileSize>30MB</FileSize>
                     </FileBox>
                     <FileName>
-                      {clusterData.file ? clusterData?.file.name :  "N/A"}
+                      {clusterData.file
+                        ? clusterData?.file || clusterData?.file.name
+                        : 'N/A'}
                     </FileName>
                     <FileInput type="file" id="cluster-certificate" />
                   </label>
@@ -250,23 +327,29 @@ export const SummaryModal = ({
                 </Info>
                 <Info width="40%">
                   <Title>Registry URL</Title>
-                  <ClusterLink href="#">{registryData.registry_url}</ClusterLink>
+                  <ClusterLink href="#">
+                    {registryData.registry_url}
+                  </ClusterLink>
                 </Info>
               </Row>
               <Row>
                 <Info width="60%">
                   <Title>Username</Title>
-                  <ClusterName>{registryData?.username || "N/A"}</ClusterName>
+                  <ClusterName>{registryData?.username || 'N/A'}</ClusterName>
                 </Info>
                 <Info width="40%">
                   <Title>Password</Title>
-                  <Password>{registryData?.password ? '***********' : "N/A"}</Password>
+                  <Password>
+                    {registryData?.password ? '***********' : 'N/A'}
+                  </Password>
                 </Info>
               </Row>
               <Row>
                 <Info width="60%">
                   <Title>PFX Passphrase</Title>
-                  <ClusterName>{registryData?.passphrase ? '***********' : "N/A"}</ClusterName>
+                  <ClusterName>
+                    {registryData?.passphrase ? '***********' : 'N/A'}
+                  </ClusterName>
                 </Info>
                 <Info width="40%">
                   <Title>Nifi Certificate</Title>
@@ -311,7 +394,9 @@ export const SummaryModal = ({
                       <FileSize>30MB</FileSize>
                     </FileBox>
                     <FileName>
-                    {registryData.file ? registryData?.file.name :  "N/A"}
+                      {registryData.file
+                        ? registryData?.file || registryData?.file.name
+                        : 'N/A'}
                     </FileName>
                     <FileInput type="file" id="cluster-certificate" />
                   </label>
@@ -320,6 +405,8 @@ export const SummaryModal = ({
             </Col>
           </Row>
         </ClusterDetailsContainer>
+
+        <ToastContainer />
       </>
     </Modal>
   );

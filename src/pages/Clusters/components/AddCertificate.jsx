@@ -93,25 +93,34 @@ const schema = yup.object().shape({
   file: yup
     .mixed()
     .required('File is required')
-    .test('fileSize', 'File is too large', (value) => {
-      return value && value.size <= 2 * 1024 * 1024; // 2MB
-    })
-    .test('fileType', 'Unsupported file format', (value) => {
-      return value && ['application/x-pkcs12'].includes(value.type);
+    .test('fileExtension', 'File must be of type .p12', value => {
+      return value && value.name.endsWith('.p12');
     }),
   passphrase: yup
     .string()
     .required('Passphrase is required')
-    .min(6, 'Passphrase must be at least 6 characters long'),
+    .min(0, 'Passphrase can be empty') // Allows empty passphrase, adjust if necessary
+    .max(50, 'Passphrase is too long'), // Optional maximum length
 });
-
-export const AddCertificate = ({ addCertificate, setAddCertificate,setCertificate }) => {
-  const [file, setFile] = useState(null);
-  const { watch, register, handleSubmit, formState: { errors }, setValue } = useForm({
+export const AddCertificate = ({
+  addCertificate,
+  setAddCertificate,
+  setCertificate,
+  certificates,
+}) => {
+  const [file, setFile] = useState(certificates?.file || null);
+  const {
+    watch,
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: certificates,
   });
 
-  const handleFileSelect = (event) => {
+  const handleFileSelect = event => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       setFile({
@@ -128,7 +137,7 @@ export const AddCertificate = ({ addCertificate, setAddCertificate,setCertificat
     setValue('file', null);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = data => {
     console.log('certificate', data);
     const certificateData = {
       file: data.file,
@@ -137,8 +146,8 @@ export const AddCertificate = ({ addCertificate, setAddCertificate,setCertificat
     setCertificate({
       file: data.file,
       passphrase: data.passphrase,
-    })
-    setAddCertificate(false)
+    });
+    setAddCertificate(false);
     console.log('certificate', certificateData);
     // Add your logic to handle the form submission
   };
@@ -185,7 +194,7 @@ export const AddCertificate = ({ addCertificate, setAddCertificate,setCertificat
                         <FileDetails>
                           <FileTypeContainer>
                             <FileSize onClick={handleFileRemove}>
-                              <CrossIcon/>
+                              <CrossIcon />
                             </FileSize>
                           </FileTypeContainer>
                           <FilePath>{file.name}</FilePath>
@@ -196,7 +205,12 @@ export const AddCertificate = ({ addCertificate, setAddCertificate,setCertificat
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
                           >
-                            <rect width={475} height={8} rx={4} fill="#38812F" />
+                            <rect
+                              width={475}
+                              height={8}
+                              rx={4}
+                              fill="#38812F"
+                            />
                           </svg>
                         </FileDetails>
                       ) : (
@@ -218,7 +232,9 @@ export const AddCertificate = ({ addCertificate, setAddCertificate,setCertificat
                             errors={errors}
                           />
                           {errors.file && (
-                            <span style={{ color: 'red' }}>{errors.file.message}</span>
+                            <span style={{ color: 'red' }}>
+                              {errors.file.message}
+                            </span>
                           )}
                         </>
                       )}
@@ -237,7 +253,7 @@ export const AddCertificate = ({ addCertificate, setAddCertificate,setCertificat
             errors={errors.passphrase}
             // required={true}
           /> */}
-            <PasswordField
+          <PasswordField
             name="passphrase"
             register={register}
             errors={errors.passphrase}
@@ -245,7 +261,7 @@ export const AddCertificate = ({ addCertificate, setAddCertificate,setCertificat
             required="Password is required"
             label="Password"
             helperText="Must be 8 characters at least"
-            />
+          />
         </form>
       </InputBox>
     </Modal>

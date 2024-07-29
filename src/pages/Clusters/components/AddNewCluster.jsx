@@ -207,9 +207,10 @@ export const AddNewCluster = ({
   setActiveTab,
   setClusterData,
   clusterData,
+  clusterId,
 }) => {
   const [successTest, setSuccessTest] = useState(false);
-  // const [c]
+  const [testLoader, setTestLoader] = useState(false);
   const [failedTest, setFailedTest] = useState(false);
   const [continueStatus, setContinueStatus] = useState(false);
   const [addCertificate, setAddCertificate] = useState(false);
@@ -221,15 +222,8 @@ export const AddNewCluster = ({
   });
   const [testMessage, setTestMessage] = useState('');
   const [testStatus, setTestStatus] = useState(false);
-  const [clusterFormData, setClusterFormData] = useState({
-    name: clusterData?.name || '',
-    nifi_url: clusterData?.nifi_url || '',
-    username: clusterData.username || '',
-    password: clusterData.password || '',
-  });
 
   console.log(clusterCertificate, 'clsutercertificate');
-  console.log(clusterFormData, 'clusterFormData');
   console.log('clusterData........', clusterData);
 
   const {
@@ -245,21 +239,25 @@ export const AddNewCluster = ({
   const navigate = useNavigate();
 
   const testClusterData = async data => {
+    setTestLoader(true);
     setClusterData({
-      name: data.name,
-      nifi_url: data.nifi_url,
-      username: data.username,
-      password: data.password,
+      name: data?.name,
+      nifi_url: data?.nifi_url,
+      username: data?.username,
+      password: data?.password,
       file: clusterCertificate?.file,
       passphrase: clusterCertificate?.passphrase,
     });
     console.log('datasssssss', data);
     const payload = new FormData();
+    !clusterCertificate?.file.name &&
+      clusterId &&
+      payload.append('id', clusterId);
     payload.append('name', data?.name);
     payload.append('nifi_url', data?.nifi_url);
     data?.password && payload.append('password', data?.password);
     data?.username && payload.append('username', data?.username);
-    clusterCertificate?.file &&
+    clusterCertificate?.file.name &&
       payload.append('file', clusterCertificate?.file);
     clusterCertificate?.passphrase &&
       payload.append('passphrase', clusterCertificate?.passphrase);
@@ -267,43 +265,25 @@ export const AddNewCluster = ({
     if (response.status === 204) {
       setSuccessTest(true);
       setContinueStatus(true);
-      // setClusterData(clusterFocontinueStatus`
+      setTestLoader(false);
     } else {
-      console.log(response.message, 'ERROR RESPONSE');
       setTestMessage(response.message);
       setContinueStatus(false);
       setFailedTest(true);
-      console.log('errorr');
+      setTestLoader(false);
     }
   };
 
   const onSubmit = data => {
     console.log('cl', data);
-    setClusterFormData({
-      name: data.name,
-      nifi_url: data.nifi_url,
-      username: data.username,
-      password: data.password,
-    });
     testClusterData(data);
   };
-
-  // const handleInputChange = e => {
-  //   console.log("hhhhhhhhh");
-  //   const { name, value } = e.target;
-  //   setClusterFormData(prevState => ({
-  //     ...prevState,
-  //     [name]: value,
-  //   }));
-  // };
 
   const watchedFields = watch(['name', 'nifi_url', 'username', 'password']);
 
   useEffect(() => {
-    // Update state based on watched fields
     const [name, nifi_url, username, password] = watchedFields;
 
-    // Example condition to set `continueStatus`
     if (nifi_url?.startsWith('https')) {
       setTestStatus(false);
       setAddCertificateStatus(false);
@@ -402,7 +382,10 @@ export const AddNewCluster = ({
                         </FileType>
                         <FileSize>20MB</FileSize>
                       </FileTypeContainer>
-                      <FilePath>{clusterCertificate?.file.name}</FilePath>
+                      <FilePath>
+                        {clusterCertificate?.file.name ||
+                          clusterCertificate?.file}
+                      </FilePath>
                     </FileDetails>
                   </FileInfo>
                 </CertificateDetails>
@@ -423,14 +406,14 @@ export const AddNewCluster = ({
                       setAddCertificate(true);
                     }}
                   >
-                    <PencilIcon />
+                    <PencilIcon color="white" />
                   </IconButton>
                   <IconButton
                     onClick={() => {
                       setClusterCertificate('');
                     }}
                   >
-                    <DeleteSmallIcon color="#FF0000" />
+                    <DeleteSmallIcon color="white" />
                   </IconButton>
                 </EditDeleteContainer>
               </UploadCertificateContainer>
@@ -461,10 +444,13 @@ export const AddNewCluster = ({
               >
                 Continue
               </Button>
-              {/* <Button type="submit" onClick={()=>setActiveTab("registry")}>Continue</Button> */}
             </BtnDiv>
             <BtnDiv>
-              <Button disabled={!testStatus} onClick={handleSubmit(onSubmit)}>
+              <Button
+                isLoading={testLoader}
+                disabled={!testStatus}
+                onClick={handleSubmit(onSubmit)}
+              >
                 Test Cluster
               </Button>
             </BtnDiv>
@@ -523,7 +509,7 @@ export const AddNewCluster = ({
         addCertificate={addCertificate}
         setAddCertificate={setAddCertificate}
         setCertificate={setClusterCertificate}
-        clusterCertificate={clusterCertificate}
+        certificates={clusterCertificate}
       />
     </>
   );

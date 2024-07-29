@@ -167,18 +167,30 @@ export const AddRegistry = ({
   registryData,
   setRegistryData,
   setActiveTab,
+  isEdit = false,
+  registry_id,
+  clusterId,
 }) => {
   const [successTest, setSuccessTest] = useState(false);
-  const [failedTest, setFailedTest]  = useState(false);
+  const [testLoader, setTestLoader] = useState(false);
+  const [failedTest, setFailedTest] = useState(false);
   const [continueStatus, setContinueStatus] = useState(false);
-  const { control, watch } = useForm();
+  const { control, reset, watch } = useForm({
+    defaultValues: {
+      registry: registry_id || '', // or any default values you need
+    },
+  });
   const [registries, setRegistries] = useState([]);
-  const selectedRegistryId = watch('registry');
+  // const selectedRegistryId = watch('registry');
+  const [selectedRegistryId, setSelectedRegistryId] = useState(
+    watch('registry')
+  );
+
   const [openSummary, setOpenSummary] = useState(false);
   const [testMessage, setTestMessage] = useState('');
 
   // const [ selectedRegistryData,setSelectedRegistryData] = useState()
-
+  console.log(registry_id, 'reggggggggiddddddddd');
   const fetchRegistry = async () => {
     try {
       const response = await getRegistryList();
@@ -209,14 +221,13 @@ export const AddRegistry = ({
     try {
       const response = await getOneRegistry(selectedRegistryId);
       console.log(response, 'ressss');
-      setRegistryData(response); // Update state with fetched details
+      setRegistryData(response);
     } catch (error) {
       console.error('Failed to fetch registry details:', error);
     }
   };
 
-   
-  const testRegistryData = async ()=> {
+  const testRegistryData = async () => {
     // setRegistryData({
     //   name: registryData.name,
     //   registry_url: registryData.registry_url,
@@ -227,33 +238,42 @@ export const AddRegistry = ({
     // })
     // console.log("datasssssss",data)
     const payload = new FormData();
+    setTestLoader(true);
+    registryData?.id && payload.append('id', registryData?.id);
     payload.append('name', registryData?.name);
     payload.append('nifi_url', registryData?.registry_url);
-    registryData?.password && payload.append('password', registryData?.password);
+    registryData?.password &&
+      payload.append('password', registryData?.password);
     registryData?.username &&
       payload.append('username', registryData?.username) &&
       payload.append('username', registryData?.username);
-      registryData?.file &&
-      payload.append('file', registryData?.file);
-      registryData?.passphrase &&
-      payload.append('passphrase', registryData?.passphrase );
+    registryData?.file && payload.append('file', registryData?.file);
+    registryData?.passphrase &&
+      payload.append('passphrase', registryData?.passphrase);
     const response = await testRegistry(payload);
     console.log('RESPONSE', response);
     if (response.status === 204) {
-     
       setSuccessTest(true);
       setContinueStatus(true);
-     
-    // setClusterData(clusterFormData);
+      setTestLoader(false);
+
+      // setClusterData(clusterFormData);
       console.log('tested');
     } else {
       setContinueStatus(false);
       setTestMessage(response.message);
       setFailedTest(true);
+      setTestLoader(false);
+
       console.log('errorr');
     }
   };
 
+  const handleDelete = () => {
+    setRegistryData('');
+    setSelectedRegistryId('');
+    reset({ registry: '' });
+  };
 
   return (
     <>
@@ -270,7 +290,7 @@ export const AddRegistry = ({
             onClick={() => setNewRegistry(true)}
             style={{ border: 'none', background: 'none', padding: 0 }}
           >
-            <Button variant="secondary">
+            <Button variant="secondary" disabled={selectedRegistryId}>
               <PlusCircleIcon width={20} height={20} color="red" />
               Add New Registry
             </Button>
@@ -325,8 +345,13 @@ export const AddRegistry = ({
               </Row>
               <BottomButtonDiv>
                 <ButtonDiv>
-                  <Button variant="secondary">Edit</Button>
-                  <Button>Delete</Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setNewRegistry(true)}
+                  >
+                    Edit
+                  </Button>
+                  <Button onClick={handleDelete}>Delete</Button>
                 </ButtonDiv>
               </BottomButtonDiv>
             </RegistryDetailsDiv>
@@ -339,9 +364,16 @@ export const AddRegistry = ({
         </Container>
         <BottomButtonDivs>
           <BtnDiv>
-            <Button variant="secondary" onClick={()=>{setActiveTab('cluster')}}>Back</Button>
             <Button
-            disabled={!continueStatus}
+              variant="secondary"
+              onClick={() => {
+                setActiveTab('cluster');
+              }}
+            >
+              Back
+            </Button>
+            <Button
+              disabled={!continueStatus}
               onClick={() => {
                 setOpenSummary(true);
               }}
@@ -350,7 +382,14 @@ export const AddRegistry = ({
             </Button>
           </BtnDiv>
           <BtnDiv>
-            <Button onClick={()=>{testRegistryData()}}>Test Cluster</Button>
+            <Button
+              onClick={() => {
+                testRegistryData();
+              }}
+              isLoading={testLoader}
+            >
+              Test Cluster
+            </Button>
           </BtnDiv>
         </BottomButtonDivs>
       </ParentDiv>
@@ -361,9 +400,12 @@ export const AddRegistry = ({
         registryData={registryData}
         openSummary={openSummary}
         setOpenSummary={setOpenSummary}
+        isEdit={isEdit}
+        clusterId={clusterId}
+        registry_id={registry_id}
       />
 
-<Modal
+      <Modal
         title="Testing Successfull"
         isOpen={successTest}
         onRequestClose={() => setSuccessTest(false)}
@@ -374,10 +416,10 @@ export const AddRegistry = ({
       >
         <>
           <div className="text-center">
-            <RightCircleIcon color='#0CBF59' />
+            <RightCircleIcon color="#0CBF59" />
           </div>
           <h5 className="pt-4 mt-2 mb-0 text-center">
-          registry Test Successful
+            registry Test Successful
           </h5>
           <p className="pt-3 mb-0 text-center">
             Your registry Test was successful. You <br /> can now proceed to the
@@ -385,7 +427,6 @@ export const AddRegistry = ({
           </p>
         </>
       </Modal>
-
 
       <Modal
         title="Testing Successfull"
@@ -397,14 +438,17 @@ export const AddRegistry = ({
       >
         <>
           <div className="text-center">
-            <ExclamationFailedTestingIcon width={90} height={65}/>
+            <ExclamationFailedTestingIcon width={90} height={65} />
           </div>
-          <h5 className="pt-4 mt-2 mb-0 text-center">
-            Cluster Test Failed
-          </h5>
-          {testMessage!= '' ?  <p className="pt-3 mb-0 text-center">{testMessage}</p> :  <p className="pt-3 mb-0 text-center">
-          We encountered an issue while testing your cluster. Please check if your File is Correct
-          </p>}
+          <h5 className="pt-4 mt-2 mb-0 text-center">Cluster Test Failed</h5>
+          {testMessage != '' ? (
+            <p className="pt-3 mb-0 text-center">{testMessage}</p>
+          ) : (
+            <p className="pt-3 mb-0 text-center">
+              We encountered an issue while testing your cluster. Please check
+              if your File is Correct
+            </p>
+          )}
         </>
       </Modal>
     </>

@@ -1,6 +1,7 @@
 /* eslint-disable */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 // import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Title } from './components/Title';
@@ -71,15 +72,22 @@ const NavButton = styled.button`
 
 export const AddCluster = () => {
   // const { id } = useParams();
+  const location = useLocation();
+  const data = location.state || {};
+
+  const [isEdit, setIsEdit] = useState(false);
   const [activeTab, setActiveTab] = useState('cluster');
   const [newRegistry, setNewRegistry] = useState(false);
+  const [registryId, setRegistryId] = useState();
+  const [clusterId, setClusterId] = useState();
   const [clusterData, setClusterData] = useState({
-    name: '',
-    nifi_url: '',
-    username: '',
-    password: '',
-    file: '',
-    passphrase: '',
+    id: data?.id || '',
+    name: data.name || '',
+    nifi_url: data.nifi_url || '',
+    username: data.username || '',
+    password: data.password || '',
+    file: data.file || '',
+    passphrase: data.passphrase || '',
   });
   const [registryData, setRegistryData] = useState({
     name: '',
@@ -96,10 +104,19 @@ export const AddCluster = () => {
 
   console.log('CLUSTERDATA.....................?????????????', clusterData);
   console.log('REGISTRYDATA.....................?????????????', registryData);
-
+  useEffect(() => {
+    if (data?.id) {
+      console.log('ifffffff', data);
+      setIsEdit(true);
+      setRegistryId(data?.registry_id || '');
+      setClusterId(data?.id);
+    }
+  }, []);
   return (
     <AddClusterContainer>
-      <Title title="Add Cluster Details" />
+      <Title
+        title={isEdit ? 'Edit cluster Details' : 'Add New Cluster Details'}
+      />
       <ToptabsContainer>
         <NavTabs className="nav nav-tabs" id="nav-tab" role="tablist">
           <NavButton
@@ -136,6 +153,8 @@ export const AddCluster = () => {
           setActiveTab={setActiveTab}
           setClusterData={setClusterData}
           clusterData={clusterData}
+          isEdit={isEdit}
+          clusterId={clusterId}
         />
       )}
       {activeTab === 'registry' && !newRegistry && (
@@ -145,7 +164,9 @@ export const AddCluster = () => {
           clusterData={clusterData}
           setRegistryData={setRegistryData}
           setActiveTab={setActiveTab}
-
+          isEdit={isEdit}
+          registry_id={registryId}
+          clusterId={clusterId}
         />
       )}
       {newRegistry && (
@@ -153,9 +174,12 @@ export const AddCluster = () => {
           setActiveTab={setActiveTab}
           setRegistryData={setRegistryData}
           registryData={registryData}
-          newRegistry={newRegistry}
+          setNewRegistry={setNewRegistry}
           clusterData={clusterData}
           setActiveTab={setActiveTab}
+          isEdit={isEdit}
+          clusterId={clusterId}
+          registry_id={registryId}
         />
       )}
     </AddClusterContainer>

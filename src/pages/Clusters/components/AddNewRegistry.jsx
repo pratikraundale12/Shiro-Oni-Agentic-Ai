@@ -203,9 +203,14 @@ export const AddNewRegistry = ({
   registryData,
   clusterData,
   setActiveTab,
+  clusterId,
+  isEdit,
+  registry_id,
+  setNewRegistry,
 }) => {
   const [successTest, setSuccessTest] = useState(false);
   const [failedTest, setFailedTest] = useState(false);
+  const [testLoader, setTestLoader] = useState(false);
   const [continueStatus, setContinueStatus] = useState(false);
   const [addCertificate, setAddCertificate] = useState(false);
   const [registryCertificate, setRegistryCertificate] = useState({
@@ -225,6 +230,7 @@ export const AddNewRegistry = ({
   });
 
   console.log(registryCertificate, 'clsutercertificate');
+  console.log(registryCertificate, 'registryCertificateeeeeeeee');
   console.log(registryFormData, 'registryFormData');
   console.log('registryData........', registryData);
 
@@ -235,10 +241,11 @@ export const AddNewRegistry = ({
     formState: { errors },
   } = useForm({
     resolver: yupResolver(registrySchema),
-    defaultValues: clusterData,
+    defaultValues: registryData,
   });
 
   const testRegistryData = async data => {
+    setTestLoader(true);
     setRegistryData({
       name: data.name,
       registry_url: data.registry_url,
@@ -249,6 +256,9 @@ export const AddNewRegistry = ({
     });
     console.log('datasssssss', data);
     const payload = new FormData();
+    !registryCertificate?.file.name &&
+      registryData?.id &&
+      payload.append('id', registryData?.id);
     payload.append('name', data?.name);
     payload.append('nifi_url', data?.registry_url);
     data?.password && payload.append('password', data?.password);
@@ -262,12 +272,14 @@ export const AddNewRegistry = ({
     const response = await testRegistry(payload);
     console.log('RESPONSE', response);
     if (response.status === 204) {
+      setTestLoader(false);
       setSuccessTest(true);
       setContinueStatus(true);
 
       // setClusterData(clusterFormData);
       console.log('tested');
     } else {
+      setTestLoader(false);
       setContinueStatus(false);
       setTestMessage(response.message);
       setFailedTest(true);
@@ -321,6 +333,10 @@ export const AddNewRegistry = ({
     }
   }, [watchedFields]);
 
+  const handleBack = () => {
+    setActiveTab('registry');
+    setNewRegistry(false);
+  };
   return (
     <>
       <ParentDiv>
@@ -400,7 +416,10 @@ export const AddNewRegistry = ({
                         </FileType>
                         <FileSize>20MB</FileSize>
                       </FileTypeContainer>
-                      <FilePath>{registryCertificate?.file.name}</FilePath>
+                      <FilePath>
+                        {registryCertificate?.file.name ||
+                          registryCertificate?.file}
+                      </FilePath>
                     </FileDetails>
                   </FileInfo>
                 </CertificateDetails>
@@ -421,14 +440,14 @@ export const AddNewRegistry = ({
                       setAddCertificate(true);
                     }}
                   >
-                    <PencilIcon />
+                    <PencilIcon color="white" />
                   </IconButton>
                   <IconButton
                     onClick={() => {
                       setRegistryCertificate('');
                     }}
                   >
-                    <DeleteSmallIcon color="#FF0000" />
+                    <DeleteSmallIcon color="white" />
                   </IconButton>
                 </EditDeleteContainer>
               </UploadCertificateContainer>
@@ -446,7 +465,8 @@ export const AddNewRegistry = ({
             <BtnDiv>
               <Button
                 variant="secondary"
-                onClick={() => setActiveTab('cluster')}
+                // onClick={() => {setActiveTab('cluster')}}\
+                onClick={handleBack}
               >
                 Back
               </Button>
@@ -462,7 +482,11 @@ export const AddNewRegistry = ({
               {/* <Button type="submit" onClick={()=>setOpenSummary(true)}>Continue</Button> */}
             </BtnDiv>
             <BtnDiv>
-              <Button disabled={!testStatus} onClick={handleSubmit(onSubmit)}>
+              <Button
+                isLoading={testLoader}
+                disabled={!testStatus}
+                onClick={handleSubmit(onSubmit)}
+              >
                 Test registry
               </Button>
             </BtnDiv>
@@ -521,12 +545,16 @@ export const AddNewRegistry = ({
         addCertificate={addCertificate}
         setAddCertificate={setAddCertificate}
         setCertificate={setRegistryCertificate}
+        certificates={registryCertificate}
       />
       <SummaryModal
         clusterData={clusterData}
         registryData={registryData}
         openSummary={openSummary}
         setOpenSummary={setOpenSummary}
+        clusterId={clusterId}
+        isEdit={isEdit}
+        registry_id={registry_id}
       />
     </>
   );
