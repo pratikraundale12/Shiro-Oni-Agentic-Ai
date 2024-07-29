@@ -6,13 +6,8 @@ import { ProfileIcon } from '../../../assets';
 
 const ImageContainer = styled.div`
   border-radius: 100%;
-  min-height: 50px;
-  height: 50px;
-  max-height: 50px;
-  min-width: 50px;
-  width: 50px;
-  max-width: 50px;
-  object-fit: contain;
+  max-height: 40px;
+  max-width: 40px;
   display: flex;
   justify-content: center;
   align-items: center;

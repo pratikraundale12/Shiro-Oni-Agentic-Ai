@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { TextRender } from '../../components';
-import { Grid } from '../../components';
-import { REFRESH_OPTIONS } from '../../utils';
-import { fetchClustersList } from '../../utils/services';
+import { TextRender, Grid } from '../../components';
+import { fetchGridData, REFRESH_OPTIONS, useGlobalContext } from '../../utils';
+import AuditLog from './AuditLog';
 import Deploy from './Deploy';
 import { Button } from '../../shared';
-import { useNavigate } from 'react-router-dom';
 import { OpenEyeIcon } from '../../assets';
-import AuditLog from './AuditLog';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -17,49 +15,19 @@ const Container = styled.div`
 `;
 
 export const ListNamespaces = () => {
-  const [clusterOptions, setClusterOptions] = useState([]);
+  const { state, setState } = useGlobalContext();
   const [selectedNamespace, setSelectedNamespace] = useState(null);
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getClusterOptions = async () => {
-      try {
-        const clusters = await fetchClustersList();
-        if (clusters) {
-          const options = clusters?.data?.map(cluster => ({
-            label: cluster?.name,
-            value: cluster?.id,
-          }));
-
-          setClusterOptions(options);
-        }
-      } catch (error) {
-        console.error('Failed to fetch cluster options:', error);
-      }
-    };
-
-    getClusterOptions();
-  }, []);
-
-  const handleSelect = namespace => {
-    setSelectedNamespace(namespace);
-    navigate('/namespaces/deploy');
-  };
-
-  const handleOpenAuditLog = () => {
-    console.log('hi');
-    setIsAuditLogOpen(true);
-  };
-
-  const handleCloseAuditLog = () => {
-    setIsAuditLogOpen(false);
-  };
-
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => <TextRender text={item.name} />,
+      renderCell: item => (
+        <button onClick={() => handleSelectNamespace(item.id)}>
+          {item.name}
+        </button>
+      ),
       sort: { sortKey: 'NAME' },
     },
     {
@@ -109,6 +77,41 @@ export const ListNamespaces = () => {
     NAME: array => array.sort((a, b) => a.name.localeCompare(b.name)),
   };
 
+  const clusterOptions = state.clusterList.map(item => ({
+    label: item.name,
+    value: item.id,
+  }));
+
+  function handleSelectNamespace(id) {
+    setState(prev => ({ ...prev, selectedNamespaceId: id }));
+    fetchGridData({
+      setState,
+      module: 'namespaces',
+      selectedSourceClusterId: state.selectedSourceClusterId,
+      selectedNamespaceId: id,
+    });
+  }
+
+  const handleSelect = namespace => {
+    setSelectedNamespace(namespace);
+    navigate('/namespaces/deploy');
+  };
+
+  const handleOpenAuditLog = () => {
+    setIsAuditLogOpen(true);
+  };
+
+  const handleCloseAuditLog = () => {
+    setIsAuditLogOpen(false);
+  };
+
+  useEffect(() => {
+    fetchGridData({
+      setState,
+      module: 'clusters',
+    });
+  }, [setState]);
+
   return (
     <Container>
       <Grid
@@ -118,13 +121,6 @@ export const ListNamespaces = () => {
         sortFns={SORT_FNS}
         refreshOptions={REFRESH_OPTIONS}
         clusterOptions={clusterOptions}
-        breadcrumbs={[
-          { id: '1', name: 'Namespace1' },
-          { id: '2', name: 'Namespace2' },
-        ]}
-        onBreadcrumbClick={breadcrumb => {
-          console.log('Breadcrumb clicked:', breadcrumb);
-        }}
       />
       {selectedNamespace && <Deploy selectedNamespace={selectedNamespace} />}
       <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} />

@@ -18,7 +18,7 @@ const Flex = styled.div`
   gap: 4px;
 `;
 
-const Pagination = ({ page, setPage, count, prev, next }) => {
+const Pagination = ({ page, setState, count, prev, next }) => {
   const getPageRange = () => {
     const start = (page - 1) * 10 + 1;
     const end = Math.min(count, page * 10);
@@ -31,7 +31,7 @@ const Pagination = ({ page, setPage, count, prev, next }) => {
       <Flex>
         <Button
           size="sm"
-          onClick={() => setPage(prev)}
+          onClick={() => setState(prevState => ({ ...prevState, page: prev }))}
           icon={<GreaterArrowIcon color={theme.colors.white} />}
         />
         <Button size="sm" variant="secondary">
@@ -51,7 +51,7 @@ const Pagination = ({ page, setPage, count, prev, next }) => {
         </Button>
         <Button
           size="sm"
-          onClick={() => setPage(next)}
+          onClick={() => setState(prevState => ({ ...prevState, page: next }))}
           icon={<LessArrowIcon color={theme.colors.white} />}
         />
       </Flex>
@@ -61,7 +61,7 @@ const Pagination = ({ page, setPage, count, prev, next }) => {
 
 Pagination.propTypes = {
   page: PropTypes.number.isRequired,
-  setPage: PropTypes.func.isRequired,
+  setState: PropTypes.func.isRequired,
   count: PropTypes.number.isRequired,
   prev: PropTypes.number,
   next: PropTypes.number,

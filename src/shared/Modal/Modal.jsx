@@ -128,13 +128,15 @@ export const Modal = ({
       </Header>
       <Body>{children}</Body>
       <Footer size={size}>
-        <Button
-          variant="secondary"
-          onClick={onSecondarySubmit || onRequestClose}
-          {...secondaryButtonProps}
-        >
-          {secondaryButtonText}
-        </Button>
+        {secondaryButtonText && (
+          <Button
+            variant="secondary"
+            onClick={onSecondarySubmit || onRequestClose}
+            {...secondaryButtonProps}
+          >
+            {secondaryButtonText}
+          </Button>
+        )}
         <Button isLoading={isLoading} onClick={onSubmit}>
           {primaryButtonText}
         </Button>

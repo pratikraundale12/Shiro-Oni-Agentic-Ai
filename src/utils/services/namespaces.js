@@ -1,12 +1,16 @@
 import API from './api';
 
 export const getNamespacesList = async ({
-  id = '292582f8-2894-451d-9e39-13a17aff74d2',
+  clusterId,
+  namespaceId = '',
   ...params
 }) => {
-  const { data } = await API.get(`/clusters/${id}/namespaces`, {
-    ...params,
-  });
+  const { data } = await API.get(
+    `/clusters/${clusterId}/namespaces/${namespaceId}`,
+    {
+      ...params,
+    }
+  );
   return data;
 };
 

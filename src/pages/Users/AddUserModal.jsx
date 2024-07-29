@@ -15,7 +15,7 @@ import {
 } from '../../shared';
 import { PlusCircleIcon, UserIcon, MailIcon, PhoneIcon } from '../../assets';
 import { createUserApi, editUserDataApi } from '../../utils/services';
-import { API_URL, useGlobalContext } from '../../utils';
+import { API_URL, fetchGridData, useGlobalContext } from '../../utils';
 import {
   userSchema,
   editUserSchema,
@@ -102,7 +102,7 @@ const DropDownWrapper = styled.div`
   margin-right: 10px;
 `;
 
-export const AddUserModal = () => {
+export const AddUserModal = props => {
   const { state, setState } = useGlobalContext();
   const {
     register,
@@ -157,24 +157,26 @@ export const AddUserModal = () => {
     if (isEmpty(state.selectedItem)) {
       const response = await createUserApi(formData);
       if (response.status == 201) {
+        fetchGridData({ setState, module: 'users' });
+        toast.success('User Created Successfully');
         setState({
           ...state,
           userModal: false,
           selectedItem: null,
         });
-        toast.success('User Created Successfully');
       } else {
         toast.error('error occured');
       }
     } else {
       const response = await editUserDataApi(state.selectedItem?.id, formData);
       if (response.status == 200) {
+        fetchGridData({ setState, module: 'users' });
+        toast.success('User Updated Successfully');
         setState({
           ...state,
           userModal: false,
           selectedItem: null,
         });
-        toast.success('User Updated Successfully');
       } else {
         toast.error('error occured');
       }
@@ -189,7 +191,7 @@ export const AddUserModal = () => {
   }, [reset, state.userModal, state.selectedItem]);
 
   return (
-    <div>
+    <div {...props}>
       <Button
         icon={<PlusCircleIcon width={20} height={20} color="white" />}
         onClick={openModal}
