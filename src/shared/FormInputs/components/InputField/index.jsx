@@ -122,8 +122,7 @@ const InputField = ({
           placeholder={placeholder}
           aria-invalid={error}
           {...props}
-          {...(isFunction(register) &&
-            register(name, { required, ...registerOptions }))}
+          {...(isFunction(register) && register(name, { ...registerOptions }))}
           disabled={disabled}
         />
         {rightIcon && <span className="icon">{rightIcon}</span>}

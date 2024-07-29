@@ -75,11 +75,19 @@ export const ListUsers = () => {
       renderCell: item => <ProfileRender url={item.photo} />,
       sort: { sortKey: 'PORFILE' },
     },
-
     {
       label: 'Name',
-      renderCell: item => <TextRender text={item.username} />,
+      renderCell: item => (
+        <TextRender
+          text={`${item.first_name} ${item.middle_name} ${item.last_name}`}
+        />
+      ),
       sort: { sortKey: 'NAME' },
+    },
+    {
+      label: 'Username',
+      renderCell: item => <TextRender text={item.username} />,
+      sort: { sortKey: 'USERNAME' },
     },
     {
       label: 'Email',
@@ -106,7 +114,10 @@ export const ListUsers = () => {
   ];
 
   const SORT_FNS = {
-    NAME: array => array.sort((a, b) => a.username.localeCompare(b.username)),
+    NAME: array =>
+      array.sort((a, b) => a.first_name.localeCompare(b.first_name)),
+    USERNAME: array =>
+      array.sort((a, b) => a.username.localeCompare(b.username)),
     EMAIL: array => array.sort((a, b) => a.email.localeCompare(b.email)),
     TYPE: array => array.sort((a, b) => a.type.localeCompare(b.type)),
     STATUS: array => array.sort((a, b) => a.is_active - b.is_active),

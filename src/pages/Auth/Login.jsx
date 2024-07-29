@@ -138,13 +138,14 @@ export const Login = () => {
           errors={errors}
           icon={<MailIcon />}
           rightIcon={getRightIcon(watch, errors)}
+          required
         />
         <PasswordField
           name="password"
           register={register}
           errors={errors}
           watch={watch}
-          required="Password is required"
+          required
           label="Password"
           helperText="Must be 8 characters at least"
         />
