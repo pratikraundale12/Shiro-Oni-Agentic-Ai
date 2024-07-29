@@ -1,12 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { theme } from '../../styles';
 
-export const CrossIcons = ({ width = 21, height = 21, color = '#444445' }) => (
+export const CrossIcons = ({
+  width = 22,
+  height = 22,
+  color = theme.colors.darker,
+  ...rest
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 20 20"
+    {...rest}
   >
     <path
       fill={color}

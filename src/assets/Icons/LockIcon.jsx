@@ -6,6 +6,7 @@ export const LockIcon = ({ width = 18, height = 20, color = '#444445' }) => (
     xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
+    viewBox="0 0 18 20"
     fill="none"
   >
     <path

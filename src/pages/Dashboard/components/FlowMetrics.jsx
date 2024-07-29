@@ -1,14 +1,14 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
+import PropTypes from 'prop-types';
 
-export const FlowMetrics = () => {
+export const FlowMetrics = ({ flowMetricsDataDynamic = [] }) => {
   const flowMetricsData = [
     {
       name: 'Flow Files Qued',
-      data: [10, 15, 8],
+      data: flowMetricsDataDynamic,
     },
   ];
-
   const series = flowMetricsData;
 
   const options = {
@@ -50,4 +50,8 @@ export const FlowMetrics = () => {
       <Chart options={options} series={series} type="area" height={350} />
     </div>
   );
+};
+
+FlowMetrics.propTypes = {
+  flowMetricsDataDynamic: PropTypes.array,
 };

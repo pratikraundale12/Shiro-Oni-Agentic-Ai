@@ -15,3 +15,13 @@ export const getInitialClusterData = async id => {
     return error.response.data;
   }
 };
+
+export const getNamespaceData = async (clusterId, nameSpaceId) => {
+  try {
+    return await API.get(
+      `/dashboard-insight/${clusterId}/namespaces/${nameSpaceId}`
+    );
+  } catch (error) {
+    return error.response.data;
+  }
+};

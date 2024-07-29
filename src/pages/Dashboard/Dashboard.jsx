@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { SelectField } from '../../shared';
@@ -15,13 +15,14 @@ import {
   TotalProcessorIcon,
   TotalQuedIcon,
   InvalidProcessorIcon,
-  DownArrowIcon,
   ErrorIcon,
 } from '../../assets';
 import { CrossIcon } from '../../assets/Icons/CrossIcon';
-import { getAllClustersApi, getInitialClusterData } from '../../utils/services';
+import { getInitialClusterData, getNamespaceData } from '../../utils/services';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { fetchGridData, useGlobalContext } from '../../utils';
 
 const TopSection = styled.div`
   display: flex;
@@ -103,155 +104,101 @@ const TextEllipses = styled.div`
 const ErrorTexts = styled.div`
   width: 90%;
   margin-left: 4px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
-const DropdoenContainer = styled.div`
+const DropdownContainer = styled.div`
   margin-left: 10px;
 `;
 const DropdownWrapper = styled.div`
   display: flex;
 `;
+
+const IdWrapper = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden;
+`;
 export const Dashboard = () => {
-  const [clusterArray, setClusterArray] = useState([]);
+  const { state, setState } = useGlobalContext();
   const [clusterDetails, setClusterDetails] = useState([]);
   const [namespaceArray, setNamespaceArray] = useState([]);
+  const [selectedClusterId, setSelectedClusterId] = useState('');
+  const [namespaceIdSelected, setNamespaceIdSelected] = useState('');
+  const [errorsLogs, setErrorLogs] = useState([]);
+  const [refreshState, setRefreshSelect] = useState(false);
+  const intervalRef = useRef(null);
   const { control } = useForm();
-
   const COLUMNS = [
     {
       label: 'Process Group',
-      renderCell: item => <div>{item.name}</div>,
+      renderCell: item => <div>{item.processor_group}</div>,
     },
     {
       label: 'Process ID',
-      renderCell: item => <div>{item.id}</div>,
+      renderCell: item => (
+        <div>
+          <IdWrapper data-tooltip-id={`tooltip-${item.processor_group_id}`}>
+            {item.processor_group_id}
+          </IdWrapper>
+          <ReactTooltip
+            id={`tooltip-${item.processor_group_id}`}
+            place="right"
+            content={item.processor_group_id}
+            style={{
+              width: '320px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        </div>
+      ),
       width: '20%',
     },
     {
       label: 'Process Name',
-      renderCell: item => <div>{item.name}</div>,
+      renderCell: item => <div>{item.processor_name}</div>,
     },
     {
       label: 'Error Message',
       renderCell: item => (
         <TextEllipses>
           <CrossIcon color="red" />
-          <ErrorTexts>{item.message}</ErrorTexts>
+          <ErrorTexts data-tooltip-id={`tooltip-${item.processor_group_id}-m`}>
+            <div>
+              <b>Error Code </b>:404- File not found
+            </div>
+            {item.message}
+          </ErrorTexts>
+          <ReactTooltip
+            id={`tooltip-${item.processor_group_id}-m`}
+            place="right"
+            content={item.message}
+            style={{
+              width: '400px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
         </TextEllipses>
       ),
       width: '50%',
     },
-    {
-      label: '',
-      renderCell: () => <DownArrowIcon />,
-      width: '10%',
-    },
+    // {
+    //   label: '',
+    //   renderCell: () => <DownArrowIcon />,
+    //   width: '10%',
+    // },
   ];
-  const data = [
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 1',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 2',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 3',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 4',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 1',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 2',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 3',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 4',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-  ];
+
+  const getNamespaceDetails = async id => {
+    const response = await getNamespaceData(selectedClusterId, id);
+    if (response.status == 200) {
+      setClusterDetails(response?.data);
+      setErrorLogs(response.data.errors);
+    } else {
+      toast.error('error occured');
+    }
+  };
 
   const getClusterDetalis = async id => {
     const response = await getInitialClusterData(id);
@@ -264,33 +211,17 @@ export const Dashboard = () => {
         })
       );
       setNamespaceArray(filteredNamespaceArray);
+      setErrorLogs(response.data.errors);
     } else {
       toast.error('error occured');
     }
   };
-
-  const getAllCluster = async () => {
-    const response = await getAllClustersApi();
-    if (response.status == 200) {
-      const filteredArray = response.data.data.map(({ id, name }) => ({
-        value: id,
-        label: name,
-      }));
-      getClusterDetalis(filteredArray[0].value);
-      setClusterArray(filteredArray);
-    } else {
-      toast.error('error occured');
-    }
-  };
-
-  useEffect(() => {
-    getAllCluster();
-  }, []);
 
   const onClusterSelect = async selectedItem => {
     try {
       if (selectedItem) {
         getClusterDetalis(selectedItem?.value);
+        setSelectedClusterId(selectedItem?.value);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -300,12 +231,59 @@ export const Dashboard = () => {
   const onNamespaceSelect = async selectedItem => {
     try {
       if (selectedItem) {
-        console.log(selectedItem);
+        setNamespaceIdSelected(selectedItem?.value);
+        await getNamespaceDetails(selectedItem?.value);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
+  const onRefreshSelect = selectedItem => {
+    if (selectedItem) {
+      setRefreshSelect(selectedItem.value);
+    }
+  };
+  const RefreshArray = [
+    { value: false, label: 'Off' },
+    { value: 5000, label: '5 sec' },
+    { value: 3000, label: '3 Sec' },
+    { value: 1000, label: '1 Sec' },
+  ];
+
+  const clusterOptions = state.clusterList.map(item => ({
+    label: item.name,
+    value: item.id,
+  }));
+
+  const handleRefreshFunctionality = () => {
+    if (namespaceIdSelected) {
+      getNamespaceDetails(selectedClusterId, namespaceIdSelected);
+    } else if (selectedClusterId) {
+      getClusterDetalis(selectedClusterId);
+    }
+    console.log('called');
+    return;
+  };
+
+  useEffect(() => {
+    fetchGridData({
+      setState,
+      module: 'clusters',
+    });
+  }, [setState]);
+
+  useEffect(() => {
+    if (refreshState !== false) {
+      intervalRef.current = setInterval(
+        handleRefreshFunctionality,
+        refreshState
+      );
+    } else {
+      clearInterval(intervalRef.current);
+    }
+
+    return () => clearInterval(intervalRef.current);
+  }, [selectedClusterId, namespaceIdSelected, refreshState]);
   return (
     <Continer>
       <TopSection>
@@ -316,28 +294,33 @@ export const Dashboard = () => {
           <QuickInsightHeadingText>Quick Insight</QuickInsightHeadingText>
         </QuickInsightHeading>
         <DropdownWrapper>
-          <DropdoenContainer>
-            <form>
-              <SelectField
-                name="selectedItem"
-                control={control}
-                options={clusterArray}
-                label="Select Cluster"
-                onChange={onClusterSelect}
-              />
-            </form>
-          </DropdoenContainer>
-          <DropdoenContainer>
-            <form>
-              <SelectField
-                name="selectedItem"
-                control={control}
-                options={namespaceArray || []}
-                label="Select Namespace"
-                onChange={onNamespaceSelect}
-              />
-            </form>
-          </DropdoenContainer>
+          <DropdownContainer>
+            <SelectField
+              name="selectedItem"
+              control={control}
+              options={clusterOptions}
+              label="Select Cluster"
+              onChange={onClusterSelect}
+            />
+          </DropdownContainer>
+          <DropdownContainer>
+            <SelectField
+              name="selectedItem"
+              control={control}
+              options={namespaceArray || []}
+              label="Select Namespace"
+              onChange={onNamespaceSelect}
+            />
+          </DropdownContainer>
+          <DropdownContainer>
+            <SelectField
+              name="selectedItem"
+              control={control}
+              options={RefreshArray}
+              label={'Refresh'}
+              onChange={onRefreshSelect}
+            />
+          </DropdownContainer>
         </DropdownWrapper>
       </TopSection>
       <BottomSectionScroll>
@@ -345,50 +328,50 @@ export const Dashboard = () => {
           <InsightContainer
             backgroundCss="#F1F5FF"
             icon={TotalProcessorIcon}
-            count={clusterDetails?.total_processors || ' '}
+            count={clusterDetails?.total_processors || '0'}
             text="Total Processor"
           />
           <InsightContainer
             backgroundCss="#FEFBEC"
             icon={RunnigProcessorIcon}
-            count={clusterDetails?.running_processors}
+            count={clusterDetails?.running_processors || '0'}
             text="Running Processor"
           />
 
           <InsightContainer
             backgroundCss="#EEF9FB"
             icon={StoppedProcessorIcon}
-            count={clusterDetails?.stopped_processors}
+            count={clusterDetails?.stopped_processors || '0'}
             text="Stopped Processor"
           />
           <InsightContainer
             backgroundCss="#FDF3FC"
             icon={DisabledProcessorIcon}
-            count={clusterDetails?.disabled_processors}
+            count={clusterDetails?.disabled_processors || '0'}
             text="Disabled Processor"
           />
           <InsightContainer
             backgroundCss="#FFF7ED"
             icon={InvalidProcessorIcon}
-            count={clusterDetails?.invalid_count}
+            count={clusterDetails?.invalid_count || '0'}
             text="Invalid Processor"
           />
           <InsightContainer
             backgroundCss="#F0F0F2"
             icon={ActiveThreadIcon}
-            count={clusterDetails?.active_thread_count}
+            count={clusterDetails?.active_thread_count || '0'}
             text="Active Thread"
           />
           <InsightContainer
             backgroundCss="#EEF8FF"
             icon={TotalQuedIcon}
-            count={clusterDetails?.total_queued}
+            count={clusterDetails?.queued_size || '0 MB'}
             text="Total Queued"
           />
           <InsightContainer
             backgroundCss="#EEF0F4"
             icon={FlowFiledQuedIcon}
-            count={clusterDetails?.flow_files_queued}
+            count={clusterDetails?.flow_files_queued || '0 Mb'}
             text="Flow Files Queued"
           />
         </InsightDataContiner>
@@ -396,13 +379,15 @@ export const Dashboard = () => {
           <FlowMetricHeaderIcon />
           <HeaderText>Flow Metrics</HeaderText>
         </FlowMetricHeader>
-        <FlowMetrics />
+        <FlowMetrics
+          flowMetricsDataDynamic={clusterDetails?.flowMetrixYData || [0, 0, 0]}
+        />
         <ErrorsHeader>
           <ErrorIcon />
 
           <HeaderText>Errors</HeaderText>
         </ErrorsHeader>
-        <Table data={data} columns={COLUMNS} />
+        <Table data={errorsLogs || []} columns={COLUMNS} />
       </BottomSectionScroll>
     </Continer>
   );

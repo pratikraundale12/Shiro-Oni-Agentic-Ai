@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -9,7 +9,7 @@ import { useSort } from '@table-library/react-table-library/sort';
 
 import { theme } from '../../styles';
 import { GridActions } from './GridActions';
-import { useFetchData } from '../../utils';
+import { fetchGridData, useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
 import Pagination from './Pagination';
 
@@ -37,14 +37,24 @@ export const Grid = ({
   addModal = () => {},
 }) => {
   const {
-    response: { count, prev, next, data },
-    page,
-    setPage,
-    search,
-    setSearch,
-    loading,
-  } = useFetchData(module);
-  const DATA = { nodes: loading ? [] : data };
+    state: {
+      search,
+      page,
+      gridData: {
+        [module]: {
+          count = 0,
+          prev = null,
+          next = null,
+          data = [],
+          // breadcrumb = [],
+        } = {},
+      },
+      loaders,
+    },
+    setState,
+  } = useGlobalContext();
+  const DATA = { nodes: loaders[module] ? [] : data };
+
   const tableTheme = useTheme([
     getTheme(),
     {
@@ -78,7 +88,7 @@ export const Grid = ({
   ]);
 
   const sort = useSort(
-    data,
+    DATA.nodes,
     {},
     {
       sortFns,
@@ -86,21 +96,25 @@ export const Grid = ({
   );
 
   const getLoader = () => {
-    if (loading) return <Loader size="lg" />;
+    if (loaders[module]) return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
       return <LoaderContainer>No data found</LoaderContainer>;
     return null;
   };
 
+  useEffect(() => {
+    fetchGridData({ setState, module, search: search });
+  }, [setState, module, search]);
+
   return (
     <Container>
       <GridActions
         title={title}
+        module={module}
         clusterOptions={clusterOptions}
         refreshOptions={refreshOptions}
         statusOptions={statusOptions}
         search={search}
-        setSearch={setSearch}
         buttonText={buttonText}
         addModal={addModal}
       />
@@ -116,7 +130,7 @@ export const Grid = ({
       </TableContainer>
       <Pagination
         page={page}
-        setPage={setPage}
+        setState={setState}
         count={count}
         prev={prev}
         next={next}

@@ -26,7 +26,6 @@ import {
   PeopleIcon,
   ReadyFlowIcon,
 } from '../assets';
-// import { currentUser } from '../utils/services/auth';
 
 export const ROUTES_MENU = [
   {
@@ -126,19 +125,6 @@ export const ROUTES_MENU = [
 ];
 
 const Routes = () => {
-  // useEffect(() => {
-  //   const fetchCurrentUser = async () => {
-  //     try {
-  //       const response = await currentUser();
-  //       if (response) {
-  //         console.log(response?.data, 'data');
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to fetch user data', error);
-  //     }
-  //   };
-  //   fetchCurrentUser();
-  // }, []);
   return (
     <Router>
       {/* Public Routes */}
