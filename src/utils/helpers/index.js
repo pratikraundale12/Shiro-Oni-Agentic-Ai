@@ -34,8 +34,8 @@ export const fetchGridData = debounce(
         },
       }));
       const response = await fetchListData[module]({
-        search,
         page,
+        ...(search && { search }),
         ...(selectedSourceClusterId && {
           clusterId: selectedSourceClusterId,
         }),

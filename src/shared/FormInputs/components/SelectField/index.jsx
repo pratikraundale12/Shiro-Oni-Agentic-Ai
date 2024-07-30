@@ -183,6 +183,7 @@ const SelectField = ({
               styles={customStyles}
               options={options}
               components={{ IndicatorSeparator: () => null, DropdownIndicator }}
+              defaultValue={options[0]}
               // formatOptionLabel={formatOptionLabel}
               {...props}
             />

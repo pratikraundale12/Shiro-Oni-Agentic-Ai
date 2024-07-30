@@ -62,6 +62,7 @@ export * from './AddIcon';
 export * from './UpArrowImageIcon';
 export * from './CrossWithCircleIcon';
 export * from './InvalidProcessorIcon';
+export * from './ErrorIcon';
 export * from './PhoneIcon';
 export * from './CrossIcons';
 export * from './GreenRightCircleIcon';

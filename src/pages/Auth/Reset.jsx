@@ -136,7 +136,7 @@ export const Reset = () => {
             name="password"
             label="New Password"
             placeholder="Enter your New Password"
-            required="Password is required"
+            required
             register={register}
             errors={errors}
             watch={watch}
@@ -147,7 +147,7 @@ export const Reset = () => {
             name="confirmPassword"
             label="Confirm New Password"
             placeholder="Confirm your New Password"
-            required="Password is required"
+            required
             register={register}
             errors={errors}
             watch={watch}
