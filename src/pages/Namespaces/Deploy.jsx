@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Button, RadioField, SelectField } from '../../shared';
@@ -8,6 +8,8 @@ import { TodoIcon } from '../../assets';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { SmallSearchIcon } from '../../assets';
 import { theme } from '../../styles';
+import { fetchGridData, useGlobalContext } from '../../utils';
+import { checkCluster } from '../../utils/services';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -89,90 +91,11 @@ const BottomButton = styled.div`
   justify-content: space-between !important;
 `;
 
-const handleNameClick = name => {
-  console.log('Name clicked:', name);
-  // Perform your navigation or other actions here
-};
-
-const handleKeyPress = (event, name) => {
+const handleKeyPress = event => {
   if (event.key === 'Enter' || event.key === ' ') {
-    handleNameClick(name);
+    // handleNameClick(name);
   }
 };
-
-const COLUMNS = [
-  {
-    label: 'Namespace',
-    renderCell: item => (
-      <div
-        style={{ color: 'red', cursor: 'pointer' }}
-        role="button"
-        tabIndex="0"
-        onClick={() => handleNameClick(item.name)}
-        onKeyPress={event => handleKeyPress(event, item.name)}
-      >
-        {item.name}
-      </div>
-    ),
-  },
-  {
-    label: 'Namespace ID',
-    renderCell: item => <div>{item.id}</div>,
-  },
-  {
-    label: 'Flow Name',
-    renderCell: item => <div>{item.flowName}</div>,
-  },
-  {
-    label: 'Bucket Name',
-    renderCell: item => <div>{item.bucketName}</div>,
-  },
-  {
-    label: 'Version',
-    renderCell: item => <div>{item.version}</div>,
-  },
-  {
-    label: '',
-    renderCell: item => (
-      <RadioField
-        name="select"
-        onChange={() => console.log('Changed', item.id)}
-      />
-    ),
-    width: '10%',
-  },
-];
-
-const DATA = [
-  {
-    id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-    name: 'Group 1',
-    flowName: 'Flow Name',
-    bucketName: 'Bucket Name',
-    version: 'V1',
-  },
-  {
-    id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-    name: 'Group 2',
-    flowName: 'Flow Name',
-    bucketName: 'Bucket Name',
-    version: 'V1',
-  },
-  {
-    id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-    name: 'Group 3',
-    flowName: 'Flow Name',
-    bucketName: 'Bucket Name',
-    version: 'V1',
-  },
-  {
-    id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-    name: 'Group 4',
-    flowName: 'Flow Name',
-    bucketName: 'Bucket Name',
-    version: 'V1',
-  },
-];
 
 const breadcrumbData = [
   { id: '1', name: 'Namespace List' },
@@ -190,28 +113,116 @@ const Deploy = () => {
     formState: { errors },
   } = useForm();
   const [search, setSearch] = useState('');
-  const [selectedOption, setSelectedOption] = useState(null);
+  const { state, setState } = useGlobalContext();
   const navigate = useNavigate();
 
-  const filteredData = DATA.filter(
-    item =>
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.flowName.toLowerCase().includes(search.toLowerCase()) ||
-      item.bucketName.toLowerCase().includes(search.toLowerCase()) ||
-      item.version.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const options = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
+  const COLUMNS = [
+    {
+      label: 'Namespace',
+      renderCell: item => (
+        <div
+          style={{ color: 'red', cursor: 'pointer' }}
+          role="button"
+          tabIndex="0"
+          onClick={() => handleSelectNamespace(item.id)}
+          onKeyPress={event => handleKeyPress(event, item.name)}
+        >
+          {item.name}
+        </div>
+      ),
+    },
+    {
+      label: 'Namespace ID',
+      renderCell: item => <div>{item?.id}</div>,
+    },
+    {
+      label: 'Flow Name',
+      renderCell: item => <div>{item?.flowName}</div>,
+    },
+    {
+      label: 'Bucket Name',
+      renderCell: item => <div>{item?.bucketName}</div>,
+    },
+    {
+      label: 'Version',
+      renderCell: item => <div>{item?.version}</div>,
+    },
+    {
+      label: '',
+      renderCell: item => (
+        <RadioField
+          name="select"
+          onChange={() => console.log('Changed', item?.id)}
+        />
+      ),
+      width: '10%',
+    },
   ];
+
+  function handleSelectNamespace(id) {
+    console.log({ id });
+    setState(prev => ({
+      ...prev,
+      selectedNamespaceId: id,
+      selectedPaths: [...prev.selectedPaths],
+    }));
+    fetchGridData({
+      setState,
+      module: 'namespaces',
+      selectedSourceClusterId: state.selectedSourceClusterId,
+      selectedNamespaceId: id,
+    });
+  }
+
+  useEffect(() => {
+    fetchGridData({
+      setState,
+      module: 'clusters',
+    });
+  }, [setState]);
+
+  const options = state.clusterList
+    .filter(cluster => cluster?.id !== state.selectedSourceClusterId)
+    .map(cluster => ({
+      value: cluster?.id,
+      label: cluster?.name,
+    }));
 
   const handleClick = () => {
     navigate('/namespaces/upgrade');
   };
+
   const handleBackClick = () => {
     navigate('/namespaces');
+  };
+
+  const onClusterCheck = async e => {
+    const selectedClusterId = e.value;
+    const selectedClusterName = e.label;
+    const ids = state?.selectedPaths.map(item => item?.flowId);
+    try {
+      const response = await checkCluster({
+        clusterId: selectedClusterId,
+        srcClusterId: state?.selectedSourceClusterId,
+        path: ids,
+      });
+      if (response.mode === 'upgrade') {
+        setState(prevState => ({
+          ...prevState,
+          selectedClusterId,
+          upgradeData: response,
+        }));
+        navigate('/namespaces/upgrade', {
+          state: {
+            upgradeData: response,
+            selectedClusterName,
+            selectedClusterId,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error checking cluster:', error);
+    }
   };
 
   return (
@@ -239,27 +250,26 @@ const Deploy = () => {
               control={control}
               options={options}
               errors={errors}
-              onChange={value => setSelectedOption(value)}
+              onChange={onClusterCheck}
             />
           </form>
-          {selectedOption && (
-            <>
-              <SearchContainer>
-                <SmallSearchIcon
-                  width={18}
-                  height={18}
-                  color={theme.colors.darkGrey1}
-                />
-                <Search
-                  type="search"
-                  value={search}
-                  placeholder="Search Namespace, Flow Name, Bucket Name, Version"
-                  onChange={e => setSearch(e.target.value)}
-                />
-              </SearchContainer>
-              <Table data={filteredData} columns={COLUMNS} />
-            </>
-          )}
+
+          <>
+            <SearchContainer>
+              <SmallSearchIcon
+                width={18}
+                height={18}
+                color={theme.colors.darkGrey1}
+              />
+              <Search
+                type="search"
+                value={search}
+                placeholder="Search Namespace, Flow Name, Bucket Name, Version"
+                onChange={e => setSearch(e.target.value)}
+              />
+            </SearchContainer>
+            <Table columns={COLUMNS} />
+          </>
         </ScrollSetGrey>
       </GreyBoxNamespace>
       <BottomButton className="bottom-button-divs d-flex">

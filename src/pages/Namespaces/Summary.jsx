@@ -13,7 +13,13 @@ import {
 } from '../../assets';
 import ParameterContext from './ParameterContext';
 import AddParameterContext from './AddParameterContext';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  getClusterProgress,
+  getClusterProgressDelete,
+  getCountDetails,
+  upgradeCluster,
+} from '../../utils/services';
 
 const MainContainer = styled.div`
   height: calc(100vh - 78px);
@@ -189,7 +195,17 @@ const Summary = () => {
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] =
     useState(false);
+  const [progress, setProgress] = useState(0);
+  const [countDetails, setCountDetails] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const {
+    upgradeData,
+    selectedVersion,
+    selectedClusterName,
+    selectedClusterId,
+  } = location.state || {};
+  console.log({ selectedVersion }, '195');
   const breadcrumbData = [
     { id: '1', name: 'Namespace List' },
     { id: '2', name: 'Select Namespace' },
@@ -198,8 +214,43 @@ const Summary = () => {
   const handleBreadcrumbClick = breadcrumb => {
     console.log('Breadcrumb clicked:', breadcrumb);
   };
-  const handleUpgradeClick = () => {
-    setModalOpen(true);
+  const handleUpgradeClick = async () => {
+    try {
+      const response = await upgradeCluster({
+        clusterId: selectedClusterId,
+        namespaceId: upgradeData?.id,
+        version: selectedVersion,
+      });
+
+      if (response) {
+        let progressData;
+        const intervalId = setInterval(async () => {
+          progressData = await getClusterProgress({
+            clusterId: selectedClusterId,
+            progressId: response.requestId,
+          });
+          setProgress(progressData.percentCompleted);
+
+          if (progressData.percentCompleted >= 100) {
+            clearInterval(intervalId);
+
+            await getClusterProgressDelete({
+              clusterId: selectedClusterId,
+              progressId: response.requestId,
+            });
+            const countDetails = await getCountDetails({
+              clusterId: selectedClusterId,
+              namespaceId: upgradeData?.id,
+            });
+            console.log('Count details:', countDetails);
+            setCountDetails(countDetails);
+            setModalOpen(true);
+          }
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Upgrade failed:', error);
+    }
   };
 
   const handleCloseModal = () => {
@@ -260,7 +311,7 @@ const Summary = () => {
                       Selected Cluster
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      Production Cluster
+                      {selectedClusterName}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -270,7 +321,7 @@ const Summary = () => {
                       Namespace
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      Kafka to Hive
+                      {upgradeData?.name}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -299,7 +350,9 @@ const Summary = () => {
                     <SummaryDetailsHFourTag className="mb-2">
                       Current Version
                     </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">V4</SummaryDetailsPtag>
+                    <SummaryDetailsPtag className="mb-0">
+                      {upgradeData?.version}
+                    </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
@@ -307,7 +360,9 @@ const Summary = () => {
                     <SummaryDetailsHFourTag className="mb-2">
                       Updated Version
                     </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">V5</SummaryDetailsPtag>
+                    <SummaryDetailsPtag className="mb-0">
+                      {selectedVersion}
+                    </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
               </RowConfig>
@@ -328,7 +383,7 @@ const Summary = () => {
                       Namespace
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      Kafka to Hive
+                      {upgradeData?.name}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -337,7 +392,9 @@ const Summary = () => {
                     <SummaryDetailsHFourTag className="mb-2">
                       Current Version
                     </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">V4</SummaryDetailsPtag>
+                    <SummaryDetailsPtag className="mb-0">
+                      {upgradeData?.version}
+                    </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
@@ -345,7 +402,9 @@ const Summary = () => {
                     <SummaryDetailsHFourTag className="mb-2">
                       Updated Version
                     </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">V5</SummaryDetailsPtag>
+                    <SummaryDetailsPtag className="mb-0">
+                      {selectedVersion}
+                    </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
               </RowConfig>
@@ -382,12 +441,12 @@ const Summary = () => {
             <ProgressBar
               className="progress-bar"
               role="progressbar"
-              style={{ width: '40%' }}
+              style={{ width: `${progress}%` }}
               aria-valuenow={40}
               aria-valuemin={0}
               aria-valuemax={100}
             >
-              40%
+              {progress}%
             </ProgressBar>
           </CustomRedProgress>
         </Progressox>
@@ -397,6 +456,10 @@ const Summary = () => {
         closePopup={handleCloseModal}
         setModalOpen={setModalOpen}
         openParameterContext={openParameterContext}
+        countDetails={countDetails}
+        upgradeData={upgradeData}
+        selectedVersion={selectedVersion}
+        selectedClusterName={selectedClusterName}
       />
       <ParameterContext
         isOpen={isParameterContextOpen}

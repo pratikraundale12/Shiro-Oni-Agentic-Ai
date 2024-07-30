@@ -13,10 +13,15 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
 `;
-
+const handleKeyPress = event => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    // handleNameClick(name);
+  }
+};
 export const ListNamespaces = () => {
   const { state, setState } = useGlobalContext();
-  const [selectedNamespace, setSelectedNamespace] = useState(null);
+  // const [selectedNamespace, setSelectedNamespace] = useState(null);
+
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -24,9 +29,15 @@ export const ListNamespaces = () => {
     {
       label: 'Name',
       renderCell: item => (
-        <button onClick={() => handleSelectNamespace(item.id)}>
+        <div
+          style={{ color: 'red', cursor: 'pointer' }}
+          role="button"
+          tabIndex="0"
+          onClick={() => handleSelectNamespace(item.id)}
+          onKeyPress={event => handleKeyPress(event, item.name)}
+        >
           {item.name}
-        </button>
+        </div>
       ),
       sort: { sortKey: 'NAME' },
     },
@@ -68,7 +79,7 @@ export const ListNamespaces = () => {
       label: 'Actions',
       width: 120,
       renderCell: item => (
-        <Button onClick={() => handleSelect(item)}>Select</Button>
+        <Button onClick={() => handleSelect(item.id)}>Select</Button>
       ),
     },
   ];
@@ -83,7 +94,14 @@ export const ListNamespaces = () => {
   }));
 
   function handleSelectNamespace(id) {
-    setState(prev => ({ ...prev, selectedNamespaceId: id }));
+    const b = state.gridData.namespaces.data.find(a => a.id === id);
+
+    setState(prev => ({
+      ...prev,
+      selectedNamespaceId: id,
+
+      selectedPaths: [...prev.selectedPaths, b],
+    }));
     fetchGridData({
       setState,
       module: 'namespaces',
@@ -91,9 +109,19 @@ export const ListNamespaces = () => {
       selectedNamespaceId: id,
     });
   }
+  console.log({ state });
 
-  const handleSelect = namespace => {
-    setSelectedNamespace(namespace);
+  const handleSelect = id => {
+    // setSelectedNamespace();
+    // console.log({ id });
+    const b = state.gridData.namespaces.data.find(a => a.id === id);
+
+    setState(prev => ({
+      ...prev,
+      selectedNamespaceId: id,
+
+      selectedPaths: [...prev.selectedPaths, b],
+    }));
     navigate('/namespaces/deploy');
   };
 
@@ -122,7 +150,7 @@ export const ListNamespaces = () => {
         refreshOptions={REFRESH_OPTIONS}
         clusterOptions={clusterOptions}
       />
-      {selectedNamespace && <Deploy selectedNamespace={selectedNamespace} />}
+      <Deploy />
       <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} />
     </Container>
   );

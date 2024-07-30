@@ -135,7 +135,15 @@ const ActiveButtonDiv = styled.div`
   }
 `;
 
-const NamespaceDeploy = ({ isOpen, closePopup, openParameterContext }) => {
+const NamespaceDeploy = ({
+  isOpen,
+  closePopup,
+  openParameterContext,
+  countDetails,
+  upgradeData,
+  selectedVersion,
+  selectedClusterName,
+}) => {
   return (
     <Modal
       title="Namespace Deployed"
@@ -153,39 +161,40 @@ const NamespaceDeploy = ({ isOpen, closePopup, openParameterContext }) => {
           <GreenRightCircleIcon />
         </ModalIcon>
         <ModalHFive className="pt-4 mt-2 mb-0 ">
-          Namespace successfully deployed to production instance
+          {upgradeData?.name} Namespace successfully deployed to{' '}
+          {selectedClusterName} cluster instance
         </ModalHFive>
         <RowModal>
           <ColumnThree className="col-3 mb-3">
             <RowModalDiv className="d-flex  h-100  ">
               <ActionTitleSet className="mb-0 ">Namespace</ActionTitleSet>
-              <SubTitleSet className="mb-0 ">Kafka to Hive</SubTitleSet>
+              <SubTitleSet className="mb-0 ">{upgradeData?.name}</SubTitleSet>
             </RowModalDiv>
           </ColumnThree>
           <CustomNine className="col-9 mb-3">
             <ActiveButtonContainer className="d-flex ">
               <ActiveButtonDiv className="div-btn-1">
                 <TriangleIcons color="#B5BDC8" />
-                <span>2</span>
+                <span>{countDetails?.running_processors}</span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-2">
                 <SquareBoxIcon color="#B5BDC8" />
-                <span>2</span>
+                <span>{countDetails?.stopped_processors}</span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-3">
                 <TriangleExclamationMarkIcon color="#B5BDC8" />
-                <span>2</span>
+                <span>{countDetails?.invalid_count}</span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-4">
                 <SmallNotThunderIcon color="#B5BDC8" />
-                <span>2</span>
+                <span>{countDetails?.disabled_processors}</span>
               </ActiveButtonDiv>
             </ActiveButtonContainer>
           </CustomNine>
           <ColumnThree className="col-3 mb-3">
             <RowModalDiv className="d-flex  h-100  ">
               <ActionTitleSet className="mb-0 ">Current Version</ActionTitleSet>
-              <SubTitleSet className="mb-0 ">V4</SubTitleSet>
+              <SubTitleSet className="mb-0 ">{selectedVersion}</SubTitleSet>
             </RowModalDiv>
           </ColumnThree>
           <CustomNine className="col-9 mb-3">
@@ -214,6 +223,13 @@ NamespaceDeploy.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
   openParameterContext: PropTypes.func,
+  countDetails: PropTypes.func,
+  upgradeData: PropTypes.shape({
+    name: PropTypes.string,
+    // Add other properties if known
+  }),
+  selectedVersion: PropTypes.string,
+  selectedClusterName: PropTypes.string,
 };
 
 export default NamespaceDeploy;

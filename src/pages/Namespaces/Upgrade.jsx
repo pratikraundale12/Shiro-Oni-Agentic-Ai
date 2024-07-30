@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { LinkIcons, QRIcons, TodoIcon } from '../../assets';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Table } from '../../components';
 
 const Container = styled.div`
@@ -139,50 +139,39 @@ const BreadcrumbContainer = styled.div`
   align-items: center;
 `;
 
-const COLUMNS = [
-  {
-    label: 'Version',
-    renderCell: item => <div>{item.version}</div>,
-  },
-  {
-    label: 'Created',
-    renderCell: item => <div>{item.created}</div>,
-  },
-  {
-    label: 'Comment',
-    renderCell: item => <div>{item.comment}</div>,
-  },
-  {
-    label: '',
-    renderCell: item => (
-      <RadioField
-        name="select"
-        onChange={() => console.log('Changed', item.id)}
-      />
-    ),
-    width: '10%',
-  },
-];
-
-const dummyData = [
-  { id: 1, version: 'v1.0', created: '2024-07-01', comment: 'Initial version' },
-  { id: 2, version: 'v1.1', created: '2024-07-05', comment: 'Bug fixes' },
-  {
-    id: 3,
-    version: 'v1.2',
-    created: '2024-07-10',
-    comment: 'Added new features',
-  },
-  {
-    id: 4,
-    version: 'v1.3',
-    created: '2024-07-15',
-    comment: 'Performance improvements',
-  },
-];
-
 const Upgrade = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { upgradeData, selectedClusterName, selectedClusterId } =
+    location.state || {};
+  const [selectedVersion, setSelectedVersion] = useState(null);
+  const COLUMNS = onVersionSelect => [
+    {
+      label: 'Version',
+      renderCell: item => <div>{item.version}</div>,
+    },
+    {
+      label: 'Created',
+      renderCell: item => <div>{item.createdAt}</div>,
+    },
+    {
+      label: 'Comment',
+      renderCell: item => <div>{item.comments}</div>,
+    },
+    {
+      label: '',
+      renderCell: item => (
+        <RadioField
+          disabled={upgradeData?.version === item.version}
+          name="select"
+          onChange={() => onVersionSelect(item.version)}
+        />
+      ),
+      width: '10%',
+    },
+  ];
+
+  console.log({ upgradeData });
   const breadcrumbData = [
     { id: '1', name: 'Namespace List' },
     { id: '2', name: 'Select Namespace' },
@@ -193,10 +182,22 @@ const Upgrade = () => {
     // Perform your navigation or other actions here
   };
   const handleClick = () => {
-    navigate('/namespaces/summary');
+    navigate('/namespaces/summary', {
+      state: {
+        upgradeData,
+        selectedVersion,
+        selectedClusterName,
+        selectedClusterId,
+      },
+    });
   };
+
   const handleBackClick = () => {
     navigate('/namespaces/deploy');
+  };
+
+  const handleVersionSelect = version => {
+    setSelectedVersion(version);
   };
   return (
     <Container>
@@ -223,6 +224,7 @@ const Upgrade = () => {
                 type="text"
                 label="Selected Cluster"
                 placeholder="Nifi Namespace"
+                value={selectedClusterName}
                 icon={<QRIcons />}
                 disabled
               />
@@ -234,7 +236,7 @@ const Upgrade = () => {
                     name="namespace"
                     type="text"
                     label="Selected Namespace"
-                    placeholder="Nifi Namespace"
+                    value={upgradeData?.name}
                     icon={<QRIcons />}
                     disabled
                   />
@@ -249,14 +251,18 @@ const Upgrade = () => {
                     type="text"
                     label="Canvas Position X"
                     placeholder="x123"
+                    value={upgradeData?.position?.x}
                     icon={'x:'}
+                    disabled
                   />
                   <InputField
                     name="y"
                     type="text"
                     label="Canvas Position Y"
                     placeholder="y123"
+                    value={upgradeData?.position?.y}
                     icon={'y:'}
+                    disabled
                   />
                 </ColXlFive>
                 <ColXlTwo className="col-xl-2 col-6">
@@ -265,6 +271,7 @@ const Upgrade = () => {
                     type="text"
                     label="Current Version"
                     placeholder="N/A"
+                    value={upgradeData?.version}
                     icon={<QRIcons />}
                     disabled
                   />
@@ -306,13 +313,11 @@ const Upgrade = () => {
               </RowConfig>
             </div>
           </RowConfig>
-          {/* <div className="d-flex align-items-center breadcrumb-container mb-3">
-            <span className="cursor-pointer version-title">
-              Version Control
-            </span>
-          </div> */}
 
-          <Table data={dummyData} columns={COLUMNS} />
+          <Table
+            data={upgradeData?.versionList}
+            columns={COLUMNS(handleVersionSelect)}
+          />
         </ScrollSetGrey>
       </GreyBoxNamespace>
       <BottomButton className="bottom-button-divs d-flex">
@@ -320,7 +325,9 @@ const Upgrade = () => {
           <Button variant="secondary" onClick={handleBackClick}>
             Back
           </Button>
-          <Button onClick={handleClick}>Upgrade</Button>
+          <Button onClick={handleClick} disabled={!selectedVersion}>
+            Upgrade
+          </Button>
         </BottomButtonDiv>
       </BottomButton>
     </Container>
