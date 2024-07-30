@@ -1,14 +1,13 @@
-/* eslint-disable */
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { Button, PasswordField } from '../../../shared';
-import { CrossIcon, KeyIcons } from '../../../assets';
-import { Modal } from '../../../shared';
+/*eslint-disable*/
 
-// Define your styled components here
+import React, { useState, useCallback } from 'react';
+import styled from 'styled-components';
+import { Button } from '../../../shared';
+import { CrossIcon } from '../../../assets';
+import { Modal } from '../../../shared';
+import { InputField } from '../../../shared'; // Import your InputField component
+import { BagIcon } from '../../../assets';
+import TogglePassword from '../../../shared/FormInputs/components/PasswordField/components/TogglePassword';
 
 const InputBox = styled.div`
   .input-box {
@@ -78,30 +77,31 @@ const FileSize = styled.span`
   font-weight: 500;
 `;
 
-const RemoveIcon = styled.svg`
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-`;
-
 const HiddenFileInput = styled.input`
   display: none;
 `;
 
-// Define validation schema with yup
-const schema = yup.object().shape({
-  file: yup
-    .mixed()
-    .required('File is required')
-    .test('fileExtension', 'File must be of type .p12', value => {
-      return value && value.name.endsWith('.p12');
-    }),
-  passphrase: yup
-    .string()
-    .required('Passphrase is required')
-    .min(0, 'Passphrase can be empty') // Allows empty passphrase, adjust if necessary
-    .max(50, 'Passphrase is too long'), // Optional maximum length
-});
+const Wrapper = styled.div`
+  position: relative;
+  width: 100%;
+  margin-bottom: 0.4rem;
+
+  > div {
+    margin-bottom: 0;
+  }
+
+  .eye-icon {
+    cursor: pointer;
+  }
+`;
+
+const HelperText = styled.div`
+  font-size: 10px;
+  line-height: 15px;
+  margin-top: 5px;
+  color: ${props => props.theme.colors.darker};
+`;
+
 export const AddCertificate = ({
   addCertificate,
   setAddCertificate,
@@ -109,48 +109,73 @@ export const AddCertificate = ({
   certificates,
 }) => {
   const [file, setFile] = useState(certificates?.file || null);
-  const {
-    watch,
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: certificates,
-  });
+  const [passphrase, setPassphrase] = useState(certificates?.passphrase || '');
+  const [errors, setErrors] = useState({ file: '', passphrase: '' });
+  const [show, setShow] = useState(false);
 
   const handleFileSelect = event => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      setFile({
-        name: selectedFile.name,
-        size: (selectedFile.size / (1024 * 1024)).toFixed(2) + 'MB',
-        path: selectedFile.path,
-      });
-      setValue('file', selectedFile);
+      if (selectedFile.name.endsWith('.p12')) {
+        setFile({
+          name: selectedFile.name,
+          size: (selectedFile.size / (1024 * 1024)).toFixed(2) + 'MB',
+          path: selectedFile.webkitRelativePath || selectedFile.path,
+        });
+        setErrors(prevErrors => ({ ...prevErrors, file: '' }));
+      } else {
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          file: 'Invalid file type. Please upload a .p12 file!',
+        }));
+      }
     }
   };
 
   const handleFileRemove = () => {
     setFile(null);
-    setValue('file', null);
+    setErrors(prevErrors => ({ ...prevErrors, file: '' }));
   };
 
-  const onSubmit = data => {
-    console.log('certificate', data);
-    const certificateData = {
-      file: data.file,
-      passphrase: data.passphrase,
-    };
-    setCertificate({
-      file: data.file,
-      passphrase: data.passphrase,
-    });
-    setAddCertificate(false);
-    console.log('certificate', certificateData);
-    // Add your logic to handle the form submission
+  const handlePassphraseChange = event => {
+    setPassphrase(event.target.value);
   };
+
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {
+      file: '',
+      passphrase: '',
+    };
+
+    if (!file) {
+      newErrors.file = 'PFX file is required.';
+      valid = false;
+    }
+    if (passphrase.length < 6) {
+      newErrors.passphrase = 'Passphrase must be at least 6 characters long.';
+      valid = false;
+    }
+    setErrors(newErrors);
+    return valid;
+  };
+
+  const onSubmit = event => {
+    event.preventDefault();
+    if (validateForm()) {
+      const certificateData = {
+        file,
+        passphrase,
+      };
+      setCertificate(certificateData);
+      setAddCertificate(false);
+    }
+  };
+
+  const togglePassword = useCallback(
+    () => setShow(prevState => !prevState),
+    []
+  );
 
   return (
     <Modal
@@ -160,10 +185,10 @@ export const AddCertificate = ({
       size="sm"
       secondaryButtonText="Cancel"
       primaryButtonText="Continue"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={onSubmit}
     >
       <InputBox>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={onSubmit}>
           <div className="input-box">
             <div className="d-flex">
               <FileIcon
@@ -227,14 +252,10 @@ export const AddCertificate = ({
                           <HiddenFileInput
                             type="file"
                             id="hiddenFileInput"
-                            register={register}
                             onChange={handleFileSelect}
-                            errors={errors}
                           />
                           {errors.file && (
-                            <span style={{ color: 'red' }}>
-                              {errors.file.message}
-                            </span>
+                            <span style={{ color: 'red' }}>{errors.file}</span>
                           )}
                         </>
                       )}
@@ -244,24 +265,24 @@ export const AddCertificate = ({
               </PFXContainer>
             </div>
           </div>
-          {/* <InputField
-            type="text"
-            placeholder="Enter your Passphrase"
-            name="passphrase"
-            icon={<KeyIcons />}
-            register={register}
-            errors={errors.passphrase}
-            // required={true}
-          /> */}
-          <PasswordField
-            name="passphrase"
-            register={register}
-            errors={errors.passphrase}
-            watch={watch}
-            required="Password is required"
-            label="Password"
-            helperText="Must be 8 characters at least"
-          />
+
+          <Wrapper>
+            <InputField
+              name="passphrase"
+              type={show ? 'text' : 'password'}
+              icon={<BagIcon />}
+              placeholder="Enter Your Password"
+              rightIcon={
+                <TogglePassword show={show} onToggle={togglePassword} />
+              }
+              value={passphrase}
+              onChange={handlePassphraseChange}
+            />
+            <HelperText>Must be at least 6 characters long.</HelperText>
+            {errors.passphrase && (
+              <span style={{ color: 'red' }}>{errors.passphrase}</span>
+            )}
+          </Wrapper>
         </form>
       </InputBox>
     </Modal>
