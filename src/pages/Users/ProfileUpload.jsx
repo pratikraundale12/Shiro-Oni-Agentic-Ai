@@ -31,23 +31,34 @@ export const ProfileUpload = ({ name, control, watch, url }) => {
       control={control}
       defaultValue={null}
       rules={{ required: !url }}
-      render={({ field: { onChange } }) => (
-        <div style={{ position: 'relative' }}>
-          <UploadLabel htmlFor="file-upload">
-            {file ? (
-              <PreviewImage src={getFilePreview()} alt="Profile Preview" />
-            ) : (
-              <UserUploadIcon />
-            )}
-          </UploadLabel>
-          <UploadInput
-            id="file-upload"
-            type="file"
-            accept="image/*"
-            onChange={event => onChange(event.target.files[0])}
-          />
-        </div>
-      )}
+      render={({ field: { onChange } }) => {
+        const handlePhotoUpload = event => {
+          const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+          if (
+            event.target.files[0] &&
+            validImageTypes.includes(event.target.files[0].type)
+          ) {
+            onChange(event.target.files[0]);
+          }
+        };
+        return (
+          <div style={{ position: 'relative' }}>
+            <UploadLabel htmlFor="file-upload">
+              {file ? (
+                <PreviewImage src={getFilePreview()} alt="Profile Preview" />
+              ) : (
+                <UserUploadIcon />
+              )}
+            </UploadLabel>
+            <UploadInput
+              id="file-upload"
+              type="file"
+              accept="image/*"
+              onChange={event => handlePhotoUpload(event)}
+            />
+          </div>
+        );
+      }}
     />
   );
 };
