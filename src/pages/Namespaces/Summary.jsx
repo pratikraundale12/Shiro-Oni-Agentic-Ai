@@ -204,6 +204,7 @@ const Summary = () => {
     selectedVersion,
     selectedClusterName,
     selectedClusterId,
+    deployData,
   } = location.state || {};
   console.log({ selectedVersion }, '195');
   const breadcrumbData = [
@@ -321,7 +322,7 @@ const Summary = () => {
                       Namespace
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {upgradeData?.name}
+                      {upgradeData?.name || deployData?.name}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -351,7 +352,7 @@ const Summary = () => {
                       Current Version
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {upgradeData?.version}
+                      {upgradeData?.version || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>

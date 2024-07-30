@@ -60,7 +60,7 @@ export const Table = ({ data, columns }) => {
   ]);
 
   const getLoader = () => {
-    if (isEmpty(DATA.nodes))
+    if (isEmpty(DATA?.nodes))
       return (
         <LoaderContainer>
           <NoDataText> No data found</NoDataText>

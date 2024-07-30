@@ -11,6 +11,7 @@ export const hasError = (errors, name) => {
 const fetchListData = {
   users: getUsersList,
   clusters: getClustersList,
+  deploy: getNamespacesList,
   namespaces: getNamespacesList,
 };
 
@@ -22,7 +23,8 @@ export const fetchGridData = debounce(
     page = 1,
     selectedSourceClusterId = '',
     selectedNamespaceId = '',
-    // selectedDestinationClusterId = '',
+    selectedDestinationClusterId = '',
+    selectedDestinationNamespaceId = '',
     ...rest
   }) => {
     try {
@@ -39,7 +41,13 @@ export const fetchGridData = debounce(
         ...(selectedSourceClusterId && {
           clusterId: selectedSourceClusterId,
         }),
+        ...(selectedDestinationClusterId && {
+          clusterId: selectedDestinationClusterId,
+        }),
         ...(selectedNamespaceId && { namespaceId: selectedNamespaceId }),
+        ...(selectedDestinationNamespaceId && {
+          namespaceId: selectedDestinationNamespaceId,
+        }),
         ...rest,
       });
       setState(prev => ({
@@ -61,9 +69,10 @@ export const fetchGridData = debounce(
         },
       }));
       toast.error(
-        error.response.data?.message ||
+        error?.response?.data?.message ||
           'Something went wrong. Please try again.'
       );
+      console.log(error, 'datttt');
     } finally {
       setState(prev => ({
         ...prev,

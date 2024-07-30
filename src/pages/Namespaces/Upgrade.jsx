@@ -142,7 +142,7 @@ const BreadcrumbContainer = styled.div`
 const Upgrade = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { upgradeData, selectedClusterName, selectedClusterId } =
+  const { upgradeData, selectedClusterName, selectedClusterId, deployData } =
     location.state || {};
   const [selectedVersion, setSelectedVersion] = useState(null);
   const COLUMNS = onVersionSelect => [
@@ -188,9 +188,11 @@ const Upgrade = () => {
         selectedVersion,
         selectedClusterName,
         selectedClusterId,
+        deployData,
       },
     });
   };
+  console.log({ deployData });
 
   const handleBackClick = () => {
     navigate('/namespaces/deploy');
@@ -223,7 +225,7 @@ const Upgrade = () => {
                 name="cluster"
                 type="text"
                 label="Selected Cluster"
-                placeholder="Nifi Namespace"
+                // placeholder="Nifi Namespace"
                 value={selectedClusterName}
                 icon={<QRIcons />}
                 disabled
@@ -236,7 +238,7 @@ const Upgrade = () => {
                     name="namespace"
                     type="text"
                     label="Selected Namespace"
-                    value={upgradeData?.name}
+                    value={upgradeData?.name || deployData?.name}
                     icon={<QRIcons />}
                     disabled
                   />
@@ -251,7 +253,7 @@ const Upgrade = () => {
                     type="text"
                     label="Canvas Position X"
                     placeholder="x123"
-                    value={upgradeData?.position?.x}
+                    value={upgradeData?.position?.x || deployData?.position?.x}
                     icon={'x:'}
                     disabled
                   />
@@ -260,7 +262,7 @@ const Upgrade = () => {
                     type="text"
                     label="Canvas Position Y"
                     placeholder="y123"
-                    value={upgradeData?.position?.y}
+                    value={upgradeData?.position?.y || deployData?.position?.y}
                     icon={'y:'}
                     disabled
                   />
@@ -271,7 +273,7 @@ const Upgrade = () => {
                     type="text"
                     label="Current Version"
                     placeholder="N/A"
-                    value={upgradeData?.version}
+                    value={upgradeData?.version || 'N/A'}
                     icon={<QRIcons />}
                     disabled
                   />
@@ -315,7 +317,7 @@ const Upgrade = () => {
           </RowConfig>
 
           <Table
-            data={upgradeData?.versionList}
+            data={upgradeData?.versionList || deployData?.versionList}
             columns={COLUMNS(handleVersionSelect)}
           />
         </ScrollSetGrey>

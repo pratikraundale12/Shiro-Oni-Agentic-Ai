@@ -93,7 +93,7 @@ const BottomButton = styled.div`
 
 const handleKeyPress = event => {
   if (event.key === 'Enter' || event.key === ' ') {
-    // handleNameClick(name);
+    // handleName
   }
 };
 
@@ -114,7 +114,16 @@ const Deploy = () => {
   } = useForm();
   const [search, setSearch] = useState('');
   const { state, setState } = useGlobalContext();
+  const [selectedDestinationClusterId, setSelectedDestinationClusterId] =
+    useState('');
+  const [showDeployUI, setShowDeployUI] = useState(false);
   const navigate = useNavigate();
+
+  console.log(selectedDestinationClusterId);
+
+  useEffect(() => {
+    handleSelectNamespace();
+  }, [selectedDestinationClusterId]);
 
   const COLUMNS = [
     {
@@ -127,7 +136,7 @@ const Deploy = () => {
           onClick={() => handleSelectNamespace(item.id)}
           onKeyPress={event => handleKeyPress(event, item.name)}
         >
-          {item.name}
+          {item?.name}
         </div>
       ),
     },
@@ -160,7 +169,6 @@ const Deploy = () => {
   ];
 
   function handleSelectNamespace(id) {
-    console.log({ id });
     setState(prev => ({
       ...prev,
       selectedNamespaceId: id,
@@ -168,8 +176,8 @@ const Deploy = () => {
     }));
     fetchGridData({
       setState,
-      module: 'namespaces',
-      selectedSourceClusterId: state.selectedSourceClusterId,
+      module: 'deploy',
+      selectedDestinationClusterId: selectedDestinationClusterId,
       selectedNamespaceId: id,
     });
   }
@@ -189,23 +197,38 @@ const Deploy = () => {
     }));
 
   const handleClick = () => {
-    navigate('/namespaces/upgrade');
+    if (state.deployData) {
+      // Implement the deploy functionality here
+      console.log('Deploying with data:', state.deployData);
+      // Navigate to the desired route after deploying
+      navigate('/namespaces/upgrade', {
+        state: {
+          deployData: state.deployData,
+          selectedClusterName: state.selectedClusterName,
+          selectedClusterId: selectedDestinationClusterId,
+        },
+      });
+    }
   };
 
   const handleBackClick = () => {
     navigate('/namespaces');
   };
 
+  console.log({ selectedDestinationClusterId });
   const onClusterCheck = async e => {
     const selectedClusterId = e.value;
+    setSelectedDestinationClusterId(e.value);
     const selectedClusterName = e.label;
     const ids = state?.selectedPaths.map(item => item?.flowId);
+
     try {
       const response = await checkCluster({
         clusterId: selectedClusterId,
         srcClusterId: state?.selectedSourceClusterId,
         path: ids,
       });
+
       if (response.mode === 'upgrade') {
         setState(prevState => ({
           ...prevState,
@@ -219,6 +242,16 @@ const Deploy = () => {
             selectedClusterId,
           },
         });
+      } else if (response.mode === 'deploy') {
+        setState(prevState => ({
+          ...prevState,
+          selectedClusterId,
+          deployData: response,
+          selectedClusterName,
+        }));
+        setShowDeployUI(true);
+      } else {
+        setShowDeployUI(false);
       }
     } catch (error) {
       console.error('Error checking cluster:', error);
@@ -254,32 +287,36 @@ const Deploy = () => {
             />
           </form>
 
-          <>
-            <SearchContainer>
-              <SmallSearchIcon
-                width={18}
-                height={18}
-                color={theme.colors.darkGrey1}
-              />
-              <Search
-                type="search"
-                value={search}
-                placeholder="Search Namespace, Flow Name, Bucket Name, Version"
-                onChange={e => setSearch(e.target.value)}
-              />
-            </SearchContainer>
-            <Table columns={COLUMNS} />
-          </>
+          {showDeployUI && (
+            <>
+              <SearchContainer>
+                <SmallSearchIcon
+                  width={18}
+                  height={18}
+                  color={theme.colors.darkGrey1}
+                />
+                <Search
+                  type="search"
+                  value={search}
+                  placeholder="Search Namespace, Flow Name, Bucket Name, Version"
+                  onChange={e => setSearch(e.target.value)}
+                />
+              </SearchContainer>
+              <Table data={state?.gridData?.deploy?.data} columns={COLUMNS} />
+            </>
+          )}
         </ScrollSetGrey>
       </GreyBoxNamespace>
-      <BottomButton className="bottom-button-divs d-flex">
-        <BottomButtonDiv className="btn-div d-flex">
-          <Button variant="secondary" onClick={handleBackClick}>
-            Back
-          </Button>
-          <Button onClick={handleClick}>Deploy</Button>
-        </BottomButtonDiv>
-      </BottomButton>
+      {showDeployUI && (
+        <BottomButton className="bottom-button-divs d-flex">
+          <BottomButtonDiv className="btn-div d-flex">
+            <Button variant="secondary" onClick={handleBackClick}>
+              Back
+            </Button>
+            <Button onClick={handleClick}>Deploy</Button>
+          </BottomButtonDiv>
+        </BottomButton>
+      )}
     </Container>
   );
 };
