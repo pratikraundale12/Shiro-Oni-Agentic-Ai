@@ -1,6 +1,8 @@
+/* eslint-disable */
+
 import React from 'react';
 import styled from 'styled-components';
-import { DeleteDustbinIcon } from '../../assets';
+import { DeleteDustbinIcon, OpenEyeIcon } from '../../assets';
 import { Grid, StatusRender, TextRender } from '../../components';
 import {
   REFRESH_OPTIONS,
@@ -81,6 +83,22 @@ export const ListClusters = () => {
       label: 'Actions',
       width: 120,
       renderCell: item => getActionsMenu(item),
+    },
+    {
+      label: 'Summary',
+      renderCell: item => (
+        <div
+          onClick={() => {
+            navigate('/cluster/summary');
+            setState({
+              ...state,
+              nodeClusterId: item.id,
+            });
+          }}
+        >
+          <OpenEyeIcon />
+        </div>
+      ),
     },
   ];
 

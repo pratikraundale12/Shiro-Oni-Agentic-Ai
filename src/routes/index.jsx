@@ -26,6 +26,7 @@ import {
   PeopleIcon,
   ReadyFlowIcon,
 } from '../assets';
+import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 
 export const ROUTES_MENU = [
   {
@@ -51,6 +52,10 @@ export const ROUTES_MENU = [
       {
         path: ['add', 'edit'],
         component: <AddCluster />,
+      },
+      {
+        path: ['summary'],
+        component: <ClusterSummary />,
       },
     ],
   },

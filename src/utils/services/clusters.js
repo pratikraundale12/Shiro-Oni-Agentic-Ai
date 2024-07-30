@@ -40,28 +40,37 @@ export const testRegistry = async payload => {
   } catch (error) {
     return error.response.data;
   }
-}
+};
 
 export const getRegistryList = async params => {
-  const { data } = await API.get('http://localhost:8000/api/registries', { params });
+  const { data } = await API.get('http://localhost:8000/api/registries', {
+    params,
+  });
   return data;
 };
-
 
 export const getOneRegistry = async params => {
-  const { data } = await API.get(`http://localhost:8000/api/registries/${params}`);
+  const { data } = await API.get(
+    `http://localhost:8000/api/registries/${params}`
+  );
   return data;
 };
 
-export const updateCluster = async (id,payload) => {
-  const {data} = await API.patch(`http://localhost:8000/api/clusters/${id}`,payload);
+export const updateCluster = async (id, payload) => {
+  const { data } = await API.patch(
+    `http://localhost:8000/api/clusters/${id}`,
+    payload
+  );
   return data;
-}
+};
 
-export const updateRegistry = async (id,payload) => {
-  const {data} = await API.patch(`http://localhost:8000/api/registries/${id}`,payload);
+export const updateRegistry = async (id, payload) => {
+  const { data } = await API.patch(
+    `http://localhost:8000/api/registries/${id}`,
+    payload
+  );
   return data;
-}
+};
 
 export const deleteCluster = async id => {
   try {
@@ -69,4 +78,11 @@ export const deleteCluster = async id => {
   } catch (error) {
     return error.response.data;
   }
+};
+
+export const getNodeList = async ({ nodeClusterId }) => {
+  const { data } = await API.get(
+    `http://localhost:8000/api/clusters/${nodeClusterId}/nodes`
+  );
+  return data;
 };

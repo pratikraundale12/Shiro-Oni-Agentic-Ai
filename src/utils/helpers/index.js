@@ -1,6 +1,11 @@
 import { debounce, get, isEmpty } from 'lodash';
 import { SEARCH_DELAY } from '../constants';
-import { getClustersList, getNamespacesList, getUsersList } from '../services';
+import {
+  getClustersList,
+  getNamespacesList,
+  getUsersList,
+  getNodeList,
+} from '../services';
 import { toast } from 'react-toastify';
 
 export const hasError = (errors, name) => {
@@ -12,6 +17,7 @@ const fetchListData = {
   users: getUsersList,
   clusters: getClustersList,
   namespaces: getNamespacesList,
+  nodeList: getNodeList,
 };
 
 export const fetchGridData = debounce(
@@ -61,7 +67,7 @@ export const fetchGridData = debounce(
         },
       }));
       toast.error(
-        error.response.data?.message ||
+        error?.response?.data?.message ||
           'Something went wrong. Please try again.'
       );
     } finally {

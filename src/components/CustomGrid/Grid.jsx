@@ -24,6 +24,17 @@ const TableContainer = styled.div`
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
 `;
+const getData = (loader = false, data = [], nodes = []) => {
+  // const DATA = { nodes: loaders[module] ? [] : nodes || data };
+
+  if (loader) {
+    return [];
+  }
+  if (!isEmpty(nodes)) {
+    return nodes;
+  }
+  return data;
+};
 
 export const Grid = ({
   module,
@@ -46,14 +57,16 @@ export const Grid = ({
           prev = null,
           next = null,
           data = [],
+          nodes = [],
           // breadcrumb = [],
         } = {},
       },
+      nodeClusterId,
       loaders,
     },
     setState,
   } = useGlobalContext();
-  const DATA = { nodes: loaders[module] ? [] : data };
+  const DATA = { nodes: getData(loaders[module], data, nodes) };
 
   const tableTheme = useTheme([
     getTheme(),
@@ -103,7 +116,7 @@ export const Grid = ({
   };
 
   useEffect(() => {
-    fetchGridData({ setState, module, search: search });
+    fetchGridData({ setState, module, search: search, nodeClusterId });
   }, [setState, module, search]);
 
   return (
