@@ -62,3 +62,11 @@ export const updateRegistry = async (id,payload) => {
   const {data} = await API.patch(`http://localhost:8000/api/registries/${id}`,payload);
   return data;
 }
+
+export const deleteCluster = async id => {
+  try {
+    return await API.delete(`http://localhost:8000/api/clusters/${id}`);
+  } catch (error) {
+    return error.response.data;
+  }
+};
