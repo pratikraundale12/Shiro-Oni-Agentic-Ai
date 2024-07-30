@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Controller } from 'react-hook-form';
-import { UserUploadIcon } from '../../assets';
+import { UpArrowImageIcon, UserUploadIcon } from '../../assets';
 
 const PreviewImage = styled.img`
   width: 150px;
@@ -17,6 +17,11 @@ const UploadLabel = styled.label`
 
 const UploadInput = styled.input`
   display: none;
+`;
+const ArrowContainer = styled.div`
+  right: 10px !important;
+  position: absolute;
+  bottom: 10px;
 `;
 
 export const ProfileUpload = ({ name, control, watch, url }) => {
@@ -45,7 +50,12 @@ export const ProfileUpload = ({ name, control, watch, url }) => {
           <div style={{ position: 'relative' }}>
             <UploadLabel htmlFor="file-upload">
               {file ? (
-                <PreviewImage src={getFilePreview()} alt="Profile Preview" />
+                <div>
+                  <PreviewImage src={getFilePreview()} alt="Profile Preview" />
+                  <ArrowContainer>
+                    <UpArrowImageIcon />
+                  </ArrowContainer>
+                </div>
               ) : (
                 <UserUploadIcon />
               )}
