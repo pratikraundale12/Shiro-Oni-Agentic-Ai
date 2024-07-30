@@ -118,7 +118,8 @@ export const AddUserModal = props => {
       isEmpty(state?.selectedItem) ? userSchema : editUserSchema
     ),
   });
-  console.log(state.selectedItem, 'itessssssss');
+
+  console.log(errors);
   const openModal = () => setState({ ...state, userModal: true });
   const closeModal = () => {
     setState({
@@ -250,7 +251,7 @@ export const AddUserModal = props => {
                 type="text"
                 label="First Name"
                 placeholder="Enter your First Name"
-                required="First Name is required"
+                required
                 register={register}
                 errors={errors}
                 icon={<UserIcon />}
@@ -269,7 +270,7 @@ export const AddUserModal = props => {
                 type="text"
                 label="Last Name"
                 placeholder="Enter your Last Name"
-                required="Last Name is required"
+                required
                 register={register}
                 errors={errors}
                 icon={<UserIcon />}
@@ -279,7 +280,7 @@ export const AddUserModal = props => {
                 type="text"
                 label="User Name"
                 placeholder="Enter your User Name"
-                required="User Name is required"
+                required
                 register={register}
                 errors={errors}
                 icon={<UserIcon />}
@@ -289,7 +290,7 @@ export const AddUserModal = props => {
                 type="email"
                 label="E-mail Address"
                 placeholder="Enter your First Name"
-                required="Email is required"
+                required
                 register={register}
                 errors={errors}
                 icon={<MailIcon />}
@@ -307,7 +308,7 @@ export const AddUserModal = props => {
                   register={register}
                   errors={errors}
                   watch={watch}
-                  required="Password is required"
+                  required
                   label="Confirm Password"
                 />
               )}

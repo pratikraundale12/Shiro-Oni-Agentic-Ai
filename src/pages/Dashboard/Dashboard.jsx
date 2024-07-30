@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { Dropdown } from '../../shared';
+import { SelectField } from '../../shared';
 import { Table } from '../../components';
 import { InsightContainer, FlowMetrics } from './components';
 import {
@@ -15,8 +15,14 @@ import {
   TotalProcessorIcon,
   TotalQuedIcon,
   InvalidProcessorIcon,
-  DownArrowIcon,
+  ErrorIcon,
 } from '../../assets';
+import { CrossIcon } from '../../assets/Icons/CrossIcon';
+import { getInitialClusterData, getNamespaceData } from '../../utils/services';
+import { toast } from 'react-toastify';
+import { useForm } from 'react-hook-form';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { fetchGridData, useGlobalContext } from '../../utils';
 
 const TopSection = styled.div`
   display: flex;
@@ -72,118 +78,212 @@ const FlowMetricHeader = styled.div`
   display: flex;
 `;
 
-const HeaderText = styled.p`
-  margin-left: 10px;
-`;
-const DropdownHolder = styled.div`
+const ErrorsHeader = styled.div`
+  background-color: #fff;
+  padding: 10px 11px;
+  font-family: Noto Sans;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 25px;
   display: flex;
   align-items: center;
 `;
-// const GraphContainer = styled.div`
-//   font-family: Noto Sans;
-//   font-size: 20px;
-//   font-weight: 600;
-//   line-height: 25px;
-//   margin-bottom: 10px;
-// `;
+
+const HeaderText = styled.p`
+  margin-left: 10px;
+`;
+
 const TextEllipses = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  width: 100%;
+  align-items: center;
+`;
+const ErrorTexts = styled.div`
+  width: 90%;
+  margin-left: 4px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+`;
+const DropdownContainer = styled.div`
+  margin-left: 10px;
+`;
+const DropdownWrapper = styled.div`
+  display: flex;
+`;
+
+const IdWrapper = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
 export const Dashboard = () => {
-  const OptionsArray = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
-    { value: 'option4', label: 'Option 4' },
-    { value: 'option5', label: 'Option 5' },
-    { value: 'option6', label: 'Option 6' },
-    { value: 'option7', label: 'Option 7' },
-    { value: 'option8', label: 'Option 8' },
-    { value: 'option9', label: 'Option 9' },
-    { value: 'option10', label: 'Option 10' },
-  ];
-
+  const { state, setState } = useGlobalContext();
+  const [clusterDetails, setClusterDetails] = useState([]);
+  const [namespaceArray, setNamespaceArray] = useState([]);
+  const [selectedClusterId, setSelectedClusterId] = useState('');
+  const [namespaceIdSelected, setNamespaceIdSelected] = useState('');
+  const [errorsLogs, setErrorLogs] = useState([]);
+  const [refreshState, setRefreshSelect] = useState(false);
+  const intervalRef = useRef(null);
+  const { control } = useForm();
   const COLUMNS = [
     {
       label: 'Process Group',
-      renderCell: item => <div>{item.name}</div>,
+      renderCell: item => <div>{item.processor_group}</div>,
     },
     {
       label: 'Process ID',
-      renderCell: item => <div>{item.id}</div>,
+      renderCell: item => (
+        <div>
+          <IdWrapper data-tooltip-id={`tooltip-${item.processor_group_id}`}>
+            {item.processor_group_id}
+          </IdWrapper>
+          <ReactTooltip
+            id={`tooltip-${item.processor_group_id}`}
+            place="right"
+            content={item.processor_group_id}
+            style={{
+              width: '320px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        </div>
+      ),
       width: '20%',
     },
     {
       label: 'Process Name',
-      renderCell: item => <div>{item.name}</div>,
+      renderCell: item => <div>{item.processor_name}</div>,
     },
     {
       label: 'Error Message',
-      renderCell: item => <TextEllipses>{item.message}</TextEllipses>,
+      renderCell: item => (
+        <TextEllipses>
+          <CrossIcon color="red" />
+          <ErrorTexts data-tooltip-id={`tooltip-${item.processor_group_id}-m`}>
+            <div>
+              <b>Error Code </b>:404- File not found
+            </div>
+            {item.message}
+          </ErrorTexts>
+          <ReactTooltip
+            id={`tooltip-${item.processor_group_id}-m`}
+            place="right"
+            content={item.message}
+            style={{
+              width: '400px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        </TextEllipses>
+      ),
       width: '50%',
     },
-    {
-      label: '',
-      renderCell: () => <DownArrowIcon />,
-      width: '10%',
-    },
+    // {
+    //   label: '',
+    //   renderCell: () => <DownArrowIcon />,
+    //   width: '10%',
+    // },
   ];
-  const data = [
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 1',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 2',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 3',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
-    {
-      id: 'ffb8931b-50eb-471d-a974-b6ad1254344f',
-      name: 'Group 4',
-      message: (
-        <div>
-          <div>Error Code: 404 - File Not Found</div>
-          <TextEllipses>
-            Description: The requested resource could not be found on the
-            server. The requested resource could not be found on the server.
-          </TextEllipses>
-        </div>
-      ),
-    },
+
+  const getNamespaceDetails = async id => {
+    const response = await getNamespaceData(selectedClusterId, id);
+    if (response.status == 200) {
+      setClusterDetails(response?.data);
+      setErrorLogs(response.data.errors);
+    } else {
+      toast.error('error occured');
+    }
+  };
+
+  const getClusterDetalis = async id => {
+    const response = await getInitialClusterData(id);
+    if (response.status == 200) {
+      setClusterDetails(response.data);
+      const filteredNamespaceArray = response.data.namespaces.data.map(
+        ({ id, name }) => ({
+          value: id,
+          label: name,
+        })
+      );
+      setNamespaceArray(filteredNamespaceArray);
+      setErrorLogs(response.data.errors);
+    } else {
+      toast.error('error occured');
+    }
+  };
+
+  const onClusterSelect = async selectedItem => {
+    try {
+      if (selectedItem) {
+        getClusterDetalis(selectedItem?.value);
+        setSelectedClusterId(selectedItem?.value);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const onNamespaceSelect = async selectedItem => {
+    try {
+      if (selectedItem) {
+        setNamespaceIdSelected(selectedItem?.value);
+        await getNamespaceDetails(selectedItem?.value);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  const onRefreshSelect = selectedItem => {
+    if (selectedItem) {
+      setRefreshSelect(selectedItem.value);
+    }
+  };
+  const RefreshArray = [
+    { value: false, label: 'Off' },
+    { value: 5000, label: '5 sec' },
+    { value: 3000, label: '3 Sec' },
+    { value: 1000, label: '1 Sec' },
   ];
+
+  const clusterOptions = state.clusterList.map(item => ({
+    label: item.name,
+    value: item.id,
+  }));
+
+  const handleRefreshFunctionality = () => {
+    if (namespaceIdSelected) {
+      getNamespaceDetails(selectedClusterId, namespaceIdSelected);
+    } else if (selectedClusterId) {
+      getClusterDetalis(selectedClusterId);
+    }
+    console.log('called');
+    return;
+  };
+
+  useEffect(() => {
+    fetchGridData({
+      setState,
+      module: 'clusters',
+    });
+  }, [setState]);
+
+  useEffect(() => {
+    if (refreshState !== false) {
+      intervalRef.current = setInterval(
+        handleRefreshFunctionality,
+        refreshState
+      );
+    } else {
+      clearInterval(intervalRef.current);
+    }
+
+    return () => clearInterval(intervalRef.current);
+  }, [selectedClusterId, namespaceIdSelected, refreshState]);
   return (
     <Continer>
       <TopSection>
@@ -193,78 +293,85 @@ export const Dashboard = () => {
           </InsightIconContiner>
           <QuickInsightHeadingText>Quick Insight</QuickInsightHeadingText>
         </QuickInsightHeading>
-        <DropdownHolder>
-          <div>
-            <Dropdown
-              options={OptionsArray}
-              placeholder="Select Cluster"
+        <DropdownWrapper>
+          <DropdownContainer>
+            <SelectField
+              name="selectedItem"
+              control={control}
+              options={clusterOptions}
               label="Select Cluster"
+              onChange={onClusterSelect}
             />
-          </div>
-
-          <div>
-            <Dropdown
-              options={OptionsArray}
-              placeholder="Select Namespace"
+          </DropdownContainer>
+          <DropdownContainer>
+            <SelectField
+              name="selectedItem"
+              control={control}
+              options={namespaceArray || []}
               label="Select Namespace"
+              onChange={onNamespaceSelect}
             />
-          </div>
-          <Dropdown
-            options={OptionsArray}
-            placeholder="Refresh"
-            label="Refresh"
-          />
-        </DropdownHolder>
+          </DropdownContainer>
+          <DropdownContainer>
+            <SelectField
+              name="selectedItem"
+              control={control}
+              options={RefreshArray}
+              label={'Refresh'}
+              onChange={onRefreshSelect}
+            />
+          </DropdownContainer>
+        </DropdownWrapper>
       </TopSection>
       <BottomSectionScroll>
         <InsightDataContiner>
           <InsightContainer
             backgroundCss="#F1F5FF"
             icon={TotalProcessorIcon}
-            count={2604}
+            count={clusterDetails?.total_processors || '0'}
             text="Total Processor"
           />
           <InsightContainer
             backgroundCss="#FEFBEC"
             icon={RunnigProcessorIcon}
-            count={24}
+            count={clusterDetails?.running_processors || '0'}
             text="Running Processor"
           />
 
           <InsightContainer
             backgroundCss="#EEF9FB"
             icon={StoppedProcessorIcon}
-            count={240}
+            count={clusterDetails?.stopped_processors || '0'}
             text="Stopped Processor"
           />
           <InsightContainer
             backgroundCss="#FDF3FC"
             icon={DisabledProcessorIcon}
-            count={126}
+            count={clusterDetails?.disabled_processors || '0'}
             text="Disabled Processor"
           />
           <InsightContainer
             backgroundCss="#FFF7ED"
             icon={InvalidProcessorIcon}
-            count={26}
+            count={clusterDetails?.invalid_count || '0'}
             text="Invalid Processor"
           />
           <InsightContainer
             backgroundCss="#F0F0F2"
             icon={ActiveThreadIcon}
-            count={260}
+            count={clusterDetails?.active_thread_count || '0'}
             text="Active Thread"
           />
           <InsightContainer
             backgroundCss="#EEF8FF"
             icon={TotalQuedIcon}
-            count={'11 Mb'}
+            count={clusterDetails?.queued_size || '0 MB'}
             text="Total Queued"
           />
           <InsightContainer
             backgroundCss="#EEF0F4"
             icon={FlowFiledQuedIcon}
-            count={26}
+            count={clusterDetails?.flow_files_queued || '0 Mb'}
             text="Flow Files Queued"
           />
         </InsightDataContiner>
@@ -272,31 +379,15 @@ export const Dashboard = () => {
           <FlowMetricHeaderIcon />
           <HeaderText>Flow Metrics</HeaderText>
         </FlowMetricHeader>
-        <FlowMetrics />
-        <FlowMetricHeader>
-          <svg
-            width={20}
-            height={18}
-            viewBox="0 0 20 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M9.99993 4.96973C9.18498 4.96973 8.52002 5.49969 8.52002 6.18465L9.04249 11.7593C9.04249 12.2868 9.47246 12.7167 9.99993 12.7167C10.5274 12.7167 10.9574 12.2868 10.9549 11.7893L11.4798 6.15465C11.4798 5.49969 10.8149 4.96973 9.99993 4.96973ZM10.3049 11.7568C10.3049 11.9243 10.1674 12.0618 9.99993 12.0618C9.83244 12.0618 9.69495 11.9243 9.69245 11.7268L9.16998 6.15215C9.16998 5.86717 9.55745 5.61969 9.99993 5.61969C10.4424 5.61969 10.8299 5.86967 10.8299 6.12215L10.3049 11.7568Z"
-              fill="#C52B2B"
-            />
-            <path
-              d="M9.99995 13.0566C9.38999 13.0566 8.89502 13.5516 8.89502 14.1616C8.89502 14.7715 9.38999 15.2665 9.99995 15.2665C10.6099 15.2665 11.1049 14.7715 11.1049 14.1616C11.1049 13.5516 10.6099 13.0566 9.99995 13.0566ZM9.99995 14.614C9.74997 14.614 9.54498 14.4116 9.54498 14.1591C9.54498 13.9091 9.74747 13.7041 9.99995 13.7041C10.2524 13.7041 10.4549 13.9066 10.4549 14.1591C10.4549 14.4116 10.2499 14.614 9.99995 14.614Z"
-              fill="#C52B2B"
-            />
-            <path
-              d="M11.4199 0.819949C11.1224 0.307481 10.5925 0 10 0C9.40754 0 8.87507 0.307481 8.58009 0.819949L0.223111 15.294C-0.0743704 15.8065 -0.0743704 16.4215 0.223111 16.9339C0.520593 17.4464 1.05056 17.7539 1.64302 17.7539H18.357C18.9494 17.7539 19.4819 17.4464 19.7769 16.9339C20.0744 16.4215 20.0744 15.8065 19.7769 15.294L11.4199 0.819949ZM19.2144 16.609C19.0369 16.9189 18.7145 17.1039 18.357 17.1039H1.64302C1.28554 17.1039 0.965565 16.9189 0.785576 16.609C0.605587 16.299 0.605587 15.929 0.785576 15.619L9.14255 1.14493C9.32004 0.834948 9.64252 0.64996 10 0.64996C10.3575 0.64996 10.6775 0.834948 10.8574 1.14493L19.2144 15.619C19.3919 15.929 19.3919 16.299 19.2144 16.609Z"
-              fill="#C52B2B"
-            />
-          </svg>
+        <FlowMetrics
+          flowMetricsDataDynamic={clusterDetails?.flowMetrixYData || [0, 0, 0]}
+        />
+        <ErrorsHeader>
+          <ErrorIcon />
+
           <HeaderText>Errors</HeaderText>
-        </FlowMetricHeader>
-        <Table data={data} columns={COLUMNS} />
+        </ErrorsHeader>
+        <Table data={errorsLogs || []} columns={COLUMNS} />
       </BottomSectionScroll>
     </Continer>
   );
