@@ -6,9 +6,9 @@ export const getNamespacesList = async ({
   ...params
 }) => {
   const { data } = await API.get(
-    `/clusters/${clusterId}/namespaces/${namespaceId}`,
+    `/clusters/${clusterId}/namespaces${namespaceId ? `/${namespaceId}` : ''}`,
     {
-      ...params,
+      params,
     }
   );
   return data;
@@ -50,7 +50,7 @@ export const getClusterProgressDelete = async ({ clusterId, progressId }) => {
 
 export const getCountDetails = async ({ clusterId, namespaceId }) => {
   const { data } = await API.get(
-    `/dashboard-insight/${clusterId}/namespaces/${namespaceId}`
+    `/clusters/${clusterId}/namespaces/${namespaceId}`
   );
   return data;
 };

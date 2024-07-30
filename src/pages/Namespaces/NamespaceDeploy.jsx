@@ -144,6 +144,7 @@ const NamespaceDeploy = ({
   selectedVersion,
   selectedClusterName,
 }) => {
+  console.log(countDetails?.data[0]?.runningCount, 'countDetails');
   return (
     <Modal
       title="Namespace Deployed"
@@ -175,19 +176,19 @@ const NamespaceDeploy = ({
             <ActiveButtonContainer className="d-flex ">
               <ActiveButtonDiv className="div-btn-1">
                 <TriangleIcons color="#B5BDC8" />
-                <span>{countDetails?.running_processors}</span>
+                <span>{countDetails?.data[0]?.runningCount}</span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-2">
                 <SquareBoxIcon color="#B5BDC8" />
-                <span>{countDetails?.stopped_processors}</span>
+                <span>{countDetails?.data[0]?.stoppedCount}</span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-3">
                 <TriangleExclamationMarkIcon color="#B5BDC8" />
-                <span>{countDetails?.invalid_count}</span>
+                <span>{countDetails?.data[0]?.invalidCount}</span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-4">
                 <SmallNotThunderIcon color="#B5BDC8" />
-                <span>{countDetails?.disabled_processors}</span>
+                <span>{countDetails?.data[0]?.disabledCount}</span>
               </ActiveButtonDiv>
             </ActiveButtonContainer>
           </CustomNine>

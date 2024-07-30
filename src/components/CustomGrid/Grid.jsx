@@ -51,6 +51,7 @@ export const Grid = ({
           breadcrumb = [],
         } = {},
       },
+      selectedSourceClusterId = '',
       loaders,
     },
     setState,
@@ -105,7 +106,12 @@ export const Grid = ({
   };
 
   useEffect(() => {
-    fetchGridData({ setState, module, search: search });
+    fetchGridData({
+      setState,
+      module,
+      search: search,
+      ...(selectedSourceClusterId && { selectedSourceClusterId }),
+    });
   }, [setState, module, search]);
 
   return (
