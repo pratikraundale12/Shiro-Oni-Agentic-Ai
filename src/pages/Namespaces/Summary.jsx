@@ -332,7 +332,7 @@ const Summary = () => {
                       Registry URL
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      https://localhost:18080/nifi-registry/
+                      {upgradeData?.registryUrl}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -342,7 +342,7 @@ const Summary = () => {
                       NiFi URL+
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      https://localhost:8445/nifi/
+                      {upgradeData?.nifiUrl}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>

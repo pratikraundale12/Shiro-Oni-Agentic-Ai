@@ -283,7 +283,8 @@ const Upgrade = () => {
                     name="currentState"
                     type="text"
                     label="Current State"
-                    placeholder="Local Changes"
+                    // placeholder="Local Changes"
+                    value={upgradeData?.stateExplanation || 'N/A'}
                     icon={<QRIcons />}
                     disabled
                   />
@@ -298,6 +299,7 @@ const Upgrade = () => {
                     type="text"
                     label="Nifi URL"
                     placeholder="Nifi Namespace"
+                    value={upgradeData?.nifiUrl || deployData?.nifiUrl}
                     icon={<LinkIcons />}
                     disabled
                   />
@@ -308,6 +310,7 @@ const Upgrade = () => {
                     type="text"
                     label="Registry URL"
                     placeholder="Nifi Namespace"
+                    value={upgradeData?.registryUrl || deployData?.registryUrl}
                     icon={<LinkIcons />}
                     disabled
                   />
