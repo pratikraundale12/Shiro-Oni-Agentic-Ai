@@ -12,6 +12,7 @@ import { GridActions } from './GridActions';
 import { fetchGridData, useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
 import Pagination from './Pagination';
+import Breadcrumb from '../../shared/Breadcrumb';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -46,6 +47,7 @@ export const Grid = ({
   title = '',
   buttonText = '',
   addModal = () => {},
+  onBreadcrumbClick = () => {},
 }) => {
   const {
     state: {
@@ -58,10 +60,11 @@ export const Grid = ({
           next = null,
           data = [],
           nodes = [],
-          // breadcrumb = [],
+          breadcrumb = [],
         } = {},
       },
       nodeClusterId,
+      selectedSourceClusterId = '',
       loaders,
     },
     setState,
@@ -116,8 +119,15 @@ export const Grid = ({
   };
 
   useEffect(() => {
-    fetchGridData({ setState, module, search: search, nodeClusterId });
+    fetchGridData({
+      setState,
+      module,
+      search: search,
+      ...(nodeClusterId && { nodeClusterId }),
+      ...(selectedSourceClusterId && { selectedSourceClusterId }),
+    });
   }, [setState, module, search]);
+
   return (
     <Container>
       <GridActions
@@ -131,6 +141,10 @@ export const Grid = ({
         addModal={addModal}
       />
       {/* Breadcrumb */}
+      <Breadcrumb
+        breadcrumbs={breadcrumb}
+        onBreadcrumbClick={onBreadcrumbClick}
+      />
       <TableContainer>
         <CompactTable
           data={DATA}
@@ -163,4 +177,11 @@ Grid.propTypes = {
   title: PropTypes.string,
   buttonText: PropTypes.string,
   addModal: PropTypes.func,
+  breadcrumbs: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    })
+  ),
+  onBreadcrumbClick: PropTypes.func,
 };

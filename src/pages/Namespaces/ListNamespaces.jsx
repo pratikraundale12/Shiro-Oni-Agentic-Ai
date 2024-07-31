@@ -1,24 +1,43 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { TextRender } from '../../components';
-import { Grid } from '../../components';
+import { TextRender, Grid } from '../../components';
 import { fetchGridData, REFRESH_OPTIONS, useGlobalContext } from '../../utils';
+import AuditLog from './AuditLog';
+import Deploy from './Deploy';
+import { Button } from '../../shared';
+import { OpenEyeIcon } from '../../assets';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   padding: 1.4rem;
   width: 100%;
   height: 100%;
 `;
-
+const handleKeyPress = event => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    // handleNameClick(name);
+  }
+};
 export const ListNamespaces = () => {
   const { state, setState } = useGlobalContext();
+  // const [selectedNamespace, setSelectedNamespace] = useState(null);
+
+  const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
+  const navigate = useNavigate();
+
   const COLUMNS = [
     {
       label: 'Name',
       renderCell: item => (
-        <button onClick={() => handleSelectNamespace(item.id)}>
+        <div
+          style={{ color: 'red', cursor: 'pointer' }}
+          role="button"
+          tabIndex="0"
+          onClick={() => handleSelectNamespace(item.id)}
+          onKeyPress={event => handleKeyPress(event, item.name)}
+        >
           {item.name}
-        </button>
+        </div>
       ),
       sort: { sortKey: 'NAME' },
     },
@@ -40,9 +59,28 @@ export const ListNamespaces = () => {
       renderCell: item => <TextRender text={item.version} />,
     },
     {
+      width: '10%',
+      renderCell: () => (
+        <button
+          onClick={handleOpenAuditLog}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+          }}
+          aria-label="Open Audit Log"
+        >
+          <OpenEyeIcon />
+        </button>
+      ),
+    },
+    {
       label: 'Actions',
       width: '10%',
-      renderCell: () => <div>Select</div>,
+      renderCell: item => (
+        <Button onClick={() => handleSelect(item.id)}>Select</Button>
+      ),
     },
   ];
 
@@ -56,14 +94,41 @@ export const ListNamespaces = () => {
   }));
 
   function handleSelectNamespace(id) {
-    setState(prev => ({ ...prev, selectedNamespaceId: id }));
+    const b = state.gridData.namespaces.data.find(a => a.id === id);
+
+    setState(prev => ({
+      ...prev,
+      selectedNamespaceId: id,
+
+      selectedPaths: [...prev.selectedPaths, b],
+    }));
     fetchGridData({
       setState,
       module: 'namespaces',
       selectedSourceClusterId: state.selectedSourceClusterId,
-      selectedNamespaceId: 'asdf',
+      selectedNamespaceId: id,
     });
   }
+
+  const handleSelect = id => {
+    const b = state.gridData.namespaces.data.find(a => a.id === id);
+
+    setState(prev => ({
+      ...prev,
+      selectedNamespaceId: id,
+
+      selectedPaths: [...prev.selectedPaths, b],
+    }));
+    navigate('/namespaces/deploy');
+  };
+
+  const handleOpenAuditLog = () => {
+    setIsAuditLogOpen(true);
+  };
+
+  const handleCloseAuditLog = () => {
+    setIsAuditLogOpen(false);
+  };
 
   useEffect(() => {
     fetchGridData({
@@ -82,6 +147,8 @@ export const ListNamespaces = () => {
         refreshOptions={REFRESH_OPTIONS}
         clusterOptions={clusterOptions}
       />
+      <Deploy />
+      <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} />
     </Container>
   );
 };

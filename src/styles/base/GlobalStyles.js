@@ -340,6 +340,9 @@ const GlobalStyle = createGlobalStyle`
   .pb-0 {
     padding-bottom: 0;
   }
+  .pe-1{
+    padding-right: 0.25rem;
+  }
 
   .pt-0 {
     padding-top: 0;
@@ -473,6 +476,15 @@ const GlobalStyle = createGlobalStyle`
   .ReactModal__Overlay--before-close {
     opacity: 0;
   }
+
+  .p-3{
+    padding: 1rem;
+  }
+
+  .col-12 {
+    width: 100%;
+    float: left;
+}
 `;
 
 export default GlobalStyle;

@@ -27,6 +27,9 @@ import {
   ReadyFlowIcon,
 } from '../assets';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
+import Deploy from '../pages/Namespaces/Deploy';
+import Upgrade from '../pages/Namespaces/Upgrade';
+import Summary from '../pages/Namespaces/Summary';
 
 export const ROUTES_MENU = [
   {
@@ -67,6 +70,18 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ListNamespaces />,
+      },
+      {
+        path: 'deploy',
+        component: <Deploy />,
+      },
+      {
+        path: 'upgrade',
+        component: <Upgrade />,
+      },
+      {
+        path: 'summary',
+        component: <Summary />,
       },
     ],
   },

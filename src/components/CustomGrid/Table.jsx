@@ -47,7 +47,8 @@ export const Table = ({ data, columns }) => {
         }
       `,
       HeaderRow: `
-        background-color: #F5F7FA;
+         background: #DDE4F0;
+        ;
         color: #444445;
       `,
       Row: `
@@ -59,7 +60,7 @@ export const Table = ({ data, columns }) => {
   ]);
 
   const getLoader = () => {
-    if (isEmpty(DATA.nodes))
+    if (isEmpty(DATA?.nodes))
       return (
         <LoaderContainer>
           <NoDataText> No data found</NoDataText>
