@@ -331,7 +331,7 @@ export const AddRegistry = ({
                       <FileDetails>
                         <FileTypeContainer>
                           <FileType>PFX file</FileType>
-                          <FileSize>20MB</FileSize>
+                          <FileSize>3.7KB</FileSize>
                         </FileTypeContainer>
                         <FilePath>{registryData.file}</FilePath>
                       </FileDetails>

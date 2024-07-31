@@ -414,7 +414,7 @@ export const AddNewRegistry = ({
                           PFX file
                           <CircleExclamationMarkIcon color="#DDE4F0" />
                         </FileType>
-                        <FileSize>20MB</FileSize>
+                        <FileSize>3.7KB</FileSize>
                       </FileTypeContainer>
                       <FilePath>
                         {registryCertificate?.file.name ||
