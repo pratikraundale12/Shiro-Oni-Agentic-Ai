@@ -117,11 +117,7 @@ export const AddCertificate = ({
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       if (selectedFile.name.endsWith('.p12')) {
-        setFile({
-          name: selectedFile.name,
-          size: (selectedFile.size / (1024 * 1024)).toFixed(2) + 'MB',
-          path: selectedFile.webkitRelativePath || selectedFile.path,
-        });
+        setFile(selectedFile);
         setErrors(prevErrors => ({ ...prevErrors, file: '' }));
       } else {
         setErrors(prevErrors => ({

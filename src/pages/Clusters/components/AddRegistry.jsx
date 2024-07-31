@@ -181,10 +181,10 @@ export const AddRegistry = ({
     },
   });
   const [registries, setRegistries] = useState([]);
-  // const selectedRegistryId = watch('registry');
-  const [selectedRegistryId, setSelectedRegistryId] = useState(
-    watch('registry')
-  );
+  const selectedRegistryId = watch('registry');
+  // const [selectedRegistryId, setSelectedRegistryId] = useState(
+  // watch('registry')
+  // );
 
   const [openSummary, setOpenSummary] = useState(false);
   const [testMessage, setTestMessage] = useState('');
@@ -271,7 +271,7 @@ export const AddRegistry = ({
 
   const handleDelete = () => {
     setRegistryData('');
-    setSelectedRegistryId('');
+    // setSelectedRegistryId('');
     reset({ registry: '' });
   };
 

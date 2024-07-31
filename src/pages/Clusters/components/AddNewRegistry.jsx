@@ -440,14 +440,14 @@ export const AddNewRegistry = ({
                       setAddCertificate(true);
                     }}
                   >
-                    <PencilIcon color="white" />
+                    <PencilIcon />
                   </IconButton>
                   <IconButton
                     onClick={() => {
                       setRegistryCertificate('');
                     }}
                   >
-                    <DeleteSmallIcon color="white" />
+                    <DeleteSmallIcon />
                   </IconButton>
                 </EditDeleteContainer>
               </UploadCertificateContainer>

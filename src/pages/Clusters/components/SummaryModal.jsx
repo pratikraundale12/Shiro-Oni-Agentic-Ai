@@ -87,7 +87,8 @@ export const SummaryModal = ({
   clusterId,
   registry_id,
 }) => {
-  console.log('DATA..........', registry_id);
+  console.log('DATA..', clusterData);
+  console.log('DATA..', registryData);
 
   const navigate = useNavigate();
   const [loadingPost, setLoadingPost] = useState(false);
@@ -304,8 +305,12 @@ export const SummaryModal = ({
                       <FileSize>30MB</FileSize>
                     </FileBox>
                     <FileName>
-                      {clusterData.file
+                      {/* {clusterData?.file.name || clusterData?.file} */}
+                      {/* {clusterData?.file
                         ? clusterData?.file || clusterData?.file.name
+                        : 'N/A'} */}
+                      {clusterData?.file
+                        ? `${clusterData?.file?.name || clusterData?.file}`
                         : 'N/A'}
                     </FileName>
                     <FileInput type="file" id="cluster-certificate" />
@@ -394,8 +399,11 @@ export const SummaryModal = ({
                       <FileSize>30MB</FileSize>
                     </FileBox>
                     <FileName>
-                      {registryData.file
+                      {/* {registryData?.file
                         ? registryData?.file || registryData?.file.name
+                        : 'N/A'} */}
+                      {registryData?.file
+                        ? `${registryData?.file?.name || registryData?.file}`
                         : 'N/A'}
                     </FileName>
                     <FileInput type="file" id="cluster-certificate" />

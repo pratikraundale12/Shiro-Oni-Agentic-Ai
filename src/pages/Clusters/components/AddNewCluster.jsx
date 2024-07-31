@@ -406,14 +406,14 @@ export const AddNewCluster = ({
                       setAddCertificate(true);
                     }}
                   >
-                    <PencilIcon color="white" />
+                    <PencilIcon />
                   </IconButton>
                   <IconButton
                     onClick={() => {
                       setClusterCertificate('');
                     }}
                   >
-                    <DeleteSmallIcon color="white" />
+                    <DeleteSmallIcon />
                   </IconButton>
                 </EditDeleteContainer>
               </UploadCertificateContainer>
