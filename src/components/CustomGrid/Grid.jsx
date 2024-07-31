@@ -73,7 +73,7 @@ export const Grid = ({
     {
       Table: `
         --data-table-library_grid-template-columns:  ${columns
-          .map(column => (column.width ? `${column.width}px` : '1fr'))
+          .map(column => (column.width ? column.width : '1fr'))
           .join(' ')} !important;
 
         th, td {
@@ -118,7 +118,6 @@ export const Grid = ({
   useEffect(() => {
     fetchGridData({ setState, module, search: search, nodeClusterId });
   }, [setState, module, search]);
-
   return (
     <Container>
       <GridActions
@@ -141,13 +140,15 @@ export const Grid = ({
         />
         {getLoader()}
       </TableContainer>
-      <Pagination
-        page={page}
-        setState={setState}
-        count={count}
-        prev={prev}
-        next={next}
-      />
+      {DATA.nodes.length > 10 && (
+        <Pagination
+          page={page}
+          setState={setState}
+          count={count}
+          prev={prev}
+          next={next}
+        />
+      )}
     </Container>
   );
 };

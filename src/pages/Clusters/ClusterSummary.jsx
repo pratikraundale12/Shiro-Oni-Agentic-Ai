@@ -72,7 +72,7 @@ export const ClusterSummary = () => {
     },
     {
       label: 'Event Log',
-      width: 120,
+      width: '10%',
       renderCell: item => getActionsMenu(item),
     },
   ];

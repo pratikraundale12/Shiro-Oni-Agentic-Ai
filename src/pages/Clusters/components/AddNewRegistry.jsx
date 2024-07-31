@@ -11,7 +11,6 @@ import { Modal } from '../../../shared';
 import { AddCertificate } from './AddCertificate';
 import { SummaryModal } from './SummaryModal';
 import {
-  LinkIcons,
   SmallPerfileIcon,
   QRIcons,
   CircleExclamationMarkIcon,
@@ -22,6 +21,7 @@ import {
   DeleteSmallIcon,
   RightCircleIcon,
   ExclamationFailedTestingIcon,
+  LinkIcon,
 } from '../../../assets';
 import { testRegistry } from '../../../utils/services';
 
@@ -356,7 +356,7 @@ export const AddNewRegistry = ({
             type="text"
             placeholder="Enter your registry URL"
             name="registry_url"
-            icon={<LinkIcons />}
+            icon={<LinkIcon />}
             label="registryUrl"
             register={register}
             errors={errors}

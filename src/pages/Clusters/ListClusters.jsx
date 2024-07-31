@@ -1,20 +1,30 @@
-/* eslint-disable */
-
-import React from 'react';
-import styled from 'styled-components';
-import { DeleteDustbinIcon, OpenEyeIcon } from '../../assets';
-import { Grid, StatusRender, TextRender } from '../../components';
 import {
   REFRESH_OPTIONS,
   STATUS_OPTIONS,
   useGlobalContext,
   fetchGridData,
 } from '../../utils';
-import { PencilIcon, DeleteSmallIcon } from '../../assets';
 import { useNavigate } from 'react-router-dom';
 import { deleteCluster } from '../../utils/services';
 import { ModalWithIcon } from '../../shared';
 import { toast } from 'react-toastify';
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+
+import {
+  Grid,
+  ProgressBarRender,
+  ActionRender,
+  StatusRender,
+  TextRender,
+  UrlRender,
+} from '../../components';
+import {
+  DeleteDustbinIcon,
+  DeleteSmallIcon,
+  OpenEyeIcon,
+  PencilIcon,
+} from '../../assets';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -22,83 +32,87 @@ const Container = styled.div`
   height: 100%;
 `;
 
-const ActionTd = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  gap: 15px;
+const List = styled.div`
+  position: absolute;
+  top: ${props => props.top}px;
+  left: ${props => props.left}px;
+  z-index: 1000;
+  background: ${props => props.theme.colors.white};
+  box-shadow: 0px 0px 5px 0px ${props => props.theme.colors.shadow};
+  border-radius: 10px;
+
+  & > div:first-child {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
+  & > div:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
 `;
-const IconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+const Item = styled.div`
+  width: 120px;
+  position: relative;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  font-family: ${props => props.theme.fontNato};
+  font-size: ${props => props.theme.size.md};
+  color: ${props => props.theme.colors.darker};
+  border: 1px solid ${props => props.theme.colors.border};
+
+  &:hover {
+    background-color: ${props => props.theme.colors.lightGrey};
+  }
 `;
+
+const EyeIcon = styled(OpenEyeIcon)`
+  margin: 0 6px 0 5px;
+`;
+
+const getX = x => 1790 > x < 1830 && 1446;
 
 export const ListClusters = () => {
   const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
-
-  const getActionsMenu = item => (
-    <div>
-      <ActionTd>
-        <IconWrapper
-          onClick={() => {
-            navigate('/cluster/edit', { state: item });
-          }}
-        >
-          <PencilIcon color="white" />
-        </IconWrapper>
-        {/* <IconWrapper onClick={() => openDeleteModal(item?.id)}> */}
-        <IconWrapper
-          onClick={() =>
-            setState({
-              ...state,
-              clusterDeleteModal: true,
-              selectedItem: item,
-            })
-          }
-        >
-          <DeleteSmallIcon color="white" />
-        </IconWrapper>
-      </ActionTd>
-    </div>
-  );
+  const menuRef = useRef(null);
+  const [menuState, setMenuState] = useState({
+    isVisible: false,
+    x: 0,
+    y: 0,
+    row: {},
+  });
 
   const COLUMNS = [
     {
       label: 'Name',
       renderCell: item => <TextRender text={item.name} />,
       sort: { sortKey: 'NAME' },
+      width: '20%',
     },
     {
       label: 'NiFi Url',
-      renderCell: item => <TextRender text={item.nifi_url} />,
+      renderCell: item => <UrlRender url={item.nifi_url} />,
+    },
+    {
+      label: 'Cluster Status',
+      renderCell: () => <ProgressBarRender count={1} maxCount={5} />,
+      width: '20%',
     },
     {
       label: 'Status',
       renderCell: item => <StatusRender status={item.status} />,
+      width: '10%',
     },
     {
       label: 'Actions',
-      width: 120,
-      renderCell: item => getActionsMenu(item),
-    },
-    {
-      label: 'Summary',
       renderCell: item => (
-        <div
-          onClick={() => {
-            navigate('/cluster/summary');
-            setState({
-              ...state,
-              nodeClusterId: item.id,
-            });
-          }}
-        >
-          <OpenEyeIcon />
-        </div>
+        <ActionRender handleMenuClick={handleMenuClick} item={item} />
       ),
+      width: '10%',
     },
   ];
 
@@ -116,6 +130,54 @@ export const ListClusters = () => {
       toast.error('error occured');
     }
   };
+
+  const handleMenuClick = (event, item) => {
+    event.stopPropagation(); // Prevent triggering row click if any
+    setMenuState({
+      isVisible: true,
+      x: event.clientX,
+      y: event.clientY,
+      row: item,
+    });
+  };
+
+  const handleClickOutside = event => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      handleCloseMenu();
+    }
+  };
+
+  const handleCloseMenu = () => {
+    setMenuState({ isVisible: false, x: 0, y: 0, row: null });
+  };
+
+  const handleClick = type => {
+    handleCloseMenu();
+    if (type === 'edit') {
+      navigate('/cluster/edit', { state: menuState.row });
+    }
+    if (type === 'view') {
+      setState({
+        ...state,
+        nodeClusterId: menuState.row.id,
+      });
+      navigate('/cluster/summary');
+    }
+    if (type === 'delete') {
+      setState({
+        ...state,
+        clusterDeleteModal: true,
+        selectedItem: menuState.row,
+      });
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <Container>
@@ -139,6 +201,19 @@ export const ListClusters = () => {
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
       />
+      {menuState.isVisible && (
+        <List ref={menuRef} top={menuState.y} left={getX(menuState.x)}>
+          <Item onClick={() => handleClick('edit')}>
+            <PencilIcon /> Edit
+          </Item>
+          <Item onClick={() => handleClick('view')}>
+            <EyeIcon width={22} height={22} /> View
+          </Item>
+          <Item onClick={() => handleClick('delete')}>
+            <DeleteSmallIcon /> Delete
+          </Item>
+        </List>
+      )}
     </Container>
   );
 };

@@ -12,7 +12,6 @@ import { AddCertificate } from './AddCertificate';
 import { useNavigate } from 'react-router-dom';
 
 import {
-  LinkIcons,
   SmallPerfileIcon,
   QRIcons,
   CircleExclamationMarkIcon,
@@ -23,6 +22,7 @@ import {
   DeleteSmallIcon,
   RightCircleIcon,
   ExclamationFailedTestingIcon,
+  LinkIcon,
 } from '../../../assets';
 import { testCluster } from '../../../utils/services';
 
@@ -322,7 +322,7 @@ export const AddNewCluster = ({
             type="text"
             placeholder="Enter your NiFi URL"
             name="nifi_url"
-            icon={<LinkIcons />}
+            icon={<LinkIcon />}
             label="NifiUrl"
             register={register}
             errors={errors}

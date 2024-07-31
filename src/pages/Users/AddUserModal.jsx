@@ -86,7 +86,7 @@ const StyledInputField = styled(InputField)`
 `;
 
 const StyledSelectField = styled(SelectField)`
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.9rem;
 `;
 
 const StyledPasswordField = styled(PasswordField)`
@@ -119,7 +119,6 @@ export const AddUserModal = props => {
     ),
   });
 
-  console.log(errors);
   const openModal = () => setState({ ...state, userModal: true });
   const closeModal = () => {
     setState({
@@ -141,14 +140,13 @@ export const AddUserModal = props => {
 
   const onSubmit = async data => {
     const formData = new FormData();
-
     formData.append('first_name', data.first_name);
     formData.append('middle_name', data.middle_name);
     formData.append('last_name', data.last_name);
     formData.append('email', data.email);
     formData.append('password', data.password);
     formData.append('phone', data.phone_number);
-    formData.append('is_active', data.is_active || false);
+    formData.append('is_active', data.is_active !== false);
     formData.append('type', data?.type || 'user');
     formData.append('username', data.username);
     if (data.photo && data.photo.size > 0) {
@@ -166,7 +164,7 @@ export const AddUserModal = props => {
           selectedItem: null,
         });
       } else {
-        toast.error('error occured');
+        toast.error(response.message);
       }
     } else {
       const response = await editUserDataApi(state.selectedItem?.id, formData);
@@ -179,7 +177,7 @@ export const AddUserModal = props => {
           selectedItem: null,
         });
       } else {
-        toast.error('error occured');
+        toast.error(response.message);
       }
     }
   };
@@ -229,6 +227,7 @@ export const AddUserModal = props => {
                 control={control}
                 placeholder="Status"
                 backgroundColor={theme.colors.lightGrey}
+                label="Status"
               />
             </DropDownWrapper>
             <DropDownWrapper>
@@ -240,6 +239,7 @@ export const AddUserModal = props => {
                 control={control}
                 placeholder="Role"
                 backgroundColor={theme.colors.lightGrey}
+                label="Role"
               />
             </DropDownWrapper>
           </SelectFieldWrapper>
@@ -298,6 +298,7 @@ export const AddUserModal = props => {
               <StyledPasswordField
                 name="password"
                 register={register}
+                required
                 errors={errors}
                 watch={watch}
                 label="Password"
