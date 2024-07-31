@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   SmallPerfileIcon,
   QRIcons,
-  CircleExclamationMarkIcon,
+  // CircleExclamationMarkIcon,
   PlusCircleIcon,
   FileIcon,
   WhiteBoradIcon,
@@ -189,6 +189,15 @@ const NoDataText = styled.div`
   color: #666;
 `;
 
+const PasswordFieldParent = styled.div`
+  margin-top: -16px;
+  flex: 1;
+`;
+
+const InputFieldParent = styled.div`
+  flex: 1;
+  margin-right: 3px;
+`;
 const clusterSchema = yup.object().shape({
   name: yup
     .string()
@@ -250,14 +259,14 @@ export const AddNewCluster = ({
     });
     console.log('datasssssss', data);
     const payload = new FormData();
-    !clusterCertificate?.file.name &&
+    !clusterCertificate?.file?.name &&
       clusterId &&
       payload.append('id', clusterId);
     payload.append('name', data?.name);
     payload.append('nifi_url', data?.nifi_url);
     data?.password && payload.append('password', data?.password);
     data?.username && payload.append('username', data?.username);
-    clusterCertificate?.file.name &&
+    clusterCertificate?.file?.name &&
       payload.append('file', clusterCertificate?.file);
     clusterCertificate?.passphrase &&
       payload.append('passphrase', clusterCertificate?.passphrase);
@@ -331,27 +340,29 @@ export const AddNewCluster = ({
           {errors.nifi_url && <p>{errors.nifi_url.message}</p>}
           {hideCertificate && (
             <InputContainer>
-              <InputField
-                type="text"
-                placeholder="Enter Your UserName"
-                name="username"
-                icon={<SmallPerfileIcon />}
-                label="Username"
-                register={register}
-                errors={errors}
-                // onChange={handleInputChange}
-              />
-
-              <PasswordField
-                name="password"
-                register={register}
-                errors={errors}
-                watch={watch}
-                label="Password"
-              />
-
+              <InputFieldParent>
+                <InputField
+                  type="text"
+                  placeholder="Enter Your UserName"
+                  name="username"
+                  icon={<SmallPerfileIcon />}
+                  label="Username"
+                  register={register}
+                  errors={errors}
+                  // onChange={handleInputChange}
+                />
+              </InputFieldParent>
+              <PasswordFieldParent>
+                <PasswordField
+                  name="password"
+                  register={register}
+                  errors={errors}
+                  watch={watch}
+                  label="Password"
+                />
+              </PasswordFieldParent>
               <FlexContainer>
-                <p>OR</p>
+                <p style={{ 'margin-right': '4px' }}>OR</p>
                 <Button
                   onClick={() => setAddCertificate(true)}
                   icon={<PlusCircleIcon width={20} height={20} color="white" />}
@@ -368,7 +379,7 @@ export const AddNewCluster = ({
                 <CertificateHeader>
                   <div>
                     NiFi Certificate
-                    <CircleExclamationMarkIcon color="#DDE4F0" />
+                    {/* <CircleExclamationMarkIcon color="#DDE4F0" /> */}
                   </div>
                 </CertificateHeader>
                 <CertificateDetails>
@@ -378,7 +389,7 @@ export const AddNewCluster = ({
                       <FileTypeContainer>
                         <FileType>
                           PFX file
-                          <CircleExclamationMarkIcon color="#DDE4F0" />
+                          {/* <CircleExclamationMarkIcon color="#DDE4F0" /> */}
                         </FileType>
                         <FileSize>3.7KB</FileSize>
                       </FileTypeContainer>
@@ -411,6 +422,11 @@ export const AddNewCluster = ({
                   <IconButton
                     onClick={() => {
                       setClusterCertificate('');
+                      setClusterData({
+                        file: '',
+                        passphrase: '',
+                      });
+                      setClusterCertificate({ file: '', passphrase: '' });
                     }}
                   >
                     <DeleteSmallIcon />
@@ -482,7 +498,7 @@ export const AddNewCluster = ({
 
       {/* //testing failed Modal */}
       <Modal
-        title="Testing Successfull"
+        title="Testing Failed"
         isOpen={failedTest}
         onRequestClose={() => setFailedTest(false)}
         size="sm"
@@ -491,7 +507,7 @@ export const AddNewCluster = ({
       >
         <>
           <div className="text-center">
-            <ExclamationFailedTestingIcon width={90} height={65} />
+            <ExclamationFailedTestingIcon />
           </div>
           <h5 className="pt-4 mt-2 mb-0 text-center">Cluster Test Failed</h5>
           {testMessage != '' ? (

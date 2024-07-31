@@ -11,25 +11,39 @@ import {
 } from '../../../utils/services';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import { FileIcon } from '../../../assets';
 
 const ClusterDetailsContainer = styled.div`
-  margin-bottom: 20px;
+  background-color: #f5f7fa;
+  border-radius: 16px;
+  padding: 14px 16px;
+  min-height: 290px;
+  width: 100%;
+  margin-bottom: 18px;
 `;
 
 const Row = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  margin-right: 1.5rem;
+  margin-left: 1.5rem;
 `;
 
 const Col = styled.div`
-  flex: ${props => (props.size ? props.size : '1')};
-  padding: 0 8px;
+flex: 0 0 auto;
+    width: 50%;
+}
 `;
 
 const Title = styled.h4`
   margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 18.52px;
+  letter-spacing: -0.005em;
+  text-align: left;
+  color: #2d343f;
+  font-family: noto;
 `;
 
 const Info = styled.div`
@@ -42,6 +56,7 @@ const ClusterName = styled.div`
 
 const ClusterLink = styled.a`
   text-decoration: none;
+  white-space: nowrap;
 `;
 
 const Password = styled.div`
@@ -50,31 +65,36 @@ const Password = styled.div`
 `;
 
 const FileBox = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const FileIcon = styled.svg`
-  width: 50px;
-  height: 50px;
+  margin-left: 5px;
 `;
 
 const FileDetails = styled.div`
+  align-items: center !important;
+  justify-content: space-between !important;
   display: flex;
-  align-items: center;
 `;
 
 const FileSize = styled.div`
   text-align: end;
 `;
 
-const FileName = styled.div`
-  margin-top: 8px;
+const Files = styled.div`
+  display: flex;
 `;
 
-const FileInput = styled.input`
-  display: none;
+const FileIconStyle = styled.div`
+  margin-left: -9px;
+  margin-top: -14px;
+`;
+
+const ModalBody = styled.div`
+  padding: 18px 0 0;
+  position: relative;
+  // flex: 1 1 auto;
+`;
+
+const FileName = styled.div`
+  white-space: nowrap;
 `;
 
 export const SummaryModal = ({
@@ -87,8 +107,8 @@ export const SummaryModal = ({
   clusterId,
   registry_id,
 }) => {
-  console.log('DATA..', clusterData);
-  console.log('DATA..', registryData);
+  console.log('CLUSTERDATA..', clusterData);
+  console.log('REGISTRYDATA..', registryData);
 
   const navigate = useNavigate();
   const [loadingPost, setLoadingPost] = useState(false);
@@ -162,13 +182,12 @@ export const SummaryModal = ({
     if (registryData?.password)
       payload.append('password', registryData.password);
 
-    registryData?.file.name && payload.append('file', registryData.file);
+    registryData?.file?.name && payload.append('file', registryData.file.name);
 
     const id = registry_id;
     const response = await updateRegistry(id, payload);
     console.log(response);
     if (response?.id) {
-      console.log('rrrrrrrrrrrrrrrrrrrrrrrrr');
       setLoadingPost(false);
       toast.success(response.message);
       navigate('/cluster');
@@ -184,14 +203,31 @@ export const SummaryModal = ({
     const payload = new FormData();
     if (clusterData?.name) payload.append('name', clusterData.name);
 
-    if (clusterData?.username) payload.append('username', clusterData.username);
+    if (clusterData?.username != '') {
+      payload.append('username', clusterData.username);
+    } else {
+      payload.append('username', null);
+    }
 
-    if (clusterData?.passphrase)
+    // if (clusterData?.file != '') {
+    //   payload.append('file', clusterData?.file);
+    // } else {
+    //   payload.append('file', null);
+    // }
+
+    if (clusterData?.passphrase != '') {
       payload.append('passphrase', clusterData.passphrase);
+    } else {
+      payload.append('passphrase', null);
+    }
 
-    if (clusterData?.password) payload.append('password', clusterData.password);
+    if (clusterData?.password != '') {
+      payload.append('password', clusterData.password);
+    } else {
+      payload.append('password', null);
+    }
 
-    clusterData?.file.name && payload.append('file', clusterData.file);
+    clusterData?.file?.name && payload.append('file', clusterData.file);
 
     const id = clusterId;
     const response = await updateCluster(id, payload);
@@ -223,7 +259,7 @@ export const SummaryModal = ({
 
   return (
     <Modal
-      title="Testing Successfull"
+      title="Cluster Summary"
       isOpen={openSummary}
       onRequestClose={() => setOpenSummary(false)}
       size="lg"
@@ -232,11 +268,11 @@ export const SummaryModal = ({
       onSubmit={handleSubmit}
       isLoading={loadingPost}
     >
-      <>
+      <ModalBody>
         <ClusterDetailsContainer>
           <Title>Cluster Details</Title>
           <Row>
-            <Col size="6">
+            <Col>
               <Row>
                 <Info width="60%">
                   <Title>Cluster Name</Title>
@@ -254,74 +290,106 @@ export const SummaryModal = ({
                 </Info>
                 <Info width="40%">
                   <Title>Password</Title>
-                  <Password>***********</Password>
+                  <Password>
+                    {clusterData?.password ? '***********' : 'N/A'}
+                  </Password>
                 </Info>
               </Row>
               <Row>
                 <Info width="60%">
                   <Title>PFX Passphrase</Title>
-                  <ClusterName>{clusterData?.passphrase || 'N/A'}</ClusterName>
+                  <ClusterName>
+                    {' '}
+                    {clusterData?.passphrase ? '**********' : 'N/A'}
+                  </ClusterName>
                 </Info>
                 <Info width="40%">
                   <Title>Nifi Certificate</Title>
-                  <label
-                    htmlFor="cluster-certificate"
-                    style={{ position: 'relative' }}
-                  >
+                  <Files>
+                    <FileIconStyle>
+                      <FileIcon width={30} height={70} />
+                    </FileIconStyle>
                     <FileBox>
-                      <FileIcon
-                        viewBox="0 0 50 50"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M27.4401 6.25H18.7493C14.821 6.25 12.8568 6.25 11.6364 7.47039C10.416 8.69078 10.416 10.655 10.416 14.5833V35.4167C10.416 39.345 10.416 41.3092 11.6364 42.5296C12.8568 43.75 14.821 43.75 18.7493 43.75H31.2494C35.1777 43.75 37.1419 43.75 38.3623 42.5296C39.5827 41.3092 39.5827 39.345 39.5827 35.4167V18.3926C39.5827 17.541 39.5827 17.1152 39.4241 16.7324C39.2655 16.3495 38.9644 16.0484 38.3623 15.4463L30.3864 7.47039C29.7843 6.86824 29.4832 6.56717 29.1003 6.40858C28.7175 6.25 28.2917 6.25 27.4401 6.25Z"
-                          stroke="#33363F"
-                          strokeWidth="2"
-                        />
-                        <path
-                          d="M27.084 6.25V14.5833C27.084 16.5475 27.084 17.5296 27.6942 18.1398C28.3044 18.75 29.2865 18.75 31.2507 18.75H39.584"
-                          stroke="#33363F"
-                          strokeWidth="2"
-                        />
-                      </FileIcon>
                       <FileDetails>
-                        <span className="me-2 pfx-file">PFX file</span>
-                        <span>
-                          <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M9.99935 18.3327C5.39697 18.3327 1.66602 14.6017 1.66602 9.99935C1.66602 5.39697 5.39697 1.66602 9.99935 1.66602C14.6017 1.66602 18.3327 5.39697 18.3327 9.99935C18.3327 14.6017 14.6017 18.3327 9.99935 18.3327ZM9.16602 9.16602V14.166H10.8327V9.16602H9.16602ZM9.16602 5.83268V7.49935H10.8327V5.83268H9.16602Z"
-                              fill="#DDE4F0"
-                            />
-                          </svg>
-                        </span>
+                        <span>PFX file</span>
+                        <FileSize>3.7KB</FileSize>
                       </FileDetails>
-                      <FileSize>30MB</FileSize>
+
+                      <FileName>
+                        {clusterData?.file
+                          ? `${clusterData?.file?.name || clusterData?.file}`
+                          : 'N/A'}
+                      </FileName>
                     </FileBox>
-                    <FileName>
-                      {/* {clusterData?.file.name || clusterData?.file} */}
-                      {/* {clusterData?.file
-                        ? clusterData?.file || clusterData?.file.name
-                        : 'N/A'} */}
-                      {clusterData?.file
-                        ? `${clusterData?.file?.name || clusterData?.file}`
-                        : 'N/A'}
-                    </FileName>
-                    <FileInput type="file" id="cluster-certificate" />
-                  </label>
+                  </Files>
+                </Info>
+              </Row>
+            </Col>
+          </Row>
+        </ClusterDetailsContainer>
+
+        <ClusterDetailsContainer>
+          <Title>Registry Details</Title>
+          <Row>
+            <Col>
+              <Row>
+                <Info width="60%">
+                  <Title>Registry Name</Title>
+                  <ClusterName>{registryData.name}</ClusterName>
+                </Info>
+                <Info width="40%">
+                  <Title>Registry URL</Title>
+                  <ClusterLink href="#">
+                    {registryData.registry_url}
+                  </ClusterLink>
+                </Info>
+              </Row>
+              <Row>
+                <Info width="60%">
+                  <Title>Username</Title>
+                  <ClusterName>{registryData?.username || 'N/A'}</ClusterName>
+                </Info>
+                <Info width="40%">
+                  <Title>Password</Title>
+                  <Password>
+                    {' '}
+                    {registryData?.password ? '***********' : 'N/A'}
+                  </Password>
+                </Info>
+              </Row>
+              <Row>
+                <Info width="60%">
+                  <Title>PFX Passphrase</Title>
+                  <ClusterName>
+                    {registryData?.passphrase ? '*********' : 'N/A'}
+                  </ClusterName>
+                </Info>
+                <Info width="40%">
+                  <Title>Nifi Certificate</Title>
+                  <Files>
+                    <FileIconStyle>
+                      <FileIcon width={30} height={70} />
+                    </FileIconStyle>
+                    <FileBox>
+                      <FileDetails>
+                        <span>PFX file</span>
+                        <FileSize>3.7KB</FileSize>
+                      </FileDetails>
+
+                      <FileName>
+                        {registryData?.file
+                          ? `${registryData?.file?.name || registryData?.file}`
+                          : 'N/A'}
+                      </FileName>
+                    </FileBox>
+                  </Files>
                 </Info>
               </Row>
             </Col>
           </Row>
         </ClusterDetailsContainer>
         {/* Repeat for the second cluster details */}
-        <ClusterDetailsContainer>
+        {/* <ClusterDetailsContainer>
           <Title>Registry Details</Title>
           <Row>
             <Col size="6">
@@ -399,9 +467,6 @@ export const SummaryModal = ({
                       <FileSize>30MB</FileSize>
                     </FileBox>
                     <FileName>
-                      {/* {registryData?.file
-                        ? registryData?.file || registryData?.file.name
-                        : 'N/A'} */}
                       {registryData?.file
                         ? `${registryData?.file?.name || registryData?.file}`
                         : 'N/A'}
@@ -412,10 +477,10 @@ export const SummaryModal = ({
               </Row>
             </Col>
           </Row>
-        </ClusterDetailsContainer>
+        </ClusterDetailsContainer> */}
 
         <ToastContainer />
-      </>
+      </ModalBody>
     </Modal>
   );
 };

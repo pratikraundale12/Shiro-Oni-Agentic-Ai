@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const ExclamationFailedTestingIcon = (width = 120, height = 80) => {
+export const ExclamationFailedTestingIcon = ({ width = 160, height = 110 }) => {
   return (
     <svg
       width={width}

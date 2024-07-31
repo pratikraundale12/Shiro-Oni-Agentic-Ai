@@ -13,7 +13,7 @@ import { SummaryModal } from './SummaryModal';
 import {
   SmallPerfileIcon,
   QRIcons,
-  CircleExclamationMarkIcon,
+  // CircleExclamationMarkIcon,
   PlusCircleIcon,
   FileIcon,
   WhiteBoradIcon,
@@ -184,6 +184,16 @@ const NoDataText = styled.div`
   color: #666;
 `;
 
+const PasswordFieldParent = styled.div`
+  margin-top: -16px;
+  flex: 1;
+`;
+
+const InputFieldParent = styled.div`
+  flex: 1;
+  margin-right: 3px;
+`;
+
 const registrySchema = yup.object().shape({
   name: yup
     .string()
@@ -256,16 +266,16 @@ export const AddNewRegistry = ({
     });
     console.log('datasssssss', data);
     const payload = new FormData();
-    !registryCertificate?.file.name &&
-      registryData?.id &&
-      payload.append('id', registryData?.id);
+    !registryCertificate?.file?.name &&
+      registry_id &&
+      payload.append('id', registry_id);
     payload.append('name', data?.name);
     payload.append('nifi_url', data?.registry_url);
     data?.password && payload.append('password', data?.password);
     data?.username &&
       payload.append('username', data?.username) &&
       payload.append('username', data?.username);
-    registryCertificate?.file &&
+    registryCertificate?.file?.name &&
       payload.append('file', registryCertificate?.file);
     registryCertificate?.passphrase &&
       payload.append('passphrase', registryCertificate?.passphrase);
@@ -365,27 +375,30 @@ export const AddNewRegistry = ({
           {errors.registry_url && <p>{errors.registry_url.message}</p>}
           {hideCertificate && (
             <InputContainer>
-              <InputField
-                type="text"
-                placeholder="Enter Your UserName"
-                name="username"
-                icon={<SmallPerfileIcon />}
-                label="Username"
-                register={register}
-                errors={errors}
-                // onChange={handleInputChange}
-              />
-
-              <PasswordField
-                name="password"
-                register={register}
-                errors={errors}
-                watch={watch}
-                label="Password"
-              />
+              <InputFieldParent>
+                <InputField
+                  type="text"
+                  placeholder="Enter Your UserName"
+                  name="username"
+                  icon={<SmallPerfileIcon />}
+                  label="Username"
+                  register={register}
+                  errors={errors}
+                  // onChange={handleInputChange}
+                />
+              </InputFieldParent>
+              <PasswordFieldParent>
+                <PasswordField
+                  name="password"
+                  register={register}
+                  errors={errors}
+                  watch={watch}
+                  label="Password"
+                />
+              </PasswordFieldParent>
 
               <FlexContainer>
-                <p>OR</p>
+                <p style={{ 'margin-right': '4px' }}>OR</p>
                 <Button
                   onClick={() => setAddCertificate(true)}
                   icon={<PlusCircleIcon width={20} height={20} color="white" />}
@@ -402,7 +415,7 @@ export const AddNewRegistry = ({
                 <CertificateHeader>
                   <div>
                     NiFi Certificate
-                    <CircleExclamationMarkIcon color="#DDE4F0" />
+                    {/* <CircleExclamationMarkIcon color="#DDE4F0" /> */}
                   </div>
                 </CertificateHeader>
                 <CertificateDetails>
@@ -410,10 +423,7 @@ export const AddNewRegistry = ({
                   <FileInfo>
                     <FileDetails>
                       <FileTypeContainer>
-                        <FileType>
-                          PFX file
-                          <CircleExclamationMarkIcon color="#DDE4F0" />
-                        </FileType>
+                        <FileType>PFX file</FileType>
                         <FileSize>3.7KB</FileSize>
                       </FileTypeContainer>
                       <FilePath>
@@ -508,7 +518,7 @@ export const AddNewRegistry = ({
             <RightCircleIcon color="#0CBF59" />
           </div>
           <h5 className="pt-4 mt-2 mb-0 text-center">
-            registry Test Successful
+            Registry Test Successful
           </h5>
           <p className="pt-3 mb-0 text-center">
             Your registry Test was successful. You <br /> can now proceed to the
@@ -518,7 +528,7 @@ export const AddNewRegistry = ({
       </Modal>
 
       <Modal
-        title="Testing Successfull"
+        title="Testing Failed"
         isOpen={failedTest}
         onRequestClose={() => setFailedTest(false)}
         size="sm"
@@ -527,14 +537,14 @@ export const AddNewRegistry = ({
       >
         <>
           <div className="text-center">
-            <ExclamationFailedTestingIcon width={90} height={65} />
+            <ExclamationFailedTestingIcon />
           </div>
-          <h5 className="pt-4 mt-2 mb-0 text-center">Cluster Test Failed</h5>
+          <h5 className="pt-4 mt-2 mb-0 text-center">Registry Test Failed</h5>
           {testMessage != '' ? (
             <p className="pt-3 mb-0 text-center">{testMessage}</p>
           ) : (
             <p className="pt-3 mb-0 text-center">
-              We encountered an issue while testing your cluster. Please check
+              We encountered an issue while testing your Registry. Please check
               if your File is Correct
             </p>
           )}
