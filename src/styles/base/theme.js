@@ -6,6 +6,7 @@ const theme = {
     white: '#FFFFFF',
     black: '#000000',
     background: '#FFFFFF',
+    lightBackground: '#FFFFFFCC',
 
     // brand colors
     primary: '#E32235',

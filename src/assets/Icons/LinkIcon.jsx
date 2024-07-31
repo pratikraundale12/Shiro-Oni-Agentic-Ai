@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const LinkIcons = ({ width = 18, height = 18, color = '#444445' }) => (
+export const LinkIcon = ({ width = 16, height = 16, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 18 18"
   >
     <path
       fill={color}
@@ -15,7 +16,7 @@ export const LinkIcons = ({ width = 18, height = 18, color = '#444445' }) => (
   </svg>
 );
 
-LinkIcons.propTypes = {
+LinkIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   color: PropTypes.string,

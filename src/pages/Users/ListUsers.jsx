@@ -10,12 +10,7 @@ import {
 } from '../../components';
 import { AddUserModal } from './AddUserModal';
 import { PencilIcon, DeleteSmallIcon, DeleteDustbinIcon } from '../../assets';
-import {
-  fetchGridData,
-  REFRESH_OPTIONS,
-  STATUS_OPTIONS,
-  useGlobalContext,
-} from '../../utils';
+import { fetchGridData, STATUS_OPTIONS, useGlobalContext } from '../../utils';
 import { deleteUserApi } from '../../utils/services';
 import { ModalWithIcon } from '../../shared';
 
@@ -73,7 +68,6 @@ export const ListUsers = () => {
     {
       label: 'Profile',
       renderCell: item => <ProfileRender url={item.photo} />,
-      sort: { sortKey: 'PORFILE' },
     },
     {
       label: 'Name',
@@ -108,7 +102,7 @@ export const ListUsers = () => {
     },
     {
       label: 'Actions',
-      width: 120,
+      width: '10%',
       renderCell: item => getActionsMenu(item),
     },
   ];
@@ -153,7 +147,6 @@ export const ListUsers = () => {
           columns={COLUMNS}
           sortFns={SORT_FNS}
           statusOptions={STATUS_OPTIONS}
-          refreshOptions={REFRESH_OPTIONS}
           addModal={AddUserModal}
         />
       </Container>

@@ -55,11 +55,11 @@ export const ListNamespaces = () => {
     },
     {
       label: 'Version',
-      width: 120,
+      width: '10%',
       renderCell: item => <TextRender text={item.version} />,
     },
     {
-      width: 120,
+      width: '10%',
       renderCell: () => (
         <button
           onClick={handleOpenAuditLog}
@@ -77,7 +77,7 @@ export const ListNamespaces = () => {
     },
     {
       label: 'Actions',
-      width: 120,
+      width: '10%',
       renderCell: item => (
         <Button onClick={() => handleSelect(item.id)}>Select</Button>
       ),
