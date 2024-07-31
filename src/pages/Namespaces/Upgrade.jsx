@@ -344,8 +344,12 @@ const Upgrade = () => {
             </div>
           </RowConfig>
 
+          {console.log({ upgradeData, deployData })}
           <Table
-            data={upgradeData?.versionList || deployData?.versionList}
+            data={
+              upgradeData?.versionList?.sort((a, b) => a.version - b.version) ||
+              deployData?.versionList?.sort((a, b) => a.version - b.version)
+            }
             columns={COLUMNS(handleVersionSelect)}
           />
         </ScrollSetGrey>
