@@ -129,7 +129,9 @@ const NamespaceDeploy = ({
   selectedClusterName,
   selectedClusterId,
   deployCountDetails,
+  deployData,
 }) => {
+  console.log({ deployData });
   const [activeButton, setActiveButton] = useState(null);
 
   const handleUpdateStatus = async (state, buttonId) => {
@@ -137,7 +139,7 @@ const NamespaceDeploy = ({
       const clusterId = selectedClusterId;
       console.log(clusterId);
 
-      const namespaceId = upgradeData?.id;
+      const namespaceId = upgradeData?.id || deployCountDetails?.data?.id;
       console.log(namespaceId);
       await updateNamespaceStatus(clusterId, namespaceId, state);
       setActiveButton(buttonId);
@@ -294,6 +296,10 @@ NamespaceDeploy.propTypes = {
     ),
   }),
   upgradeData: PropTypes.shape({
+    name: PropTypes.string,
+    id: PropTypes.string,
+  }),
+  deployData: PropTypes.shape({
     name: PropTypes.string,
     id: PropTypes.string,
   }),
