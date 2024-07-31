@@ -144,8 +144,13 @@ const BreadcrumbContainer = styled.div`
 const Upgrade = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { upgradeData, selectedClusterName, selectedClusterId, deployData } =
-    location.state || {};
+  const {
+    upgradeData,
+    selectedClusterName,
+    selectedClusterId,
+    deployData,
+    depolyNamespaceId,
+  } = location.state || {};
   const [selectedVersion, setSelectedVersion] = useState(null);
   const COLUMNS = onVersionSelect => [
     {
@@ -190,6 +195,7 @@ const Upgrade = () => {
         selectedClusterName,
         selectedClusterId,
         deployData,
+        depolyNamespaceId,
       },
     });
   };

@@ -16,6 +16,8 @@ import ParameterContext from './ParameterContext';
 import AddParameterContext from './AddParameterContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
+  deployCluster,
+  fetchParameterContext,
   getClusterProgress,
   getClusterProgressDelete,
   getCountDetails,
@@ -217,6 +219,7 @@ const Summary = () => {
     useState(false);
   const [progress, setProgress] = useState(0);
   const [countDetails, setCountDetails] = useState(null);
+  const [deployCountDetails, setDeployCountDetails] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const {
@@ -225,8 +228,8 @@ const Summary = () => {
     selectedClusterName,
     selectedClusterId,
     deployData,
+    depolyNamespaceId,
   } = location.state || {};
-  console.log({ selectedVersion }, '195');
   const breadcrumbData = [
     { id: '1', name: 'Namespace List' },
     { id: '2', name: 'Select Namespace' },
@@ -235,6 +238,23 @@ const Summary = () => {
   const handleBreadcrumbClick = breadcrumb => {
     console.log('Breadcrumb clicked:', breadcrumb);
   };
+
+  const [parameterDetails, setParameterDetails] = useState('');
+
+  const getParamerterContext = async () => {
+    try {
+      openParameterContext();
+      const response = await fetchParameterContext(
+        selectedClusterId,
+        deployCountDetails?.data?.parameterContextId
+      );
+      console.log({ response }, 'line no.250');
+      setParameterDetails(response);
+    } catch (error) {
+      console.log('Error fetching parameter context:', error);
+    }
+  };
+
   const handleUpgradeClick = async () => {
     try {
       const response = await upgradeCluster({
@@ -263,7 +283,6 @@ const Summary = () => {
               clusterId: selectedClusterId,
               namespaceId: upgradeData?.id,
             });
-            console.log('Count details:', countDetails);
             setCountDetails(countDetails);
             setModalOpen(true);
           }
@@ -274,9 +293,28 @@ const Summary = () => {
     }
   };
 
+  const handleDeploy = async () => {
+    try {
+      const result = await deployCluster({
+        namespaceId: depolyNamespaceId?.id,
+        clusterId: selectedClusterId,
+        flowId: deployData?.flowId,
+        bucketId: deployData?.bucketId,
+        bucketName: deployData.bucketName,
+        registryId: deployData?.registryId,
+        version: deployData?.version,
+      });
+      setDeployCountDetails(result);
+      setModalOpen(true);
+    } catch (error) {
+      toast.error(error?.message);
+    }
+  };
+
   const handleCloseModal = () => {
     setModalOpen(false);
   };
+
   const openParameterContext = () => {
     setIsParameterContextOpen(true);
     setModalOpen(false);
@@ -294,19 +332,17 @@ const Summary = () => {
   const closeAddParameterContext = () => {
     setIsAddParameterContextOpen(false);
   };
+
   const handleBackClick = () => {
     navigate('/namespaces/upgrade');
   };
+
   const [activeButton, setActiveButton] = useState(null);
-  console.log(countDetails?.data[0]?.runningCount, 'countDetails');
 
   const handleUpdateStatus = async (state, buttonId) => {
     try {
       const clusterId = selectedClusterId;
-      console.log(clusterId);
-
       const namespaceId = upgradeData?.id;
-      console.log(namespaceId);
       await updateNamespaceStatus(clusterId, namespaceId, state);
       setActiveButton(buttonId);
       toast.success(`Namespace status updated to ${state}`);
@@ -315,6 +351,9 @@ const Summary = () => {
       toast.error(`Failed to update namespace status to ${state}`);
     }
   };
+
+  const isDeploy = upgradeData ? false : true;
+
   return (
     <MainContainer className="main-space bg-white">
       <TopTitleBar className="d-flex mb-3">
@@ -520,7 +559,9 @@ const Summary = () => {
           <Button variant="secondary" onClick={handleBackClick}>
             Back
           </Button>
-          <Button onClick={handleUpgradeClick}>Upgrade</Button>
+          <Button onClick={isDeploy ? handleDeploy : handleUpgradeClick}>
+            {isDeploy ? 'Deploy' : 'Upgrade'}
+          </Button>
         </BottomButtonDiv>
         {!deployData && (
           <Progressox className="w-100">
@@ -552,11 +593,15 @@ const Summary = () => {
         selectedVersion={selectedVersion}
         selectedClusterName={selectedClusterName}
         selectedClusterId={selectedClusterId}
+        deployCountDetails={deployCountDetails}
+        getParamerterContext={getParamerterContext}
       />
       <ParameterContext
         isOpen={isParameterContextOpen}
         closePopup={closeParameterContext}
         openAddParameterContext={openAddParameterContext}
+        parameterDetails={parameterDetails}
+        parameterIds={[deployCountDetails?.data?.parameterContextId]}
       />
       <AddParameterContext
         isOpen={isAddParameterContextOpen}

@@ -122,15 +122,15 @@ const ActiveButtonDiv = styled.div`
 const NamespaceDeploy = ({
   isOpen,
   closePopup,
-  openParameterContext,
+  getParamerterContext,
   countDetails,
   upgradeData,
   selectedVersion,
   selectedClusterName,
   selectedClusterId,
+  deployCountDetails,
 }) => {
   const [activeButton, setActiveButton] = useState(null);
-  console.log(countDetails?.data[0]?.runningCount, 'countDetails');
 
   const handleUpdateStatus = async (state, buttonId) => {
     try {
@@ -153,7 +153,7 @@ const NamespaceDeploy = ({
       isOpen={isOpen}
       onRequestClose={closePopup}
       size="sm"
-      onSecondarySubmit={openParameterContext}
+      onSecondarySubmit={getParamerterContext}
       secondaryButtonText="ParaMeter Context"
       primaryButtonText="Navigate"
       contentStyles={{ maxWidth: '45%', maxHeight: '50%' }}
@@ -178,19 +178,31 @@ const NamespaceDeploy = ({
             <ActiveButtonContainer className="d-flex ">
               <ActiveButtonDiv className="div-btn-1">
                 <TriangleIcons color="#B5BDC8" />
-                <span>{countDetails?.data[0]?.runningCount}</span>
+                <span>
+                  {countDetails?.data[0]?.runningCount ||
+                    deployCountDetails?.data?.runningCount}
+                </span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-2">
                 <SquareBoxIcon color="#B5BDC8" />
-                <span>{countDetails?.data[0]?.stoppedCount}</span>
+                <span>
+                  {countDetails?.data[0]?.stoppedCount ||
+                    deployCountDetails?.data?.stoppedCount}
+                </span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-3">
                 <TriangleExclamationMarkIcon color="#B5BDC8" />
-                <span>{countDetails?.data[0]?.invalidCount}</span>
+                <span>
+                  {countDetails?.data[0]?.invalidCount ||
+                    deployCountDetails?.data?.invalidCount}
+                </span>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-4">
                 <SmallNotThunderIcon color="#B5BDC8" />
-                <span>{countDetails?.data[0]?.disabledCount}</span>
+                <span>
+                  {countDetails?.data[0]?.disabledCount ||
+                    deployCountDetails?.data?.disabledCount}
+                </span>
               </ActiveButtonDiv>
             </ActiveButtonContainer>
           </CustomNine>
@@ -270,7 +282,7 @@ const NamespaceDeploy = ({
 NamespaceDeploy.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
-  openParameterContext: PropTypes.func,
+  getParamerterContext: PropTypes.func,
   countDetails: PropTypes.shape({
     data: PropTypes.arrayOf(
       PropTypes.shape({
@@ -288,6 +300,16 @@ NamespaceDeploy.propTypes = {
   selectedVersion: PropTypes.string,
   selectedClusterName: PropTypes.string,
   selectedClusterId: PropTypes.string,
+  deployCountDetails: PropTypes.shape({
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        runningCount: PropTypes.number,
+        stoppedCount: PropTypes.number,
+        invalidCount: PropTypes.number,
+        disabledCount: PropTypes.number,
+      })
+    ),
+  }),
 };
 
 export default NamespaceDeploy;

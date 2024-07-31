@@ -63,3 +63,32 @@ export const updateNamespaceStatus = async (clusterId, namespaceId, state) => {
   );
   return data;
 };
+
+export const deployCluster = async ({
+  clusterId,
+  namespaceId,
+  flowId,
+  bucketId,
+  bucketName,
+  registryId,
+  version,
+}) => {
+  const data = {
+    namespaceId,
+    flowId,
+    bucketId,
+    bucketName,
+    registryId,
+    version,
+  };
+
+  const response = await API.post(`/clusters/${clusterId}/deploy`, data);
+  return response;
+};
+
+export const fetchParameterContext = async (clusterId, parameterId) => {
+  const response = await API.get(
+    `parameter-context/${clusterId}?contextId=${parameterId}`
+  );
+  return response;
+};

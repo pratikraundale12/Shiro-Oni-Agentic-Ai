@@ -116,10 +116,9 @@ const Deploy = () => {
   const { state, setState } = useGlobalContext();
   const [selectedDestinationClusterId, setSelectedDestinationClusterId] =
     useState('');
+  const [depolyNamespaceId, setDepolyNamespaceId] = useState('');
   const [showDeployUI, setShowDeployUI] = useState(false);
   const navigate = useNavigate();
-
-  console.log(selectedDestinationClusterId);
 
   useEffect(() => {
     handleSelectNamespace();
@@ -159,10 +158,7 @@ const Deploy = () => {
     {
       label: '',
       renderCell: item => (
-        <RadioField
-          name="select"
-          onChange={() => console.log('Changed', item?.id)}
-        />
+        <RadioField name="select" onChange={() => setDepolyNamespaceId(item)} />
       ),
       width: '10%',
     },
@@ -198,14 +194,12 @@ const Deploy = () => {
 
   const handleClick = () => {
     if (state.deployData) {
-      // Implement the deploy functionality here
-      console.log('Deploying with data:', state.deployData);
-      // Navigate to the desired route after deploying
       navigate('/namespaces/upgrade', {
         state: {
           deployData: state.deployData,
           selectedClusterName: state.selectedClusterName,
           selectedClusterId: selectedDestinationClusterId,
+          depolyNamespaceId: depolyNamespaceId,
         },
       });
     }
@@ -214,8 +208,6 @@ const Deploy = () => {
   const handleBackClick = () => {
     navigate('/namespaces');
   };
-
-  console.log({ selectedDestinationClusterId });
   const onClusterCheck = async e => {
     const selectedClusterId = e.value;
     setSelectedDestinationClusterId(e.value);

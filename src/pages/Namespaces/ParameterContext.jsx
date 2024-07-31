@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from '../../shared';
 import styled from 'styled-components';
@@ -9,36 +9,63 @@ const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
 `;
+// can_write
+// :
+// true
+// context_name
+// :
+// "Interest"
+// description
+// :
+// ""
+// name
+// :
+// "SQLDB"
+// provided
+// :
+// false
+// sensitive
+// :
+// false
+// value
+// :
+
+// "Cricket
 
 const COLUMNS = [
   {
     label: 'Name',
-    renderCell: item => <div>{item.name}</div>,
+    renderCell: item => <div>{item.context_name}</div>,
   },
   {
     label: 'Value',
-    renderCell: item => <div>{item.id}</div>,
+    renderCell: item => <div>{item.value}</div>,
   },
   {
-    renderCell: () => <PencilIcon color="white" />,
+    renderCell: () => <PencilIcon color="red" />,
   },
 ];
 
-const generateDummyData = count => {
-  return Array.from({ length: count }, (_, index) => ({
-    id: `ID-${index + 1}`,
-    name: `Name-${index + 1}`,
-  }));
-};
+const ParameterContext = ({
+  isOpen,
+  closePopup,
+  openAddParameterContext,
+  parameterDetails,
+}) => {
+  const parameterDetialsData = parameterDetails?.data || {};
+  delete parameterDetialsData.version;
+  console.log(parameterDetialsData, 'parameterDetialsData');
+  const dummay = Object.values(parameterDetialsData).flat();
+  console.log(dummay, 'dummay');
+  // let dataToRender = [];
+  // // if (parameterIds && parameterIds.length) {
+  // //   parameterIds.forEach(key => {
+  // //     dataToRender = [...dataToRender, parameterDetails?.data?.[key]];
+  // //   });
+  // // }
 
-const ParameterContext = ({ isOpen, closePopup, openAddParameterContext }) => {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    const dummyData = generateDummyData(5);
-    setData(dummyData);
-  }, []);
-
+  // console.log(dataToRender);
+  // console.log({ dataToRender, parameterIds, parameterDetails });
   return (
     <Modal
       title="Parameter Context"
@@ -52,7 +79,7 @@ const ParameterContext = ({ isOpen, closePopup, openAddParameterContext }) => {
       //   onSubmit={handleSubmit(onSubmit)}
     >
       <ModalBody className="modal-body">
-        <Table data={data} columns={COLUMNS} />
+        <Table data={dummay} columns={COLUMNS} />
       </ModalBody>
     </Modal>
   );
@@ -62,6 +89,8 @@ ParameterContext.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
   openAddParameterContext: PropTypes.func,
+  parameterDetails: PropTypes.string,
+  parameterIds: PropTypes.array,
 };
 
 export default ParameterContext;

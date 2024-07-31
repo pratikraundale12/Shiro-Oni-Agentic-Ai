@@ -109,11 +109,8 @@ export const ListNamespaces = () => {
       selectedNamespaceId: id,
     });
   }
-  console.log({ state });
 
   const handleSelect = id => {
-    // setSelectedNamespace();
-    // console.log({ id });
     const b = state.gridData.namespaces.data.find(a => a.id === id);
 
     setState(prev => ({
