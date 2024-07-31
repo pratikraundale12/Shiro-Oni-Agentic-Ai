@@ -13,6 +13,11 @@ import { fetchGridData, useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
 import Pagination from './Pagination';
 import Breadcrumb from '../../shared/Breadcrumb';
+import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
+import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
+import { Modal } from '../../shared';
+import { Table } from './Table';
+import { TextRender } from './CellRenders';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -25,6 +30,30 @@ const TableContainer = styled.div`
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
 `;
+
+const ClusterRegistryContainer = styled.div`
+  display: flex;
+  gap: 2%;
+  margin-bottom: 1%;
+`;
+
+const EVENTCOLUMNS = [
+  {
+    label: 'Address',
+    renderCell: item => <TextRender text={item.address} />,
+  },
+  {
+    label: 'Node ID',
+    renderCell: item => <TextRender text={item.nodeId} />,
+  },
+  {
+    label: 'Node Events',
+    renderCell: item => (
+      <TextRender text={`${item.timestamp}: ${item.message}`} />
+    ),
+  },
+];
+
 const getData = (loader = false, data = [], nodes = []) => {
   // const DATA = { nodes: loaders[module] ? [] : nodes || data };
 
@@ -59,10 +88,17 @@ export const Grid = ({
           prev = null,
           next = null,
           data = [],
+
+          // nodelist
+          name: nodeName = '',
+          nifi_url = '',
+          registry = {},
           nodes = [],
           breadcrumb = [],
         } = {},
       },
+      eventModal,
+      selectedNode,
       nodeClusterId,
       selectedSourceClusterId = '',
       loaders,
@@ -140,7 +176,37 @@ export const Grid = ({
         buttonText={buttonText}
         addModal={addModal}
       />
-      {/* Breadcrumb */}
+      {module === 'nodeList' && !isEmpty(nodes) && (
+        <>
+          <ClusterRegistryContainer>
+            <ClusterDetail data={{ name: nodeName, nifi_url }} />
+            <RegistryDetail data={registry} />
+          </ClusterRegistryContainer>
+          <Modal
+            title="Event Log"
+            isOpen={eventModal}
+            onRequestClose={() =>
+              setState(prevState => ({ ...prevState, eventModal: false }))
+            }
+            size="lg"
+            primaryButtonText="Continue"
+            onSubmit={() =>
+              setState(prevState => ({ ...prevState, eventModal: false }))
+            }
+          >
+            <Table
+              data={
+                selectedNode?.events?.slice(0, 10).map(item => ({
+                  address: selectedNode?.address,
+                  nodeId: selectedNode?.nodeId,
+                  ...item,
+                })) || []
+              }
+              columns={EVENTCOLUMNS}
+            />
+          </Modal>
+        </>
+      )}
       <Breadcrumb
         breadcrumbs={breadcrumb}
         onBreadcrumbClick={onBreadcrumbClick}

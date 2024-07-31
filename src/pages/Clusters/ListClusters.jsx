@@ -99,7 +99,12 @@ export const ListClusters = () => {
     },
     {
       label: 'Cluster Status',
-      renderCell: () => <ProgressBarRender count={1} maxCount={5} />,
+      renderCell: item => (
+        <ProgressBarRender
+          count={item.connected_nodes || 0}
+          maxCount={item.total_nodes || 1}
+        />
+      ),
       width: '20%',
     },
     {

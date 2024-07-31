@@ -73,3 +73,4 @@ export * from './LinkIcon';
 export * from './UpsideSquareIcon';
 export * from './RightIcon';
 export * from './LocalChangesIcon';
+export * from './ThreedotsIcon';
