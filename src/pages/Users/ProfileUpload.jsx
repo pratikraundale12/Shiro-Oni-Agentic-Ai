@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Controller } from 'react-hook-form';
-import { UserUploadIcon } from '../../assets';
+import { UpArrowImageIcon, UserUploadIcon } from '../../assets';
 
 const PreviewImage = styled.img`
   width: 150px;
@@ -18,6 +18,11 @@ const UploadLabel = styled.label`
 const UploadInput = styled.input`
   display: none;
 `;
+const ArrowContainer = styled.div`
+  right: 10px !important;
+  position: absolute;
+  bottom: 10px;
+`;
 
 export const ProfileUpload = ({ name, control, watch, url }) => {
   const file = watch(name);
@@ -31,23 +36,39 @@ export const ProfileUpload = ({ name, control, watch, url }) => {
       control={control}
       defaultValue={null}
       rules={{ required: !url }}
-      render={({ field: { onChange } }) => (
-        <div style={{ position: 'relative' }}>
-          <UploadLabel htmlFor="file-upload">
-            {file ? (
-              <PreviewImage src={getFilePreview()} alt="Profile Preview" />
-            ) : (
-              <UserUploadIcon />
-            )}
-          </UploadLabel>
-          <UploadInput
-            id="file-upload"
-            type="file"
-            accept="image/*"
-            onChange={event => onChange(event.target.files[0])}
-          />
-        </div>
-      )}
+      render={({ field: { onChange } }) => {
+        const handlePhotoUpload = event => {
+          const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+          if (
+            event.target.files[0] &&
+            validImageTypes.includes(event.target.files[0].type)
+          ) {
+            onChange(event.target.files[0]);
+          }
+        };
+        return (
+          <div style={{ position: 'relative' }}>
+            <UploadLabel htmlFor="file-upload">
+              {file ? (
+                <div>
+                  <PreviewImage src={getFilePreview()} alt="Profile Preview" />
+                  <ArrowContainer>
+                    <UpArrowImageIcon />
+                  </ArrowContainer>
+                </div>
+              ) : (
+                <UserUploadIcon />
+              )}
+            </UploadLabel>
+            <UploadInput
+              id="file-upload"
+              type="file"
+              accept="image/*"
+              onChange={event => handlePhotoUpload(event)}
+            />
+          </div>
+        );
+      }}
     />
   );
 };

@@ -105,7 +105,6 @@ export const Grid = ({
   useEffect(() => {
     fetchGridData({ setState, module, search: search });
   }, [setState, module, search]);
-
   return (
     <Container>
       <GridActions
@@ -128,13 +127,15 @@ export const Grid = ({
         />
         {getLoader()}
       </TableContainer>
-      <Pagination
-        page={page}
-        setState={setState}
-        count={count}
-        prev={prev}
-        next={next}
-      />
+      {DATA.nodes.length > 10 && (
+        <Pagination
+          page={page}
+          setState={setState}
+          count={count}
+          prev={prev}
+          next={next}
+        />
+      )}
     </Container>
   );
 };

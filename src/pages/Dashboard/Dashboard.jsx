@@ -319,6 +319,7 @@ export const Dashboard = () => {
               options={RefreshArray}
               label={'Refresh'}
               onChange={onRefreshSelect}
+              placeholder="Refresh"
             />
           </DropdownContainer>
         </DropdownWrapper>
