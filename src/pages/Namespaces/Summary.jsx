@@ -461,6 +461,7 @@ const Summary = () => {
         upgradeData={upgradeData}
         selectedVersion={selectedVersion}
         selectedClusterName={selectedClusterName}
+        selectedClusterId={selectedClusterId}
       />
       <ParameterContext
         isOpen={isParameterContextOpen}

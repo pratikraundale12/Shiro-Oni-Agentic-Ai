@@ -10,6 +10,8 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { updateNamespaceStatus } from '../../utils/services';
+import { toast } from 'react-toastify';
 
 const ModalBody = styled.div`
   position: relative;
@@ -143,8 +145,22 @@ const NamespaceDeploy = ({
   upgradeData,
   selectedVersion,
   selectedClusterName,
+  selectedClusterId,
 }) => {
   console.log(countDetails?.data[0]?.runningCount, 'countDetails');
+
+  const handleUpdateStatus = async state => {
+    try {
+      const clusterId = selectedClusterId;
+      const namespaceId = upgradeData?.id;
+      await updateNamespaceStatus(clusterId, namespaceId, state);
+
+      toast.success(`Namespace status updated to ${state}`);
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      toast.error(`Failed to update namespace status to ${state}`);
+    }
+  };
   return (
     <Modal
       title="Namespace Deployed"
@@ -201,16 +217,28 @@ const NamespaceDeploy = ({
           <CustomNine className="col-9 mb-3">
             <ActiveButtonContainer className="d-flex ">
               <ActiveButtonDiv className="div-btn-1">
-                <TriangleIcons color="#B5BDC8" />
+                <TriangleIcons
+                  color="#B5BDC8"
+                  onClick={() => handleUpdateStatus('RUNNING')}
+                />
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-2">
-                <SquareBoxIcon color="#B5BDC8" />
+                <SquareBoxIcon
+                  color="#B5BDC8"
+                  onClick={() => handleUpdateStatus('STOPPED')}
+                />
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-3">
-                <SmallThunderIcon color="#B5BDC8" />
+                <SmallThunderIcon
+                  color="#B5BDC8"
+                  onClick={() => handleUpdateStatus('ENABLED')}
+                />
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-4">
-                <SmallNotThunderIcon color="#B5BDC8" />
+                <SmallNotThunderIcon
+                  color="#B5BDC8"
+                  onClick={() => handleUpdateStatus('DISABLED')}
+                />
               </ActiveButtonDiv>
             </ActiveButtonContainer>
           </CustomNine>
@@ -224,13 +252,23 @@ NamespaceDeploy.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
   openParameterContext: PropTypes.func,
-  countDetails: PropTypes.func,
+  countDetails: PropTypes.shape({
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        runningCount: PropTypes.number,
+        stoppedCount: PropTypes.number,
+        invalidCount: PropTypes.number,
+        disabledCount: PropTypes.number,
+      })
+    ),
+  }),
   upgradeData: PropTypes.shape({
     name: PropTypes.string,
-    // Add other properties if known
+    id: PropTypes.string,
   }),
   selectedVersion: PropTypes.string,
   selectedClusterName: PropTypes.string,
+  selectedClusterId: PropTypes.string,
 };
 
 export default NamespaceDeploy;

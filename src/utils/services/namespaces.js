@@ -54,3 +54,12 @@ export const getCountDetails = async ({ clusterId, namespaceId }) => {
   );
   return data;
 };
+export const updateNamespaceStatus = async (clusterId, namespaceId, state) => {
+  const data = await API.put(
+    `/status-update/${clusterId}/namespace/${namespaceId}`,
+    {
+      state: state,
+    }
+  );
+  return data;
+};
