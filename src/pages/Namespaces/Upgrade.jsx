@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { LinkIcons, QRIcons, TodoIcon } from '../../assets';
+import { LinkIcon, QRIcons, TodoIcon, UpsideSquareIcon } from '../../assets';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Table } from '../../components';
+import RightIcon from '../../assets/Icons/RightIcon';
+import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
 
 const Container = styled.div`
   height: calc(100vh - 78px);
@@ -171,7 +173,6 @@ const Upgrade = () => {
     },
   ];
 
-  console.log({ upgradeData });
   const breadcrumbData = [
     { id: '1', name: 'Namespace List' },
     { id: '2', name: 'Select Namespace' },
@@ -192,7 +193,6 @@ const Upgrade = () => {
       },
     });
   };
-  console.log({ deployData });
 
   const handleBackClick = () => {
     navigate('/namespaces/deploy');
@@ -201,6 +201,25 @@ const Upgrade = () => {
   const handleVersionSelect = version => {
     setSelectedVersion(version);
   };
+
+  const getIconForState = state => {
+    switch (state) {
+      case 'LOCALLY_MODIFIED_AND_STALE':
+        return <LocalChangesIcon />;
+      case 'STALE':
+        return <UpsideSquareIcon color="#BB564A" />;
+      case 'LOCALLY_MODIFIED':
+        return <LocalChangesIcon />;
+      case 'UP_TO_DATE':
+        return <RightIcon />;
+      default:
+        return null;
+    }
+  };
+
+  const isStateStale =
+    upgradeData?.state === 'STALE' || upgradeData?.state === 'UP_TO_DATE';
+
   return (
     <Container>
       <TopTitleBar className=" d-flex  mb-3">
@@ -285,7 +304,7 @@ const Upgrade = () => {
                     label="Current State"
                     // placeholder="Local Changes"
                     value={upgradeData?.stateExplanation || 'N/A'}
-                    icon={<QRIcons />}
+                    icon={getIconForState(upgradeData?.state)}
                     disabled
                   />
                 </ColXlSix>
@@ -300,7 +319,7 @@ const Upgrade = () => {
                     label="Nifi URL"
                     placeholder="Nifi Namespace"
                     value={upgradeData?.nifiUrl || deployData?.nifiUrl}
-                    icon={<LinkIcons />}
+                    icon={<LinkIcon />}
                     disabled
                   />
                 </ColLgSix>
@@ -311,7 +330,7 @@ const Upgrade = () => {
                     label="Registry URL"
                     placeholder="Nifi Namespace"
                     value={upgradeData?.registryUrl || deployData?.registryUrl}
-                    icon={<LinkIcons />}
+                    icon={<LinkIcon />}
                     disabled
                   />
                 </ColLgSix>
@@ -330,8 +349,12 @@ const Upgrade = () => {
           <Button variant="secondary" onClick={handleBackClick}>
             Back
           </Button>
-          <Button onClick={handleClick} disabled={!selectedVersion}>
-            Upgrade
+          <Button
+            onClick={handleClick}
+            disabled={!selectedVersion && isStateStale}
+          >
+            {' '}
+            Upgrade{' '}
           </Button>
         </BottomButtonDiv>
       </BottomButton>

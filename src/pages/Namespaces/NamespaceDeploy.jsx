@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from '../../shared';
 import styled from 'styled-components';
@@ -81,6 +81,7 @@ const ActiveButtonContainer = styled.div`
   justify-content: flex-start !important;
   gap: 7px;
 `;
+
 const ActiveButtonDiv = styled.div`
   height: 48px;
   width: 48px;
@@ -98,7 +99,8 @@ const ActiveButtonDiv = styled.div`
   justify-content: center;
 
   &:hover {
-    border: 1px solid #c52b2b;
+    border: 1px solid
+      ${props => (props.isActive ? props.activeColor : '#c52b2b')};
   }
 
   & span {
@@ -109,31 +111,11 @@ const ActiveButtonDiv = styled.div`
     font-size: 14px;
     font-weight: 500;
     line-height: 23px;
-    color: #b5bdc8;
+    color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
   }
 
-  &.div-btn-1:hover svg path,
-  &.div-btn-1:hover span {
-    fill: #58e715;
-    color: #58e715;
-  }
-
-  &.div-btn-2:hover svg path,
-  &.div-btn-2:hover span {
-    fill: #c52b2b;
-    color: #c52b2b;
-  }
-
-  &.div-btn-3:hover svg path,
-  &.div-btn-3:hover span {
-    fill: #cf9f5d;
-    color: #cf9f5d;
-  }
-
-  &.div-btn-4:hover svg path,
-  &.div-btn-4:hover span {
-    fill: #2c7cf3;
-    color: #2c7cf3;
+  svg path {
+    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
 `;
 
@@ -147,14 +129,18 @@ const NamespaceDeploy = ({
   selectedClusterName,
   selectedClusterId,
 }) => {
+  const [activeButton, setActiveButton] = useState(null);
   console.log(countDetails?.data[0]?.runningCount, 'countDetails');
 
-  const handleUpdateStatus = async state => {
+  const handleUpdateStatus = async (state, buttonId) => {
     try {
       const clusterId = selectedClusterId;
-      const namespaceId = upgradeData?.id;
-      await updateNamespaceStatus(clusterId, namespaceId, state);
+      console.log(clusterId);
 
+      const namespaceId = upgradeData?.id;
+      console.log(namespaceId);
+      await updateNamespaceStatus(clusterId, namespaceId, state);
+      setActiveButton(buttonId);
       toast.success(`Namespace status updated to ${state}`);
     } catch (error) {
       console.error('Failed to update status:', error);
@@ -217,28 +203,61 @@ const NamespaceDeploy = ({
           <CustomNine className="col-9 mb-3">
             <ActiveButtonContainer className="d-flex ">
               <ActiveButtonDiv className="div-btn-1">
-                <TriangleIcons
-                  color="#B5BDC8"
-                  onClick={() => handleUpdateStatus('RUNNING')}
-                />
+                <ActiveButtonDiv
+                  className="div-btn-1"
+                  isActive={activeButton === 'RUNNING'}
+                  activeColor="#58e715"
+                  hoverColor="#58e715"
+                  activeTextColor="#fff"
+                  onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
+                >
+                  <TriangleIcons color="#B5BDC8" />
+                </ActiveButtonDiv>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-2">
-                <SquareBoxIcon
-                  color="#B5BDC8"
-                  onClick={() => handleUpdateStatus('STOPPED')}
-                />
+                <ActiveButtonDiv
+                  className="div-btn-1"
+                  isActive={activeButton === 'STOPPED'}
+                  activeColor="#c52b2b"
+                  hoverColor="#c52b2b"
+                  activeTextColor="#fff"
+                  onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
+                >
+                  <SquareBoxIcon
+                    color="#B5BDC8"
+                    onClick={() => handleUpdateStatus('STOPPED')}
+                  />
+                </ActiveButtonDiv>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-3">
-                <SmallThunderIcon
-                  color="#B5BDC8"
-                  onClick={() => handleUpdateStatus('ENABLED')}
-                />
+                <ActiveButtonDiv
+                  className="div-btn-1"
+                  isActive={activeButton === 'ENABLED'}
+                  activeColor="#cf9f5d"
+                  hoverColor="#cf9f5d"
+                  activeTextColor="#fff"
+                  onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
+                >
+                  <SmallThunderIcon
+                    color="#B5BDC8"
+                    onClick={() => handleUpdateStatus('ENABLED')}
+                  />
+                </ActiveButtonDiv>
               </ActiveButtonDiv>
               <ActiveButtonDiv className="div-btn-4">
-                <SmallNotThunderIcon
-                  color="#B5BDC8"
-                  onClick={() => handleUpdateStatus('DISABLED')}
-                />
+                <ActiveButtonDiv
+                  className="div-btn-1"
+                  isActive={activeButton === 'DISABLED'}
+                  activeColor="#2c7cf3"
+                  hoverColor="#2c7cf3"
+                  activeTextColor="#fff"
+                  onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
+                >
+                  <SmallNotThunderIcon
+                    color="#B5BDC8"
+                    onClick={() => handleUpdateStatus('DISABLED')}
+                  />
+                </ActiveButtonDiv>
               </ActiveButtonDiv>
             </ActiveButtonContainer>
           </CustomNine>

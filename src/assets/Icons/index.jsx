@@ -66,3 +66,6 @@ export * from './PhoneIcon';
 export * from './CrossIcons';
 export * from './GreenRightCircleIcon';
 export * from './LinkIcon';
+export * from './UpsideSquareIcon';
+export * from './RightIcon';
+export * from './LocalChangesIcon';

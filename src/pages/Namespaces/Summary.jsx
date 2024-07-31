@@ -7,8 +7,9 @@ import NamespaceDeploy from './NamespaceDeploy';
 // import AddParameterContext from './AddParameterContext';
 import {
   SmallNotThunderIcon,
+  SmallThunderIcon,
   SquareBoxIcon,
-  TriangleExclamationMarkIcon,
+  // TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
 import ParameterContext from './ParameterContext';
@@ -18,8 +19,10 @@ import {
   getClusterProgress,
   getClusterProgressDelete,
   getCountDetails,
+  updateNamespaceStatus,
   upgradeCluster,
 } from '../../utils/services';
+import { toast } from 'react-toastify';
 
 const MainContainer = styled.div`
   height: calc(100vh - 78px);
@@ -133,16 +136,13 @@ const SummaryDetailsPtag = styled.h4`
   text-align: left;
   color: #7a7a7a;
 `;
-const ButtonContainer = styled.div`
+const ActiveButtonContainer = styled.div`
   gap: 7px;
   align-items: center;
   justify-content: center;
 `;
+
 const ActiveButtonDiv = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   height: 48px;
   width: 48px;
   max-width: 48px;
@@ -151,11 +151,31 @@ const ActiveButtonDiv = styled.div`
   min-width: 48px;
   border: 1px solid #dde4f0;
   border-radius: 8px;
+  background-color: #f5f7fa;
   cursor: pointer;
-  background-color: white !important;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
-    border: 1px solid #c52b2b;
+    border: 1px solid
+      ${props => (props.isActive ? props.activeColor : '#c52b2b')};
+  }
+
+  & span {
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    font-family: ${props => props.theme.fontNato};
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 23px;
+    color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
+  }
+
+  svg path {
+    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
 `;
 const BottomButtonDiv = styled.div`
@@ -277,7 +297,24 @@ const Summary = () => {
   const handleBackClick = () => {
     navigate('/namespaces/upgrade');
   };
+  const [activeButton, setActiveButton] = useState(null);
+  console.log(countDetails?.data[0]?.runningCount, 'countDetails');
 
+  const handleUpdateStatus = async (state, buttonId) => {
+    try {
+      const clusterId = selectedClusterId;
+      console.log(clusterId);
+
+      const namespaceId = upgradeData?.id;
+      console.log(namespaceId);
+      await updateNamespaceStatus(clusterId, namespaceId, state);
+      setActiveButton(buttonId);
+      toast.success(`Namespace status updated to ${state}`);
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      toast.error(`Failed to update namespace status to ${state}`);
+    }
+  };
   return (
     <MainContainer className="main-space bg-white">
       <TopTitleBar className="d-flex mb-3">
@@ -332,7 +369,7 @@ const Summary = () => {
                       Registry URL
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {upgradeData?.registryUrl}
+                      {upgradeData?.registryUrl || deployData?.registryUrl}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -342,7 +379,7 @@ const Summary = () => {
                       NiFi URL+
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {upgradeData?.nifiUrl}
+                      {upgradeData?.nifiUrl || deployData?.nifiUrl}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -369,62 +406,113 @@ const Summary = () => {
               </RowConfig>
             </UseColLg>
             {/* versions */}
-            <div className="col-12 p-3">
-              <ConfigTitle className="config-title">
-                <ConfigTitleHTwo className="p-3 mb-0">
-                  <span>Version Settings</span>
-                </ConfigTitleHTwo>
-              </ConfigTitle>
-            </div>
-            <UseColLg className="col-lg-10 col-12 ">
-              <RowConfig className="row p-3">
-                <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                  <div className="summary-details">
-                    <SummaryDetailsHFourTag className="mb-2">
-                      Namespace
-                    </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">
-                      {upgradeData?.name}
-                    </SummaryDetailsPtag>
-                  </div>
-                </UseColXl>
-                <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                  <div className="summary-details">
-                    <SummaryDetailsHFourTag className="mb-2">
-                      Current Version
-                    </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">
-                      {upgradeData?.version}
-                    </SummaryDetailsPtag>
-                  </div>
-                </UseColXl>
-                <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                  <div className="summary-details">
-                    <SummaryDetailsHFourTag className="mb-2">
-                      Updated Version
-                    </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">
-                      {selectedVersion}
-                    </SummaryDetailsPtag>
-                  </div>
-                </UseColXl>
-              </RowConfig>
-            </UseColLg>
+            {!deployData && (
+              <>
+                <div className="col-12 p-3">
+                  <ConfigTitle className="config-title">
+                    <ConfigTitleHTwo className="p-3 mb-0">
+                      <span>Version Settings</span>
+                    </ConfigTitleHTwo>
+                  </ConfigTitle>
+                </div>
+                <UseColLg className="col-lg-10 col-12 ">
+                  <RowConfig className="row p-3">
+                    <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                      <div className="summary-details">
+                        <SummaryDetailsHFourTag className="mb-2">
+                          Namespace
+                        </SummaryDetailsHFourTag>
+                        <SummaryDetailsPtag className="mb-0">
+                          {upgradeData?.name}
+                        </SummaryDetailsPtag>
+                      </div>
+                    </UseColXl>
+                    <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                      <div className="summary-details">
+                        <SummaryDetailsHFourTag className="mb-2">
+                          Current Version
+                        </SummaryDetailsHFourTag>
+                        <SummaryDetailsPtag className="mb-0">
+                          {upgradeData?.version}
+                        </SummaryDetailsPtag>
+                      </div>
+                    </UseColXl>
+                    <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                      <div className="summary-details">
+                        <SummaryDetailsHFourTag className="mb-2">
+                          Updated Version
+                        </SummaryDetailsHFourTag>
+                        <SummaryDetailsPtag className="mb-0">
+                          {selectedVersion}
+                        </SummaryDetailsPtag>
+                      </div>
+                    </UseColXl>
+                  </RowConfig>
+                </UseColLg>
+              </>
+            )}
           </RowConfig>
-          <ButtonContainer className="d-flex active-buttons-container">
-            <ActiveButtonDiv className="div-btn-1">
-              <TriangleIcons color="#B5BDC8" />
-            </ActiveButtonDiv>
-            <ActiveButtonDiv className="div-btn-2">
-              <SquareBoxIcon color="#B5BDC8" />
-            </ActiveButtonDiv>
-            <ActiveButtonDiv className="div-btn-3">
-              <TriangleExclamationMarkIcon color="#B5BDC8" />
-            </ActiveButtonDiv>
-            <ActiveButtonDiv className="div-btn-4">
-              <SmallNotThunderIcon color="#B5BDC8" />
-            </ActiveButtonDiv>
-          </ButtonContainer>
+          {!deployData && (
+            <ActiveButtonContainer className="d-flex ">
+              <ActiveButtonDiv className="div-btn-1">
+                <ActiveButtonDiv
+                  className="div-btn-1"
+                  isActive={activeButton === 'RUNNING'}
+                  activeColor="#58e715"
+                  hoverColor="#58e715"
+                  activeTextColor="#fff"
+                  onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
+                >
+                  <TriangleIcons color="#B5BDC8" />
+                </ActiveButtonDiv>
+              </ActiveButtonDiv>
+              <ActiveButtonDiv className="div-btn-2">
+                <ActiveButtonDiv
+                  className="div-btn-1"
+                  isActive={activeButton === 'STOPPED'}
+                  activeColor="#c52b2b"
+                  hoverColor="#c52b2b"
+                  activeTextColor="#fff"
+                  onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
+                >
+                  <SquareBoxIcon
+                    color="#B5BDC8"
+                    onClick={() => handleUpdateStatus('STOPPED')}
+                  />
+                </ActiveButtonDiv>
+              </ActiveButtonDiv>
+              <ActiveButtonDiv className="div-btn-3">
+                <ActiveButtonDiv
+                  className="div-btn-1"
+                  isActive={activeButton === 'ENABLED'}
+                  activeColor="#cf9f5d"
+                  hoverColor="#cf9f5d"
+                  activeTextColor="#fff"
+                  onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
+                >
+                  <SmallThunderIcon
+                    color="#B5BDC8"
+                    onClick={() => handleUpdateStatus('ENABLED')}
+                  />
+                </ActiveButtonDiv>
+              </ActiveButtonDiv>
+              <ActiveButtonDiv className="div-btn-4">
+                <ActiveButtonDiv
+                  className="div-btn-1"
+                  isActive={activeButton === 'DISABLED'}
+                  activeColor="#2c7cf3"
+                  hoverColor="#2c7cf3"
+                  activeTextColor="#fff"
+                  onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
+                >
+                  <SmallNotThunderIcon
+                    color="#B5BDC8"
+                    onClick={() => handleUpdateStatus('DISABLED')}
+                  />
+                </ActiveButtonDiv>
+              </ActiveButtonDiv>
+            </ActiveButtonContainer>
+          )}
         </ScrollSetGrey>
       </GreyBoxNamespace>
       <BottomButton className="bottom-button-divs d-flex">
@@ -434,23 +522,25 @@ const Summary = () => {
           </Button>
           <Button onClick={handleUpgradeClick}>Upgrade</Button>
         </BottomButtonDiv>
-        <Progressox className="w-100">
-          <ProgressLabel className="progress-label">
-            Updating Flow
-          </ProgressLabel>
-          <CustomRedProgress className="progress w-100 custom-red-progress">
-            <ProgressBar
-              className="progress-bar"
-              role="progressbar"
-              style={{ width: `${progress}%` }}
-              aria-valuenow={40}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            >
-              {progress}%
-            </ProgressBar>
-          </CustomRedProgress>
-        </Progressox>
+        {!deployData && (
+          <Progressox className="w-100">
+            <ProgressLabel className="progress-label">
+              Updating Flow
+            </ProgressLabel>
+            <CustomRedProgress className="progress w-100 custom-red-progress">
+              <ProgressBar
+                className="progress-bar"
+                role="progressbar"
+                style={{ width: `${progress}%` }}
+                aria-valuenow={40}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
+                {progress}%
+              </ProgressBar>
+            </CustomRedProgress>
+          </Progressox>
+        )}
       </BottomButton>
       <NamespaceDeploy
         isOpen={isModalOpen}
