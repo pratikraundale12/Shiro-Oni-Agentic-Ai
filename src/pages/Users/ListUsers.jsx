@@ -108,7 +108,7 @@ export const ListUsers = () => {
     },
     {
       label: 'Actions',
-      width: 120,
+      width: '10%',
       renderCell: item => getActionsMenu(item),
     },
   ];

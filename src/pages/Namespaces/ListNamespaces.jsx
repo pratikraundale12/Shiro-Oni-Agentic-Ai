@@ -36,12 +36,12 @@ export const ListNamespaces = () => {
     },
     {
       label: 'Version',
-      width: 120,
+      width: '10%',
       renderCell: item => <TextRender text={item.version} />,
     },
     {
       label: 'Actions',
-      width: 120,
+      width: '10%',
       renderCell: () => <div>Select</div>,
     },
   ];

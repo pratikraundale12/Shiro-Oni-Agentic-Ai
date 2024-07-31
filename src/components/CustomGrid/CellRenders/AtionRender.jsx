@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { DeleteSmallIcon, PencilIcon } from '../../../assets';
-import { useGlobalContext } from '../../../utils';
+import { PencilIcon } from '../../../assets';
 
 // Styled components based on the provided CSS
 const ActionTd = styled.div`
@@ -12,36 +11,31 @@ const ActionTd = styled.div`
   gap: 8px;
 `;
 
-const IconWrapper = styled.div`
+export const IconButton = styled.button`
+  min-width: 34px;
+  min-height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  border-radius: 100%;
+  background-color: ${props => props.theme.colors.white};
+  border: 1px solid ${props => props.theme.colors.border};
 `;
 
-export const ActionRender = ({ item }) => {
-  const { state, setState } = useGlobalContext();
-
+export const ActionRender = ({ handleMenuClick, item }) => {
   return (
     <ActionTd>
-      <IconWrapper
-        onClick={() =>
-          setState({
-            ...state,
-            userModal: true,
-            selectedItem: item,
-          })
-        }
-      >
+      <IconButton>
         <PencilIcon />
-      </IconWrapper>
-      <IconWrapper>
-        <DeleteSmallIcon color="red" />
-      </IconWrapper>
+      </IconButton>
+      <IconButton onClick={event => handleMenuClick(event, item)}>
+        <PencilIcon />
+      </IconButton>
     </ActionTd>
   );
 };
 
 ActionRender.propTypes = {
   item: PropTypes.object.isRequired,
+  handleMenuClick: PropTypes.func.isRequired,
 };

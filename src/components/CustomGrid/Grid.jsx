@@ -60,7 +60,7 @@ export const Grid = ({
     {
       Table: `
         --data-table-library_grid-template-columns:  ${columns
-          .map(column => (column.width ? `${column.width}px` : '1fr'))
+          .map(column => (column.width ? column.width : '1fr'))
           .join(' ')} !important;
 
         th, td {
