@@ -42,7 +42,7 @@ const COLUMNS = [
     renderCell: item => <div>{item.value}</div>,
   },
   {
-    renderCell: () => <PencilIcon color="red" />,
+    renderCell: () => <PencilIcon color="black" />,
   },
 ];
 

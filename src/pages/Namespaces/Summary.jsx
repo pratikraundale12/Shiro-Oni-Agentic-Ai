@@ -595,6 +595,7 @@ const Summary = () => {
         selectedClusterId={selectedClusterId}
         deployCountDetails={deployCountDetails}
         getParamerterContext={getParamerterContext}
+        deployData={deployData}
       />
       <ParameterContext
         isOpen={isParameterContextOpen}
