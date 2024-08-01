@@ -7,24 +7,22 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { InputField, Button, PasswordField } from '../../../shared';
 import { RegexConst } from '../../../utils';
-import { Modal } from '../../../shared';
 import { AddCertificate } from './AddCertificate';
 import { useNavigate } from 'react-router-dom';
 
 import {
   SmallPerfileIcon,
   QRIcons,
-  // CircleExclamationMarkIcon,
   PlusCircleIcon,
   FileIcon,
   WhiteBoradIcon,
   PencilIcon,
   DeleteSmallIcon,
-  RightCircleIcon,
-  ExclamationFailedTestingIcon,
   LinkIcon,
 } from '../../../assets';
 import { testCluster } from '../../../utils/services';
+import { SuccessTestModal } from './SuccessTestModal';
+import { FailedTestModal } from './FailedTestModal';
 
 const InputContainer = styled.div`
   display: flex;
@@ -32,14 +30,6 @@ const InputContainer = styled.div`
   align-items: center;
   gap: 16px;
 `;
-
-// const StyledInputField = styled(InputField)`
-//   // flex: 1;
-// `;
-
-// const StyledInputFieldpassword = styled(PasswordField)`
-//   // flex: 1;
-// `;
 
 const FlexContainer = styled.div`
   display: flex;
@@ -473,53 +463,18 @@ export const AddNewCluster = ({
           </BottomButtonDivs>
         </form>
       </ParentDiv>
-      {/* //testing Success Modal */}
-      <Modal
-        title="Testing Successfull"
-        isOpen={successTest}
-        onRequestClose={() => setSuccessTest(false)}
-        size="sm"
-        primaryButtonText="Continue"
-        onSubmit={() => setSuccessTest(false)}
-      >
-        <>
-          <div className="text-center">
-            <RightCircleIcon color="#0CBF59" />
-          </div>
-          <h5 className="pt-4 mt-2 mb-0 text-center">
-            Cluster Test Successful
-          </h5>
-          <p className="pt-3 mb-0 text-center">
-            Your Cluster Test was successful. You <br /> can now proceed to the
-            next steps.
-          </p>
-        </>
-      </Modal>
 
-      {/* //testing failed Modal */}
-      <Modal
-        title="Testing Failed"
-        isOpen={failedTest}
-        onRequestClose={() => setFailedTest(false)}
-        size="sm"
-        primaryButtonText="Continue"
-        onSubmit={() => setFailedTest(false)}
-      >
-        <>
-          <div className="text-center">
-            <ExclamationFailedTestingIcon />
-          </div>
-          <h5 className="pt-4 mt-2 mb-0 text-center">Cluster Test Failed</h5>
-          {testMessage != '' ? (
-            <p className="pt-3 mb-0 text-center">{testMessage}</p>
-          ) : (
-            <p className="pt-3 mb-0 text-center">
-              We encountered an issue while testing your cluster. Please check
-              if your File is Correct
-            </p>
-          )}
-        </>
-      </Modal>
+      <SuccessTestModal
+        successTest={successTest}
+        setSuccessTest={setSuccessTest}
+        name="Cluster"
+      />
+
+      <FailedTestModal
+        failedTest={failedTest}
+        setFailedTest={setFailedTest}
+        testMessage={testMessage}
+      />
 
       <AddCertificate
         addCertificate={addCertificate}

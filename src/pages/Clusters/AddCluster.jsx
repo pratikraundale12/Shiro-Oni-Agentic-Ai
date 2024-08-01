@@ -20,11 +20,13 @@ const AddClusterContainer = styled.div`
 
 const ToptabsContainer = styled.div`
   border-radius: 20px 20px 0 0;
-  background-color: var(--col-F5F7FA);
+  background-color: ${props => props.theme.colors.lightGrey};
   padding: 10px 0 0 0;
 `;
 
 const NavTabs = styled.div`
+  border-bottom: 1px solid ${props => props.theme.colors.border};
+
   display: flex;
 
   .nav-link {

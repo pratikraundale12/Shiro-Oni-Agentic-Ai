@@ -30,14 +30,19 @@ const Container = styled.div`
 `;
 
 const RegistryDetailsDiv = styled.div`
-  background-color: white;
+  background-color: ${props => props.theme.colors.white};
   padding: 20px;
   border-radius: 8px;
 `;
 
-const Title = styled.p`
+const Title = styled.h6`
+  font-family: noto sans;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 21.79px;
+  letter-spacing: -0.005em;
   margin-bottom: 20px;
-  font-weight: 500;
+  color: #4b5564;
 `;
 
 const Row = styled.div`
@@ -55,15 +60,23 @@ const Column = styled.div`
 `;
 
 const BoxContentArea = styled.div`
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 
   p {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    font-size: 13px;
     font-weight: 500;
+    line-height: 15.73px;
+    letter-spacing: -0.005em;
+    color: #2d343f;
   }
 
   span {
-    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14.52px;
+    letter-spacing: -0.005em;
+    color: #7a7a7a;
   }
 `;
 
@@ -74,8 +87,11 @@ const CertificateAddedDiv = styled.div`
 `;
 
 const FileSize = styled.span`
-  margin-left: auto;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: -0.01em;
+  color: #4b5564;
 `;
 
 const PasswordText = styled.div`
@@ -107,8 +123,11 @@ const FileDetails = styled.div`
 `;
 
 const FilePath = styled.span`
-  display: block;
-  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14.52px;
+  letter-spacing: -0.005em;
+  color: #7a7a7a;
 `;
 
 const FileTypeContainer = styled.div`
@@ -116,16 +135,15 @@ const FileTypeContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  margin-bottom: 0.5rem !important;
 `;
 
 const FileType = styled.div`
-  display: flex;
-  align-items: center;
-  font-weight: 500;
-
-  & > svg {
-    margin-left: 8px;
-  }
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: -0.01em;
+  color: #4b5564;
 `;
 
 const BottomButtonDivs = styled.div`
@@ -161,6 +179,22 @@ const NoDataText = styled.div`
   color: #666;
 `;
 
+const Passphrase = styled.div`
+  align-items: center !important;
+  justify-content: flex-start !important;
+  display: flex !important;
+`;
+
+const PFXPassphrase = styled.div`
+margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: v500);
+    line-height: 15.73px;
+    letter-spacing: -0.005em;
+    color: var(--model-heading);
+}
+`;
+
 export const AddRegistry = ({
   setNewRegistry,
   clusterData,
@@ -182,14 +216,10 @@ export const AddRegistry = ({
   });
   const [registries, setRegistries] = useState([]);
   const selectedRegistryId = watch('registry');
-  // const [selectedRegistryId, setSelectedRegistryId] = useState(
-  // watch('registry')
-  // );
 
   const [openSummary, setOpenSummary] = useState(false);
   const [testMessage, setTestMessage] = useState('');
 
-  // const [ selectedRegistryData,setSelectedRegistryData] = useState()
   console.log(registry_id, 'reggggggggiddddddddd');
   const fetchRegistry = async () => {
     try {
@@ -228,15 +258,6 @@ export const AddRegistry = ({
   };
 
   const testRegistryData = async () => {
-    // setRegistryData({
-    //   name: registryData.name,
-    //   registry_url: registryData.registry_url,
-    //   username: registryData?.username,
-    //   password: registryData?.password,
-    //   file: registryData?.file,
-    //   passphrase: registryData?.passphrase,
-    // })
-    // console.log("datasssssss",data)
     const payload = new FormData();
     setTestLoader(true);
     registryData?.id && payload.append('id', registryData?.id);
@@ -256,8 +277,6 @@ export const AddRegistry = ({
       setSuccessTest(true);
       setContinueStatus(true);
       setTestLoader(false);
-
-      // setClusterData(clusterFormData);
       console.log('tested');
     } else {
       setContinueStatus(false);
@@ -337,10 +356,10 @@ export const AddRegistry = ({
                       </FileDetails>
                     </FileInfo>
                   </CertificateAddedDiv>
-                  <div className="d-flex align-items-center justify-content-start">
-                    <p className="txt me-4">PFX Paraphrase:</p>
+                  <Passphrase>
+                    <PFXPassphrase>PFX Paraphrase:</PFXPassphrase>
                     <PasswordText>***********</PasswordText>
-                  </div>
+                  </Passphrase>
                 </Column>
               </Row>
               <BottomButtonDiv>

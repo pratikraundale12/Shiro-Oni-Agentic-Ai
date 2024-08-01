@@ -37,13 +37,13 @@ flex: 0 0 auto;
 `;
 
 const Title = styled.h4`
-  margin-bottom: 8px;
   font-size: 14px;
+  font-weight: 500;
   line-height: 18.52px;
   letter-spacing: -0.005em;
   text-align: left;
   color: #2d343f;
-  font-family: noto;
+  margin-bottom: 0.5rem;
 `;
 
 const Info = styled.div`
@@ -51,7 +51,12 @@ const Info = styled.div`
 `;
 
 const ClusterName = styled.div`
-  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18.52px;
+  letter-spacing: -0.005em;
+  color: #7a7a7a;
+  white-space: nowrap;
 `;
 
 const ClusterLink = styled.a`
@@ -72,6 +77,11 @@ const FileDetails = styled.div`
   align-items: center !important;
   justify-content: space-between !important;
   display: flex;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: -0.01em;
+  color: #4b5564;
 `;
 
 const FileSize = styled.div`
@@ -88,13 +98,38 @@ const FileIconStyle = styled.div`
 `;
 
 const ModalBody = styled.div`
-  padding: 18px 0 0;
+  // padding: 18px 0 0;
   position: relative;
-  // flex: 1 1 auto;
 `;
 
 const FileName = styled.div`
   white-space: nowrap;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14.52px;
+  letter-spacing: -0.005em;
+  color: #7a7a7a;
+  margin-top: 0.5rem;
+`;
+
+const DetailsTitle = styled.div`
+  font-family: noto sans;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 21.79px;
+  letter-spacing: -0.005em;
+  text-align: left;
+  color: #4b5564;
+  margin-bottom: 20px;
+`;
+
+const RowTwo = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  margin-right: 1.5rem;
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
 `;
 
 export const SummaryModal = ({
@@ -258,229 +293,148 @@ export const SummaryModal = ({
   };
 
   return (
-    <Modal
-      title="Cluster Summary"
-      isOpen={openSummary}
-      onRequestClose={() => setOpenSummary(false)}
-      size="lg"
-      secondaryButtonText="Cancel"
-      primaryButtonText="Continue"
-      onSubmit={handleSubmit}
-      isLoading={loadingPost}
-    >
-      <ModalBody>
-        <ClusterDetailsContainer>
-          <Title>Cluster Details</Title>
-          <Row>
-            <Col>
-              <Row>
-                <Info width="60%">
-                  <Title>Cluster Name</Title>
-                  <ClusterName>{clusterData.name}</ClusterName>
-                </Info>
-                <Info width="40%">
-                  <Title>Cluster URL</Title>
-                  <ClusterLink href="#">{clusterData.nifi_url}</ClusterLink>
-                </Info>
-              </Row>
-              <Row>
-                <Info width="60%">
-                  <Title>Username</Title>
-                  <ClusterName>{clusterData?.username || 'N/A'}</ClusterName>
-                </Info>
-                <Info width="40%">
-                  <Title>Password</Title>
-                  <Password>
-                    {clusterData?.password ? '***********' : 'N/A'}
-                  </Password>
-                </Info>
-              </Row>
-              <Row>
-                <Info width="60%">
-                  <Title>PFX Passphrase</Title>
-                  <ClusterName>
-                    {' '}
-                    {clusterData?.passphrase ? '**********' : 'N/A'}
-                  </ClusterName>
-                </Info>
-                <Info width="40%">
-                  <Title>Nifi Certificate</Title>
-                  <Files>
-                    <FileIconStyle>
-                      <FileIcon width={30} height={70} />
-                    </FileIconStyle>
-                    <FileBox>
-                      <FileDetails>
-                        <span>PFX file</span>
-                        <FileSize>3.7KB</FileSize>
-                      </FileDetails>
+    <>
+      <Modal
+        title="Cluster Summary"
+        isOpen={openSummary}
+        onRequestClose={() => setOpenSummary(false)}
+        size="lg"
+        secondaryButtonText="Cancel"
+        primaryButtonText="Continue"
+        onSubmit={handleSubmit}
+        isLoading={loadingPost}
+      >
+        <ModalBody>
+          <ClusterDetailsContainer>
+            <DetailsTitle>Cluster Details</DetailsTitle>
+            <Row>
+              <Col>
+                <RowTwo>
+                  <Info width="60%">
+                    <Title>Cluster Name</Title>
+                    <ClusterName>{clusterData.name}</ClusterName>
+                  </Info>
+                  <Info width="40%">
+                    <Title>Cluster URL</Title>
+                    <ClusterName href="#">{clusterData.nifi_url}</ClusterName>
+                  </Info>
+                </RowTwo>
+                <RowTwo>
+                  <Info width="60%">
+                    <Title>Username</Title>
+                    <ClusterName>{clusterData?.username || 'N/A'}</ClusterName>
+                  </Info>
+                  <Info width="40%">
+                    <Title>Password</Title>
+                    <Password>
+                      {clusterData?.password ? '***********' : 'N/A'}
+                    </Password>
+                  </Info>
+                </RowTwo>
+                <RowTwo>
+                  <Info width="60%">
+                    <Title>PFX Passphrase</Title>
+                    <ClusterName>
+                      {' '}
+                      {clusterData?.passphrase ? '**********' : 'N/A'}
+                    </ClusterName>
+                  </Info>
+                  <Info width="40%">
+                    <Title>Nifi Certificate</Title>
+                    <Files>
+                      <FileIconStyle>
+                        <FileIcon width={30} height={70} />
+                      </FileIconStyle>
+                      <FileBox>
+                        <FileDetails>
+                          <span>PFX file</span>
+                          {clusterData?.file && <FileSize>3.7KB</FileSize>}
+                        </FileDetails>
 
-                      <FileName>
-                        {clusterData?.file
-                          ? `${clusterData?.file?.name || clusterData?.file}`
-                          : 'N/A'}
-                      </FileName>
-                    </FileBox>
-                  </Files>
-                </Info>
-              </Row>
-            </Col>
-          </Row>
-        </ClusterDetailsContainer>
+                        <FileName>
+                          {clusterData?.file
+                            ? `${clusterData?.file?.name || clusterData?.file}`
+                            : 'N/A'}
+                        </FileName>
+                      </FileBox>
+                    </Files>
+                  </Info>
+                </RowTwo>
+              </Col>
+            </Row>
+          </ClusterDetailsContainer>
 
-        <ClusterDetailsContainer>
-          <Title>Registry Details</Title>
-          <Row>
-            <Col>
-              <Row>
-                <Info width="60%">
-                  <Title>Registry Name</Title>
-                  <ClusterName>{registryData.name}</ClusterName>
-                </Info>
-                <Info width="40%">
-                  <Title>Registry URL</Title>
-                  <ClusterLink href="#">
-                    {registryData.registry_url}
-                  </ClusterLink>
-                </Info>
-              </Row>
-              <Row>
-                <Info width="60%">
-                  <Title>Username</Title>
-                  <ClusterName>{registryData?.username || 'N/A'}</ClusterName>
-                </Info>
-                <Info width="40%">
-                  <Title>Password</Title>
-                  <Password>
-                    {' '}
-                    {registryData?.password ? '***********' : 'N/A'}
-                  </Password>
-                </Info>
-              </Row>
-              <Row>
-                <Info width="60%">
-                  <Title>PFX Passphrase</Title>
-                  <ClusterName>
-                    {registryData?.passphrase ? '*********' : 'N/A'}
-                  </ClusterName>
-                </Info>
-                <Info width="40%">
-                  <Title>Nifi Certificate</Title>
-                  <Files>
-                    <FileIconStyle>
-                      <FileIcon width={30} height={70} />
-                    </FileIconStyle>
-                    <FileBox>
-                      <FileDetails>
-                        <span>PFX file</span>
-                        <FileSize>3.7KB</FileSize>
-                      </FileDetails>
+          <ClusterDetailsContainer>
+            <DetailsTitle>Registry Details</DetailsTitle>
+            <Row>
+              <Col>
+                <RowTwo>
+                  <Info width="60%">
+                    <Title>Registry Name</Title>
+                    <ClusterName>{registryData.name}</ClusterName>
+                  </Info>
+                  <Info width="40%">
+                    <Title>Registry URL</Title>
+                    <ClusterName href="#">
+                      {registryData.registry_url}
+                    </ClusterName>
+                  </Info>
+                </RowTwo>
+                <RowTwo>
+                  <Info width="60%">
+                    <Title>Username</Title>
+                    <ClusterName>{registryData?.username || 'N/A'}</ClusterName>
+                  </Info>
+                  <Info width="40%">
+                    <Title>Password</Title>
+                    <Password>
+                      {registryData?.password ? '***********' : 'N/A'}
+                    </Password>
+                  </Info>
+                </RowTwo>
+                <RowTwo>
+                  <Info width="60%">
+                    <Title>PFX Passphrase</Title>
+                    <ClusterName>
+                      {' '}
+                      {registryData?.passphrase ? '**********' : 'N/A'}
+                    </ClusterName>
+                  </Info>
+                  <Info width="40%">
+                    <Title>Nifi Certificate</Title>
+                    <Files>
+                      <FileIconStyle>
+                        <FileIcon width={30} height={70} />
+                      </FileIconStyle>
+                      <FileBox>
+                        <FileDetails>
+                          <span>PFX file</span>
+                          {registryData?.file && <FileSize>3.7KB</FileSize>}
+                        </FileDetails>
 
-                      <FileName>
-                        {registryData?.file
-                          ? `${registryData?.file?.name || registryData?.file}`
-                          : 'N/A'}
-                      </FileName>
-                    </FileBox>
-                  </Files>
-                </Info>
-              </Row>
-            </Col>
-          </Row>
-        </ClusterDetailsContainer>
-        {/* Repeat for the second cluster details */}
-        {/* <ClusterDetailsContainer>
-          <Title>Registry Details</Title>
-          <Row>
-            <Col size="6">
-              <Row>
-                <Info width="60%">
-                  <Title>Registry Name</Title>
-                  <ClusterName>{registryData.name}</ClusterName>
-                </Info>
-                <Info width="40%">
-                  <Title>Registry URL</Title>
-                  <ClusterLink href="#">
-                    {registryData.registry_url}
-                  </ClusterLink>
-                </Info>
-              </Row>
-              <Row>
-                <Info width="60%">
-                  <Title>Username</Title>
-                  <ClusterName>{registryData?.username || 'N/A'}</ClusterName>
-                </Info>
-                <Info width="40%">
-                  <Title>Password</Title>
-                  <Password>
-                    {registryData?.password ? '***********' : 'N/A'}
-                  </Password>
-                </Info>
-              </Row>
-              <Row>
-                <Info width="60%">
-                  <Title>PFX Passphrase</Title>
-                  <ClusterName>
-                    {registryData?.passphrase ? '***********' : 'N/A'}
-                  </ClusterName>
-                </Info>
-                <Info width="40%">
-                  <Title>Nifi Certificate</Title>
-                  <label
-                    htmlFor="cluster-certificate"
-                    style={{ position: 'relative' }}
-                  >
-                    <FileBox>
-                      <FileIcon
-                        viewBox="0 0 50 50"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M27.4401 6.25H18.7493C14.821 6.25 12.8568 6.25 11.6364 7.47039C10.416 8.69078 10.416 10.655 10.416 14.5833V35.4167C10.416 39.345 10.416 41.3092 11.6364 42.5296C12.8568 43.75 14.821 43.75 18.7493 43.75H31.2494C35.1777 43.75 37.1419 43.75 38.3623 42.5296C39.5827 41.3092 39.5827 39.345 39.5827 35.4167V18.3926C39.5827 17.541 39.5827 17.1152 39.4241 16.7324C39.2655 16.3495 38.9644 16.0484 38.3623 15.4463L30.3864 7.47039C29.7843 6.86824 29.4832 6.56717 29.1003 6.40858C28.7175 6.25 28.2917 6.25 27.4401 6.25Z"
-                          stroke="#33363F"
-                          strokeWidth="2"
-                        />
-                        <path
-                          d="M27.084 6.25V14.5833C27.084 16.5475 27.084 17.5296 27.6942 18.1398C28.3044 18.75 29.2865 18.75 31.2507 18.75H39.584"
-                          stroke="#33363F"
-                          strokeWidth="2"
-                        />
-                      </FileIcon>
-                      <FileDetails>
-                        <span className="me-2 pfx-file">PFX file</span>
-                        <span>
-                          <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M9.99935 18.3327C5.39697 18.3327 1.66602 14.6017 1.66602 9.99935C1.66602 5.39697 5.39697 1.66602 9.99935 1.66602C14.6017 1.66602 18.3327 5.39697 18.3327 9.99935C18.3327 14.6017 14.6017 18.3327 9.99935 18.3327ZM9.16602 9.16602V14.166H10.8327V9.16602H9.16602ZM9.16602 5.83268V7.49935H10.8327V5.83268H9.16602Z"
-                              fill="#DDE4F0"
-                            />
-                          </svg>
-                        </span>
-                      </FileDetails>
-                      <FileSize>30MB</FileSize>
-                    </FileBox>
-                    <FileName>
-                      {registryData?.file
-                        ? `${registryData?.file?.name || registryData?.file}`
-                        : 'N/A'}
-                    </FileName>
-                    <FileInput type="file" id="cluster-certificate" />
-                  </label>
-                </Info>
-              </Row>
-            </Col>
-          </Row>
-        </ClusterDetailsContainer> */}
-
-        <ToastContainer />
-      </ModalBody>
-    </Modal>
+                        <FileName>
+                          {registryData?.file
+                            ? `${registryData?.file?.name || registryData?.file}`
+                            : 'N/A'}
+                        </FileName>
+                      </FileBox>
+                    </Files>
+                  </Info>
+                </RowTwo>
+              </Col>
+            </Row>
+          </ClusterDetailsContainer>
+        </ModalBody>
+      </Modal>
+      <ToastContainer
+        theme="colored"
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
+    </>
   );
 };

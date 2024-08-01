@@ -13,7 +13,6 @@ import { SummaryModal } from './SummaryModal';
 import {
   SmallPerfileIcon,
   QRIcons,
-  // CircleExclamationMarkIcon,
   PlusCircleIcon,
   FileIcon,
   WhiteBoradIcon,
@@ -24,16 +23,14 @@ import {
   LinkIcon,
 } from '../../../assets';
 import { testRegistry } from '../../../utils/services';
+import { SuccessTestModal } from './SuccessTestModal';
+import { FailedTestModal } from './FailedTestModal';
 
 const InputContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-`;
-
-const StyledInputField = styled(InputField)`
-  flex: 1;
 `;
 
 const FlexContainer = styled.div`
@@ -503,53 +500,18 @@ export const AddNewRegistry = ({
           </BottomButtonDivs>
         </form>
       </ParentDiv>
-      {/* //testing Modal */}
-      <Modal
-        title="Testing Successfull"
-        isOpen={successTest}
-        onRequestClose={() => setSuccessTest(false)}
-        size="sm"
-        // secondaryButtonText="Cancel"
-        primaryButtonText="Continue"
-        onSubmit={() => setSuccessTest(false)}
-      >
-        <>
-          <div className="text-center">
-            <RightCircleIcon color="#0CBF59" />
-          </div>
-          <h5 className="pt-4 mt-2 mb-0 text-center">
-            Registry Test Successful
-          </h5>
-          <p className="pt-3 mb-0 text-center">
-            Your registry Test was successful. You <br /> can now proceed to the
-            next steps.
-          </p>
-        </>
-      </Modal>
 
-      <Modal
-        title="Testing Failed"
-        isOpen={failedTest}
-        onRequestClose={() => setFailedTest(false)}
-        size="sm"
-        primaryButtonText="Continue"
-        onSubmit={() => setFailedTest(false)}
-      >
-        <>
-          <div className="text-center">
-            <ExclamationFailedTestingIcon />
-          </div>
-          <h5 className="pt-4 mt-2 mb-0 text-center">Registry Test Failed</h5>
-          {testMessage != '' ? (
-            <p className="pt-3 mb-0 text-center">{testMessage}</p>
-          ) : (
-            <p className="pt-3 mb-0 text-center">
-              We encountered an issue while testing your Registry. Please check
-              if your File is Correct
-            </p>
-          )}
-        </>
-      </Modal>
+      <SuccessTestModal
+        successTest={successTest}
+        setSuccessTest={setSuccessTest}
+        name="Registry"
+      />
+
+      <FailedTestModal
+        failedTest={failedTest}
+        setFailedTest={setFailedTest}
+        testMessage={testMessage}
+      />
 
       <AddCertificate
         addCertificate={addCertificate}
