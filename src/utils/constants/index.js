@@ -15,5 +15,9 @@ export const REFRESH_OPTIONS = [
   { value: 10, label: '10 Seconds' },
 ];
 
+export const RegexConst = {
+  NAME: /^[a-zA-Z0-9 ]{3,}$/,
+  NIFI_URL: /^(https?:\/\/)/,
+};
 export * from './login';
 export const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;

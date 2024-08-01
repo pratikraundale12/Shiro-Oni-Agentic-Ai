@@ -26,10 +26,10 @@ import {
   PeopleIcon,
   ReadyFlowIcon,
 } from '../assets';
+import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import Deploy from '../pages/Namespaces/Deploy';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import Summary from '../pages/Namespaces/Summary';
-// import { currentUser } from '../utils/services/auth';
 
 export const ROUTES_MENU = [
   {
@@ -53,8 +53,12 @@ export const ROUTES_MENU = [
         component: <ListClusters />,
       },
       {
-        path: ['add', 'edit/:id'],
+        path: ['add', 'edit'],
         component: <AddCluster />,
+      },
+      {
+        path: ['summary'],
+        component: <ClusterSummary />,
       },
     ],
   },

@@ -92,6 +92,7 @@ const Button = ({
   size = 'md',
   children,
   isLoading = false,
+  disabled = false, // Add the disabled prop here
   ...buttonProps
 }) => {
   if (isLoading) {
@@ -115,6 +116,7 @@ const Button = ({
       type={type}
       variant={variant}
       icon={icon}
+      disabled={disabled} // Pass the disabled prop to StyledButton
       {...buttonProps}
     >
       {icon && iconPosition === 'left' && (
@@ -136,6 +138,7 @@ Button.propTypes = {
   iconPosition: PropTypes.oneOf(['left', 'right']),
   variant: PropTypes.oneOf(['primary', 'secondary']),
   isLoading: PropTypes.bool,
+  disabled: PropTypes.bool, // Add PropTypes for the disabled prop
 };
 
 export default Button;

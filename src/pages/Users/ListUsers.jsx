@@ -7,6 +7,7 @@ import {
   TextRender,
   StatusRender,
   ProfileRender,
+  IconButton,
 } from '../../components';
 import { AddUserModal } from './AddUserModal';
 import { PencilIcon, DeleteSmallIcon, DeleteDustbinIcon } from '../../assets';
@@ -25,12 +26,6 @@ const ActionTd = styled.div`
   justify-content: start;
   gap: 15px;
 `;
-const IconWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-`;
 
 export const ListUsers = () => {
   const { state, setState } = useGlobalContext();
@@ -38,7 +33,7 @@ export const ListUsers = () => {
   const getActionsMenu = item => (
     <div>
       <ActionTd>
-        <IconWrapper
+        <IconButton
           onClick={() =>
             setState({
               ...state,
@@ -47,9 +42,9 @@ export const ListUsers = () => {
             })
           }
         >
-          <PencilIcon color="white" />
-        </IconWrapper>
-        <IconWrapper
+          <PencilIcon />
+        </IconButton>
+        <IconButton
           onClick={() =>
             setState({
               ...state,
@@ -58,8 +53,8 @@ export const ListUsers = () => {
             })
           }
         >
-          <DeleteSmallIcon color="white" />
-        </IconWrapper>
+          <DeleteSmallIcon color="red" />
+        </IconButton>
       </ActionTd>
     </div>
   );

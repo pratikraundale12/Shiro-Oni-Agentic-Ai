@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { PencilIcon } from '../../../assets';
+import { CircleExclamationMarkIcon, ThreedotsIcon } from '../../../assets';
 
 // Styled components based on the provided CSS
 const ActionTd = styled.div`
@@ -26,10 +26,10 @@ export const ActionRender = ({ handleMenuClick, item }) => {
   return (
     <ActionTd>
       <IconButton>
-        <PencilIcon />
+        <CircleExclamationMarkIcon />
       </IconButton>
       <IconButton onClick={event => handleMenuClick(event, item)}>
-        <PencilIcon />
+        <ThreedotsIcon />
       </IconButton>
     </ActionTd>
   );

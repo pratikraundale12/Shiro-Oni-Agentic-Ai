@@ -7,6 +7,9 @@ const TextColor = styled.div`
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.lg};
   font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 export const TextRender = ({ text }) => {

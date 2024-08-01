@@ -1,6 +1,11 @@
 import { debounce, get, isEmpty } from 'lodash';
 import { SEARCH_DELAY } from '../constants';
-import { getClustersList, getNamespacesList, getUsersList } from '../services';
+import {
+  getClustersList,
+  getNamespacesList,
+  getUsersList,
+  getNodeList,
+} from '../services';
 import { toast } from 'react-toastify';
 
 export const hasError = (errors, name) => {
@@ -13,6 +18,7 @@ const fetchListData = {
   clusters: getClustersList,
   deploy: getNamespacesList,
   namespaces: getNamespacesList,
+  nodeList: getNodeList,
 };
 
 export const fetchGridData = debounce(

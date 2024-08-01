@@ -26,6 +26,7 @@ const Header = styled.div`
 
 const Body = styled.div`
   padding: 16px;
+  // flex: 1;
 `;
 
 const Footer = styled.div`
@@ -126,7 +127,9 @@ export const Modal = ({
         <Title>{title}</Title>
         <SvgButton icon={<CloseIcon />} onClick={onRequestClose} />
       </Header>
-      <Body>{children}</Body>
+      <Body style={title === 'Cluster Summary' ? { flex: 1 } : {}}>
+        {children}
+      </Body>{' '}
       <Footer size={size}>
         {secondaryButtonText && (
           <Button

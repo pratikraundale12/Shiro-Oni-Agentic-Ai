@@ -1,3 +1,13 @@
+import {
+  REFRESH_OPTIONS,
+  STATUS_OPTIONS,
+  useGlobalContext,
+  fetchGridData,
+} from '../../utils';
+import { useNavigate } from 'react-router-dom';
+import { deleteCluster } from '../../utils/services';
+import { ModalWithIcon } from '../../shared';
+import { toast } from 'react-toastify';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
@@ -9,8 +19,12 @@ import {
   TextRender,
   UrlRender,
 } from '../../components';
-import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../utils';
-import { DeleteSmallIcon, OpenEyeIcon, PencilIcon } from '../../assets';
+import {
+  DeleteDustbinIcon,
+  DeleteSmallIcon,
+  OpenEyeIcon,
+  PencilIcon,
+} from '../../assets';
 
 const Container = styled.div`
   padding: 1.4rem;
@@ -62,13 +76,16 @@ const EyeIcon = styled(OpenEyeIcon)`
 const getX = x => 1790 > x < 1830 && 1446;
 
 export const ListClusters = () => {
+  const navigate = useNavigate();
+  const { state, setState } = useGlobalContext();
   const menuRef = useRef(null);
   const [menuState, setMenuState] = useState({
     isVisible: false,
     x: 0,
     y: 0,
-    row: null,
+    row: {},
   });
+
   const COLUMNS = [
     {
       label: 'Name',
@@ -82,7 +99,12 @@ export const ListClusters = () => {
     },
     {
       label: 'Cluster Status',
-      renderCell: () => <ProgressBarRender count={1} maxCount={5} />,
+      renderCell: item => (
+        <ProgressBarRender
+          count={item.connected_nodes || 0}
+          maxCount={item.total_nodes || 1}
+        />
+      ),
       width: '20%',
     },
     {
@@ -101,6 +123,17 @@ export const ListClusters = () => {
 
   const SORT_FNS = {
     NAME: array => array.sort((a, b) => a.name.localeCompare(b.name)),
+  };
+
+  const deleteUserConfirmed = async () => {
+    const response = await deleteCluster(state.selectedItem.id);
+    if (response.status == 204) {
+      fetchGridData({ setState, module: 'clusters' });
+      toast.success('cluster Deleted Successfully');
+      setState({ ...state, clusterDeleteModal: false });
+    } else {
+      toast.error('error occured');
+    }
   };
 
   const handleMenuClick = (event, item) => {
@@ -125,7 +158,23 @@ export const ListClusters = () => {
 
   const handleClick = type => {
     handleCloseMenu();
-    console.log(type);
+    if (type === 'edit') {
+      navigate('/cluster/edit', { state: menuState.row });
+    }
+    if (type === 'view') {
+      setState({
+        ...state,
+        nodeClusterId: menuState.row.id,
+      });
+      navigate('/cluster/summary');
+    }
+    if (type === 'delete') {
+      setState({
+        ...state,
+        clusterDeleteModal: true,
+        selectedItem: menuState.row,
+      });
+    }
   };
 
   useEffect(() => {
@@ -137,6 +186,17 @@ export const ListClusters = () => {
 
   return (
     <Container>
+      <ModalWithIcon
+        primaryButtonText="Delete"
+        secondaryButtonText="Cancel"
+        icon={<DeleteDustbinIcon />}
+        isOpen={state.clusterDeleteModal}
+        onSubmit={deleteUserConfirmed}
+        onRequestClose={() => setState({ ...state, clusterDeleteModal: false })}
+        primaryText="Are You Sure You Want to Delete This Cluster"
+        secondaryText="It Will Temporary Remove the Cluster"
+      />
+
       <Grid
         module="clusters"
         title="Clusters List"
