@@ -30,7 +30,7 @@ export const ListNamespaces = () => {
       label: 'Name',
       renderCell: item => (
         <div
-          style={{ color: 'red', cursor: 'pointer' }}
+          style={{ color: '#C52B2B', cursor: 'pointer' }}
           role="button"
           tabIndex="0"
           onClick={() => handleSelectNamespace(item.id)}
@@ -47,16 +47,16 @@ export const ListNamespaces = () => {
     },
     {
       label: 'Flow Name',
-      renderCell: item => <TextRender text={item.flowName} />,
+      renderCell: item => <TextRender text={item.flowName || 'N/A'} />,
     },
     {
       label: 'Bucket Name',
-      renderCell: item => <TextRender text={item.bucketName} />,
+      renderCell: item => <TextRender text={item.bucketName || 'N/A'} />,
     },
     {
       label: 'Version',
       width: '10%',
-      renderCell: item => <TextRender text={item.version} />,
+      renderCell: item => <TextRender text={item.version || 'N/A'} />,
     },
     {
       width: '10%',
@@ -79,7 +79,17 @@ export const ListNamespaces = () => {
       label: 'Actions',
       width: '10%',
       renderCell: item => (
-        <Button onClick={() => handleSelect(item.id)}>Select</Button>
+        <Button
+          onClick={() => handleSelect(item.id)}
+          disabled={
+            !item.flowId ||
+            !item.version ||
+            item.flowId === 'N/A' ||
+            item.version === 'N/A'
+          }
+        >
+          Select
+        </Button>
       ),
     },
   ];

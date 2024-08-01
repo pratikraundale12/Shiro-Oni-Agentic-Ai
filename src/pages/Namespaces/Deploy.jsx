@@ -92,9 +92,7 @@ const BottomButton = styled.div`
 `;
 
 const handleKeyPress = event => {
-  if (event.key === 'Enter' || event.key === ' ') {
-    // handleName
-  }
+  console.log(event);
 };
 
 const breadcrumbData = [
@@ -129,11 +127,11 @@ const Deploy = () => {
       label: 'Namespace',
       renderCell: item => (
         <div
-          style={{ color: 'red', cursor: 'pointer' }}
+          style={{ color: '#C52B2B', cursor: 'pointer' }}
           role="button"
           tabIndex="0"
           onClick={() => handleSelectNamespace(item.id)}
-          onKeyPress={event => handleKeyPress(event, item.name)}
+          onKeyDown={event => handleKeyPress(event, item.name)}
         >
           {item?.name}
         </div>
@@ -145,15 +143,15 @@ const Deploy = () => {
     },
     {
       label: 'Flow Name',
-      renderCell: item => <div>{item?.flowName}</div>,
+      renderCell: item => <div>{item?.flowName || 'N/A'}</div>,
     },
     {
       label: 'Bucket Name',
-      renderCell: item => <div>{item?.bucketName}</div>,
+      renderCell: item => <div>{item?.bucketName || 'N/A'}</div>,
     },
     {
       label: 'Version',
-      renderCell: item => <div>{item?.version}</div>,
+      renderCell: item => <div>{item?.version || 'N/A'}</div>,
     },
     {
       label: '',
