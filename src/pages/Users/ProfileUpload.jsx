@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Controller } from 'react-hook-form';
-import { UpArrowImageIcon, UserUploadIcon } from '../../assets';
+import { CrossIcon, UpArrowImageIcon, UserUploadIcon } from '../../assets';
 import { toast } from 'react-toastify';
 
 const PreviewImage = styled.img`
@@ -36,9 +36,19 @@ const UploadImageOuterContainer = styled.div`
   border-radius: 50%;
   padding: 28px;
 `;
+const RemoveImage = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  cursor: pointer;
+`;
 
-export const ProfileUpload = ({ name, control, watch, url }) => {
+export const ProfileUpload = ({ name, control, watch, url, setValue }) => {
   const file = watch(name);
+
+  const removeUploadedImage = () => {
+    setValue(name, null);
+  };
 
   const getFilePreview = () =>
     file && file.size > 0 ? URL.createObjectURL(file) : url;
@@ -51,13 +61,13 @@ export const ProfileUpload = ({ name, control, watch, url }) => {
       rules={{ required: !url }}
       render={({ field: { onChange } }) => {
         const handlePhotoUpload = event => {
-          const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+          const validImageTypes = ['image/jpeg', 'image/png'];
           const file = event.target.files[0];
           event.target.value = null;
           if (file && validImageTypes.includes(file.type)) {
             onChange(file);
           } else {
-            toast.error('Please upload a valid image file');
+            toast.error('Please upload a valid image');
           }
         };
 
@@ -65,12 +75,17 @@ export const ProfileUpload = ({ name, control, watch, url }) => {
           <div style={{ position: 'relative' }}>
             <UploadLabel htmlFor="file-upload">
               {file ? (
-                <UploadImageOuterContainer>
-                  <PreviewImage src={getFilePreview()} alt="Profile Preview" />
-                  <ArrowContainer>
-                    <UpArrowImageIcon />
-                  </ArrowContainer>
-                </UploadImageOuterContainer>
+                <>
+                  <UploadImageOuterContainer>
+                    <PreviewImage
+                      src={getFilePreview()}
+                      alt="Profile Preview"
+                    />
+                    <ArrowContainer>
+                      <UpArrowImageIcon />
+                    </ArrowContainer>
+                  </UploadImageOuterContainer>
+                </>
               ) : (
                 <UploadImageOuterContainer>
                   <UploadImageInnerContainer>
@@ -79,6 +94,12 @@ export const ProfileUpload = ({ name, control, watch, url }) => {
                 </UploadImageOuterContainer>
               )}
             </UploadLabel>
+            {file && (
+              <RemoveImage onClick={removeUploadedImage}>
+                Remove image &nbsp;
+                <CrossIcon />
+              </RemoveImage>
+            )}
             <UploadInput
               id="file-upload"
               type="file"
