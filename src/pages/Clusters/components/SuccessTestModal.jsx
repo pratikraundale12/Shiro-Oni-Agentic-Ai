@@ -10,10 +10,10 @@ const Icon = styled.div`
 `;
 
 const Title = styled.h5`
-  ont-family: noto sans;
+  font-family: noto sans;
   font-size: 20px;
   font-weight: 700;
-  color: 2D343F;
+  color: #2d343f;
   line-height: 24px;
   letter-spacing: -0.02em;
   text-align: center !important;
@@ -23,6 +23,7 @@ const Title = styled.h5`
 `;
 
 const Para = styled.p`
+  text-align: center;
   margin-bottom: 0 !important;
   margin-top: 0;
   margin-bottom: 1rem;
@@ -30,7 +31,6 @@ const Para = styled.p`
   display: block;
   margin-block-start: 1em;
   margin-block-end: 1em;
-  margin-inline-start: 140px;
   margin-inline-end: 0px;
 `;
 

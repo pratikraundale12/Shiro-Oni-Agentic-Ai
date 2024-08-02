@@ -78,6 +78,7 @@ const IconWrapper = styled.span.withConfig({
   display: inline-block;
   vertical-align: middle;
   margin-top: 6px;
+  ${props => (props.icon === null ? 'height: 20px;' : '')}
   ${props =>
     props.position === 'right'
       ? `margin-left: ${props.size === 'md' ? 10 : 4}px;`
@@ -119,11 +120,13 @@ const Button = ({
       disabled={disabled} // Pass the disabled prop to StyledButton
       {...buttonProps}
     >
-      {icon && iconPosition === 'left' && (
-        <IconWrapper position={iconPosition}>{icon}</IconWrapper>
+      {iconPosition === 'left' && (
+        <IconWrapper position={iconPosition} icon={icon}>
+          {icon}
+        </IconWrapper>
       )}
       <div>{children}</div>
-      {icon && iconPosition === 'right' && (
+      {iconPosition === 'right' && (
         <IconWrapper position={iconPosition}>{icon}</IconWrapper>
       )}
     </StyledButton>

@@ -1,7 +1,6 @@
 /* eslint-disable */
 
 import React, { useEffect, useState } from 'react';
-import { Modal } from '../../../shared';
 import styled from 'styled-components';
 import { FileIcon, PlusCircleIcon } from '../../../assets';
 import { Button, SelectField } from '../../../shared';
@@ -11,7 +10,8 @@ import { getOneRegistry, getRegistryList } from '../../../utils/services';
 import { SummaryModal } from './SummaryModal';
 import { WhiteBoradIcon } from '../../../assets';
 import { testRegistry } from '../../../utils/services';
-import { RightCircleIcon, ExclamationFailedTestingIcon } from '../../../assets';
+import { SuccessTestModal } from './SuccessTestModal';
+import { FailedTestModal } from './FailedTestModal';
 
 const FlexContainer = styled.div`
   display: flex;
@@ -424,52 +424,17 @@ export const AddRegistry = ({
         registry_id={registry_id}
       />
 
-      <Modal
-        title="Testing Successfull"
-        isOpen={successTest}
-        onRequestClose={() => setSuccessTest(false)}
-        size="sm"
-        // secondaryButtonText="Cancel"
-        primaryButtonText="Continue"
-        onSubmit={() => setSuccessTest(false)}
-      >
-        <>
-          <div className="text-center">
-            <RightCircleIcon color="#0CBF59" />
-          </div>
-          <h5 className="pt-4 mt-2 mb-0 text-center">
-            registry Test Successful
-          </h5>
-          <p className="pt-3 mb-0 text-center">
-            Your registry Test was successful. You <br /> can now proceed to the
-            next steps.
-          </p>
-        </>
-      </Modal>
+      <SuccessTestModal
+        successTest={successTest}
+        setSuccessTest={setSuccessTest}
+        name="Registry"
+      />
 
-      <Modal
-        title="Testing Successfull"
-        isOpen={failedTest}
-        onRequestClose={() => setFailedTest(false)}
-        size="sm"
-        primaryButtonText="Continue"
-        onSubmit={() => setFailedTest(false)}
-      >
-        <>
-          <div className="text-center">
-            <ExclamationFailedTestingIcon width={90} height={65} />
-          </div>
-          <h5 className="pt-4 mt-2 mb-0 text-center">Cluster Test Failed</h5>
-          {testMessage != '' ? (
-            <p className="pt-3 mb-0 text-center">{testMessage}</p>
-          ) : (
-            <p className="pt-3 mb-0 text-center">
-              We encountered an issue while testing your cluster. Please check
-              if your File is Correct
-            </p>
-          )}
-        </>
-      </Modal>
+      <FailedTestModal
+        failedTest={failedTest}
+        setFailedTest={setFailedTest}
+        testMessage={testMessage}
+      />
     </>
   );
 };
