@@ -68,14 +68,14 @@ export const ListUsers = () => {
       label: 'Name',
       renderCell: item => (
         <TextRender
-          text={`${item.first_name} ${item.middle_name} ${item.last_name}`}
+          text={`${item?.first_name || ''} ${item?.middle_name || ''} ${item?.last_name || ''}`}
         />
       ),
       sort: { sortKey: 'NAME' },
     },
     {
       label: 'Username',
-      renderCell: item => <TextRender text={item.username} />,
+      renderCell: item => <TextRender text={item.username || ''} />,
       sort: { sortKey: 'USERNAME' },
     },
     {

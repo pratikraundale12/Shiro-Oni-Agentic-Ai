@@ -3,10 +3,12 @@ import { EMAIL_REGEX } from '../../utils';
 export const userSchema = yup.object().shape({
   first_name: yup
     .string()
+    .trim()
     .matches(/^[A-Za-z\s]+$/, 'First Name must contain only letters and spaces')
     .required('Name is required'),
   last_name: yup
     .string()
+    .trim()
     .matches(/^[A-Za-z\s]+$/, 'Last Name must contain only letters and spaces')
     .required('Name is required'),
   email: yup
@@ -35,6 +37,7 @@ export const editUserSchema = yup.object().shape(
   {
     first_name: yup
       .string()
+      .trim()
       .matches(
         /^[A-Za-z\s]+$/,
         'First Name must contain only letters and spaces'
@@ -42,6 +45,7 @@ export const editUserSchema = yup.object().shape(
       .required('Name is required'),
     last_name: yup
       .string()
+      .trim()
       .matches(
         /^[A-Za-z\s]+$/,
         'Last Name must contain only letters and spaces'

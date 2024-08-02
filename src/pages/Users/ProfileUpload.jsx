@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Controller } from 'react-hook-form';
 import { UpArrowImageIcon, UserUploadIcon } from '../../assets';
+import { toast } from 'react-toastify';
 
 const PreviewImage = styled.img`
   width: 150px;
@@ -19,9 +20,21 @@ const UploadInput = styled.input`
   display: none;
 `;
 const ArrowContainer = styled.div`
-  right: 10px !important;
+  right: 25px !important;
   position: absolute;
-  bottom: 10px;
+  bottom: 25px;
+`;
+const UploadImageInnerContainer = styled.div`
+  height: 115px;
+  width: 115px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+const UploadImageOuterContainer = styled.div`
+  background: #f5f7fa;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  padding: 28px;
 `;
 
 export const ProfileUpload = ({ name, control, watch, url }) => {
@@ -39,25 +52,31 @@ export const ProfileUpload = ({ name, control, watch, url }) => {
       render={({ field: { onChange } }) => {
         const handlePhotoUpload = event => {
           const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
-          if (
-            event.target.files[0] &&
-            validImageTypes.includes(event.target.files[0].type)
-          ) {
-            onChange(event.target.files[0]);
+          const file = event.target.files[0];
+          event.target.value = null;
+          if (file && validImageTypes.includes(file.type)) {
+            onChange(file);
+          } else {
+            toast.error('Please upload a valid image file');
           }
         };
+
         return (
           <div style={{ position: 'relative' }}>
             <UploadLabel htmlFor="file-upload">
               {file ? (
-                <div>
+                <UploadImageOuterContainer>
                   <PreviewImage src={getFilePreview()} alt="Profile Preview" />
                   <ArrowContainer>
                     <UpArrowImageIcon />
                   </ArrowContainer>
-                </div>
+                </UploadImageOuterContainer>
               ) : (
-                <UserUploadIcon />
+                <UploadImageOuterContainer>
+                  <UploadImageInnerContainer>
+                    <UserUploadIcon />
+                  </UploadImageInnerContainer>
+                </UploadImageOuterContainer>
               )}
             </UploadLabel>
             <UploadInput
