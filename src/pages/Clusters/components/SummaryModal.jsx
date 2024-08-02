@@ -169,10 +169,10 @@ export const SummaryModal = ({
 
   const editRegistryData = async () => {
     // setLoading(true);
-    console.log('reeeeeeeeeeee', registryData);
     const payload = new FormData();
     if (registryData?.name) payload.append('name', registryData.name);
-
+    if (registryData?.registry_url)
+      payload.append('registry_url', registryData.registry_url);
     if (registryData?.username)
       payload.append('username', registryData.username);
 
@@ -182,7 +182,7 @@ export const SummaryModal = ({
     if (registryData?.password)
       payload.append('password', registryData.password);
 
-    registryData?.file?.name && payload.append('file', registryData.file.name);
+    registryData?.file?.name && payload.append('file', registryData.file);
 
     const id = registry_id;
     const response = await updateRegistry(id, payload);
@@ -209,11 +209,11 @@ export const SummaryModal = ({
       payload.append('username', null);
     }
 
-    // if (clusterData?.file != '') {
-    //   payload.append('file', clusterData?.file);
-    // } else {
-    //   payload.append('file', null);
-    // }
+    if (clusterData?.file != '') {
+      payload.append('file', clusterData?.file);
+    } else {
+      payload.append('file', null);
+    }
 
     if (clusterData?.passphrase != '') {
       payload.append('passphrase', clusterData.passphrase);
@@ -227,7 +227,7 @@ export const SummaryModal = ({
       payload.append('password', null);
     }
 
-    clusterData?.file?.name && payload.append('file', clusterData.file);
+    // clusterData?.file?.name && payload.append('file', clusterData.file);
 
     const id = clusterId;
     const response = await updateCluster(id, payload);
