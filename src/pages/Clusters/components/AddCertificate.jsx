@@ -1,6 +1,5 @@
-/*eslint-disable*/
-
 import React, { useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Button } from '../../../shared';
 import { CrossIcon, FileIcon } from '../../../assets';
@@ -16,12 +15,6 @@ const InputBox = styled.div`
     align-items: flex-start;
   }
 `;
-
-// const FileIcon = styled.svg`
-//   width: 50px;
-//   height: 50px;
-//   fill: none;
-// `;
 
 const PFXContainer = styled.div`
   display: flex;
@@ -63,10 +56,11 @@ const FileTypeContainer = styled.div`
   width: 100%;
 `;
 const FileType = styled.div`
-  font-weight: 500; /* Make the text bold */
+  font-size: 12px;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 8px; /* Add some space between the text and the icon */
+  gap: 8px;
 `;
 
 const FileSize = styled.span`
@@ -104,8 +98,7 @@ const CertificateContainer = styled.div`
   flex-direction: column;
   width: 100%;
   background: #fff;
-  padding: 20px;
-  margin-top: 20px;
+  padding: 20px 0;
   border-radius: 8px;
 
   label {
@@ -122,12 +115,17 @@ const CertificateHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+  font-size: 14px;
 `;
 
 const CertificateDetailsnew = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+`;
+
+const StyledButton = styled(Button)`
+  height: 36px;
+  padding: 0 16px;
 `;
 
 export const AddCertificate = ({
@@ -210,6 +208,8 @@ export const AddCertificate = ({
       secondaryButtonText="Cancel"
       primaryButtonText="Continue"
       onSubmit={onSubmit}
+      footerAlign="start"
+      contentStyles={{ maxWidth: '34%' }}
     >
       <InputBox>
         <form onSubmit={onSubmit}>
@@ -262,14 +262,9 @@ export const AddCertificate = ({
               </div> */}
 
               <CertificateContainer>
-                <CertificateHeader>
-                  <div>
-                    NiFi Certificate
-                    {/* <CircleExclamationMarkIcon color="#DDE4F0" /> */}
-                  </div>
-                </CertificateHeader>
+                <CertificateHeader>NiFi Certificate</CertificateHeader>
                 <CertificateDetailsnew>
-                  <FileIcon width={50} height={65} />
+                  <FileIcon width={50} height={50} />
                   <FileInfo>
                     <FileDetails>
                       {file ? (
@@ -308,15 +303,14 @@ export const AddCertificate = ({
                             <FileType>PFX file</FileType>
                           </FileTypeContainer>
 
-                          <Button
+                          <StyledButton
                             variant="secondary"
-                            size="sm"
                             onClick={() =>
                               document.getElementById('hiddenFileInput').click()
                             }
                           >
                             Select File
-                          </Button>
+                          </StyledButton>
                           <HiddenFileInput
                             type="file"
                             id="hiddenFileInput"
@@ -360,4 +354,11 @@ export const AddCertificate = ({
       </InputBox>
     </Modal>
   );
+};
+
+AddCertificate.propTypes = {
+  addCertificate: PropTypes.bool.isRequired,
+  setAddCertificate: PropTypes.func.isRequired,
+  certificates: PropTypes.object.isRequired,
+  setCertificate: PropTypes.func.isRequired,
 };

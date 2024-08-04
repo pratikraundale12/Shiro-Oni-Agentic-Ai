@@ -74,3 +74,4 @@ export * from './UpsideSquareIcon';
 export * from './RightIcon';
 export * from './LocalChangesIcon';
 export * from './ThreedotsIcon';
+export * from './NodataIcon';

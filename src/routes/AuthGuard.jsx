@@ -9,7 +9,7 @@ import { useGlobalContext } from '../utils';
 import { currentUser } from '../utils/services';
 
 const Container = styled.div`
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   display: flex;
   background-color: ${props => props.theme.colors.lighter};
@@ -17,11 +17,18 @@ const Container = styled.div`
 
 const Content = styled.main`
   width: 100%;
-  overflow: hidden;
+  height: 100%;
   position: relative;
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
   background-color: ${props => props.theme.colors.white};
+`;
+
+const Wrapper = styled.div`
+  height: calc(100% - ${props => props.theme.header});
+  width: 100%;
+  padding: 24px;
+  overflow-y: auto;
 `;
 
 const AuthGuard = () => {
@@ -59,7 +66,9 @@ const AuthGuard = () => {
       <Sidebar />
       <Content>
         <Header route={route} />
-        <Outlet />
+        <Wrapper>
+          <Outlet />
+        </Wrapper>
       </Content>
     </Container>
   );

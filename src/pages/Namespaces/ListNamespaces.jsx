@@ -1,21 +1,14 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
+
 import { TextRender, Grid } from '../../components';
 import { fetchGridData, REFRESH_OPTIONS, useGlobalContext } from '../../utils';
-// import AuditLog from './AuditLog';
-// import Deploy from './Deploy';
 import { Button } from '../../shared';
 import { OpenEyeIcon } from '../../assets';
 import { useNavigate } from 'react-router-dom';
-import Deploy from './Deploy';
-
-const Container = styled.div`
-  padding: 1.4rem;
-  width: 100%;
-  height: 100%;
-`;
+// import Deploy from './Deploy';
 
 export const ListNamespaces = () => {
+  const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
   // const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   useEffect(() => {
@@ -36,7 +29,6 @@ export const ListNamespaces = () => {
       updatedCount: null,
     }));
   }, []);
-  const navigate = useNavigate();
 
   const COLUMNS = [
     {
@@ -172,7 +164,7 @@ export const ListNamespaces = () => {
   };
 
   return (
-    <Container>
+    <>
       <Grid
         module="namespaces"
         title="Namespaces List"
@@ -182,8 +174,8 @@ export const ListNamespaces = () => {
         clusterOptions={clusterOptions}
         onBreadcrumbClick={onBreadcrumbClick}
       />
-      <Deploy />
+      {/* <Deploy /> */}
       {/* <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} /> */}
-    </Container>
+    </>
   );
 };

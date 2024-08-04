@@ -1,30 +1,36 @@
 import React from 'react';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import { getTheme } from '@table-library/react-table-library/baseline';
-import styled from 'styled-components';
+
 import { LoaderContainer } from '../Loader';
-import { isEmpty } from 'lodash';
 import { theme } from '../../styles';
 import Breadcrumb from '../../shared/Breadcrumb';
-// import { useSort } from '@table-library/react-table-library/sort';
 
 const TableContainer = styled.div`
-  height: 73%;
-  overflow: hidden;
+  height: 90%;
+  overflow: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
+
+  table {
+    overflow: visible;
+  }
 `;
+
 const NoDataText = styled.div`
-  font-family: Noto Sans;
+  font-family: ${props => props.theme.fontNato};
   font-size: 32px;
   font-weight: 600;
   line-height: 43.58px;
   text-align: center;
-  background: #fff;
+  background: ${props => props.theme.colors.white};
   color: #b9c3d3;
 `;
+
 export const Table = ({
   data,
   columns,
@@ -36,24 +42,19 @@ export const Table = ({
     getTheme(),
     {
       Table: `
-        --data-table-library_grid-template-columns:  ${columns
-          .map(column => (column.width ? `${column.width}` : '1fr'))
-          .join(' ')} !important;
-
         th, td {
           border-bottom: none !important;
         }
         th {
-          height: 50px;
+          height: 48px;
         }
 
         td {
-          height: 58px;
+          height: 60px;
         }
       `,
       HeaderRow: `
-         background: #DDE4F0;
-        ;
+        background-color: #F5F7FA;
         color: #444445;
       `,
       Row: `

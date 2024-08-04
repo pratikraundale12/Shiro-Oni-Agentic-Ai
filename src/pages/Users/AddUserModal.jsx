@@ -59,14 +59,14 @@ const FormWrapper = styled.div`
   width: 100%;
 `;
 
-const FormTitle = styled.h3`
+const FormTitle = styled.h5`
   background-color: ${props => props.theme.colors.lightGrey};
   color: ${props => props.theme.colors.darker};
   font-family: ${props => props.theme.fontNato};
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  height: 44px;
-  padding: 16px;
+  padding: 26px 16px;
+  line-height: 13px;
 `;
 
 const FormSection = styled.div`
@@ -104,6 +104,7 @@ const DropDownWrapper = styled.div`
 
 export const AddUserModal = props => {
   const { state, setState } = useGlobalContext();
+  const currentUser = state.currentUser;
   const {
     register,
     reset,
@@ -176,6 +177,14 @@ export const AddUserModal = props => {
           userModal: false,
           selectedItem: null,
         });
+        if (response?.data?.id == currentUser?.id) {
+          setState({
+            ...state,
+            currentUser: response.data,
+            userModal: false,
+            selectedItem: null,
+          });
+        }
       } else {
         toast.error(response.message);
       }
@@ -192,8 +201,9 @@ export const AddUserModal = props => {
   return (
     <div {...props}>
       <Button
-        icon={<PlusCircleIcon width={20} height={20} color="white" />}
+        icon={<PlusCircleIcon width={16} height={16} color="white" />}
         onClick={openModal}
+        size="sm"
       >
         Add New User
       </Button>
@@ -205,6 +215,8 @@ export const AddUserModal = props => {
         secondaryButtonText="Cancel"
         primaryButtonText="Submit"
         onSubmit={handleSubmit(onSubmit)}
+        footerAlign="start"
+        contentStyles={{ minWidth: '60%' }}
       >
         <ImageContainer>
           <ProfileUpload

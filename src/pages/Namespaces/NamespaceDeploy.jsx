@@ -186,7 +186,7 @@ const NamespaceDeploy = ({ isOpen, closePopup, getParamerterContext }) => {
       onSecondarySubmit={getParamerterContext}
       secondaryButtonText="Parameter Context"
       primaryButtonText="Go to Nifi Instance"
-      contentStyles={{ maxWidth: '45%', maxHeight: '50%' }}
+      contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
       onSubmit={handleClick}
       secondaryButtonProps={{
         disabled: !(

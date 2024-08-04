@@ -1,30 +1,28 @@
-/*eslint-disable*/
-
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { InputField, Button, PasswordField } from '../../../shared';
 import { RegexConst } from '../../../utils';
-import { Modal } from '../../../shared';
 import { AddCertificate } from './AddCertificate';
 import { useNavigate } from 'react-router-dom';
 
 import {
   SmallPerfileIcon,
   QRIcons,
-  // CircleExclamationMarkIcon,
   PlusCircleIcon,
   FileIcon,
   WhiteBoradIcon,
   PencilIcon,
   DeleteSmallIcon,
-  RightCircleIcon,
-  ExclamationFailedTestingIcon,
   LinkIcon,
 } from '../../../assets';
 import { testCluster } from '../../../utils/services';
+import { SuccessTestModal } from './SuccessTestModal';
+import { FailedTestModal } from './FailedTestModal';
+import { IconButton } from '../../../components';
 
 const InputContainer = styled.div`
   display: flex;
@@ -32,14 +30,6 @@ const InputContainer = styled.div`
   align-items: center;
   gap: 16px;
 `;
-
-// const StyledInputField = styled(InputField)`
-//   // flex: 1;
-// `;
-
-// const StyledInputFieldpassword = styled(PasswordField)`
-//   // flex: 1;
-// `;
 
 const FlexContainer = styled.div`
   display: flex;
@@ -146,14 +136,7 @@ const CertificateMessage = styled.div`
 const EditDeleteContainer = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const IconButton = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin-left: 10px;
+  gap: 1rem;
 `;
 
 const BottomButtonDivs = styled.div`
@@ -232,9 +215,6 @@ export const AddNewCluster = ({
   const [testMessage, setTestMessage] = useState('');
   const [testStatus, setTestStatus] = useState(false);
 
-  console.log(clusterCertificate, 'clsutercertificate');
-  console.log('clusterData........', clusterData);
-
   const {
     watch,
     register,
@@ -257,7 +237,6 @@ export const AddNewCluster = ({
       file: clusterCertificate?.file,
       passphrase: clusterCertificate?.passphrase,
     });
-    console.log('datasssssss', data);
     const payload = new FormData();
     !clusterCertificate?.file?.name &&
       clusterId &&
@@ -284,13 +263,13 @@ export const AddNewCluster = ({
   };
 
   const onSubmit = data => {
-    console.log('cl', data);
     testClusterData(data);
   };
 
   const watchedFields = watch(['name', 'nifi_url', 'username', 'password']);
 
   useEffect(() => {
+    // eslint-disable-next-line no-unused-vars
     const [name, nifi_url, username, password] = watchedFields;
 
     if (nifi_url?.startsWith('https')) {
@@ -324,7 +303,6 @@ export const AddNewCluster = ({
             label="Cluster Name"
             register={register}
             errors={errors}
-            // onChange={handleInputChange}
           />
           {errors.name && <p>{errors.name.message}</p>}
           <InputField
@@ -335,7 +313,6 @@ export const AddNewCluster = ({
             label="NifiUrl"
             register={register}
             errors={errors}
-            // onChange={handleInputChange}
           />
           {errors.nifi_url && <p>{errors.nifi_url.message}</p>}
           {hideCertificate && (
@@ -349,7 +326,6 @@ export const AddNewCluster = ({
                   label="Username"
                   register={register}
                   errors={errors}
-                  // onChange={handleInputChange}
                 />
               </InputFieldParent>
               <PasswordFieldParent>
@@ -367,6 +343,7 @@ export const AddNewCluster = ({
                   onClick={() => setAddCertificate(true)}
                   icon={<PlusCircleIcon width={20} height={20} color="white" />}
                   disabled={addCertificateSatus}
+                  size="sm"
                 >
                   Add Certificate
                 </Button>
@@ -377,20 +354,14 @@ export const AddNewCluster = ({
             <>
               <CertificateContainer>
                 <CertificateHeader>
-                  <div>
-                    NiFi Certificate
-                    {/* <CircleExclamationMarkIcon color="#DDE4F0" /> */}
-                  </div>
+                  <div>NiFi Certificate</div>
                 </CertificateHeader>
                 <CertificateDetails>
                   <FileIcon width={25} height={35} />
                   <FileInfo>
                     <FileDetails>
                       <FileTypeContainer>
-                        <FileType>
-                          PFX file
-                          {/* <CircleExclamationMarkIcon color="#DDE4F0" /> */}
-                        </FileType>
+                        <FileType>PFX file</FileType>
                         <FileSize>3.7KB</FileSize>
                       </FileTypeContainer>
                       <FilePath>
@@ -429,7 +400,7 @@ export const AddNewCluster = ({
                       setClusterCertificate({ file: '', passphrase: '' });
                     }}
                   >
-                    <DeleteSmallIcon />
+                    <DeleteSmallIcon color="red" />
                   </IconButton>
                 </EditDeleteContainer>
               </UploadCertificateContainer>
@@ -473,53 +444,18 @@ export const AddNewCluster = ({
           </BottomButtonDivs>
         </form>
       </ParentDiv>
-      {/* //testing Success Modal */}
-      <Modal
-        title="Testing Successfull"
-        isOpen={successTest}
-        onRequestClose={() => setSuccessTest(false)}
-        size="sm"
-        primaryButtonText="Continue"
-        onSubmit={() => setSuccessTest(false)}
-      >
-        <>
-          <div className="text-center">
-            <RightCircleIcon color="#0CBF59" />
-          </div>
-          <h5 className="pt-4 mt-2 mb-0 text-center">
-            Cluster Test Successful
-          </h5>
-          <p className="pt-3 mb-0 text-center">
-            Your Cluster Test was successful. You <br /> can now proceed to the
-            next steps.
-          </p>
-        </>
-      </Modal>
 
-      {/* //testing failed Modal */}
-      <Modal
-        title="Testing Failed"
-        isOpen={failedTest}
-        onRequestClose={() => setFailedTest(false)}
-        size="sm"
-        primaryButtonText="Continue"
-        onSubmit={() => setFailedTest(false)}
-      >
-        <>
-          <div className="text-center">
-            <ExclamationFailedTestingIcon />
-          </div>
-          <h5 className="pt-4 mt-2 mb-0 text-center">Cluster Test Failed</h5>
-          {testMessage != '' ? (
-            <p className="pt-3 mb-0 text-center">{testMessage}</p>
-          ) : (
-            <p className="pt-3 mb-0 text-center">
-              We encountered an issue while testing your cluster. Please check
-              if your File is Correct
-            </p>
-          )}
-        </>
-      </Modal>
+      <SuccessTestModal
+        successTest={successTest}
+        setSuccessTest={setSuccessTest}
+        name="Cluster"
+      />
+
+      <FailedTestModal
+        failedTest={failedTest}
+        setFailedTest={setFailedTest}
+        testMessage={testMessage}
+      />
 
       <AddCertificate
         addCertificate={addCertificate}
@@ -529,4 +465,11 @@ export const AddNewCluster = ({
       />
     </>
   );
+};
+
+AddNewCluster.propTypes = {
+  setActiveTab: PropTypes.func,
+  setClusterData: PropTypes.func,
+  clusterData: PropTypes.object,
+  clusterId: PropTypes.string,
 };
