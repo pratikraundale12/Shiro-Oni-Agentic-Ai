@@ -173,6 +173,7 @@ export const ListNamespaces = () => {
         refreshOptions={REFRESH_OPTIONS}
         clusterOptions={clusterOptions}
         onBreadcrumbClick={onBreadcrumbClick}
+        placeholder="Search Namespace, ID, Flow Name, Bucket Name"
       />
       {/* <Deploy /> */}
       {/* <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} /> */}

@@ -86,6 +86,7 @@ export const Grid = ({
   statusOptions = [],
   title = '',
   buttonText = '',
+  placeholder = '',
   addModal = () => {},
   onBreadcrumbClick = () => {},
 }) => {
@@ -184,6 +185,7 @@ export const Grid = ({
         refreshOptions={refreshOptions}
         statusOptions={statusOptions}
         search={search}
+        placeholder={placeholder}
         buttonText={buttonText}
         addModal={addModal}
       />
@@ -252,6 +254,7 @@ Grid.propTypes = {
   refreshOptions: PropTypes.arrayOf(PropTypes.shape({})),
   statusOptions: PropTypes.arrayOf(PropTypes.shape({})),
   title: PropTypes.string,
+  placeholder: PropTypes.string,
   buttonText: PropTypes.string,
   addModal: PropTypes.func,
   breadcrumbs: PropTypes.arrayOf(

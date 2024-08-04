@@ -55,6 +55,7 @@ const AuthGuard = () => {
 
   useEffect(() => {
     fetchCurrentUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isEmpty(user)) {
