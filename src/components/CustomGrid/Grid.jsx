@@ -45,7 +45,7 @@ const ClusterRegistryContainer = styled.div`
 const LoadingText = styled.div`
   color: ${props => props.theme.colors.lightGrey3};
   font-family: ${props => props.theme.fontNato};
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 600;
   text-align: center;
 `;
@@ -157,7 +157,7 @@ export const Grid = ({
     if (isEmpty(DATA.nodes))
       return (
         <LoaderContainer>
-          <NoDataIcon width={150} />
+          <NoDataIcon width={140} />
           <LoadingText>No data found!!</LoadingText>
         </LoaderContainer>
       );
