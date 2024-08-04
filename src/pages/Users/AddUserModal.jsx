@@ -104,6 +104,7 @@ const DropDownWrapper = styled.div`
 
 export const AddUserModal = props => {
   const { state, setState } = useGlobalContext();
+  const currentUser = state.currentUser;
   const {
     register,
     reset,
@@ -176,6 +177,14 @@ export const AddUserModal = props => {
           userModal: false,
           selectedItem: null,
         });
+        if (response?.data?.id == currentUser?.id) {
+          setState({
+            ...state,
+            currentUser: response.data,
+            userModal: false,
+            selectedItem: null,
+          });
+        }
       } else {
         toast.error(response.message);
       }

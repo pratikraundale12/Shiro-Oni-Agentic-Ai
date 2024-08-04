@@ -23,6 +23,7 @@ import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { fetchGridData, useGlobalContext } from '../../utils';
+import { theme } from '../../styles';
 
 const TopSection = styled.div`
   display: flex;
@@ -104,6 +105,14 @@ const DropdownWrapper = styled.div`
 const IdWrapper = styled.div`
   text-overflow: ellipsis;
   overflow: hidden;
+`;
+const StyledSelectField = styled(SelectField)`
+  margin-bottom: 0;
+  margin-right: 1.4rem;
+  padding: 0;
+  > div {
+    margin-top: 0;
+  }
 `;
 export const Dashboard = () => {
   const { state, setState } = useGlobalContext();
@@ -248,7 +257,6 @@ export const Dashboard = () => {
     } else if (selectedClusterId) {
       getClusterDetalis(selectedClusterId);
     }
-    console.log('called');
     return;
   };
 
@@ -283,12 +291,14 @@ export const Dashboard = () => {
         </QuickInsightHeading>
         <DropdownWrapper>
           <DropdownContainer>
-            <SelectField
+            <StyledSelectField
               name="selectedItem"
               control={control}
               options={clusterOptions}
-              label="Select Cluster"
               onChange={onClusterSelect}
+              placeholder="Select Cluster"
+              backgroundColor={theme.colors.lightGrey}
+              size="sm"
             />
           </DropdownContainer>
           <DropdownContainer>
@@ -296,8 +306,10 @@ export const Dashboard = () => {
               name="selectedItem"
               control={control}
               options={namespaceArray || []}
-              label="Select Namespace"
               onChange={onNamespaceSelect}
+              placeholder="Select Namespace"
+              backgroundColor={theme.colors.lightGrey}
+              size="sm"
             />
           </DropdownContainer>
           <DropdownContainer>
@@ -305,9 +317,10 @@ export const Dashboard = () => {
               name="selectedItem"
               control={control}
               options={RefreshArray}
-              label={'Refresh'}
               onChange={onRefreshSelect}
-              placeholder="Refresh"
+              placeholder={` () Refresh`}
+              backgroundColor={theme.colors.lightGrey}
+              size="sm"
             />
           </DropdownContainer>
         </DropdownWrapper>

@@ -19,6 +19,7 @@ import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { Modal } from '../../shared';
 import { Table } from './Table';
 import { TextRender } from './CellRenders';
+import { NoDataIcon } from '../../assets';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -40,6 +41,14 @@ const ClusterRegistryContainer = styled.div`
   display: flex;
   gap: 2%;
   margin-bottom: 1%;
+`;
+const LoadingText = styled.div`
+  color: #b9c3d3;
+  font-family: Noto Sans;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 43.58px;
+  text-align: center;
 `;
 
 const EVENTCOLUMNS = [
@@ -147,7 +156,12 @@ export const Grid = ({
   const getLoader = () => {
     if (loaders[module]) return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
-      return <LoaderContainer>No data found</LoaderContainer>;
+      return (
+        <LoaderContainer>
+          <NoDataIcon />
+          <LoadingText>No data found!!</LoadingText>
+        </LoaderContainer>
+      );
     return null;
   };
 

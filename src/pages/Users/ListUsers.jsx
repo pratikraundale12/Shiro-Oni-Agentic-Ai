@@ -63,14 +63,14 @@ export const ListUsers = () => {
       label: 'Name',
       renderCell: item => (
         <TextRender
-          text={`${item.first_name} ${item.middle_name} ${item.last_name}`}
+          text={`${item?.first_name || ''} ${item?.middle_name || ''} ${item?.last_name || ''}`}
         />
       ),
       sort: { sortKey: 'NAME' },
     },
     {
       label: 'Username',
-      renderCell: item => <TextRender text={item.username} />,
+      renderCell: item => <TextRender text={item.username || ''} />,
       sort: { sortKey: 'USERNAME' },
     },
     {
@@ -121,13 +121,14 @@ export const ListUsers = () => {
   return (
     <>
       <ModalWithIcon
+        title="Delete User"
         primaryButtonText="Delete"
         secondaryButtonText="Cancel"
         icon={<DeleteDustbinIcon />}
         isOpen={state.userDeleteModal}
         onSubmit={deleteUserConfirmed}
         onRequestClose={() => setState({ ...state, userDeleteModal: false })}
-        primaryText="Are You Sure You Want to Delete This User"
+        primaryText="Are You Sure You Want to Delete This User?"
         secondaryText="It Will Temporary Remove the User"
       />
       <Grid

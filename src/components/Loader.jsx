@@ -25,6 +25,7 @@ export const Spinner = styled.div`
 
 export const LoaderContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;

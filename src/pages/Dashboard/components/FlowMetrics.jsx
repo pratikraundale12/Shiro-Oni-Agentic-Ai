@@ -28,10 +28,6 @@ export const FlowMetrics = ({ flowMetricsDataDynamic = [] }) => {
     stroke: {
       curve: 'straight',
     },
-    title: {
-      text: 'Flow Metrics',
-      align: 'center',
-    },
     xaxis: {
       type: 'category',
       categories: ['Flow Files Qued', 'Flow Files In', 'Flow Files Out'],
