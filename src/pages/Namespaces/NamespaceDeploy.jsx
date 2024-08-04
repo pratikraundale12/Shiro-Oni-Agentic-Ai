@@ -158,7 +158,7 @@ const NamespaceDeploy = ({
       onSecondarySubmit={getParamerterContext}
       secondaryButtonText="ParaMeter Context"
       primaryButtonText="Navigate"
-      contentStyles={{ maxWidth: '45%', maxHeight: '50%' }}
+      contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
       //   onSubmit={handleSubmit(onSubmit)}
     >
       <ModalBody className="modal-body">

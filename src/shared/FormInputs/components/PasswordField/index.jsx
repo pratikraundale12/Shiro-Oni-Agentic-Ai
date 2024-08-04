@@ -10,10 +10,9 @@ import { hasError } from '../../../../utils';
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
-  margin-bottom: 0.4rem;
 
   > div {
-    margin-bottom: 0;
+    margin-bottom: 0.4rem;
   }
 
   .eye-icon {

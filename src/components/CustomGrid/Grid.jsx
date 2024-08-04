@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
@@ -26,10 +27,14 @@ const Container = styled.div`
 `;
 
 const TableContainer = styled.div`
-  height: 73%;
-  overflow: hidden;
+  height: 90%;
+  overflow: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
+
+  table {
+    overflow: visible;
+  }
 `;
 
 const ClusterRegistryContainer = styled.div`
@@ -64,8 +69,6 @@ const EVENTCOLUMNS = [
 ];
 
 const getData = (loader = false, data = [], nodes = []) => {
-  // const DATA = { nodes: loaders[module] ? [] : nodes || data };
-
   if (loader) {
     return [];
   }
@@ -97,8 +100,6 @@ export const Grid = ({
           prev = null,
           next = null,
           data = [],
-
-          // nodelist
           name: nodeName = '',
           nifi_url = '',
           registry = {},
@@ -120,20 +121,16 @@ export const Grid = ({
     getTheme(),
     {
       Table: `
-        --data-table-library_grid-template-columns:  ${columns
-          .map(column => (column.width ? column.width : '1fr'))
-          .join(' ')} !important;
-
         th, td {
           border-bottom: none !important;
         }
 
         th {
-          height: 50px;
+          height: 48px;
         }
 
         td {
-          height: 58px;
+          height: 60px;
         }
       `,
       HeaderRow: `

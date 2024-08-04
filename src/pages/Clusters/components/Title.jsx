@@ -1,7 +1,7 @@
-/*eslint-disable*/
-
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
+
 import { TodoIcon } from '../../../assets';
 
 const Container = styled.div`
@@ -15,9 +15,11 @@ const PageHeading = styled.div`
   gap: 10px;
   align-items: center !important;
   display: flex !important;
-  p {
+
+  h3 {
+    font-family: ${props => props.theme.fontNato};
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 500;
     margin: 0;
   }
 `;
@@ -26,11 +28,13 @@ export const Title = ({ title }) => {
   return (
     <Container>
       <PageHeading>
-        <div>
-          <TodoIcon height="22" width="27" />
-        </div>
-        <p>{title}</p>
+        <TodoIcon width={22} height={24} />
+        <h3>{title}</h3>
       </PageHeading>
     </Container>
   );
+};
+
+Title.propTypes = {
+  title: PropTypes.string.isRequired,
 };

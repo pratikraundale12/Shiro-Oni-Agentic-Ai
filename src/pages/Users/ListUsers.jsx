@@ -15,11 +15,6 @@ import { fetchGridData, STATUS_OPTIONS, useGlobalContext } from '../../utils';
 import { deleteUserApi } from '../../utils/services';
 import { ModalWithIcon } from '../../shared';
 
-const Container = styled.div`
-  padding: 1.4rem;
-  width: 100%;
-  height: 100%;
-`;
 const ActionTd = styled.div`
   display: flex;
   align-items: center;
@@ -42,7 +37,7 @@ export const ListUsers = () => {
             })
           }
         >
-          <PencilIcon />
+          <PencilIcon width={16} height={16} />
         </IconButton>
         <IconButton
           onClick={() =>
@@ -97,7 +92,7 @@ export const ListUsers = () => {
     },
     {
       label: 'Actions',
-      width: '10%',
+      width: '22%',
       renderCell: item => getActionsMenu(item),
     },
   ];
@@ -125,26 +120,24 @@ export const ListUsers = () => {
 
   return (
     <>
-      <Container>
-        <ModalWithIcon
-          primaryButtonText="Delete"
-          secondaryButtonText="Cancel"
-          icon={<DeleteDustbinIcon />}
-          isOpen={state.userDeleteModal}
-          onSubmit={deleteUserConfirmed}
-          onRequestClose={() => setState({ ...state, userDeleteModal: false })}
-          primaryText="Are You Sure You Want to Delete This User"
-          secondaryText="It Will Temporary Remove the User"
-        />
-        <Grid
-          module="users"
-          title="User List"
-          columns={COLUMNS}
-          sortFns={SORT_FNS}
-          statusOptions={STATUS_OPTIONS}
-          addModal={AddUserModal}
-        />
-      </Container>
+      <ModalWithIcon
+        primaryButtonText="Delete"
+        secondaryButtonText="Cancel"
+        icon={<DeleteDustbinIcon />}
+        isOpen={state.userDeleteModal}
+        onSubmit={deleteUserConfirmed}
+        onRequestClose={() => setState({ ...state, userDeleteModal: false })}
+        primaryText="Are You Sure You Want to Delete This User"
+        secondaryText="It Will Temporary Remove the User"
+      />
+      <Grid
+        module="users"
+        title="User List"
+        columns={COLUMNS}
+        sortFns={SORT_FNS}
+        statusOptions={STATUS_OPTIONS}
+        addModal={AddUserModal}
+      />
     </>
   );
 };
