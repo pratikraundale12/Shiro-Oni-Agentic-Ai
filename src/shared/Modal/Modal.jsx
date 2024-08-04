@@ -31,6 +31,8 @@ const Header = styled.div`
 `;
 
 const Body = styled.div`
+  flex: 1;
+  overflow-y: auto;
   padding: 16px;
 `;
 
@@ -47,6 +49,8 @@ const CloseIcon = styled(CrossIcons)`
   border: 1px solid ${props => props.theme.colors.border};
   background-color: ${props => props.theme.colors.white};
 `;
+
+ReactModal.setAppElement('#root');
 
 export const Modal = ({
   title,
@@ -88,7 +92,6 @@ export const Modal = ({
       boxShadow: `0px 4px 18px 0px ${theme.colors.shadow}`,
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between',
       ...contentStyles,
     },
   };
@@ -98,7 +101,6 @@ export const Modal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={styleObject}
-      ariaHideApp={false}
     >
       <Header>
         <Title>{title}</Title>

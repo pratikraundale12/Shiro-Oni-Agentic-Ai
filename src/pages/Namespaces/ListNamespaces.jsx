@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 import { TextRender, Grid } from '../../components';
 import { fetchGridData, REFRESH_OPTIONS, useGlobalContext } from '../../utils';
 import AuditLog from './AuditLog';
-import Deploy from './Deploy';
+// import Deploy from './Deploy';
 import { Button } from '../../shared';
 import { OpenEyeIcon } from '../../assets';
 import { useNavigate } from 'react-router-dom';
 
-const Container = styled.div`
-  padding: 1.4rem;
-  width: 100%;
-  height: 100%;
-`;
 const handleKeyPress = event => {
   if (event.key === 'Enter' || event.key === ' ') {
     // handleNameClick(name);
@@ -138,7 +132,7 @@ export const ListNamespaces = () => {
   }, [setState]);
 
   return (
-    <Container>
+    <>
       <Grid
         module="namespaces"
         title="Namespaces List"
@@ -147,8 +141,8 @@ export const ListNamespaces = () => {
         refreshOptions={REFRESH_OPTIONS}
         clusterOptions={clusterOptions}
       />
-      <Deploy />
+      {/* <Deploy /> */}
       <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} />
-    </Container>
+    </>
   );
 };

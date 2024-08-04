@@ -37,9 +37,9 @@ const UploadImageOuterContainer = styled.div`
   padding: 28px;
 `;
 const RemoveImage = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
+  position: absolute;
+  top: 0;
+  right: 0;
   cursor: pointer;
 `;
 
@@ -96,7 +96,6 @@ export const ProfileUpload = ({ name, control, watch, url, setValue }) => {
             </UploadLabel>
             {file && (
               <RemoveImage onClick={removeUploadedImage}>
-                Remove image &nbsp;
                 <CrossIcon />
               </RemoveImage>
             )}
