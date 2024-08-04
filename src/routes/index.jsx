@@ -86,7 +86,7 @@ export const ROUTES_MENU = [
     ],
   },
   {
-    name: 'ReadyFlow Gallary',
+    name: 'Ready to use Flows',
     path: 'ready-flow-gallary',
     icon: ReadyFlowIcon,
     pages: [

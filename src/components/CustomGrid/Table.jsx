@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { LoaderContainer } from '../Loader';
 import { isEmpty } from 'lodash';
 import { theme } from '../../styles';
+import Breadcrumb from '../../shared/Breadcrumb';
 // import { useSort } from '@table-library/react-table-library/sort';
 
 const TableContainer = styled.div`
@@ -24,7 +25,12 @@ const NoDataText = styled.div`
   background: #fff;
   color: #b9c3d3;
 `;
-export const Table = ({ data, columns }) => {
+export const Table = ({
+  data,
+  columns,
+  onBreadcrumbClick = () => {},
+  breadcrumb = [],
+}) => {
   const DATA = { nodes: data || [] };
   const tableTheme = useTheme([
     getTheme(),
@@ -37,7 +43,6 @@ export const Table = ({ data, columns }) => {
         th, td {
           border-bottom: none !important;
         }
-
         th {
           height: 50px;
         }
@@ -70,14 +75,22 @@ export const Table = ({ data, columns }) => {
   };
 
   return (
-    <TableContainer>
-      <CompactTable data={DATA} columns={columns} theme={tableTheme} />
-      {getLoader()}
-    </TableContainer>
+    <>
+      <Breadcrumb
+        breadcrumbs={breadcrumb}
+        onBreadcrumbClick={onBreadcrumbClick}
+      />
+      <TableContainer>
+        <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+        {getLoader()}
+      </TableContainer>
+    </>
   );
 };
 
 Table.propTypes = {
   data: PropTypes.object.isRequired,
   columns: PropTypes.arrayOf(PropTypes.shape({})),
+  onBreadcrumbClick: PropTypes.func,
+  breadcrumb: PropTypes.array,
 };

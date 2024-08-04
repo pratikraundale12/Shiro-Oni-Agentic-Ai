@@ -50,7 +50,7 @@ export const getClusterProgressDelete = async ({ clusterId, progressId }) => {
 
 export const getCountDetails = async ({ clusterId, namespaceId }) => {
   const { data } = await API.get(
-    `/clusters/${clusterId}/namespaces/${namespaceId}`
+    `/clusters/${clusterId}/namespace/${namespaceId}`
   );
   return data;
 };

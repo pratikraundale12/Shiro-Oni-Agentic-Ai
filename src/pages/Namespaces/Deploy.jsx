@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Button, RadioField, SelectField } from '../../shared';
-import { Table } from '../../components';
+import { FullPageLoader, Table } from '../../components';
 import styled from 'styled-components';
-import { TodoIcon } from '../../assets';
+import { TodoIcon, WhiteBoradIcon } from '../../assets';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { SmallSearchIcon } from '../../assets';
 import { theme } from '../../styles';
@@ -90,20 +90,30 @@ const BottomButton = styled.div`
   align-items: center;
   justify-content: space-between !important;
 `;
+const NoDataContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  margin-top: 15%;
+`;
+
+const NoDataText = styled.div`
+  margin-top: 10px;
+  font-size: 30px;
+  color: #666;
+`;
 
 const handleKeyPress = event => {
   console.log(event);
 };
 
 const breadcrumbData = [
-  { id: '1', name: 'Namespace List' },
-  { id: '2', name: 'Select Namespace' },
-  { id: '3', name: 'Configuration Details' },
+  { id: '1', name: 'Namespace List', path: '/namespaces' },
+  { id: '2', name: 'Select Namespace', path: '/namespaces/deploy' },
 ];
-
-const handleBreadcrumbClick = breadcrumb => {
-  console.log('Breadcrumb clicked:', breadcrumb);
-};
 
 const Deploy = () => {
   const {
@@ -114,14 +124,18 @@ const Deploy = () => {
   const { state, setState } = useGlobalContext();
   const [selectedDestinationClusterId, setSelectedDestinationClusterId] =
     useState('');
-  const [depolyNamespaceId, setDepolyNamespaceId] = useState('');
+  const [loading, setLoading] = useState(false);
+  // const [depolyNamespaceId, setDepolyNamespaceId] = useState('');
   const [showDeployUI, setShowDeployUI] = useState(false);
   const navigate = useNavigate();
-
   useEffect(() => {
     handleSelectNamespace();
   }, [selectedDestinationClusterId]);
 
+  const handleBreadcrumbClick = breadcrumb => {
+    console.log('Breadcrumb clicked:', breadcrumb);
+    navigate(breadcrumb.path);
+  };
   const COLUMNS = [
     {
       label: 'Namespace',
@@ -156,11 +170,21 @@ const Deploy = () => {
     {
       label: '',
       renderCell: item => (
-        <RadioField name="select" onChange={() => setDepolyNamespaceId(item)} />
+        <RadioField
+          name="select"
+          onChange={() => handleNamespaceSelect(item)}
+        />
       ),
       width: '10%',
     },
   ];
+
+  const handleNamespaceSelect = item => {
+    setState(prevState => ({
+      ...prevState,
+      deployNamespaceId: item,
+    }));
+  };
 
   function handleSelectNamespace(id) {
     setState(prev => ({
@@ -194,10 +218,10 @@ const Deploy = () => {
     if (state.deployData) {
       navigate('/namespaces/upgrade', {
         state: {
-          deployData: state.deployData,
-          selectedClusterName: state.selectedClusterName,
+          // deployData: state.deployData,
+          // selectedClusterName: state.selectedClusterName,
           selectedClusterId: selectedDestinationClusterId,
-          depolyNamespaceId: depolyNamespaceId,
+          // depolyNamespaceId: depolyNamespaceId,
         },
       });
     }
@@ -206,12 +230,15 @@ const Deploy = () => {
   const handleBackClick = () => {
     navigate('/namespaces');
   };
+
   const onClusterCheck = async e => {
+    setLoading(true);
     const selectedClusterId = e.value;
     setSelectedDestinationClusterId(e.value);
     const selectedClusterName = e.label;
+    console.log(state);
     const ids = state?.selectedPaths.map(item => item?.flowId);
-
+    console.log({ a: state.selectedPaths });
     try {
       const response = await checkCluster({
         clusterId: selectedClusterId,
@@ -224,12 +251,13 @@ const Deploy = () => {
           ...prevState,
           selectedClusterId,
           upgradeData: response,
+          selectedClusterName,
         }));
         navigate('/namespaces/upgrade', {
           state: {
             upgradeData: response,
-            selectedClusterName,
-            selectedClusterId,
+            // selectedClusterName,
+            // selectedClusterId,
           },
         });
       } else if (response.mode === 'deploy') {
@@ -243,6 +271,7 @@ const Deploy = () => {
       } else {
         setShowDeployUI(false);
       }
+      setLoading(false);
     } catch (error) {
       console.error('Error checking cluster:', error);
     }
@@ -250,6 +279,7 @@ const Deploy = () => {
 
   return (
     <Container>
+      <FullPageLoader loading={loading} />
       <TopTitleBar className="d-flex mb-3">
         <MainTitleDiv className="d-flex">
           <div>
@@ -276,7 +306,12 @@ const Deploy = () => {
               onChange={onClusterCheck}
             />
           </form>
-
+          {!showDeployUI && (
+            <NoDataContainer>
+              <WhiteBoradIcon width={200} height={195} />
+              <NoDataText>No data found</NoDataText>
+            </NoDataContainer>
+          )}
           {showDeployUI && (
             <>
               <SearchContainer>
@@ -292,7 +327,12 @@ const Deploy = () => {
                   onChange={e => setSearch(e.target.value)}
                 />
               </SearchContainer>
-              <Table data={state?.gridData?.deploy?.data} columns={COLUMNS} />
+              <Table
+                data={state?.gridData?.deploy?.data}
+                columns={COLUMNS}
+                breadcrumb={state?.gridData?.deploy?.breadcrumb}
+                onBreadcrumbClick={e => handleSelectNamespace(e.id)}
+              />
             </>
           )}
         </ScrollSetGrey>

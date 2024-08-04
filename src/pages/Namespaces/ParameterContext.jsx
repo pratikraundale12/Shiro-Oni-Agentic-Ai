@@ -4,6 +4,7 @@ import { Modal } from '../../shared';
 import styled from 'styled-components';
 import { Table } from '../../components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
+import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
   position: relative;
@@ -50,22 +51,12 @@ const ParameterContext = ({
   isOpen,
   closePopup,
   openAddParameterContext,
-  parameterDetails,
+  // parameterDetails,
 }) => {
-  const parameterDetialsData = parameterDetails?.data || {};
+  const { state } = useGlobalContext();
+  const parameterDetialsData = state.parameterDetails?.data || {};
   delete parameterDetialsData.version;
-  console.log(parameterDetialsData, 'parameterDetialsData');
   const dummay = Object.values(parameterDetialsData).flat();
-  console.log(dummay, 'dummay');
-  // let dataToRender = [];
-  // // if (parameterIds && parameterIds.length) {
-  // //   parameterIds.forEach(key => {
-  // //     dataToRender = [...dataToRender, parameterDetails?.data?.[key]];
-  // //   });
-  // // }
-
-  // console.log(dataToRender);
-  // console.log({ dataToRender, parameterIds, parameterDetails });
   return (
     <Modal
       title="Parameter Context"
@@ -74,7 +65,7 @@ const ParameterContext = ({
       size="md"
       onSecondarySubmit={openAddParameterContext}
       secondaryButtonText="Add Parameter Context"
-      primaryButtonText="Navigate"
+      primaryButtonText="Save"
       secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
       //   onSubmit={handleSubmit(onSubmit)}
     >

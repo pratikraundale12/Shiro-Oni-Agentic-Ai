@@ -1,43 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { TextRender, Grid } from '../../components';
 import { fetchGridData, REFRESH_OPTIONS, useGlobalContext } from '../../utils';
-import AuditLog from './AuditLog';
-import Deploy from './Deploy';
+// import AuditLog from './AuditLog';
+// import Deploy from './Deploy';
 import { Button } from '../../shared';
 import { OpenEyeIcon } from '../../assets';
 import { useNavigate } from 'react-router-dom';
+import Deploy from './Deploy';
 
 const Container = styled.div`
   padding: 1.4rem;
   width: 100%;
   height: 100%;
 `;
-const handleKeyPress = event => {
-  if (event.key === 'Enter' || event.key === ' ') {
-    // handleNameClick(name);
-  }
-};
+
 export const ListNamespaces = () => {
   const { state, setState } = useGlobalContext();
-  // const [selectedNamespace, setSelectedNamespace] = useState(null);
-
-  const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
+  // const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
+  useEffect(() => {
+    setState(prevState => ({
+      ...prevState,
+      selectedPaths: [],
+      selectedClusterId: null,
+      selectedVersion: null,
+      deployNamespaceId: null,
+      deployData: {
+        flowId: null,
+        bucketId: null,
+        bucketName: null,
+        registryId: null,
+        version: null,
+      },
+      upgradeData: {},
+      updatedCount: null,
+    }));
+  }, []);
   const navigate = useNavigate();
 
   const COLUMNS = [
     {
       label: 'Name',
       renderCell: item => (
-        <div
-          style={{ color: '#C52B2B', cursor: 'pointer' }}
-          role="button"
+        <button
+          style={{
+            color: '#C52B2B',
+            cursor: 'pointer',
+            background: 'none',
+            border: 'none',
+          }}
           tabIndex="0"
           onClick={() => handleSelectNamespace(item.id)}
-          onKeyPress={event => handleKeyPress(event, item.name)}
         >
           {item.name}
-        </div>
+        </button>
       ),
       sort: { sortKey: 'NAME' },
     },
@@ -62,7 +78,7 @@ export const ListNamespaces = () => {
       width: '10%',
       renderCell: () => (
         <button
-          onClick={handleOpenAuditLog}
+          // onClick={handleOpenAuditLog}
           style={{
             background: 'none',
             border: 'none',
@@ -105,13 +121,13 @@ export const ListNamespaces = () => {
 
   function handleSelectNamespace(id) {
     const b = state.gridData.namespaces.data.find(a => a.id === id);
-
     setState(prev => ({
       ...prev,
       selectedNamespaceId: id,
 
       selectedPaths: [...prev.selectedPaths, b],
     }));
+
     fetchGridData({
       setState,
       module: 'namespaces',
@@ -121,23 +137,26 @@ export const ListNamespaces = () => {
   }
 
   const handleSelect = id => {
+    console.log({ state });
     const b = state.gridData.namespaces.data.find(a => a.id === id);
+    if (state.selectedPaths.length === 0) {
+      setState(prev => ({
+        ...prev,
+        selectedNamespaceId: id,
 
-    setState(prev => ({
-      ...prev,
-      selectedNamespaceId: id,
+        selectedPaths: [b],
+      }));
+    } else {
+      setState(prev => ({
+        ...prev,
+        selectedNamespaceId: id,
 
-      selectedPaths: [...prev.selectedPaths, b],
-    }));
+        selectedPaths: [...prev.selectedPaths, b],
+      }));
+    }
+    console.log(b);
+
     navigate('/namespaces/deploy');
-  };
-
-  const handleOpenAuditLog = () => {
-    setIsAuditLogOpen(true);
-  };
-
-  const handleCloseAuditLog = () => {
-    setIsAuditLogOpen(false);
   };
 
   useEffect(() => {
@@ -146,6 +165,11 @@ export const ListNamespaces = () => {
       module: 'clusters',
     });
   }, [setState]);
+
+  const onBreadcrumbClick = e => {
+    console.log(e);
+    handleSelectNamespace(e.id);
+  };
 
   return (
     <Container>
@@ -156,9 +180,10 @@ export const ListNamespaces = () => {
         sortFns={SORT_FNS}
         refreshOptions={REFRESH_OPTIONS}
         clusterOptions={clusterOptions}
+        onBreadcrumbClick={onBreadcrumbClick}
       />
       <Deploy />
-      <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} />
+      {/* <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} /> */}
     </Container>
   );
 };

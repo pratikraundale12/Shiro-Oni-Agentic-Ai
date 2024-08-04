@@ -135,6 +135,7 @@ export const Modal = ({
           <Button
             variant="secondary"
             onClick={onSecondarySubmit || onRequestClose}
+            disabled={secondaryButtonProps.disabled}
             {...secondaryButtonProps}
           >
             {secondaryButtonText}
