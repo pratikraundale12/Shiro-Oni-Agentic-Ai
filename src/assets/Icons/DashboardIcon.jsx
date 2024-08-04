@@ -11,6 +11,7 @@ export const DashboardIcon = ({
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 17 20"
   >
     <path
       fill={color}

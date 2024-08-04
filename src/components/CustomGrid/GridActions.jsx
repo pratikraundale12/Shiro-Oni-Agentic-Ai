@@ -100,7 +100,7 @@ export const GridActions = ({
     <>
       <Flex>
         <Flex>
-          <TodoIcon width={28} height={28} />
+          <TodoIcon width={22} height={24} />
           <Title>{title}</Title>
         </Flex>
         <Flex>
@@ -136,8 +136,9 @@ export const GridActions = ({
           )}
           {!isEmpty(buttonText) && (
             <Button
-              icon={<PlusCircleIcon width={20} height={20} color="white" />}
+              icon={<PlusCircleIcon width={16} height={16} color="white" />}
               onClick={() => navigate('add')}
+              size="sm"
             >
               {buttonText}
             </Button>

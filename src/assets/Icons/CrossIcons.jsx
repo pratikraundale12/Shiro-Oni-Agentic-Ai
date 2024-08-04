@@ -13,7 +13,7 @@ export const CrossIcons = ({
     width={width}
     height={height}
     fill="none"
-    viewBox="0 0 20 20"
+    viewBox="0 0 19 19"
     {...rest}
   >
     <path

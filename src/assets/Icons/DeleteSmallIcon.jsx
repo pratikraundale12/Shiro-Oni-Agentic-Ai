@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import { theme } from '../../styles';
 
 export const DeleteSmallIcon = ({
-  width = 33,
-  height = 33,
+  width = 20,
+  height = 20,
   color = theme.colors.darker,
 }) => (
   <svg
     width={width}
     height={height}
-    viewBox="0 0 33 33"
+    viewBox="6 6 19 19"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >

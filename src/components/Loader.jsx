@@ -32,7 +32,11 @@ export const LoaderContainer = styled.div`
   background-color: transparent;
 `;
 
-export const Loader = ({ size = 'md', color = theme.colors.primary }) => {
+export const Loader = ({
+  size = 'md',
+  color = theme.colors.primary,
+  ...props
+}) => {
   const sizes = {
     sm: 20,
     md: 30,
@@ -40,7 +44,7 @@ export const Loader = ({ size = 'md', color = theme.colors.primary }) => {
   };
 
   return (
-    <LoaderContainer>
+    <LoaderContainer {...props}>
       <Spinner size={sizes[size]} color={color} />
     </LoaderContainer>
   );

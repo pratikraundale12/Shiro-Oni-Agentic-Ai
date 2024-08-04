@@ -18,6 +18,10 @@ const Flex = styled.div`
   gap: 4px;
 `;
 
+const StyledButton = styled(Button)`
+  height: 30px;
+`;
+
 const Pagination = ({ page, setState, count, prev, next }) => {
   const getPageRange = () => {
     const start = (page - 1) * 10 + 1;
@@ -29,27 +33,27 @@ const Pagination = ({ page, setState, count, prev, next }) => {
     <Container>
       <span>{`${getPageRange()} of ${count} List`}</span>
       <Flex>
-        <Button
+        <StyledButton
           size="sm"
           onClick={() => setState(prevState => ({ ...prevState, page: prev }))}
           icon={<GreaterArrowIcon color={theme.colors.white} />}
         />
-        <Button size="sm" variant="secondary">
+        <StyledButton size="sm" variant="secondary">
           1
-        </Button>
-        <Button size="sm" variant="secondary">
+        </StyledButton>
+        <StyledButton size="sm" variant="secondary">
           2
-        </Button>
-        <Button size="sm" variant="secondary">
+        </StyledButton>
+        <StyledButton size="sm" variant="secondary">
           ...
-        </Button>
-        <Button size="sm" variant="secondary">
+        </StyledButton>
+        <StyledButton size="sm" variant="secondary">
           9
-        </Button>
-        <Button size="sm" variant="secondary">
+        </StyledButton>
+        <StyledButton size="sm" variant="secondary">
           10
-        </Button>
-        <Button
+        </StyledButton>
+        <StyledButton
           size="sm"
           onClick={() => setState(prevState => ({ ...prevState, page: next }))}
           icon={<LessArrowIcon color={theme.colors.white} />}

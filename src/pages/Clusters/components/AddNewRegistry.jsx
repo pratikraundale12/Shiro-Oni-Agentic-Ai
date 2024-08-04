@@ -1,13 +1,11 @@
-/*eslint-disable*/
-
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { InputField, Button, PasswordField } from '../../../shared';
 import { RegexConst } from '../../../utils';
-import { Modal } from '../../../shared';
 import { AddCertificate } from './AddCertificate';
 import { SummaryModal } from './SummaryModal';
 import {
@@ -18,8 +16,6 @@ import {
   WhiteBoradIcon,
   PencilIcon,
   DeleteSmallIcon,
-  RightCircleIcon,
-  ExclamationFailedTestingIcon,
   LinkIcon,
 } from '../../../assets';
 import { testRegistry } from '../../../utils/services';
@@ -317,7 +313,7 @@ export const AddNewRegistry = ({
   const watchedFields = watch(['name', 'registry_url', 'username', 'password']);
 
   useEffect(() => {
-    // Update state based on watched fields
+    // eslint-disable-next-line no-unused-vars
     const [name, registry_url, username, password] = watchedFields;
 
     // Example condition to set `continueStatus`
@@ -470,11 +466,7 @@ export const AddNewRegistry = ({
 
           <BottomButtonDivs>
             <BtnDiv>
-              <Button
-                variant="secondary"
-                // onClick={() => {setActiveTab('cluster')}}\
-                onClick={handleBack}
-              >
+              <Button variant="secondary" onClick={handleBack}>
                 Back
               </Button>
               <Button
@@ -486,7 +478,6 @@ export const AddNewRegistry = ({
               >
                 Continue
               </Button>
-              {/* <Button type="submit" onClick={()=>setOpenSummary(true)}>Continue</Button> */}
             </BtnDiv>
             <BtnDiv>
               <Button
@@ -530,4 +521,15 @@ export const AddNewRegistry = ({
       />
     </>
   );
+};
+
+AddNewRegistry.propTypes = {
+  setNewRegistry: PropTypes.func,
+  clusterData: PropTypes.object,
+  registryData: PropTypes.object,
+  setRegistryData: PropTypes.func,
+  setActiveTab: PropTypes.func,
+  isEdit: PropTypes.bool,
+  registry_id: PropTypes.string,
+  clusterId: PropTypes.string,
 };

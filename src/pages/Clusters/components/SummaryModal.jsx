@@ -1,6 +1,5 @@
-/* eslint-disable */
-
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Modal } from '../../../shared';
 import {
@@ -9,7 +8,7 @@ import {
   updateCluster,
   updateRegistry,
 } from '../../../utils/services';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import { FileIcon } from '../../../assets';
 
@@ -31,9 +30,8 @@ const Row = styled.div`
 `;
 
 const Col = styled.div`
-flex: 0 0 auto;
-    width: 50%;
-}
+  flex: 0 0 auto;
+  width: 50%;
 `;
 
 const Title = styled.h4`
@@ -56,11 +54,6 @@ const ClusterName = styled.div`
   line-height: 18.52px;
   letter-spacing: -0.005em;
   color: #7a7a7a;
-  white-space: nowrap;
-`;
-
-const ClusterLink = styled.a`
-  text-decoration: none;
   white-space: nowrap;
 `;
 
@@ -113,14 +106,13 @@ const FileName = styled.div`
 `;
 
 const DetailsTitle = styled.div`
-  font-family: noto sans;
+  font-family: ${props => props.theme.fontNato};
   font-size: 16px;
   font-weight: 600;
   line-height: 21.79px;
   letter-spacing: -0.005em;
   text-align: left;
   color: #4b5564;
-  margin-bottom: 20px;
 `;
 
 const RowTwo = styled.div`
@@ -129,7 +121,7 @@ const RowTwo = styled.div`
   margin-top: 10px;
   margin-right: 1.5rem;
   margin-left: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 `;
 
 export const SummaryModal = ({
@@ -137,14 +129,10 @@ export const SummaryModal = ({
   registryData,
   openSummary,
   setOpenSummary,
-  selectedRegistry = '',
   isEdit = false,
   clusterId,
   registry_id,
 }) => {
-  console.log('CLUSTERDATA..', clusterData);
-  console.log('REGISTRYDATA..', registryData);
-
   const navigate = useNavigate();
   const [loadingPost, setLoadingPost] = useState(false);
   const addRegistry = async () => {
@@ -165,11 +153,8 @@ export const SummaryModal = ({
     if (registryData?.passphrase)
       payload.append('passphrase', registryData.passphrase);
 
-    console.log(payload, '............>>>>>>>>>>>');
     const response = await createRegistry(payload);
-    console.log('RES', response);
     if (response?.status === 201) {
-      console.log('SUCCESS', response);
       addCluster({ registry_id: response?.data.id });
     } else {
       setLoadingPost(false);
@@ -178,7 +163,6 @@ export const SummaryModal = ({
   };
 
   const addCluster = async ({ registry_id }) => {
-    // setLoading(true);
     const payload = new FormData();
 
     if (clusterData?.name) payload.append('name', clusterData.name);
@@ -203,8 +187,6 @@ export const SummaryModal = ({
   };
 
   const editRegistryData = async () => {
-    // setLoading(true);
-    console.log('reeeeeeeeeeee', registryData);
     const payload = new FormData();
     if (registryData?.name) payload.append('name', registryData.name);
 
@@ -221,7 +203,6 @@ export const SummaryModal = ({
 
     const id = registry_id;
     const response = await updateRegistry(id, payload);
-    console.log(response);
     if (response?.id) {
       setLoadingPost(false);
       toast.success(response.message);
@@ -233,8 +214,6 @@ export const SummaryModal = ({
   };
 
   const editClusterData = async () => {
-    console.log('clusteredit');
-    // setLoading(true);
     const payload = new FormData();
     if (clusterData?.name) payload.append('name', clusterData.name);
 
@@ -243,13 +222,6 @@ export const SummaryModal = ({
     } else {
       payload.append('username', null);
     }
-
-    // if (clusterData?.file != '') {
-    //   payload.append('file', clusterData?.file);
-    // } else {
-    //   payload.append('file', null);
-    // }
-
     if (clusterData?.passphrase != '') {
       payload.append('passphrase', clusterData.passphrase);
     } else {
@@ -266,20 +238,15 @@ export const SummaryModal = ({
 
     const id = clusterId;
     const response = await updateCluster(id, payload);
-    // setLoading(false);
     if (response?.id) {
       editRegistryData();
-      console.log('succcccc');
     } else {
-      console.log('errror');
       setLoadingPost(false);
       toast.error(response.message);
-      // popup('error', error.data.message);
     }
   };
 
   const handleSubmit = () => {
-    console.log(isEdit, 'editt');
     if (isEdit) {
       setLoadingPost(true);
       editClusterData();
@@ -343,7 +310,7 @@ export const SummaryModal = ({
                     <Title>Nifi Certificate</Title>
                     <Files>
                       <FileIconStyle>
-                        <FileIcon width={30} height={70} />
+                        <FileIcon width={30} height={60} />
                       </FileIconStyle>
                       <FileBox>
                         <FileDetails>
@@ -404,7 +371,7 @@ export const SummaryModal = ({
                     <Title>Nifi Certificate</Title>
                     <Files>
                       <FileIconStyle>
-                        <FileIcon width={30} height={70} />
+                        <FileIcon width={30} height={60} />
                       </FileIconStyle>
                       <FileBox>
                         <FileDetails>
@@ -437,4 +404,14 @@ export const SummaryModal = ({
       />
     </>
   );
+};
+
+SummaryModal.propTypes = {
+  clusterData: PropTypes.object,
+  registryData: PropTypes.object,
+  openSummary: PropTypes.bool,
+  setOpenSummary: PropTypes.func,
+  isEdit: PropTypes.bool,
+  clusterId: PropTypes.string,
+  registry_id: PropTypes.string,
 };

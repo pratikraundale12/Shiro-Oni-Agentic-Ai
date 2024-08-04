@@ -14,8 +14,8 @@ const Button = styled.button`
   cursor: pointer;
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: inherit;
+    height: inherit;
   }
 `;
 

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { CircleExclamationMarkIcon, ThreedotsIcon } from '../../../assets';
 import { Tooltip } from '../../../shared/Tooltip';
+import { theme } from '../../../styles';
 
 // Styled components based on the provided CSS
 const ActionTd = styled.div`
@@ -17,6 +18,7 @@ const ActionTd = styled.div`
 export const IconButton = styled.button`
   min-width: 34px;
   min-height: 34px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,7 +78,7 @@ export const ActionRender = ({ handleMenuClick, item }) => {
   return (
     <ActionTd>
       <IconButton data-tooltip-id={item.id}>
-        <CircleExclamationMarkIcon />
+        <CircleExclamationMarkIcon color={theme.colors.border} />
       </IconButton>
       <IconButton onClick={event => handleMenuClick(event, item)}>
         <ThreedotsIcon />
@@ -97,20 +99,20 @@ export const ActionRender = ({ handleMenuClick, item }) => {
               <ClusterDeatils>Cluster Details</ClusterDeatils>
               <TooltipSecond>
                 <Connected>
-                  {' '}
-                  <Span> </Span>
-                  <Strong>Connected Nodes:</Strong>{' '}
+                  <Span />
+                  <Strong>Connected Nodes:</Strong>
                 </Connected>
                 <Number>
-                  {' '}
                   {item.total_nodes === item.connected_nodes
                     ? item.connected_nodes
                     : `${item.connected_nodes}`}
                 </Number>
               </TooltipSecond>
               <TooltipSecond>
-                <Span color="#A5D6A7"> </Span>
-                <Strong>Total Nodes:</Strong>
+                <Connected>
+                  <Span color="#A5D6A7" />
+                  <Strong>Total Nodes:</Strong>
+                </Connected>
                 <Number>{item.total_nodes}</Number>
               </TooltipSecond>
             </TooltipParent>

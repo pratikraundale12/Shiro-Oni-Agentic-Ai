@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FileIcon, PlusCircleIcon } from '../../../assets';
@@ -186,13 +184,24 @@ const Passphrase = styled.div`
 `;
 
 const PFXPassphrase = styled.div`
-margin-bottom: 8px;
-    font-size: 13px;
-    font-weight: v500);
-    line-height: 15.73px;
-    letter-spacing: -0.005em;
-    color: var(--model-heading);
-}
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: v500);
+  line-height: 15.73px;
+  letter-spacing: -0.005em;
+  color: var(--model-heading);
+`;
+
+const StyledButton = styled(Button)`
+  border-color: ${props => props.theme.colors.darker};
+
+  span {
+    color: ${props => props.theme.colors.primary};
+  }
+
+  &:hover {
+    background-color: ${props => props.theme.colors.lightGrey};
+  }
 `;
 
 export const AddRegistry = ({
@@ -247,7 +256,7 @@ export const AddRegistry = ({
     }
   }, [registries, selectedRegistryId]);
 
-  const fetchRegistryDetails = async id => {
+  const fetchRegistryDetails = async () => {
     try {
       const response = await getOneRegistry(selectedRegistryId);
       console.log(response, 'ressss');
@@ -309,10 +318,13 @@ export const AddRegistry = ({
             onClick={() => setNewRegistry(true)}
             style={{ border: 'none', background: 'none', padding: 0 }}
           >
-            <Button variant="secondary" disabled={selectedRegistryId}>
-              <PlusCircleIcon width={20} height={20} color="red" />
+            <StyledButton
+              variant="secondary"
+              // disabled={selectedRegistryId}
+              icon={<PlusCircleIcon width={20} height={20} color="red" />}
+            >
               Add New Registry
-            </Button>
+            </StyledButton>
           </button>
         </FlexContainer>
         <Container>
@@ -413,7 +425,6 @@ export const AddRegistry = ({
         </BottomButtonDivs>
       </ParentDiv>
 
-      {/* <SummaryModal openSummary={openSummary} setOpenSummary={setOpenSummary} selectedRegistry={selectedRegistryId}/> */}
       <SummaryModal
         clusterData={clusterData}
         registryData={registryData}
@@ -441,4 +452,11 @@ export const AddRegistry = ({
 
 AddRegistry.propTypes = {
   setNewRegistry: PropTypes.func,
+  clusterData: PropTypes.object,
+  registryData: PropTypes.object,
+  setRegistryData: PropTypes.func,
+  setActiveTab: PropTypes.func,
+  isEdit: PropTypes.bool,
+  registry_id: PropTypes.string,
+  clusterId: PropTypes.string,
 };

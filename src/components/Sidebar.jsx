@@ -10,15 +10,17 @@ import { useGlobalContext } from '../utils';
 
 const Container = styled.div`
   height: 100%;
+  min-width: 240px;
   padding: 16px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-y: auto;
   background-color: ${props => props.theme.colors.lighter};
 `;
 
 const List = styled.ul`
-  width: max-content;
+  width: 100%;
   margin-top: 20px;
 `;
 
