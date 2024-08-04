@@ -15,14 +15,14 @@ import { AddUserModal } from '../pages/Users/AddUserModal';
 import { ProfileRender } from './CustomGrid';
 
 const Container = styled.header`
+  height: ${props => props.theme.header};
   width: 100%;
-  padding: 14px 50px 14px 23px;
+  padding: 14px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: ${props => props.theme.colors.white};
   border-bottom: 1px solid ${props => props.theme.colors.border};
-  height: 78px;
 `;
 
 const IconButton = styled.button`

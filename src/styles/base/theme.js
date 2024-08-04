@@ -20,6 +20,8 @@ const theme = {
     info: '#0066FF',
     success: '#06C270',
 
+    darkSuccess: '#38812F',
+
     // light colors
     lightGrey: '#F5F7FA',
     lightGrey1: '#EBEBF0',
@@ -28,6 +30,7 @@ const theme = {
     // dark colors
     darkGrey: '#E0D3D3',
     darkGrey1: '#B5B5BD',
+    darkGrey2: '#988C8C',
 
     // variants
     primaryActive: '#C60B1D',
@@ -44,7 +47,10 @@ const theme = {
     md: '24px',
     lg: '32px',
     xl: '40px',
-    xxl: '64px',
+    xl2: '64px',
+    xl3: '80px',
+    xl4: '96px',
+    xl5: '120px',
   },
   size: {
     xs: '10px',
@@ -52,9 +58,10 @@ const theme = {
     md: '14px',
     lg: '16px',
     xl: '20px',
-    xxl: '24px',
-    xxxl: '32px',
-    xxxxl: '48px',
+    xl2: '24px',
+    xl3: '32px',
+    xl4: '42px',
+    xl5: '48px',
   },
   breakpoint: {
     mobile: '320px',
@@ -62,6 +69,7 @@ const theme = {
     desktop: '1024px',
     desktopHD: '1440px',
   },
+  header: '78px',
   zIndex: {},
 };
 export default theme;

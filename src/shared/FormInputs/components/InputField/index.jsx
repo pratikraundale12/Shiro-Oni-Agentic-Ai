@@ -93,10 +93,8 @@ const InputField = ({
   rightIcon = null,
   type = 'text',
   required = false,
-  disabled = false,
   registerOptions = {},
   className,
-  placeholder = '',
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -119,11 +117,9 @@ const InputField = ({
         <input
           name={name}
           type={type}
-          placeholder={placeholder}
           aria-invalid={error}
           {...props}
           {...(isFunction(register) && register(name, { ...registerOptions }))}
-          disabled={disabled}
         />
         {rightIcon && <span className="icon">{rightIcon}</span>}
       </div>
@@ -141,10 +137,8 @@ InputField.propTypes = {
   type: PropTypes.string,
   errors: PropTypes.shape({}),
   required: PropTypes.string,
-  disabled: PropTypes.bool,
   registerOptions: PropTypes.shape({}),
   className: PropTypes.string,
-  placeholder: PropTypes.string.isRequired,
 };
 
 export default InputField;

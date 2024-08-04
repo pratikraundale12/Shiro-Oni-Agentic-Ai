@@ -1,7 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const ClusterIcon = ({ width = 18, height = 20, color = '#444445' }) => (
+import { theme } from '../../styles';
+
+export const ClusterIcon = ({
+  width = 18,
+  height = 20,
+  color = theme.colors.darker,
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}

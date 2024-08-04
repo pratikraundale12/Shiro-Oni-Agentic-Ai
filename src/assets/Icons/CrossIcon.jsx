@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import { theme } from '../../styles';
 
 export const CrossIcon = ({
@@ -12,6 +13,7 @@ export const CrossIcon = ({
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 20 20"
   >
     <path
       fill={color}

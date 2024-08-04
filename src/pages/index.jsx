@@ -7,3 +7,4 @@ export * from './Namespaces';
 export * from './ReadyFlowGallary';
 export * from './GenrateFlow';
 export * from './PermissionMatrix';
+export * from './Icons';
