@@ -26,6 +26,7 @@ const theme = {
     lightGrey: '#F5F7FA',
     lightGrey1: '#EBEBF0',
     lightGrey2: '#F3FAFF',
+    lightGrey3: '#B9C3D3',
 
     // dark colors
     darkGrey: '#E0D3D3',

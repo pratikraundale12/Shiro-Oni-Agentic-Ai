@@ -71,6 +71,7 @@ const SelectField = ({
   required = false,
   className = '',
   backgroundColor,
+  title = '',
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -161,7 +162,7 @@ const SelectField = ({
   };
 
   return (
-    <Container className={className}>
+    <Container className={className} title={title}>
       <Controller
         control={control}
         name={name}
@@ -207,6 +208,7 @@ SelectField.propTypes = {
   size: PropTypes.string,
   icon: PropTypes.node,
   backgroundColor: PropTypes.string,
+  title: PropTypes.string,
 };
 
 export default SelectField;

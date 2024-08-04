@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { theme } from '../../styles';
 import { SelectField } from '../../shared';
 import { Table } from '../../components';
 import { InsightContainer, FlowMetrics } from './components';
@@ -23,7 +24,6 @@ import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { fetchGridData, useGlobalContext } from '../../utils';
-import { theme } from '../../styles';
 
 const TopSection = styled.div`
   display: flex;
@@ -297,6 +297,7 @@ export const Dashboard = () => {
               options={clusterOptions}
               onChange={onClusterSelect}
               placeholder="Select Cluster"
+              title="Select Cluster"
               backgroundColor={theme.colors.lightGrey}
               size="sm"
             />
@@ -308,6 +309,7 @@ export const Dashboard = () => {
               options={namespaceArray || []}
               onChange={onNamespaceSelect}
               placeholder="Select Namespace"
+              title="Select Namespace"
               backgroundColor={theme.colors.lightGrey}
               size="sm"
             />
@@ -319,6 +321,7 @@ export const Dashboard = () => {
               options={RefreshArray}
               onChange={onRefreshSelect}
               placeholder={` () Refresh`}
+              title="Refresh"
               backgroundColor={theme.colors.lightGrey}
               size="sm"
             />

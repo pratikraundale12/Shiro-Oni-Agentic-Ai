@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
@@ -42,12 +41,12 @@ const ClusterRegistryContainer = styled.div`
   gap: 2%;
   margin-bottom: 1%;
 `;
+
 const LoadingText = styled.div`
-  color: #b9c3d3;
-  font-family: Noto Sans;
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
   font-size: 32px;
   font-weight: 600;
-  line-height: 43.58px;
   text-align: center;
 `;
 
@@ -158,7 +157,7 @@ export const Grid = ({
     if (isEmpty(DATA.nodes))
       return (
         <LoaderContainer>
-          <NoDataIcon />
+          <NoDataIcon width={150} />
           <LoadingText>No data found!!</LoadingText>
         </LoaderContainer>
       );
@@ -173,6 +172,7 @@ export const Grid = ({
       ...(nodeClusterId && { nodeClusterId }),
       ...(selectedSourceClusterId && { selectedSourceClusterId }),
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setState, module, search]);
 
   return (

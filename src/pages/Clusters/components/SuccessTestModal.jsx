@@ -37,7 +37,7 @@ const Para = styled.p`
 export const SuccessTestModal = ({ successTest, setSuccessTest, name }) => {
   return (
     <Modal
-      title="Testing Successfull"
+      title="Testing Successful"
       isOpen={successTest}
       onRequestClose={() => setSuccessTest(false)}
       size="sm"

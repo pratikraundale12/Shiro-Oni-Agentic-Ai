@@ -22,6 +22,7 @@ import {
 import { testCluster } from '../../../utils/services';
 import { SuccessTestModal } from './SuccessTestModal';
 import { FailedTestModal } from './FailedTestModal';
+import { IconButton } from '../../../components';
 
 const InputContainer = styled.div`
   display: flex;
@@ -135,14 +136,7 @@ const CertificateMessage = styled.div`
 const EditDeleteContainer = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const IconButton = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin-left: 10px;
+  gap: 1rem;
 `;
 
 const BottomButtonDivs = styled.div`
@@ -406,7 +400,7 @@ export const AddNewCluster = ({
                       setClusterCertificate({ file: '', passphrase: '' });
                     }}
                   >
-                    <DeleteSmallIcon />
+                    <DeleteSmallIcon color="red" />
                   </IconButton>
                 </EditDeleteContainer>
               </UploadCertificateContainer>
