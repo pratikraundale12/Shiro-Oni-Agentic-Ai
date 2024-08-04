@@ -177,6 +177,7 @@ export const ListClusters = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -200,6 +201,7 @@ export const ListClusters = () => {
         sortFns={SORT_FNS}
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
+        placeholder="Search Cluster Name, Status, URL"
       />
       {menuState.isVisible && (
         <List ref={menuRef} top={menuState.y} left={getX(menuState.x)}>

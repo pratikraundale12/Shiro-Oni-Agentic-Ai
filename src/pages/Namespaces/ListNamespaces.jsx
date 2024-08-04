@@ -140,6 +140,7 @@ export const ListNamespaces = () => {
         sortFns={SORT_FNS}
         refreshOptions={REFRESH_OPTIONS}
         clusterOptions={clusterOptions}
+        placeholder="Search Namespace, ID, Flow Name, Bucket Name"
       />
       {/* <Deploy /> */}
       <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} />
