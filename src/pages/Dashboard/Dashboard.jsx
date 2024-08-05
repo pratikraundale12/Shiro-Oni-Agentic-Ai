@@ -136,6 +136,14 @@ const StyledSelectField = styled(SelectField)`
     margin-top: 0;
   }
 `;
+const StyledTable = styled(Table)`
+  height: 60%;
+
+  > div {
+    height: 88%;
+  }
+`;
+
 export const Dashboard = () => {
   const { state, setState } = useGlobalContext();
   const [clusterDetails, setClusterDetails] = useState([]);
@@ -415,7 +423,12 @@ export const Dashboard = () => {
 
         <HeaderText>Errors</HeaderText>
       </ErrorsHeader>
-      <Table data={errorsLogs || []} columns={COLUMNS} />
+      <StyledTable
+        data={
+          [...errorsLogs, ...errorsLogs, ...errorsLogs, ...errorsLogs] || []
+        }
+        columns={COLUMNS}
+      />
     </>
   );
 };

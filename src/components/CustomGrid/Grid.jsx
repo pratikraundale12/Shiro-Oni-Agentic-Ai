@@ -161,7 +161,7 @@ export const Grid = ({
       return (
         <LoaderContainer>
           <NoDataIcon width={140} />
-          <LoadingText>No data found!!</LoadingText>
+          <LoadingText>No Data Found!!</LoadingText>
         </LoaderContainer>
       );
     return null;

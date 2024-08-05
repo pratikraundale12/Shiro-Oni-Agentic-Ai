@@ -81,11 +81,6 @@ export const GridActions = ({
   const watchStatus = watch('is_active');
   const watchCluster = watch('cluster');
 
-  const statusOption = [
-    { value: 'true', label: 'Active' },
-    { value: 'false', label: 'Inactive' },
-  ];
-
   useEffect(() => {
     if (watchCluster || watchStatus) {
       setState(prev => ({
@@ -96,7 +91,7 @@ export const GridActions = ({
       fetchGridData({
         setState,
         module,
-        ...(watchStatus && { is_active: watchStatus }),
+        ...(watchStatus && watchStatus !== 'all' && { is_active: watchStatus }),
         ...(watchCluster && { selectedSourceClusterId: watchCluster }),
       });
     }
@@ -127,7 +122,7 @@ export const GridActions = ({
               name="is_active"
               size="sm"
               control={control}
-              options={statusOption}
+              options={statusOptions}
               placeholder="Status"
               backgroundColor={theme.colors.lightGrey}
             />
