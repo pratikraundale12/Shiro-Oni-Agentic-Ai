@@ -393,7 +393,10 @@ export const AddNewRegistry = ({
               <FlexContainer>
                 <p style={{ 'margin-right': '4px' }}>OR</p>
                 <Button
-                  onClick={() => setAddCertificate(true)}
+                  onClick={e => {
+                    e.preventDefault();
+                    setAddCertificate(true);
+                  }}
                   icon={<PlusCircleIcon width={20} height={20} color="white" />}
                   disabled={addCertificateSatus}
                 >
@@ -439,7 +442,8 @@ export const AddNewRegistry = ({
                 </CertificateMessage>
                 <EditDeleteContainer>
                   <IconButton
-                    onClick={() => {
+                    onClick={e => {
+                      e.preventDefault();
                       setAddCertificate(true);
                     }}
                   >

@@ -86,13 +86,6 @@ const Wrapper = styled.div`
   }
 `;
 
-const HelperText = styled.div`
-  font-size: 10px;
-  line-height: 15px;
-  margin-top: 5px;
-  color: ${props => props.theme.colors.darker};
-`;
-
 const CertificateContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -212,10 +205,9 @@ export const AddCertificate = ({
       contentStyles={{ maxWidth: '34%' }}
     >
       <InputBox>
-        <form onSubmit={onSubmit}>
-          <PFXContainer>
-            <CertificateDetails>
-              {/* <FileIcon width={25} height={35} />
+        <PFXContainer>
+          <CertificateDetails>
+            {/* <FileIcon width={25} height={35} />
               <div>
                 <FileType>PFX file</FileType>
                 <FileInfo>
@@ -261,96 +253,87 @@ export const AddCertificate = ({
                 </FileInfo>
               </div> */}
 
-              <CertificateContainer>
-                <CertificateHeader>NiFi Certificate</CertificateHeader>
-                <CertificateDetailsnew>
-                  <FileIcon width={50} height={50} />
-                  <FileInfo>
-                    <FileDetails>
-                      {file ? (
-                        <>
-                          <FileTypeContainer>
-                            <FileType>PFX file</FileType>
-                            <FileSize onClick={handleFileRemove}>
-                              <CrossIcon />
-                            </FileSize>
-                          </FileTypeContainer>
+            <CertificateContainer>
+              <CertificateHeader>NiFi Certificate</CertificateHeader>
+              <CertificateDetailsnew>
+                <FileIcon width={50} height={50} />
+                <FileInfo>
+                  <FileDetails>
+                    {file ? (
+                      <>
+                        <FileTypeContainer>
+                          <FileType>PFX file</FileType>
+                          <FileSize onClick={handleFileRemove}>
+                            <CrossIcon />
+                          </FileSize>
+                        </FileTypeContainer>
 
-                          <FilePath>
-                            {file?.name ||
-                              certificates?.file?.name ||
-                              certificates?.file}
-                          </FilePath>
+                        <FilePath>
+                          {file?.name ||
+                            certificates?.file?.name ||
+                            certificates?.file}
+                        </FilePath>
 
-                          <svg
-                            width="100%"
-                            height={8}
-                            viewBox="0 0 475 8"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <rect
-                              width={475}
-                              height={8}
-                              rx={4}
-                              fill="#38812F"
-                            />
-                          </svg>
-                        </>
-                      ) : (
-                        <>
-                          <FileTypeContainer>
-                            <FileType>PFX file</FileType>
-                          </FileTypeContainer>
+                        <svg
+                          width="100%"
+                          height={8}
+                          viewBox="0 0 475 8"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect width={475} height={8} rx={4} fill="#38812F" />
+                        </svg>
+                      </>
+                    ) : (
+                      <>
+                        <FileTypeContainer>
+                          <FileType>PFX file</FileType>
+                        </FileTypeContainer>
 
-                          <StyledButton
-                            variant="secondary"
-                            onClick={() =>
-                              document.getElementById('hiddenFileInput').click()
-                            }
-                          >
-                            Select File
-                          </StyledButton>
-                          <HiddenFileInput
-                            type="file"
-                            id="hiddenFileInput"
-                            onChange={handleFileSelect}
-                          />
-                        </>
-                      )}
-                      {errors.file && (
-                        <span style={{ color: 'red' }}>{errors.file}</span>
-                      )}
-                      {/* {file && (
+                        <StyledButton
+                          variant="secondary"
+                          onClick={() =>
+                            document.getElementById('hiddenFileInput').click()
+                          }
+                        >
+                          Select File
+                        </StyledButton>
+                        <HiddenFileInput
+                          type="file"
+                          id="hiddenFileInput"
+                          onChange={handleFileSelect}
+                        />
+                      </>
+                    )}
+                    {errors.file && (
+                      <span style={{ color: 'red' }}>{errors.file}</span>
+                    )}
+                    {/* {file && (
                         <FilePath>
                           {certificates?.file.name || certificates?.file}
                         </FilePath>
                       )} */}
-                    </FileDetails>
-                  </FileInfo>
-                </CertificateDetailsnew>
-              </CertificateContainer>
-            </CertificateDetails>
-          </PFXContainer>
+                  </FileDetails>
+                </FileInfo>
+              </CertificateDetailsnew>
+            </CertificateContainer>
+          </CertificateDetails>
+        </PFXContainer>
 
-          <Wrapper>
-            <InputField
-              name="passphrase"
-              type={show ? 'text' : 'password'}
-              icon={<BagIcon />}
-              placeholder="Enter Your Password"
-              rightIcon={
-                <TogglePassword show={show} onToggle={togglePassword} />
-              }
-              value={passphrase}
-              onChange={handlePassphraseChange}
-            />
-            <HelperText>Must be at least 6 characters long.</HelperText>
-            {errors.passphrase && (
-              <span style={{ color: 'red' }}>{errors.passphrase}</span>
-            )}
-          </Wrapper>
-        </form>
+        <Wrapper>
+          <InputField
+            name="passphrase"
+            type={show ? 'text' : 'password'}
+            icon={<BagIcon />}
+            placeholder="Enter Your Password"
+            rightIcon={<TogglePassword show={show} onToggle={togglePassword} />}
+            value={passphrase}
+            onChange={handlePassphraseChange}
+          />
+          {errors.passphrase && (
+            <span style={{ color: 'red' }}>{errors.passphrase}</span>
+          )}
+        </Wrapper>
       </InputBox>
     </Modal>
   );
