@@ -15,6 +15,7 @@ export const INITIAL_STATE = {
   selectedNamespaceId: '',
   selectedDestinationClusterId: '',
   selectedPaths: [],
+  parameterVersion: 0,
 };
 
 export const GlobalProvider = ({ children }) => {

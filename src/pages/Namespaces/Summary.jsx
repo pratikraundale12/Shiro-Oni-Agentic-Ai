@@ -307,9 +307,13 @@ const Summary = () => {
         state.deployCountDetails?.data?.parameterContextId ||
           state?.updatedCount?.parameterContextId
       );
+      const data = response.data;
+
+      console.log(data.version, 'line no 312');
       setState(prevState => ({
         ...prevState,
         parameterDetails: response,
+        parameterVersion: response.data.version,
       }));
       setLoading(false);
     } catch (error) {
@@ -792,6 +796,8 @@ const Summary = () => {
       <AddParameterContext
         isOpen={isAddParameterContextOpen}
         closePopup={closeAddParameterContext}
+        setIsAddParameterContextOpen={setIsAddParameterContextOpen}
+        setIsParameterContextOpen={setIsParameterContextOpen}
       />
     </MainContainer>
   );

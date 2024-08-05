@@ -92,3 +92,26 @@ export const fetchParameterContext = async (clusterId, parameterId) => {
   );
   return response;
 };
+
+export const updateParameterContextService = async (
+  clusterId,
+  parameterContextId,
+  revision,
+  data
+) => {
+  console.log({ revision, data, clusterId, parameterContextId });
+  const updateData = {
+    revision: revision,
+    parameters: [
+      {
+        parameter: data,
+      },
+    ],
+  };
+
+  const response = await API.put(
+    `parameter-context/${clusterId}/contextId/${parameterContextId}`,
+    updateData
+  );
+  return response;
+};

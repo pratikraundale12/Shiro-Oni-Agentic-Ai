@@ -10,28 +10,6 @@ const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
 `;
-// can_write
-// :
-// true
-// context_name
-// :
-// "Interest"
-// description
-// :
-// ""
-// name
-// :
-// "SQLDB"
-// provided
-// :
-// false
-// sensitive
-// :
-// false
-// value
-// :
-
-// "Cricket
 
 const COLUMNS = [
   {
