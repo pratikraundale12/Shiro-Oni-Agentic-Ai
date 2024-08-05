@@ -101,6 +101,21 @@ const ErrorTexts = styled.div`
 `;
 const DropdownContainer = styled.div`
   margin-left: 10px;
+  min-width: 175px;
+  max-width: 175px;
+
+  & div > div {
+    & > div {
+      min-width: 175px;
+      max-width: 175px;
+    }
+  }
+  & div > div {
+    & > div > * {
+      min-width: unset;
+      max-width: unset;
+    }
+  }
 `;
 const DropdownWrapper = styled.div`
   display: flex;
@@ -196,7 +211,7 @@ export const Dashboard = () => {
       setClusterDetails(response?.data);
       setErrorLogs(response.data.errors);
     } else {
-      toast.error('error occured');
+      toast.error(response?.message || 'Something went wrong');
     }
   };
 
@@ -213,7 +228,7 @@ export const Dashboard = () => {
       setNamespaceArray(filteredNamespaceArray);
       setErrorLogs(response.data.errors);
     } else {
-      toast.error('error occured');
+      toast.error(response?.message || 'Something went wrong');
     }
   };
 
@@ -250,10 +265,12 @@ export const Dashboard = () => {
     { value: 1000, label: '1 Sec' },
   ];
 
-  const clusterOptions = state.clusterList.map(item => ({
-    label: item.name,
-    value: item.id,
-  }));
+  const clusterOptions = state.clusterList
+    .filter(item => item.is_active)
+    .map(item => ({
+      label: item.name,
+      value: item.id,
+    }));
 
   const handleRefreshFunctionality = () => {
     if (namespaceIdSelected) {
@@ -324,7 +341,7 @@ export const Dashboard = () => {
               control={control}
               options={RefreshArray}
               onChange={onRefreshSelect}
-              placeholder={` () Refresh`}
+              placeholder={` Refresh`}
               title="Refresh"
               backgroundColor={theme.colors.lightGrey}
               size="sm"

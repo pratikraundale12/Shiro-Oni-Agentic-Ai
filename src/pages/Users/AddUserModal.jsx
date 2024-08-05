@@ -239,7 +239,7 @@ export const AddUserModal = props => {
                 control={control}
                 placeholder="Status"
                 backgroundColor={theme.colors.lightGrey}
-                label="Status"
+                title="Select Status"
               />
             </DropDownWrapper>
             <DropDownWrapper>
@@ -251,7 +251,7 @@ export const AddUserModal = props => {
                 control={control}
                 placeholder="Role"
                 backgroundColor={theme.colors.lightGrey}
-                label="Role"
+                title="Select Role"
               />
             </DropDownWrapper>
           </SelectFieldWrapper>
