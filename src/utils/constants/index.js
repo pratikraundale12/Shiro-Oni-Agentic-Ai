@@ -10,9 +10,10 @@ export const STATUS_OPTIONS = [
 ];
 
 export const REFRESH_OPTIONS = [
-  { value: null, label: 'Off' },
-  { value: 5, label: '5 Seconds' },
-  { value: 10, label: '10 Seconds' },
+  { value: false, label: 'Off' },
+  { value: 5000, label: '5 Seconds' },
+  { value: 3000, label: '3 Seconds' },
+  { value: 1000, label: '1 Seconds' },
 ];
 
 export const RegexConst = {

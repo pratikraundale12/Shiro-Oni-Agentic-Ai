@@ -67,6 +67,8 @@ const Item = styled.div`
 const getX = x => 1790 > x < 1830 && 1446;
 
 export const ListClusters = () => {
+  const [refreshState, setRefreshSelect] = useState(false);
+  const intervalRef = useRef(null);
   const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
   const menuRef = useRef(null);
@@ -177,6 +179,27 @@ export const ListClusters = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleRefreshFunctionality = () => {
+    fetchGridData({
+      setState,
+      module: 'clusters',
+    });
+  };
+  const handleRefresh = event => {
+    setRefreshSelect(event.value);
+  };
+  useEffect(() => {
+    if (refreshState !== false) {
+      intervalRef.current = setInterval(
+        handleRefreshFunctionality,
+        refreshState
+      );
+    } else {
+      clearInterval(intervalRef.current);
+    }
+
+    return () => clearInterval(intervalRef.current);
+  }, [refreshState]);
   return (
     <>
       <ModalWithIcon
@@ -199,6 +222,7 @@ export const ListClusters = () => {
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
         placeholder="Search Cluster Name, Status, URL"
+        handleRefresh={handleRefresh}
       />
       {menuState.isVisible && (
         <List ref={menuRef} top={menuState.y} left={getX(menuState.x)}>

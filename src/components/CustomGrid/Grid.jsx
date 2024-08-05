@@ -90,6 +90,7 @@ export const Grid = ({
   placeholder = '',
   addModal = () => {},
   onBreadcrumbClick = () => {},
+  handleRefresh = () => {},
 }) => {
   const {
     state: {
@@ -189,6 +190,7 @@ export const Grid = ({
         placeholder={placeholder}
         buttonText={buttonText}
         addModal={addModal}
+        handleRefresh={handleRefresh}
       />
       {module === 'nodeList' && !isEmpty(nodes) && (
         <>
@@ -265,4 +267,5 @@ Grid.propTypes = {
     })
   ),
   onBreadcrumbClick: PropTypes.func,
+  handleRefresh: PropTypes.func,
 };

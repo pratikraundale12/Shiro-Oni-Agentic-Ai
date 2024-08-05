@@ -72,6 +72,7 @@ export const GridActions = ({
   placeholder = 'Search...',
   buttonText,
   addModal: Modal,
+  handleRefresh = () => {},
 }) => {
   const { setState } = useGlobalContext();
   const navigate = useNavigate();
@@ -118,6 +119,7 @@ export const GridActions = ({
               options={refreshOptions}
               placeholder="Refresh"
               backgroundColor={theme.colors.lightGrey}
+              onChange={handleRefresh}
             />
           )}
           {!isEmpty(statusOptions) && (
@@ -181,4 +183,5 @@ GridActions.propTypes = {
   placeholder: PropTypes.string,
   buttonText: PropTypes.string,
   addModal: PropTypes.func,
+  handleRefresh: PropTypes.func,
 };

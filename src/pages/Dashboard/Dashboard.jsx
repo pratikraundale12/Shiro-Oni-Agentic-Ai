@@ -103,17 +103,20 @@ const DropdownContainer = styled.div`
   margin-left: 10px;
   min-width: 175px;
   max-width: 175px;
+  cursor: pointer;
 
   & div > div {
     & > div {
       min-width: 175px;
       max-width: 175px;
+      cursor: pointer;
     }
   }
   & div > div {
     & > div > * {
       min-width: unset;
       max-width: unset;
+      cursor: pointer;
     }
   }
 `;
@@ -149,7 +152,7 @@ export const Dashboard = () => {
       renderCell: item => <div>{item.processor_group}</div>,
     },
     {
-      label: 'Process ID',
+      label: 'Processor ID',
       renderCell: item => (
         <div>
           <IdWrapper data-tooltip-id={`tooltip-${item.processor_group_id}`}>
@@ -170,7 +173,7 @@ export const Dashboard = () => {
       width: '20%',
     },
     {
-      label: 'Process Name',
+      label: 'Processor Name',
       renderCell: item => <div>{item.processor_name}</div>,
     },
     {
@@ -180,7 +183,7 @@ export const Dashboard = () => {
           <CrossIcon color="red" />
           <ErrorTexts data-tooltip-id={`tooltip-${item.processor_group_id}-m`}>
             <div>
-              <b>Error Code </b>:404- File not found
+              <b>Error Code </b>:404- File Not Found
             </div>
             {item.message}
           </ErrorTexts>
@@ -260,9 +263,9 @@ export const Dashboard = () => {
   };
   const RefreshArray = [
     { value: false, label: 'Off' },
-    { value: 5000, label: '5 sec' },
-    { value: 3000, label: '3 Sec' },
-    { value: 1000, label: '1 Sec' },
+    { value: 5000, label: '5 Seconds' },
+    { value: 3000, label: '3 Seconds' },
+    { value: 1000, label: '1 Seconds' },
   ];
 
   const clusterOptions = state.clusterList
@@ -274,7 +277,7 @@ export const Dashboard = () => {
 
   const handleRefreshFunctionality = () => {
     if (namespaceIdSelected) {
-      getNamespaceDetails(selectedClusterId, namespaceIdSelected);
+      getNamespaceDetails(namespaceIdSelected);
     } else if (selectedClusterId) {
       getClusterDetalis(selectedClusterId);
     }
@@ -396,7 +399,7 @@ export const Dashboard = () => {
         <InsightContainer
           backgroundCss="#EEF0F4"
           icon={FlowFiledQuedIcon}
-          count={clusterDetails?.flow_files_queued || '0 Mb'}
+          count={clusterDetails?.flow_files_queued || '0'}
           text="Flow Files Queued"
         />
       </InsightDataContiner>
