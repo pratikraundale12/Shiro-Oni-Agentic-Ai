@@ -6,8 +6,8 @@ import { CrossIcon, UpArrowImageIcon, UserUploadIcon } from '../../assets';
 import { toast } from 'react-toastify';
 
 const PreviewImage = styled.img`
-  width: 150px;
-  height: 150px;
+  width: 115px;
+  height: 115px;
   border-radius: 50%;
   object-fit: cover;
 `;
@@ -37,7 +37,11 @@ const UploadImageOuterContainer = styled.div`
   padding: 28px;
 `;
 const RemoveImage = styled.div`
-  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 10px;
+  margin-top: 5px;
   top: 0;
   right: 0;
   cursor: pointer;
@@ -94,17 +98,18 @@ export const ProfileUpload = ({ name, control, watch, url, setValue }) => {
                 </UploadImageOuterContainer>
               )}
             </UploadLabel>
-            {file && (
-              <RemoveImage onClick={removeUploadedImage}>
-                <CrossIcon />
-              </RemoveImage>
-            )}
             <UploadInput
               id="file-upload"
               type="file"
               accept="image/*"
               onChange={event => handlePhotoUpload(event)}
-            />
+            />{' '}
+            {file && (
+              <RemoveImage onClick={removeUploadedImage}>
+                Remove Photo &nbsp;
+                <CrossIcon />
+              </RemoveImage>
+            )}
           </div>
         );
       }}
