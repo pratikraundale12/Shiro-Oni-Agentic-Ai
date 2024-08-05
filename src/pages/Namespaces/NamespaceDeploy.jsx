@@ -10,7 +10,7 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
-import { updateNamespaceStatus } from '../../utils/services';
+import { updateNamespaceStatus } from '../../store';
 import { toast } from 'react-toastify';
 
 const ModalBody = styled.div`

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TextRender, Grid } from '../../components';
-import { fetchGridData, REFRESH_OPTIONS, useGlobalContext } from '../../utils';
+import { REFRESH_OPTIONS, useGlobalContext } from '../../utils';
+import { fetchGridData } from '../../store';
 import AuditLog from './AuditLog';
 // import Deploy from './Deploy';
 import { Button } from '../../shared';

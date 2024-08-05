@@ -19,7 +19,7 @@ import {
   DeleteSmallIcon,
   LinkIcon,
 } from '../../../assets';
-import { testCluster } from '../../../utils/services';
+import { testCluster } from '../../../store';
 import { SuccessTestModal } from './SuccessTestModal';
 import { FailedTestModal } from './FailedTestModal';
 import { IconButton } from '../../../components';

@@ -8,8 +8,8 @@ import { TodoIcon } from '../../assets';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { SmallSearchIcon } from '../../assets';
 import { theme } from '../../styles';
-import { fetchGridData, useGlobalContext } from '../../utils';
-import { checkCluster } from '../../utils/services';
+import { useGlobalContext } from '../../utils';
+import { fetchGridData, checkCluster } from '../../store';
 
 const Container = styled.div`
   padding: 1.4rem;

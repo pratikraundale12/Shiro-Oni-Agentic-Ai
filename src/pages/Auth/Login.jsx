@@ -23,12 +23,11 @@ import {
   LOGIN_TO_YOUR_ACCOUNT,
   MICROSOFT,
   OR_DO_IT_VIA_OTHER_ACCOUNTS,
-  request,
   SIGN_IN_TO_YOUR_ACCOUNT,
   useGlobalContext,
   WELCOME_BACK,
 } from '../../utils';
-import { login } from '../../utils/services';
+import { request, login } from '../../store';
 import { getRightIcon } from '.';
 
 const Title = styled.h3`

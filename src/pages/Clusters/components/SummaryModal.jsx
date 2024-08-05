@@ -7,7 +7,7 @@ import {
   createRegistry,
   updateCluster,
   updateRegistry,
-} from '../../../utils/services';
+} from '../../../store';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import { FileIcon } from '../../../assets';

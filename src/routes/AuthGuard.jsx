@@ -6,7 +6,7 @@ import { isEmpty } from 'lodash';
 
 import { Header, Sidebar } from '../components';
 import { useGlobalContext } from '../utils';
-import { currentUser } from '../utils/services';
+import { currentUser } from '../store';
 
 const Container = styled.div`
   width: 100%;

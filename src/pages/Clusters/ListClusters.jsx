@@ -1,15 +1,11 @@
-import {
-  REFRESH_OPTIONS,
-  STATUS_OPTIONS,
-  useGlobalContext,
-  fetchGridData,
-} from '../../utils';
-import { useNavigate } from 'react-router-dom';
-import { deleteCluster } from '../../utils/services';
-import { ModalWithIcon } from '../../shared';
-import { toast } from 'react-toastify';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
+import { ModalWithIcon } from '../../shared';
+import { fetchGridData, deleteCluster } from '../../store';
+import { REFRESH_OPTIONS, STATUS_OPTIONS, useGlobalContext } from '../../utils';
 
 import {
   Grid,
@@ -96,8 +92,9 @@ export const ListClusters = () => {
       label: 'Cluster Status',
       renderCell: item => (
         <ProgressBarRender
-          count={item.connected_nodes || 0}
-          maxCount={item.total_nodes || 1}
+          is_active={item.is_active}
+          count={item.connected_nodes}
+          maxCount={item.total_nodes}
         />
       ),
       width: '20%',

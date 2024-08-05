@@ -1,10 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
+import { useForm } from 'react-hook-form';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import { theme } from '../../styles';
 import { SelectField } from '../../shared';
 import { Table } from '../../components';
 import { InsightContainer, FlowMetrics } from './components';
+import { useGlobalContext } from '../../utils';
 import {
   ActiveThreadIcon,
   DisabledProcessorIcon,
@@ -19,11 +23,11 @@ import {
   ErrorIcon,
 } from '../../assets';
 import { CrossIcon } from '../../assets/Icons/CrossIcon';
-import { getInitialClusterData, getNamespaceData } from '../../utils/services';
-import { toast } from 'react-toastify';
-import { useForm } from 'react-hook-form';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { fetchGridData, useGlobalContext } from '../../utils';
+import {
+  fetchGridData,
+  getInitialClusterData,
+  getNamespaceData,
+} from '../../store';
 
 const TopSection = styled.div`
   display: flex;

@@ -17,7 +17,7 @@ import {
   RESET_YOUR_PASSWORD,
   SIGN_IN,
 } from '../../utils';
-import { resetPassword } from '../../utils/services/auth';
+import { resetPassword } from '../../store';
 
 const BackButtonContainer = styled.div`
   width: 100%;

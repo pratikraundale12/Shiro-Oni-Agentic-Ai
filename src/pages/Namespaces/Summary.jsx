@@ -23,7 +23,7 @@ import {
   getCountDetails,
   updateNamespaceStatus,
   upgradeCluster,
-} from '../../utils/services';
+} from '../../store';
 import { toast } from 'react-toastify';
 
 const MainContainer = styled.div`

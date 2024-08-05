@@ -30,27 +30,33 @@ const Indicator = styled.div`
   background-color: ${props => props.color || props.theme.colors.background};
 `;
 
-export const ProgressBarRender = ({ count, maxCount }) => {
+export const ProgressBarRender = ({ is_active, count, maxCount }) => {
   const width = (1 / maxCount) * 100;
+  const isStandalone = count === 0 && maxCount === 0 && is_active;
 
   return (
     <ProgressContainer>
-      {Array(maxCount)
-        .fill()
-        .map((_, i) => (
-          <Indicator
-            key={i}
-            width={width}
-            color={
-              i < count ? theme.colors.success : theme.colors.primaryDisabled
-            }
-          />
-        ))}
+      {isStandalone ? (
+        <Indicator width={100} color={theme.colors.success} />
+      ) : (
+        Array(maxCount)
+          .fill()
+          .map((_, i) => (
+            <Indicator
+              key={i}
+              width={width}
+              color={
+                i < count ? theme.colors.success : theme.colors.primaryDisabled
+              }
+            />
+          ))
+      )}
     </ProgressContainer>
   );
 };
 
 ProgressBarRender.propTypes = {
+  is_active: PropTypes.bool.isRequired,
   count: PropTypes.number.isRequired,
   maxCount: PropTypes.number.isRequired,
 };

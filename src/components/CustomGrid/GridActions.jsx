@@ -8,7 +8,8 @@ import { theme } from '../../styles';
 import { Button, SelectField } from '../../shared';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { useForm } from 'react-hook-form';
-import { fetchGridData, useGlobalContext } from '../../utils';
+import { useGlobalContext } from '../../utils';
+import { fetchGridData } from '../../store';
 
 const Flex = styled.div`
   display: flex;

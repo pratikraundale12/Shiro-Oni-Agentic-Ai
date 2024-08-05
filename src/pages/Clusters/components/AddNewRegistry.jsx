@@ -18,7 +18,7 @@ import {
   DeleteSmallIcon,
   LinkIcon,
 } from '../../../assets';
-import { testRegistry } from '../../../utils/services';
+import { testRegistry } from '../../../store';
 import { SuccessTestModal } from './SuccessTestModal';
 import { FailedTestModal } from './FailedTestModal';
 

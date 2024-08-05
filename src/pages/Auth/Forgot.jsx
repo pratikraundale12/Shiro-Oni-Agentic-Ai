@@ -9,7 +9,7 @@ import * as yup from 'yup';
 import { theme } from '../../styles';
 import { Layout } from '../../components';
 import { Button, TextButton, InputField } from '../../shared';
-import { resetPasswordToken } from '../../utils/services';
+import { resetPasswordToken } from '../../store';
 import {
   GreaterArrowIcon,
   LessArrowIcon,

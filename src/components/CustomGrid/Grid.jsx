@@ -9,7 +9,8 @@ import { useSort } from '@table-library/react-table-library/sort';
 
 import { theme } from '../../styles';
 import { GridActions } from './GridActions';
-import { fetchGridData, useGlobalContext } from '../../utils';
+import { useGlobalContext } from '../../utils';
+import { fetchGridData } from '../../store';
 import { Loader, LoaderContainer } from '../Loader';
 import Pagination from './Pagination';
 import Breadcrumb from '../../shared/Breadcrumb';
