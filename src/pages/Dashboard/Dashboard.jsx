@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { theme } from '../../styles';
 import { SelectField } from '../../shared';
 import { Table } from '../../components';
 import { InsightContainer, FlowMetrics } from './components';
@@ -35,13 +36,6 @@ const QuickInsightHeading = styled.div`
   gap: 10px;
 `;
 
-const Continer = styled.div`
-  height: calc(100vh - 78px);
-  width: calc(100vw - 250px);
-  overflow: hidden;
-  padding: 20px 50px 22px 20px;
-`;
-
 const QuickInsightHeadingText = styled.h4`
   font-family: Noto Sans;
   font-size: 20px;
@@ -53,12 +47,6 @@ const QuickInsightHeadingText = styled.h4`
 
 const InsightIconContiner = styled.div`
   padding-top: 5px;
-`;
-
-const BottomSectionScroll = styled.div`
-  max-height: calc(100vh - 180px);
-  overflow-y: auto;
-  overflow-x: hidden;
 `;
 
 const InsightDataContiner = styled.div`
@@ -117,6 +105,14 @@ const DropdownWrapper = styled.div`
 const IdWrapper = styled.div`
   text-overflow: ellipsis;
   overflow: hidden;
+`;
+const StyledSelectField = styled(SelectField)`
+  margin-bottom: 0;
+  margin-right: 1.4rem;
+  padding: 0;
+  > div {
+    margin-top: 0;
+  }
 `;
 export const Dashboard = () => {
   const { state, setState } = useGlobalContext();
@@ -261,7 +257,6 @@ export const Dashboard = () => {
     } else if (selectedClusterId) {
       getClusterDetalis(selectedClusterId);
     }
-    console.log('called');
     return;
   };
 
@@ -284,8 +279,9 @@ export const Dashboard = () => {
 
     return () => clearInterval(intervalRef.current);
   }, [selectedClusterId, namespaceIdSelected, refreshState]);
+
   return (
-    <Continer>
+    <>
       <TopSection>
         <QuickInsightHeading>
           <InsightIconContiner>
@@ -295,12 +291,15 @@ export const Dashboard = () => {
         </QuickInsightHeading>
         <DropdownWrapper>
           <DropdownContainer>
-            <SelectField
+            <StyledSelectField
               name="selectedItem"
               control={control}
               options={clusterOptions}
-              label="Select Cluster"
               onChange={onClusterSelect}
+              placeholder="Select Cluster"
+              title="Select Cluster"
+              backgroundColor={theme.colors.lightGrey}
+              size="sm"
             />
           </DropdownContainer>
           <DropdownContainer>
@@ -308,8 +307,11 @@ export const Dashboard = () => {
               name="selectedItem"
               control={control}
               options={namespaceArray || []}
-              label="Select Namespace"
               onChange={onNamespaceSelect}
+              placeholder="Select Namespace"
+              title="Select Namespace"
+              backgroundColor={theme.colors.lightGrey}
+              size="sm"
             />
           </DropdownContainer>
           <DropdownContainer>
@@ -317,79 +319,79 @@ export const Dashboard = () => {
               name="selectedItem"
               control={control}
               options={RefreshArray}
-              label={'Refresh'}
               onChange={onRefreshSelect}
-              placeholder="Refresh"
+              placeholder={` () Refresh`}
+              title="Refresh"
+              backgroundColor={theme.colors.lightGrey}
+              size="sm"
             />
           </DropdownContainer>
         </DropdownWrapper>
       </TopSection>
-      <BottomSectionScroll>
-        <InsightDataContiner>
-          <InsightContainer
-            backgroundCss="#F1F5FF"
-            icon={TotalProcessorIcon}
-            count={clusterDetails?.total_processors || '0'}
-            text="Total Processor"
-          />
-          <InsightContainer
-            backgroundCss="#FEFBEC"
-            icon={RunnigProcessorIcon}
-            count={clusterDetails?.running_processors || '0'}
-            text="Running Processor"
-          />
-
-          <InsightContainer
-            backgroundCss="#EEF9FB"
-            icon={StoppedProcessorIcon}
-            count={clusterDetails?.stopped_processors || '0'}
-            text="Stopped Processor"
-          />
-          <InsightContainer
-            backgroundCss="#FDF3FC"
-            icon={DisabledProcessorIcon}
-            count={clusterDetails?.disabled_processors || '0'}
-            text="Disabled Processor"
-          />
-          <InsightContainer
-            backgroundCss="#FFF7ED"
-            icon={InvalidProcessorIcon}
-            count={clusterDetails?.invalid_count || '0'}
-            text="Invalid Processor"
-          />
-          <InsightContainer
-            backgroundCss="#F0F0F2"
-            icon={ActiveThreadIcon}
-            count={clusterDetails?.active_thread_count || '0'}
-            text="Active Thread"
-          />
-          <InsightContainer
-            backgroundCss="#EEF8FF"
-            icon={TotalQuedIcon}
-            count={clusterDetails?.queued_size || '0 MB'}
-            text="Total Queued"
-          />
-          <InsightContainer
-            backgroundCss="#EEF0F4"
-            icon={FlowFiledQuedIcon}
-            count={clusterDetails?.flow_files_queued || '0 Mb'}
-            text="Flow Files Queued"
-          />
-        </InsightDataContiner>
-        <FlowMetricHeader>
-          <FlowMetricHeaderIcon />
-          <HeaderText>Flow Metrics</HeaderText>
-        </FlowMetricHeader>
-        <FlowMetrics
-          flowMetricsDataDynamic={clusterDetails?.flowMetrixYData || [0, 0, 0]}
+      <InsightDataContiner>
+        <InsightContainer
+          backgroundCss="#F1F5FF"
+          icon={TotalProcessorIcon}
+          count={clusterDetails?.total_processors || '0'}
+          text="Total Processor"
         />
-        <ErrorsHeader>
-          <ErrorIcon />
+        <InsightContainer
+          backgroundCss="#FEFBEC"
+          icon={RunnigProcessorIcon}
+          count={clusterDetails?.running_processors || '0'}
+          text="Running Processor"
+        />
 
-          <HeaderText>Errors</HeaderText>
-        </ErrorsHeader>
-        <Table data={errorsLogs || []} columns={COLUMNS} />
-      </BottomSectionScroll>
-    </Continer>
+        <InsightContainer
+          backgroundCss="#EEF9FB"
+          icon={StoppedProcessorIcon}
+          count={clusterDetails?.stopped_processors || '0'}
+          text="Stopped Processor"
+        />
+        <InsightContainer
+          backgroundCss="#FDF3FC"
+          icon={DisabledProcessorIcon}
+          count={clusterDetails?.disabled_processors || '0'}
+          text="Disabled Processor"
+        />
+        <InsightContainer
+          backgroundCss="#FFF7ED"
+          icon={InvalidProcessorIcon}
+          count={clusterDetails?.invalid_count || '0'}
+          text="Invalid Processor"
+        />
+        <InsightContainer
+          backgroundCss="#F0F0F2"
+          icon={ActiveThreadIcon}
+          count={clusterDetails?.active_thread_count || '0'}
+          text="Active Thread"
+        />
+        <InsightContainer
+          backgroundCss="#EEF8FF"
+          icon={TotalQuedIcon}
+          count={clusterDetails?.queued_size || '0 MB'}
+          text="Total Queued"
+        />
+        <InsightContainer
+          backgroundCss="#EEF0F4"
+          icon={FlowFiledQuedIcon}
+          count={clusterDetails?.flow_files_queued || '0 Mb'}
+          text="Flow Files Queued"
+        />
+      </InsightDataContiner>
+      <FlowMetricHeader>
+        <FlowMetricHeaderIcon />
+        <HeaderText>Flow Metrics</HeaderText>
+      </FlowMetricHeader>
+      <FlowMetrics
+        flowMetricsDataDynamic={clusterDetails?.flowMetrixYData || [0, 0, 0]}
+      />
+      <ErrorsHeader>
+        <ErrorIcon />
+
+        <HeaderText>Errors</HeaderText>
+      </ErrorsHeader>
+      <Table data={errorsLogs || []} columns={COLUMNS} />
+    </>
   );
 };

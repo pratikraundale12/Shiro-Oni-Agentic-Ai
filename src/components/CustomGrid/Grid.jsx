@@ -18,6 +18,7 @@ import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { Modal } from '../../shared';
 import { Table } from './Table';
 import { TextRender } from './CellRenders';
+import { NoDataIcon } from '../../assets';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -25,16 +26,28 @@ const Container = styled.div`
 `;
 
 const TableContainer = styled.div`
-  height: 73%;
-  overflow: hidden;
+  height: 90%;
+  overflow: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
+
+  table {
+    overflow: visible;
+  }
 `;
 
 const ClusterRegistryContainer = styled.div`
   display: flex;
   gap: 2%;
   margin-bottom: 1%;
+`;
+
+const LoadingText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
 `;
 
 const EVENTCOLUMNS = [
@@ -55,8 +68,6 @@ const EVENTCOLUMNS = [
 ];
 
 const getData = (loader = false, data = [], nodes = []) => {
-  // const DATA = { nodes: loaders[module] ? [] : nodes || data };
-
   if (loader) {
     return [];
   }
@@ -75,6 +86,7 @@ export const Grid = ({
   statusOptions = [],
   title = '',
   buttonText = '',
+  placeholder = '',
   addModal = () => {},
   onBreadcrumbClick = () => {},
 }) => {
@@ -88,8 +100,6 @@ export const Grid = ({
           prev = null,
           next = null,
           data = [],
-
-          // nodelist
           name: nodeName = '',
           nifi_url = '',
           registry = {},
@@ -111,20 +121,16 @@ export const Grid = ({
     getTheme(),
     {
       Table: `
-        --data-table-library_grid-template-columns:  ${columns
-          .map(column => (column.width ? column.width : '1fr'))
-          .join(' ')} !important;
-
         th, td {
           border-bottom: none !important;
         }
 
         th {
-          height: 50px;
+          height: 48px;
         }
 
         td {
-          height: 58px;
+          height: 60px;
         }
       `,
       HeaderRow: `
@@ -150,7 +156,12 @@ export const Grid = ({
   const getLoader = () => {
     if (loaders[module]) return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
-      return <LoaderContainer>No data found</LoaderContainer>;
+      return (
+        <LoaderContainer>
+          <NoDataIcon width={140} />
+          <LoadingText>No data found!!</LoadingText>
+        </LoaderContainer>
+      );
     return null;
   };
 
@@ -162,6 +173,7 @@ export const Grid = ({
       ...(nodeClusterId && { nodeClusterId }),
       ...(selectedSourceClusterId && { selectedSourceClusterId }),
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setState, module, search]);
 
   return (
@@ -173,6 +185,7 @@ export const Grid = ({
         refreshOptions={refreshOptions}
         statusOptions={statusOptions}
         search={search}
+        placeholder={placeholder}
         buttonText={buttonText}
         addModal={addModal}
       />
@@ -241,6 +254,7 @@ Grid.propTypes = {
   refreshOptions: PropTypes.arrayOf(PropTypes.shape({})),
   statusOptions: PropTypes.arrayOf(PropTypes.shape({})),
   title: PropTypes.string,
+  placeholder: PropTypes.string,
   buttonText: PropTypes.string,
   addModal: PropTypes.func,
   breadcrumbs: PropTypes.arrayOf(

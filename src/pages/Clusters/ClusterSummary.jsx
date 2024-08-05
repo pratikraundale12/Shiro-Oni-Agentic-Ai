@@ -5,13 +5,7 @@ import { REFRESH_OPTIONS, STATUS_OPTIONS, useGlobalContext } from '../../utils';
 import { OpenEyeIcon } from '../../assets';
 
 const Container = styled.div`
-  padding: 1.4rem;
-  width: 100%;
-  height: 100%;
-
-  > div > div:nth-child(5) {
-    height: 65%;
-  }
+  height: 86%;
 `;
 
 const ActionTd = styled.div`
@@ -70,17 +64,15 @@ export const ClusterSummary = () => {
   };
 
   return (
-    <>
-      <Container>
-        <Grid
-          module="nodeList"
-          title="Clusters Summary"
-          columns={COLUMNS}
-          sortFns={SORT_FNS}
-          statusOptions={STATUS_OPTIONS}
-          refreshOptions={REFRESH_OPTIONS}
-        />
-      </Container>
-    </>
+    <Container>
+      <Grid
+        module="nodeList"
+        title="Clusters Summary"
+        columns={COLUMNS}
+        sortFns={SORT_FNS}
+        statusOptions={STATUS_OPTIONS}
+        refreshOptions={REFRESH_OPTIONS}
+      />
+    </Container>
   );
 };

@@ -10,8 +10,14 @@ import { CrossIcons } from '../../assets';
 const Title = styled.h5`
   color: ${props => props.theme.colors.darker};
   font-family: ${props => props.theme.fontNato};
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
+  line-height: 13px;
+`;
+
+const CloseButton = styled(SvgButton)`
+  width: 30px;
+  height: 30px;
 `;
 
 const Header = styled.div`
@@ -20,22 +26,21 @@ const Header = styled.div`
   align-items: center;
   width: 100%;
   height: 44px;
-  padding: 16px;
+  padding: 26px 16px;
   background-color: ${theme.colors.lightGrey};
 `;
 
 const Body = styled.div`
+  flex: 1;
+  overflow-y: auto;
   padding: 16px;
-  // flex: 1;
 `;
 
 const Footer = styled.div`
   padding: 16px;
   display: flex;
   gap: 1rem;
-  height: 80px;
-  width: ${props => getWidthBySize(props.size)};
-  ${props => props.size === 'sm' && 'align-self: center;'};
+  align-self: ${props => props.footerAlign};
 `;
 
 const CloseIcon = styled(CrossIcons)`
@@ -45,20 +50,10 @@ const CloseIcon = styled(CrossIcons)`
   background-color: ${props => props.theme.colors.white};
 `;
 
-const getWidthBySize = size => {
-  switch (size) {
-    case 'sm':
-      return '50%';
-    case 'md':
-      return '35%';
-    default:
-      return '25%';
-  }
-};
+ReactModal.setAppElement('#root');
 
 export const Modal = ({
   title,
-  size = 'md',
   children,
   isOpen,
   onRequestClose,
@@ -68,23 +63,9 @@ export const Modal = ({
   onSubmit = () => null,
   onSecondarySubmit,
   secondaryButtonProps = {},
+  footerAlign = 'center',
   contentStyles,
 }) => {
-  const sizes = {
-    lg: {
-      width: '70%',
-      height: '80%',
-    },
-    md: {
-      width: '50%',
-      height: '60%',
-    },
-    sm: {
-      width: '30%',
-      height: '45%',
-    },
-  };
-
   const styleObject = {
     overlay: {
       position: 'fixed',
@@ -102,16 +83,15 @@ export const Modal = ({
       border: 'none',
       overflow: 'hidden',
       borderRadius: 16,
-      minWidth: sizes[size].width,
-      minHeight: sizes[size].height,
-      maxWidth: sizes[size].width,
-      maxHeight: sizes[size].height,
+      minWidth: '30%',
+      minHeight: '40%',
+      maxWidth: '75%',
+      maxHeight: '90%',
       transform: 'translate(-50%, -50%)',
       backgroundColor: theme.colors.white,
       boxShadow: `0px 4px 18px 0px ${theme.colors.shadow}`,
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between',
       ...contentStyles,
     },
   };
@@ -121,16 +101,13 @@ export const Modal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={styleObject}
-      ariaHideApp={false}
     >
       <Header>
         <Title>{title}</Title>
-        <SvgButton icon={<CloseIcon />} onClick={onRequestClose} />
+        <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
       </Header>
-      <Body style={title === 'Cluster Summary' ? { flex: 1 } : {}}>
-        {children}
-      </Body>{' '}
-      <Footer size={size}>
+      <Body>{children}</Body>
+      <Footer footerAlign={footerAlign}>
         {secondaryButtonText && (
           <Button
             variant="secondary"
@@ -162,4 +139,5 @@ Modal.propTypes = {
   onSecondarySubmit: PropTypes.func,
   secondaryButtonProps: PropTypes.object,
   contentStyles: PropTypes.object,
+  footerAlign: PropTypes.string,
 };

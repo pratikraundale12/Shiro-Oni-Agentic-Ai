@@ -16,6 +16,10 @@ const Flex = styled.div`
   justify-content: space-between;
 `;
 
+const ButtonsContainer = styled(Flex)`
+  gap: 1.4rem;
+`;
+
 const Title = styled.h3`
   font-family: ${props => props.theme.fontNato};
   font-weight: 500;
@@ -51,7 +55,6 @@ const Search = styled.input`
 
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
-  margin-right: 1.4rem;
 
   > div {
     margin-top: 0;
@@ -65,6 +68,7 @@ export const GridActions = ({
   refreshOptions,
   statusOptions,
   search,
+  placeholder = 'Search...',
   buttonText,
   addModal: Modal,
 }) => {
@@ -94,16 +98,17 @@ export const GridActions = ({
         ...(watchCluster && { selectedSourceClusterId: watchCluster }),
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchStatus, watchCluster]);
 
   return (
     <>
       <Flex>
         <Flex>
-          <TodoIcon width={28} height={28} />
+          <TodoIcon width={22} height={24} />
           <Title>{title}</Title>
         </Flex>
-        <Flex>
+        <ButtonsContainer>
           {!isEmpty(refreshOptions) && (
             <StyledSelectField
               name="refresh"
@@ -136,14 +141,15 @@ export const GridActions = ({
           )}
           {!isEmpty(buttonText) && (
             <Button
-              icon={<PlusCircleIcon width={20} height={20} color="white" />}
+              icon={<PlusCircleIcon width={16} height={16} color="white" />}
               onClick={() => navigate('add')}
+              size="sm"
             >
               {buttonText}
             </Button>
           )}
           <Modal />
-        </Flex>
+        </ButtonsContainer>
       </Flex>
       <SearchContainer>
         <SmallSearchIcon
@@ -154,7 +160,7 @@ export const GridActions = ({
         <Search
           type="search"
           value={search}
-          placeholder="Search User Name, Email, Status"
+          placeholder={placeholder}
           onChange={e =>
             setState(prev => ({ ...prev, search: e.target.value }))
           }
@@ -171,6 +177,7 @@ GridActions.propTypes = {
   refreshOptions: PropTypes.array,
   statusOptions: PropTypes.array,
   search: PropTypes.string,
+  placeholder: PropTypes.string,
   buttonText: PropTypes.string,
   addModal: PropTypes.func,
 };

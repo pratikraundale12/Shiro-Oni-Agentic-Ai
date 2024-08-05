@@ -96,7 +96,7 @@ export const ROUTES_MENU = [
       },
       {
         path: ['add', 'edit/:id'],
-        component: <AddCluster />,
+        component: <div>ReadyFlow Gallary</div>,
       },
     ],
   },
@@ -111,7 +111,7 @@ export const ROUTES_MENU = [
       },
       {
         path: ['add', 'edit/:id'],
-        component: <AddCluster />,
+        component: <div>Genrate Flow</div>,
       },
     ],
   },
@@ -138,7 +138,7 @@ export const ROUTES_MENU = [
       },
       {
         path: ['add', 'edit/:id'],
-        component: <AddCluster />,
+        component: <div>Permission</div>,
       },
     ],
   },

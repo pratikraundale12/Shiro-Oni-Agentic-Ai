@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
@@ -51,17 +50,6 @@ const SubTitle = styled.p`
 
 const SubmitButton = styled(Button)`
   margin-top: 2.4rem;
-  padding: 10px 14px;
-  border-radius: 8px;
-
-  > div {
-    width: auto;
-  }
-
-  span {
-    margin-top: 4px;
-    margin-left: 10px;
-  }
 `;
 
 const SmallText = styled.small`
@@ -156,7 +144,7 @@ export const Login = () => {
           iconPosition="right"
           icon={<LessArrowIcon color={theme.colors.white} />}
           type="submit"
-          isLoading={state.loaders[PATH]}
+          loading={state.loaders[PATH] && 'Signing In...'}
         >
           {SIGN_IN_TO_YOUR_ACCOUNT}
         </SubmitButton>

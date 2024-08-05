@@ -11,7 +11,7 @@ export const FileIcon = ({
     width={width}
     height={height}
     fill="none"
-    viewBox="0 0 65 85"
+    viewBox="0 0 62 83"
   >
     <path
       stroke={color}

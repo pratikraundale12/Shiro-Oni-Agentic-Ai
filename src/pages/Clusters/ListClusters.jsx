@@ -26,12 +26,6 @@ import {
   PencilIcon,
 } from '../../assets';
 
-const Container = styled.div`
-  padding: 1.4rem;
-  width: 100%;
-  height: 100%;
-`;
-
 const List = styled.div`
   position: absolute;
   top: ${props => props.top}px;
@@ -58,7 +52,7 @@ const Item = styled.div`
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding: 8px;
+  padding: 16px 12px;
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.md};
   color: ${props => props.theme.colors.darker};
@@ -67,10 +61,11 @@ const Item = styled.div`
   &:hover {
     background-color: ${props => props.theme.colors.lightGrey};
   }
-`;
 
-const EyeIcon = styled(OpenEyeIcon)`
-  margin: 0 6px 0 5px;
+  > span {
+    margin-top: 2px;
+    margin-left: 10px;
+  }
 `;
 
 const getX = x => 1790 > x < 1830 && 1446;
@@ -182,10 +177,11 @@ export const ListClusters = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <Container>
+    <>
       <ModalWithIcon
         primaryButtonText="Delete"
         secondaryButtonText="Cancel"
@@ -205,20 +201,24 @@ export const ListClusters = () => {
         sortFns={SORT_FNS}
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
+        placeholder="Search Cluster Name, Status, URL"
       />
       {menuState.isVisible && (
         <List ref={menuRef} top={menuState.y} left={getX(menuState.x)}>
           <Item onClick={() => handleClick('edit')}>
-            <PencilIcon /> Edit
+            <PencilIcon width={16} height={16} />
+            <span>Edit</span>
           </Item>
           <Item onClick={() => handleClick('view')}>
-            <EyeIcon width={22} height={22} /> View
+            <OpenEyeIcon width={18} height={18} />
+            <span>View</span>
           </Item>
           <Item onClick={() => handleClick('delete')}>
-            <DeleteSmallIcon /> Delete
+            <DeleteSmallIcon width={18} height={18} />
+            <span>Delete</span>
           </Item>
         </List>
       )}
-    </Container>
+    </>
   );
 };
