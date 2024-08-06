@@ -2,8 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import { BrandLogoIcon, ChatBoxIcon } from '../assets';
+import { ChatBoxIcon, KsolvesDataFlowIcon } from '../assets';
 import { VERSION } from '../utils';
+// import RightSectionImg from '../assets/Image/aside.png';
+// import Right from "../assets/Image/rightsection"
 
 const Container = styled.div`
   width: 100vw;
@@ -28,7 +30,7 @@ const LeftSection = styled.div`
 const RightSection = styled.div`
   width: 50vw;
   height: 100vh;
-  background-image: url('/img/right-bg.png');
+  background-image: url(${'../assets/Image/right-back.png'});
   background-repeat: no-repeat;
   background-size: 100% 100%;
 `;
@@ -64,17 +66,21 @@ const Version = styled.div`
   margin: 1.8rem 0;
 `;
 
-export const Layout = ({ children }) => {
+export const Layout = ({ children, newLogin = false }) => {
+  newLogin;
   return (
     <Container>
       <LeftSection>
-        <BrandLogoIcon />
+        <KsolvesDataFlowIcon />
+
         <Content>{children}</Content>
         <Version>{VERSION}</Version>
       </LeftSection>
-      <RightSection>
-        <Image />
-      </RightSection>
+      {/* {newLogin ? (
+        <img src={RightSectionImg} alt="img" />
+      ) : ( */}
+      <RightSection>{<Image />}</RightSection>
+      {/* )} */}
       <ChatBoxContainer>
         <ChatBoxIcon />
       </ChatBoxContainer>
@@ -84,4 +90,5 @@ export const Layout = ({ children }) => {
 
 Layout.propTypes = {
   children: PropTypes.arrayOf(PropTypes.node).isRequired,
+  newLogin: PropTypes.bool,
 };
