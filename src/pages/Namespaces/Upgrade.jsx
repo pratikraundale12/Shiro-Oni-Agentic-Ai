@@ -10,12 +10,12 @@ import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
 import { useGlobalContext } from '../../utils';
 
 const Container = styled.div`
-  height: calc(100vh - 78px);
-  width: calc(100vw - 250px);
-  overflow: hidden;
-  padding: 37px 50px 22px 20px;
-  --bs-bg-opacity: 1;
-  background-color: white !important;
+  // height: calc(100vh - 78px);
+  // width: calc(100vw - 250px);
+  // overflow: hidden;
+  // padding: 37px 50px 22px 20px;
+  // --bs-bg-opacity: 1;
+  // background-color: white !important;
 `;
 const TopTitleBar = styled.div`
   height: 37px;
@@ -178,14 +178,12 @@ const Upgrade = () => {
     },
   ];
 
-  console.log({ state }, 'line no 174');
   const breadcrumbData = [
     { id: '1', name: 'Namespace List', path: '/namespaces' },
     { id: '2', name: 'Select Namespace', path: '/namespaces/deploy' },
     { id: '3', name: 'Configuration Details' },
   ];
   const handleBreadcrumbClick = breadcrumb => {
-    console.log('Breadcrumb clicked:', breadcrumb);
     navigate(breadcrumb.path);
   };
   const handleClick = () => {
@@ -248,8 +246,6 @@ const Upgrade = () => {
     }
   };
   // const isDeploy = state?.upgradeData ? false : true;
-
-  console.log({ state }, '245');
   return (
     <Container>
       <TopTitleBar className=" d-flex  mb-3">

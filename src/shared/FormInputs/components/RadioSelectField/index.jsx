@@ -46,6 +46,7 @@ RadioSelectField.propTypes = {
   label: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   errors: PropTypes.shape({}),
+  // existingValue: PropTypes.any,
 };
 
 RadioSelectField.defaultProps = {

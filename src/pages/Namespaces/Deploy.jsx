@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, RadioField, SelectField } from '../../shared';
 import { FullPageLoader, Table } from '../../components';
 import styled from 'styled-components';
@@ -10,11 +10,6 @@ import { SmallSearchIcon } from '../../assets';
 import { theme } from '../../styles';
 import { fetchGridData, useGlobalContext } from '../../utils';
 import { checkCluster } from '../../utils/services';
-
-const Container = styled.div`
-  padding: 1.4rem;
-  background-color: white !important;
-`;
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -122,18 +117,16 @@ const Deploy = () => {
   } = useForm();
   const [search, setSearch] = useState('');
   const { state, setState } = useGlobalContext();
-  const [selectedDestinationClusterId, setSelectedDestinationClusterId] =
-    useState('');
   const [loading, setLoading] = useState(false);
-  // const [depolyNamespaceId, setDepolyNamespaceId] = useState('');
   const [showDeployUI, setShowDeployUI] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     handleSelectNamespace();
-  }, [selectedDestinationClusterId]);
+  }, [state.selectedDestinationClusterId]);
+
+  const location = useLocation();
 
   const handleBreadcrumbClick = breadcrumb => {
-    console.log('Breadcrumb clicked:', breadcrumb);
     navigate(breadcrumb.path);
   };
   const COLUMNS = [
@@ -190,15 +183,26 @@ const Deploy = () => {
     setState(prev => ({
       ...prev,
       selectedNamespaceId: id,
-      selectedPaths: [...prev.selectedPaths],
     }));
     fetchGridData({
       setState,
       module: 'deploy',
-      selectedDestinationClusterId: selectedDestinationClusterId,
+      selectedDestinationClusterId: state.selectedDestinationClusterId,
       selectedNamespaceId: id,
     });
   }
+
+  useEffect(() => {
+    fetchGridData({
+      setState,
+      module: 'deploy',
+      search: search,
+      ...(state.selectedDestinationClusterId && {
+        selectedDestinationClusterId: state.selectedDestinationClusterId,
+      }),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setState, search]);
 
   useEffect(() => {
     fetchGridData({
@@ -216,17 +220,9 @@ const Deploy = () => {
 
   const handleClick = () => {
     if (state.deployData) {
-      navigate('/namespaces/upgrade', {
-        state: {
-          // deployData: state.deployData,
-          // selectedClusterName: state.selectedClusterName,
-          selectedClusterId: selectedDestinationClusterId,
-          // depolyNamespaceId: depolyNamespaceId,
-        },
-      });
+      navigate('/namespaces/upgrade');
     }
   };
-
   const handleBackClick = () => {
     navigate('/namespaces');
   };
@@ -234,16 +230,32 @@ const Deploy = () => {
   const onClusterCheck = async e => {
     setLoading(true);
     const selectedClusterId = e.value;
-    setSelectedDestinationClusterId(e.value);
+    setState(prevState => ({
+      ...prevState,
+      selectedDestinationClusterId: e.value,
+    }));
     const selectedClusterName = e.label;
-    console.log(state);
-    const ids = state?.selectedPaths.map(item => item?.flowId);
-    console.log({ a: state.selectedPaths });
+    let ids = [];
+    for (const a of state.tempNamespacesData) {
+      if (location.state.id === a.id) {
+        ids.push(a.flowId);
+      }
+    }
+
+    for (const a of state.gridData.namespaces.breadcrumb) {
+      for (const b of state.tempNamespacesData) {
+        if (a.id === b.id) {
+          ids.push(b.flowId);
+        }
+      }
+    }
+    const arrayWithoutNullsAndUndefineds = ids.filter(item => item != null);
+
     try {
       const response = await checkCluster({
         clusterId: selectedClusterId,
         srcClusterId: state?.selectedSourceClusterId,
-        path: ids,
+        path: arrayWithoutNullsAndUndefineds,
       });
 
       if (response.mode === 'upgrade') {
@@ -278,7 +290,7 @@ const Deploy = () => {
   };
 
   return (
-    <Container>
+    <div>
       <FullPageLoader loading={loading} />
       <TopTitleBar className="d-flex mb-3">
         <MainTitleDiv className="d-flex">
@@ -347,7 +359,7 @@ const Deploy = () => {
           </BottomButtonDiv>
         </BottomButton>
       )}
-    </Container>
+    </div>
   );
 };
 

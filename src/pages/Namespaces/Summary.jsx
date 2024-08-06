@@ -30,12 +30,12 @@ import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../../components';
 
 const MainContainer = styled.div`
-  height: calc(100vh - 78px);
-  width: calc(100vw - 250px);
-  overflow: hidden;
-  padding: 37px 50px 22px 20px;
-  --bs-bg-opacity: 1;
-  background-color: white !important;
+  // height: calc(100vh - 78px);
+  // width: calc(100vw - 250px);
+  // overflow: hidden;
+  // padding: 37px 50px 22px 20px;
+  // --bs-bg-opacity: 1;
+  // background-color: white !important;
 `;
 const TopTitleBar = styled.div`
   height: 37px;
@@ -284,7 +284,7 @@ const Summary = () => {
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] =
     useState(false);
-
+  const [parameterContextItem, setParameterContextItem] = useState({});
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
 
@@ -309,7 +309,7 @@ const Summary = () => {
       );
       const data = response.data;
 
-      console.log(data.version, 'line no 312');
+      console.log(data.version);
       setState(prevState => ({
         ...prevState,
         parameterDetails: response,
@@ -362,7 +362,6 @@ const Summary = () => {
       toast.error('Upgrade failed:', error.message);
     }
   };
-  console.log(state?.deployData?.registryId);
   const handleDeploy = async () => {
     try {
       const result = await deployCluster({
@@ -792,8 +791,13 @@ const Summary = () => {
         isOpen={isParameterContextOpen}
         closePopup={closeParameterContext}
         openAddParameterContext={openAddParameterContext}
+        setIsAddParameterContextOpen={setIsAddParameterContextOpen}
+        setIsParameterContextOpen={setIsParameterContextOpen}
+        setParameterContextItem={setParameterContextItem}
       />
+
       <AddParameterContext
+        parameterContextItem={parameterContextItem}
         isOpen={isAddParameterContextOpen}
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}

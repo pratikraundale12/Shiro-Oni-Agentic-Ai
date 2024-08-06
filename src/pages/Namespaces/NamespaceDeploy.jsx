@@ -42,9 +42,9 @@ const ColumnThree = styled.div`
   padding-right: calc(1.5rem * 0.5);
   padding-left: calc(1.5rem * 0.5);
   margin-top: 0;
-  &.col-3 {
+  &.col-4 {
     flex: 0 0 auto;
-    width: 25%;
+    width: 35%;
   }
 `;
 const RowModalDiv = styled.div`
@@ -64,7 +64,10 @@ const SubTitleSet = styled.p`
   font-size: 14px !important;
   font-weight: 500 !important;
   line-height: 18.52px !important;
-  letter-spacing: -0.005em Im !important;
+  letter-spacing: -0.005em !important;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -72,9 +75,9 @@ const CustomNine = styled.div`
   padding-right: calc(1.5rem * 0.5);
   padding-left: calc(1.5rem * 0.5);
   margin-top: 0;
-  &.col-9 {
+  &.col-8 {
     flex: 0 0 auto;
-    width: 75%;
+    width: 65%;
   }
 `;
 
@@ -176,7 +179,7 @@ const NamespaceDeploy = ({ isOpen, closePopup, getParamerterContext }) => {
     );
   };
 
-  const isDeploy = state?.upgradeData ? false : true;
+  // const isDeploy = state?.upgradeData ? false : true;
   return (
     <Modal
       title={`Namespace ${state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
@@ -201,11 +204,11 @@ const NamespaceDeploy = ({ isOpen, closePopup, getParamerterContext }) => {
         </ModalIcon>
         <ModalHFive className="pt-4 mt-2 mb-0 ">
           {state?.upgradeData?.name} {state?.deployData?.name} successfully{' '}
-          {isDeploy ? 'Deployed' : 'Upgrade'} to {state?.selectedClusterName}{' '}
-          instance
+          {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'} to{' '}
+          {state?.selectedClusterName} instance
         </ModalHFive>
         <RowModal>
-          <ColumnThree className="col-3 mb-3">
+          <ColumnThree className="col-4 mb-3">
             <RowModalDiv className="d-flex  h-100  ">
               <ActionTitleSet className="mb-0 ">Namespace</ActionTitleSet>
               <SubTitleSet className="mb-0 ">
@@ -214,7 +217,7 @@ const NamespaceDeploy = ({ isOpen, closePopup, getParamerterContext }) => {
               </SubTitleSet>
             </RowModalDiv>
           </ColumnThree>
-          <CustomNine className="col-9 mb-3">
+          <CustomNine className="col-8 mb-3">
             <ActiveButtonContainer className="d-flex ">
               <CountDiv
                 className="div-btn-1"
@@ -274,7 +277,7 @@ const NamespaceDeploy = ({ isOpen, closePopup, getParamerterContext }) => {
               </CountDiv>
             </ActiveButtonContainer>
           </CustomNine>
-          <ColumnThree className="col-3 mb-3">
+          <ColumnThree className="col-4 mb-3">
             <RowModalDiv className="d-flex  h-100  ">
               <ActionTitleSet className="mb-0 ">Current Version</ActionTitleSet>
               <SubTitleSet className="mb-0 ">
@@ -282,7 +285,7 @@ const NamespaceDeploy = ({ isOpen, closePopup, getParamerterContext }) => {
               </SubTitleSet>
             </RowModalDiv>
           </ColumnThree>
-          <CustomNine className="col-9 mb-3">
+          <CustomNine className="col-8 mb-3">
             <ActiveButtonContainer className="d-flex ">
               <ActiveButtonDiv className="div-btn-1">
                 <ActiveButtonDiv

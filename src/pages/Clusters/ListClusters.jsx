@@ -83,9 +83,8 @@ export const ListClusters = () => {
 
   const COLUMNS = [
     {
-      label: 'Name',
+      label: 'Cluster Name',
       renderCell: item => <TextRender text={item.name} />,
-      sort: { sortKey: 'NAME' },
       width: '20%',
     },
     {
@@ -115,10 +114,6 @@ export const ListClusters = () => {
       width: '10%',
     },
   ];
-
-  const SORT_FNS = {
-    NAME: array => array.sort((a, b) => a.name.localeCompare(b.name)),
-  };
 
   const deleteUserConfirmed = async () => {
     const response = await deleteCluster(state.selectedItem.id);
@@ -198,7 +193,6 @@ export const ListClusters = () => {
         title="Clusters List"
         buttonText="Add New Cluster"
         columns={COLUMNS}
-        sortFns={SORT_FNS}
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
         placeholder="Search Cluster Name, Status, URL"

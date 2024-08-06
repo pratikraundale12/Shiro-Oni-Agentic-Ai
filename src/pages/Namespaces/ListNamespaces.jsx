@@ -32,7 +32,7 @@ export const ListNamespaces = () => {
 
   const COLUMNS = [
     {
-      label: 'Name',
+      label: 'Namespace',
       renderCell: item => (
         <button
           style={{
@@ -47,7 +47,6 @@ export const ListNamespaces = () => {
           {item.name}
         </button>
       ),
-      sort: { sortKey: 'NAME' },
     },
     {
       label: 'Namespace ID',
@@ -63,48 +62,59 @@ export const ListNamespaces = () => {
     },
     {
       label: 'Version',
-      width: '10%',
+      // width: '10%',
       renderCell: item => <TextRender text={item.version || 'N/A'} />,
     },
-    {
-      width: '10%',
-      renderCell: () => (
-        <button
-          // onClick={handleOpenAuditLog}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-          }}
-          aria-label="Open Audit Log"
-        >
-          <OpenEyeIcon />
-        </button>
-      ),
-    },
+    // {
+    //   width: '10%',
+    //   renderCell: () => (
+    //     <button
+    //       // onClick={handleOpenAuditLog}
+    //       style={{
+    //         background: 'none',
+    //         border: 'none',
+    //         padding: 0,
+    //         cursor: 'pointer',
+    //       }}
+    //       aria-label="Open Audit Log"
+    //     >
+    //       <OpenEyeIcon />
+    //     </button>
+    //   ),
+    // },
     {
       label: 'Actions',
-      width: '10%',
+      // width: '10%',
       renderCell: item => (
-        <Button
-          onClick={() => handleSelect(item.id)}
-          disabled={
-            !item.flowId ||
-            !item.version ||
-            item.flowId === 'N/A' ||
-            item.version === 'N/A'
-          }
-        >
-          Select
-        </Button>
+        <div className="d-flex" style={{ gap: 8 }}>
+          <button
+            // onClick={handleOpenAuditLog}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+            }}
+            aria-label="Open Audit Log"
+          >
+            <OpenEyeIcon />
+          </button>
+          <Button
+            onClick={() => handleSelect(item.id)}
+            disabled={
+              !item.flowId ||
+              !item.version ||
+              item.flowId === 'N/A' ||
+              item.version === 'N/A'
+            }
+            size="sm"
+          >
+            Select
+          </Button>
+        </div>
       ),
     },
   ];
-
-  const SORT_FNS = {
-    NAME: array => array.sort((a, b) => a.name.localeCompare(b.name)),
-  };
 
   const clusterOptions = state.clusterList.map(item => ({
     label: item.name,
@@ -112,43 +122,49 @@ export const ListNamespaces = () => {
   }));
 
   function handleSelectNamespace(id) {
-    const b = state.gridData.namespaces.data.find(a => a.id === id);
-    setState(prev => ({
-      ...prev,
-      selectedNamespaceId: id,
-
-      selectedPaths: [...prev.selectedPaths, b],
-    }));
-
     fetchGridData({
       setState,
       module: 'namespaces',
       selectedSourceClusterId: state.selectedSourceClusterId,
       selectedNamespaceId: id,
     });
+
+    setState(prev => {
+      const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
+      const newData = state.gridData.namespaces.data.filter(
+        item => !existingIds.has(item.id)
+      );
+
+      return {
+        ...prev,
+        selectedNamespaceId: id,
+        tempNamespacesData: [...prev.tempNamespacesData, ...newData],
+      };
+    });
   }
-
   const handleSelect = id => {
-    console.log({ state });
-    const b = state.gridData.namespaces.data.find(a => a.id === id);
-    if (state.selectedPaths.length === 0) {
-      setState(prev => ({
+    setState(prev => ({
+      ...prev,
+      selectedNamespaceId: id,
+    }));
+
+    setState(prev => {
+      const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
+      const newData = state.gridData.namespaces.data.filter(
+        item => !existingIds.has(item.id)
+      );
+      return {
         ...prev,
         selectedNamespaceId: id,
+        tempNamespacesData: [...prev.tempNamespacesData, ...newData],
+      };
+    });
 
-        selectedPaths: [b],
-      }));
-    } else {
-      setState(prev => ({
-        ...prev,
-        selectedNamespaceId: id,
-
-        selectedPaths: [...prev.selectedPaths, b],
-      }));
-    }
-    console.log(b);
-
-    navigate('/namespaces/deploy');
+    navigate('/namespaces/deploy', {
+      state: {
+        id,
+      },
+    });
   };
 
   useEffect(() => {
@@ -159,7 +175,6 @@ export const ListNamespaces = () => {
   }, [setState]);
 
   const onBreadcrumbClick = e => {
-    console.log(e);
     handleSelectNamespace(e.id);
   };
 
@@ -169,7 +184,6 @@ export const ListNamespaces = () => {
         module="namespaces"
         title="Namespaces List"
         columns={COLUMNS}
-        sortFns={SORT_FNS}
         refreshOptions={REFRESH_OPTIONS}
         clusterOptions={clusterOptions}
         onBreadcrumbClick={onBreadcrumbClick}
