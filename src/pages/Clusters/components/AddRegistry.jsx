@@ -336,18 +336,6 @@ export const AddRegistry = ({
                     <p>Registry Name</p>
                     <span>{registryData.name}</span>
                   </BoxContentArea>
-                  <BoxContentArea>
-                    <p>Registry URL</p>
-                    <span>{registryData.registry_url}</span>
-                  </BoxContentArea>
-                  <BoxContentArea>
-                    <p>Username</p>
-                    <span>N/A</span>
-                  </BoxContentArea>
-                  <BoxContentArea>
-                    <p>Password</p>
-                    <span>N/A</span>
-                  </BoxContentArea>
                 </Column>
                 <Column size={66.66}>
                   <BoxContentArea>

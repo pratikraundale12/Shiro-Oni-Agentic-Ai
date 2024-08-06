@@ -11,11 +11,11 @@ import {
   Dashboard,
   ListUsers,
   ListClusters,
-  AddCluster,
   ListNamespaces,
   ReadyFlowGallary,
   GenrateFlow,
   PermissionMatrix,
+  Add,
 } from '../pages';
 import {
   ClusterIcon,
@@ -54,7 +54,7 @@ export const ROUTES_MENU = [
       },
       {
         path: ['add', 'edit'],
-        component: <AddCluster />,
+        component: <Add />,
       },
       {
         path: ['summary'],
