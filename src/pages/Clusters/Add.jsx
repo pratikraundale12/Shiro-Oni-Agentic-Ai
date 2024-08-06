@@ -244,6 +244,7 @@ export const Add = () => {
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
   const [isCredOpen, setIsCredOpen] = useState(false);
   // const [clusterTest, setClusterTest] = useState(false);
+  const [newRegistry, setNewRegistry] = useState(false);
   const {
     control,
     watch,
@@ -343,7 +344,7 @@ export const Add = () => {
           </FormContainer>
         )}
 
-        {activeTab === TABS.REGISTRY && (
+        {activeTab === TABS.REGISTRY && !newRegistry && (
           <FormContainer>
             <SelectField
               control={control}
@@ -356,7 +357,9 @@ export const Add = () => {
             <StyledButton
               variant="secondary"
               icon={<PlusCircleIcon color="red" />}
-              // onClick={() => ref.current.click()}
+              onClick={() => {
+                setNewRegistry(true);
+              }}
             >
               Add New Registry
             </StyledButton>
@@ -412,6 +415,48 @@ export const Add = () => {
                 </FlexTwo>
               </RegistryDetailsDivTwo>
             </RegistryDetailsDiv>
+          </FormContainer>
+        )}
+
+        {activeTab === TABS.REGISTRY && newRegistry && (
+          <FormContainer>
+            <InputField
+              name="registryName"
+              register={register}
+              icon={<QRIcons />}
+              label="Registry Name"
+              placeholder="Enter your Registry Name"
+              errors={errors}
+            />
+            <InputField
+              name="registryUrl"
+              register={register}
+              icon={<LinkIcon />}
+              label="Registry Url"
+              placeholder="Enter your Registry Url"
+              errors={errors}
+            />
+            <Flex>
+              <div>
+                <ButtonLabel>Test Via Certificate</ButtonLabel>
+                <Button
+                  onClick={() => setIsCertificateOpen(true)}
+                  // disabled={addCertificateSatus}
+                >
+                  Add Certificate
+                </Button>
+              </div>
+              <ORText>OR</ORText>
+              <div>
+                <ButtonLabel>Test Via Creditionals</ButtonLabel>
+                <Button
+                  onClick={() => setIsCredOpen(true)}
+                  // disabled={addCertificateSatus}
+                >
+                  Enter Creditionals
+                </Button>
+              </div>
+            </Flex>
           </FormContainer>
         )}
 
