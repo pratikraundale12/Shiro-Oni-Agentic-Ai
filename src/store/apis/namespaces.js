@@ -50,7 +50,7 @@ export const getClusterProgressDelete = async ({ clusterId, progressId }) => {
 
 export const getCountDetails = async ({ clusterId, namespaceId }) => {
   const { data } = await API.get(
-    `/clusters/${clusterId}/namespaces/${namespaceId}`
+    `/clusters/${clusterId}/namespace/${namespaceId}`
   );
   return data;
 };
@@ -89,6 +89,29 @@ export const deployCluster = async ({
 export const fetchParameterContext = async (clusterId, parameterId) => {
   const response = await API.get(
     `parameter-context/${clusterId}?contextId=${parameterId}`
+  );
+  return response;
+};
+
+export const updateParameterContextService = async (
+  clusterId,
+  parameterContextId,
+  revision,
+  data
+) => {
+  console.log({ revision, data, clusterId, parameterContextId });
+  const updateData = {
+    revision: revision,
+    parameters: [
+      {
+        parameter: data,
+      },
+    ],
+  };
+
+  const response = await API.put(
+    `parameter-context/${clusterId}/contextId/${parameterContextId}`,
+    updateData
   );
   return response;
 };

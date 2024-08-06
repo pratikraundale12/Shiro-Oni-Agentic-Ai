@@ -8,6 +8,7 @@ import { getTheme } from '@table-library/react-table-library/baseline';
 
 import { LoaderContainer } from '../Loader';
 import { theme } from '../../styles';
+import Breadcrumb from '../../shared/Breadcrumb';
 import { NoDataIcon } from '../../assets';
 
 const TableContainer = styled.div`
@@ -29,7 +30,13 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
-export const Table = ({ data, columns, className }) => {
+export const Table = ({
+  data,
+  columns,
+  onBreadcrumbClick = () => {},
+  breadcrumb = [],
+  className,
+}) => {
   const DATA = { nodes: data || [] };
   const tableTheme = useTheme([
     getTheme(),
@@ -38,7 +45,6 @@ export const Table = ({ data, columns, className }) => {
         th, td {
           border-bottom: none !important;
         }
-
         th {
           height: 48px;
         }
@@ -71,15 +77,23 @@ export const Table = ({ data, columns, className }) => {
   };
 
   return (
-    <TableContainer className={className}>
-      <CompactTable data={DATA} columns={columns} theme={tableTheme} />
-      {getLoader()}
-    </TableContainer>
+    <>
+      <Breadcrumb
+        breadcrumbs={breadcrumb}
+        onBreadcrumbClick={onBreadcrumbClick}
+      />
+      <TableContainer className={className}>
+        <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+        {getLoader()}
+      </TableContainer>
+    </>
   );
 };
 
 Table.propTypes = {
   data: PropTypes.object.isRequired,
   columns: PropTypes.arrayOf(PropTypes.shape({})),
+  onBreadcrumbClick: PropTypes.func,
+  breadcrumb: PropTypes.array,
   className: PropTypes.string,
 };

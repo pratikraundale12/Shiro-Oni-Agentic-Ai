@@ -1,5 +1,6 @@
 /*eslint-disable*/
 
+import { API_URL } from '../../utils';
 import API from './api';
 
 export const getClustersList = async params => {
@@ -10,7 +11,7 @@ export const getClustersList = async params => {
 export const testCluster = async payload => {
   // console.log("PAYLOAD",payload);
   try {
-    return await API.post('http://localhost:8000/api/test/clusters', payload);
+    return await API.post(`${API_URL}/api/test/clusters`, payload);
   } catch (error) {
     return error.response.data;
   }
@@ -19,7 +20,7 @@ export const testCluster = async payload => {
 export const createRegistry = async payload => {
   // console.log("PAYLOAD",payload);
   try {
-    return await API.post('http://localhost:8000/api/registries', payload);
+    return await API.post(`${API_URL}/api/registries`, payload);
   } catch (error) {
     return error.response.data;
   }
@@ -28,7 +29,7 @@ export const createRegistry = async payload => {
 export const createCluster = async payload => {
   // console.log("PAYLOAD",payload);
   try {
-    return await API.post('http://localhost:8000/api/clusters', payload);
+    return await API.post(`${API_URL}/api/clusters`, payload);
   } catch (error) {
     return error.response.data;
   }
@@ -36,14 +37,14 @@ export const createCluster = async payload => {
 
 export const testRegistry = async payload => {
   try {
-    return await API.post('http://localhost:8000/api/test/registries', payload);
+    return await API.post(`${API_URL}/api/test/registries`, payload);
   } catch (error) {
     return error.response.data;
   }
 };
 
 export const getRegistryList = async params => {
-  const { data } = await API.get('http://localhost:8000/api/registries', {
+  const { data } = await API.get(`${API_URL}/api/registries`, {
     params,
   });
   return data;
@@ -51,14 +52,14 @@ export const getRegistryList = async params => {
 
 export const getOneRegistry = async params => {
   const { data } = await API.get(
-    `http://localhost:8000/api/registries/${params}`
+    `${API_URL}/api/registries/${params}`
   );
   return data;
 };
 
 export const updateCluster = async (id, payload) => {
   const { data } = await API.patch(
-    `http://localhost:8000/api/clusters/${id}`,
+    `${API_URL}/api/clusters/${id}`,
     payload
   );
   return data;
@@ -66,7 +67,7 @@ export const updateCluster = async (id, payload) => {
 
 export const updateRegistry = async (id, payload) => {
   const { data } = await API.patch(
-    `http://localhost:8000/api/registries/${id}`,
+    `${API_URL}/registries/${id}`,
     payload
   );
   return data;
@@ -74,7 +75,7 @@ export const updateRegistry = async (id, payload) => {
 
 export const deleteCluster = async id => {
   try {
-    return await API.delete(`http://localhost:8000/api/clusters/${id}`);
+    return await API.delete(`${API_URL}/api/clusters/${id}`);
   } catch (error) {
     return error.response.data;
   }
@@ -82,7 +83,7 @@ export const deleteCluster = async id => {
 
 export const getNodeList = async ({ nodeClusterId }) => {
   const { data } = await API.get(
-    `http://localhost:8000/api/clusters/${nodeClusterId}/nodes`
+    `${API_URL}/api/clusters/${nodeClusterId}/nodes`
   );
   return data;
 };

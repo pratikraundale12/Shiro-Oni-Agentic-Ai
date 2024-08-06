@@ -123,6 +123,10 @@ export const Grid = ({
     getTheme(),
     {
       Table: `
+      --data-table-library_grid-template-columns: ${columns
+        .map(column => column.width)
+        .join(' ')} !important;
+
         th, td {
           border-bottom: none !important;
         }

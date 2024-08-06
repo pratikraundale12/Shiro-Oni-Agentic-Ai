@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   CheckboxField,
@@ -8,16 +8,22 @@ import {
 } from '../../shared';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
+import { useGlobalContext } from '../../utils';
+// import { updateParameterContextService } from '../../utils/services';
+import { toast } from 'react-toastify';
+import { updateParameterContextService } from '../../store';
 
 const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
 `;
+
 const ModalBodyDiv = styled.div`
   align-items: center !important;
   justify-content: flex-start !important;
 `;
+
 const RowModal = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -25,9 +31,11 @@ const RowModal = styled.div`
   margin-right: calc(-0.5 * 1.5rem);
   margin-left: calc(-0.5 * 1.5rem);
 `;
+
 const InputBox = styled.div`
   margin-bottom: 24px;
 `;
+
 const ColumnSix = styled.div`
   max-width: 100%;
   padding-right: calc(1.5rem * 0.5);
@@ -38,30 +46,110 @@ const ColumnSix = styled.div`
     width: 50%;
   }
 `;
+
 const ColumnOneTwo = styled.div`
   max-width: 100%;
   padding-right: calc(1.5rem * 0.5);
-  padding-left: calc(1.5rem * 0.5);
+  padding-left: calc(1.5 * 0.5);
   margin-top: 0;
   &.col-12 {
     flex: 0 0 auto;
     width: 100%;
   }
 `;
+
 const RedioButtonDiv = styled.div`
   margin-top: 30px;
 `;
+const defaultValues = {
+  name: '',
+  value: '',
+  sensitive: false,
+  description: '',
+};
+const AddParameterContext = ({
+  isOpen,
+  closePopup,
+  setIsAddParameterContextOpen,
+  setIsParameterContextOpen,
+  parameterContextItem,
+}) => {
+  const { state, setState } = useGlobalContext();
+  const { register, handleSubmit, control, reset, setValue } = useForm({
+    defaultValues,
+  });
+  console.log({ parameterContextItem }, 'parameterContextItem');
+  useEffect(() => {
+    reset({
+      name: parameterContextItem.context_name ?? '',
+      value: parameterContextItem.value ?? '',
+      // sensitive: OPTIONS.find(
+      //   options => options.value === parameterContextItem.sensitive
+      // ),
+      sensitive: 'true',
+      description: parameterContextItem.description ?? '',
+    });
+    setValue('sensitive', 'true');
+  }, [JSON.stringify(parameterContextItem)]);
 
-const AddParameterContext = ({ isOpen, closePopup }) => {
-  const { register, handleSubmit } = useForm();
   const OPTIONS = [
     { name: 'Yes', value: true },
     { name: 'No', value: false },
   ];
 
-  const onSubmit = data => {
-    console.log(data);
+  const convertObject = objects => {
+    return objects.map(originalObject => ({
+      context_name: originalObject?.parameter?.name,
+      value: originalObject?.parameter?.value,
+      description: originalObject?.parameter?.description,
+      sensitive: originalObject?.parameter?.sensitive === 'true',
+    }));
   };
+
+  const onSubmit = async data => {
+    try {
+      data.sensitive = data.sensitive === 'true';
+      const revision = {
+        version: state.parameterVersion,
+      };
+
+      const response = await updateParameterContextService(
+        state.selectedClusterId,
+        state.deployCountDetails.data.parameterContextId ||
+          state?.updatedCount?.parameterContextId,
+        revision,
+        data
+      );
+
+      if (response.status === 200) {
+        setIsAddParameterContextOpen(false);
+        setIsParameterContextOpen(true);
+
+        const paramter = {
+          [response?.data?.id]: convertObject(
+            response.data.component.parameters
+          ),
+        };
+
+        setState(prevState => ({
+          ...prevState,
+          parameterVersion: response.data.revision.version,
+          parameterDetails: {
+            ...prevState.parameterDetails,
+            data: paramter,
+          },
+        }));
+      }
+      reset(defaultValues);
+    } catch (error) {
+      toast.error(error?.message);
+    }
+  };
+  const check = useWatch({
+    control,
+    name: 'check',
+  });
+
   return (
     <Modal
       title="Add Parameter Context"
@@ -81,8 +169,8 @@ const AddParameterContext = ({ isOpen, closePopup }) => {
                   name="name"
                   type="text"
                   label="Name"
-                  placeholder="User"
                   icon={<QRIcons />}
+                  register={register}
                 />
               </InputBox>
             </ColumnSix>
@@ -92,20 +180,21 @@ const AddParameterContext = ({ isOpen, closePopup }) => {
                   name="value"
                   type="text"
                   label="Value"
-                  placeholder="User@123"
                   icon={<QRIcons />}
+                  register={register}
+                  disabled={check}
                 />
               </InputBox>
             </ColumnSix>
             <ColumnOneTwo className="col-12 mb-4">
               <CheckboxField
-                name="is_admin"
+                name="check"
                 label="Set Empty String"
                 register={register}
               />
               <RedioButtonDiv>
                 <RadioSelectField
-                  name="is_active"
+                  name="sensitive"
                   label="Sensitive value"
                   options={OPTIONS}
                   register={register}
@@ -120,6 +209,7 @@ const AddParameterContext = ({ isOpen, closePopup }) => {
                   label="Description"
                   placeholder="Description"
                   icon={<QRIcons />}
+                  register={register}
                 />
               </InputBox>
             </ColumnOneTwo>
@@ -133,6 +223,9 @@ const AddParameterContext = ({ isOpen, closePopup }) => {
 AddParameterContext.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
+  setIsAddParameterContextOpen: PropTypes.func,
+  setIsParameterContextOpen: PropTypes.func,
+  parameterContextItem: PropTypes.object,
 };
 
 export default AddParameterContext;
