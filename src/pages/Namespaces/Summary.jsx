@@ -294,10 +294,7 @@ const Summary = () => {
   const handleBreadcrumbClick = breadcrumb => {
     navigate(breadcrumb.path);
   };
-  // console.log(
-  //   state.deployCountDetails?.data?.parameterContextId ||
-  //     state.updatedCount.parameterContextId
-  // );
+
   const getParamerterContext = async () => {
     try {
       setLoading(true);
