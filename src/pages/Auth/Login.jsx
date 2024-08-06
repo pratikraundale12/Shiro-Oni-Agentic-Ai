@@ -195,7 +195,7 @@ export const Login = () => {
               label="Password"
               helperText="Must be 8 characters at least"
             />
-            <TextButton onClick={() => navigate('/forgot')}>
+            <TextButton type="button" onClick={() => navigate('/forgot')}>
               {FORGOT_PASSWORD}
             </TextButton>
             <SubmitButton
