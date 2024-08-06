@@ -4,8 +4,6 @@ import styled from 'styled-components';
 
 import { ChatBoxIcon, KsolvesDataFlowIcon } from '../assets';
 import { VERSION } from '../utils';
-// import RightSectionImg from '../assets/Image/aside.png';
-// import Right from "../assets/Image/rightsection"
 
 const Container = styled.div`
   width: 100vw;
@@ -30,7 +28,7 @@ const LeftSection = styled.div`
 const RightSection = styled.div`
   width: 50vw;
   height: 100vh;
-  background-image: url(${'../assets/Image/right-back.png'});
+  background-image: url('/img/right-back.png');
   background-repeat: no-repeat;
   background-size: 100% 100%;
 `;
@@ -76,11 +74,7 @@ export const Layout = ({ children, newLogin = false }) => {
         <Content>{children}</Content>
         <Version>{VERSION}</Version>
       </LeftSection>
-      {/* {newLogin ? (
-        <img src={RightSectionImg} alt="img" />
-      ) : ( */}
-      <RightSection>{<Image />}</RightSection>
-      {/* )} */}
+      <RightSection>{<Image />} </RightSection>
       <ChatBoxContainer>
         <ChatBoxIcon />
       </ChatBoxContainer>

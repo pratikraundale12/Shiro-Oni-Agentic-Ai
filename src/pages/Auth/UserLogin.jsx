@@ -8,8 +8,15 @@ import * as yup from 'yup';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
-import { Button, TextButton, InputField, PasswordField } from '../../shared';
 import {
+  Button,
+  TextButton,
+  InputField,
+  PasswordField,
+  SelectField,
+} from '../../shared';
+import {
+  ClusterIcon,
   GoogleIcon,
   LessArrowIcon,
   MailIcon,
@@ -102,6 +109,7 @@ export const UserLogin = () => {
     watch,
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(loginSchema),
@@ -132,7 +140,17 @@ export const UserLogin = () => {
           rightIcon={getRightIcon(watch, errors)}
           required
         />
-
+        <SelectField
+          name="selectedItem"
+          control={control}
+          // options={namespaceArray || []}
+          // onChange={onNamespaceSelect}
+          placeholder="Select a Cluster"
+          title="Select Namespace"
+          backgroundColor={theme.colors.white}
+          size="lg"
+          icon={<ClusterIcon width={22} height={22} />}
+        />
         <PasswordField
           name="password"
           register={register}
