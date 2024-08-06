@@ -2,7 +2,7 @@ import API from './api';
 
 export const login = async payload => {
   try {
-    return await API.post('/login', payload);
+    return await API.post('/login/admin', payload);
   } catch (error) {
     return error.response.data;
   }
