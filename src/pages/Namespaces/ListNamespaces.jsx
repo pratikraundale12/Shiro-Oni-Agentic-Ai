@@ -49,22 +49,26 @@ export const ListNamespaces = () => {
           {item.name}
         </button>
       ),
+      width: '20%',
     },
     {
       label: 'Namespace ID',
       renderCell: item => <TextRender text={item.id} />,
+      width: '24%',
     },
     {
       label: 'Flow Name',
       renderCell: item => <TextRender text={item.flowName || 'N/A'} />,
+      width: '18%',
     },
     {
       label: 'Bucket Name',
       renderCell: item => <TextRender text={item.bucketName || 'N/A'} />,
+      width: '18%',
     },
     {
       label: 'Version',
-      // width: '10%',
+      width: '8%',
       renderCell: item => <TextRender text={item.version || 'N/A'} />,
     },
     // {
@@ -86,7 +90,7 @@ export const ListNamespaces = () => {
     // },
     {
       label: 'Actions',
-      // width: '10%',
+      width: '12%',
       renderCell: item => (
         <div className="d-flex" style={{ gap: 8 }}>
           <button

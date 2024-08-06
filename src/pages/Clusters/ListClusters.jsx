@@ -83,11 +83,12 @@ export const ListClusters = () => {
     {
       label: 'Cluster Name',
       renderCell: item => <TextRender text={item.name} />,
-      width: '20%',
+      width: '18%',
     },
     {
-      label: 'NiFi Url',
+      label: 'NiFi URL',
       renderCell: item => <UrlRender url={item.nifi_url} />,
+      width: '44%',
     },
     {
       label: 'Cluster Status',
@@ -98,19 +99,19 @@ export const ListClusters = () => {
           maxCount={item.total_nodes}
         />
       ),
-      width: '20%',
+      width: '12%',
     },
     {
       label: 'Status',
       renderCell: item => <StatusRender status={item.status} />,
-      width: '10%',
+      width: '12%',
     },
     {
       label: 'Actions',
       renderCell: item => (
         <ActionRender handleMenuClick={handleMenuClick} item={item} />
       ),
-      width: '10%',
+      width: '14%',
     },
   ];
 
@@ -166,6 +167,17 @@ export const ListClusters = () => {
     }
   };
 
+  const handleRefreshFunctionality = () => {
+    fetchGridData({
+      setState,
+      module: 'clusters',
+    });
+  };
+
+  const handleRefresh = event => {
+    setRefreshSelect(event.value);
+  };
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -174,15 +186,6 @@ export const ListClusters = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleRefreshFunctionality = () => {
-    fetchGridData({
-      setState,
-      module: 'clusters',
-    });
-  };
-  const handleRefresh = event => {
-    setRefreshSelect(event.value);
-  };
   useEffect(() => {
     if (refreshState !== false) {
       intervalRef.current = setInterval(
@@ -195,6 +198,7 @@ export const ListClusters = () => {
 
     return () => clearInterval(intervalRef.current);
   }, [refreshState]);
+
   return (
     <>
       <ModalWithIcon

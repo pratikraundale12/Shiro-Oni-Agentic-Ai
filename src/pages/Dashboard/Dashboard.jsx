@@ -272,8 +272,8 @@ export const Dashboard = () => {
   const RefreshArray = [
     { value: false, label: 'Off' },
     { value: 5000, label: '5 Seconds' },
-    { value: 3000, label: '3 Seconds' },
-    { value: 1000, label: '1 Seconds' },
+    { value: 30000, label: '30 Seconds' },
+    { value: 100000, label: '1 Minute' },
   ];
 
   const clusterOptions = state.clusterList

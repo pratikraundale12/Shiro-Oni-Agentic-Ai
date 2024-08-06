@@ -58,9 +58,11 @@ export const ListUsers = () => {
     {
       label: 'Profile',
       renderCell: item => <ProfileRender url={item.photo} />,
+      width: '10%',
     },
     {
       label: 'Name',
+      width: '20%',
       renderCell: item => (
         <TextRender
           text={`${item?.first_name || ''} ${item?.middle_name || ''} ${item?.last_name || ''}`}
@@ -70,21 +72,25 @@ export const ListUsers = () => {
     },
     {
       label: 'Username',
+      width: '20%',
       renderCell: item => <TextRender text={item.username || ''} />,
       sort: { sortKey: 'USERNAME' },
     },
     {
       label: 'Email',
+      width: '20%',
       renderCell: item => <TextRender text={item.email} />,
       sort: { sortKey: 'EMAIL' },
     },
     {
       label: 'Role',
+      width: '10%',
       renderCell: item => <TextRender text={item.type} />,
       sort: { sortKey: 'TYPE' },
     },
     {
       label: 'Status',
+      width: '10%',
       renderCell: item => (
         <StatusRender status={item.is_active ? 'Active' : 'Inactive'} />
       ),
@@ -92,7 +98,7 @@ export const ListUsers = () => {
     },
     {
       label: 'Actions',
-      width: '22%',
+      width: '10%',
       renderCell: item => getActionsMenu(item),
     },
   ];
