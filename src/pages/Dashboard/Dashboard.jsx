@@ -1,10 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
+import { useForm } from 'react-hook-form';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import { theme } from '../../styles';
 import { SelectField } from '../../shared';
 import { Table } from '../../components';
 import { InsightContainer, FlowMetrics } from './components';
+import { useGlobalContext } from '../../utils';
 import {
   ActiveThreadIcon,
   DisabledProcessorIcon,
@@ -19,11 +23,11 @@ import {
   ErrorIcon,
 } from '../../assets';
 import { CrossIcon } from '../../assets/Icons/CrossIcon';
-import { getInitialClusterData, getNamespaceData } from '../../utils/services';
-import { toast } from 'react-toastify';
-import { useForm } from 'react-hook-form';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { fetchGridData, useGlobalContext } from '../../utils';
+import {
+  fetchGridData,
+  getInitialClusterData,
+  getNamespaceData,
+} from '../../store';
 
 const TopSection = styled.div`
   display: flex;
@@ -97,6 +101,24 @@ const ErrorTexts = styled.div`
 `;
 const DropdownContainer = styled.div`
   margin-left: 10px;
+  min-width: 175px;
+  max-width: 175px;
+  cursor: pointer;
+
+  & div > div {
+    & > div {
+      min-width: 175px;
+      max-width: 175px;
+      cursor: pointer;
+    }
+  }
+  & div > div {
+    & > div > * {
+      min-width: unset;
+      max-width: unset;
+      cursor: pointer;
+    }
+  }
 `;
 const DropdownWrapper = styled.div`
   display: flex;
@@ -114,6 +136,14 @@ const StyledSelectField = styled(SelectField)`
     margin-top: 0;
   }
 `;
+const StyledTable = styled(Table)`
+  height: 60%;
+
+  > div {
+    height: 88%;
+  }
+`;
+
 export const Dashboard = () => {
   const { state, setState } = useGlobalContext();
   const [clusterDetails, setClusterDetails] = useState([]);
@@ -130,7 +160,7 @@ export const Dashboard = () => {
       renderCell: item => <div>{item.processor_group}</div>,
     },
     {
-      label: 'Process ID',
+      label: 'Processor ID',
       renderCell: item => (
         <div>
           <IdWrapper data-tooltip-id={`tooltip-${item.processor_group_id}`}>
@@ -151,7 +181,7 @@ export const Dashboard = () => {
       width: '20%',
     },
     {
-      label: 'Process Name',
+      label: 'Processor Name',
       renderCell: item => <div>{item.processor_name}</div>,
     },
     {
@@ -161,7 +191,7 @@ export const Dashboard = () => {
           <CrossIcon color="red" />
           <ErrorTexts data-tooltip-id={`tooltip-${item.processor_group_id}-m`}>
             <div>
-              <b>Error Code </b>:404- File not found
+              <b>Error Code </b>:404- File Not Found
             </div>
             {item.message}
           </ErrorTexts>
@@ -192,7 +222,7 @@ export const Dashboard = () => {
       setClusterDetails(response?.data);
       setErrorLogs(response.data.errors);
     } else {
-      toast.error('error occured');
+      toast.error(response?.message || 'Something went wrong');
     }
   };
 
@@ -209,7 +239,7 @@ export const Dashboard = () => {
       setNamespaceArray(filteredNamespaceArray);
       setErrorLogs(response.data.errors);
     } else {
-      toast.error('error occured');
+      toast.error(response?.message || 'Something went wrong');
     }
   };
 
@@ -241,19 +271,21 @@ export const Dashboard = () => {
   };
   const RefreshArray = [
     { value: false, label: 'Off' },
-    { value: 5000, label: '5 sec' },
-    { value: 3000, label: '3 Sec' },
-    { value: 1000, label: '1 Sec' },
+    { value: 5000, label: '5 Seconds' },
+    { value: 3000, label: '3 Seconds' },
+    { value: 1000, label: '1 Seconds' },
   ];
 
-  const clusterOptions = state.clusterList.map(item => ({
-    label: item.name,
-    value: item.id,
-  }));
+  const clusterOptions = state.clusterList
+    .filter(item => item.is_active)
+    .map(item => ({
+      label: item.name,
+      value: item.id,
+    }));
 
   const handleRefreshFunctionality = () => {
     if (namespaceIdSelected) {
-      getNamespaceDetails(selectedClusterId, namespaceIdSelected);
+      getNamespaceDetails(namespaceIdSelected);
     } else if (selectedClusterId) {
       getClusterDetalis(selectedClusterId);
     }
@@ -320,7 +352,7 @@ export const Dashboard = () => {
               control={control}
               options={RefreshArray}
               onChange={onRefreshSelect}
-              placeholder={` () Refresh`}
+              placeholder={` Refresh`}
               title="Refresh"
               backgroundColor={theme.colors.lightGrey}
               size="sm"
@@ -375,7 +407,7 @@ export const Dashboard = () => {
         <InsightContainer
           backgroundCss="#EEF0F4"
           icon={FlowFiledQuedIcon}
-          count={clusterDetails?.flow_files_queued || '0 Mb'}
+          count={clusterDetails?.flow_files_queued || '0'}
           text="Flow Files Queued"
         />
       </InsightDataContiner>
@@ -391,7 +423,12 @@ export const Dashboard = () => {
 
         <HeaderText>Errors</HeaderText>
       </ErrorsHeader>
-      <Table data={errorsLogs || []} columns={COLUMNS} />
+      <StyledTable
+        data={
+          [...errorsLogs, ...errorsLogs, ...errorsLogs, ...errorsLogs] || []
+        }
+        columns={COLUMNS}
+      />
     </>
   );
 };

@@ -8,7 +8,8 @@ import { theme } from '../../styles';
 import { Button, SelectField } from '../../shared';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { useForm } from 'react-hook-form';
-import { fetchGridData, useGlobalContext } from '../../utils';
+import { useGlobalContext } from '../../utils';
+import { fetchGridData } from '../../store';
 
 const Flex = styled.div`
   display: flex;
@@ -71,6 +72,7 @@ export const GridActions = ({
   placeholder = 'Search...',
   buttonText,
   addModal: Modal,
+  handleRefresh = () => {},
 }) => {
   const { setState } = useGlobalContext();
   const navigate = useNavigate();
@@ -78,11 +80,6 @@ export const GridActions = ({
 
   const watchStatus = watch('is_active');
   const watchCluster = watch('cluster');
-
-  const statusOption = [
-    { value: 'true', label: 'Active' },
-    { value: 'false', label: 'Inactive' },
-  ];
 
   useEffect(() => {
     if (watchCluster || watchStatus) {
@@ -94,7 +91,7 @@ export const GridActions = ({
       fetchGridData({
         setState,
         module,
-        ...(watchStatus && { is_active: watchStatus }),
+        ...(watchStatus && watchStatus !== 'all' && { is_active: watchStatus }),
         ...(watchCluster && { selectedSourceClusterId: watchCluster }),
       });
     }
@@ -117,6 +114,7 @@ export const GridActions = ({
               options={refreshOptions}
               placeholder="Refresh"
               backgroundColor={theme.colors.lightGrey}
+              onChange={handleRefresh}
             />
           )}
           {!isEmpty(statusOptions) && (
@@ -124,7 +122,7 @@ export const GridActions = ({
               name="is_active"
               size="sm"
               control={control}
-              options={statusOption}
+              options={statusOptions}
               placeholder="Status"
               backgroundColor={theme.colors.lightGrey}
             />
@@ -180,4 +178,5 @@ GridActions.propTypes = {
   placeholder: PropTypes.string,
   buttonText: PropTypes.string,
   addModal: PropTypes.func,
+  handleRefresh: PropTypes.func,
 };

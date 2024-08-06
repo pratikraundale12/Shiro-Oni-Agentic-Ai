@@ -10,8 +10,9 @@ import styled from 'styled-components';
 import { QRIcons } from '../../assets';
 import { useForm, useWatch } from 'react-hook-form';
 import { useGlobalContext } from '../../utils';
-import { updateParameterContextService } from '../../utils/services';
+// import { updateParameterContextService } from '../../utils/services';
 import { toast } from 'react-toastify';
+import { updateParameterContextService } from '../../store';
 
 const ModalBody = styled.div`
   position: relative;

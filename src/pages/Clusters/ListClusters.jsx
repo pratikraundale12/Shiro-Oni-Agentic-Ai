@@ -1,15 +1,11 @@
-import {
-  REFRESH_OPTIONS,
-  STATUS_OPTIONS,
-  useGlobalContext,
-  fetchGridData,
-} from '../../utils';
-import { useNavigate } from 'react-router-dom';
-import { deleteCluster } from '../../utils/services';
-import { ModalWithIcon } from '../../shared';
-import { toast } from 'react-toastify';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
+import { ModalWithIcon } from '../../shared';
+import { fetchGridData, deleteCluster } from '../../store';
+import { REFRESH_OPTIONS, STATUS_OPTIONS, useGlobalContext } from '../../utils';
 
 import {
   Grid,
@@ -71,6 +67,8 @@ const Item = styled.div`
 const getX = x => 1790 > x < 1830 && 1446;
 
 export const ListClusters = () => {
+  const [refreshState, setRefreshSelect] = useState(false);
+  const intervalRef = useRef(null);
   const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
   const menuRef = useRef(null);
@@ -95,8 +93,9 @@ export const ListClusters = () => {
       label: 'Cluster Status',
       renderCell: item => (
         <ProgressBarRender
-          count={item.connected_nodes || 0}
-          maxCount={item.total_nodes || 1}
+          is_active={item.is_active}
+          count={item.connected_nodes}
+          maxCount={item.total_nodes}
         />
       ),
       width: '20%',
@@ -175,6 +174,27 @@ export const ListClusters = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleRefreshFunctionality = () => {
+    fetchGridData({
+      setState,
+      module: 'clusters',
+    });
+  };
+  const handleRefresh = event => {
+    setRefreshSelect(event.value);
+  };
+  useEffect(() => {
+    if (refreshState !== false) {
+      intervalRef.current = setInterval(
+        handleRefreshFunctionality,
+        refreshState
+      );
+    } else {
+      clearInterval(intervalRef.current);
+    }
+
+    return () => clearInterval(intervalRef.current);
+  }, [refreshState]);
   return (
     <>
       <ModalWithIcon
@@ -196,6 +216,7 @@ export const ListClusters = () => {
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
         placeholder="Search Cluster Name, Status, URL"
+        handleRefresh={handleRefresh}
       />
       {menuState.isVisible && (
         <List ref={menuRef} top={menuState.y} left={getX(menuState.x)}>

@@ -9,6 +9,7 @@ import { getTheme } from '@table-library/react-table-library/baseline';
 import { LoaderContainer } from '../Loader';
 import { theme } from '../../styles';
 import Breadcrumb from '../../shared/Breadcrumb';
+import { NoDataIcon } from '../../assets';
 
 const TableContainer = styled.div`
   height: 90%;
@@ -22,13 +23,11 @@ const TableContainer = styled.div`
 `;
 
 const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
   font-family: ${props => props.theme.fontNato};
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 600;
-  line-height: 43.58px;
   text-align: center;
-  background: ${props => props.theme.colors.white};
-  color: #b9c3d3;
 `;
 
 export const Table = ({
@@ -36,6 +35,7 @@ export const Table = ({
   columns,
   onBreadcrumbClick = () => {},
   breadcrumb = [],
+  className,
 }) => {
   const DATA = { nodes: data || [] };
   const tableTheme = useTheme([
@@ -69,7 +69,8 @@ export const Table = ({
     if (isEmpty(DATA?.nodes))
       return (
         <LoaderContainer>
-          <NoDataText> No data found</NoDataText>
+          <NoDataIcon width={130} />
+          <NoDataText>No Data Found!!</NoDataText>
         </LoaderContainer>
       );
     return null;
@@ -81,7 +82,7 @@ export const Table = ({
         breadcrumbs={breadcrumb}
         onBreadcrumbClick={onBreadcrumbClick}
       />
-      <TableContainer>
+      <TableContainer className={className}>
         <CompactTable data={DATA} columns={columns} theme={tableTheme} />
         {getLoader()}
       </TableContainer>
@@ -94,4 +95,5 @@ Table.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.shape({})),
   onBreadcrumbClick: PropTypes.func,
   breadcrumb: PropTypes.array,
+  className: PropTypes.string,
 };

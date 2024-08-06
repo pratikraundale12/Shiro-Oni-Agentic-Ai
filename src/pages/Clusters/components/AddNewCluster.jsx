@@ -19,7 +19,7 @@ import {
   DeleteSmallIcon,
   LinkIcon,
 } from '../../../assets';
-import { testCluster } from '../../../utils/services';
+import { testCluster } from '../../../store';
 import { SuccessTestModal } from './SuccessTestModal';
 import { FailedTestModal } from './FailedTestModal';
 import { IconButton } from '../../../components';
@@ -340,7 +340,10 @@ export const AddNewCluster = ({
               <FlexContainer>
                 <p style={{ 'margin-right': '4px' }}>OR</p>
                 <Button
-                  onClick={() => setAddCertificate(true)}
+                  onClick={e => {
+                    setAddCertificate(true);
+                    e.preventDefault();
+                  }}
                   icon={<PlusCircleIcon width={20} height={20} color="white" />}
                   disabled={addCertificateSatus}
                   size="sm"
@@ -384,7 +387,8 @@ export const AddNewCluster = ({
                 </CertificateMessage>
                 <EditDeleteContainer>
                   <IconButton
-                    onClick={() => {
+                    onClick={e => {
+                      e.preventDefault();
                       setAddCertificate(true);
                     }}
                   >

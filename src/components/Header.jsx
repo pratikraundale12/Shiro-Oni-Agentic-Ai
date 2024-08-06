@@ -63,7 +63,7 @@ const ProfileInfo = styled.div`
 const Title = styled.h2`
   font-family: ${props => props.theme.fontNato};
   color: ${props => props.theme.colors.darker};
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 500;
   text-transform: capitalize;
 `;
@@ -178,7 +178,7 @@ const ProfileDropdown = () => {
       <ProfileButton type="button" onClick={() => setShowMenu(prev => !prev)}>
         <ProfileRender url={currentUser?.photo} />
         <ProfileInfo>
-          <Name>{`${currentUser?.first_name} ${currentUser?.last_name}`}</Name>
+          <Name>{`${currentUser?.first_name || ''} ${currentUser?.last_name || ''}`}</Name>
           <Role>{currentUser?.type}</Role>
         </ProfileInfo>
         <DownArrowIcon />

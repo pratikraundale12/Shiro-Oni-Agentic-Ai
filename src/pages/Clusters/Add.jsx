@@ -14,7 +14,7 @@ import {
   QRIcons,
   SmallPerfileIcon,
 } from '../../assets';
-import { testCluster } from '../../utils/services';
+import { testCluster } from '../../store';
 import { UploadFile } from './UploadFile';
 
 const Wrapper = styled.div`

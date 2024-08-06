@@ -9,7 +9,8 @@ import { useSort } from '@table-library/react-table-library/sort';
 
 import { theme } from '../../styles';
 import { GridActions } from './GridActions';
-import { fetchGridData, useGlobalContext } from '../../utils';
+import { useGlobalContext } from '../../utils';
+import { fetchGridData } from '../../store';
 import { Loader, LoaderContainer } from '../Loader';
 import Pagination from './Pagination';
 import Breadcrumb from '../../shared/Breadcrumb';
@@ -89,6 +90,7 @@ export const Grid = ({
   placeholder = '',
   addModal = () => {},
   onBreadcrumbClick = () => {},
+  handleRefresh = () => {},
 }) => {
   const {
     state: {
@@ -159,7 +161,7 @@ export const Grid = ({
       return (
         <LoaderContainer>
           <NoDataIcon width={140} />
-          <LoadingText>No data found!!</LoadingText>
+          <LoadingText>No Data Found!!</LoadingText>
         </LoaderContainer>
       );
     return null;
@@ -188,6 +190,7 @@ export const Grid = ({
         placeholder={placeholder}
         buttonText={buttonText}
         addModal={addModal}
+        handleRefresh={handleRefresh}
       />
       {module === 'nodeList' && !isEmpty(nodes) && (
         <>
@@ -264,4 +267,5 @@ Grid.propTypes = {
     })
   ),
   onBreadcrumbClick: PropTypes.func,
+  handleRefresh: PropTypes.func,
 };

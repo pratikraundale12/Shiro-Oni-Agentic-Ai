@@ -14,8 +14,8 @@ import {
   PhoneField,
 } from '../../shared';
 import { PlusCircleIcon, UserIcon, MailIcon, PhoneIcon } from '../../assets';
-import { createUserApi, editUserDataApi } from '../../utils/services';
-import { API_URL, fetchGridData, useGlobalContext } from '../../utils';
+import { fetchGridData, createUserApi, editUserDataApi } from '../../store';
+import { API_URL, useGlobalContext } from '../../utils';
 import {
   userSchema,
   editUserSchema,
@@ -239,7 +239,7 @@ export const AddUserModal = props => {
                 control={control}
                 placeholder="Status"
                 backgroundColor={theme.colors.lightGrey}
-                label="Status"
+                title="Select Status"
               />
             </DropDownWrapper>
             <DropDownWrapper>
@@ -251,7 +251,7 @@ export const AddUserModal = props => {
                 control={control}
                 placeholder="Role"
                 backgroundColor={theme.colors.lightGrey}
-                label="Role"
+                title="Select Role"
               />
             </DropDownWrapper>
           </SelectFieldWrapper>
