@@ -32,3 +32,20 @@ export const currentUser = async () => {
     return error.response.data;
   }
 };
+
+export const checkLicense = async () => {
+  try {
+    const response = await API.get('/license-info');
+    return [response, null];
+  } catch (error) {
+    return [null, error];
+  }
+};
+export const getLicenseExpiresData = async () => {
+  try {
+    const response = await API.get('/current-user');
+    return response;
+  } catch (error) {
+    return error.response.data;
+  }
+};
