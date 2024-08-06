@@ -1,0 +1,31 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import { theme } from '../../styles';
+
+export const AddIcon = ({
+  width = 20,
+  height = 20,
+  color = theme.colors.darker,
+}) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 15 15"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M7.33337 7.33301V4.66634H8.66671V7.33301H11.3334V8.66634H8.66671V11.333H7.33337V8.66634H4.66671V7.33301H7.33337ZM8.00004 14.6663C4.31814 14.6663 1.33337 11.6815 1.33337 7.99967C1.33337 4.31777 4.31814 1.33301 8.00004 1.33301C11.6819 1.33301 14.6667 4.31777 14.6667 7.99967C14.6667 11.6815 11.6819 14.6663 8.00004 14.6663ZM8.00004 13.333C10.9456 13.333 13.3334 10.9452 13.3334 7.99967C13.3334 5.05415 10.9456 2.66634 8.00004 2.66634C5.05452 2.66634 2.66671 5.05415 2.66671 7.99967C2.66671 10.9452 5.05452 13.333 8.00004 13.333Z"
+        fill={color}
+      />
+    </svg>
+  );
+};
+
+AddIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};

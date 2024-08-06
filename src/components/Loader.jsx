@@ -1,30 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { theme } from '../styles';
 
 export const Spinner = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-  position: relative;
-  animation: rotate 1s linear infinite;
+  width: ${props => `${props.size || 40}px`};
+  height: ${props => `${props.size || 40}px`};
+  border: ${props => `${props.size / 10}px`} solid ${props => props.color};
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
 
-  &::before,
-  &::after {
-    content: '';
-    box-sizing: border-box;
-    position: absolute;
-    inset: 0px;
-    border-radius: 50%;
-    border: 4px solid #fff;
-    animation: prixClipFix 2s linear infinite;
-  }
-
-  &::after {
-    transform: rotate3d(90, 90, 0, 180deg);
-    border-color: ${props => props.theme.colors.primary};
-  }
-
-  @keyframes rotate {
+  @keyframes rotation {
     0% {
       transform: rotate(0deg);
     }
@@ -32,32 +21,37 @@ export const Spinner = styled.div`
       transform: rotate(360deg);
     }
   }
-
-  @keyframes prixClipFix {
-    0% {
-      clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0);
-    }
-    50% {
-      clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0);
-    }
-    75%,
-    100% {
-      clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%);
-    }
-  }
 `;
 
 export const LoaderContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 90%;
-  background-color: ${props => props.theme.colors.lightGrey};
+  background-color: transparent;
 `;
 
-export const Loader = () => (
-  <LoaderContainer>
-    <Spinner />
-  </LoaderContainer>
-);
+export const Loader = ({
+  size = 'md',
+  color = theme.colors.primary,
+  ...props
+}) => {
+  const sizes = {
+    sm: 20,
+    md: 30,
+    lg: 40,
+  };
+
+  return (
+    <LoaderContainer {...props}>
+      <Spinner size={sizes[size]} color={color} />
+    </LoaderContainer>
+  );
+};
+
+Loader.propTypes = {
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  color: PropTypes.string,
+};

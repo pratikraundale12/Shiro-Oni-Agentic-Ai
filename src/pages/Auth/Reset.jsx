@@ -17,7 +17,7 @@ import {
   RESET_YOUR_PASSWORD,
   SIGN_IN,
 } from '../../utils';
-import { resetPassword } from '../../utils/services/auth';
+import { resetPassword } from '../../store';
 
 const BackButtonContainer = styled.div`
   width: 100%;
@@ -136,7 +136,7 @@ export const Reset = () => {
             name="password"
             label="New Password"
             placeholder="Enter your New Password"
-            required="Password is required"
+            required
             register={register}
             errors={errors}
             watch={watch}
@@ -147,7 +147,7 @@ export const Reset = () => {
             name="confirmPassword"
             label="Confirm New Password"
             placeholder="Confirm your New Password"
-            required="Password is required"
+            required
             register={register}
             errors={errors}
             watch={watch}

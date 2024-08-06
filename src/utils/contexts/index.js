@@ -3,11 +3,30 @@ import PropTypes from 'prop-types';
 
 const GlobalContext = createContext();
 
+export const INITIAL_STATE = {
+  currentUser: null,
+  search: '',
+  page: 1,
+  gridData: {},
+  loaders: {},
+  errors: {},
+  clusterList: [],
+  selectedSourceClusterId: '',
+  selectedNamespaceId: '',
+  selectedDestinationClusterId: '',
+  selectedPaths: [],
+};
+
 export const GlobalProvider = ({ children }) => {
-  const [state, setState] = useState({});
+  const [state, setState] = useState(INITIAL_STATE);
 
   return (
-    <GlobalContext.Provider value={{ state, setState }}>
+    <GlobalContext.Provider
+      value={{
+        state,
+        setState,
+      }}
+    >
       {children}
     </GlobalContext.Provider>
   );

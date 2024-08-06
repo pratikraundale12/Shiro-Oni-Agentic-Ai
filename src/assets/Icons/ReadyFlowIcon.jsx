@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export const ReadyFlowIcon = ({
   width = 20,
-  height = 18,
+  height = 20,
   color = '#444445',
 }) => (
   <svg
@@ -11,6 +11,7 @@ export const ReadyFlowIcon = ({
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 20 18"
   >
     <path
       fill={color}

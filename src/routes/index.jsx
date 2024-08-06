@@ -8,9 +8,8 @@ import {
   Forgot,
   Reset,
   Success,
-  ListDashBoard,
+  Dashboard,
   ListUsers,
-  AddUser,
   ListClusters,
   AddCluster,
   ListNamespaces,
@@ -27,7 +26,10 @@ import {
   PeopleIcon,
   ReadyFlowIcon,
 } from '../assets';
-// import { currentUser } from '../utils/services/auth';
+import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
+import Deploy from '../pages/Namespaces/Deploy';
+import Upgrade from '../pages/Namespaces/Upgrade';
+import Summary from '../pages/Namespaces/Summary';
 
 export const ROUTES_MENU = [
   {
@@ -36,8 +38,8 @@ export const ROUTES_MENU = [
     icon: DashboardIcon,
     pages: [
       {
-        path: '',
-        component: <ListDashBoard />,
+        path: '/dashboard',
+        component: <Dashboard />,
       },
     ],
   },
@@ -51,8 +53,12 @@ export const ROUTES_MENU = [
         component: <ListClusters />,
       },
       {
-        path: ['add', 'edit/:id'],
+        path: ['add', 'edit'],
         component: <AddCluster />,
+      },
+      {
+        path: ['summary'],
+        component: <ClusterSummary />,
       },
     ],
   },
@@ -64,6 +70,18 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ListNamespaces />,
+      },
+      {
+        path: 'deploy',
+        component: <Deploy />,
+      },
+      {
+        path: 'upgrade',
+        component: <Upgrade />,
+      },
+      {
+        path: 'summary',
+        component: <Summary />,
       },
     ],
   },
@@ -78,7 +96,7 @@ export const ROUTES_MENU = [
       },
       {
         path: ['add', 'edit/:id'],
-        component: <AddCluster />,
+        component: <div>ReadyFlow Gallary</div>,
       },
     ],
   },
@@ -93,7 +111,7 @@ export const ROUTES_MENU = [
       },
       {
         path: ['add', 'edit/:id'],
-        component: <AddCluster />,
+        component: <div>Genrate Flow</div>,
       },
     ],
   },
@@ -105,10 +123,6 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ListUsers />,
-      },
-      {
-        path: ['add', 'edit/:id'],
-        component: <AddUser />,
       },
     ],
   },
@@ -124,26 +138,13 @@ export const ROUTES_MENU = [
       },
       {
         path: ['add', 'edit/:id'],
-        component: <AddCluster />,
+        component: <div>Permission</div>,
       },
     ],
   },
 ];
 
 const Routes = () => {
-  // useEffect(() => {
-  //   const fetchCurrentUser = async () => {
-  //     try {
-  //       const response = await currentUser();
-  //       if (response) {
-  //         console.log(response?.data, 'data');
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to fetch user data', error);
-  //     }
-  //   };
-  //   fetchCurrentUser();
-  // }, []);
   return (
     <Router>
       {/* Public Routes */}

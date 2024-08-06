@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+
 // Styled components based on the provided CSS
-const MainTableDiv = styled.div`
+const Container = styled.div`
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.lg};
   font-weight: 500;
@@ -45,13 +46,13 @@ const RedInactive = styled(ActiveTd)`
 // Usage in your component
 export const StatusRender = ({ status }) => {
   return (
-    <MainTableDiv>
-      {status === 'Active' ? (
+    <Container>
+      {['active', 'connected'].includes(status?.toLowerCase()) ? (
         <GreenActiveness>{status}</GreenActiveness>
       ) : (
         <RedInactive>{status}</RedInactive>
       )}
-    </MainTableDiv>
+    </Container>
   );
 };
 

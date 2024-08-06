@@ -1,0 +1,85 @@
+import React from 'react';
+import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import { CompactTable } from '@table-library/react-table-library/compact';
+import { useTheme } from '@table-library/react-table-library/theme';
+import { getTheme } from '@table-library/react-table-library/baseline';
+
+import { LoaderContainer } from '../Loader';
+import { theme } from '../../styles';
+import { NoDataIcon } from '../../assets';
+
+const TableContainer = styled.div`
+  height: 90%;
+  overflow: auto;
+  border-radius: 16px;
+  border: 1px solid ${theme.colors.darkGrey};
+
+  table {
+    overflow: visible;
+  }
+`;
+
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+`;
+
+export const Table = ({ data, columns, className }) => {
+  const DATA = { nodes: data || [] };
+  const tableTheme = useTheme([
+    getTheme(),
+    {
+      Table: `
+        th, td {
+          border-bottom: none !important;
+        }
+
+        th {
+          height: 48px;
+        }
+
+        td {
+          height: 60px;
+        }
+      `,
+      HeaderRow: `
+        background-color: #F5F7FA;
+        color: #444445;
+      `,
+      Row: `
+        &:nth-of-type(even) {
+          background-color: #F5F7FA;
+        }
+      `,
+    },
+  ]);
+
+  const getLoader = () => {
+    if (isEmpty(DATA?.nodes))
+      return (
+        <LoaderContainer>
+          <NoDataIcon width={130} />
+          <NoDataText>No Data Found!!</NoDataText>
+        </LoaderContainer>
+      );
+    return null;
+  };
+
+  return (
+    <TableContainer className={className}>
+      <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+      {getLoader()}
+    </TableContainer>
+  );
+};
+
+Table.propTypes = {
+  data: PropTypes.object.isRequired,
+  columns: PropTypes.arrayOf(PropTypes.shape({})),
+  className: PropTypes.string,
+};

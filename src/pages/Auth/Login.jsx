@@ -24,9 +24,10 @@ import {
   MICROSOFT,
   OR_DO_IT_VIA_OTHER_ACCOUNTS,
   SIGN_IN_TO_YOUR_ACCOUNT,
+  useGlobalContext,
   WELCOME_BACK,
 } from '../../utils';
-import { checkLicense, login } from '../../utils/services';
+import { request, login, checkLicense } from '../../store';
 import { getRightIcon } from '.';
 
 const Title = styled.h3`
@@ -48,13 +49,6 @@ const SubTitle = styled.p`
 
 const SubmitButton = styled(Button)`
   margin-top: 2.4rem;
-  padding: 10px 14px;
-  border-radius: 8px;
-
-  span {
-    margin-top: 4px;
-    margin-left: 10px;
-  }
 `;
 
 const SmallText = styled.small`
@@ -129,8 +123,11 @@ const loginSchema = yup.object().shape({
   password: yup.string().required('Password is required'),
 });
 
+const PATH = 'login';
+
 export const Login = () => {
   const [licensePageDisplay, setLicensePageDisplay] = useState(false);
+  const { state, setState } = useGlobalContext();
   const navigate = useNavigate();
   const {
     watch,
@@ -142,15 +139,11 @@ export const Login = () => {
   });
 
   const onSubmit = async data => {
-    const response = await login(data);
-    if (response.data?.token) {
+    const response = await request(setState, PATH, login, data);
+    if (response) {
       toast.success('Login successful');
-      localStorage.setItem(ACCESS_TOKEN, response.data?.token);
+      localStorage.setItem(ACCESS_TOKEN, response.token);
       navigate('/dashboard');
-    } else {
-      toast.error(
-        response?.message || 'Something went wrong. Please try again'
-      );
     }
   };
 
@@ -191,13 +184,14 @@ export const Login = () => {
               errors={errors}
               icon={<MailIcon />}
               rightIcon={getRightIcon(watch, errors)}
+              required
             />
             <PasswordField
               name="password"
               register={register}
               errors={errors}
               watch={watch}
-              required="Password is required"
+              required
               label="Password"
               helperText="Must be 8 characters at least"
             />
@@ -208,6 +202,7 @@ export const Login = () => {
               iconPosition="right"
               icon={<LessArrowIcon color={theme.colors.white} />}
               type="submit"
+              loading={state.loaders[PATH] && 'Signing In...'}
             >
               {SIGN_IN_TO_YOUR_ACCOUNT}
             </SubmitButton>

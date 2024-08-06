@@ -1,0 +1,142 @@
+import React from 'react';
+import ReactModal from 'react-modal';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+import { theme } from '../../styles';
+import { Button, SvgButton } from '../Button';
+import { CrossIcons } from '../../assets';
+
+const Title = styled.h5`
+  color: ${props => props.theme.colors.darker};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 13px;
+`;
+
+const CloseButton = styled(SvgButton)`
+  width: 30px;
+  height: 30px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 44px;
+  padding: 26px 16px;
+  background-color: ${theme.colors.lightGrey};
+`;
+
+const Body = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+`;
+
+const Footer = styled.div`
+  padding: 16px;
+  display: flex;
+  gap: 1rem;
+  align-self: ${props => props.footerAlign};
+`;
+
+const CloseIcon = styled(CrossIcons)`
+  padding: 5px;
+  border-radius: 50%;
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.white};
+`;
+
+ReactModal.setAppElement('#root');
+
+export const Modal = ({
+  title,
+  children,
+  isOpen,
+  onRequestClose,
+  isLoading = false,
+  secondaryButtonText = '',
+  primaryButtonText = '',
+  onSubmit = () => null,
+  onSecondarySubmit,
+  secondaryButtonProps = {},
+  footerAlign = 'center',
+  contentStyles,
+}) => {
+  const styleObject = {
+    overlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      zIndex: 9,
+      backgroundColor: theme.colors.shadow,
+    },
+    content: {
+      padding: 0,
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      border: 'none',
+      overflow: 'hidden',
+      borderRadius: 16,
+      minWidth: '30%',
+      minHeight: '40%',
+      maxWidth: '75%',
+      maxHeight: '90%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: theme.colors.white,
+      boxShadow: `0px 4px 18px 0px ${theme.colors.shadow}`,
+      display: 'flex',
+      flexDirection: 'column',
+      ...contentStyles,
+    },
+  };
+
+  return (
+    <ReactModal
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      style={styleObject}
+    >
+      <Header>
+        <Title>{title}</Title>
+        <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
+      </Header>
+      <Body>{children}</Body>
+      <Footer footerAlign={footerAlign}>
+        {secondaryButtonText && (
+          <Button
+            variant="secondary"
+            onClick={onSecondarySubmit || onRequestClose}
+            {...secondaryButtonProps}
+          >
+            {secondaryButtonText}
+          </Button>
+        )}
+        <Button isLoading={isLoading} onClick={onSubmit}>
+          {primaryButtonText}
+        </Button>
+      </Footer>
+    </ReactModal>
+  );
+};
+
+Modal.propTypes = {
+  title: PropTypes.string.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onRequestClose: PropTypes.func.isRequired,
+  children: PropTypes.node,
+  size: PropTypes.oneOf(['lg', 'md', 'sm']),
+  onSubmit: PropTypes.func,
+  secondaryButtonText: PropTypes.string,
+  primaryButtonText: PropTypes.string,
+  isLoading: PropTypes.bool,
+  onSecondarySubmit: PropTypes.func,
+  secondaryButtonProps: PropTypes.object,
+  contentStyles: PropTypes.object,
+  footerAlign: PropTypes.string,
+};

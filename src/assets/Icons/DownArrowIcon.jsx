@@ -2,15 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export const DownArrowIcon = ({
-  width = 14,
+  width = 13,
   height = 8,
   color = '#444445',
+  ...rest
 }) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 13 8"
+    xmlns="http://www.w3.org/2000/svg"
+    {...rest}
   >
     <path
       fill={color}

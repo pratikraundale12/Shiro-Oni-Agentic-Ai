@@ -52,7 +52,29 @@ const Button = styled.button`
   }
 `;
 
-export const Dropdown = ({ placeholder, options = [] }) => {
+const SelectedItemcontainer = styled.div`
+  display: flex;
+`;
+const SelectedTile = styled.div`
+  margin-right: 8px;
+  font-family: Noto Sans;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.01em;
+  text-align: left;
+  color: #4b5564;
+`;
+const Label = styled.div`
+  font-family: Noto Sans;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.01em;
+  text-align: left;
+`;
+
+export const Dropdown = ({ options = [], label = '', placeholder }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [selectedOption, setSelectedOption] = useState({});
   const menuRef = useRef(null);
@@ -77,8 +99,11 @@ export const Dropdown = ({ placeholder, options = [] }) => {
 
   return (
     <Container ref={menuRef}>
+      {label && <Label>{label}</Label>}
       <Button type="button" onClick={() => setShowMenu(prev => !prev)}>
-        <span>{selectedOption.label || placeholder}</span>
+        <SelectedItemcontainer>
+          <SelectedTile>{selectedOption.label || placeholder}</SelectedTile>
+        </SelectedItemcontainer>
         <DownArrowIcon />
       </Button>
       <List show={showMenu}>
@@ -93,6 +118,12 @@ export const Dropdown = ({ placeholder, options = [] }) => {
 };
 
 Dropdown.propTypes = {
-  options: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  label: PropTypes.string,
   placeholder: PropTypes.string.isRequired,
 };

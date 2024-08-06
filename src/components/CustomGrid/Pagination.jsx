@@ -18,7 +18,11 @@ const Flex = styled.div`
   gap: 4px;
 `;
 
-const Pagination = ({ page, setPage, count, prev, next }) => {
+const StyledButton = styled(Button)`
+  height: 30px;
+`;
+
+const Pagination = ({ page, setState, count, prev, next }) => {
   const getPageRange = () => {
     const start = (page - 1) * 10 + 1;
     const end = Math.min(count, page * 10);
@@ -29,29 +33,29 @@ const Pagination = ({ page, setPage, count, prev, next }) => {
     <Container>
       <span>{`${getPageRange()} of ${count} List`}</span>
       <Flex>
-        <Button
+        <StyledButton
           size="sm"
-          onClick={() => setPage(prev)}
+          onClick={() => setState(prevState => ({ ...prevState, page: prev }))}
           icon={<GreaterArrowIcon color={theme.colors.white} />}
         />
-        <Button size="sm" variant="secondary">
+        <StyledButton size="sm" variant="secondary">
           1
-        </Button>
-        <Button size="sm" variant="secondary">
+        </StyledButton>
+        <StyledButton size="sm" variant="secondary">
           2
-        </Button>
-        <Button size="sm" variant="secondary">
+        </StyledButton>
+        <StyledButton size="sm" variant="secondary">
           ...
-        </Button>
-        <Button size="sm" variant="secondary">
+        </StyledButton>
+        <StyledButton size="sm" variant="secondary">
           9
-        </Button>
-        <Button size="sm" variant="secondary">
+        </StyledButton>
+        <StyledButton size="sm" variant="secondary">
           10
-        </Button>
-        <Button
+        </StyledButton>
+        <StyledButton
           size="sm"
-          onClick={() => setPage(next)}
+          onClick={() => setState(prevState => ({ ...prevState, page: next }))}
           icon={<LessArrowIcon color={theme.colors.white} />}
         />
       </Flex>
@@ -61,7 +65,7 @@ const Pagination = ({ page, setPage, count, prev, next }) => {
 
 Pagination.propTypes = {
   page: PropTypes.number.isRequired,
-  setPage: PropTypes.func.isRequired,
+  setState: PropTypes.func.isRequired,
   count: PropTypes.number.isRequired,
   prev: PropTypes.number,
   next: PropTypes.number,
