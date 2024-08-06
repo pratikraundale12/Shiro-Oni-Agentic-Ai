@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
@@ -23,7 +23,7 @@ import {
   MicroSoftIcon,
 } from '../../assets';
 import {
-  ACCESS_TOKEN,
+  // ACCESS_TOKEN,
   EMAIL_REGEX,
   FORGOT_PASSWORD,
   GOOGLE,
@@ -34,8 +34,9 @@ import {
   useGlobalContext,
   WELCOME_BACK,
 } from '../../utils';
-import { request, login } from '../../store';
+// import { request, login } from '../../store';
 import { getRightIcon } from '.';
+import { getClusterList } from '../../store';
 
 const Title = styled.h3`
   font-weight: 500;
@@ -98,12 +99,14 @@ const loginSchema = yup.object().shape({
     .matches(EMAIL_REGEX, 'Invalid email address')
     .required('Email is required'),
   password: yup.string().required('Password is required'),
+  // cluster: yup.required('Password is required'),
 });
 
 const PATH = 'login';
 
 export const UserLogin = () => {
-  const { state, setState } = useGlobalContext();
+  // setState
+  const { state } = useGlobalContext();
   const navigate = useNavigate();
   const {
     watch,
@@ -116,16 +119,31 @@ export const UserLogin = () => {
   });
 
   const onSubmit = async data => {
-    const response = await request(setState, PATH, login, data);
-    if (response) {
-      toast.success('Login successful');
-      localStorage.setItem(ACCESS_TOKEN, response.token);
-      navigate('/dashboard');
-    }
+    console.log(data);
+    // const response = await request(setState, PATH, login, data);
+    // if (response) {
+    //   toast.success('Login successful');
+    //   localStorage.setItem(ACCESS_TOKEN, response.token);
+    //   navigate('/dashboard');
+    // }
   };
 
+  const getClusterDataList = async () => {
+    // alert('called');
+    const response = await getClusterList();
+    if (response.status == 200) {
+      console.log(response);
+    } else {
+      console.log(response);
+      // toast.error(response?.message || 'Something went wrong');
+    }
+  };
+  useEffect(() => {
+    getClusterDataList();
+  }, []);
+
   return (
-    <Layout newLogin={true}>
+    <Layout userLogin={true}>
       <Title>{`👋 ${WELCOME_BACK}`}</Title>
       <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -141,15 +159,17 @@ export const UserLogin = () => {
           required
         />
         <SelectField
-          name="selectedItem"
+          name="cluster"
           control={control}
           // options={namespaceArray || []}
           // onChange={onNamespaceSelect}
           placeholder="Select a Cluster"
-          title="Select Namespace"
+          title="Select Cluster"
           backgroundColor={theme.colors.white}
           size="lg"
-          icon={<ClusterIcon width={22} height={22} />}
+          icon={<ClusterIcon />}
+          label="Select Cluster"
+          required
         />
         <PasswordField
           name="password"

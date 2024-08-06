@@ -31,7 +31,7 @@ const StyledButton = styled.button.withConfig({
   border: 1px solid
     ${props =>
       props.variant === 'primary'
-        ? props.theme.colors.primary
+        ? props.theme.colors.yellow
         : props.theme.colors.darker};
   color: ${props =>
     props.variant === 'primary'
@@ -39,7 +39,7 @@ const StyledButton = styled.button.withConfig({
       : props.theme.colors.darker};
   background-color: ${props =>
     props.variant === 'primary'
-      ? props.theme.colors.primary
+      ? props.theme.colors.yellow
       : props.theme.colors.white};
   transition:
     background 0.3s ease-in-out,

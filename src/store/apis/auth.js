@@ -32,3 +32,11 @@ export const currentUser = async () => {
     return error.response.data;
   }
 };
+
+export const getClusterList = async () => {
+  try {
+    return await API.get('/list-clusters');
+  } catch (error) {
+    return error.response.data;
+  }
+};

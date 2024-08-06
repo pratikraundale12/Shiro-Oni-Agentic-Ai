@@ -7,6 +7,7 @@ const theme = {
     black: '#000000',
     background: '#FFFFFF',
     lightBackground: '#FFFFFFCC',
+    yellow: ' #FF7A00',
 
     // brand colors
     primary: '#E32235',
