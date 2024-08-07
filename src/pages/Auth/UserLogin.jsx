@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -99,7 +99,7 @@ const loginSchema = yup.object().shape({
     .matches(EMAIL_REGEX, 'Invalid email address')
     .required('Email is required'),
   password: yup.string().required('Password is required'),
-  // cluster: yup.required('Password is required'),
+  cluster_id: yup.string().required('Cluster is required'),
 });
 
 const PATH = 'login';
@@ -107,6 +107,7 @@ const PATH = 'login';
 export const UserLogin = () => {
   // setState
   const { state } = useGlobalContext();
+  const [clusterList, setClusterList] = useState([]);
   const navigate = useNavigate();
   const {
     watch,
@@ -129,13 +130,15 @@ export const UserLogin = () => {
   };
 
   const getClusterDataList = async () => {
-    // alert('called');
     const response = await getClusterList();
     if (response.status == 200) {
-      console.log(response);
+      const filteredArray = response?.data.map(item => ({
+        label: item.name,
+        value: item.id,
+      }));
+      setClusterList(filteredArray);
     } else {
-      console.log(response);
-      // toast.error(response?.message || 'Something went wrong');
+      toast.error(response?.message || 'Something went wrong');
     }
   };
   useEffect(() => {
@@ -159,9 +162,9 @@ export const UserLogin = () => {
           required
         />
         <SelectField
-          name="cluster"
+          name="cluster_id"
           control={control}
-          // options={namespaceArray || []}
+          options={clusterList || []}
           // onChange={onNamespaceSelect}
           placeholder="Select a Cluster"
           title="Select Cluster"
@@ -169,7 +172,9 @@ export const UserLogin = () => {
           size="lg"
           icon={<ClusterIcon />}
           label="Select Cluster"
-          required
+          register={register}
+          errors={errors}
+          // required
         />
         <PasswordField
           name="password"
