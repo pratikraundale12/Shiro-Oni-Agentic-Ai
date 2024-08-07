@@ -487,8 +487,8 @@ export const Add = () => {
         isOpen={isCertificateOpen}
         onRequestClose={() => setIsCertificateOpen(false)}
         size="sm"
-        secondaryButtonText="Cancel"
-        primaryButtonText="Continue"
+        secondaryButtonText="Back"
+        primaryButtonText="Test Certificate"
         onSubmit={() => setIsCertificateOpen(false)}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}
@@ -528,8 +528,8 @@ export const Add = () => {
         isOpen={isCredOpen}
         onRequestClose={() => setIsCredOpen(false)}
         size="sm"
-        secondaryButtonText="Cancel"
-        primaryButtonText="Continue"
+        secondaryButtonText="Back"
+        primaryButtonText="Test Creditionals"
         onSubmit={() => setIsCredOpen(false)}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}
