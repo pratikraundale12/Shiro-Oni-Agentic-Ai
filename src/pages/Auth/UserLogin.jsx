@@ -119,7 +119,7 @@ export const UserLogin = () => {
     const response = await userLogin(data);
     if (response) {
       toast.success('Login successful');
-      localStorage.setItem(ACCESS_TOKEN, response.token);
+      localStorage.setItem(ACCESS_TOKEN, response?.data?.token);
       navigate('/dashboard');
     }
   };
