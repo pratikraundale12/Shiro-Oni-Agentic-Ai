@@ -23,8 +23,7 @@ import {
   MicroSoftIcon,
 } from '../../assets';
 import {
-  // ACCESS_TOKEN,
-  EMAIL_REGEX,
+  ACCESS_TOKEN,
   FORGOT_PASSWORD,
   GOOGLE,
   LOGIN_TO_YOUR_ACCOUNT,
@@ -34,9 +33,9 @@ import {
   useGlobalContext,
   WELCOME_BACK,
 } from '../../utils';
-// import { request, login } from '../../store';
 import { getRightIcon } from '.';
-import { getClusterList } from '../../store';
+import { getClusterList, userLogin } from '../../store';
+import { toast } from 'react-toastify';
 
 const Title = styled.h3`
   font-weight: 500;
@@ -94,10 +93,7 @@ const ForgetLinkContainer = styled.div`
 `;
 
 const loginSchema = yup.object().shape({
-  email: yup
-    .string()
-    .matches(EMAIL_REGEX, 'Invalid email address')
-    .required('Email is required'),
+  username: yup.string().required('Email is required'),
   password: yup.string().required('Password is required'),
   cluster_id: yup.string().required('Cluster is required'),
 });
@@ -120,13 +116,12 @@ export const UserLogin = () => {
   });
 
   const onSubmit = async data => {
-    console.log(data);
-    // const response = await request(setState, PATH, login, data);
-    // if (response) {
-    //   toast.success('Login successful');
-    //   localStorage.setItem(ACCESS_TOKEN, response.token);
-    //   navigate('/dashboard');
-    // }
+    const response = await userLogin(data);
+    if (response) {
+      toast.success('Login successful');
+      localStorage.setItem(ACCESS_TOKEN, response.token);
+      navigate('/dashboard');
+    }
   };
 
   const getClusterDataList = async () => {
@@ -151,7 +146,7 @@ export const UserLogin = () => {
       <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <InputField
-          name="email"
+          name="username"
           type="text"
           label="E-mail Address"
           placeholder="Enter your Email Address"
