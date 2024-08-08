@@ -11,6 +11,11 @@ const ModalBody = styled.div`
 `;
 
 const Listvariables = ({ isOpen, closePopup }) => {
+  const dummyData = [
+    { id: 1, name: 'Variable 1', value: 'Value 1' },
+    { id: 2, name: 'Variable 2', value: 'Value 2' },
+    { id: 3, name: 'Variable 3', value: 'Value 3' },
+  ];
   const COLUMNS = [
     {
       label: 'Name',
@@ -22,12 +27,18 @@ const Listvariables = ({ isOpen, closePopup }) => {
     },
     {
       renderCell: item => (
-        <IconButton>
-          <PencilIcon color="black" />
-        </IconButton>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <IconButton onClick={() => handleEdit(item)}>
+            <PencilIcon style={{ color: 'black' }} />
+          </IconButton>
+        </div>
       ),
     },
   ];
+  const handleEdit = item => {
+    console.log('Edit item:', item);
+  };
+
   return (
     <Modal
       title="Variables"
