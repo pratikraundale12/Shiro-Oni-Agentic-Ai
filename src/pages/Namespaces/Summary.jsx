@@ -787,6 +787,7 @@ const Summary = () => {
         getParamerterContext={getParamerterContext}
       />
       <ParameterContext
+        key={isParameterContextOpen}
         isOpen={isParameterContextOpen}
         closePopup={closeParameterContext}
         openAddParameterContext={openAddParameterContext}

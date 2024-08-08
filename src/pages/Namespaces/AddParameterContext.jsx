@@ -68,7 +68,7 @@ const OPTIONS = [
 ];
 
 const DEFAULT_VALUES = {
-  context_name: '',
+  name: '',
   value: '',
   description: '',
   sensitive: false,
@@ -87,7 +87,7 @@ const AddParameterContext = ({
   parameterContextItem,
 }) => {
   const { state, setState } = useGlobalContext();
-  const parameterDetailsData = state.parameterDetails?.data || {};
+  const parameterDetailsData = state?.parameterDetails?.data || {};
   delete parameterDetailsData.version;
   const parameterContextList = Object.values(parameterDetailsData).flat();
   const { register, handleSubmit, control, reset, setValue } = useForm({
@@ -100,7 +100,13 @@ const AddParameterContext = ({
         reset(DEFAULT_VALUES);
         setValue('check', false);
       } else {
-        reset(parameterContextItem);
+        reset({
+          name: parameterContextItem?.context_name,
+          ...parameterContextItem,
+          value: parameterContextItem?.sensitive
+            ? ''
+            : parameterContextItem?.value,
+        });
         setValue(
           'check',
           !parameterContextItem?.sensitive && !parameterContextItem?.value
@@ -121,7 +127,7 @@ const AddParameterContext = ({
       context_name: originalObject?.parameter?.name,
       value: originalObject?.parameter?.value,
       description: originalObject?.parameter?.description,
-      sensitive: originalObject?.parameter?.sensitive === 'true',
+      sensitive: originalObject?.parameter?.sensitive,
     }));
   };
 
@@ -129,8 +135,7 @@ const AddParameterContext = ({
     if (!data) return;
     const parameterAlreadyExist = parameterContextList.find(
       parameter =>
-        parameter?.context_name?.toLowerCase() ===
-        data?.context_name?.toLowerCase()
+        parameter?.context_name?.toLowerCase() === data?.name?.toLowerCase()
     );
     if (
       parameterAlreadyExist &&
@@ -146,7 +151,7 @@ const AddParameterContext = ({
       };
       const response = await updateParameterContextService(
         state.selectedClusterId,
-        state.deployCountDetails.data.parameterContextId ||
+        state.deployCountDetails?.data?.parameterContextId ||
           state?.updatedCount?.parameterContextId,
         revision,
         data
@@ -205,7 +210,7 @@ const AddParameterContext = ({
             <ColumnSix className="col-6">
               <InputBox>
                 <InputField
-                  name="context_name"
+                  name="name"
                   type="text"
                   label="Name"
                   icon={<QRIcons />}
