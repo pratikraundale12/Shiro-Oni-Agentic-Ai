@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -22,7 +22,13 @@ const CheckboxInput = styled.input.attrs({ type: 'checkbox' })`
   accent-color: ${props => props.theme.colors.primary};
 `;
 
-const CheckboxField = ({ name, register, label, className, ...props }) => (
+const CheckboxField = ({
+  name,
+  register,
+  label,
+  className = null,
+  ...props
+}) => (
   <Wrapper className={className}>
     <CheckboxInput
       id={label?.toLowerCase()}
@@ -40,10 +46,6 @@ CheckboxField.propTypes = {
   register: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
   className: PropTypes.string,
-};
-
-CheckboxField.defaultProps = {
-  className: null,
 };
 
 export default CheckboxField;
