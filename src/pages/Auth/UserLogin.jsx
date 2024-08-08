@@ -19,8 +19,8 @@ import {
   ClusterIcon,
   GoogleIcon,
   LessArrowIcon,
-  MailIcon,
   MicroSoftIcon,
+  UserIcon,
 } from '../../assets';
 import {
   ACCESS_TOKEN,
@@ -93,7 +93,7 @@ const ForgetLinkContainer = styled.div`
 `;
 
 const loginSchema = yup.object().shape({
-  username: yup.string().required('User name is required'),
+  username: yup.string().required('Username is required'),
   password: yup.string().required('Password is required'),
   cluster_id: yup.string().required('Cluster is required'),
 });
@@ -148,11 +148,11 @@ export const UserLogin = () => {
         <InputField
           name="username"
           type="text"
-          label="User Name"
-          placeholder="Enter your User Name"
+          label="Username"
+          placeholder="Enter your Username"
           register={register}
           errors={errors}
-          icon={<MailIcon />}
+          icon={<UserIcon />}
           rightIcon={getRightIcon(watch, errors)}
           required
         />
