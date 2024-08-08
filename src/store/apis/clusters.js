@@ -9,29 +9,26 @@ export const getClustersList = async params => {
 };
 
 export const testCluster = async payload => {
-  // console.log("PAYLOAD",payload);
   try {
     return await API.post(`${API_URL}/api/test/clusters`, payload);
   } catch (error) {
-    return error.response.data;
+    return error?.response?.data;
   }
 };
 
 export const createRegistry = async payload => {
-  // console.log("PAYLOAD",payload);
   try {
     return await API.post(`${API_URL}/api/registries`, payload);
   } catch (error) {
-    return error.response.data;
+    return error?.response?.data;
   }
 };
 
 export const createCluster = async payload => {
-  // console.log("PAYLOAD",payload);
   try {
     return await API.post(`${API_URL}/api/clusters`, payload);
   } catch (error) {
-    return error.response.data;
+    return error?.response?.data;
   }
 };
 
@@ -39,7 +36,7 @@ export const testRegistry = async payload => {
   try {
     return await API.post(`${API_URL}/api/test/registries`, payload);
   } catch (error) {
-    return error.response.data;
+    return error?.response?.data;
   }
 };
 
@@ -77,7 +74,7 @@ export const deleteCluster = async id => {
   try {
     return await API.delete(`${API_URL}/api/clusters/${id}`);
   } catch (error) {
-    return error.response.data;
+    return error?.response?.data;
   }
 };
 

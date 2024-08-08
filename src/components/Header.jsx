@@ -13,6 +13,7 @@ import {
 import { INITIAL_STATE, useGlobalContext } from '../utils';
 import { AddUserModal } from '../pages/Users/AddUserModal';
 import { ProfileRender } from './CustomGrid';
+import SessionExpiredLabel from '../shared/SessionExpiredLabel';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -133,6 +134,7 @@ const UserModal = styled(AddUserModal)`
 const ProfileDropdown = () => {
   const { state, setState } = useGlobalContext();
   const [showMenu, setShowMenu] = useState(false);
+
   const menuRef = useRef(null);
   const currentUser = state.currentUser;
   const options = [
@@ -195,22 +197,47 @@ const ProfileDropdown = () => {
 };
 
 export const Header = ({ route }) => {
+  const [displaySessionTab, setDisplaySessionTab] = useState(false);
+  const {
+    state: { licenseTimeStamp },
+  } = useGlobalContext();
+
+  const closeTab = () => {
+    setDisplaySessionTab(false);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDisplaySessionTab(true);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <Container>
-      <Title>{route?.replace(/-/g, ' ')}</Title>
-      <ButtonContainer>
-        <IconButton>
-          <HeadphoneIcon />
-        </IconButton>
-        <IconButton>
-          <BellIcon />
-        </IconButton>
-        <IconButton>
-          <SettingSmallIcon />
-        </IconButton>
-        <ProfileDropdown />
-      </ButtonContainer>
-    </Container>
+    <>
+      <Container>
+        <Title>{route?.replace(/-/g, ' ')}</Title>
+        <ButtonContainer>
+          <IconButton>
+            <HeadphoneIcon />
+          </IconButton>
+          <IconButton>
+            <BellIcon />
+          </IconButton>
+          <IconButton>
+            <SettingSmallIcon />
+          </IconButton>
+          <ProfileDropdown />
+        </ButtonContainer>
+      </Container>
+      {displaySessionTab && (
+        <SessionExpiredLabel
+          closeTab={closeTab}
+          expireData={licenseTimeStamp || ''}
+        />
+      )}
+    </>
   );
 };
 
