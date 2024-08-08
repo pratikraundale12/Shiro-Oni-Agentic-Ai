@@ -101,8 +101,8 @@ const AddParameterContext = ({
         setValue('check', false);
       } else {
         reset({
-          name: parameterContextItem?.context_name,
           ...parameterContextItem,
+          name: parameterContextItem?.context_name,
           value: parameterContextItem?.sensitive
             ? ''
             : parameterContextItem?.value,
