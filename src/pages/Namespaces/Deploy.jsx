@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, RadioField, SelectField } from '../../shared';
-import { FullPageLoader, Table, TextRender } from '../../components';
 import styled from 'styled-components';
-import { QRIcons, TodoIcon, WhiteBoradIcon } from '../../assets';
+import {
+  QRIcons,
+  SmallSearchIcon,
+  TodoIcon,
+  WhiteBoradIcon,
+} from '../../assets';
+import { FullPageLoader, Table, TextRender } from '../../components';
+import { Button, RadioField, SelectField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { SmallSearchIcon } from '../../assets';
+import { checkCluster, fetchGridData } from '../../store';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
-import { fetchGridData, checkCluster } from '../../store';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -239,7 +243,6 @@ const Deploy = () => {
   };
   console.log({ state });
   const onClusterCheck = async e => {
-    console.log(options);
     setLoading(true);
     const selectedClusterId = e.value;
     setState(prevState => ({
