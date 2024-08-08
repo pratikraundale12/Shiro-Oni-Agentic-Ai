@@ -28,6 +28,7 @@ import {
 import { toast } from 'react-toastify';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../../components';
+import Listvariables from './Listvariables';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -283,6 +284,7 @@ const Summary = () => {
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] =
     useState(false);
   const [parameterContextItem, setParameterContextItem] = useState({});
+  const [isVariablesModalOpen, setVariablesModalOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
 
@@ -422,6 +424,17 @@ const Summary = () => {
   const closeAddParameterContext = () => {
     setIsAddParameterContextOpen(false);
     setIsParameterContextOpen(true);
+  };
+
+  const handleTertiaryButton = () => {
+    console.log('hi');
+    setVariablesModalOpen(true);
+    setModalOpen(false);
+  };
+
+  const closeVariablesModal = () => {
+    setVariablesModalOpen(false);
+    setModalOpen(true);
   };
 
   const handleBackClick = () => {
@@ -781,6 +794,7 @@ const Summary = () => {
         setModalOpen={setModalOpen}
         openParameterContext={openParameterContext}
         getParamerterContext={getParamerterContext}
+        handleTertiaryButton={handleTertiaryButton}
       />
       <ParameterContext
         isOpen={isParameterContextOpen}
@@ -797,6 +811,10 @@ const Summary = () => {
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
+      />
+      <Listvariables
+        isOpen={isVariablesModalOpen}
+        closePopup={closeVariablesModal}
       />
     </MainContainer>
   );
