@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
 
 import { Header, Sidebar } from '../components';
-import SessionExpiredLabel from '../shared/SessionExpiredLabel';
-import { getLicenseExpiresData } from '../store';
 import { useGlobalContext } from '../utils';
 import { currentUser } from '../store';
 
@@ -34,20 +32,19 @@ const Wrapper = styled.div`
 `;
 
 const AuthGuard = () => {
-  const [displaySessionTab, setDisplaySessionTab] = useState(false);
-  const [expireData, setExpireData] = useState(null);
   const navigate = useNavigate();
   const {
     state: { currentUser: user, activeRoute: route },
     setState,
   } = useGlobalContext();
 
-  const getLicenseData = async () => {
-    const response = await getLicenseExpiresData();
-    if (response.status == 200) {
+  async function fetchCurrentUser() {
+    let pathname = window.location.pathname;
+    pathname = pathname.split('/')[1];
+    const response = await currentUser();
+    if (response.status === 200) {
       const date = new Date(response?.data?.license);
       const istTime = date.toLocaleString('en-US', {
-        timeZone: 'Asia/Kolkata',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -56,29 +53,11 @@ const AuthGuard = () => {
         second: 'numeric',
         hour12: true,
       });
-      setExpireData(istTime);
-    }
-  };
-  useEffect(() => {
-    getLicenseData();
-    const timer = setTimeout(() => {
-      setDisplaySessionTab(true);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-  const closeTab = () => {
-    setDisplaySessionTab(false);
-  };
-  async function fetchCurrentUser() {
-    let pathname = window.location.pathname;
-    pathname = pathname.split('/')[1];
-    const response = await currentUser();
-    if (response.status === 200) {
       setState(prev => ({
         ...prev,
         activeRoute: pathname || 'dashboard',
         currentUser: response.data,
+        licenseTimeStamp: istTime,
       }));
     } else {
       setState(prev => ({ ...prev, activeRoute: 'login', currentUser: null }));
@@ -99,9 +78,6 @@ const AuthGuard = () => {
       <Sidebar />
       <Content>
         <Header route={route} />
-        {displaySessionTab && (
-          <SessionExpiredLabel closeTab={closeTab} expireData={expireData} />
-        )}
         <Wrapper>
           <Outlet />
         </Wrapper>
