@@ -5,6 +5,8 @@ import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import NamespaceDeploy from './NamespaceDeploy';
 // import AddParameterContext from './AddParameterContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
   SmallNotThunderIcon,
   SmallThunderIcon,
@@ -13,9 +15,7 @@ import {
   // TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
-import ParameterContext from './ParameterContext';
-import AddParameterContext from './AddParameterContext';
-import { useNavigate } from 'react-router-dom';
+import { FullPageLoader } from '../../components';
 import {
   deployCluster,
   fetchParameterContext,
@@ -25,9 +25,9 @@ import {
   updateNamespaceStatus,
   upgradeCluster,
 } from '../../store';
-import { toast } from 'react-toastify';
 import { useGlobalContext } from '../../utils';
-import { FullPageLoader } from '../../components';
+import AddParameterContext from './AddParameterContext';
+import ParameterContext from './ParameterContext';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -223,7 +223,7 @@ const CountDiv = styled.div`
   min-width: 48px;
   border: 1px solid #dde4f0;
   border-radius: 8px;
-  background-color: #f5f7fa
+  background-color: #f5f7fa;
   cursor: pointer;
   position: relative;
   display: flex;
@@ -280,8 +280,10 @@ const breadcrumbData = [
 const Summary = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
-  const [isAddParameterContextOpen, setIsAddParameterContextOpen] =
-    useState(false);
+  const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
+    isOpen: false,
+    mode: 'add',
+  });
   const [parameterContextItem, setParameterContextItem] = useState({});
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
@@ -415,12 +417,14 @@ const Summary = () => {
   };
 
   const openAddParameterContext = () => {
-    setIsAddParameterContextOpen(true);
+    setIsAddParameterContextOpen({ isOpen: true, mode: 'add' });
+    setParameterContextItem({});
     setIsParameterContextOpen(false);
   };
 
   const closeAddParameterContext = () => {
-    setIsAddParameterContextOpen(false);
+    setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
+    setParameterContextItem({});
     setIsParameterContextOpen(true);
   };
 
@@ -790,10 +794,10 @@ const Summary = () => {
         setIsParameterContextOpen={setIsParameterContextOpen}
         setParameterContextItem={setParameterContextItem}
       />
-
       <AddParameterContext
+        key={isParameterContextOpen.mode}
         parameterContextItem={parameterContextItem}
-        isOpen={isAddParameterContextOpen}
+        isAddParameterContextOpen={isAddParameterContextOpen}
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
