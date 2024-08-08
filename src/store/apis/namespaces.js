@@ -115,3 +115,14 @@ export const updateParameterContextService = async (
   );
   return response;
 };
+
+export const fetchVariables = async (clusterId, namespaceId) => {
+  try {
+    const response = await API.get(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variables`
+    );
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch variables:', error);
+  }
+};

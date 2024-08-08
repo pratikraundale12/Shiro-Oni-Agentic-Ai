@@ -1,29 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from '../../shared';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
 import styled from 'styled-components';
 import { IconButton, Table, TextRender } from '../../components';
+import { useGlobalContext } from '../../utils';
+import AddVariables from './AddVariables';
 
 const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
 `;
 
-const Listvariables = ({ isOpen, closePopup }) => {
-  const dummyData = [
-    { id: 1, name: 'Variable 1', value: 'Value 1' },
-    { id: 2, name: 'Variable 2', value: 'Value 2' },
-    { id: 3, name: 'Variable 3', value: 'Value 3' },
-  ];
+const Listvariables = ({ isOpen, closePopup, setVariablesModalOpen }) => {
+  const { state } = useGlobalContext();
+  const [isAddVariablesOpen, setIsAddVariablesOpen] = useState(false);
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => <TextRender text={item.name} />,
+      renderCell: item => <TextRender text={item.variable.name} />,
     },
     {
       label: 'Value',
-      renderCell: item => <TextRender text={item.name} />,
+      renderCell: item => <TextRender text={item.variable.value} />,
     },
     {
       renderCell: item => (
@@ -39,27 +38,46 @@ const Listvariables = ({ isOpen, closePopup }) => {
     console.log('Edit item:', item);
   };
 
+  const openVariable = () => {
+    setIsAddVariablesOpen(true);
+    setVariablesModalOpen(false);
+  };
+
+  const closeAddVariablesModal = () => {
+    setIsAddVariablesOpen(false);
+    setVariablesModalOpen(true);
+  };
+
   return (
-    <Modal
-      title="Variables"
-      isOpen={isOpen}
-      onRequestClose={closePopup}
-      size="md"
-      // onSecondarySubmit={openAddParameterContext}
-      secondaryButtonText="Add Variables"
-      primaryButtonText="Save"
-      secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
-    >
-      <ModalBody className="modal-body">
-        <Table data={dummyData} columns={COLUMNS} />
-      </ModalBody>
-    </Modal>
+    <>
+      <Modal
+        title="Variables"
+        isOpen={isOpen}
+        onRequestClose={closePopup}
+        size="md"
+        onSecondarySubmit={openVariable}
+        secondaryButtonText="Add Variables"
+        primaryButtonText="Save"
+        secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
+      >
+        <ModalBody className="modal-body">
+          <Table data={state?.variablesDetail?.variables} columns={COLUMNS} />
+        </ModalBody>
+      </Modal>
+      {isAddVariablesOpen && (
+        <AddVariables
+          isOpen={isAddVariablesOpen}
+          closePopup={closeAddVariablesModal}
+        />
+      )}
+    </>
   );
 };
 
 Listvariables.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
+  setVariablesModalOpen: PropTypes.func.isRequired,
 };
 
 export default Listvariables;

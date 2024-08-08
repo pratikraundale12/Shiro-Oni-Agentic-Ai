@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   deployCluster,
   fetchParameterContext,
+  fetchVariables,
   getClusterProgress,
   getClusterProgressDelete,
   getCountDetails,
@@ -359,6 +360,7 @@ const Summary = () => {
       toast.error('Upgrade failed:', error.message);
     }
   };
+
   const handleDeploy = async () => {
     try {
       const result = await deployCluster({
@@ -426,8 +428,22 @@ const Summary = () => {
     setIsParameterContextOpen(true);
   };
 
-  const handleTertiaryButton = () => {
-    console.log('hi');
+  const handleTertiaryButton = async () => {
+    const response = await fetchVariables(
+      state?.selectedDestinationClusterId,
+      state?.deployCountDetails?.data?.id || state?.updatedCount?.id
+    );
+
+    if (response) {
+      setState(prevState => ({
+        ...prevState,
+        variablesDetail: response?.data,
+      }));
+      setVariablesModalOpen(true);
+      setModalOpen(false);
+    } else {
+      toast.error(response.message);
+    }
     setVariablesModalOpen(true);
     setModalOpen(false);
   };
@@ -815,6 +831,7 @@ const Summary = () => {
       <Listvariables
         isOpen={isVariablesModalOpen}
         closePopup={closeVariablesModal}
+        setVariablesModalOpen={setVariablesModalOpen}
       />
     </MainContainer>
   );
