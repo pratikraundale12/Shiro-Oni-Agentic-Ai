@@ -148,8 +148,8 @@ export const UserLogin = () => {
         <InputField
           name="username"
           type="text"
-          label="E-mail Address"
-          placeholder="Enter your Email Address"
+          label="User Name"
+          placeholder="Enter your User Name"
           register={register}
           errors={errors}
           icon={<MailIcon />}

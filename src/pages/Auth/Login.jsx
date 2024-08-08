@@ -115,6 +115,11 @@ const TxtContainerDiv = styled.div`
   text-align: center;
 `;
 
+const ForgetLinkContainer = styled.div`
+  display: flex;
+  justify-content: end;
+`;
+
 const loginSchema = yup.object().shape({
   email: yup
     .string()
@@ -195,9 +200,11 @@ export const Login = () => {
               label="Password"
               helperText="Must be 8 characters at least"
             />
-            <TextButton type="button" onClick={() => navigate('/forgot')}>
-              {FORGOT_PASSWORD}
-            </TextButton>
+            <ForgetLinkContainer>
+              <TextButton type="button" onClick={() => navigate('/forgot')}>
+                {FORGOT_PASSWORD}
+              </TextButton>
+            </ForgetLinkContainer>
             <SubmitButton
               iconPosition="right"
               icon={<LessArrowIcon color={theme.colors.white} />}

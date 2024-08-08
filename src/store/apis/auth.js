@@ -56,3 +56,11 @@ export const getLicenseExpiresData = async () => {
     return error.response.data;
   }
 };
+
+export const userLogin = async payload => {
+  try {
+    return await API.post('/login/user', payload);
+  } catch (error) {
+    return error.response.data;
+  }
+};
