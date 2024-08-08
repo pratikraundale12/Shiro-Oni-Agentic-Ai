@@ -64,7 +64,7 @@ const RedioButtonDiv = styled.div`
 const defaultValues = {
   name: '',
   value: '',
-  sensitive: false,
+  sensitive: { name: 'sensitive', value: false, label: 'No' },
   description: '',
 };
 const AddParameterContext = ({
@@ -93,8 +93,8 @@ const AddParameterContext = ({
   }, [JSON.stringify(parameterContextItem)]);
 
   const OPTIONS = [
-    { name: 'Yes', value: true },
-    { name: 'No', value: false },
+    { name: 'sensitive', value: true, label: 'Yes' },
+    { name: 'sensitive', value: false, label: 'No' },
   ];
 
   const convertObject = objects => {

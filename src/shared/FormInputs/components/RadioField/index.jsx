@@ -66,7 +66,10 @@ const RadioField = ({ name, register, label, refName, ...props }) => (
       {...props}
       {...(typeof register === 'function' &&
         register(name, {
-          setValueAs: value => Boolean(value),
+          setValueAs: value => {
+            console.log(value, 'nian');
+            return Boolean(value);
+          },
         }))}
     />
     <StyledLabel>{label}</StyledLabel>
