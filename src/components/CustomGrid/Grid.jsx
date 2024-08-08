@@ -90,6 +90,7 @@ export const Grid = ({
   placeholder = '',
   addModal = () => {},
   onBreadcrumbClick = () => {},
+  handleRefresh = () => {},
 }) => {
   const {
     state: {
@@ -122,6 +123,10 @@ export const Grid = ({
     getTheme(),
     {
       Table: `
+      --data-table-library_grid-template-columns: ${columns
+        .map(column => column.width)
+        .join(' ')} !important;
+
         th, td {
           border-bottom: none !important;
         }
@@ -160,7 +165,7 @@ export const Grid = ({
       return (
         <LoaderContainer>
           <NoDataIcon width={140} />
-          <LoadingText>No data found!!</LoadingText>
+          <LoadingText>No Data Found!!</LoadingText>
         </LoaderContainer>
       );
     return null;
@@ -189,6 +194,7 @@ export const Grid = ({
         placeholder={placeholder}
         buttonText={buttonText}
         addModal={addModal}
+        handleRefresh={handleRefresh}
       />
       {module === 'nodeList' && !isEmpty(nodes) && (
         <>
@@ -265,4 +271,5 @@ Grid.propTypes = {
     })
   ),
   onBreadcrumbClick: PropTypes.func,
+  handleRefresh: PropTypes.func,
 };

@@ -67,6 +67,8 @@ const Item = styled.div`
 const getX = x => 1790 > x < 1830 && 1446;
 
 export const ListClusters = () => {
+  const [refreshState, setRefreshSelect] = useState(false);
+  const intervalRef = useRef(null);
   const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
   const menuRef = useRef(null);
@@ -79,14 +81,14 @@ export const ListClusters = () => {
 
   const COLUMNS = [
     {
-      label: 'Name',
+      label: 'Cluster Name',
       renderCell: item => <TextRender text={item.name} />,
-      sort: { sortKey: 'NAME' },
-      width: '20%',
+      width: '18%',
     },
     {
-      label: 'NiFi Url',
+      label: 'NiFi URL',
       renderCell: item => <UrlRender url={item.nifi_url} />,
+      width: '44%',
     },
     {
       label: 'Cluster Status',
@@ -97,25 +99,21 @@ export const ListClusters = () => {
           maxCount={item.total_nodes}
         />
       ),
-      width: '20%',
+      width: '12%',
     },
     {
       label: 'Status',
       renderCell: item => <StatusRender status={item.status} />,
-      width: '10%',
+      width: '12%',
     },
     {
       label: 'Actions',
       renderCell: item => (
         <ActionRender handleMenuClick={handleMenuClick} item={item} />
       ),
-      width: '10%',
+      width: '14%',
     },
   ];
-
-  const SORT_FNS = {
-    NAME: array => array.sort((a, b) => a.name.localeCompare(b.name)),
-  };
 
   const deleteUserConfirmed = async () => {
     const response = await deleteCluster(state.selectedItem.id);
@@ -169,6 +167,17 @@ export const ListClusters = () => {
     }
   };
 
+  const handleRefreshFunctionality = () => {
+    fetchGridData({
+      setState,
+      module: 'clusters',
+    });
+  };
+
+  const handleRefresh = event => {
+    setRefreshSelect(event.value);
+  };
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -176,6 +185,19 @@ export const ListClusters = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (refreshState !== false) {
+      intervalRef.current = setInterval(
+        handleRefreshFunctionality,
+        refreshState
+      );
+    } else {
+      clearInterval(intervalRef.current);
+    }
+
+    return () => clearInterval(intervalRef.current);
+  }, [refreshState]);
 
   return (
     <>
@@ -195,10 +217,10 @@ export const ListClusters = () => {
         title="Clusters List"
         buttonText="Add New Cluster"
         columns={COLUMNS}
-        sortFns={SORT_FNS}
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
         placeholder="Search Cluster Name, Status, URL"
+        handleRefresh={handleRefresh}
       />
       {menuState.isVisible && (
         <List ref={menuRef} top={menuState.y} left={getX(menuState.x)}>

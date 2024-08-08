@@ -4,68 +4,59 @@ import { Modal } from '../../shared';
 import styled from 'styled-components';
 import { Table } from '../../components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
+import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
 `;
-// can_write
-// :
-// true
-// context_name
-// :
-// "Interest"
-// description
-// :
-// ""
-// name
-// :
-// "SQLDB"
-// provided
-// :
-// false
-// sensitive
-// :
-// false
-// value
-// :
-
-// "Cricket
-
-const COLUMNS = [
-  {
-    label: 'Name',
-    renderCell: item => <div>{item.context_name}</div>,
-  },
-  {
-    label: 'Value',
-    renderCell: item => <div>{item.value}</div>,
-  },
-  {
-    renderCell: () => <PencilIcon color="black" />,
-  },
-];
 
 const ParameterContext = ({
   isOpen,
   closePopup,
   openAddParameterContext,
-  parameterDetails,
+  setIsAddParameterContextOpen,
+  setIsParameterContextOpen,
+  setParameterContextItem,
 }) => {
-  const parameterDetialsData = parameterDetails?.data || {};
-  delete parameterDetialsData.version;
-  console.log(parameterDetialsData, 'parameterDetialsData');
-  const dummay = Object.values(parameterDetialsData).flat();
-  console.log(dummay, 'dummay');
-  // let dataToRender = [];
-  // // if (parameterIds && parameterIds.length) {
-  // //   parameterIds.forEach(key => {
-  // //     dataToRender = [...dataToRender, parameterDetails?.data?.[key]];
-  // //   });
-  // // }
+  const COLUMNS = [
+    {
+      label: 'Name',
+      renderCell: item => <div>{item.context_name}</div>,
+    },
+    {
+      label: 'Value',
+      renderCell: item => (
+        <div>
+          {item.sensitive
+            ? 'Sensitive value set'
+            : item.value
+              ? item.value
+              : 'Empty string set'}
+        </div>
+      ),
+    },
+    {
+      renderCell: item => (
+        <button
+          onClick={() => {
+            setIsAddParameterContextOpen(true);
+            setIsParameterContextOpen(false);
+            setParameterContextItem(item);
+          }}
+          style={{ cursor: 'pointer' }}
+        >
+          <PencilIcon color="black" />
+        </button>
+      ),
+    },
+  ];
 
-  // console.log(dataToRender);
-  // console.log({ dataToRender, parameterIds, parameterDetails });
+  const { state } = useGlobalContext();
+  const parameterDetailsData = state.parameterDetails?.data || {};
+  delete parameterDetailsData.version;
+  const dummyData = Object.values(parameterDetailsData).flat();
+
   return (
     <Modal
       title="Parameter Context"
@@ -74,12 +65,11 @@ const ParameterContext = ({
       size="md"
       onSecondarySubmit={openAddParameterContext}
       secondaryButtonText="Add Parameter Context"
-      primaryButtonText="Navigate"
+      primaryButtonText="Save"
       secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
-      //   onSubmit={handleSubmit(onSubmit)}
     >
       <ModalBody className="modal-body">
-        <Table data={dummay} columns={COLUMNS} />
+        <Table data={dummyData} columns={COLUMNS} />
       </ModalBody>
     </Modal>
   );
@@ -91,6 +81,9 @@ ParameterContext.propTypes = {
   openAddParameterContext: PropTypes.func,
   parameterDetails: PropTypes.string,
   parameterIds: PropTypes.array,
+  setIsAddParameterContextOpen: PropTypes.func.isRequired,
+  setIsParameterContextOpen: PropTypes.func.isRequired,
+  setParameterContextItem: PropTypes.func,
 };
 
 export default ParameterContext;

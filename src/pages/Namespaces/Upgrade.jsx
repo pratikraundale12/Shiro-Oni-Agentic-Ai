@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { LinkIcon, QRIcons, TodoIcon, UpsideSquareIcon } from '../../assets';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Table } from '../../components';
 import RightIcon from '../../assets/Icons/RightIcon';
 import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
+import { useGlobalContext } from '../../utils';
 
 const Container = styled.div`
-  height: calc(100vh - 78px);
-  width: calc(100vw - 250px);
-  overflow: hidden;
-  padding: 37px 50px 22px 20px;
-  --bs-bg-opacity: 1;
-  background-color: white !important;
+  // height: calc(100vh - 78px);
+  // width: calc(100vw - 250px);
+  // overflow: hidden;
+  // padding: 37px 50px 22px 20px;
+  // --bs-bg-opacity: 1;
+  // background-color: white !important;
 `;
 const TopTitleBar = styled.div`
   height: 37px;
@@ -140,18 +141,17 @@ const BreadcrumbContainer = styled.div`
   color: #444445;
   align-items: center;
 `;
-
+const StyledInputField = styled(InputField)`
+  input {
+    &:disabled {
+      background-color: #ebf0f7;
+      border-color: #ccc;
+    }
+  }
+`;
 const Upgrade = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const {
-    upgradeData,
-    selectedClusterName,
-    selectedClusterId,
-    deployData,
-    depolyNamespaceId,
-  } = location.state || {};
-  const [selectedVersion, setSelectedVersion] = useState(null);
+  const { state, setState } = useGlobalContext();
   const COLUMNS = onVersionSelect => [
     {
       label: 'Version',
@@ -169,7 +169,7 @@ const Upgrade = () => {
       label: '',
       renderCell: item => (
         <RadioField
-          disabled={upgradeData?.version === item.version}
+          disabled={state.upgradeData?.version === item.version}
           name="select"
           onChange={() => onVersionSelect(item.version)}
         />
@@ -179,23 +179,22 @@ const Upgrade = () => {
   ];
 
   const breadcrumbData = [
-    { id: '1', name: 'Namespace List' },
-    { id: '2', name: 'Select Namespace' },
+    { id: '1', name: 'Namespace List', path: '/namespaces' },
+    { id: '2', name: 'Select Namespace', path: '/namespaces/deploy' },
     { id: '3', name: 'Configuration Details' },
   ];
   const handleBreadcrumbClick = breadcrumb => {
-    console.log('Breadcrumb clicked:', breadcrumb);
-    // Perform your navigation or other actions here
+    navigate(breadcrumb.path);
   };
   const handleClick = () => {
     navigate('/namespaces/summary', {
       state: {
-        upgradeData,
-        selectedVersion,
-        selectedClusterName,
-        selectedClusterId,
-        deployData,
-        depolyNamespaceId,
+        // upgradeData,
+        // selectedVersion,
+        // selectedClusterName,
+        // selectedClusterId,
+        // deployData,
+        // depolyNamespaceId,
       },
     });
   };
@@ -205,7 +204,12 @@ const Upgrade = () => {
   };
 
   const handleVersionSelect = version => {
-    setSelectedVersion(version);
+    if (setState) {
+      setState(prevState => ({
+        ...prevState,
+        selectedVersion: version,
+      }));
+    }
   };
 
   const getIconForState = state => {
@@ -224,8 +228,24 @@ const Upgrade = () => {
   };
 
   const isStateStale =
-    upgradeData?.state === 'STALE' || upgradeData?.state === 'UP_TO_DATE';
+    state.upgradeData?.state === 'STALE' ||
+    state.upgradeData?.state === 'UP_TO_DATE';
 
+  const handlePositionChange = (name, value) => {
+    if (setState) {
+      setState(prevState => ({
+        ...prevState,
+        deployData: {
+          ...prevState.deployData,
+          position: {
+            ...prevState.deployData.position,
+            [name]: value,
+          },
+        },
+      }));
+    }
+  };
+  // const isDeploy = state?.upgradeData ? false : true;
   return (
     <Container>
       <TopTitleBar className=" d-flex  mb-3">
@@ -233,7 +253,10 @@ const Upgrade = () => {
           <div>
             <TodoIcon />
           </div>
-          <MainTitleHfour className="mb-0">Deploy Namespace</MainTitleHfour>
+          <MainTitleHfour className="mb-0">
+            {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}{' '}
+            Namespace
+          </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex  mb-3">
@@ -246,12 +269,11 @@ const Upgrade = () => {
         <ScrollSetGrey className="scroll-set-grey pe-1">
           <RowConfig>
             <div className="col-12 p-3">
-              <InputField
+              <StyledInputField
                 name="cluster"
                 type="text"
                 label="Selected Cluster"
-                // placeholder="Nifi Namespace"
-                value={selectedClusterName}
+                value={state.selectedClusterName}
                 icon={<QRIcons />}
                 disabled
               />
@@ -263,7 +285,7 @@ const Upgrade = () => {
                     name="namespace"
                     type="text"
                     label="Selected Namespace"
-                    value={upgradeData?.name || deployData?.name}
+                    value={state?.upgradeData?.name || state?.deployData?.name}
                     icon={<QRIcons />}
                     disabled
                   />
@@ -277,43 +299,52 @@ const Upgrade = () => {
                     name="x"
                     type="text"
                     label="Canvas Position X"
-                    placeholder="x123"
-                    value={upgradeData?.position?.x || deployData?.position?.x}
+                    value={
+                      state?.deployData?.position?.x ||
+                      state?.upgradeData?.position?.x
+                    }
                     icon={'x:'}
-                    disabled
+                    disabled={state?.upgradeData?.mode === 'upgrade'}
+                    onChange={e => handlePositionChange('x', e.target.value)}
                   />
                   <InputField
                     name="y"
                     type="text"
                     label="Canvas Position Y"
-                    placeholder="y123"
-                    value={upgradeData?.position?.y || deployData?.position?.y}
+                    value={
+                      state?.deployData?.position?.y ||
+                      state?.upgradeData?.position?.y
+                    }
                     icon={'y:'}
-                    disabled
+                    disabled={state?.upgradeData?.mode === 'upgrade'}
+                    onChange={e => handlePositionChange('y', e.target.value)}
                   />
                 </ColXlFive>
-                <ColXlTwo className="col-xl-2 col-6">
-                  <InputField
-                    name="currentVersion"
-                    type="text"
-                    label="Current Version"
-                    placeholder="N/A"
-                    value={upgradeData?.version || 'N/A'}
-                    icon={<QRIcons />}
-                    disabled
-                  />
-                </ColXlTwo>
-                <ColXlSix className="col-xl-5 col-6">
-                  <InputField
-                    name="currentState"
-                    type="text"
-                    label="Current State"
-                    // placeholder="Local Changes"
-                    value={upgradeData?.stateExplanation || 'N/A'}
-                    icon={getIconForState(upgradeData?.state)}
-                    disabled
-                  />
-                </ColXlSix>
+                {state?.upgradeData?.mode && (
+                  <ColXlTwo className="col-xl-2 col-6">
+                    <InputField
+                      name="currentVersion"
+                      type="text"
+                      label="Current Version"
+                      placeholder="N/A"
+                      value={state.upgradeData.version}
+                      icon={<QRIcons />}
+                      disabled
+                    />
+                  </ColXlTwo>
+                )}
+                {state?.upgradeData?.mode && (
+                  <ColXlSix className="col-xl-5 col-6">
+                    <InputField
+                      name="currentState"
+                      type="text"
+                      label="Current State"
+                      value={state.upgradeData.stateExplanation}
+                      icon={getIconForState(state.upgradeData.state)}
+                      disabled
+                    />
+                  </ColXlSix>
+                )}
               </RowConfig>
             </div>
             <div className="col-12 p-3">
@@ -324,7 +355,9 @@ const Upgrade = () => {
                     type="text"
                     label="Nifi URL"
                     placeholder="Nifi Namespace"
-                    value={upgradeData?.nifiUrl || deployData?.nifiUrl}
+                    value={
+                      state?.upgradeData?.nifiUrl || state?.deployData?.nifiUrl
+                    }
                     icon={<LinkIcon />}
                     disabled
                   />
@@ -335,7 +368,10 @@ const Upgrade = () => {
                     type="text"
                     label="Registry URL"
                     placeholder="Nifi Namespace"
-                    value={upgradeData?.registryUrl || deployData?.registryUrl}
+                    value={
+                      state?.upgradeData?.registryUrl ||
+                      state?.deployData?.registryUrl
+                    }
                     icon={<LinkIcon />}
                     disabled
                   />
@@ -343,12 +379,14 @@ const Upgrade = () => {
               </RowConfig>
             </div>
           </RowConfig>
-
-          {console.log({ upgradeData, deployData })}
           <Table
             data={
-              upgradeData?.versionList?.sort((a, b) => a.version - b.version) ||
-              deployData?.versionList?.sort((a, b) => a.version - b.version)
+              state?.upgradeData?.versionList?.sort(
+                (a, b) => a.version - b.version
+              ) ||
+              state?.deployData?.versionList?.sort(
+                (a, b) => a.version - b.version
+              )
             }
             columns={COLUMNS(handleVersionSelect)}
           />
@@ -361,10 +399,10 @@ const Upgrade = () => {
           </Button>
           <Button
             onClick={handleClick}
-            disabled={!selectedVersion && isStateStale}
+            disabled={!state.selectedVersion && isStateStale}
           >
             {' '}
-            Upgrade{' '}
+            {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}{' '}
           </Button>
         </BottomButtonDiv>
       </BottomButton>
