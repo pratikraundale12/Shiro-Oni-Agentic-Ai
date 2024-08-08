@@ -93,7 +93,7 @@ const ForgetLinkContainer = styled.div`
 `;
 
 const loginSchema = yup.object().shape({
-  username: yup.string().required('Email is required'),
+  username: yup.string().required('User name is required'),
   password: yup.string().required('Password is required'),
   cluster_id: yup.string().required('Cluster is required'),
 });
