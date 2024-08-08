@@ -117,10 +117,12 @@ export const UserLogin = () => {
 
   const onSubmit = async data => {
     const response = await userLogin(data);
-    if (response) {
-      toast.success('Login successful');
+    if (response.status == 200) {
       localStorage.setItem(ACCESS_TOKEN, response?.data?.token);
       navigate('/dashboard');
+      toast.success('Login successful');
+    } else {
+      toast.error(response.message);
     }
   };
 
