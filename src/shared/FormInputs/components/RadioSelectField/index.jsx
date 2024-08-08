@@ -29,7 +29,7 @@ export const RadioSelectField = ({
         <div key={option.name} className="mr-2">
           <RadioField
             name={name}
-            label={option.name}
+            label={option.label}
             value={option.value}
             register={register}
             {...props}

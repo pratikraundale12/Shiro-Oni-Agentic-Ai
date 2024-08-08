@@ -143,10 +143,8 @@ const SummaryDetailsPtag = styled.h4`
 `;
 const ActiveButtonContainer = styled.div`
   gap: 7px;
-  align-items: center;
   justify-content: center;
   flex-direction: column;
-  width: 50%;
 `;
 
 const ActiveButtonDiv = styled.div`
@@ -251,11 +249,11 @@ const CustomNine = styled.div`
   margin-bottom: 1rem !important;
   max-width: 100%;
   padding-right: calc(1.5rem * 0.5);
-  padding-left: calc(1.5rem * 0.5);
   margin-top: 0;
-  &.col-9 {
+  &.col-4 {
     flex: 0 0 auto;
-    width: 50%;
+    width: 33%;
+    text-align: end;
   }
 `;
 const IconsvgDiv = styled.div`
@@ -368,7 +366,7 @@ const Summary = () => {
         bucketId: state?.deployData?.bucketId,
         bucketName: state?.deployData.bucketName,
         registryId: state?.deployData?.registryId,
-        version: state?.deployData?.version,
+        version: state.selectedVersion,
       });
       setLoading(true);
       setState(prevState => ({
@@ -592,7 +590,7 @@ const Summary = () => {
           </RowConfig>
           <IconsvgDiv>
             {state?.upgradeData?.mode && (
-              <CustomNine className="col-9 mb-3">
+              <CustomNine className="col-4 mb-3">
                 <ActiveButtonContainer className="d-flex ">
                   <TextDiv className="d-flex">
                     {' '}

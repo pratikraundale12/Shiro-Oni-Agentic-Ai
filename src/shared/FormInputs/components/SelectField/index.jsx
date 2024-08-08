@@ -160,6 +160,7 @@ const SelectField = ({
       ...styles,
     }),
   };
+  console.log(options);
 
   return (
     <Container className={className} title={title}>

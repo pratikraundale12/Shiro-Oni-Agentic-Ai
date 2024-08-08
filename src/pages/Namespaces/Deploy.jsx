@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, RadioField, SelectField } from '../../shared';
-import { FullPageLoader, Table } from '../../components';
+import { FullPageLoader, Table, TextRender } from '../../components';
 import styled from 'styled-components';
-import { TodoIcon, WhiteBoradIcon } from '../../assets';
+import { QRIcons, TodoIcon, WhiteBoradIcon } from '../../assets';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { SmallSearchIcon } from '../../assets';
 import { theme } from '../../styles';
@@ -134,7 +134,15 @@ const Deploy = () => {
       label: 'Namespace',
       renderCell: item => (
         <div
-          style={{ color: '#C52B2B', cursor: 'pointer' }}
+          style={{
+            color: '#C52B2B',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            textUnderlineOffset: '3px',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+          }}
           role="button"
           tabIndex="0"
           onClick={() => handleSelectNamespace(item.id)}
@@ -146,27 +154,30 @@ const Deploy = () => {
     },
     {
       label: 'Namespace ID',
-      renderCell: item => <div>{item?.id}</div>,
+      renderCell: item => <TextRender text={item.id} />,
+      width: '26%',
     },
     {
       label: 'Flow Name',
-      renderCell: item => <div>{item?.flowName || 'N/A'}</div>,
+      renderCell: item => <TextRender text={item?.flowName || 'N/A'} />,
     },
     {
       label: 'Bucket Name',
-      renderCell: item => <div>{item?.bucketName || 'N/A'}</div>,
+      renderCell: item => <TextRender text={item?.bucketName || 'N/A'} />,
     },
     {
       label: 'Version',
-      renderCell: item => <div>{item?.version || 'N/A'}</div>,
+      renderCell: item => <TextRender text={item?.version || 'N/A'} />,
     },
     {
       label: '',
       renderCell: item => (
-        <RadioField
-          name="select"
-          onChange={() => handleNamespaceSelect(item)}
-        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <RadioField
+            name="select"
+            onChange={() => handleNamespaceSelect(item)}
+          />
+        </div>
       ),
       width: '10%',
     },
@@ -226,8 +237,9 @@ const Deploy = () => {
   const handleBackClick = () => {
     navigate('/namespaces');
   };
-
+  console.log({ state });
   const onClusterCheck = async e => {
+    console.log(options);
     setLoading(true);
     const selectedClusterId = e.value;
     setState(prevState => ({
@@ -237,15 +249,15 @@ const Deploy = () => {
     const selectedClusterName = e.label;
     let ids = [];
     for (const a of state.tempNamespacesData) {
-      if (location.state.id === a.id) {
-        ids.push(a.flowId);
+      if (location?.state?.id === a?.id || state?.currentFlowId === a?.id) {
+        ids?.push(a.flowId);
       }
     }
 
     for (const a of state.gridData.namespaces.breadcrumb) {
       for (const b of state.tempNamespacesData) {
         if (a.id === b.id) {
-          ids.push(b.flowId);
+          ids?.push(b.flowId);
         }
       }
     }
@@ -268,9 +280,8 @@ const Deploy = () => {
         navigate('/namespaces/upgrade', {
           state: {
             upgradeData: response,
-            // selectedClusterName,
-            // selectedClusterId,
           },
+          setShowDeployUI: setShowDeployUI,
         });
       } else if (response.mode === 'deploy') {
         setState(prevState => ({
@@ -316,6 +327,7 @@ const Deploy = () => {
               options={options}
               errors={errors}
               onChange={onClusterCheck}
+              icon={<QRIcons />}
             />
           </form>
           {!showDeployUI && (
@@ -335,7 +347,7 @@ const Deploy = () => {
                 <Search
                   type="search"
                   value={search}
-                  placeholder="Search Namespace, Flow Name, Bucket Name, Version"
+                  placeholder="Search Namespace, Flow Name, Bucket Name"
                   onChange={e => setSearch(e.target.value)}
                 />
               </SearchContainer>
