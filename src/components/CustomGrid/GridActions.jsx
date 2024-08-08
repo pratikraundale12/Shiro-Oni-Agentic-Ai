@@ -18,7 +18,7 @@ const Flex = styled.div`
 `;
 
 const ButtonsContainer = styled(Flex)`
-  gap: 1.4rem;
+  gap: 0.5rem;
 `;
 
 const Title = styled.h3`

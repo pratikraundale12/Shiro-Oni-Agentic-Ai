@@ -75,3 +75,6 @@ export * from './RightIcon';
 export * from './LocalChangesIcon';
 export * from './ThreedotsIcon';
 export * from './NodataIcon';
+export * from './CopyIcon';
+export * from './CanvasXIcon';
+export * from './canvasYIcon';

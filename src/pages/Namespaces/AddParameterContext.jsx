@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import styled from 'styled-components';
+import { QRIcons } from '../../assets';
 import {
   CheckboxField,
   InputField,
   Modal,
   RadioSelectField,
 } from '../../shared';
-import styled from 'styled-components';
-import { QRIcons } from '../../assets';
-import { useForm, useWatch } from 'react-hook-form';
-import { useGlobalContext } from '../../utils';
-// import { updateParameterContextService } from '../../utils/services';
-import { toast } from 'react-toastify';
 import { updateParameterContextService } from '../../store';
+import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
   position: relative;
@@ -49,8 +49,8 @@ const ColumnSix = styled.div`
 
 const ColumnOneTwo = styled.div`
   max-width: 100%;
-  padding-right: calc(1.5rem * 0.5);
-  padding-left: calc(1.5 * 0.5);
+  padding-right: 1rem;
+  padding-left: 1rem;
   margin-top: 0;
   &.col-12 {
     flex: 0 0 auto;
@@ -61,68 +61,101 @@ const ColumnOneTwo = styled.div`
 const RedioButtonDiv = styled.div`
   margin-top: 30px;
 `;
-const defaultValues = {
+
+const OPTIONS = [
+  { id: 1, value: 'true', label: 'Yes' },
+  { id: 2, value: 'false', label: 'No' },
+];
+
+const DEFAULT_VALUES = {
   name: '',
   value: '',
-  sensitive: false,
   description: '',
+  sensitive: 'false',
 };
+
 const AddParameterContext = ({
-  isOpen,
+  isAddParameterContextOpen,
   closePopup,
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   parameterContextItem,
 }) => {
   const { state, setState } = useGlobalContext();
+  const parameterDetailsData = state?.parameterDetails?.data || {};
+  delete parameterDetailsData.version;
+  const parameterContextList = Object.values(parameterDetailsData).flat();
   const { register, handleSubmit, control, reset, setValue } = useForm({
-    defaultValues,
+    defaultValues: DEFAULT_VALUES,
   });
-  console.log({ parameterContextItem }, 'parameterContextItem');
-  useEffect(() => {
-    reset({
-      name: parameterContextItem.context_name ?? '',
-      value: parameterContextItem.value ?? '',
-      // sensitive: OPTIONS.find(
-      //   options => options.value === parameterContextItem.sensitive
-      // ),
-      sensitive: 'true',
-      description: parameterContextItem.description ?? '',
-    });
-    setValue('sensitive', 'true');
-  }, [JSON.stringify(parameterContextItem)]);
 
-  const OPTIONS = [
-    { name: 'Yes', value: true },
-    { name: 'No', value: false },
-  ];
+  useEffect(() => {
+    if (isAddParameterContextOpen?.isOpen) {
+      if (isEmpty(parameterContextItem)) {
+        reset(DEFAULT_VALUES);
+        setValue('check', false);
+      } else {
+        reset({
+          ...parameterContextItem,
+          name: parameterContextItem?.context_name,
+          value: parameterContextItem?.sensitive
+            ? ''
+            : parameterContextItem?.value,
+          sensitive: parameterContextItem?.sensitive ? 'true' : 'false',
+        });
+        setValue(
+          'check',
+          !parameterContextItem?.sensitive && !parameterContextItem?.value
+            ? true
+            : false
+        );
+      }
+    }
+  }, [
+    reset,
+    isAddParameterContextOpen?.isOpen,
+    parameterContextItem,
+    setValue,
+  ]);
 
   const convertObject = objects => {
     return objects.map(originalObject => ({
       context_name: originalObject?.parameter?.name,
       value: originalObject?.parameter?.value,
       description: originalObject?.parameter?.description,
-      sensitive: originalObject?.parameter?.sensitive === 'true',
+      sensitive: originalObject?.parameter?.sensitive,
     }));
   };
 
   const onSubmit = async data => {
+    if (!data) return;
+    const parameterAlreadyExist = parameterContextList.find(
+      parameter =>
+        parameter?.context_name?.toLowerCase() === data?.name?.toLowerCase()
+    );
+    if (
+      parameterAlreadyExist &&
+      Object.keys(parameterAlreadyExist)?.length > 0 &&
+      isAddParameterContextOpen?.mode === 'add'
+    ) {
+      toast.info('Parameter with same name already exists');
+      return;
+    }
     try {
       data.sensitive = data.sensitive === 'true';
       const revision = {
         version: state.parameterVersion,
       };
-
       const response = await updateParameterContextService(
         state.selectedClusterId,
-        state.deployCountDetails.data.parameterContextId ||
+        state.deployCountDetails?.data?.parameterContextId ||
           state?.updatedCount?.parameterContextId,
         revision,
         data
       );
 
       if (response.status === 200) {
-        setIsAddParameterContextOpen(false);
+        setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
         setIsParameterContextOpen(true);
 
         const paramter = {
@@ -140,7 +173,7 @@ const AddParameterContext = ({
           },
         }));
       }
-      reset(defaultValues);
+      reset();
     } catch (error) {
       toast.error(error?.message);
     }
@@ -150,10 +183,18 @@ const AddParameterContext = ({
     name: 'check',
   });
 
+  if (check) {
+    setValue('value', '');
+  }
+
   return (
     <Modal
-      title="Add Parameter Context"
-      isOpen={isOpen}
+      title={
+        isAddParameterContextOpen?.mode === 'add'
+          ? 'Add Parameter Context'
+          : 'Edit Parameter Context'
+      }
+      isOpen={isAddParameterContextOpen?.isOpen}
       onRequestClose={closePopup}
       size="md"
       secondaryButtonText="Back"
@@ -170,6 +211,7 @@ const AddParameterContext = ({
                   type="text"
                   label="Name"
                   icon={<QRIcons />}
+                  disabled={isAddParameterContextOpen?.mode === 'edit'}
                   register={register}
                 />
               </InputBox>
@@ -182,6 +224,9 @@ const AddParameterContext = ({
                   label="Value"
                   icon={<QRIcons />}
                   register={register}
+                  placeholder={
+                    check ? 'Empty String Set' : 'Sensitive value set'
+                  }
                   disabled={check}
                 />
               </InputBox>
@@ -197,6 +242,11 @@ const AddParameterContext = ({
                   name="sensitive"
                   label="Sensitive value"
                   options={OPTIONS}
+                  disabled={isAddParameterContextOpen?.mode === 'edit'}
+                  defaultValue={
+                    String(parameterContextItem?.sensitive) ??
+                    DEFAULT_VALUES?.sensitive
+                  }
                   register={register}
                 />
               </RedioButtonDiv>
@@ -207,7 +257,6 @@ const AddParameterContext = ({
                   name="description"
                   type="text"
                   label="Description"
-                  placeholder="Description"
                   icon={<QRIcons />}
                   register={register}
                 />
@@ -221,7 +270,7 @@ const AddParameterContext = ({
 };
 
 AddParameterContext.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
+  isAddParameterContextOpen: PropTypes.object.isRequired,
   closePopup: PropTypes.func.isRequired,
   setIsAddParameterContextOpen: PropTypes.func,
   setIsParameterContextOpen: PropTypes.func,

@@ -38,11 +38,12 @@ const Breadcrumb = ({ breadcrumbs, onBreadcrumbClick }) => {
 
   return (
     <BreadcrumbContainer>
-      {breadcrumbs?.map((breadcrumb, index) => (
-        <BreadcrumbItem key={index} onClick={() => handleClick(breadcrumb)}>
-          {breadcrumb.name}
-        </BreadcrumbItem>
-      ))}
+      {breadcrumbs?.length > 1 &&
+        breadcrumbs?.map((breadcrumb, index) => (
+          <BreadcrumbItem key={index} onClick={() => handleClick(breadcrumb)}>
+            {breadcrumb.name}
+          </BreadcrumbItem>
+        ))}
     </BreadcrumbContainer>
   );
 };

@@ -99,7 +99,6 @@ export const updateParameterContextService = async (
   revision,
   data
 ) => {
-  console.log({ revision, data, clusterId, parameterContextId });
   const updateData = {
     revision: revision,
     parameters: [
