@@ -7,12 +7,11 @@ const theme = {
     black: '#000000',
     background: '#FFFFFF',
     lightBackground: '#FFFFFFCC',
-    yellow: ' #FF7A00',
 
     // brand colors
-    primary: '#E32235',
+    primary: '#FF7A00',
     darker: '#444445',
-    lighter: '#FDEEEE',
+    lighter: '#FFF7ED',
     subtle: '#F7FAFC',
 
     // state colors
@@ -35,7 +34,7 @@ const theme = {
     darkGrey2: '#988C8C',
 
     // variants
-    primaryActive: '#C60B1D',
+    primaryActive: '#E4842B',
     primaryFocus: '#C52B2B',
     primaryDisabled: '#E3223580',
     secondaryDisabled: '#44444580',
