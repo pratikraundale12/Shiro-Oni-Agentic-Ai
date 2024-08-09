@@ -241,7 +241,7 @@ const Deploy = () => {
   const handleBackClick = () => {
     navigate('/namespaces');
   };
-  console.log({ state });
+
   const onClusterCheck = async e => {
     setLoading(true);
     const selectedClusterId = e.value;
