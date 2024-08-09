@@ -1,17 +1,18 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { CheckboxField, InputField, Modal } from '../../shared';
+import React from 'react';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
+import { CheckboxField, InputField, Modal } from '../../shared';
 
 const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
 `;
 
-const AddVariables = ({ isOpen, closePopup, isAddVariablesOpen }) => {
+const AddVariables = ({ closePopup, isAddVariablesOpen }) => {
   const handleSubmit = e => {
     e.preventDefault();
+    console.log('e');
     // Handle form submission
   };
 
@@ -20,7 +21,7 @@ const AddVariables = ({ isOpen, closePopup, isAddVariablesOpen }) => {
       title={
         isAddVariablesOpen?.mode === 'add' ? 'Add variables' : 'Edit Variables'
       }
-      isOpen={isOpen}
+      isOpen={isAddVariablesOpen?.isOpen}
       onRequestClose={closePopup}
       size="md"
       secondaryButtonText="Back"

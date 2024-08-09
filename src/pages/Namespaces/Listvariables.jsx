@@ -14,7 +14,10 @@ const ModalBody = styled.div`
 
 const Listvariables = ({ isOpen, closePopup, setVariablesModalOpen }) => {
   const { state } = useGlobalContext();
-  const [isAddVariablesOpen, setIsAddVariablesOpen] = useState(false);
+  const [isAddVariablesOpen, setIsAddVariablesOpen] = useState({
+    isOpen: false,
+    mode: 'add',
+  });
   const COLUMNS = [
     {
       label: 'Name',
@@ -46,12 +49,12 @@ const Listvariables = ({ isOpen, closePopup, setVariablesModalOpen }) => {
   };
 
   const openVariable = () => {
-    setIsAddVariablesOpen(true);
+    setIsAddVariablesOpen({ isOpen: true, mode: 'add' });
     setVariablesModalOpen(false);
   };
 
   const closeAddVariablesModal = () => {
-    setIsAddVariablesOpen(false);
+    setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
     setVariablesModalOpen(true);
   };
 
