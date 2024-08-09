@@ -139,7 +139,8 @@ const AddParameterContext = ({
     );
     if (
       parameterAlreadyExist &&
-      Object.keys(parameterAlreadyExist)?.length > 0
+      Object.keys(parameterAlreadyExist)?.length > 0 &&
+      isAddParameterContextOpen?.mode === 'add'
     ) {
       toast.info('Parameter with same name already exists');
       return;
