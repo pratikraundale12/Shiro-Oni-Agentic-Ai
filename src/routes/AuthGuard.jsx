@@ -38,6 +38,7 @@ const AuthGuard = () => {
     state: { currentUser: user, activeRoute: route },
     setState,
   } = useGlobalContext();
+  const [isOpenSidebar, setIsOpenSidebar] = useState(false);
 
   async function fetchCurrentUser() {
     setLoading(true);
@@ -80,11 +81,19 @@ const AuthGuard = () => {
   if (isEmpty(user)) {
     navigate('login');
   }
+
+  const handleOpenSidebar = () => {
+    setIsOpenSidebar(!isOpenSidebar);
+  };
+
   return (
     <Container>
-      <Sidebar />
+      <Sidebar
+        handleOpenSidebar={handleOpenSidebar}
+        isOpenSidebar={isOpenSidebar}
+      />
       <Content>
-        <Header route={route} />
+        <Header route={route} isOpenSidebar={isOpenSidebar} />
         <Wrapper>
           <Outlet />
         </Wrapper>

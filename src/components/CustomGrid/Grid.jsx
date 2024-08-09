@@ -28,12 +28,16 @@ const Container = styled.div`
 
 const TableContainer = styled.div`
   height: 90%;
-  overflow: auto;
+  overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
-
-  table {
-    overflow: visible;
+  @media (min-width: 992px) {
+    overflow-x: hidden;
+  }
+  @media (max-width: 991px) {
+    table {
+      min-width: 800px;
+    }
   }
 `;
 
@@ -123,10 +127,6 @@ export const Grid = ({
     getTheme(),
     {
       Table: `
-      --data-table-library_grid-template-columns: ${columns
-        .map(column => column.width)
-        .join(' ')} !important;
-
         th, td {
           border-bottom: none !important;
         }

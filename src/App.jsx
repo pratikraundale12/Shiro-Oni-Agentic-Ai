@@ -5,6 +5,7 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyles, theme } from './styles';
 import { GlobalProvider } from './utils';
 import Routes from './routes';
+import 'bootstrap/dist/css/bootstrap.css';
 
 function App() {
   return (

@@ -24,6 +24,13 @@ const Container = styled.header`
   justify-content: space-between;
   background-color: ${props => props.theme.colors.white};
   border-bottom: 1px solid ${props => props.theme.colors.border};
+  @media (max-width: 992px) {
+    padding-left: 50px;
+    .title {
+      margin-left: 15.5rem;
+      font-size: 23px;
+    }
+  }
 `;
 
 const IconButton = styled.button`
@@ -67,6 +74,10 @@ const Title = styled.h2`
   font-size: 26px;
   font-weight: 500;
   text-transform: capitalize;
+  @media (max-width: 992px) {
+    font-size: 23px;
+    transition: 0.3s;
+  }
 `;
 
 const Name = styled.span`
@@ -196,7 +207,7 @@ const ProfileDropdown = () => {
   );
 };
 
-export const Header = ({ route }) => {
+export const Header = ({ route, isOpenSidebar }) => {
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
   const {
     state: { licenseTimeStamp },
@@ -217,17 +228,23 @@ export const Header = ({ route }) => {
   return (
     <>
       <Container>
-        <Title>{route?.replace(/-/g, ' ')}</Title>
+        <Title className={isOpenSidebar && 'title'}>
+          {route?.replace(/-/g, ' ')}
+        </Title>
         <ButtonContainer>
-          <IconButton>
-            <HeadphoneIcon />
-          </IconButton>
-          <IconButton>
-            <BellIcon />
-          </IconButton>
-          <IconButton>
-            <SettingSmallIcon />
-          </IconButton>
+          <div className="d-none d-lg-inline">
+            <div className="d-flex">
+              <IconButton>
+                <HeadphoneIcon />
+              </IconButton>
+              <IconButton>
+                <BellIcon />
+              </IconButton>
+              <IconButton>
+                <SettingSmallIcon />
+              </IconButton>
+            </div>
+          </div>
           <ProfileDropdown />
         </ButtonContainer>
       </Container>
@@ -243,4 +260,5 @@ export const Header = ({ route }) => {
 
 Header.propTypes = {
   route: PropTypes.string,
+  isOpenSidebar: PropTypes.bool,
 };

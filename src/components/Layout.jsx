@@ -7,18 +7,12 @@ import { VERSION } from '../utils';
 import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  background-color: ${props => props.theme.colors.lighter};
+  min-height: 100vh;
+  padding: 0px 15px;
 `;
 
 const LeftSection = styled.div`
-  width: 50vw;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,28 +21,47 @@ const LeftSection = styled.div`
 `;
 
 const RightSection = styled.div`
-  width: 50vw;
-  height: 100vh;
-  background-image: url('/img/right-back.png');
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
   position: relative;
-`;
-
-const Image = styled.div`
-  width: 50vw;
   height: 100vh;
+  background-image: url('/img/aside-background.png');
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position: center;
+  background-color: #fff7ed;
+  position: fixed;
+  top: 0;
+  right: 0;
+  p {
+    font-weight: 700;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+`;
+const Image = styled.div`
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
   background-image: url('/img/right-logo.png');
   background-repeat: no-repeat;
   background-position: center;
+  background-size: 65%;
+  @media (max-width: 1440px) and (min-width: 992px) {
+    background-size: 90%;
+  }
+  @media (max-width: 1660px) and (min-width: 1441px) {
+    background-size: 80%;
+  }
+  @media (max-width: 1800px) and (min-width: 1661px) {
+    background-size: 75%;
+  }
 `;
 
 const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 55%;
-  height: 70%;
+  max-width: 470px;
+  width: 100%;
   background-color: ${props => props.theme.colors.lightGrey};
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 16px;
@@ -112,31 +125,32 @@ export const Layout = ({ children, userLogin = false }) => {
   userLogin;
   return (
     <Container>
-      <LeftSection>
-        <KsolvesDataFlowIcon />
-
-        <Content>{children}</Content>
-        <RedirectionSection>
-          Login via{' '}
-          <RedirectionText
-            onClick={() => navigate(userLogin ? '/admin/login' : '/login')}
-          >
-            {userLogin ? 'Admin' : 'User'}
-          </RedirectionText>
-        </RedirectionSection>
-        {/* */}
-      </LeftSection>
-      <RightSection>
-        <RightSectionTextContainer>
-          {' '}
-          <HeadingRightText>
-            Check out the Best Data <br /> Flow Management Tool!
-          </HeadingRightText>
-          <br />
-          <VersionRightText>{VERSION}</VersionRightText>{' '}
-        </RightSectionTextContainer>{' '}
-        {<Image />}
-      </RightSection>
+      <div className="row">
+        <LeftSection className="col-xl-5 col-lg-5">
+          <KsolvesDataFlowIcon />
+          <Content>{children}</Content>
+          <RedirectionSection>
+            Login via{' '}
+            <RedirectionText
+              onClick={() => navigate(userLogin ? '/admin/login' : '/login')}
+            >
+              {userLogin ? 'Admin' : 'User'}
+            </RedirectionText>
+          </RedirectionSection>
+          {/* */}
+        </LeftSection>
+        <RightSection className="col-xl-7 col-lg-7 d-none d-lg-inline">
+          <RightSectionTextContainer>
+            {' '}
+            <HeadingRightText>
+              Check out the Best Data <br /> Flow Management Tool!
+            </HeadingRightText>
+            <br />
+            <VersionRightText>{VERSION}</VersionRightText>{' '}
+          </RightSectionTextContainer>{' '}
+          {<Image />}
+        </RightSection>
+      </div>
       <ChatBoxContainer>
         <ChatBoxIcon />
       </ChatBoxContainer>

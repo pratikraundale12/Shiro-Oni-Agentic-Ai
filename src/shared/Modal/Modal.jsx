@@ -103,7 +103,7 @@ export const Modal = ({
       style={styleObject}
     >
       <Header>
-        <Title>{title}</Title>
+        <Title className="mb-0">{title}</Title>
         <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
       </Header>
       <Body>{children}</Body>
