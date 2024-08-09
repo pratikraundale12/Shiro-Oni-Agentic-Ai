@@ -287,6 +287,9 @@ const Summary = () => {
   const [parameterContextItem, setParameterContextItem] = useState({});
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
+  const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
+    []
+  );
 
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
@@ -304,9 +307,7 @@ const Summary = () => {
         state.deployCountDetails?.data?.parameterContextId ||
           state?.updatedCount?.parameterContextId
       );
-      const data = response.data;
 
-      console.log(data.version);
       setState(prevState => ({
         ...prevState,
         parameterDetails: response,
@@ -413,6 +414,7 @@ const Summary = () => {
 
   const closeParameterContext = () => {
     setIsParameterContextOpen(false);
+    setNewlyAddedParameterContext([]);
     setModalOpen(true);
   };
 
@@ -794,6 +796,7 @@ const Summary = () => {
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
         setParameterContextItem={setParameterContextItem}
+        newlyAddedPrameterContext={newlyAddedPrameterContext}
       />
       <AddParameterContext
         key={isParameterContextOpen.mode}
@@ -802,6 +805,8 @@ const Summary = () => {
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
+        newlyAddedPrameterContext={newlyAddedPrameterContext}
+        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
     </MainContainer>
   );

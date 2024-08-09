@@ -18,6 +18,7 @@ const ParameterContext = ({
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   setParameterContextItem,
+  newlyAddedPrameterContext,
 }) => {
   const COLUMNS = [
     {
@@ -59,7 +60,15 @@ const ParameterContext = ({
   const { state } = useGlobalContext();
   const parameterDetailsData = state.parameterDetails?.data || {};
   delete parameterDetailsData.version;
-  const dummyData = Object.values(parameterDetailsData).flat();
+  const dummyData = [
+    ...Object.values(parameterDetailsData).flat(),
+    ...newlyAddedPrameterContext,
+  ];
+
+  const handleSaveParameterContext = async () => {
+    if (!newlyAddedPrameterContext) return;
+    console.log(newlyAddedPrameterContext);
+  };
 
   return (
     <Modal
@@ -70,6 +79,7 @@ const ParameterContext = ({
       onSecondarySubmit={openAddParameterContext}
       secondaryButtonText="Add Parameter Context"
       primaryButtonText="Save"
+      onSubmit={handleSaveParameterContext}
       secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
     >
       <ModalBody className="modal-body">
@@ -88,6 +98,7 @@ ParameterContext.propTypes = {
   setIsAddParameterContextOpen: PropTypes.func.isRequired,
   setIsParameterContextOpen: PropTypes.func.isRequired,
   setParameterContextItem: PropTypes.func,
+  newlyAddedPrameterContext: PropTypes.array,
 };
 
 export default ParameterContext;
