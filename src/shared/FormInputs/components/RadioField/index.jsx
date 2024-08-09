@@ -50,7 +50,7 @@ const RadioInput = styled.input.attrs({ type: 'radio' })`
     }
 
     &:disabled {
-      background-color: ${props => props.theme.colors.lightGrey};
+      background-color: ${props => props.theme.colors.primaryDisabled};
       cursor: not-allowed;
     }
   }
