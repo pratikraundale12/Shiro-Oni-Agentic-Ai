@@ -22,7 +22,7 @@ const ParameterContext = ({
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => <TextRender text={item?.context_name || 'N/A'} />,
+      renderCell: item => <TextRender text={item?.name || 'N/A'} />,
     },
     {
       label: 'Value',
