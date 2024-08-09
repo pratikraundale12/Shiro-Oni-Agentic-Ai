@@ -35,8 +35,8 @@ const theme = {
     darkGrey3: '#EBF0F7',
 
     // variants
-    primaryActive: '#E4842B',
-    primaryFocus: '#C52B2B',
+    primaryActive: '#C60B1D',
+    primaryFocus: '#FF7A00',
     primaryDisabled: '#E3223580',
     secondaryDisabled: '#44444580',
 
