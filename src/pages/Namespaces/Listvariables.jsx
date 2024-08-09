@@ -27,7 +27,14 @@ const Listvariables = ({ isOpen, closePopup, setVariablesModalOpen }) => {
     {
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <IconButton onClick={() => handleEdit(item)}>
+          <IconButton
+            onClick={() => {
+              setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
+              setVariablesModalOpen(false);
+              handleEdit(item);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
             <PencilIcon style={{ color: 'black' }} />
           </IconButton>
         </div>
@@ -68,6 +75,7 @@ const Listvariables = ({ isOpen, closePopup, setVariablesModalOpen }) => {
         <AddVariables
           isOpen={isAddVariablesOpen}
           closePopup={closeAddVariablesModal}
+          isAddVariablesOpen={isAddVariablesOpen}
         />
       )}
     </>

@@ -9,7 +9,7 @@ const ModalBody = styled.div`
   flex: 1 1 auto;
 `;
 
-const AddVariables = ({ isOpen, closePopup }) => {
+const AddVariables = ({ isOpen, closePopup, isAddVariablesOpen }) => {
   const handleSubmit = e => {
     e.preventDefault();
     // Handle form submission
@@ -17,7 +17,9 @@ const AddVariables = ({ isOpen, closePopup }) => {
 
   return (
     <Modal
-      title="Add Variables"
+      title={
+        isAddVariablesOpen?.mode === 'add' ? 'Add variables' : 'Edit Variables'
+      }
       isOpen={isOpen}
       onRequestClose={closePopup}
       size="md"
@@ -43,6 +45,7 @@ const AddVariables = ({ isOpen, closePopup }) => {
 AddVariables.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
+  isAddVariablesOpen: PropTypes.object.isRequired,
 };
 
 export default AddVariables;
