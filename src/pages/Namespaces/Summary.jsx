@@ -27,8 +27,8 @@ import {
   upgradeCluster,
 } from '../../store';
 import { useGlobalContext } from '../../utils';
-import Listvariables from './Listvariables';
 import AddParameterContext from './AddParameterContext';
+import Listvariables from './Listvariables';
 import ParameterContext from './ParameterContext';
 
 const MainContainer = styled.div`

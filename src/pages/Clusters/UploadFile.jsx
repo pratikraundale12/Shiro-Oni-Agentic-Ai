@@ -12,7 +12,7 @@ const StyledButton = styled(Button)`
   padding: 0 20px;
   margin-top: 4px;
   border-radius: 4px;
-  max-width: 110px;
+  max-width: 130px;
   border: 1px solid ${props => props.theme.colors.primary};
   color: ${props => props.theme.colors.primary};
 
@@ -40,9 +40,10 @@ const FlexBetween = styled.div`
 
 const FileLabel = styled.span`
   color: ${props => props.theme.colors.darker};
-  font-family: ${props => props.theme.fontNato};
+  // font-family: ${props => props.theme.fontNato};
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 14px;
 `;
 
 const Progress = styled.div`
