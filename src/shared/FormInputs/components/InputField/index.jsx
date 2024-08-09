@@ -72,7 +72,7 @@ const Container = styled.div`
       border: 1px solid ${props => props.theme.colors.darker};
     }
     &:disabled {
-      background: ${props => props.theme.colors.lightGrey2};
+      background: ${props => props.theme.colors.darkGrey3};
     }
   }
 

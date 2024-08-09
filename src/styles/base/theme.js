@@ -32,6 +32,7 @@ const theme = {
     darkGrey: '#E0D3D3',
     darkGrey1: '#B5B5BD',
     darkGrey2: '#988C8C',
+    darkGrey3: '#EBF0F7',
 
     // variants
     primaryActive: '#E4842B',
@@ -39,7 +40,7 @@ const theme = {
     primaryDisabled: '#E3223580',
     secondaryDisabled: '#44444580',
 
-    border: '#DDE4F0',
+    border: '#CCC',
     shadow: '#9C838326',
   },
   spacing: {

@@ -1,9 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from '../../shared';
+import React from 'react';
 import styled from 'styled-components';
-import { Table } from '../../components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
+import { IconButton, Table, TextRender } from '../../components';
+import { Modal } from '../../shared';
 import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
@@ -22,32 +22,36 @@ const ParameterContext = ({
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => <div>{item.context_name}</div>,
+      renderCell: item => <TextRender text={item?.context_name || 'N/A'} />,
     },
     {
       label: 'Value',
       renderCell: item => (
-        <div>
-          {item.sensitive
-            ? 'Sensitive value set'
-            : item.value
-              ? item.value
-              : 'Empty string set'}
-        </div>
+        <TextRender
+          text={
+            item.sensitive
+              ? 'Sensitive value set'
+              : item.value
+                ? item.value
+                : 'Empty string set' || 'N/A'
+          }
+        />
       ),
     },
     {
       renderCell: item => (
-        <button
-          onClick={() => {
-            setIsAddParameterContextOpen(true);
-            setIsParameterContextOpen(false);
-            setParameterContextItem(item);
-          }}
-          style={{ cursor: 'pointer' }}
-        >
-          <PencilIcon color="black" />
-        </button>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <IconButton
+            onClick={() => {
+              setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
+              setIsParameterContextOpen(false);
+              setParameterContextItem(item);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            <PencilIcon color="black" />
+          </IconButton>
+        </div>
       ),
     },
   ];
