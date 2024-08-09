@@ -18,8 +18,8 @@ const Container = styled.div`
 `;
 
 const Loader = styled.img`
-  width: 360px;
-  height: 360px;
+  width: 150px;
+  height: 150px;
 `;
 
 export const FullPageLoader = ({ loading }) => {
