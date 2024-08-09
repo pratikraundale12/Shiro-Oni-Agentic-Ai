@@ -310,7 +310,7 @@ export const AddUserModal = props => {
               <StyledPasswordField
                 name="password"
                 register={register}
-                required
+                required={!state?.selectedItem}
                 errors={errors}
                 watch={watch}
                 label="Password"

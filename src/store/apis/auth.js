@@ -33,6 +33,13 @@ export const currentUser = async () => {
   }
 };
 
+export const getClusterList = async () => {
+  try {
+    return await API.get('/list-clusters');
+  } catch (error) {
+    return error.response.data;
+  }
+};
 export const checkLicense = async () => {
   try {
     const response = await API.get('/license-info');
@@ -47,5 +54,13 @@ export const getLicenseExpiresData = async () => {
     return response;
   } catch (error) {
     return error?.response?.data;
+  }
+};
+
+export const userLogin = async payload => {
+  try {
+    return await API.post('/login/user', payload);
+  } catch (error) {
+    return error.response.data;
   }
 };

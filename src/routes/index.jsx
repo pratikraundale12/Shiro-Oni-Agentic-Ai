@@ -16,6 +16,7 @@ import {
   ReadyFlowGallary,
   GenrateFlow,
   PermissionMatrix,
+  UserLogin,
 } from '../pages';
 import {
   ClusterIcon,
@@ -148,10 +149,11 @@ const Routes = () => {
   return (
     <Router>
       {/* Public Routes */}
-      <Route path="/login" element={<Login />} />
+      <Route path="/admin/login" element={<Login />} />
       <Route path="/forgot" element={<Forgot />} />
       <Route path="/reset" element={<Reset />} />
       <Route path="/success" element={<Success />} />
+      <Route path="/login" element={<UserLogin />} />
 
       {/* Private Routes */}
       <Route path="/" element={<AuthGaurd />}>

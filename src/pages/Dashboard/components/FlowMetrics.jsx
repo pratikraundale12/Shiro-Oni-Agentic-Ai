@@ -30,7 +30,7 @@ export const FlowMetrics = ({ flowMetricsDataDynamic = [] }) => {
     },
     xaxis: {
       type: 'category',
-      categories: ['Flow Files Qued', 'Flow Files In', 'Flow Files Out'],
+      categories: ['Flow Files Queued', 'Flow Files In', 'Flow Files Out'],
     },
     yaxis: {
       opposite: false,

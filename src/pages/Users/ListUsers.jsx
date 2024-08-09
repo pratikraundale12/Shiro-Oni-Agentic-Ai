@@ -143,7 +143,7 @@ export const ListUsers = () => {
         columns={COLUMNS}
         sortFns={SORT_FNS}
         statusOptions={STATUS_OPTIONS}
-        placeholder="Search User Name, Email, Status"
+        placeholder="Search Name, Username, Email, Status"
         addModal={AddUserModal}
       />
     </>
