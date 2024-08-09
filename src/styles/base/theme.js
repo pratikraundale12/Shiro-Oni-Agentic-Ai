@@ -36,8 +36,8 @@ const theme = {
 
     // variants
     primaryActive: '#E4842B',
-    primaryFocus: '#C52B2B',
-    primaryDisabled: '#E3223580',
+    primaryFocus: '#E4842B',
+    primaryDisabled: '#FF7A0080',
     secondaryDisabled: '#44444580',
 
     border: '#CCC',
