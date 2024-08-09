@@ -63,20 +63,15 @@ const RedioButtonDiv = styled.div`
 `;
 
 const OPTIONS = [
-  { id: 1, value: true, label: 'Yes' },
-  { id: 2, value: false, label: 'No' },
+  { id: 1, value: 'true', label: 'Yes' },
+  { id: 2, value: 'false', label: 'No' },
 ];
 
 const DEFAULT_VALUES = {
   name: '',
   value: '',
   description: '',
-  sensitive: false,
-};
-
-const SENSITIVE_VALUE_MAP = {
-  ['true']: true,
-  ['false']: false,
+  sensitive: 'false',
 };
 
 const AddParameterContext = ({
@@ -106,6 +101,7 @@ const AddParameterContext = ({
           value: parameterContextItem?.sensitive
             ? ''
             : parameterContextItem?.value,
+          sensitive: parameterContextItem?.sensitive ? 'true' : 'false',
         });
         setValue(
           'check',
@@ -146,7 +142,7 @@ const AddParameterContext = ({
       return;
     }
     try {
-      data.sensitive = SENSITIVE_VALUE_MAP[data.sensitive];
+      data.sensitive = data.sensitive === 'true';
       const revision = {
         version: state.parameterVersion,
       };
@@ -248,7 +244,8 @@ const AddParameterContext = ({
                   options={OPTIONS}
                   disabled={isAddParameterContextOpen?.mode === 'edit'}
                   defaultValue={
-                    parameterContextItem?.sensitive ?? DEFAULT_VALUES?.sensitive
+                    String(parameterContextItem?.sensitive) ??
+                    DEFAULT_VALUES?.sensitive
                   }
                   register={register}
                 />
