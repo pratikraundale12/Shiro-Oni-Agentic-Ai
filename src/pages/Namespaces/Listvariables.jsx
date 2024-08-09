@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from '../../shared';
-import { PencilIcon, PlusCircleIcon } from '../../assets';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { PencilIcon, PlusCircleIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
+import { Modal } from '../../shared';
+// import { useGlobalContext } from '../../utils';
+import { addVariableServices } from '../../store';
 import { useGlobalContext } from '../../utils';
 import AddVariables from './AddVariables';
 
@@ -12,7 +14,13 @@ const ModalBody = styled.div`
   flex: 1 1 auto;
 `;
 
-const Listvariables = ({ isOpen, closePopup, setVariablesModalOpen }) => {
+const Listvariables = ({
+  variables,
+  setVariables,
+  isOpen,
+  closePopup,
+  setVariablesModalOpen,
+}) => {
   const { state } = useGlobalContext();
   const [isAddVariablesOpen, setIsAddVariablesOpen] = useState({
     isOpen: false,
@@ -57,6 +65,28 @@ const Listvariables = ({ isOpen, closePopup, setVariablesModalOpen }) => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
     setVariablesModalOpen(true);
   };
+  console.log({ state });
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    const variableName = 'sumit';
+    const variableValue = 'sumit123';
+    try {
+      const response = await addVariableServices(
+        state?.selectedDestinationClusterId,
+        state?.updatedCount?.id,
+        state?.variablesDetail?.version,
+        variableName,
+        variableValue
+      );
+
+      if (response) {
+        console.log(response);
+      }
+    } catch (error) {
+      console.error('Failed to submit variables:', error);
+    }
+  };
 
   return (
     <>
@@ -68,10 +98,11 @@ const Listvariables = ({ isOpen, closePopup, setVariablesModalOpen }) => {
         onSecondarySubmit={openVariable}
         secondaryButtonText="Add Variables"
         primaryButtonText="Save"
+        onSubmit={handleSubmit}
         secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
       >
         <ModalBody className="modal-body">
-          <Table data={state?.variablesDetail?.variables} columns={COLUMNS} />
+          <Table data={variables} columns={COLUMNS} />
         </ModalBody>
       </Modal>
       {isAddVariablesOpen && (
@@ -79,6 +110,9 @@ const Listvariables = ({ isOpen, closePopup, setVariablesModalOpen }) => {
           isOpen={isAddVariablesOpen}
           closePopup={closeAddVariablesModal}
           isAddVariablesOpen={isAddVariablesOpen}
+          setVariables={setVariables}
+          variables={variables}
+          setVariablesModalOpen={setVariablesModalOpen}
         />
       )}
     </>
@@ -89,6 +123,8 @@ Listvariables.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
   setVariablesModalOpen: PropTypes.func.isRequired,
+  setVariables: PropTypes.func,
+  variables: PropTypes.array,
 };
 
 export default Listvariables;

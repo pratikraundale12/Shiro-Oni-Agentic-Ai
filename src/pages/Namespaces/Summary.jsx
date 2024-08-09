@@ -289,9 +289,9 @@ const Summary = () => {
   const [parameterContextItem, setParameterContextItem] = useState({});
   const [isVariablesModalOpen, setVariablesModalOpen] = useState(false);
   const [progress, setProgress] = useState(0);
-  const navigate = useNavigate();
-
   const { state, setState } = useGlobalContext();
+  const [variables, setVariables] = useState(state?.variablesDetail?.variables);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const handleBreadcrumbClick = breadcrumb => {
@@ -455,6 +455,7 @@ const Summary = () => {
   const closeVariablesModal = () => {
     setVariablesModalOpen(false);
     setModalOpen(true);
+    setVariables(state?.variablesDetail?.variables);
   };
 
   const handleBackClick = () => {
@@ -837,6 +838,8 @@ const Summary = () => {
         isOpen={isVariablesModalOpen}
         closePopup={closeVariablesModal}
         setVariablesModalOpen={setVariablesModalOpen}
+        variables={variables}
+        setVariables={setVariables}
       />
     </MainContainer>
   );

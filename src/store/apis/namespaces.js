@@ -125,3 +125,26 @@ export const fetchVariables = async (clusterId, namespaceId) => {
     console.error('Failed to fetch variables:', error);
   }
 };
+
+export const addVariableServices = async (
+  clusterId,
+  namespaceId,
+  version,
+  variableName,
+  variableValue
+) => {
+  try {
+    const response = await API.post(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variables`,
+      {
+        version,
+        variableName,
+        variableValue,
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch variables:', error);
+    throw error;
+  }
+};
