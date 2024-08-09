@@ -153,6 +153,9 @@ export const AddUserModal = props => {
     if (data.photo && data.photo.size > 0) {
       formData.append('photo', data.photo);
     }
+    if (state.selectedItem && !data.photo) {
+      formData.append('photo', null);
+    }
 
     if (isEmpty(state.selectedItem)) {
       const response = await createUserApi(formData);
@@ -239,7 +242,7 @@ export const AddUserModal = props => {
                 control={control}
                 placeholder="Status"
                 backgroundColor={theme.colors.lightGrey}
-                label="Status"
+                title="Select Status"
               />
             </DropDownWrapper>
             <DropDownWrapper>
@@ -251,7 +254,7 @@ export const AddUserModal = props => {
                 control={control}
                 placeholder="Role"
                 backgroundColor={theme.colors.lightGrey}
-                label="Role"
+                title="Select Role"
               />
             </DropDownWrapper>
           </SelectFieldWrapper>
@@ -310,7 +313,7 @@ export const AddUserModal = props => {
               <StyledPasswordField
                 name="password"
                 register={register}
-                required
+                required={!state?.selectedItem}
                 errors={errors}
                 watch={watch}
                 label="Password"

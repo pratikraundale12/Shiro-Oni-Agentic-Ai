@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -7,6 +7,7 @@ const Wrapper = styled.div`
   align-items: center;
   margin-right: 1rem;
   margin-bottom: 0.5rem;
+  cursor: pointer;
 `;
 
 const StyledLabel = styled.label`
@@ -14,6 +15,7 @@ const StyledLabel = styled.label`
   font-size: 14px;
   margin-top: 2px;
   margin-left: 8px;
+  cursor: pointer;
 `;
 
 const RadioInput = styled.input.attrs({ type: 'radio' })`
@@ -48,7 +50,7 @@ const RadioInput = styled.input.attrs({ type: 'radio' })`
     }
 
     &:disabled {
-      background-color: ${props => props.theme.colors.lightGrey};
+      background-color: ${props => props.theme.colors.primaryDisabled};
       cursor: not-allowed;
     }
   }
@@ -58,29 +60,26 @@ const RadioInput = styled.input.attrs({ type: 'radio' })`
   }
 `;
 
-const RadioField = ({ name, register, label, refName, ...props }) => (
-  <Wrapper ref={refName}>
-    <RadioInput
-      type="radio"
-      name={name}
-      {...props}
-      {...(typeof register === 'function' &&
-        register(name, {
-          setValueAs: value => Boolean(value),
-        }))}
-    />
-    <StyledLabel>{label}</StyledLabel>
-  </Wrapper>
-);
+const RadioField = ({ name, register, label, refName = null, ...props }) => {
+  return (
+    <Wrapper ref={refName}>
+      <RadioInput
+        type="radio"
+        name={name}
+        id={label}
+        {...props}
+        {...(typeof register === 'function' && register(name))}
+      />
+      <StyledLabel htmlFor={label}>{label}</StyledLabel>
+    </Wrapper>
+  );
+};
+
 RadioField.propTypes = {
   name: PropTypes.string.isRequired,
   register: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
   refName: PropTypes.string,
-};
-
-RadioField.defaultProps = {
-  refName: null,
 };
 
 export default RadioField;

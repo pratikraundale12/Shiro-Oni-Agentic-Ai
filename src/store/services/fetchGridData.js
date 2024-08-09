@@ -51,6 +51,14 @@ export const fetchGridData = debounce(
         }),
         ...rest,
       });
+      if (
+        (module === 'namespaces' || module === 'deploy') &&
+        response.data &&
+        response.data.length === 0
+      ) {
+        toast.info('No Data Found');
+        return;
+      }
       setState(prev => ({
         ...prev,
         gridData: {

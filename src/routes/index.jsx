@@ -16,6 +16,7 @@ import {
   GenrateFlow,
   PermissionMatrix,
   Add,
+  UserLogin,
 } from '../pages';
 import {
   ClusterIcon,
@@ -86,7 +87,7 @@ export const ROUTES_MENU = [
     ],
   },
   {
-    name: 'ReadyFlow Gallary',
+    name: 'Ready to use Flows',
     path: 'ready-flow-gallary',
     icon: ReadyFlowIcon,
     pages: [
@@ -148,10 +149,11 @@ const Routes = () => {
   return (
     <Router>
       {/* Public Routes */}
-      <Route path="/login" element={<Login />} />
+      <Route path="/admin/login" element={<Login />} />
       <Route path="/forgot" element={<Forgot />} />
       <Route path="/reset" element={<Reset />} />
       <Route path="/success" element={<Success />} />
+      <Route path="/login" element={<UserLogin />} />
 
       {/* Private Routes */}
       <Route path="/" element={<AuthGaurd />}>
