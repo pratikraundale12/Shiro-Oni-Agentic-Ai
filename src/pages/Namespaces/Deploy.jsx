@@ -226,6 +226,20 @@ const Deploy = () => {
     });
   }, [setState]);
 
+  useEffect(() => {
+    if (state?.deployData?.id && state?.deployData?.mode === 'deploy') {
+      onClusterCheck({
+        value: state.selectedClusterId,
+        label: state.selectedClusterName,
+      });
+    }
+  }, [
+    state?.deployData?.id,
+    state?.deployData?.mode,
+    state.selectedClusterId,
+    state.selectedClusterName,
+  ]);
+
   const options = state.clusterList
     .filter(cluster => cluster?.id !== state.selectedSourceClusterId)
     .map(cluster => ({
@@ -329,6 +343,14 @@ const Deploy = () => {
               control={control}
               options={options}
               errors={errors}
+              defaultValue={
+                state?.deployData?.id && state?.deployData?.mode === 'deploy'
+                  ? {
+                      label: state.selectedClusterName,
+                      value: state.selectedClusterId,
+                    }
+                  : null
+              }
               onChange={onClusterCheck}
               icon={<QRIcons />}
             />
