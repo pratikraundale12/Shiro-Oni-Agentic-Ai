@@ -1,22 +1,29 @@
-import React, { useState } from 'react';
-import { isEmpty } from 'lodash';
+import React, { useEffect, useState } from 'react';
+// import { isEmpty } from 'lodash';
 // import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { KeyIcons, PlusCircleIcon, WhiteBoradIcon } from '../../assets';
+import { NoDataIcon, PlusCircleIcon, WhiteBoradIcon } from '../../assets';
 import { Title } from './components/Title';
-import {
-  Button,
-  InputField,
-  Modal,
-  PasswordField,
-  SelectField,
-} from '../../shared';
+import { Button, InputField, SelectField } from '../../shared';
 import { useForm } from 'react-hook-form';
-import { LinkIcon, QRIcons, SmallPerfileIcon } from '../../assets';
+import { LinkIcon, QRIcons } from '../../assets';
+import { useNavigate } from 'react-router-dom';
+import { Certificate } from './components/Certificate';
+import { Creditionals } from './components/Creditionals';
+
 // import { testCluster } from '../../store';
-import { UploadFile } from './UploadFile';
+import { RegexConst } from '../../utils';
+import { SummaryModal } from './components/SummaryModal';
+import {
+  getRegistryList,
+  getOneRegistry,
+  testCluster,
+  testRegistry,
+} from '../../store';
+import { SuccessTestModal } from './components/SuccessTestModal';
+import { FailedTestModal } from './components/FailedTestModal';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -63,6 +70,7 @@ const FlexTwo = styled.div`
   gap: 2rem;
   justify-content: space-between;
 `;
+
 const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -116,13 +124,6 @@ const TextTest = styled.div`
   font-size: 20px;
   color: #444445;
   line-height: 27.24px;
-`;
-
-const NifiText = styled.h6`
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 18.52px;
-  color: #425466;
 `;
 
 const StyledButton = styled(Button)`
@@ -203,34 +204,47 @@ const ButtonDiv = styled.div`
   gap: 10px;
 `;
 
+const NoDataContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  margin: 80px;
+`;
+
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+`;
+
 const ClusterSchema = yup.object().shape({
-  clusterName: yup.string().required('Cluster name is required'),
-  nifiUrl: yup.string().required('NiFi Url is required'),
-  clusterUsername: yup.string().when('nifiUrl', {
-    is: value => !isEmpty(value) && value.startsWith('https'),
-    then: () => yup.string().required('Username is required'),
-    otherwise: () => yup.string().notRequired(),
-  }),
-  clusterPassword: yup.string().when('nifiUrl', {
-    is: value => !isEmpty(value) && value.startsWith('https'),
-    then: () => yup.string().required('Password is required'),
-    otherwise: () => yup.string().notRequired(),
-  }),
+  clusterName: yup
+    .string()
+    .matches(RegexConst.NAME, 'Cluster Name must be at least 3 characters long')
+    .required('Cluster Name is required'),
+  nifiUrl: yup
+    .string()
+    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
+    .required('NiFi URL is required'),
 });
 
 const RegistrySchema = yup.object().shape({
-  registryName: yup.string().required('Registry name is required'),
-  registryUrl: yup.string().required('Registry Url is required'),
-  registryUsername: yup.string().when('registryUrl', {
-    is: value => !isEmpty(value) && value.startsWith('https'),
-    then: () => yup.string().required('Username is required'),
-    otherwise: () => yup.string().notRequired(),
-  }),
-  registryPassword: yup.string().when('registryUrl', {
-    is: value => !isEmpty(value) && value.startsWith('https'),
-    then: () => yup.string().required('Password is required'),
-    otherwise: () => yup.string().notRequired(),
-  }),
+  registryName: yup
+    .string()
+    .matches(
+      RegexConst.NAME,
+      'Registry Name must be at least 3 characters long'
+    )
+    .required('Registry Name is required'),
+  registryUrl: yup
+    .string()
+    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
+    .required('NiFi URL is required'),
 });
 
 const TABS = {
@@ -239,12 +253,27 @@ const TABS = {
 };
 
 export const Add = () => {
-  const [activeTab, setActiveTab] = useState(TABS.REGISTRY);
-  // const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState(TABS.CLUSTER);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isCredOpen, setIsCredOpen] = useState(false);
   // const [clusterTest, setClusterTest] = useState(false);
+  const [test, setTest] = useState(true);
+  const [suceessModal, setSuccessModal] = useState(false);
+  const [failedModal, setFailedModal] = useState(false);
   const [newRegistry, setNewRegistry] = useState(false);
+  const [testSuccess, setTestSuccess] = useState(false);
+  const [dataFill, setDataFill] = useState(false);
+  const [openSummary, setOpenSummary] = useState(false);
+  const [clusterData, setClusterData] = useState({
+    clusterName: '',
+    nifiUrl: '',
+  });
+  const [registryData, setRegistryData] = useState({
+    registryName: '',
+    registryUrl: '',
+  });
+
   const {
     control,
     watch,
@@ -256,39 +285,191 @@ export const Add = () => {
       activeTab === TABS.CLUSTER ? ClusterSchema : RegistrySchema
     ),
   });
+  const navigate = useNavigate();
+  const [registries, setRegistries] = useState([]);
+  const selectedRegistryId = watch('registry');
 
-  // const { pfxFile, passphrase } = watch();
+  const handleBack = () => {
+    setIsCertificateOpen(false);
+    setIsCredOpen(false);
+    setTestSuccess(false);
+    setDataFill(false);
 
-  const handleBack = () => setActiveTab(TABS.CLUSTER);
-
-  // const handleTest = async data => {
-  //   const testData =
-  //     activeTab === TABS.CLUSTER
-  //       ? {
-  //           nifi_url: data.nifiUrl,
-  //           username: data.clusterUsername,
-  //           password: data.clusterPassword,
-  //         }
-  //       : {
-  //           registry_url: data.registryUrl,
-  //           username: data.registryUsername,
-  //           password: data.registryPassword,
-  //         };
-  //   setLoading(true);
-  //   await testCluster(testData);
-  //   setLoading(false);
-  //   setClusterTest(true);
-  // };
-
-  const onSubmit = data => {
-    if (activeTab === TABS.CLUSTER) {
+    setTest(true);
+    if (activeTab === TABS.REGISTRY && newRegistry) {
       setActiveTab(TABS.REGISTRY);
-      return;
+      setNewRegistry(false);
+    } else if (activeTab === TABS.CLUSTER) {
+      navigate('/cluster');
+    } else {
+      setActiveTab(TABS.CLUSTER);
     }
-    console.log(data);
   };
 
-  console.log(watch());
+  const onSubmit = data => {
+    console.log(data, 'DATAAAaaaaaaaaa');
+    setClusterData({
+      clusterName: data.clusterName,
+      nifiUrl: data.nifiUrl,
+    });
+    setRegistryData({
+      registryName: data.registryName,
+      registryUrl: data.registryUrl,
+    });
+    setIsCertificateOpen(false);
+    setIsCredOpen(false);
+    setTestSuccess(false);
+    setDataFill(false);
+
+    setTest(true);
+    if (activeTab === TABS.CLUSTER) {
+      setActiveTab(TABS.REGISTRY);
+    } else if (activeTab === TABS.REGISTRY) {
+      setOpenSummary(true);
+    }
+  };
+
+  const watchedFields = watch([
+    'clusterName',
+    'nifiUrl',
+    'registryName',
+    'registryUrl',
+  ]);
+
+  useEffect(() => {
+    const [clusterName, nifiUrl, registryName, registryUrl] = watchedFields;
+
+    if (activeTab === 'cluster') {
+      if (
+        clusterName !== clusterData.clusterName ||
+        nifiUrl !== clusterData.nifiUrl
+      ) {
+        setClusterData({
+          clusterName: clusterName || '',
+          nifiUrl: nifiUrl || '',
+        });
+      }
+    } else if (newRegistry && activeTab === 'registry') {
+      if (
+        registryName !== registryData.registryName ||
+        registryUrl !== registryData.registryUrl
+      ) {
+        setRegistryData({
+          registryName: registryName || '',
+          registryUrl: registryUrl || '',
+        });
+      }
+    }
+
+    // Update dataFill state based on conditions
+    if (
+      (clusterName && nifiUrl && activeTab === 'cluster') ||
+      (registryName && registryUrl && activeTab === 'registry')
+    ) {
+      setDataFill(true);
+    } else {
+      setDataFill(false);
+    }
+
+    // Update test state based on URL schemes
+    if (nifiUrl?.startsWith('https') || registryUrl?.startsWith('https')) {
+      setTest(true);
+    } else if (nifiUrl?.startsWith('http') || registryUrl?.startsWith('http')) {
+      setTest(false);
+    }
+  }, [
+    watchedFields,
+    clusterData,
+    setClusterData,
+    setRegistryData,
+    setDataFill,
+    setTest,
+  ]);
+
+  console.log(dataFill, 'DATAFIELD');
+
+  const fetchRegistry = async () => {
+    try {
+      const response = await getRegistryList();
+      const names = response.data.map(item => ({
+        label: item.name,
+        value: item.id,
+      }));
+      setRegistries(names);
+    } catch (error) {
+      console.error('Failed to fetch registries:', error);
+    }
+  };
+
+  console.log(registryData, 'selected');
+  useEffect(() => {
+    fetchRegistry();
+  }, []);
+
+  useEffect(() => {
+    console.log('Updated registries:', registries);
+    console.log('Selected registry:', selectedRegistryId);
+    if (selectedRegistryId) {
+      fetchRegistryDetails(selectedRegistryId);
+    }
+  }, [registries, selectedRegistryId]);
+
+  const fetchRegistryDetails = async () => {
+    try {
+      const response = await getOneRegistry(selectedRegistryId);
+      console.log(response, 'ressss');
+      setRegistryData(response);
+    } catch (error) {
+      console.error('Failed to fetch registry details:', error);
+    }
+  };
+
+  const handleRegistry = () => {
+    console.log(clusterData, 'cl');
+    console.log(registryData, 'rd');
+    setIsCertificateOpen(false);
+    setIsCredOpen(false);
+    setTestSuccess(false);
+    setTest(true);
+    setOpenSummary(true);
+  };
+
+  const testData = async () => {
+    setLoading(true);
+    const payload = new FormData();
+    if (activeTab === 'cluster') {
+      payload.append('name', clusterData.clusterName);
+      payload.append('nifi_url', clusterData.nifiUrl);
+
+      const response = await testCluster(payload);
+      console.log('Response:', response);
+      if (response.status === 204) {
+        setTestSuccess(true);
+        setSuccessModal(true);
+        setLoading(false);
+      } else {
+        setFailedModal(true);
+        setLoading(false);
+      }
+    } else {
+      payload.append('name', registryData?.registryName || registryData.name);
+      payload.append(
+        'nifi_url',
+        registryData?.registryUrl || registryData.registry_url
+      );
+
+      const response = await testRegistry(payload);
+      console.log('Response:', response);
+      if (response.status === 204) {
+        setTestSuccess(true);
+        setSuccessModal(true);
+        setLoading(false);
+      } else {
+        setFailedModal(true);
+        setLoading(false);
+      }
+    }
+  };
   return (
     <Wrapper>
       <Title title="Add New Cluster Details" />
@@ -321,25 +502,37 @@ export const Add = () => {
               errors={errors}
             />
             <Flex>
-              <div>
-                <ButtonLabel>Test Via Certificate</ButtonLabel>
-                <Button
-                  onClick={() => setIsCertificateOpen(true)}
-                  // disabled={addCertificateSatus}
-                >
-                  Add Certificate
-                </Button>
-              </div>
-              <ORText>OR</ORText>
-              <div>
-                <ButtonLabel>Test Via Creditionals</ButtonLabel>
-                <Button
-                  onClick={() => setIsCredOpen(true)}
-                  // disabled={addCertificateSatus}
-                >
-                  Enter Creditionals
-                </Button>
-              </div>
+              {test ? (
+                <>
+                  {' '}
+                  <div>
+                    <ButtonLabel>Test Via Certificate</ButtonLabel>
+                    <Button
+                      onClick={() => setIsCertificateOpen(true)}
+                      disabled={testSuccess || !dataFill}
+                    >
+                      Add Certificate
+                    </Button>
+                  </div>
+                  <ORText>OR</ORText>
+                  <div>
+                    <ButtonLabel>Test Via Creditionals</ButtonLabel>
+                    <Button
+                      onClick={() => setIsCredOpen(true)}
+                      disabled={testSuccess || !dataFill}
+                    >
+                      Enter Creditionals
+                    </Button>
+                  </div>{' '}
+                </>
+              ) : (
+                <div>
+                  <ButtonLabel>Test Cluster</ButtonLabel>
+                  <Button onClick={testData} loading={loading && 'testng...'}>
+                    Test Cluster
+                  </Button>
+                </div>
+              )}
             </Flex>
           </FormContainer>
         )}
@@ -350,8 +543,7 @@ export const Add = () => {
               control={control}
               name="registry"
               label="Registry Name"
-              icon={<QRIcons />}
-              // options={registries}
+              options={registries}
             />
             <ORText style={{ textAlign: 'center' }}>OR</ORText>
             <StyledButton
@@ -364,57 +556,77 @@ export const Add = () => {
               Add New Registry
             </StyledButton>
 
-            <RegistryDetailsDiv>
-              <TitleRegistry>Registry Details</TitleRegistry>
-              <Flex>
-                <BoxContentArea>
-                  <p>Registry Name</p>
-                  <span>Registry</span>
-                </BoxContentArea>
+            {selectedRegistryId ? (
+              <RegistryDetailsDiv>
+                <TitleRegistry>Registry Details</TitleRegistry>
+                <Flex>
+                  <BoxContentArea>
+                    <p>Registry Name</p>
+                    <span>{registryData.name}</span>
+                  </BoxContentArea>
 
-                <BoxContentArea>
-                  <p>Registry Url</p>
-                  <span>URL: https://172.31.47.210/9443</span>
-                </BoxContentArea>
-              </Flex>
-              <RegistryDetailsDivTwo>
-                <FlexTwo>
-                  <Flex>
-                    <div>
-                      <ButtonLabel>Test Via Certificate</ButtonLabel>
-                      <Button
-                        onClick={() => setIsCertificateOpen(true)}
-                        // disabled={addCertificateSatus}
-                      >
-                        Add Certificate
-                      </Button>
-                    </div>
-                    <ORText>OR</ORText>
-                    <div>
-                      <ButtonLabel>Test Via Creditionals</ButtonLabel>
-                      <Button
-                        onClick={() => setIsCredOpen(true)}
-                        // disabled={addCertificateSatus}
-                      >
-                        Enter Creditionals
-                      </Button>
-                    </div>
-                  </Flex>
-
-                  <BottomButtonDiv>
-                    <ButtonDiv>
-                      <Button
-                        variant="secondary"
-                        // onClick={() => setNewRegistry(true)}
-                      >
-                        Edit
-                      </Button>
-                      <Button>Delete</Button>
-                    </ButtonDiv>
-                  </BottomButtonDiv>
-                </FlexTwo>
-              </RegistryDetailsDivTwo>
-            </RegistryDetailsDiv>
+                  <BoxContentArea>
+                    <p>Registry Url</p>
+                    <span>{registryData.registry_url}</span>
+                  </BoxContentArea>
+                </Flex>
+                <RegistryDetailsDivTwo>
+                  <FlexTwo>
+                    {!testSuccess && (
+                      <Flex>
+                        <div>
+                          <ButtonLabel>Test Via Certificate</ButtonLabel>
+                          <Button
+                            onClick={() => {
+                              setIsCertificateOpen(true);
+                            }}
+                            disabled={testSuccess}
+                          >
+                            Add Certificate
+                          </Button>
+                        </div>
+                        <ORText>OR</ORText>
+                        <div>
+                          <ButtonLabel>Test Via Creditionals</ButtonLabel>
+                          <Button
+                            onClick={() => {
+                              setIsCredOpen(true);
+                            }}
+                            disabled={testSuccess}
+                          >
+                            Enter Creditionals
+                          </Button>
+                        </div>
+                      </Flex>
+                    )}
+                    <BottomButtonDiv>
+                      {testSuccess && (
+                        <CertificateMessage>
+                          <WhiteBoradIcon />
+                          <TextTest>Cluster Tested Successfully</TextTest>
+                        </CertificateMessage>
+                      )}
+                      <ButtonDiv>
+                        <Button
+                          variant="secondary"
+                          onClick={() => {
+                            setNewRegistry(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button>Delete</Button>
+                      </ButtonDiv>
+                    </BottomButtonDiv>
+                  </FlexTwo>
+                </RegistryDetailsDivTwo>
+              </RegistryDetailsDiv>
+            ) : (
+              <NoDataContainer>
+                <NoDataIcon />
+                <NoDataText>No Data Found!!</NoDataText>
+              </NoDataContainer>
+            )}
           </FormContainer>
         )}
 
@@ -437,131 +649,106 @@ export const Add = () => {
               errors={errors}
             />
             <Flex>
-              <div>
-                <ButtonLabel>Test Via Certificate</ButtonLabel>
-                <Button
-                  onClick={() => setIsCertificateOpen(true)}
-                  // disabled={addCertificateSatus}
-                >
-                  Add Certificate
-                </Button>
-              </div>
-              <ORText>OR</ORText>
-              <div>
-                <ButtonLabel>Test Via Creditionals</ButtonLabel>
-                <Button
-                  onClick={() => setIsCredOpen(true)}
-                  // disabled={addCertificateSatus}
-                >
-                  Enter Creditionals
-                </Button>
-              </div>
+              {test ? (
+                <>
+                  <div>
+                    <ButtonLabel>Test Via Certificate</ButtonLabel>
+                    <Button
+                      onClick={() => setIsCertificateOpen(true)}
+                      disabled={testSuccess || !dataFill}
+                    >
+                      Add Certificate
+                    </Button>
+                  </div>
+                  <ORText>OR</ORText>
+                  <div>
+                    <ButtonLabel>Test Via Creditionals</ButtonLabel>
+                    <Button
+                      onClick={() => setIsCredOpen(true)}
+                      disabled={testSuccess || !dataFill}
+                    >
+                      Enter Creditionals
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <ButtonLabel>Test Cluster</ButtonLabel>
+                  <Button
+                    onClick={testData}
+                    // disabled={addCertificateSatus}
+                  >
+                    Test Registry
+                  </Button>
+                </div>
+              )}
             </Flex>
           </FormContainer>
         )}
 
-        <UploadCertificateContainer>
-          <CertificateMessage>
-            <WhiteBoradIcon />
-            <TextTest>Cluster Tested Successfully</TextTest>
-          </CertificateMessage>
-        </UploadCertificateContainer>
+        {testSuccess && newRegistry && (
+          <UploadCertificateContainer>
+            <CertificateMessage>
+              <WhiteBoradIcon />
+              <TextTest>Cluster Tested Successfully</TextTest>
+            </CertificateMessage>
+          </UploadCertificateContainer>
+        )}
       </Container>
-
       <FlexWrapper>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <Button variant="secondary" onClick={handleBack}>
             Back
           </Button>
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            //  disabled={!clusterTest}
-          >
-            Continue
-          </Button>
+          {(activeTab === 'cluster' || newRegistry) && (
+            <Button onClick={handleSubmit(onSubmit)} disabled={!testSuccess}>
+              Continue
+            </Button>
+          )}
+          {!newRegistry && activeTab === 'registry' && (
+            <Button onClick={handleRegistry} disabled={!testSuccess}>
+              Continue
+            </Button>
+          )}
         </div>
       </FlexWrapper>
+      <Certificate
+        isCertificateOpen={isCertificateOpen}
+        setIsCertificateOpen={setIsCertificateOpen}
+        setTestSuccess={setTestSuccess}
+        testSuccess={testSuccess}
+        activeTab={activeTab}
+        clusterData={clusterData}
+        registryData={registryData}
+      />
+      <Creditionals
+        isCredOpen={isCredOpen}
+        setIsCredOpen={setIsCredOpen}
+        setTestSuccess={setTestSuccess}
+        testSuccess={testSuccess}
+        activeTab={activeTab}
+        clusterData={clusterData}
+        registryData={registryData}
+      />
 
-      <Modal
-        title="Add Cluster Certificate"
-        isOpen={isCertificateOpen}
-        onRequestClose={() => setIsCertificateOpen(false)}
-        size="sm"
-        secondaryButtonText="Back"
-        primaryButtonText="Test Certificate"
-        onSubmit={() => setIsCertificateOpen(false)}
-        footerAlign="start"
-        contentStyles={{ minWidth: '30%' }}
-      >
-        <NifiText>NiFi Certificate</NifiText>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '2rem',
-            marginTop: '38px',
-            marginBottom: '35px',
-          }}
-        >
-          <UploadFile
-            name="pfxFile"
-            watch={watch}
-            control={control}
-            label="PFX File"
-            placeholder="Enter your PFX File"
-            errors={errors}
-          />
-          <PasswordField
-            name="password"
-            watch={watch}
-            errors={errors}
-            register={register}
-            label="Password"
-            placeholder="Enter your Passphrase"
-            icon={<KeyIcons />}
-          />
-        </div>
-      </Modal>
+      <SummaryModal
+        clusterData={clusterData}
+        registryData={registryData}
+        openSummary={openSummary}
+        setOpenSummary={setOpenSummary}
+        registry_id={selectedRegistryId}
+      />
 
-      <Modal
-        title="Add Creditionals"
-        isOpen={isCredOpen}
-        onRequestClose={() => setIsCredOpen(false)}
-        size="sm"
-        secondaryButtonText="Back"
-        primaryButtonText="Test Creditionals"
-        onSubmit={() => setIsCredOpen(false)}
-        footerAlign="start"
-        contentStyles={{ minWidth: '30%' }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            marginBottom: '60px',
-          }}
-        >
-          <InputField
-            name="clusterUsername"
-            setIsOpen
-            register={register}
-            icon={<SmallPerfileIcon />}
-            label="Username"
-            placeholder="Enter your Username"
-            errors={errors}
-          />
-          <div>
-            <PasswordField
-              name="passphrase"
-              watch={watch}
-              errors={errors}
-              register={register}
-              label="PFX Passphrase"
-              placeholder="Enter your Passphrase"
-            />
-          </div>
-        </div>
-      </Modal>
+      <SuccessTestModal
+        successTest={suceessModal}
+        setSuccessTest={setSuccessModal}
+        name={activeTab}
+      />
+
+      <FailedTestModal
+        failedTest={failedModal}
+        setFailedTest={setFailedModal}
+      />
     </Wrapper>
   );
 };
