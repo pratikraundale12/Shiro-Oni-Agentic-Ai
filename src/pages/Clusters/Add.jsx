@@ -12,8 +12,7 @@ import { LinkIcon, QRIcons } from '../../assets';
 import { useNavigate } from 'react-router-dom';
 import { Certificate } from './components/Certificate';
 import { Creditionals } from './components/Creditionals';
-
-// import { testCluster } from '../../store';
+import { useLocation } from 'react-router-dom';
 import { RegexConst } from '../../utils';
 import { SummaryModal } from './components/SummaryModal';
 import {
@@ -265,19 +264,24 @@ export const Add = () => {
   const [testSuccess, setTestSuccess] = useState(false);
   const [dataFill, setDataFill] = useState(false);
   const [openSummary, setOpenSummary] = useState(false);
+  const [failedTestMessage, setFailedTestMessage] = useState('');
+  const location = useLocation();
+  const data = location.state || {};
   const [clusterData, setClusterData] = useState({
-    clusterName: '',
-    nifiUrl: '',
+    clusterName: data?.name || '',
+    nifiUrl: data?.nifi_url || '',
   });
   const [registryData, setRegistryData] = useState({
     registryName: '',
     registryUrl: '',
   });
+  const [clusterId, setClusterId] = useState(data?.id);
 
   const {
     control,
     watch,
     register,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -285,10 +289,11 @@ export const Add = () => {
       activeTab === TABS.CLUSTER ? ClusterSchema : RegistrySchema
     ),
   });
+
   const navigate = useNavigate();
   const [registries, setRegistries] = useState([]);
   const selectedRegistryId = watch('registry');
-
+  console.log(data, 'ed');
   const handleBack = () => {
     setIsCertificateOpen(false);
     setIsCredOpen(false);
@@ -349,11 +354,12 @@ export const Add = () => {
           nifiUrl: nifiUrl || '',
         });
       }
-    } else if (newRegistry && activeTab === 'registry') {
+    } else if (newRegistry && activeTab === 'registry' && !data?.id) {
       if (
-        registryName !== registryData.registryName ||
-        registryUrl !== registryData.registryUrl
+        registryName !== registryData?.registryName ||
+        registryUrl !== registryData?.registryUrl
       ) {
+        console.log(registryName, registryUrl, 'dataaaare');
         setRegistryData({
           registryName: registryName || '',
           registryUrl: registryUrl || '',
@@ -361,7 +367,6 @@ export const Add = () => {
       }
     }
 
-    // Update dataFill state based on conditions
     if (
       (clusterName && nifiUrl && activeTab === 'cluster') ||
       (registryName && registryUrl && activeTab === 'registry')
@@ -371,7 +376,6 @@ export const Add = () => {
       setDataFill(false);
     }
 
-    // Update test state based on URL schemes
     if (nifiUrl?.startsWith('https') || registryUrl?.startsWith('https')) {
       setTest(true);
     } else if (nifiUrl?.startsWith('http') || registryUrl?.startsWith('http')) {
@@ -385,7 +389,18 @@ export const Add = () => {
     setDataFill,
     setTest,
   ]);
-
+  useEffect(() => {
+    if (data?.registry_id) {
+      reset({
+        registry: data?.registry_id || '',
+        clusterName: clusterData?.clusterName,
+        nifiUrl: clusterData?.nifiUrl,
+        registryName: registryData?.name,
+        registryUrl: registryData?.registry_url || '',
+      });
+      setClusterId(data?.id);
+    }
+  }, [reset, activeTab, newRegistry]);
   console.log(dataFill, 'DATAFIELD');
 
   const fetchRegistry = async () => {
@@ -404,7 +419,7 @@ export const Add = () => {
   console.log(registryData, 'selected');
   useEffect(() => {
     fetchRegistry();
-  }, []);
+  }, [activeTab]);
 
   useEffect(() => {
     console.log('Updated registries:', registries);
@@ -412,7 +427,7 @@ export const Add = () => {
     if (selectedRegistryId) {
       fetchRegistryDetails(selectedRegistryId);
     }
-  }, [registries, selectedRegistryId]);
+  }, [registries, selectedRegistryId, activeTab]);
 
   const fetchRegistryDetails = async () => {
     try {
@@ -448,6 +463,7 @@ export const Add = () => {
         setSuccessModal(true);
         setLoading(false);
       } else {
+        setFailedTestMessage(response.message);
         setFailedModal(true);
         setLoading(false);
       }
@@ -737,6 +753,8 @@ export const Add = () => {
         openSummary={openSummary}
         setOpenSummary={setOpenSummary}
         registry_id={selectedRegistryId}
+        clusterId={clusterId}
+        edit={clusterId ? true : false}
       />
 
       <SuccessTestModal
@@ -748,6 +766,7 @@ export const Add = () => {
       <FailedTestModal
         failedTest={failedModal}
         setFailedTest={setFailedModal}
+        testMessage={failedTestMessage}
       />
     </Wrapper>
   );

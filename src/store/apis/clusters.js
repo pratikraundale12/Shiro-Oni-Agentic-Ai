@@ -61,7 +61,7 @@ export const updateCluster = async (id, payload) => {
 };
 
 export const updateRegistry = async (id, payload) => {
-  const { data } = await API.patch(`${API_URL}/registries/${id}`, payload);
+  const { data } = await API.patch(`${API_URL}/api/registries/${id}`, payload);
   return data;
 };
 

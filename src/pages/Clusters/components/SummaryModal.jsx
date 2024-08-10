@@ -5,8 +5,8 @@ import { Modal } from '../../../shared';
 import {
   createCluster,
   createRegistry,
-  // updateCluster,
-  // updateRegistry,
+  updateCluster,
+  updateRegistry,
 } from '../../../store';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
@@ -137,13 +137,11 @@ export const SummaryModal = ({
   registryData,
   openSummary,
   setOpenSummary,
-  // isEdit = false,
-  // clusterId,
+  clusterId,
   registry_id,
+  edit,
 }) => {
   const [loading, setLoading] = useState(false);
-
-  console.log(registry_id, 'idddddddddddddddddddddddreggg');
   const navigate = useNavigate();
   const addRegistry = async () => {
     const data = {
@@ -163,7 +161,6 @@ export const SummaryModal = ({
   };
 
   const addCluster = async ({ registry_id }) => {
-    console.log(registry_id, 'idddddddddddddddddddddddd');
     const data = {
       name: clusterData.clusterName,
       nifi_url: clusterData.nifiUrl,
@@ -181,87 +178,44 @@ export const SummaryModal = ({
     }
   };
 
-  // const editRegistryData = async () => {
-  //   const payload = new FormData();
-  //   if (registryData?.name) payload.append('name', registryData.name);
-  //   if (registryData?.registry_url)
-  //     payload.append('registry_url', registryData.registry_url);
-  //   if (registryData?.username)
-  //     payload.append('username', registryData.username);
+  const editRegistryData = async () => {
+    const payload = {
+      name: registryData.registryName,
+      registry_url: registryData.registryUrl,
+    };
+    const id = registry_id;
+    const response = await updateRegistry(id, payload);
+    if (response?.id) {
+      setLoading(false);
+      toast.success(response.message);
+      navigate('/cluster');
+    } else {
+      setLoading(false);
+      toast.error(response.message);
+    }
+  };
 
-  //   if (registryData?.passphrase)
-  //     payload.append('passphrase', registryData.passphrase);
+  const editClusterData = async () => {
+    const payload = {
+      name: clusterData.clusterName,
+      nifi_url: clusterData.nifiUrl,
+    };
 
-  //   if (registryData?.password)
-  //     payload.append('password', registryData.password);
-
-  //   registryData?.file?.name && payload.append('file', registryData.file);
-
-  //   const id = registry_id;
-  //   const response = await updateRegistry(id, payload);
-  //   if (response?.id) {
-  //     setLoadingPost(false);
-  //     toast.success(response.message);
-  //     navigate('/cluster');
-  //   } else {
-  //     setLoadingPost(false);
-  //     toast.error(response.message);
-  //   }
-  // };
-
-  // const editClusterData = async () => {
-  //   const payload = new FormData();
-  //   if (clusterData?.name) payload.append('name', clusterData.name);
-
-  //   if (clusterData?.username != '') {
-  //     payload.append('username', clusterData.username);
-  //   } else {
-  //     payload.append('username', null);
-  //   }
-
-  //   if (clusterData?.file != '') {
-  //     payload.append('file', clusterData?.file);
-  //   } else {
-  //     payload.append('file', null);
-  //   }
-
-  //   if (clusterData?.passphrase != '') {
-  //     payload.append('passphrase', clusterData.passphrase);
-  //   } else {
-  //     payload.append('passphrase', null);
-  //   }
-
-  //   if (clusterData?.password != '') {
-  //     payload.append('password', clusterData.password);
-  //   } else {
-  //     payload.append('password', null);
-  //   }
-
-  //   // clusterData?.file?.name && payload.append('file', clusterData.file);
-
-  //   const id = clusterId;
-  //   const response = await updateCluster(id, payload);
-  //   if (response?.id) {
-  //     editRegistryData();
-  //   } else {
-  //     setLoadingPost(false);
-  //     toast.error(response.message);
-  //   }
-  // };
+    const id = clusterId;
+    const response = await updateCluster(id, payload);
+    if (response?.id) {
+      editRegistryData();
+    } else {
+      setLoading(false);
+      toast.error(response.message);
+    }
+  };
 
   const handleSubmit = () => {
     setLoading(true);
-    // if (isEdit) {
-    //   setLoadingPost(true);
-    //   editClusterData();
-    // } else if (registryData.id) {
-    //   setLoadingPost(true);
-    //   addCluster({ registry_id: registryData.id });
-    // } else {
-    //   setLoadingPost(true);
-    //   addRegistry();
-    // }
-    if (registry_id) {
+    if (edit) {
+      editClusterData();
+    } else if (registry_id) {
       addCluster({ registry_id: registry_id });
     } else {
       addRegistry();
@@ -343,4 +297,5 @@ SummaryModal.propTypes = {
   isEdit: PropTypes.bool,
   clusterId: PropTypes.string,
   registry_id: PropTypes.string,
+  edit: PropTypes.bool,
 };
