@@ -36,9 +36,13 @@ export const fetchGridData = debounce(
           [module]: true,
         },
       }));
+      const clusterData = localStorage.getItem('clusters');
       const response = await fetchListData[module]({
         page,
         ...(search && { search }),
+        ...(module === 'clusters' && {
+          clusterData: JSON.parse(clusterData),
+        }),
         ...(selectedSourceClusterId && {
           clusterId: selectedSourceClusterId,
         }),

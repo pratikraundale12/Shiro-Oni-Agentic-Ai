@@ -3,8 +3,8 @@
 import { API_URL } from '../../utils';
 import API from './api';
 
-export const getClustersList = async params => {
-  const { data } = await API.get('/clusters', { params });
+export const getClustersList = async ({ clusterData }) => {
+  const { data } = await API.post('/list-clusters', clusterData);
   return data;
 };
 
@@ -48,25 +48,17 @@ export const getRegistryList = async params => {
 };
 
 export const getOneRegistry = async params => {
-  const { data } = await API.get(
-    `${API_URL}/api/registries/${params}`
-  );
+  const { data } = await API.get(`${API_URL}/api/registries/${params}`);
   return data;
 };
 
 export const updateCluster = async (id, payload) => {
-  const { data } = await API.patch(
-    `${API_URL}/api/clusters/${id}`,
-    payload
-  );
+  const { data } = await API.patch(`${API_URL}/api/clusters/${id}`, payload);
   return data;
 };
 
 export const updateRegistry = async (id, payload) => {
-  const { data } = await API.patch(
-    `${API_URL}/registries/${id}`,
-    payload
-  );
+  const { data } = await API.patch(`${API_URL}/registries/${id}`, payload);
   return data;
 };
 
