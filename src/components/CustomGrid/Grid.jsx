@@ -175,13 +175,13 @@ export const Grid = ({
     fetchGridData({
       setState,
       module,
-      search: search,
+      search,
+      page,
       ...(nodeClusterId && { nodeClusterId }),
       ...(selectedSourceClusterId && { selectedSourceClusterId }),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, module, search]);
-
+  }, [setState, module, search, page]);
   return (
     <Container>
       <GridActions
@@ -240,7 +240,7 @@ export const Grid = ({
         />
         {getLoader()}
       </TableContainer>
-      {DATA.nodes.length > 10 && (
+      {count >= 10 && (
         <Pagination
           page={page}
           setState={setState}

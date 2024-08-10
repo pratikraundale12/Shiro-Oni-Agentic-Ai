@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { TextRender, Grid } from '../../components';
+import { TextRender, Grid, IconButton } from '../../components';
 import { REFRESH_OPTIONS, useGlobalContext } from '../../utils';
 import { fetchGridData } from '../../store';
 // import AuditLog from './AuditLog';
 import { Button } from '../../shared';
-import { OpenEyeIcon } from '../../assets';
+import { CopyIcon, OpenEyeIcon } from '../../assets';
 import { useNavigate } from 'react-router-dom';
 // import Deploy from './Deploy';
 
 export const ListNamespaces = () => {
   const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
+  const [refreshState, setRefreshSelect] = useState(false);
+  const intervalRef = useRef(null);
   // const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   useEffect(() => {
     setState(prevState => ({
@@ -42,6 +44,8 @@ export const ListNamespaces = () => {
             cursor: 'pointer',
             background: 'none',
             border: 'none',
+            textDecoration: 'underline',
+            textUnderlineOffset: '3px',
           }}
           tabIndex="0"
           onClick={() => handleSelectNamespace(item.id)}
@@ -49,12 +53,36 @@ export const ListNamespaces = () => {
           {item.name}
         </button>
       ),
-      width: '20%',
+      width: '18%',
     },
     {
       label: 'Namespace ID',
-      renderCell: item => <TextRender text={item.id} />,
-      width: '24%',
+      renderCell: item => (
+        <div
+          className="d-flex"
+          style={{ justifyContent: 'space-between', alignItems: 'center' }}
+        >
+          <div style={{ width: 'max-content' }}>
+            <TextRender text={item.id} />
+          </div>
+          <button
+            onClick={() => handleCopyToClipboard(item.id)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              marginLeft: '8px',
+            }}
+            aria-label="Copy Namespace ID"
+          >
+            <IconButton>
+              <CopyIcon />
+            </IconButton>
+          </button>
+        </div>
+      ),
+      width: '26%',
     },
     {
       label: 'Flow Name',
@@ -71,23 +99,6 @@ export const ListNamespaces = () => {
       width: '8%',
       renderCell: item => <TextRender text={item.version || 'N/A'} />,
     },
-    // {
-    //   width: '10%',
-    //   renderCell: () => (
-    //     <button
-    //       // onClick={handleOpenAuditLog}
-    //       style={{
-    //         background: 'none',
-    //         border: 'none',
-    //         padding: 0,
-    //         cursor: 'pointer',
-    //       }}
-    //       aria-label="Open Audit Log"
-    //     >
-    //       <OpenEyeIcon />
-    //     </button>
-    //   ),
-    // },
     {
       label: 'Actions',
       width: '12%',
@@ -103,7 +114,9 @@ export const ListNamespaces = () => {
             }}
             aria-label="Open Audit Log"
           >
-            <OpenEyeIcon />
+            <IconButton>
+              <OpenEyeIcon />
+            </IconButton>
           </button>
           <Button
             onClick={() => handleSelect(item.id)}
@@ -121,6 +134,15 @@ export const ListNamespaces = () => {
       ),
     },
   ];
+
+  const handleCopyToClipboard = async text => {
+    try {
+      await navigator.clipboard.writeText(text);
+      console.log('Copied to clipboard');
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
 
   const clusterOptions = state.clusterList.map(item => ({
     label: item.name,
@@ -163,6 +185,7 @@ export const ListNamespaces = () => {
         ...prev,
         selectedNamespaceId: id,
         tempNamespacesData: [...prev.tempNamespacesData, ...newData],
+        currentFlowId: id,
       };
     });
 
@@ -183,6 +206,30 @@ export const ListNamespaces = () => {
   const onBreadcrumbClick = e => {
     handleSelectNamespace(e.id);
   };
+  const handleRefreshFunctionality = () => {
+    fetchGridData({
+      setState,
+      module: 'namespaces',
+      selectedSourceClusterId: state.selectedSourceClusterId,
+    });
+  };
+
+  const handleRefresh = event => {
+    setRefreshSelect(event.value);
+  };
+
+  useEffect(() => {
+    if (refreshState !== false) {
+      intervalRef.current = setInterval(
+        handleRefreshFunctionality,
+        refreshState
+      );
+    } else {
+      clearInterval(intervalRef.current);
+    }
+
+    return () => clearInterval(intervalRef.current);
+  }, [refreshState]);
 
   return (
     <>
@@ -194,6 +241,7 @@ export const ListNamespaces = () => {
         clusterOptions={clusterOptions}
         onBreadcrumbClick={onBreadcrumbClick}
         placeholder="Search Namespace, ID, Flow Name, Bucket Name"
+        handleRefresh={handleRefresh}
       />
       {/* <Deploy /> */}
       {/* <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} /> */}

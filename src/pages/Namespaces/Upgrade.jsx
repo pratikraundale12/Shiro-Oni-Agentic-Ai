@@ -1,6 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
-import { LinkIcon, QRIcons, TodoIcon, UpsideSquareIcon } from '../../assets';
+import {
+  LinkIcon,
+  QRIcons,
+  TodoIcon,
+  UpsideSquareIcon,
+  CanvasXIcon,
+  CanvasYIcon,
+} from '../../assets';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { useNavigate } from 'react-router-dom';
@@ -85,7 +92,7 @@ const ColXlFive = styled.div`
   margin-top: 0;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: self-end;
   column-gap: 18px;
   &.col-12 {
     flex: 0 0 auto;
@@ -149,9 +156,34 @@ const StyledInputField = styled(InputField)`
     }
   }
 `;
+const VersionDiv = styled.div`
+  margin-bottom: 1rem;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: #444445;
+`;
+
 const Upgrade = () => {
   const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
+  const convertDate = dateString => {
+    const date = new Date(dateString);
+
+    const pad = num => String(num).padStart(2, '0');
+
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const year = date.getFullYear();
+
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+
+    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}.${milliseconds}`;
+  };
+
   const COLUMNS = onVersionSelect => [
     {
       label: 'Version',
@@ -159,7 +191,7 @@ const Upgrade = () => {
     },
     {
       label: 'Created',
-      renderCell: item => <div>{item.createdAt}</div>,
+      renderCell: item => <div>{convertDate(item.createdAt)}</div>,
     },
     {
       label: 'Comment',
@@ -168,11 +200,13 @@ const Upgrade = () => {
     {
       label: '',
       renderCell: item => (
-        <RadioField
-          disabled={state.upgradeData?.version === item.version}
-          name="select"
-          onChange={() => onVersionSelect(item.version)}
-        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <RadioField
+            disabled={state.upgradeData?.version === item.version}
+            name="select"
+            onChange={() => onVersionSelect(item.version)}
+          />
+        </div>
       ),
       width: '10%',
     },
@@ -298,24 +332,24 @@ const Upgrade = () => {
                   <InputField
                     name="x"
                     type="text"
-                    label="Canvas Position X"
+                    label="Canvas Position"
                     value={
                       state?.deployData?.position?.x ||
                       state?.upgradeData?.position?.x
                     }
-                    icon={'x:'}
+                    icon={<CanvasXIcon />}
                     disabled={state?.upgradeData?.mode === 'upgrade'}
                     onChange={e => handlePositionChange('x', e.target.value)}
                   />
                   <InputField
                     name="y"
                     type="text"
-                    label="Canvas Position Y"
+                    label=""
                     value={
                       state?.deployData?.position?.y ||
                       state?.upgradeData?.position?.y
                     }
-                    icon={'y:'}
+                    icon={<CanvasYIcon />}
                     disabled={state?.upgradeData?.mode === 'upgrade'}
                     onChange={e => handlePositionChange('y', e.target.value)}
                   />
@@ -379,6 +413,7 @@ const Upgrade = () => {
               </RowConfig>
             </div>
           </RowConfig>
+          <VersionDiv>Version Control</VersionDiv>
           <Table
             data={
               state?.upgradeData?.versionList?.sort(

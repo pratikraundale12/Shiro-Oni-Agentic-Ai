@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import { BrandLogoIcon, ChatBoxIcon } from '../assets';
-import { VERSION } from '../utils';
+import { KsolvesDataFlowIcon } from '../assets';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   width: 100vw;
@@ -20,7 +20,7 @@ const LeftSection = styled.div`
   height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: end;
+  justify-content: center;
   flex-direction: column;
   background-color: ${props => props.theme.colors.white};
 `;
@@ -28,9 +28,10 @@ const LeftSection = styled.div`
 const RightSection = styled.div`
   width: 50vw;
   height: 100vh;
-  background-image: url('/img/right-bg.png');
+  background-image: url('/img/right-back.png');
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  position: relative;
 `;
 
 const Image = styled.div`
@@ -54,34 +55,79 @@ const Content = styled.div`
   margin-top: 20px;
 `;
 
-const ChatBoxContainer = styled.div`
+const RedirectionSection = styled.div`
+  font-family: Red Hat Display;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 21.17px;
+  text-align: left;
+  color: #757575;
+  margin-top: 14px;
+`;
+
+const RedirectionText = styled.button`
+  border: none;
+  background-color: transparent;
+  font-family: Red Hat Display;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 21.17px;
+  text-align: left;
+  color: #ff7a00;
+  cursor: pointer;
+`;
+
+const RightSectionTextContainer = styled.div`
   position: absolute;
   bottom: 20px;
-  left: 20px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 100%;
 `;
 
-const Version = styled.div`
-  margin: 1.8rem 0;
+const HeadingRightText = styled.p`
+  font-family: Red Hat Display;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 47.63px;
+  letter-spacing: 0.08em;
+  text-align: center;
 `;
 
-export const Layout = ({ children }) => {
+export const Layout = ({ children, userLogin = false }) => {
+  const navigate = useNavigate();
+  userLogin;
   return (
     <Container>
       <LeftSection>
-        <BrandLogoIcon />
+        <KsolvesDataFlowIcon />
+
         <Content>{children}</Content>
-        <Version>{VERSION}</Version>
+        <RedirectionSection>
+          Login via{' '}
+          <RedirectionText
+            onClick={() => navigate(userLogin ? '/admin/login' : '/login')}
+          >
+            {userLogin ? 'Admin' : 'User'}
+          </RedirectionText>
+        </RedirectionSection>
+        {/* */}
       </LeftSection>
       <RightSection>
-        <Image />
+        <RightSectionTextContainer>
+          {' '}
+          <HeadingRightText>
+            Check out the Best Data <br /> Flow Management Tool!
+          </HeadingRightText>
+          <br />
+        </RightSectionTextContainer>{' '}
+        {<Image />}
       </RightSection>
-      <ChatBoxContainer>
-        <ChatBoxIcon />
-      </ChatBoxContainer>
     </Container>
   );
 };
 
 Layout.propTypes = {
   children: PropTypes.arrayOf(PropTypes.node).isRequired,
+  userLogin: PropTypes.bool,
 };

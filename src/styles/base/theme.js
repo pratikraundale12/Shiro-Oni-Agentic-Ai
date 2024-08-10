@@ -9,9 +9,9 @@ const theme = {
     lightBackground: '#FFFFFFCC',
 
     // brand colors
-    primary: '#E32235',
+    primary: '#FF7A00',
     darker: '#444445',
-    lighter: '#FDEEEE',
+    lighter: '#FFF7ED',
     subtle: '#F7FAFC',
 
     // state colors
@@ -32,14 +32,15 @@ const theme = {
     darkGrey: '#E0D3D3',
     darkGrey1: '#B5B5BD',
     darkGrey2: '#988C8C',
+    darkGrey3: '#EBF0F7',
 
     // variants
-    primaryActive: '#C60B1D',
-    primaryFocus: '#C52B2B',
-    primaryDisabled: '#E3223580',
+    primaryActive: '#E4842B',
+    primaryFocus: '#E4842B',
+    primaryDisabled: '#FF7A0080',
     secondaryDisabled: '#44444580',
 
-    border: '#DDE4F0',
+    border: '#CCC',
     shadow: '#9C838326',
   },
   spacing: {

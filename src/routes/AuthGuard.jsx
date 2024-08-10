@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
 
-import { Header, Sidebar } from '../components';
+import { FullPageLoader, Header, Sidebar } from '../components';
 import { useGlobalContext } from '../utils';
 import { currentUser } from '../store';
 
@@ -33,12 +33,14 @@ const Wrapper = styled.div`
 
 const AuthGuard = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const {
     state: { currentUser: user, activeRoute: route },
     setState,
   } = useGlobalContext();
 
   async function fetchCurrentUser() {
+    setLoading(true);
     let pathname = window.location.pathname;
     pathname = pathname.split('/')[1];
     const response = await currentUser();
@@ -53,14 +55,17 @@ const AuthGuard = () => {
         second: 'numeric',
         hour12: true,
       });
+
       setState(prev => ({
         ...prev,
         activeRoute: pathname || 'dashboard',
         currentUser: response.data,
         licenseTimeStamp: istTime,
       }));
+      setLoading(false);
     } else {
       setState(prev => ({ ...prev, activeRoute: 'login', currentUser: null }));
+      setLoading(false);
     }
   }
 
@@ -69,10 +74,12 @@ const AuthGuard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  if (loading) {
+    return <FullPageLoader loading={loading} />;
+  }
   if (isEmpty(user)) {
     navigate('login');
   }
-
   return (
     <Container>
       <Sidebar />

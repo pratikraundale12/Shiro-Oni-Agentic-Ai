@@ -68,25 +68,21 @@ export const ListUsers = () => {
           text={`${item?.first_name || ''} ${item?.middle_name || ''} ${item?.last_name || ''}`}
         />
       ),
-      sort: { sortKey: 'NAME' },
     },
     {
       label: 'Username',
       width: '20%',
       renderCell: item => <TextRender text={item.username || ''} />,
-      sort: { sortKey: 'USERNAME' },
     },
     {
       label: 'Email',
       width: '20%',
       renderCell: item => <TextRender text={item.email} />,
-      sort: { sortKey: 'EMAIL' },
     },
     {
       label: 'Role',
       width: '10%',
       renderCell: item => <TextRender text={item.type} />,
-      sort: { sortKey: 'TYPE' },
     },
     {
       label: 'Status',
@@ -94,7 +90,6 @@ export const ListUsers = () => {
       renderCell: item => (
         <StatusRender status={item.is_active ? 'Active' : 'Inactive'} />
       ),
-      sort: { sortKey: 'STATUS' },
     },
     {
       label: 'Actions',
@@ -102,16 +97,6 @@ export const ListUsers = () => {
       renderCell: item => getActionsMenu(item),
     },
   ];
-
-  const SORT_FNS = {
-    NAME: array =>
-      array.sort((a, b) => a.first_name.localeCompare(b.first_name)),
-    USERNAME: array =>
-      array.sort((a, b) => a.username.localeCompare(b.username)),
-    EMAIL: array => array.sort((a, b) => a.email.localeCompare(b.email)),
-    TYPE: array => array.sort((a, b) => a.type.localeCompare(b.type)),
-    STATUS: array => array.sort((a, b) => a.is_active - b.is_active),
-  };
 
   const deleteUserConfirmed = async () => {
     const response = await deleteUserApi(state.selectedItem.id);
@@ -141,9 +126,8 @@ export const ListUsers = () => {
         module="users"
         title="User List"
         columns={COLUMNS}
-        sortFns={SORT_FNS}
         statusOptions={STATUS_OPTIONS}
-        placeholder="Search User Name, Email, Status"
+        placeholder="Search Name, Username, Email, Status"
         addModal={AddUserModal}
       />
     </>

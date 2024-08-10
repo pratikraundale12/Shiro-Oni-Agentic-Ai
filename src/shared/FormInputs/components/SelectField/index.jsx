@@ -1,13 +1,13 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import React from 'react';
 import { Controller } from 'react-hook-form';
 import Select, { components } from 'react-select';
+import styled from 'styled-components';
 
-import FieldErrorMessage from '../FieldErrorMessage';
-import { hasError } from '../../../../utils';
-import { theme } from '../../../../styles';
 import { DownArrowIcon } from '../../../../assets';
+import { theme } from '../../../../styles';
+import { hasError } from '../../../../utils';
+import FieldErrorMessage from '../FieldErrorMessage';
 
 const Container = styled.div`
   position: relative;
@@ -70,6 +70,7 @@ const SelectField = ({
   disabled = false,
   required = false,
   className = '',
+  placeholder = 'Select...',
   backgroundColor,
   title = '',
   ...props
@@ -179,6 +180,7 @@ const SelectField = ({
               ref={ref}
               value={options.find(option => option.value === value)}
               onChange={option => onChange(option?.value)}
+              placeholder={placeholder}
               theme={theme.reactSelecttheme}
               isDisabled={disabled}
               styles={customStyles}

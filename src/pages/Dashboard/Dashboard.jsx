@@ -190,9 +190,6 @@ export const Dashboard = () => {
         <TextEllipses>
           <CrossIcon color="red" />
           <ErrorTexts data-tooltip-id={`tooltip-${item.processor_group_id}-m`}>
-            <div>
-              <b>Error Code </b>:404- File Not Found
-            </div>
             {item.message}
           </ErrorTexts>
           <ReactTooltip
@@ -423,12 +420,7 @@ export const Dashboard = () => {
 
         <HeaderText>Errors</HeaderText>
       </ErrorsHeader>
-      <StyledTable
-        data={
-          [...errorsLogs, ...errorsLogs, ...errorsLogs, ...errorsLogs] || []
-        }
-        columns={COLUMNS}
-      />
+      <StyledTable data={[...errorsLogs] || []} columns={COLUMNS} />
     </>
   );
 };
