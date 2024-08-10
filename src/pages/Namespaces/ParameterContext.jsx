@@ -1,9 +1,14 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
+import {
+  deleteParameterContextService,
+  updateParameterContextService,
+} from '../../store';
 import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
@@ -19,7 +24,11 @@ const ParameterContext = ({
   setIsParameterContextOpen,
   setParameterContextItem,
   newlyAddedPrameterContext,
+  setNewlyAddedParameterContext,
+  getParamerterContext,
 }) => {
+  const [loading, setLoading] = useState(false);
+
   const COLUMNS = [
     {
       label: 'Name',
@@ -30,11 +39,13 @@ const ParameterContext = ({
       renderCell: item => (
         <TextRender
           text={
-            item.sensitive
+            item.sensitive === 'true' && item?.sensitive
               ? 'Sensitive value set'
               : item.value
                 ? item.value
-                : 'Empty string set' || 'N/A'
+                : item?.check
+                  ? 'Empty string set'
+                  : 'No value set'
           }
         />
       ),
@@ -67,7 +78,65 @@ const ParameterContext = ({
 
   const handleSaveParameterContext = async () => {
     if (!newlyAddedPrameterContext) return;
-    console.log(newlyAddedPrameterContext);
+    setLoading(true);
+    try {
+      const response = await updateParameterContextService(
+        state.selectedClusterId,
+        state.deployCountDetails?.data?.parameterContextId ||
+          state?.updatedCount?.parameterContextId,
+        { version: state.parameterVersion },
+        [...newlyAddedPrameterContext]
+      );
+
+      if (response?.status === 200) {
+        if (response?.data?.requestId) {
+          const response2 = await deleteParameterContextService(
+            state.selectedClusterId,
+            state.deployCountDetails?.data?.parameterContextId ||
+              state?.updatedCount?.parameterContextId,
+            response?.data?.requestId,
+            'get'
+          );
+
+          const startTime = Date.now();
+          let isComplete = response2?.data?.complete;
+
+          while (!isComplete && Date.now() - startTime < 15000) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const checkResponse = await deleteParameterContextService(
+              state.selectedClusterId,
+              state.deployCountDetails?.data?.parameterContextId ||
+                state?.updatedCount?.parameterContextId,
+              response2?.data?.requestId,
+              'get'
+            );
+            isComplete = checkResponse?.data?.complete;
+          }
+
+          if (isComplete) {
+            const responseAfterCompletion = await deleteParameterContextService(
+              state.selectedClusterId,
+              state.deployCountDetails?.data?.parameterContextId ||
+                state?.updatedCount?.parameterContextId,
+              response2?.data?.requestId
+            );
+
+            if (responseAfterCompletion?.status === 204) {
+              getParamerterContext();
+            } else {
+              toast.error('The operation did not complete within 15 seconds.');
+            }
+          } else {
+            toast.error('The operation did not complete within 15 seconds.');
+          }
+        }
+      }
+    } catch (error) {
+      toast.error(error?.message);
+    } finally {
+      setLoading(false);
+      setNewlyAddedParameterContext([]);
+    }
   };
 
   return (
@@ -76,8 +145,10 @@ const ParameterContext = ({
       isOpen={isOpen}
       onRequestClose={closePopup}
       size="md"
+      isLoading={loading}
       onSecondarySubmit={openAddParameterContext}
       secondaryButtonText="Add Parameter Context"
+      primaryButtonDisabled={!newlyAddedPrameterContext?.length || loading}
       primaryButtonText="Save"
       onSubmit={handleSaveParameterContext}
       secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
@@ -99,6 +170,8 @@ ParameterContext.propTypes = {
   setIsParameterContextOpen: PropTypes.func.isRequired,
   setParameterContextItem: PropTypes.func,
   newlyAddedPrameterContext: PropTypes.array,
+  getParamerterContext: PropTypes.func.isRequired,
+  setNewlyAddedParameterContext: PropTypes.func.isRequired,
 };
 
 export default ParameterContext;

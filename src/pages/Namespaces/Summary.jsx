@@ -298,10 +298,12 @@ const Summary = () => {
     navigate(breadcrumb.path);
   };
 
-  const getParamerterContext = async () => {
+  const getParamerterContext = async (shouldFetchData = true) => {
     try {
       setLoading(true);
       openParameterContext();
+
+      if (!shouldFetchData) return;
       const response = await fetchParameterContext(
         state.selectedClusterId,
         state.deployCountDetails?.data?.parameterContextId ||
@@ -797,6 +799,8 @@ const Summary = () => {
         setIsParameterContextOpen={setIsParameterContextOpen}
         setParameterContextItem={setParameterContextItem}
         newlyAddedPrameterContext={newlyAddedPrameterContext}
+        getParamerterContext={getParamerterContext}
+        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
       <AddParameterContext
         key={isParameterContextOpen.mode}

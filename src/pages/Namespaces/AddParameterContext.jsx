@@ -103,9 +103,10 @@ const AddParameterContext = ({
         reset({
           ...parameterContextItem,
           name: parameterContextItem?.name,
-          value: parameterContextItem?.sensitive
-            ? ''
-            : parameterContextItem?.value,
+          value:
+            parameterContextItem?.sensitive === 'true'
+              ? ''
+              : parameterContextItem?.value,
           sensitive: isString(parameterContextItem?.sensitive)
             ? parameterContextItem?.sensitive
             : parameterContextItem?.sensitive
@@ -127,15 +128,6 @@ const AddParameterContext = ({
     parameterContextItem,
     setValue,
   ]);
-
-  // const convertObject = objects => {
-  //   return objects.map(originalObject => ({
-  //     context_name: originalObject?.parameter?.name,
-  //     value: originalObject?.parameter?.value,
-  //     description: originalObject?.parameter?.description,
-  //     sensitive: originalObject?.parameter?.sensitive,
-  //   }));
-  // };
 
   const handleAddEditParameterContext = async data => {
     if (!data) return;
@@ -164,30 +156,36 @@ const AddParameterContext = ({
           ? { ...item, ...data }
           : item
       );
-
       const filteredParameterContextList = parameterContextList.filter(
         item => item?.name?.toLowerCase() !== data?.name?.toLowerCase()
       );
-      setState({
-        ...state,
-        parameterDetails: {
-          ...state.parameterDetails,
-          data: {
-            [data?.name]: filteredParameterContextList,
-          },
-        },
-      });
-
-      setNewlyAddedParameterContext(
-        filteredParameterContextList.length !== 0
-          ? [...newlyAddedPrameterContext, data]
-          : updatedData
+      const existingParameterContext = parameterContextList.find(
+        item => item?.name?.toLowerCase() === data?.name?.toLowerCase()
       );
+
+      if (
+        existingParameterContext &&
+        Object.values(existingParameterContext)?.length !== 0
+      ) {
+        setState({
+          ...state,
+          parameterDetails: {
+            ...state.parameterDetails,
+            data: {
+              [data?.name]: filteredParameterContextList,
+            },
+          },
+        });
+        setNewlyAddedParameterContext([...updatedData, data]);
+      } else {
+        setNewlyAddedParameterContext([...updatedData]);
+      }
     } else {
       setNewlyAddedParameterContext([...newlyAddedPrameterContext, data]);
     }
     setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
     setIsParameterContextOpen(true);
+    reset(DEFAULT_VALUES);
   };
 
   const check = useWatch({
@@ -255,10 +253,6 @@ const AddParameterContext = ({
                   label="Sensitive value"
                   options={OPTIONS}
                   disabled={isAddParameterContextOpen?.mode === 'edit'}
-                  defaultValue={
-                    String(parameterContextItem?.sensitive) ??
-                    DEFAULT_VALUES?.sensitive
-                  }
                   register={register}
                 />
               </RedioButtonDiv>

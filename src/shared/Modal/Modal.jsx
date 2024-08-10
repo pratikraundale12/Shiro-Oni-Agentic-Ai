@@ -1,11 +1,11 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactModal from 'react-modal';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
+import { CrossIcons } from '../../assets';
 import { theme } from '../../styles';
 import { Button, SvgButton } from '../Button';
-import { CrossIcons } from '../../assets';
 
 const Title = styled.h5`
   color: ${props => props.theme.colors.darker};
@@ -60,6 +60,7 @@ export const Modal = ({
   isLoading = false,
   secondaryButtonText = '',
   primaryButtonText = '',
+  primaryButtonDisabled = false,
   onSubmit = () => null,
   onSecondarySubmit,
   secondaryButtonProps = {},
@@ -118,7 +119,11 @@ export const Modal = ({
             {secondaryButtonText}
           </Button>
         )}
-        <Button isLoading={isLoading} onClick={onSubmit}>
+        <Button
+          loading={isLoading}
+          onClick={onSubmit}
+          disabled={primaryButtonDisabled}
+        >
           {primaryButtonText}
         </Button>
       </Footer>
@@ -134,6 +139,7 @@ Modal.propTypes = {
   size: PropTypes.oneOf(['lg', 'md', 'sm']),
   onSubmit: PropTypes.func,
   secondaryButtonText: PropTypes.string,
+  primaryButtonDisabled: PropTypes.bool,
   primaryButtonText: PropTypes.string,
   isLoading: PropTypes.bool,
   onSecondarySubmit: PropTypes.func,

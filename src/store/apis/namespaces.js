@@ -101,16 +101,37 @@ export const updateParameterContextService = async (
 ) => {
   const updateData = {
     revision: revision,
-    parameters: [
-      {
-        parameter: data,
-      },
-    ],
+    parameters:
+      data &&
+      data?.map(item => ({
+        parameter: {
+          ...item,
+        },
+      })),
   };
 
-  const response = await API.put(
+  const response = await API.post(
     `parameter-context/${clusterId}/contextId/${parameterContextId}`,
     updateData
   );
+  return response;
+};
+
+export const deleteParameterContextService = async (
+  clusterId,
+  parameterContextId,
+  requestId,
+  method = 'delete'
+) => {
+  let response;
+  if (method === 'get') {
+    response = await API.get(
+      `parameter-context/${clusterId}/contextId/${parameterContextId}/requestId/${requestId}`
+    );
+  } else {
+    response = await API.delete(
+      `parameter-context/${clusterId}/contextId/${parameterContextId}/requestId/${requestId}`
+    );
+  }
   return response;
 };
