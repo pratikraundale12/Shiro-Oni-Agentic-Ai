@@ -130,16 +130,19 @@ export const addVariableServices = async (
   clusterId,
   namespaceId,
   version,
-  variableName,
-  variableValue
+  variables
 ) => {
   try {
     const response = await API.post(
       `clusters/${clusterId}/namespaces/${namespaceId}/variables`,
       {
         version,
-        variableName,
-        variableValue,
+        variables: variables.map(variable => ({
+          variable: {
+            name: variable.name,
+            value: variable.value,
+          },
+        })),
       }
     );
     return response;

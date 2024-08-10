@@ -69,22 +69,24 @@ const Listvariables = ({
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const variableName = 'sumit';
-    const variableValue = 'sumit123';
-    try {
-      const response = await addVariableServices(
-        state?.selectedDestinationClusterId,
-        state?.updatedCount?.id,
-        state?.variablesDetail?.version,
-        variableName,
-        variableValue
-      );
+    const variables = [
+      {
+        name: 'vd',
+        value: 'md',
+      },
+    ];
 
-      if (response) {
-        console.log(response);
-      }
-    } catch (error) {
-      console.error('Failed to submit variables:', error);
+    const response = await addVariableServices(
+      state?.selectedDestinationClusterId,
+      state?.updatedCount?.id,
+      state?.variablesDetail?.version,
+      variables
+    );
+
+    if (response) {
+      console.log('Variables successfully submitted:', response);
+    } else {
+      console.log(response.error);
     }
   };
 
