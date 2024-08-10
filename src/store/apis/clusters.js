@@ -3,8 +3,8 @@
 import { API_URL } from '../../utils';
 import API from './api';
 
-export const getClustersList = async params => {
-  const { data } = await API.post('/list-clusters', { params });
+export const getClustersList = async ({ clusterData }) => {
+  const { data } = await API.post('/list-clusters', clusterData);
   return data;
 };
 
