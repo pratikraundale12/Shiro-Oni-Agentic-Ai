@@ -133,19 +133,16 @@ export const Grid = ({
 
         th {
           height: 48px;
+          background-color: ${theme.colors.lightGrey} !important;
+          color:  ${theme.colors.darker} !important;
         }
 
         td {
           height: 60px;
         }
-      `,
-      HeaderRow: `
-        background-color: #F5F7FA;
-        color: #444445;
-      `,
-      Row: `
-        &:nth-of-type(even) {
-          background-color: #F5F7FA;
+
+        tbody tr:nth-of-type(even) td {
+          background-color: ${theme.colors.lightGrey} !important;          
         }
       `,
     },
@@ -175,13 +172,13 @@ export const Grid = ({
     fetchGridData({
       setState,
       module,
-      search: search,
+      search,
+      page,
       ...(nodeClusterId && { nodeClusterId }),
       ...(selectedSourceClusterId && { selectedSourceClusterId }),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, module, search]);
-
+  }, [setState, module, search, page]);
   return (
     <Container>
       <GridActions
@@ -240,7 +237,7 @@ export const Grid = ({
         />
         {getLoader()}
       </TableContainer>
-      {DATA.nodes.length > 10 && (
+      {count >= 10 && (
         <Pagination
           page={page}
           setState={setState}

@@ -10,13 +10,13 @@ import {
 } from '../../../store';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
-import { FileIcon } from '../../../assets';
+// import { FileIcon } from '../../../assets';
 
 const ClusterDetailsContainer = styled.div`
   background-color: #f5f7fa;
   border-radius: 16px;
   padding: 14px 16px;
-  min-height: 290px;
+  min-height: 120px;
   width: 100%;
   margin-bottom: 18px;
 `;
@@ -57,53 +57,54 @@ const ClusterName = styled.div`
   white-space: nowrap;
 `;
 
-const Password = styled.div`
-  text-decoration: none;
-  margin-bottom: 0;
-`;
+// const Password = styled.div`
+//   text-decoration: none;
+//   margin-bottom: 0;
+// `;
 
-const FileBox = styled.div`
-  margin-left: 5px;
-`;
+// const FileBox = styled.div`
+//   margin-left: 5px;
+// `;
 
-const FileDetails = styled.div`
-  align-items: center !important;
-  justify-content: space-between !important;
-  display: flex;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 14px;
-  letter-spacing: -0.01em;
-  color: #4b5564;
-`;
+// const FileDetails = styled.div`
+//   align-items: center !important;
+//   justify-content: space-between !important;
+//   display: flex;
+//   font-size: 14px;
+//   font-weight: 700;
+//   line-height: 14px;
+//   letter-spacing: -0.01em;
+//   color: #4b5564;
+// `;
 
-const FileSize = styled.div`
-  text-align: end;
-`;
+// const FileSize = styled.div`
+//   text-align: end;
+// `;
 
-const Files = styled.div`
-  display: flex;
-`;
+// const Files = styled.div`
+//   display: flex;
+// `;
 
-const FileIconStyle = styled.div`
-  margin-left: -9px;
-  margin-top: -14px;
-`;
+// const FileIconStyle = styled.div`
+//   margin-left: -9px;
+//   margin-top: -14px;
+// `;
 
 const ModalBody = styled.div`
   // padding: 18px 0 0;
   position: relative;
+  padding-bottom: 2px;
 `;
 
-const FileName = styled.div`
-  white-space: nowrap;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 14.52px;
-  letter-spacing: -0.005em;
-  color: #7a7a7a;
-  margin-top: 0.5rem;
-`;
+// const FileName = styled.div`
+//   white-space: nowrap;
+//   font-size: 12px;
+//   font-weight: 400;
+//   line-height: 14.52px;
+//   letter-spacing: -0.005em;
+//   color: #7a7a7a;
+//   margin-top: 0.5rem;
+// `;
 
 const DetailsTitle = styled.div`
   font-family: ${props => props.theme.fontNato};
@@ -123,146 +124,100 @@ const RowTwo = styled.div`
   margin-left: 1.5rem;
   margin-bottom: 1rem;
 `;
-
+const TextEllipses = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  width: 100%;
+  align-items: center;
+`;
 export const SummaryModal = ({
   clusterData,
   registryData,
   openSummary,
   setOpenSummary,
-  isEdit = false,
   clusterId,
   registry_id,
+  edit,
 }) => {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [loadingPost, setLoadingPost] = useState(false);
   const addRegistry = async () => {
-    const payload = new FormData();
-    if (registryData?.registry_url)
-      payload.append('registry_url', registryData.registry_url);
+    const data = {
+      name: registryData?.registryName,
+      registry_url: registryData?.registryUrl,
+    };
 
-    if (registryData?.name) payload.append('name', registryData.name);
-
-    if (registryData?.username)
-      payload.append('username', registryData.username);
-
-    if (registryData?.password)
-      payload.append('password', registryData.password);
-
-    if (registryData?.file) payload.append('file', registryData.file);
-
-    if (registryData?.passphrase)
-      payload.append('passphrase', registryData.passphrase);
-
-    const response = await createRegistry(payload);
+    const response = await createRegistry(data);
+    console.log('REGISTRY ID RESPONSE', response);
     if (response?.status === 201) {
-      addCluster({ registry_id: response?.data.id });
+      addCluster({ registry_id: response.data.id });
+      setLoading(false);
     } else {
-      setLoadingPost(false);
+      setLoading(false);
       toast.error(response.message);
     }
   };
 
   const addCluster = async ({ registry_id }) => {
-    const payload = new FormData();
-
-    if (clusterData?.name) payload.append('name', clusterData.name);
-    if (clusterData?.nifi_url) payload.append('nifi_url', clusterData.nifi_url);
-    if (clusterData?.username) payload.append('username', clusterData.username);
-    if (clusterData?.password) payload.append('password', clusterData.password);
-
-    if (clusterData?.file) payload.append('file', clusterData?.file);
-    if (clusterData?.passphrase)
-      payload.append('passphrase', clusterData.passphrase);
-    if (registry_id) payload.append('registry_id', registry_id);
-
-    const response = await createCluster(payload);
+    const data = {
+      name: clusterData.clusterName,
+      nifi_url: clusterData.nifiUrl,
+      registry_id: registry_id,
+    };
+    const response = await createCluster(data);
     if (response?.status === 201) {
+      setLoading(false);
+
       navigate('/cluster');
-      setLoadingPost(false);
       toast.success(response.message);
     } else {
-      setLoadingPost(false);
+      setLoading(false);
       toast.error(response.message);
     }
   };
 
   const editRegistryData = async () => {
-    const payload = new FormData();
-    if (registryData?.name) payload.append('name', registryData.name);
-    if (registryData?.registry_url)
-      payload.append('registry_url', registryData.registry_url);
-    if (registryData?.username)
-      payload.append('username', registryData.username);
-
-    if (registryData?.passphrase)
-      payload.append('passphrase', registryData.passphrase);
-
-    if (registryData?.password)
-      payload.append('password', registryData.password);
-
-    registryData?.file?.name && payload.append('file', registryData.file);
-
+    const payload = {
+      name: registryData.registryName,
+      registry_url: registryData.registryUrl,
+    };
     const id = registry_id;
     const response = await updateRegistry(id, payload);
     if (response?.id) {
-      setLoadingPost(false);
+      setLoading(false);
       toast.success(response.message);
       navigate('/cluster');
     } else {
-      setLoadingPost(false);
+      setLoading(false);
       toast.error(response.message);
     }
   };
 
   const editClusterData = async () => {
-    const payload = new FormData();
-    if (clusterData?.name) payload.append('name', clusterData.name);
-
-    if (clusterData?.username != '') {
-      payload.append('username', clusterData.username);
-    } else {
-      payload.append('username', null);
-    }
-
-    if (clusterData?.file != '') {
-      payload.append('file', clusterData?.file);
-    } else {
-      payload.append('file', null);
-    }
-
-    if (clusterData?.passphrase != '') {
-      payload.append('passphrase', clusterData.passphrase);
-    } else {
-      payload.append('passphrase', null);
-    }
-
-    if (clusterData?.password != '') {
-      payload.append('password', clusterData.password);
-    } else {
-      payload.append('password', null);
-    }
-
-    // clusterData?.file?.name && payload.append('file', clusterData.file);
+    const payload = {
+      name: clusterData.clusterName,
+      nifi_url: clusterData.nifiUrl,
+    };
 
     const id = clusterId;
     const response = await updateCluster(id, payload);
     if (response?.id) {
       editRegistryData();
     } else {
-      setLoadingPost(false);
+      setLoading(false);
       toast.error(response.message);
     }
   };
 
   const handleSubmit = () => {
-    if (isEdit) {
-      setLoadingPost(true);
+    setLoading(true);
+    if (edit) {
       editClusterData();
-    } else if (registryData.id) {
-      setLoadingPost(true);
-      addCluster({ registry_id: registryData.id });
+    } else if (registry_id) {
+      addCluster({ registry_id: registry_id });
     } else {
-      setLoadingPost(true);
       addRegistry();
     }
   };
@@ -273,11 +228,11 @@ export const SummaryModal = ({
         title="Cluster Summary"
         isOpen={openSummary}
         onRequestClose={() => setOpenSummary(false)}
-        size="lg"
+        size="sm"
         secondaryButtonText="Cancel"
-        primaryButtonText="Continue"
+        primaryButtonText="Save"
+        loading={loading}
         onSubmit={handleSubmit}
-        isLoading={loadingPost}
       >
         <ModalBody>
           <ClusterDetailsContainer>
@@ -285,54 +240,13 @@ export const SummaryModal = ({
             <Row>
               <Col>
                 <RowTwo>
-                  <Info width="60%">
+                  <Info width="50%">
                     <Title>Cluster Name</Title>
-                    <ClusterName>{clusterData.name}</ClusterName>
+                    <ClusterName>{clusterData.clusterName}</ClusterName>
                   </Info>
-                  <Info width="40%">
+                  <Info width="50%">
                     <Title>Cluster URL</Title>
-                    <ClusterName href="#">{clusterData.nifi_url}</ClusterName>
-                  </Info>
-                </RowTwo>
-                <RowTwo>
-                  <Info width="60%">
-                    <Title>Username</Title>
-                    <ClusterName>{clusterData?.username || 'N/A'}</ClusterName>
-                  </Info>
-                  <Info width="40%">
-                    <Title>Password</Title>
-                    <Password>
-                      {clusterData?.password ? '***********' : 'N/A'}
-                    </Password>
-                  </Info>
-                </RowTwo>
-                <RowTwo>
-                  <Info width="60%">
-                    <Title>PFX Passphrase</Title>
-                    <ClusterName>
-                      {' '}
-                      {clusterData?.passphrase ? '**********' : 'N/A'}
-                    </ClusterName>
-                  </Info>
-                  <Info width="40%">
-                    <Title>Nifi Certificate</Title>
-                    <Files>
-                      <FileIconStyle>
-                        <FileIcon width={30} height={60} />
-                      </FileIconStyle>
-                      <FileBox>
-                        <FileDetails>
-                          <span>PFX file</span>
-                          {clusterData?.file && <FileSize>3.7KB</FileSize>}
-                        </FileDetails>
-
-                        <FileName>
-                          {clusterData?.file
-                            ? `${clusterData?.file?.name || clusterData?.file}`
-                            : 'N/A'}
-                        </FileName>
-                      </FileBox>
-                    </Files>
+                    <TextEllipses>{clusterData.nifiUrl}</TextEllipses>
                   </Info>
                 </RowTwo>
               </Col>
@@ -344,56 +258,17 @@ export const SummaryModal = ({
             <Row>
               <Col>
                 <RowTwo>
-                  <Info width="60%">
+                  <Info width="50%">
                     <Title>Registry Name</Title>
-                    <ClusterName>{registryData.name}</ClusterName>
-                  </Info>
-                  <Info width="40%">
-                    <Title>Registry URL</Title>
-                    <ClusterName href="#">
-                      {registryData.registry_url}
-                    </ClusterName>
-                  </Info>
-                </RowTwo>
-                <RowTwo>
-                  <Info width="60%">
-                    <Title>Username</Title>
-                    <ClusterName>{registryData?.username || 'N/A'}</ClusterName>
-                  </Info>
-                  <Info width="40%">
-                    <Title>Password</Title>
-                    <Password>
-                      {registryData?.password ? '***********' : 'N/A'}
-                    </Password>
-                  </Info>
-                </RowTwo>
-                <RowTwo>
-                  <Info width="60%">
-                    <Title>PFX Passphrase</Title>
                     <ClusterName>
-                      {' '}
-                      {registryData?.passphrase ? '**********' : 'N/A'}
+                      {registryData?.registryName || registryData?.name}
                     </ClusterName>
                   </Info>
-                  <Info width="40%">
-                    <Title>Nifi Certificate</Title>
-                    <Files>
-                      <FileIconStyle>
-                        <FileIcon width={30} height={60} />
-                      </FileIconStyle>
-                      <FileBox>
-                        <FileDetails>
-                          <span>PFX file</span>
-                          {registryData?.file && <FileSize>3.7KB</FileSize>}
-                        </FileDetails>
-
-                        <FileName>
-                          {registryData?.file
-                            ? `${registryData?.file?.name || registryData?.file}`
-                            : 'N/A'}
-                        </FileName>
-                      </FileBox>
-                    </Files>
+                  <Info width="50%">
+                    <Title>Registry URL</Title>
+                    <TextEllipses>
+                      {registryData?.registryUrl || registryData?.registry_url}
+                    </TextEllipses>
                   </Info>
                 </RowTwo>
               </Col>
@@ -422,4 +297,5 @@ SummaryModal.propTypes = {
   isEdit: PropTypes.bool,
   clusterId: PropTypes.string,
   registry_id: PropTypes.string,
+  edit: PropTypes.bool,
 };

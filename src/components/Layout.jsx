@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import { ChatBoxIcon, KsolvesDataFlowIcon } from '../assets';
-import { VERSION } from '../utils';
+import { KsolvesDataFlowIcon } from '../assets';
 import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
@@ -69,12 +68,6 @@ const Content = styled.div`
   margin-top: 20px;
 `;
 
-const ChatBoxContainer = styled.div`
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-`;
-
 const RedirectionSection = styled.div`
   font-family: Red Hat Display;
   font-size: 16px;
@@ -104,13 +97,7 @@ const RightSectionTextContainer = styled.div`
   transform: translate(-50%, 0);
   width: 100%;
 `;
-const VersionRightText = styled.p`
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 21.17px;
-  text-align: center;
-  color: #757575;
-`;
+
 const HeadingRightText = styled.p`
   font-family: Red Hat Display;
   font-size: 36px;
@@ -130,30 +117,24 @@ export const Layout = ({ children, userLogin = false }) => {
           <KsolvesDataFlowIcon />
           <Content>{children}</Content>
           <RedirectionSection>
-            Login via{' '}
+            Login via
             <RedirectionText
               onClick={() => navigate(userLogin ? '/admin/login' : '/login')}
             >
               {userLogin ? 'Admin' : 'User'}
             </RedirectionText>
           </RedirectionSection>
-          {/* */}
         </LeftSection>
         <RightSection className="col-xl-7 col-lg-7 d-none d-lg-inline">
           <RightSectionTextContainer>
-            {' '}
             <HeadingRightText>
               Check out the Best Data <br /> Flow Management Tool!
             </HeadingRightText>
             <br />
-            <VersionRightText>{VERSION}</VersionRightText>{' '}
-          </RightSectionTextContainer>{' '}
-          {<Image />}
+          </RightSectionTextContainer>
+          <Image />
         </RightSection>
       </div>
-      <ChatBoxContainer>
-        <ChatBoxIcon />
-      </ChatBoxContainer>
     </Container>
   );
 };

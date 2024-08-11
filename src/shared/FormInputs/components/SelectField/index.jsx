@@ -70,6 +70,7 @@ const SelectField = ({
   disabled = false,
   required = false,
   className = '',
+  placeholder = 'Select...',
   backgroundColor,
   title = '',
   ...props
@@ -179,6 +180,7 @@ const SelectField = ({
               ref={ref}
               value={options.find(option => option.value === value)}
               onChange={option => onChange(option?.value)}
+              placeholder={placeholder}
               theme={theme.reactSelecttheme}
               isDisabled={disabled}
               styles={customStyles}

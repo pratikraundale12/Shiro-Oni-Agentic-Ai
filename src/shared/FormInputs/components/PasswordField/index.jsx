@@ -74,6 +74,7 @@ const PasswordInputField = ({
   watch,
   helperText = '',
   showStrengthMeter = false,
+  icon = <BagIcon />,
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -97,7 +98,7 @@ const PasswordInputField = ({
         name={name}
         type={show ? 'text' : 'password'}
         {...props}
-        icon={<BagIcon />}
+        icon={icon}
         placeholder="Enter Your Password"
         rightIcon={<TogglePassword show={show} onToggle={togglePassword} />}
         registerOptions={{
@@ -126,6 +127,7 @@ PasswordInputField.propTypes = {
   errors: PropTypes.shape({}),
   helperText: PropTypes.string,
   showStrengthMeter: PropTypes.boolean,
+  icon: PropTypes.func,
 };
 
 export default PasswordInputField;

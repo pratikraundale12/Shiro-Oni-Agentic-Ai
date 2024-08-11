@@ -11,11 +11,11 @@ import {
   Dashboard,
   ListUsers,
   ListClusters,
-  AddCluster,
   ListNamespaces,
   ReadyFlowGallary,
   GenrateFlow,
   PermissionMatrix,
+  Add,
   UserLogin,
 } from '../pages';
 import {
@@ -55,7 +55,7 @@ export const ROUTES_MENU = [
       },
       {
         path: ['add', 'edit'],
-        component: <AddCluster />,
+        component: <Add />,
       },
       {
         path: ['summary'],
@@ -102,8 +102,8 @@ export const ROUTES_MENU = [
     ],
   },
   {
-    name: 'Genrate Flow',
-    path: 'genrate-flow',
+    name: 'Generate Flow',
+    path: 'generate-flow',
     icon: GenrateFlowIcon,
     pages: [
       {

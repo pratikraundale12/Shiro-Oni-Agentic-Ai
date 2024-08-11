@@ -57,7 +57,7 @@ export const Modal = ({
   children,
   isOpen,
   onRequestClose,
-  isLoading = false,
+  loading = false,
   secondaryButtonText = '',
   primaryButtonText = '',
   onSubmit = () => null,
@@ -118,7 +118,7 @@ export const Modal = ({
             {secondaryButtonText}
           </Button>
         )}
-        <Button isLoading={isLoading} onClick={onSubmit}>
+        <Button loading={loading && 'Continue...'} onClick={onSubmit}>
           {primaryButtonText}
         </Button>
       </Footer>
@@ -135,7 +135,7 @@ Modal.propTypes = {
   onSubmit: PropTypes.func,
   secondaryButtonText: PropTypes.string,
   primaryButtonText: PropTypes.string,
-  isLoading: PropTypes.bool,
+  loading: PropTypes.bool,
   onSecondarySubmit: PropTypes.func,
   secondaryButtonProps: PropTypes.object,
   contentStyles: PropTypes.object,

@@ -38,10 +38,18 @@ const Pagination = ({ page, setState, count, prev, next }) => {
           onClick={() => setState(prevState => ({ ...prevState, page: prev }))}
           icon={<GreaterArrowIcon color={theme.colors.white} />}
         />
-        <StyledButton size="sm" variant="secondary">
+        <StyledButton
+          size="sm"
+          variant="secondary"
+          onClick={() => setState(prevState => ({ ...prevState, page: 1 }))}
+        >
           1
         </StyledButton>
-        <StyledButton size="sm" variant="secondary">
+        <StyledButton
+          size="sm"
+          variant="secondary"
+          onClick={() => setState(prevState => ({ ...prevState, page: 2 }))}
+        >
           2
         </StyledButton>
         <StyledButton size="sm" variant="secondary">
