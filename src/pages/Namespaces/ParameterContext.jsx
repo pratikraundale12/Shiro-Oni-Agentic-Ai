@@ -120,12 +120,14 @@ const ParameterContext = ({
                 state?.updatedCount?.parameterContextId,
               response2?.data?.requestId
             );
-
-            if (responseAfterCompletion?.status === 204) {
-              getParamerterContext();
+            console.log(responseAfterCompletion, 'responseAfterCompletion');
+            if (responseAfterCompletion?.status !== 204) {
+              toast.error('Error: The operation did not complete.');
             }
           } else {
-            toast.error('The operation did not complete within 15 seconds.');
+            toast.error(
+              'Error: The operation did not complete within 15 seconds.'
+            );
           }
         }
       }
@@ -134,6 +136,7 @@ const ParameterContext = ({
     } finally {
       setLoading(false);
       setNewlyAddedParameterContext([]);
+      getParamerterContext();
     }
   };
 
