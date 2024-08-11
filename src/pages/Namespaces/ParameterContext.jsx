@@ -39,11 +39,11 @@ const ParameterContext = ({
       renderCell: item => (
         <TextRender
           text={
-            item.sensitive === 'true' && item?.sensitive
+            item.sensitive === true || item.sensitive === 'true'
               ? 'Sensitive value set'
               : item.value
                 ? item.value
-                : item?.check
+                : item.check
                   ? 'Empty string set'
                   : 'No value set'
           }
@@ -54,12 +54,12 @@ const ParameterContext = ({
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <IconButton
+            disabled={loading}
             onClick={() => {
               setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
               setIsParameterContextOpen(false);
               setParameterContextItem(item);
             }}
-            style={{ cursor: 'pointer' }}
           >
             <PencilIcon color="black" />
           </IconButton>
@@ -123,8 +123,6 @@ const ParameterContext = ({
 
             if (responseAfterCompletion?.status === 204) {
               getParamerterContext();
-            } else {
-              toast.error('The operation did not complete within 15 seconds.');
             }
           } else {
             toast.error('The operation did not complete within 15 seconds.');
@@ -151,7 +149,7 @@ const ParameterContext = ({
       primaryButtonDisabled={!newlyAddedPrameterContext?.length || loading}
       primaryButtonText="Save"
       onSubmit={handleSaveParameterContext}
-      secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
+      secondaryButtonProps={{ icons: <PlusCircleIcon />, disabled: loading }}
     >
       <ModalBody className="modal-body">
         <Table data={dummyData} columns={COLUMNS} />
