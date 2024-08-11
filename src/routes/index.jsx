@@ -102,8 +102,8 @@ export const ROUTES_MENU = [
     ],
   },
   {
-    name: 'Genrate Flow',
-    path: 'genrate-flow',
+    name: 'Generate Flow',
+    path: 'generate-flow',
     icon: GenrateFlowIcon,
     pages: [
       {

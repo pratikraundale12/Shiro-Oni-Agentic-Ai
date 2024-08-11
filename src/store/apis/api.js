@@ -10,6 +10,9 @@ API.interceptors.request.use(config => {
   const options = config;
   const token = localStorage.getItem(ACCESS_TOKEN);
   if (token) options.headers.Authorization = `Bearer ${token}`;
+  if (options.data instanceof FormData) {
+    delete options.headers['Content-Type'];
+  }
   return options;
 });
 
