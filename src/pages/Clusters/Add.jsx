@@ -54,13 +54,14 @@ const NavButton = styled.button`
   font-weight: 600;
   font-family: ${props => props.theme.fontNato};
   color: ${props =>
-    props.active ? props.theme.colors.error : props.theme.colors.darkGrey2};
+    props.active ? props.theme.colors.primary : props.theme.colors.darkGrey2};
   cursor: auto;
   transition:
     color 0.3s,
     border-bottom 0.3s;
   ${props =>
-    props.active && `border-bottom: 1px solid ${props.theme.colors.error};`}
+    props.active &&
+    `border-bottom: 1px solid ${props.theme.colors.primaryActive};`}
 `;
 
 const Flex = styled.div`
@@ -199,6 +200,7 @@ const RegistryDetailsDivTwo = styled.div`
 const BottomButtonDiv = styled.div`
   display: flex;
   align-items: center;
+  gap: 20px;
   margin-top: 20px;
 `;
 
@@ -363,7 +365,6 @@ export const Add = () => {
         registryName !== registryData?.registryName ||
         registryUrl !== registryData?.registryUrl
       ) {
-        console.log(registryName, registryUrl, 'dataaaare');
         setRegistryData({
           registryName: registryName || '',
           registryUrl: registryUrl || '',
@@ -405,7 +406,6 @@ export const Add = () => {
       setClusterId(data?.id);
     }
   }, [reset, activeTab, newRegistry]);
-  console.log(dataFill, 'DATAFIELD');
 
   const fetchRegistry = async () => {
     try {
@@ -425,8 +425,6 @@ export const Add = () => {
   }, [activeTab]);
 
   useEffect(() => {
-    console.log('Updated registries:', registries);
-    console.log('Selected registry:', selectedRegistryId);
     if (selectedRegistryId) {
       fetchRegistryDetails(selectedRegistryId);
     }
@@ -443,8 +441,6 @@ export const Add = () => {
   };
 
   const handleRegistry = () => {
-    console.log(clusterData, 'cl');
-    console.log(registryData, 'rd');
     setIsCertificateOpen(false);
     setIsCredOpen(false);
     setTestSuccess(false);
@@ -460,7 +456,6 @@ export const Add = () => {
       payload.append('nifi_url', clusterData.nifiUrl);
 
       const response = await testCluster(payload);
-      console.log('Response:', response);
       if (response.status === 204) {
         setTestSuccess(true);
         setSuccessModal(true);
