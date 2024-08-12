@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { Modal } from '../../../shared';
 import {
@@ -8,8 +10,6 @@ import {
   updateCluster,
   updateRegistry,
 } from '../../../store';
-import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
 // import { FileIcon } from '../../../assets';
 
 const ClusterDetailsContainer = styled.div`
@@ -26,7 +26,6 @@ const Row = styled.div`
   flex-wrap: wrap;
   margin-top: 10px;
   margin-right: 1.5rem;
-  margin-left: 1.5rem;
 `;
 
 const Col = styled.div`
@@ -121,7 +120,6 @@ const RowTwo = styled.div`
   flex-wrap: wrap;
   margin-top: 10px;
   margin-right: 1.5rem;
-  margin-left: 1.5rem;
   margin-bottom: 1rem;
 `;
 const TextEllipses = styled.div`

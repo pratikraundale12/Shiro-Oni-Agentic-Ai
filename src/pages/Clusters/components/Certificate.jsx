@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
-import { Modal } from '../../../shared';
-import styled from 'styled-components';
-import { UploadFile } from '../UploadFile';
-import { PasswordField } from '../../../shared';
-import { KeyIcons } from '../../../assets';
-import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import styled from 'styled-components';
+import * as yup from 'yup';
+import { KeyIcons } from '../../../assets';
+import { Modal, PasswordField } from '../../../shared';
 import { testCluster, testRegistry } from '../../../store/apis/clusters';
-import { SuccessTestModal } from './SuccessTestModal';
+import { UploadFile } from '../UploadFile';
 import { FailedTestModal } from './FailedTestModal';
+import { SuccessTestModal } from './SuccessTestModal';
 // Define your validation schema
 const schema = yup.object().shape({
   pfxFile: yup.mixed().required('PFX file is required'),
@@ -143,7 +142,7 @@ export const Certificate = ({
           <PasswordField
             name="password"
             watch={watch}
-            label="Password"
+            label="Passphrase"
             register={register}
             placeholder="Enter your Passphrase"
             icon={<KeyIcons />}

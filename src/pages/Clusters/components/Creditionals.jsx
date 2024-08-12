@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { SmallPerfileIcon } from '../../../assets';
-import { Modal } from '../../../shared';
-import { PasswordField } from '../../../shared';
-import { InputField } from '../../../shared';
-import { SuccessTestModal } from './SuccessTestModal';
-import { FailedTestModal } from './FailedTestModal';
+import { InputField, Modal, PasswordField } from '../../../shared';
 import { testCluster, testRegistry } from '../../../store';
+import { FailedTestModal } from './FailedTestModal';
+import { SuccessTestModal } from './SuccessTestModal';
 
 export const Creditionals = ({
   isCredOpen,
@@ -94,13 +92,13 @@ export const Creditionals = ({
   return (
     <>
       <Modal
-        title="Add Creditionals"
+        title="Add Credentials"
         isOpen={isCredOpen}
         onRequestClose={() => setIsCredOpen(false)}
         size="sm"
         loading={loading}
         secondaryButtonText="Back"
-        primaryButtonText="Test Creditionals"
+        primaryButtonText="Test Credentials"
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}

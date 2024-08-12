@@ -12,7 +12,7 @@ const size = {
   },
   md: {
     height: '48px',
-    padding: '0 32px',
+    padding: '0 24px',
     margin: '10px',
   },
 };
@@ -44,7 +44,7 @@ const StyledButton = styled.button.withConfig({
   transition:
     background 0.3s ease-in-out,
     color 0.3s ease-in-out;
-    
+
   &:hover {
     color: ${props => props.theme.colors.white};
     background: ${props =>
@@ -61,13 +61,16 @@ const StyledButton = styled.button.withConfig({
   }
 
   svg {
-    margin-${props => (props.iconPosition === 'left' ? 'right' : 'left')}: ${props => size[props.size].margin};
+    margin-right: ${props =>
+      props.iconPosition === 'left' ? size[props.size].margin : '0'};
+    margin-left: ${props =>
+      props.iconPosition === 'right' ? size[props.size].margin : '0'};
   }
 
   span {
     width: max-content;
     font-weight: 600;
-    font-size: ${props => props.theme.size.md};
+    font-size: ${props => props.theme.size[props.size]};
     font-family: ${props => props.theme.fontNato};
   }
 `;
@@ -98,7 +101,7 @@ const Button = ({
         disabled
         {...buttonProps}
       >
-        <LoadingText>{loading || 'Loading...'}</LoadingText>
+        <LoadingText>{loading && 'Loading...'}</LoadingText>
         <StyledLoader size="sm" color="white" />
       </StyledButton>
     );

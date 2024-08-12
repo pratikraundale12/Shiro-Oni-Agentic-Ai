@@ -1,28 +1,32 @@
 import React, { useEffect, useState } from 'react';
 // import { isEmpty } from 'lodash';
 // import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { NoDataIcon, PlusCircleIcon, WhiteBoradIcon } from '../../assets';
-import { Title } from './components/Title';
-import { Button, InputField, SelectField } from '../../shared';
 import { useForm } from 'react-hook-form';
-import { LinkIcon, QRIcons } from '../../assets';
-import { useNavigate } from 'react-router-dom';
-import { Certificate } from './components/Certificate';
-import { Creditionals } from './components/Creditionals';
-import { useLocation } from 'react-router-dom';
-import { RegexConst } from '../../utils';
-import { SummaryModal } from './components/SummaryModal';
+import { useLocation, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import * as yup from 'yup';
 import {
-  getRegistryList,
+  LinkIcon,
+  NoDataIcon,
+  PlusCircleIcon,
+  QRIcons,
+  WhiteBoradIcon,
+} from '../../assets';
+import { Button, InputField, SelectField } from '../../shared';
+import {
   getOneRegistry,
+  getRegistryList,
   testCluster,
   testRegistry,
 } from '../../store';
-import { SuccessTestModal } from './components/SuccessTestModal';
+import { RegexConst } from '../../utils';
+import { Certificate } from './components/Certificate';
+import { Creditionals } from './components/Creditionals';
 import { FailedTestModal } from './components/FailedTestModal';
+import { SuccessTestModal } from './components/SuccessTestModal';
+import { SummaryModal } from './components/SummaryModal';
+import { Title } from './components/Title';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -68,6 +72,7 @@ const FlexTwo = styled.div`
   display: flex;
   gap: 2rem;
   justify-content: space-between;
+  align-items: flex-end;
 `;
 
 const FlexWrapper = styled.div`
@@ -293,7 +298,7 @@ export const Add = () => {
   const navigate = useNavigate();
   const [registries, setRegistries] = useState([]);
   const selectedRegistryId = watch('registry');
-  console.log(data, 'ed');
+
   const handleBack = () => {
     setIsCertificateOpen(false);
     setIsCredOpen(false);
@@ -312,7 +317,6 @@ export const Add = () => {
   };
 
   const onSubmit = data => {
-    console.log(data, 'DATAAAaaaaaaaaa');
     setClusterData({
       clusterName: data.clusterName,
       nifiUrl: data.nifiUrl,
@@ -416,7 +420,6 @@ export const Add = () => {
     }
   };
 
-  console.log(registryData, 'selected');
   useEffect(() => {
     fetchRegistry();
   }, [activeTab]);
@@ -491,7 +494,10 @@ export const Add = () => {
       <Title title="Add New Cluster Details" />
       <Container>
         <NavTabs id="nav-tab" role="tablist">
-          <NavButton active={activeTab === TABS.CLUSTER}>
+          <NavButton
+            active={activeTab === TABS.CLUSTER}
+            onClick={() => setActiveTab(TABS.CLUSTER)}
+          >
             Cluster Details
           </NavButton>
           <NavButton active={activeTab === TABS.REGISTRY}>
@@ -513,7 +519,7 @@ export const Add = () => {
               name="nifiUrl"
               register={register}
               icon={<LinkIcon />}
-              label="Nifi Url"
+              label="NiFi URL"
               placeholder="Enter your Nifi Url"
               errors={errors}
             />
@@ -532,12 +538,12 @@ export const Add = () => {
                   </div>
                   <ORText>OR</ORText>
                   <div>
-                    <ButtonLabel>Test Via Creditionals</ButtonLabel>
+                    <ButtonLabel>Test Via Credentials</ButtonLabel>
                     <Button
                       onClick={() => setIsCredOpen(true)}
                       disabled={testSuccess || !dataFill}
                     >
-                      Enter Creditionals
+                      Enter Credentials
                     </Button>
                   </div>{' '}
                 </>
@@ -564,7 +570,12 @@ export const Add = () => {
             <ORText style={{ textAlign: 'center' }}>OR</ORText>
             <StyledButton
               variant="secondary"
-              icon={<PlusCircleIcon color="red" />}
+              icon={
+                <PlusCircleIcon
+                  color="#FF7A00
+                "
+                />
+              }
               onClick={() => {
                 setNewRegistry(true);
               }}
@@ -603,14 +614,14 @@ export const Add = () => {
                         </div>
                         <ORText>OR</ORText>
                         <div>
-                          <ButtonLabel>Test Via Creditionals</ButtonLabel>
+                          <ButtonLabel>Test Via Credentials</ButtonLabel>
                           <Button
                             onClick={() => {
                               setIsCredOpen(true);
                             }}
                             disabled={testSuccess}
                           >
-                            Enter Creditionals
+                            Enter Credentials
                           </Button>
                         </div>
                       </Flex>
@@ -678,12 +689,12 @@ export const Add = () => {
                   </div>
                   <ORText>OR</ORText>
                   <div>
-                    <ButtonLabel>Test Via Creditionals</ButtonLabel>
+                    <ButtonLabel>Test Via Credentials</ButtonLabel>
                     <Button
                       onClick={() => setIsCredOpen(true)}
                       disabled={testSuccess || !dataFill}
                     >
-                      Enter Creditionals
+                      Enter Credentials
                     </Button>
                   </div>
                 </>
