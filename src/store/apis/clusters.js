@@ -79,3 +79,12 @@ export const getNodeList = async ({ nodeClusterId }) => {
   );
   return data;
 };
+
+export const getClusterToken = async payload => {
+  const { data } = await API.post(
+    `${API_URL}/api/clusters/token
+`,
+    payload
+  );
+  return data;
+};

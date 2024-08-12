@@ -73,8 +73,6 @@ const TooltipSecond = styled.div`
 `;
 
 export const ActionRender = ({ handleMenuClick, item }) => {
-  console.log(item, 'ExclamationMark');
-
   return (
     <ActionTd>
       <IconButton data-tooltip-id={item.id}>
