@@ -1,37 +1,117 @@
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
 import { CheckboxField, InputField, Modal } from '../../shared';
+import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
 `;
 
+const DEFAULT_VALUES = {
+  name: '',
+  value: '',
+};
 const AddVariables = ({
-  variables,
-  setVariables,
+  newlyAddVariables,
+  setNewlyAddvariables,
   closePopup,
   isAddVariablesOpen,
   setVariablesModalOpen,
+  setIsAddVariablesOpen,
+  variableContextItem,
 }) => {
-  const { register, handleSubmit, reset, control, setValue } = useForm();
-  console.log(variables);
-  const onSubmit = data => {
-    setVariables(prev => [
-      ...prev,
-      {
-        variable: {
-          name: data.name,
-          value: data.value,
-        },
-      },
-    ]);
-    setVariablesModalOpen(true);
-    reset();
+  const { register, handleSubmit, reset, control, setValue } = useForm({
+    defaultValues: DEFAULT_VALUES,
+  });
+  const { state, setState } = useGlobalContext();
+  const variablesDetailsData = state?.variablesDetail?.variables || {};
+
+  useEffect(() => {
+    if (isAddVariablesOpen?.isOpen) {
+      if (isEmpty(variableContextItem) && isAddVariablesOpen?.mode === 'add') {
+        reset(DEFAULT_VALUES);
+        setValue('check', false);
+      } else {
+        reset({
+          name: variableContextItem?.variable?.name,
+          value: variableContextItem?.variable?.value,
+        });
+        setValue('check', variableContextItem?.variable?.value ? false : true);
+      }
+    }
+  }, [
+    reset,
+    isAddVariablesOpen,
+    isAddVariablesOpen?.isOpen,
+    isAddVariablesOpen?.mode,
+    variableContextItem,
+    setValue,
+  ]);
+
+  const handleAddEditVariables = async data => {
+    if (!data) return;
+    const nameExists = (contextList, name) =>
+      contextList.some(
+        parameter => parameter?.name?.toLowerCase() === name?.toLowerCase()
+      );
+    const parameterAlreadyExist = nameExists(newlyAddVariables, data?.name);
+    const parameterAlreadyExistInNewlyAddedContext = nameExists(
+      newlyAddVariables,
+      data?.name
+    );
+
+    const isDuplicate =
+      (parameterAlreadyExist || parameterAlreadyExistInNewlyAddedContext) &&
+      isAddVariablesOpen?.mode === 'add';
+
+    if (isDuplicate) {
+      toast.info('Parameter with same name already exists');
+      return;
+    }
+
+    if (isAddVariablesOpen?.mode === 'edit') {
+      const updatedData = newlyAddVariables.map(item =>
+        item?.name?.toLowerCase() === data?.name?.toLowerCase()
+          ? { ...item, ...data }
+          : item
+      );
+      const filteredParameterContextList = variablesDetailsData.filter(
+        item =>
+          item?.variable?.name?.toLowerCase() !== data?.name?.toLowerCase()
+      );
+      const existingVariableDetails = variablesDetailsData.find(
+        item =>
+          item?.variable?.name?.toLowerCase() === data?.name?.toLowerCase()
+      );
+
+      if (existingVariableDetails && existingVariableDetails.length !== 0) {
+        setState(prevState => ({
+          ...prevState,
+          variablesDetail: {
+            version: prevState.variablesDetail.version,
+            variables: filteredParameterContextList,
+          },
+        }));
+
+        setNewlyAddvariables([...updatedData, data]);
+      } else {
+        setNewlyAddvariables([...updatedData]);
+      }
+    } else {
+      setNewlyAddvariables([...newlyAddVariables, data]);
+    }
+
+    setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
+    setVariablesModalOpen({ isOpen: true, mode: 'add' });
+    reset(DEFAULT_VALUES);
   };
+
   const check = useWatch({
     control,
     name: 'check',
@@ -50,10 +130,10 @@ const AddVariables = ({
       size="md"
       secondaryButtonText="Back"
       primaryButtonText="Add"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleAddEditVariables)}
     >
       <ModalBody className="modal-body">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form>
           <InputField
             name="name"
             type="text"
@@ -86,9 +166,11 @@ const AddVariables = ({
 AddVariables.propTypes = {
   closePopup: PropTypes.func.isRequired,
   isAddVariablesOpen: PropTypes.object.isRequired,
-  variables: PropTypes.array,
-  setVariables: PropTypes.func,
+  newlyAddVariables: PropTypes.array,
+  setNewlyAddvariables: PropTypes.func,
   setVariablesModalOpen: PropTypes.func.isRequired,
+  setIsAddVariablesOpen: PropTypes.func,
+  variableContextItem: PropTypes.func,
 };
 
 export default AddVariables;

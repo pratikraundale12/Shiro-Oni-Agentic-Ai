@@ -151,3 +151,29 @@ export const addVariableServices = async (
     throw error;
   }
 };
+export const GetVariableServices = async (clusterId, namespaceId, clientId) => {
+  try {
+    const response = await API.get(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${clientId}`
+    );
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch variables:', error);
+    throw error;
+  }
+};
+export const DeleteVariableServices = async (
+  clusterId,
+  namespaceId,
+  clientId
+) => {
+  try {
+    const response = await API.delete(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${clientId}`
+    );
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch variables:', error);
+    throw error;
+  }
+};

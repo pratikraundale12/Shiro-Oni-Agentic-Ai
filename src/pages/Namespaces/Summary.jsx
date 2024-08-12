@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import { TodoIcon } from '../../assets/Icons/TodoIcon';
-import { Button } from '../../shared';
-import Breadcrumb from '../../shared/Breadcrumb';
-import NamespaceDeploy from './NamespaceDeploy';
-// import AddParameterContext from './AddParameterContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import styled from 'styled-components';
 import {
   SmallNotThunderIcon,
   SmallThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
-  // TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { TodoIcon } from '../../assets/Icons/TodoIcon';
 import { FullPageLoader } from '../../components';
+import { Button } from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
 import {
   deployCluster,
   fetchParameterContext,
@@ -29,6 +26,7 @@ import {
 import { useGlobalContext } from '../../utils';
 import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
+import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
 
 const MainContainer = styled.div`
@@ -282,15 +280,18 @@ const breadcrumbData = [
 const Summary = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
+
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
   const [parameterContextItem, setParameterContextItem] = useState({});
-  const [isVariablesModalOpen, setVariablesModalOpen] = useState(false);
+  const [isVariablesModalOpen, setVariablesModalOpen] = useState({
+    isOpen: false,
+    mode: 'add',
+  });
   const [progress, setProgress] = useState(0);
   const { state, setState } = useGlobalContext();
-  const [variables, setVariables] = useState(state?.variablesDetail?.variables);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -317,7 +318,7 @@ const Summary = () => {
       }));
       setLoading(false);
     } catch (error) {
-      toast.error('Error fetching parameter context:', error.message);
+      toast.error(error.message);
     }
   };
 
@@ -373,6 +374,7 @@ const Summary = () => {
         bucketName: state?.deployData.bucketName,
         registryId: state?.deployData?.registryId,
         version: state.selectedVersion,
+        position: state?.deployData?.position.x,
       });
       setLoading(true);
       setState(prevState => ({
@@ -389,13 +391,10 @@ const Summary = () => {
   const handleCloseModal = () => {
     setState(prevState => ({
       ...prevState,
-      // selectedSourceClusterId: null,
       selectedPaths: [],
       selectedClusterId: null,
       selectedVersion: null,
-      // deployCountDetails: result,
       deployNamespaceId: null,
-      // selectedClusterId: null,
       deployData: {
         flowId: null,
         bucketId: null,
@@ -443,19 +442,18 @@ const Summary = () => {
         ...prevState,
         variablesDetail: response?.data,
       }));
-      setVariablesModalOpen(true);
+      setVariablesModalOpen({ isOpen: false, mode: 'add' });
       setModalOpen(false);
     } else {
       toast.error(response.message);
     }
-    setVariablesModalOpen(true);
+    setVariablesModalOpen({ isOpen: true, mode: 'add' });
     setModalOpen(false);
   };
 
   const closeVariablesModal = () => {
-    setVariablesModalOpen(false);
+    setVariablesModalOpen({ isOpen: false, mode: 'add' });
     setModalOpen(true);
-    setVariables(state?.variablesDetail?.variables);
   };
 
   const handleBackClick = () => {
@@ -466,16 +464,37 @@ const Summary = () => {
 
   const handleUpdateStatus = async (status, buttonId) => {
     try {
-      await updateNamespaceStatus(
+      const response = await updateNamespaceStatus(
         state.selectedClusterId,
         state?.upgradeData?.id || state.deployCountDetails?.data?.id,
         status
       );
+      if (response?.data) {
+        setState(prevState => ({
+          ...prevState,
+          deployCountDetails: {
+            ...prevState.deployCountDetails,
+            data: {
+              ...prevState.deployCountDetails?.data,
+              runningCount: response?.data?.status?.runningCount,
+              stoppedCount: response?.data?.status?.stoppedCount,
+              invalidCount: response?.data?.status?.invalidCount,
+              disabledCount: response?.data?.status?.disabledCount,
+            },
+          },
+          upgradeData: {
+            ...prevState.upgradeData,
+            runningCount: response?.data?.status?.runningCount,
+            stoppedCount: response?.data?.status?.stoppedCount,
+            invalidCount: response?.data?.status?.invalidCount,
+            disabledCount: response?.data?.status?.disabledCount,
+          },
+        }));
+      }
+      console.log(response, state);
       setActiveButton(buttonId);
-      toast.success(`Namespace status updated to ${status}`);
     } catch (error) {
       console.error('Failed to update status:', error);
-      toast.error(`Failed to update namespace status to ${status}`);
     }
   };
 
@@ -575,7 +594,6 @@ const Summary = () => {
                 </UseColXl>
               </RowConfig>
             </UseColLg>
-            {/* versions */}
             {state?.upgradeData?.mode && (
               <>
                 <div className="col-12 p-3">
@@ -834,12 +852,12 @@ const Summary = () => {
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
       />
+
       <Listvariables
         isOpen={isVariablesModalOpen}
         closePopup={closeVariablesModal}
         setVariablesModalOpen={setVariablesModalOpen}
-        variables={variables}
-        setVariables={setVariables}
+        handleTertiaryButton={handleTertiaryButton}
       />
     </MainContainer>
   );

@@ -1,19 +1,19 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import {
+  CanvasXIcon,
+  CanvasYIcon,
   LinkIcon,
   QRIcons,
   TodoIcon,
   UpsideSquareIcon,
-  CanvasXIcon,
-  CanvasYIcon,
 } from '../../assets';
+import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
+import RightIcon from '../../assets/Icons/RightIcon';
+import { Table } from '../../components';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { useNavigate } from 'react-router-dom';
-import { Table } from '../../components';
-import RightIcon from '../../assets/Icons/RightIcon';
-import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
 import { useGlobalContext } from '../../utils';
 
 const Container = styled.div`
@@ -211,7 +211,6 @@ const Upgrade = () => {
       width: '10%',
     },
   ];
-
   const breadcrumbData = [
     { id: '1', name: 'Namespace List', path: '/namespaces' },
     { id: '2', name: 'Select Namespace', path: '/namespaces/deploy' },
@@ -262,8 +261,8 @@ const Upgrade = () => {
   };
 
   const isStateStale =
-    state.upgradeData?.state === 'STALE' ||
-    state.upgradeData?.state === 'UP_TO_DATE';
+    state.upgradeData?.state === 'LOCALLY_MODIFIED_AND_STALE' ||
+    state.upgradeData?.state === 'LOCALLY_MODIFIED';
 
   const handlePositionChange = (name, value) => {
     if (setState) {
@@ -434,9 +433,8 @@ const Upgrade = () => {
           </Button>
           <Button
             onClick={handleClick}
-            disabled={!state.selectedVersion && isStateStale}
+            disabled={isStateStale || state.selectedVersion === null}
           >
-            {' '}
             {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}{' '}
           </Button>
         </BottomButtonDiv>

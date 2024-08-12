@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { TextRender, Grid, IconButton } from '../../components';
-import { REFRESH_OPTIONS, useGlobalContext } from '../../utils';
+import { Grid, IconButton, TextRender } from '../../components';
 import { fetchGridData } from '../../store';
+import { REFRESH_OPTIONS, useGlobalContext } from '../../utils';
 // import AuditLog from './AuditLog';
-import { Button } from '../../shared';
-import { CopyIcon, OpenEyeIcon } from '../../assets';
 import { useNavigate } from 'react-router-dom';
+import { CopyIcon, OpenEyeIcon } from '../../assets';
+import { Button } from '../../shared';
 // import Deploy from './Deploy';
 
 export const ListNamespaces = () => {

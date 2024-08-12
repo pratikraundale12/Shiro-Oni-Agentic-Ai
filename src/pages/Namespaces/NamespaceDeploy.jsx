@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from '../../shared';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   GreenRightCircleIcon,
@@ -10,8 +9,8 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { Modal } from '../../shared';
 import { updateNamespaceStatus } from '../../store';
-import { toast } from 'react-toastify';
 import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
@@ -90,7 +89,7 @@ const CountDiv = styled.div`
   min-width: 48px;
   border: 1px solid #dde4f0;
   border-radius: 8px;
-  background-color: #f5f7fa
+  background-color: #f5f7fa;
   cursor: pointer;
   position: relative;
   display: flex;
@@ -161,20 +160,41 @@ const NamespaceDeploy = ({
   getParamerterContext,
   handleTertiaryButton,
 }) => {
-  const { state } = useGlobalContext();
+  const { state, setState } = useGlobalContext();
   const [activeButton, setActiveButton] = useState(null);
   const handleUpdateStatus = async (status, buttonId) => {
     try {
-      await updateNamespaceStatus(
+      const response = await updateNamespaceStatus(
         state.selectedClusterId,
         state?.upgradeData?.id || state.deployCountDetails?.data?.id,
         status
       );
+      if (response?.data) {
+        setState(prevState => ({
+          ...prevState,
+          deployCountDetails: {
+            ...prevState.deployCountDetails,
+            data: {
+              ...prevState?.deployCountDetails.data,
+              runningCount: response?.data?.status?.runningCount,
+              stoppedCount: response?.data?.status?.stoppedCount,
+              invalidCount: response?.data?.status?.invalidCount,
+              disabledCount: response?.data?.status?.disabledCount,
+            },
+          },
+          updatedCount: {
+            ...prevState?.updatedCount,
+            runningCount: response?.data?.status?.runningCount,
+            stoppedCount: response?.data?.status?.stoppedCount,
+            invalidCount: response?.data?.status?.invalidCount,
+            disabledCount: response?.data?.status?.disabledCount,
+          },
+        }));
+      }
+      console.log(response, state);
       setActiveButton(buttonId);
-      toast.success(`Namespace status updated to ${status}`);
     } catch (error) {
       console.error('Failed to update status:', error);
-      toast.error(`Failed to update namespace status to ${status}`);
     }
   };
   const handleClick = () => {
@@ -183,7 +203,7 @@ const NamespaceDeploy = ({
       '_blank'
     );
   };
-
+  console.log(state, 'count');
   return (
     <>
       <Modal

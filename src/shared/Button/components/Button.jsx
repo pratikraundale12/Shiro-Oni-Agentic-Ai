@@ -44,7 +44,7 @@ const StyledButton = styled.button.withConfig({
   transition:
     background 0.3s ease-in-out,
     color 0.3s ease-in-out;
-    
+
   &:hover {
     color: ${props => props.theme.colors.white};
     background: ${props =>
@@ -61,7 +61,10 @@ const StyledButton = styled.button.withConfig({
   }
 
   svg {
-    margin-${props => (props.iconPosition === 'left' ? 'right' : 'left')}: ${props => size[props.size].margin};
+    margin-right: ${props =>
+      props.iconPosition === 'left' ? size[props.size].margin : '0'};
+    margin-left: ${props =>
+      props.iconPosition === 'right' ? size[props.size].margin : '0'};
   }
 
   span {
@@ -98,7 +101,7 @@ const Button = ({
         disabled
         {...buttonProps}
       >
-        <LoadingText>{loading || 'Loading...'}</LoadingText>
+        <LoadingText>{loading && 'Loading...'}</LoadingText>
         <StyledLoader size="sm" color="white" />
       </StyledButton>
     );

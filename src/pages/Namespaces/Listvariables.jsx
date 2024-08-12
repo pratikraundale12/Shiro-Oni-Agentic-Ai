@@ -4,8 +4,13 @@ import styled from 'styled-components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
-// import { useGlobalContext } from '../../utils';
-import { addVariableServices } from '../../store';
+
+import { toast } from 'react-toastify';
+import {
+  DeleteVariableServices,
+  GetVariableServices,
+  addVariableServices,
+} from '../../store';
 import { useGlobalContext } from '../../utils';
 import AddVariables from './AddVariables';
 
@@ -15,17 +20,20 @@ const ModalBody = styled.div`
 `;
 
 const Listvariables = ({
-  variables,
-  setVariables,
   isOpen,
   closePopup,
+  handleTertiaryButton,
   setVariablesModalOpen,
 }) => {
+  const [variableContextItem, setVariableContextItem] = useState({});
+  const [newlyAddVariables, setNewlyAddvariables] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { state } = useGlobalContext();
   const [isAddVariablesOpen, setIsAddVariablesOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
+
   const COLUMNS = [
     {
       label: 'Name',
@@ -33,18 +41,30 @@ const Listvariables = ({
     },
     {
       label: 'Value',
-      renderCell: item => <TextRender text={item.variable.value} />,
+      renderCell: item => {
+        return (
+          <TextRender
+            text={
+              item?.variable?.check || item?.variable?.value === ''
+                ? 'Empty string set'
+                : item?.variable?.value
+                  ? item?.variable?.value
+                  : 'No value set'
+            }
+          />
+        );
+      },
     },
     {
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <IconButton
+            disabled={loading}
             onClick={() => {
               setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
-              setVariablesModalOpen(false);
-              handleEdit(item);
+              setVariablesModalOpen({ isOpen: false, mode: 'add' });
+              setVariableContextItem(item);
             }}
-            style={{ cursor: 'pointer' }}
           >
             <PencilIcon style={{ color: 'black' }} />
           </IconButton>
@@ -52,41 +72,75 @@ const Listvariables = ({
       ),
     },
   ];
-  const handleEdit = item => {
-    console.log('Edit item:', item);
-  };
+
+  let variablesData = [];
+  if (state?.variablesDetail?.variables) {
+    const variables = newlyAddVariables.map(item => {
+      return {
+        variable: {
+          name: item.name,
+          value: item.value,
+          check: item?.check,
+        },
+      };
+    });
+
+    variablesData = [...state.variablesDetail.variables, ...variables];
+  }
 
   const openVariable = () => {
     setIsAddVariablesOpen({ isOpen: true, mode: 'add' });
-    setVariablesModalOpen(false);
+    setVariableContextItem({});
+    setVariablesModalOpen({ isOpen: false, mode: 'add' });
   };
 
   const closeAddVariablesModal = () => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
-    setVariablesModalOpen(true);
+    setVariableContextItem({});
+    setVariablesModalOpen({ isOpen: true, mode: 'add' });
   };
-  console.log({ state });
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    const variables = [
-      {
-        name: 'vd',
-        value: 'md',
-      },
-    ];
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      const variables = newlyAddVariables.map(item => ({
+        name: item.name,
+        value: item.value,
+      }));
 
-    const response = await addVariableServices(
-      state?.selectedDestinationClusterId,
-      state?.updatedCount?.id,
-      state?.variablesDetail?.version,
-      variables
-    );
+      const response = await addVariableServices(
+        state?.selectedDestinationClusterId,
+        state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
+        state?.variablesDetail?.version,
+        variables
+      );
 
-    if (response) {
-      console.log('Variables successfully submitted:', response);
-    } else {
-      console.log(response.error);
+      if (response) {
+        const getVariablesResponse = await GetVariableServices(
+          state?.selectedDestinationClusterId,
+          state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
+          response?.data?.requestId
+        );
+
+        if (getVariablesResponse) {
+          const DeleteVariablesResponse = await DeleteVariableServices(
+            state?.selectedDestinationClusterId,
+            state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
+            response?.data?.requestId
+          );
+
+          if (DeleteVariablesResponse) {
+            handleTertiaryButton();
+          } else {
+            toast.error(response.error);
+          }
+        }
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+      setNewlyAddvariables([]);
     }
   };
 
@@ -94,26 +148,34 @@ const Listvariables = ({
     <>
       <Modal
         title="Variables"
-        isOpen={isOpen}
-        onRequestClose={closePopup}
+        isOpen={isOpen.isOpen}
+        onRequestClose={() => {
+          setNewlyAddvariables([]);
+          closePopup();
+        }}
+        isLoading={loading}
         size="md"
         onSecondarySubmit={openVariable}
         secondaryButtonText="Add Variables"
         primaryButtonText="Save"
         onSubmit={handleSubmit}
+        primaryButtonDisabled={loading || !newlyAddVariables?.length}
         secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
       >
         <ModalBody className="modal-body">
-          <Table data={variables} columns={COLUMNS} />
+          <Table data={variablesData} columns={COLUMNS} />
         </ModalBody>
       </Modal>
       {isAddVariablesOpen && (
         <AddVariables
+          variableContextItem={variableContextItem}
+          setVariableContextItem={setVariableContextItem}
+          newlyAddVariables={newlyAddVariables}
+          setNewlyAddvariables={setNewlyAddvariables}
           isOpen={isAddVariablesOpen}
           closePopup={closeAddVariablesModal}
           isAddVariablesOpen={isAddVariablesOpen}
-          setVariables={setVariables}
-          variables={variables}
+          setIsAddVariablesOpen={setIsAddVariablesOpen}
           setVariablesModalOpen={setVariablesModalOpen}
         />
       )}
@@ -127,6 +189,7 @@ Listvariables.propTypes = {
   setVariablesModalOpen: PropTypes.func.isRequired,
   setVariables: PropTypes.func,
   variables: PropTypes.array,
+  handleTertiaryButton: PropTypes.func,
 };
 
 export default Listvariables;
