@@ -120,7 +120,6 @@ const ParameterContext = ({
                 state?.updatedCount?.parameterContextId,
               response2?.data?.requestId
             );
-            console.log(responseAfterCompletion, 'responseAfterCompletion');
             if (responseAfterCompletion?.status !== 204) {
               toast.error('Error: The operation did not complete.');
             }
