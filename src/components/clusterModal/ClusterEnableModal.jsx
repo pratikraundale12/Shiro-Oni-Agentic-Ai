@@ -40,13 +40,12 @@ export const ClusterEnableModal = ({ setIsOpen, isOpen, clusterId }) => {
         }));
         setClusterList(filteredArray);
 
-        // Find the selected cluster name and set it
         const selectedCluster = response.data.find(
           item => item.id === clusterId
         );
         if (selectedCluster) {
           setSelectedClusterName(selectedCluster.name);
-          setValue('cluster', selectedCluster.id); // Set default value for 'registry'
+          setValue('cluster', selectedCluster.id);
         }
       } else {
         toast.error(response?.message || 'Something went wrong');
