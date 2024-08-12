@@ -118,7 +118,10 @@ export const Modal = ({
             {secondaryButtonText}
           </Button>
         )}
-        <Button loading={loading && 'Continue...'} onClick={onSubmit}>
+        <Button
+          loading={loading && `${primaryButtonText}...`}
+          onClick={onSubmit}
+        >
           {primaryButtonText}
         </Button>
       </Footer>
