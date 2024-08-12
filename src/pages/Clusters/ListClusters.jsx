@@ -160,9 +160,6 @@ export const ListClusters = () => {
           onMouseLeave={handleMouseLeave}
         >
           {!item.is_active && (
-            // <EnableClusterText isVisible={hoveredItemId === item.id}>
-            //   Enable Cluster
-            // </EnableClusterText>
             <EnableClusterRender hoveredItemId={hoveredItemId} item={item} />
           )}
         </Item>
