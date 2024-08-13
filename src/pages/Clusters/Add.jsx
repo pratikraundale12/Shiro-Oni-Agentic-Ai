@@ -229,31 +229,41 @@ const NoDataText = styled.div`
 const ClusterSchema = yup.object().shape({
   clusterName: yup
     .string()
-    .matches(RegexConst.NAME, 'Cluster Name must be at least 3 characters long')
+    .min(3, 'Cluster Name must be at least 3 characters long')
     .required('Cluster Name is required'),
   nifiUrl: yup
     .string()
-    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
+    .url('Enter a valid NiFi URL')
+    .matches(RegexConst.NIFI_URL, 'Enter a valid NiFi URL')
     .required('NiFi URL is required'),
 });
 
 const RegistrySchema = yup.object().shape({
   registryName: yup
     .string()
-    .matches(
-      RegexConst.NAME,
-      'Registry Name must be at least 3 characters long'
-    )
+    .min(3, 'Registry Name must be at least 3 characters long')
     .required('Registry Name is required'),
   registryUrl: yup
     .string()
-    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
+    .url('Enter a valid Registry URL')
+    .matches(RegexConst.NIFI_URL, 'Enter a valid Registry URL')
     .required('NiFi URL is required'),
 });
 
 const TABS = {
   CLUSTER: 'cluster',
   REGISTRY: 'registry',
+};
+
+const DEFAULT_VALUES = {
+  [TABS.CLUSTER]: {
+    clusterName: '',
+    nifiUrl: '',
+  },
+  [TABS.REGISTRY]: {
+    registryName: '',
+    registryUrl: '',
+  },
 };
 
 export const Add = () => {
@@ -293,6 +303,9 @@ export const Add = () => {
     resolver: yupResolver(
       activeTab === TABS.CLUSTER ? ClusterSchema : RegistrySchema
     ),
+    defaultValues: DEFAULT_VALUES,
+    mode: 'all',
+    reValidateMode: 'onChange',
   });
 
   const navigate = useNavigate();
@@ -431,7 +444,6 @@ export const Add = () => {
   const fetchRegistryDetails = async () => {
     try {
       const response = await getOneRegistry(selectedRegistryId);
-      console.log(response, 'ressss');
       setRegistryData(response);
     } catch (error) {
       console.error('Failed to fetch registry details:', error);
@@ -471,7 +483,6 @@ export const Add = () => {
       );
 
       const response = await testRegistry(payload);
-      console.log('Response:', response);
       if (response.status === 204) {
         setTestSuccess(true);
         setSuccessModal(true);

@@ -32,7 +32,6 @@ export const Certificate = ({
   activeTab,
   registryData,
 }) => {
-  console.log('CLUSTERDATA', clusterData);
   const [suceessModal, setSuccessModal] = useState(false);
   const [failedModal, setFailedModal] = useState(false);
   const [testMessage, setTestMessage] = useState('');
@@ -57,14 +56,12 @@ export const Certificate = ({
       payload.append('passphrase', data.password);
 
       const response = await testCluster(payload);
-      console.log('Response:', response);
       if (response.status === 204) {
         setTestSuccess(true);
         setIsCertificateOpen(false);
         setSuccessModal(true);
         setLoading(false);
       } else {
-        console.log('helllllllllllll', response);
         setIsCertificateOpen(false);
         setFailedModal(true);
         setTestMessage(response.message);
@@ -80,7 +77,6 @@ export const Certificate = ({
       payload.append('passphrase', data.password);
 
       const response = await testRegistry(payload);
-      console.log('Response:', response);
       if (response.status === 204) {
         setTestSuccess(true);
         setIsCertificateOpen(false);
@@ -98,8 +94,6 @@ export const Certificate = ({
   const onSubmit = data => {
     setLoading(true);
     handleTest(data);
-
-    console.log(data);
     reset({
       pfxFile: '',
       password: '',
