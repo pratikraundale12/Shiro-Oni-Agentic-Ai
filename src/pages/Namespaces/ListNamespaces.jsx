@@ -1,13 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
-
 import { Grid, IconButton, TextRender } from '../../components';
 import { fetchGridData } from '../../store';
 import { REFRESH_OPTIONS, useGlobalContext } from '../../utils';
 // import AuditLog from './AuditLog';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import { CopyIcon, OpenEyeIcon } from '../../assets';
 import { Button } from '../../shared';
 // import Deploy from './Deploy';
+const StyledButton = styled.button`
+  color: #ff7a00;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+`;
+const StyledDiv = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+`;
 
 export const ListNamespaces = () => {
   const navigate = useNavigate();
@@ -38,20 +53,12 @@ export const ListNamespaces = () => {
     {
       label: 'Namespace',
       renderCell: item => (
-        <button
-          style={{
-            color: '#C52B2B',
-            cursor: 'pointer',
-            background: 'none',
-            border: 'none',
-            textDecoration: 'underline',
-            textUnderlineOffset: '3px',
-          }}
+        <StyledButton
           tabIndex="0"
           onClick={() => handleSelectNamespace(item.id)}
         >
           {item.name}
-        </button>
+        </StyledButton>
       ),
       width: '18%',
     },
@@ -65,21 +72,14 @@ export const ListNamespaces = () => {
           <div style={{ width: 'max-content' }}>
             <TextRender text={item.id} />
           </div>
-          <button
+          <StyledDiv
             onClick={() => handleCopyToClipboard(item.id)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              marginLeft: '8px',
-            }}
             aria-label="Copy Namespace ID"
           >
             <IconButton>
               <CopyIcon />
             </IconButton>
-          </button>
+          </StyledDiv>
         </div>
       ),
       width: '26%',
@@ -157,6 +157,7 @@ export const ListNamespaces = () => {
       selectedNamespaceId: id,
     });
 
+    setOffset(0);
     setState(prev => {
       const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
       const newData = state.gridData.namespaces.data.filter(
@@ -201,8 +202,10 @@ export const ListNamespaces = () => {
       setState,
       module: 'clusters',
     });
+    setOffset(0);
   }, [setState]);
-
+  const [offset, setOffset] = useState(0);
+  useEffect(() => {});
   const onBreadcrumbClick = e => {
     handleSelectNamespace(e.id);
   };
@@ -231,16 +234,21 @@ export const ListNamespaces = () => {
     return () => clearInterval(intervalRef.current);
   }, [refreshState]);
 
+  const LIMIT = 10;
   return (
     <>
       <Grid
+        isNamespace={true}
+        LIMIT={LIMIT}
+        offset={offset}
+        setOffset={setOffset}
         module="namespaces"
         title="Namespaces List"
         columns={COLUMNS}
         refreshOptions={REFRESH_OPTIONS}
         clusterOptions={clusterOptions}
         onBreadcrumbClick={onBreadcrumbClick}
-        placeholder="Search Namespace, ID, Flow Name, Bucket Name"
+        placeholder="Search Namespace, ID, Flow Name"
         handleRefresh={handleRefresh}
       />
       {/* <Deploy /> */}

@@ -72,6 +72,7 @@ export const deployCluster = async ({
   bucketName,
   registryId,
   version,
+  position,
 }) => {
   const data = {
     namespaceId,
@@ -80,6 +81,7 @@ export const deployCluster = async ({
     bucketName,
     registryId,
     version,
+    position,
   };
 
   const response = await API.post(`/clusters/${clusterId}/deploy`, data);

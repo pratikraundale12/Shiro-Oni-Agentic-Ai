@@ -220,16 +220,7 @@ const Upgrade = () => {
     navigate(breadcrumb.path);
   };
   const handleClick = () => {
-    navigate('/namespaces/summary', {
-      state: {
-        // upgradeData,
-        // selectedVersion,
-        // selectedClusterName,
-        // selectedClusterId,
-        // deployData,
-        // depolyNamespaceId,
-      },
-    });
+    navigate('/namespaces/summary');
   };
 
   const handleBackClick = () => {

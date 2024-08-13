@@ -90,9 +90,9 @@ const ConfigTitleHTwo = styled.div`
   line-height: 24px;
   letter-spacing: 0.01em;
   text-align: left;
-  color: #c52b2b;
+  color: #ff7a00;
   position: relative;
-  border-bottom: 1px solid #c52b2b;
+  border-bottom: 1px solid #ff7a00;
   width: fit-content;
 `;
 const UseColLg = styled.div`
@@ -165,7 +165,7 @@ const ActiveButtonDiv = styled.div`
 
   &:hover {
     border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#c52b2b')};
+      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
   }
 
   & span {
@@ -209,8 +209,8 @@ const CustomRedProgress = styled.div`
 `;
 const ProgressBar = styled.div`
   color: white;
-  text-align: end;
-  background: #c52b2b;
+  text-align: center;
+  background: #ff7a00;
   padding: 0px;
   border-radius: 50px;
 `;
@@ -374,7 +374,7 @@ const Summary = () => {
         bucketName: state?.deployData.bucketName,
         registryId: state?.deployData?.registryId,
         version: state.selectedVersion,
-        position: state?.deployData?.position.x,
+        position: state?.deployData?.position,
       });
       setLoading(true);
       setState(prevState => ({
