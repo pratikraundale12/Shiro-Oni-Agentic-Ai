@@ -28,9 +28,7 @@ export const Creditionals = ({
     reset,
     formState: { errors },
   } = useForm();
-  console.log('REGESTYRDAT', registryData);
   const handleTest = async data => {
-    console.log(data);
     const payload = new FormData();
     if (activeTab === 'cluster') {
       payload.append('name', clusterData.clusterName);
@@ -39,7 +37,6 @@ export const Creditionals = ({
       payload.append('password', data.password);
 
       const response = await testCluster(payload);
-      console.log('Response:', response);
       if (response.status === 204) {
         setTestSuccess(true);
         setIsCredOpen(false);
@@ -47,7 +44,6 @@ export const Creditionals = ({
         setLoading(false);
       } else {
         setTestMessage(response.message);
-
         setIsCredOpen(false);
         setFailedModal(true);
         setLoading(false);
