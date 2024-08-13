@@ -33,7 +33,7 @@ const Header = styled.div`
 const Body = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 18px;
+  padding: 2.25rem 1.125rem 1.125rem;
 `;
 
 const Footer = styled.div`
@@ -120,6 +120,7 @@ export const Modal = ({
         <Button
           loading={loading && `${primaryButtonText}...`}
           onClick={onSubmit}
+          size={!secondaryButtonText ? 'lg' : 'md'}
         >
           {primaryButtonText}
         </Button>

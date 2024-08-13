@@ -9,11 +9,19 @@ const size = {
     height: '40px',
     padding: '0 10px',
     margin: '4px',
+    fontSize: '12px',
   },
   md: {
     height: '48px',
     padding: '0 24px',
     margin: '10px',
+    fontSize: '14px',
+  },
+  lg: {
+    height: '56px',
+    padding: '0 32px',
+    margin: '10px',
+    fontSize: '18px',
   },
 };
 
@@ -70,7 +78,7 @@ const StyledButton = styled.button.withConfig({
   span {
     width: max-content;
     font-weight: 600;
-    font-size: ${props => props.theme.size[props.size]};
+    font-size: ${props => size[props.size].fontSize};
     font-family: ${props => props.theme.fontNato};
   }
 `;
@@ -124,7 +132,7 @@ Button.propTypes = {
   icon: PropTypes.node,
   children: PropTypes.node.isRequired,
   type: PropTypes.string,
-  size: PropTypes.oneOf(['md', 'sm']),
+  size: PropTypes.oneOf(['md', 'sm', 'lg']),
   iconPosition: PropTypes.oneOf(['left', 'right']),
   variant: PropTypes.oneOf(['primary', 'secondary']),
   loading: PropTypes.bool,
