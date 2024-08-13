@@ -1,11 +1,23 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
 import { SmallPerfileIcon } from '../../../assets';
 import { InputField, Modal, PasswordField } from '../../../shared';
 import { testCluster, testRegistry } from '../../../store';
 import { FailedTestModal } from './FailedTestModal';
 import { SuccessTestModal } from './SuccessTestModal';
+
+const DEFAULT_VALUES = {
+  username: '',
+  password: '',
+};
+
+const credentialSchema = yup.object().shape({
+  username: yup.string().required('Username is required'),
+  password: yup.string().required('Password is required'),
+});
 
 export const Creditionals = ({
   isCredOpen,
@@ -27,7 +39,11 @@ export const Creditionals = ({
     watch,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    resolver: yupResolver(credentialSchema),
+    defaultValues: DEFAULT_VALUES,
+  });
+
   const handleTest = async data => {
     const payload = new FormData();
     if (activeTab === 'cluster') {
@@ -58,7 +74,6 @@ export const Creditionals = ({
       payload.append('password', data.password);
 
       const response = await testRegistry(payload);
-      console.log('Response:', response);
       if (response.status === 204) {
         setTestSuccess(true);
         setIsCredOpen(false);
@@ -66,7 +81,6 @@ export const Creditionals = ({
         setLoading(false);
       } else {
         setTestMessage(response.message);
-
         setIsCredOpen(false);
         setFailedModal(true);
         setLoading(false);
@@ -76,13 +90,8 @@ export const Creditionals = ({
 
   const onSubmit = data => {
     setLoading(true);
-
     handleTest(data);
-
-    reset({
-      username: '',
-      password: '',
-    });
+    reset(DEFAULT_VALUES);
   };
 
   return (
