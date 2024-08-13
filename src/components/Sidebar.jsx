@@ -7,6 +7,7 @@ import { theme } from '../styles';
 import { ROUTES_MENU } from '../routes';
 import { KsolvesDataFlowIcon } from '../assets';
 import { useGlobalContext } from '../utils';
+import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 
 const Container = styled.div`
   height: 100%;
@@ -76,6 +77,13 @@ const Item = styled.li`
   }
 `;
 
+const HelpSupportConatiner = styled.div`
+  display: flex;
+  align-items: flex-end;
+  margin-top: auto;
+  width: 100%;
+`;
+
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const navigate = useNavigate();
   const {
@@ -111,6 +119,15 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
           );
         })}
       </List>
+      <HelpSupportConatiner>
+        <Item
+          active={false}
+          // onClick={() => }
+        >
+          <QuestionMarkIcon />
+          <span>Help & Support</span>
+        </Item>
+      </HelpSupportConatiner>
     </Container>
   );
 };
