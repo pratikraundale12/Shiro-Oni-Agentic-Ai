@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import {
   BellIcon,
+  ClusterIcon,
   DownArrowIcon,
   HeadphoneIcon,
   LockIcon,
@@ -14,6 +15,7 @@ import { INITIAL_STATE, useGlobalContext } from '../utils';
 import { AddUserModal } from '../pages/Users/AddUserModal';
 import { ProfileRender } from './CustomGrid';
 import SessionExpiredLabel from '../shared/SessionExpiredLabel';
+import { ClusterEnableModal } from './clusterModal/ClusterEnableModal';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -24,6 +26,13 @@ const Container = styled.header`
   justify-content: space-between;
   background-color: ${props => props.theme.colors.white};
   border-bottom: 1px solid ${props => props.theme.colors.border};
+  @media (max-width: 992px) {
+    padding-left: 50px;
+    .title {
+      margin-left: 15.5rem;
+      font-size: 23px;
+    }
+  }
 `;
 
 const IconButton = styled.button`
@@ -67,6 +76,10 @@ const Title = styled.h2`
   font-size: 26px;
   font-weight: 500;
   text-transform: capitalize;
+  @media (max-width: 992px) {
+    font-size: 23px;
+    transition: 0.3s;
+  }
 `;
 
 const Name = styled.span`
@@ -154,7 +167,7 @@ const ProfileDropdown = () => {
       label: 'Logout',
       icon: <LockIcon width={14} height={14} />,
       onClick: () => {
-        localStorage.removeItem('access_token');
+        localStorage.clear();
         setState(INITIAL_STATE);
         setShowMenu(prev => !prev);
       },
@@ -196,8 +209,9 @@ const ProfileDropdown = () => {
   );
 };
 
-export const Header = ({ route }) => {
+export const Header = ({ route, isOpenSidebar }) => {
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const {
     state: { licenseTimeStamp },
   } = useGlobalContext();
@@ -205,7 +219,6 @@ export const Header = ({ route }) => {
   const closeTab = () => {
     setDisplaySessionTab(false);
   };
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setDisplaySessionTab(true);
@@ -217,17 +230,26 @@ export const Header = ({ route }) => {
   return (
     <>
       <Container>
-        <Title>{route?.replace(/-/g, ' ')}</Title>
+        <Title className={isOpenSidebar && 'title'}>
+          {route?.replace(/-/g, ' ')}
+        </Title>
         <ButtonContainer>
-          <IconButton>
-            <HeadphoneIcon />
-          </IconButton>
-          <IconButton>
-            <BellIcon />
-          </IconButton>
-          <IconButton>
-            <SettingSmallIcon />
-          </IconButton>
+          <div className="d-none d-lg-inline">
+            <div className="d-flex">
+              <IconButton onClick={() => setIsOpen(true)}>
+                <ClusterIcon />
+              </IconButton>
+              <IconButton>
+                <HeadphoneIcon />
+              </IconButton>
+              <IconButton>
+                <BellIcon />
+              </IconButton>
+              <IconButton>
+                <SettingSmallIcon />
+              </IconButton>
+            </div>
+          </div>
           <ProfileDropdown />
         </ButtonContainer>
       </Container>
@@ -237,10 +259,12 @@ export const Header = ({ route }) => {
           expireData={licenseTimeStamp || ''}
         />
       )}
+      <ClusterEnableModal setIsOpen={setIsOpen} isOpen={isOpen} />
     </>
   );
 };
 
 Header.propTypes = {
   route: PropTypes.string,
+  isOpenSidebar: PropTypes.bool,
 };

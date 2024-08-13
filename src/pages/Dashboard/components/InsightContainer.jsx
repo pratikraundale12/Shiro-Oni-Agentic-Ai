@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const Container = styled.div`
-  flex: 0 0 auto;
-  width: 25%;
   height: fit-content;
   padding-left: 8px;
   padding-right: 8px;
@@ -58,7 +56,7 @@ export const InsightContainer = ({
   count = '',
   text = '',
 }) => (
-  <Container>
+  <Container className="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6">
     <InnerContainer
       backgroundCss={backgroundCss}
       // className={`main-box  w-100 h-100 position-relative ${backgroundCss}`}

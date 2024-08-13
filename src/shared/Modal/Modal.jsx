@@ -57,7 +57,7 @@ export const Modal = ({
   children,
   isOpen,
   onRequestClose,
-  isLoading = false,
+  loading = false,
   secondaryButtonText = '',
   primaryButtonText = '',
   primaryButtonDisabled = false,
@@ -110,7 +110,7 @@ export const Modal = ({
       style={styleObject}
     >
       <Header>
-        <Title>{title}</Title>
+        <Title className="mb-0">{title}</Title>
         <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
       </Header>
       <Body>{children}</Body>
@@ -136,7 +136,7 @@ export const Modal = ({
           </Button>
         )}
         <Button
-          loading={isLoading}
+          loading={loading}
           onClick={onSubmit}
           disabled={primaryButtonDisabled}
         >
@@ -157,7 +157,7 @@ Modal.propTypes = {
   secondaryButtonText: PropTypes.string,
   primaryButtonDisabled: PropTypes.bool,
   primaryButtonText: PropTypes.string,
-  isLoading: PropTypes.bool,
+  loading: PropTypes.bool,
   onSecondarySubmit: PropTypes.func,
   secondaryButtonProps: PropTypes.object,
   contentStyles: PropTypes.object,

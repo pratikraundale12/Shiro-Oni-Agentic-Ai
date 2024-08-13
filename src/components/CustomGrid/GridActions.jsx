@@ -83,6 +83,10 @@ const DropdownContainer = styled.div`
   }
 `;
 
+const ImageContainer = styled.div`
+  margin-bottom: 0.5rem;
+`;
+
 export const GridActions = ({
   title,
   module,
@@ -123,7 +127,9 @@ export const GridActions = ({
     <>
       <Flex>
         <Flex>
-          <TodoIcon width={22} height={24} />
+          <ImageContainer>
+            <TodoIcon width={22} height={24} />
+          </ImageContainer>
           <Title>{title}</Title>
         </Flex>
         <ButtonsContainer>

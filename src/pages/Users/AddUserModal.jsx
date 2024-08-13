@@ -53,6 +53,7 @@ const SelectFieldWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: flex-end;
+  margin-top: 20px;
 `;
 
 const FormWrapper = styled.div`
@@ -70,15 +71,15 @@ const FormTitle = styled.h5`
 `;
 
 const FormSection = styled.div`
-  display: grid;
-  gap: 1%;
-  grid-template-columns: 32% 32% 32%;
-  justify-content: center;
-  padding: 0.8rem 0;
   border: 1px solid ${props => props.theme.colors.border};
   border-top: none;
   border-bottom-left-radius: 16px;
   border-bottom-right-radius: 16px;
+  max-width: 100%;
+  padding-top: 1rem;
+  .form-ele {
+    min-height: 115px;
+  }
 `;
 
 const StyledInputField = styled(InputField)`
@@ -98,7 +99,7 @@ const StyledPhoneField = styled(PhoneField)`
 `;
 
 const DropDownWrapper = styled.div`
-  width: 15%;
+  min-width: 15%;
   margin-right: 10px;
 `;
 
@@ -219,7 +220,7 @@ export const AddUserModal = props => {
         primaryButtonText="Submit"
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
-        contentStyles={{ minWidth: '60%' }}
+        contentStyles={{ minWidth: '65%' }}
       >
         <ImageContainer>
           <ProfileUpload
@@ -259,81 +260,100 @@ export const AddUserModal = props => {
             </DropDownWrapper>
           </SelectFieldWrapper>
           <FormWrapper>
-            <FormTitle>User Information</FormTitle>
-            <FormSection>
-              <StyledInputField
-                name="first_name"
-                type="text"
-                label="First Name"
-                placeholder="Enter your First Name"
-                required
-                register={register}
-                errors={errors}
-                icon={<UserIcon />}
-              />
-              <StyledInputField
-                name="middle_name"
-                type="text"
-                label="Middle Name"
-                placeholder="Enter your Middle Name"
-                register={register}
-                errors={errors}
-                icon={<UserIcon />}
-              />
-              <StyledInputField
-                name="last_name"
-                type="text"
-                label="Last Name"
-                placeholder="Enter your Last Name"
-                required
-                register={register}
-                errors={errors}
-                icon={<UserIcon />}
-              />
-              <StyledInputField
-                name="username"
-                type="text"
-                label="User Name"
-                placeholder="Enter your User Name"
-                required
-                register={register}
-                errors={errors}
-                icon={<UserIcon />}
-              />
-              <StyledInputField
-                name="email"
-                type="email"
-                label="E-mail Address"
-                placeholder="Enter your First Name"
-                required
-                register={register}
-                errors={errors}
-                icon={<MailIcon />}
-              />
-              <StyledPasswordField
-                name="password"
-                register={register}
-                required={!state?.selectedItem}
-                errors={errors}
-                watch={watch}
-                label="Password"
-              />
-              {(!state?.selectedItem || password) && (
-                <StyledPasswordField
-                  name="confirm_password"
-                  register={register}
-                  errors={errors}
-                  watch={watch}
-                  required
-                  label="Confirm Password"
-                />
-              )}
-              <StyledPhoneField
-                name="phone_number"
-                errors={errors}
-                control={control}
-                icon={<PhoneIcon />}
-              />
+            <FormTitle className="mb-0">User Information</FormTitle>
+            <FormSection className="container">
+              <div className="row">
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                  <StyledInputField
+                    name="first_name"
+                    type="text"
+                    label="First Name"
+                    placeholder="Enter your First Name"
+                    required
+                    register={register}
+                    errors={errors}
+                    icon={<UserIcon />}
+                  />
+                </div>
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                  <StyledInputField
+                    name="middle_name"
+                    type="text"
+                    label="Middle Name"
+                    placeholder="Enter your Middle Name"
+                    register={register}
+                    errors={errors}
+                    icon={<UserIcon />}
+                  />
+                </div>
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                  <StyledInputField
+                    name="last_name"
+                    type="text"
+                    label="Last Name"
+                    placeholder="Enter your Last Name"
+                    required
+                    register={register}
+                    errors={errors}
+                    icon={<UserIcon />}
+                  />
+                </div>
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                  <StyledInputField
+                    name="username"
+                    type="text"
+                    label="User Name"
+                    placeholder="Enter your User Name"
+                    required
+                    register={register}
+                    errors={errors}
+                    icon={<UserIcon />}
+                  />
+                </div>
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                  <StyledInputField
+                    name="email"
+                    type="email"
+                    label="E-mail Address"
+                    placeholder="Enter your First Name"
+                    required
+                    register={register}
+                    errors={errors}
+                    icon={<MailIcon />}
+                  />
+                </div>
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                  <StyledPasswordField
+                    name="password"
+                    register={register}
+                    required
+                    errors={errors}
+                    watch={watch}
+                    label="Password"
+                  />
+                </div>
+                {(!state?.selectedItem || password) && (
+                  <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                    <StyledPasswordField
+                      name="confirm_password"
+                      register={register}
+                      errors={errors}
+                      watch={watch}
+                      required
+                      label="Confirm Password"
+                    />
+                  </div>
+                )}
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                  <StyledPhoneField
+                    name="phone_number"
+                    errors={errors}
+                    control={control}
+                    register={register}
+                    icon={<PhoneIcon />}
+                  />
+                </div>
+              </div>
             </FormSection>
           </FormWrapper>
         </Continer>

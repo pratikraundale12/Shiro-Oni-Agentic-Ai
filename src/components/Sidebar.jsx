@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { theme } from '../styles';
 import { ROUTES_MENU } from '../routes';
-import { KsolvesIcon } from '../assets';
+import { KsolvesDataFlowIcon } from '../assets';
 import { useGlobalContext } from '../utils';
 
 const Container = styled.div`
@@ -15,13 +15,35 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
   background-color: ${props => props.theme.colors.lighter};
+  button {
+    background-color: transparent;
+    border: none;
+    padding: 0 10px;
+    display: none;
+    top: 22px;
+  }
+  left: -250px;
+  @media (max-width: 992px) {
+    position: fixed;
+    transition: 0.3s;
+    z-index: 99;
+    &.menuOpen {
+      left: 0px;
+    }
+    button {
+      display: block;
+      position: absolute;
+      margin-left: calc(100% + 55px);
+    }
+  }
 `;
 
 const List = styled.ul`
   width: 100%;
   margin-top: 20px;
+  padding-left: 0;
+  overflow-y: auto;
 `;
 
 const Item = styled.li`
@@ -54,7 +76,7 @@ const Item = styled.li`
   }
 `;
 
-export const Sidebar = () => {
+export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const navigate = useNavigate();
   const {
     state: { activeRoute: route },
@@ -67,8 +89,11 @@ export const Sidebar = () => {
   };
 
   return (
-    <Container>
-      <KsolvesIcon />
+    <Container className={isOpenSidebar && 'menuOpen'}>
+      <button onClick={() => handleOpenSidebar()}>
+        <img alt="menu" src="/img/Frame.png" />
+      </button>
+      <KsolvesDataFlowIcon width={200} height={80} />
       <List>
         {ROUTES_MENU.map(item => {
           const active = item.path === route;
@@ -93,4 +118,6 @@ export const Sidebar = () => {
 Sidebar.propTypes = {
   route: PropTypes.string,
   handleRoute: PropTypes.func,
+  handleOpenSidebar: PropTypes.func,
+  isOpenSidebar: PropTypes.bool,
 };

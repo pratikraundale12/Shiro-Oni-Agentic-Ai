@@ -32,6 +32,8 @@ import { FlowMetrics, InsightContainer } from './components';
 const TopSection = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
 `;
 
 const QuickInsightHeading = styled.div`
@@ -51,6 +53,7 @@ const QuickInsightHeadingText = styled.h4`
 
 const InsightIconContiner = styled.div`
   padding-top: 5px;
+  margin-bottom: 0.5rem;
 `;
 
 const InsightDataContiner = styled.div`
@@ -68,6 +71,7 @@ const FlowMetricHeader = styled.div`
   font-weight: 600;
   line-height: 25px;
   display: flex;
+  align-items: center;
 `;
 
 const ErrorsHeader = styled.div`
@@ -83,6 +87,7 @@ const ErrorsHeader = styled.div`
 
 const HeaderText = styled.p`
   margin-left: 10px;
+  margin-bottom: 0px;
 `;
 
 const TextEllipses = styled.div`
@@ -140,8 +145,14 @@ const StyledTable = styled(Table)`
   height: 60%;
 
   > div {
-    height: 88%;
+    height: 70%;
   }
+`;
+
+const FlowMetricContainer = styled.div`
+  box-shadow: 0px 4px 5px 1px #3232470d;
+  border-radius: 0px 0px 16px 16px;
+  margin-bottom: 20px;
 `;
 
 export const Dashboard = () => {
@@ -403,13 +414,15 @@ export const Dashboard = () => {
           text="Flow Files Queued"
         />
       </InsightDataContiner>
-      <FlowMetricHeader>
-        <FlowMetricHeaderIcon />
-        <HeaderText>Flow Metrics</HeaderText>
-      </FlowMetricHeader>
-      <FlowMetrics
-        flowMetricsDataDynamic={clusterDetails?.flowMetrixYData || [0, 0, 0]}
-      />
+      <FlowMetricContainer>
+        <FlowMetricHeader>
+          <FlowMetricHeaderIcon />
+          <HeaderText>Flow Metrics</HeaderText>
+        </FlowMetricHeader>
+        <FlowMetrics
+          flowMetricsDataDynamic={clusterDetails?.flowMetrixYData || [0, 0, 0]}
+        />
+      </FlowMetricContainer>
       <ErrorsHeader>
         <ErrorIcon />
 

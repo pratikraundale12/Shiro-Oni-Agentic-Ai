@@ -42,7 +42,7 @@ export const FlowMetrics = ({ flowMetricsDataDynamic = [] }) => {
   };
 
   return (
-    <div id="chart" className="w-100">
+    <div id="chart" className="w-100 px-4">
       <Chart options={options} series={series} type="area" height={350} />
     </div>
   );

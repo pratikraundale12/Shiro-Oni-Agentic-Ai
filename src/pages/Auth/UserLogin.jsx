@@ -119,6 +119,14 @@ export const UserLogin = () => {
     const response = await userLogin(data);
     if (response.status == 200) {
       localStorage.setItem(ACCESS_TOKEN, response?.data?.token);
+
+      let cluster_token = [
+        {
+          id: response?.data?.cluster_id,
+          token: response?.data?.cluster_token,
+        },
+      ];
+      localStorage.setItem('clusters', JSON.stringify(cluster_token));
       navigate('/dashboard');
       toast.success('Login successful');
     } else {

@@ -47,19 +47,16 @@ export const Table = ({
         }
         th {
           height: 48px;
+          background-color: ${theme.colors.lightGrey} !important;
+          color:  ${theme.colors.darker} !important;
         }
 
         td {
           height: 60px;
         }
-      `,
-      HeaderRow: `
-        background-color: #F5F7FA;
-        color: #444445;
-      `,
-      Row: `
-        &:nth-of-type(even) {
-          background-color: #F5F7FA;
+
+        tbody tr:nth-of-type(even) td {
+          background-color: ${theme.colors.lightGrey} !important;          
         }
       `,
     },
