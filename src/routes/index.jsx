@@ -17,6 +17,7 @@ import {
   PermissionMatrix,
   Add,
   UserLogin,
+  LdapConfig,
 } from '../pages';
 import {
   ClusterIcon,
@@ -136,6 +137,22 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <PermissionMatrix />,
+      },
+      {
+        path: ['add', 'edit/:id'],
+        component: <div>Permission</div>,
+      },
+    ],
+  },
+
+  {
+    name: 'LDAP Configuration',
+    path: 'ldap-configuration',
+    icon: LockIcon,
+    pages: [
+      {
+        path: '',
+        component: <LdapConfig />,
       },
       {
         path: ['add', 'edit/:id'],
