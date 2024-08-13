@@ -31,13 +31,13 @@ const TableContainer = styled.div`
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
-  @media (min-width: 992px) {
-    overflow-x: hidden;
-  }
   @media (max-width: 991px) {
     table {
       min-width: 800px;
     }
+  }
+  table {
+    overflow: visible;
   }
 `;
 
