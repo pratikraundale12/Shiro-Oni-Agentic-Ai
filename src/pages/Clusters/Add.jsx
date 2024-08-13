@@ -255,17 +255,6 @@ const TABS = {
   REGISTRY: 'registry',
 };
 
-const DEFAULT_VALUES = {
-  [TABS.CLUSTER]: {
-    clusterName: '',
-    nifiUrl: '',
-  },
-  [TABS.REGISTRY]: {
-    registryName: '',
-    registryUrl: '',
-  },
-};
-
 export const Add = () => {
   const [activeTab, setActiveTab] = useState(TABS.CLUSTER);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
@@ -303,7 +292,6 @@ export const Add = () => {
     resolver: yupResolver(
       activeTab === TABS.CLUSTER ? ClusterSchema : RegistrySchema
     ),
-    defaultValues: DEFAULT_VALUES,
     mode: 'all',
     reValidateMode: 'onChange',
   });
