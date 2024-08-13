@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -7,7 +5,6 @@ import { CircleExclamationMarkIcon, ThreedotsIcon } from '../../../assets';
 import { Tooltip } from '../../../shared/Tooltip';
 import { theme } from '../../../styles';
 
-// Styled components based on the provided CSS
 const ActionTd = styled.div`
   display: flex;
   align-items: center;

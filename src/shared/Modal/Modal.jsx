@@ -31,6 +31,7 @@ const Header = styled.div`
 `;
 
 const Body = styled.div`
+  display: flex;
   flex: 1;
   overflow-y: auto;
   padding: 16px;

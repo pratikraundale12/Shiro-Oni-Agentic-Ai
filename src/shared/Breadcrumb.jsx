@@ -59,6 +59,7 @@ Breadcrumb.propTypes = {
 };
 
 Breadcrumb.defaultProps = {
+  breadcrumbs: [],
   onBreadcrumbClick: () => {},
 };
 

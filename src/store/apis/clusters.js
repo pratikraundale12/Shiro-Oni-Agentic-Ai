@@ -1,5 +1,3 @@
-/*eslint-disable*/
-
 import { API_URL } from '../../utils';
 import API from './api';
 
@@ -8,8 +6,12 @@ export const getClustersList = async ({ clusterData }) => {
   return data;
 };
 
+export const getClusters = async params => {
+  const { data } = await API.get('/list-clusters', { params });
+  return data;
+};
+
 export const testCluster = async payload => {
-  console.log(API_URL, 'dd');
   try {
     return await API.post(`${API_URL}/api/test/clusters`, payload);
   } catch (error) {
@@ -18,7 +20,6 @@ export const testCluster = async payload => {
 };
 
 export const createRegistry = async payload => {
-  // console.log("PAYLOAD",payload);
   try {
     return await API.post(`${API_URL}/api/registries`, payload);
   } catch (error) {
@@ -27,7 +28,6 @@ export const createRegistry = async payload => {
 };
 
 export const createCluster = async payload => {
-  // console.log("PAYLOAD",payload);
   try {
     return await API.post(`${API_URL}/api/clusters`, payload);
   } catch (error) {

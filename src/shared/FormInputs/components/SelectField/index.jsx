@@ -1,13 +1,15 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
+import { isEmpty } from 'lodash';
 import { Controller } from 'react-hook-form';
 import Select, { components } from 'react-select';
 import styled from 'styled-components';
+import makeAnimated from 'react-select/animated';
 
+import FieldErrorMessage from '../FieldErrorMessage';
 import { DownArrowIcon } from '../../../../assets';
 import { theme } from '../../../../styles';
 import { hasError } from '../../../../utils';
-import FieldErrorMessage from '../FieldErrorMessage';
 
 const Container = styled.div`
   position: relative;
@@ -73,8 +75,10 @@ const SelectField = ({
   placeholder = 'Select...',
   backgroundColor,
   title = '',
+  isClearable = false,
   ...props
 }) => {
+  const animatedComponents = makeAnimated();
   const error = hasError(errors, name);
 
   const getBorderColor = ({ isFocused }) => {
@@ -162,6 +166,25 @@ const SelectField = ({
     }),
   };
 
+  if (isEmpty(control)) {
+    return (
+      <Select
+        isClearable={isClearable}
+        classNamePrefix="react-select"
+        theme={theme.reactSelecttheme}
+        isDisabled={disabled}
+        styles={customStyles}
+        options={options}
+        components={{
+          ...animatedComponents,
+          IndicatorSeparator: () => null,
+          DropdownIndicator,
+        }}
+        {...props}
+      />
+    );
+  }
+
   return (
     <Container className={className} title={title}>
       <Controller
@@ -178,6 +201,8 @@ const SelectField = ({
             )}
             <Select
               ref={ref}
+              isClearable={isClearable}
+              classNamePrefix="react-select"
               value={options.find(option => option.value === value)}
               onChange={option => onChange(option?.value)}
               placeholder={placeholder}
@@ -185,7 +210,11 @@ const SelectField = ({
               isDisabled={disabled}
               styles={customStyles}
               options={options}
-              components={{ IndicatorSeparator: () => null, DropdownIndicator }}
+              components={{
+                ...animatedComponents,
+                IndicatorSeparator: () => null,
+                DropdownIndicator,
+              }}
               // formatOptionLabel={formatOptionLabel}
               {...props}
             />
@@ -198,9 +227,9 @@ const SelectField = ({
 };
 
 SelectField.propTypes = {
-  name: PropTypes.string.isRequired,
-  control: PropTypes.shape({}).isRequired,
-  placeholder: PropTypes.string.isRequired,
+  name: PropTypes.string,
+  control: PropTypes.shape({}),
+  placeholder: PropTypes.string,
   options: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   errors: PropTypes.shape({}),
   disabled: PropTypes.bool,
@@ -211,6 +240,7 @@ SelectField.propTypes = {
   icon: PropTypes.node,
   backgroundColor: PropTypes.string,
   title: PropTypes.string,
+  isClearable: PropTypes.bool,
 };
 
 export default SelectField;

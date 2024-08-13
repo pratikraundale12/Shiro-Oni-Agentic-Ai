@@ -5,6 +5,12 @@ const GlobalContext = createContext();
 
 export const INITIAL_STATE = {
   currentUser: null,
+  accessType: 'cluster_access',
+  roles: [],
+  clustersAccess: [],
+  updatedClustersAccess: [],
+  policiesAccess: [],
+  updatedPoliciesAccess: [],
   search: '',
   page: 1,
   gridData: {},

@@ -12,8 +12,8 @@ const TextColor = styled.div`
   overflow: hidden;
 `;
 
-export const TextRender = ({ text }) => {
-  return <TextColor>{text}</TextColor>;
+export const TextRender = ({ text, ...rest }) => {
+  return <TextColor {...rest}>{text}</TextColor>;
 };
 
 TextRender.propTypes = {

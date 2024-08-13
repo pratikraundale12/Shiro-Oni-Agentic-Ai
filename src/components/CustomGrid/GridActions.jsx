@@ -8,7 +8,7 @@ import { theme } from '../../styles';
 import { Button, SelectField } from '../../shared';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { useForm } from 'react-hook-form';
-import { useGlobalContext } from '../../utils';
+import { ACCESS_OPTIONS, useGlobalContext } from '../../utils';
 import { fetchGridData } from '../../store';
 
 const Flex = styled.div`
@@ -141,6 +141,20 @@ export const GridActions = ({
               placeholder="Clusters"
               options={clusterOptions}
               backgroundColor={theme.colors.lightGrey}
+            />
+          )}
+          {window.location.pathname.includes('permission-matrix') && (
+            <StyledSelectField
+              size="sm"
+              name="access"
+              control={control}
+              placeholder="Clusters"
+              options={ACCESS_OPTIONS}
+              defaultValue={ACCESS_OPTIONS[0]}
+              backgroundColor={theme.colors.lightGrey}
+              onChange={option =>
+                setState(prev => ({ ...prev, accessType: option.value }))
+              }
             />
           )}
           {!isEmpty(buttonText) && (

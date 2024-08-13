@@ -25,8 +25,8 @@ const StyledButton = styled(Button)`
 
 const Pagination = ({ page, setState, count, prev, next }) => {
   const getPageRange = () => {
-    const start = (page - 1) * 10 + 1;
-    const end = Math.min(count, page * 10);
+    const start = (currentPage - 1) * 10 + 1;
+    const end = Math.min(count, currentPage * 10);
     return `${start} - ${end}`;
   };
   const itemsPerPage = 10;
@@ -80,6 +80,7 @@ const Pagination = ({ page, setState, count, prev, next }) => {
           size="sm"
           onClick={() => setState(prevState => ({ ...prevState, page: prev }))}
           icon={<GreaterArrowIcon color={theme.colors.white} />}
+          disabled={currentPage === 1}
         />
         {pageNumbers.map((number, index) => (
           <StyledButton
@@ -100,6 +101,7 @@ const Pagination = ({ page, setState, count, prev, next }) => {
           size="sm"
           onClick={() => setState(prevState => ({ ...prevState, page: next }))}
           icon={<LessArrowIcon color={theme.colors.white} />}
+          disabled={currentPage === Math.ceil(count / 10)}
         />
       </Flex>
     </Container>
