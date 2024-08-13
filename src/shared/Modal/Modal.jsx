@@ -1,11 +1,11 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactModal from 'react-modal';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
+import { CrossIcons } from '../../assets';
 import { theme } from '../../styles';
 import { Button, SvgButton } from '../Button';
-import { CrossIcons } from '../../assets';
 
 const Title = styled.h5`
   color: ${props => props.theme.colors.darker};
@@ -26,18 +26,18 @@ const Header = styled.div`
   align-items: center;
   width: 100%;
   height: 44px;
-  padding: 26px 16px;
+  padding: 26px 18px;
   background-color: ${theme.colors.lightGrey};
 `;
 
 const Body = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 2.25rem 1.125rem 1.125rem;
 `;
 
 const Footer = styled.div`
-  padding: 16px;
+  padding: ${props => (props.hasSingleButton ? '32px' : '18px')} 18px;
   display: flex;
   gap: 1rem;
   align-self: ${props => props.footerAlign};
@@ -84,7 +84,6 @@ export const Modal = ({
       overflow: 'hidden',
       borderRadius: 16,
       minWidth: '30%',
-      minHeight: '40%',
       maxWidth: '75%',
       maxHeight: '90%',
       transform: 'translate(-50%, -50%)',
@@ -107,7 +106,7 @@ export const Modal = ({
         <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
       </Header>
       <Body>{children}</Body>
-      <Footer footerAlign={footerAlign}>
+      <Footer footerAlign={footerAlign} hasSingleButton={!secondaryButtonText}>
         {secondaryButtonText && (
           <Button
             variant="secondary"
@@ -121,6 +120,7 @@ export const Modal = ({
         <Button
           loading={loading && `${primaryButtonText}...`}
           onClick={onSubmit}
+          size={!secondaryButtonText ? 'lg' : 'md'}
         >
           {primaryButtonText}
         </Button>
