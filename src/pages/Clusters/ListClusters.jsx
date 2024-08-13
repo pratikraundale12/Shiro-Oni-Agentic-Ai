@@ -49,7 +49,7 @@ const Item = styled.div`
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding: 16px 12px;
+  padding: 14px 12px;
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.md};
   color: ${props => props.theme.colors.darker};
