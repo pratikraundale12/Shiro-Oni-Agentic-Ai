@@ -13,7 +13,7 @@ const size = {
   },
   md: {
     height: '48px',
-    padding: '0 24px',
+    padding: '0 28px',
     margin: '10px',
     fontSize: '14px',
   },
