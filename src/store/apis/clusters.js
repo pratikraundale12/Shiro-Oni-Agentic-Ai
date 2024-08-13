@@ -1,6 +1,6 @@
 /*eslint-disable*/
 
-import { API_URL } from '../../utils';
+import { API_URL } from '../../constants';
 import API from './api';
 
 export const getClustersList = async ({ clusterData }) => {

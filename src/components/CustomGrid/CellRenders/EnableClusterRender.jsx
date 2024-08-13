@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { ClusterEnableModal } from '../../clusterModal/ClusterEnableModal';
+import { ClusterLoginModal } from '../../ClusterLoginModal';
 
 const EnableClusterText = styled.div`
   display: ${props => (props.isVisible ? 'block' : 'none')};
@@ -27,10 +27,10 @@ export const EnableClusterRender = ({ hoveredItemId, item }) => {
           setIsOpen(true);
         }}
       >
-        Enable Cluster
+        Login to Cluster
       </EnableClusterText>
 
-      <ClusterEnableModal
+      <ClusterLoginModal
         setIsOpen={setIsOpen}
         isOpen={isOpen}
         clusterId={item.id}

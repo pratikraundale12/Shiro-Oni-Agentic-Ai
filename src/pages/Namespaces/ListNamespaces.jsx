@@ -1,16 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-
+import React, { useState, useEffect, useRef } from 'react';
 import { TextRender, Grid, IconButton } from '../../components';
-import { REFRESH_OPTIONS, useGlobalContext } from '../../utils';
-import { fetchGridData } from '../../store';
+import { useGlobalContext } from '../../utils';
+import { fetchGridData } from '../../store/index1';
 // import AuditLog from './AuditLog';
 import { Button } from '../../shared';
 import { CopyIcon, OpenEyeIcon } from '../../assets';
-import { useNavigate } from 'react-router-dom';
-// import Deploy from './Deploy';
+import { REFRESH_OPTIONS } from '../../constants';
+import { history } from '../../helpers/history';
 
 export const ListNamespaces = () => {
-  const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
@@ -144,11 +142,6 @@ export const ListNamespaces = () => {
     }
   };
 
-  const clusterOptions = state.clusterList.map(item => ({
-    label: item.name,
-    value: item.id,
-  }));
-
   function handleSelectNamespace(id) {
     fetchGridData({
       setState,
@@ -189,19 +182,12 @@ export const ListNamespaces = () => {
       };
     });
 
-    navigate('/namespaces/deploy', {
+    history.push('/namespaces/deploy', {
       state: {
         id,
       },
     });
   };
-
-  useEffect(() => {
-    fetchGridData({
-      setState,
-      module: 'clusters',
-    });
-  }, [setState]);
 
   const onBreadcrumbClick = e => {
     handleSelectNamespace(e.id);
@@ -238,7 +224,6 @@ export const ListNamespaces = () => {
         title="Namespaces List"
         columns={COLUMNS}
         refreshOptions={REFRESH_OPTIONS}
-        clusterOptions={clusterOptions}
         onBreadcrumbClick={onBreadcrumbClick}
         placeholder="Search Namespace, ID, Flow Name, Bucket Name"
         handleRefresh={handleRefresh}

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -8,9 +9,8 @@ import { getTheme } from '@table-library/react-table-library/baseline';
 import { useSort } from '@table-library/react-table-library/sort';
 
 import { theme } from '../../styles';
-import { GridActions } from './GridActions';
+import { GridActions as GridActionsComponent } from './GridActions';
 import { useGlobalContext } from '../../utils';
-import { fetchGridData } from '../../store';
 import { Loader, LoaderContainer } from '../Loader';
 import Pagination from './Pagination';
 import Breadcrumb from '../../shared/Breadcrumb';
@@ -20,6 +20,8 @@ import { Modal } from '../../shared';
 import { Table } from './Table';
 import { TextRender } from './CellRenders';
 import { NoDataIcon } from '../../assets';
+import { GridActions, GridSelectors } from '../../store/grid';
+import { fetchGridData } from '../../store/services';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -96,6 +98,10 @@ export const Grid = ({
   onBreadcrumbClick = () => {},
   handleRefresh = () => {},
 }) => {
+  const dispatch = useDispatch();
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, module)
+  );
   const {
     state: {
       search,
@@ -121,12 +127,24 @@ export const Grid = ({
     },
     setState,
   } = useGlobalContext();
-  const DATA = { nodes: getData(loaders[module], data, nodes) };
+  const DATA = {
+    nodes: getData(
+      loaders[module],
+      module === 'clusters' || module === 'users' || module === 'namespaces'
+        ? gridData
+        : data,
+      nodes
+    ),
+  };
 
   const tableTheme = useTheme([
     getTheme(),
     {
       Table: `
+      --data-table-library_grid-template-columns: ${columns
+        .map(column => column.width)
+        .join(' ')} !important;
+
         th, td {
           border-bottom: none !important;
         }
@@ -169,19 +187,27 @@ export const Grid = ({
   };
 
   useEffect(() => {
-    fetchGridData({
-      setState,
-      module,
-      search,
-      page,
-      ...(nodeClusterId && { nodeClusterId }),
-      ...(selectedSourceClusterId && { selectedSourceClusterId }),
-    });
+    if (
+      module === 'clusters' ||
+      module === 'users' ||
+      module === 'namespaces'
+    ) {
+      dispatch(GridActions.fetchGrid({ module, params: { page: 1, search } }));
+    } else {
+      fetchGridData({
+        setState,
+        module,
+        search,
+        page,
+        ...(nodeClusterId && { nodeClusterId }),
+        ...(selectedSourceClusterId && { selectedSourceClusterId }),
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setState, module, search, page]);
   return (
     <Container>
-      <GridActions
+      <GridActionsComponent
         title={title}
         module={module}
         clusterOptions={clusterOptions}

@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { toast } from 'react-toastify';
-import { useForm } from 'react-hook-form';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { useDispatch, useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
 
 import { theme } from '../../styles';
 import { SelectField } from '../../shared';
-import { Table } from '../../components';
+import { ClusterSelect, Table } from '../../components';
 import { InsightContainer, FlowMetrics } from './components';
-import { useGlobalContext } from '../../utils';
 import {
   ActiveThreadIcon,
   DisabledProcessorIcon,
@@ -24,9 +23,10 @@ import {
 } from '../../assets';
 import { CrossIcon } from '../../assets/Icons/CrossIcon';
 import {
-  fetchGridData,
-  getInitialClusterData,
-  getNamespaceData,
+  DashboardActions,
+  DashboardSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
 } from '../../store';
 
 const TopSection = styled.div`
@@ -133,14 +133,7 @@ const IdWrapper = styled.div`
   text-overflow: ellipsis;
   overflow: hidden;
 `;
-const StyledSelectField = styled(SelectField)`
-  margin-bottom: 0;
-  margin-right: 1.4rem;
-  padding: 0;
-  > div {
-    margin-top: 0;
-  }
-`;
+
 const StyledTable = styled(Table)`
   height: 60%;
 
@@ -156,15 +149,15 @@ const FlowMetricContainer = styled.div`
 `;
 
 export const Dashboard = () => {
-  const { state, setState } = useGlobalContext();
-  const [clusterDetails, setClusterDetails] = useState([]);
-  const [namespaceArray, setNamespaceArray] = useState([]);
-  const [selectedClusterId, setSelectedClusterId] = useState('');
-  const [namespaceIdSelected, setNamespaceIdSelected] = useState('');
-  const [errorsLogs, setErrorLogs] = useState([]);
+  const dispatch = useDispatch();
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const namespaces = useSelector(NamespacesSelectors.getNamespaces);
+  const dashboardData = useSelector(DashboardSelectors.getDashboardData);
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
-  const { control } = useForm();
   const COLUMNS = [
     {
       label: 'Process Group',
@@ -217,60 +210,10 @@ export const Dashboard = () => {
       ),
       width: '50%',
     },
-    // {
-    //   label: '',
-    //   renderCell: () => <DownArrowIcon />,
-    //   width: '10%',
-    // },
   ];
 
-  const getNamespaceDetails = async id => {
-    const response = await getNamespaceData(selectedClusterId, id);
-    if (response.status == 200) {
-      setClusterDetails(response?.data);
-      setErrorLogs(response.data.errors);
-    } else {
-      toast.error(response?.message || 'Something went wrong');
-    }
-  };
-
-  const getClusterDetalis = async id => {
-    const response = await getInitialClusterData(id);
-    if (response.status == 200) {
-      setClusterDetails(response.data);
-      const filteredNamespaceArray = response.data.namespaces.data.map(
-        ({ id, name }) => ({
-          value: id,
-          label: name,
-        })
-      );
-      setNamespaceArray(filteredNamespaceArray);
-      setErrorLogs(response.data.errors);
-    } else {
-      toast.error(response?.message || 'Something went wrong');
-    }
-  };
-
-  const onClusterSelect = async selectedItem => {
-    try {
-      if (selectedItem) {
-        getClusterDetalis(selectedItem?.value);
-        setSelectedClusterId(selectedItem?.value);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  const onNamespaceSelect = async selectedItem => {
-    try {
-      if (selectedItem) {
-        setNamespaceIdSelected(selectedItem?.value);
-        await getNamespaceDetails(selectedItem?.value);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+  const onNamespaceSelect = selectedItem => {
+    dispatch(NamespacesActions.setSelectedNamespace(selectedItem));
   };
   const onRefreshSelect = selectedItem => {
     if (selectedItem) {
@@ -284,41 +227,31 @@ export const Dashboard = () => {
     { value: 100000, label: '1 Minute' },
   ];
 
-  const clusterOptions = state.clusterList
-    .filter(item => item.is_active)
-    .map(item => ({
-      label: item.name,
-      value: item.id,
-    }));
-
-  const handleRefreshFunctionality = () => {
-    if (namespaceIdSelected) {
-      getNamespaceDetails(namespaceIdSelected);
-    } else if (selectedClusterId) {
-      getClusterDetalis(selectedClusterId);
-    }
-    return;
-  };
-
-  useEffect(() => {
-    fetchGridData({
-      setState,
-      module: 'clusters',
-    });
-  }, [setState]);
-
   useEffect(() => {
     if (refreshState !== false) {
-      intervalRef.current = setInterval(
-        handleRefreshFunctionality,
-        refreshState
-      );
+      intervalRef.current = setInterval(() => {
+        if (!isEmpty(selectedCluster)) {
+          dispatch(DashboardActions.fetchDashboard());
+        }
+      }, refreshState);
     } else {
       clearInterval(intervalRef.current);
     }
 
     return () => clearInterval(intervalRef.current);
-  }, [selectedClusterId, namespaceIdSelected, refreshState]);
+  }, [dispatch, selectedCluster, refreshState]);
+
+  useEffect(() => {
+    if (!isEmpty(selectedCluster)) {
+      dispatch(DashboardActions.fetchDashboard());
+    }
+  }, [dispatch, selectedCluster, selectedNamespace]);
+
+  useEffect(() => {
+    if (!isEmpty(selectedCluster)) {
+      dispatch(NamespacesActions.fetchNamespaces());
+    }
+  }, [dispatch, selectedCluster]);
 
   return (
     <>
@@ -331,11 +264,7 @@ export const Dashboard = () => {
         </QuickInsightHeading>
         <DropdownWrapper>
           <DropdownContainer>
-            <StyledSelectField
-              name="selectedItem"
-              control={control}
-              options={clusterOptions}
-              onChange={onClusterSelect}
+            <ClusterSelect
               placeholder="Select Cluster"
               title="Select Cluster"
               backgroundColor={theme.colors.lightGrey}
@@ -344,9 +273,10 @@ export const Dashboard = () => {
           </DropdownContainer>
           <DropdownContainer>
             <SelectField
-              name="selectedItem"
-              control={control}
-              options={namespaceArray || []}
+              options={namespaces.map(({ id, name }) => ({
+                value: id,
+                label: name,
+              }))}
               onChange={onNamespaceSelect}
               placeholder="Select Namespace"
               title="Select Namespace"
@@ -356,8 +286,6 @@ export const Dashboard = () => {
           </DropdownContainer>
           <DropdownContainer>
             <SelectField
-              name="selectedItem"
-              control={control}
               options={RefreshArray}
               onChange={onRefreshSelect}
               placeholder={` Refresh`}
@@ -372,50 +300,50 @@ export const Dashboard = () => {
         <InsightContainer
           backgroundCss="#F1F5FF"
           icon={TotalProcessorIcon}
-          count={clusterDetails?.total_processors || '0'}
+          count={dashboardData?.total_processors || '0'}
           text="Total Processor"
         />
         <InsightContainer
           backgroundCss="#FEFBEC"
           icon={RunnigProcessorIcon}
-          count={clusterDetails?.running_processors || '0'}
+          count={dashboardData?.running_processors || '0'}
           text="Running Processor"
         />
 
         <InsightContainer
           backgroundCss="#EEF9FB"
           icon={StoppedProcessorIcon}
-          count={clusterDetails?.stopped_processors || '0'}
+          count={dashboardData?.stopped_processors || '0'}
           text="Stopped Processor"
         />
         <InsightContainer
           backgroundCss="#FDF3FC"
           icon={DisabledProcessorIcon}
-          count={clusterDetails?.disabled_processors || '0'}
+          count={dashboardData?.disabled_processors || '0'}
           text="Disabled Processor"
         />
         <InsightContainer
           backgroundCss="#FFF7ED"
           icon={InvalidProcessorIcon}
-          count={clusterDetails?.invalid_count || '0'}
+          count={dashboardData?.invalid_count || '0'}
           text="Invalid Processor"
         />
         <InsightContainer
           backgroundCss="#F0F0F2"
           icon={ActiveThreadIcon}
-          count={clusterDetails?.active_thread_count || '0'}
+          count={dashboardData?.active_thread_count || '0'}
           text="Active Thread"
         />
         <InsightContainer
           backgroundCss="#EEF8FF"
           icon={TotalQuedIcon}
-          count={clusterDetails?.queued_size || '0 MB'}
+          count={dashboardData?.queued_size || '0 MB'}
           text="Total Queued"
         />
         <InsightContainer
           backgroundCss="#EEF0F4"
           icon={FlowFiledQuedIcon}
-          count={clusterDetails?.flow_files_queued || '0'}
+          count={dashboardData?.flow_files_queued || '0'}
           text="Flow Files Queued"
         />
       </InsightDataContiner>
@@ -425,7 +353,7 @@ export const Dashboard = () => {
           <HeaderText>Flow Metrics</HeaderText>
         </FlowMetricHeader>
         <FlowMetrics
-          flowMetricsDataDynamic={clusterDetails?.flowMetrixYData || [0, 0, 0]}
+          flowMetricsDataDynamic={dashboardData?.flowMetrixYData || [0, 0, 0]}
         />
       </FlowMetricContainer>
       <ErrorsHeader>
@@ -433,7 +361,7 @@ export const Dashboard = () => {
 
         <HeaderText>Errors</HeaderText>
       </ErrorsHeader>
-      <StyledTable data={[...errorsLogs] || []} columns={COLUMNS} />
+      <StyledTable data={dashboardData.errors || []} columns={COLUMNS} />
     </>
   );
 };

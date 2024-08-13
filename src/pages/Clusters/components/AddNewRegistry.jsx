@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { InputField, Button, PasswordField } from '../../../shared';
-import { RegexConst } from '../../../utils';
+import { RegexConst } from '../../../constants';
 import { AddCertificate } from './AddCertificate';
 import { SummaryModal } from './SummaryModal';
 import {
@@ -18,7 +18,7 @@ import {
   DeleteSmallIcon,
   LinkIcon,
 } from '../../../assets';
-import { testRegistry } from '../../../store';
+import { testRegistry } from '../../../store/index1';
 import { SuccessTestModal } from './SuccessTestModal';
 import { FailedTestModal } from './FailedTestModal';
 

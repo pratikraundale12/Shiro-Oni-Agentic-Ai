@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { AuthenticationSelectors } from '../store';
 
 const FloatingAlertBox = styled.div`
   border: 3px solid #f3c652;
@@ -41,12 +43,14 @@ const Container = styled.div`
   z-index: 10;
 `;
 
-const SessionExpiredLabel = ({ closeTab, expireData }) => {
+const SessionExpiredLabel = ({ closeTab }) => {
+  const license = useSelector(AuthenticationSelectors.getLicense);
+
   return (
     <Container>
       <FloatingAlertBox>
         <AlertContent>
-          <AlertText>Your license will expire on {expireData}.</AlertText>
+          <AlertText>Your license will expire on {license}.</AlertText>
           <IconContainer onClick={closeTab}>
             <svg
               width="33"
@@ -78,5 +82,4 @@ export default SessionExpiredLabel;
 
 SessionExpiredLabel.propTypes = {
   closeTab: PropTypes.func,
-  expireData: PropTypes.string,
 };

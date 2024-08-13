@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import FieldErrorMessage from '../FieldErrorMessage';
-import { hasError } from '../../../../utils';
+import { hasError } from '../../../../helpers';
 
 const Container = styled.div`
   width: 100%;

@@ -7,9 +7,9 @@ import {
   createRegistry,
   updateCluster,
   updateRegistry,
-} from '../../../store';
-import { useNavigate } from 'react-router-dom';
+} from '../../../store/index1';
 import { toast, ToastContainer } from 'react-toastify';
+import { history } from '../../../helpers/history';
 // import { FileIcon } from '../../../assets';
 
 const ClusterDetailsContainer = styled.div`
@@ -142,7 +142,6 @@ export const SummaryModal = ({
   edit,
 }) => {
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const addRegistry = async () => {
     const data = {
       name: registryData?.registryName,
@@ -170,7 +169,7 @@ export const SummaryModal = ({
     if (response?.status === 201) {
       setLoading(false);
 
-      navigate('/cluster');
+      history.push('/clusters');
       toast.success(response.message);
     } else {
       setLoading(false);
@@ -188,7 +187,7 @@ export const SummaryModal = ({
     if (response?.id) {
       setLoading(false);
       toast.success(response.message);
-      navigate('/cluster');
+      history.push('/clusters');
     } else {
       setLoading(false);
       toast.error(response.message);

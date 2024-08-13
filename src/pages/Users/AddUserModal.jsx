@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -14,14 +15,15 @@ import {
   PhoneField,
 } from '../../shared';
 import { PlusCircleIcon, UserIcon, MailIcon, PhoneIcon } from '../../assets';
-import { fetchGridData, createUserApi, editUserDataApi } from '../../store';
-import { API_URL, useGlobalContext } from '../../utils';
+import { fetchGridData, createUserApi, editUserDataApi } from '../../store/index1';
+import { useGlobalContext } from '../../utils';
 import {
   userSchema,
   editUserSchema,
 } from '../../components/UserManagement/userValidation';
 import { ProfileUpload } from './ProfileUpload';
 import { theme } from '../../styles';
+import { API_URL } from '../../constants';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -136,8 +138,9 @@ export const AddUserModal = props => {
     { value: false, label: 'Inactive' },
   ];
   const roleOption = [
-    { value: 'admin', label: 'Admin' },
-    { value: 'user', label: 'User' },
+    { value: '9504c471-e895-457d-90b1-ce6758badd9d', label:	'Admin' },
+    { value: '0c5840f6-3ac4-47b4-9740-24ac33645150', label:	'Manager' },
+    { value: 'b8b61796-7def-4416-8420-c6812155d495', label: 'Developer' },
   ];
 
   const onSubmit = async data => {
@@ -149,7 +152,7 @@ export const AddUserModal = props => {
     formData.append('password', data.password);
     formData.append('phone', data.phone_number);
     formData.append('is_active', data.is_active !== false);
-    formData.append('type', data?.type || 'user');
+    formData.append('role_id', data?.role_id);
     formData.append('username', data.username);
     if (data.photo && data.photo.size > 0) {
       formData.append('photo', data.photo);
@@ -248,7 +251,7 @@ export const AddUserModal = props => {
             </DropDownWrapper>
             <DropDownWrapper>
               <StyledSelectField
-                name="type"
+                name="role_id"
                 size="sm"
                 options={roleOption}
                 errors={errors}

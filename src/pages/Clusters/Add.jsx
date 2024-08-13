@@ -9,20 +9,20 @@ import { Title } from './components/Title';
 import { Button, InputField, SelectField } from '../../shared';
 import { useForm } from 'react-hook-form';
 import { LinkIcon, QRIcons } from '../../assets';
-import { useNavigate } from 'react-router-dom';
 import { Certificate } from './components/Certificate';
 import { Creditionals } from './components/Creditionals';
 import { useLocation } from 'react-router-dom';
-import { RegexConst } from '../../utils';
+import { RegexConst } from '../../constants';
 import { SummaryModal } from './components/SummaryModal';
-import {
-  getRegistryList,
-  getOneRegistry,
-  testCluster,
-  testRegistry,
-} from '../../store';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { FailedTestModal } from './components/FailedTestModal';
+import { history } from '../../helpers/history';
+import {
+  testCluster,
+  testRegistry,
+  getOneRegistry,
+  getRegistryList,
+} from '../../store/apis';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -290,7 +290,6 @@ export const Add = () => {
     ),
   });
 
-  const navigate = useNavigate();
   const [registries, setRegistries] = useState([]);
   const selectedRegistryId = watch('registry');
   console.log(data, 'ed');
@@ -305,7 +304,7 @@ export const Add = () => {
       setActiveTab(TABS.REGISTRY);
       setNewRegistry(false);
     } else if (activeTab === TABS.CLUSTER) {
-      navigate('/cluster');
+      history.push('/clusters');
     } else {
       setActiveTab(TABS.CLUSTER);
     }

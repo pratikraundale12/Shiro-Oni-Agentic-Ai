@@ -11,7 +11,7 @@ import {
   Modal,
   RadioSelectField,
 } from '../../shared';
-import { updateParameterContextService } from '../../store';
+import { updateParameterContextService } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`

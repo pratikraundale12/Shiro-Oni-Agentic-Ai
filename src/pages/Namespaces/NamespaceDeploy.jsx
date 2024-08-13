@@ -10,7 +10,7 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
-import { updateNamespaceStatus } from '../../store';
+import { updateNamespaceStatus } from '../../store/index1';
 import { toast } from 'react-toastify';
 import { useGlobalContext } from '../../utils';
 

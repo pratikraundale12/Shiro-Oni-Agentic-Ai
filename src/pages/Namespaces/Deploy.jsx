@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   QRIcons,
@@ -11,9 +11,10 @@ import {
 import { FullPageLoader, Table, TextRender } from '../../components';
 import { Button, RadioField, SelectField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { checkCluster, fetchGridData } from '../../store';
+import { checkCluster, fetchGridData } from '../../store/index1';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
+import { history } from '../../helpers/history';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -123,7 +124,6 @@ const Deploy = () => {
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [showDeployUI, setShowDeployUI] = useState(false);
-  const navigate = useNavigate();
   useEffect(() => {
     handleSelectNamespace();
   }, [state.selectedDestinationClusterId]);
@@ -131,7 +131,7 @@ const Deploy = () => {
   const location = useLocation();
 
   const handleBreadcrumbClick = breadcrumb => {
-    navigate(breadcrumb.path);
+    history.push(breadcrumb.path);
   };
   const COLUMNS = [
     {
@@ -249,11 +249,11 @@ const Deploy = () => {
 
   const handleClick = () => {
     if (state.deployData) {
-      navigate('/namespaces/upgrade');
+      history.push('/namespaces/upgrade');
     }
   };
   const handleBackClick = () => {
-    navigate('/namespaces');
+    history.push('/namespaces');
   };
 
   const onClusterCheck = async e => {
@@ -294,7 +294,7 @@ const Deploy = () => {
           upgradeData: response,
           selectedClusterName,
         }));
-        navigate('/namespaces/upgrade', {
+        history.push('/namespaces/upgrade', {
           state: {
             upgradeData: response,
           },

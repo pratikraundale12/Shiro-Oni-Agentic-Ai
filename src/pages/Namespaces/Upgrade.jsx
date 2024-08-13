@@ -10,11 +10,11 @@ import {
 } from '../../assets';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { useNavigate } from 'react-router-dom';
 import { Table } from '../../components';
 import RightIcon from '../../assets/Icons/RightIcon';
 import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
 import { useGlobalContext } from '../../utils';
+import { history } from '../../helpers/history';
 
 const Container = styled.div`
   // height: calc(100vh - 78px);
@@ -165,7 +165,6 @@ const VersionDiv = styled.div`
 `;
 
 const Upgrade = () => {
-  const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
   const convertDate = dateString => {
     const date = new Date(dateString);
@@ -218,10 +217,10 @@ const Upgrade = () => {
     { id: '3', name: 'Configuration Details' },
   ];
   const handleBreadcrumbClick = breadcrumb => {
-    navigate(breadcrumb.path);
+    history.push(breadcrumb.path);
   };
   const handleClick = () => {
-    navigate('/namespaces/summary', {
+    history.push('/namespaces/summary', {
       state: {
         // upgradeData,
         // selectedVersion,
@@ -234,7 +233,7 @@ const Upgrade = () => {
   };
 
   const handleBackClick = () => {
-    navigate('/namespaces/deploy');
+    history.push('/namespaces/deploy');
   };
 
   const handleVersionSelect = version => {

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import TogglePassword from './components/TogglePassword';
 import InputField from '../InputField';
 import { BagIcon } from '../../../../assets';
-import { hasError } from '../../../../utils';
+import { hasError } from '../../../../helpers';
 
 const Wrapper = styled.div`
   position: relative;

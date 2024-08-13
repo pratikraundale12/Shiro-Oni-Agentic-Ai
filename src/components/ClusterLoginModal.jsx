@@ -1,73 +1,73 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, SelectField, PasswordField, InputField } from '../../shared';
+import React, { useState } from 'react';
+import { Modal, PasswordField, InputField } from '../shared';
 import PropTypes from 'prop-types';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ClusterIcon, UserIcon } from '../../assets';
+import { ClusterIcon, UserIcon } from '../assets';
 import { toast } from 'react-toastify';
-import { getClusterList, getClusterToken } from '../../store';
+import { getClusterToken } from '../store/apis';
+import { ClusterSelect } from './ClusterSelect';
 
 const clusterSchema = yup.object().shape({
-  cluster: yup.string().required('Registry Name is required'),
+  cluster_id: yup.string().required('Cluster is required'),
   username: yup.string().required('Username is required'),
   password: yup.string().required('Password is required'),
 });
 
-export const ClusterEnableModal = ({ setIsOpen, isOpen, clusterId }) => {
-  const [clusterList, setClusterList] = useState([]);
-  const [selectedClusterName, setSelectedClusterName] = useState('');
+export const ClusterLoginModal = ({ setIsOpen, isOpen }) => {
+  // const [clusterList, setClusterList] = useState([]);
+  // const [selectedClusterName, setSelectedClusterName] = useState('');
   const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
     control,
     watch,
-    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(clusterSchema),
   });
-  const clusterArrayData = JSON.parse(localStorage.getItem('clusters'));
-  const clusterIdConnected = new Set(clusterArrayData?.map(item => item.id));
-  const getClusterDataList = async () => {
-    try {
-      const response = await getClusterList();
-      if (response.status === 200) {
-        const filteredClusterArray = response.data.filter(
-          item => !clusterIdConnected.has(item.id)
-        );
-        const filteredArray = filteredClusterArray.map(item => ({
-          label: item.name,
-          value: item.id,
-        }));
+  // const clusterArrayData = JSON.parse(localStorage.getItem('clusters'));
+  // const clusterIdConnected = new Set(clusterArrayData?.map(item => item.id));
+  // const getClusterDataList = async () => {
+  //   try {
+  //     const response = await getClusterList();
+  //     if (response.status === 200) {
+  //       const filteredClusterArray = response.data.filter(
+  //         item => !clusterIdConnected.has(item.id)
+  //       );
+  //       const filteredArray = filteredClusterArray.map(item => ({
+  //         label: item.name,
+  //         value: item.id,
+  //       }));
 
-        setClusterList(filteredArray);
-        const selectedCluster = response.data.find(
-          item => item.id === clusterId
-        );
-        if (selectedCluster) {
-          setSelectedClusterName(selectedCluster.name);
-          setValue('cluster', selectedCluster.id);
-        }
-      } else {
-        toast.error(response?.message || 'Something went wrong');
-      }
-    } catch (error) {
-      toast.error('Error fetching cluster data');
-    }
-  };
+  //       setClusterList(filteredArray);
+  //       const selectedCluster = response.data.find(
+  //         item => item.id === clusterId
+  //       );
+  //       if (selectedCluster) {
+  //         setSelectedClusterName(selectedCluster.name);
+  //         setValue('cluster', selectedCluster.id);
+  //       }
+  //     } else {
+  //       toast.error(response?.message || 'Something went wrong');
+  //     }
+  //   } catch (error) {
+  //     toast.error('Error fetching cluster data');
+  //   }
+  // };
 
-  useEffect(() => {
-    getClusterDataList();
-  }, [clusterId]);
+  // useEffect(() => {
+  //   getClusterDataList();
+  // }, [clusterId]);
 
   const onSubmit = async data => {
     setLoading(true);
     const clusterData = JSON.parse(localStorage.getItem('clusters'));
 
     const payload = {
-      cluster_id: data.cluster,
+      cluster_id: data.cluster_id,
       username: data.username,
       password: data.password,
     };
@@ -108,14 +108,15 @@ export const ClusterEnableModal = ({ setIsOpen, isOpen, clusterId }) => {
       footerAlign="start"
       contentStyles={{ minWidth: '30%' }}
     >
-      <SelectField
+      <ClusterSelect
         label="Select Cluster"
-        name="cluster"
+        name="cluster_id"
         control={control}
         icon={<ClusterIcon />}
-        options={clusterList || []}
-        error={errors}
-        placeholder={selectedClusterName || 'Select Cluster'}
+        errors={errors}
+        // placeholder={selectedClusterName || 'Select Cluster'}
+        placeholder="Select Cluster"
+        required
       />
 
       <InputField
@@ -140,7 +141,7 @@ export const ClusterEnableModal = ({ setIsOpen, isOpen, clusterId }) => {
   );
 };
 
-ClusterEnableModal.propTypes = {
+ClusterLoginModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func.isRequired,
   clusterId: PropTypes.string,

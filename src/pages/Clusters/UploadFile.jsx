@@ -5,7 +5,7 @@ import { Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { Button, SvgButton } from '../../shared';
 import { CrossIcon, FileIcon } from '../../assets';
-import { getFileSize } from '../../utils';
+import { getFileSize } from '../../helpers';
 
 const StyledButton = styled(Button)`
   height: 36px;

@@ -5,9 +5,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { InputField, Button, PasswordField } from '../../../shared';
-import { RegexConst } from '../../../utils';
+import { RegexConst } from '../../../constants';
 import { AddCertificate } from './AddCertificate';
-import { useNavigate } from 'react-router-dom';
 
 import {
   SmallPerfileIcon,
@@ -19,10 +18,11 @@ import {
   DeleteSmallIcon,
   LinkIcon,
 } from '../../../assets';
-import { testCluster } from '../../../store';
+import { testCluster } from '../../../store/index1';
 import { SuccessTestModal } from './SuccessTestModal';
 import { FailedTestModal } from './FailedTestModal';
 import { IconButton } from '../../../components';
+import { history } from '../../../helpers/history';
 
 const InputContainer = styled.div`
   display: flex;
@@ -225,8 +225,6 @@ export const AddNewCluster = ({
     defaultValues: clusterData,
   });
 
-  const navigate = useNavigate();
-
   const testClusterData = async data => {
     setTestLoader(true);
     setClusterData({
@@ -423,7 +421,7 @@ export const AddNewCluster = ({
               <Button
                 variant="secondary"
                 onClick={() => {
-                  navigate('/cluster');
+                  history.push('/clusters');
                 }}
               >
                 Back

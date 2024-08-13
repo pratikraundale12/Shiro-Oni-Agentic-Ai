@@ -7,7 +7,7 @@ import { PasswordField } from '../../../shared';
 import { InputField } from '../../../shared';
 import { SuccessTestModal } from './SuccessTestModal';
 import { FailedTestModal } from './FailedTestModal';
-import { testCluster, testRegistry } from '../../../store';
+import { testCluster, testRegistry } from '../../../store/index1';
 
 export const Creditionals = ({
   isCredOpen,

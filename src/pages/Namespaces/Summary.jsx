@@ -5,7 +5,6 @@ import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import NamespaceDeploy from './NamespaceDeploy';
 // import AddParameterContext from './AddParameterContext';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   SmallNotThunderIcon,
@@ -24,10 +23,11 @@ import {
   getCountDetails,
   updateNamespaceStatus,
   upgradeCluster,
-} from '../../store';
+} from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import AddParameterContext from './AddParameterContext';
 import ParameterContext from './ParameterContext';
+import { history } from '../../helpers/history';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -286,13 +286,12 @@ const Summary = () => {
   });
   const [parameterContextItem, setParameterContextItem] = useState({});
   const [progress, setProgress] = useState(0);
-  const navigate = useNavigate();
 
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
   const handleBreadcrumbClick = breadcrumb => {
-    navigate(breadcrumb.path);
+    history.push(breadcrumb.path);
   };
 
   const getParamerterContext = async () => {
@@ -402,7 +401,7 @@ const Summary = () => {
       upgradeData: {},
       updatedCount: null,
     }));
-    navigate('/namespaces');
+    history.push('/namespaces');
     setModalOpen(false);
   };
 
@@ -429,7 +428,7 @@ const Summary = () => {
   };
 
   const handleBackClick = () => {
-    navigate('/namespaces/upgrade');
+    history.push('/namespaces/upgrade');
   };
 
   const [activeButton, setActiveButton] = useState(null);
