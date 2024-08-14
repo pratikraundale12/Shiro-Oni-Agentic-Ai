@@ -94,8 +94,8 @@ export const Grid = ({
   title = '',
   buttonText = '',
   placeholder = '',
-  addModal = () => {},
-  handleRefresh = () => {},
+  addModal = () => { },
+  handleRefresh = () => { },
   // isNamespace = false,
   // LIMIT,
   // offset,
@@ -143,13 +143,14 @@ export const Grid = ({
     nodes: getData(loading, gridData, nodes),
   };
 
+
   const tableTheme = useTheme([
     getTheme(),
     {
       Table: `
-      --data-table-library_grid-template-columns: ${columns
-        .map(column => column.width)
-        .join(' ')} !important;
+        --data-table-library_grid-template-columns: ${columns
+          .map(column => column.width)
+          .join(' ')} !important;
         margin-bottom: 0;
 
         th, td {
@@ -168,6 +169,9 @@ export const Grid = ({
 
         tbody tr:nth-of-type(even) td {
           background-color: ${theme.colors.lightGrey} !important;          
+        }
+       tr td:last-child div {
+          overflow: visible;
         }
       `,
     },

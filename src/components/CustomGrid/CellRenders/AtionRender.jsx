@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { CircleExclamationMarkIcon, ThreedotsIcon } from '../../../assets';
 import { Tooltip } from '../../../shared/Tooltip';
 import { theme } from '../../../styles';
+import { EnableClusterRender } from './EnableClusterRender';
 
 // Styled components based on the provided CSS
 const ActionTd = styled.div`
@@ -77,15 +78,19 @@ const TooltipSecond = styled.div`
   gap: 8px;
 `;
 
-export const ActionRender = ({ handleMenuClick, item }) => {
+export const ActionRender = ({ handleMenuClick, item, children }) => {
   return (
     <ActionTd>
       <IconButton data-tooltip-id={item.id}>
         <CircleExclamationMarkIcon color={theme.colors.border} />
       </IconButton>
+     <div className="position-relative">
       <IconButton onClick={event => handleMenuClick(event, item)}>
-        <ThreedotsIcon />
-      </IconButton>
+          <ThreedotsIcon />
+        </IconButton>
+        {children}
+     </div>
+      <EnableClusterRender item={item} />
       <Tooltip
         id={item.id}
         styles={{
@@ -135,4 +140,6 @@ ActionRender.propTypes = {
     total_nodes: PropTypes.number.isRequired,
     connected_nodes: PropTypes.number.isRequired,
   }).isRequired,
+  ref: PropTypes.func,
+  children: PropTypes.any,
 };
