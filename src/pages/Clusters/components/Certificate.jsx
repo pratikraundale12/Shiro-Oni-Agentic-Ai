@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import * as yup from 'yup';
@@ -22,6 +22,11 @@ const NifiText = styled.h6`
   line-height: 18.52px;
   color: #425466;
 `;
+
+const DEFAULT_VALUES = {
+  pfxFile: null,
+  password: '',
+};
 
 export const Certificate = ({
   isCertificateOpen,
@@ -45,7 +50,12 @@ export const Certificate = ({
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: DEFAULT_VALUES,
   });
+
+  useEffect(() => {
+    if (isCertificateOpen) reset(DEFAULT_VALUES);
+  }, [isCertificateOpen]);
 
   const handleTest = async data => {
     const payload = new FormData();
@@ -94,16 +104,13 @@ export const Certificate = ({
   const onSubmit = data => {
     setLoading(true);
     handleTest(data);
-    reset({
-      pfxFile: '',
-      password: '',
-    });
+    reset(DEFAULT_VALUES);
   };
 
   return (
     <>
       <Modal
-        title="Add Certificate"
+        title={`Add ${activeTab === 'cluster' ? 'Cluster' : 'Registry'} Certificate`}
         isOpen={isCertificateOpen}
         onRequestClose={() => setIsCertificateOpen(false)}
         size="sm"
@@ -136,7 +143,7 @@ export const Certificate = ({
           <PasswordField
             name="password"
             watch={watch}
-            label="Passphrase"
+            label="PFX Passphrase"
             register={register}
             placeholder="Enter your Passphrase"
             icon={<KeyIcons />}

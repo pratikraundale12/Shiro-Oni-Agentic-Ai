@@ -125,13 +125,13 @@ const DetailsTitle = styled.div`
 const TextEllipses = styled.div`
   font-size: 14px;
   font-weight: 500;
-  line-height: 18.52px;
   letter-spacing: -0.005em;
   color: #7a7a7a;
   white-space: nowrap;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  border-bottom: 1px solid #7a7a7a;
 `;
 
 export const SummaryModal = ({
@@ -230,9 +230,10 @@ export const SummaryModal = ({
         isOpen={openSummary}
         onRequestClose={() => setOpenSummary(false)}
         size="sm"
-        secondaryButtonText="Cancel"
+        secondaryButtonText="Back"
         primaryButtonText="Save"
         loading={loading}
+        footerAlign="start"
         onSubmit={handleSubmit}
       >
         <ModalBody>

@@ -75,10 +75,20 @@ export const UploadFile = ({ name, control, watch }) => {
       render={({ field: { onChange } }) => {
         const handleChange = event => {
           const uploadedFile = event.target.files[0];
-          if (uploadedFile.type !== 'application/x-pkcs12')
+          if (uploadedFile?.type !== 'application/x-pkcs12') {
             toast.error('Invalid file type');
-          onChange(event.target.files[0]);
+          } else {
+            onChange(uploadedFile);
+          }
         };
+
+        const handleRemove = () => {
+          onChange(null);
+          if (ref.current) {
+            ref.current.value = '';
+          }
+        };
+
         return (
           <div>
             <FileWrapper>
@@ -87,10 +97,7 @@ export const UploadFile = ({ name, control, watch }) => {
                 <FlexBetween>
                   <FileLabel>PFX File</FileLabel>
                   {file && (
-                    <RemoveButton
-                      onClick={() => onChange(null)}
-                      icon={<CrossIcon />}
-                    />
+                    <RemoveButton onClick={handleRemove} icon={<CrossIcon />} />
                   )}
                 </FlexBetween>
                 {file && (

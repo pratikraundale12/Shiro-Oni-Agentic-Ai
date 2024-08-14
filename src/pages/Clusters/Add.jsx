@@ -199,7 +199,9 @@ const RegistryDetailsDivTwo = styled.div`
 const BottomButtonDiv = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 20px;
+  width: 100%;
   margin-top: 20px;
 `;
 
