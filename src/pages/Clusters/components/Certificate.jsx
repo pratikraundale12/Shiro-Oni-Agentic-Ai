@@ -103,7 +103,7 @@ export const Certificate = ({
   return (
     <>
       <Modal
-        title="Add Certificate"
+        title={`Add ${activeTab === 'cluster' ? 'Cluster' : 'Registry'} Certificate`}
         isOpen={isCertificateOpen}
         onRequestClose={() => setIsCertificateOpen(false)}
         size="sm"
@@ -136,7 +136,7 @@ export const Certificate = ({
           <PasswordField
             name="password"
             watch={watch}
-            label="Passphrase"
+            label="PFX Passphrase"
             register={register}
             placeholder="Enter your Passphrase"
             icon={<KeyIcons />}
