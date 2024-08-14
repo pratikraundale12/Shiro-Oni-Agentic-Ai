@@ -291,8 +291,12 @@ const Summary = () => {
     mode: 'add',
   });
   const [progress, setProgress] = useState(0);
-  const { state, setState } = useGlobalContext();
   const navigate = useNavigate();
+  const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
+    []
+  );
+
+  const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
   const handleBreadcrumbClick = breadcrumb => {
@@ -303,14 +307,13 @@ const Summary = () => {
     try {
       setLoading(true);
       openParameterContext();
+
       const response = await fetchParameterContext(
         state.selectedClusterId,
         state.deployCountDetails?.data?.parameterContextId ||
           state?.updatedCount?.parameterContextId
       );
-      const data = response.data;
 
-      console.log(data.version);
       setState(prevState => ({
         ...prevState,
         parameterDetails: response,
@@ -416,6 +419,7 @@ const Summary = () => {
 
   const closeParameterContext = () => {
     setIsParameterContextOpen(false);
+    setNewlyAddedParameterContext([]);
     setModalOpen(true);
   };
 
@@ -843,6 +847,9 @@ const Summary = () => {
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
         setParameterContextItem={setParameterContextItem}
+        newlyAddedPrameterContext={newlyAddedPrameterContext}
+        getParamerterContext={getParamerterContext}
+        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
       <AddParameterContext
         key={isParameterContextOpen.mode}
@@ -851,6 +858,8 @@ const Summary = () => {
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
+        newlyAddedPrameterContext={newlyAddedPrameterContext}
+        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
 
       <Listvariables

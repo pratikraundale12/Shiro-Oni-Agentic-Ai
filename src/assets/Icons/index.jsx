@@ -1,4 +1,5 @@
 export * from './ActiveThreadIcon';
+export * from './ActivityHistoryIcon';
 export * from './AddIcon';
 export * from './BagIcon';
 export * from './BellIcon';
@@ -42,6 +43,7 @@ export * from './MicroSoftIcon';
 export * from './NameSpaceIcon';
 export * from './NodataIcon';
 export * from './OpenEyeIcon';
+export * from './PageComingSoon';
 export * from './PancilIcon';
 export * from './PeopleIcon';
 export * from './PhoneIcon';

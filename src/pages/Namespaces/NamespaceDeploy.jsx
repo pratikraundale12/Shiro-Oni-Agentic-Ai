@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   GreenRightCircleIcon,

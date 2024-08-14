@@ -135,18 +135,20 @@ export const Grid = ({
     getTheme(),
     {
       Table: `
+        margin-bottom: 0;
+
         th, td {
           border-bottom: none !important;
         }
 
         th {
-          height: 48px;
+          height: 52px;
           background-color: ${theme.colors.lightGrey} !important;
           color:  ${theme.colors.darker} !important;
         }
 
         td {
-          height: 60px;
+          height: 65px;
         }
 
         tbody tr:nth-of-type(even) td {

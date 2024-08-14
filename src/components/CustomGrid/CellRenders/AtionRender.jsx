@@ -25,6 +25,7 @@ export const IconButton = styled.button`
   border-radius: 100%;
   background-color: ${props => props.theme.colors.white};
   border: 1px solid ${props => props.theme.colors.border};
+
   &:disabled {
     opacity: 0.4;
     cursor: not-allowed;
