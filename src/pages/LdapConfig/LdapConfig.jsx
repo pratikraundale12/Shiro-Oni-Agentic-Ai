@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { LinkIcon, QRIcons, TodoIcon } from '../../assets';
 import { Button, CheckboxField, InputField, PasswordField } from '../../shared';
 import { CreateMapping } from './components/CreateMapping';
 import { useForm } from 'react-hook-form';
 import { Table } from '../../components/CustomGrid/Table';
+import { checkLdapConfig } from '../../store/apis/ldap';
+import { toast } from 'react-toastify';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -106,6 +108,9 @@ const EVENTCOLUMNS = [
 
 export const LdapConfig = () => {
   const [mappingOepn, setMappingOpen] = useState(false);
+  const [ldapInitialConfig, setLdapInitialConfig] = useState(false);
+  const [secondFormState, setSecondFormState] = useState(false);
+  setSecondFormState;
   const {
     register,
     handleSubmit,
@@ -117,6 +122,21 @@ export const LdapConfig = () => {
     console.log(data, 'DATA');
   };
 
+  const handleCheckLdapConfig = async () => {
+    const response = await checkLdapConfig();
+    if (response.status === 200) {
+      setLdapInitialConfig(response?.data?.ldapEnabled);
+    } else {
+      toast.error(response?.message || 'Something went wrong');
+    }
+  };
+
+  const handleCheckMark = () => {
+    setLdapInitialConfig(!ldapInitialConfig);
+  };
+  useEffect(() => {
+    handleCheckLdapConfig();
+  }, []);
   return (
     <Wrapper>
       <Heading>
@@ -126,7 +146,11 @@ export const LdapConfig = () => {
           </ImageContainer>
           <Title>LDAP Configuration Fields</Title>
         </Flex>
-        <CheckboxField name="check" />
+        <CheckboxField
+          name="check"
+          checked={ldapInitialConfig}
+          onClick={handleCheckMark}
+        />
       </Heading>
       <InputFieldFlex className="row">
         <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -138,6 +162,7 @@ export const LdapConfig = () => {
             errors={errors}
             placeholder="Enter your LDAP URL"
             icon={<LinkIcon />}
+            disabled={!ldapInitialConfig}
           />
         </div>
         <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -149,6 +174,7 @@ export const LdapConfig = () => {
             errors={errors}
             placeholder="Enter your Login DN"
             icon={<QRIcons />}
+            disabled={!ldapInitialConfig}
           />
         </div>
 
@@ -160,6 +186,7 @@ export const LdapConfig = () => {
             watch={watch}
             required
             label="Password"
+            disabled={!ldapInitialConfig}
           />
         </div>
       </InputFieldFlex>
@@ -178,6 +205,7 @@ export const LdapConfig = () => {
             label="Base DN"
             placeholder="Enter your Base DN"
             icon={<LinkIcon />}
+            disabled={!secondFormState}
           />
         </div>
         <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -187,6 +215,7 @@ export const LdapConfig = () => {
             label="Groups DN"
             placeholder="Enter your Groups DN"
             icon={<QRIcons />}
+            disabled={!secondFormState}
           />
         </div>
         <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -196,6 +225,7 @@ export const LdapConfig = () => {
             label="Users DN"
             placeholder="Enter your Users DN"
             icon={<QRIcons />}
+            disabled={!secondFormState}
           />
         </div>
       </InputFieldFlex>
@@ -207,6 +237,7 @@ export const LdapConfig = () => {
             label="User Unique Identifier"
             placeholder="Enter User Identifier"
             icon={<LinkIcon />}
+            disabled={!secondFormState}
           />
         </div>
 
@@ -217,6 +248,7 @@ export const LdapConfig = () => {
             label="Group Unique Identifier"
             placeholder="Enter Group Identifier"
             icon={<LinkIcon />}
+            disabled={!secondFormState}
           />
         </div>
       </InputFieldFlex>
