@@ -6,15 +6,14 @@ import { toast } from 'react-toastify';
 import { Button, InputField, Modal, SelectField } from '../../shared';
 import { useGlobalContext } from '../../utils';
 import { PlusCircleIcon, UserIcon } from '../../assets';
-import {
-  fetchGridData,
-  getClusters,
-  getClustersAccess,
-  getRolesClusters,
-  updatePermission,
-} from '../../store';
 import { isEmpty } from 'lodash';
 import { useForm } from 'react-hook-form';
+import {
+  getClusters,
+  getRolesClusters,
+  updatePermission,
+} from '../../store/apis';
+import { fetchGridData } from '../../store/services/fetchGridData';
 
 const TableContainer = styled.div`
   flex: 1;

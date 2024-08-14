@@ -7,7 +7,7 @@ import { EditPermissions } from './EditPermissions';
 import { CheckboxField } from '../../shared';
 import { PencilIcon } from '../../assets';
 import { useGlobalContext } from '../../utils';
-import { getRoles } from '../../store';
+import { getRoles } from '../../store/apis';
 import { EditPolicies } from './EditPolicies';
 
 const Select = styled.select`
