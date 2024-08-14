@@ -60,6 +60,7 @@ export const Modal = ({
   loading = false,
   secondaryButtonText = '',
   primaryButtonText = '',
+  primaryButtonDisabled = false,
   onSubmit = () => null,
   onSecondarySubmit,
   secondaryButtonProps = {},
@@ -118,8 +119,9 @@ export const Modal = ({
           </Button>
         )}
         <Button
-          loading={loading && `${primaryButtonText}...`}
+          loading={loading}
           onClick={onSubmit}
+          disabled={primaryButtonDisabled}
           size={!secondaryButtonText ? 'lg' : 'md'}
         >
           {primaryButtonText}
@@ -137,6 +139,7 @@ Modal.propTypes = {
   size: PropTypes.oneOf(['lg', 'md', 'sm']),
   onSubmit: PropTypes.func,
   secondaryButtonText: PropTypes.string,
+  primaryButtonDisabled: PropTypes.bool,
   primaryButtonText: PropTypes.string,
   loading: PropTypes.bool,
   onSecondarySubmit: PropTypes.func,

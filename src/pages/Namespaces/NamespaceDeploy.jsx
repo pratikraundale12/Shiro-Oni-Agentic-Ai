@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from '../../shared';
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   GreenRightCircleIcon,
@@ -10,8 +10,8 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { Modal } from '../../shared';
 import { updateNamespaceStatus } from '../../store';
-import { toast } from 'react-toastify';
 import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
@@ -90,7 +90,7 @@ const CountDiv = styled.div`
   min-width: 48px;
   border: 1px solid #dde4f0;
   border-radius: 8px;
-  background-color: #f5f7fa
+  background-color: #f5f7fa;
   cursor: pointer;
   position: relative;
   display: flex;
