@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
 
 const BreadcrumbContainer = styled.div`
@@ -21,7 +21,7 @@ const BreadcrumbItem = styled.span`
   }
 
   &:last-child {
-    color: #c52b2b;
+    color: #ff7a00;
   }
 
   &:hover {

@@ -34,6 +34,9 @@ export const FlowMetrics = ({ flowMetricsDataDynamic = [] }) => {
     },
     yaxis: {
       opposite: false,
+      labels: {
+        minWidth: 50,
+      },
     },
     legend: {
       horizontalAlign: 'left',
@@ -42,7 +45,7 @@ export const FlowMetrics = ({ flowMetricsDataDynamic = [] }) => {
   };
 
   return (
-    <div id="chart" className="w-100 px-4">
+    <div id="chart" className="w-100">
       <Chart options={options} series={series} type="area" height={350} />
     </div>
   );

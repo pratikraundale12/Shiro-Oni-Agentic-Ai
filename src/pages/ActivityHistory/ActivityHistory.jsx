@@ -1,4 +1,9 @@
 import React from 'react';
+import { PageComingSoon } from '../../shared';
 export const ActvityHistory = () => {
-  return <>ActvityHistory</>;
+  return (
+    <>
+      <PageComingSoon pageTitle="Actvity History" />
+    </>
+  );
 };

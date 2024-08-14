@@ -217,11 +217,6 @@ export const Dashboard = () => {
       ),
       width: '50%',
     },
-    // {
-    //   label: '',
-    //   renderCell: () => <DownArrowIcon />,
-    //   width: '10%',
-    // },
   ];
 
   const getNamespaceDetails = async id => {

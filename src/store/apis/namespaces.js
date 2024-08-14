@@ -72,6 +72,7 @@ export const deployCluster = async ({
   bucketName,
   registryId,
   version,
+  position,
 }) => {
   const data = {
     namespaceId,
@@ -80,6 +81,7 @@ export const deployCluster = async ({
     bucketName,
     registryId,
     version,
+    position,
   };
 
   const response = await API.post(`/clusters/${clusterId}/deploy`, data);
@@ -117,6 +119,68 @@ export const updateParameterContextService = async (
   return response;
 };
 
+export const fetchVariables = async (clusterId, namespaceId) => {
+  try {
+    const response = await API.get(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variables`
+    );
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch variables:', error);
+  }
+};
+
+export const addVariableServices = async (
+  clusterId,
+  namespaceId,
+  version,
+  variables
+) => {
+  try {
+    const response = await API.post(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variables`,
+      {
+        version,
+        variables: variables.map(variable => ({
+          variable: {
+            name: variable.name,
+            value: variable.value,
+          },
+        })),
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch variables:', error);
+    throw error;
+  }
+};
+export const GetVariableServices = async (clusterId, namespaceId, clientId) => {
+  try {
+    const response = await API.get(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${clientId}`
+    );
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch variables:', error);
+    throw error;
+  }
+};
+export const DeleteVariableServices = async (
+  clusterId,
+  namespaceId,
+  clientId
+) => {
+  try {
+    const response = await API.delete(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${clientId}`
+    );
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch variables:', error);
+    throw error;
+  }
+};
 export const deleteParameterContextService = async (
   clusterId,
   parameterContextId,

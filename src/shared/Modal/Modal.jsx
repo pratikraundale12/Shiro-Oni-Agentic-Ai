@@ -66,6 +66,12 @@ export const Modal = ({
   secondaryButtonProps = {},
   footerAlign = 'center',
   contentStyles,
+  tertiaryButton = false,
+  tertiaryButtonConfig = {
+    tertiaryButtonTest: '',
+    tertiaryButtonSubmit: () => null,
+    tertiaryButtonDisable: false,
+  },
 }) => {
   const styleObject = {
     overlay: {
@@ -118,6 +124,16 @@ export const Modal = ({
             {secondaryButtonText}
           </Button>
         )}
+        {tertiaryButton && tertiaryButtonConfig && (
+          <Button
+            variant="secondary"
+            onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
+            disabled={tertiaryButtonConfig.disabled}
+            {...tertiaryButtonConfig}
+          >
+            {tertiaryButtonConfig.tertiaryButtonTest}
+          </Button>
+        )}
         <Button
           loading={loading}
           onClick={onSubmit}
@@ -146,4 +162,10 @@ Modal.propTypes = {
   secondaryButtonProps: PropTypes.object,
   contentStyles: PropTypes.object,
   footerAlign: PropTypes.string,
+  tertiaryButton: PropTypes.bool,
+  tertiaryButtonConfig: PropTypes.shape({
+    tertiaryButtonTest: PropTypes.string,
+    tertiaryButtonSubmit: PropTypes.func,
+    tertiaryButtonDisable: PropTypes.bool,
+  }),
 };
