@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { SmallPerfileIcon } from '../../../assets';
-import { InputField, Modal, PasswordField } from '../../../shared';
-import { testCluster, testRegistry } from '../../../store';
-import { FailedTestModal } from './FailedTestModal';
 import { SuccessTestModal } from './SuccessTestModal';
+import { FailedTestModal } from './FailedTestModal';
+import { testCluster, testRegistry } from '../../../store/index1';
+import { InputField, Modal, PasswordField } from '../../../shared';
 
 const DEFAULT_VALUES = {
   username: '',

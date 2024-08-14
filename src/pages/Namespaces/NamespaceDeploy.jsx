@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   GreenRightCircleIcon,
@@ -10,9 +9,11 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { updateNamespaceStatus } from '../../store/index1';
 import { Modal } from '../../shared';
-import { updateNamespaceStatus } from '../../store';
 import { useGlobalContext } from '../../utils';
+import { useSelector } from 'react-redux';
+import { NamespacesSelectors } from '../../store';
 
 const ModalBody = styled.div`
   position: relative;
@@ -161,13 +162,14 @@ const NamespaceDeploy = ({
   getParamerterContext,
   handleTertiaryButton,
 }) => {
+  const deployDetails = useSelector(NamespacesSelectors.getDeployDetails);
   const { state, setState } = useGlobalContext();
   const [activeButton, setActiveButton] = useState(null);
   const handleUpdateStatus = async (status, buttonId) => {
     try {
       const response = await updateNamespaceStatus(
         state.selectedClusterId,
-        state?.upgradeData?.id || state.deployCountDetails?.data?.id,
+        state?.upgradeData?.id || deployDetails?.id,
         status
       );
       if (response?.data) {
@@ -199,10 +201,7 @@ const NamespaceDeploy = ({
     }
   };
   const handleClick = () => {
-    window.open(
-      state.upgradeData?.nifiUrl || state.deployData.nifiUrl,
-      '_blank'
-    );
+    window.open(deployDetails.nifiUrl, '_blank');
   };
   console.log(state, 'count');
   return (
@@ -219,7 +218,7 @@ const NamespaceDeploy = ({
         onSubmit={handleClick}
         secondaryButtonProps={{
           disabled: !(
-            state?.deployCountDetails?.data?.parameterContextId ||
+            deployDetails?.parameterContextId ||
             state?.updatedCount?.parameterContextId
           ),
         }}
@@ -254,57 +253,61 @@ const NamespaceDeploy = ({
                 <CountDiv
                   className="div-btn-1"
                   count={
-                    state.updatedCount?.runningCount ||
-                    state.deployCountDetails?.data?.runningCount
+                    // state.updatedCount?.runningCount ||
+                    deployDetails?.runningCount
                   }
                   activeColor="#58e715"
                 >
                   <TriangleIcons color="#B5BDC8" />
                   <span>
-                    {state.deployCountDetails?.data?.runningCount ||
-                      state?.updatedCount?.runningCount}
+                    {/* {deployDetails?.runningCount ||
+                      state?.updatedCount?.runningCount} */}
+                    {deployDetails?.runningCount}
                   </span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-2"
                   count={
-                    state.updatedCount?.stoppedCount ||
-                    state.deployCountDetails?.data?.stoppedCount
+                    // state.updatedCount?.stoppedCount ||
+                    deployDetails?.stoppedCount
                   }
                   activeColor="#c52b2b"
                 >
                   <SquareBoxIcon color="#B5BDC8" />
                   <span>
-                    {state.updatedCount?.stoppedCount ||
-                      state.deployCountDetails?.data?.stoppedCount}
+                    {/* {state.updatedCount?.stoppedCount ||
+                      deployDetails?.stoppedCount} */}
+                    {deployDetails?.stoppedCount}
                   </span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-3"
                   count={
-                    state.updatedCount?.invalidCount ||
-                    state.deployCountDetails?.data?.invalidCount
+                    // state.updatedCount?.invalidCount ||
+                    deployDetails?.invalidCount
                   }
                   activeColor="#CF9F5D"
                 >
                   <TriangleExclamationMarkIcon color="#B5BDC8" />
                   <span>
-                    {state.updatedCount?.invalidCount ||
-                      state.deployCountDetails?.data?.invalidCount}
+                    {/* {state.updatedCount?.invalidCount ||
+                      deployDetails?.invalidCount} */}
+                    {deployDetails?.invalidCount}
                   </span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-4"
                   count={
-                    state?.updatedCount?.disabledCount ||
-                    state?.deployCountDetails?.data?.disabledCount
+                    // state?.updatedCount?.disabledCount ||
+                    deployDetails?.disabledCount
                   }
                   activeColor="#2c7cf3"
                 >
                   <SmallNotThunderIcon color="#B5BDC8" />
                   <span>
-                    {state?.deployCountDetails?.data?.disabledCount ||
-                      state?.updatedCount?.disabledCount}
+                    {/* {deployDetails?.disabledCount ||
+                      state?.updatedCount?.disabledCount} */}
+                    {deployDetails?.disabledCount}
                   </span>
                 </CountDiv>
               </ActiveButtonContainer>

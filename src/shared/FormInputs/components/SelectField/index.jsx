@@ -9,7 +9,7 @@ import makeAnimated from 'react-select/animated';
 import FieldErrorMessage from '../FieldErrorMessage';
 import { DownArrowIcon } from '../../../../assets';
 import { theme } from '../../../../styles';
-import { hasError } from '../../../../utils';
+import { hasError } from '../../../../helpers';
 
 const Container = styled.div`
   position: relative;
@@ -170,20 +170,22 @@ const SelectField = ({
 
   if (isEmpty(control)) {
     return (
-      <Select
-        isClearable={isClearable}
-        classNamePrefix="react-select"
-        theme={theme.reactSelecttheme}
-        isDisabled={disabled}
-        styles={customStyles}
-        options={options}
-        components={{
-          ...animatedComponents,
-          IndicatorSeparator: () => null,
-          DropdownIndicator,
-        }}
-        {...props}
-      />
+      <Container className={className} title={title}>
+        <Select
+          isClearable={isClearable}
+          classNamePrefix="react-select"
+          theme={theme.reactSelecttheme}
+          isDisabled={disabled}
+          styles={customStyles}
+          options={options}
+          components={{
+            ...animatedComponents,
+            IndicatorSeparator: () => null,
+            DropdownIndicator,
+          }}
+          {...props}
+        />
+      </Container>
     );
   }
 
@@ -192,7 +194,6 @@ const SelectField = ({
       <Controller
         control={control}
         name={name}
-        rules={{ required }}
         render={({ field: { onChange, value, ref } }) => (
           <>
             {label && (
@@ -206,7 +207,6 @@ const SelectField = ({
               isClearable={isClearable}
               classNamePrefix="react-select"
               value={options.find(option => option.value === value)}
-              onChange={option => onChange(option?.value)}
               placeholder={placeholder}
               theme={theme.reactSelecttheme}
               isDisabled={disabled}
@@ -219,6 +219,10 @@ const SelectField = ({
               }}
               // formatOptionLabel={formatOptionLabel}
               {...props}
+              onChange={option => {
+                if (props.onChange) props.onChange(option);
+                onChange(option?.value);
+              }}
             />
             <FieldErrorMessage errors={errors} name={name} />
           </>
@@ -243,6 +247,7 @@ SelectField.propTypes = {
   backgroundColor: PropTypes.string,
   title: PropTypes.string,
   isClearable: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 export default SelectField;

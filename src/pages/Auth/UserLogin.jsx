@@ -1,20 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-// import { toast } from 'react-toastify';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useDispatch } from 'react-redux';
 
 import { theme } from '../../styles';
-import { Layout } from '../../components';
-import {
-  Button,
-  TextButton,
-  InputField,
-  PasswordField,
-  SelectField,
-} from '../../shared';
+import { ClusterSelect, Layout } from '../../components';
+import { Button, TextButton, InputField, PasswordField } from '../../shared';
 import {
   ClusterIcon,
   GoogleIcon,
@@ -23,19 +16,18 @@ import {
   UserIcon,
 } from '../../assets';
 import {
-  ACCESS_TOKEN,
   FORGOT_PASSWORD,
   GOOGLE,
   LOGIN_TO_YOUR_ACCOUNT,
   MICROSOFT,
   OR_DO_IT_VIA_OTHER_ACCOUNTS,
   SIGN_IN_TO_YOUR_ACCOUNT,
-  useGlobalContext,
   WELCOME_BACK,
-} from '../../utils';
+} from '../../constants';
 import { getRightIcon } from '.';
-import { getClusterList, userLogin } from '../../store';
-import { toast } from 'react-toastify';
+import { useGlobalContext } from '../../utils';
+import { AuthenticationActions } from '../../store';
+import { history } from '../../helpers/history';
 
 const Title = styled.h3`
   font-weight: 500;
@@ -101,18 +93,17 @@ const PasswordTextMessage = styled.span`
 `;
 
 const loginSchema = yup.object().shape({
+  cluster_id: yup.string().required('Cluster is required'),
   username: yup.string().required('Username is required'),
   password: yup.string().required('Password is required'),
-  cluster_id: yup.string().required('Cluster is required'),
 });
 
 const PATH = 'login';
 
 export const UserLogin = () => {
+  const dispatch = useDispatch();
   // setState
   const { state } = useGlobalContext();
-  const [clusterList, setClusterList] = useState([]);
-  const navigate = useNavigate();
   const {
     watch,
     register,
@@ -123,46 +114,26 @@ export const UserLogin = () => {
     resolver: yupResolver(loginSchema),
   });
 
-  const onSubmit = async data => {
-    const response = await userLogin(data);
-    if (response.status == 200) {
-      localStorage.setItem(ACCESS_TOKEN, response?.data?.token);
-
-      let cluster_token = [
-        {
-          id: response?.data?.cluster_id,
-          token: response?.data?.cluster_token,
-        },
-      ];
-      localStorage.setItem('clusters', JSON.stringify(cluster_token));
-      navigate('/dashboard');
-      toast.success('Login successful');
-    } else {
-      toast.error(response.message);
-    }
+  const onSubmit = data => {
+    dispatch(AuthenticationActions.login(data));
   };
-
-  const getClusterDataList = async () => {
-    const response = await getClusterList();
-    if (response.status == 200) {
-      const filteredArray = response?.data.map(item => ({
-        label: item.name,
-        value: item.id,
-      }));
-      setClusterList(filteredArray);
-    } else {
-      toast.error(response?.message || 'Something went wrong');
-    }
-  };
-  useEffect(() => {
-    getClusterDataList();
-  }, []);
 
   return (
     <Layout userLogin={true}>
       <Title>{`👋 ${WELCOME_BACK}`}</Title>
       <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
+        <ClusterSelect
+          name="cluster_id"
+          control={control}
+          placeholder="Select a Cluster"
+          title="Select Cluster"
+          backgroundColor={theme.colors.white}
+          size="lg"
+          icon={<ClusterIcon />}
+          label="Select Cluster"
+          errors={errors}
+        />
         <InputField
           name="username"
           type="text"
@@ -173,21 +144,6 @@ export const UserLogin = () => {
           icon={<UserIcon />}
           rightIcon={getRightIcon(watch, errors)}
           required
-        />
-        <SelectField
-          name="cluster_id"
-          control={control}
-          options={clusterList || []}
-          // onChange={onNamespaceSelect}
-          placeholder="Select a Cluster"
-          title="Select Cluster"
-          backgroundColor={theme.colors.white}
-          size="lg"
-          icon={<ClusterIcon />}
-          label="Select Cluster"
-          register={register}
-          errors={errors}
-          // required
         />
         <PasswordField
           name="password"
@@ -201,7 +157,7 @@ export const UserLogin = () => {
           <PasswordTextMessage>
             Must be 8 characters at least
           </PasswordTextMessage>
-          <TextButton onClick={() => navigate('/forgot')}>
+          <TextButton onClick={() => history.push('/forgot')}>
             {FORGOT_PASSWORD}
           </TextButton>
         </ForgetLinkContainer>

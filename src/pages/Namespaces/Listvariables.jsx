@@ -10,7 +10,7 @@ import {
   DeleteVariableServices,
   GetVariableServices,
   addVariableServices,
-} from '../../store';
+} from '../../store/apis';
 import { useGlobalContext } from '../../utils';
 import AddVariables from './AddVariables';
 

@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import PhoneInput from 'react-phone-number-input/react-hook-form-input';
 
 import FieldErrorMessage from '../FieldErrorMessage';
-import { hasError } from '../../../../utils';
+import { hasError } from '../../../../helpers';
 
 const Container = styled.div`
   width: 100%;

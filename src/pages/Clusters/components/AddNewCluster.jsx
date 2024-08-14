@@ -2,11 +2,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { Button, InputField, PasswordField } from '../../../shared';
-import { RegexConst } from '../../../utils';
+import { InputField, Button, PasswordField } from '../../../shared';
+import { RegexConst } from '../../../constants';
 import { AddCertificate } from './AddCertificate';
 
 import {
@@ -19,10 +18,11 @@ import {
   SmallPerfileIcon,
   WhiteBoradIcon,
 } from '../../../assets';
-import { IconButton } from '../../../components';
-import { testCluster } from '../../../store';
-import { FailedTestModal } from './FailedTestModal';
+import { testCluster } from '../../../store/index1';
 import { SuccessTestModal } from './SuccessTestModal';
+import { FailedTestModal } from './FailedTestModal';
+import { IconButton } from '../../../components';
+import { history } from '../../../helpers/history';
 
 const InputContainer = styled.div`
   display: flex;
@@ -223,8 +223,6 @@ export const AddNewCluster = ({
     defaultValues: clusterData,
   });
 
-  const navigate = useNavigate();
-
   const testClusterData = async data => {
     setTestLoader(true);
     setClusterData({
@@ -421,7 +419,7 @@ export const AddNewCluster = ({
               <Button
                 variant="secondary"
                 onClick={() => {
-                  navigate('/cluster');
+                  history.push('/clusters');
                 }}
               >
                 Back

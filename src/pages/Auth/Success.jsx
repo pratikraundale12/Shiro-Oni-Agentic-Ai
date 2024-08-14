@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
@@ -10,7 +9,8 @@ import {
   LessArrowIcon,
   RightInCircleIcon,
 } from '../../assets';
-import { PASSWORD_CHANGED, SUCCESS_MESSAGE } from '../../utils';
+import { PASSWORD_CHANGED, SUCCESS_MESSAGE } from '../../constants';
+import { history } from '../../helpers/history';
 
 const Container = styled.div`
   display: flex;
@@ -46,7 +46,6 @@ const SubmitButton = styled(Button)`
 `;
 
 export const Success = () => {
-  const navigate = useNavigate();
   return (
     <Layout>
       <Container>
@@ -58,7 +57,7 @@ export const Success = () => {
           iconPosition="right"
           icon={<LessArrowIcon color={theme.colors.white} />}
           type="submit"
-          onClick={() => navigate('/login')}
+          onClick={() => history.replace('/login')}
         >
           Back to Login
         </SubmitButton>

@@ -1,6 +1,11 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { GridSelectors, NamespacesActions } from '../store';
+import { history } from '../helpers/history';
 
 const BreadcrumbContainer = styled.div`
   display: flex;
@@ -12,8 +17,9 @@ const BreadcrumbItem = styled.span`
   cursor: pointer;
 
   &::after {
-    content: ' > ';
+    content: '>';
     padding: 0 8px;
+    text-decoration: none;
   }
 
   &:last-child::after {
@@ -29,38 +35,41 @@ const BreadcrumbItem = styled.span`
   }
 `;
 
-const Breadcrumb = ({ breadcrumbs, onBreadcrumbClick }) => {
-  const handleClick = breadcrumb => {
-    if (onBreadcrumbClick) {
-      onBreadcrumbClick(breadcrumb);
-    }
+const MODULES = ['namespaces', 'destNamespaces', 'deploy', 'upgrade'];
+
+const Breadcrumb = ({ module, path }) => {
+  const dispatch = useDispatch();
+  const breadcrumbs = useSelector(state =>
+    GridSelectors.getGridBreadcrumb(state, module)
+  );
+  const data = isEmpty(path) ? breadcrumbs : path;
+
+  const handleClick = value => {
+    console.log(value);
+    if (module === 'namespaces')
+      dispatch(NamespacesActions.setSelectedNamespace(value));
+    else if (module === 'destNamespaces')
+      dispatch(NamespacesActions.setSelectedDestNamespace(value));
+    else history.push(value.path);
   };
+
+  if (!MODULES.includes(module)) return null;
+  if (data.length <= 1) return null;
 
   return (
     <BreadcrumbContainer>
-      {breadcrumbs?.length > 1 &&
-        breadcrumbs?.map((breadcrumb, index) => (
-          <BreadcrumbItem key={index} onClick={() => handleClick(breadcrumb)}>
-            {breadcrumb.name}
-          </BreadcrumbItem>
-        ))}
+      {data?.map((breadcrumb, index) => (
+        <BreadcrumbItem key={index} onClick={() => handleClick(breadcrumb)}>
+          {breadcrumb.label}
+        </BreadcrumbItem>
+      ))}
     </BreadcrumbContainer>
   );
 };
 
 Breadcrumb.propTypes = {
-  breadcrumbs: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  onBreadcrumbClick: PropTypes.func,
-};
-
-Breadcrumb.defaultProps = {
-  breadcrumbs: [],
-  onBreadcrumbClick: () => {},
+  module: PropTypes.string.isRequired,
+  path: PropTypes.arrayOf(PropTypes.shape({})),
 };
 
 export default Breadcrumb;

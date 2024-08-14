@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 
-import { hasError } from '../../../../utils';
 import FieldErrorMessage from '../FieldErrorMessage';
+import { hasError } from '../../../../helpers';
 
 const Container = styled.div`
   width: 100%;

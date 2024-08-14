@@ -8,7 +8,7 @@ import {
   getUsersList,
   getPoliciesAccess,
 } from '../apis';
-import { SEARCH_DELAY } from '../../utils';
+import { DEBOUNCE_DELAY } from '../../constants';
 
 const fetchListData = {
   users: getUsersList,
@@ -100,5 +100,5 @@ export const fetchGridData = debounce(
       }));
     }
   },
-  SEARCH_DELAY
+  DEBOUNCE_DELAY
 );

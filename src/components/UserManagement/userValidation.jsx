@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { EMAIL_REGEX } from '../../utils';
+import { EMAIL_REGEX } from '../../constants';
 export const userSchema = yup.object().shape({
   first_name: yup
     .string()

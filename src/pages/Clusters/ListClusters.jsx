@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
 
 import { ModalWithIcon } from '../../shared';
-import { deleteCluster, fetchGridData } from '../../store';
-import { REFRESH_OPTIONS, STATUS_OPTIONS, useGlobalContext } from '../../utils';
+import { fetchGridData, deleteCluster } from '../../store/index1';
+import { useGlobalContext } from '../../utils';
 
 import {
   DeleteDustbinIcon,
@@ -13,6 +12,8 @@ import {
   OpenEyeIcon,
   PencilIcon,
 } from '../../assets';
+import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
+import { history } from '../../helpers/history';
 import {
   ActionRender,
   EnableClusterRender,
@@ -70,7 +71,6 @@ export const ListClusters = () => {
   const [refreshState, setRefreshSelect] = useState(false);
   const [hoveredItemId, setHoveredItemId] = useState(null);
   const intervalRef = useRef(null);
-  const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
   const menuRef = useRef(null);
   const [menuState, setMenuState] = useState({
@@ -110,7 +110,7 @@ export const ListClusters = () => {
           <UrlRender url={item.nifi_url} />
         </Item>
       ),
-      width: '44%',
+      width: '42%',
     },
     {
       label: 'Cluster Status',
@@ -151,7 +151,7 @@ export const ListClusters = () => {
           <ActionRender handleMenuClick={handleMenuClick} item={item} />
         </Item>
       ),
-      width: '14%',
+      width: '7%',
     },
     {
       renderCell: item => (
@@ -159,12 +159,12 @@ export const ListClusters = () => {
           onMouseEnter={() => handleMouseEnter(item.id)}
           onMouseLeave={handleMouseLeave}
         >
-          {!item.is_active && (
+          {item.status === 'Disconnected' && (
             <EnableClusterRender hoveredItemId={hoveredItemId} item={item} />
           )}
         </Item>
       ),
-      width: '14%',
+      width: '9%',
     },
   ];
   const deleteUserConfirmed = async () => {
@@ -201,14 +201,14 @@ export const ListClusters = () => {
   const handleClick = type => {
     handleCloseMenu();
     if (type === 'edit') {
-      navigate('/cluster/edit', { state: menuState.row });
+      history.push('/clusters/edit', { state: menuState.row });
     }
     if (type === 'view') {
       setState({
         ...state,
         nodeClusterId: menuState.row.id,
       });
-      navigate('/cluster/summary');
+      history.push('/clusters/summary');
     }
     if (type === 'delete') {
       setState({

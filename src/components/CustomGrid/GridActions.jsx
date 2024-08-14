@@ -1,15 +1,17 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { useForm } from 'react-hook-form';
+import { useGlobalContext } from '../../utils';
+import { fetchGridData } from '../../store/index1';
+import { history } from '../../helpers/history';
+import { useLocation } from 'react-router-dom';
+import { ClusterSelect } from '../ClusterSelect';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { Button, SelectField } from '../../shared';
-import { fetchGridData } from '../../store';
 import { theme } from '../../styles';
-import { useGlobalContext } from '../../utils';
 
 const Flex = styled.div`
   display: flex;
@@ -54,6 +56,14 @@ const Search = styled.input`
   }
 `;
 
+const StyledClusterSelect = styled(ClusterSelect)`
+  margin-bottom: 0;
+
+  > div {
+    margin-top: 0;
+  }
+`;
+
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
   min-width: 8.5rem;
@@ -91,7 +101,6 @@ const ImageContainer = styled.div`
 export const GridActions = ({
   title,
   module,
-  clusterOptions,
   refreshOptions,
   statusOptions,
   search,
@@ -100,8 +109,8 @@ export const GridActions = ({
   addModal: Modal,
   handleRefresh = () => {},
 }) => {
+  const location = useLocation();
   const { setState } = useGlobalContext();
-  const navigate = useNavigate();
   const { watch, control } = useForm();
 
   const watchStatus = watch('is_active');
@@ -159,20 +168,20 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
-          {window.location.pathname.includes('namespaces') && (
-            <StyledSelectField
-              size="sm"
-              name="cluster"
-              control={control}
-              placeholder="Clusters"
-              options={clusterOptions}
-              backgroundColor={theme.colors.lightGrey}
-            />
+          {location.pathname.includes('namespaces') && (
+            <DropdownContainer>
+              <StyledClusterSelect
+                size="sm"
+                placeholder="Cluster"
+                title="Select Cluster"
+                backgroundColor={theme.colors.lightGrey}
+              />
+            </DropdownContainer>
           )}
           {!isEmpty(buttonText) && (
             <Button
               icon={<PlusCircleIcon width={16} height={16} color="white" />}
-              onClick={() => navigate('add')}
+              onClick={() => history.push(`/${module}/add`)}
               size="sm"
             >
               {buttonText}

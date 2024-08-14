@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   BellIcon,
@@ -11,11 +12,11 @@ import {
   SettingSmallIcon,
   UserIcon,
 } from '../assets';
-import { INITIAL_STATE, useGlobalContext } from '../utils';
 import { AddUserModal } from '../pages/Users/AddUserModal';
 import { ProfileRender } from './CustomGrid';
 import SessionExpiredLabel from '../shared/SessionExpiredLabel';
-import { ClusterEnableModal } from './clusterModal/ClusterEnableModal';
+import { ClusterLoginModal } from './ClusterLoginModal';
+import { AuthenticationActions, AuthenticationSelectors } from '../store';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -145,32 +146,33 @@ const UserModal = styled(AddUserModal)`
 `;
 
 const ProfileDropdown = () => {
-  const { state, setState } = useGlobalContext();
+  const dispatch = useDispatch();
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [showMenu, setShowMenu] = useState(false);
 
   const menuRef = useRef(null);
-  const currentUser = state.currentUser;
   const options = [
     {
       label: 'Profile',
       icon: <UserIcon width={14} height={14} />,
       onClick: () => {
-        setState(prev => ({
-          ...prev,
-          userModal: true,
-          selectedItem: prev.currentUser,
-        }));
-        setShowMenu(prev => !prev);
+        // setState(prev => ({
+        //   ...prev,
+        //   userModal: true,
+        //   selectedItem: prev.currentUser,
+        // }));
+        // setShowMenu(prev => !prev);
       },
     },
     {
       label: 'Logout',
       icon: <LockIcon width={14} height={14} />,
-      onClick: () => {
-        localStorage.clear();
-        setState(INITIAL_STATE);
-        setShowMenu(prev => !prev);
-      },
+      // onClick: () => {
+      //   localStorage.clear();
+      //   setState(INITIAL_STATE);
+      //   setShowMenu(prev => !prev);
+      // },
+      onClick: () => dispatch(AuthenticationActions.logout()),
     },
   ];
 
@@ -209,12 +211,10 @@ const ProfileDropdown = () => {
   );
 };
 
-export const Header = ({ route, isOpenSidebar }) => {
+export const Header = ({ isOpenSidebar }) => {
+  const dispatch = useDispatch();
+  const route = useSelector(AuthenticationSelectors.getRoute);
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const {
-    state: { licenseTimeStamp },
-  } = useGlobalContext();
 
   const closeTab = () => {
     setDisplaySessionTab(false);
@@ -236,7 +236,11 @@ export const Header = ({ route, isOpenSidebar }) => {
         <ButtonContainer>
           <div className="d-none d-lg-inline">
             <div className="d-flex">
-              <IconButton onClick={() => setIsOpen(true)}>
+              <IconButton
+                onClick={() =>
+                  dispatch(AuthenticationActions.setClusterLogin(true))
+                }
+              >
                 <ClusterIcon />
               </IconButton>
               <IconButton>
@@ -253,13 +257,8 @@ export const Header = ({ route, isOpenSidebar }) => {
           <ProfileDropdown />
         </ButtonContainer>
       </Container>
-      {displaySessionTab && (
-        <SessionExpiredLabel
-          closeTab={closeTab}
-          expireData={licenseTimeStamp || ''}
-        />
-      )}
-      <ClusterEnableModal setIsOpen={setIsOpen} isOpen={isOpen} />
+      <ClusterLoginModal />
+      {displaySessionTab && <SessionExpiredLabel closeTab={closeTab} />}
     </>
   );
 };

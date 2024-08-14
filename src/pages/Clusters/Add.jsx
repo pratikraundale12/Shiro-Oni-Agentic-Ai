@@ -1,7 +1,20 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Certificate } from './components/Certificate';
+import { Creditionals } from './components/Creditionals';
+import { useLocation } from 'react-router-dom';
+import { RegexConst } from '../../constants';
+import { SummaryModal } from './components/SummaryModal';
+import { SuccessTestModal } from './components/SuccessTestModal';
+import { FailedTestModal } from './components/FailedTestModal';
+import { history } from '../../helpers/history';
+import {
+  testCluster,
+  testRegistry,
+  getOneRegistry,
+  getRegistryList,
+} from '../../store/apis';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -12,18 +25,6 @@ import {
   WhiteBoradIcon,
 } from '../../assets';
 import { Button, InputField, SelectField } from '../../shared';
-import {
-  getOneRegistry,
-  getRegistryList,
-  testCluster,
-  testRegistry,
-} from '../../store';
-import { RegexConst } from '../../utils';
-import { Certificate } from './components/Certificate';
-import { Creditionals } from './components/Creditionals';
-import { FailedTestModal } from './components/FailedTestModal';
-import { SuccessTestModal } from './components/SuccessTestModal';
-import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
 
 const Wrapper = styled.div`
@@ -198,7 +199,9 @@ const RegistryDetailsDivTwo = styled.div`
 const BottomButtonDiv = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 20px;
+  width: 100%;
   margin-top: 20px;
 `;
 
@@ -296,7 +299,6 @@ export const Add = () => {
     reValidateMode: 'onChange',
   });
 
-  const navigate = useNavigate();
   const [registries, setRegistries] = useState([]);
   const selectedRegistryId = watch('registry');
 
@@ -311,7 +313,7 @@ export const Add = () => {
       setActiveTab(TABS.REGISTRY);
       setNewRegistry(false);
     } else if (activeTab === TABS.CLUSTER) {
-      navigate('/cluster');
+      history.push('/clusters');
     } else {
       setActiveTab(TABS.CLUSTER);
     }

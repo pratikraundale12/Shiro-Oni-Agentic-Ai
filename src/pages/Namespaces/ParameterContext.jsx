@@ -8,7 +8,7 @@ import { Modal } from '../../shared';
 import {
   deleteParameterContextService,
   updateParameterContextService,
-} from '../../store';
+} from '../../store/apis';
 import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
