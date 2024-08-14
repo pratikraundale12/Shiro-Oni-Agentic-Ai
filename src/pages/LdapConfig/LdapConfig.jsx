@@ -67,12 +67,6 @@ const Heading = styled.div`
   justify-content: space-between;
 `;
 
-const LabelButton = styled(Button)`
-  width: auto;
-  height: 32px;
-  margin-left: 330px;
-`;
-
 const tableData = [
   {
     id: 1,
@@ -99,18 +93,16 @@ const EVENTCOLUMNS = [
     key: 'id',
     renderCell: data => data.id,
   },
-  {
-    label: <LabelButton variant="secondary">Click Me</LabelButton>,
-    key: 'actions', // You can use any key here; it's not used in renderCell
-    renderCell: () => {},
-  },
 ];
 
 export const LdapConfig = () => {
   const [mappingOepn, setMappingOpen] = useState(false);
   const [ldapInitialConfig, setLdapInitialConfig] = useState(false);
   const [secondFormState, setSecondFormState] = useState(false);
+  const [displayList, setDisplayList] = useState(false);
   setSecondFormState;
+  setDisplayList;
+  displayList;
   const {
     register,
     handleSubmit,
@@ -146,129 +138,148 @@ export const LdapConfig = () => {
           </ImageContainer>
           <Title>LDAP Configuration Fields</Title>
         </Flex>
-        <CheckboxField
-          name="check"
-          checked={ldapInitialConfig}
-          onClick={handleCheckMark}
-        />
       </Heading>
-      <InputFieldFlex className="row">
-        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-          <InputField
-            name="ldapUrl"
-            type="text"
-            register={register}
-            label="LDAP URL"
-            errors={errors}
-            placeholder="Enter your LDAP URL"
-            icon={<LinkIcon />}
-            disabled={!ldapInitialConfig}
-          />
-        </div>
-        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-          <InputField
-            name="loginDN"
-            type="text"
-            register={register}
-            label="Login DN"
-            errors={errors}
-            placeholder="Enter your Login DN"
-            icon={<QRIcons />}
-            disabled={!ldapInitialConfig}
-          />
-        </div>
+      {displayList ? (
+        <>
+          <div className="d-flex justify-content-end me-4">
+            <CheckboxField
+              name="check"
+              checked={ldapInitialConfig}
+              onClick={handleCheckMark}
+            />
+          </div>
 
-        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-          <PasswordField
-            name="password"
-            register={register}
-            errors={errors}
-            watch={watch}
-            required
-            label="Password"
-            disabled={!ldapInitialConfig}
-          />
-        </div>
-      </InputFieldFlex>
-      <ButtonFlex>
-        <div>
-          <StyledButton size="md" onClick={handleSubmit(onSubmit)}>
-            Test Configuration
-          </StyledButton>
-        </div>
-      </ButtonFlex>
-      <InputFieldFlex className="row">
-        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-          <InputField
-            name="baseDN"
-            type="text"
-            label="Base DN"
-            placeholder="Enter your Base DN"
-            icon={<LinkIcon />}
-            disabled={!secondFormState}
-          />
-        </div>
-        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-          <InputField
-            name="groupsDN"
-            type="text"
-            label="Groups DN"
-            placeholder="Enter your Groups DN"
-            icon={<QRIcons />}
-            disabled={!secondFormState}
-          />
-        </div>
-        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-          <InputField
-            name="usersDN"
-            type="text"
-            label="Users DN"
-            placeholder="Enter your Users DN"
-            icon={<QRIcons />}
-            disabled={!secondFormState}
-          />
-        </div>
-      </InputFieldFlex>
-      <InputFieldFlex className="row">
-        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-          <InputField
-            name="userUniqueIdentifier"
-            type="text"
-            label="User Unique Identifier"
-            placeholder="Enter User Identifier"
-            icon={<LinkIcon />}
-            disabled={!secondFormState}
-          />
-        </div>
+          <InputFieldFlex className="row">
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="ldapUrl"
+                type="text"
+                register={register}
+                label="LDAP URL"
+                errors={errors}
+                placeholder="Enter your LDAP URL"
+                icon={<LinkIcon />}
+                disabled={!ldapInitialConfig}
+              />
+            </div>
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="loginDN"
+                type="text"
+                register={register}
+                label="Login DN"
+                errors={errors}
+                placeholder="Enter your Login DN"
+                icon={<QRIcons />}
+                disabled={!ldapInitialConfig}
+              />
+            </div>
 
-        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-          <InputField
-            name="groupUniqueIdentifier"
-            type="text"
-            label="Group Unique Identifier"
-            placeholder="Enter Group Identifier"
-            icon={<LinkIcon />}
-            disabled={!secondFormState}
-          />
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <PasswordField
+                name="password"
+                register={register}
+                errors={errors}
+                watch={watch}
+                required
+                label="Password"
+                disabled={!ldapInitialConfig}
+              />
+            </div>
+          </InputFieldFlex>
+          <ButtonFlex>
+            <div>
+              <StyledButton size="md" onClick={handleSubmit(onSubmit)}>
+                Test Configuration
+              </StyledButton>
+            </div>
+          </ButtonFlex>
+          <InputFieldFlex className="row">
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="baseDN"
+                type="text"
+                label="Base DN"
+                placeholder="Enter your Base DN"
+                icon={<LinkIcon />}
+                disabled={!secondFormState}
+              />
+            </div>
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="groupsDN"
+                type="text"
+                label="Groups DN"
+                placeholder="Enter your Groups DN"
+                icon={<QRIcons />}
+                disabled={!secondFormState}
+              />
+            </div>
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="usersDN"
+                type="text"
+                label="Users DN"
+                placeholder="Enter your Users DN"
+                icon={<QRIcons />}
+                disabled={!secondFormState}
+              />
+            </div>
+          </InputFieldFlex>
+          <InputFieldFlex className="row">
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="userUniqueIdentifier"
+                type="text"
+                label="User Unique Identifier"
+                placeholder="Enter User Identifier"
+                icon={<LinkIcon />}
+                disabled={!secondFormState}
+              />
+            </div>
+
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="groupUniqueIdentifier"
+                type="text"
+                label="Group Unique Identifier"
+                placeholder="Enter Group Identifier"
+                icon={<LinkIcon />}
+                disabled={!secondFormState}
+              />
+            </div>
+          </InputFieldFlex>
+          <SmallButtonFlex className="row">
+            <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele ">
+              <Button>Fetch LDAP Groups</Button>
+            </div>
+            <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setMappingOpen(true);
+                }}
+              >
+                Save
+              </Button>
+            </div>
+          </SmallButtonFlex>
+        </>
+      ) : (
+        <div className="mt-3">
+          <Table data={tableData} columns={EVENTCOLUMNS} />
+          <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-4">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setMappingOpen(true);
+              }}
+            >
+              Create Mapping
+            </Button>
+          </div>
         </div>
-      </InputFieldFlex>
-      <SmallButtonFlex className="row">
-        <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele ">
-          <Button>Fetch LDAP Groups</Button>
-        </div>
-        <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setMappingOpen(true);
-            }}
-          >
-            Save
-          </Button>
-        </div>
-      </SmallButtonFlex>
-      {/* <CompactTable data={DATA} columns={EVENTCOLUMNS} theme={tableTheme} />{' '} */}
-      <Table data={tableData} columns={EVENTCOLUMNS} />
+      )}
       <CreateMapping isOpen={mappingOepn} setIsOpen={setMappingOpen} />
     </Wrapper>
   );
