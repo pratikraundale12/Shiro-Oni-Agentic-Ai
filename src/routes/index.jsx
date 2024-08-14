@@ -159,9 +159,9 @@ export const ROUTES_MENU = [
       {
         path: ['add', 'edit/:id'],
         component: <div>Permission</div>,
-      }
-    ]
-  }
+      },
+    ],
+  },
 
   {
     name: 'Activity History',

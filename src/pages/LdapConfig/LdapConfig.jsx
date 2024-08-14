@@ -221,7 +221,7 @@ export const LdapConfig = () => {
         </div>
       </InputFieldFlex>
       <SmallButtonFlex className="row">
-        <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+        <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele ">
           <Button>Fetch LDAP Groups</Button>
         </div>
         <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -231,7 +231,7 @@ export const LdapConfig = () => {
               setMappingOpen(true);
             }}
           >
-            Create Mapping
+            Save
           </Button>
         </div>
       </SmallButtonFlex>
