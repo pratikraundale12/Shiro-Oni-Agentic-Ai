@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import * as yup from 'yup';
@@ -52,6 +52,10 @@ export const Certificate = ({
     resolver: yupResolver(schema),
     defaultValues: DEFAULT_VALUES,
   });
+
+  useEffect(() => {
+    if (isCertificateOpen) reset(DEFAULT_VALUES);
+  }, [isCertificateOpen]);
 
   const handleTest = async data => {
     const payload = new FormData();
