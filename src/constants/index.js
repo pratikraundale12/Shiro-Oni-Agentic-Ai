@@ -23,6 +23,11 @@ export const REFRESH_OPTIONS = [
   { value: 1000, label: '1 Seconds' },
 ];
 
+export const ACCESS_OPTIONS = [
+  { value: 'cluster_access', label: 'Cluster Access' },
+  { value: 'dfm_access', label: 'DFM Access' },
+];
+
 export const RegexConst = {
   NAME: /^[a-zA-Z0-9 ]{3,}$/,
   NIFI_URL: /^(https?:\/\/)/,
