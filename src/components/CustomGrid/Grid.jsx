@@ -1,25 +1,26 @@
-import React, { useEffect } from 'react';
+import { getTheme } from '@table-library/react-table-library/baseline';
+import { CompactTable } from '@table-library/react-table-library/compact';
+import { useSort } from '@table-library/react-table-library/sort';
+import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { CompactTable } from '@table-library/react-table-library/compact';
-import { useTheme } from '@table-library/react-table-library/theme';
-import { getTheme } from '@table-library/react-table-library/baseline';
-import { useSort } from '@table-library/react-table-library/sort';
 
-import { theme } from '../../styles';
-import { GridActions } from './GridActions';
-import { useGlobalContext } from '../../utils';
-import { fetchGridData } from '../../store';
-import { Loader, LoaderContainer } from '../Loader';
-import Pagination from './Pagination';
-import Breadcrumb from '../../shared/Breadcrumb';
+import { NoDataIcon } from '../../assets';
 import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
 import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { Modal } from '../../shared';
-import { Table } from './Table';
+import Breadcrumb from '../../shared/Breadcrumb';
+import { fetchGridData } from '../../store';
+import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
+import { Loader, LoaderContainer } from '../Loader';
 import { TextRender } from './CellRenders';
-import { NoDataIcon } from '../../assets';
+import { GridActions } from './GridActions';
+import Pagination from './Pagination';
+import ReactPagination from './ReactPagnation';
+import { Table } from './Table';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -31,13 +32,13 @@ const TableContainer = styled.div`
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
-  @media (min-width: 992px) {
-    overflow-x: hidden;
-  }
   @media (max-width: 991px) {
     table {
       min-width: 800px;
     }
+  }
+  table {
+    overflow: visible;
   }
 `;
 
@@ -95,6 +96,10 @@ export const Grid = ({
   addModal = () => {},
   onBreadcrumbClick = () => {},
   handleRefresh = () => {},
+  isNamespace = false,
+  LIMIT,
+  offset,
+  setOffset,
 }) => {
   const {
     state: {
@@ -102,15 +107,15 @@ export const Grid = ({
       page,
       gridData: {
         [module]: {
-          count = 0,
-          prev = null,
-          next = null,
           data = [],
           name: nodeName = '',
           nifi_url = '',
           registry = {},
           nodes = [],
           breadcrumb = [],
+          count = 0,
+          prev = null,
+          next = null,
         } = {},
       },
       eventModal,
@@ -121,24 +126,29 @@ export const Grid = ({
     },
     setState,
   } = useGlobalContext();
-  const DATA = { nodes: getData(loaders[module], data, nodes) };
-
+  const DATA = {
+    nodes: isNamespace
+      ? getData(loaders[module], data, nodes).slice(offset, offset + LIMIT)
+      : getData(loaders[module], data, nodes),
+  };
   const tableTheme = useTheme([
     getTheme(),
     {
       Table: `
+        margin-bottom: 0;
+
         th, td {
           border-bottom: none !important;
         }
 
         th {
-          height: 48px;
+          height: 52px;
           background-color: ${theme.colors.lightGrey} !important;
           color:  ${theme.colors.darker} !important;
         }
 
         td {
-          height: 60px;
+          height: 65px;
         }
 
         tbody tr:nth-of-type(even) td {
@@ -167,7 +177,6 @@ export const Grid = ({
       );
     return null;
   };
-
   useEffect(() => {
     fetchGridData({
       setState,
@@ -177,8 +186,16 @@ export const Grid = ({
       ...(nodeClusterId && { nodeClusterId }),
       ...(selectedSourceClusterId && { selectedSourceClusterId }),
     });
+    if (isNamespace) {
+      setOffset(0);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setState, module, search, page]);
+  const handlePageChange = newOffset => {
+    setOffset(newOffset);
+    // Additional logic can be added here if needed
+  };
+
   return (
     <Container>
       <GridActions
@@ -237,15 +254,24 @@ export const Grid = ({
         />
         {getLoader()}
       </TableContainer>
-      {count >= 10 && (
-        <Pagination
-          page={page}
-          setState={setState}
-          count={count}
-          prev={prev}
-          next={next}
-        />
-      )}
+      {isNamespace
+        ? count >= LIMIT && (
+            <ReactPagination
+              offset={offset}
+              onPageChange={handlePageChange}
+              count={count}
+              LIMIT={LIMIT}
+            />
+          )
+        : count >= 10 && (
+            <Pagination
+              page={page}
+              setState={setState}
+              count={count}
+              prev={prev}
+              next={next}
+            />
+          )}
     </Container>
   );
 };
@@ -269,4 +295,8 @@ Grid.propTypes = {
   ),
   onBreadcrumbClick: PropTypes.func,
   handleRefresh: PropTypes.func,
+  LIMIT: PropTypes.number,
+  offset: PropTypes.number,
+  setOffset: PropTypes.func,
+  isNamespace: PropTypes.bool,
 };

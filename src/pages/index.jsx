@@ -9,3 +9,4 @@ export * from './GenrateFlow';
 export * from './PermissionMatrix';
 export * from './Icons';
 export * from './LdapConfig';
+export * from './ActivityHistory';

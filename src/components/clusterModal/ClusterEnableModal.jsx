@@ -18,7 +18,6 @@ export const ClusterEnableModal = ({ setIsOpen, isOpen, clusterId }) => {
   const [clusterList, setClusterList] = useState([]);
   const [selectedClusterName, setSelectedClusterName] = useState('');
   const [loading, setLoading] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -29,17 +28,21 @@ export const ClusterEnableModal = ({ setIsOpen, isOpen, clusterId }) => {
   } = useForm({
     resolver: yupResolver(clusterSchema),
   });
-
+  const clusterArrayData = JSON.parse(localStorage.getItem('clusters'));
+  const clusterIdConnected = new Set(clusterArrayData?.map(item => item.id));
   const getClusterDataList = async () => {
     try {
       const response = await getClusterList();
       if (response.status === 200) {
-        const filteredArray = response.data.map(item => ({
+        const filteredClusterArray = response.data.filter(
+          item => !clusterIdConnected.has(item.id)
+        );
+        const filteredArray = filteredClusterArray.map(item => ({
           label: item.name,
           value: item.id,
         }));
-        setClusterList(filteredArray);
 
+        setClusterList(filteredArray);
         const selectedCluster = response.data.find(
           item => item.id === clusterId
         );
@@ -64,7 +67,7 @@ export const ClusterEnableModal = ({ setIsOpen, isOpen, clusterId }) => {
     const clusterData = JSON.parse(localStorage.getItem('clusters'));
 
     const payload = {
-      cluster_id: clusterId,
+      cluster_id: data.cluster,
       username: data.username,
       password: data.password,
     };
@@ -73,7 +76,6 @@ export const ClusterEnableModal = ({ setIsOpen, isOpen, clusterId }) => {
       const response = await getClusterToken(payload);
 
       if (response.cluster_id) {
-        console.log(response);
         const newCluster = {
           id: response.cluster_id,
           token: response.token,
@@ -82,6 +84,7 @@ export const ClusterEnableModal = ({ setIsOpen, isOpen, clusterId }) => {
         localStorage.setItem('clusters', JSON.stringify(clusterData));
         setLoading(false);
         setIsOpen(false);
+        toast.success('Cluster Enabled Successfully');
       } else {
         toast.error('Error while getting data');
         setLoading(false);
@@ -112,7 +115,7 @@ export const ClusterEnableModal = ({ setIsOpen, isOpen, clusterId }) => {
         icon={<ClusterIcon />}
         options={clusterList || []}
         error={errors}
-        placeholder={selectedClusterName}
+        placeholder={selectedClusterName || 'Select Cluster'}
       />
 
       <InputField

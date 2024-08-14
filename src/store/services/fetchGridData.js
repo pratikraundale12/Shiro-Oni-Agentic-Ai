@@ -2,9 +2,11 @@ import debounce from 'lodash/debounce';
 import { toast } from 'react-toastify';
 import {
   getClustersList,
+  getClustersAccess,
   getNamespacesList,
   getNodeList,
   getUsersList,
+  getPoliciesAccess,
 } from '../apis';
 import { SEARCH_DELAY } from '../../utils';
 
@@ -14,6 +16,8 @@ const fetchListData = {
   deploy: getNamespacesList,
   namespaces: getNamespacesList,
   nodeList: getNodeList,
+  clustersAccess: getClustersAccess,
+  policiesAccess: getPoliciesAccess,
 };
 
 export const fetchGridData = debounce(

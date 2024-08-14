@@ -48,7 +48,7 @@ const SubTitle = styled.p`
 `;
 
 const SubmitButton = styled(Button)`
-  margin-top: 2.4rem;
+  margin-top: 1.8rem;
 `;
 
 const SmallText = styled.small`
@@ -117,7 +117,15 @@ const TxtContainerDiv = styled.div`
 
 const ForgetLinkContainer = styled.div`
   display: flex;
-  justify-content: end;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const PasswordTextMessage = styled.span`
+  font-size: 10px;
+  font-weight: 400;
+  color: #7a7a9d;
+  line-height: 12px;
 `;
 
 const loginSchema = yup.object().shape({
@@ -198,9 +206,11 @@ export const Login = () => {
               watch={watch}
               required
               label="Password"
-              helperText="Must be 8 characters at least"
             />
             <ForgetLinkContainer>
+              <PasswordTextMessage>
+                Must be 8 characters at least
+              </PasswordTextMessage>
               <TextButton type="button" onClick={() => navigate('/forgot')}>
                 {FORGOT_PASSWORD}
               </TextButton>

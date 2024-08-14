@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import {
   BellIcon,
+  ClusterIcon,
   DownArrowIcon,
   HeadphoneIcon,
   LockIcon,
@@ -14,6 +15,7 @@ import { INITIAL_STATE, useGlobalContext } from '../utils';
 import { AddUserModal } from '../pages/Users/AddUserModal';
 import { ProfileRender } from './CustomGrid';
 import SessionExpiredLabel from '../shared/SessionExpiredLabel';
+import { ClusterEnableModal } from './clusterModal/ClusterEnableModal';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -165,7 +167,7 @@ const ProfileDropdown = () => {
       label: 'Logout',
       icon: <LockIcon width={14} height={14} />,
       onClick: () => {
-        localStorage.removeItem('access_token');
+        localStorage.clear();
         setState(INITIAL_STATE);
         setShowMenu(prev => !prev);
       },
@@ -209,6 +211,7 @@ const ProfileDropdown = () => {
 
 export const Header = ({ route, isOpenSidebar }) => {
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const {
     state: { licenseTimeStamp },
   } = useGlobalContext();
@@ -216,7 +219,6 @@ export const Header = ({ route, isOpenSidebar }) => {
   const closeTab = () => {
     setDisplaySessionTab(false);
   };
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setDisplaySessionTab(true);
@@ -234,6 +236,9 @@ export const Header = ({ route, isOpenSidebar }) => {
         <ButtonContainer>
           <div className="d-none d-lg-inline">
             <div className="d-flex">
+              <IconButton onClick={() => setIsOpen(true)}>
+                <ClusterIcon />
+              </IconButton>
               <IconButton>
                 <HeadphoneIcon />
               </IconButton>
@@ -254,6 +259,7 @@ export const Header = ({ route, isOpenSidebar }) => {
           expireData={licenseTimeStamp || ''}
         />
       )}
+      <ClusterEnableModal setIsOpen={setIsOpen} isOpen={isOpen} />
     </>
   );
 };

@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import { TodoIcon } from '../../assets/Icons/TodoIcon';
-import { Button } from '../../shared';
-import Breadcrumb from '../../shared/Breadcrumb';
-import NamespaceDeploy from './NamespaceDeploy';
-// import AddParameterContext from './AddParameterContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import styled from 'styled-components';
 import {
   SmallNotThunderIcon,
   SmallThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
-  // TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { TodoIcon } from '../../assets/Icons/TodoIcon';
 import { FullPageLoader } from '../../components';
+import { Button } from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
 import {
   deployCluster,
   fetchParameterContext,
+  fetchVariables,
   getClusterProgress,
   getClusterProgressDelete,
   getCountDetails,
@@ -27,6 +25,8 @@ import {
 } from '../../store';
 import { useGlobalContext } from '../../utils';
 import AddParameterContext from './AddParameterContext';
+import Listvariables from './Listvariables';
+import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
 
 const MainContainer = styled.div`
@@ -90,9 +90,9 @@ const ConfigTitleHTwo = styled.div`
   line-height: 24px;
   letter-spacing: 0.01em;
   text-align: left;
-  color: #c52b2b;
+  color: #ff7a00;
   position: relative;
-  border-bottom: 1px solid #c52b2b;
+  border-bottom: 1px solid #ff7a00;
   width: fit-content;
 `;
 const UseColLg = styled.div`
@@ -165,7 +165,7 @@ const ActiveButtonDiv = styled.div`
 
   &:hover {
     border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#c52b2b')};
+      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
   }
 
   & span {
@@ -209,8 +209,8 @@ const CustomRedProgress = styled.div`
 `;
 const ProgressBar = styled.div`
   color: white;
-  text-align: end;
-  background: #c52b2b;
+  text-align: center;
+  background: #ff7a00;
   padding: 0px;
   border-radius: 50px;
 `;
@@ -280,13 +280,21 @@ const breadcrumbData = [
 const Summary = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
+
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
   const [parameterContextItem, setParameterContextItem] = useState({});
+  const [isVariablesModalOpen, setVariablesModalOpen] = useState({
+    isOpen: false,
+    mode: 'add',
+  });
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
+  const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
+    []
+  );
 
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
@@ -299,14 +307,13 @@ const Summary = () => {
     try {
       setLoading(true);
       openParameterContext();
+
       const response = await fetchParameterContext(
         state.selectedClusterId,
         state.deployCountDetails?.data?.parameterContextId ||
           state?.updatedCount?.parameterContextId
       );
-      const data = response.data;
 
-      console.log(data.version);
       setState(prevState => ({
         ...prevState,
         parameterDetails: response,
@@ -314,7 +321,7 @@ const Summary = () => {
       }));
       setLoading(false);
     } catch (error) {
-      toast.error('Error fetching parameter context:', error.message);
+      toast.error(error.message);
     }
   };
 
@@ -359,6 +366,7 @@ const Summary = () => {
       toast.error('Upgrade failed:', error.message);
     }
   };
+
   const handleDeploy = async () => {
     try {
       const result = await deployCluster({
@@ -369,6 +377,7 @@ const Summary = () => {
         bucketName: state?.deployData.bucketName,
         registryId: state?.deployData?.registryId,
         version: state.selectedVersion,
+        position: state?.deployData?.position,
       });
       setLoading(true);
       setState(prevState => ({
@@ -385,13 +394,10 @@ const Summary = () => {
   const handleCloseModal = () => {
     setState(prevState => ({
       ...prevState,
-      // selectedSourceClusterId: null,
       selectedPaths: [],
       selectedClusterId: null,
       selectedVersion: null,
-      // deployCountDetails: result,
       deployNamespaceId: null,
-      // selectedClusterId: null,
       deployData: {
         flowId: null,
         bucketId: null,
@@ -413,6 +419,7 @@ const Summary = () => {
 
   const closeParameterContext = () => {
     setIsParameterContextOpen(false);
+    setNewlyAddedParameterContext([]);
     setModalOpen(true);
   };
 
@@ -428,6 +435,31 @@ const Summary = () => {
     setIsParameterContextOpen(true);
   };
 
+  const handleTertiaryButton = async () => {
+    const response = await fetchVariables(
+      state?.selectedDestinationClusterId,
+      state?.deployCountDetails?.data?.id || state?.updatedCount?.id
+    );
+
+    if (response) {
+      setState(prevState => ({
+        ...prevState,
+        variablesDetail: response?.data,
+      }));
+      setVariablesModalOpen({ isOpen: false, mode: 'add' });
+      setModalOpen(false);
+    } else {
+      toast.error(response.message);
+    }
+    setVariablesModalOpen({ isOpen: true, mode: 'add' });
+    setModalOpen(false);
+  };
+
+  const closeVariablesModal = () => {
+    setVariablesModalOpen({ isOpen: false, mode: 'add' });
+    setModalOpen(true);
+  };
+
   const handleBackClick = () => {
     navigate('/namespaces/upgrade');
   };
@@ -436,16 +468,37 @@ const Summary = () => {
 
   const handleUpdateStatus = async (status, buttonId) => {
     try {
-      await updateNamespaceStatus(
+      const response = await updateNamespaceStatus(
         state.selectedClusterId,
         state?.upgradeData?.id || state.deployCountDetails?.data?.id,
         status
       );
+      if (response?.data) {
+        setState(prevState => ({
+          ...prevState,
+          deployCountDetails: {
+            ...prevState.deployCountDetails,
+            data: {
+              ...prevState.deployCountDetails?.data,
+              runningCount: response?.data?.status?.runningCount,
+              stoppedCount: response?.data?.status?.stoppedCount,
+              invalidCount: response?.data?.status?.invalidCount,
+              disabledCount: response?.data?.status?.disabledCount,
+            },
+          },
+          upgradeData: {
+            ...prevState.upgradeData,
+            runningCount: response?.data?.status?.runningCount,
+            stoppedCount: response?.data?.status?.stoppedCount,
+            invalidCount: response?.data?.status?.invalidCount,
+            disabledCount: response?.data?.status?.disabledCount,
+          },
+        }));
+      }
+      console.log(response, state);
       setActiveButton(buttonId);
-      toast.success(`Namespace status updated to ${status}`);
     } catch (error) {
       console.error('Failed to update status:', error);
-      toast.error(`Failed to update namespace status to ${status}`);
     }
   };
 
@@ -545,7 +598,6 @@ const Summary = () => {
                 </UseColXl>
               </RowConfig>
             </UseColLg>
-            {/* versions */}
             {state?.upgradeData?.mode && (
               <>
                 <div className="col-12 p-3">
@@ -785,6 +837,7 @@ const Summary = () => {
         setModalOpen={setModalOpen}
         openParameterContext={openParameterContext}
         getParamerterContext={getParamerterContext}
+        handleTertiaryButton={handleTertiaryButton}
       />
       <ParameterContext
         key={isParameterContextOpen}
@@ -794,6 +847,9 @@ const Summary = () => {
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
         setParameterContextItem={setParameterContextItem}
+        newlyAddedPrameterContext={newlyAddedPrameterContext}
+        getParamerterContext={getParamerterContext}
+        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
       <AddParameterContext
         key={isParameterContextOpen.mode}
@@ -802,6 +858,15 @@ const Summary = () => {
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
+        newlyAddedPrameterContext={newlyAddedPrameterContext}
+        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
+      />
+
+      <Listvariables
+        isOpen={isVariablesModalOpen}
+        closePopup={closeVariablesModal}
+        setVariablesModalOpen={setVariablesModalOpen}
+        handleTertiaryButton={handleTertiaryButton}
       />
     </MainContainer>
   );
