@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 import { KsolvesDataFlowIcon } from '../assets';
 import { useNavigate } from 'react-router-dom';
-import { VERSION } from '../utils';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -134,7 +133,6 @@ export const Layout = ({ children, userLogin = false }) => {
               Check out the Best Data <br /> Flow Management Tool!
             </HeadingRightText>
             <br />
-            <span>{VERSION}</span>
           </RightSectionTextContainer>
           <Image />
         </RightSection>
