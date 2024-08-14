@@ -56,6 +56,7 @@ const Search = styled.input`
 
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
+  min-width: 8.5rem;
 
   > div {
     margin-top: 0;
@@ -125,7 +126,7 @@ export const GridActions = ({
 
   return (
     <>
-      <Flex>
+      <Flex className="flex-wrap gap-2">
         <Flex>
           <ImageContainer>
             <TodoIcon width={22} height={24} />
