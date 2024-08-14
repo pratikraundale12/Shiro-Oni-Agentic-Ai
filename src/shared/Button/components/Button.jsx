@@ -9,11 +9,19 @@ const size = {
     height: '40px',
     padding: '0 10px',
     margin: '4px',
+    fontSize: '12px',
   },
   md: {
     height: '48px',
+    padding: '0 28px',
+    margin: '10px',
+    fontSize: '14px',
+  },
+  lg: {
+    height: '56px',
     padding: '0 32px',
     margin: '10px',
+    fontSize: '18px',
   },
 };
 
@@ -44,7 +52,7 @@ const StyledButton = styled.button.withConfig({
   transition:
     background 0.3s ease-in-out,
     color 0.3s ease-in-out;
-    
+
   &:hover {
     color: ${props => props.theme.colors.white};
     background: ${props =>
@@ -61,13 +69,16 @@ const StyledButton = styled.button.withConfig({
   }
 
   svg {
-    margin-${props => (props.iconPosition === 'left' ? 'right' : 'left')}: ${props => size[props.size].margin};
+    margin-right: ${props =>
+      props.iconPosition === 'left' ? size[props.size].margin : '0'};
+    margin-left: ${props =>
+      props.iconPosition === 'right' ? size[props.size].margin : '0'};
   }
 
   span {
     width: max-content;
     font-weight: 600;
-    font-size: ${props => props.theme.size.md};
+    font-size: ${props => size[props.size].fontSize};
     font-family: ${props => props.theme.fontNato};
   }
 `;
@@ -98,7 +109,7 @@ const Button = ({
         disabled
         {...buttonProps}
       >
-        <LoadingText>{loading || 'Loading...'}</LoadingText>
+        <LoadingText>{loading && 'Loading...'}</LoadingText>
         <StyledLoader size="sm" color="white" />
       </StyledButton>
     );
@@ -121,7 +132,7 @@ Button.propTypes = {
   icon: PropTypes.node,
   children: PropTypes.node.isRequired,
   type: PropTypes.string,
-  size: PropTypes.oneOf(['md', 'sm']),
+  size: PropTypes.oneOf(['md', 'sm', 'lg']),
   iconPosition: PropTypes.oneOf(['left', 'right']),
   variant: PropTypes.oneOf(['primary', 'secondary']),
   loading: PropTypes.bool,

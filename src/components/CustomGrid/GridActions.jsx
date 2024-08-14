@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
-import styled from 'styled-components';
+import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
-import { theme } from '../../styles';
-import { Button, SelectField } from '../../shared';
-import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { useForm } from 'react-hook-form';
-import { ACCESS_OPTIONS, useGlobalContext } from '../../utils';
+import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
+import { Button, SelectField } from '../../shared';
 import { fetchGridData } from '../../store';
+import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
 
 const Flex = styled.div`
   display: flex;
@@ -56,9 +56,31 @@ const Search = styled.input`
 
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
+  min-width: 8.5rem;
 
   > div {
     margin-top: 0;
+  }
+`;
+const DropdownContainer = styled.div`
+  margin-left: 10px;
+  min-width: 175px;
+  max-width: 175px;
+  cursor: pointer;
+
+  & div > div {
+    & > div {
+      min-width: 175px;
+      max-width: 175px;
+      cursor: pointer;
+    }
+  }
+  & div > div {
+    & > div > * {
+      min-width: unset;
+      max-width: unset;
+      cursor: pointer;
+    }
   }
 `;
 
@@ -104,7 +126,7 @@ export const GridActions = ({
 
   return (
     <>
-      <Flex>
+      <Flex className="flex-wrap gap-2">
         <Flex>
           <ImageContainer>
             <TodoIcon width={22} height={24} />
@@ -113,25 +135,29 @@ export const GridActions = ({
         </Flex>
         <ButtonsContainer>
           {!isEmpty(refreshOptions) && (
-            <StyledSelectField
-              name="refresh"
-              size="sm"
-              control={control}
-              options={refreshOptions}
-              placeholder="Refresh"
-              backgroundColor={theme.colors.lightGrey}
-              onChange={handleRefresh}
-            />
+            <DropdownContainer>
+              <StyledSelectField
+                name="refresh"
+                size="sm"
+                control={control}
+                options={refreshOptions}
+                placeholder="Refresh"
+                backgroundColor={theme.colors.lightGrey}
+                onChange={handleRefresh}
+              />
+            </DropdownContainer>
           )}
           {!isEmpty(statusOptions) && (
-            <StyledSelectField
-              name="is_active"
-              size="sm"
-              control={control}
-              options={statusOptions}
-              placeholder="Status"
-              backgroundColor={theme.colors.lightGrey}
-            />
+            <DropdownContainer>
+              <StyledSelectField
+                name="is_active"
+                size="sm"
+                control={control}
+                options={statusOptions}
+                placeholder="Status"
+                backgroundColor={theme.colors.lightGrey}
+              />
+            </DropdownContainer>
           )}
           {window.location.pathname.includes('namespaces') && (
             <StyledSelectField
@@ -141,20 +167,6 @@ export const GridActions = ({
               placeholder="Clusters"
               options={clusterOptions}
               backgroundColor={theme.colors.lightGrey}
-            />
-          )}
-          {window.location.pathname.includes('permission-matrix') && (
-            <StyledSelectField
-              size="sm"
-              name="access"
-              control={control}
-              placeholder="Clusters"
-              options={ACCESS_OPTIONS}
-              defaultValue={ACCESS_OPTIONS[0]}
-              backgroundColor={theme.colors.lightGrey}
-              onChange={option =>
-                setState(prev => ({ ...prev, accessType: option.value }))
-              }
             />
           )}
           {!isEmpty(buttonText) && (

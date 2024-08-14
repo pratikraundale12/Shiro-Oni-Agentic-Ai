@@ -1,27 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import styled from 'styled-components';
 
 import { ModalWithIcon } from '../../shared';
-import { fetchGridData, deleteCluster } from '../../store';
+import { deleteCluster, fetchGridData } from '../../store';
 import { REFRESH_OPTIONS, STATUS_OPTIONS, useGlobalContext } from '../../utils';
 
-import {
-  Grid,
-  ProgressBarRender,
-  ActionRender,
-  StatusRender,
-  TextRender,
-  UrlRender,
-  EnableClusterRender,
-} from '../../components';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
   OpenEyeIcon,
   PencilIcon,
 } from '../../assets';
+import {
+  ActionRender,
+  EnableClusterRender,
+  Grid,
+  ProgressBarRender,
+  StatusRender,
+  TextRender,
+  UrlRender,
+} from '../../components';
 
 const List = styled.div`
   position: absolute;
@@ -49,7 +49,7 @@ const Item = styled.div`
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding: 16px 12px;
+  padding: 14px 12px;
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.md};
   color: ${props => props.theme.colors.darker};
@@ -254,14 +254,15 @@ export const ListClusters = () => {
   return (
     <>
       <ModalWithIcon
+        title="Delete Cluster"
         primaryButtonText="Delete"
         secondaryButtonText="Cancel"
         icon={<DeleteDustbinIcon />}
         isOpen={state.clusterDeleteModal}
         onSubmit={deleteUserConfirmed}
         onRequestClose={() => setState({ ...state, clusterDeleteModal: false })}
-        primaryText="Are You Sure You Want to Delete This Cluster"
-        secondaryText="It Will Temporary Remove the Cluster"
+        primaryText="Are You Sure You Want to Delete This Cluster?"
+        secondaryText="It Will Permanently Remove the Cluster"
       />
 
       <Grid

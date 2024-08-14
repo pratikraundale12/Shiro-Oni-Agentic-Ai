@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from '../../shared';
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   GreenRightCircleIcon,
@@ -10,8 +10,8 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { Modal } from '../../shared';
 import { updateNamespaceStatus } from '../../store';
-import { toast } from 'react-toastify';
 import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
@@ -90,7 +90,7 @@ const CountDiv = styled.div`
   min-width: 48px;
   border: 1px solid #dde4f0;
   border-radius: 8px;
-  background-color: #f5f7fa
+  background-color: #f5f7fa;
   cursor: pointer;
   position: relative;
   display: flex;
@@ -155,21 +155,47 @@ const ActiveButtonDiv = styled.div`
   }
 `;
 
-const NamespaceDeploy = ({ isOpen, closePopup, getParamerterContext }) => {
-  const { state } = useGlobalContext();
+const NamespaceDeploy = ({
+  isOpen,
+  closePopup,
+  getParamerterContext,
+  handleTertiaryButton,
+}) => {
+  const { state, setState } = useGlobalContext();
   const [activeButton, setActiveButton] = useState(null);
   const handleUpdateStatus = async (status, buttonId) => {
     try {
-      await updateNamespaceStatus(
+      const response = await updateNamespaceStatus(
         state.selectedClusterId,
         state?.upgradeData?.id || state.deployCountDetails?.data?.id,
         status
       );
+      if (response?.data) {
+        setState(prevState => ({
+          ...prevState,
+          deployCountDetails: {
+            ...prevState.deployCountDetails,
+            data: {
+              ...prevState?.deployCountDetails.data,
+              runningCount: response?.data?.status?.runningCount,
+              stoppedCount: response?.data?.status?.stoppedCount,
+              invalidCount: response?.data?.status?.invalidCount,
+              disabledCount: response?.data?.status?.disabledCount,
+            },
+          },
+          updatedCount: {
+            ...prevState?.updatedCount,
+            runningCount: response?.data?.status?.runningCount,
+            stoppedCount: response?.data?.status?.stoppedCount,
+            invalidCount: response?.data?.status?.invalidCount,
+            disabledCount: response?.data?.status?.disabledCount,
+          },
+        }));
+      }
+      console.log(response, state);
       setActiveButton(buttonId);
-      toast.success(`Namespace status updated to ${status}`);
     } catch (error) {
       console.error('Failed to update status:', error);
-      toast.error(`Failed to update namespace status to ${status}`);
     }
   };
   const handleClick = () => {
@@ -178,168 +204,177 @@ const NamespaceDeploy = ({ isOpen, closePopup, getParamerterContext }) => {
       '_blank'
     );
   };
-
-  // const isDeploy = state?.upgradeData ? false : true;
+  console.log(state, 'count');
   return (
-    <Modal
-      title={`Namespace ${state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
-      isOpen={isOpen}
-      onRequestClose={closePopup}
-      size="sm"
-      onSecondarySubmit={getParamerterContext}
-      secondaryButtonText="Parameter Context"
-      primaryButtonText="Go to Nifi Instance"
-      contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
-      onSubmit={handleClick}
-      secondaryButtonProps={{
-        disabled: !(
-          state?.deployCountDetails?.data?.parameterContextId ||
-          state?.updatedCount?.parameterContextId
-        ),
-      }}
-    >
-      <ModalBody className="modal-body">
-        <ModalIcon className="d-flex ">
-          <GreenRightCircleIcon />
-        </ModalIcon>
-        <ModalHFive className="pt-4 mt-2 mb-0 ">
-          {state?.upgradeData?.name} {state?.deployData?.name} successfully{' '}
-          {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'} to{' '}
-          {state?.selectedClusterName} instance
-        </ModalHFive>
-        <RowModal>
-          <ColumnThree className="col-4 mb-3">
-            <RowModalDiv className="d-flex  h-100  ">
-              <ActionTitleSet className="mb-0 ">Namespace</ActionTitleSet>
-              <SubTitleSet className="mb-0 ">
-                {state?.upgradeData?.name}
-                {state?.deployData?.name}
-              </SubTitleSet>
-            </RowModalDiv>
-          </ColumnThree>
-          <CustomNine className="col-8 mb-3">
-            <ActiveButtonContainer className="d-flex ">
-              <CountDiv
-                className="div-btn-1"
-                count={
-                  state.updatedCount?.runningCount ||
-                  state.deployCountDetails?.data?.runningCount
-                }
-                activeColor="#58e715"
-              >
-                <TriangleIcons color="#B5BDC8" />
-                <span>
-                  {state.deployCountDetails?.data?.runningCount ||
-                    state?.updatedCount?.runningCount}
-                </span>
-              </CountDiv>
-              <CountDiv
-                className="div-btn-2"
-                count={
-                  state.updatedCount?.stoppedCount ||
-                  state.deployCountDetails?.data?.stoppedCount
-                }
-                activeColor="#c52b2b"
-              >
-                <SquareBoxIcon color="#B5BDC8" />
-                <span>
-                  {state.updatedCount?.stoppedCount ||
-                    state.deployCountDetails?.data?.stoppedCount}
-                </span>
-              </CountDiv>
-              <CountDiv
-                className="div-btn-3"
-                count={
-                  state.updatedCount?.invalidCount ||
-                  state.deployCountDetails?.data?.invalidCount
-                }
-                activeColor="#CF9F5D"
-              >
-                <TriangleExclamationMarkIcon color="#B5BDC8" />
-                <span>
-                  {state.updatedCount?.invalidCount ||
-                    state.deployCountDetails?.data?.invalidCount}
-                </span>
-              </CountDiv>
-              <CountDiv
-                className="div-btn-4"
-                count={
-                  state?.updatedCount?.disabledCount ||
-                  state?.deployCountDetails?.data?.disabledCount
-                }
-                activeColor="#2c7cf3"
-              >
-                <SmallNotThunderIcon color="#B5BDC8" />
-                <span>
-                  {state?.deployCountDetails?.data?.disabledCount ||
-                    state?.updatedCount?.disabledCount}
-                </span>
-              </CountDiv>
-            </ActiveButtonContainer>
-          </CustomNine>
-          <ColumnThree className="col-4 mb-3">
-            <RowModalDiv className="d-flex  h-100  ">
-              <ActionTitleSet className="mb-0 ">Current Version</ActionTitleSet>
-              <SubTitleSet className="mb-0 ">
-                {state.selectedVersion}
-              </SubTitleSet>
-            </RowModalDiv>
-          </ColumnThree>
-          <CustomNine className="col-8 mb-3">
-            <ActiveButtonContainer className="d-flex ">
-              <ActiveButtonDiv className="div-btn-1">
-                <ActiveButtonDiv
+    <>
+      <Modal
+        title={`Namespace ${state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
+        isOpen={isOpen}
+        onRequestClose={closePopup}
+        size="sm"
+        onSecondarySubmit={getParamerterContext}
+        secondaryButtonText="Parameter Context"
+        primaryButtonText="Go to Nifi Instance"
+        contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
+        onSubmit={handleClick}
+        secondaryButtonProps={{
+          disabled: !(
+            state?.deployCountDetails?.data?.parameterContextId ||
+            state?.updatedCount?.parameterContextId
+          ),
+        }}
+        tertiaryButton={true}
+        tertiaryButtonConfig={{
+          tertiaryButtonTest: 'Variables',
+          tertiaryButtonSubmit: handleTertiaryButton,
+          tertiaryButtonDisable: false,
+        }}
+      >
+        <ModalBody className="modal-body">
+          <ModalIcon className="d-flex ">
+            <GreenRightCircleIcon />
+          </ModalIcon>
+          <ModalHFive className="pt-4 mt-2 mb-0 ">
+            {state?.upgradeData?.name} {state?.deployData?.name} successfully{' '}
+            {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'} to{' '}
+            {state?.selectedClusterName} instance
+          </ModalHFive>
+          <RowModal>
+            <ColumnThree className="col-4 mb-3">
+              <RowModalDiv className="d-flex  h-100  ">
+                <ActionTitleSet className="mb-0 ">Namespace</ActionTitleSet>
+                <SubTitleSet className="mb-0 ">
+                  {state?.upgradeData?.name}
+                  {state?.deployData?.name}
+                </SubTitleSet>
+              </RowModalDiv>
+            </ColumnThree>
+            <CustomNine className="col-8 mb-3">
+              <ActiveButtonContainer className="d-flex ">
+                <CountDiv
                   className="div-btn-1"
-                  isActive={activeButton === 'RUNNING'}
+                  count={
+                    state.updatedCount?.runningCount ||
+                    state.deployCountDetails?.data?.runningCount
+                  }
                   activeColor="#58e715"
-                  hoverColor="#58e715"
-                  activeTextColor="#fff"
-                  onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
                 >
                   <TriangleIcons color="#B5BDC8" />
-                </ActiveButtonDiv>
-              </ActiveButtonDiv>
-              <ActiveButtonDiv className="div-btn-2">
-                <ActiveButtonDiv
-                  className="div-btn-1"
-                  isActive={activeButton === 'STOPPED'}
+                  <span>
+                    {state.deployCountDetails?.data?.runningCount ||
+                      state?.updatedCount?.runningCount}
+                  </span>
+                </CountDiv>
+                <CountDiv
+                  className="div-btn-2"
+                  count={
+                    state.updatedCount?.stoppedCount ||
+                    state.deployCountDetails?.data?.stoppedCount
+                  }
                   activeColor="#c52b2b"
-                  hoverColor="#c52b2b"
-                  activeTextColor="#fff"
-                  onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
                 >
                   <SquareBoxIcon color="#B5BDC8" />
-                </ActiveButtonDiv>
-              </ActiveButtonDiv>
-              <ActiveButtonDiv className="div-btn-3">
-                <ActiveButtonDiv
-                  className="div-btn-1"
-                  isActive={activeButton === 'ENABLED'}
-                  activeColor="#cf9f5d"
-                  hoverColor="#cf9f5d"
-                  activeTextColor="#fff"
-                  onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
+                  <span>
+                    {state.updatedCount?.stoppedCount ||
+                      state.deployCountDetails?.data?.stoppedCount}
+                  </span>
+                </CountDiv>
+                <CountDiv
+                  className="div-btn-3"
+                  count={
+                    state.updatedCount?.invalidCount ||
+                    state.deployCountDetails?.data?.invalidCount
+                  }
+                  activeColor="#CF9F5D"
                 >
-                  <SmallThunderIcon color="#B5BDC8" />
-                </ActiveButtonDiv>
-              </ActiveButtonDiv>
-              <ActiveButtonDiv className="div-btn-4">
-                <ActiveButtonDiv
-                  className="div-btn-1"
-                  isActive={activeButton === 'DISABLED'}
+                  <TriangleExclamationMarkIcon color="#B5BDC8" />
+                  <span>
+                    {state.updatedCount?.invalidCount ||
+                      state.deployCountDetails?.data?.invalidCount}
+                  </span>
+                </CountDiv>
+                <CountDiv
+                  className="div-btn-4"
+                  count={
+                    state?.updatedCount?.disabledCount ||
+                    state?.deployCountDetails?.data?.disabledCount
+                  }
                   activeColor="#2c7cf3"
-                  hoverColor="#2c7cf3"
-                  activeTextColor="#fff"
-                  onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
                 >
                   <SmallNotThunderIcon color="#B5BDC8" />
+                  <span>
+                    {state?.deployCountDetails?.data?.disabledCount ||
+                      state?.updatedCount?.disabledCount}
+                  </span>
+                </CountDiv>
+              </ActiveButtonContainer>
+            </CustomNine>
+            <ColumnThree className="col-4 mb-3">
+              <RowModalDiv className="d-flex  h-100  ">
+                <ActionTitleSet className="mb-0 ">
+                  Current Version
+                </ActionTitleSet>
+                <SubTitleSet className="mb-0 ">
+                  {state.selectedVersion}
+                </SubTitleSet>
+              </RowModalDiv>
+            </ColumnThree>
+            <CustomNine className="col-8 mb-3">
+              <ActiveButtonContainer className="d-flex ">
+                <ActiveButtonDiv className="div-btn-1">
+                  <ActiveButtonDiv
+                    className="div-btn-1"
+                    isActive={activeButton === 'RUNNING'}
+                    activeColor="#58e715"
+                    hoverColor="#58e715"
+                    activeTextColor="#fff"
+                    onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
+                  >
+                    <TriangleIcons color="#B5BDC8" />
+                  </ActiveButtonDiv>
                 </ActiveButtonDiv>
-              </ActiveButtonDiv>
-            </ActiveButtonContainer>
-          </CustomNine>
-        </RowModal>
-      </ModalBody>
-    </Modal>
+                <ActiveButtonDiv className="div-btn-2">
+                  <ActiveButtonDiv
+                    className="div-btn-1"
+                    isActive={activeButton === 'STOPPED'}
+                    activeColor="#c52b2b"
+                    hoverColor="#c52b2b"
+                    activeTextColor="#fff"
+                    onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
+                  >
+                    <SquareBoxIcon color="#B5BDC8" />
+                  </ActiveButtonDiv>
+                </ActiveButtonDiv>
+                <ActiveButtonDiv className="div-btn-3">
+                  <ActiveButtonDiv
+                    className="div-btn-1"
+                    isActive={activeButton === 'ENABLED'}
+                    activeColor="#cf9f5d"
+                    hoverColor="#cf9f5d"
+                    activeTextColor="#fff"
+                    onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
+                  >
+                    <SmallThunderIcon color="#B5BDC8" />
+                  </ActiveButtonDiv>
+                </ActiveButtonDiv>
+                <ActiveButtonDiv className="div-btn-4">
+                  <ActiveButtonDiv
+                    className="div-btn-1"
+                    isActive={activeButton === 'DISABLED'}
+                    activeColor="#2c7cf3"
+                    hoverColor="#2c7cf3"
+                    activeTextColor="#fff"
+                    onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
+                  >
+                    <SmallNotThunderIcon color="#B5BDC8" />
+                  </ActiveButtonDiv>
+                </ActiveButtonDiv>
+              </ActiveButtonContainer>
+            </CustomNine>
+          </RowModal>
+        </ModalBody>
+      </Modal>
+    </>
   );
 };
 
@@ -365,6 +400,7 @@ NamespaceDeploy.propTypes = {
     name: PropTypes.string,
     id: PropTypes.string,
   }),
+  handleTertiaryButton: PropTypes.func,
   selectedVersion: PropTypes.string,
   selectedClusterName: PropTypes.string,
   selectedClusterId: PropTypes.string,

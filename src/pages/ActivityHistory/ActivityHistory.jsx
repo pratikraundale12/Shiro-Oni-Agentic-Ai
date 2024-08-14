@@ -1,9 +1,9 @@
 import React from 'react';
 import { PageComingSoon } from '../../shared';
-export const ReadyFlowGallary = () => {
+export const ActvityHistory = () => {
   return (
     <>
-      <PageComingSoon pageTitle="Ready to use Flow" />
+      <PageComingSoon pageTitle="Actvity History" />
     </>
   );
 };

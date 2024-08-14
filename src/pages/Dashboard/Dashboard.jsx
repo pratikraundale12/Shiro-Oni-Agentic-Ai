@@ -1,33 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import styled from 'styled-components';
 
-import { theme } from '../../styles';
-import { SelectField } from '../../shared';
-import { Table } from '../../components';
-import { InsightContainer, FlowMetrics } from './components';
-import { useGlobalContext } from '../../utils';
 import {
   ActiveThreadIcon,
   DisabledProcessorIcon,
+  ErrorIcon,
   FlowFiledQuedIcon,
   FlowMetricHeaderIcon,
+  InvalidProcessorIcon,
   LensIcon,
   RunnigProcessorIcon,
   StoppedProcessorIcon,
   TotalProcessorIcon,
   TotalQuedIcon,
-  InvalidProcessorIcon,
-  ErrorIcon,
 } from '../../assets';
 import { CrossIcon } from '../../assets/Icons/CrossIcon';
+import { Table } from '../../components';
+import { SelectField } from '../../shared';
 import {
   fetchGridData,
   getInitialClusterData,
   getNamespaceData,
 } from '../../store';
+import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
+import { FlowMetrics, InsightContainer } from './components';
 
 const TopSection = styled.div`
   display: flex;
@@ -48,7 +48,7 @@ const QuickInsightHeadingText = styled.h4`
   font-weight: 600;
   line-height: 27.24px;
   text-align: left;
-  padding-botton: 5px;
+  padding-bottom: 5px;
 `;
 
 const InsightIconContiner = styled.div`
@@ -217,11 +217,6 @@ export const Dashboard = () => {
       ),
       width: '50%',
     },
-    // {
-    //   label: '',
-    //   renderCell: () => <DownArrowIcon />,
-    //   width: '10%',
-    // },
   ];
 
   const getNamespaceDetails = async id => {

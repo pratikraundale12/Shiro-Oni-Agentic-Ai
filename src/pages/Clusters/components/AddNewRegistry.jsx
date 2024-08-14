@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import styled from 'styled-components';
 import * as yup from 'yup';
-import { InputField, Button, PasswordField } from '../../../shared';
+import {
+  DeleteSmallIcon,
+  FileIcon,
+  LinkIcon,
+  PencilIcon,
+  PlusCircleIcon,
+  QRIcons,
+  SmallPerfileIcon,
+  WhiteBoradIcon,
+} from '../../../assets';
+import { Button, InputField, PasswordField } from '../../../shared';
+import { testRegistry } from '../../../store';
 import { RegexConst } from '../../../utils';
 import { AddCertificate } from './AddCertificate';
-import { SummaryModal } from './SummaryModal';
-import {
-  SmallPerfileIcon,
-  QRIcons,
-  PlusCircleIcon,
-  FileIcon,
-  WhiteBoradIcon,
-  PencilIcon,
-  DeleteSmallIcon,
-  LinkIcon,
-} from '../../../assets';
-import { testRegistry } from '../../../store';
-import { SuccessTestModal } from './SuccessTestModal';
 import { FailedTestModal } from './FailedTestModal';
+import { SuccessTestModal } from './SuccessTestModal';
+import { SummaryModal } from './SummaryModal';
 
 const InputContainer = styled.div`
   display: flex;
@@ -191,7 +191,7 @@ const registrySchema = yup.object().shape({
   name: yup
     .string()
     .matches(
-      RegexConst.REGESTRY_NAME,
+      RegexConst.NAME,
       'Registry Name must be at least 3 characters long'
     )
     .required('Registry Name is required'),

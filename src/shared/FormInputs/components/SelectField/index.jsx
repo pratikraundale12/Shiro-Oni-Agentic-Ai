@@ -133,6 +133,7 @@ const SelectField = ({
       minHeight: 0,
       minWidth: 'max-content',
       boxShadow: 'none',
+      cursor: disabled ? 'not-allowed' : 'pointer',
       borderColor: getBorderColor(state),
       backgroundColor: disabled
         ? theme.colors.lightGrey2
@@ -154,6 +155,7 @@ const SelectField = ({
           ? theme.colors.lightGrey1
           : 'transparent',
       color: state.isSelected && theme.colors.darker,
+      cursor: disabled ? 'not-allowed' : 'pointer',
     }),
     singleValue: styles => ({
       ...styles,
