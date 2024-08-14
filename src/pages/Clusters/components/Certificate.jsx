@@ -23,6 +23,11 @@ const NifiText = styled.h6`
   color: #425466;
 `;
 
+const DEFAULT_VALUES = {
+  pfxFile: null,
+  password: '',
+};
+
 export const Certificate = ({
   isCertificateOpen,
   setIsCertificateOpen,
@@ -45,6 +50,7 @@ export const Certificate = ({
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: DEFAULT_VALUES,
   });
 
   const handleTest = async data => {
@@ -94,10 +100,7 @@ export const Certificate = ({
   const onSubmit = data => {
     setLoading(true);
     handleTest(data);
-    reset({
-      pfxFile: '',
-      password: '',
-    });
+    reset(DEFAULT_VALUES);
   };
 
   return (
