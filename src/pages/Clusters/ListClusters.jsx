@@ -7,15 +7,6 @@ import { fetchGridData, deleteCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 
 import {
-  Grid,
-  ProgressBarRender,
-  ActionRender,
-  StatusRender,
-  TextRender,
-  UrlRender,
-  EnableClusterRender,
-} from '../../components';
-import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
   OpenEyeIcon,
@@ -23,6 +14,15 @@ import {
 } from '../../assets';
 import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
+import {
+  ActionRender,
+  EnableClusterRender,
+  Grid,
+  ProgressBarRender,
+  StatusRender,
+  TextRender,
+  UrlRender,
+} from '../../components';
 
 const List = styled.div`
   position: absolute;
@@ -50,7 +50,7 @@ const Item = styled.div`
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding: 16px 12px;
+  padding: 14px 12px;
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.md};
   color: ${props => props.theme.colors.darker};
@@ -254,14 +254,15 @@ export const ListClusters = () => {
   return (
     <>
       <ModalWithIcon
+        title="Delete Cluster"
         primaryButtonText="Delete"
         secondaryButtonText="Cancel"
         icon={<DeleteDustbinIcon />}
         isOpen={state.clusterDeleteModal}
         onSubmit={deleteUserConfirmed}
         onRequestClose={() => setState({ ...state, clusterDeleteModal: false })}
-        primaryText="Are You Sure You Want to Delete This Cluster"
-        secondaryText="It Will Temporary Remove the Cluster"
+        primaryText="Are You Sure You Want to Delete This Cluster?"
+        secondaryText="It Will Permanently Remove the Cluster"
       />
 
       <Grid

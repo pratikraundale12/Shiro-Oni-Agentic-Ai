@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -11,7 +11,7 @@ import {
   Modal,
   RadioSelectField,
 } from '../../shared';
-import { updateParameterContextService } from '../../store/index1';
+// import { updateParameterContextService } from '../../store';
 import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
@@ -80,6 +80,8 @@ const AddParameterContext = ({
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   parameterContextItem,
+  newlyAddedPrameterContext,
+  setNewlyAddedParameterContext,
 }) => {
   const { state, setState } = useGlobalContext();
   const parameterDetailsData = state?.parameterDetails?.data || {};
@@ -91,17 +93,25 @@ const AddParameterContext = ({
 
   useEffect(() => {
     if (isAddParameterContextOpen?.isOpen) {
-      if (isEmpty(parameterContextItem)) {
+      if (
+        isEmpty(parameterContextItem) &&
+        isAddParameterContextOpen?.mode === 'add'
+      ) {
         reset(DEFAULT_VALUES);
         setValue('check', false);
       } else {
         reset({
           ...parameterContextItem,
-          name: parameterContextItem?.context_name,
-          value: parameterContextItem?.sensitive
-            ? ''
-            : parameterContextItem?.value,
-          sensitive: parameterContextItem?.sensitive ? 'true' : 'false',
+          name: parameterContextItem?.name,
+          value:
+            parameterContextItem?.sensitive === 'true'
+              ? ''
+              : parameterContextItem?.value,
+          sensitive: isString(parameterContextItem?.sensitive)
+            ? parameterContextItem?.sensitive
+            : parameterContextItem?.sensitive
+              ? 'true'
+              : 'false',
         });
         setValue(
           'check',
@@ -114,70 +124,70 @@ const AddParameterContext = ({
   }, [
     reset,
     isAddParameterContextOpen?.isOpen,
+    isAddParameterContextOpen?.mode,
     parameterContextItem,
     setValue,
   ]);
 
-  const convertObject = objects => {
-    return objects.map(originalObject => ({
-      context_name: originalObject?.parameter?.name,
-      value: originalObject?.parameter?.value,
-      description: originalObject?.parameter?.description,
-      sensitive: originalObject?.parameter?.sensitive,
-    }));
-  };
-
-  const onSubmit = async data => {
+  const handleAddEditParameterContext = async data => {
     if (!data) return;
-    const parameterAlreadyExist = parameterContextList.find(
-      parameter =>
-        parameter?.context_name?.toLowerCase() === data?.name?.toLowerCase()
+    const nameExists = (contextList, name) =>
+      contextList.some(
+        parameter => parameter?.name?.toLowerCase() === name?.toLowerCase()
+      );
+    const parameterAlreadyExist = nameExists(parameterContextList, data?.name);
+    const parameterAlreadyExistInNewlyAddedContext = nameExists(
+      newlyAddedPrameterContext,
+      data?.name
     );
-    if (
-      parameterAlreadyExist &&
-      Object.keys(parameterAlreadyExist)?.length > 0 &&
-      isAddParameterContextOpen?.mode === 'add'
-    ) {
+
+    const isDuplicate =
+      (parameterAlreadyExist || parameterAlreadyExistInNewlyAddedContext) &&
+      isAddParameterContextOpen?.mode === 'add';
+
+    if (isDuplicate) {
       toast.info('Parameter with same name already exists');
       return;
     }
-    try {
-      data.sensitive = data.sensitive === 'true';
-      const revision = {
-        version: state.parameterVersion,
-      };
-      const response = await updateParameterContextService(
-        state.selectedClusterId,
-        state.deployCountDetails?.data?.parameterContextId ||
-          state?.updatedCount?.parameterContextId,
-        revision,
-        data
+
+    if (isAddParameterContextOpen?.mode === 'edit') {
+      const updatedData = newlyAddedPrameterContext.map(item =>
+        item?.name?.toLowerCase() === data?.name?.toLowerCase()
+          ? { ...item, ...data }
+          : item
+      );
+      const filteredParameterContextList = parameterContextList.filter(
+        item => item?.name?.toLowerCase() !== data?.name?.toLowerCase()
+      );
+      const existingParameterContext = parameterContextList.find(
+        item => item?.name?.toLowerCase() === data?.name?.toLowerCase()
       );
 
-      if (response.status === 200) {
-        setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
-        setIsParameterContextOpen(true);
-
-        const paramter = {
-          [response?.data?.id]: convertObject(
-            response.data.component.parameters
-          ),
-        };
-
-        setState(prevState => ({
-          ...prevState,
-          parameterVersion: response.data.revision.version,
+      if (
+        existingParameterContext &&
+        Object.values(existingParameterContext)?.length !== 0
+      ) {
+        setState({
+          ...state,
           parameterDetails: {
-            ...prevState.parameterDetails,
-            data: paramter,
+            ...state.parameterDetails,
+            data: {
+              [data?.name]: filteredParameterContextList,
+            },
           },
-        }));
+        });
+        setNewlyAddedParameterContext([...updatedData, data]);
+      } else {
+        setNewlyAddedParameterContext([...updatedData]);
       }
-      reset();
-    } catch (error) {
-      toast.error(error?.message);
+    } else {
+      setNewlyAddedParameterContext([...newlyAddedPrameterContext, data]);
     }
+    setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
+    setIsParameterContextOpen(true);
+    reset(DEFAULT_VALUES);
   };
+
   const check = useWatch({
     control,
     name: 'check',
@@ -199,7 +209,7 @@ const AddParameterContext = ({
       size="md"
       secondaryButtonText="Back"
       primaryButtonText="Save"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleAddEditParameterContext)}
     >
       <ModalBody className="modal-body">
         <ModalBodyDiv className="d-flex">
@@ -243,10 +253,6 @@ const AddParameterContext = ({
                   label="Sensitive value"
                   options={OPTIONS}
                   disabled={isAddParameterContextOpen?.mode === 'edit'}
-                  defaultValue={
-                    String(parameterContextItem?.sensitive) ??
-                    DEFAULT_VALUES?.sensitive
-                  }
                   register={register}
                 />
               </RedioButtonDiv>
@@ -275,6 +281,8 @@ AddParameterContext.propTypes = {
   setIsAddParameterContextOpen: PropTypes.func,
   setIsParameterContextOpen: PropTypes.func,
   parameterContextItem: PropTypes.object,
+  newlyAddedPrameterContext: PropTypes.array,
+  setNewlyAddedParameterContext: PropTypes.func,
 };
 
 export default AddParameterContext;

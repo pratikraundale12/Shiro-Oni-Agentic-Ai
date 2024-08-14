@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
-import { theme } from '../../styles';
-import { Button, SelectField } from '../../shared';
-import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { useForm } from 'react-hook-form';
 import { useGlobalContext } from '../../utils';
 import { fetchGridData } from '../../store/index1';
 import { history } from '../../helpers/history';
 import { useLocation } from 'react-router-dom';
 import { ClusterSelect } from '../ClusterSelect';
+import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
+import { Button, SelectField } from '../../shared';
+import { theme } from '../../styles';
 
 const Flex = styled.div`
   display: flex;
@@ -66,9 +66,31 @@ const StyledClusterSelect = styled(ClusterSelect)`
 
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
+  min-width: 8.5rem;
 
   > div {
     margin-top: 0;
+  }
+`;
+const DropdownContainer = styled.div`
+  margin-left: 10px;
+  min-width: 175px;
+  max-width: 175px;
+  cursor: pointer;
+
+  & div > div {
+    & > div {
+      min-width: 175px;
+      max-width: 175px;
+      cursor: pointer;
+    }
+  }
+  & div > div {
+    & > div > * {
+      min-width: unset;
+      max-width: unset;
+      cursor: pointer;
+    }
   }
 `;
 
@@ -113,7 +135,7 @@ export const GridActions = ({
 
   return (
     <>
-      <Flex>
+      <Flex className="flex-wrap gap-2">
         <Flex>
           <ImageContainer>
             <TodoIcon width={22} height={24} />
@@ -122,33 +144,39 @@ export const GridActions = ({
         </Flex>
         <ButtonsContainer>
           {!isEmpty(refreshOptions) && (
-            <StyledSelectField
-              name="refresh"
-              size="sm"
-              control={control}
-              options={refreshOptions}
-              placeholder="Refresh"
-              backgroundColor={theme.colors.lightGrey}
-              onChange={handleRefresh}
-            />
+            <DropdownContainer>
+              <StyledSelectField
+                name="refresh"
+                size="sm"
+                control={control}
+                options={refreshOptions}
+                placeholder="Refresh"
+                backgroundColor={theme.colors.lightGrey}
+                onChange={handleRefresh}
+              />
+            </DropdownContainer>
           )}
           {!isEmpty(statusOptions) && (
-            <StyledSelectField
-              name="is_active"
-              size="sm"
-              control={control}
-              options={statusOptions}
-              placeholder="Status"
-              backgroundColor={theme.colors.lightGrey}
-            />
+            <DropdownContainer>
+              <StyledSelectField
+                name="is_active"
+                size="sm"
+                control={control}
+                options={statusOptions}
+                placeholder="Status"
+                backgroundColor={theme.colors.lightGrey}
+              />
+            </DropdownContainer>
           )}
           {location.pathname.includes('namespaces') && (
-            <StyledClusterSelect
-              size="sm"
-              placeholder="Cluster"
-              title="Select Cluster"
-              backgroundColor={theme.colors.lightGrey}
-            />
+            <DropdownContainer>
+              <StyledClusterSelect
+                size="sm"
+                placeholder="Cluster"
+                title="Select Cluster"
+                backgroundColor={theme.colors.lightGrey}
+              />
+            </DropdownContainer>
           )}
           {!isEmpty(buttonText) && (
             <Button

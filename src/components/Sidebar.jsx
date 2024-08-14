@@ -8,6 +8,7 @@ import { ROUTES_MENU } from '../routes';
 import { KsolvesDataFlowIcon } from '../assets';
 import { AuthenticationActions, AuthenticationSelectors } from '../store';
 import { history } from '../helpers/history';
+import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 
 const Container = styled.div`
   height: 100%;
@@ -77,6 +78,13 @@ const Item = styled.li`
   }
 `;
 
+const HelpSupportConatiner = styled.div`
+  display: flex;
+  align-items: flex-end;
+  margin-top: auto;
+  width: 100%;
+`;
+
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
   const route = useSelector(AuthenticationSelectors.getRoute);
@@ -109,6 +117,15 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
           );
         })}
       </List>
+      <HelpSupportConatiner>
+        <Item
+          active={false}
+          // onClick={() => }
+        >
+          <QuestionMarkIcon />
+          <span>Help & Support</span>
+        </Item>
+      </HelpSupportConatiner>
     </Container>
   );
 };

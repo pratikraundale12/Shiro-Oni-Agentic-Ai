@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { Modal } from '../../../shared';
 import {
@@ -8,7 +9,6 @@ import {
   updateCluster,
   updateRegistry,
 } from '../../../store/index1';
-import { toast, ToastContainer } from 'react-toastify';
 import { history } from '../../../helpers/history';
 // import { FileIcon } from '../../../assets';
 
@@ -25,13 +25,16 @@ const Row = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 10px;
-  margin-right: 1.5rem;
-  margin-left: 1.5rem;
+  width: 100%;
 `;
 
 const Col = styled.div`
-  flex: 0 0 auto;
-  width: 50%;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.625rem;
+  margin-bottom: 1rem;
 `;
 
 const Title = styled.h4`
@@ -55,6 +58,9 @@ const ClusterName = styled.div`
   letter-spacing: -0.005em;
   color: #7a7a7a;
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 // const Password = styled.div`
@@ -116,22 +122,18 @@ const DetailsTitle = styled.div`
   color: #4b5564;
 `;
 
-const RowTwo = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 10px;
-  margin-right: 1.5rem;
-  margin-left: 1.5rem;
-  margin-bottom: 1rem;
-`;
 const TextEllipses = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18.52px;
+  letter-spacing: -0.005em;
+  color: #7a7a7a;
   white-space: nowrap;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: flex;
-  width: 100%;
-  align-items: center;
 `;
+
 export const SummaryModal = ({
   clusterData,
   registryData,
@@ -238,16 +240,14 @@ export const SummaryModal = ({
             <DetailsTitle>Cluster Details</DetailsTitle>
             <Row>
               <Col>
-                <RowTwo>
-                  <Info width="50%">
-                    <Title>Cluster Name</Title>
-                    <ClusterName>{clusterData.clusterName}</ClusterName>
-                  </Info>
-                  <Info width="50%">
-                    <Title>Cluster URL</Title>
-                    <TextEllipses>{clusterData.nifiUrl}</TextEllipses>
-                  </Info>
-                </RowTwo>
+                <Info width="50%">
+                  <Title>Cluster Name</Title>
+                  <ClusterName>{clusterData.clusterName}</ClusterName>
+                </Info>
+                <Info width="50%">
+                  <Title>Cluster URL</Title>
+                  <TextEllipses>{clusterData.nifiUrl}</TextEllipses>
+                </Info>
               </Col>
             </Row>
           </ClusterDetailsContainer>
@@ -256,20 +256,18 @@ export const SummaryModal = ({
             <DetailsTitle>Registry Details</DetailsTitle>
             <Row>
               <Col>
-                <RowTwo>
-                  <Info width="50%">
-                    <Title>Registry Name</Title>
-                    <ClusterName>
-                      {registryData?.registryName || registryData?.name}
-                    </ClusterName>
-                  </Info>
-                  <Info width="50%">
-                    <Title>Registry URL</Title>
-                    <TextEllipses>
-                      {registryData?.registryUrl || registryData?.registry_url}
-                    </TextEllipses>
-                  </Info>
-                </RowTwo>
+                <Info width="50%">
+                  <Title>Registry Name</Title>
+                  <ClusterName>
+                    {registryData?.registryName || registryData?.name}
+                  </ClusterName>
+                </Info>
+                <Info width="50%">
+                  <Title>Registry URL</Title>
+                  <TextEllipses>
+                    {registryData?.registryUrl || registryData?.registry_url}
+                  </TextEllipses>
+                </Info>
               </Col>
             </Row>
           </ClusterDetailsContainer>

@@ -1,7 +1,7 @@
 /* eslint-disable */
 
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
 import { CircleExclamationMarkIcon, ThreedotsIcon } from '../../../assets';
 import { Tooltip } from '../../../shared/Tooltip';
@@ -25,6 +25,11 @@ export const IconButton = styled.button`
   border-radius: 100%;
   background-color: ${props => props.theme.colors.white};
   border: 1px solid ${props => props.theme.colors.border};
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 `;
 
 const ClusterDeatils = styled.div`

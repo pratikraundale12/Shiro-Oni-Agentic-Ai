@@ -8,18 +8,19 @@ import { theme } from '../../styles';
 import { SelectField } from '../../shared';
 import { ClusterSelect, FullPageLoader, Table } from '../../components';
 import { InsightContainer, FlowMetrics } from './components';
+
 import {
   ActiveThreadIcon,
   DisabledProcessorIcon,
+  ErrorIcon,
   FlowFiledQuedIcon,
   FlowMetricHeaderIcon,
+  InvalidProcessorIcon,
   LensIcon,
   RunnigProcessorIcon,
   StoppedProcessorIcon,
   TotalProcessorIcon,
   TotalQuedIcon,
-  InvalidProcessorIcon,
-  ErrorIcon,
 } from '../../assets';
 import { CrossIcon } from '../../assets/Icons/CrossIcon';
 import {
@@ -49,7 +50,7 @@ const QuickInsightHeadingText = styled.h4`
   font-weight: 600;
   line-height: 27.24px;
   text-align: left;
-  padding-botton: 5px;
+  padding-bottom: 5px;
 `;
 
 const InsightIconContiner = styled.div`

@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import TogglePassword from './components/TogglePassword';
-import InputField from '../InputField';
 import { BagIcon } from '../../../../assets';
 import { hasError } from '../../../../helpers';
+import InputField from '../InputField';
+import TogglePassword from './components/TogglePassword';
 
 const Wrapper = styled.div`
   position: relative;
@@ -73,6 +73,7 @@ const PasswordInputField = ({
   errors,
   watch,
   helperText = '',
+  placeholder = '',
   showStrengthMeter = false,
   icon = <BagIcon />,
   ...props
@@ -99,7 +100,7 @@ const PasswordInputField = ({
         type={show ? 'text' : 'password'}
         {...props}
         icon={icon}
-        placeholder="Enter Your Password"
+        placeholder={placeholder || 'Enter Your Password'}
         rightIcon={<TogglePassword show={show} onToggle={togglePassword} />}
         registerOptions={{
           onChange,
@@ -125,6 +126,7 @@ PasswordInputField.propTypes = {
   name: PropTypes.string.isRequired,
   watch: PropTypes.func.isRequired,
   errors: PropTypes.shape({}),
+  placeholder: PropTypes.string,
   helperText: PropTypes.string,
   showStrengthMeter: PropTypes.boolean,
   icon: PropTypes.func,

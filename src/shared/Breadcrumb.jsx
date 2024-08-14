@@ -27,7 +27,7 @@ const BreadcrumbItem = styled.span`
   }
 
   &:last-child {
-    color: #c52b2b;
+    color: #ff7a00;
   }
 
   &:hover {

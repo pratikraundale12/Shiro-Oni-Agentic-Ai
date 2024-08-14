@@ -1,11 +1,8 @@
-import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { Button } from '../../../shared';
-import { CrossIcon, FileIcon } from '../../../assets';
-import { Modal } from '../../../shared';
-import { InputField } from '../../../shared'; // Import your InputField component
-import { BagIcon } from '../../../assets';
+import { BagIcon, CrossIcon, FileIcon } from '../../../assets';
+import { Button, InputField, Modal } from '../../../shared';
 import TogglePassword from '../../../shared/FormInputs/components/PasswordField/components/TogglePassword';
 
 const InputBox = styled.div`

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import { TextRender, Grid, IconButton } from '../../components';
 import { useGlobalContext } from '../../utils';
@@ -10,6 +9,24 @@ import { REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { NamespacesActions } from '../../store';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+// import Deploy from './Deploy';
+
+const StyledButton = styled.button`
+  color: #ff7a00;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+`;
+const StyledDiv = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+`;
 
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
@@ -40,15 +57,7 @@ export const ListNamespaces = () => {
     {
       label: 'Namespace',
       renderCell: item => (
-        <button
-          style={{
-            color: '#C52B2B',
-            cursor: 'pointer',
-            background: 'none',
-            border: 'none',
-            textDecoration: 'underline',
-            textUnderlineOffset: '3px',
-          }}
+        <StyledButton
           tabIndex="0"
           onClick={() => {
             dispatch(NamespacesActions.setFlowPath(item.flowId));
@@ -61,7 +70,7 @@ export const ListNamespaces = () => {
           }}
         >
           {item.name}
-        </button>
+        </StyledButton>
       ),
       width: '18%',
     },
@@ -75,21 +84,14 @@ export const ListNamespaces = () => {
           <div style={{ width: 'max-content' }}>
             <TextRender text={item.id} />
           </div>
-          <button
+          <StyledDiv
             onClick={() => handleCopyToClipboard(item.id)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              marginLeft: '8px',
-            }}
             aria-label="Copy Namespace ID"
           >
             <IconButton>
               <CopyIcon />
             </IconButton>
-          </button>
+          </StyledDiv>
         </div>
       ),
       width: '26%',
@@ -154,27 +156,28 @@ export const ListNamespaces = () => {
     }
   };
 
-  function handleSelectNamespace(id) {
-    fetchGridData({
-      setState,
-      module: 'namespaces',
-      selectedSourceClusterId: state.selectedSourceClusterId,
-      selectedNamespaceId: id,
-    });
+  // function handleSelectNamespace(id) {
+  //   fetchGridData({
+  //     setState,
+  //     module: 'namespaces',
+  //     selectedSourceClusterId: state.selectedSourceClusterId,
+  //     selectedNamespaceId: id,
+  //   });
 
-    setState(prev => {
-      const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
-      const newData = state.gridData.namespaces.data.filter(
-        item => !existingIds.has(item.id)
-      );
+  //   // setOffset(0);
+  //   setState(prev => {
+  //     const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
+  //     const newData = state.gridData.namespaces.data.filter(
+  //       item => !existingIds.has(item.id)
+  //     );
 
-      return {
-        ...prev,
-        selectedNamespaceId: id,
-        tempNamespacesData: [...prev.tempNamespacesData, ...newData],
-      };
-    });
-  }
+  //     return {
+  //       ...prev,
+  //       selectedNamespaceId: id,
+  //       tempNamespacesData: [...prev.tempNamespacesData, ...newData],
+  //     };
+  //   });
+  // }
   const handleSelect = item => {
     dispatch(NamespacesActions.setFlowPath(item.flowId));
     dispatch(
@@ -208,6 +211,15 @@ export const ListNamespaces = () => {
     });
   };
 
+  // useEffect(() => {
+  //   fetchGridData({
+  //     setState,
+  //     module: 'clusters',
+  //   });
+  //   setOffset(0);
+  // }, [setState]);
+  // const [offset, setOffset] = useState(0);
+
   const handleRefreshFunctionality = () => {
     fetchGridData({
       setState,
@@ -233,9 +245,14 @@ export const ListNamespaces = () => {
     return () => clearInterval(intervalRef.current);
   }, [refreshState]);
 
+  // const LIMIT = 10;
   return (
     <>
       <Grid
+        // isNamespace={true}
+        // LIMIT={LIMIT}
+        // offset={offset}
+        // setOffset={setOffset}
         module="namespaces"
         title="Namespaces List"
         columns={COLUMNS}

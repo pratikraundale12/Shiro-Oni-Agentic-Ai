@@ -173,7 +173,7 @@ const Deploy = () => {
       renderCell: item => (
         <div
           style={{
-            color: '#C52B2B',
+            color: '#FF7A00',
             cursor: 'pointer',
             textDecoration: 'underline',
             textUnderlineOffset: '3px',
@@ -295,6 +295,7 @@ const Deploy = () => {
   };
 
   const onClusterCheck = value => {
+    console.log('onClusterCheck', value);
     dispatch(NamespacesActions.setSelectedDestCluster(value));
     dispatch(NamespacesActions.checkDestCluster());
     // setLoading(true);

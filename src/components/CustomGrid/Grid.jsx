@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { getTheme } from '@table-library/react-table-library/baseline';
+import { CompactTable } from '@table-library/react-table-library/compact';
+import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { CompactTable } from '@table-library/react-table-library/compact';
-import { useTheme } from '@table-library/react-table-library/theme';
-import { getTheme } from '@table-library/react-table-library/baseline';
 
 import { theme } from '../../styles';
 import { GridActions as GridActionsComponent } from './GridActions';
@@ -13,15 +13,17 @@ import { useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
 import Pagination from './Pagination';
 import Breadcrumb from '../../shared/Breadcrumb';
+
+import { NoDataIcon } from '../../assets';
 import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
 import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { Modal } from '../../shared';
-import { Table } from './Table';
-import { TextRender } from './CellRenders';
-import { NoDataIcon } from '../../assets';
 import { GridActions, GridSelectors } from '../../store/grid';
 // import { fetchGridData } from '../../store/services';
 import { LoadingSelectors, NamespacesSelectors } from '../../store';
+// import ReactPagination from './ReactPagnation';
+import { Table } from './Table';
+import { TextRender } from './CellRenders';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -33,13 +35,13 @@ const TableContainer = styled.div`
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
-  @media (min-width: 992px) {
-    overflow-x: hidden;
-  }
   @media (max-width: 991px) {
     table {
       min-width: 800px;
     }
+  }
+  table {
+    overflow: visible;
   }
 `;
 
@@ -94,6 +96,10 @@ export const Grid = ({
   placeholder = '',
   addModal = () => {},
   handleRefresh = () => {},
+  // isNamespace = false,
+  // LIMIT,
+  // offset,
+  // setOffset,
 }) => {
   const dispatch = useDispatch();
   const loading = useSelector(state =>
@@ -131,6 +137,9 @@ export const Grid = ({
     setState,
   } = useGlobalContext();
   const DATA = {
+    // nodes: isNamespace
+    //   ? getData(loading, gridData, nodes).slice(offset, offset + LIMIT)
+    //   : getData(loading, gridData, nodes),
     nodes: getData(loading, gridData, nodes),
   };
 
@@ -141,19 +150,20 @@ export const Grid = ({
       --data-table-library_grid-template-columns: ${columns
         .map(column => column.width)
         .join(' ')} !important;
+        margin-bottom: 0;
 
         th, td {
           border-bottom: none !important;
         }
 
         th {
-          height: 48px;
+          height: 52px;
           background-color: ${theme.colors.lightGrey} !important;
           color:  ${theme.colors.darker} !important;
         }
 
         td {
-          height: 60px;
+          height: 65px;
         }
 
         tbody tr:nth-of-type(even) td {
@@ -174,9 +184,11 @@ export const Grid = ({
       );
     return null;
   };
-
   useEffect(() => {
     dispatch(GridActions.fetchGrid({ module, params: { page: 1, search } }));
+    // if (isNamespace) {
+    //   setOffset(0);
+    // }
     // fetchGridData({
     //   setState,
     //   module,
@@ -192,6 +204,10 @@ export const Grid = ({
     () => () => setState(prev => ({ ...prev, search: '', page: 1 })),
     [setState]
   );
+  // const handlePageChange = newOffset => {
+  //   setOffset(newOffset);
+  //   // Additional logic can be added here if needed
+  // };
 
   return (
     <Container>
@@ -242,7 +258,7 @@ export const Grid = ({
         <CompactTable data={DATA} columns={columns} theme={tableTheme} />
         {getLoader()}
       </TableContainer>
-      {count >= 10 && (
+      {count > 10 && (
         <Pagination
           page={page}
           setState={setState}
@@ -251,6 +267,24 @@ export const Grid = ({
           next={next}
         />
       )}
+      {/* {isNamespace
+        ? count >= LIMIT && (
+            <ReactPagination
+              offset={offset}
+              onPageChange={handlePageChange}
+              count={count}
+              LIMIT={LIMIT}
+            />
+          )
+        : count >= 10 && (
+            <Pagination
+              page={page}
+              setState={setState}
+              count={count}
+              prev={prev}
+              next={next}
+            />
+          )} */}
     </Container>
   );
 };
@@ -274,4 +308,8 @@ Grid.propTypes = {
   ),
   onBreadcrumbClick: PropTypes.func,
   handleRefresh: PropTypes.func,
+  LIMIT: PropTypes.number,
+  offset: PropTypes.number,
+  setOffset: PropTypes.func,
+  isNamespace: PropTypes.bool,
 };

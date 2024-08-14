@@ -41,7 +41,7 @@ const theme = {
     secondaryDisabled: '#44444580',
 
     border: '#CCC',
-    shadow: '#9C838326',
+    shadow: '#00000033',
   },
   spacing: {
     xs: '8px',

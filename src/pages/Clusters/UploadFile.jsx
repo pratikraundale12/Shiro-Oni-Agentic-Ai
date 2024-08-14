@@ -1,10 +1,10 @@
-import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import React, { useRef } from 'react';
 import { Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { Button, SvgButton } from '../../shared';
+import styled from 'styled-components';
 import { CrossIcon, FileIcon } from '../../assets';
+import { Button, SvgButton } from '../../shared';
 import { getFileSize } from '../../helpers';
 
 const StyledButton = styled(Button)`

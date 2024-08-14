@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import styled from 'styled-components';
 import * as yup from 'yup';
 import { InputField, Button, PasswordField } from '../../../shared';
 import { RegexConst } from '../../../constants';
 import { AddCertificate } from './AddCertificate';
 
 import {
-  SmallPerfileIcon,
-  QRIcons,
-  PlusCircleIcon,
-  FileIcon,
-  WhiteBoradIcon,
-  PencilIcon,
   DeleteSmallIcon,
+  FileIcon,
   LinkIcon,
+  PencilIcon,
+  PlusCircleIcon,
+  QRIcons,
+  SmallPerfileIcon,
+  WhiteBoradIcon,
 } from '../../../assets';
 import { testCluster } from '../../../store/index1';
 import { SuccessTestModal } from './SuccessTestModal';
@@ -184,13 +184,11 @@ const InputFieldParent = styled.div`
 const clusterSchema = yup.object().shape({
   name: yup
     .string()
-    .matches(
-      RegexConst.CLUSTER_NAME,
-      'Cluster Name must be at least 3 characters long'
-    )
+    .min(3, 'Cluster Name must be at least 3 characters long')
     .required('Cluster Name is required'),
   nifi_url: yup
     .string()
+    .url('Enter a valid URL')
     .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
     .required('NiFi URL is required'),
 });

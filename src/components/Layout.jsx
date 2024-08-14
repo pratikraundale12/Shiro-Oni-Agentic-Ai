@@ -88,7 +88,7 @@ const RedirectionText = styled.button`
   text-align: left;
   color: ${props => props.theme.colors.primary};
   cursor: pointer;
-  margin-left: 8px;
+  margin-left: 5px;
 `;
 
 const RightSectionTextContainer = styled.div`
@@ -97,6 +97,7 @@ const RightSectionTextContainer = styled.div`
   left: 50%;
   transform: translate(-50%, 0);
   width: 100%;
+  text-align: center;
 `;
 
 const HeadingRightText = styled.p`

@@ -1,19 +1,20 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import {
+  CanvasXIcon,
+  CanvasYIcon,
   LinkIcon,
   QRIcons,
   TodoIcon,
   UpsideSquareIcon,
-  CanvasXIcon,
-  CanvasYIcon,
 } from '../../assets';
+import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
+import RightIcon from '../../assets/Icons/RightIcon';
+import { Table } from '../../components';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { Table } from '../../components';
-import RightIcon from '../../assets/Icons/RightIcon';
-import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
 import { useGlobalContext } from '../../utils';
 import { history } from '../../helpers/history';
 import { useDispatch, useSelector } from 'react-redux';
@@ -220,7 +221,6 @@ const Upgrade = () => {
       width: '10%',
     },
   ];
-
   const breadcrumbData = [
     { label: 'Namespace List', path: '/namespaces' },
     { label: 'Select Namespace', path: '/namespaces/deploy' },
@@ -228,16 +228,7 @@ const Upgrade = () => {
   ];
 
   const handleClick = () => {
-    history.push('/namespaces/summary', {
-      state: {
-        // upgradeData,
-        // selectedVersion,
-        // selectedClusterName,
-        // selectedClusterId,
-        // deployData,
-        // depolyNamespaceId,
-      },
-    });
+    history.push('/namespaces/summary');
   };
 
   const handleBackClick = () => {
@@ -270,8 +261,8 @@ const Upgrade = () => {
   };
 
   const isStateStale =
-    checkDestCluster.state === 'STALE' ||
-    checkDestCluster.state === 'UP_TO_DATE';
+    checkDestCluster.state === 'LOCALLY_MODIFIED_AND_STALE' ||
+    checkDestCluster.state === 'LOCALLY_MODIFIED';
 
   const handlePositionChange = (name, value) => {
     if (setState) {
@@ -422,9 +413,9 @@ const Upgrade = () => {
           </Button>
           <Button
             onClick={handleClick}
-            disabled={!formData.version && isStateStale}
+            disabled={!formData.version || isStateStale}
           >
-            {checkDestCluster.mode}
+            {checkDestCluster.mode === 'upgrade' ? 'Upgrade' : 'Deploy'}
           </Button>
         </BottomButtonDiv>
       </BottomButton>
