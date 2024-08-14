@@ -1,5 +1,9 @@
 import React from 'react';
-
+import { PageComingSoon } from '../../shared';
 export const ReadyFlowGallary = () => {
-  return <div>Readyflow Gallary</div>;
+  return (
+    <>
+      <PageComingSoon pageTitle="Ready to use Flow" />
+    </>
+  );
 };

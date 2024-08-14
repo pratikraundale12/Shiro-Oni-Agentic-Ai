@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets/Icons/TodoIcon';
@@ -5,29 +6,32 @@ import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import NamespaceDeploy from './NamespaceDeploy';
 // import AddParameterContext from './AddParameterContext';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   SmallNotThunderIcon,
   SmallThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
-  // TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
 import { FullPageLoader } from '../../components';
 import {
-  deployCluster,
+  // deployCluster,
   fetchParameterContext,
+  fetchVariables,
   getClusterProgress,
   getClusterProgressDelete,
   getCountDetails,
   updateNamespaceStatus,
   upgradeCluster,
-} from '../../store';
+} from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import AddParameterContext from './AddParameterContext';
+import Listvariables from './Listvariables';
 import ParameterContext from './ParameterContext';
+import { history } from '../../helpers/history';
+import { useDispatch, useSelector } from 'react-redux';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -52,6 +56,7 @@ const MainTitleHfour = styled.h4`
   font-weight: 600;
   line-height: 27.24px;
   color: #444445;
+  text-transform: capitalize;
 `;
 const BreadcrumbContainer = styled.div`
   font-size: 12px;
@@ -90,9 +95,9 @@ const ConfigTitleHTwo = styled.div`
   line-height: 24px;
   letter-spacing: 0.01em;
   text-align: left;
-  color: #c52b2b;
+  color: #ff7a00;
   position: relative;
-  border-bottom: 1px solid #c52b2b;
+  border-bottom: 1px solid #ff7a00;
   width: fit-content;
 `;
 const UseColLg = styled.div`
@@ -165,7 +170,7 @@ const ActiveButtonDiv = styled.div`
 
   &:hover {
     border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#c52b2b')};
+      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
   }
 
   & span {
@@ -209,8 +214,8 @@ const CustomRedProgress = styled.div`
 `;
 const ProgressBar = styled.div`
   color: white;
-  text-align: end;
-  background: #c52b2b;
+  text-align: center;
+  background: #ff7a00;
   padding: 0px;
   border-radius: 50px;
 `;
@@ -271,42 +276,52 @@ const TextDiv = styled.div`
 `;
 
 const breadcrumbData = [
-  { id: '1', name: 'Namespace List', path: '/namespaces' },
-  { id: '2', name: 'Select Namespace', path: '/namespaces/deploy' },
-  { id: '3', name: 'Configuration Details', path: '/namespaces/upgrade' },
-  { id: '4', name: 'Summary' },
+  { label: 'Namespace List', path: '/namespaces' },
+  { label: 'Select Namespace', path: '/namespaces/deploy' },
+  { label: 'Configuration Details', path: '/namespaces/upgrade' },
+  { label: 'Summary' },
 ];
 
 const Summary = () => {
+  const dispatch = useDispatch();
+  const selectedDestCluster = useSelector(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const formData = useSelector(NamespacesSelectors.getFormData);
+  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
+
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
   const [parameterContextItem, setParameterContextItem] = useState({});
+  const [isVariablesModalOpen, setVariablesModalOpen] = useState({
+    isOpen: false,
+    mode: 'add',
+  });
   const [progress, setProgress] = useState(0);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
+    []
+  );
 
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
-
-  const handleBreadcrumbClick = breadcrumb => {
-    navigate(breadcrumb.path);
-  };
 
   const getParamerterContext = async () => {
     try {
       setLoading(true);
       openParameterContext();
+
       const response = await fetchParameterContext(
         state.selectedClusterId,
         state.deployCountDetails?.data?.parameterContextId ||
           state?.updatedCount?.parameterContextId
       );
-      const data = response.data;
 
-      console.log(data.version);
       setState(prevState => ({
         ...prevState,
         parameterDetails: response,
@@ -314,7 +329,7 @@ const Summary = () => {
       }));
       setLoading(false);
     } catch (error) {
-      toast.error('Error fetching parameter context:', error.message);
+      toast.error(error.message);
     }
   };
 
@@ -359,51 +374,50 @@ const Summary = () => {
       toast.error('Upgrade failed:', error.message);
     }
   };
-  const handleDeploy = async () => {
-    try {
-      const result = await deployCluster({
-        namespaceId: state.depolyNamespaceId?.id,
-        clusterId: state.selectedClusterId,
-        flowId: state?.deployData?.flowId,
-        bucketId: state?.deployData?.bucketId,
-        bucketName: state?.deployData.bucketName,
-        registryId: state?.deployData?.registryId,
-        version: state.selectedVersion,
-      });
-      setLoading(true);
-      setState(prevState => ({
-        ...prevState,
-        deployCountDetails: result,
-      }));
-      setLoading(false);
-      setModalOpen(true);
-    } catch (error) {
-      toast.error(error?.message);
-    }
+  const handleDeploy = () => {
+    dispatch(NamespacesActions.deployCluster());
+    // try {
+    //   const result = await deployCluster({
+    //     clusterId: selectedDestCluster?.value,
+    //     namespaceId: formData.namespaceId,
+    //     flowId: checkDestCluster?.flowId,
+    //     bucketId: checkDestCluster?.bucketId,
+    //     bucketName: checkDestCluster.bucketName,
+    //     registryId: checkDestCluster?.registryId,
+    //     version: formData.version,
+    //     position: formData.position,
+    //   });
+    //   setLoading(true);
+    //   setState(prevState => ({
+    //     ...prevState,
+    //     deployCountDetails: result,
+    //   }));
+    //   setLoading(false);
+    //   setModalOpen(true);
+    // } catch (error) {
+    //   toast.error(error?.message);
+    // }
   };
 
   const handleCloseModal = () => {
-    setState(prevState => ({
-      ...prevState,
-      // selectedSourceClusterId: null,
-      selectedPaths: [],
-      selectedClusterId: null,
-      selectedVersion: null,
-      // deployCountDetails: result,
-      deployNamespaceId: null,
-      // selectedClusterId: null,
-      deployData: {
-        flowId: null,
-        bucketId: null,
-        bucketName: null,
-        registryId: null,
-        version: null,
-      },
-      upgradeData: {},
-      updatedCount: null,
-    }));
-    navigate('/namespaces');
-    setModalOpen(false);
+    dispatch(NamespacesActions.resetDeployData());
+    // setState(prevState => ({
+    //   ...prevState,
+    //   selectedPaths: [],
+    //   selectedClusterId: null,
+    //   selectedVersion: null,
+    //   deployNamespaceId: null,
+    //   deployData: {
+    //     flowId: null,
+    //     bucketId: null,
+    //     bucketName: null,
+    //     registryId: null,
+    //     version: null,
+    //   },
+    //   upgradeData: {},
+    //   updatedCount: null,
+    // }));
+    history.push('/namespaces');
   };
 
   const openParameterContext = () => {
@@ -413,6 +427,7 @@ const Summary = () => {
 
   const closeParameterContext = () => {
     setIsParameterContextOpen(false);
+    setNewlyAddedParameterContext([]);
     setModalOpen(true);
   };
 
@@ -428,24 +443,70 @@ const Summary = () => {
     setIsParameterContextOpen(true);
   };
 
+  const handleTertiaryButton = async () => {
+    const response = await fetchVariables(
+      state?.selectedDestinationClusterId,
+      state?.deployCountDetails?.data?.id || state?.updatedCount?.id
+    );
+
+    if (response) {
+      setState(prevState => ({
+        ...prevState,
+        variablesDetail: response?.data,
+      }));
+      setVariablesModalOpen({ isOpen: false, mode: 'add' });
+      setModalOpen(false);
+    } else {
+      toast.error(response.message);
+    }
+    setVariablesModalOpen({ isOpen: true, mode: 'add' });
+    setModalOpen(false);
+  };
+
+  const closeVariablesModal = () => {
+    setVariablesModalOpen({ isOpen: false, mode: 'add' });
+    setModalOpen(true);
+  };
+
   const handleBackClick = () => {
-    navigate('/namespaces/upgrade');
+    history.push('/namespaces/upgrade');
   };
 
   const [activeButton, setActiveButton] = useState(null);
 
   const handleUpdateStatus = async (status, buttonId) => {
     try {
-      await updateNamespaceStatus(
+      const response = await updateNamespaceStatus(
         state.selectedClusterId,
         state?.upgradeData?.id || state.deployCountDetails?.data?.id,
         status
       );
+      if (response?.data) {
+        setState(prevState => ({
+          ...prevState,
+          deployCountDetails: {
+            ...prevState.deployCountDetails,
+            data: {
+              ...prevState.deployCountDetails?.data,
+              runningCount: response?.data?.status?.runningCount,
+              stoppedCount: response?.data?.status?.stoppedCount,
+              invalidCount: response?.data?.status?.invalidCount,
+              disabledCount: response?.data?.status?.disabledCount,
+            },
+          },
+          upgradeData: {
+            ...prevState.upgradeData,
+            runningCount: response?.data?.status?.runningCount,
+            stoppedCount: response?.data?.status?.stoppedCount,
+            invalidCount: response?.data?.status?.invalidCount,
+            disabledCount: response?.data?.status?.disabledCount,
+          },
+        }));
+      }
+      console.log(response, state);
       setActiveButton(buttonId);
-      toast.success(`Namespace status updated to ${status}`);
     } catch (error) {
       console.error('Failed to update status:', error);
-      toast.error(`Failed to update namespace status to ${status}`);
     }
   };
 
@@ -458,16 +519,12 @@ const Summary = () => {
             <TodoIcon />
           </div>
           <MainTitleHfour className="mb-0">
-            {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}{' '}
-            Namespace
+            {`${checkDestCluster.mode} Namespace`}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex mb-3">
-        <Breadcrumb
-          breadcrumbs={breadcrumbData}
-          onBreadcrumbClick={handleBreadcrumbClick}
-        />
+        <Breadcrumb module="deploy" path={breadcrumbData} />
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className=" pe-1">
@@ -487,7 +544,7 @@ const Summary = () => {
                       Selected Cluster
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {state.selectedClusterName}
+                      {selectedDestCluster?.label}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -497,7 +554,7 @@ const Summary = () => {
                       Namespace
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {state?.upgradeData?.name || state?.deployData?.name}
+                      {checkDestCluster.name}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -507,8 +564,7 @@ const Summary = () => {
                       Registry URL
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {state?.upgradeData?.registryUrl ||
-                        state?.deployData?.registryUrl}
+                      {checkDestCluster.registryUrl}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -518,8 +574,7 @@ const Summary = () => {
                       NiFi URL
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {state?.upgradeData?.nifiUrl ||
-                        state?.deployData?.nifiUrl}
+                      {checkDestCluster.nifiUrl}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -529,7 +584,7 @@ const Summary = () => {
                       Current Version
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {state?.upgradeData?.version || 'N/A'}
+                      {checkDestCluster.version || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -539,14 +594,14 @@ const Summary = () => {
                       Updated Version
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {state.selectedVersion}
+                      {formData.version || checkDestCluster.version}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
               </RowConfig>
             </UseColLg>
             {/* versions */}
-            {state?.upgradeData?.mode && (
+            {checkDestCluster.mode === 'upgrade' && (
               <>
                 <div className="col-12 p-3">
                   <ConfigTitle className="config-title">
@@ -563,7 +618,7 @@ const Summary = () => {
                           Namespace
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {state?.upgradeData?.name}
+                          {checkDestCluster.name}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -573,7 +628,7 @@ const Summary = () => {
                           Current Version
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {state?.upgradeData?.version}
+                          {checkDestCluster.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -593,7 +648,7 @@ const Summary = () => {
             )}
           </RowConfig>
           <IconsvgDiv>
-            {state?.upgradeData?.mode && (
+            {checkDestCluster.mode === 'upgrade' && (
               <CustomNine className="col-4 mb-3">
                 <ActiveButtonContainer className="d-flex ">
                   <TextDiv className="d-flex">
@@ -602,14 +657,14 @@ const Summary = () => {
                       className="div-btn-1 mr-2"
                       count={
                         state?.deployCountDetails?.data?.runningCount ||
-                        state?.upgradeData?.runningCount
+                        checkDestCluster.runningCount
                       }
                       activeColor="#58e715"
                     >
                       <TriangleIcons color="#B5BDC8" />
                       <span>
                         {state?.deployCountDetails?.data?.runningCount ||
-                          state?.upgradeData?.runningCount}
+                          checkDestCluster.runningCount}
                       </span>
                     </CountDiv>
                     <div>Running Processors</div>
@@ -618,14 +673,14 @@ const Summary = () => {
                     <CountDiv
                       className="div-btn-2 mr-2"
                       count={
-                        state?.upgradeData?.stoppedCount ||
+                        checkDestCluster.stoppedCount ||
                         state?.deployCountDetails?.data?.stoppedCount
                       }
                       activeColor="#c52b2b"
                     >
                       <SquareBoxIcon color="#B5BDC8" />
                       <span>
-                        {state?.upgradeData?.stoppedCount ||
+                        {checkDestCluster.stoppedCount ||
                           state?.deployCountDetails?.data?.stoppedCount}
                       </span>
                     </CountDiv>
@@ -635,14 +690,14 @@ const Summary = () => {
                     <CountDiv
                       className="div-btn-3 mr-2"
                       count={
-                        state?.upgradeData?.invalidCount ||
+                        checkDestCluster.invalidCount ||
                         state?.deployCountDetails?.data?.invalidCount
                       }
                       activeColor="#CF9F5D"
                     >
                       <TriangleExclamationMarkIcon color="#B5BDC8" />
                       <span>
-                        {state?.upgradeData?.invalidCount ||
+                        {checkDestCluster.invalidCount ||
                           state?.deployCountDetails?.data?.invalidCount}
                       </span>
                     </CountDiv>
@@ -652,7 +707,7 @@ const Summary = () => {
                     <CountDiv
                       className="div-btn-4 mr-2"
                       count={
-                        state?.upgradeData?.disabledCount ||
+                        checkDestCluster.disabledCount ||
                         state?.deployCountDetails?.data?.disabledCount
                       }
                       activeColor="#2c7cf3"
@@ -660,7 +715,7 @@ const Summary = () => {
                       <SmallNotThunderIcon color="#B5BDC8" />
                       <span>
                         {state?.deployCountDetails?.data?.disabledCount ||
-                          state?.upgradeData?.disabledCount}
+                          checkDestCluster.disabledCount}
                       </span>
                     </CountDiv>
                     <div>Disabled Processors</div>
@@ -668,7 +723,7 @@ const Summary = () => {
                 </ActiveButtonContainer>
               </CustomNine>
             )}
-            {state?.upgradeData?.mode && (
+            {checkDestCluster.mode === 'upgrade' && (
               <ActiveButtonContainer className="d-flex ">
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-1 mr-2">
@@ -751,15 +806,15 @@ const Summary = () => {
           </Button>
           <Button
             onClick={
-              state?.upgradeData?.mode !== 'upgrade'
+              checkDestCluster.mode !== 'upgrade'
                 ? handleDeploy
                 : handleUpgradeClick
             }
           >
-            {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}
+            {checkDestCluster.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}
           </Button>
         </BottomButtonDiv>
-        {state?.upgradeData?.mode && (
+        {checkDestCluster.mode === 'upgrade' && (
           <Progressox className="w-100">
             <ProgressLabel className="progress-label">
               Updating Flow
@@ -780,11 +835,12 @@ const Summary = () => {
         )}
       </BottomButton>
       <NamespaceDeploy
-        isOpen={isModalOpen}
+        isOpen={isDeployedModal}
         closePopup={handleCloseModal}
         setModalOpen={setModalOpen}
         openParameterContext={openParameterContext}
         getParamerterContext={getParamerterContext}
+        handleTertiaryButton={handleTertiaryButton}
       />
       <ParameterContext
         key={isParameterContextOpen}
@@ -794,6 +850,9 @@ const Summary = () => {
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
         setParameterContextItem={setParameterContextItem}
+        newlyAddedPrameterContext={newlyAddedPrameterContext}
+        getParamerterContext={getParamerterContext}
+        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
       <AddParameterContext
         key={isParameterContextOpen.mode}
@@ -802,6 +861,15 @@ const Summary = () => {
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
+        newlyAddedPrameterContext={newlyAddedPrameterContext}
+        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
+      />
+
+      <Listvariables
+        isOpen={isVariablesModalOpen}
+        closePopup={closeVariablesModal}
+        setVariablesModalOpen={setVariablesModalOpen}
+        handleTertiaryButton={handleTertiaryButton}
       />
     </MainContainer>
   );

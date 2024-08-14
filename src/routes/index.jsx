@@ -1,6 +1,8 @@
 import React from 'react';
-import { Outlet, Route, Routes as Router } from 'react-router-dom';
+import { Outlet, Route } from 'react-router-dom';
+
 import AuthGaurd from './AuthGuard';
+import { HistoryRouter } from './HistoryRouter';
 
 import {
   NotFound,
@@ -17,8 +19,10 @@ import {
   PermissionMatrix,
   Add,
   UserLogin,
+  ActvityHistory,
 } from '../pages';
 import {
+  ActivityHistoryIcon,
   ClusterIcon,
   DashboardIcon,
   GenrateFlowIcon,
@@ -46,7 +50,7 @@ export const ROUTES_MENU = [
   },
   {
     name: 'Cluster',
-    path: 'cluster',
+    path: 'clusters',
     icon: ClusterIcon,
     pages: [
       {
@@ -143,11 +147,26 @@ export const ROUTES_MENU = [
       },
     ],
   },
+  {
+    name: 'Activity History',
+    path: 'activity-history',
+    icon: ActivityHistoryIcon,
+    pages: [
+      {
+        path: '',
+        component: <ActvityHistory />,
+      },
+      {
+        path: ['add', 'edit/:id'],
+        component: <div>Activity History</div>,
+      },
+    ],
+  },
 ];
 
 const Routes = () => {
   return (
-    <Router>
+    <HistoryRouter>
       {/* Public Routes */}
       <Route path="/admin/login" element={<Login />} />
       <Route path="/forgot" element={<Forgot />} />
@@ -181,7 +200,7 @@ const Routes = () => {
         ))}
       </Route>
       <Route path="*" element={<NotFound />} />
-    </Router>
+    </HistoryRouter>
   );
 };
 

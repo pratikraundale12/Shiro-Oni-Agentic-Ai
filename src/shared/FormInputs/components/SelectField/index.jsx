@@ -1,13 +1,15 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
+import { isEmpty } from 'lodash';
 import { Controller } from 'react-hook-form';
 import Select, { components } from 'react-select';
 import styled from 'styled-components';
+import makeAnimated from 'react-select/animated';
 
+import FieldErrorMessage from '../FieldErrorMessage';
 import { DownArrowIcon } from '../../../../assets';
 import { theme } from '../../../../styles';
-import { hasError } from '../../../../utils';
-import FieldErrorMessage from '../FieldErrorMessage';
+import { hasError } from '../../../../helpers';
 
 const Container = styled.div`
   position: relative;
@@ -73,8 +75,10 @@ const SelectField = ({
   placeholder = 'Select...',
   backgroundColor,
   title = '',
+  isClearable = false,
   ...props
 }) => {
+  const animatedComponents = makeAnimated();
   const error = hasError(errors, name);
 
   const getBorderColor = ({ isFocused }) => {
@@ -129,6 +133,7 @@ const SelectField = ({
       minHeight: 0,
       minWidth: 'max-content',
       boxShadow: 'none',
+      cursor: disabled ? 'not-allowed' : 'pointer',
       borderColor: getBorderColor(state),
       backgroundColor: disabled
         ? theme.colors.lightGrey2
@@ -150,6 +155,7 @@ const SelectField = ({
           ? theme.colors.lightGrey1
           : 'transparent',
       color: state.isSelected && theme.colors.darker,
+      cursor: disabled ? 'not-allowed' : 'pointer',
     }),
     singleValue: styles => ({
       ...styles,
@@ -162,12 +168,32 @@ const SelectField = ({
     }),
   };
 
+  if (isEmpty(control)) {
+    return (
+      <Container className={className} title={title}>
+        <Select
+          isClearable={isClearable}
+          classNamePrefix="react-select"
+          theme={theme.reactSelecttheme}
+          isDisabled={disabled}
+          styles={customStyles}
+          options={options}
+          components={{
+            ...animatedComponents,
+            IndicatorSeparator: () => null,
+            DropdownIndicator,
+          }}
+          {...props}
+        />
+      </Container>
+    );
+  }
+
   return (
     <Container className={className} title={title}>
       <Controller
         control={control}
         name={name}
-        rules={{ required }}
         render={({ field: { onChange, value, ref } }) => (
           <>
             {label && (
@@ -178,16 +204,25 @@ const SelectField = ({
             )}
             <Select
               ref={ref}
+              isClearable={isClearable}
+              classNamePrefix="react-select"
               value={options.find(option => option.value === value)}
-              onChange={option => onChange(option?.value)}
               placeholder={placeholder}
               theme={theme.reactSelecttheme}
               isDisabled={disabled}
               styles={customStyles}
               options={options}
-              components={{ IndicatorSeparator: () => null, DropdownIndicator }}
+              components={{
+                ...animatedComponents,
+                IndicatorSeparator: () => null,
+                DropdownIndicator,
+              }}
               // formatOptionLabel={formatOptionLabel}
               {...props}
+              onChange={option => {
+                if (props.onChange) props.onChange(option);
+                onChange(option?.value);
+              }}
             />
             <FieldErrorMessage errors={errors} name={name} />
           </>
@@ -198,9 +233,9 @@ const SelectField = ({
 };
 
 SelectField.propTypes = {
-  name: PropTypes.string.isRequired,
-  control: PropTypes.shape({}).isRequired,
-  placeholder: PropTypes.string.isRequired,
+  name: PropTypes.string,
+  control: PropTypes.shape({}),
+  placeholder: PropTypes.string,
   options: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   errors: PropTypes.shape({}),
   disabled: PropTypes.bool,
@@ -211,6 +246,8 @@ SelectField.propTypes = {
   icon: PropTypes.node,
   backgroundColor: PropTypes.string,
   title: PropTypes.string,
+  isClearable: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 export default SelectField;

@@ -1,7 +1,11 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
-export const ExclamationFailedTestingIcon = ({ width = 160, height = 110 }) => {
+export const ExclamationFailedTestingIcon = ({
+  width = 160,
+  height = 110,
+  color = '#FF7A00',
+}) => {
   return (
     <svg
       width={width}
@@ -16,7 +20,7 @@ export const ExclamationFailedTestingIcon = ({ width = 160, height = 110 }) => {
       />
       <path
         d="M117.871 105.511C144.909 105.511 166.828 83.5919 166.828 56.5533C166.828 29.5148 144.909 7.5957 117.871 7.5957C90.8322 7.5957 68.9131 29.5148 68.9131 56.5533C68.9131 83.5919 90.8322 105.511 117.871 105.511Z"
-        fill="#C52B2B"
+        fill={color}
       />
       <path
         d="M117.88 86.5645C120.363 86.5645 122.375 84.552 122.375 82.0694C122.375 79.5868 120.363 77.5742 117.88 77.5742C115.397 77.5742 113.385 79.5868 113.385 82.0694C113.385 84.552 115.397 86.5645 117.88 86.5645Z"
@@ -37,4 +41,5 @@ export const ExclamationFailedTestingIcon = ({ width = 160, height = 110 }) => {
 ExclamationFailedTestingIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
+  color: PropTypes.string,
 };

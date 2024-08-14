@@ -1,25 +1,29 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getTheme } from '@table-library/react-table-library/baseline';
+import { CompactTable } from '@table-library/react-table-library/compact';
+import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { CompactTable } from '@table-library/react-table-library/compact';
-import { useTheme } from '@table-library/react-table-library/theme';
-import { getTheme } from '@table-library/react-table-library/baseline';
-import { useSort } from '@table-library/react-table-library/sort';
 
 import { theme } from '../../styles';
-import { GridActions } from './GridActions';
+import { GridActions as GridActionsComponent } from './GridActions';
 import { useGlobalContext } from '../../utils';
-import { fetchGridData } from '../../store';
 import { Loader, LoaderContainer } from '../Loader';
 import Pagination from './Pagination';
 import Breadcrumb from '../../shared/Breadcrumb';
+
+import { NoDataIcon } from '../../assets';
 import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
 import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { Modal } from '../../shared';
+import { GridActions, GridSelectors } from '../../store/grid';
+// import { fetchGridData } from '../../store/services';
+import { LoadingSelectors, NamespacesSelectors } from '../../store';
+// import ReactPagination from './ReactPagnation';
 import { Table } from './Table';
 import { TextRender } from './CellRenders';
-import { NoDataIcon } from '../../assets';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -31,13 +35,13 @@ const TableContainer = styled.div`
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
-  @media (min-width: 992px) {
-    overflow-x: hidden;
-  }
   @media (max-width: 991px) {
     table {
       min-width: 800px;
     }
+  }
+  table {
+    overflow: visible;
   }
 `;
 
@@ -85,17 +89,28 @@ const getData = (loader = false, data = [], nodes = []) => {
 export const Grid = ({
   module,
   columns = [],
-  sortFns = {},
-  clusterOptions = [],
   refreshOptions = [],
   statusOptions = [],
   title = '',
   buttonText = '',
   placeholder = '',
   addModal = () => {},
-  onBreadcrumbClick = () => {},
   handleRefresh = () => {},
+  // isNamespace = false,
+  // LIMIT,
+  // offset,
+  // setOffset,
 }) => {
+  const dispatch = useDispatch();
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchGrid')
+  );
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, module)
+  );
+  const selectedNamespace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const {
     state: {
       search,
@@ -105,40 +120,50 @@ export const Grid = ({
           count = 0,
           prev = null,
           next = null,
-          data = [],
+          // data = [],
           name: nodeName = '',
           nifi_url = '',
           registry = {},
           nodes = [],
-          breadcrumb = [],
+          // breadcrumb = [],
         } = {},
       },
       eventModal,
       selectedNode,
-      nodeClusterId,
-      selectedSourceClusterId = '',
-      loaders,
+      // nodeClusterId,
+      // selectedSourceClusterId = '',
+      // loaders,
     },
     setState,
   } = useGlobalContext();
-  const DATA = { nodes: getData(loaders[module], data, nodes) };
+  const DATA = {
+    // nodes: isNamespace
+    //   ? getData(loading, gridData, nodes).slice(offset, offset + LIMIT)
+    //   : getData(loading, gridData, nodes),
+    nodes: getData(loading, gridData, nodes),
+  };
 
   const tableTheme = useTheme([
     getTheme(),
     {
       Table: `
+      --data-table-library_grid-template-columns: ${columns
+        .map(column => column.width)
+        .join(' ')} !important;
+        margin-bottom: 0;
+
         th, td {
           border-bottom: none !important;
         }
 
         th {
-          height: 48px;
+          height: 52px;
           background-color: ${theme.colors.lightGrey} !important;
           color:  ${theme.colors.darker} !important;
         }
 
         td {
-          height: 60px;
+          height: 65px;
         }
 
         tbody tr:nth-of-type(even) td {
@@ -148,16 +173,8 @@ export const Grid = ({
     },
   ]);
 
-  const sort = useSort(
-    DATA.nodes,
-    {},
-    {
-      sortFns,
-    }
-  );
-
   const getLoader = () => {
-    if (loaders[module]) return <Loader size="lg" />;
+    if (loading) return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
       return (
         <LoaderContainer>
@@ -167,24 +184,36 @@ export const Grid = ({
       );
     return null;
   };
-
   useEffect(() => {
-    fetchGridData({
-      setState,
-      module,
-      search,
-      page,
-      ...(nodeClusterId && { nodeClusterId }),
-      ...(selectedSourceClusterId && { selectedSourceClusterId }),
-    });
+    dispatch(GridActions.fetchGrid({ module, params: { page: 1, search } }));
+    // if (isNamespace) {
+    //   setOffset(0);
+    // }
+    // fetchGridData({
+    //   setState,
+    //   module,
+    //   search,
+    //   page,
+    //   ...(nodeClusterId && { nodeClusterId }),
+    //   ...(selectedSourceClusterId && { selectedSourceClusterId }),
+    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, module, search, page]);
+  }, [setState, module, search, page, selectedNamespace]);
+
+  useEffect(
+    () => () => setState(prev => ({ ...prev, search: '', page: 1 })),
+    [setState]
+  );
+  // const handlePageChange = newOffset => {
+  //   setOffset(newOffset);
+  //   // Additional logic can be added here if needed
+  // };
+
   return (
     <Container>
-      <GridActions
+      <GridActionsComponent
         title={title}
         module={module}
-        clusterOptions={clusterOptions}
         refreshOptions={refreshOptions}
         statusOptions={statusOptions}
         search={search}
@@ -224,20 +253,12 @@ export const Grid = ({
           </Modal>
         </>
       )}
-      <Breadcrumb
-        breadcrumbs={breadcrumb}
-        onBreadcrumbClick={onBreadcrumbClick}
-      />
+      <Breadcrumb module={module} />
       <TableContainer>
-        <CompactTable
-          data={DATA}
-          sort={sort}
-          columns={columns}
-          theme={tableTheme}
-        />
+        <CompactTable data={DATA} columns={columns} theme={tableTheme} />
         {getLoader()}
       </TableContainer>
-      {count >= 10 && (
+      {count > 10 && (
         <Pagination
           page={page}
           setState={setState}
@@ -246,6 +267,24 @@ export const Grid = ({
           next={next}
         />
       )}
+      {/* {isNamespace
+        ? count >= LIMIT && (
+            <ReactPagination
+              offset={offset}
+              onPageChange={handlePageChange}
+              count={count}
+              LIMIT={LIMIT}
+            />
+          )
+        : count >= 10 && (
+            <Pagination
+              page={page}
+              setState={setState}
+              count={count}
+              prev={prev}
+              next={next}
+            />
+          )} */}
     </Container>
   );
 };
@@ -269,4 +308,8 @@ Grid.propTypes = {
   ),
   onBreadcrumbClick: PropTypes.func,
   handleRefresh: PropTypes.func,
+  LIMIT: PropTypes.number,
+  offset: PropTypes.number,
+  setOffset: PropTypes.func,
+  isNamespace: PropTypes.bool,
 };

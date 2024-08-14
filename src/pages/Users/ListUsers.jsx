@@ -11,9 +11,10 @@ import {
 } from '../../components';
 import { AddUserModal } from './AddUserModal';
 import { PencilIcon, DeleteSmallIcon, DeleteDustbinIcon } from '../../assets';
-import { STATUS_OPTIONS, useGlobalContext } from '../../utils';
-import { fetchGridData, deleteUserApi } from '../../store';
+import { useGlobalContext } from '../../utils';
+import { fetchGridData, deleteUserApi } from '../../store/index1';
 import { ModalWithIcon } from '../../shared';
+import { STATUS_OPTIONS } from '../../constants';
 
 const ActionTd = styled.div`
   display: flex;

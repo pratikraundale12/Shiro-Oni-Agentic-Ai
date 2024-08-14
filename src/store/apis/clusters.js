@@ -1,15 +1,16 @@
 /*eslint-disable*/
 
-import { API_URL } from '../../utils';
+import { API_URL } from '../../constants';
 import API from './api';
 
-export const getClustersList = async ({ clusterData }) => {
-  const { data } = await API.post('/list-clusters', clusterData);
+export const getClustersList = async ({ clusterData, ...rest }) => {
+  const { data } = await API.post('/list-clusters', clusterData, {
+    params: { ...rest },
+  });
   return data;
 };
 
 export const testCluster = async payload => {
-  console.log(API_URL, 'dd');
   try {
     return await API.post(`${API_URL}/api/test/clusters`, payload);
   } catch (error) {
@@ -18,7 +19,6 @@ export const testCluster = async payload => {
 };
 
 export const createRegistry = async payload => {
-  // console.log("PAYLOAD",payload);
   try {
     return await API.post(`${API_URL}/api/registries`, payload);
   } catch (error) {
@@ -27,7 +27,6 @@ export const createRegistry = async payload => {
 };
 
 export const createCluster = async payload => {
-  // console.log("PAYLOAD",payload);
   try {
     return await API.post(`${API_URL}/api/clusters`, payload);
   } catch (error) {
@@ -76,6 +75,15 @@ export const deleteCluster = async id => {
 export const getNodeList = async ({ nodeClusterId }) => {
   const { data } = await API.get(
     `${API_URL}/api/clusters/${nodeClusterId}/nodes`
+  );
+  return data;
+};
+
+export const getClusterToken = async payload => {
+  const { data } = await API.post(
+    `${API_URL}/api/clusters/token
+`,
+    payload
   );
   return data;
 };

@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+
 import { Grid, StatusRender, TextRender } from '../../components';
-import { REFRESH_OPTIONS, STATUS_OPTIONS, useGlobalContext } from '../../utils';
+import { useGlobalContext } from '../../utils';
 import { OpenEyeIcon } from '../../assets';
+import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
 
 const Container = styled.div`
   height: 86%;

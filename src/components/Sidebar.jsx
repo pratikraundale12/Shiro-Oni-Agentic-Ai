@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { theme } from '../styles';
 import { ROUTES_MENU } from '../routes';
 import { KsolvesDataFlowIcon } from '../assets';
-import { useGlobalContext } from '../utils';
+import { AuthenticationActions, AuthenticationSelectors } from '../store';
+import { history } from '../helpers/history';
+import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 
 const Container = styled.div`
   height: 100%;
@@ -76,16 +78,20 @@ const Item = styled.li`
   }
 `;
 
+const HelpSupportConatiner = styled.div`
+  display: flex;
+  align-items: flex-end;
+  margin-top: auto;
+  width: 100%;
+`;
+
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
-  const navigate = useNavigate();
-  const {
-    state: { activeRoute: route },
-    setState,
-  } = useGlobalContext();
+  const dispatch = useDispatch();
+  const route = useSelector(AuthenticationSelectors.getRoute);
 
   const handleRoute = path => {
-    setState(prev => ({ ...prev, activeRoute: path }));
-    navigate(path);
+    dispatch(AuthenticationActions.setRoute(path));
+    history.push(`/${path}`);
   };
 
   return (
@@ -111,6 +117,15 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
           );
         })}
       </List>
+      <HelpSupportConatiner>
+        <Item
+          active={false}
+          // onClick={() => }
+        >
+          <QuestionMarkIcon />
+          <span>Help & Support</span>
+        </Item>
+      </HelpSupportConatiner>
     </Container>
   );
 };

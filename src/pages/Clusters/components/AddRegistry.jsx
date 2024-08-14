@@ -1,10 +1,11 @@
+/* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FileIcon, PlusCircleIcon } from '../../../assets';
 import { Button, SelectField } from '../../../shared';
 import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
-import { getOneRegistry, getRegistryList, testRegistry } from '../../../store';
+import { getOneRegistry, getRegistryList, testRegistry } from '../../../store/index1';
 import { SummaryModal } from './SummaryModal';
 import { WhiteBoradIcon } from '../../../assets';
 import { SuccessTestModal } from './SuccessTestModal';

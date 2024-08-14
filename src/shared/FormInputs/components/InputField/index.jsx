@@ -1,11 +1,11 @@
-import React from 'react';
-import { isFunction } from 'lodash';
-import styled from 'styled-components';
 import classNames from 'classnames';
+import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
+import React from 'react';
+import styled from 'styled-components';
 
 import FieldErrorMessage from '../FieldErrorMessage';
-import { hasError } from '../../../../utils';
+import { hasError } from '../../../../helpers';
 
 const Container = styled.div`
   width: 100%;
@@ -37,7 +37,8 @@ const Container = styled.div`
   .icon-placeholder {
     position: absolute;
     top: 2px;
-    left: 1px;
+    left: 2px;
+    bottom: 2px;
     z-index: 1;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;

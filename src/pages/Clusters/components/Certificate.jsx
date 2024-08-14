@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
-import { Modal } from '../../../shared';
-import styled from 'styled-components';
-import { UploadFile } from '../UploadFile';
-import { PasswordField } from '../../../shared';
-import { KeyIcons } from '../../../assets';
-import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import styled from 'styled-components';
+import * as yup from 'yup';
+import { KeyIcons } from '../../../assets';
+import { Modal, PasswordField } from '../../../shared';
 import { testCluster, testRegistry } from '../../../store/apis/clusters';
-import { SuccessTestModal } from './SuccessTestModal';
+import { UploadFile } from '../UploadFile';
 import { FailedTestModal } from './FailedTestModal';
+import { SuccessTestModal } from './SuccessTestModal';
 // Define your validation schema
 const schema = yup.object().shape({
   pfxFile: yup.mixed().required('PFX file is required'),
@@ -24,6 +23,11 @@ const NifiText = styled.h6`
   color: #425466;
 `;
 
+const DEFAULT_VALUES = {
+  pfxFile: null,
+  password: '',
+};
+
 export const Certificate = ({
   isCertificateOpen,
   setIsCertificateOpen,
@@ -33,7 +37,6 @@ export const Certificate = ({
   activeTab,
   registryData,
 }) => {
-  console.log('CLUSTERDATA', clusterData);
   const [suceessModal, setSuccessModal] = useState(false);
   const [failedModal, setFailedModal] = useState(false);
   const [testMessage, setTestMessage] = useState('');
@@ -47,7 +50,12 @@ export const Certificate = ({
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: DEFAULT_VALUES,
   });
+
+  useEffect(() => {
+    if (isCertificateOpen) reset(DEFAULT_VALUES);
+  }, [isCertificateOpen]);
 
   const handleTest = async data => {
     const payload = new FormData();
@@ -58,14 +66,12 @@ export const Certificate = ({
       payload.append('passphrase', data.password);
 
       const response = await testCluster(payload);
-      console.log('Response:', response);
       if (response.status === 204) {
         setTestSuccess(true);
         setIsCertificateOpen(false);
         setSuccessModal(true);
         setLoading(false);
       } else {
-        console.log('helllllllllllll', response);
         setIsCertificateOpen(false);
         setFailedModal(true);
         setTestMessage(response.message);
@@ -81,7 +87,6 @@ export const Certificate = ({
       payload.append('passphrase', data.password);
 
       const response = await testRegistry(payload);
-      console.log('Response:', response);
       if (response.status === 204) {
         setTestSuccess(true);
         setIsCertificateOpen(false);
@@ -99,18 +104,13 @@ export const Certificate = ({
   const onSubmit = data => {
     setLoading(true);
     handleTest(data);
-
-    console.log(data);
-    reset({
-      pfxFile: '',
-      password: '',
-    });
+    reset(DEFAULT_VALUES);
   };
 
   return (
     <>
       <Modal
-        title="Add Certificate"
+        title={`Add ${activeTab === 'cluster' ? 'Cluster' : 'Registry'} Certificate`}
         isOpen={isCertificateOpen}
         onRequestClose={() => setIsCertificateOpen(false)}
         size="sm"
@@ -143,7 +143,7 @@ export const Certificate = ({
           <PasswordField
             name="password"
             watch={watch}
-            label="Password"
+            label="PFX Passphrase"
             register={register}
             placeholder="Enter your Passphrase"
             icon={<KeyIcons />}

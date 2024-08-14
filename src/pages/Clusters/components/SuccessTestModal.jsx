@@ -1,7 +1,7 @@
 /*eslint-disable*/
-import { Modal } from '../../../shared';
-import { RightCircleIcon } from '../../../assets';
 import styled from 'styled-components';
+import { RightCircleIcon } from '../../../assets';
+import { Modal } from '../../../shared';
 
 const Icon = styled.div`
   align-items: center !important;
@@ -13,6 +13,7 @@ const Title = styled.h5`
   font-family: noto sans;
   font-size: 20px;
   font-weight: 700;
+  text-transform: capitalize;
   color: #2d343f;
   line-height: 24px;
   letter-spacing: -0.02em;
@@ -24,6 +25,7 @@ const Title = styled.h5`
 
 const Para = styled.p`
   text-align: center;
+  text-transform: capitalize;
   margin-bottom: 0 !important;
   margin-top: 0;
   margin-bottom: 1rem;

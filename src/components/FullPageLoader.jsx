@@ -22,11 +22,11 @@ const Loader = styled.img`
   height: 150px;
 `;
 
-export const FullPageLoader = ({ loading }) => {
+export const FullPageLoader = ({ loading, ...props }) => {
   if (!loading) return null;
 
   return (
-    <Container>
+    <Container {...props}>
       <Loader src={loader} alt="loader" />
     </Container>
   );

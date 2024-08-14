@@ -1,15 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useDispatch } from 'react-redux';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
 import { Button, TextButton, InputField } from '../../shared';
-import { resetPasswordToken } from '../../store';
 import {
   GreaterArrowIcon,
   LessArrowIcon,
@@ -24,7 +22,9 @@ import {
   SEND_RESET_LINK,
   SIGN_IN,
   EMAIL_REGEX,
-} from '../../utils';
+} from '../../constants';
+import { history } from '../../helpers/history';
+import { AuthenticationActions } from '../../store';
 
 const BackButtonContainer = styled.div`
   width: 100%;
@@ -100,7 +100,7 @@ export const getRightIcon = (watch, errors) => {
 };
 
 export const Forgot = () => {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const {
     register,
     watch,
@@ -110,26 +110,15 @@ export const Forgot = () => {
     resolver: yupResolver(resetSchema),
   });
 
-  const onSubmit = async data => {
-    const response = await resetPasswordToken(data);
-    if (response.data) {
-      navigate('/reset', {
-        state: {
-          refreshToken: response.data?.resetToken,
-        },
-      });
-    } else {
-      toast.error(
-        response?.message || 'Something went wrong. Please try again'
-      );
-    }
+  const onSubmit = data => {
+    dispatch(AuthenticationActions.resetPasswordRequest(data));
   };
 
   return (
     <Layout>
       <div>
         <BackButtonContainer>
-          <BackButton onClick={() => navigate(-1)}>
+          <BackButton onClick={() => history.back()}>
             <GreaterArrowIcon /> <span>{BACK}</span>
           </BackButton>
         </BackButtonContainer>
@@ -157,7 +146,9 @@ export const Forgot = () => {
       </div>
       <SignInContainer>
         {ALREADY_HAVE_AN_ACCOUNT}
-        <TextButton onClick={() => navigate('/login')}>{SIGN_IN}</TextButton>
+        <TextButton onClick={() => history.replace('/login')}>
+          {SIGN_IN}
+        </TextButton>
       </SignInContainer>
     </Layout>
   );

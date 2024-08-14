@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
+import { history } from '../helpers/history';
 import { KsolvesDataFlowIcon } from '../assets';
-import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -86,8 +86,9 @@ const RedirectionText = styled.button`
   font-weight: 700;
   line-height: 21.17px;
   text-align: left;
-  color: #ff7a00;
+  color: ${props => props.theme.colors.primary};
   cursor: pointer;
+  margin-left: 5px;
 `;
 
 const RightSectionTextContainer = styled.div`
@@ -96,6 +97,7 @@ const RightSectionTextContainer = styled.div`
   left: 50%;
   transform: translate(-50%, 0);
   width: 100%;
+  text-align: center;
 `;
 
 const HeadingRightText = styled.p`
@@ -108,8 +110,6 @@ const HeadingRightText = styled.p`
 `;
 
 export const Layout = ({ children, userLogin = false }) => {
-  const navigate = useNavigate();
-  userLogin;
   return (
     <Container>
       <div className="row">
@@ -119,7 +119,9 @@ export const Layout = ({ children, userLogin = false }) => {
           <RedirectionSection>
             Login via
             <RedirectionText
-              onClick={() => navigate(userLogin ? '/admin/login' : '/login')}
+              onClick={() =>
+                history.push(userLogin ? '/admin/login' : '/login')
+              }
             >
               {userLogin ? 'Admin' : 'User'}
             </RedirectionText>

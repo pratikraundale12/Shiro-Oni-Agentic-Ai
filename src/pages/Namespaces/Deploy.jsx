@@ -1,19 +1,34 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import {
+  ClusterIcon,
   QRIcons,
   SmallSearchIcon,
   TodoIcon,
   WhiteBoradIcon,
 } from '../../assets';
-import { FullPageLoader, Table, TextRender } from '../../components';
+import { ClusterSelect, FullPageLoader, Table, TextRender } from '../../components';
 import { Button, RadioField, SelectField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { checkCluster, fetchGridData } from '../../store';
+import { checkCluster, fetchGridData } from '../../store/index1';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
+import { history } from '../../helpers/history';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  GridActions,
+  GridSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
+import { CLUSTERS_TOKEN } from '../../constants';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -110,11 +125,31 @@ const handleKeyPress = event => {
 };
 
 const breadcrumbData = [
-  { id: '1', name: 'Namespace List', path: '/namespaces' },
-  { id: '2', name: 'Select Namespace', path: '/namespaces/deploy' },
+  { label: 'Namespace List', path: '/namespaces' },
+  { label: 'Select Namespace', path: '/namespaces/deploy' },
 ];
 
+const MODULE = 'destNamespaces';
+
 const Deploy = () => {
+  const dispatch = useDispatch();
+  const selectedDestCluster = useSelector(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const selectedDestNamespace = useSelector(
+    NamespacesSelectors.getSelectedDestNamespace
+  );
+  const tokens = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const tokenIds = tokens.map(item => item.id);
+  const clusters = useSelector(ClustersSelectors.getClusters);
+  const filteredClusters = clusters.filter(
+    item => !tokenIds.includes(item.value)
+  );
+  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, MODULE)
+  );
+  const formData = useSelector(NamespacesSelectors.getFormData);
   const {
     control,
     formState: { errors },
@@ -123,15 +158,14 @@ const Deploy = () => {
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [showDeployUI, setShowDeployUI] = useState(false);
-  const navigate = useNavigate();
-  useEffect(() => {
-    handleSelectNamespace();
-  }, [state.selectedDestinationClusterId]);
+  // useEffect(() => {
+  //   handleSelectNamespace();
+  // }, [state.selectedDestinationClusterId]);
 
   const location = useLocation();
 
   const handleBreadcrumbClick = breadcrumb => {
-    navigate(breadcrumb.path);
+    history.push(breadcrumb.path);
   };
   const COLUMNS = [
     {
@@ -139,7 +173,7 @@ const Deploy = () => {
       renderCell: item => (
         <div
           style={{
-            color: '#C52B2B',
+            color: '#FF7A00',
             cursor: 'pointer',
             textDecoration: 'underline',
             textUnderlineOffset: '3px',
@@ -149,7 +183,7 @@ const Deploy = () => {
           }}
           role="button"
           tabIndex="0"
-          onClick={() => handleSelectNamespace(item.id)}
+          onClick={() => handleSelectNamespace(item)}
           onKeyDown={event => handleKeyPress(event, item.name)}
         >
           {item?.name}
@@ -178,8 +212,8 @@ const Deploy = () => {
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <RadioField
-            name="select"
-            onChange={() => handleNamespaceSelect(item)}
+            defaultChecked={formData.namespaceId}
+            onChange={() => dispatch(NamespacesActions.setNamespaceId(item.id))}
           />
         </div>
       ),
@@ -187,135 +221,158 @@ const Deploy = () => {
     },
   ];
 
-  const handleNamespaceSelect = item => {
-    setState(prevState => ({
-      ...prevState,
-      deployNamespaceId: item,
-    }));
-  };
+  // const handleNamespaceSelect = item => {
+  //   setState(prevState => ({
+  //     ...prevState,
+  //     deployNamespaceId: item,
+  //   }));
+  // };
 
-  function handleSelectNamespace(id) {
-    setState(prev => ({
-      ...prev,
-      selectedNamespaceId: id,
-    }));
-    fetchGridData({
-      setState,
-      module: 'deploy',
-      selectedDestinationClusterId: state.selectedDestinationClusterId,
-      selectedNamespaceId: id,
-    });
+  function handleSelectNamespace(item) {
+    dispatch(
+      NamespacesActions.setSelectedDestNamespace({
+        label: item.name,
+        value: item.id,
+      })
+    );
+    // setState(prev => ({
+    //   ...prev,
+    //   selectedNamespaceId: id,
+    // }));
+    // fetchGridData({
+    //   setState,
+    //   module: 'deploy',
+    //   selectedDestinationClusterId: state.selectedDestinationClusterId,
+    //   selectedNamespaceId: id,
+    // });
   }
 
-  useEffect(() => {
-    fetchGridData({
-      setState,
-      module: 'deploy',
-      search: search,
-      ...(state.selectedDestinationClusterId && {
-        selectedDestinationClusterId: state.selectedDestinationClusterId,
-      }),
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, search]);
+  // useEffect(() => {
+  //   // fetchGridData({
+  //   //   setState,
+  //   //   module: 'deploy',
+  //   //   search: search,
+  //   //   ...(state.selectedDestinationClusterId && {
+  //   //     selectedDestinationClusterId: state.selectedDestinationClusterId,
+  //   //   }),
+  //   // });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [setState, search]);
 
-  useEffect(() => {
-    fetchGridData({
-      setState,
-      module: 'clusters',
-    });
-  }, [setState]);
+  // useEffect(() => {
+  //   fetchGridData({
+  //     setState,
+  //     module: 'clusters',
+  //   });
+  // }, [setState]);
 
-  useEffect(() => {
-    if (state?.deployData?.id && state?.deployData?.mode === 'deploy') {
-      onClusterCheck({
-        value: state.selectedClusterId,
-        label: state.selectedClusterName,
-      });
-    }
-  }, [
-    state?.deployData?.id,
-    state?.deployData?.mode,
-    state.selectedClusterId,
-    state.selectedClusterName,
-  ]);
+  // useEffect(() => {
+  //   if (state?.deployData?.id && state?.deployData?.mode === 'deploy') {
+  //     onClusterCheck({
+  //       value: state.selectedClusterId,
+  //       label: state.selectedClusterName,
+  //     });
+  //   }
+  // }, [
+  //   state?.deployData?.id,
+  //   state?.deployData?.mode,
+  //   state.selectedClusterId,
+  //   state.selectedClusterName,
+  // ]);
 
-  const options = state.clusterList
-    .filter(cluster => cluster?.id !== state.selectedSourceClusterId)
-    .map(cluster => ({
-      value: cluster?.id,
-      label: cluster?.name,
-    }));
+  // const options = state.clusterList
+  //   .filter(cluster => cluster?.id !== state.selectedSourceClusterId)
+  //   .map(cluster => ({
+  //     value: cluster?.id,
+  //     label: cluster?.name,
+  //   }));
 
   const handleClick = () => {
-    if (state.deployData) {
-      navigate('/namespaces/upgrade');
-    }
+    history.push('/namespaces/upgrade');
   };
   const handleBackClick = () => {
-    navigate('/namespaces');
+    history.push('/namespaces');
   };
 
-  const onClusterCheck = async e => {
-    setLoading(true);
-    const selectedClusterId = e.value;
-    setState(prevState => ({
-      ...prevState,
-      selectedDestinationClusterId: e.value,
-    }));
-    const selectedClusterName = e.label;
-    let ids = [];
-    for (const a of state.tempNamespacesData) {
-      if (location?.state?.id === a?.id || state?.currentFlowId === a?.id) {
-        ids?.push(a.flowId);
-      }
-    }
+  const onClusterCheck = value => {
+    console.log('onClusterCheck', value);
+    // dispatch(NamespacesActions.setSelectedDestCluster(value));
+    dispatch(NamespacesActions.checkDestCluster());
+    // setLoading(true);
+    // const selectedClusterId = e.value;
+    // setState(prevState => ({
+    //   ...prevState,
+    //   selectedDestinationClusterId: e.value,
+    // }));
+    // const selectedClusterName = e.label;
+    // let ids = [];
+    // for (const a of state.tempNamespacesData) {
+    //   if (location?.state?.id === a?.id || state?.currentFlowId === a?.id) {
+    //     ids?.push(a.flowId);
+    //   }
+    // }
 
-    for (const a of state.gridData.namespaces.breadcrumb) {
-      for (const b of state.tempNamespacesData) {
-        if (a.id === b.id) {
-          ids?.push(b.flowId);
-        }
-      }
-    }
-    const arrayWithoutNullsAndUndefineds = ids.filter(item => item != null);
+    // for (const a of state.gridData.namespaces.breadcrumb) {
+    //   for (const b of state.tempNamespacesData) {
+    //     if (a.id === b.id) {
+    //       ids?.push(b.flowId);
+    //     }
+    //   }
+    // }
+    // const arrayWithoutNullsAndUndefineds = ids.filter(item => item != null);
 
-    try {
-      const response = await checkCluster({
-        clusterId: selectedClusterId,
-        srcClusterId: state?.selectedSourceClusterId,
-        path: arrayWithoutNullsAndUndefineds,
-      });
+    // try {
+    //   const response = await checkCluster({
+    //     clusterId: selectedClusterId,
+    //     srcClusterId: state?.selectedSourceClusterId,
+    //     path: arrayWithoutNullsAndUndefineds,
+    //   });
 
-      if (response.mode === 'upgrade') {
-        setState(prevState => ({
-          ...prevState,
-          selectedClusterId,
-          upgradeData: response,
-          selectedClusterName,
-        }));
-        navigate('/namespaces/upgrade', {
-          state: {
-            upgradeData: response,
-          },
-          setShowDeployUI: setShowDeployUI,
-        });
-      } else if (response.mode === 'deploy') {
-        setState(prevState => ({
-          ...prevState,
-          selectedClusterId,
-          deployData: response,
-          selectedClusterName,
-        }));
-        setShowDeployUI(true);
-      } else {
-        setShowDeployUI(false);
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error('Error checking cluster:', error);
-    }
+    //   if (response.mode === 'upgrade') {
+    //     setState(prevState => ({
+    //       ...prevState,
+    //       selectedClusterId,
+    //       upgradeData: response,
+    //       selectedClusterName,
+    //     }));
+    //     history.push('/namespaces/upgrade', {
+    //       state: {
+    //         upgradeData: response,
+    //       },
+    //       setShowDeployUI: setShowDeployUI,
+    //     });
+    //   } else if (response.mode === 'deploy') {
+    //     setState(prevState => ({
+    //       ...prevState,
+    //       selectedClusterId,
+    //       deployData: response,
+    //       selectedClusterName,
+    //     }));
+    //     setShowDeployUI(true);
+    //   } else {
+    //     setShowDeployUI(false);
+    //   }
+    //   setLoading(false);
+    // } catch (error) {
+    //   console.error('Error checking cluster:', error);
+    // }
   };
+
+  useEffect(() => {
+    dispatch(ClustersActions.fetchClusterList());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (
+      !isEmpty(checkDestCluster) &&
+      checkDestCluster.mode === 'deploy' &&
+      !isEmpty(selectedDestCluster)
+    ) {
+      dispatch(GridActions.fetchGrid({ module: MODULE }));
+    }
+  }, [dispatch, checkDestCluster, selectedDestCluster, selectedDestNamespace]);
+
+  if (checkDestCluster.mode === 'upgrade') history.push('/namespaces/upgrade');
 
   return (
     <div>
@@ -329,39 +386,41 @@ const Deploy = () => {
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex mb-3">
-        <Breadcrumb
-          breadcrumbs={breadcrumbData}
-          onBreadcrumbClick={handleBreadcrumbClick}
-        />
+        <Breadcrumb module="deploy" path={breadcrumbData} />
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100 mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
-          <form>
-            <SelectField
-              name="selectOption"
-              label="Select Cluster"
-              control={control}
-              options={options}
-              errors={errors}
-              defaultValue={
-                state?.deployData?.id && state?.deployData?.mode === 'deploy'
-                  ? {
-                      label: state.selectedClusterName,
-                      value: state.selectedClusterId,
-                    }
-                  : null
-              }
-              onChange={onClusterCheck}
-              icon={<QRIcons />}
-            />
-          </form>
-          {!showDeployUI && (
+          <ClusterSelect
+            label="Select Cluster"
+            icon={<QRIcons />}
+            placeholder="Select Cluster"
+            isDestination
+            onChange={onClusterCheck}
+            required
+            // disabled={isObject(clusterLogin)}
+          />
+          {/* <SelectField
+            name="selectOption"
+            label="Select Cluster"
+            options={clusters}
+            defaultValue={
+              checkDestCluster.mode === 'deploy'
+                ? {
+                    label: selectedDestCluster?.label,
+                    value: selectedDestCluster?.value,
+                  }
+                : null
+            }
+            onChange={onClusterCheck}
+            icon={<QRIcons />}
+          /> */}
+          {isEmpty(checkDestCluster) && (
             <NoDataContainer>
               <WhiteBoradIcon width={200} height={195} />
               <NoDataText>No data found</NoDataText>
             </NoDataContainer>
           )}
-          {showDeployUI && (
+          {checkDestCluster.mode === 'deploy' && (
             <>
               <SearchContainer>
                 <SmallSearchIcon
@@ -376,8 +435,9 @@ const Deploy = () => {
                   onChange={e => setSearch(e.target.value)}
                 />
               </SearchContainer>
+              <Breadcrumb module={MODULE} />
               <Table
-                data={state?.gridData?.deploy?.data}
+                data={gridData}
                 columns={COLUMNS}
                 breadcrumb={state?.gridData?.deploy?.breadcrumb}
                 onBreadcrumbClick={e => handleSelectNamespace(e.id)}
@@ -386,7 +446,7 @@ const Deploy = () => {
           )}
         </ScrollSetGrey>
       </GreyBoxNamespace>
-      {showDeployUI && (
+      {checkDestCluster.mode === 'deploy' && (
         <BottomButton className="bottom-button-divs d-flex">
           <BottomButtonDiv className="btn-div d-flex">
             <Button variant="secondary" onClick={handleBackClick}>
