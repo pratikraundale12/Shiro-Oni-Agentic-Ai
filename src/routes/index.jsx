@@ -17,8 +17,10 @@ import {
   PermissionMatrix,
   Add,
   UserLogin,
+  ActvityHistory,
 } from '../pages';
 import {
+  ActivityHistoryIcon,
   ClusterIcon,
   DashboardIcon,
   GenrateFlowIcon,
@@ -140,6 +142,21 @@ export const ROUTES_MENU = [
       {
         path: ['add', 'edit/:id'],
         component: <div>Permission</div>,
+      },
+    ],
+  },
+  {
+    name: 'Activity History',
+    path: 'activity-history',
+    icon: ActivityHistoryIcon,
+    pages: [
+      {
+        path: '',
+        component: <ActvityHistory />,
+      },
+      {
+        path: ['add', 'edit/:id'],
+        component: <div>Activity History</div>,
       },
     ],
   },

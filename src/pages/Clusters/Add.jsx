@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from 'react';
-// import { isEmpty } from 'lodash';
-// import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { NoDataIcon, PlusCircleIcon, WhiteBoradIcon } from '../../assets';
-import { Title } from './components/Title';
-import { Button, InputField, SelectField } from '../../shared';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { LinkIcon, QRIcons } from '../../assets';
-import { useNavigate } from 'react-router-dom';
-import { Certificate } from './components/Certificate';
-import { Creditionals } from './components/Creditionals';
-import { useLocation } from 'react-router-dom';
-import { RegexConst } from '../../utils';
-import { SummaryModal } from './components/SummaryModal';
+import { useLocation, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import * as yup from 'yup';
 import {
-  getRegistryList,
+  LinkIcon,
+  NoDataIcon,
+  PlusCircleIcon,
+  QRIcons,
+  WhiteBoradIcon,
+} from '../../assets';
+import { Button, InputField, SelectField } from '../../shared';
+import {
   getOneRegistry,
+  getRegistryList,
   testCluster,
   testRegistry,
 } from '../../store';
-import { SuccessTestModal } from './components/SuccessTestModal';
+import { RegexConst } from '../../utils';
+import { Certificate } from './components/Certificate';
+import { Creditionals } from './components/Creditionals';
 import { FailedTestModal } from './components/FailedTestModal';
+import { SuccessTestModal } from './components/SuccessTestModal';
+import { SummaryModal } from './components/SummaryModal';
+import { Title } from './components/Title';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -50,13 +52,14 @@ const NavButton = styled.button`
   font-weight: 600;
   font-family: ${props => props.theme.fontNato};
   color: ${props =>
-    props.active ? props.theme.colors.error : props.theme.colors.darkGrey2};
+    props.active ? props.theme.colors.primary : props.theme.colors.darkGrey2};
   cursor: auto;
   transition:
     color 0.3s,
     border-bottom 0.3s;
   ${props =>
-    props.active && `border-bottom: 1px solid ${props.theme.colors.error};`}
+    props.active &&
+    `border-bottom: 1px solid ${props.theme.colors.primaryActive};`}
 `;
 
 const Flex = styled.div`
@@ -68,6 +71,7 @@ const FlexTwo = styled.div`
   display: flex;
   gap: 2rem;
   justify-content: space-between;
+  align-items: flex-end;
 `;
 
 const FlexWrapper = styled.div`
@@ -194,6 +198,7 @@ const RegistryDetailsDivTwo = styled.div`
 const BottomButtonDiv = styled.div`
   display: flex;
   align-items: center;
+  gap: 20px;
   margin-top: 20px;
 `;
 
@@ -224,25 +229,24 @@ const NoDataText = styled.div`
 const ClusterSchema = yup.object().shape({
   clusterName: yup
     .string()
-    .matches(RegexConst.NAME, 'Cluster Name must be at least 3 characters long')
+    .min(3, 'Cluster Name must be at least 3 characters long')
     .required('Cluster Name is required'),
   nifiUrl: yup
     .string()
-    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
+    .url('Enter a valid NiFi URL')
+    .matches(RegexConst.NIFI_URL, 'Enter a valid NiFi URL')
     .required('NiFi URL is required'),
 });
 
 const RegistrySchema = yup.object().shape({
   registryName: yup
     .string()
-    .matches(
-      RegexConst.NAME,
-      'Registry Name must be at least 3 characters long'
-    )
+    .min(3, 'Registry Name must be at least 3 characters long')
     .required('Registry Name is required'),
   registryUrl: yup
     .string()
-    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
+    .url('Enter a valid Registry URL')
+    .matches(RegexConst.NIFI_URL, 'Enter a valid Registry URL')
     .required('NiFi URL is required'),
 });
 
@@ -288,12 +292,14 @@ export const Add = () => {
     resolver: yupResolver(
       activeTab === TABS.CLUSTER ? ClusterSchema : RegistrySchema
     ),
+    mode: 'all',
+    reValidateMode: 'onChange',
   });
 
   const navigate = useNavigate();
   const [registries, setRegistries] = useState([]);
   const selectedRegistryId = watch('registry');
-  console.log(data, 'ed');
+
   const handleBack = () => {
     setIsCertificateOpen(false);
     setIsCredOpen(false);
@@ -312,7 +318,6 @@ export const Add = () => {
   };
 
   const onSubmit = data => {
-    console.log(data, 'DATAAAaaaaaaaaa');
     setClusterData({
       clusterName: data.clusterName,
       nifiUrl: data.nifiUrl,
@@ -359,7 +364,6 @@ export const Add = () => {
         registryName !== registryData?.registryName ||
         registryUrl !== registryData?.registryUrl
       ) {
-        console.log(registryName, registryUrl, 'dataaaare');
         setRegistryData({
           registryName: registryName || '',
           registryUrl: registryUrl || '',
@@ -401,7 +405,6 @@ export const Add = () => {
       setClusterId(data?.id);
     }
   }, [reset, activeTab, newRegistry]);
-  console.log(dataFill, 'DATAFIELD');
 
   const fetchRegistry = async () => {
     try {
@@ -416,14 +419,11 @@ export const Add = () => {
     }
   };
 
-  console.log(registryData, 'selected');
   useEffect(() => {
     fetchRegistry();
   }, [activeTab]);
 
   useEffect(() => {
-    console.log('Updated registries:', registries);
-    console.log('Selected registry:', selectedRegistryId);
     if (selectedRegistryId) {
       fetchRegistryDetails(selectedRegistryId);
     }
@@ -432,7 +432,6 @@ export const Add = () => {
   const fetchRegistryDetails = async () => {
     try {
       const response = await getOneRegistry(selectedRegistryId);
-      console.log(response, 'ressss');
       setRegistryData(response);
     } catch (error) {
       console.error('Failed to fetch registry details:', error);
@@ -440,8 +439,6 @@ export const Add = () => {
   };
 
   const handleRegistry = () => {
-    console.log(clusterData, 'cl');
-    console.log(registryData, 'rd');
     setIsCertificateOpen(false);
     setIsCredOpen(false);
     setTestSuccess(false);
@@ -457,7 +454,6 @@ export const Add = () => {
       payload.append('nifi_url', clusterData.nifiUrl);
 
       const response = await testCluster(payload);
-      console.log('Response:', response);
       if (response.status === 204) {
         setTestSuccess(true);
         setSuccessModal(true);
@@ -475,7 +471,6 @@ export const Add = () => {
       );
 
       const response = await testRegistry(payload);
-      console.log('Response:', response);
       if (response.status === 204) {
         setTestSuccess(true);
         setSuccessModal(true);
@@ -491,7 +486,10 @@ export const Add = () => {
       <Title title="Add New Cluster Details" />
       <Container>
         <NavTabs id="nav-tab" role="tablist">
-          <NavButton active={activeTab === TABS.CLUSTER}>
+          <NavButton
+            active={activeTab === TABS.CLUSTER}
+            onClick={() => setActiveTab(TABS.CLUSTER)}
+          >
             Cluster Details
           </NavButton>
           <NavButton active={activeTab === TABS.REGISTRY}>
@@ -513,7 +511,7 @@ export const Add = () => {
               name="nifiUrl"
               register={register}
               icon={<LinkIcon />}
-              label="Nifi Url"
+              label="NiFi URL"
               placeholder="Enter your Nifi Url"
               errors={errors}
             />
@@ -532,12 +530,12 @@ export const Add = () => {
                   </div>
                   <ORText>OR</ORText>
                   <div>
-                    <ButtonLabel>Test Via Creditionals</ButtonLabel>
+                    <ButtonLabel>Test Via Credentials</ButtonLabel>
                     <Button
                       onClick={() => setIsCredOpen(true)}
                       disabled={testSuccess || !dataFill}
                     >
-                      Enter Creditionals
+                      Enter Credentials
                     </Button>
                   </div>{' '}
                 </>
@@ -564,7 +562,12 @@ export const Add = () => {
             <ORText style={{ textAlign: 'center' }}>OR</ORText>
             <StyledButton
               variant="secondary"
-              icon={<PlusCircleIcon color="red" />}
+              icon={
+                <PlusCircleIcon
+                  color="#FF7A00
+                "
+                />
+              }
               onClick={() => {
                 setNewRegistry(true);
               }}
@@ -603,14 +606,14 @@ export const Add = () => {
                         </div>
                         <ORText>OR</ORText>
                         <div>
-                          <ButtonLabel>Test Via Creditionals</ButtonLabel>
+                          <ButtonLabel>Test Via Credentials</ButtonLabel>
                           <Button
                             onClick={() => {
                               setIsCredOpen(true);
                             }}
                             disabled={testSuccess}
                           >
-                            Enter Creditionals
+                            Enter Credentials
                           </Button>
                         </div>
                       </Flex>
@@ -678,12 +681,12 @@ export const Add = () => {
                   </div>
                   <ORText>OR</ORText>
                   <div>
-                    <ButtonLabel>Test Via Creditionals</ButtonLabel>
+                    <ButtonLabel>Test Via Credentials</ButtonLabel>
                     <Button
                       onClick={() => setIsCredOpen(true)}
                       disabled={testSuccess || !dataFill}
                     >
-                      Enter Creditionals
+                      Enter Credentials
                     </Button>
                   </div>
                 </>

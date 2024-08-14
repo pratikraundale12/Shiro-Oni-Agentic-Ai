@@ -1,7 +1,7 @@
 /*eslint-disable*/
-import { Modal } from '../../../shared';
-import { ExclamationFailedTestingIcon } from '../../../assets';
 import styled from 'styled-components';
+import { ExclamationFailedTestingIcon } from '../../../assets';
+import { Modal } from '../../../shared';
 
 const Icon = styled.div`
   align-items: center !important;
@@ -13,6 +13,7 @@ const Title = styled.h5`
   font-family: noto sans;
   font-size: 20px;
   font-weight: 700;
+  text-transform: capitalize;
   color: #2d343f;
   line-height: 24px;
   letter-spacing: -0.02em;
@@ -29,6 +30,7 @@ const Para = styled.p`
   margin-bottom: 1rem;
   box-sizing: border-box;
   display: block;
+  text-transform: capitalize;
   margin-block-start: 1em;
   margin-block-end: 1em;
   margin-inline-end: 0px;
@@ -46,7 +48,7 @@ export const FailedTestModal = ({ failedTest, setFailedTest, testMessage }) => {
     >
       <>
         <Icon>
-          <ExclamationFailedTestingIcon />
+          <ExclamationFailedTestingIcon color="#FF7A00" />
         </Icon>
         <Title>Cluster Test Failed</Title>
         {testMessage != '' ? (

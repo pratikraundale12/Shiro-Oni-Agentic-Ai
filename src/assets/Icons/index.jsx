@@ -78,3 +78,4 @@ export * from './UserIcon';
 export * from './UserUploadIcon';
 export * from './WhiteBoradIcon';
 export * from './PageComingSoon';
+export * from './ActivityHistoryIcon';
