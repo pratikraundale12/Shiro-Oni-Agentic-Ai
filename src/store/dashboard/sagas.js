@@ -8,11 +8,15 @@ export function* fetchDashboard(api) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+  const queryParams = {
+    clusterId: selectedCluster?.value || '',
+    namespaceId: selectedNamespace?.value || '',
+  };
   yield call(requestSaga, {
     errorSection: 'fetchDashboard',
     loadingSection: 'fetchDashboard',
     apiMethod: api.fetchDashboard,
-    apiParams: [selectedCluster?.value, selectedNamespace?.value],
+    apiParams: [{ queryParams }],
     successAction: DashboardActions.fetchDashboardSuccess,
   });
 }

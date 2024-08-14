@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Modal, PasswordField, InputField } from '../shared';
+import React, { useEffect, useState } from 'react';
+import { Modal, PasswordField, InputField, SelectField } from '../shared';
 import PropTypes from 'prop-types';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -7,7 +7,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { ClusterIcon, UserIcon } from '../assets';
 import { toast } from 'react-toastify';
 import { getClusterToken } from '../store/apis';
-import { ClusterSelect } from './ClusterSelect';
+import { CLUSTERS_TOKEN } from '../constants';
+import {
+  AuthenticationActions,
+  AuthenticationSelectors,
+  ClustersSelectors,
+  GridActions,
+} from '../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { isObject } from 'lodash';
 
 const clusterSchema = yup.object().shape({
   cluster_id: yup.string().required('Cluster is required'),
@@ -15,56 +23,36 @@ const clusterSchema = yup.object().shape({
   password: yup.string().required('Password is required'),
 });
 
-export const ClusterLoginModal = ({ setIsOpen, isOpen }) => {
-  // const [clusterList, setClusterList] = useState([]);
-  // const [selectedClusterName, setSelectedClusterName] = useState('');
+const DEFAULT_VALUES = { cluster_id: '', username: '', password: '' };
+
+export const ClusterLoginModal = () => {
+  const dispatch = useDispatch();
+  const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
+  const tokens = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const tokenIds = tokens.map(item => item.id);
+  const clusters = useSelector(ClustersSelectors.getClusters);
+  const filteredClusters = clusters.filter(
+    item => !tokenIds.includes(item.value)
+  );
   const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
     control,
     watch,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm({
+    defaultValues: DEFAULT_VALUES,
     resolver: yupResolver(clusterSchema),
   });
-  // const clusterArrayData = JSON.parse(localStorage.getItem('clusters'));
-  // const clusterIdConnected = new Set(clusterArrayData?.map(item => item.id));
-  // const getClusterDataList = async () => {
-  //   try {
-  //     const response = await getClusterList();
-  //     if (response.status === 200) {
-  //       const filteredClusterArray = response.data.filter(
-  //         item => !clusterIdConnected.has(item.id)
-  //       );
-  //       const filteredArray = filteredClusterArray.map(item => ({
-  //         label: item.name,
-  //         value: item.id,
-  //       }));
-
-  //       setClusterList(filteredArray);
-  //       const selectedCluster = response.data.find(
-  //         item => item.id === clusterId
-  //       );
-  //       if (selectedCluster) {
-  //         setSelectedClusterName(selectedCluster.name);
-  //         setValue('cluster', selectedCluster.id);
-  //       }
-  //     } else {
-  //       toast.error(response?.message || 'Something went wrong');
-  //     }
-  //   } catch (error) {
-  //     toast.error('Error fetching cluster data');
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getClusterDataList();
-  // }, [clusterId]);
 
   const onSubmit = async data => {
     setLoading(true);
-    const clusterData = JSON.parse(localStorage.getItem('clusters'));
+    const clusterData = JSON.parse(
+      localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+    );
 
     const payload = {
       cluster_id: data.cluster_id,
@@ -78,28 +66,39 @@ export const ClusterLoginModal = ({ setIsOpen, isOpen }) => {
       if (response.cluster_id) {
         const newCluster = {
           id: response.cluster_id,
+          name: response.cluster_name,
           token: response.token,
         };
         clusterData.push(newCluster);
-        localStorage.setItem('clusters', JSON.stringify(clusterData));
+        localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(clusterData));
         setLoading(false);
-        setIsOpen(false);
+        dispatch(AuthenticationActions.setClusterLogin());
         toast.success('Cluster Enabled Successfully');
+        reset(DEFAULT_VALUES);
+        dispatch(GridActions.fetchGrid({ module: 'clusters' }));
       } else {
         toast.error('Error while getting data');
         setLoading(false);
       }
     } catch (error) {
       setLoading(false);
-      toast.error('An unexpected error occurred. Please try again.');
+      toast.error(error.message);
     }
   };
+
+  useEffect(() => {
+    if (isObject(clusterLogin)) {
+      setValue('cluster_id', clusterLogin.value);
+    }
+
+    return () => reset(DEFAULT_VALUES);
+  }, [clusterLogin, setValue, reset]);
 
   return (
     <Modal
       title="Enable Cluster"
-      isOpen={isOpen}
-      onRequestClose={() => setIsOpen(false)}
+      isOpen={isObject(clusterLogin) || clusterLogin}
+      onRequestClose={() => dispatch(AuthenticationActions.setClusterLogin())}
       size="sm"
       loading={loading}
       secondaryButtonText="Back"
@@ -108,15 +107,17 @@ export const ClusterLoginModal = ({ setIsOpen, isOpen }) => {
       footerAlign="start"
       contentStyles={{ minWidth: '30%' }}
     >
-      <ClusterSelect
+      <SelectField
         label="Select Cluster"
         name="cluster_id"
         control={control}
         icon={<ClusterIcon />}
         errors={errors}
-        // placeholder={selectedClusterName || 'Select Cluster'}
+        options={filteredClusters}
+        defaultValue={clusterLogin}
         placeholder="Select Cluster"
         required
+        disabled={isObject(clusterLogin)}
       />
 
       <InputField
@@ -142,7 +143,5 @@ export const ClusterLoginModal = ({ setIsOpen, isOpen }) => {
 };
 
 ClusterLoginModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  setIsOpen: PropTypes.func.isRequired,
-  clusterId: PropTypes.string,
+  cluster: PropTypes.string,
 };

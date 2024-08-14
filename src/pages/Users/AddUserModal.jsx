@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,7 +14,11 @@ import {
   PhoneField,
 } from '../../shared';
 import { PlusCircleIcon, UserIcon, MailIcon, PhoneIcon } from '../../assets';
-import { fetchGridData, createUserApi, editUserDataApi } from '../../store/index1';
+import {
+  // fetchGridData,
+  createUserApi,
+  editUserDataApi,
+} from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import {
   userSchema,
@@ -24,6 +27,8 @@ import {
 import { ProfileUpload } from './ProfileUpload';
 import { theme } from '../../styles';
 import { API_URL } from '../../constants';
+import { useDispatch } from 'react-redux';
+import { GridActions } from '../../store';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -106,6 +111,7 @@ const DropDownWrapper = styled.div`
 `;
 
 export const AddUserModal = props => {
+  const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
   const currentUser = state.currentUser;
   const {
@@ -138,8 +144,8 @@ export const AddUserModal = props => {
     { value: false, label: 'Inactive' },
   ];
   const roleOption = [
-    { value: '9504c471-e895-457d-90b1-ce6758badd9d', label:	'Admin' },
-    { value: '0c5840f6-3ac4-47b4-9740-24ac33645150', label:	'Manager' },
+    { value: '9504c471-e895-457d-90b1-ce6758badd9d', label: 'Admin' },
+    { value: '0c5840f6-3ac4-47b4-9740-24ac33645150', label: 'Manager' },
     { value: 'b8b61796-7def-4416-8420-c6812155d495', label: 'Developer' },
   ];
 
@@ -164,7 +170,8 @@ export const AddUserModal = props => {
     if (isEmpty(state.selectedItem)) {
       const response = await createUserApi(formData);
       if (response.status == 201) {
-        fetchGridData({ setState, module: 'users' });
+        dispatch(GridActions.fetchGrid({ module: 'users' }));
+        // fetchGridData({ setState, module: 'users' });
         toast.success('User Created Successfully');
         setState({
           ...state,
@@ -177,7 +184,8 @@ export const AddUserModal = props => {
     } else {
       const response = await editUserDataApi(state.selectedItem?.id, formData);
       if (response.status == 200) {
-        fetchGridData({ setState, module: 'users' });
+        dispatch(GridActions.fetchGrid({ module: 'users' }));
+        // fetchGridData({ setState, module: 'users' });
         toast.success('User Updated Successfully');
         setState({
           ...state,

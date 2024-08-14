@@ -13,6 +13,7 @@ export function* fetchCurrentUser(api) {
     successAction: AuthenticationActions.fetchCurrentUserSuccess,
   });
   if (response.status === 401) window.location.pathname = '/login';
+  else yield call(history.push, DEFAULT_ROUTE);
 }
 
 export function* resetPasswordRequest(api, { payload }) {
@@ -53,6 +54,7 @@ export function* login(api, { payload: { type, ...payload } }) {
     if (!type) {
       const cluster = {
         id: response.data.cluster_id,
+        name: response.data.cluster_name,
         token: response.data.cluster_token,
       };
       localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify([cluster]));

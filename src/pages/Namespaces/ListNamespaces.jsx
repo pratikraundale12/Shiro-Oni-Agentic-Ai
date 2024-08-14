@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import { TextRender, Grid, IconButton } from '../../components';
 import { useGlobalContext } from '../../utils';
@@ -7,8 +8,11 @@ import { Button } from '../../shared';
 import { CopyIcon, OpenEyeIcon } from '../../assets';
 import { REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
+import { NamespacesActions } from '../../store';
+import { useDispatch } from 'react-redux';
 
 export const ListNamespaces = () => {
+  const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
@@ -46,7 +50,15 @@ export const ListNamespaces = () => {
             textUnderlineOffset: '3px',
           }}
           tabIndex="0"
-          onClick={() => handleSelectNamespace(item.id)}
+          onClick={() => {
+            dispatch(NamespacesActions.setFlowPath(item.flowId));
+            dispatch(
+              NamespacesActions.setSelectedNamespace({
+                label: item.name,
+                value: item.id,
+              })
+            );
+          }}
         >
           {item.name}
         </button>
@@ -117,7 +129,7 @@ export const ListNamespaces = () => {
             </IconButton>
           </button>
           <Button
-            onClick={() => handleSelect(item.id)}
+            onClick={() => handleSelect(item)}
             disabled={
               !item.flowId ||
               !item.version ||
@@ -163,35 +175,39 @@ export const ListNamespaces = () => {
       };
     });
   }
-  const handleSelect = id => {
-    setState(prev => ({
-      ...prev,
-      selectedNamespaceId: id,
-    }));
+  const handleSelect = item => {
+    dispatch(NamespacesActions.setFlowPath(item.flowId));
+    dispatch(
+      NamespacesActions.setSelectedNamespace({
+        label: item.name,
+        value: item.id,
+      })
+    );
+    // setState(prev => ({
+    //   ...prev,
+    //   selectedNamespaceId: id,
+    // }));
 
-    setState(prev => {
-      const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
-      const newData = state.gridData.namespaces.data.filter(
-        item => !existingIds.has(item.id)
-      );
-      return {
-        ...prev,
-        selectedNamespaceId: id,
-        tempNamespacesData: [...prev.tempNamespacesData, ...newData],
-        currentFlowId: id,
-      };
-    });
+    // setState(prev => {
+    //   const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
+    //   const newData = state.gridData.namespaces.data.filter(
+    //     item => !existingIds.has(item.id)
+    //   );
+    //   return {
+    //     ...prev,
+    //     selectedNamespaceId: id,
+    //     tempNamespacesData: [...prev.tempNamespacesData, ...newData],
+    //     currentFlowId: id,
+    //   };
+    // });
 
     history.push('/namespaces/deploy', {
       state: {
-        id,
+        id: item.id,
       },
     });
   };
 
-  const onBreadcrumbClick = e => {
-    handleSelectNamespace(e.id);
-  };
   const handleRefreshFunctionality = () => {
     fetchGridData({
       setState,
@@ -224,7 +240,6 @@ export const ListNamespaces = () => {
         title="Namespaces List"
         columns={COLUMNS}
         refreshOptions={REFRESH_OPTIONS}
-        onBreadcrumbClick={onBreadcrumbClick}
         placeholder="Search Namespace, ID, Flow Name, Bucket Name"
         handleRefresh={handleRefresh}
       />

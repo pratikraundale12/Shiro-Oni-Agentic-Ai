@@ -85,9 +85,9 @@ const ForgetLinkContainer = styled.div`
 `;
 
 const loginSchema = yup.object().shape({
+  cluster_id: yup.string().required('Cluster is required'),
   username: yup.string().required('Username is required'),
   password: yup.string().required('Password is required'),
-  cluster_id: yup.string().required('Cluster is required'),
 });
 
 const PATH = 'login';
@@ -115,17 +115,6 @@ export const UserLogin = () => {
       <Title>{`👋 ${WELCOME_BACK}`}</Title>
       <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <InputField
-          name="username"
-          type="text"
-          label="Username"
-          placeholder="Enter your Username"
-          register={register}
-          errors={errors}
-          icon={<UserIcon />}
-          rightIcon={getRightIcon(watch, errors)}
-          required
-        />
         <ClusterSelect
           name="cluster_id"
           control={control}
@@ -136,6 +125,17 @@ export const UserLogin = () => {
           icon={<ClusterIcon />}
           label="Select Cluster"
           errors={errors}
+        />
+        <InputField
+          name="username"
+          type="text"
+          label="Username"
+          placeholder="Enter your Username"
+          register={register}
+          errors={errors}
+          icon={<UserIcon />}
+          rightIcon={getRightIcon(watch, errors)}
+          required
         />
         <PasswordField
           name="password"

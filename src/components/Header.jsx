@@ -212,9 +212,9 @@ const ProfileDropdown = () => {
 };
 
 export const Header = ({ isOpenSidebar }) => {
+  const dispatch = useDispatch();
   const route = useSelector(AuthenticationSelectors.getRoute);
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
 
   const closeTab = () => {
     setDisplaySessionTab(false);
@@ -236,7 +236,11 @@ export const Header = ({ isOpenSidebar }) => {
         <ButtonContainer>
           <div className="d-none d-lg-inline">
             <div className="d-flex">
-              <IconButton onClick={() => setIsOpen(true)}>
+              <IconButton
+                onClick={() =>
+                  dispatch(AuthenticationActions.setClusterLogin(true))
+                }
+              >
                 <ClusterIcon />
               </IconButton>
               <IconButton>
@@ -253,8 +257,8 @@ export const Header = ({ isOpenSidebar }) => {
           <ProfileDropdown />
         </ButtonContainer>
       </Container>
+      <ClusterLoginModal />
       {displaySessionTab && <SessionExpiredLabel closeTab={closeTab} />}
-      <ClusterLoginModal setIsOpen={setIsOpen} isOpen={isOpen} />
     </>
   );
 };

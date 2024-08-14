@@ -14,6 +14,12 @@ export const GRID_INITIAL_STATE = {};
 /* ------------- SELECTORS ------------------ */
 export const GridSelectors = {
   getGridData: (state, module) => state.grid?.[module]?.data || [],
+  getGridCount: (state, module) => state.grid?.[module]?.count || 0,
+  getGridBreadcrumb: (state, module) =>
+    state.grid?.[module]?.breadcrumb?.map(item => ({
+      label: item.name,
+      value: item.id,
+    })) || [],
 };
 
 /* ------------- REDUCERS ------------------- */

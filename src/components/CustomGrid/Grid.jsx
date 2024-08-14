@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import { getTheme } from '@table-library/react-table-library/baseline';
-import { useSort } from '@table-library/react-table-library/sort';
 
 import { theme } from '../../styles';
 import { GridActions as GridActionsComponent } from './GridActions';
@@ -21,7 +20,8 @@ import { Table } from './Table';
 import { TextRender } from './CellRenders';
 import { NoDataIcon } from '../../assets';
 import { GridActions, GridSelectors } from '../../store/grid';
-import { fetchGridData } from '../../store/services';
+// import { fetchGridData } from '../../store/services';
+import { LoadingSelectors, NamespacesSelectors } from '../../store';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -87,20 +87,23 @@ const getData = (loader = false, data = [], nodes = []) => {
 export const Grid = ({
   module,
   columns = [],
-  sortFns = {},
-  clusterOptions = [],
   refreshOptions = [],
   statusOptions = [],
   title = '',
   buttonText = '',
   placeholder = '',
   addModal = () => {},
-  onBreadcrumbClick = () => {},
   handleRefresh = () => {},
 }) => {
   const dispatch = useDispatch();
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchGrid')
+  );
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, module)
+  );
+  const selectedNamespace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
   );
   const {
     state: {
@@ -111,30 +114,24 @@ export const Grid = ({
           count = 0,
           prev = null,
           next = null,
-          data = [],
+          // data = [],
           name: nodeName = '',
           nifi_url = '',
           registry = {},
           nodes = [],
-          breadcrumb = [],
+          // breadcrumb = [],
         } = {},
       },
       eventModal,
       selectedNode,
-      nodeClusterId,
-      selectedSourceClusterId = '',
-      loaders,
+      // nodeClusterId,
+      // selectedSourceClusterId = '',
+      // loaders,
     },
     setState,
   } = useGlobalContext();
   const DATA = {
-    nodes: getData(
-      loaders[module],
-      module === 'clusters' || module === 'users' || module === 'namespaces'
-        ? gridData
-        : data,
-      nodes
-    ),
+    nodes: getData(loading, gridData, nodes),
   };
 
   const tableTheme = useTheme([
@@ -166,16 +163,8 @@ export const Grid = ({
     },
   ]);
 
-  const sort = useSort(
-    DATA.nodes,
-    {},
-    {
-      sortFns,
-    }
-  );
-
   const getLoader = () => {
-    if (loaders[module]) return <Loader size="lg" />;
+    if (loading) return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
       return (
         <LoaderContainer>
@@ -187,30 +176,28 @@ export const Grid = ({
   };
 
   useEffect(() => {
-    if (
-      module === 'clusters' ||
-      module === 'users' ||
-      module === 'namespaces'
-    ) {
-      dispatch(GridActions.fetchGrid({ module, params: { page: 1, search } }));
-    } else {
-      fetchGridData({
-        setState,
-        module,
-        search,
-        page,
-        ...(nodeClusterId && { nodeClusterId }),
-        ...(selectedSourceClusterId && { selectedSourceClusterId }),
-      });
-    }
+    dispatch(GridActions.fetchGrid({ module, params: { page: 1, search } }));
+    // fetchGridData({
+    //   setState,
+    //   module,
+    //   search,
+    //   page,
+    //   ...(nodeClusterId && { nodeClusterId }),
+    //   ...(selectedSourceClusterId && { selectedSourceClusterId }),
+    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, module, search, page]);
+  }, [setState, module, search, page, selectedNamespace]);
+
+  useEffect(
+    () => () => setState(prev => ({ ...prev, search: '', page: 1 })),
+    [setState]
+  );
+
   return (
     <Container>
       <GridActionsComponent
         title={title}
         module={module}
-        clusterOptions={clusterOptions}
         refreshOptions={refreshOptions}
         statusOptions={statusOptions}
         search={search}
@@ -250,17 +237,9 @@ export const Grid = ({
           </Modal>
         </>
       )}
-      <Breadcrumb
-        breadcrumbs={breadcrumb}
-        onBreadcrumbClick={onBreadcrumbClick}
-      />
+      <Breadcrumb module={module} />
       <TableContainer>
-        <CompactTable
-          data={DATA}
-          sort={sort}
-          columns={columns}
-          theme={tableTheme}
-        />
+        <CompactTable data={DATA} columns={columns} theme={tableTheme} />
         {getLoader()}
       </TableContainer>
       {count >= 10 && (

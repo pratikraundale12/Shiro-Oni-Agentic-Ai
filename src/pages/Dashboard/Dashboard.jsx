@@ -6,7 +6,7 @@ import { isEmpty } from 'lodash';
 
 import { theme } from '../../styles';
 import { SelectField } from '../../shared';
-import { ClusterSelect, Table } from '../../components';
+import { ClusterSelect, FullPageLoader, Table } from '../../components';
 import { InsightContainer, FlowMetrics } from './components';
 import {
   ActiveThreadIcon,
@@ -25,6 +25,7 @@ import { CrossIcon } from '../../assets/Icons/CrossIcon';
 import {
   DashboardActions,
   DashboardSelectors,
+  LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
@@ -148,6 +149,13 @@ const FlowMetricContainer = styled.div`
   margin-bottom: 20px;
 `;
 
+const Loader = styled(FullPageLoader)`
+  position: absolute;
+  top: ${props => props.theme.header};
+  width: 100%;
+  height: calc(100% - ${props => props.theme.header});
+`;
+
 export const Dashboard = () => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
@@ -156,6 +164,9 @@ export const Dashboard = () => {
   );
   const namespaces = useSelector(NamespacesSelectors.getNamespaces);
   const dashboardData = useSelector(DashboardSelectors.getDashboardData);
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchDashboard')
+  );
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
   const COLUMNS = [
@@ -255,6 +266,7 @@ export const Dashboard = () => {
 
   return (
     <>
+      <Loader loading={loading} />
       <TopSection>
         <QuickInsightHeading>
           <InsightIconContiner>

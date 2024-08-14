@@ -83,7 +83,7 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
 
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));
-    history.push(path);
+    history.push(`/${path}`);
   };
 
   return (

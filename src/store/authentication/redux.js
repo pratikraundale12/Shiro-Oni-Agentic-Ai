@@ -18,6 +18,7 @@ export const AuthenticationActions = {
     `${prefix}resetPasswordRequestSuccess`
   ),
   resetPassword: createAction(`${prefix}resetPassword`),
+  setClusterLogin: createAction(`${prefix}setClusterLogin`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -27,6 +28,7 @@ export const AUTHENTICATION_INITIAL_STATE = {
   license: '',
   isLoggedIn: false,
   resetToken: '',
+  clusterLogin: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -36,6 +38,7 @@ export const AuthenticationSelectors = {
   getRoute: state => state.auth.route,
   getLicense: state => state.auth.license,
   getResetToken: state => state.auth.resetToken,
+  getClusterLogin: state => state.auth.clusterLogin,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -71,6 +74,12 @@ const setRoute = (state, { payload }) => {
     route: payload,
   };
 };
+const setClusterLogin = (state, { payload }) => {
+  return {
+    ...state,
+    clusterLogin: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const authenticationReducer = createReducer(
@@ -87,6 +96,7 @@ export const authenticationReducer = createReducer(
         AuthenticationActions.resetPasswordRequestSuccess,
         resetPasswordRequestSuccess
       )
-      .addCase(AuthenticationActions.setRoute, setRoute);
+      .addCase(AuthenticationActions.setRoute, setRoute)
+      .addCase(AuthenticationActions.setClusterLogin, setClusterLogin);
   }
 );

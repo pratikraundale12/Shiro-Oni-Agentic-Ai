@@ -8,15 +8,7 @@ export const HistoryRouter = ({ children }) => {
   const [state, setState] = useState(history);
 
   history.listen(setState);
-  return (
-    <Router
-      location={state.location}
-      navigationType={state.action}
-      navigator={history}
-    >
-      {children}
-    </Router>
-  );
+  return <Router location={state.location}>{children}</Router>;
 };
 
 HistoryRouter.propTypes = {

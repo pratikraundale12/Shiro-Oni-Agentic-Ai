@@ -1,10 +1,12 @@
 import { CLUSTERS_TOKEN } from '../../constants';
 
 export const namespacesAPI = api => {
-  const fetchNamespaces = (clusterId = '', namespaceId = '', params = {}) => {
+  const fetchNamespaces = ({
+    params = {},
+    queryParams: { clusterId, namespaceId },
+  }) => {
     const clusterData = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
     const selectedCluster = clusterData.find(item => item.id === clusterId);
-    console.log(selectedCluster);
     api.headers['x-cluster-id'] = selectedCluster?.id;
     api.headers['x-cluster-token'] = selectedCluster?.token;
     return api.get(
@@ -13,7 +15,24 @@ export const namespacesAPI = api => {
     );
   };
 
+  const checkDestCluster = ({
+    clusterId,
+    srcClusterId,
+    srcClusterToken,
+    path,
+  }) =>
+    api.post(`/clusters/${clusterId}/check`, {
+      srcClusterId,
+      srcClusterToken,
+      path,
+    });
+
+  const deployCluster = ({ clusterId, ...rest }) =>
+    api.post(`/clusters/${clusterId}/deploy`, rest);
+
   return {
     fetchNamespaces,
+    checkDestCluster,
+    deployCluster,
   };
 };
