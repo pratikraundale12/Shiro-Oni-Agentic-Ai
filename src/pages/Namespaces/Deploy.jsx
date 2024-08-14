@@ -296,7 +296,7 @@ const Deploy = () => {
 
   const onClusterCheck = value => {
     console.log('onClusterCheck', value);
-    dispatch(NamespacesActions.setSelectedDestCluster(value));
+    // dispatch(NamespacesActions.setSelectedDestCluster(value));
     dispatch(NamespacesActions.checkDestCluster());
     // setLoading(true);
     // const selectedClusterId = e.value;

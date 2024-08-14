@@ -22,6 +22,7 @@ export const NamespacesActions = {
   setVersion: createAction(`${prefix}setVersion`),
   deployCluster: createAction(`${prefix}deployCluster`),
   deployClusterSuccess: createAction(`${prefix}deployClusterSuccess`),
+  resetDeployData: createAction(`${prefix}resetDeployData`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -145,6 +146,12 @@ const setDeployedModal = state => {
     isDeployedModal: !state.isDeployedModal,
   };
 };
+const resetDeployData = state => {
+  return {
+    ...NAMESPACES_INITIAL_STATE,
+    selectedCluster: state.selectedCluster,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -171,6 +178,7 @@ export const namespacesReducer = createReducer(
       .addCase(NamespacesActions.setNamespaceId, setNamespaceId)
       .addCase(NamespacesActions.setVersion, setVersion)
       .addCase(NamespacesActions.deployClusterSuccess, deployClusterSuccess)
-      .addCase(NamespacesActions.setDeployedModal, setDeployedModal);
+      .addCase(NamespacesActions.setDeployedModal, setDeployedModal)
+      .addCase(NamespacesActions.resetDeployData, resetDeployData);
   }
 );

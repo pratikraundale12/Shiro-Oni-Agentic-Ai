@@ -400,24 +400,24 @@ const Summary = () => {
   };
 
   const handleCloseModal = () => {
-    setState(prevState => ({
-      ...prevState,
-      selectedPaths: [],
-      selectedClusterId: null,
-      selectedVersion: null,
-      deployNamespaceId: null,
-      deployData: {
-        flowId: null,
-        bucketId: null,
-        bucketName: null,
-        registryId: null,
-        version: null,
-      },
-      upgradeData: {},
-      updatedCount: null,
-    }));
+    dispatch(NamespacesActions.resetDeployData());
+    // setState(prevState => ({
+    //   ...prevState,
+    //   selectedPaths: [],
+    //   selectedClusterId: null,
+    //   selectedVersion: null,
+    //   deployNamespaceId: null,
+    //   deployData: {
+    //     flowId: null,
+    //     bucketId: null,
+    //     bucketName: null,
+    //     registryId: null,
+    //     version: null,
+    //   },
+    //   upgradeData: {},
+    //   updatedCount: null,
+    // }));
     history.push('/namespaces');
-    setModalOpen(false);
   };
 
   const openParameterContext = () => {

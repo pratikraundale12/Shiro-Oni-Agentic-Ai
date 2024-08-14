@@ -31,7 +31,8 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
   const onChange = value => {
     console.log(value);
     if (value.is_active || location.pathname === '/login')
-      dispatch(NamespacesActions.setSelectedCluster(value));
+      if (!isDestination) dispatch(NamespacesActions.setSelectedCluster(value));
+      else dispatch(NamespacesActions.setSelectedDestCluster(value));
     else dispatch(AuthenticationActions.setClusterLogin(value));
     if (props.onChange) props.onChange(value);
   };

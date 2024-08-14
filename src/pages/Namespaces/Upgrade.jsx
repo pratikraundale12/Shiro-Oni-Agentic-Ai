@@ -212,7 +212,7 @@ const Upgrade = () => {
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <RadioField
-            checked={checkDestCluster.version === item.version}
+            checked={formData.version === item.version}
             disabled={checkDestCluster.version === item.version}
             onChange={() => onVersionSelect(item.version)}
           />
@@ -413,7 +413,10 @@ const Upgrade = () => {
           </Button>
           <Button
             onClick={handleClick}
-            disabled={!formData.version || isStateStale}
+            disabled={
+              checkDestCluster.mode === 'upgrade' &&
+              (!formData.version || isStateStale)
+            }
           >
             {checkDestCluster.mode === 'upgrade' ? 'Upgrade' : 'Deploy'}
           </Button>
