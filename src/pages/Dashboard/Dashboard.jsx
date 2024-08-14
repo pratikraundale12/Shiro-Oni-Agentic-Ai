@@ -1,37 +1,39 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import styled from 'styled-components';
 
-import { theme } from '../../styles';
-import { SelectField } from '../../shared';
-import { Table } from '../../components';
-import { InsightContainer, FlowMetrics } from './components';
-import { useGlobalContext } from '../../utils';
 import {
   ActiveThreadIcon,
   DisabledProcessorIcon,
+  ErrorIcon,
   FlowFiledQuedIcon,
   FlowMetricHeaderIcon,
+  InvalidProcessorIcon,
   LensIcon,
   RunnigProcessorIcon,
   StoppedProcessorIcon,
   TotalProcessorIcon,
   TotalQuedIcon,
-  InvalidProcessorIcon,
-  ErrorIcon,
 } from '../../assets';
 import { CrossIcon } from '../../assets/Icons/CrossIcon';
+import { Table } from '../../components';
+import { SelectField } from '../../shared';
 import {
   fetchGridData,
   getInitialClusterData,
   getNamespaceData,
 } from '../../store';
+import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
+import { FlowMetrics, InsightContainer } from './components';
 
 const TopSection = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
 `;
 
 const QuickInsightHeading = styled.div`
@@ -46,11 +48,12 @@ const QuickInsightHeadingText = styled.h4`
   font-weight: 600;
   line-height: 27.24px;
   text-align: left;
-  padding-botton: 5px;
+  padding-bottom: 5px;
 `;
 
 const InsightIconContiner = styled.div`
   padding-top: 5px;
+  margin-bottom: 0.5rem;
 `;
 
 const InsightDataContiner = styled.div`
@@ -68,6 +71,7 @@ const FlowMetricHeader = styled.div`
   font-weight: 600;
   line-height: 25px;
   display: flex;
+  align-items: center;
 `;
 
 const ErrorsHeader = styled.div`
@@ -83,6 +87,7 @@ const ErrorsHeader = styled.div`
 
 const HeaderText = styled.p`
   margin-left: 10px;
+  margin-bottom: 0px;
 `;
 
 const TextEllipses = styled.div`
@@ -140,8 +145,14 @@ const StyledTable = styled(Table)`
   height: 60%;
 
   > div {
-    height: 88%;
+    height: 70%;
   }
+`;
+
+const FlowMetricContainer = styled.div`
+  box-shadow: 0px 4px 5px 1px #3232470d;
+  border-radius: 0px 0px 16px 16px;
+  margin-bottom: 20px;
 `;
 
 export const Dashboard = () => {
@@ -408,13 +419,15 @@ export const Dashboard = () => {
           text="Flow Files Queued"
         />
       </InsightDataContiner>
-      <FlowMetricHeader>
-        <FlowMetricHeaderIcon />
-        <HeaderText>Flow Metrics</HeaderText>
-      </FlowMetricHeader>
-      <FlowMetrics
-        flowMetricsDataDynamic={clusterDetails?.flowMetrixYData || [0, 0, 0]}
-      />
+      <FlowMetricContainer>
+        <FlowMetricHeader>
+          <FlowMetricHeaderIcon />
+          <HeaderText>Flow Metrics</HeaderText>
+        </FlowMetricHeader>
+        <FlowMetrics
+          flowMetricsDataDynamic={clusterDetails?.flowMetrixYData || [0, 0, 0]}
+        />
+      </FlowMetricContainer>
       <ErrorsHeader>
         <ErrorIcon />
 

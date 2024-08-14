@@ -1,10 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { theme } from '../../styles';
-export const KsolvesDataFlowIcon = () => {
+
+export const KsolvesDataFlowIcon = ({ width = 180, height = 120 }) => {
   return (
     <svg
-      width={253}
-      height={137}
+      width={width}
+      height={height}
       viewBox="0 0 253 137"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -77,4 +79,9 @@ export const KsolvesDataFlowIcon = () => {
       />
     </svg>
   );
+};
+
+KsolvesDataFlowIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
 };

@@ -26,18 +26,18 @@ const Header = styled.div`
   align-items: center;
   width: 100%;
   height: 44px;
-  padding: 26px 16px;
+  padding: 26px 18px;
   background-color: ${theme.colors.lightGrey};
 `;
 
 const Body = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 2.25rem 1.125rem 1.125rem;
 `;
 
 const Footer = styled.div`
-  padding: 16px;
+  padding: ${props => (props.hasSingleButton ? '32px' : '18px')} 18px;
   display: flex;
   gap: 1rem;
   align-self: ${props => props.footerAlign};
@@ -85,7 +85,6 @@ export const Modal = ({
       overflow: 'hidden',
       borderRadius: 16,
       minWidth: '30%',
-      minHeight: '40%',
       maxWidth: '75%',
       maxHeight: '90%',
       transform: 'translate(-50%, -50%)',
@@ -104,11 +103,11 @@ export const Modal = ({
       style={styleObject}
     >
       <Header>
-        <Title>{title}</Title>
+        <Title className="mb-0">{title}</Title>
         <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
       </Header>
       <Body>{children}</Body>
-      <Footer footerAlign={footerAlign}>
+      <Footer footerAlign={footerAlign} hasSingleButton={!secondaryButtonText}>
         {secondaryButtonText && (
           <Button
             variant="secondary"
@@ -123,6 +122,7 @@ export const Modal = ({
           loading={loading}
           onClick={onSubmit}
           disabled={primaryButtonDisabled}
+          size={!secondaryButtonText ? 'lg' : 'md'}
         >
           {primaryButtonText}
         </Button>

@@ -1,26 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import styled from 'styled-components';
 
 import { ModalWithIcon } from '../../shared';
-import { fetchGridData, deleteCluster } from '../../store';
+import { deleteCluster, fetchGridData } from '../../store';
 import { REFRESH_OPTIONS, STATUS_OPTIONS, useGlobalContext } from '../../utils';
 
-import {
-  Grid,
-  ProgressBarRender,
-  ActionRender,
-  StatusRender,
-  TextRender,
-  UrlRender,
-} from '../../components';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
   OpenEyeIcon,
   PencilIcon,
 } from '../../assets';
+import {
+  ActionRender,
+  EnableClusterRender,
+  Grid,
+  ProgressBarRender,
+  StatusRender,
+  TextRender,
+  UrlRender,
+} from '../../components';
 
 const List = styled.div`
   position: absolute;
@@ -52,12 +53,11 @@ const Item = styled.div`
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.md};
   color: ${props => props.theme.colors.darker};
-  border: 1px solid ${props => props.theme.colors.border};
+  // border: 1px solid ${props => props.theme.colors.border};
 
   &:hover {
     background-color: ${props => props.theme.colors.lightGrey};
   }
-
   > span {
     margin-top: 2px;
     margin-left: 10px;
@@ -68,6 +68,7 @@ const getX = x => 1790 > x < 1830 && 1446;
 
 export const ListClusters = () => {
   const [refreshState, setRefreshSelect] = useState(false);
+  const [hoveredItemId, setHoveredItemId] = useState(null);
   const intervalRef = useRef(null);
   const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
@@ -78,43 +79,94 @@ export const ListClusters = () => {
     y: 0,
     row: {},
   });
+  const handleMouseEnter = id => {
+    setHoveredItemId(id);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredItemId(null);
+  };
 
   const COLUMNS = [
     {
       label: 'Cluster Name',
-      renderCell: item => <TextRender text={item.name} />,
+      renderCell: item => (
+        <Item
+          onMouseEnter={() => handleMouseEnter(item.id)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <TextRender text={item.name} />
+        </Item>
+      ),
       width: '18%',
     },
     {
       label: 'NiFi URL',
-      renderCell: item => <UrlRender url={item.nifi_url} />,
+      renderCell: item => (
+        <Item
+          onMouseEnter={() => handleMouseEnter(item.id)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <UrlRender url={item.nifi_url} />
+        </Item>
+      ),
       width: '44%',
     },
     {
       label: 'Cluster Status',
       renderCell: item => (
-        <ProgressBarRender
-          is_active={item.is_active}
-          count={item.connected_nodes}
-          maxCount={item.total_nodes}
-        />
+        <Item
+          onMouseEnter={() => handleMouseEnter(item.id)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <ProgressBarRender
+            is_active={item.is_active}
+            count={item.connected_nodes}
+            maxCount={item.total_nodes}
+          />
+        </Item>
       ),
       width: '12%',
     },
     {
       label: 'Status',
-      renderCell: item => <StatusRender status={item.status} />,
+      renderCell: item => (
+        <Item
+          onMouseEnter={() => handleMouseEnter(item.id)}
+          onMouseLeave={handleMouseLeave}
+        >
+          {' '}
+          <StatusRender status={item.status} />
+        </Item>
+      ),
       width: '12%',
     },
     {
       label: 'Actions',
       renderCell: item => (
-        <ActionRender handleMenuClick={handleMenuClick} item={item} />
+        <Item
+          onMouseEnter={() => handleMouseEnter(item.id)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <ActionRender handleMenuClick={handleMenuClick} item={item} />
+        </Item>
+      ),
+      width: '14%',
+    },
+    {
+      renderCell: item => (
+        <Item
+          onMouseEnter={() => handleMouseEnter(item.id)}
+          onMouseLeave={handleMouseLeave}
+        >
+          {!item.is_active && (
+            <EnableClusterRender hoveredItemId={hoveredItemId} item={item} />
+          )}
+        </Item>
       ),
       width: '14%',
     },
   ];
-
   const deleteUserConfirmed = async () => {
     const response = await deleteCluster(state.selectedItem.id);
     if (response.status == 204) {
@@ -202,14 +254,15 @@ export const ListClusters = () => {
   return (
     <>
       <ModalWithIcon
+        title="Delete Cluster"
         primaryButtonText="Delete"
         secondaryButtonText="Cancel"
         icon={<DeleteDustbinIcon />}
         isOpen={state.clusterDeleteModal}
         onSubmit={deleteUserConfirmed}
         onRequestClose={() => setState({ ...state, clusterDeleteModal: false })}
-        primaryText="Are You Sure You Want to Delete This Cluster"
-        secondaryText="It Will Temporary Remove the Cluster"
+        primaryText="Are You Sure You Want to Delete This Cluster?"
+        secondaryText="It Will Permanently Remove the Cluster"
       />
 
       <Grid

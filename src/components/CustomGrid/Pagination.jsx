@@ -20,6 +20,7 @@ const Flex = styled.div`
 
 const StyledButton = styled(Button)`
   height: 30px;
+  background-color: ${props => (props.active ? theme.colors.primary : 'none')};
 `;
 
 const Pagination = ({ page, setState, count, prev, next }) => {
@@ -28,6 +29,48 @@ const Pagination = ({ page, setState, count, prev, next }) => {
     const end = Math.min(count, page * 10);
     return `${start} - ${end}`;
   };
+  const itemsPerPage = 10;
+  const currentPage = page;
+  const totalPage = Math.ceil(count / itemsPerPage);
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+
+    if (currentPage > 1) {
+      pageNumbers.push(1);
+    }
+    if (currentPage > 4) {
+      pageNumbers.push('...');
+    }
+
+    if (currentPage > 3) {
+      pageNumbers.push(currentPage - 2);
+    }
+
+    if (currentPage > 2) {
+      pageNumbers.push(currentPage - 1);
+    }
+
+    pageNumbers.push(currentPage);
+
+    if (currentPage < totalPage - 1) {
+      pageNumbers.push(currentPage + 1);
+    }
+
+    if (currentPage < totalPage - 2) {
+      pageNumbers.push(currentPage + 2);
+    }
+    if (currentPage < totalPage - 3) {
+      pageNumbers.push('...');
+    }
+
+    if (currentPage < totalPage) {
+      pageNumbers.push(totalPage);
+    }
+
+    return pageNumbers;
+  };
+
+  const pageNumbers = getPageNumbers();
 
   return (
     <Container>
@@ -38,29 +81,21 @@ const Pagination = ({ page, setState, count, prev, next }) => {
           onClick={() => setState(prevState => ({ ...prevState, page: prev }))}
           icon={<GreaterArrowIcon color={theme.colors.white} />}
         />
-        <StyledButton
-          size="sm"
-          variant="secondary"
-          onClick={() => setState(prevState => ({ ...prevState, page: 1 }))}
-        >
-          1
-        </StyledButton>
-        <StyledButton
-          size="sm"
-          variant="secondary"
-          onClick={() => setState(prevState => ({ ...prevState, page: 2 }))}
-        >
-          2
-        </StyledButton>
-        <StyledButton size="sm" variant="secondary">
-          ...
-        </StyledButton>
-        <StyledButton size="sm" variant="secondary">
-          9
-        </StyledButton>
-        <StyledButton size="sm" variant="secondary">
-          10
-        </StyledButton>
+        {pageNumbers.map((number, index) => (
+          <StyledButton
+            key={index}
+            onClick={() =>
+              number != '...'
+                ? setState(prevState => ({ ...prevState, page: number }))
+                : null
+            }
+            size="sm"
+            variant="secondary"
+            active={number === currentPage}
+          >
+            {number}
+          </StyledButton>
+        ))}
         <StyledButton
           size="sm"
           onClick={() => setState(prevState => ({ ...prevState, page: next }))}

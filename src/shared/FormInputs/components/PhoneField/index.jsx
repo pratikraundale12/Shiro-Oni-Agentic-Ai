@@ -94,7 +94,7 @@ const PhoneField = ({
 
   return (
     <Container className={className}>
-      <label>
+      <label className="mb-0">
         {'Phone Number'}
         {required && <span className="required">&nbsp;*</span>}
       </label>
