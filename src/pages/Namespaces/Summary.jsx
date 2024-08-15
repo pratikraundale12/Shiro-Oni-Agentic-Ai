@@ -416,7 +416,7 @@ const Summary = () => {
   const closeParameterContext = () => {
     setIsParameterContextOpen(false);
     setNewlyAddedParameterContext([]);
-    setModalOpen(true);
+    dispatch(NamespacesActions.setDeployedModal());
   };
 
   const openAddParameterContext = () => {

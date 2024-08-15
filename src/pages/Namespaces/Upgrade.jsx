@@ -223,7 +223,6 @@ const Upgrade = () => {
           />
         </div>
       ),
-
       width: '10%',
     },
   ];
