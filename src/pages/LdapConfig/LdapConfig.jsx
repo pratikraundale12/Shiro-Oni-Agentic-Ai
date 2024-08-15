@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { LinkIcon, QRIcons, TodoIcon } from '../../assets';
-import { Button, CheckboxField, InputField, PasswordField } from '../../shared';
+import { Button, InputField, PasswordField } from '../../shared';
 import { CreateMapping } from './components/CreateMapping';
 import { useForm } from 'react-hook-form';
 import { Table } from '../../components/CustomGrid/Table';
-import { checkLdapConfig } from '../../store/apis/ldap';
+import { SwitchButton } from '../../shared';
+import {
+  checkLdapConfig,
+  ldapConfig,
+  getLdapGroupAPI,
+} from '../../store/apis/ldap';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { testConfigApi } from '../../store/apis/ldap';
+import { testConfigApi, getRolesAPI } from '../../store/apis/ldap';
+import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -70,44 +76,29 @@ const Heading = styled.div`
   justify-content: space-between;
 `;
 
-const tableData = [
-  {
-    id: 1,
-    ldapUrl: 'ldap://example.com',
-  },
-  {
-    id: 2,
-    ldapUrl: 'ldap://example.org',
-  },
-  {
-    id: 3,
-    ldapUrl: 'ldap://example.net',
-  },
-];
-
 const EVENTCOLUMNS = [
   {
     label: 'LDAP Groups',
     key: 'ldapUrl',
-    renderCell: data => data.ldapUrl, // Adjust based on how `CompactTable` expects cell rendering
+    renderCell: data => data.cn,
   },
   {
     label: 'KDFM Groups',
-    key: 'id',
-    renderCell: data => data.id,
+    key: 'name',
+    renderCell: data => data.name,
   },
 ];
 export const schemaForm1 = Yup.object().shape({
   ldapUrl: Yup.string().required('LDAP URL is required'),
-  loginDN: Yup.string().required('Login DN is required'),
+  loginDn: Yup.string().required('Login DN is required'),
   password: Yup.string().required('Password is required'),
 });
 
 // Schema for the second form
 export const schemaForm2 = Yup.object().shape({
-  baseDN: Yup.string().required('Base DN is required'),
-  groupsDN: Yup.string().required('Groups DN is required'),
-  usersDN: Yup.string().required('Users DN is required'),
+  baseDn: Yup.string().required('Base DN is required'),
+  groupsDn: Yup.string().required('Groups DN is required'),
+  usersDn: Yup.string().required('Users DN is required'),
   userUniqueIdentifier: Yup.string().required(
     'User Unique Identifier is required'
   ),
@@ -118,40 +109,52 @@ export const schemaForm2 = Yup.object().shape({
 export const LdapConfig = () => {
   const [ldapInitialConfig, setLdapInitialConfig] = useState(false);
   const [secondFormState, setSecondFormState] = useState(false);
+  const [createMappingShow, setCreatMappingShow] = useState(false);
+  const [successTest, setSuccessTest] = useState(false);
   const [displayList, setDisplayList] = useState(true);
+  const [testFormData, setTestFormData] = useState({});
+  const [listData, setListData] = useState();
   setDisplayList;
   displayList;
   const {
     register: registerForm1,
     handleSubmit: handleSubmitForm1,
     formState: { errors: errorsForm1 },
+    reset: reset1,
     watch,
-  } = useForm({ resolver: yupResolver(schemaForm1) });
+  } = useForm({
+    resolver: yupResolver(schemaForm1),
+    // defaultValues: formData,
+  });
 
   // Second form
   const {
     register: registerForm2,
     handleSubmit: handleSubmitForm2,
     formState: { errors: errorsForm2 },
+    reset: reset2,
   } = useForm({
     resolver: yupResolver(schemaForm2),
+    // defaultValues: formData,
   });
 
   const onSubmitForm1 = async data => {
     console.log('Form 1 Data:', data);
-    // "url": "ldap://ec2-3-111-156-231.ap-south-1.compute.amazonaws.com:389",
-    // "password": "ksolves",
-    // "loginDn": "cn=admin,dc=user,dc=ksolves,dc=co"
-
+    setTestFormData({
+      url: data.ldapUrl,
+      password: data.password,
+      loginDn: data.loginDn,
+    });
     const payload = {
       url: data.ldapUrl,
       password: data.password,
-      loginDn: data.loginDN,
+      loginDn: data.loginDn,
     };
 
     const response = await testConfigApi(payload);
     if (response?.status === 200) {
       setSecondFormState(true);
+      setSuccessTest(true);
       console.log(response, 'ressssss');
     } else {
       toast.error(
@@ -160,14 +163,51 @@ export const LdapConfig = () => {
     }
   };
 
-  const onSubmitForm2 = data => {
+  const onSubmitForm2 = async data => {
+    console.log(testFormData, 'Data Form1');
     console.log('Form 2 Data:', data);
+
+    const payload = {
+      ldapEnabled: true,
+      url: testFormData.url,
+      password: testFormData.password,
+      loginDn: testFormData.loginDn,
+      baseDn: data.baseDn,
+      groupDn: data.groupDn,
+      userDn: data.userDn,
+      userUniqueIdentifier: data.userUniqueIdentifier,
+      groupUniqueIdentifier: data.groupUniqueIdentifier,
+    };
+
+    const response = await ldapConfig(payload);
+    if (response?.status === 200) {
+      console.log(response, 'ressssss');
+    } else {
+      toast.error(
+        response?.message || 'Something went wrong. Please try again'
+      );
+    }
   };
 
   const handleCheckLdapConfig = async () => {
     const response = await checkLdapConfig();
     if (response.status === 200) {
+      console.log(response, '...??????//');
       setLdapInitialConfig(response?.data?.ldapEnabled);
+      if (response?.data?.ldapEnabled) {
+        reset1({
+          url: response?.data?.url,
+          password: response?.data?.password,
+          loginDn: response?.data?.loginDn,
+        });
+        reset2({
+          baseDn: response?.data?.baseDn,
+          groupDn: response?.data?.groupDn,
+          userDn: response?.data?.userDn,
+          userUniqueIdentifier: response?.data?.userUniqueIdentifier,
+          groupUniqueIdentifier: response?.data?.groupUniqueIdentifier,
+        });
+      }
     } else {
       toast.error(response?.message || 'Something went wrong');
     }
@@ -177,8 +217,51 @@ export const LdapConfig = () => {
     setLdapInitialConfig(!ldapInitialConfig);
   };
   useEffect(() => {
+    console.log(listData, 'DATA');
     handleCheckLdapConfig();
   }, []);
+
+  const getLDAPGroup = async () => {
+    const response = await getLdapGroupAPI();
+    if (response?.status === 200) {
+      console.log(response, '>>>>>>>>>', response.data.groups);
+      setListData(response?.data.groups);
+    } else {
+      toast.error(
+        response?.message || 'Something went wrong. Please try again'
+      );
+    }
+    const response1 = await getRolesAPI();
+    if (response1?.status === 200) {
+      console.log(listData, 'LISTTTT');
+      console.log(response1.data.data, 'RESPONSE!!!!!');
+
+      const sortedArray = listData?.map(item => {
+        // Find the matching object in listData based on ldapGroupName and cn
+        const matchedItem = response1?.data?.data?.find(
+          listItem => listItem?.ldap_group_name === item.cn
+        );
+
+        return {
+          ...item,
+          name: matchedItem ? matchedItem?.name : 'NA', // If a match is found, use the name; otherwise, set it to 'NA'
+        };
+      });
+      console.log(sortedArray, 'sortedArray');
+      if (sortedArray) setListData(sortedArray);
+    } else {
+      toast.error(
+        response1?.message || 'Something went wrong. Please try again'
+      );
+    }
+  };
+
+  useEffect(() => {
+    console.log(listData, 'DATADATA');
+    if (!displayList) {
+      getLDAPGroup();
+    }
+  }, [displayList]);
 
   return (
     <Wrapper>
@@ -193,16 +276,16 @@ export const LdapConfig = () => {
       {displayList ? (
         <>
           <div className="d-flex justify-content-end me-4">
-            <CheckboxField
-              name="check"
+            <SwitchButton
+              id="openModalInput"
               checked={ldapInitialConfig}
-              onClick={handleCheckMark}
+              onChange={handleCheckMark}
             />
           </div>
           <InputFieldFlex className="row">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
-                name="ldapUrl"
+                name="url"
                 type="text"
                 register={registerForm1}
                 label="LDAP URL"
@@ -214,7 +297,7 @@ export const LdapConfig = () => {
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
-                name="loginDN"
+                name="loginDn"
                 type="text"
                 register={registerForm1}
                 label="Login DN"
@@ -238,7 +321,7 @@ export const LdapConfig = () => {
             </div>
           </InputFieldFlex>
           <ButtonFlex>
-            <div>
+            <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <StyledButton
                 size="md"
                 onClick={handleSubmitForm1(onSubmitForm1)}
@@ -251,7 +334,7 @@ export const LdapConfig = () => {
           <InputFieldFlex className="row">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
-                name="baseDN"
+                name="baseDn"
                 register={registerForm2}
                 type="text"
                 label="Base DN"
@@ -263,7 +346,7 @@ export const LdapConfig = () => {
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
-                name="groupsDN"
+                name="groupDn"
                 register={registerForm2}
                 type="text"
                 label="Groups DN"
@@ -275,7 +358,7 @@ export const LdapConfig = () => {
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
-                name="usersDN"
+                name="userDn"
                 type="text"
                 register={registerForm2}
                 label="Users DN"
@@ -315,12 +398,20 @@ export const LdapConfig = () => {
           </InputFieldFlex>
           <SmallButtonFlex className="row">
             <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele ">
-              <Button>Fetch LDAP Groups</Button>
+              <Button
+                onClick={() => {
+                  setDisplayList(false);
+                }}
+                disabled={!successTest}
+              >
+                Fetch LDAP Groups
+              </Button>
             </div>
             <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <Button
                 variant="secondary"
                 onClick={handleSubmitForm2(onSubmitForm2)}
+                disabled={!successTest}
               >
                 Save
               </Button>
@@ -328,9 +419,31 @@ export const LdapConfig = () => {
           </SmallButtonFlex>
         </>
       ) : (
-        <Table data={tableData} columns={EVENTCOLUMNS} />
+        <>
+          <Table
+            data={listData}
+            columns={EVENTCOLUMNS}
+            // breadcrumb={}
+          />
+          <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-4">
+            <Button
+              variant="secondary"
+              onClick={() => setCreatMappingShow(true)}
+            >
+              Create Mapping
+            </Button>
+          </div>
+        </>
       )}
-      <CreateMapping />
+      <CreateMapping
+        isOpen={createMappingShow}
+        setIsOpen={setCreatMappingShow}
+      />
+
+      <SuccessTestModal
+        successTest={successTest}
+        setSuccessTest={setSuccessTest}
+      />
     </Wrapper>
   );
 };

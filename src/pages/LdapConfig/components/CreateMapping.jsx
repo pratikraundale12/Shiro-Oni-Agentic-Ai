@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from '../../../shared';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { SelectField } from '../../../shared';
+import {
+  getLdapGroupAPI,
+  getRolesAPI,
+  groupMappingApi,
+} from '../../../store/apis/ldap';
+import { toast } from 'react-toastify';
 
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
@@ -54,18 +60,78 @@ const Table = styled.table`
   }
 `;
 export const CreateMapping = ({ isOpen, setIsOpen }) => {
-  const { control } = useForm();
+  const { control, handleSubmit } = useForm();
+  const [ldapList, setLdapList] = useState([]);
+  const [kdfList, setKdfList] = useState([]);
+  const [formPayload, setFormPayload] = useState([]);
 
-  const fieldData = [
-    { label: 'Admin' },
-    { label: 'Manager' },
-    { label: 'Developer' },
-    { label: 'Tester' },
-    { label: 'Sales' },
-    { label: 'Consultant' },
-    { label: 'Designer' },
-    { label: 'IT Admin' },
-  ];
+  // const fieldData = [
+  //   { label: 'Admin' },
+  //   { label: 'Manager' },
+  //   { label: 'Developer' },
+  //   { label: 'Tester' },
+  //   { label: 'Sales' },
+  //   { label: 'Consultant' },
+  //   { label: 'Designer' },
+  //   { label: 'IT Admin' },
+  // ];
+
+  const getLDAPGroup = async () => {
+    const response = await getLdapGroupAPI();
+    if (response?.status === 200) {
+      setLdapList(response.data.groups);
+    } else {
+      toast.error(
+        response?.message || 'Something went wrong. Please try again'
+      );
+    }
+    const response1 = await getRolesAPI();
+    if (response1?.status === 200) {
+      console.log(response1.data.data, 'RESEPONSE!!!!!');
+      const sortedArray = response1?.data?.data?.map(item => ({
+        label: item.name,
+        value: item.id,
+      }));
+      setKdfList(sortedArray);
+    } else {
+      toast.error(
+        response1?.message || 'Something went wrong. Please try again'
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      getLDAPGroup();
+    }
+  }, [isOpen]);
+
+  console.log(kdfList, 'kdfmList');
+  console.log(ldapList, 'ldaplist');
+  const temp = kdfList?.map(item => item.cn);
+  console.log(temp, '<>><><><');
+
+  const handleChange = (event, item) => {
+    console.log(event.value, item, '??????????');
+    const sortedArray = kdfList.filter(item => item.value !== event.value);
+    setKdfList(sortedArray);
+    setFormPayload([
+      ...formPayload,
+      { id: event.value, ldap_group_name: item.cn },
+    ]);
+  };
+
+  const onSubmit = async data => {
+    console.log(data);
+    const response = await groupMappingApi({ data: formPayload });
+    if (response?.status === 200) {
+      console.log(response, '>>>>>>>>>', response);
+    } else {
+      toast.error(
+        response?.message || 'Something went wrong. Please try again'
+      );
+    }
+  };
 
   return (
     <Modal
@@ -77,15 +143,20 @@ export const CreateMapping = ({ isOpen, setIsOpen }) => {
       primaryButtonText="Submit"
       footerAlign="start"
       contentStyles={{ minWidth: '50%' }}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <TableContainer>
         <Table>
           <tbody>
-            {fieldData.map((item, index) => (
+            {ldapList.map((item, index) => (
               <tr key={index}>
-                <td>{item.label}</td>
+                <td>{item.cn}</td>
                 <td>
-                  <StyledSelectField options={[]} control={control} />
+                  <StyledSelectField
+                    options={kdfList}
+                    control={control}
+                    onChange={event => handleChange(event, item)}
+                  />
                 </td>
               </tr>
             ))}

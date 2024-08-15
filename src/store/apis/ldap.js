@@ -15,3 +15,35 @@ export const testConfigApi = async payload => {
     return error?.response?.data;
   }
 };
+
+export const ldapConfig = async payload => {
+  try {
+    return await API.post(`/ldap-config`, payload);
+  } catch (error) {
+    return error?.response?.data;
+  }
+};
+
+export const getLdapGroupAPI = async () => {
+  try {
+    return await API.get(`/ldap-group`);
+  } catch (error) {
+    return error?.response?.data;
+  }
+};
+
+export const getRolesAPI = async () => {
+  try {
+    return await API.get(`/roles`);
+  } catch (error) {
+    return error?.response?.data;
+  }
+};
+
+export const groupMappingApi = async payload => {
+  try {
+    return await API.post(`/group-mapping`, payload);
+  } catch (error) {
+    return error?.response?.data;
+  }
+};
