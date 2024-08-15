@@ -25,6 +25,8 @@ export const NamespacesActions = {
   deployClusterSuccess: createAction(`${prefix}deployClusterSuccess`),
   resetDeployData: createAction(`${prefix}resetDeployData`),
   updateNamespaceStatus: createAction(`${prefix}updateNamespaceStatus`),
+  fetchVariableList: createAction(`${prefix}fetchVariableList`),
+  fetchVariableListSuccess: createAction(`${prefix}fetchVariableListSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -55,6 +57,7 @@ export const NAMESPACES_INITIAL_STATE = {
   },
   deployDetails: {},
   isDeployedModal: false,
+  variableList: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -70,6 +73,7 @@ export const NamespacesSelectors = {
   getFormData: state => state.namespaces.formData,
   getDeployDetails: state => state.namespaces.deployDetails,
   getDeployedModal: state => state.namespaces.isDeployedModal,
+  getVariableList: state => state.namespaces.variableList,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -125,6 +129,14 @@ const checkDestClusterSuccess = (state, { payload }) => {
     },
   };
 };
+
+const fetchVariableListSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    variableList: payload,
+  };
+};
+
 const setNamespaceId = (state, { payload }) => {
   return {
     ...state,
@@ -156,7 +168,6 @@ const setPosition = (state, { payload }) => {
   };
 };
 const deployClusterSuccess = (state, { payload }) => {
-  console.log(payload, 'pay');
   return {
     ...state,
     deployDetails: {
@@ -206,6 +217,10 @@ export const namespacesReducer = createReducer(
       .addCase(NamespacesActions.setVersion, setVersion)
       .addCase(NamespacesActions.deployClusterSuccess, deployClusterSuccess)
       .addCase(NamespacesActions.setDeployedModal, setDeployedModal)
-      .addCase(NamespacesActions.resetDeployData, resetDeployData);
+      .addCase(NamespacesActions.resetDeployData, resetDeployData)
+      .addCase(
+        NamespacesActions.fetchVariableListSuccess,
+        fetchVariableListSuccess
+      );
   }
 );

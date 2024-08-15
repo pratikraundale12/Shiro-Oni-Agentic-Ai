@@ -5,7 +5,9 @@ import { PencilIcon, PlusCircleIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
 
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { NamespacesSelectors } from '../../store';
 import {
   DeleteVariableServices,
   GetVariableServices,
@@ -27,6 +29,8 @@ const Listvariables = ({
 }) => {
   const [variableContextItem, setVariableContextItem] = useState({});
   const [newlyAddVariables, setNewlyAddvariables] = useState([]);
+  const variableList = useSelector(NamespacesSelectors.getVariableList);
+  console.log(variableList, 'variableDetails');
   const [loading, setLoading] = useState(false);
   const { state } = useGlobalContext();
   const [isAddVariablesOpen, setIsAddVariablesOpen] = useState({
@@ -37,7 +41,7 @@ const Listvariables = ({
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => <TextRender text={item.variable.name} />,
+      renderCell: item => <TextRender text={item?.variable?.name} />,
     },
     {
       label: 'Value',
@@ -74,7 +78,7 @@ const Listvariables = ({
   ];
 
   let variablesData = [];
-  if (state?.variablesDetail?.variables) {
+  if (variableList && variableList.variables) {
     const variables = newlyAddVariables.map(item => {
       return {
         variable: {
@@ -85,7 +89,7 @@ const Listvariables = ({
       };
     });
 
-    variablesData = [...state.variablesDetail.variables, ...variables];
+    variablesData = [...variableList.variables, ...variables];
   }
 
   const openVariable = () => {
