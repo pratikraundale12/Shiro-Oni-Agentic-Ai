@@ -2,6 +2,7 @@ import { isEmpty, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
@@ -11,8 +12,7 @@ import {
   Modal,
   RadioSelectField,
 } from '../../shared';
-// import { updateParameterContextService } from '../../store';
-import { useGlobalContext } from '../../utils';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const ModalBody = styled.div`
   position: relative;
@@ -83,10 +83,13 @@ const AddParameterContext = ({
   newlyAddedPrameterContext,
   setNewlyAddedParameterContext,
 }) => {
-  const { state, setState } = useGlobalContext();
-  const parameterDetailsData = state?.parameterDetails?.data || {};
-  delete parameterDetailsData.version;
-  const parameterContextList = Object.values(parameterDetailsData).flat();
+  const dispatch = useDispatch();
+  const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
+  const deployOrUpgradeDetails = useSelector(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const parameterContextList =
+    parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
   const { register, handleSubmit, control, reset, setValue } = useForm({
     defaultValues: DEFAULT_VALUES,
   });
@@ -167,15 +170,13 @@ const AddParameterContext = ({
         existingParameterContext &&
         Object.values(existingParameterContext)?.length !== 0
       ) {
-        setState({
-          ...state,
-          parameterDetails: {
-            ...state.parameterDetails,
-            data: {
-              [data?.name]: filteredParameterContextList,
-            },
-          },
-        });
+        dispatch(
+          NamespacesActions.setParameterDetails({
+            ...parameterDetails,
+            [deployOrUpgradeDetails?.parameterContextId]:
+              filteredParameterContextList,
+          })
+        );
         setNewlyAddedParameterContext([...updatedData, data]);
       } else {
         setNewlyAddedParameterContext([...updatedData]);

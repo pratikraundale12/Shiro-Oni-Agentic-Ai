@@ -160,19 +160,21 @@ const NamespaceDeploy = ({
   getParamerterContext,
   handleTertiaryButton,
 }) => {
-  const deployDetails = useSelector(NamespacesSelectors.getDeployDetails);
+  const dispatch = useDispatch();
+  const deployOrUpgradeDetails = useSelector(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const selectedDestCluster = useSelector(
     NamespacesSelectors.getSelectedDestCluster
   );
-  const formData = useSelector(NamespacesSelectors.getFormData);
-  const dispatch = useDispatch();
-  const handleUpdateStatus = async status => {
+  const handleUpdateStatus = status => {
     dispatch(NamespacesActions.updateNamespaceStatus(status));
     // try {
     //   const response = await updateNamespaceStatus(
-    //     selectedDestCluster?.value,
-    //     deployDetails?.id,
+    //     state.selectedClusterId,
+    //     state?.upgradeData?.id || deployOrUpgradeDetails?.id,
     //     status
     //   );
     //   if (response?.data) {
@@ -205,7 +207,7 @@ const NamespaceDeploy = ({
   };
 
   const handleClick = () => {
-    window.open(deployDetails.nifiUrl, '_blank');
+    window.open(deployOrUpgradeDetails.nifiUrl, '_blank');
   };
 
   return (
@@ -221,7 +223,7 @@ const NamespaceDeploy = ({
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={handleClick}
         secondaryButtonProps={{
-          disabled: !deployDetails?.parameterContextId,
+          disabled: !deployOrUpgradeDetails?.parameterContextId,
         }}
         tertiaryButton={true}
         tertiaryButtonConfig={{
@@ -252,35 +254,35 @@ const NamespaceDeploy = ({
               <ActiveButtonContainer className="d-flex ">
                 <CountDiv
                   className="div-btn-1"
-                  count={deployDetails?.runningCount}
+                  count={deployOrUpgradeDetails?.runningCount}
                   activeColor="#58e715"
                 >
                   <TriangleIcons color="#B5BDC8" />
-                  <span>{deployDetails?.runningCount}</span>
+                  <span>{deployOrUpgradeDetails?.runningCount}</span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-2"
-                  count={deployDetails?.stoppedCount}
+                  count={deployOrUpgradeDetails?.stoppedCount}
                   activeColor="#c52b2b"
                 >
                   <SquareBoxIcon color="#B5BDC8" />
-                  <span>{deployDetails?.stoppedCount}</span>
+                  <span>{deployOrUpgradeDetails?.stoppedCount}</span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-3"
-                  count={deployDetails?.invalidCount}
+                  count={deployOrUpgradeDetails?.invalidCount}
                   activeColor="#CF9F5D"
                 >
                   <TriangleExclamationMarkIcon color="#B5BDC8" />
-                  <span>{deployDetails?.invalidCount}</span>
+                  <span>{deployOrUpgradeDetails?.invalidCount}</span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-4"
-                  count={deployDetails?.disabledCount}
+                  count={deployOrUpgradeDetails?.disabledCount}
                   activeColor="#2c7cf3"
                 >
                   <SmallNotThunderIcon color="#B5BDC8" />
-                  <span>{deployDetails?.disabledCount}</span>
+                  <span>{deployOrUpgradeDetails?.disabledCount}</span>
                 </CountDiv>
               </ActiveButtonContainer>
             </CustomNine>
@@ -289,7 +291,7 @@ const NamespaceDeploy = ({
                 <ActionTitleSet className="mb-0 ">
                   Current Version
                 </ActionTitleSet>
-                <SubTitleSet className="mb-0 ">{formData.version}</SubTitleSet>
+                <SubTitleSet className="mb-0 ">{formData?.version}</SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
             <CustomNine className="col-8 mb-3">
@@ -301,7 +303,7 @@ const NamespaceDeploy = ({
                     activeColor="#58e715"
                     hoverColor="#58e715"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
+                    onClick={() => handleUpdateStatus('RUNNING')}
                   >
                     <TriangleIcons color="#B5BDC8" />
                   </ActiveButtonDiv>
@@ -313,7 +315,7 @@ const NamespaceDeploy = ({
                     activeColor="#c52b2b"
                     hoverColor="#c52b2b"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
+                    onClick={() => handleUpdateStatus('STOPPED')}
                   >
                     <SquareBoxIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
@@ -325,7 +327,7 @@ const NamespaceDeploy = ({
                     activeColor="#cf9f5d"
                     hoverColor="#cf9f5d"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
+                    onClick={() => handleUpdateStatus('ENABLED')}
                   >
                     <SmallThunderIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
@@ -337,7 +339,7 @@ const NamespaceDeploy = ({
                     activeColor="#2c7cf3"
                     hoverColor="#2c7cf3"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
+                    onClick={() => handleUpdateStatus('DISABLED')}
                   >
                     <SmallNotThunderIcon color="#B5BDC8" />
                   </ActiveButtonDiv>

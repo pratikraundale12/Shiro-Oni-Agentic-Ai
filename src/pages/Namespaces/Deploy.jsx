@@ -34,7 +34,6 @@ import {
 } from '../../store';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
-// import { checkCluster, fetchGridData } from '../../store/index1';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -215,14 +214,19 @@ const Deploy = () => {
     },
     {
       label: '',
-      renderCell: item => (
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <RadioField
-            defaultChecked={formData.namespaceId}
-            onChange={() => dispatch(NamespacesActions.setNamespaceId(item.id))}
-          />
-        </div>
-      ),
+      renderCell: item => {
+        console.log(item, 'Deploy item');
+        return (
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <RadioField
+              defaultChecked={formData.namespaceId}
+              onChange={() =>
+                dispatch(NamespacesActions.setNamespaceId(item.id))
+              }
+            />
+          </div>
+        );
+      },
       width: '10%',
     },
   ];

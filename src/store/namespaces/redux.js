@@ -23,6 +23,12 @@ export const NamespacesActions = {
   setPosition: createAction(`${prefix}setPosition`),
   deployCluster: createAction(`${prefix}deployCluster`),
   deployClusterSuccess: createAction(`${prefix}deployClusterSuccess`),
+  upgradeCluster: createAction(`${prefix}upgradeCluster`),
+  clusterProgress: createAction(`${prefix}clusterProgress`),
+  clusterProgressDelete: createAction(`${prefix}clusterProgressDelete`),
+  getCountDetails: createAction(`${prefix}getCountDetails`),
+  fetchParameterContext: createAction(`${prefix}fetchParameterContext`),
+  setParameterDetails: createAction(`${prefix}setParameterDetails`),
   resetDeployData: createAction(`${prefix}resetDeployData`),
   updateNamespaceStatus: createAction(`${prefix}updateNamespaceStatus`),
 };
@@ -53,7 +59,8 @@ export const NAMESPACES_INITIAL_STATE = {
       y: 0,
     },
   },
-  deployDetails: {},
+  deployOrUpgradeDetails: {},
+  parameterDetails: {},
   isDeployedModal: false,
 };
 
@@ -68,7 +75,8 @@ export const NamespacesSelectors = {
   getFlowPath: state => state.namespaces.flowPath,
   getCheckDestCluster: state => state.namespaces.checkDestCluster,
   getFormData: state => state.namespaces.formData,
-  getDeployDetails: state => state.namespaces.deployDetails,
+  getDeployOrUpgradeDetails: state => state.namespaces.deployOrUpgradeDetails,
+  getParameterDetails: state => state.namespaces.parameterDetails,
   getDeployedModal: state => state.namespaces.isDeployedModal,
 };
 
@@ -155,12 +163,18 @@ const setPosition = (state, { payload }) => {
     },
   };
 };
-const deployClusterSuccess = (state, { payload }) => {
-  console.log(payload, 'pay');
+const setParameterDetails = (state, { payload }) => {
   return {
     ...state,
-    deployDetails: {
-      ...state.deployDetails,
+    parameterDetails: payload,
+  };
+};
+
+const deployClusterSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    deployOrUpgradeDetails: {
+      ...state.deployOrUpgradeDetails,
       ...payload,
     },
   };
@@ -205,6 +219,7 @@ export const namespacesReducer = createReducer(
       .addCase(NamespacesActions.setPosition, setPosition)
       .addCase(NamespacesActions.setVersion, setVersion)
       .addCase(NamespacesActions.deployClusterSuccess, deployClusterSuccess)
+      .addCase(NamespacesActions.setParameterDetails, setParameterDetails)
       .addCase(NamespacesActions.setDeployedModal, setDeployedModal)
       .addCase(NamespacesActions.resetDeployData, resetDeployData);
   }
