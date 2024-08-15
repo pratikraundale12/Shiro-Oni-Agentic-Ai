@@ -79,7 +79,7 @@ const Heading = styled.div`
 const EVENTCOLUMNS = [
   {
     label: 'LDAP Groups',
-    key: 'ldapUrl',
+    key: 'url',
     renderCell: data => data.cn,
   },
   {
@@ -89,7 +89,7 @@ const EVENTCOLUMNS = [
   },
 ];
 export const schemaForm1 = Yup.object().shape({
-  ldapUrl: Yup.string().required('LDAP URL is required'),
+  url: Yup.string().required('LDAP URL is required'),
   loginDn: Yup.string().required('Login DN is required'),
   password: Yup.string().required('Password is required'),
 });
@@ -114,8 +114,7 @@ export const LdapConfig = () => {
   const [displayList, setDisplayList] = useState(true);
   const [testFormData, setTestFormData] = useState({});
   const [listData, setListData] = useState();
-  setDisplayList;
-  displayList;
+  // const [saveButtonStatus, setSaveButtonStatus] = useState(false);
   const {
     register: registerForm1,
     handleSubmit: handleSubmitForm1,
@@ -141,12 +140,12 @@ export const LdapConfig = () => {
   const onSubmitForm1 = async data => {
     console.log('Form 1 Data:', data);
     setTestFormData({
-      url: data.ldapUrl,
+      url: data.url,
       password: data.password,
       loginDn: data.loginDn,
     });
     const payload = {
-      url: data.ldapUrl,
+      url: data.url,
       password: data.password,
       loginDn: data.loginDn,
     };
