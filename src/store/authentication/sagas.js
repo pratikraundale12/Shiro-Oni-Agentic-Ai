@@ -1,11 +1,18 @@
 import { put, call, all, takeLatest, select } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
 import { requestSaga } from '../helpers/request_sagas';
 import { AuthenticationActions, AuthenticationSelectors } from './redux';
-import { ACCESS_TOKEN, CLUSTERS_TOKEN, DEFAULT_ROUTE } from '../../constants';
 import { history } from '../../helpers/history';
-import { toast } from 'react-toastify';
+import {
+  ACCESS_TOKEN,
+  CLUSTERS_TOKEN,
+  DEFAULT_ROUTE,
+  PREVIOUS_PATH,
+} from '../../constants';
 
 export function* fetchCurrentUser(api) {
+  const route = localStorage.getItem(PREVIOUS_PATH) || DEFAULT_ROUTE;
+  yield put(AuthenticationActions.setRoute(route));
   const response = yield call(requestSaga, {
     errorSection: 'fetchCurrentUser',
     loadingSection: 'fetchCurrentUser',
@@ -13,7 +20,7 @@ export function* fetchCurrentUser(api) {
     successAction: AuthenticationActions.fetchCurrentUserSuccess,
   });
   if (response.status === 401) window.location.pathname = '/login';
-  else yield call(history.push, `/${DEFAULT_ROUTE}`);
+  else yield call(history.push, `/${route}`);
 }
 
 export function* resetPasswordRequest(api, { payload }) {

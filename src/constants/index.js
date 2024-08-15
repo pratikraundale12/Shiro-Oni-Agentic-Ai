@@ -8,6 +8,7 @@ export const CLUSTERS_TOKEN = 'clusters';
 
 export const DEBOUNCE_DELAY = 500;
 
+export const PREVIOUS_PATH = 'previous_path';
 export const DEFAULT_ROUTE = 'dashboard';
 
 export const STATUS_OPTIONS = [
