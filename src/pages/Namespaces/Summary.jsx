@@ -296,7 +296,6 @@ const Summary = () => {
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
-  console.log(checkDestCluster, 'checkDestCluster');
 
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
@@ -315,7 +314,6 @@ const Summary = () => {
 
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
-  console.log(checkDestCluster, 'checkDestCluster');
   const getParamerterContext = async () => {
     // try {
     setLoading(true);
@@ -449,21 +447,22 @@ const Summary = () => {
   };
 
   const handleTertiaryButton = async () => {
-    const response = await fetchVariables(
-      state?.selectedDestinationClusterId,
-      state?.deployCountDetails?.data?.id || state?.updatedCount?.id
-    );
+    dispatch(NamespacesActions.fetchVariableList());
+    // const response = await fetchVariables(
+    //   state?.selectedDestinationClusterId,
+    //   state?.deployCountDetails?.data?.id || state?.updatedCount?.id
+    // );
 
-    if (response) {
-      setState(prevState => ({
-        ...prevState,
-        variablesDetail: response?.data,
-      }));
-      setVariablesModalOpen({ isOpen: false, mode: 'add' });
-      setModalOpen(false);
-    } else {
-      toast.error(response.message);
-    }
+    // if (response) {
+    //   setState(prevState => ({
+    //     ...prevState,
+    //     variablesDetail: response?.data,
+    //   }));
+    //   setVariablesModalOpen({ isOpen: false, mode: 'add' });
+    //   setModalOpen(false);
+    // } else {
+    //   toast.error(response.message);
+    // }
     setVariablesModalOpen({ isOpen: true, mode: 'add' });
     setModalOpen(false);
   };
@@ -508,7 +507,6 @@ const Summary = () => {
           },
         }));
       }
-      console.log(response, state);
       setActiveButton(buttonId);
     } catch (error) {
       console.error('Failed to update status:', error);

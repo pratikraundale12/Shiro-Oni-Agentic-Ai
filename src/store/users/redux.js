@@ -1,4 +1,4 @@
-import { createReducer, createAction } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
 const prefix = '@@KDFM-USERS/';
 
@@ -24,7 +24,6 @@ export const UsersSelectors = {
 
 /* ------------- REDUCERS ------------------- */
 const fetchUsersSuccess = (state, { payload }) => {
-  console.log('payload', payload);
   return {
     count: payload.count,
     data: payload.data,
