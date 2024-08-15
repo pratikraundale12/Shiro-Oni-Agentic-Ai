@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Button, InputField, Modal, SelectField } from '../../shared';
 import { useGlobalContext } from '../../utils';
 import { PlusCircleIcon, UserIcon } from '../../assets';
-import { fetchGridData } from '../../store/services/fetchGridData';
+// import { fetchGridData } from '../../store/services/fetchGridData';
 import { useForm } from 'react-hook-form';
 import {
   getPolicies,
@@ -190,10 +190,10 @@ export const EditPolicies = () => {
       toast.error(response.message);
     } else {
       toast.success('Updated Successfully');
-      fetchGridData({
-        setState,
-        module: 'policiesAccess',
-      });
+      // fetchGridData({
+      //   setState,
+      //   module: 'policiesAccess',
+      // });
       closePermissionModal();
     }
   };

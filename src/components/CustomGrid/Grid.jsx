@@ -19,7 +19,6 @@ import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
 import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { Modal } from '../../shared';
 import { GridActions, GridSelectors } from '../../store/grid';
-// import { fetchGridData } from '../../store/services';
 import { LoadingSelectors, NamespacesSelectors } from '../../store';
 // import ReactPagination from './ReactPagnation';
 import { Table } from './Table';
@@ -185,18 +184,15 @@ export const Grid = ({
     return null;
   };
   useEffect(() => {
-    dispatch(GridActions.fetchGrid({ module, params: { page: 1, search } }));
+    dispatch(
+      GridActions.fetchGrid({
+        module,
+        params: { page: 1, ...(search && { search }) },
+      })
+    );
     // if (isNamespace) {
     //   setOffset(0);
     // }
-    // fetchGridData({
-    //   setState,
-    //   module,
-    //   search,
-    //   page,
-    //   ...(nodeClusterId && { nodeClusterId }),
-    //   ...(selectedSourceClusterId && { selectedSourceClusterId }),
-    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setState, module, search, page, selectedNamespace]);
 

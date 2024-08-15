@@ -12,9 +12,11 @@ import {
 import { AddUserModal } from './AddUserModal';
 import { PencilIcon, DeleteSmallIcon, DeleteDustbinIcon } from '../../assets';
 import { useGlobalContext } from '../../utils';
-import { fetchGridData, deleteUserApi } from '../../store/index1';
+import { deleteUserApi } from '../../store/index1';
 import { ModalWithIcon } from '../../shared';
 import { STATUS_OPTIONS } from '../../constants';
+import { GridActions } from '../../store';
+import { useDispatch } from 'react-redux';
 
 const ActionTd = styled.div`
   display: flex;
@@ -24,6 +26,7 @@ const ActionTd = styled.div`
 `;
 
 export const ListUsers = () => {
+  const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
 
   const getActionsMenu = item => (
@@ -102,7 +105,7 @@ export const ListUsers = () => {
   const deleteUserConfirmed = async () => {
     const response = await deleteUserApi(state.selectedItem.id);
     if (response.status == 204) {
-      fetchGridData({ setState, module: 'users' });
+      dispatch(GridActions.fetchGrid({ module: 'users' }));
       toast.success('User Deleted Successfully');
       setState({ ...state, userDeleteModal: false });
     } else {

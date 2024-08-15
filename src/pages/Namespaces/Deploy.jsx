@@ -14,7 +14,6 @@ import {
 import { ClusterSelect, FullPageLoader, Table, TextRender } from '../../components';
 import { Button, RadioField, SelectField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { checkCluster, fetchGridData } from '../../store/index1';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { history } from '../../helpers/history';

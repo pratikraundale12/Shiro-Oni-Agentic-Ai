@@ -13,7 +13,7 @@ import {
   getRolesClusters,
   updatePermission,
 } from '../../store/apis';
-import { fetchGridData } from '../../store/services/fetchGridData';
+// import { fetchGridData } from '../../store/services/fetchGridData';
 
 const TableContainer = styled.div`
   flex: 1;
@@ -189,10 +189,10 @@ export const EditPermissions = () => {
       toast.error(response.message);
     } else {
       toast.success('Updated Successfully');
-      fetchGridData({
-        setState,
-        module: 'clustersAccess',
-      });
+      // fetchGridData({
+      //   setState,
+      //   module: 'clustersAccess',
+      // });
       closePermissionModal();
     }
   };

@@ -5,13 +5,14 @@ import styled from 'styled-components';
 
 import { useForm } from 'react-hook-form';
 import { useGlobalContext } from '../../utils';
-import { fetchGridData } from '../../store/index1';
 import { history } from '../../helpers/history';
 import { useLocation } from 'react-router-dom';
 import { ClusterSelect } from '../ClusterSelect';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { Button, SelectField } from '../../shared';
 import { theme } from '../../styles';
+import { useDispatch } from 'react-redux';
+import { GridActions as GridSagsActions } from '../../store';
 
 const Flex = styled.div`
   display: flex;
@@ -109,29 +110,29 @@ export const GridActions = ({
   addModal: Modal,
   handleRefresh = () => {},
 }) => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const { setState } = useGlobalContext();
   const { watch, control } = useForm();
 
   const watchStatus = watch('is_active');
-  const watchCluster = watch('cluster');
 
   useEffect(() => {
-    if (watchCluster || watchStatus) {
-      setState(prev => ({
-        ...prev,
-        ...(watchStatus && { is_active: watchStatus }),
-        ...(watchCluster && { selectedSourceClusterId: watchCluster }),
-      }));
-      fetchGridData({
-        setState,
-        module,
-        ...(watchStatus && watchStatus !== 'all' && { is_active: watchStatus }),
-        ...(watchCluster && { selectedSourceClusterId: watchCluster }),
-      });
+    if (watchStatus) {
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module,
+          params: {
+            page: 1,
+            ...(search && { search }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && { is_active: watchStatus }),
+          },
+        })
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchStatus, watchCluster]);
+  }, [watchStatus]);
 
   return (
     <>
