@@ -41,7 +41,7 @@ export const namespacesAPI = api => {
     namespaceId,
     version,
     variables,
-  }) => {
+  }) =>
     api.post(`clusters/${clusterId}/namespaces/${namespaceId}/variables`, {
       version,
       variables: variables.map(variable => ({
@@ -51,22 +51,16 @@ export const namespacesAPI = api => {
         },
       })),
     });
-  };
-  const getVariableServices = async ({ clusterId, namespaceId, requestId }) => {
-    api.get(
-      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`
-    );
-  };
 
-  const deleteVariableServices = async ({
-    clusterId,
-    namespaceId,
-    requestId,
-  }) => {
+  const getVariableServices = ({ clusterId, namespaceId, requestId }) =>
     api.get(
       `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`
     );
-  };
+
+  const deleteVariableServices = ({ clusterId, namespaceId, requestId }) =>
+    api.get(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`
+    );
 
   const deployCluster = ({ clusterId, ...rest }) =>
     api.post(`/clusters/${clusterId}/deploy`, rest);
