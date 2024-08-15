@@ -59,7 +59,11 @@ const Table = styled.table`
     }
   }
 `;
-export const CreateMapping = ({ isOpen, setIsOpen }) => {
+export const CreateMapping = ({
+  isOpen,
+  setIsOpen,
+  getLDAPGroupForMapping,
+}) => {
   const { control, handleSubmit } = useForm();
   const [ldapList, setLdapList] = useState([]);
   const [kdfList, setKdfList] = useState([]);
@@ -126,10 +130,14 @@ export const CreateMapping = ({ isOpen, setIsOpen }) => {
     const response = await groupMappingApi({ data: formPayload });
     if (response?.status === 200) {
       console.log(response, '>>>>>>>>>', response);
+      toast.success('LDAP and KDFM Mapping is SuccessFully');
+      setIsOpen(false);
+      getLDAPGroupForMapping();
     } else {
       toast.error(
         response?.message || 'Something went wrong. Please try again'
       );
+      setIsOpen(false);
     }
   };
 
@@ -170,4 +178,5 @@ export const CreateMapping = ({ isOpen, setIsOpen }) => {
 CreateMapping.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func.isRequired,
+  getLDAPGroupForMapping: PropTypes.func,
 };

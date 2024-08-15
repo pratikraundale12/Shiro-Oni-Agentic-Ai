@@ -30,12 +30,17 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
+const Flex = styled.div`
+  display: flex;
+`;
+
 export const Table = ({
   data,
   columns,
   onBreadcrumbClick = () => {},
   breadcrumb = [],
   className,
+  syncButton,
 }) => {
   const DATA = { nodes: data || [] };
   const tableTheme = useTheme([
@@ -75,10 +80,15 @@ export const Table = ({
 
   return (
     <>
-      <Breadcrumb
-        breadcrumbs={breadcrumb}
-        onBreadcrumbClick={onBreadcrumbClick}
-      />
+      <Flex>
+        <div>
+          <Breadcrumb
+            breadcrumbs={breadcrumb}
+            onBreadcrumbClick={onBreadcrumbClick}
+          />
+        </div>
+        {syncButton}
+      </Flex>
       <TableContainer className={className}>
         <CompactTable data={DATA} columns={columns} theme={tableTheme} />
         {getLoader()}
@@ -93,4 +103,5 @@ Table.propTypes = {
   onBreadcrumbClick: PropTypes.func,
   breadcrumb: PropTypes.array,
   className: PropTypes.string,
+  syncButton: PropTypes.func,
 };

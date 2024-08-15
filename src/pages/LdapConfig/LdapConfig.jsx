@@ -10,6 +10,7 @@ import {
   checkLdapConfig,
   ldapConfig,
   getLdapGroupAPI,
+  SyncUsers,
 } from '../../store/apis/ldap';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
@@ -97,8 +98,8 @@ export const schemaForm1 = Yup.object().shape({
 // Schema for the second form
 export const schemaForm2 = Yup.object().shape({
   baseDn: Yup.string().required('Base DN is required'),
-  groupsDn: Yup.string().required('Groups DN is required'),
-  usersDn: Yup.string().required('Users DN is required'),
+  groupDn: Yup.string().required('Groups DN is required'),
+  userDn: Yup.string().required('Users DN is required'),
   userUniqueIdentifier: Yup.string().required(
     'User Unique Identifier is required'
   ),
@@ -114,7 +115,7 @@ export const LdapConfig = () => {
   const [displayList, setDisplayList] = useState(true);
   const [testFormData, setTestFormData] = useState({});
   const [listData, setListData] = useState();
-  // const [saveButtonStatus, setSaveButtonStatus] = useState(false);
+  const [saveButtonStatus, setSaveButtonStatus] = useState(false);
   const {
     register: registerForm1,
     handleSubmit: handleSubmitForm1,
@@ -154,6 +155,7 @@ export const LdapConfig = () => {
     if (response?.status === 200) {
       setSecondFormState(true);
       setSuccessTest(true);
+      setSaveButtonStatus(true);
       console.log(response, 'ressssss');
     } else {
       toast.error(
@@ -181,6 +183,7 @@ export const LdapConfig = () => {
     const response = await ldapConfig(payload);
     if (response?.status === 200) {
       console.log(response, 'ressssss');
+      toast.success('LDAP Data Saved Successfully');
     } else {
       toast.error(
         response?.message || 'Something went wrong. Please try again'
@@ -236,14 +239,14 @@ export const LdapConfig = () => {
       console.log(response1.data.data, 'RESPONSE!!!!!');
 
       const sortedArray = listData?.map(item => {
-        // Find the matching object in listData based on ldapGroupName and cn
         const matchedItem = response1?.data?.data?.find(
           listItem => listItem?.ldap_group_name === item.cn
         );
 
+        console.log(matchedItem, 'matcheditem');
         return {
           ...item,
-          name: matchedItem ? matchedItem?.name : 'NA', // If a match is found, use the name; otherwise, set it to 'NA'
+          name: matchedItem ? matchedItem?.name : 'NA',
         };
       });
       console.log(sortedArray, 'sortedArray');
@@ -257,11 +260,34 @@ export const LdapConfig = () => {
 
   useEffect(() => {
     console.log(listData, 'DATADATA');
-    if (!displayList) {
-      getLDAPGroup();
-    }
+
+    getLDAPGroup();
   }, [displayList]);
 
+  const breadcrumbData = [
+    { id: 1, name: 'LDAP Configuration Fields' },
+    { id: 2, name: 'LDAP Group List' },
+  ];
+  const breadCurmbChnages = id => {
+    if (id === 1) {
+      setDisplayList(true);
+    } else {
+      setDisplayList(false);
+    }
+  };
+
+  const syncldapApi = async () => {
+    const response = await SyncUsers();
+    console.log(response);
+    // if (response?.status === 200) {
+    //   console.log(response, '>>>>>>>>>', response.data.groups);
+    //   setListData(response?.data.groups);
+    // } else {
+    //   toast.error(
+    //     response?.message || 'Something went wrong. Please try again'
+    //   );
+    // }
+  };
   return (
     <Wrapper>
       <Heading>
@@ -401,7 +427,7 @@ export const LdapConfig = () => {
                 onClick={() => {
                   setDisplayList(false);
                 }}
-                disabled={!successTest}
+                disabled={!saveButtonStatus}
               >
                 Fetch LDAP Groups
               </Button>
@@ -410,7 +436,7 @@ export const LdapConfig = () => {
               <Button
                 variant="secondary"
                 onClick={handleSubmitForm2(onSubmitForm2)}
-                disabled={!successTest}
+                disabled={!saveButtonStatus}
               >
                 Save
               </Button>
@@ -422,7 +448,9 @@ export const LdapConfig = () => {
           <Table
             data={listData}
             columns={EVENTCOLUMNS}
-            // breadcrumb={}
+            breadcrumb={breadcrumbData}
+            onBreadcrumbClick={e => breadCurmbChnages(e.id)}
+            syncButton={<Button onClick={syncldapApi}>Sync LDAP Users</Button>}
           />
           <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-4">
             <Button
@@ -437,6 +465,7 @@ export const LdapConfig = () => {
       <CreateMapping
         isOpen={createMappingShow}
         setIsOpen={setCreatMappingShow}
+        getLDAPGroupForMapping={getLDAPGroup}
       />
 
       <SuccessTestModal

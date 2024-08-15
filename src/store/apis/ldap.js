@@ -47,3 +47,11 @@ export const groupMappingApi = async payload => {
     return error?.response?.data;
   }
 };
+
+export const SyncUsers = async () => {
+  try {
+    return await API.get(`/sync-users`);
+  } catch (error) {
+    return error?.response?.data;
+  }
+};
