@@ -29,6 +29,10 @@ export const NamespacesActions = {
   getCountDetails: createAction(`${prefix}getCountDetails`),
   fetchParameterContext: createAction(`${prefix}fetchParameterContext`),
   setParameterDetails: createAction(`${prefix}setParameterDetails`),
+  updateParameterContext: createAction(`${prefix}updateParameterContext`),
+  getStatusAndDeleteParameterContext: createAction(
+    `${prefix}getStatusAndDeleteParameterContext`
+  ),
   resetDeployData: createAction(`${prefix}resetDeployData`),
   updateNamespaceStatus: createAction(`${prefix}updateNamespaceStatus`),
   fetchVariableList: createAction(`${prefix}fetchVariableList`),

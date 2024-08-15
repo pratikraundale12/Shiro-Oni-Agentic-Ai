@@ -86,14 +86,32 @@ export const namespacesAPI = api => {
   const fetchParameterContext = ({ clusterId, parameterId }) =>
     api.get(`parameter-context/${clusterId}?contextId=${parameterId}`);
 
-  const updateParameterContextService = ({
+  const updateParameterContext = ({
     clusterId,
     parameterContextId,
-    updateData,
+    payloadData,
   }) =>
     api.post(
       `parameter-context/${clusterId}/contextId/${parameterContextId}`,
-      updateData
+      payloadData
+    );
+
+  const getParameterContextStatus = ({
+    clusterId,
+    parameterContextId,
+    requestId,
+  }) =>
+    api.get(
+      `parameter-context/${clusterId}/contextId/${parameterContextId}/requestId/${requestId}`
+    );
+
+  const deleteParameterContext = ({
+    clusterId,
+    parameterContextId,
+    requestId,
+  }) =>
+    api.delete(
+      `parameter-context/${clusterId}/contextId/${parameterContextId}/requestId/${requestId}`
     );
 
   return {
@@ -106,7 +124,9 @@ export const namespacesAPI = api => {
     clusterProgressDelete,
     getCountDetails,
     fetchParameterContext,
-    updateParameterContextService,
+    updateParameterContext,
+    getParameterContextStatus,
+    deleteParameterContext,
     getVariableList,
     addVariableServices,
     deleteVariableServices,
