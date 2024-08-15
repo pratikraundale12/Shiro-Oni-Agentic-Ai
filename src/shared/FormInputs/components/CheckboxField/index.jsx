@@ -44,7 +44,7 @@ const CheckboxField = ({
 CheckboxField.propTypes = {
   name: PropTypes.string.isRequired,
   register: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   className: PropTypes.string,
 };
 

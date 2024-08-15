@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { toast } from 'react-toastify';
 
 import { ModalWithIcon } from '../../shared';
-import { fetchGridData, deleteCluster } from '../../store/index1';
+import { deleteCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 
 import {
@@ -23,6 +23,8 @@ import {
   TextRender,
   UrlRender,
 } from '../../components';
+import { useDispatch } from 'react-redux';
+import { GridActions } from '../../store';
 
 const List = styled.div`
   position: absolute;
@@ -68,6 +70,7 @@ const Item = styled.div`
 const getX = x => 1790 > x < 1830 && 1446;
 
 export const ListClusters = () => {
+  const dispatch = useDispatch();
   const [refreshState, setRefreshSelect] = useState(false);
   const [hoveredItemId, setHoveredItemId] = useState(null);
   const intervalRef = useRef(null);
@@ -170,7 +173,7 @@ export const ListClusters = () => {
   const deleteUserConfirmed = async () => {
     const response = await deleteCluster(state.selectedItem.id);
     if (response.status == 204) {
-      fetchGridData({ setState, module: 'clusters' });
+      dispatch(GridActions.fetchGrid({ module: 'clusters' }));
       toast.success('cluster Deleted Successfully');
       setState({ ...state, clusterDeleteModal: false });
     } else {
@@ -219,13 +222,6 @@ export const ListClusters = () => {
     }
   };
 
-  const handleRefreshFunctionality = () => {
-    fetchGridData({
-      setState,
-      module: 'clusters',
-    });
-  };
-
   const handleRefresh = event => {
     setRefreshSelect(event.value);
   };
@@ -241,7 +237,7 @@ export const ListClusters = () => {
   useEffect(() => {
     if (refreshState !== false) {
       intervalRef.current = setInterval(
-        handleRefreshFunctionality,
+        () => dispatch(GridActions.fetchGrid({ module: 'clusters' })),
         refreshState
       );
     } else {
@@ -249,7 +245,7 @@ export const ListClusters = () => {
     }
 
     return () => clearInterval(intervalRef.current);
-  }, [refreshState]);
+  }, [dispatch, refreshState]);
 
   return (
     <>

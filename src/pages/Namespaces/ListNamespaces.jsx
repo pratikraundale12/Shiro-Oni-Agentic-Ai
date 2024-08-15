@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TextRender, Grid, IconButton } from '../../components';
 import { useGlobalContext } from '../../utils';
-import { fetchGridData } from '../../store/index1';
 // import AuditLog from './AuditLog';
 import { Button } from '../../shared';
 import { CopyIcon, OpenEyeIcon } from '../../assets';
 import { REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { NamespacesActions } from '../../store';
+import { GridActions, NamespacesActions } from '../../store';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 // import Deploy from './Deploy';
@@ -30,7 +29,7 @@ const StyledDiv = styled.button`
 
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
-  const { state, setState } = useGlobalContext();
+  const { setState } = useGlobalContext();
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
   // const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
@@ -220,14 +219,6 @@ export const ListNamespaces = () => {
   // }, [setState]);
   // const [offset, setOffset] = useState(0);
 
-  const handleRefreshFunctionality = () => {
-    fetchGridData({
-      setState,
-      module: 'namespaces',
-      selectedSourceClusterId: state.selectedSourceClusterId,
-    });
-  };
-
   const handleRefresh = event => {
     setRefreshSelect(event.value);
   };
@@ -235,7 +226,7 @@ export const ListNamespaces = () => {
   useEffect(() => {
     if (refreshState !== false) {
       intervalRef.current = setInterval(
-        handleRefreshFunctionality,
+        () => dispatch(GridActions.fetchGrid({ module: 'namespaces' })),
         refreshState
       );
     } else {
@@ -243,7 +234,7 @@ export const ListNamespaces = () => {
     }
 
     return () => clearInterval(intervalRef.current);
-  }, [refreshState]);
+  }, [dispatch, refreshState]);
 
   // const LIMIT = 10;
   return (

@@ -31,9 +31,9 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { checkCluster, fetchGridData } from '../../store/index1';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
+// import { checkCluster, fetchGridData } from '../../store/index1';
 
 const TopTitleBar = styled.div`
   height: 37px;

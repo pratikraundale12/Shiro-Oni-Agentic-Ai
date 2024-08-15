@@ -14,11 +14,7 @@ import {
   PhoneField,
 } from '../../shared';
 import { PlusCircleIcon, UserIcon, MailIcon, PhoneIcon } from '../../assets';
-import {
-  // fetchGridData,
-  createUserApi,
-  editUserDataApi,
-} from '../../store/index1';
+import { createUserApi, editUserDataApi } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import {
   userSchema,
@@ -84,9 +80,9 @@ const FormSection = styled.div`
   border-bottom-right-radius: 16px;
   max-width: 100%;
   padding-top: 1rem;
-  .form-ele {
-    min-height: 115px;
-  }
+  // .form-ele {
+  //   min-height: 100px;
+  // }
 `;
 
 const StyledInputField = styled(InputField)`
@@ -171,7 +167,6 @@ export const AddUserModal = props => {
       const response = await createUserApi(formData);
       if (response.status == 201) {
         dispatch(GridActions.fetchGrid({ module: 'users' }));
-        // fetchGridData({ setState, module: 'users' });
         toast.success('User Created Successfully');
         setState({
           ...state,
@@ -185,7 +180,6 @@ export const AddUserModal = props => {
       const response = await editUserDataApi(state.selectedItem?.id, formData);
       if (response.status == 200) {
         dispatch(GridActions.fetchGrid({ module: 'users' }));
-        // fetchGridData({ setState, module: 'users' });
         toast.success('User Updated Successfully');
         setState({
           ...state,
