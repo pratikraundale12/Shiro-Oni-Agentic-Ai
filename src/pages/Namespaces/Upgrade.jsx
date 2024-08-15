@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import {
@@ -13,12 +14,11 @@ import {
 import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
 import RightIcon from '../../assets/Icons/RightIcon';
 import { Table } from '../../components';
+import { history } from '../../helpers/history';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { useGlobalContext } from '../../utils';
-import { history } from '../../helpers/history';
-import { useDispatch, useSelector } from 'react-redux';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { useGlobalContext } from '../../utils';
 
 const Container = styled.div`
   // height: calc(100vh - 78px);
@@ -212,12 +212,18 @@ const Upgrade = () => {
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <RadioField
-            checked={formData.version === item.version}
+            name="upgrade"
+            // checked={formData.version === item.version}
+            // onChange={() => onVersionSelect(item.version)}
             disabled={checkDestCluster.version === item.version}
-            onChange={() => onVersionSelect(item.version)}
+            defaultChecked={formData.namespaceId}
+            onChange={() =>
+              dispatch(NamespacesActions.setVersion(item.version))
+            }
           />
         </div>
       ),
+
       width: '10%',
     },
   ];

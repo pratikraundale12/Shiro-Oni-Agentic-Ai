@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { TextRender, Grid, IconButton } from '../../components';
+import React, { useEffect, useRef, useState } from 'react';
+import { Grid, IconButton, TextRender } from '../../components';
 import { useGlobalContext } from '../../utils';
 // import AuditLog from './AuditLog';
-import { Button } from '../../shared';
+import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import { CopyIcon, OpenEyeIcon } from '../../assets';
 import { REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
+import { Button } from '../../shared';
 import { GridActions, NamespacesActions } from '../../store';
-import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 // import Deploy from './Deploy';
 
 const StyledButton = styled.button`
@@ -178,6 +178,7 @@ export const ListNamespaces = () => {
   //   });
   // }
   const handleSelect = item => {
+    console.log(item, 'LIST NAMESPASE item');
     dispatch(NamespacesActions.setFlowPath(item.flowId));
     dispatch(
       NamespacesActions.setSelectedNamespace({

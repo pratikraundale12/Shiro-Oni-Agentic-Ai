@@ -1,4 +1,4 @@
-import { createReducer, createAction } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
 const prefix = '@@KDFM-NAMESPACES/';
 
@@ -22,6 +22,12 @@ export const NamespacesActions = {
   setVersion: createAction(`${prefix}setVersion`),
   deployCluster: createAction(`${prefix}deployCluster`),
   deployClusterSuccess: createAction(`${prefix}deployClusterSuccess`),
+  upgradeCluster: createAction(`${prefix}upgradeCluster`),
+  clusterProgress: createAction(`${prefix}clusterProgress`),
+  clusterProgressDelete: createAction(`${prefix}clusterProgressDelete`),
+  getCountDetails: createAction(`${prefix}getCountDetails`),
+  fetchParameterContext: createAction(`${prefix}fetchParameterContext`),
+  setParameterDetails: createAction(`${prefix}setParameterDetails`),
   resetDeployData: createAction(`${prefix}resetDeployData`),
 };
 
@@ -47,7 +53,8 @@ export const NAMESPACES_INITIAL_STATE = {
     namespaceId: '',
     version: '',
   },
-  deployDetails: {},
+  deployOrUpgradeDetails: {},
+  parameterDetails: {},
   isDeployedModal: false,
 };
 
@@ -62,7 +69,8 @@ export const NamespacesSelectors = {
   getFlowPath: state => state.namespaces.flowPath,
   getCheckDestCluster: state => state.namespaces.checkDestCluster,
   getFormData: state => state.namespaces.formData,
-  getDeployDetails: state => state.namespaces.deployDetails,
+  getDeployOrUpgradeDetails: state => state.namespaces.deployOrUpgradeDetails,
+  getParameterDetails: state => state.namespaces.parameterDetails,
   getDeployedModal: state => state.namespaces.isDeployedModal,
 };
 
@@ -133,10 +141,22 @@ const setVersion = (state, { payload }) => {
     },
   };
 };
+
+const setParameterDetails = (state, { payload }) => {
+  console.log('===', payload);
+  return {
+    ...state,
+    parameterDetails: payload,
+  };
+};
+
 const deployClusterSuccess = (state, { payload }) => {
   return {
     ...state,
-    deployDetails: payload,
+    deployOrUpgradeDetails: {
+      ...state.deployOrUpgradeDetails,
+      ...payload,
+    },
   };
 };
 
@@ -178,6 +198,7 @@ export const namespacesReducer = createReducer(
       .addCase(NamespacesActions.setNamespaceId, setNamespaceId)
       .addCase(NamespacesActions.setVersion, setVersion)
       .addCase(NamespacesActions.deployClusterSuccess, deployClusterSuccess)
+      .addCase(NamespacesActions.setParameterDetails, setParameterDetails)
       .addCase(NamespacesActions.setDeployedModal, setDeployedModal)
       .addCase(NamespacesActions.resetDeployData, resetDeployData);
   }

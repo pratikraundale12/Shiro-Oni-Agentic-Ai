@@ -1,12 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import { TodoIcon } from '../../assets/Icons/TodoIcon';
-import { Button } from '../../shared';
-import Breadcrumb from '../../shared/Breadcrumb';
-import NamespaceDeploy from './NamespaceDeploy';
-// import AddParameterContext from './AddParameterContext';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import styled from 'styled-components';
 import {
   SmallNotThunderIcon,
   SmallThunderIcon,
@@ -14,7 +10,12 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { TodoIcon } from '../../assets/Icons/TodoIcon';
 import { FullPageLoader } from '../../components';
+import { history } from '../../helpers/history';
+import { Button } from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import {
   // deployCluster,
   fetchParameterContext,
@@ -28,10 +29,8 @@ import {
 import { useGlobalContext } from '../../utils';
 import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
+import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
-import { history } from '../../helpers/history';
-import { useDispatch, useSelector } from 'react-redux';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -287,6 +286,10 @@ const Summary = () => {
   const selectedDestCluster = useSelector(
     NamespacesSelectors.getSelectedDestCluster
   );
+  const deployOrUpgradeDetails = useSelector(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
@@ -312,67 +315,68 @@ const Summary = () => {
   const [loading, setLoading] = useState(false);
 
   const getParamerterContext = async () => {
-    try {
-      setLoading(true);
-      openParameterContext();
+    // try {
+    setLoading(true);
+    openParameterContext();
+    dispatch(NamespacesActions.fetchParameterContext());
+    // const response = await fetchParameterContext(
+    //   state.selectedClusterId,
+    //   state.deployCountDetails?.data?.parameterContextId ||
+    //     state?.updatedCount?.parameterContextId
+    // );
 
-      const response = await fetchParameterContext(
-        state.selectedClusterId,
-        state.deployCountDetails?.data?.parameterContextId ||
-          state?.updatedCount?.parameterContextId
-      );
-
-      setState(prevState => ({
-        ...prevState,
-        parameterDetails: response,
-        parameterVersion: response.data.version,
-      }));
-      setLoading(false);
-    } catch (error) {
-      toast.error(error.message);
-    }
+    // setState(prevState => ({
+    //   ...prevState,
+    //   parameterDetails: response,
+    //   parameterVersion: response.data.version,
+    // }));
+    setLoading(false);
+    // } catch (error) {
+    //   toast.error(error.message);
+    // }
   };
 
   const handleUpgradeClick = async () => {
-    try {
-      const response = await upgradeCluster({
-        clusterId: state.selectedClusterId,
-        namespaceId: state?.upgradeData?.id,
-        version: state.selectedVersion,
-      });
-      setLoading(true);
-      if (response) {
-        let progressData;
-        const intervalId = setInterval(async () => {
-          progressData = await getClusterProgress({
-            clusterId: state.selectedClusterId,
-            progressId: response.requestId,
-          });
-          setProgress(progressData.percentCompleted);
+    dispatch(NamespacesActions.upgradeCluster());
+    setProgress(deployOrUpgradeDetails?.percentCompleted);
 
-          if (progressData.percentCompleted >= 100) {
-            clearInterval(intervalId);
-
-            await getClusterProgressDelete({
-              clusterId: state.selectedClusterId,
-              progressId: response.requestId,
-            });
-            const countDetails = await getCountDetails({
-              clusterId: state.selectedClusterId,
-              namespaceId: state?.upgradeData?.id,
-            });
-            setState(prevState => ({
-              ...prevState,
-              updatedCount: countDetails,
-            }));
-            setModalOpen(true);
-          }
-        }, 1000);
-      }
-      setLoading(false);
-    } catch (error) {
-      toast.error('Upgrade failed:', error.message);
-    }
+    // try {
+    //   const response = await upgradeCluster({
+    //     clusterId: state.selectedClusterId,
+    //     namespaceId: state?.upgradeData?.id,
+    //     version: state.selectedVersion,
+    //   });
+    //   setLoading(true);
+    //   if (response) {
+    //     let progressData;
+    //     const intervalId = setInterval(async () => {
+    //       progressData = await getClusterProgress({
+    //         clusterId: state.selectedClusterId,
+    //         progressId: response.requestId,
+    //       });
+    //       setProgress(progressData.percentCompleted);
+    //       if (progressData.percentCompleted >= 100) {
+    //         clearInterval(intervalId);
+    //         await getClusterProgressDelete({
+    //           clusterId: state.selectedClusterId,
+    //           progressId: response.requestId,
+    //         });
+    //         const countDetails = await getCountDetails({
+    //           clusterId: state.selectedClusterId,
+    //           namespaceId: state?.upgradeData?.id,
+    //         });
+    //         setState(prevState => ({
+    //           ...prevState,
+    //           updatedCount: countDetails,
+    //         }));
+    //         setModalOpen(true);
+    //       }
+    //     }, 1000);
+    //   }
+    //   setLoading(false);
+    // } catch (error) {
+    //   toast.error('Upgrade failed:', error.message);
+    // }
   };
   const handleDeploy = () => {
     dispatch(NamespacesActions.deployCluster());
@@ -823,12 +827,14 @@ const Summary = () => {
               <ProgressBar
                 className="progress-bar"
                 role="progressbar"
-                style={{ width: `${progress}%` }}
+                style={{
+                  width: `${deployOrUpgradeDetails?.percentCompleted || 0}%`,
+                }}
                 aria-valuenow={40}
                 aria-valuemin={0}
                 aria-valuemax={100}
               >
-                {progress}%
+                {deployOrUpgradeDetails?.percentCompleted || 0}%
               </ProgressBar>
             </CustomRedProgress>
           </Progressox>

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   GreenRightCircleIcon,
@@ -9,11 +10,10 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
-import { updateNamespaceStatus } from '../../store/index1';
 import { Modal } from '../../shared';
-import { useGlobalContext } from '../../utils';
-import { useSelector } from 'react-redux';
 import { NamespacesSelectors } from '../../store';
+import { updateNamespaceStatus } from '../../store/index1';
+import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
   position: relative;
@@ -162,14 +162,19 @@ const NamespaceDeploy = ({
   getParamerterContext,
   handleTertiaryButton,
 }) => {
-  const deployDetails = useSelector(NamespacesSelectors.getDeployDetails);
+  const deployOrUpgradeDetails = useSelector(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const formData = useSelector(NamespacesSelectors.getFormData);
+  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const { state, setState } = useGlobalContext();
   const [activeButton, setActiveButton] = useState(null);
   const handleUpdateStatus = async (status, buttonId) => {
     try {
       const response = await updateNamespaceStatus(
         state.selectedClusterId,
-        state?.upgradeData?.id || deployDetails?.id,
+        state?.upgradeData?.id || deployOrUpgradeDetails?.id,
         status
       );
       if (response?.data) {
@@ -201,13 +206,12 @@ const NamespaceDeploy = ({
     }
   };
   const handleClick = () => {
-    window.open(deployDetails.nifiUrl, '_blank');
+    window.open(deployOrUpgradeDetails.nifiUrl, '_blank');
   };
-  console.log(state, 'count');
   return (
     <>
       <Modal
-        title={`Namespace ${state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
+        title={`Namespace ${checkDestCluster?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
@@ -218,7 +222,7 @@ const NamespaceDeploy = ({
         onSubmit={handleClick}
         secondaryButtonProps={{
           disabled: !(
-            deployDetails?.parameterContextId ||
+            deployOrUpgradeDetails?.parameterContextId ||
             state?.updatedCount?.parameterContextId
           ),
         }}
@@ -234,17 +238,16 @@ const NamespaceDeploy = ({
             <GreenRightCircleIcon />
           </ModalIcon>
           <ModalHFive className="pt-4 mt-2 mb-0 ">
-            {state?.upgradeData?.name} {state?.deployData?.name} successfully{' '}
-            {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'} to{' '}
-            {state?.selectedClusterName} instance
+            {deployOrUpgradeDetails?.name} Successfully{' '}
+            {checkDestCluster?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'} to{' '}
+            {selectedCluster?.label} instance
           </ModalHFive>
           <RowModal>
             <ColumnThree className="col-4 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
                 <ActionTitleSet className="mb-0 ">Namespace</ActionTitleSet>
                 <SubTitleSet className="mb-0 ">
-                  {state?.upgradeData?.name}
-                  {state?.deployData?.name}
+                  {deployOrUpgradeDetails?.name}
                 </SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
@@ -254,7 +257,7 @@ const NamespaceDeploy = ({
                   className="div-btn-1"
                   count={
                     // state.updatedCount?.runningCount ||
-                    deployDetails?.runningCount
+                    deployOrUpgradeDetails?.runningCount
                   }
                   activeColor="#58e715"
                 >
@@ -262,14 +265,14 @@ const NamespaceDeploy = ({
                   <span>
                     {/* {deployDetails?.runningCount ||
                       state?.updatedCount?.runningCount} */}
-                    {deployDetails?.runningCount}
+                    {deployOrUpgradeDetails?.runningCount}
                   </span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-2"
                   count={
                     // state.updatedCount?.stoppedCount ||
-                    deployDetails?.stoppedCount
+                    deployOrUpgradeDetails?.stoppedCount
                   }
                   activeColor="#c52b2b"
                 >
@@ -277,14 +280,14 @@ const NamespaceDeploy = ({
                   <span>
                     {/* {state.updatedCount?.stoppedCount ||
                       deployDetails?.stoppedCount} */}
-                    {deployDetails?.stoppedCount}
+                    {deployOrUpgradeDetails?.stoppedCount}
                   </span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-3"
                   count={
                     // state.updatedCount?.invalidCount ||
-                    deployDetails?.invalidCount
+                    deployOrUpgradeDetails?.invalidCount
                   }
                   activeColor="#CF9F5D"
                 >
@@ -292,14 +295,14 @@ const NamespaceDeploy = ({
                   <span>
                     {/* {state.updatedCount?.invalidCount ||
                       deployDetails?.invalidCount} */}
-                    {deployDetails?.invalidCount}
+                    {deployOrUpgradeDetails?.invalidCount}
                   </span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-4"
                   count={
                     // state?.updatedCount?.disabledCount ||
-                    deployDetails?.disabledCount
+                    deployOrUpgradeDetails?.disabledCount
                   }
                   activeColor="#2c7cf3"
                 >
@@ -307,7 +310,7 @@ const NamespaceDeploy = ({
                   <span>
                     {/* {deployDetails?.disabledCount ||
                       state?.updatedCount?.disabledCount} */}
-                    {deployDetails?.disabledCount}
+                    {deployOrUpgradeDetails?.disabledCount}
                   </span>
                 </CountDiv>
               </ActiveButtonContainer>
@@ -317,9 +320,7 @@ const NamespaceDeploy = ({
                 <ActionTitleSet className="mb-0 ">
                   Current Version
                 </ActionTitleSet>
-                <SubTitleSet className="mb-0 ">
-                  {state.selectedVersion}
-                </SubTitleSet>
+                <SubTitleSet className="mb-0 ">{formData?.version}</SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
             <CustomNine className="col-8 mb-3">

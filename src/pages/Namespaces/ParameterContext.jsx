@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
+import { NamespacesSelectors } from '../../store';
 import {
   deleteParameterContextService,
   updateParameterContextService,
@@ -28,6 +30,15 @@ const ParameterContext = ({
   getParamerterContext,
 }) => {
   const [loading, setLoading] = useState(false);
+  const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
+  const deployOrUpgradeDetails = useSelector(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+
+  const { state } = useGlobalContext();
+  const copyParameterDetailsData =
+    parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
+  const tableData = [...copyParameterDetailsData, ...newlyAddedPrameterContext];
 
   const COLUMNS = [
     {
@@ -66,14 +77,6 @@ const ParameterContext = ({
         </div>
       ),
     },
-  ];
-
-  const { state } = useGlobalContext();
-  const parameterDetailsData = state.parameterDetails?.data || {};
-  delete parameterDetailsData.version;
-  const dummyData = [
-    ...Object.values(parameterDetailsData).flat(),
-    ...newlyAddedPrameterContext,
   ];
 
   const handleSaveParameterContext = async () => {
@@ -154,7 +157,7 @@ const ParameterContext = ({
       secondaryButtonProps={{ icons: <PlusCircleIcon />, disabled: loading }}
     >
       <ModalBody className="modal-body">
-        <Table data={dummyData} columns={COLUMNS} />
+        <Table data={tableData} columns={COLUMNS} />
       </ModalBody>
     </Modal>
   );

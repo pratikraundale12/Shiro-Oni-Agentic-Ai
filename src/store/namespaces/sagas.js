@@ -1,8 +1,8 @@
-import { call, all, takeLatest, select, put } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
+import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from './redux';
-import { CLUSTERS_TOKEN } from '../../constants';
-import { toast } from 'react-toastify';
 
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -108,11 +108,189 @@ export function* deployCluster(api) {
   else toast.error(response.data.message);
 }
 
+export function* upgradeCluster(api) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const checkDestCluster = yield select(
+    NamespacesSelectors.getCheckDestCluster
+  );
+  const formData = yield select(NamespacesSelectors.getFormData);
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'upgradeCluster',
+    loadingSection: 'upgradeCluster',
+    apiMethod: api.upgradeCluster,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        namespaceId: checkDestCluster?.id,
+        version: formData.version || checkDestCluster?.version,
+      },
+    ],
+    successAction: NamespacesActions.deployClusterSuccess,
+  });
+
+  if (response.ok && response.data?.requestId) {
+    yield call(clusterProgress, api);
+  }
+
+  if (!response.ok) {
+    toast.error(response.data.message);
+  }
+}
+
+export function* clusterProgress(api) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployOrUpgradeDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'clusterProgress',
+    loadingSection: 'clusterProgress',
+    apiMethod: api.clusterProgress,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        progressId: deployOrUpgradeDetails.requestId,
+      },
+    ],
+    successAction: NamespacesActions.deployClusterSuccess,
+  });
+
+  if (response.ok && response.data?.percentCompleted < 100) {
+    delay(1000);
+    yield call(clusterProgress, api);
+  } else if (response.ok && response.data?.percentCompleted === 100) {
+    yield call(clusterProgressDelete, api);
+  }
+  if (!response.ok) {
+    toast.error(response.data.message);
+  }
+}
+
+export function* clusterProgressDelete(api) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployOrUpgradeDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'clusterProgressDelete',
+    loadingSection: 'clusterProgressDelete',
+    apiMethod: api.clusterProgressDelete,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        progressId: deployOrUpgradeDetails.requestId,
+      },
+    ],
+    // successAction: NamespacesActions.deployClusterSuccess,
+  });
+  if (response.ok) {
+    yield call(getCountDetails, api);
+  } else {
+    toast.error(response.data.message);
+  }
+}
+
+export function* getCountDetails(api) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const checkDestCluster = yield select(
+    NamespacesSelectors.getCheckDestCluster
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'getCountDetails',
+    loadingSection: 'getCountDetails',
+    apiMethod: api.getCountDetails,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        namespaceId: checkDestCluster?.id,
+      },
+    ],
+    successAction: NamespacesActions.deployClusterSuccess,
+  });
+
+  if (response.ok) yield put(NamespacesActions.setDeployedModal());
+  else toast.error(response.data.message);
+}
+
+export function* fetchParameterContext(api) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployOrUpgradeDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchParameterContext',
+    loadingSection: 'fetchParameterContext',
+    apiMethod: api.fetchParameterContext,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        parameterId: deployOrUpgradeDetails?.parameterContextId,
+      },
+    ],
+    successAction: NamespacesActions.setParameterDetails,
+  });
+  if (response.ok) yield put(NamespacesActions.setDeployedModal());
+  else toast.error(response.data.message);
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
     takeLatest(NamespacesActions.fetchDestNamespaces, fetchDestNamespaces, api),
     takeLatest(NamespacesActions.checkDestCluster, checkDestCluster, api),
     takeLatest(NamespacesActions.deployCluster, deployCluster, api),
+    takeLatest(NamespacesActions.upgradeCluster, upgradeCluster, api),
+    takeLatest(NamespacesActions.clusterProgress, clusterProgress, api),
+    takeLatest(
+      NamespacesActions.clusterProgressDelete,
+      clusterProgressDelete,
+      api
+    ),
+    takeLatest(NamespacesActions.getCountDetails, getCountDetails, api),
+    takeLatest(
+      NamespacesActions.fetchParameterContext,
+      fetchParameterContext,
+      api
+    ),
   ]);
 }
