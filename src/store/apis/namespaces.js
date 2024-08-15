@@ -1,3 +1,4 @@
+import { CLUSTERS_TOKEN } from '../../constants';
 import API from './api';
 
 export const getNamespacesList = async ({
@@ -55,6 +56,12 @@ export const getCountDetails = async ({ clusterId, namespaceId }) => {
   return data;
 };
 export const updateNamespaceStatus = async (clusterId, namespaceId, state) => {
+  const clusterData = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const selectedCluster = clusterData.find(item => item.id === clusterId);
+
+  console.log(selectedCluster);
+  API.headers['x-cluster-id'] = selectedCluster?.id;
+  API.headers['x-cluster-token'] = selectedCluster?.token;
   const data = await API.put(
     `/status-update/${clusterId}/namespace/${namespaceId}`,
     {

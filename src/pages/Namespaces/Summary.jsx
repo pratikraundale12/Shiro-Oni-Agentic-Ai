@@ -6,6 +6,7 @@ import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import NamespaceDeploy from './NamespaceDeploy';
 // import AddParameterContext from './AddParameterContext';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
   SmallNotThunderIcon,
@@ -15,6 +16,8 @@ import {
   TriangleIcons,
 } from '../../assets';
 import { FullPageLoader } from '../../components';
+import { history } from '../../helpers/history';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import {
   // deployCluster,
   fetchParameterContext,
@@ -29,9 +32,6 @@ import { useGlobalContext } from '../../utils';
 import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import ParameterContext from './ParameterContext';
-import { history } from '../../helpers/history';
-import { useDispatch, useSelector } from 'react-redux';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -292,6 +292,7 @@ const Summary = () => {
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
+  console.log(checkDestCluster, 'checkDestCluster');
 
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
@@ -310,7 +311,7 @@ const Summary = () => {
 
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
-
+  console.log(checkDestCluster, 'checkDestCluster');
   const getParamerterContext = async () => {
     try {
       setLoading(true);

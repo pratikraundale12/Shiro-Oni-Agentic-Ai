@@ -1,7 +1,9 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-unused-vars */
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import {
@@ -11,13 +13,16 @@ import {
   TodoIcon,
   WhiteBoradIcon,
 } from '../../assets';
-import { ClusterSelect, FullPageLoader, Table, TextRender } from '../../components';
+import {
+  ClusterSelect,
+  FullPageLoader,
+  Table,
+  TextRender,
+} from '../../components';
+import { CLUSTERS_TOKEN } from '../../constants';
+import { history } from '../../helpers/history';
 import { Button, RadioField, SelectField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { checkCluster, fetchGridData } from '../../store/index1';
-import { theme } from '../../styles';
-import { useGlobalContext } from '../../utils';
-import { history } from '../../helpers/history';
 import {
   ClustersActions,
   ClustersSelectors,
@@ -26,9 +31,9 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { useDispatch, useSelector } from 'react-redux';
-import { isEmpty } from 'lodash';
-import { CLUSTERS_TOKEN } from '../../constants';
+import { checkCluster, fetchGridData } from '../../store/index1';
+import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
 
 const TopTitleBar = styled.div`
   height: 37px;

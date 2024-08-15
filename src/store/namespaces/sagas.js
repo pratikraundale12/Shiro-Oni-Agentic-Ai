@@ -1,8 +1,8 @@
-import { call, all, takeLatest, select, put } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+import { all, call, put, select, takeLatest } from 'redux-saga/effects';
+import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from './redux';
-import { CLUSTERS_TOKEN } from '../../constants';
-import { toast } from 'react-toastify';
 
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -108,11 +108,56 @@ export function* deployCluster(api) {
   else toast.error(response.data.message);
 }
 
+export function* updateNamespaceStatus(api, { payload }) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployDetails = yield select(NamespacesSelectors.getDeployDetails);
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'updateNamespaceStatus',
+    loadingSection: 'updateNamespaceStatus',
+    apiMethod: api.updateNamespaceStatus,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        namespaceId: deployDetails.id,
+        state: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    console.log(response);
+    const data = {
+      id: response.data.status.id,
+      runningCount: response.data.status.runningCount,
+      stoppedCount: response.data.status.stoppedCount,
+      invalidCount: response.data.status.invalidCount,
+      disabledCount: response.data.status.disabledCount,
+      parameterContextId: response.data.status.parameterContextId,
+    };
+    yield put(NamespacesActions.deployClusterSuccess(data));
+  }
+  if (!response.ok) {
+    toast.error(response.data.message);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
     takeLatest(NamespacesActions.fetchDestNamespaces, fetchDestNamespaces, api),
     takeLatest(NamespacesActions.checkDestCluster, checkDestCluster, api),
     takeLatest(NamespacesActions.deployCluster, deployCluster, api),
+    takeLatest(
+      NamespacesActions.updateNamespaceStatus,
+      updateNamespaceStatus,
+      api
+    ),
   ]);
 }

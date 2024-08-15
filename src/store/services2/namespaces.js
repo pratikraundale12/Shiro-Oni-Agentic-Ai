@@ -27,6 +27,12 @@ export const namespacesAPI = api => {
       path,
     });
 
+  const updateNamespaceStatus = ({ clusterId, namespaceId, state }) => {
+    return api.put(`/status-update/${clusterId}/namespace/${namespaceId}`, {
+      state,
+    });
+  };
+
   const deployCluster = ({ clusterId, ...rest }) =>
     api.post(`/clusters/${clusterId}/deploy`, rest);
 
@@ -34,5 +40,6 @@ export const namespacesAPI = api => {
     fetchNamespaces,
     checkDestCluster,
     deployCluster,
+    updateNamespaceStatus,
   };
 };

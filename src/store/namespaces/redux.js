@@ -1,4 +1,4 @@
-import { createReducer, createAction } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
 const prefix = '@@KDFM-NAMESPACES/';
 
@@ -23,6 +23,7 @@ export const NamespacesActions = {
   deployCluster: createAction(`${prefix}deployCluster`),
   deployClusterSuccess: createAction(`${prefix}deployClusterSuccess`),
   resetDeployData: createAction(`${prefix}resetDeployData`),
+  updateNamespaceStatus: createAction(`${prefix}updateNamespaceStatus`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -134,9 +135,13 @@ const setVersion = (state, { payload }) => {
   };
 };
 const deployClusterSuccess = (state, { payload }) => {
+  console.log(payload, 'pay');
   return {
     ...state,
-    deployDetails: payload,
+    deployDetails: {
+      ...state.deployDetails,
+      ...payload,
+    },
   };
 };
 
