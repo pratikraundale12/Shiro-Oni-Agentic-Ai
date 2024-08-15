@@ -57,7 +57,7 @@ export function* checkDestCluster(api) {
   );
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'checkDestCluster',
     loadingSection: 'checkDestCluster',
     apiMethod: api.checkDestCluster,
@@ -71,6 +71,9 @@ export function* checkDestCluster(api) {
     ],
     successAction: NamespacesActions.checkDestClusterSuccess,
   });
+  if (response.ok && response.data.message) {
+    toast.error(response.data.message);
+  }
 }
 
 export function* deployCluster(api) {
@@ -94,12 +97,12 @@ export function* deployCluster(api) {
     apiParams: [
       {
         clusterId: selectedDestCluster?.value,
-        namespaceId: formData.namespaceId,
         version: formData.version || checkDestCluster?.version,
         flowId: checkDestCluster?.flowId,
         bucketId: checkDestCluster?.bucketId,
-        bucketName: checkDestCluster.bucketName,
         registryId: checkDestCluster?.registryId,
+        ...(formData.namespaceId && { namespaceId: formData.namespaceId }),
+        ...(formData.position && { position: formData.position }),
       },
     ],
     successAction: NamespacesActions.deployClusterSuccess,

@@ -20,6 +20,7 @@ export const NamespacesActions = {
   checkDestClusterSuccess: createAction(`${prefix}checkDestClusterSuccess`),
   setNamespaceId: createAction(`${prefix}setNamespaceId`),
   setVersion: createAction(`${prefix}setVersion`),
+  setPosition: createAction(`${prefix}setPosition`),
   deployCluster: createAction(`${prefix}deployCluster`),
   deployClusterSuccess: createAction(`${prefix}deployClusterSuccess`),
   resetDeployData: createAction(`${prefix}resetDeployData`),
@@ -47,6 +48,10 @@ export const NAMESPACES_INITIAL_STATE = {
   formData: {
     namespaceId: '',
     version: '',
+    position: {
+      x: 0,
+      y: 0,
+    },
   },
   deployDetails: {},
   isDeployedModal: false,
@@ -114,6 +119,10 @@ const checkDestClusterSuccess = (state, { payload }) => {
   return {
     ...state,
     checkDestCluster: payload,
+    formData: {
+      ...state.formData,
+      position: payload.position,
+    },
   };
 };
 const setNamespaceId = (state, { payload }) => {
@@ -131,6 +140,18 @@ const setVersion = (state, { payload }) => {
     formData: {
       ...state.formData,
       version: payload,
+    },
+  };
+};
+const setPosition = (state, { payload }) => {
+  return {
+    ...state,
+    formData: {
+      ...state.formData,
+      position: {
+        ...state.formData.position,
+        ...payload,
+      },
     },
   };
 };
@@ -181,6 +202,7 @@ export const namespacesReducer = createReducer(
         checkDestClusterSuccess
       )
       .addCase(NamespacesActions.setNamespaceId, setNamespaceId)
+      .addCase(NamespacesActions.setPosition, setPosition)
       .addCase(NamespacesActions.setVersion, setVersion)
       .addCase(NamespacesActions.deployClusterSuccess, deployClusterSuccess)
       .addCase(NamespacesActions.setDeployedModal, setDeployedModal)

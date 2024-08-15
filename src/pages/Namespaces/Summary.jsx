@@ -401,7 +401,6 @@ const Summary = () => {
   };
 
   const handleCloseModal = () => {
-    dispatch(NamespacesActions.resetDeployData());
     // setState(prevState => ({
     //   ...prevState,
     //   selectedPaths: [],

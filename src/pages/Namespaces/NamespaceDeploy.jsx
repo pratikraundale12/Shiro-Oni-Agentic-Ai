@@ -12,8 +12,6 @@ import {
 } from '../../assets';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-// import { updateNamespaceStatus } from '../../store/index1';
-import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
   position: relative;
@@ -168,9 +166,6 @@ const NamespaceDeploy = ({
     NamespacesSelectors.getSelectedDestCluster
   );
   const formData = useSelector(NamespacesSelectors.getFormData);
-  const { state } = useGlobalContext();
-  // const [activeButton, setActiveButton] = useState(null);
-  console.log(selectedDestCluster, 'selectedDestCluster');
   const dispatch = useDispatch();
   const handleUpdateStatus = async status => {
     dispatch(NamespacesActions.updateNamespaceStatus(status));
@@ -208,15 +203,15 @@ const NamespaceDeploy = ({
     //   console.error('Failed to update status:', error);
     // }
   };
-  console.log(deployDetails, 'deploy');
+
   const handleClick = () => {
     window.open(deployDetails.nifiUrl, '_blank');
   };
-  console.log(state, 'count');
+
   return (
     <>
       <Modal
-        title={`Namespace ${state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
+        title={`Namespace ${checkDestCluster.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
@@ -226,10 +221,7 @@ const NamespaceDeploy = ({
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={handleClick}
         secondaryButtonProps={{
-          disabled: !(
-            deployDetails?.parameterContextId ||
-            state?.updatedCount?.parameterContextId
-          ),
+          disabled: !deployDetails?.parameterContextId,
         }}
         tertiaryButton={true}
         tertiaryButtonConfig={{
@@ -243,16 +235,15 @@ const NamespaceDeploy = ({
             <GreenRightCircleIcon />
           </ModalIcon>
           <ModalHFive className="pt-4 mt-2 mb-0 ">
-            {state?.upgradeData?.name} {selectedDestCluster?.label} successfully{' '}
-            {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'} to{' '}
-            {checkDestCluster?.name} instance
+            {`${checkDestCluster.name} is successfully 
+            ${checkDestCluster.mode === 'upgrade' ? 'Upgraded' : 'Deployed'} to
+            ${selectedDestCluster?.label} instance`}
           </ModalHFive>
           <RowModal>
             <ColumnThree className="col-4 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
                 <ActionTitleSet className="mb-0 ">Namespace</ActionTitleSet>
                 <SubTitleSet className="mb-0 ">
-                  {state?.upgradeData?.name}
                   {checkDestCluster?.name}
                 </SubTitleSet>
               </RowModalDiv>
@@ -261,63 +252,35 @@ const NamespaceDeploy = ({
               <ActiveButtonContainer className="d-flex ">
                 <CountDiv
                   className="div-btn-1"
-                  count={
-                    // state.updatedCount?.runningCount ||
-                    deployDetails?.runningCount
-                  }
+                  count={deployDetails?.runningCount}
                   activeColor="#58e715"
                 >
                   <TriangleIcons color="#B5BDC8" />
-                  <span>
-                    {/* {deployDetails?.runningCount ||
-                      state?.updatedCount?.runningCount} */}
-                    {deployDetails?.runningCount}
-                  </span>
+                  <span>{deployDetails?.runningCount}</span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-2"
-                  count={
-                    // state.updatedCount?.stoppedCount ||
-                    deployDetails?.stoppedCount
-                  }
+                  count={deployDetails?.stoppedCount}
                   activeColor="#c52b2b"
                 >
                   <SquareBoxIcon color="#B5BDC8" />
-                  <span>
-                    {/* {state.updatedCount?.stoppedCount ||
-                      deployDetails?.stoppedCount} */}
-                    {deployDetails?.stoppedCount}
-                  </span>
+                  <span>{deployDetails?.stoppedCount}</span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-3"
-                  count={
-                    // state.updatedCount?.invalidCount ||
-                    deployDetails?.invalidCount
-                  }
+                  count={deployDetails?.invalidCount}
                   activeColor="#CF9F5D"
                 >
                   <TriangleExclamationMarkIcon color="#B5BDC8" />
-                  <span>
-                    {/* {state.updatedCount?.invalidCount ||
-                      deployDetails?.invalidCount} */}
-                    {deployDetails?.invalidCount}
-                  </span>
+                  <span>{deployDetails?.invalidCount}</span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-4"
-                  count={
-                    // state?.updatedCount?.disabledCount ||
-                    deployDetails?.disabledCount
-                  }
+                  count={deployDetails?.disabledCount}
                   activeColor="#2c7cf3"
                 >
                   <SmallNotThunderIcon color="#B5BDC8" />
-                  <span>
-                    {/* {deployDetails?.disabledCount ||
-                      state?.updatedCount?.disabledCount} */}
-                    {deployDetails?.disabledCount}
-                  </span>
+                  <span>{deployDetails?.disabledCount}</span>
                 </CountDiv>
               </ActiveButtonContainer>
             </CustomNine>

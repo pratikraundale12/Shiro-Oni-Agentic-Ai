@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TextRender, Grid, IconButton } from '../../components';
-import { useGlobalContext } from '../../utils';
 // import AuditLog from './AuditLog';
 import { Button } from '../../shared';
 import { CopyIcon, OpenEyeIcon } from '../../assets';
@@ -29,27 +28,11 @@ const StyledDiv = styled.button`
 
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
-  const { setState } = useGlobalContext();
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
   // const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   useEffect(() => {
-    setState(prevState => ({
-      ...prevState,
-      selectedPaths: [],
-      selectedClusterId: null,
-      selectedVersion: null,
-      deployNamespaceId: null,
-      deployData: {
-        flowId: null,
-        bucketId: null,
-        bucketName: null,
-        registryId: null,
-        version: null,
-      },
-      upgradeData: {},
-      updatedCount: null,
-    }));
+    dispatch(NamespacesActions.resetDeployData());
   }, []);
 
   const COLUMNS = [

@@ -328,19 +328,27 @@ const Upgrade = () => {
                     name="x"
                     type="text"
                     label="Canvas Position"
-                    value={checkDestCluster.position?.x}
+                    value={formData.position.x}
                     icon={<CanvasXIcon />}
                     disabled={checkDestCluster.mode === 'upgrade'}
-                    onChange={e => handlePositionChange('x', e.target.value)}
+                    onChange={e =>
+                      dispatch(
+                        NamespacesActions.setPosition({ x: e.target.value })
+                      )
+                    }
                   />
                   <InputField
                     name="y"
                     type="text"
                     label=""
-                    value={checkDestCluster.position?.y}
+                    value={formData.position.y}
                     icon={<CanvasYIcon />}
                     disabled={checkDestCluster.mode === 'upgrade'}
-                    onChange={e => handlePositionChange('y', e.target.value)}
+                    onChange={e =>
+                      dispatch(
+                        NamespacesActions.setPosition({ y: e.target.value })
+                      )
+                    }
                   />
                 </ColXlFive>
                 {checkDestCluster.mode === 'upgrade' && (
