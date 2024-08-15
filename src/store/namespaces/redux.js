@@ -28,6 +28,10 @@ export const NamespacesActions = {
   getCountDetails: createAction(`${prefix}getCountDetails`),
   fetchParameterContext: createAction(`${prefix}fetchParameterContext`),
   setParameterDetails: createAction(`${prefix}setParameterDetails`),
+  updateParameterContext: createAction(`${prefix}updateParameterContext`),
+  getStatusAndDeleteParameterContext: createAction(
+    `${prefix}getStatusAndDeleteParameterContext`
+  ),
   resetDeployData: createAction(`${prefix}resetDeployData`),
 };
 
@@ -143,7 +147,6 @@ const setVersion = (state, { payload }) => {
 };
 
 const setParameterDetails = (state, { payload }) => {
-  console.log('===', payload);
   return {
     ...state,
     parameterDetails: payload,

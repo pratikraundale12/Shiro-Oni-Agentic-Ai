@@ -244,7 +244,7 @@ export function* getCountDetails(api) {
   else toast.error(response.data.message);
 }
 
-export function* fetchParameterContext(api) {
+export function* fetchParameterContext(api, { initialCall = true }) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
@@ -269,8 +269,110 @@ export function* fetchParameterContext(api) {
     ],
     successAction: NamespacesActions.setParameterDetails,
   });
-  if (response.ok) yield put(NamespacesActions.setDeployedModal());
+  if (response.ok && initialCall)
+    yield put(NamespacesActions.setDeployedModal());
   else toast.error(response.data.message);
+}
+
+export function* updateParameterContext(api, { payload }) {
+  const { modifiedPayloadData } = payload;
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployOrUpgradeDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const parameterDetails = yield select(
+    NamespacesSelectors.getParameterDetails
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'updateParameterContext',
+    loadingSection: 'updateParameterContext',
+    apiMethod: api.updateParameterContext,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        parameterContextId: deployOrUpgradeDetails?.parameterContextId,
+        payloadData: {
+          revision: { version: parameterDetails?.version },
+          parameters:
+            modifiedPayloadData &&
+            modifiedPayloadData?.map(item => ({
+              parameter: {
+                name: item.name,
+                value: item.value,
+                description: item.description,
+                sensitive: item.sensitive,
+                can_write: item.can_write,
+                provided: item.provided,
+              },
+            })),
+        },
+      },
+    ],
+  });
+  if (response.ok && !response.data?.complete && response.data?.requestId) {
+    yield call(getStatusAndDeleteParameterContext, api, {
+      method: 'get',
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else toast.error(response.data.message);
+}
+
+export function* getStatusAndDeleteParameterContext(
+  api,
+  { method, additionalData }
+) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployOrUpgradeDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'getParameterContextStatus',
+    loadingSection: 'getParameterContextStatus',
+    apiMethod:
+      method === 'get'
+        ? api.getParameterContextStatus
+        : api.deleteParameterContext,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        parameterContextId: deployOrUpgradeDetails?.parameterContextId,
+        requestId: additionalData?.requestId,
+      },
+    ],
+  });
+  if (response.ok && !response.data?.complete && response.data?.requestId) {
+    delay(1000);
+    yield call(getStatusAndDeleteParameterContext, api, {
+      method: 'get',
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else if (
+    response.ok &&
+    response.data?.complete &&
+    response.data?.requestId
+  ) {
+    yield call(getStatusAndDeleteParameterContext, api, {
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else if (response.ok && response.status === 204) {
+    yield call(fetchParameterContext, api, { initialCall: false });
+  } else toast.error(response.data.message);
 }
 
 export function* namespacesSagas(api) {
@@ -290,6 +392,16 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.fetchParameterContext,
       fetchParameterContext,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.updateParameterContext,
+      updateParameterContext,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.getStatusAndDeleteParameterContext,
+      getStatusAndDeleteParameterContext,
       api
     ),
   ]);

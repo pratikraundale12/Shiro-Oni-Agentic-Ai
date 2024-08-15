@@ -315,25 +315,10 @@ const Summary = () => {
   const [loading, setLoading] = useState(false);
 
   const getParamerterContext = async () => {
-    // try {
     setLoading(true);
     openParameterContext();
     dispatch(NamespacesActions.fetchParameterContext());
-    // const response = await fetchParameterContext(
-    //   state.selectedClusterId,
-    //   state.deployCountDetails?.data?.parameterContextId ||
-    //     state?.updatedCount?.parameterContextId
-    // );
-
-    // setState(prevState => ({
-    //   ...prevState,
-    //   parameterDetails: response,
-    //   parameterVersion: response.data.version,
-    // }));
     setLoading(false);
-    // } catch (error) {
-    //   toast.error(error.message);
-    // }
   };
 
   const handleUpgradeClick = async () => {
@@ -426,7 +411,7 @@ const Summary = () => {
 
   const openParameterContext = () => {
     setIsParameterContextOpen(true);
-    setModalOpen(false);
+    dispatch(NamespacesActions.deployClusterSuccess());
   };
 
   const closeParameterContext = () => {
