@@ -27,6 +27,15 @@ export const namespacesAPI = api => {
       path,
     });
 
+  const updateNamespaceStatus = ({ clusterId, namespaceId, state }) => {
+    return api.put(`/status-update/${clusterId}/namespace/${namespaceId}`, {
+      state,
+    });
+  };
+
+  const getVariableList = async ({ clusterId, namespaceId }) =>
+    api.get(`clusters/${clusterId}/namespaces/${namespaceId}/variables`);
+
   const deployCluster = ({ clusterId, ...rest }) =>
     api.post(`/clusters/${clusterId}/deploy`, rest);
 
@@ -77,6 +86,7 @@ export const namespacesAPI = api => {
     fetchNamespaces,
     checkDestCluster,
     deployCluster,
+    updateNamespaceStatus,
     upgradeCluster,
     clusterProgress,
     clusterProgressDelete,
@@ -85,5 +95,6 @@ export const namespacesAPI = api => {
     updateParameterContext,
     getParameterContextStatus,
     deleteParameterContext,
+    getVariableList,
   };
 };

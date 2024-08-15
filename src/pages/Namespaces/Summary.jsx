@@ -1,8 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
+import styled from 'styled-components';
+import { TodoIcon } from '../../assets/Icons/TodoIcon';
+import { Button } from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
+import NamespaceDeploy from './NamespaceDeploy';
+// import AddParameterContext from './AddParameterContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import styled from 'styled-components';
 import {
   SmallNotThunderIcon,
   SmallThunderIcon,
@@ -10,11 +15,8 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
-import { TodoIcon } from '../../assets/Icons/TodoIcon';
 import { FullPageLoader } from '../../components';
 import { history } from '../../helpers/history';
-import { Button } from '../../shared';
-import Breadcrumb from '../../shared/Breadcrumb';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import {
   // deployCluster,
@@ -29,7 +31,6 @@ import {
 import { useGlobalContext } from '../../utils';
 import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
-import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
 
 const MainContainer = styled.div`
@@ -313,7 +314,6 @@ const Summary = () => {
 
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
-
   const getParamerterContext = async () => {
     setLoading(true);
     openParameterContext();
@@ -389,7 +389,6 @@ const Summary = () => {
   };
 
   const handleCloseModal = () => {
-    dispatch(NamespacesActions.resetDeployData());
     // setState(prevState => ({
     //   ...prevState,
     //   selectedPaths: [],
@@ -433,21 +432,22 @@ const Summary = () => {
   };
 
   const handleTertiaryButton = async () => {
-    const response = await fetchVariables(
-      state?.selectedDestinationClusterId,
-      state?.deployCountDetails?.data?.id || state?.updatedCount?.id
-    );
+    dispatch(NamespacesActions.fetchVariableList());
+    // const response = await fetchVariables(
+    //   state?.selectedDestinationClusterId,
+    //   state?.deployCountDetails?.data?.id || state?.updatedCount?.id
+    // );
 
-    if (response) {
-      setState(prevState => ({
-        ...prevState,
-        variablesDetail: response?.data,
-      }));
-      setVariablesModalOpen({ isOpen: false, mode: 'add' });
-      setModalOpen(false);
-    } else {
-      toast.error(response.message);
-    }
+    // if (response) {
+    //   setState(prevState => ({
+    //     ...prevState,
+    //     variablesDetail: response?.data,
+    //   }));
+    //   setVariablesModalOpen({ isOpen: false, mode: 'add' });
+    //   setModalOpen(false);
+    // } else {
+    //   toast.error(response.message);
+    // }
     setVariablesModalOpen({ isOpen: true, mode: 'add' });
     setModalOpen(false);
   };
@@ -492,7 +492,6 @@ const Summary = () => {
           },
         }));
       }
-      console.log(response, state);
       setActiveButton(buttonId);
     } catch (error) {
       console.error('Failed to update status:', error);

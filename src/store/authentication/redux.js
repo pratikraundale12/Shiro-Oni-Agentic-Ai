@@ -1,6 +1,6 @@
 import { createReducer, createAction } from '@reduxjs/toolkit';
 import { formatDateStringToLocal } from '../../helpers';
-import { DEFAULT_ROUTE } from '../../constants';
+import { DEFAULT_ROUTE, PREVIOUS_PATH } from '../../constants';
 
 const prefix = '@@KDFM-AUTHENTICATION/';
 
@@ -69,6 +69,7 @@ const resetPasswordRequestSuccess = (state, { payload: { resetToken } }) => {
   };
 };
 const setRoute = (state, { payload }) => {
+  localStorage.setItem(PREVIOUS_PATH, payload);
   return {
     ...state,
     route: payload,

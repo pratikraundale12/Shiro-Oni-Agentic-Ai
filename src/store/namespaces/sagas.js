@@ -57,7 +57,7 @@ export function* checkDestCluster(api) {
   );
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'checkDestCluster',
     loadingSection: 'checkDestCluster',
     apiMethod: api.checkDestCluster,
@@ -71,6 +71,9 @@ export function* checkDestCluster(api) {
     ],
     successAction: NamespacesActions.checkDestClusterSuccess,
   });
+  if (response.ok && response.data.message) {
+    toast.error(response.data.message);
+  }
 }
 
 export function* deployCluster(api) {
@@ -94,18 +97,59 @@ export function* deployCluster(api) {
     apiParams: [
       {
         clusterId: selectedDestCluster?.value,
-        namespaceId: formData.namespaceId,
         version: formData.version || checkDestCluster?.version,
         flowId: checkDestCluster?.flowId,
         bucketId: checkDestCluster?.bucketId,
-        bucketName: checkDestCluster.bucketName,
         registryId: checkDestCluster?.registryId,
+        ...(formData.namespaceId && { namespaceId: formData.namespaceId }),
+        ...(formData.position && { position: formData.position }),
       },
     ],
     successAction: NamespacesActions.deployClusterSuccess,
   });
   if (response.ok) yield put(NamespacesActions.setDeployedModal());
   else toast.error(response.data.message);
+}
+
+export function* updateNamespaceStatus(api, { payload }) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'updateNamespaceStatus',
+    loadingSection: 'updateNamespaceStatus',
+    apiMethod: api.updateNamespaceStatus,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        namespaceId: deployDetails.id,
+        state: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    const data = {
+      id: response.data.status.id,
+      runningCount: response.data.status.runningCount,
+      stoppedCount: response.data.status.stoppedCount,
+      invalidCount: response.data.status.invalidCount,
+      disabledCount: response.data.status.disabledCount,
+      parameterContextId: response.data.status.parameterContextId,
+    };
+    yield put(NamespacesActions.deployClusterSuccess(data));
+  }
+  if (!response.ok) {
+    toast.error(response.data.message);
+  }
 }
 
 export function* upgradeCluster(api) {
@@ -375,12 +419,46 @@ export function* getStatusAndDeleteParameterContext(
   } else toast.error(response.data.message);
 }
 
+export function* fetchVariableList(api) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchVariableList',
+    loadingSection: 'fetchVariableList',
+    apiMethod: api.getVariableList,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        namespaceId: deployDetails.id,
+      },
+    ],
+    successAction: NamespacesActions.fetchVariableListSuccess,
+  });
+  if (response.ok) yield put(NamespacesActions.setDeployedModal());
+  else toast.error(response.data.message);
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
     takeLatest(NamespacesActions.fetchDestNamespaces, fetchDestNamespaces, api),
     takeLatest(NamespacesActions.checkDestCluster, checkDestCluster, api),
     takeLatest(NamespacesActions.deployCluster, deployCluster, api),
+    takeLatest(
+      NamespacesActions.updateNamespaceStatus,
+      updateNamespaceStatus,
+      api
+    ),
     takeLatest(NamespacesActions.upgradeCluster, upgradeCluster, api),
     takeLatest(NamespacesActions.clusterProgress, clusterProgress, api),
     takeLatest(
@@ -404,5 +482,6 @@ export function* namespacesSagas(api) {
       getStatusAndDeleteParameterContext,
       api
     ),
+    takeLatest(NamespacesActions.fetchVariableList, fetchVariableList, api),
   ]);
 }

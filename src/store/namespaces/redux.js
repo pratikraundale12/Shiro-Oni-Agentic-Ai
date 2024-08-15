@@ -20,6 +20,7 @@ export const NamespacesActions = {
   checkDestClusterSuccess: createAction(`${prefix}checkDestClusterSuccess`),
   setNamespaceId: createAction(`${prefix}setNamespaceId`),
   setVersion: createAction(`${prefix}setVersion`),
+  setPosition: createAction(`${prefix}setPosition`),
   deployCluster: createAction(`${prefix}deployCluster`),
   deployClusterSuccess: createAction(`${prefix}deployClusterSuccess`),
   upgradeCluster: createAction(`${prefix}upgradeCluster`),
@@ -33,6 +34,9 @@ export const NamespacesActions = {
     `${prefix}getStatusAndDeleteParameterContext`
   ),
   resetDeployData: createAction(`${prefix}resetDeployData`),
+  updateNamespaceStatus: createAction(`${prefix}updateNamespaceStatus`),
+  fetchVariableList: createAction(`${prefix}fetchVariableList`),
+  fetchVariableListSuccess: createAction(`${prefix}fetchVariableListSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -56,10 +60,15 @@ export const NAMESPACES_INITIAL_STATE = {
   formData: {
     namespaceId: '',
     version: '',
+    position: {
+      x: 0,
+      y: 0,
+    },
   },
   deployOrUpgradeDetails: {},
   parameterDetails: {},
   isDeployedModal: false,
+  variableList: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -76,6 +85,7 @@ export const NamespacesSelectors = {
   getDeployOrUpgradeDetails: state => state.namespaces.deployOrUpgradeDetails,
   getParameterDetails: state => state.namespaces.parameterDetails,
   getDeployedModal: state => state.namespaces.isDeployedModal,
+  getVariableList: state => state.namespaces.variableList,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -125,8 +135,20 @@ const checkDestClusterSuccess = (state, { payload }) => {
   return {
     ...state,
     checkDestCluster: payload,
+    formData: {
+      ...state.formData,
+      position: payload.position,
+    },
   };
 };
+
+const fetchVariableListSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    variableList: payload,
+  };
+};
+
 const setNamespaceId = (state, { payload }) => {
   return {
     ...state,
@@ -145,7 +167,18 @@ const setVersion = (state, { payload }) => {
     },
   };
 };
-
+const setPosition = (state, { payload }) => {
+  return {
+    ...state,
+    formData: {
+      ...state.formData,
+      position: {
+        ...state.formData.position,
+        ...payload,
+      },
+    },
+  };
+};
 const setParameterDetails = (state, { payload }) => {
   return {
     ...state,
@@ -199,10 +232,15 @@ export const namespacesReducer = createReducer(
         checkDestClusterSuccess
       )
       .addCase(NamespacesActions.setNamespaceId, setNamespaceId)
+      .addCase(NamespacesActions.setPosition, setPosition)
       .addCase(NamespacesActions.setVersion, setVersion)
       .addCase(NamespacesActions.deployClusterSuccess, deployClusterSuccess)
       .addCase(NamespacesActions.setParameterDetails, setParameterDetails)
       .addCase(NamespacesActions.setDeployedModal, setDeployedModal)
-      .addCase(NamespacesActions.resetDeployData, resetDeployData);
+      .addCase(NamespacesActions.resetDeployData, resetDeployData)
+      .addCase(
+        NamespacesActions.fetchVariableListSuccess,
+        fetchVariableListSuccess
+      );
   }
 );

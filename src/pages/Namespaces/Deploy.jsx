@@ -28,6 +28,7 @@ import {
   ClustersSelectors,
   GridActions,
   GridSelectors,
+  LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
@@ -143,6 +144,7 @@ const Deploy = () => {
   const selectedDestNamespace = useSelector(
     NamespacesSelectors.getSelectedDestNamespace
   );
+  const loading = useSelector(state => LoadingSelectors.getLoading(state, 'checkDestCluster'));
   const tokens = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const tokenIds = tokens.map(item => item.id);
   const clusters = useSelector(ClustersSelectors.getClusters);
@@ -160,7 +162,6 @@ const Deploy = () => {
   } = useForm();
   const [search, setSearch] = useState('');
   const { state, setState } = useGlobalContext();
-  const [loading, setLoading] = useState(false);
   const [showDeployUI, setShowDeployUI] = useState(false);
   // useEffect(() => {
   //   handleSelectNamespace();
