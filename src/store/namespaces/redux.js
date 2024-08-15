@@ -38,6 +38,9 @@ export const NamespacesActions = {
   fetchVariableList: createAction(`${prefix}fetchVariableList`),
   fetchVariableListSuccess: createAction(`${prefix}fetchVariableListSuccess`),
   addVariableServices: createAction(`${prefix}addVariableServices`),
+  getStatusAndDeleteVariables: createAction(
+    `${prefix}getStatusAndDeleteVariables`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */

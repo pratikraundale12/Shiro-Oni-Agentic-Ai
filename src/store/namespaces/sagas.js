@@ -470,8 +470,8 @@ export function* addVariableServices(api, { payload }) {
     variables: variables,
   });
   const response = yield call(requestSaga, {
-    errorSection: 'fetchVariableList',
-    loadingSection: 'fetchVariableList',
+    errorSection: 'addVariableServices',
+    loadingSection: 'addVariableServices',
     apiMethod: api.addVariableServices,
     apiParams: [
       {
@@ -482,8 +482,57 @@ export function* addVariableServices(api, { payload }) {
       },
     ],
   });
-  if (response.ok) console.log(response);
-  else toast.error(response.data.message);
+  console.log(response, 'data');
+  if (response.ok && !response.data?.complete && response.data?.requestId) {
+    yield call(getStatusAndDeleteVariables, api, {
+      method: 'get',
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else toast.error(response.data.message);
+}
+export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployOrUpgradeDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'getVariableServices',
+    loadingSection: 'getVariableServices',
+    apiMethod:
+      method === 'get' ? api.getVariableServices : api.deleteVariableServices,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        namespaceId: deployOrUpgradeDetails?.id,
+        requestId: additionalData?.requestId,
+      },
+    ],
+  });
+  if (response.ok && !response.data?.complete && response.data?.requestId) {
+    delay(1000);
+    yield call(getStatusAndDeleteVariables, api, {
+      method: 'get',
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else if (
+    response.ok &&
+    response.data?.complete &&
+    response.data?.requestId
+  ) {
+    yield call(getStatusAndDeleteVariables, api, {
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else if (response.ok && response.status === 204) {
+    yield call(fetchVariableList, api, { initialCall: false });
+  } else toast.error(response.data.message);
 }
 
 export function* namespacesSagas(api) {
@@ -519,6 +568,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.getStatusAndDeleteParameterContext,
       getStatusAndDeleteParameterContext,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.getStatusAndDeleteVariables,
+      getStatusAndDeleteVariables,
       api
     ),
     takeLatest(NamespacesActions.fetchVariableList, fetchVariableList, api),

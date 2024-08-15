@@ -52,19 +52,19 @@ export const namespacesAPI = api => {
       })),
     });
   };
-  const getVariableServices = async ({ clusterId, namespaceId, clientId }) => {
+  const getVariableServices = async ({ clusterId, namespaceId, requestId }) => {
     api.get(
-      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${clientId}`
+      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`
     );
   };
 
   const deleteVariableServices = async ({
     clusterId,
     namespaceId,
-    clientId,
+    requestId,
   }) => {
     api.get(
-      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${clientId}`
+      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`
     );
   };
 
