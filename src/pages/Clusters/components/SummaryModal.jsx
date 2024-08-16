@@ -2,14 +2,15 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
+import { history } from '../../../helpers/history';
 import { Modal } from '../../../shared';
+import CopyToClipboard from '../../../shared/CopyToClipboard';
 import {
   createCluster,
   createRegistry,
   updateCluster,
   updateRegistry,
 } from '../../../store/index1';
-import { history } from '../../../helpers/history';
 // import { FileIcon } from '../../../assets';
 
 const ClusterDetailsContainer = styled.div`
@@ -26,6 +27,12 @@ const Row = styled.div`
   flex-wrap: wrap;
   margin-top: 10px;
   width: 100%;
+`;
+
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 `;
 
 const Col = styled.div`
@@ -128,7 +135,7 @@ const TextEllipses = styled.div`
   letter-spacing: -0.005em;
   color: #7a7a7a;
   white-space: nowrap;
-  max-width: 100%;
+  max-width: calc(100% - 4rem);
   overflow: hidden;
   text-overflow: ellipsis;
   border-bottom: 1px solid #7a7a7a;
@@ -247,7 +254,10 @@ export const SummaryModal = ({
                 </Info>
                 <Info width="50%">
                   <Title>Cluster URL</Title>
-                  <TextEllipses>{clusterData.nifiUrl}</TextEllipses>
+                  <Flex>
+                    <TextEllipses>{clusterData.nifiUrl}</TextEllipses>
+                    <CopyToClipboard copyItem={clusterData.nifiUrl} />
+                  </Flex>
                 </Info>
               </Col>
             </Row>
@@ -265,9 +275,14 @@ export const SummaryModal = ({
                 </Info>
                 <Info width="50%">
                   <Title>Registry URL</Title>
-                  <TextEllipses>
-                    {registryData?.registryUrl || registryData?.registry_url}
-                  </TextEllipses>
+                  <Flex className="d-flex align-items-center">
+                    <TextEllipses>
+                      {registryData?.registryUrl || registryData?.registry_url}
+                    </TextEllipses>
+                    <CopyToClipboard
+                      copyItem={registryData?.registry_url || ''}
+                    />
+                  </Flex>
                 </Info>
               </Col>
             </Row>

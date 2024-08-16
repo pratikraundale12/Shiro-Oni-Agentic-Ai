@@ -14,6 +14,7 @@ import {
 import { RegexConst } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, SelectField } from '../../shared';
+import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
   getOneRegistry,
   getRegistryList,
@@ -257,7 +258,6 @@ export const Add = () => {
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isCredOpen, setIsCredOpen] = useState(false);
-  // const [clusterTest, setClusterTest] = useState(false);
   const [test, setTest] = useState(true);
   const [suceessModal, setSuccessModal] = useState(false);
   const [failedModal, setFailedModal] = useState(false);
@@ -592,7 +592,10 @@ export const Add = () => {
 
                   <BoxContentArea>
                     <p>Registry Url</p>
-                    <span>{registryData.registry_url}</span>
+                    <span className="d-flex align-items-center gap-3">
+                      {registryData.registry_url}
+                      <CopyToClipboard copyItem={registryData.registry_url} />
+                    </span>
                   </BoxContentArea>
                 </Flex>
                 <RegistryDetailsDivTwo>

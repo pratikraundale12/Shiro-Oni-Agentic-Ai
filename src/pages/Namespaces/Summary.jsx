@@ -17,6 +17,7 @@ import {
 } from '../../assets';
 import { FullPageLoader } from '../../components';
 import { history } from '../../helpers/history';
+import CopyToClipboard from '../../shared/CopyToClipboard';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import {
   // deployCluster,
@@ -553,6 +554,9 @@ const Summary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       {checkDestCluster.registryUrl}
+                      <CopyToClipboard
+                        copyItem={checkDestCluster.registryUrl}
+                      />
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>

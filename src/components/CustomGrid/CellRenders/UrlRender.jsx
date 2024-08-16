@@ -11,7 +11,6 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-inline-end: 1rem;
 `;
 
 const StyleUrl = styled.span`
@@ -22,8 +21,8 @@ const StyleUrl = styled.span`
 `;
 
 const StyledLink = styled.a`
-  min-width: 34px;
-  min-height: 34px;
+  min-width: 32px;
+  min-height: 32px;
   cursor: pointer;
   display: flex;
   align-items: center;

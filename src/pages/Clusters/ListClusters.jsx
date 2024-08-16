@@ -1,19 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { toast } from 'react-toastify';
+import styled from 'styled-components';
 
 import { ModalWithIcon } from '../../shared';
 import { deleteCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 
+import { useDispatch } from 'react-redux';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
   OpenEyeIcon,
   PencilIcon,
 } from '../../assets';
-import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
-import { history } from '../../helpers/history';
 import {
   ActionRender,
   Grid,
@@ -22,7 +21,8 @@ import {
   TextRender,
   UrlRender,
 } from '../../components';
-import { useDispatch } from 'react-redux';
+import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
+import { history } from '../../helpers/history';
 import { GridActions } from '../../store';
 
 const List = styled.div`
