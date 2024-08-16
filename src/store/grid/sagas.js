@@ -1,20 +1,9 @@
 import { isEmpty } from 'lodash';
-import {
-  all,
-  all,
-  call,
-  call,
-  debounce,
-  debounce,
-  put,
-  put,
-  select,
-  select,
-} from 'redux-saga/effects';
+import { all, call, debounce, put, select } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, DEBOUNCE_DELAY } from '../../constants';
-import { requestSaga, requestSaga } from '../helpers/request_sagas';
+import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
-import { GridActions, GridActions } from './redux';
+import { GridActions } from './redux';
 
 export function* fetchGrid(api, { payload: { module = '', params } }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
