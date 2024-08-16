@@ -18,7 +18,7 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { testConfigApi, getRolesAPI } from '../../store/apis/ldap';
 import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
-
+import { SyncUsersSuccess } from '../../shared';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 88%;
@@ -129,6 +129,7 @@ export const LdapConfig = () => {
   const [successTest, setSuccessTest] = useState(false);
   const [displayList, setDisplayList] = useState(true);
   const [testFormData, setTestFormData] = useState({});
+  const [syncSuccess, setSyncSuccess] = useState(false);
   const [listData, setListData] = useState();
   const [saveButtonStatus, setSaveButtonStatus] = useState(false);
   const {
@@ -269,7 +270,7 @@ export const LdapConfig = () => {
   const syncldapApi = async () => {
     const response = await SyncUsers();
     if (response?.status === 200) {
-      toast.success('Users sync up successfully');
+      setSyncSuccess(true);
     } else {
       toast.error(
         response?.message || 'Something went wrong. Please try again'
@@ -481,6 +482,11 @@ export const LdapConfig = () => {
       <SuccessTestModal
         successTest={successTest}
         setSuccessTest={setSuccessTest}
+      />
+
+      <SyncUsersSuccess
+        successTest={syncSuccess}
+        setSuccessTest={setSyncSuccess}
       />
     </Wrapper>
   );

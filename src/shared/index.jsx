@@ -4,3 +4,4 @@ export * from './FormInputs';
 export * from './Modal';
 export * from './Dropdown';
 export * from './PageComingSoon';
+export * from './SyncUsersSuccess';
