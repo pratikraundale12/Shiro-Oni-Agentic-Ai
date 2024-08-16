@@ -13,6 +13,12 @@ export function* fetchNamespaces(api) {
     clusterId: selectedCluster?.value || '',
     namespaceId: selectedNamespace?.value || '',
   };
+  const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   yield call(requestSaga, {
     errorSection: 'fetchNamespaces',
     loadingSection: 'fetchNamespaces',

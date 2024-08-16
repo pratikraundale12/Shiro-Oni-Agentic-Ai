@@ -1,5 +1,6 @@
 import { call, all, put, debounce, select } from 'redux-saga/effects';
 import { requestSaga } from '../helpers/request_sagas';
+import { isEmpty } from 'lodash';
 import { GridActions } from './redux';
 import { CLUSTERS_TOKEN, DEBOUNCE_DELAY } from '../../constants';
 import { NamespacesSelectors } from '../namespaces';
@@ -36,6 +37,13 @@ export function* fetchGrid(api, { payload: { module = '', params } }) {
       clusterId: selectedDestCluster?.value || '',
       namespaceId: selectedDestNamespace?.value || '',
     };
+  if (module === 'namespaces' && isEmpty(selectedCluster)) return;
+  const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'fetchGrid',
     loadingSection: 'fetchGrid',

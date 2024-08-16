@@ -101,7 +101,7 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
       </button>
       <KsolvesDataFlowIcon width={200} height={80} />
       <List>
-        {ROUTES_MENU.map(item => {
+        {ROUTES_MENU.filter(item => !item.hidden).map(item => {
           const active = item.path === route;
           return (
             <Item

@@ -126,7 +126,6 @@ export const AddUserModal = props => {
     ),
   });
 
-  console.log(roles);
   const openModal = () => setState({ ...state, userModal: true });
   const closeModal = () => {
     setState({
