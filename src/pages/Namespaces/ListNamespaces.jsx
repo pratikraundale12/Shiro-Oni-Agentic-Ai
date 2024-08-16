@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { TextRender, Grid, IconButton } from '../../components';
+import React, { useEffect, useRef, useState } from 'react';
+import { Grid, IconButton, TextRender } from '../../components';
 // import AuditLog from './AuditLog';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -161,7 +161,6 @@ export const ListNamespaces = () => {
   //   });
   // }
   const handleSelect = item => {
-    console.log(item, 'LIST NAMESPASE item');
     dispatch(NamespacesActions.setFlowPath(item.flowId));
     dispatch(
       NamespacesActions.setSelectedNamespace({

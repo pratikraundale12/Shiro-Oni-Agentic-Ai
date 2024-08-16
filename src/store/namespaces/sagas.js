@@ -463,12 +463,6 @@ export function* addVariableServices(api, { payload }) {
   );
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
-  console.log({
-    clusterId: selectedDestCluster?.value,
-    namespaceId: deployDetails.id,
-    version: variableList.version,
-    variables: variables,
-  });
   const response = yield call(requestSaga, {
     errorSection: 'addVariableServices',
     loadingSection: 'addVariableServices',
@@ -482,7 +476,6 @@ export function* addVariableServices(api, { payload }) {
       },
     ],
   });
-  console.log(response, 'data');
   if (response.ok && response.data?.requestId) {
     yield call(getStatusAndDeleteVariables, api, {
       method: 'get',
@@ -516,17 +509,21 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
       },
     ],
   });
-  if (response.ok && response.data?.requestId) {
+  if (response.ok && !response.data?.complete && response.data?.requestId) {
     delay(1000);
     yield call(getStatusAndDeleteVariables, api, {
       method: 'get',
       additionalData: { requestId: response.data?.requestId },
     });
-    // } else if (response.ok && response.data?.requestId) {
-    //   yield call(getStatusAndDeleteVariables, api, {
-    //     additionalData: { requestId: response.data?.requestId },
-    //   });
-  } else if (response.ok && response.status === 204) {
+  } else if (
+    response.ok &&
+    response.data?.complete &&
+    response.data?.requestId
+  ) {
+    yield call(getStatusAndDeleteVariables, api, {
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else if (response.ok && method !== 'get') {
     yield call(fetchVariableList, api, { initialCall: false });
   } else toast.error(response.data.message);
 }

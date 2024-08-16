@@ -58,7 +58,7 @@ export const namespacesAPI = api => {
     );
 
   const deleteVariableServices = ({ clusterId, namespaceId, requestId }) =>
-    api.get(
+    api.delete(
       `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`
     );
 
