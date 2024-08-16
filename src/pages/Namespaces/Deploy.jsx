@@ -144,7 +144,9 @@ const Deploy = () => {
   const selectedDestNamespace = useSelector(
     NamespacesSelectors.getSelectedDestNamespace
   );
-  const loading = useSelector(state => LoadingSelectors.getLoading(state, 'checkDestCluster'));
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'checkDestCluster')
+  );
   const tokens = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const tokenIds = tokens.map(item => item.id);
   const clusters = useSelector(ClustersSelectors.getClusters);

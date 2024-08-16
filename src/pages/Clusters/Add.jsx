@@ -562,6 +562,7 @@ export const Add = () => {
               name="registry"
               label="Registry Name"
               options={registries}
+              icon={<QRIcons />}
             />
             <ORText style={{ textAlign: 'center' }}>OR</ORText>
             <div>
