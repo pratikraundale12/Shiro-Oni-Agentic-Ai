@@ -448,6 +448,86 @@ export function* fetchVariableList(api) {
   else toast.error(response.data.message);
 }
 
+export function* addVariableServices(api, { payload }) {
+  const { variables } = payload;
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const variableList = yield select(NamespacesSelectors.getVariableList);
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'addVariableServices',
+    loadingSection: 'addVariableServices',
+    apiMethod: api.addVariableServices,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        namespaceId: deployDetails.id,
+        version: variableList.version,
+        variables: variables,
+      },
+    ],
+  });
+  if (response.ok && response.data?.requestId) {
+    yield call(getStatusAndDeleteVariables, api, {
+      method: 'get',
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else toast.error(response.data.message);
+}
+export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'getVariableServices',
+    loadingSection: 'getVariableServices',
+    apiMethod:
+      method === 'get' ? api.getVariableServices : api.deleteVariableServices,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        namespaceId: deployDetails?.id,
+        requestId: additionalData?.requestId,
+      },
+    ],
+  });
+  if (response.ok && !response.data?.complete && response.data?.requestId) {
+    delay(1000);
+    yield call(getStatusAndDeleteVariables, api, {
+      method: 'get',
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else if (
+    response.ok &&
+    response.data?.complete &&
+    response.data?.requestId
+  ) {
+    yield call(getStatusAndDeleteVariables, api, {
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else if (response.ok && method !== 'get') {
+    yield call(fetchVariableList, api, { initialCall: false });
+  } else toast.error(response.data.message);
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -472,6 +552,7 @@ export function* namespacesSagas(api) {
       fetchParameterContext,
       api
     ),
+    takeLatest(NamespacesActions.addVariableServices, addVariableServices, api),
     takeLatest(
       NamespacesActions.updateParameterContext,
       updateParameterContext,
@@ -480,6 +561,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.getStatusAndDeleteParameterContext,
       getStatusAndDeleteParameterContext,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.getStatusAndDeleteVariables,
+      getStatusAndDeleteVariables,
       api
     ),
     takeLatest(NamespacesActions.fetchVariableList, fetchVariableList, api),
