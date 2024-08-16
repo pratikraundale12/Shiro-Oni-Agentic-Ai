@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Grid, IconButton, TextRender } from '../../components';
-// import AuditLog from './AuditLog';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { CopyIcon, OpenEyeIcon } from '../../assets';
+import { Grid, IconButton, TextRender } from '../../components';
 import { REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import { GridActions, NamespacesActions } from '../../store';
-// import Deploy from './Deploy';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -35,9 +33,32 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.resetDeployData());
   }, []);
 
+  const sortFns = {
+    name: array => sortByNameWithVersionFilter(array),
+  };
+  const state = {
+    sortKey: 'name',
+    reverse: false,
+  };
+
+  function sortByNameWithVersionFilter(arr) {
+    const objectsWithVersion = arr.filter(item => item.version !== undefined);
+    const objectsWithoutVersion = arr.filter(
+      item => item.version === undefined
+    );
+    const sortedWithVersion = objectsWithVersion.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    const sortedWithoutVersion = objectsWithoutVersion.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    return [...sortedWithVersion, ...sortedWithoutVersion];
+  }
+
   const COLUMNS = [
     {
       label: 'Namespace',
+
       renderCell: item => (
         <StyledButton
           tabIndex="0"
@@ -55,6 +76,7 @@ export const ListNamespaces = () => {
         </StyledButton>
       ),
       width: '18%',
+      sort: { sortKey: 'name' },
     },
     {
       label: 'Namespace ID',
@@ -185,6 +207,9 @@ export const ListNamespaces = () => {
         refreshOptions={REFRESH_OPTIONS}
         placeholder="Search Namespace, ID, Flow Name, Bucket Name"
         handleRefresh={handleRefresh}
+        sortFns={sortFns}
+        state={state}
+        // handleIconClick={handleIconClick}
       />
       {/* <Deploy /> */}
       {/* <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} /> */}
