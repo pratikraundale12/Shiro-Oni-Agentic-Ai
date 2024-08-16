@@ -3,10 +3,11 @@ import { Grid, IconButton, TextRender } from '../../components';
 // import AuditLog from './AuditLog';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { CopyIcon, OpenEyeIcon } from '../../assets';
+import { OpenEyeIcon } from '../../assets';
 import { REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
+import CopyToClipboard from '../../shared/CopyToClipboard';
 import { GridActions, NamespacesActions } from '../../store';
 // import Deploy from './Deploy';
 
@@ -17,13 +18,6 @@ const StyledButton = styled.button`
   border: none;
   text-decoration: underline;
   text-underline-offset: 3px;
-`;
-const StyledDiv = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  margin-left: 8px;
 `;
 
 export const ListNamespaces = () => {
@@ -66,14 +60,7 @@ export const ListNamespaces = () => {
           <div style={{ width: 'max-content' }}>
             <TextRender text={item.id} />
           </div>
-          <StyledDiv
-            onClick={() => handleCopyToClipboard(item.id)}
-            aria-label="Copy Namespace ID"
-          >
-            <IconButton>
-              <CopyIcon />
-            </IconButton>
-          </StyledDiv>
+          <CopyToClipboard copyItem={item.id} />
         </div>
       ),
       width: '26%',
@@ -128,15 +115,6 @@ export const ListNamespaces = () => {
       ),
     },
   ];
-
-  const handleCopyToClipboard = async text => {
-    try {
-      await navigator.clipboard.writeText(text);
-      console.log('Copied to clipboard');
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
-  };
 
   // function handleSelectNamespace(id) {
   //   fetchGridData({

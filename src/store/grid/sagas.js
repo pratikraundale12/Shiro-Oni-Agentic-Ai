@@ -1,8 +1,8 @@
-import { call, all, put, debounce, select } from 'redux-saga/effects';
-import { requestSaga } from '../helpers/request_sagas';
-import { GridActions } from './redux';
+import { all, call, debounce, put, select } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, DEBOUNCE_DELAY } from '../../constants';
+import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
+import { GridActions } from './redux';
 
 export function* fetchGrid(api, { payload: { module = '', params } }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
