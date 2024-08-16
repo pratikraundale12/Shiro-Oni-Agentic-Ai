@@ -85,7 +85,7 @@ export const ListClusters = () => {
     {
       label: 'NiFi URL',
       renderCell: item => <UrlRender url={item.nifi_url} />,
-      width: '44%',
+      width: 'auto',
     },
     {
       label: 'Cluster Status',
@@ -96,12 +96,12 @@ export const ListClusters = () => {
           maxCount={item.total_nodes}
         />
       ),
-      width: '12%',
+      width: 'auto',
     },
     {
       label: 'Status',
       renderCell: item => <StatusRender status={item.status} />,
-      width: '12%',
+      width: 'auto',
     },
     {
       label: 'Actions',
@@ -125,7 +125,7 @@ export const ListClusters = () => {
           )}
         </ActionRender>
       ),
-      width: '20%',
+      width: 'auto',
     },
   ];
   const deleteUserConfirmed = async () => {

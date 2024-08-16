@@ -94,8 +94,8 @@ export const Grid = ({
   title = '',
   buttonText = '',
   placeholder = '',
-  addModal = () => { },
-  handleRefresh = () => { },
+  addModal = () => {},
+  handleRefresh = () => {},
   // isNamespace = false,
   // LIMIT,
   // offset,
@@ -143,13 +143,12 @@ export const Grid = ({
     nodes: getData(loading, gridData, nodes),
   };
 
-
   const tableTheme = useTheme([
     getTheme(),
     {
       Table: `
         --data-table-library_grid-template-columns: ${columns
-          .map(column => column.width)
+          .map(column => column.width || 'auto')
           .join(' ')} !important;
         margin-bottom: 0;
 
