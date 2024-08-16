@@ -4,10 +4,9 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { SmallPerfileIcon } from '../../../assets';
-import { InputField, Modal, PasswordField } from '../../../shared';
-import { testCluster, testRegistry } from '../../../store';
 import { FailedTestModal } from './FailedTestModal';
-import { SuccessTestModal } from './SuccessTestModal';
+import { testCluster, testRegistry } from '../../../store/index1';
+import { InputField, Modal, PasswordField } from '../../../shared';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -27,8 +26,8 @@ export const Creditionals = ({
   activeTab,
   clusterData,
   registryData,
+  setSuccessModal,
 }) => {
-  const [suceessModal, setSuccessModal] = useState(false);
   const [failedModal, setFailedModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [testMessage, setTestMessage] = useState('');
@@ -135,12 +134,6 @@ export const Creditionals = ({
         </form>
       </Modal>
 
-      <SuccessTestModal
-        successTest={suceessModal}
-        setSuccessTest={setSuccessModal}
-        name={activeTab}
-      />
-
       <FailedTestModal
         failedTest={failedModal}
         setFailedTest={setFailedModal}
@@ -157,4 +150,5 @@ Creditionals.propTypes = {
   clusterData: PropTypes.object,
   registryData: PropTypes.object,
   activeTab: PropTypes.string,
+  setSuccessModal: PropTypes.func,
 };

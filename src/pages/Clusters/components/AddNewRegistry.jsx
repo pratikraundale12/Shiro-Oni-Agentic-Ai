@@ -4,23 +4,23 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import {
-  DeleteSmallIcon,
-  FileIcon,
-  LinkIcon,
-  PencilIcon,
-  PlusCircleIcon,
-  QRIcons,
-  SmallPerfileIcon,
-  WhiteBoradIcon,
-} from '../../../assets';
-import { Button, InputField, PasswordField } from '../../../shared';
-import { testRegistry } from '../../../store';
-import { RegexConst } from '../../../utils';
+import { InputField, Button, PasswordField } from '../../../shared';
+import { RegexConst } from '../../../constants';
 import { AddCertificate } from './AddCertificate';
-import { FailedTestModal } from './FailedTestModal';
-import { SuccessTestModal } from './SuccessTestModal';
 import { SummaryModal } from './SummaryModal';
+import {
+  SmallPerfileIcon,
+  QRIcons,
+  PlusCircleIcon,
+  FileIcon,
+  WhiteBoradIcon,
+  PencilIcon,
+  DeleteSmallIcon,
+  LinkIcon,
+} from '../../../assets';
+import { testRegistry } from '../../../store/index1';
+import { SuccessTestModal } from './SuccessTestModal';
+import { FailedTestModal } from './FailedTestModal';
 
 const InputContainer = styled.div`
   display: flex;

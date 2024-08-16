@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { ClusterEnableModal } from '../../clusterModal/ClusterEnableModal';
+import { ClusterLoginModal } from '../../ClusterLoginModal';
+import { useDispatch } from 'react-redux';
+import { AuthenticationActions } from '../../../store';
 
 const EnableClusterText = styled.div`
   display: ${props => (props.isVisible ? 'block' : 'none')};
   color: #0cbf59;
-  position: absolute;
   left: 0;
   bottom: 0;
   padding: 4px;
@@ -17,29 +18,29 @@ const EnableClusterText = styled.div`
   line-height: 19.36px;
   cursor: pointer;
 `;
-export const EnableClusterRender = ({ hoveredItemId, item }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const EnableClusterRender = ({ item }) => {
+  const dispatch = useDispatch();
   return (
     <>
       <EnableClusterText
-        isVisible={hoveredItemId === item.id}
+        isVisible={true}
         onClick={() => {
-          setIsOpen(true);
+          dispatch(
+            AuthenticationActions.setClusterLogin({
+              label: item.name,
+              value: item.id,
+            })
+          );
         }}
       >
-        Enable Cluster
+        Login to Cluster
       </EnableClusterText>
 
-      <ClusterEnableModal
-        setIsOpen={setIsOpen}
-        isOpen={isOpen}
-        clusterId={item.id}
-      />
+      <ClusterLoginModal cluster={item} />
     </>
   );
 };
 
 EnableClusterRender.propTypes = {
   item: PropTypes.object.isRequired,
-  hoveredItemId: PropTypes.string,
 };

@@ -5,13 +5,15 @@ import { PencilIcon, PlusCircleIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
 
-import { toast } from 'react-toastify';
-import {
-  DeleteVariableServices,
-  GetVariableServices,
-  addVariableServices,
-} from '../../store';
-import { useGlobalContext } from '../../utils';
+import { useDispatch, useSelector } from 'react-redux';
+// import { toast } from 'react-toastify';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
+// import {
+//   DeleteVariableServices,
+//   GetVariableServices,
+//   addVariableServices,
+// } from '../../store/apis';
+// import { useGlobalContext } from '../../utils';
 import AddVariables from './AddVariables';
 
 const ModalBody = styled.div`
@@ -22,13 +24,15 @@ const ModalBody = styled.div`
 const Listvariables = ({
   isOpen,
   closePopup,
-  handleTertiaryButton,
+  // handleTertiaryButton,
   setVariablesModalOpen,
 }) => {
   const [variableContextItem, setVariableContextItem] = useState({});
   const [newlyAddVariables, setNewlyAddvariables] = useState([]);
+  const variableList = useSelector(NamespacesSelectors.getVariableList);
   const [loading, setLoading] = useState(false);
-  const { state } = useGlobalContext();
+  // const { state } = useGlobalContext();
+  const dispatch = useDispatch();
   const [isAddVariablesOpen, setIsAddVariablesOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -37,7 +41,7 @@ const Listvariables = ({
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => <TextRender text={item.variable.name} />,
+      renderCell: item => <TextRender text={item?.variable?.name} />,
     },
     {
       label: 'Value',
@@ -74,7 +78,7 @@ const Listvariables = ({
   ];
 
   let variablesData = [];
-  if (state?.variablesDetail?.variables) {
+  if (variableList && variableList.variables) {
     const variables = newlyAddVariables.map(item => {
       return {
         variable: {
@@ -85,7 +89,7 @@ const Listvariables = ({
       };
     });
 
-    variablesData = [...state.variablesDetail.variables, ...variables];
+    variablesData = [...variableList.variables, ...variables];
   }
 
   const openVariable = () => {
@@ -102,46 +106,51 @@ const Listvariables = ({
 
   const handleSubmit = async () => {
     setLoading(true);
-    try {
-      const variables = newlyAddVariables.map(item => ({
-        name: item.name,
-        value: item.value,
-      }));
+    dispatch(
+      NamespacesActions.addVariableServices({
+        variables: newlyAddVariables,
+      })
+    );
+    // try {
+    //   const variables = newlyAddVariables.map(item => ({
+    //     name: item.name,
+    //     value: item.value,
+    //   }));
 
-      const response = await addVariableServices(
-        state?.selectedDestinationClusterId,
-        state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
-        state?.variablesDetail?.version,
-        variables
-      );
+    //   const response = await addVariableServices(
+    //     state?.selectedDestinationClusterId,
+    //     state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
+    //     state?.variablesDetail?.version,
+    //     variables
+    //   );
 
-      if (response) {
-        const getVariablesResponse = await GetVariableServices(
-          state?.selectedDestinationClusterId,
-          state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
-          response?.data?.requestId
-        );
+    //   if (response) {
+    //     const getVariablesResponse = await GetVariableServices(
+    //       state?.selectedDestinationClusterId,
+    //       state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
+    //       response?.data?.requestId
+    //     );
 
-        if (getVariablesResponse) {
-          const DeleteVariablesResponse = await DeleteVariableServices(
-            state?.selectedDestinationClusterId,
-            state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
-            response?.data?.requestId
-          );
+    //     if (getVariablesResponse) {
+    //       const DeleteVariablesResponse = await DeleteVariableServices(
+    //         state?.selectedDestinationClusterId,
+    //         state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
+    //         response?.data?.requestId
+    //       );
 
-          if (DeleteVariablesResponse) {
-            handleTertiaryButton();
-          } else {
-            toast.error(response.error);
-          }
-        }
-      }
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-      setNewlyAddvariables([]);
-    }
+    //       if (DeleteVariablesResponse) {
+    //         handleTertiaryButton();
+    //       } else {
+    //         toast.error(response.error);
+    //       }
+    //     }
+    //   }
+    // } catch (error) {
+    //   toast.error(error.message);
+    // } finally {
+    setLoading(false);
+    setNewlyAddvariables([]);
+    // }
   };
 
   return (

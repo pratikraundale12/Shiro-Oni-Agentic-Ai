@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { Modal } from '../../../shared';
@@ -9,7 +8,8 @@ import {
   createRegistry,
   updateCluster,
   updateRegistry,
-} from '../../../store';
+} from '../../../store/index1';
+import { history } from '../../../helpers/history';
 // import { FileIcon } from '../../../assets';
 
 const ClusterDetailsContainer = styled.div`
@@ -125,13 +125,13 @@ const DetailsTitle = styled.div`
 const TextEllipses = styled.div`
   font-size: 14px;
   font-weight: 500;
-  line-height: 18.52px;
   letter-spacing: -0.005em;
   color: #7a7a7a;
   white-space: nowrap;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  border-bottom: 1px solid #7a7a7a;
 `;
 
 export const SummaryModal = ({
@@ -144,7 +144,6 @@ export const SummaryModal = ({
   edit,
 }) => {
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const addRegistry = async () => {
     const data = {
       name: registryData?.registryName,
@@ -172,7 +171,7 @@ export const SummaryModal = ({
     if (response?.status === 201) {
       setLoading(false);
 
-      navigate('/cluster');
+      history.push('/clusters');
       toast.success(response.message);
     } else {
       setLoading(false);
@@ -190,7 +189,7 @@ export const SummaryModal = ({
     if (response?.id) {
       setLoading(false);
       toast.success(response.message);
-      navigate('/cluster');
+      history.push('/clusters');
     } else {
       setLoading(false);
       toast.error(response.message);
@@ -231,9 +230,10 @@ export const SummaryModal = ({
         isOpen={openSummary}
         onRequestClose={() => setOpenSummary(false)}
         size="sm"
-        secondaryButtonText="Cancel"
+        secondaryButtonText="Back"
         primaryButtonText="Save"
         loading={loading}
+        footerAlign="start"
         onSubmit={handleSubmit}
       >
         <ModalBody>

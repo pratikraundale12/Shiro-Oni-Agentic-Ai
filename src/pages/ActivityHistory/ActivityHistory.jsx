@@ -3,7 +3,7 @@ import { PageComingSoon } from '../../shared';
 export const ActvityHistory = () => {
   return (
     <>
-      <PageComingSoon pageTitle="Actvity History" />
+      <PageComingSoon pageTitle="Activity History" />
     </>
   );
 };

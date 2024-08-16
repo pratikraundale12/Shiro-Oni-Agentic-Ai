@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import { Grid, IconButton, TextRender } from '../../components';
-import { EditPermissions } from './EditPermissions';
+import { EditClusterAccess } from './EditClusterAccess';
 import { CheckboxField } from '../../shared';
 import { PencilIcon } from '../../assets';
-import { useGlobalContext } from '../../utils';
-import { getRoles } from '../../store';
 import { EditPolicies } from './EditPolicies';
+import { RolesActions, RolesSelectors } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Select = styled.select`
   border: none;
@@ -40,11 +40,13 @@ const Capitalize = styled(TextRender)`
 `;
 
 export const PermissionMatrix = () => {
-  const {
-    state: { accessType, roles },
-    setState,
-  } = useGlobalContext();
-  const [selectedRole, setSelectedRole] = useState('');
+  const dispatch = useDispatch();
+  const roles = useSelector(RolesSelectors.getRoles);
+  const selectedRole = useSelector(RolesSelectors.getSelectedRole);
+  const accessType = useSelector(RolesSelectors.getAccessType);
+
+  const onChange = event =>
+    dispatch(RolesActions.setSelectedRole(event.target.value));
 
   const CLUSTER_ACCESS_COLUMNS = [
     {
@@ -55,7 +57,7 @@ export const PermissionMatrix = () => {
     {
       label: (
         <GroupColumn>
-          <Select onChange={event => setSelectedRole(event.target.value)}>
+          <Select onChange={onChange}>
             {roles?.map(g => (
               <option key={g.id} value={g.id}>
                 {g.name}
@@ -63,7 +65,7 @@ export const PermissionMatrix = () => {
             ))}
           </Select>
           <IconButton
-            onClick={() => setState(prev => ({ ...prev, roleModal: true }))}
+          // onClick={() => setState(prev => ({ ...prev, roleModal: true }))}
           >
             <PencilIcon width={16} height={16} />
           </IconButton>
@@ -90,7 +92,7 @@ export const PermissionMatrix = () => {
     {
       label: (
         <GroupColumn>
-          <Select onChange={event => setSelectedRole(event.target.value)}>
+          <Select onChange={onChange}>
             {roles.map(g => (
               <option key={g.id} value={g.id}>
                 {g.name}
@@ -98,7 +100,7 @@ export const PermissionMatrix = () => {
             ))}
           </Select>
           <IconButton
-            onClick={() => setState(prev => ({ ...prev, roleModal: true }))}
+          // onClick={() => setState(prev => ({ ...prev, roleModal: true }))}
           >
             <PencilIcon width={16} height={16} />
           </IconButton>
@@ -114,34 +116,29 @@ export const PermissionMatrix = () => {
     },
   ];
 
-  const fetchRoles = async () => {
-    const response = await getRoles();
-    setState(prev => ({
-      ...prev,
-      roles: response.data || [],
-    }));
-    setSelectedRole(response.data[0].id);
-  };
-
   useEffect(() => {
-    fetchRoles();
-  }, []);
+    dispatch(RolesActions.fetchRoles());
+  }, [dispatch]);
+
+  if (accessType.value === 'dfm_access') {
+    return (
+      <Grid
+        module="policiesRolesAccess"
+        title="Role Management"
+        columns={DFM_ACCESS_COLUMNS}
+        placeholder="Search cluster name..."
+        addModal={EditPolicies}
+      />
+    );
+  }
 
   return (
     <Grid
-      module={
-        accessType === 'cluster_access' ? 'clustersAccess' : 'policiesAccess'
-      }
+      module="clustersRolesAccess"
       title="Role Management"
-      columns={
-        accessType === 'cluster_access'
-          ? CLUSTER_ACCESS_COLUMNS
-          : DFM_ACCESS_COLUMNS
-      }
+      columns={CLUSTER_ACCESS_COLUMNS}
       placeholder="Search cluster name..."
-      addModal={
-        accessType === 'cluster_access' ? EditPermissions : EditPolicies
-      }
+      addModal={EditClusterAccess}
     />
   );
 };

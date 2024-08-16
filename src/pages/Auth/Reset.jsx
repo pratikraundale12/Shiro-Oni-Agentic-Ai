@@ -1,10 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useDispatch } from 'react-redux';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
@@ -16,8 +15,9 @@ import {
   RESET_PASSWORD,
   RESET_YOUR_PASSWORD,
   SIGN_IN,
-} from '../../utils';
-import { resetPassword } from '../../store';
+} from '../../constants';
+import { history } from '../../helpers/history';
+import { AuthenticationActions } from '../../store';
 
 const BackButtonContainer = styled.div`
   width: 100%;
@@ -96,8 +96,8 @@ const validationSchema = yup.object().shape({
 });
 
 export const Reset = () => {
-  const navigate = useNavigate();
-  const { state } = useLocation();
+  const dispatch = useDispatch();
+  // const { state } = useLocation();
   const {
     formState: { errors },
     watch,
@@ -107,25 +107,26 @@ export const Reset = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = async data => {
-    const response = await resetPassword({
-      password: data.password,
-      resetToken: state.refreshToken,
-    });
-    if (response.status === 204) {
-      navigate('/success');
-    } else {
-      toast.error(
-        response?.message || 'Something went wrong. Please try again'
-      );
-    }
+  const onSubmit = data => {
+    dispatch(AuthenticationActions.resetPassword(data));
+    // const response = await resetPassword({
+    //   password: data.password,
+    //   resetToken: state.refreshToken,
+    // });
+    // if (response.status === 204) {
+    //   history.push('/success');
+    // } else {
+    //   toast.error(
+    //     response?.message || 'Something went wrong. Please try again'
+    //   );
+    // }
   };
 
   return (
     <Layout>
       <div>
         <BackButtonContainer>
-          <BackButton onClick={() => navigate(-1)}>
+          <BackButton onClick={() => history.back()}>
             <GreaterArrowIcon /> <span>Back</span>
           </BackButton>
         </BackButtonContainer>
@@ -164,7 +165,9 @@ export const Reset = () => {
       </div>
       <SignInContainer>
         {ALREADY_HAVE_AN_ACCOUNT}
-        <TextButton onClick={() => navigate('/login')}>{SIGN_IN}</TextButton>
+        <TextButton onClick={() => history.push('/login')}>
+          {SIGN_IN}
+        </TextButton>
       </SignInContainer>
     </Layout>
   );

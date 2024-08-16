@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
 
 import { ModalWithIcon } from '../../shared';
-import { deleteCluster, fetchGridData } from '../../store';
-import { REFRESH_OPTIONS, STATUS_OPTIONS, useGlobalContext } from '../../utils';
+import { deleteCluster } from '../../store/index1';
+import { useGlobalContext } from '../../utils';
 
 import {
   DeleteDustbinIcon,
@@ -13,20 +12,23 @@ import {
   OpenEyeIcon,
   PencilIcon,
 } from '../../assets';
+import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
+import { history } from '../../helpers/history';
 import {
   ActionRender,
-  EnableClusterRender,
   Grid,
   ProgressBarRender,
   StatusRender,
   TextRender,
   UrlRender,
 } from '../../components';
+import { useDispatch } from 'react-redux';
+import { GridActions } from '../../store';
 
 const List = styled.div`
   position: absolute;
-  top: ${props => props.top}px;
-  left: ${props => props.left}px;
+  top: 25%;
+  left: 40px;
   z-index: 1000;
   background: ${props => props.theme.colors.white};
   box-shadow: 0px 0px 5px 0px ${props => props.theme.colors.shadow};
@@ -64,13 +66,10 @@ const Item = styled.div`
   }
 `;
 
-const getX = x => 1790 > x < 1830 && 1446;
-
 export const ListClusters = () => {
+  const dispatch = useDispatch();
   const [refreshState, setRefreshSelect] = useState(false);
-  const [hoveredItemId, setHoveredItemId] = useState(null);
   const intervalRef = useRef(null);
-  const navigate = useNavigate();
   const { state, setState } = useGlobalContext();
   const menuRef = useRef(null);
   const [menuState, setMenuState] = useState({
@@ -79,98 +78,63 @@ export const ListClusters = () => {
     y: 0,
     row: {},
   });
-  const handleMouseEnter = id => {
-    setHoveredItemId(id);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredItemId(null);
-  };
 
   const COLUMNS = [
     {
       label: 'Cluster Name',
-      renderCell: item => (
-        <Item
-          onMouseEnter={() => handleMouseEnter(item.id)}
-          onMouseLeave={handleMouseLeave}
-        >
-          <TextRender text={item.name} />
-        </Item>
-      ),
+      renderCell: item => <TextRender text={item.name} />,
       width: '18%',
     },
     {
       label: 'NiFi URL',
-      renderCell: item => (
-        <Item
-          onMouseEnter={() => handleMouseEnter(item.id)}
-          onMouseLeave={handleMouseLeave}
-        >
-          <UrlRender url={item.nifi_url} />
-        </Item>
-      ),
-      width: '44%',
+      renderCell: item => <UrlRender url={item.nifi_url} />,
+      width: 'auto',
     },
     {
       label: 'Cluster Status',
       renderCell: item => (
-        <Item
-          onMouseEnter={() => handleMouseEnter(item.id)}
-          onMouseLeave={handleMouseLeave}
-        >
-          <ProgressBarRender
-            is_active={item.is_active}
-            count={item.connected_nodes}
-            maxCount={item.total_nodes}
-          />
-        </Item>
+        <ProgressBarRender
+          is_active={item.is_active}
+          count={item.connected_nodes}
+          maxCount={item.total_nodes}
+        />
       ),
-      width: '12%',
+      width: 'auto',
     },
     {
       label: 'Status',
-      renderCell: item => (
-        <Item
-          onMouseEnter={() => handleMouseEnter(item.id)}
-          onMouseLeave={handleMouseLeave}
-        >
-          {' '}
-          <StatusRender status={item.status} />
-        </Item>
-      ),
-      width: '12%',
+      renderCell: item => <StatusRender status={item.status} />,
+      width: 'auto',
     },
     {
       label: 'Actions',
       renderCell: item => (
-        <Item
-          onMouseEnter={() => handleMouseEnter(item.id)}
-          onMouseLeave={handleMouseLeave}
-        >
-          <ActionRender handleMenuClick={handleMenuClick} item={item} />
-        </Item>
-      ),
-      width: '14%',
-    },
-    {
-      renderCell: item => (
-        <Item
-          onMouseEnter={() => handleMouseEnter(item.id)}
-          onMouseLeave={handleMouseLeave}
-        >
-          {!item.is_active && (
-            <EnableClusterRender hoveredItemId={hoveredItemId} item={item} />
+        <ActionRender handleMenuClick={handleMenuClick} item={item}>
+          {menuState.isVisible && item.id == menuState.row.id && (
+            <List ref={menuRef}>
+              <Item onClick={() => handleClick('edit')}>
+                <PencilIcon width={16} height={16} />
+                <span>Edit</span>
+              </Item>
+              <Item onClick={() => handleClick('view')}>
+                <OpenEyeIcon width={18} height={18} />
+                <span>View</span>
+              </Item>
+              <Item onClick={() => handleClick('delete')}>
+                <DeleteSmallIcon width={18} height={18} />
+                <span>Delete</span>
+              </Item>
+            </List>
           )}
-        </Item>
+        </ActionRender>
       ),
-      width: '14%',
+      width: 'auto',
     },
   ];
   const deleteUserConfirmed = async () => {
     const response = await deleteCluster(state.selectedItem.id);
     if (response.status == 204) {
-      fetchGridData({ setState, module: 'clusters' });
+      dispatch(GridActions.fetchGrid({ module: 'clusters' }));
       toast.success('cluster Deleted Successfully');
       setState({ ...state, clusterDeleteModal: false });
     } else {
@@ -201,14 +165,14 @@ export const ListClusters = () => {
   const handleClick = type => {
     handleCloseMenu();
     if (type === 'edit') {
-      navigate('/cluster/edit', { state: menuState.row });
+      history.push('/clusters/edit', { state: menuState.row });
     }
     if (type === 'view') {
       setState({
         ...state,
         nodeClusterId: menuState.row.id,
       });
-      navigate('/cluster/summary');
+      history.push('/clusters/summary');
     }
     if (type === 'delete') {
       setState({
@@ -217,13 +181,6 @@ export const ListClusters = () => {
         selectedItem: menuState.row,
       });
     }
-  };
-
-  const handleRefreshFunctionality = () => {
-    fetchGridData({
-      setState,
-      module: 'clusters',
-    });
   };
 
   const handleRefresh = event => {
@@ -241,7 +198,7 @@ export const ListClusters = () => {
   useEffect(() => {
     if (refreshState !== false) {
       intervalRef.current = setInterval(
-        handleRefreshFunctionality,
+        () => dispatch(GridActions.fetchGrid({ module: 'clusters' })),
         refreshState
       );
     } else {
@@ -249,7 +206,7 @@ export const ListClusters = () => {
     }
 
     return () => clearInterval(intervalRef.current);
-  }, [refreshState]);
+  }, [dispatch, refreshState]);
 
   return (
     <>
@@ -275,22 +232,6 @@ export const ListClusters = () => {
         placeholder="Search Cluster Name, Status, URL"
         handleRefresh={handleRefresh}
       />
-      {menuState.isVisible && (
-        <List ref={menuRef} top={menuState.y} left={getX(menuState.x)}>
-          <Item onClick={() => handleClick('edit')}>
-            <PencilIcon width={16} height={16} />
-            <span>Edit</span>
-          </Item>
-          <Item onClick={() => handleClick('view')}>
-            <OpenEyeIcon width={18} height={18} />
-            <span>View</span>
-          </Item>
-          <Item onClick={() => handleClick('delete')}>
-            <DeleteSmallIcon width={18} height={18} />
-            <span>Delete</span>
-          </Item>
-        </List>
-      )}
     </>
   );
 };

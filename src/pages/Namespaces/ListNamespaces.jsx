@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Grid, IconButton, TextRender } from '../../components';
-import { fetchGridData } from '../../store';
-import { REFRESH_OPTIONS, useGlobalContext } from '../../utils';
 // import AuditLog from './AuditLog';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { CopyIcon, OpenEyeIcon } from '../../assets';
+import { REFRESH_OPTIONS } from '../../constants';
+import { history } from '../../helpers/history';
 import { Button } from '../../shared';
+import { GridActions, NamespacesActions } from '../../store';
 // import Deploy from './Deploy';
+
 const StyledButton = styled.button`
   color: #ff7a00;
   cursor: pointer;
@@ -25,28 +27,12 @@ const StyledDiv = styled.button`
 `;
 
 export const ListNamespaces = () => {
-  const navigate = useNavigate();
-  const { state, setState } = useGlobalContext();
+  const dispatch = useDispatch();
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
   // const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   useEffect(() => {
-    setState(prevState => ({
-      ...prevState,
-      selectedPaths: [],
-      selectedClusterId: null,
-      selectedVersion: null,
-      deployNamespaceId: null,
-      deployData: {
-        flowId: null,
-        bucketId: null,
-        bucketName: null,
-        registryId: null,
-        version: null,
-      },
-      upgradeData: {},
-      updatedCount: null,
-    }));
+    dispatch(NamespacesActions.resetDeployData());
   }, []);
 
   const COLUMNS = [
@@ -55,7 +41,15 @@ export const ListNamespaces = () => {
       renderCell: item => (
         <StyledButton
           tabIndex="0"
-          onClick={() => handleSelectNamespace(item.id)}
+          onClick={() => {
+            dispatch(NamespacesActions.setFlowPath(item.flowId));
+            dispatch(
+              NamespacesActions.setSelectedNamespace({
+                label: item.name,
+                value: item.id,
+              })
+            );
+          }}
         >
           {item.name}
         </StyledButton>
@@ -119,7 +113,7 @@ export const ListNamespaces = () => {
             </IconButton>
           </button>
           <Button
-            onClick={() => handleSelect(item.id)}
+            onClick={() => handleSelect(item)}
             disabled={
               !item.flowId ||
               !item.version ||
@@ -144,78 +138,69 @@ export const ListNamespaces = () => {
     }
   };
 
-  const clusterOptions = state.clusterList.map(item => ({
-    label: item.name,
-    value: item.id,
-  }));
+  // function handleSelectNamespace(id) {
+  //   fetchGridData({
+  //     setState,
+  //     module: 'namespaces',
+  //     selectedSourceClusterId: state.selectedSourceClusterId,
+  //     selectedNamespaceId: id,
+  //   });
 
-  function handleSelectNamespace(id) {
-    fetchGridData({
-      setState,
-      module: 'namespaces',
-      selectedSourceClusterId: state.selectedSourceClusterId,
-      selectedNamespaceId: id,
-    });
+  //   // setOffset(0);
+  //   setState(prev => {
+  //     const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
+  //     const newData = state.gridData.namespaces.data.filter(
+  //       item => !existingIds.has(item.id)
+  //     );
 
-    setOffset(0);
-    setState(prev => {
-      const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
-      const newData = state.gridData.namespaces.data.filter(
-        item => !existingIds.has(item.id)
-      );
+  //     return {
+  //       ...prev,
+  //       selectedNamespaceId: id,
+  //       tempNamespacesData: [...prev.tempNamespacesData, ...newData],
+  //     };
+  //   });
+  // }
+  const handleSelect = item => {
+    dispatch(NamespacesActions.setFlowPath(item.flowId));
+    dispatch(
+      NamespacesActions.setSelectedNamespace({
+        label: item.name,
+        value: item.id,
+      })
+    );
+    // setState(prev => ({
+    //   ...prev,
+    //   selectedNamespaceId: id,
+    // }));
 
-      return {
-        ...prev,
-        selectedNamespaceId: id,
-        tempNamespacesData: [...prev.tempNamespacesData, ...newData],
-      };
-    });
-  }
-  const handleSelect = id => {
-    setState(prev => ({
-      ...prev,
-      selectedNamespaceId: id,
-    }));
+    // setState(prev => {
+    //   const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
+    //   const newData = state.gridData.namespaces.data.filter(
+    //     item => !existingIds.has(item.id)
+    //   );
+    //   return {
+    //     ...prev,
+    //     selectedNamespaceId: id,
+    //     tempNamespacesData: [...prev.tempNamespacesData, ...newData],
+    //     currentFlowId: id,
+    //   };
+    // });
 
-    setState(prev => {
-      const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
-      const newData = state.gridData.namespaces.data.filter(
-        item => !existingIds.has(item.id)
-      );
-      return {
-        ...prev,
-        selectedNamespaceId: id,
-        tempNamespacesData: [...prev.tempNamespacesData, ...newData],
-        currentFlowId: id,
-      };
-    });
-
-    navigate('/namespaces/deploy', {
+    history.push('/namespaces/deploy', {
       state: {
-        id,
+        id: item.id,
       },
     });
   };
 
-  useEffect(() => {
-    fetchGridData({
-      setState,
-      module: 'clusters',
-    });
-    setOffset(0);
-  }, [setState]);
-  const [offset, setOffset] = useState(0);
-  useEffect(() => {});
-  const onBreadcrumbClick = e => {
-    handleSelectNamespace(e.id);
-  };
-  const handleRefreshFunctionality = () => {
-    fetchGridData({
-      setState,
-      module: 'namespaces',
-      selectedSourceClusterId: state.selectedSourceClusterId,
-    });
-  };
+  // useEffect(() => {
+  //   fetchGridData({
+  //     setState,
+  //     module: 'clusters',
+  //   });
+  //   setOffset(0);
+  // }, [setState]);
+  // const [offset, setOffset] = useState(0);
 
   const handleRefresh = event => {
     setRefreshSelect(event.value);
@@ -224,7 +209,7 @@ export const ListNamespaces = () => {
   useEffect(() => {
     if (refreshState !== false) {
       intervalRef.current = setInterval(
-        handleRefreshFunctionality,
+        () => dispatch(GridActions.fetchGrid({ module: 'namespaces' })),
         refreshState
       );
     } else {
@@ -232,23 +217,21 @@ export const ListNamespaces = () => {
     }
 
     return () => clearInterval(intervalRef.current);
-  }, [refreshState]);
+  }, [dispatch, refreshState]);
 
-  const LIMIT = 10;
+  // const LIMIT = 10;
   return (
     <>
       <Grid
-        isNamespace={true}
-        LIMIT={LIMIT}
-        offset={offset}
-        setOffset={setOffset}
+        // isNamespace={true}
+        // LIMIT={LIMIT}
+        // offset={offset}
+        // setOffset={setOffset}
         module="namespaces"
         title="Namespaces List"
         columns={COLUMNS}
         refreshOptions={REFRESH_OPTIONS}
-        clusterOptions={clusterOptions}
-        onBreadcrumbClick={onBreadcrumbClick}
-        placeholder="Search Namespace, ID, Flow Name"
+        placeholder="Search Namespace, ID, Flow Name, Bucket Name"
         handleRefresh={handleRefresh}
       />
       {/* <Deploy /> */}

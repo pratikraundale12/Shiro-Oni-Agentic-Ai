@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   GreenRightCircleIcon,
@@ -10,8 +11,7 @@ import {
   TriangleIcons,
 } from '../../assets';
 import { Modal } from '../../shared';
-import { updateNamespaceStatus } from '../../store';
-import { useGlobalContext } from '../../utils';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const ModalBody = styled.div`
   position: relative;
@@ -160,54 +160,60 @@ const NamespaceDeploy = ({
   getParamerterContext,
   handleTertiaryButton,
 }) => {
-  const { state, setState } = useGlobalContext();
-  const [activeButton, setActiveButton] = useState(null);
-  const handleUpdateStatus = async (status, buttonId) => {
-    try {
-      const response = await updateNamespaceStatus(
-        state.selectedClusterId,
-        state?.upgradeData?.id || state.deployCountDetails?.data?.id,
-        status
-      );
-      if (response?.data) {
-        setState(prevState => ({
-          ...prevState,
-          deployCountDetails: {
-            ...prevState.deployCountDetails,
-            data: {
-              ...prevState?.deployCountDetails.data,
-              runningCount: response?.data?.status?.runningCount,
-              stoppedCount: response?.data?.status?.stoppedCount,
-              invalidCount: response?.data?.status?.invalidCount,
-              disabledCount: response?.data?.status?.disabledCount,
-            },
-          },
-          updatedCount: {
-            ...prevState?.updatedCount,
-            runningCount: response?.data?.status?.runningCount,
-            stoppedCount: response?.data?.status?.stoppedCount,
-            invalidCount: response?.data?.status?.invalidCount,
-            disabledCount: response?.data?.status?.disabledCount,
-          },
-        }));
-      }
-      console.log(response, state);
-      setActiveButton(buttonId);
-    } catch (error) {
-      console.error('Failed to update status:', error);
-    }
+  const dispatch = useDispatch();
+  const deployOrUpgradeDetails = useSelector(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const formData = useSelector(NamespacesSelectors.getFormData);
+  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const selectedDestCluster = useSelector(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const handleUpdateStatus = status => {
+    dispatch(NamespacesActions.updateNamespaceStatus(status));
+    // try {
+    //   const response = await updateNamespaceStatus(
+    //     state.selectedClusterId,
+    //     state?.upgradeData?.id || deployOrUpgradeDetails?.id,
+    //     status
+    //   );
+    //   if (response?.data) {
+    //     setState(prevState => ({
+    //       ...prevState,
+    //       deployCountDetails: {
+    //         ...prevState.deployCountDetails,
+    //         data: {
+    //           ...prevState?.deployCountDetails.data,
+    //           runningCount: response?.data?.status?.runningCount,
+    //           stoppedCount: response?.data?.status?.stoppedCount,
+    //           invalidCount: response?.data?.status?.invalidCount,
+    //           disabledCount: response?.data?.status?.disabledCount,
+    //         },
+    //       },
+    //       updatedCount: {
+    //         ...prevState?.updatedCount,
+    //         runningCount: response?.data?.status?.runningCount,
+    //         stoppedCount: response?.data?.status?.stoppedCount,
+    //         invalidCount: response?.data?.status?.invalidCount,
+    //         disabledCount: response?.data?.status?.disabledCount,
+    //       },
+    //     }));
+    //   }
+    //   console.log(response, state);
+    //   setActiveButton(buttonId);
+    // } catch (error) {
+    //   console.error('Failed to update status:', error);
+    // }
   };
+
   const handleClick = () => {
-    window.open(
-      state.upgradeData?.nifiUrl || state.deployData.nifiUrl,
-      '_blank'
-    );
+    window.open(deployOrUpgradeDetails.nifiUrl, '_blank');
   };
-  console.log(state, 'count');
+
   return (
     <>
       <Modal
-        title={`Namespace ${state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
+        title={`Namespace ${checkDestCluster.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
@@ -217,10 +223,7 @@ const NamespaceDeploy = ({
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={handleClick}
         secondaryButtonProps={{
-          disabled: !(
-            state?.deployCountDetails?.data?.parameterContextId ||
-            state?.updatedCount?.parameterContextId
-          ),
+          disabled: !deployOrUpgradeDetails?.parameterContextId,
         }}
         tertiaryButton={true}
         tertiaryButtonConfig={{
@@ -234,17 +237,16 @@ const NamespaceDeploy = ({
             <GreenRightCircleIcon />
           </ModalIcon>
           <ModalHFive className="pt-4 mt-2 mb-0 ">
-            {state?.upgradeData?.name} {state?.deployData?.name} successfully{' '}
-            {state?.upgradeData?.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'} to{' '}
-            {state?.selectedClusterName} instance
+            {`${checkDestCluster.name} is successfully 
+            ${checkDestCluster.mode === 'upgrade' ? 'Upgraded' : 'Deployed'} to
+            ${selectedDestCluster?.label} instance`}
           </ModalHFive>
           <RowModal>
             <ColumnThree className="col-4 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
                 <ActionTitleSet className="mb-0 ">Namespace</ActionTitleSet>
                 <SubTitleSet className="mb-0 ">
-                  {state?.upgradeData?.name}
-                  {state?.deployData?.name}
+                  {checkDestCluster?.name}
                 </SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
@@ -252,59 +254,35 @@ const NamespaceDeploy = ({
               <ActiveButtonContainer className="d-flex ">
                 <CountDiv
                   className="div-btn-1"
-                  count={
-                    state.updatedCount?.runningCount ||
-                    state.deployCountDetails?.data?.runningCount
-                  }
+                  count={deployOrUpgradeDetails?.runningCount}
                   activeColor="#58e715"
                 >
                   <TriangleIcons color="#B5BDC8" />
-                  <span>
-                    {state.deployCountDetails?.data?.runningCount ||
-                      state?.updatedCount?.runningCount}
-                  </span>
+                  <span>{deployOrUpgradeDetails?.runningCount}</span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-2"
-                  count={
-                    state.updatedCount?.stoppedCount ||
-                    state.deployCountDetails?.data?.stoppedCount
-                  }
+                  count={deployOrUpgradeDetails?.stoppedCount}
                   activeColor="#c52b2b"
                 >
                   <SquareBoxIcon color="#B5BDC8" />
-                  <span>
-                    {state.updatedCount?.stoppedCount ||
-                      state.deployCountDetails?.data?.stoppedCount}
-                  </span>
+                  <span>{deployOrUpgradeDetails?.stoppedCount}</span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-3"
-                  count={
-                    state.updatedCount?.invalidCount ||
-                    state.deployCountDetails?.data?.invalidCount
-                  }
+                  count={deployOrUpgradeDetails?.invalidCount}
                   activeColor="#CF9F5D"
                 >
                   <TriangleExclamationMarkIcon color="#B5BDC8" />
-                  <span>
-                    {state.updatedCount?.invalidCount ||
-                      state.deployCountDetails?.data?.invalidCount}
-                  </span>
+                  <span>{deployOrUpgradeDetails?.invalidCount}</span>
                 </CountDiv>
                 <CountDiv
                   className="div-btn-4"
-                  count={
-                    state?.updatedCount?.disabledCount ||
-                    state?.deployCountDetails?.data?.disabledCount
-                  }
+                  count={deployOrUpgradeDetails?.disabledCount}
                   activeColor="#2c7cf3"
                 >
                   <SmallNotThunderIcon color="#B5BDC8" />
-                  <span>
-                    {state?.deployCountDetails?.data?.disabledCount ||
-                      state?.updatedCount?.disabledCount}
-                  </span>
+                  <span>{deployOrUpgradeDetails?.disabledCount}</span>
                 </CountDiv>
               </ActiveButtonContainer>
             </CustomNine>
@@ -313,9 +291,7 @@ const NamespaceDeploy = ({
                 <ActionTitleSet className="mb-0 ">
                   Current Version
                 </ActionTitleSet>
-                <SubTitleSet className="mb-0 ">
-                  {state.selectedVersion}
-                </SubTitleSet>
+                <SubTitleSet className="mb-0 ">{formData?.version}</SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
             <CustomNine className="col-8 mb-3">
@@ -323,11 +299,11 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-1">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'RUNNING'}
+                    // isActive={activeButton === 'RUNNING'}
                     activeColor="#58e715"
                     hoverColor="#58e715"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
+                    onClick={() => handleUpdateStatus('RUNNING')}
                   >
                     <TriangleIcons color="#B5BDC8" />
                   </ActiveButtonDiv>
@@ -335,11 +311,11 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-2">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'STOPPED'}
+                    // isActive={activeButton === 'STOPPED'}
                     activeColor="#c52b2b"
                     hoverColor="#c52b2b"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
+                    onClick={() => handleUpdateStatus('STOPPED')}
                   >
                     <SquareBoxIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
@@ -347,11 +323,11 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-3">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'ENABLED'}
+                    // isActive={activeButton === 'ENABLED'}
                     activeColor="#cf9f5d"
                     hoverColor="#cf9f5d"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
+                    onClick={() => handleUpdateStatus('ENABLED')}
                   >
                     <SmallThunderIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
@@ -359,11 +335,11 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-4">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'DISABLED'}
+                    // isActive={activeButton === 'DISABLED'}
                     activeColor="#2c7cf3"
                     hoverColor="#2c7cf3"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
+                    onClick={() => handleUpdateStatus('DISABLED')}
                   >
                     <SmallNotThunderIcon color="#B5BDC8" />
                   </ActiveButtonDiv>

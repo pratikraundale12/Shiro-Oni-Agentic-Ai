@@ -8,7 +8,6 @@ import { getTheme } from '@table-library/react-table-library/baseline';
 
 import { LoaderContainer } from '../Loader';
 import { theme } from '../../styles';
-import Breadcrumb from '../../shared/Breadcrumb';
 import { NoDataIcon } from '../../assets';
 
 const TableContainer = styled.div`
@@ -30,18 +29,7 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
-const Flex = styled.div`
-  display: flex;
-`;
-
-export const Table = ({
-  data,
-  columns,
-  onBreadcrumbClick = () => {},
-  breadcrumb = [],
-  className,
-  syncButton,
-}) => {
+export const Table = ({ data, columns, className }) => {
   const DATA = { nodes: data || [] };
   const tableTheme = useTheme([
     getTheme(),
@@ -79,29 +67,16 @@ export const Table = ({
   };
 
   return (
-    <>
-      <Flex>
-        <div>
-          <Breadcrumb
-            breadcrumbs={breadcrumb}
-            onBreadcrumbClick={onBreadcrumbClick}
-          />
-        </div>
-        {syncButton}
-      </Flex>
-      <TableContainer className={className}>
-        <CompactTable data={DATA} columns={columns} theme={tableTheme} />
-        {getLoader()}
-      </TableContainer>
-    </>
+    <TableContainer className={className}>
+      <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+      {getLoader()}
+    </TableContainer>
   );
 };
 
 Table.propTypes = {
   data: PropTypes.object.isRequired,
   columns: PropTypes.arrayOf(PropTypes.shape({})),
-  onBreadcrumbClick: PropTypes.func,
-  breadcrumb: PropTypes.array,
   className: PropTypes.string,
   syncButton: PropTypes.func,
 };

@@ -14,7 +14,9 @@ const Button = styled.button`
 `;
 
 const TextButton = ({ children, ...props }) => (
-  <Button {...props}>{children}</Button>
+  <Button type="button" {...props}>
+    {children}
+  </Button>
 );
 
 TextButton.propTypes = {

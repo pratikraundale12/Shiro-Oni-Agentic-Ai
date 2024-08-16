@@ -14,14 +14,17 @@ import {
   PhoneField,
 } from '../../shared';
 import { PlusCircleIcon, UserIcon, MailIcon, PhoneIcon } from '../../assets';
-import { fetchGridData, createUserApi, editUserDataApi } from '../../store';
-import { API_URL, useGlobalContext } from '../../utils';
+import { createUserApi, editUserDataApi } from '../../store/index1';
+import { useGlobalContext } from '../../utils';
 import {
   userSchema,
   editUserSchema,
 } from '../../components/UserManagement/userValidation';
 import { ProfileUpload } from './ProfileUpload';
 import { theme } from '../../styles';
+import { API_URL } from '../../constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { GridActions, RolesSelectors } from '../../store';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -77,9 +80,9 @@ const FormSection = styled.div`
   border-bottom-right-radius: 16px;
   max-width: 100%;
   padding-top: 1rem;
-  .form-ele {
-    min-height: 115px;
-  }
+  // .form-ele {
+  //   min-height: 100px;
+  // }
 `;
 
 const StyledInputField = styled(InputField)`
@@ -104,6 +107,8 @@ const DropDownWrapper = styled.div`
 `;
 
 export const AddUserModal = props => {
+  const dispatch = useDispatch();
+  const roles = useSelector(RolesSelectors.getRoles);
   const { state, setState } = useGlobalContext();
   const currentUser = state.currentUser;
   const {
@@ -121,6 +126,7 @@ export const AddUserModal = props => {
     ),
   });
 
+  console.log(roles);
   const openModal = () => setState({ ...state, userModal: true });
   const closeModal = () => {
     setState({
@@ -135,10 +141,7 @@ export const AddUserModal = props => {
     { value: true, label: 'Active' },
     { value: false, label: 'Inactive' },
   ];
-  const roleOption = [
-    { value: 'admin', label: 'Admin' },
-    { value: 'user', label: 'User' },
-  ];
+  const rolesOption = roles.map(role => ({ value: role.id, label: role.name }));
 
   const onSubmit = async data => {
     const formData = new FormData();
@@ -149,7 +152,7 @@ export const AddUserModal = props => {
     formData.append('password', data.password);
     formData.append('phone', data.phone_number);
     formData.append('is_active', data.is_active !== false);
-    formData.append('type', data?.type || 'user');
+    formData.append('role_id', data?.role_id);
     formData.append('username', data.username);
     if (data.photo && data.photo.size > 0) {
       formData.append('photo', data.photo);
@@ -161,7 +164,7 @@ export const AddUserModal = props => {
     if (isEmpty(state.selectedItem)) {
       const response = await createUserApi(formData);
       if (response.status == 201) {
-        fetchGridData({ setState, module: 'users' });
+        dispatch(GridActions.fetchGrid({ module: 'users' }));
         toast.success('User Created Successfully');
         setState({
           ...state,
@@ -174,7 +177,7 @@ export const AddUserModal = props => {
     } else {
       const response = await editUserDataApi(state.selectedItem?.id, formData);
       if (response.status == 200) {
-        fetchGridData({ setState, module: 'users' });
+        dispatch(GridActions.fetchGrid({ module: 'users' }));
         toast.success('User Updated Successfully');
         setState({
           ...state,
@@ -248,9 +251,9 @@ export const AddUserModal = props => {
             </DropDownWrapper>
             <DropDownWrapper>
               <StyledSelectField
-                name="type"
+                name="role_id"
                 size="sm"
-                options={roleOption}
+                options={rolesOption}
                 errors={errors}
                 control={control}
                 placeholder="Role"

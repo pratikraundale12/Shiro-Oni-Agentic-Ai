@@ -1,24 +1,20 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { toast } from 'react-toastify';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Button, InputField, Modal, SelectField } from '../../shared';
 import { useGlobalContext } from '../../utils';
 import { PlusCircleIcon, UserIcon } from '../../assets';
 import {
-  fetchGridData,
-  getClusters,
-  getClustersAccess,
-  getRolesClusters,
-  updatePermission,
+  ClustersActions,
+  ClustersSelectors,
+  RolesActions,
+  RolesSelectors,
 } from '../../store';
-import { isEmpty } from 'lodash';
-import { useForm } from 'react-hook-form';
 
 const TableContainer = styled.div`
   flex: 1;
-  overflow: hidden;
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 20px;
 `;
@@ -80,30 +76,23 @@ const RoleFormContainer = styled.div`
   gap: 1rem;
 `;
 
-export const EditPermissions = () => {
+export const EditClusterAccess = () => {
+  const dispatch = useDispatch();
   const {
-    state: {
-      roleModal,
-      permissionModal,
-      roles,
-      clustersAccess,
-      updatedClustersAccess,
-    },
+    state: { roleModal },
     setState,
   } = useGlobalContext();
   const {
     register,
     formState: { errors },
   } = useForm();
-  const [clusters, setClusters] = useState([]);
+  const roles = useSelector(RolesSelectors.getRoles);
+  const clusters = useSelector(ClustersSelectors.getClusters);
+  const clustersAccess = useSelector(RolesSelectors.getRolesClusters);
+  const permissionModal = useSelector(RolesSelectors.getPermissionModal);
+  const [updatedClustersAccess, setUpdatedClustersAccess] = useState([]);
 
-  const openPermissionModal = () =>
-    setState(prev => ({ ...prev, permissionModal: true }));
-  const closePermissionModal = () =>
-    setState(prev => ({
-      ...prev,
-      permissionModal: false,
-    }));
+  const handlePermissionModal = () => dispatch(RolesActions.permissionModal());
 
   const openRoleModal = () => setState(prev => ({ ...prev, roleModal: true }));
   const closeRoleModal = () =>
@@ -113,39 +102,11 @@ export const EditPermissions = () => {
     }));
 
   const handleChange = (role, value) => {
-    let updatedGroup = updatedClustersAccess.find(
-      item => item.role_id === role.id
-    );
-    console.log(updatedGroup);
-    setState(prev => ({
-      ...prev,
-      updatedClustersAccess: prev.updatedClustersAccess.map(item =>
+    setUpdatedClustersAccess(prev =>
+      prev.map(item =>
         item.role_id === role.id ? { ...item, clusters: value } : item
-      ),
-    }));
-  };
-
-  const fetchClusters = async () => {
-    const response = await getClusters();
-    setClusters(
-      response.map(item => ({ label: item.name, value: item.id })) || []
+      )
     );
-  };
-
-  const fetchClusterAccess = async () => {
-    const response = await getRolesClusters();
-    const filteredArray = response?.data?.map(item => ({
-      ...item,
-      clusters: item.clusters?.map(c => ({
-        label: c.cluster_name,
-        value: c.cluster_id,
-      })),
-    }));
-    setState(prev => ({
-      ...prev,
-      clustersAccess: filteredArray || [],
-      updatedClustersAccess: filteredArray || [],
-    }));
   };
 
   const handleSubmit = async () => {
@@ -185,23 +146,17 @@ export const EditPermissions = () => {
       }
     });
 
-    const response = await updatePermission(payload);
-    if (response?.message) {
-      toast.error(response.message);
-    } else {
-      toast.success('Updated Successfully');
-      fetchGridData({
-        setState,
-        module: 'clustersAccess',
-      });
-      closePermissionModal();
-    }
+    dispatch(RolesActions.updateRolesClusters(payload));
   };
 
   useEffect(() => {
-    fetchClusters();
-    fetchClusterAccess();
-  }, []);
+    dispatch(ClustersActions.fetchClusterList());
+    dispatch(RolesActions.fetchRolesClusters());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setUpdatedClustersAccess(clustersAccess);
+  }, [clustersAccess]);
 
   return (
     <div>
@@ -214,14 +169,14 @@ export const EditPermissions = () => {
         >
           Add New Role
         </Button>
-        <Button onClick={openPermissionModal} size="sm">
+        <Button onClick={handlePermissionModal} size="sm">
           Edit Permissions
         </Button>
       </ButtonContainer>
       <Modal
         title="Edit Cluster Permissions"
         isOpen={permissionModal}
-        onRequestClose={closePermissionModal}
+        onRequestClose={handlePermissionModal}
         secondaryButtonText="Back"
         primaryButtonText="Submit"
         footerAlign="start"
@@ -296,4 +251,4 @@ export const EditPermissions = () => {
   );
 };
 
-EditPermissions.propTypes = {};
+EditClusterAccess.propTypes = {};

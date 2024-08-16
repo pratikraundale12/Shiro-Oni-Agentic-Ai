@@ -1,9 +1,12 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import * as yup from 'yup';
 import { QRIcons } from '../../assets';
 import {
   CheckboxField,
@@ -11,8 +14,7 @@ import {
   Modal,
   RadioSelectField,
 } from '../../shared';
-// import { updateParameterContextService } from '../../store';
-import { useGlobalContext } from '../../utils';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const ModalBody = styled.div`
   position: relative;
@@ -74,6 +76,13 @@ const DEFAULT_VALUES = {
   sensitive: 'false',
 };
 
+const parameterContextSchema = yup.object().shape({
+  name: yup.string().required('Name is required'),
+  value: yup.string().required('Value is required'),
+  description: yup.string().required('Description is required'),
+  sensitive: yup.string().nullable(),
+});
+
 const AddParameterContext = ({
   isAddParameterContextOpen,
   closePopup,
@@ -83,11 +92,22 @@ const AddParameterContext = ({
   newlyAddedPrameterContext,
   setNewlyAddedParameterContext,
 }) => {
-  const { state, setState } = useGlobalContext();
-  const parameterDetailsData = state?.parameterDetails?.data || {};
-  delete parameterDetailsData.version;
-  const parameterContextList = Object.values(parameterDetailsData).flat();
-  const { register, handleSubmit, control, reset, setValue } = useForm({
+  const dispatch = useDispatch();
+  const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
+  const deployOrUpgradeDetails = useSelector(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const parameterContextList =
+    parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(parameterContextSchema),
     defaultValues: DEFAULT_VALUES,
   });
 
@@ -167,15 +187,13 @@ const AddParameterContext = ({
         existingParameterContext &&
         Object.values(existingParameterContext)?.length !== 0
       ) {
-        setState({
-          ...state,
-          parameterDetails: {
-            ...state.parameterDetails,
-            data: {
-              [data?.name]: filteredParameterContextList,
-            },
-          },
-        });
+        dispatch(
+          NamespacesActions.setParameterDetails({
+            ...parameterDetails,
+            [deployOrUpgradeDetails?.parameterContextId]:
+              filteredParameterContextList,
+          })
+        );
         setNewlyAddedParameterContext([...updatedData, data]);
       } else {
         setNewlyAddedParameterContext([...updatedData]);
@@ -223,6 +241,7 @@ const AddParameterContext = ({
                   icon={<QRIcons />}
                   disabled={isAddParameterContextOpen?.mode === 'edit'}
                   register={register}
+                  errors={errors}
                 />
               </InputBox>
             </ColumnSix>
@@ -238,6 +257,7 @@ const AddParameterContext = ({
                     check ? 'Empty String Set' : 'Sensitive value set'
                   }
                   disabled={check}
+                  errors={errors}
                 />
               </InputBox>
             </ColumnSix>
@@ -265,6 +285,7 @@ const AddParameterContext = ({
                   label="Description"
                   icon={<QRIcons />}
                   register={register}
+                  errors={errors}
                 />
               </InputBox>
             </ColumnOneTwo>

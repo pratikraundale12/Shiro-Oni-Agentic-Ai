@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 import { BagIcon } from '../../../../assets';
-import { hasError } from '../../../../utils';
+import { hasError } from '../../../../helpers';
 import InputField from '../InputField';
 import TogglePassword from './components/TogglePassword';
 

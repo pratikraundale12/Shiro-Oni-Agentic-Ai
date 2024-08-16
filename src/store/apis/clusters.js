@@ -1,8 +1,12 @@
-import { API_URL } from '../../utils';
+/*eslint-disable*/
+
+import { API_URL } from '../../constants';
 import API from './api';
 
-export const getClustersList = async ({ clusterData }) => {
-  const { data } = await API.post('/list-clusters', clusterData);
+export const getClustersList = async ({ clusterData, ...rest }) => {
+  const { data } = await API.post('/list-clusters', clusterData, {
+    params: { ...rest },
+  });
   return data;
 };
 

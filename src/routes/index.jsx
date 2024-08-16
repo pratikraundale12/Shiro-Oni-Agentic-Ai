@@ -1,6 +1,8 @@
 import React from 'react';
-import { Outlet, Route, Routes as Router } from 'react-router-dom';
+import { Outlet, Route } from 'react-router-dom';
+
 import AuthGaurd from './AuthGuard';
+import { HistoryRouter } from './HistoryRouter';
 
 import {
   NotFound,
@@ -49,7 +51,7 @@ export const ROUTES_MENU = [
   },
   {
     name: 'Cluster',
-    path: 'cluster',
+    path: 'clusters',
     icon: ClusterIcon,
     pages: [
       {
@@ -182,7 +184,7 @@ export const ROUTES_MENU = [
 
 const Routes = () => {
   return (
-    <Router>
+    <HistoryRouter>
       {/* Public Routes */}
       <Route path="/admin/login" element={<Login />} />
       <Route path="/forgot" element={<Forgot />} />
@@ -216,7 +218,7 @@ const Routes = () => {
         ))}
       </Route>
       <Route path="*" element={<NotFound />} />
-    </Router>
+    </HistoryRouter>
   );
 };
 

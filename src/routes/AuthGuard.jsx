@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { isEmpty } from 'lodash';
 
 import { FullPageLoader, Header, Sidebar } from '../components';
-import { useGlobalContext } from '../utils';
-import { currentUser } from '../store';
+import {
+  AuthenticationActions,
+  AuthenticationSelectors,
+  LoadingSelectors,
+} from '../store';
 
 const Container = styled.div`
   width: 100%;
@@ -32,59 +35,24 @@ const Wrapper = styled.div`
 `;
 
 const AuthGuard = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const {
-    state: { currentUser: user, activeRoute: route },
-    setState,
-  } = useGlobalContext();
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector(AuthenticationSelectors.getIsLoggedIn);
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchCurrentUser')
+  );
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
-
-  async function fetchCurrentUser() {
-    setLoading(true);
-    let pathname = window.location.pathname;
-    pathname = pathname.split('/')[1];
-    const response = await currentUser();
-    if (response.status === 200) {
-      const date = new Date(response?.data?.license);
-      const istTime = date.toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-        hour12: true,
-      });
-
-      setState(prev => ({
-        ...prev,
-        activeRoute: pathname || 'dashboard',
-        currentUser: response.data,
-        licenseTimeStamp: istTime,
-      }));
-      setLoading(false);
-    } else {
-      setState(prev => ({ ...prev, activeRoute: 'login', currentUser: null }));
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchCurrentUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (loading) {
-    return <FullPageLoader loading={loading} />;
-  }
-  if (isEmpty(user)) {
-    navigate('login');
-  }
 
   const handleOpenSidebar = () => {
     setIsOpenSidebar(!isOpenSidebar);
   };
+
+  useEffect(() => {
+    dispatch(AuthenticationActions.fetchCurrentUser());
+  }, [dispatch]);
+
+  if (loading || !isLoggedIn) {
+    return <FullPageLoader loading={loading || !isLoggedIn} />;
+  }
 
   return (
     <Container>
@@ -93,7 +61,7 @@ const AuthGuard = () => {
         isOpenSidebar={isOpenSidebar}
       />
       <Content>
-        <Header route={route} isOpenSidebar={isOpenSidebar} />
+        <Header isOpenSidebar={isOpenSidebar} />
         <Wrapper>
           <Outlet />
         </Wrapper>

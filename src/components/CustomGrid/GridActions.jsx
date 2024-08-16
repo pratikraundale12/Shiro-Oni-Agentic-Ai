@@ -1,15 +1,23 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { useForm } from 'react-hook-form';
+import { useGlobalContext } from '../../utils';
+import { history } from '../../helpers/history';
+import { useLocation } from 'react-router-dom';
+import { ClusterSelect } from '../ClusterSelect';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { Button, SelectField } from '../../shared';
-import { fetchGridData } from '../../store';
 import { theme } from '../../styles';
-import { useGlobalContext } from '../../utils';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  GridActions as GridSagsActions,
+  RolesActions,
+  RolesSelectors,
+} from '../../store';
+import { ACCESS_OPTIONS } from '../../constants';
 
 const Flex = styled.div`
   display: flex;
@@ -54,6 +62,14 @@ const Search = styled.input`
   }
 `;
 
+const StyledClusterSelect = styled(ClusterSelect)`
+  margin-bottom: 0;
+
+  > div {
+    margin-top: 0;
+  }
+`;
+
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
   min-width: 8.5rem;
@@ -91,7 +107,6 @@ const ImageContainer = styled.div`
 export const GridActions = ({
   title,
   module,
-  clusterOptions,
   refreshOptions,
   statusOptions,
   search,
@@ -100,29 +115,30 @@ export const GridActions = ({
   addModal: Modal,
   handleRefresh = () => {},
 }) => {
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const accessType = useSelector(RolesSelectors.getAccessType);
   const { setState } = useGlobalContext();
-  const navigate = useNavigate();
   const { watch, control } = useForm();
 
   const watchStatus = watch('is_active');
-  const watchCluster = watch('cluster');
 
   useEffect(() => {
-    if (watchCluster || watchStatus) {
-      setState(prev => ({
-        ...prev,
-        ...(watchStatus && { is_active: watchStatus }),
-        ...(watchCluster && { selectedSourceClusterId: watchCluster }),
-      }));
-      fetchGridData({
-        setState,
-        module,
-        ...(watchStatus && watchStatus !== 'all' && { is_active: watchStatus }),
-        ...(watchCluster && { selectedSourceClusterId: watchCluster }),
-      });
+    if (watchStatus) {
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module,
+          params: {
+            page: 1,
+            ...(search && { search }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && { is_active: watchStatus }),
+          },
+        })
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchStatus, watchCluster]);
+  }, [watchStatus]);
 
   return (
     <>
@@ -159,20 +175,30 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
-          {window.location.pathname.includes('namespaces') && (
+          {location.pathname.includes('namespaces') && (
+            <DropdownContainer>
+              <StyledClusterSelect
+                size="sm"
+                placeholder="Cluster"
+                title="Select Cluster"
+                backgroundColor={theme.colors.lightGrey}
+              />
+            </DropdownContainer>
+          )}
+          {location.pathname.includes('permission-matrix') && (
             <StyledSelectField
               size="sm"
-              name="cluster"
-              control={control}
-              placeholder="Clusters"
-              options={clusterOptions}
+              placeholder="Access"
+              options={ACCESS_OPTIONS}
+              defaultValue={accessType}
               backgroundColor={theme.colors.lightGrey}
+              onChange={option => dispatch(RolesActions.setAccessType(option))}
             />
           )}
           {!isEmpty(buttonText) && (
             <Button
               icon={<PlusCircleIcon width={16} height={16} color="white" />}
-              onClick={() => navigate('add')}
+              onClick={() => history.push(`/${module}/add`)}
               size="sm"
             >
               {buttonText}
