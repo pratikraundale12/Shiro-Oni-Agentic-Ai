@@ -19,6 +19,7 @@ import {
   PermissionMatrix,
   Add,
   UserLogin,
+  LdapConfig,
   ActvityHistory,
 } from '../pages';
 import {
@@ -149,6 +150,23 @@ export const ROUTES_MENU = [
       },
     ],
   },
+
+  {
+    name: 'LDAP Configuration',
+    path: 'ldap-configuration',
+    icon: LockIcon,
+    pages: [
+      {
+        path: '',
+        component: <LdapConfig />,
+      },
+      {
+        path: ['add', 'edit/:id'],
+        component: <div>Permission</div>,
+      },
+    ],
+  },
+
   {
     name: 'Activity History',
     path: 'activity-history',
