@@ -1,23 +1,22 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
-
 import { useForm } from 'react-hook-form';
-import { useGlobalContext } from '../../utils';
-import { history } from '../../helpers/history';
-import { useLocation } from 'react-router-dom';
-import { ClusterSelect } from '../ClusterSelect';
-import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
-import { Button, SelectField } from '../../shared';
-import { theme } from '../../styles';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
+import { ACCESS_OPTIONS, KDFM } from '../../constants';
+import { history } from '../../helpers/history';
+import { Button, SelectField } from '../../shared';
 import {
   GridActions as GridSagsActions,
   RolesActions,
   RolesSelectors,
 } from '../../store';
-import { ACCESS_OPTIONS } from '../../constants';
+import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
+import { ClusterSelect } from '../ClusterSelect';
 
 const Flex = styled.div`
   display: flex;
@@ -157,7 +156,7 @@ export const GridActions = ({
                 size="sm"
                 control={control}
                 options={refreshOptions}
-                placeholder="Refresh"
+                placeholder={KDFM.REFRESH}
                 backgroundColor={theme.colors.lightGrey}
                 onChange={handleRefresh}
               />
@@ -170,7 +169,7 @@ export const GridActions = ({
                 size="sm"
                 control={control}
                 options={statusOptions}
-                placeholder="Status"
+                placeholder={KDFM.STATUS}
                 backgroundColor={theme.colors.lightGrey}
               />
             </DropdownContainer>
@@ -179,8 +178,8 @@ export const GridActions = ({
             <DropdownContainer>
               <StyledClusterSelect
                 size="sm"
-                placeholder="Cluster"
-                title="Select Cluster"
+                placeholder={KDFM.CLUSTER}
+                title={KDFM.SELECT_CLUSTER}
                 backgroundColor={theme.colors.lightGrey}
               />
             </DropdownContainer>
@@ -188,7 +187,7 @@ export const GridActions = ({
           {location.pathname.includes('permission-matrix') && (
             <StyledSelectField
               size="sm"
-              placeholder="Access"
+              placeholder={KDFM.ACCESS}
               options={ACCESS_OPTIONS}
               defaultValue={accessType}
               backgroundColor={theme.colors.lightGrey}

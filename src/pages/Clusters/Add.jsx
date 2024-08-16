@@ -1,20 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Certificate } from './components/Certificate';
-import { Creditionals } from './components/Creditionals';
 import { useLocation } from 'react-router-dom';
-import { RegexConst } from '../../constants';
-import { SummaryModal } from './components/SummaryModal';
-import { SuccessTestModal } from './components/SuccessTestModal';
-import { FailedTestModal } from './components/FailedTestModal';
-import { history } from '../../helpers/history';
-import {
-  testCluster,
-  testRegistry,
-  getOneRegistry,
-  getRegistryList,
-} from '../../store/apis';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -24,7 +11,21 @@ import {
   QRIcons,
   WhiteBoradIcon,
 } from '../../assets';
+import { CLUSTER_MODULE_TABS, KDFM, RegexConst } from '../../constants';
+import { history } from '../../helpers/history';
 import { Button, InputField, SelectField } from '../../shared';
+import CopyToClipboard from '../../shared/CopyToClipboard';
+import {
+  getOneRegistry,
+  getRegistryList,
+  testCluster,
+  testRegistry,
+} from '../../store/apis';
+import { Certificate } from './components/Certificate';
+import { Creditionals } from './components/Creditionals';
+import { FailedTestModal } from './components/FailedTestModal';
+import { SuccessTestModal } from './components/SuccessTestModal';
+import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
 
 const Wrapper = styled.div`
@@ -130,7 +131,6 @@ const TextTest = styled.div`
   font-size: 20px;
   color: #444445;
   line-height: 27.24px;
-  text-transform: capitalize;
 `;
 
 const StyledButton = styled(Button)`
@@ -227,6 +227,7 @@ const ClusterSchema = yup.object().shape({
   clusterName: yup
     .string()
     .min(3, 'Cluster Name must be at least 3 characters long')
+    .max(30, 'Cluster Name must be at most 30 characters long')
     .required('Cluster Name is required'),
   nifiUrl: yup
     .string()
@@ -239,6 +240,7 @@ const RegistrySchema = yup.object().shape({
   registryName: yup
     .string()
     .min(3, 'Registry Name must be at least 3 characters long')
+    .max(30, 'Registry Name must be at most 30 characters long')
     .required('Registry Name is required'),
   registryUrl: yup
     .string()
@@ -247,17 +249,11 @@ const RegistrySchema = yup.object().shape({
     .required('NiFi URL is required'),
 });
 
-const TABS = {
-  CLUSTER: 'cluster',
-  REGISTRY: 'registry',
-};
-
 export const Add = () => {
-  const [activeTab, setActiveTab] = useState(TABS.CLUSTER);
+  const [activeTab, setActiveTab] = useState(CLUSTER_MODULE_TABS.CLUSTER);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isCredOpen, setIsCredOpen] = useState(false);
-  // const [clusterTest, setClusterTest] = useState(false);
   const [test, setTest] = useState(true);
   const [suceessModal, setSuccessModal] = useState(false);
   const [failedModal, setFailedModal] = useState(false);
@@ -287,7 +283,7 @@ export const Add = () => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(
-      activeTab === TABS.CLUSTER ? ClusterSchema : RegistrySchema
+      activeTab === CLUSTER_MODULE_TABS.CLUSTER ? ClusterSchema : RegistrySchema
     ),
     mode: 'all',
     reValidateMode: 'onChange',
@@ -302,13 +298,13 @@ export const Add = () => {
     setDataFill(false);
 
     setTest(true);
-    if (activeTab === TABS.REGISTRY && newRegistry) {
-      setActiveTab(TABS.REGISTRY);
+    if (activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry) {
+      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
       setNewRegistry(false);
-    } else if (activeTab === TABS.CLUSTER) {
+    } else if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
       history.push('/clusters');
     } else {
-      setActiveTab(TABS.CLUSTER);
+      setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
     }
   };
 
@@ -327,9 +323,9 @@ export const Add = () => {
     setDataFill(false);
 
     setTest(true);
-    if (activeTab === TABS.CLUSTER) {
-      setActiveTab(TABS.REGISTRY);
-    } else if (activeTab === TABS.REGISTRY) {
+    if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
+      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
+    } else if (activeTab === CLUSTER_MODULE_TABS.REGISTRY) {
       setOpenSummary(true);
     }
   };
@@ -476,69 +472,70 @@ export const Add = () => {
       }
     }
   };
+
   return (
     <Wrapper>
       <Title title="Add New Cluster Details" />
       <Container>
         <NavTabs id="nav-tab" role="tablist">
           <NavButton
-            active={activeTab === TABS.CLUSTER}
-            onClick={() => setActiveTab(TABS.CLUSTER)}
+            active={activeTab === CLUSTER_MODULE_TABS.CLUSTER}
+            onClick={() => setActiveTab(CLUSTER_MODULE_TABS.CLUSTER)}
           >
-            Cluster Details
+            {KDFM.CLUSTER_DETAILS}
           </NavButton>
-          <NavButton active={activeTab === TABS.REGISTRY}>
-            Registry Details
+          <NavButton active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}>
+            {KDFM.REGISTRY_DETAILS}
           </NavButton>
         </NavTabs>
 
-        {activeTab === TABS.CLUSTER && (
+        {activeTab === CLUSTER_MODULE_TABS.CLUSTER && (
           <FormContainer>
             <InputField
               name="clusterName"
               register={register}
               icon={<QRIcons />}
-              label="Cluster Name"
-              placeholder="Enter your Cluster Name"
+              label={KDFM.CLUSTER_NAME}
+              placeholder={KDFM.ENTER_CLUSTER_NAME}
               errors={errors}
             />
             <InputField
               name="nifiUrl"
               register={register}
               icon={<LinkIcon />}
-              label="NiFi URL"
-              placeholder="Enter your Nifi Url"
+              label={KDFM.NIFI_URL}
+              disabled={testSuccess}
+              placeholder={KDFM.ENTER_NIFI_URL}
               errors={errors}
             />
             <Flex>
               {test ? (
                 <>
-                  {' '}
                   <div>
-                    <ButtonLabel>Test Via Certificate</ButtonLabel>
+                    <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
                     <Button
                       onClick={() => setIsCertificateOpen(true)}
                       disabled={testSuccess || !dataFill}
                     >
-                      Add Certificate
+                      {KDFM.ADD_CERTIFICATE}
                     </Button>
                   </div>
-                  <ORText>OR</ORText>
+                  <ORText>{KDFM.SEPARATOR}</ORText>
                   <div>
-                    <ButtonLabel>Test Via Credentials</ButtonLabel>
+                    <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
                     <Button
                       onClick={() => setIsCredOpen(true)}
                       disabled={testSuccess || !dataFill}
                     >
-                      Enter Credentials
+                      {KDFM.ENTER_CREDENTIALS}
                     </Button>
-                  </div>{' '}
+                  </div>
                 </>
               ) : (
                 <div>
-                  <ButtonLabel>Test Cluster</ButtonLabel>
-                  <Button onClick={testData} loading={loading && 'testng...'}>
-                    Test Cluster
+                  <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
+                  <Button onClick={testData} loading={loading}>
+                    {KDFM.TEST_CLUSTER}
                   </Button>
                 </div>
               )}
@@ -547,20 +544,25 @@ export const Add = () => {
               <UploadCertificateContainer>
                 <CertificateMessage>
                   <WhiteBoradIcon />
-                  <TextTest>{`${activeTab} Tested Successfully`}</TextTest>
+                  <TextTest>
+                    {activeTab === CLUSTER_MODULE_TABS.CLUSTER
+                      ? KDFM.CLUSTER_TESTED_SUCCESSFULLY
+                      : KDFM.REGISRTY_TESTED_SUCCESSFULLY}
+                  </TextTest>
                 </CertificateMessage>
               </UploadCertificateContainer>
             )}
           </FormContainer>
         )}
 
-        {activeTab === TABS.REGISTRY && !newRegistry && (
+        {activeTab === CLUSTER_MODULE_TABS.REGISTRY && !newRegistry && (
           <FormContainer>
             <SelectField
               control={control}
               name="registry"
-              label="Registry Name"
+              label={KDFM.REGISTRY_NAME}
               options={registries}
+              icon={<QRIcons />}
             />
             <ORText style={{ textAlign: 'center' }}>OR</ORText>
             <div>
@@ -576,22 +578,25 @@ export const Add = () => {
                   setNewRegistry(true);
                 }}
               >
-                Add New Registry
+                {KDFM.ADD_NEW_REGISTRY}
               </StyledButton>
             </div>
 
             {selectedRegistryId ? (
               <RegistryDetailsDiv>
-                <TitleRegistry>Registry Details</TitleRegistry>
+                <TitleRegistry>{KDFM.REGISTRY_DETAILS}</TitleRegistry>
                 <Flex>
                   <BoxContentArea>
-                    <p>Registry Name</p>
+                    <p>{KDFM.REGISTRY_NAME}</p>
                     <span>{registryData.name}</span>
                   </BoxContentArea>
 
                   <BoxContentArea>
-                    <p>Registry Url</p>
-                    <span>{registryData.registry_url}</span>
+                    <p>{KDFM.REGISTRY_URL}</p>
+                    <span className="d-flex align-items-center gap-3">
+                      {registryData.registry_url}
+                      <CopyToClipboard copyItem={registryData.registry_url} />
+                    </span>
                   </BoxContentArea>
                 </Flex>
                 <RegistryDetailsDivTwo>
@@ -599,33 +604,37 @@ export const Add = () => {
                     {!testSuccess ? (
                       <Flex>
                         <div>
-                          <ButtonLabel>Test Via Certificate</ButtonLabel>
+                          <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
                           <Button
                             onClick={() => {
                               setIsCertificateOpen(true);
                             }}
                             disabled={testSuccess}
                           >
-                            Add Certificate
+                            {KDFM.ADD_CERTIFICATE}
                           </Button>
                         </div>
-                        <ORText>OR</ORText>
+                        <ORText>{KDFM.SEPARATOR}</ORText>
                         <div>
-                          <ButtonLabel>Test Via Credentials</ButtonLabel>
+                          <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
                           <Button
                             onClick={() => {
                               setIsCredOpen(true);
                             }}
                             disabled={testSuccess}
                           >
-                            Enter Credentials
+                            {KDFM.ENTER_CREDENTIALS}
                           </Button>
                         </div>
                         {testSuccess && !suceessModal && (
                           <UploadCertificateContainer>
                             <CertificateMessage>
                               <WhiteBoradIcon />
-                              <TextTest>{`${activeTab} Tested Successfully`}</TextTest>
+                              <TextTest>
+                                {activeTab === CLUSTER_MODULE_TABS.REGISTRY
+                                  ? KDFM.REGISRTY_TESTED_SUCCESSFULLY
+                                  : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
+                              </TextTest>
                             </CertificateMessage>
                           </UploadCertificateContainer>
                         )}
@@ -633,7 +642,11 @@ export const Add = () => {
                     ) : (
                       <CertificateMessage>
                         <WhiteBoradIcon />
-                        <TextTest>{`${activeTab} Tested Successfully`}</TextTest>
+                        <TextTest>
+                          {activeTab === CLUSTER_MODULE_TABS.REGISTRY
+                            ? KDFM.REGISRTY_TESTED_SUCCESSFULLY
+                            : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
+                        </TextTest>
                       </CertificateMessage>
                     )}
                     <ButtonDiv>
@@ -643,7 +656,7 @@ export const Add = () => {
                           setNewRegistry(true);
                         }}
                       >
-                        Edit
+                        {KDFM.EDIT}
                       </Button>
                       <Button
                         onClick={() => {
@@ -651,7 +664,7 @@ export const Add = () => {
                           setRegistryData('');
                         }}
                       >
-                        Delete
+                        {KDFM.DELETE}
                       </Button>
                     </ButtonDiv>
                   </FlexTwo>
@@ -660,61 +673,62 @@ export const Add = () => {
             ) : (
               <NoDataContainer>
                 <NoDataIcon />
-                <NoDataText>No Data Found!!</NoDataText>
+                <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
               </NoDataContainer>
             )}
           </FormContainer>
         )}
 
-        {activeTab === TABS.REGISTRY && newRegistry && (
+        {activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry && (
           <FormContainer>
             <InputField
               name="registryName"
               register={register}
               icon={<QRIcons />}
-              label="Registry Name"
-              placeholder="Enter your Registry Name"
+              label={KDFM.REGISTRY_NAME}
+              placeholder={KDFM.ENTER_REGISTRY_NAME}
               errors={errors}
             />
             <InputField
               name="registryUrl"
               register={register}
               icon={<LinkIcon />}
-              label="Registry Url"
-              placeholder="Enter your Registry Url"
+              label={KDFM.REGISTRY_URL}
+              disabled={testSuccess}
+              placeholder={KDFM.ENTER_REGISTRY_URL}
               errors={errors}
             />
             <Flex>
               {test ? (
                 <>
                   <div>
-                    <ButtonLabel>Test Via Certificate</ButtonLabel>
+                    <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
                     <Button
                       onClick={() => setIsCertificateOpen(true)}
                       disabled={testSuccess || !dataFill}
                     >
-                      Add Certificate
+                      {KDFM.ADD_CERTIFICATE}
                     </Button>
                   </div>
                   <ORText>OR</ORText>
                   <div>
-                    <ButtonLabel>Test Via Credentials</ButtonLabel>
+                    <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
                     <Button
                       onClick={() => setIsCredOpen(true)}
                       disabled={testSuccess || !dataFill}
                     >
-                      Enter Credentials
+                      {KDFM.ENTER_CREDENTIALS}
                     </Button>
                   </div>
                 </>
               ) : (
                 <div>
-                  <ButtonLabel>Test Cluster</ButtonLabel>
+                  <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
                   <Button
                     onClick={testData}
                     // disabled={addCertificateSatus}
                   >
-                    Test Registry
+                    {KDFM.TEST_REGISTRY}
                   </Button>
                 </div>
               )}
@@ -723,7 +737,11 @@ export const Add = () => {
               <UploadCertificateContainer>
                 <CertificateMessage>
                   <WhiteBoradIcon />
-                  <TextTest>{`${activeTab} Tested Successfully`}</TextTest>
+                  <TextTest>
+                    {activeTab === CLUSTER_MODULE_TABS.REGISTRY
+                      ? KDFM.REGISRTY_TESTED_SUCCESSFULLY
+                      : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
+                  </TextTest>
                 </CertificateMessage>
               </UploadCertificateContainer>
             )}
@@ -733,16 +751,16 @@ export const Add = () => {
       <FlexWrapper>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <Button variant="secondary" onClick={handleBack}>
-            Back
+            {KDFM.BACK}
           </Button>
           {(activeTab === 'cluster' || newRegistry) && (
             <Button onClick={handleSubmit(onSubmit)} disabled={!testSuccess}>
-              Continue
+              {KDFM.CONTINUE}
             </Button>
           )}
           {!newRegistry && activeTab === 'registry' && (
             <Button onClick={handleRegistry} disabled={!testSuccess}>
-              Continue
+              {KDFM.CONTINUE}
             </Button>
           )}
         </div>
@@ -767,7 +785,6 @@ export const Add = () => {
         registryData={registryData}
         setSuccessModal={setSuccessModal}
       />
-
       <SummaryModal
         clusterData={clusterData}
         registryData={registryData}
@@ -777,7 +794,6 @@ export const Add = () => {
         clusterId={clusterId}
         edit={clusterId ? true : false}
       />
-
       {suceessModal && (
         <SuccessTestModal
           successTest={suceessModal}
@@ -785,7 +801,6 @@ export const Add = () => {
           name={activeTab}
         />
       )}
-
       <FailedTestModal
         failedTest={failedModal}
         setFailedTest={setFailedModal}

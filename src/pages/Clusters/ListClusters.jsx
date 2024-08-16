@@ -1,19 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-
-import { ModalWithIcon } from '../../shared';
-import { deleteCluster } from '../../store/index1';
-import { useGlobalContext } from '../../utils';
-
+import styled from 'styled-components';
 import {
   DeleteDustbinIcon,
   DeleteSmallIcon,
   OpenEyeIcon,
   PencilIcon,
 } from '../../assets';
-import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
-import { history } from '../../helpers/history';
 import {
   ActionRender,
   Grid,
@@ -22,8 +16,12 @@ import {
   TextRender,
   UrlRender,
 } from '../../components';
-import { useDispatch } from 'react-redux';
+import { KDFM, REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
+import { history } from '../../helpers/history';
+import { ModalWithIcon } from '../../shared';
 import { GridActions } from '../../store';
+import { deleteCluster } from '../../store/index1';
+import { useGlobalContext } from '../../utils';
 
 const List = styled.div`
   position: absolute;
@@ -114,15 +112,15 @@ export const ListClusters = () => {
             <List ref={menuRef}>
               <Item onClick={() => handleClick('edit')}>
                 <PencilIcon width={16} height={16} />
-                <span>Edit</span>
+                <span>{KDFM.EDIT}</span>
               </Item>
               <Item onClick={() => handleClick('view')}>
                 <OpenEyeIcon width={18} height={18} />
-                <span>View</span>
+                <span>{KDFM.VIEW}</span>
               </Item>
               <Item onClick={() => handleClick('delete')}>
                 <DeleteSmallIcon width={18} height={18} />
-                <span>Delete</span>
+                <span>{KDFM.DELETE}</span>
               </Item>
             </List>
           )}
@@ -135,7 +133,7 @@ export const ListClusters = () => {
     const response = await deleteCluster(state.selectedItem.id);
     if (response.status == 204) {
       dispatch(GridActions.fetchGrid({ module: 'clusters' }));
-      toast.success('cluster Deleted Successfully');
+      toast.success('Cluster Deleted Successfully');
       setState({ ...state, clusterDeleteModal: false });
     } else {
       toast.error('error occured');
@@ -211,25 +209,24 @@ export const ListClusters = () => {
   return (
     <>
       <ModalWithIcon
-        title="Delete Cluster"
-        primaryButtonText="Delete"
-        secondaryButtonText="Cancel"
+        title={KDFM.DELETE_CLUSTER}
+        primaryButtonText={KDFM.DELETE}
+        secondaryButtonText={KDFM.CANCEL}
         icon={<DeleteDustbinIcon />}
         isOpen={state.clusterDeleteModal}
         onSubmit={deleteUserConfirmed}
         onRequestClose={() => setState({ ...state, clusterDeleteModal: false })}
-        primaryText="Are You Sure You Want to Delete This Cluster?"
-        secondaryText="It Will Permanently Remove the Cluster"
+        primaryText={KDFM.DELETE_CLUSTER_WARNING}
+        secondaryText={KDFM.DELETE_CLUSTER_DESCRIPTION}
       />
-
       <Grid
         module="clusters"
-        title="Clusters List"
-        buttonText="Add New Cluster"
+        title={KDFM.CLUSTER_LIST}
+        buttonText={KDFM.ADD_NEW_CLUSTER}
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
-        placeholder="Search Cluster Name, Status, URL"
+        placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
         handleRefresh={handleRefresh}
       />
     </>

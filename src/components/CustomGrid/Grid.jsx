@@ -3,7 +3,7 @@ import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import { default as React, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -22,6 +22,7 @@ import { LoadingSelectors, NamespacesSelectors } from '../../store';
 import { GridActions, GridSelectors } from '../../store/grid';
 // import ReactPagination from './ReactPagnation';
 import { useSort } from '@table-library/react-table-library/sort';
+import { KDFM } from '../../constants';
 import { TextRender } from './CellRenders';
 import { Table } from './Table';
 
@@ -248,7 +249,7 @@ export const Grid = ({
               setState(prevState => ({ ...prevState, eventModal: false }))
             }
             size="lg"
-            primaryButtonText="Continue"
+            primaryButtonText={KDFM.CONTINUE}
             onSubmit={() =>
               setState(prevState => ({ ...prevState, eventModal: false }))
             }

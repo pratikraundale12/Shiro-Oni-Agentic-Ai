@@ -1,13 +1,13 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
-import { ThemeProvider } from 'styled-components';
 import { Provider } from 'react-redux';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-tooltip/dist/react-tooltip.css';
+import { ThemeProvider } from 'styled-components';
+import Routes from './routes';
 import { GlobalStyles, theme } from './styles';
 import { GlobalProvider } from './utils';
-import Routes from './routes';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 import store from './store/configureStore';
 

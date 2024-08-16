@@ -17,6 +17,7 @@ import {
 } from '../../assets';
 import { FullPageLoader } from '../../components';
 import { history } from '../../helpers/history';
+import CopyToClipboard from '../../shared/CopyToClipboard';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import {
   // deployCluster,
@@ -311,13 +312,12 @@ const Summary = () => {
   const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
     []
   );
-
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
+
   const getParamerterContext = async () => {
     setLoading(true);
     openParameterContext();
-    dispatch(NamespacesActions.fetchParameterContext());
     setLoading(false);
   };
 
@@ -335,10 +335,11 @@ const Summary = () => {
 
   const openParameterContext = () => {
     setIsParameterContextOpen(true);
-    dispatch(NamespacesActions.deployClusterSuccess());
+    dispatch(NamespacesActions.fetchParameterContext());
   };
 
   const closeParameterContext = () => {
+    // dispatch(NamespacesActions.setParameterDetails({}));
     setIsParameterContextOpen(false);
     setNewlyAddedParameterContext([]);
     dispatch(NamespacesActions.setDeployedModal());
@@ -463,6 +464,9 @@ const Summary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       {checkDestCluster.registryUrl}
+                      <CopyToClipboard
+                        copyItem={checkDestCluster.registryUrl}
+                      />
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
