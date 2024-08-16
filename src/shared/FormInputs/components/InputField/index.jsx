@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 
-import FieldErrorMessage from '../FieldErrorMessage';
 import { hasError } from '../../../../helpers';
+import FieldErrorMessage from '../FieldErrorMessage';
 
 const Container = styled.div`
   width: 100%;
@@ -58,22 +58,20 @@ const Container = styled.div`
     font-size: 14px;
     color: ${props => props.theme.colors.darker};
     font-family: ${props => props.theme.fontNato};
-
     &::placeholder {
       color: ${props => props.theme.colors.grey};
       font-family: ${props => props.theme.fontNato};
       font-size: 14px;
     }
-
     &:focus-visible {
       outline: none;
     }
-
     &:focus {
       border: 1px solid ${props => props.theme.colors.darker};
     }
     &:disabled {
       background: ${props => props.theme.colors.darkGrey3};
+      cursor: not-allowed;
     }
   }
 

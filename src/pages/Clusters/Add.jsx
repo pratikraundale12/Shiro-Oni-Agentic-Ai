@@ -1,20 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Certificate } from './components/Certificate';
-import { Creditionals } from './components/Creditionals';
 import { useLocation } from 'react-router-dom';
-import { RegexConst } from '../../constants';
-import { SummaryModal } from './components/SummaryModal';
-import { SuccessTestModal } from './components/SuccessTestModal';
-import { FailedTestModal } from './components/FailedTestModal';
-import { history } from '../../helpers/history';
-import {
-  testCluster,
-  testRegistry,
-  getOneRegistry,
-  getRegistryList,
-} from '../../store/apis';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -24,7 +11,20 @@ import {
   QRIcons,
   WhiteBoradIcon,
 } from '../../assets';
+import { RegexConst } from '../../constants';
+import { history } from '../../helpers/history';
 import { Button, InputField, SelectField } from '../../shared';
+import {
+  getOneRegistry,
+  getRegistryList,
+  testCluster,
+  testRegistry,
+} from '../../store/apis';
+import { Certificate } from './components/Certificate';
+import { Creditionals } from './components/Creditionals';
+import { FailedTestModal } from './components/FailedTestModal';
+import { SuccessTestModal } from './components/SuccessTestModal';
+import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
 
 const Wrapper = styled.div`
@@ -476,6 +476,7 @@ export const Add = () => {
       }
     }
   };
+
   return (
     <Wrapper>
       <Title title="Add New Cluster Details" />
@@ -507,13 +508,13 @@ export const Add = () => {
               register={register}
               icon={<LinkIcon />}
               label="NiFi URL"
+              disabled={testSuccess}
               placeholder="Enter your Nifi Url"
               errors={errors}
             />
             <Flex>
               {test ? (
                 <>
-                  {' '}
                   <div>
                     <ButtonLabel>Test Via Certificate</ButtonLabel>
                     <Button
@@ -681,6 +682,7 @@ export const Add = () => {
               register={register}
               icon={<LinkIcon />}
               label="Registry Url"
+              disabled={testSuccess}
               placeholder="Enter your Registry Url"
               errors={errors}
             />
