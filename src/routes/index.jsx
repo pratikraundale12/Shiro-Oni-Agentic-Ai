@@ -30,11 +30,13 @@ import {
   NameSpaceIcon,
   PeopleIcon,
   ReadyFlowIcon,
+  ScheduleDeploymentIcon,
 } from '../assets';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import Deploy from '../pages/Namespaces/Deploy';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import Summary from '../pages/Namespaces/Summary';
+import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
 
 export const ROUTES_MENU = [
   {
@@ -75,6 +77,29 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ListNamespaces />,
+      },
+      {
+        path: 'deploy',
+        component: <Deploy />,
+      },
+      {
+        path: 'upgrade',
+        component: <Upgrade />,
+      },
+      {
+        path: 'summary',
+        component: <Summary />,
+      },
+    ],
+  },
+  {
+    name: 'Schedule Deployment',
+    path: 'sechedule-deployment',
+    icon: ScheduleDeploymentIcon,
+    pages: [
+      {
+        path: '',
+        component: <ListScheduleDeployment />,
       },
       {
         path: 'deploy',
