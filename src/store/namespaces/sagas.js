@@ -288,7 +288,10 @@ export function* getCountDetails(api) {
   else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
-export function* fetchParameterContext(api, { initialCall = true }) {
+export function* fetchParameterContext(
+  api,
+  { initialCall = true, showError = false }
+) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
@@ -315,7 +318,9 @@ export function* fetchParameterContext(api, { initialCall = true }) {
   });
   if (response.ok && initialCall)
     yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  else if (!response.ok || (showError && !initialCall)) {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
 }
 
 export function* updateParameterContext(api, { payload }) {
@@ -367,8 +372,10 @@ export function* updateParameterContext(api, { payload }) {
       additionalData: { requestId: response.data?.requestId },
     });
   } else {
-    yield call(fetchParameterContext, api, { initialCall: false });
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    yield call(fetchParameterContext, api, {
+      initialCall: false,
+      showError: true,
+    });
   }
 }
 
@@ -418,8 +425,10 @@ export function* getStatusAndDeleteParameterContext(
       additionalData: { requestId: response.data?.requestId },
     });
   } else {
-    yield call(fetchParameterContext, api, { initialCall: false });
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    yield call(fetchParameterContext, api, {
+      initialCall: false,
+      showError: !response.ok,
+    });
   }
 }
 
