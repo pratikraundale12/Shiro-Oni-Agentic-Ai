@@ -6,6 +6,7 @@ import { CreateMapping } from './components/CreateMapping';
 import { useForm } from 'react-hook-form';
 import { Table } from '../../components/CustomGrid/Table';
 import { SwitchButton } from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
 import {
   checkLdapConfig,
   ldapConfig,
@@ -59,6 +60,16 @@ const StyledButton = styled(Button)`
   }
 `;
 
+const SyncButton = styled(Button)`
+  width: auto;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-right: 17px;
+  padding-left: 17px;
+  height: 40px;
+  margin-bottom: 5px;
+`;
+
 const ButtonFlex = styled.div`
   display: flex;
   justify-content: space-between;
@@ -107,6 +118,10 @@ export const schemaForm2 = Yup.object().shape({
     'Group Unique Identifier is required'
   ),
 });
+const breadcrumbData = [
+  { label: 'LDAP Configuration Fields' },
+  { label: 'LDAP Group List' },
+];
 export const LdapConfig = () => {
   const [ldapInitialConfig, setLdapInitialConfig] = useState(false);
   const [secondFormState, setSecondFormState] = useState(false);
@@ -139,7 +154,6 @@ export const LdapConfig = () => {
   });
 
   const onSubmitForm1 = async data => {
-    console.log('Form 1 Data:', data);
     setTestFormData({
       url: data.url,
       password: data.password,
@@ -156,7 +170,6 @@ export const LdapConfig = () => {
       setSecondFormState(true);
       setSuccessTest(true);
       setSaveButtonStatus(true);
-      console.log(response, 'ressssss');
     } else {
       toast.error(
         response?.message || 'Something went wrong. Please try again'
@@ -165,9 +178,6 @@ export const LdapConfig = () => {
   };
 
   const onSubmitForm2 = async data => {
-    console.log(testFormData, 'Data Form1');
-    console.log('Form 2 Data:', data);
-
     const payload = {
       ldapEnabled: true,
       url: testFormData.url,
@@ -182,7 +192,6 @@ export const LdapConfig = () => {
 
     const response = await ldapConfig(payload);
     if (response?.status === 200) {
-      console.log(response, 'ressssss');
       toast.success('LDAP Data Saved Successfully');
     } else {
       toast.error(
@@ -194,7 +203,6 @@ export const LdapConfig = () => {
   const handleCheckLdapConfig = async () => {
     const response = await checkLdapConfig();
     if (response.status === 200) {
-      console.log(response, '...??????//');
       setLdapInitialConfig(response?.data?.ldapEnabled);
       if (response?.data?.ldapEnabled) {
         reset1({
@@ -219,14 +227,12 @@ export const LdapConfig = () => {
     setLdapInitialConfig(!ldapInitialConfig);
   };
   useEffect(() => {
-    console.log(listData, 'DATA');
     handleCheckLdapConfig();
   }, []);
 
   const getLDAPGroup = async () => {
     const response = await getLdapGroupAPI();
     if (response?.status === 200) {
-      console.log(response, '>>>>>>>>>', response.data.groups);
       setListData(response?.data.groups);
     } else {
       toast.error(
@@ -234,24 +240,16 @@ export const LdapConfig = () => {
       );
     }
     const response1 = await getRolesAPI();
-    console.log('RE1', response1);
-    // if(response1?.status === 200 && response1.data.data.)
     if (response1?.status === 200) {
-      console.log(listData, 'LISTTTT');
-      console.log(response1.data.data, 'RESPONSE!!!!!');
-
       const sortedArray = response.data.groups?.map(item => {
-        // Find the matching object in listData based on ldapGroupName and cn
         const matchedItem = response1?.data?.data?.find(
           listItem => listItem?.ldap_group_name === item.cn
         );
-        console.log(matchedItem, 'matched');
         return {
           ...item,
-          name: matchedItem ? matchedItem?.name : 'NA', // If a match is found, use the name; otherwise, set it to 'NA'
+          name: matchedItem ? matchedItem?.name : 'NA',
         };
       });
-      console.log(sortedArray, 'sortedArray');
       if (sortedArray) {
         setListData(sortedArray);
       }
@@ -263,35 +261,27 @@ export const LdapConfig = () => {
   };
 
   useEffect(() => {
-    console.log(listData, 'DATADATA');
     if (!displayList) {
       getLDAPGroup();
     }
   }, [displayList]);
 
-  const breadcrumbData = [
-    { id: 1, name: 'LDAP Configuration Fields' },
-    { id: 2, name: 'LDAP Group List' },
-  ];
-  const breadCurmbChnages = id => {
-    if (id === 1) {
+  const syncldapApi = async () => {
+    const response = await SyncUsers();
+    if (response?.status === 200) {
+      toast.success('Users sync up successfully');
+    } else {
+      toast.error(
+        response?.message || 'Something went wrong. Please try again'
+      );
+    }
+  };
+  const onBreadCrumbClick = ldapPath => {
+    if (ldapPath === 'LDAP Configuration Fields') {
       setDisplayList(true);
     } else {
       setDisplayList(false);
     }
-  };
-
-  const syncldapApi = async () => {
-    const response = await SyncUsers();
-    console.log(response);
-    // if (response?.status === 200) {
-    //   console.log(response, '>>>>>>>>>', response.data.groups);
-    //   setListData(response?.data.groups);
-    // } else {
-    //   toast.error(
-    //     response?.message || 'Something went wrong. Please try again'
-    //   );
-    // }
   };
   return (
     <Wrapper>
@@ -450,11 +440,26 @@ export const LdapConfig = () => {
         </>
       ) : (
         <>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Breadcrumb
+              onClick={onBreadCrumbClick}
+              path={breadcrumbData}
+              module="ldap"
+            />
+            <SyncButton variant="secondary" onClick={syncldapApi}>
+              Sync Users
+            </SyncButton>
+          </div>
+
           <Table
             data={listData}
             columns={EVENTCOLUMNS}
-            breadcrumb={breadcrumbData}
-            onBreadcrumbClick={e => breadCurmbChnages(e.id)}
             syncButton={<Button onClick={syncldapApi}>Sync LDAP Users</Button>}
           />
           <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-4">

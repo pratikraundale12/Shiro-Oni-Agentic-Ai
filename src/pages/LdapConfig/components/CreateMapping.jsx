@@ -30,7 +30,7 @@ const StyledSelectField = styled(SelectField)`
 
 const TableContainer = styled.div`
   flex: 1;
-  overflow: hidden;
+  // overflow: hidden;
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 20px;
 `;
@@ -80,10 +80,10 @@ export const CreateMapping = ({
     }
     const response1 = await getRolesAPI();
     if (response1?.status === 200) {
-      console.log(response1.data.data, 'RESEPONSE!!!!!');
       const sortedArray = response1?.data?.data?.map(item => ({
         label: item.name,
-        value: item.ldap_group_name,
+        value: item.id,
+        ldapGroupname: item.ldap_group_name,
       }));
       setKdfList(sortedArray);
     } else {
@@ -97,29 +97,26 @@ export const CreateMapping = ({
     if (isOpen) {
       getLDAPGroup();
     }
-    kdfList;
   }, [isOpen]);
 
-  // console.log(, 'kdfmList');
-  console.log(ldapList, 'ldaplist');
-  const temp = kdfList?.map(item => item.cn);
-  console.log(temp, '<>><><><');
-
   const handleChange = (event, item) => {
-    console.log(event.value, item, '??????????');
-    // const sortedArray = kdfList.filter(item => item.value !== event.value);
-    // setKdfList(sortedArray);
-    setFormPayload([
-      ...formPayload,
-      { id: event.value, ldap_group_name: item.cn },
-    ]);
+    const newItem = { id: event.value, ldap_group_name: item.cn };
+    const existingIndex = formPayload.findIndex(
+      payload => payload.id === newItem.id
+    );
+
+    if (existingIndex >= 0) {
+      const updatedPayload = [...formPayload];
+      updatedPayload[existingIndex] = newItem;
+      setFormPayload(updatedPayload);
+    } else {
+      setFormPayload([...formPayload, newItem]);
+    }
   };
 
-  const onSubmit = async data => {
-    console.log(data, 'DATATA');
+  const onSubmit = async () => {
     const response = await groupMappingApi({ data: formPayload });
     if (response?.status === 200) {
-      console.log(response, '>>>>>>>>>', response);
       toast.success('LDAP and KDFM Mapping is SuccessFully');
       setIsOpen(false);
       getLDAPGroupForMapping();
@@ -130,10 +127,6 @@ export const CreateMapping = ({
       setIsOpen(false);
     }
   };
-
-  useEffect(() => {
-    console.log('KDF', kdfList);
-  }, [kdfList]);
 
   return (
     <Modal
@@ -157,7 +150,18 @@ export const CreateMapping = ({
                   <StyledSelectField
                     options={kdfList}
                     control={control}
-                    value={item.ldap_group_name}
+                    defaultValue={
+                      kdfList.find(
+                        option => option.ldapGroupname === item.cn
+                      ) && {
+                        label: kdfList.find(
+                          option => option.ldapGroupname === item.cn
+                        ).label,
+                        value: kdfList.find(
+                          option => option.ldapGroupname === item.cn
+                        ).ldapGroupname,
+                      }
+                    }
                     onChange={event => handleChange(event, item)}
                   />
                 </td>
