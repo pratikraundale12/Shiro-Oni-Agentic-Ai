@@ -312,13 +312,12 @@ const Summary = () => {
   const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
     []
   );
-
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
+
   const getParamerterContext = async () => {
     setLoading(true);
     openParameterContext();
-    dispatch(NamespacesActions.fetchParameterContext());
     setLoading(false);
   };
 
@@ -411,10 +410,11 @@ const Summary = () => {
 
   const openParameterContext = () => {
     setIsParameterContextOpen(true);
-    dispatch(NamespacesActions.deployClusterSuccess());
+    dispatch(NamespacesActions.fetchParameterContext());
   };
 
   const closeParameterContext = () => {
+    // dispatch(NamespacesActions.setParameterDetails({}));
     setIsParameterContextOpen(false);
     setNewlyAddedParameterContext([]);
     dispatch(NamespacesActions.setDeployedModal());
