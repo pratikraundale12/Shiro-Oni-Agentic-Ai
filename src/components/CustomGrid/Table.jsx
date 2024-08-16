@@ -78,4 +78,5 @@ Table.propTypes = {
   data: PropTypes.object.isRequired,
   columns: PropTypes.arrayOf(PropTypes.shape({})),
   className: PropTypes.string,
+  syncButton: PropTypes.func,
 };
