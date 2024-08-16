@@ -146,6 +146,19 @@ const SummaryDetailsPtag = styled.h4`
   letter-spacing: -0.005em;
   text-align: left;
   color: #7a7a7a;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  & span {
+    max-width: 18rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 const ActiveButtonContainer = styled.div`
   gap: 7px;
@@ -463,10 +476,12 @@ const Summary = () => {
                       Registry URL
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {checkDestCluster.registryUrl}
-                      <CopyToClipboard
-                        copyItem={checkDestCluster.registryUrl}
-                      />
+                      <div>
+                        <span>{checkDestCluster.registryUrl}</span>
+                        <CopyToClipboard
+                          copyItem={checkDestCluster.registryUrl}
+                        />
+                      </div>
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -476,7 +491,10 @@ const Summary = () => {
                       NiFi URL
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {checkDestCluster.nifiUrl}
+                      <div>
+                        <span>{checkDestCluster.nifiUrl}</span>
+                        <CopyToClipboard copyItem={checkDestCluster.nifiUrl} />
+                      </div>
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
