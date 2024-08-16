@@ -66,7 +66,7 @@ export const Creditionals = ({
     } else {
       payload.append('name', registryData?.registryName || registryData.name);
       payload.append(
-        'registry_url',
+        'nifi_url',
         registryData?.registryUrl || registryData.registry_url
       );
       payload.append('username', data.username);

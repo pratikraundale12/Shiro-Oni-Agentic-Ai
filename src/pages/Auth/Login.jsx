@@ -199,7 +199,6 @@ export const Login = () => {
             watch={watch}
             required
             label="Password"
-            helperText="Must be 8 characters at least"
           />
           <ForgetLinkContainer>
             <PasswordTextMessage>
