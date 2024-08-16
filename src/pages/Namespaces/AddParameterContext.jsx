@@ -79,7 +79,7 @@ const DEFAULT_VALUES = {
 const parameterContextSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
   value: yup.string().nonNullable(),
-  description: yup.string().required('Description is required'),
+  description: yup.string().nonNullable(),
   sensitive: yup.string().nullable(),
 });
 

@@ -366,7 +366,10 @@ export function* updateParameterContext(api, { payload }) {
       method: 'get',
       additionalData: { requestId: response.data?.requestId },
     });
-  } else toast.error(response.data.message);
+  } else {
+    yield call(fetchParameterContext, api, { initialCall: false });
+    toast.error(response.data.message);
+  }
 }
 
 export function* getStatusAndDeleteParameterContext(
@@ -414,9 +417,10 @@ export function* getStatusAndDeleteParameterContext(
     yield call(getStatusAndDeleteParameterContext, api, {
       additionalData: { requestId: response.data?.requestId },
     });
-  } else if (response.ok && response.status === 204) {
+  } else {
     yield call(fetchParameterContext, api, { initialCall: false });
-  } else toast.error(response.data.message);
+    toast.error(response.data.message);
+  }
 }
 
 export function* fetchVariableList(api) {
