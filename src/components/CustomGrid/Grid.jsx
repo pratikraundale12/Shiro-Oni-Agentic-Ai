@@ -1,28 +1,29 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { getTheme } from '@table-library/react-table-library/baseline';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import Breadcrumb from '../../shared/Breadcrumb';
 import { theme } from '../../styles';
-import { GridActions as GridActionsComponent } from './GridActions';
 import { useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
+import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
-import Breadcrumb from '../../shared/Breadcrumb';
 
 import { NoDataIcon } from '../../assets';
 import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
 import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { Modal } from '../../shared';
-import { GridActions, GridSelectors } from '../../store/grid';
 import { LoadingSelectors, NamespacesSelectors } from '../../store';
+import { GridActions, GridSelectors } from '../../store/grid';
 // import ReactPagination from './ReactPagnation';
-import { Table } from './Table';
+import { useSort } from '@table-library/react-table-library/sort';
 import { TextRender } from './CellRenders';
+import { Table } from './Table';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -99,6 +100,8 @@ export const Grid = ({
   // LIMIT,
   // offset,
   // setOffset,
+  sortFns = () => {},
+  state,
 }) => {
   const dispatch = useDispatch();
   const loading = useSelector(state =>
@@ -135,10 +138,11 @@ export const Grid = ({
     },
     setState,
   } = useGlobalContext();
+
   const DATA = {
     // nodes: isNamespace
     //   ? getData(loading, gridData, nodes).slice(offset, offset + LIMIT)
-    //   : getData(loading, gridData, nodes),
+    //   : getData(loading, gridData, nodes)
     nodes: getData(loading, gridData, nodes),
   };
 
@@ -174,6 +178,16 @@ export const Grid = ({
       `,
     },
   ]);
+
+  const sort = useSort(
+    DATA,
+    {
+      state,
+    },
+    {
+      sortFns,
+    }
+  );
 
   const getLoader = () => {
     if (loading) return <Loader size="lg" />;
@@ -254,7 +268,12 @@ export const Grid = ({
       )}
       <Breadcrumb module={module} />
       <TableContainer>
-        <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+        <CompactTable
+          data={DATA}
+          columns={columns}
+          theme={tableTheme}
+          sort={sort}
+        />
         {getLoader()}
       </TableContainer>
       {count > 10 && (
@@ -311,4 +330,6 @@ Grid.propTypes = {
   offset: PropTypes.number,
   setOffset: PropTypes.func,
   isNamespace: PropTypes.bool,
+  state: PropTypes.object.isRequired,
+  // sortFns: PropTypes.func,
 };

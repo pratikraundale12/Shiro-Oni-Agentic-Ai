@@ -31,7 +31,6 @@ const Listvariables = ({
   const [newlyAddVariables, setNewlyAddvariables] = useState([]);
   const variableList = useSelector(NamespacesSelectors.getVariableList);
   const [loading, setLoading] = useState(false);
-  // const { state } = useGlobalContext();
   const dispatch = useDispatch();
   const [isAddVariablesOpen, setIsAddVariablesOpen] = useState({
     isOpen: false,
@@ -111,46 +110,9 @@ const Listvariables = ({
         variables: newlyAddVariables,
       })
     );
-    // try {
-    //   const variables = newlyAddVariables.map(item => ({
-    //     name: item.name,
-    //     value: item.value,
-    //   }));
 
-    //   const response = await addVariableServices(
-    //     state?.selectedDestinationClusterId,
-    //     state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
-    //     state?.variablesDetail?.version,
-    //     variables
-    //   );
-
-    //   if (response) {
-    //     const getVariablesResponse = await GetVariableServices(
-    //       state?.selectedDestinationClusterId,
-    //       state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
-    //       response?.data?.requestId
-    //     );
-
-    //     if (getVariablesResponse) {
-    //       const DeleteVariablesResponse = await DeleteVariableServices(
-    //         state?.selectedDestinationClusterId,
-    //         state?.updatedCount?.id || state?.deployCountDetails?.data?.id,
-    //         response?.data?.requestId
-    //       );
-
-    //       if (DeleteVariablesResponse) {
-    //         handleTertiaryButton();
-    //       } else {
-    //         toast.error(response.error);
-    //       }
-    //     }
-    //   }
-    // } catch (error) {
-    //   toast.error(error.message);
-    // } finally {
     setLoading(false);
     setNewlyAddvariables([]);
-    // }
   };
 
   return (

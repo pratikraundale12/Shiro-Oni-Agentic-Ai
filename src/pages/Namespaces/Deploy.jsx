@@ -165,9 +165,6 @@ const Deploy = () => {
   const [search, setSearch] = useState('');
   const { state, setState } = useGlobalContext();
   const [showDeployUI, setShowDeployUI] = useState(false);
-  // useEffect(() => {
-  //   handleSelectNamespace();
-  // }, [state.selectedDestinationClusterId]);
 
   const location = useLocation();
 
@@ -232,13 +229,6 @@ const Deploy = () => {
     },
   ];
 
-  // const handleNamespaceSelect = item => {
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     deployNamespaceId: item,
-  //   }));
-  // };
-
   function handleSelectNamespace(item) {
     dispatch(
       NamespacesActions.setSelectedDestNamespace({
@@ -246,57 +236,7 @@ const Deploy = () => {
         value: item.id,
       })
     );
-    // setState(prev => ({
-    //   ...prev,
-    //   selectedNamespaceId: id,
-    // }));
-    // fetchGridData({
-    //   setState,
-    //   module: 'deploy',
-    //   selectedDestinationClusterId: state.selectedDestinationClusterId,
-    //   selectedNamespaceId: id,
-    // });
   }
-
-  // useEffect(() => {
-  //   // fetchGridData({
-  //   //   setState,
-  //   //   module: 'deploy',
-  //   //   search: search,
-  //   //   ...(state.selectedDestinationClusterId && {
-  //   //     selectedDestinationClusterId: state.selectedDestinationClusterId,
-  //   //   }),
-  //   // });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [setState, search]);
-
-  // useEffect(() => {
-  //   fetchGridData({
-  //     setState,
-  //     module: 'clusters',
-  //   });
-  // }, [setState]);
-
-  // useEffect(() => {
-  //   if (state?.deployData?.id && state?.deployData?.mode === 'deploy') {
-  //     onClusterCheck({
-  //       value: state.selectedClusterId,
-  //       label: state.selectedClusterName,
-  //     });
-  //   }
-  // }, [
-  //   state?.deployData?.id,
-  //   state?.deployData?.mode,
-  //   state.selectedClusterId,
-  //   state.selectedClusterName,
-  // ]);
-
-  // const options = state.clusterList
-  //   .filter(cluster => cluster?.id !== state.selectedSourceClusterId)
-  //   .map(cluster => ({
-  //     value: cluster?.id,
-  //     label: cluster?.name,
-  //   }));
 
   const handleClick = () => {
     history.push('/namespaces/upgrade');
@@ -306,66 +246,7 @@ const Deploy = () => {
   };
 
   const onClusterCheck = value => {
-    // dispatch(NamespacesActions.setSelectedDestCluster(value));
     dispatch(NamespacesActions.checkDestCluster());
-    // setLoading(true);
-    // const selectedClusterId = e.value;
-    // setState(prevState => ({
-    //   ...prevState,
-    //   selectedDestinationClusterId: e.value,
-    // }));
-    // const selectedClusterName = e.label;
-    // let ids = [];
-    // for (const a of state.tempNamespacesData) {
-    //   if (location?.state?.id === a?.id || state?.currentFlowId === a?.id) {
-    //     ids?.push(a.flowId);
-    //   }
-    // }
-
-    // for (const a of state.gridData.namespaces.breadcrumb) {
-    //   for (const b of state.tempNamespacesData) {
-    //     if (a.id === b.id) {
-    //       ids?.push(b.flowId);
-    //     }
-    //   }
-    // }
-    // const arrayWithoutNullsAndUndefineds = ids.filter(item => item != null);
-
-    // try {
-    //   const response = await checkCluster({
-    //     clusterId: selectedClusterId,
-    //     srcClusterId: state?.selectedSourceClusterId,
-    //     path: arrayWithoutNullsAndUndefineds,
-    //   });
-
-    //   if (response.mode === 'upgrade') {
-    //     setState(prevState => ({
-    //       ...prevState,
-    //       selectedClusterId,
-    //       upgradeData: response,
-    //       selectedClusterName,
-    //     }));
-    //     history.push('/namespaces/upgrade', {
-    //       state: {
-    //         upgradeData: response,
-    //       },
-    //       setShowDeployUI: setShowDeployUI,
-    //     });
-    //   } else if (response.mode === 'deploy') {
-    //     setState(prevState => ({
-    //       ...prevState,
-    //       selectedClusterId,
-    //       deployData: response,
-    //       selectedClusterName,
-    //     }));
-    //     setShowDeployUI(true);
-    //   } else {
-    //     setShowDeployUI(false);
-    //   }
-    //   setLoading(false);
-    // } catch (error) {
-    //   console.error('Error checking cluster:', error);
-    // }
   };
 
   useEffect(() => {
