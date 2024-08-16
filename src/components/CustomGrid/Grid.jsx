@@ -3,7 +3,7 @@ import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import { default as React, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -21,6 +21,7 @@ import { Modal } from '../../shared';
 import { LoadingSelectors, NamespacesSelectors } from '../../store';
 import { GridActions, GridSelectors } from '../../store/grid';
 // import ReactPagination from './ReactPagnation';
+import { useSort } from '@table-library/react-table-library/sort';
 import { KDFM } from '../../constants';
 import { TextRender } from './CellRenders';
 import { Table } from './Table';
@@ -100,6 +101,8 @@ export const Grid = ({
   // LIMIT,
   // offset,
   // setOffset,
+  sortFns = () => {},
+  state,
 }) => {
   const dispatch = useDispatch();
   const loading = useSelector(state =>
@@ -136,10 +139,11 @@ export const Grid = ({
     },
     setState,
   } = useGlobalContext();
+
   const DATA = {
     // nodes: isNamespace
     //   ? getData(loading, gridData, nodes).slice(offset, offset + LIMIT)
-    //   : getData(loading, gridData, nodes),
+    //   : getData(loading, gridData, nodes)
     nodes: getData(loading, gridData, nodes),
   };
 
@@ -175,6 +179,16 @@ export const Grid = ({
       `,
     },
   ]);
+
+  const sort = useSort(
+    DATA,
+    {
+      state,
+    },
+    {
+      sortFns,
+    }
+  );
 
   const getLoader = () => {
     if (loading) return <Loader size="lg" />;
@@ -255,7 +269,12 @@ export const Grid = ({
       )}
       <Breadcrumb module={module} />
       <TableContainer>
-        <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+        <CompactTable
+          data={DATA}
+          columns={columns}
+          theme={tableTheme}
+          sort={sort}
+        />
         {getLoader()}
       </TableContainer>
       {count > 10 && (
@@ -312,4 +331,6 @@ Grid.propTypes = {
   offset: PropTypes.number,
   setOffset: PropTypes.func,
   isNamespace: PropTypes.bool,
+  state: PropTypes.object.isRequired,
+  // sortFns: PropTypes.func,
 };

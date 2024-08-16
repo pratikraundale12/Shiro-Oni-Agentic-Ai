@@ -2,11 +2,13 @@ import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
 import { CheckboxField, InputField, Modal } from '../../shared';
-import { useGlobalContext } from '../../utils';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
+// import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
   position: relative;
@@ -29,8 +31,9 @@ const AddVariables = ({
   const { register, handleSubmit, reset, control, setValue } = useForm({
     defaultValues: DEFAULT_VALUES,
   });
-  const { state, setState } = useGlobalContext();
-  const variablesDetailsData = state?.variablesDetail?.variables || {};
+  const variableList = useSelector(NamespacesSelectors.getVariableList);
+  const variablesDetailsData = variableList?.variables || [];
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isAddVariablesOpen?.isOpen) {
@@ -60,9 +63,15 @@ const AddVariables = ({
       contextList.some(
         parameter => parameter?.name?.toLowerCase() === name?.toLowerCase()
       );
+    const oldParameters = variablesDetailsData.map(item => {
+      return {
+        name: item?.variable?.name,
+      };
+    });
+
     const parameterAlreadyExist = nameExists(newlyAddVariables, data?.name);
     const parameterAlreadyExistInNewlyAddedContext = nameExists(
-      newlyAddVariables,
+      oldParameters,
       data?.name
     );
 
@@ -77,11 +86,11 @@ const AddVariables = ({
 
     if (isAddVariablesOpen?.mode === 'edit') {
       const updatedData = newlyAddVariables.map(item =>
-        item?.name?.toLowerCase() === data?.name?.toLowerCase()
+        item?.variable?.toLowerCase() === data?.name?.toLowerCase()
           ? { ...item, ...data }
           : item
       );
-      const filteredParameterContextList = variablesDetailsData.filter(
+      const filteredVariableList = variablesDetailsData.filter(
         item =>
           item?.variable?.name?.toLowerCase() !== data?.name?.toLowerCase()
       );
@@ -91,13 +100,12 @@ const AddVariables = ({
       );
 
       if (existingVariableDetails && existingVariableDetails.length !== 0) {
-        setState(prevState => ({
-          ...prevState,
-          variablesDetail: {
-            version: prevState.variablesDetail.version,
-            variables: filteredParameterContextList,
-          },
-        }));
+        dispatch(
+          NamespacesActions.fetchVariableListSuccess({
+            ...variableList,
+            variables: filteredVariableList,
+          })
+        );
 
         setNewlyAddvariables([...updatedData, data]);
       } else {

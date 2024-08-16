@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Button, InputField, Modal, SelectField } from '../../shared';
 import { useGlobalContext } from '../../utils';
-import { PlusCircleIcon, UserIcon } from '../../assets';
+import { UserIcon } from '../../assets';
 import {
   ClustersActions,
   ClustersSelectors,
@@ -94,7 +94,7 @@ export const EditClusterAccess = () => {
 
   const handlePermissionModal = () => dispatch(RolesActions.permissionModal());
 
-  const openRoleModal = () => setState(prev => ({ ...prev, roleModal: true }));
+  // const openRoleModal = () => setState(prev => ({ ...prev, roleModal: true }));
   const closeRoleModal = () =>
     setState(prev => ({
       ...prev,
@@ -161,14 +161,14 @@ export const EditClusterAccess = () => {
   return (
     <div>
       <ButtonContainer>
-        <Button
+        {/* <Button
           onClick={openRoleModal}
           variant="secondary"
           size="sm"
           icon={<PlusCircleIcon />}
         >
           Add New Role
-        </Button>
+        </Button> */}
         <Button onClick={handlePermissionModal} size="sm">
           Edit Permissions
         </Button>

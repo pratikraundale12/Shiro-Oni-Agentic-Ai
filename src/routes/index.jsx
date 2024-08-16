@@ -104,6 +104,7 @@ export const ROUTES_MENU = [
         component: <div>ReadyFlow Gallary</div>,
       },
     ],
+    hidden: true,
   },
   {
     name: 'Generate Flow',
@@ -119,6 +120,7 @@ export const ROUTES_MENU = [
         component: <div>Genrate Flow</div>,
       },
     ],
+    hidden: true,
   },
   {
     name: 'User Management',
@@ -161,6 +163,7 @@ export const ROUTES_MENU = [
         component: <div>Activity History</div>,
       },
     ],
+    hidden: true,
   },
 ];
 
@@ -176,7 +179,7 @@ const Routes = () => {
 
       {/* Private Routes */}
       <Route path="/" element={<AuthGaurd />}>
-        {ROUTES_MENU.map(item => (
+        {ROUTES_MENU.filter(item => !item.hidden).map(item => (
           <Route key={item.path} path={item.path} element={<Outlet />}>
             {item.pages.map(page =>
               Array.isArray(page.path) ? (

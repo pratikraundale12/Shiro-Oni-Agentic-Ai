@@ -1,15 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Grid, IconButton, TextRender } from '../../components';
-// import AuditLog from './AuditLog';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { OpenEyeIcon } from '../../assets';
+import { Grid, IconButton, TextRender } from '../../components';
 import { REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import { GridActions, NamespacesActions } from '../../store';
-// import Deploy from './Deploy';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -29,9 +27,32 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.resetDeployData());
   }, []);
 
+  const sortFns = {
+    name: array => sortByNameWithVersionFilter(array),
+  };
+  const state = {
+    sortKey: 'name',
+    reverse: false,
+  };
+
+  function sortByNameWithVersionFilter(arr) {
+    const objectsWithVersion = arr.filter(item => item.version !== undefined);
+    const objectsWithoutVersion = arr.filter(
+      item => item.version === undefined
+    );
+    const sortedWithVersion = objectsWithVersion.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    const sortedWithoutVersion = objectsWithoutVersion.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    return [...sortedWithVersion, ...sortedWithoutVersion];
+  }
+
   const COLUMNS = [
     {
       label: 'Namespace',
+
       renderCell: item => (
         <StyledButton
           tabIndex="0"
@@ -49,6 +70,7 @@ export const ListNamespaces = () => {
         </StyledButton>
       ),
       width: '18%',
+      sort: { sortKey: 'name' },
     },
     {
       label: 'Namespace ID',
@@ -116,28 +138,6 @@ export const ListNamespaces = () => {
     },
   ];
 
-  // function handleSelectNamespace(id) {
-  //   fetchGridData({
-  //     setState,
-  //     module: 'namespaces',
-  //     selectedSourceClusterId: state.selectedSourceClusterId,
-  //     selectedNamespaceId: id,
-  //   });
-
-  //   // setOffset(0);
-  //   setState(prev => {
-  //     const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
-  //     const newData = state.gridData.namespaces.data.filter(
-  //       item => !existingIds.has(item.id)
-  //     );
-
-  //     return {
-  //       ...prev,
-  //       selectedNamespaceId: id,
-  //       tempNamespacesData: [...prev.tempNamespacesData, ...newData],
-  //     };
-  //   });
-  // }
   const handleSelect = item => {
     dispatch(NamespacesActions.setFlowPath(item.flowId));
     dispatch(
@@ -146,23 +146,6 @@ export const ListNamespaces = () => {
         value: item.id,
       })
     );
-    // setState(prev => ({
-    //   ...prev,
-    //   selectedNamespaceId: id,
-    // }));
-
-    // setState(prev => {
-    //   const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
-    //   const newData = state.gridData.namespaces.data.filter(
-    //     item => !existingIds.has(item.id)
-    //   );
-    //   return {
-    //     ...prev,
-    //     selectedNamespaceId: id,
-    //     tempNamespacesData: [...prev.tempNamespacesData, ...newData],
-    //     currentFlowId: id,
-    //   };
-    // });
 
     history.push('/namespaces/deploy', {
       state: {
@@ -170,15 +153,6 @@ export const ListNamespaces = () => {
       },
     });
   };
-
-  // useEffect(() => {
-  //   fetchGridData({
-  //     setState,
-  //     module: 'clusters',
-  //   });
-  //   setOffset(0);
-  // }, [setState]);
-  // const [offset, setOffset] = useState(0);
 
   const handleRefresh = event => {
     setRefreshSelect(event.value);
@@ -211,6 +185,9 @@ export const ListNamespaces = () => {
         refreshOptions={REFRESH_OPTIONS}
         placeholder="Search Namespace, ID, Flow Name, Bucket Name"
         handleRefresh={handleRefresh}
+        sortFns={sortFns}
+        state={state}
+        // handleIconClick={handleIconClick}
       />
       {/* <Deploy /> */}
       {/* <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} /> */}

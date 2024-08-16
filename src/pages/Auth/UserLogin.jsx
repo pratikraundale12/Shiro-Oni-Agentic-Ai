@@ -7,27 +7,27 @@ import { useDispatch } from 'react-redux';
 
 import { theme } from '../../styles';
 import { ClusterSelect, Layout } from '../../components';
-import { Button, TextButton, InputField, PasswordField } from '../../shared';
+import { Button, InputField, PasswordField } from '../../shared';
 import {
   ClusterIcon,
-  GoogleIcon,
+  // GoogleIcon,
   LessArrowIcon,
-  MicroSoftIcon,
+  // MicroSoftIcon,
   UserIcon,
 } from '../../assets';
 import {
-  FORGOT_PASSWORD,
-  GOOGLE,
+  // FORGOT_PASSWORD,
+  // GOOGLE,
   LOGIN_TO_YOUR_ACCOUNT,
-  MICROSOFT,
-  OR_DO_IT_VIA_OTHER_ACCOUNTS,
+  // MICROSOFT,
+  // OR_DO_IT_VIA_OTHER_ACCOUNTS,
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../constants';
 import { getRightIcon } from '.';
 import { useGlobalContext } from '../../utils';
 import { AuthenticationActions } from '../../store';
-import { history } from '../../helpers/history';
+// import { history } from '../../helpers/history';
 
 const Title = styled.h3`
   font-weight: 500;
@@ -46,38 +46,45 @@ const SubTitle = styled.p`
   color: ${props => props.theme.colors.darker};
 `;
 
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+`;
+
 const SubmitButton = styled(Button)`
   margin-top: 1.8rem;
 `;
 
-const SmallText = styled.small`
-  display: block;
-  margin-top: 1.4rem;
-  color: ${props => props.theme.colors.darker};
-  text-align: center;
-`;
+// const SmallText = styled.small`
+//   display: block;
+//   margin-top: 1.4rem;
+//   color: ${props => props.theme.colors.darker};
+//   text-align: center;
+// `;
 
-const SSOButtonsContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.4rem;
-`;
+// const SSOButtonsContainer = styled.div`
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 1rem;
+//   margin-top: 1.4rem;
+// `;
 
-const SSOButton = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-  opacity: 0.35;
-  padding: 1rem 1.4rem;
-  border-radius: 8px;
-  border: 1px solid ${props => props.theme.colors.border};
-  background-color: ${props => props.theme.colors.white};
-  box-shadow: 0px 1px 3px ${props => props.theme.colors.shadow};
-`;
+// const SSOButton = styled.div`
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 1rem;
+//   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+//   opacity: 0.35;
+//   padding: 1rem 1.4rem;
+//   border-radius: 8px;
+//   border: 1px solid ${props => props.theme.colors.border};
+//   background-color: ${props => props.theme.colors.white};
+//   box-shadow: 0px 1px 3px ${props => props.theme.colors.shadow};
+// `;
 
 const ForgetLinkContainer = styled.div`
   display: flex;
@@ -85,12 +92,12 @@ const ForgetLinkContainer = styled.div`
   align-items: center;
 `;
 
-const PasswordTextMessage = styled.span`
-  font-size: 10px;
-  font-weight: 400;
-  color: #7a7a9d;
-  line-height: 12px;
-`;
+// const PasswordTextMessage = styled.span`
+//   font-size: 10px;
+//   font-weight: 400;
+//   color: #7a7a9d;
+//   line-height: 12px;
+// `;
 
 const loginSchema = yup.object().shape({
   cluster_id: yup.string().required('Cluster is required'),
@@ -119,48 +126,48 @@ export const UserLogin = () => {
   };
 
   return (
-    <Layout userLogin={true}>
+    <Layout>
       <Title>{`👋 ${WELCOME_BACK}`}</Title>
       <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <ClusterSelect
-          name="cluster_id"
-          control={control}
-          placeholder="Select a Cluster"
-          title="Select Cluster"
-          backgroundColor={theme.colors.white}
-          size="lg"
-          icon={<ClusterIcon />}
-          label="Select Cluster"
-          errors={errors}
-        />
-        <InputField
-          name="username"
-          type="text"
-          label="Username"
-          placeholder="Enter your Username"
-          register={register}
-          errors={errors}
-          icon={<UserIcon />}
-          rightIcon={getRightIcon(watch, errors)}
-          required
-        />
-        <PasswordField
-          name="password"
-          register={register}
-          errors={errors}
-          watch={watch}
-          required
-          label="Password"
-        />
-        <ForgetLinkContainer>
-          <PasswordTextMessage>
-            Must be 8 characters at least
-          </PasswordTextMessage>
-          <TextButton onClick={() => history.push('/forgot')}>
-            {FORGOT_PASSWORD}
-          </TextButton>
-        </ForgetLinkContainer>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <ClusterSelect
+            name="cluster_id"
+            control={control}
+            placeholder="Select a Cluster"
+            title="Select Cluster"
+            backgroundColor={theme.colors.white}
+            size="lg"
+            icon={<ClusterIcon />}
+            label="Select Cluster"
+            errors={errors}
+          />
+          <InputField
+            name="username"
+            type="text"
+            label="Username"
+            placeholder="Enter your Username"
+            register={register}
+            errors={errors}
+            icon={<UserIcon />}
+            rightIcon={getRightIcon(watch, errors)}
+            required
+          />
+          <PasswordField
+            name="password"
+            register={register}
+            errors={errors}
+            watch={watch}
+            required
+            label="Password"
+            helperText="Must be 8 characters at least"
+          />
+          <ForgetLinkContainer>
+            {/* <TextButton onClick={() => history.push('/forgot')}>
+              {FORGOT_PASSWORD}
+            </TextButton> */}
+          </ForgetLinkContainer>
+        </div>
 
         <SubmitButton
           iconPosition="right"
@@ -170,8 +177,8 @@ export const UserLogin = () => {
         >
           {SIGN_IN_TO_YOUR_ACCOUNT}
         </SubmitButton>
-      </form>
-      <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
+      </Form>
+      {/* <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
       <SSOButtonsContainer>
         <SSOButton disabled>
           <GoogleIcon />
@@ -181,7 +188,7 @@ export const UserLogin = () => {
           <MicroSoftIcon />
           <span>{MICROSOFT}</span>
         </SSOButton>
-      </SSOButtonsContainer>
+      </SSOButtonsContainer> */}
     </Layout>
   );
 };

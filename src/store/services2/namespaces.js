@@ -1,16 +1,10 @@
-import { CLUSTERS_TOKEN } from '../../constants';
-
 export const namespacesAPI = api => {
   const fetchNamespaces = ({
     params = {},
     queryParams: { clusterId, namespaceId },
   }) => {
-    const clusterData = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
-    const selectedCluster = clusterData?.find(item => item.id === clusterId);
-    api.headers['x-cluster-id'] = selectedCluster?.id;
-    api.headers['x-cluster-token'] = selectedCluster?.token;
     return api.get(
-      `/clusters/${selectedCluster.id}/namespaces${namespaceId && `/${namespaceId}`}`,
+      `/clusters/${clusterId}/namespaces${namespaceId && `/${namespaceId}`}`,
       params
     );
   };
@@ -33,8 +27,34 @@ export const namespacesAPI = api => {
     });
   };
 
-  const getVariableList = async ({ clusterId, namespaceId }) =>
+  const getVariableList = ({ clusterId, namespaceId }) =>
     api.get(`clusters/${clusterId}/namespaces/${namespaceId}/variables`);
+
+  const addVariableServices = ({
+    clusterId,
+    namespaceId,
+    version,
+    variables,
+  }) =>
+    api.post(`clusters/${clusterId}/namespaces/${namespaceId}/variables`, {
+      version,
+      variables: variables.map(variable => ({
+        variable: {
+          name: variable.name,
+          value: variable.value,
+        },
+      })),
+    });
+
+  const getVariableServices = ({ clusterId, namespaceId, requestId }) =>
+    api.get(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`
+    );
+
+  const deleteVariableServices = ({ clusterId, namespaceId, requestId }) =>
+    api.delete(
+      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`
+    );
 
   const deployCluster = ({ clusterId, ...rest }) =>
     api.post(`/clusters/${clusterId}/deploy`, rest);
@@ -96,5 +116,8 @@ export const namespacesAPI = api => {
     getParameterContextStatus,
     deleteParameterContext,
     getVariableList,
+    addVariableServices,
+    deleteVariableServices,
+    getVariableServices,
   };
 };

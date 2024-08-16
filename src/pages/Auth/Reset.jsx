@@ -7,14 +7,12 @@ import { useDispatch } from 'react-redux';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
-import { Button, TextButton, PasswordField } from '../../shared';
+import { Button, PasswordField } from '../../shared';
 import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
 import {
-  ALREADY_HAVE_AN_ACCOUNT,
   RESET_PASSWORD_SUBTITLE,
   RESET_PASSWORD,
   RESET_YOUR_PASSWORD,
-  SIGN_IN,
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { AuthenticationActions } from '../../store';
@@ -66,17 +64,13 @@ const SubmitButton = styled(Button)`
   }
 `;
 
-const SignInContainer = styled.div`
+const Form = styled.form`
   display: flex;
-  align-items: center;
-  justify-content: center;
-
-  button {
-    color: ${props => props.theme.colors.primary};
-    font-weight: 600;
-    margin-left: 10px;
-  }
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
 `;
+
 const validationSchema = yup.object().shape({
   password: yup
     .string()
@@ -124,15 +118,15 @@ export const Reset = () => {
 
   return (
     <Layout>
-      <div>
-        <BackButtonContainer>
-          <BackButton onClick={() => history.back()}>
-            <GreaterArrowIcon /> <span>Back</span>
-          </BackButton>
-        </BackButtonContainer>
-        <Title>{RESET_YOUR_PASSWORD}</Title>
-        <SubTitle>{RESET_PASSWORD_SUBTITLE}</SubTitle>
-        <form onSubmit={handleSubmit(onSubmit)}>
+      <BackButtonContainer>
+        <BackButton onClick={() => history.back()}>
+          <GreaterArrowIcon /> <span>Back</span>
+        </BackButton>
+      </BackButtonContainer>
+      <Title>{RESET_YOUR_PASSWORD}</Title>
+      <SubTitle>{RESET_PASSWORD_SUBTITLE}</SubTitle>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <div>
           <PasswordField
             name="password"
             label="New Password"
@@ -154,21 +148,15 @@ export const Reset = () => {
             watch={watch}
             showStrengthMeter
           />
-          <SubmitButton
-            iconPosition="right"
-            icon={<LessArrowIcon color={theme.colors.white} />}
-            type="submit"
-          >
-            {RESET_PASSWORD}
-          </SubmitButton>
-        </form>
-      </div>
-      <SignInContainer>
-        {ALREADY_HAVE_AN_ACCOUNT}
-        <TextButton onClick={() => history.push('/login')}>
-          {SIGN_IN}
-        </TextButton>
-      </SignInContainer>
+        </div>
+        <SubmitButton
+          iconPosition="right"
+          icon={<LessArrowIcon color={theme.colors.white} />}
+          type="submit"
+        >
+          {RESET_PASSWORD}
+        </SubmitButton>
+      </Form>
     </Layout>
   );
 };

@@ -1,8 +1,20 @@
-import { all, call, debounce, put, select } from 'redux-saga/effects';
+import { isEmpty } from 'lodash';
+import {
+  all,
+  all,
+  call,
+  call,
+  debounce,
+  debounce,
+  put,
+  put,
+  select,
+  select,
+} from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, DEBOUNCE_DELAY } from '../../constants';
-import { requestSaga } from '../helpers/request_sagas';
+import { requestSaga, requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
-import { GridActions } from './redux';
+import { GridActions, GridActions } from './redux';
 
 export function* fetchGrid(api, { payload: { module = '', params } }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -36,6 +48,13 @@ export function* fetchGrid(api, { payload: { module = '', params } }) {
       clusterId: selectedDestCluster?.value || '',
       namespaceId: selectedDestNamespace?.value || '',
     };
+  if (module === 'namespaces' && isEmpty(selectedCluster)) return;
+  const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'fetchGrid',
     loadingSection: 'fetchGrid',
