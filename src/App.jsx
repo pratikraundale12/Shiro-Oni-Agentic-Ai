@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import { GlobalStyles, theme } from './styles';
 import { GlobalProvider } from './utils';
 import Routes from './routes';
-import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import store from './store/configureStore';
 
