@@ -1,4 +1,4 @@
-import { React } from 'react';
+import { React, useEffect } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 
@@ -15,7 +15,7 @@ import { useGlobalContext } from '../../utils';
 import { deleteUserApi } from '../../store/index1';
 import { ModalWithIcon } from '../../shared';
 import { STATUS_OPTIONS } from '../../constants';
-import { GridActions } from '../../store';
+import { GridActions, RolesActions } from '../../store';
 import { useDispatch } from 'react-redux';
 
 const ActionTd = styled.div`
@@ -86,7 +86,7 @@ export const ListUsers = () => {
     {
       label: 'Role',
       width: '10%',
-      renderCell: item => <TextRender text={item.type} />,
+      renderCell: item => <TextRender text={item.role} />,
     },
     {
       label: 'Status',
@@ -112,6 +112,10 @@ export const ListUsers = () => {
       toast.error('error occured');
     }
   };
+
+  useEffect(() => {
+    dispatch(RolesActions.fetchRoles());
+  }, [dispatch]);
 
   return (
     <>

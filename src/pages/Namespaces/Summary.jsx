@@ -416,7 +416,7 @@ const Summary = () => {
   const closeParameterContext = () => {
     setIsParameterContextOpen(false);
     setNewlyAddedParameterContext([]);
-    setModalOpen(true);
+    dispatch(NamespacesActions.setDeployedModal());
   };
 
   const openAddParameterContext = () => {
@@ -454,7 +454,7 @@ const Summary = () => {
 
   const closeVariablesModal = () => {
     setVariablesModalOpen({ isOpen: false, mode: 'add' });
-    setModalOpen(true);
+    dispatch(NamespacesActions.setDeployedModal());
   };
 
   const handleBackClick = () => {
@@ -854,7 +854,6 @@ const Summary = () => {
         newlyAddedPrameterContext={newlyAddedPrameterContext}
         setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
-
       <Listvariables
         isOpen={isVariablesModalOpen}
         closePopup={closeVariablesModal}

@@ -29,7 +29,7 @@ import { Title } from './components/Title';
 
 const Wrapper = styled.div`
   margin-top: 4px;
-  height: 88%;
+  height: 95%;
 `;
 
 const Container = styled.div`
@@ -37,7 +37,8 @@ const Container = styled.div`
   border-radius: 20px;
   padding-top: 10px;
   margin-bottom: 2rem;
-  height: 94%;
+  height: 88%;
+  overflow: auto;
 `;
 
 const NavTabs = styled.div`
@@ -66,6 +67,7 @@ const NavButton = styled.button`
 const Flex = styled.div`
   display: flex;
   gap: 2rem;
+  align-items: center;
 `;
 
 const FlexTwo = styled.div`
@@ -82,16 +84,18 @@ const FlexWrapper = styled.div`
 `;
 
 const FormContainer = styled.div`
-  padding: 2rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 65px);
+  min-height: 500px;
 `;
 
 const ORText = styled.div`
   color: #7a7a9d;
   font-weight: 500;
   font-size: 20px;
-  margin-top: 20px;
   line-height: 26px;
-  margin-top: 32px;
 `;
 
 const ButtonLabel = styled.h6`
@@ -110,9 +114,7 @@ const UploadCertificateContainer = styled.div`
   background: #fff;
   padding: 20px;
   border-radius: 20px;
-  margin-top: 150px;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-top: auto;
   height: 95px;
 `;
 
@@ -128,6 +130,7 @@ const TextTest = styled.div`
   font-size: 20px;
   color: #444445;
   line-height: 27.24px;
+  text-transform: capitalize;
 `;
 
 const StyledButton = styled(Button)`
@@ -158,7 +161,7 @@ const RegistryDetailsDiv = styled.div`
   background-color: ${props => props.theme.colors.white};
   padding: 25px;
   border-radius: 8px;
-  margin-top: 110px;
+  margin-top: auto;
 `;
 
 const TitleRegistry = styled.h6`
@@ -194,15 +197,6 @@ const BoxContentArea = styled.div`
 
 const RegistryDetailsDivTwo = styled.div`
   padding-left: -4px;
-`;
-
-const BottomButtonDiv = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  width: 100%;
-  margin-top: 20px;
 `;
 
 const ButtonDiv = styled.div`
@@ -301,7 +295,6 @@ export const Add = () => {
 
   const [registries, setRegistries] = useState([]);
   const selectedRegistryId = watch('registry');
-
   const handleBack = () => {
     setIsCertificateOpen(false);
     setIsCredOpen(false);
@@ -550,6 +543,14 @@ export const Add = () => {
                 </div>
               )}
             </Flex>
+            {testSuccess && !suceessModal && (
+              <UploadCertificateContainer>
+                <CertificateMessage>
+                  <WhiteBoradIcon />
+                  <TextTest>{`${activeTab} Tested Successfully`}</TextTest>
+                </CertificateMessage>
+              </UploadCertificateContainer>
+            )}
           </FormContainer>
         )}
 
@@ -562,20 +563,22 @@ export const Add = () => {
               options={registries}
             />
             <ORText style={{ textAlign: 'center' }}>OR</ORText>
-            <StyledButton
-              variant="secondary"
-              icon={
-                <PlusCircleIcon
-                  color="#FF7A00
-                "
-                />
-              }
-              onClick={() => {
-                setNewRegistry(true);
-              }}
-            >
-              Add New Registry
-            </StyledButton>
+            <div>
+              <StyledButton
+                variant="secondary"
+                icon={
+                  <PlusCircleIcon
+                    color="#FF7A00
+                  "
+                  />
+                }
+                onClick={() => {
+                  setNewRegistry(true);
+                }}
+              >
+                Add New Registry
+              </StyledButton>
+            </div>
 
             {selectedRegistryId ? (
               <RegistryDetailsDiv>
@@ -593,7 +596,7 @@ export const Add = () => {
                 </Flex>
                 <RegistryDetailsDivTwo>
                   <FlexTwo>
-                    {!testSuccess && (
+                    {!testSuccess ? (
                       <Flex>
                         <div>
                           <ButtonLabel>Test Via Certificate</ButtonLabel>
@@ -618,27 +621,39 @@ export const Add = () => {
                             Enter Credentials
                           </Button>
                         </div>
+                        {testSuccess && !suceessModal && (
+                          <UploadCertificateContainer>
+                            <CertificateMessage>
+                              <WhiteBoradIcon />
+                              <TextTest>{`${activeTab} Tested Successfully`}</TextTest>
+                            </CertificateMessage>
+                          </UploadCertificateContainer>
+                        )}
                       </Flex>
+                    ) : (
+                      <CertificateMessage>
+                        <WhiteBoradIcon />
+                        <TextTest>{`${activeTab} Tested Successfully`}</TextTest>
+                      </CertificateMessage>
                     )}
-                    <BottomButtonDiv>
-                      {testSuccess && (
-                        <CertificateMessage>
-                          <WhiteBoradIcon />
-                          <TextTest>Cluster Tested Successfully</TextTest>
-                        </CertificateMessage>
-                      )}
-                      <ButtonDiv>
-                        <Button
-                          variant="secondary"
-                          onClick={() => {
-                            setNewRegistry(true);
-                          }}
-                        >
-                          Edit
-                        </Button>
-                        <Button>Delete</Button>
-                      </ButtonDiv>
-                    </BottomButtonDiv>
+                    <ButtonDiv>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setNewRegistry(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          reset({ registry: '' });
+                          setRegistryData('');
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </ButtonDiv>
                   </FlexTwo>
                 </RegistryDetailsDivTwo>
               </RegistryDetailsDiv>
@@ -704,16 +719,15 @@ export const Add = () => {
                 </div>
               )}
             </Flex>
+            {testSuccess && !suceessModal && (
+              <UploadCertificateContainer>
+                <CertificateMessage>
+                  <WhiteBoradIcon />
+                  <TextTest>{`${activeTab} Tested Successfully`}</TextTest>
+                </CertificateMessage>
+              </UploadCertificateContainer>
+            )}
           </FormContainer>
-        )}
-
-        {testSuccess && newRegistry && (
-          <UploadCertificateContainer>
-            <CertificateMessage>
-              <WhiteBoradIcon />
-              <TextTest>Cluster Tested Successfully</TextTest>
-            </CertificateMessage>
-          </UploadCertificateContainer>
         )}
       </Container>
       <FlexWrapper>
@@ -741,6 +755,7 @@ export const Add = () => {
         activeTab={activeTab}
         clusterData={clusterData}
         registryData={registryData}
+        setSuccessModal={setSuccessModal}
       />
       <Creditionals
         isCredOpen={isCredOpen}
@@ -750,6 +765,7 @@ export const Add = () => {
         activeTab={activeTab}
         clusterData={clusterData}
         registryData={registryData}
+        setSuccessModal={setSuccessModal}
       />
 
       <SummaryModal
@@ -762,11 +778,13 @@ export const Add = () => {
         edit={clusterId ? true : false}
       />
 
-      <SuccessTestModal
-        successTest={suceessModal}
-        setSuccessTest={setSuccessModal}
-        name={activeTab}
-      />
+      {suceessModal && (
+        <SuccessTestModal
+          successTest={suceessModal}
+          setSuccessTest={setSuccessModal}
+          name={activeTab}
+        />
+      )}
 
       <FailedTestModal
         failedTest={failedModal}

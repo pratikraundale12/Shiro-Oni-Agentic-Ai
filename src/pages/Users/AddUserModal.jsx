@@ -23,8 +23,8 @@ import {
 import { ProfileUpload } from './ProfileUpload';
 import { theme } from '../../styles';
 import { API_URL } from '../../constants';
-import { useDispatch } from 'react-redux';
-import { GridActions } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { GridActions, RolesSelectors } from '../../store';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -108,6 +108,7 @@ const DropDownWrapper = styled.div`
 
 export const AddUserModal = props => {
   const dispatch = useDispatch();
+  const roles = useSelector(RolesSelectors.getRoles);
   const { state, setState } = useGlobalContext();
   const currentUser = state.currentUser;
   const {
@@ -125,6 +126,7 @@ export const AddUserModal = props => {
     ),
   });
 
+  console.log(roles);
   const openModal = () => setState({ ...state, userModal: true });
   const closeModal = () => {
     setState({
@@ -139,11 +141,7 @@ export const AddUserModal = props => {
     { value: true, label: 'Active' },
     { value: false, label: 'Inactive' },
   ];
-  const roleOption = [
-    { value: '9504c471-e895-457d-90b1-ce6758badd9d', label: 'Admin' },
-    { value: '0c5840f6-3ac4-47b4-9740-24ac33645150', label: 'Manager' },
-    { value: 'b8b61796-7def-4416-8420-c6812155d495', label: 'Developer' },
-  ];
+  const rolesOption = roles.map(role => ({ value: role.id, label: role.name }));
 
   const onSubmit = async data => {
     const formData = new FormData();
@@ -255,7 +253,7 @@ export const AddUserModal = props => {
               <StyledSelectField
                 name="role_id"
                 size="sm"
-                options={roleOption}
+                options={rolesOption}
                 errors={errors}
                 control={control}
                 placeholder="Role"

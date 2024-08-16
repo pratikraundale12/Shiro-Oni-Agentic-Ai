@@ -146,9 +146,9 @@ export const Grid = ({
     getTheme(),
     {
       Table: `
-      --data-table-library_grid-template-columns: ${columns
-        .map(column => column.width)
-        .join(' ')} !important;
+        --data-table-library_grid-template-columns: ${columns
+          .map(column => column.width || 'auto')
+          .join(' ')} !important;
         margin-bottom: 0;
 
         th, td {
@@ -167,6 +167,9 @@ export const Grid = ({
 
         tbody tr:nth-of-type(even) td {
           background-color: ${theme.colors.lightGrey} !important;          
+        }
+       tr td:last-child div {
+          overflow: visible;
         }
       `,
     },

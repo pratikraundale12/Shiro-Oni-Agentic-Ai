@@ -6,6 +6,8 @@ import { dashboardAPI } from './dashboard';
 import { clustersAPI } from './clusters';
 import { usersAPI } from './users';
 import { namespacesAPI } from './namespaces';
+import { rolesAPI } from './roles';
+import { policiesAPI } from './policies';
 
 const create = (baseURL = `${API_URL}/api`) => {
   const api = apisauce.create({
@@ -43,6 +45,10 @@ const create = (baseURL = `${API_URL}/api`) => {
     ...clustersAPI(api),
     // Namespaces
     ...namespacesAPI(api),
+    // Roles
+    ...rolesAPI(api),
+    // Policies
+    ...policiesAPI(api),
   };
 };
 

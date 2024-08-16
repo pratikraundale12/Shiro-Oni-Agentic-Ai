@@ -15,6 +15,7 @@ export const userSchema = yup.object().shape({
     .string()
     .matches(EMAIL_REGEX, 'Invalid email address')
     .required('Email is required'),
+  role_id: yup.string().required('Role is required'),
   password: yup
     .string()
     .required('Password is required')
@@ -55,6 +56,7 @@ export const editUserSchema = yup.object().shape(
       .string()
       .matches(EMAIL_REGEX, 'Invalid email address')
       .required('Email is required'),
+    role_id: yup.string().required('Role is required'),
     username: yup.string().required('Username is required'),
     password: yup
       .string()

@@ -9,7 +9,6 @@ import { Modal, PasswordField } from '../../../shared';
 import { testCluster, testRegistry } from '../../../store/apis/clusters';
 import { UploadFile } from '../UploadFile';
 import { FailedTestModal } from './FailedTestModal';
-import { SuccessTestModal } from './SuccessTestModal';
 // Define your validation schema
 const schema = yup.object().shape({
   pfxFile: yup.mixed().required('PFX file is required'),
@@ -36,8 +35,8 @@ export const Certificate = ({
   // testSuccess,
   activeTab,
   registryData,
+  setSuccessModal,
 }) => {
-  const [suceessModal, setSuccessModal] = useState(false);
   const [failedModal, setFailedModal] = useState(false);
   const [testMessage, setTestMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -151,11 +150,6 @@ export const Certificate = ({
           />
         </form>
       </Modal>
-      <SuccessTestModal
-        successTest={suceessModal}
-        setSuccessTest={setSuccessModal}
-        name={activeTab}
-      />
 
       <FailedTestModal
         failedTest={failedModal}
@@ -174,4 +168,5 @@ Certificate.propTypes = {
   clusterData: PropTypes.object,
   registryData: PropTypes.object,
   activeTab: PropTypes.string,
+  setSuccessModal: PropTypes.func,
 };

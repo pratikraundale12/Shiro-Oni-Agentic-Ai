@@ -11,8 +11,13 @@ import { ClusterSelect } from '../ClusterSelect';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { Button, SelectField } from '../../shared';
 import { theme } from '../../styles';
-import { useDispatch } from 'react-redux';
-import { GridActions as GridSagsActions } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  GridActions as GridSagsActions,
+  RolesActions,
+  RolesSelectors,
+} from '../../store';
+import { ACCESS_OPTIONS } from '../../constants';
 
 const Flex = styled.div`
   display: flex;
@@ -112,6 +117,7 @@ export const GridActions = ({
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const accessType = useSelector(RolesSelectors.getAccessType);
   const { setState } = useGlobalContext();
   const { watch, control } = useForm();
 
@@ -178,6 +184,16 @@ export const GridActions = ({
                 backgroundColor={theme.colors.lightGrey}
               />
             </DropdownContainer>
+          )}
+          {location.pathname.includes('permission-matrix') && (
+            <StyledSelectField
+              size="sm"
+              placeholder="Access"
+              options={ACCESS_OPTIONS}
+              defaultValue={accessType}
+              backgroundColor={theme.colors.lightGrey}
+              onChange={option => dispatch(RolesActions.setAccessType(option))}
+            />
           )}
           {!isEmpty(buttonText) && (
             <Button
