@@ -234,23 +234,27 @@ export const LdapConfig = () => {
       );
     }
     const response1 = await getRolesAPI();
+    console.log('RE1', response1);
+    // if(response1?.status === 200 && response1.data.data.)
     if (response1?.status === 200) {
       console.log(listData, 'LISTTTT');
       console.log(response1.data.data, 'RESPONSE!!!!!');
 
-      const sortedArray = listData?.map(item => {
+      const sortedArray = response.data.groups?.map(item => {
+        // Find the matching object in listData based on ldapGroupName and cn
         const matchedItem = response1?.data?.data?.find(
           listItem => listItem?.ldap_group_name === item.cn
         );
-
-        console.log(matchedItem, 'matcheditem');
+        console.log(matchedItem, 'matched');
         return {
           ...item,
-          name: matchedItem ? matchedItem?.name : 'NA',
+          name: matchedItem ? matchedItem?.name : 'NA', // If a match is found, use the name; otherwise, set it to 'NA'
         };
       });
       console.log(sortedArray, 'sortedArray');
-      if (sortedArray) setListData(sortedArray);
+      if (sortedArray) {
+        setListData(sortedArray);
+      }
     } else {
       toast.error(
         response1?.message || 'Something went wrong. Please try again'
@@ -260,8 +264,9 @@ export const LdapConfig = () => {
 
   useEffect(() => {
     console.log(listData, 'DATADATA');
-
-    getLDAPGroup();
+    if (!displayList) {
+      getLDAPGroup();
+    }
   }, [displayList]);
 
   const breadcrumbData = [

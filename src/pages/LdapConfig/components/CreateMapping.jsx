@@ -69,17 +69,6 @@ export const CreateMapping = ({
   const [kdfList, setKdfList] = useState([]);
   const [formPayload, setFormPayload] = useState([]);
 
-  // const fieldData = [
-  //   { label: 'Admin' },
-  //   { label: 'Manager' },
-  //   { label: 'Developer' },
-  //   { label: 'Tester' },
-  //   { label: 'Sales' },
-  //   { label: 'Consultant' },
-  //   { label: 'Designer' },
-  //   { label: 'IT Admin' },
-  // ];
-
   const getLDAPGroup = async () => {
     const response = await getLdapGroupAPI();
     if (response?.status === 200) {
@@ -94,7 +83,7 @@ export const CreateMapping = ({
       console.log(response1.data.data, 'RESEPONSE!!!!!');
       const sortedArray = response1?.data?.data?.map(item => ({
         label: item.name,
-        value: item.id,
+        value: item.ldap_group_name,
       }));
       setKdfList(sortedArray);
     } else {
@@ -108,17 +97,18 @@ export const CreateMapping = ({
     if (isOpen) {
       getLDAPGroup();
     }
+    kdfList;
   }, [isOpen]);
 
-  console.log(kdfList, 'kdfmList');
+  // console.log(, 'kdfmList');
   console.log(ldapList, 'ldaplist');
   const temp = kdfList?.map(item => item.cn);
   console.log(temp, '<>><><><');
 
   const handleChange = (event, item) => {
     console.log(event.value, item, '??????????');
-    const sortedArray = kdfList.filter(item => item.value !== event.value);
-    setKdfList(sortedArray);
+    // const sortedArray = kdfList.filter(item => item.value !== event.value);
+    // setKdfList(sortedArray);
     setFormPayload([
       ...formPayload,
       { id: event.value, ldap_group_name: item.cn },
@@ -126,7 +116,7 @@ export const CreateMapping = ({
   };
 
   const onSubmit = async data => {
-    console.log(data);
+    console.log(data, 'DATATA');
     const response = await groupMappingApi({ data: formPayload });
     if (response?.status === 200) {
       console.log(response, '>>>>>>>>>', response);
@@ -140,6 +130,10 @@ export const CreateMapping = ({
       setIsOpen(false);
     }
   };
+
+  useEffect(() => {
+    console.log('KDF', kdfList);
+  }, [kdfList]);
 
   return (
     <Modal
@@ -163,6 +157,7 @@ export const CreateMapping = ({
                   <StyledSelectField
                     options={kdfList}
                     control={control}
+                    value={item.ldap_group_name}
                     onChange={event => handleChange(event, item)}
                   />
                 </td>

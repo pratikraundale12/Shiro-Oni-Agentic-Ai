@@ -35,7 +35,7 @@ const Slider = styled.span`
   right: 0;
   bottom: 0;
   background-color: #e6ebf0;
-  transition: 0.4s;
+  transition: 0.2s;
 
   border-radius: 34px;
 
