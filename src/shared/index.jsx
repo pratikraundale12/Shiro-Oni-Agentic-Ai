@@ -5,3 +5,4 @@ export * from './ErrorBoundary';
 export * from './FormInputs';
 export * from './Modal';
 export * from './PageComingSoon';
+export * from './SyncUsersSuccess';

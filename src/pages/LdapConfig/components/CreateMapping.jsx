@@ -34,6 +34,7 @@ const TableContainer = styled.div`
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 20px;
 `;
+
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -59,6 +60,7 @@ const Table = styled.table`
     }
   }
 `;
+
 export const CreateMapping = ({
   isOpen,
   setIsOpen,
@@ -70,26 +72,30 @@ export const CreateMapping = ({
   const [formPayload, setFormPayload] = useState([]);
 
   const getLDAPGroup = async () => {
-    const response = await getLdapGroupAPI();
-    if (response?.status === 200) {
-      setLdapList(response.data.groups);
-    } else {
-      toast.error(
-        response?.message || 'Something went wrong. Please try again'
-      );
-    }
-    const response1 = await getRolesAPI();
-    if (response1?.status === 200) {
-      const sortedArray = response1?.data?.data?.map(item => ({
-        label: item.name,
-        value: item.id,
-        ldapGroupname: item.ldap_group_name,
-      }));
-      setKdfList(sortedArray);
-    } else {
-      toast.error(
-        response1?.message || 'Something went wrong. Please try again'
-      );
+    try {
+      const [ldapResponse, rolesResponse] = await Promise.all([
+        getLdapGroupAPI(),
+        getRolesAPI(),
+      ]);
+
+      if (ldapResponse?.status === 200) {
+        setLdapList(ldapResponse.data.groups);
+      } else {
+        toast.error(ldapResponse?.message || 'Failed to load LDAP groups');
+      }
+
+      if (rolesResponse?.status === 200) {
+        const sortedArray = rolesResponse?.data?.data?.map(item => ({
+          label: item.name,
+          value: item.id,
+          ldapGroupname: item.ldap_group_name,
+        }));
+        setKdfList(sortedArray);
+      } else {
+        toast.error(rolesResponse?.message || 'Failed to load roles');
+      }
+    } catch (error) {
+      toast.error('An error occurred while loading data');
     }
   };
 
@@ -117,7 +123,7 @@ export const CreateMapping = ({
   const onSubmit = async () => {
     const response = await groupMappingApi({ data: formPayload });
     if (response?.status === 200) {
-      toast.success('LDAP and KDFM Mapping is SuccessFully');
+      toast.success('LDAP and KDFM Mapping is Successful');
       setIsOpen(false);
       getLDAPGroupForMapping();
     } else {
@@ -137,36 +143,39 @@ export const CreateMapping = ({
       secondaryButtonText="Back"
       primaryButtonText="Submit"
       footerAlign="start"
-      contentStyles={{ minWidth: '50%' }}
+      contentStyles={{ minWidth: '50%', maxHeight: '90%' }}
       onSubmit={handleSubmit(onSubmit)}
     >
       <TableContainer>
         <Table>
           <tbody>
-            {ldapList.map((item, index) => (
-              <tr key={index}>
-                <td>{item.cn}</td>
-                <td>
-                  <StyledSelectField
-                    options={kdfList}
-                    control={control}
-                    defaultValue={
-                      kdfList.find(
-                        option => option.ldapGroupname === item.cn
-                      ) && {
-                        label: kdfList.find(
-                          option => option.ldapGroupname === item.cn
-                        ).label,
-                        value: kdfList.find(
-                          option => option.ldapGroupname === item.cn
-                        ).ldapGroupname,
-                      }
-                    }
-                    onChange={event => handleChange(event, item)}
-                  />
-                </td>
-              </tr>
-            ))}
+            {ldapList.map((item, index) => {
+              const defaultValue = kdfList.find(
+                option => option.ldapGroupname === item.cn
+              );
+              return (
+                <tr key={index}>
+                  <td>{item.cn}</td>
+                  <td>
+                    {kdfList.length > 0 && (
+                      <StyledSelectField
+                        options={kdfList}
+                        control={control}
+                        defaultValue={
+                          defaultValue
+                            ? {
+                                label: defaultValue.label,
+                                value: defaultValue.value,
+                              }
+                            : null
+                        }
+                        onChange={event => handleChange(event, item)}
+                      />
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </Table>
       </TableContainer>
