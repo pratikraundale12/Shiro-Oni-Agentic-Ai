@@ -1,6 +1,7 @@
 /*eslint-disable*/
 import styled from 'styled-components';
 import { ExclamationFailedTestingIcon } from '../../../assets';
+import { KDFM } from '../../../constants';
 import { Modal } from '../../../shared';
 
 const Icon = styled.div`
@@ -50,14 +51,11 @@ export const FailedTestModal = ({ failedTest, setFailedTest, testMessage }) => {
         <Icon>
           <ExclamationFailedTestingIcon color="#FF7A00" />
         </Icon>
-        <Title>Cluster Test Failed</Title>
+        <Title>{KDFM.CLUSTER_TEST_FAILED}</Title>
         {testMessage != '' ? (
           <Para>{testMessage}</Para>
         ) : (
-          <Para>
-            We encountered an issue while testing your cluster. Please check if
-            your File is Correct
-          </Para>
+          <Para>{KDFM.PFX_TEST_FAIL_MESSAGE}</Para>
         )}
       </>
     </Modal>

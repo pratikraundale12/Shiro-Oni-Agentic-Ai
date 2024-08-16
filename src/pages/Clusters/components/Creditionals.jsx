@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { SmallPerfileIcon } from '../../../assets';
-import { FailedTestModal } from './FailedTestModal';
-import { testCluster, testRegistry } from '../../../store/index1';
+import { KDFM } from '../../../constants';
 import { InputField, Modal, PasswordField } from '../../../shared';
+import { testCluster, testRegistry } from '../../../store/index1';
+import { FailedTestModal } from './FailedTestModal';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -96,13 +97,13 @@ export const Creditionals = ({
   return (
     <>
       <Modal
-        title="Add Credentials"
+        title={KDFM.ADD_CREDENTIALS}
         isOpen={isCredOpen}
         onRequestClose={() => setIsCredOpen(false)}
         size="sm"
         loading={loading}
-        secondaryButtonText="Back"
-        primaryButtonText="Test Credentials"
+        secondaryButtonText={KDFM.BACK}
+        primaryButtonText={KDFM.TEST_CREDENTIALS}
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}
@@ -119,21 +120,20 @@ export const Creditionals = ({
             name="username"
             register={register}
             icon={<SmallPerfileIcon />}
-            label="Username"
-            placeholder="Enter your Username"
+            label={KDFM.USERNAME}
+            placeholder={KDFM.ENTER_USERNAME}
             errors={errors}
           />
           <PasswordField
             name="password"
             register={register}
             watch={watch}
-            label="password"
-            placeholder="Enter your Password"
+            label={KDFM.PASSWORD}
+            placeholder={KDFM.ENTER_PASSWORD}
             errors={errors}
           />
         </form>
       </Modal>
-
       <FailedTestModal
         failedTest={failedModal}
         setFailedTest={setFailedModal}
