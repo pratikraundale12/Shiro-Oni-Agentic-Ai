@@ -171,7 +171,7 @@ export const UserLogin = () => {
           {SIGN_IN_TO_YOUR_ACCOUNT}
         </SubmitButton>
       </form>
-      <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
+      {/* <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
       <SSOButtonsContainer>
         <SSOButton disabled>
           <GoogleIcon />
@@ -181,7 +181,7 @@ export const UserLogin = () => {
           <MicroSoftIcon />
           <span>{MICROSOFT}</span>
         </SSOButton>
-      </SSOButtonsContainer>
+      </SSOButtonsContainer> */}
     </Layout>
   );
 };
