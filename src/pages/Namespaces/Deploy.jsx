@@ -19,7 +19,7 @@ import {
   Table,
   TextRender,
 } from '../../components';
-import { CLUSTERS_TOKEN } from '../../constants';
+import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, RadioField, SelectField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
@@ -130,8 +130,8 @@ const handleKeyPress = event => {
 };
 
 const breadcrumbData = [
-  { label: 'Namespace List', path: '/namespaces' },
-  { label: 'Select Namespace', path: '/namespaces/deploy' },
+  { label: KDFM.NAMESPACE_LIST, path: '/namespaces' },
+  { label: KDFM.SELECT_NAMESPACE, path: '/namespaces/deploy' },
 ];
 
 const MODULE = 'destNamespaces';
@@ -173,7 +173,7 @@ const Deploy = () => {
   };
   const COLUMNS = [
     {
-      label: 'Namespace',
+      label: KDFM.NAMESPACE,
       renderCell: item => (
         <div
           style={{
@@ -195,20 +195,20 @@ const Deploy = () => {
       ),
     },
     {
-      label: 'Namespace ID',
+      label: KDFM.NAMESPACE_ID,
       renderCell: item => <TextRender text={item.id} />,
       width: '26%',
     },
     {
-      label: 'Flow Name',
+      label: KDFM.FLOW_NAME,
       renderCell: item => <TextRender text={item?.flowName || 'N/A'} />,
     },
     {
-      label: 'Bucket Name',
+      label: KDFM.BUCKET_NAME,
       renderCell: item => <TextRender text={item?.bucketName || 'N/A'} />,
     },
     {
-      label: 'Version',
+      label: KDFM.VERSION,
       renderCell: item => <TextRender text={item?.version || 'N/A'} />,
     },
     {
@@ -273,7 +273,9 @@ const Deploy = () => {
           <div>
             <TodoIcon />
           </div>
-          <MainTitleHfour className="mb-0">Deploy Namespace</MainTitleHfour>
+          <MainTitleHfour className="mb-0">
+            {KDFM.DEPLOY_NAMESPACE}
+          </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex mb-3">
@@ -282,9 +284,9 @@ const Deploy = () => {
       <GreyBoxNamespace className="w-100 mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
           <ClusterSelect
-            label="Select Cluster"
+            label={KDFM.SELECT_CLUSTER}
             icon={<QRIcons />}
-            placeholder="Select Cluster"
+            placeholder={KDFM.SELECT_CLUSTER}
             isDestination
             onChange={onClusterCheck}
             required
@@ -308,7 +310,7 @@ const Deploy = () => {
           {isEmpty(checkDestCluster) && (
             <NoDataContainer>
               <WhiteBoradIcon width={200} height={195} />
-              <NoDataText>No data found</NoDataText>
+              <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
             </NoDataContainer>
           )}
           {checkDestCluster.mode === 'deploy' && (
@@ -322,7 +324,7 @@ const Deploy = () => {
                 <Search
                   type="search"
                   value={search}
-                  placeholder="Search Namespace, Flow Name, Bucket Name"
+                  placeholder={KDFM.SELECT_NAMESPACE_FLOW_BUCKET_NAME}
                   onChange={e => setSearch(e.target.value)}
                 />
               </SearchContainer>
@@ -341,9 +343,9 @@ const Deploy = () => {
         <BottomButton className="bottom-button-divs d-flex">
           <BottomButtonDiv className="btn-div d-flex">
             <Button variant="secondary" onClick={handleBackClick}>
-              Back
+              {KDFM.BACK}
             </Button>
-            <Button onClick={handleClick}>Deploy</Button>
+            <Button onClick={handleClick}>{KDFM.DEPLOY}</Button>
           </BottomButtonDiv>
         </BottomButton>
       )}

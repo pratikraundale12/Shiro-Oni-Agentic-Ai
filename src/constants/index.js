@@ -1,4 +1,5 @@
 import { CLUSTER_CONSTANTS } from './cluster.constant';
+import { NAMESPACE_CONSTANTS } from './namespace.constant';
 
 // modules constants exports
 export * from './login';
@@ -68,6 +69,8 @@ export const KDFM = {
   CANCEL: 'Cancel',
   YES: 'Yes',
   NO: 'No',
+  UPGRADE: 'Upgrade',
+  DEPLOY: 'Deploy',
   USERNAME: 'Username',
   PASSWORD: 'Password',
   ENTER_USERNAME: 'Enter your Username',
@@ -84,8 +87,13 @@ export const KDFM = {
   REFRESH: 'Refresh',
   STATUS: 'Status',
   ACCESS: 'Access',
+  VERSION: 'Version',
+  CREATED: 'Created',
+  COMMENT: 'Comment',
+  SUMMARY: 'Summary',
   SOMETHING_WENT_WRONG: 'Something went wrong',
 
   // module specific constants
   ...CLUSTER_CONSTANTS,
+  ...NAMESPACE_CONSTANTS,
 };
