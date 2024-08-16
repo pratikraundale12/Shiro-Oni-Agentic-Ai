@@ -80,7 +80,7 @@ export const KDFM = {
   TESTED: 'Tested',
   TEST_SUCCEED: 'Test Succeeded',
   TEST_FAILED: 'Test Failed',
-  TEST_FAIL: 'Test Failed',
+  TESTING_FAILED: 'Test Failed',
   REFRESH: 'Refresh',
   STATUS: 'Status',
   ACCESS: 'Access',

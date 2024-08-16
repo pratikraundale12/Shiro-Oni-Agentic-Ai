@@ -32,6 +32,7 @@ export const CLUSTER_CONSTANTS = {
   ADD_NEW_REGISTRY: 'Add New Registry',
   ADD_CLUSTER_CERTIFICATE: 'Add Cluster Certificate',
   ADD_REGISTRY_CERTIFICATE: 'Add Registry Certificate',
+  PFX_FILE_SIZE: '3.7KB',
   PFX_FILE: 'PFX File',
   PFX_PASSPHRASE: 'PFX Passphrase',
   SELECT_PFX_FILE: 'Select your PFX File',

@@ -1,11 +1,10 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
-
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import styled from 'styled-components';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { ACCESS_OPTIONS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';

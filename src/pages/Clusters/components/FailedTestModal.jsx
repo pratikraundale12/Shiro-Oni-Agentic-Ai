@@ -40,11 +40,11 @@ const Para = styled.p`
 export const FailedTestModal = ({ failedTest, setFailedTest, testMessage }) => {
   return (
     <Modal
-      title="Testing Failed"
+      title={KDFM.TESTING_FAILED}
       isOpen={failedTest}
       onRequestClose={() => setFailedTest(false)}
       size="sm"
-      primaryButtonText="Continue"
+      primaryButtonText={KDFM.CONTINUE}
       onSubmit={() => setFailedTest(false)}
     >
       <>
