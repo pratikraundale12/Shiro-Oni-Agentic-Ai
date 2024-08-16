@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
-import { CLUSTERS_TOKEN } from '../../constants';
+import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from './redux';
 
@@ -72,7 +72,7 @@ export function* checkDestCluster(api) {
     successAction: NamespacesActions.checkDestClusterSuccess,
   });
   if (response.ok && response.data.message) {
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -108,7 +108,7 @@ export function* deployCluster(api) {
     successAction: NamespacesActions.deployClusterSuccess,
   });
   if (response.ok) yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message);
+  else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
 export function* updateNamespaceStatus(api, { payload }) {
@@ -148,7 +148,7 @@ export function* updateNamespaceStatus(api, { payload }) {
     yield put(NamespacesActions.deployClusterSuccess(data));
   }
   if (!response.ok) {
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -185,7 +185,7 @@ export function* upgradeCluster(api) {
   }
 
   if (!response.ok) {
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -222,7 +222,7 @@ export function* clusterProgress(api) {
     yield call(clusterProgressDelete, api);
   }
   if (!response.ok) {
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -254,7 +254,7 @@ export function* clusterProgressDelete(api) {
   if (response.ok) {
     yield call(getCountDetails, api);
   } else {
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -285,7 +285,7 @@ export function* getCountDetails(api) {
   });
 
   if (response.ok) yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message);
+  else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
 export function* fetchParameterContext(api, { initialCall = true }) {
@@ -315,7 +315,7 @@ export function* fetchParameterContext(api, { initialCall = true }) {
   });
   if (response.ok && initialCall)
     yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message);
+  else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
 export function* updateParameterContext(api, { payload }) {
@@ -368,7 +368,7 @@ export function* updateParameterContext(api, { payload }) {
     });
   } else {
     yield call(fetchParameterContext, api, { initialCall: false });
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -419,7 +419,7 @@ export function* getStatusAndDeleteParameterContext(
     });
   } else {
     yield call(fetchParameterContext, api, { initialCall: false });
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -449,7 +449,7 @@ export function* fetchVariableList(api) {
     successAction: NamespacesActions.fetchVariableListSuccess,
   });
   if (response.ok) yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message);
+  else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
 export function* namespacesSagas(api) {

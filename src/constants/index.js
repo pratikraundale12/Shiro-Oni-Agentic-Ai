@@ -84,6 +84,7 @@ export const KDFM = {
   REFRESH: 'Refresh',
   STATUS: 'Status',
   ACCESS: 'Access',
+  SOMETHING_WENT_WRONG: 'Something went wrong',
 
   // module specific constants
   ...CLUSTER_CONSTANTS,

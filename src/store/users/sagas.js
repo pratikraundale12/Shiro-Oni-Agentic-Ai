@@ -1,4 +1,6 @@
+import { toast } from 'react-toastify';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { KDFM } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { UsersActions } from './redux';
 
@@ -14,6 +16,8 @@ export function* fetchUsers(api, { payload }) {
     yield put(
       UsersActions.fetchUsersSuccess({ ...response.data, test: 'test' })
     );
+  } else {
+    toast.error(response.data?.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
