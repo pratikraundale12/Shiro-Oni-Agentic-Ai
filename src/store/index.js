@@ -9,3 +9,5 @@ export { DashboardActions, DashboardSelectors } from './dashboard';
 export { UsersActions, UsersSelectors } from './users';
 export { ClustersActions, ClustersSelectors } from './clusters';
 export { NamespacesActions, NamespacesSelectors } from './namespaces';
+export { RolesActions, RolesSelectors } from './roles';
+export { PoliciesActions, PoliciesSelectors } from './policies';

@@ -7,6 +7,8 @@ import { usersSagas } from './users';
 import { clustersSagas } from './clusters';
 import { dashboardSagas } from './dashboard';
 import { namespacesSagas } from './namespaces';
+import { rolesSagas } from './roles/sagas';
+import { policiesSagas } from './policies';
 
 /* ------------- API ------------- */
 export const api = API.create();
@@ -25,5 +27,9 @@ export default function* root() {
     fork(clustersSagas, api),
     // |---------------------namespaces-------------------------|
     fork(namespacesSagas, api),
+    // |---------------------roles-------------------------|
+    fork(rolesSagas, api),
+    // |---------------------policies-------------------------|
+    fork(policiesSagas, api),
   ]);
 }

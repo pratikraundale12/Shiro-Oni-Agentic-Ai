@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { toast } from 'react-toastify';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Button, InputField, Modal, SelectField } from '../../shared';
 import { useGlobalContext } from '../../utils';
 import { PlusCircleIcon, UserIcon } from '../../assets';
-// import { fetchGridData } from '../../store/services/fetchGridData';
-import { useForm } from 'react-hook-form';
 import {
-  getPolicies,
-  getRolesPolicies,
-  updatePolicies,
-} from '../../store/apis';
+  RolesSelectors,
+  PoliciesActions,
+  PoliciesSelectors,
+} from '../../store';
 
 const TableContainer = styled.div`
   flex: 1;
-  overflow: hidden;
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 20px;
 `;
@@ -78,29 +76,23 @@ const RoleFormContainer = styled.div`
 `;
 
 export const EditPolicies = () => {
+  const dispatch = useDispatch();
   const {
-    state: {
-      roleModal,
-      permissionModal,
-      roles,
-      policiesAccess,
-      updatedPoliciesAccess,
-    },
+    state: { roleModal },
     setState,
   } = useGlobalContext();
   const {
     register,
     formState: { errors },
   } = useForm();
-  const [policies, setPolicies] = useState([]);
+  const roles = useSelector(RolesSelectors.getRoles);
+  const policies = useSelector(PoliciesSelectors.getPolicies);
+  const policiesAccess = useSelector(PoliciesSelectors.getRolesPolicies);
+  const permissionModal = useSelector(PoliciesSelectors.getPermissionModal);
+  const [updatedPoliciesAccess, setUpdatedPoliciesAccess] = useState([]);
 
-  const openPermissionModal = () =>
-    setState(prev => ({ ...prev, permissionModal: true }));
-  const closePermissionModal = () =>
-    setState(prev => ({
-      ...prev,
-      permissionModal: false,
-    }));
+  const handlePermissionModal = () =>
+    dispatch(PoliciesActions.permissionModal());
 
   const openRoleModal = () => setState(prev => ({ ...prev, roleModal: true }));
   const closeRoleModal = () =>
@@ -110,42 +102,11 @@ export const EditPolicies = () => {
     }));
 
   const handleChange = (role, value) => {
-    let updatedGroup = updatedPoliciesAccess.find(
-      item => item.role_id === role.id
-    );
-    console.log(updatedGroup);
-    setState(prev => ({
-      ...prev,
-      updatedPoliciesAccess: prev.updatedPoliciesAccess.map(item =>
+    setUpdatedPoliciesAccess(prev =>
+      prev.map(item =>
         item.role_id === role.id ? { ...item, policies: value } : item
-      ),
-    }));
-  };
-
-  const fetchPolicies = async () => {
-    const response = await getPolicies();
-    setPolicies(
-      response.map(item => ({
-        label: item.name,
-        value: item.id,
-      })) || []
+      )
     );
-  };
-
-  const fetchPoliciesAccess = async () => {
-    const response = await getRolesPolicies();
-    const filteredArray = response?.data?.map(item => ({
-      ...item,
-      policies: item.policies?.map(p => ({
-        label: p.policy_name,
-        value: p.policy_id,
-      })),
-    }));
-    setState(prev => ({
-      ...prev,
-      policiesAccess: filteredArray || [],
-      updatedPoliciesAccess: filteredArray || [],
-    }));
   };
 
   const handleSubmit = async () => {
@@ -185,24 +146,19 @@ export const EditPolicies = () => {
       }
     });
 
-    const response = await updatePolicies(payload);
-    if (response?.message) {
-      toast.error(response.message);
-    } else {
-      toast.success('Updated Successfully');
-      // fetchGridData({
-      //   setState,
-      //   module: 'policiesAccess',
-      // });
-      closePermissionModal();
-    }
+    dispatch(PoliciesActions.updateRolesPolicies(payload));
   };
 
   useEffect(() => {
-    fetchPolicies();
-    fetchPoliciesAccess();
-  }, []);
+    dispatch(PoliciesActions.fetchPolicies());
+    dispatch(PoliciesActions.fetchRolesPolicies());
+  }, [dispatch]);
 
+  useEffect(() => {
+    setUpdatedPoliciesAccess(policiesAccess);
+  }, [policiesAccess]);
+
+  console.log(policiesAccess, updatedPoliciesAccess, policies);
   return (
     <div>
       <ButtonContainer>
@@ -214,14 +170,14 @@ export const EditPolicies = () => {
         >
           Add New Role
         </Button>
-        <Button onClick={openPermissionModal} size="sm">
+        <Button onClick={handlePermissionModal} size="sm">
           Edit Permissions
         </Button>
       </ButtonContainer>
       <Modal
         title="Edit DFM Permissions"
         isOpen={permissionModal}
-        onRequestClose={closePermissionModal}
+        onRequestClose={handlePermissionModal}
         secondaryButtonText="Back"
         primaryButtonText="Submit"
         footerAlign="start"

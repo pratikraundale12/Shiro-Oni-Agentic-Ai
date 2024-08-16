@@ -9,6 +9,8 @@ import { usersReducer } from './users';
 import { clustersReducer } from './clusters';
 import { dashboardReducer } from './dashboard';
 import { namespacesReducer } from './namespaces';
+import { rolesReducer } from './roles/redux';
+import { policiesReducer } from './policies';
 
 const resettable = resettableReducer('RESET');
 
@@ -26,4 +28,6 @@ export default combineReducers({
   users: resettable(usersReducer),
   clusters: resettable(clustersReducer),
   namespaces: resettable(namespacesReducer),
+  roles: resettable(rolesReducer),
+  policies: resettable(policiesReducer),
 });
