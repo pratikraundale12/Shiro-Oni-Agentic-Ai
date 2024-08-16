@@ -13,7 +13,9 @@ export function* fetchDashboard(api) {
     clusterId: selectedCluster?.value || '',
     namespaceId: selectedNamespace?.value || '',
   };
-  const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );

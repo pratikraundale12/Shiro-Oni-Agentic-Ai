@@ -38,7 +38,9 @@ export function* fetchGrid(api, { payload: { module = '', params } }) {
       namespaceId: selectedDestNamespace?.value || '',
     };
   if (module === 'namespaces' && isEmpty(selectedCluster)) return;
-  const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );

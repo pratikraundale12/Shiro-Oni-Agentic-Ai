@@ -32,7 +32,9 @@ export function* requestSaga({
     response.data.message.includes('Token Expired')
   ) {
     toast.error(response.data.message);
-    const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+    const clustersToken = JSON.parse(
+      localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+    );
     const filteredClustersToken = clustersToken.filter(
       cluster => cluster.id !== clusterId
     );
