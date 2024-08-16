@@ -107,13 +107,12 @@ export const ListScheduleDeployment = () => {
   return (
     <>
       <Grid
-        module="schedule_deploymet"
+        module="scheduler"
         title="Deployment List"
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
         placeholder="Search Namespace, Cluster or Approver"
         handleRefresh={handleRefresh}
-        // buttonText="Schedule Deployment"
         addModal={AddScheduleDeploymentModal}
       />
     </>
