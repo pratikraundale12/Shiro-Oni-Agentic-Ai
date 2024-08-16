@@ -8,7 +8,6 @@ import { AuthenticationActions } from '../../../store';
 const EnableClusterText = styled.div`
   display: ${props => (props.isVisible ? 'block' : 'none')};
   color: #0cbf59;
-  position: absolute;
   left: 0;
   bottom: 0;
   padding: 4px;
@@ -19,12 +18,12 @@ const EnableClusterText = styled.div`
   line-height: 19.36px;
   cursor: pointer;
 `;
-export const EnableClusterRender = ({ hoveredItemId, item }) => {
+export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
   return (
     <>
       <EnableClusterText
-        isVisible={hoveredItemId === item.id}
+        isVisible={true}
         onClick={() => {
           dispatch(
             AuthenticationActions.setClusterLogin({
@@ -44,5 +43,4 @@ export const EnableClusterRender = ({ hoveredItemId, item }) => {
 
 EnableClusterRender.propTypes = {
   item: PropTypes.object.isRequired,
-  hoveredItemId: PropTypes.string,
 };

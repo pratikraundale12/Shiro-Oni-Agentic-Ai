@@ -144,7 +144,9 @@ const Deploy = () => {
   const selectedDestNamespace = useSelector(
     NamespacesSelectors.getSelectedDestNamespace
   );
-  const loading = useSelector(state => LoadingSelectors.getLoading(state, 'checkDestCluster'));
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'checkDestCluster')
+  );
   const tokens = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const tokenIds = tokens.map(item => item.id);
   const clusters = useSelector(ClustersSelectors.getClusters);
@@ -215,7 +217,6 @@ const Deploy = () => {
     {
       label: '',
       renderCell: item => {
-        console.log(item, 'Deploy item');
         return (
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <RadioField
@@ -305,7 +306,6 @@ const Deploy = () => {
   };
 
   const onClusterCheck = value => {
-    console.log('onClusterCheck', value);
     // dispatch(NamespacesActions.setSelectedDestCluster(value));
     dispatch(NamespacesActions.checkDestCluster());
     // setLoading(true);
