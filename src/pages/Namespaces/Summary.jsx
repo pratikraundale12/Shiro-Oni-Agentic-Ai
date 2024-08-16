@@ -324,87 +324,12 @@ const Summary = () => {
   const handleUpgradeClick = async () => {
     dispatch(NamespacesActions.upgradeCluster());
     setProgress(deployOrUpgradeDetails?.percentCompleted);
-
-    // try {
-    //   const response = await upgradeCluster({
-    //     clusterId: state.selectedClusterId,
-    //     namespaceId: state?.upgradeData?.id,
-    //     version: state.selectedVersion,
-    //   });
-    //   setLoading(true);
-    //   if (response) {
-    //     let progressData;
-    //     const intervalId = setInterval(async () => {
-    //       progressData = await getClusterProgress({
-    //         clusterId: state.selectedClusterId,
-    //         progressId: response.requestId,
-    //       });
-    //       setProgress(progressData.percentCompleted);
-    //       if (progressData.percentCompleted >= 100) {
-    //         clearInterval(intervalId);
-    //         await getClusterProgressDelete({
-    //           clusterId: state.selectedClusterId,
-    //           progressId: response.requestId,
-    //         });
-    //         const countDetails = await getCountDetails({
-    //           clusterId: state.selectedClusterId,
-    //           namespaceId: state?.upgradeData?.id,
-    //         });
-    //         setState(prevState => ({
-    //           ...prevState,
-    //           updatedCount: countDetails,
-    //         }));
-    //         setModalOpen(true);
-    //       }
-    //     }, 1000);
-    //   }
-    //   setLoading(false);
-    // } catch (error) {
-    //   toast.error('Upgrade failed:', error.message);
-    // }
   };
   const handleDeploy = () => {
     dispatch(NamespacesActions.deployCluster());
-    // try {
-    //   const result = await deployCluster({
-    //     clusterId: selectedDestCluster?.value,
-    //     namespaceId: formData.namespaceId,
-    //     flowId: checkDestCluster?.flowId,
-    //     bucketId: checkDestCluster?.bucketId,
-    //     bucketName: checkDestCluster.bucketName,
-    //     registryId: checkDestCluster?.registryId,
-    //     version: formData.version,
-    //     position: formData.position,
-    //   });
-    //   setLoading(true);
-    //   setState(prevState => ({
-    //     ...prevState,
-    //     deployCountDetails: result,
-    //   }));
-    //   setLoading(false);
-    //   setModalOpen(true);
-    // } catch (error) {
-    //   toast.error(error?.message);
-    // }
   };
 
   const handleCloseModal = () => {
-    // setState(prevState => ({
-    //   ...prevState,
-    //   selectedPaths: [],
-    //   selectedClusterId: null,
-    //   selectedVersion: null,
-    //   deployNamespaceId: null,
-    //   deployData: {
-    //     flowId: null,
-    //     bucketId: null,
-    //     bucketName: null,
-    //     registryId: null,
-    //     version: null,
-    //   },
-    //   upgradeData: {},
-    //   updatedCount: null,
-    // }));
     history.push('/namespaces');
   };
 
@@ -433,21 +358,6 @@ const Summary = () => {
 
   const handleTertiaryButton = async () => {
     dispatch(NamespacesActions.fetchVariableList());
-    // const response = await fetchVariables(
-    //   state?.selectedDestinationClusterId,
-    //   state?.deployCountDetails?.data?.id || state?.updatedCount?.id
-    // );
-
-    // if (response) {
-    //   setState(prevState => ({
-    //     ...prevState,
-    //     variablesDetail: response?.data,
-    //   }));
-    //   setVariablesModalOpen({ isOpen: false, mode: 'add' });
-    //   setModalOpen(false);
-    // } else {
-    //   toast.error(response.message);
-    // }
     setVariablesModalOpen({ isOpen: true, mode: 'add' });
     setModalOpen(false);
   };

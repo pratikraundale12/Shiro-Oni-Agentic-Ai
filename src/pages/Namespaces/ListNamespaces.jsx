@@ -138,28 +138,6 @@ export const ListNamespaces = () => {
     }
   };
 
-  // function handleSelectNamespace(id) {
-  //   fetchGridData({
-  //     setState,
-  //     module: 'namespaces',
-  //     selectedSourceClusterId: state.selectedSourceClusterId,
-  //     selectedNamespaceId: id,
-  //   });
-
-  //   // setOffset(0);
-  //   setState(prev => {
-  //     const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
-  //     const newData = state.gridData.namespaces.data.filter(
-  //       item => !existingIds.has(item.id)
-  //     );
-
-  //     return {
-  //       ...prev,
-  //       selectedNamespaceId: id,
-  //       tempNamespacesData: [...prev.tempNamespacesData, ...newData],
-  //     };
-  //   });
-  // }
   const handleSelect = item => {
     dispatch(NamespacesActions.setFlowPath(item.flowId));
     dispatch(
@@ -168,23 +146,6 @@ export const ListNamespaces = () => {
         value: item.id,
       })
     );
-    // setState(prev => ({
-    //   ...prev,
-    //   selectedNamespaceId: id,
-    // }));
-
-    // setState(prev => {
-    //   const existingIds = new Set(prev.tempNamespacesData.map(item => item.id));
-    //   const newData = state.gridData.namespaces.data.filter(
-    //     item => !existingIds.has(item.id)
-    //   );
-    //   return {
-    //     ...prev,
-    //     selectedNamespaceId: id,
-    //     tempNamespacesData: [...prev.tempNamespacesData, ...newData],
-    //     currentFlowId: id,
-    //   };
-    // });
 
     history.push('/namespaces/deploy', {
       state: {
@@ -192,15 +153,6 @@ export const ListNamespaces = () => {
       },
     });
   };
-
-  // useEffect(() => {
-  //   fetchGridData({
-  //     setState,
-  //     module: 'clusters',
-  //   });
-  //   setOffset(0);
-  // }, [setState]);
-  // const [offset, setOffset] = useState(0);
 
   const handleRefresh = event => {
     setRefreshSelect(event.value);

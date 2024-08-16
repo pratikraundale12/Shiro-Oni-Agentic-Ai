@@ -171,39 +171,6 @@ const NamespaceDeploy = ({
   );
   const handleUpdateStatus = status => {
     dispatch(NamespacesActions.updateNamespaceStatus(status));
-    // try {
-    //   const response = await updateNamespaceStatus(
-    //     state.selectedClusterId,
-    //     state?.upgradeData?.id || deployOrUpgradeDetails?.id,
-    //     status
-    //   );
-    //   if (response?.data) {
-    //     setState(prevState => ({
-    //       ...prevState,
-    //       deployCountDetails: {
-    //         ...prevState.deployCountDetails,
-    //         data: {
-    //           ...prevState?.deployCountDetails.data,
-    //           runningCount: response?.data?.status?.runningCount,
-    //           stoppedCount: response?.data?.status?.stoppedCount,
-    //           invalidCount: response?.data?.status?.invalidCount,
-    //           disabledCount: response?.data?.status?.disabledCount,
-    //         },
-    //       },
-    //       updatedCount: {
-    //         ...prevState?.updatedCount,
-    //         runningCount: response?.data?.status?.runningCount,
-    //         stoppedCount: response?.data?.status?.stoppedCount,
-    //         invalidCount: response?.data?.status?.invalidCount,
-    //         disabledCount: response?.data?.status?.disabledCount,
-    //       },
-    //     }));
-    //   }
-    //   console.log(response, state);
-    //   setActiveButton(buttonId);
-    // } catch (error) {
-    //   console.error('Failed to update status:', error);
-    // }
   };
 
   const handleClick = () => {

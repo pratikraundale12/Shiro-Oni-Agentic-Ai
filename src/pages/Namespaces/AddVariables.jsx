@@ -100,13 +100,6 @@ const AddVariables = ({
       );
 
       if (existingVariableDetails && existingVariableDetails.length !== 0) {
-        // setState(prevState => ({
-        //   ...prevState,
-        //   variablesDetail: {
-        //     version: prevState.variablesDetail.version,
-        //     variables: filteredParameterContextList,
-        //   },
-        // }));
         dispatch(
           NamespacesActions.fetchVariableListSuccess({
             ...variableList,

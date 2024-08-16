@@ -115,7 +115,7 @@ export function* updateNamespaceStatus(api, { payload }) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
-  const deployDetails = yield select(
+  const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
@@ -131,7 +131,7 @@ export function* updateNamespaceStatus(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedDestCluster?.value,
-        namespaceId: deployDetails.id,
+        namespaceId: deployOrUpgradeDetails.id,
         state: payload,
       },
     ],
