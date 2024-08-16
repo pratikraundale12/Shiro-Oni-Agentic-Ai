@@ -42,7 +42,7 @@ export const getRolesAPI = async () => {
 
 export const groupMappingApi = async payload => {
   try {
-    return await API.post(`/group-mapping`, payload);
+    return await API.patch(`/group-mapping`, payload);
   } catch (error) {
     return error?.response?.data;
   }
