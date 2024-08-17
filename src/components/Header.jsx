@@ -17,6 +17,7 @@ import { ProfileRender } from './CustomGrid';
 import SessionExpiredLabel from '../shared/SessionExpiredLabel';
 import { ClusterLoginModal } from './ClusterLoginModal';
 import { AuthenticationActions, AuthenticationSelectors } from '../store';
+import { useGlobalContext } from '../utils';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -149,6 +150,7 @@ const ProfileDropdown = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [showMenu, setShowMenu] = useState(false);
+  const { setState } = useGlobalContext();
 
   const menuRef = useRef(null);
   const options = [
@@ -156,22 +158,17 @@ const ProfileDropdown = () => {
       label: 'Profile',
       icon: <UserIcon width={14} height={14} />,
       onClick: () => {
-        // setState(prev => ({
-        //   ...prev,
-        //   userModal: true,
-        //   selectedItem: prev.currentUser,
-        // }));
-        // setShowMenu(prev => !prev);
+        setState(prev => ({
+          ...prev,
+          userModal: true,
+          selectedItem: prev.currentUser,
+        }));
+        setShowMenu(prev => !prev);
       },
     },
     {
       label: 'Logout',
       icon: <LockIcon width={14} height={14} />,
-      // onClick: () => {
-      //   localStorage.clear();
-      //   setState(INITIAL_STATE);
-      //   setShowMenu(prev => !prev);
-      // },
       onClick: () => dispatch(AuthenticationActions.logout()),
     },
   ];
