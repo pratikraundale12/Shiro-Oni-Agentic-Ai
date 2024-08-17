@@ -25,7 +25,6 @@ const Title = styled.h5`
 
 const Para = styled.p`
   text-align: center;
-  text-transform: capitalize;
   margin-bottom: 0 !important;
   margin-top: 0;
   margin-bottom: 1rem;
