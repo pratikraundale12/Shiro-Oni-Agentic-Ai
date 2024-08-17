@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -123,8 +124,6 @@ export const LdapConfig = () => {
   const dispatch = useDispatch();
   const roles = useSelector(RolesSelectors.getRoles);
 
-  console.log(roles, 'RolesDat');
-
   const {
     register: registerForm1,
     handleSubmit: handleSubmitForm1,
@@ -146,15 +145,24 @@ export const LdapConfig = () => {
     resolver: yupResolver(schemaForm2),
     // defaultValues: formData,
   });
-  const onChange = (ldapGroupName, option) => {
-    console.log(option, ldapGroupName);
+  const onChange = (data, option) => {
+    console.log({ data, option });
 
-    const updatedData = formPayload.map(item =>
-      item.id === option.value
-        ? { ...item, ldap_group_name: ldapGroupName }
+    // const existingData = listData.filter(
+    //   item => item.ldap_group_name !== data.ldap_group_name
+    // );
+    // const updatedData = listData.find(
+    //   item => item.ldap_group_name === data.ldap_group_name
+    // );
+    // updatedData.id = option.value;
+
+    // console.log({ existingData, updatedData });
+    const updatedData = listData.map(item =>
+      item.ldap_group_name === data.ldap_group_name
+        ? { ...item, role_id: option.value }
         : item
     );
-    console.log(updatedData, 'Fil');
+    setListData(updatedData);
     // const newItem = {
     //   id: option.value,
     //   ldap_group_name: option.ldap_group_name,
@@ -172,22 +180,18 @@ export const LdapConfig = () => {
     // }
   };
 
-  console.log(formPayload, 'payload');
+  console.log(listData, 'listData');
   const EVENTCOLUMNS = [
     {
       label: 'LDAP Groups',
       key: 'url',
-      renderCell: data => data.name,
+      renderCell: data => data.ldap_group_name,
     },
     {
       label: 'KDFM Groups',
       key: 'name',
       renderCell: data => (
-        <SelectCellRender
-          ldapGroupName={data.name}
-          onChange={onChange}
-          roles={formPayload}
-        />
+        <SelectCellRender data={data} onChange={onChange} roles={roles} />
       ),
     },
   ];
@@ -217,8 +221,8 @@ export const LdapConfig = () => {
   };
 
   useEffect(() => {
-    setFormPayload(roles);
-  }, [roles]);
+    setFormPayload(listData);
+  }, [listData]);
   // const onSubmitForm2 = async data => {
   //   const payload = {
   //     ldapEnabled: true,
@@ -287,7 +291,12 @@ export const LdapConfig = () => {
     const response = await getLdapGroupAPI(payload);
     if (response?.status === 200) {
       toast.success('LDAP Data Saved Successfully');
-      setListData(response?.data.groups);
+      const list = response?.data.groups.map((item, idx) => ({
+        id: idx,
+        ldap_group_name: item.name,
+        role_id: roles.find(role => role.ldap_group_name === item.name)?.id,
+      }));
+      setListData(list);
       setDisplayList(false);
     } else {
       toast.error(
@@ -295,18 +304,18 @@ export const LdapConfig = () => {
       );
     }
 
-    const sortedArray = response.data.groups?.map(item => {
-      const matchedItem = roles.find(
-        listItem => listItem?.ldap_group_name === item.name
-      );
-      return {
-        ...item,
-        dfmGroup: matchedItem ? matchedItem?.name : 'NA',
-      };
-    });
-    if (sortedArray) {
-      setListData(sortedArray);
-    }
+    // const sortedArray = response.data.groups?.map(item => {
+    //   const matchedItem = roles.find(
+    //     listItem => listItem?.ldap_group_name === item.name
+    //   );
+    //   return {
+    //     ...item,
+    //     dfmGroup: matchedItem ? matchedItem?.name : 'NA',
+    //   };
+    // });
+    // if (sortedArray) {
+    //   setListData(sortedArray);
+    // }
     // const response1 = await getRolesAPI();
     // if (response1?.status === 200) {
     //   const sortedArray = response.data.groups?.map(item => {

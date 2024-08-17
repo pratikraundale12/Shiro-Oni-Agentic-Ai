@@ -24,10 +24,9 @@ const StyledSelectField = styled(SelectField)`
   }
 `;
 
-const SelectCellRender = ({ onChange, roles, ldapGroupName }) => {
+const SelectCellRender = ({ onChange, roles, data }) => {
   //   const dispatch = useDispatch();
   //   const roles = useSelector(RolesSelectors.getRoles);
-  console.log('rolesSES', roles);
 
   //   const [kdfList, setKdfList] = useState([]);
   //   //   const { control } = useForm();
@@ -52,15 +51,9 @@ const SelectCellRender = ({ onChange, roles, ldapGroupName }) => {
   //   );
   //   console.log(defaultValue, 'dd');
 
-  console.log(
-    roles.find(option => option.ldap_group_name === ldapGroupName),
-    ldapGroupName,
-    '??????'
-  );
   const sortedArray = roles?.map(item => ({
     label: item.name,
     value: item.id,
-    ldap_group_name: item.ldap_group_name,
   }));
 
   return (
@@ -68,13 +61,9 @@ const SelectCellRender = ({ onChange, roles, ldapGroupName }) => {
       <StyledSelectField
         options={sortedArray}
         //   control={control}
-        defaultValue={sortedArray.find(
-          option => option.ldap_group_name === ldapGroupName
-        )}
+        defaultValue={sortedArray.find(option => option.value === data.role_id)}
         //   onChange={event => onChange(event, item)}
-        onChange={option => {
-          onChange(ldapGroupName, option);
-        }}
+        onChange={option => onChange(data, option)}
       />
     </>
   );
@@ -84,6 +73,6 @@ export default SelectCellRender;
 
 SelectCellRender.propTypes = {
   roles: PropTypes.array,
-  ldapGroupName: PropTypes.string,
+  data: PropTypes.object,
   onChange: PropTypes.func,
 };
