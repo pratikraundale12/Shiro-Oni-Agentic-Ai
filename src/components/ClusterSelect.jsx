@@ -35,6 +35,12 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
     if (props.onChange) props.onChange(value);
   };
 
+  const getValue = () => {
+    if (location.pathname === '/login') return;
+    if (isDestination) return selectedDestCluster;
+    else return selectedCluster;
+  };
+
   useEffect(() => {
     dispatch(ClustersActions.fetchClusterList());
   }, [dispatch]);
@@ -42,7 +48,7 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
   return (
     <SelectField
       options={updatedClusters}
-      value={isDestination ? selectedDestCluster : selectedCluster}
+      value={getValue()}
       {...props}
       onChange={onChange}
     />

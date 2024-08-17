@@ -16,7 +16,12 @@ import {
   TextRender,
   UrlRender,
 } from '../../components';
-import { KDFM, REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
+import {
+  CLUSTERS_TOKEN,
+  KDFM,
+  REFRESH_OPTIONS,
+  STATUS_OPTIONS,
+} from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import { GridActions } from '../../store';
@@ -132,6 +137,16 @@ export const ListClusters = () => {
   const deleteUserConfirmed = async () => {
     const response = await deleteCluster(state.selectedItem.id);
     if (response.status == 204) {
+      const clustersToken = JSON.parse(
+        localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+      );
+      const updatedClustersToken = clustersToken.filter(
+        cluster => cluster.id !== state.selectedItem.id
+      );
+      localStorage.setItem(
+        CLUSTERS_TOKEN,
+        JSON.stringify(updatedClustersToken)
+      );
       dispatch(GridActions.fetchGrid({ module: 'clusters' }));
       toast.success('Cluster Deleted Successfully');
       setState({ ...state, clusterDeleteModal: false });
