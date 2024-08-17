@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 
 import {
   BellIcon,
@@ -13,11 +13,15 @@ import {
   UserIcon,
 } from '../assets';
 import { AddUserModal } from '../pages/Users/AddUserModal';
-import { ProfileRender } from './CustomGrid';
 import SessionExpiredLabel from '../shared/SessionExpiredLabel';
-import { ClusterLoginModal } from './ClusterLoginModal';
-import { AuthenticationActions, AuthenticationSelectors } from '../store';
+import {
+  AuthenticationActions,
+  AuthenticationSelectors,
+  NamespacesSelectors,
+} from '../store';
 import { useGlobalContext } from '../utils';
+import { ClusterLoginModal } from './ClusterLoginModal';
+import { ProfileRender } from './CustomGrid';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -139,6 +143,25 @@ const Option = styled.span`
   font-size: ${props => props.theme.size.md};
   font-weight: 600;
 `;
+const IconCusterButton = styled.button`
+  min-width: 50px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 32px;
+  gap: 10px;
+  padding: 0 10px;
+  margin-right: 10px;
+  background-color: #f5f7fa;
+  border: 1px solid #ccc;
+`;
+const NameDiv = styled.div`
+  font-family: ${props => props.theme.fontNato};
+  color: ${props => props.theme.colors.darker};
+  font-size: 18px;
+  font-weight: 500;
+`;
 
 const UserModal = styled(AddUserModal)`
   > button {
@@ -210,6 +233,7 @@ const ProfileDropdown = () => {
 
 export const Header = ({ isOpenSidebar }) => {
   const dispatch = useDispatch();
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const route = useSelector(AuthenticationSelectors.getRoute);
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
 
@@ -233,13 +257,14 @@ export const Header = ({ isOpenSidebar }) => {
         <ButtonContainer>
           <div className="d-none d-lg-inline">
             <div className="d-flex">
-              <IconButton
+              <IconCusterButton
                 onClick={() =>
                   dispatch(AuthenticationActions.setClusterLogin(true))
                 }
               >
                 <ClusterIcon />
-              </IconButton>
+                <NameDiv> {selectedCluster?.label}</NameDiv>
+              </IconCusterButton>
               <IconButton>
                 <HeadphoneIcon />
               </IconButton>

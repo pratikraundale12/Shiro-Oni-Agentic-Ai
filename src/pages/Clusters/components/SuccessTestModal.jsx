@@ -25,7 +25,6 @@ const Title = styled.h5`
 
 const Para = styled.p`
   text-align: center;
-  text-transform: capitalize;
   margin-bottom: 0 !important;
   margin-top: 0;
   margin-bottom: 1rem;
@@ -52,7 +51,7 @@ export const SuccessTestModal = ({ successTest, setSuccessTest, name }) => {
         </Icon>
         <Title className="text-capitalize">{name} Test Successful</Title>
         <Para>
-          Your {name} Test was successful. You <br /> can now proceed to the
+          Your {name} test was successful. You <br /> can now proceed to the
           next steps.
         </Para>
       </>

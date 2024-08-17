@@ -440,7 +440,10 @@ export function* getStatusAndDeleteParameterContext(
   }
 }
 
-export function* fetchVariableList(api) {
+export function* fetchVariableList(
+  api,
+  { initialCall = true, showError = false }
+) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
@@ -465,8 +468,10 @@ export function* fetchVariableList(api) {
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
   });
-  if (response.ok) yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  if (response.ok && initialCall)
+    yield put(NamespacesActions.setDeployedModal());
+  else if (!response.ok || (showError && !initialCall))
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
 export function* addVariableServices(api, { payload }) {
