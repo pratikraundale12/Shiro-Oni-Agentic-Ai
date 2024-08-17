@@ -141,6 +141,7 @@ const checkDestClusterSuccess = (state, { payload }) => {
     checkDestCluster: payload,
     formData: {
       ...state.formData,
+      version: payload.version,
       position: payload.position,
     },
   };

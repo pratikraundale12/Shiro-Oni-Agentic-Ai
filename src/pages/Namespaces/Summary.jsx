@@ -182,10 +182,10 @@ const ActiveButtonDiv = styled.div`
   align-items: center;
   justify-content: center;
 
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
+  // &:hover {
+  //   border: 1px solid
+  //     ${props => (props.isActive ? props.activeColor : '#FF7A00')};
+  // }
 
   & span {
     position: absolute;
@@ -558,7 +558,7 @@ const Summary = () => {
                           Updated Version
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {state.selectedVersion}
+                          {formData.version || checkDestCluster.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -653,7 +653,7 @@ const Summary = () => {
                       activeColor="#58e715"
                       hoverColor="#58e715"
                       activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
+                      // onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
                     >
                       <TriangleIcons color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -668,12 +668,9 @@ const Summary = () => {
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
+                      // onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
                     >
-                      <SquareBoxIcon
-                        color="#B5BDC8"
-                        onClick={() => handleUpdateStatus('STOPPED')}
-                      />
+                      <SquareBoxIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
                   <div>Stopped Flow</div>
@@ -686,12 +683,9 @@ const Summary = () => {
                       activeColor="#cf9f5d"
                       hoverColor="#cf9f5d"
                       activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
+                      // onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
                     >
-                      <SmallThunderIcon
-                        color="#B5BDC8"
-                        onClick={() => handleUpdateStatus('ENABLED')}
-                      />
+                      <SmallThunderIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
                   <div>Enabled Flow</div>
@@ -704,12 +698,9 @@ const Summary = () => {
                       activeColor="#2c7cf3"
                       hoverColor="#2c7cf3"
                       activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
+                      // onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
                     >
-                      <SmallNotThunderIcon
-                        color="#B5BDC8"
-                        onClick={() => handleUpdateStatus('DISABLED')}
-                      />
+                      <SmallNotThunderIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
                   <div>Disabled Flow</div>
