@@ -95,7 +95,7 @@ const EVENTCOLUMNS = [
     renderCell: data => data.cn,
   },
   {
-    label: 'KDFM Groups',
+    label: 'DFM Groups',
     key: 'name',
     renderCell: data => data.name,
   },
