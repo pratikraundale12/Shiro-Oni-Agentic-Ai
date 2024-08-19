@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { InputField, Button, PasswordField } from '../../../shared';
-import { RegexConst } from '../../../constants';
+import { KDFM, RegexConst } from '../../../constants';
+import { Button, InputField, PasswordField } from '../../../shared';
 import { AddCertificate } from './AddCertificate';
 
 import {
@@ -18,11 +18,11 @@ import {
   SmallPerfileIcon,
   WhiteBoradIcon,
 } from '../../../assets';
-import { testCluster } from '../../../store/index1';
-import { SuccessTestModal } from './SuccessTestModal';
-import { FailedTestModal } from './FailedTestModal';
 import { IconButton } from '../../../components';
 import { history } from '../../../helpers/history';
+import { testCluster } from '../../../store/index1';
+import { FailedTestModal } from './FailedTestModal';
+import { SuccessTestModal } from './SuccessTestModal';
 
 const InputContainer = styled.div`
   display: flex;
@@ -293,20 +293,20 @@ export const AddNewCluster = ({
         <form onSubmit={handleSubmit(onSubmit)}>
           <InputField
             type="text"
-            placeholder="Enter your Cluster Name"
+            placeholder={KDFM.ENTER_CLUSTER_NAME}
             name="name"
             icon={<QRIcons />}
-            label="Cluster Name"
+            label={KDFM.CLUSTER_NAME}
             register={register}
             errors={errors}
           />
           {errors.name && <p>{errors.name.message}</p>}
           <InputField
             type="text"
-            placeholder="Enter your NiFi URL"
+            placeholder={KDFM.ENTER_NIFI_URL}
             name="nifi_url"
             icon={<LinkIcon />}
-            label="NifiUrl"
+            label={KDFM.NIFI_URL}
             register={register}
             errors={errors}
           />
@@ -316,10 +316,10 @@ export const AddNewCluster = ({
               <InputFieldParent>
                 <InputField
                   type="text"
-                  placeholder="Enter Your UserName"
+                  placeholder={KDFM.ENTER_USERNAME}
                   name="username"
                   icon={<SmallPerfileIcon />}
-                  label="Username"
+                  label={KDFM.USERNAME}
                   register={register}
                   errors={errors}
                 />
@@ -330,11 +330,12 @@ export const AddNewCluster = ({
                   register={register}
                   errors={errors}
                   watch={watch}
-                  label="Password"
+                  label={KDFM.PASSWORD}
+                  placeholder={KDFM.ENTER_PASSWORD}
                 />
               </PasswordFieldParent>
               <FlexContainer>
-                <p style={{ 'margin-right': '4px' }}>OR</p>
+                <p style={{ 'margin-right': '4px' }}>{KDFM.SEPARATOR}</p>
                 <Button
                   onClick={e => {
                     setAddCertificate(true);
@@ -344,7 +345,7 @@ export const AddNewCluster = ({
                   disabled={addCertificateSatus}
                   size="sm"
                 >
-                  Add Certificate
+                  {KDFM.ADD_CERTIFICATE}
                 </Button>
               </FlexContainer>
             </InputContainer>
@@ -353,15 +354,15 @@ export const AddNewCluster = ({
             <>
               <CertificateContainer>
                 <CertificateHeader>
-                  <div>NiFi Certificate</div>
+                  <div>{KDFM.NIFI_CERTIFICATE}</div>
                 </CertificateHeader>
                 <CertificateDetails>
                   <FileIcon width={25} height={35} />
                   <FileInfo>
                     <FileDetails>
                       <FileTypeContainer>
-                        <FileType>PFX file</FileType>
-                        <FileSize>3.7KB</FileSize>
+                        <FileType>{KDFM.PFX_FILE}</FileType>
+                        <FileSize>{KDFM.PFX_FILE_SIZE}</FileSize>
                       </FileTypeContainer>
                       <FilePath>
                         {clusterCertificate?.file.name ||
@@ -371,7 +372,7 @@ export const AddNewCluster = ({
                   </FileInfo>
                 </CertificateDetails>
                 <CertificateFooter>
-                  <ParaphraseLabel>PFX Paraphrase:</ParaphraseLabel>
+                  <ParaphraseLabel>{KDFM.PFX_PASSPHRASE}:</ParaphraseLabel>
                   <ParaphraseValue>************</ParaphraseValue>
                 </CertificateFooter>
               </CertificateContainer>
@@ -409,7 +410,7 @@ export const AddNewCluster = ({
             hideCertificate && (
               <NoDataContainer>
                 <WhiteBoradIcon />
-                <NoDataText>No data found</NoDataText>
+                <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
               </NoDataContainer>
             )
           )}
@@ -422,14 +423,14 @@ export const AddNewCluster = ({
                   history.push('/clusters');
                 }}
               >
-                Back
+                {KDFM.BACK}
               </Button>
               <Button
                 type="submit"
                 disabled={!continueStatus}
                 onClick={() => setActiveTab('registry')}
               >
-                Continue
+                {KDFM.CONTINUE}
               </Button>
             </BtnDiv>
             <BtnDiv>
@@ -438,7 +439,7 @@ export const AddNewCluster = ({
                 disabled={!testStatus}
                 onClick={handleSubmit(onSubmit)}
               >
-                Test Cluster
+                {KDFM.TEST_CLUSTER}
               </Button>
             </BtnDiv>
           </BottomButtonDivs>

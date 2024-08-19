@@ -2,14 +2,16 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
+import { KDFM } from '../../../constants';
+import { history } from '../../../helpers/history';
 import { Modal } from '../../../shared';
+import CopyToClipboard from '../../../shared/CopyToClipboard';
 import {
   createCluster,
   createRegistry,
   updateCluster,
   updateRegistry,
 } from '../../../store/index1';
-import { history } from '../../../helpers/history';
 // import { FileIcon } from '../../../assets';
 
 const ClusterDetailsContainer = styled.div`
@@ -26,6 +28,12 @@ const Row = styled.div`
   flex-wrap: wrap;
   margin-top: 10px;
   width: 100%;
+`;
+
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 `;
 
 const Col = styled.div`
@@ -128,7 +136,7 @@ const TextEllipses = styled.div`
   letter-spacing: -0.005em;
   color: #7a7a7a;
   white-space: nowrap;
-  max-width: 100%;
+  max-width: calc(100% - 4rem);
   overflow: hidden;
   text-overflow: ellipsis;
   border-bottom: 1px solid #7a7a7a;
@@ -151,7 +159,6 @@ export const SummaryModal = ({
     };
 
     const response = await createRegistry(data);
-    console.log('REGISTRY ID RESPONSE', response);
     if (response?.status === 201) {
       addCluster({ registry_id: response.data.id });
       setLoading(false);
@@ -226,48 +233,56 @@ export const SummaryModal = ({
   return (
     <>
       <Modal
-        title="Cluster Summary"
+        title={KDFM.CLUSTER_SUMMARY}
         isOpen={openSummary}
         onRequestClose={() => setOpenSummary(false)}
         size="sm"
-        secondaryButtonText="Back"
-        primaryButtonText="Save"
+        secondaryButtonText={KDFM.BACK}
+        primaryButtonText={KDFM.SAVE}
         loading={loading}
         footerAlign="start"
         onSubmit={handleSubmit}
       >
         <ModalBody>
           <ClusterDetailsContainer>
-            <DetailsTitle>Cluster Details</DetailsTitle>
+            <DetailsTitle>{KDFM.CLUSTER_DETAILS}</DetailsTitle>
             <Row>
               <Col>
                 <Info width="50%">
-                  <Title>Cluster Name</Title>
+                  <Title>{KDFM.CLUSTER_NAME}</Title>
                   <ClusterName>{clusterData.clusterName}</ClusterName>
                 </Info>
                 <Info width="50%">
-                  <Title>Cluster URL</Title>
-                  <TextEllipses>{clusterData.nifiUrl}</TextEllipses>
+                  <Title>{KDFM.CLUSTER_URL}</Title>
+                  <Flex>
+                    <TextEllipses>{clusterData.nifiUrl}</TextEllipses>
+                    <CopyToClipboard copyItem={clusterData.nifiUrl} />
+                  </Flex>
                 </Info>
               </Col>
             </Row>
           </ClusterDetailsContainer>
 
           <ClusterDetailsContainer>
-            <DetailsTitle>Registry Details</DetailsTitle>
+            <DetailsTitle>{KDFM.REGISTRY_DETAILS}</DetailsTitle>
             <Row>
               <Col>
                 <Info width="50%">
-                  <Title>Registry Name</Title>
+                  <Title>{KDFM.REGISTRY_NAME}</Title>
                   <ClusterName>
                     {registryData?.registryName || registryData?.name}
                   </ClusterName>
                 </Info>
                 <Info width="50%">
-                  <Title>Registry URL</Title>
-                  <TextEllipses>
-                    {registryData?.registryUrl || registryData?.registry_url}
-                  </TextEllipses>
+                  <Title>{KDFM.REGISTRY_URL}</Title>
+                  <Flex className="d-flex align-items-center">
+                    <TextEllipses>
+                      {registryData?.registryUrl || registryData?.registry_url}
+                    </TextEllipses>
+                    <CopyToClipboard
+                      copyItem={registryData?.registry_url || ''}
+                    />
+                  </Flex>
                 </Info>
               </Col>
             </Row>

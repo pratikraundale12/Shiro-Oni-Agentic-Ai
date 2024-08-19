@@ -8,10 +8,12 @@ const RegistryDetail = ({ data }) => {
     {
       label: 'Registry Name',
       renderCell: item => <TextRender text={item.name} />,
+      width: '25%',
     },
     {
       label: 'Registry URL',
       renderCell: item => <TextRender text={item.registry_url} />,
+      width: '75%',
     },
   ];
 

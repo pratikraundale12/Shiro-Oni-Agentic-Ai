@@ -81,3 +81,4 @@ export * from './WhiteBoradIcon';
 export * from './canvasYIcon';
 export * from './ScheduleDeploymentIcon';
 export * from './CalendarIcon';
+export * from './LdapConfigIcon';

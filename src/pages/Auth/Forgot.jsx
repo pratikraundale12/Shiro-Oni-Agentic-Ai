@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 
 import { theme } from '../../styles';
 import { Layout } from '../../components';
-import { Button, TextButton, InputField } from '../../shared';
+import { Button, InputField } from '../../shared';
 import {
   GreaterArrowIcon,
   LessArrowIcon,
@@ -15,12 +15,10 @@ import {
   RightArrowIcon,
 } from '../../assets';
 import {
-  ALREADY_HAVE_AN_ACCOUNT,
   BACK,
   FORGOT_PASSWORD_SUBTITLE,
   FORGOT_PASSWORD,
   SEND_RESET_LINK,
-  SIGN_IN,
   EMAIL_REGEX,
 } from '../../constants';
 import { history } from '../../helpers/history';
@@ -73,17 +71,11 @@ const SubmitButton = styled(Button)`
   }
 `;
 
-const SignInContainer = styled.div`
+const Container = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 9rem;
-
-  button {
-    color: ${props => props.theme.colors.primary};
-    font-weight: 600;
-    margin-left: 10px;
-  }
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
 `;
 
 const resetSchema = yup.object().shape({
@@ -116,25 +108,27 @@ export const Forgot = () => {
 
   return (
     <Layout>
-      <div>
-        <BackButtonContainer>
-          <BackButton onClick={() => history.back()}>
-            <GreaterArrowIcon /> <span>{BACK}</span>
-          </BackButton>
-        </BackButtonContainer>
-        <Title>{FORGOT_PASSWORD}</Title>
-        <SubTitle>{FORGOT_PASSWORD_SUBTITLE}</SubTitle>
-        <InputField
-          name="email"
-          type="email"
-          label="E-mail Address"
-          placeholder="Enter your Email Address"
-          required
-          register={register}
-          errors={errors}
-          icon={<MailIcon />}
-          rightIcon={getRightIcon(watch, errors)}
-        />
+      <BackButtonContainer>
+        <BackButton onClick={() => history.back()}>
+          <GreaterArrowIcon /> <span>{BACK}</span>
+        </BackButton>
+      </BackButtonContainer>
+      <Container>
+        <div>
+          <Title>{FORGOT_PASSWORD}</Title>
+          <SubTitle>{FORGOT_PASSWORD_SUBTITLE}</SubTitle>
+          <InputField
+            name="email"
+            type="email"
+            label="E-mail Address"
+            placeholder="Enter your Email Address"
+            required
+            register={register}
+            errors={errors}
+            icon={<MailIcon />}
+            rightIcon={getRightIcon(watch, errors)}
+          />
+        </div>
         <SubmitButton
           iconPosition="right"
           icon={<LessArrowIcon color={theme.colors.white} />}
@@ -143,13 +137,7 @@ export const Forgot = () => {
         >
           {SEND_RESET_LINK}
         </SubmitButton>
-      </div>
-      <SignInContainer>
-        {ALREADY_HAVE_AN_ACCOUNT}
-        <TextButton onClick={() => history.replace('/login')}>
-          {SIGN_IN}
-        </TextButton>
-      </SignInContainer>
+      </Container>
     </Layout>
   );
 };

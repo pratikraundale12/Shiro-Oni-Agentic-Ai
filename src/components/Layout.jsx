@@ -4,6 +4,8 @@ import styled from 'styled-components';
 
 import { history } from '../helpers/history';
 import { KsolvesDataFlowIcon } from '../assets';
+import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
+import { TextButton } from '../shared';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -56,9 +58,9 @@ const Image = styled.div`
 `;
 
 const Content = styled.div`
+  flex: 0.8;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   max-width: 470px;
   width: 100%;
   background-color: ${props => props.theme.colors.lightGrey};
@@ -109,23 +111,54 @@ const HeadingRightText = styled.p`
   text-align: center;
 `;
 
-export const Layout = ({ children, userLogin = false }) => {
+const SignInContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6px;
+
+  button {
+    color: ${props => props.theme.colors.primary};
+    font-size: 16px;
+    font-weight: 700;
+    margin-left: 5px;
+    text-decoration: none;
+  }
+`;
+
+export const Layout = ({ children }) => {
+  const pathname = history.location.pathname;
+  const isUserLogin = pathname === '/login';
+  const isAdminLogin = pathname === '/admin/login';
+  const isForgotPassword = pathname === '/forgot';
+  const isReset = pathname === '/reset';
+
   return (
     <Container>
       <div className="row">
         <LeftSection className="col-xl-5 col-lg-5">
           <KsolvesDataFlowIcon />
           <Content>{children}</Content>
-          <RedirectionSection>
-            Login via
-            <RedirectionText
-              onClick={() =>
-                history.push(userLogin ? '/admin/login' : '/login')
-              }
-            >
-              {userLogin ? 'Admin' : 'User'}
-            </RedirectionText>
-          </RedirectionSection>
+          {(isUserLogin || isAdminLogin) && (
+            <RedirectionSection>
+              Login via
+              <RedirectionText
+                onClick={() =>
+                  history.push(isUserLogin ? '/admin/login' : '/login')
+                }
+              >
+                {isUserLogin ? 'Admin' : 'User'}
+              </RedirectionText>
+            </RedirectionSection>
+          )}
+          {(isForgotPassword || isReset) && (
+            <SignInContainer>
+              {ALREADY_HAVE_AN_ACCOUNT}
+              <TextButton onClick={() => history.replace('/login')}>
+                {SIGN_IN}
+              </TextButton>
+            </SignInContainer>
+          )}
         </LeftSection>
         <RightSection className="col-xl-7 col-lg-7 d-none d-lg-inline">
           <RightSectionTextContainer>
@@ -143,5 +176,4 @@ export const Layout = ({ children, userLogin = false }) => {
 
 Layout.propTypes = {
   children: PropTypes.arrayOf(PropTypes.node).isRequired,
-  userLogin: PropTypes.bool,
 };

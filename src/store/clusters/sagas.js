@@ -5,12 +5,12 @@ import { NamespacesActions } from '../namespaces';
 import { CLUSTERS_TOKEN } from '../../constants';
 import { isEmpty } from 'lodash';
 
-export function* fetchClusterList(api, { payload }) {
+export function* fetchClusterList(api, { payload: { params } = {} }) {
   yield call(requestSaga, {
     errorSection: 'fetchClusterList',
     loadingSection: 'fetchClusterList',
     apiMethod: api.fetchClusterList,
-    apiParams: [payload],
+    apiParams: [{ params }],
     successAction: ClustersActions.fetchClusterListSuccess,
   });
   const clusterData = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
@@ -24,8 +24,19 @@ export function* fetchClusterList(api, { payload }) {
   }
 }
 
+export function* fetchClusterNodes(api, { payload }) {
+  yield call(requestSaga, {
+    errorSection: 'fetchClusterNodes',
+    loadingSection: 'fetchClusterNodes',
+    apiMethod: api.fetchClusterNodes,
+    apiParams: [payload],
+    successAction: ClustersActions.fetchClusterNodesSuccess,
+  });
+}
+
 export function* clustersSagas(api) {
   yield all([
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
+    takeLatest(ClustersActions.fetchClusterNodes, fetchClusterNodes, api),
   ]);
 }

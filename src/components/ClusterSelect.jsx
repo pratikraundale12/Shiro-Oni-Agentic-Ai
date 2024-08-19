@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { useLocation } from 'react-router-dom';
+import { CLUSTERS_TOKEN } from '../constants';
 import { SelectField } from '../shared';
 import {
   AuthenticationActions,
@@ -10,8 +11,6 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../store';
-import { CLUSTERS_TOKEN } from '../constants';
-import { useLocation } from 'react-router-dom';
 
 export const ClusterSelect = ({ isDestination = false, ...props }) => {
   const dispatch = useDispatch();
@@ -29,12 +28,22 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
   );
 
   const onChange = value => {
-    console.log(value);
     if (value.is_active || location.pathname === '/login')
       if (!isDestination) dispatch(NamespacesActions.setSelectedCluster(value));
-      else dispatch(NamespacesActions.setSelectedDestCluster(value));
-    else dispatch(AuthenticationActions.setClusterLogin(value));
-    if (props.onChange) props.onChange(value);
+      else {
+        dispatch(NamespacesActions.setSelectedDestCluster(value));
+        if (props.onChange) props.onChange(value);
+      }
+    else {
+      dispatch(AuthenticationActions.setClusterLogin(value));
+      if (isDestination) dispatch(AuthenticationActions.setDestinationFlag());
+    }
+  };
+
+  const getValue = () => {
+    if (location.pathname === '/login') return;
+    if (isDestination) return selectedDestCluster;
+    else return selectedCluster;
   };
 
   useEffect(() => {
@@ -44,7 +53,7 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
   return (
     <SelectField
       options={updatedClusters}
-      value={isDestination ? selectedDestCluster : selectedCluster}
+      value={getValue()}
       {...props}
       onChange={onChange}
     />

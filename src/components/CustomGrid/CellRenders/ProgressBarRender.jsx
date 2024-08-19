@@ -24,7 +24,7 @@ const ProgressContainer = styled.div`
 `;
 
 const Indicator = styled.div`
-  height: 100%;
+  height: 12px;
   width: ${props => props.width}%;
   transition: width 0.2s ease-in-out;
   background-color: ${props => props.color || props.theme.colors.background};

@@ -5,11 +5,12 @@ import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import { KeyIcons } from '../../../assets';
+import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import { Modal, PasswordField } from '../../../shared';
 import { testCluster, testRegistry } from '../../../store/apis/clusters';
 import { UploadFile } from '../UploadFile';
 import { FailedTestModal } from './FailedTestModal';
-// Define your validation schema
+
 const schema = yup.object().shape({
   pfxFile: yup.mixed().required('PFX file is required'),
   password: yup.string().required('Password is required'),
@@ -109,18 +110,22 @@ export const Certificate = ({
   return (
     <>
       <Modal
-        title={`Add ${activeTab === 'cluster' ? 'Cluster' : 'Registry'} Certificate`}
+        title={
+          activeTab === CLUSTER_MODULE_TABS.CLUSTER
+            ? KDFM.ADD_CLUSTER_CERTIFICATE
+            : KDFM.ADD_REGISTRY_CERTIFICATE
+        }
         isOpen={isCertificateOpen}
         onRequestClose={() => setIsCertificateOpen(false)}
         size="sm"
-        secondaryButtonText="Back"
-        primaryButtonText="Test Certificate"
+        secondaryButtonText={KDFM.BACK}
+        primaryButtonText={KDFM.TEST_CERTIFICATE}
         onSubmit={handleSubmit(onSubmit)}
         loading={loading}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}
       >
-        <NifiText>NiFi Certificate</NifiText>
+        <NifiText>{KDFM.NIFI_CERTIFICATE}</NifiText>
         <form
           onSubmit={handleSubmit(onSubmit)}
           style={{
@@ -135,16 +140,16 @@ export const Certificate = ({
             name="pfxFile"
             watch={watch}
             control={control}
-            label="PFX File"
-            placeholder="Enter your PFX File"
+            label={KDFM.PFX_FILE}
+            placeholder={KDFM.SELECT_PFX_FILE}
             errors={errors}
           />
           <PasswordField
             name="password"
             watch={watch}
-            label="PFX Passphrase"
+            label={KDFM.PFX_PASSPHRASE}
             register={register}
-            placeholder="Enter your Passphrase"
+            placeholder={KDFM.ENTER_PFX_PASSPHRASE}
             icon={<KeyIcons />}
             errors={errors}
           />

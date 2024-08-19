@@ -171,39 +171,6 @@ const NamespaceDeploy = ({
   );
   const handleUpdateStatus = status => {
     dispatch(NamespacesActions.updateNamespaceStatus(status));
-    // try {
-    //   const response = await updateNamespaceStatus(
-    //     state.selectedClusterId,
-    //     state?.upgradeData?.id || deployOrUpgradeDetails?.id,
-    //     status
-    //   );
-    //   if (response?.data) {
-    //     setState(prevState => ({
-    //       ...prevState,
-    //       deployCountDetails: {
-    //         ...prevState.deployCountDetails,
-    //         data: {
-    //           ...prevState?.deployCountDetails.data,
-    //           runningCount: response?.data?.status?.runningCount,
-    //           stoppedCount: response?.data?.status?.stoppedCount,
-    //           invalidCount: response?.data?.status?.invalidCount,
-    //           disabledCount: response?.data?.status?.disabledCount,
-    //         },
-    //       },
-    //       updatedCount: {
-    //         ...prevState?.updatedCount,
-    //         runningCount: response?.data?.status?.runningCount,
-    //         stoppedCount: response?.data?.status?.stoppedCount,
-    //         invalidCount: response?.data?.status?.invalidCount,
-    //         disabledCount: response?.data?.status?.disabledCount,
-    //       },
-    //     }));
-    //   }
-    //   console.log(response, state);
-    //   setActiveButton(buttonId);
-    // } catch (error) {
-    //   console.error('Failed to update status:', error);
-    // }
   };
 
   const handleClick = () => {
@@ -238,7 +205,7 @@ const NamespaceDeploy = ({
           </ModalIcon>
           <ModalHFive className="pt-4 mt-2 mb-0 ">
             {`${checkDestCluster.name} is successfully 
-            ${checkDestCluster.mode === 'upgrade' ? 'Upgraded' : 'Deployed'} to
+            ${checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'deployed'} to
             ${selectedDestCluster?.label} instance`}
           </ModalHFive>
           <RowModal>

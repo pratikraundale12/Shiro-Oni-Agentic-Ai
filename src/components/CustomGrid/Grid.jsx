@@ -1,28 +1,31 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { getTheme } from '@table-library/react-table-library/baseline';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
+import { default as React, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import Breadcrumb from '../../shared/Breadcrumb';
 import { theme } from '../../styles';
-import { GridActions as GridActionsComponent } from './GridActions';
 import { useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
-import Pagination from './Pagination';
-import Breadcrumb from '../../shared/Breadcrumb';
+import { GridActions as GridActionsComponent } from './GridActions';
+// import Pagination from './Pagination';
 
 import { NoDataIcon } from '../../assets';
 import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
 import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { Modal } from '../../shared';
-import { GridActions, GridSelectors } from '../../store/grid';
 import { LoadingSelectors, NamespacesSelectors } from '../../store';
+import { GridActions, GridSelectors } from '../../store/grid';
 // import ReactPagination from './ReactPagnation';
-import { Table } from './Table';
+import { useSort } from '@table-library/react-table-library/sort';
+import { KDFM } from '../../constants';
 import { TextRender } from './CellRenders';
+import { Table } from './Table';
+import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -48,6 +51,10 @@ const ClusterRegistryContainer = styled.div`
   display: flex;
   gap: 2%;
   margin-bottom: 1%;
+
+  > div {
+    width: calc(75% - ${props => props.theme.sidebar});
+  }
 `;
 
 const LoadingText = styled.div`
@@ -99,14 +106,25 @@ export const Grid = ({
   // LIMIT,
   // offset,
   // setOffset,
+  sortFns = () => {},
+  state,
 }) => {
   const dispatch = useDispatch();
+  const { id: clusterId } = useParams();
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchGrid')
   );
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, module)
   );
+  const clusterSummary = useSelector(state =>
+    GridSelectors.getGridNodes(state, module)
+  );
+  // const gridCount = useSelector(state =>
+  //   GridSelectors.getGridCount(state, module)
+  // );
+  // const prev = useSelector(state => GridSelectors.getGridPrev(state, module));
+  // const next = useSelector(state => GridSelectors.getGridNext(state, module));
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
@@ -114,19 +132,6 @@ export const Grid = ({
     state: {
       search,
       page,
-      gridData: {
-        [module]: {
-          count = 0,
-          prev = null,
-          next = null,
-          // data = [],
-          name: nodeName = '',
-          nifi_url = '',
-          registry = {},
-          nodes = [],
-          // breadcrumb = [],
-        } = {},
-      },
       eventModal,
       selectedNode,
       // nodeClusterId,
@@ -135,11 +140,12 @@ export const Grid = ({
     },
     setState,
   } = useGlobalContext();
+
   const DATA = {
     // nodes: isNamespace
     //   ? getData(loading, gridData, nodes).slice(offset, offset + LIMIT)
-    //   : getData(loading, gridData, nodes),
-    nodes: getData(loading, gridData, nodes),
+    //   : getData(loading, gridData, nodes)
+    nodes: getData(loading, gridData, clusterSummary.nodes),
   };
 
   const tableTheme = useTheme([
@@ -175,6 +181,16 @@ export const Grid = ({
     },
   ]);
 
+  const sort = useSort(
+    DATA,
+    {
+      state,
+    },
+    {
+      sortFns,
+    }
+  );
+
   const getLoader = () => {
     if (loading) return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
@@ -186,10 +202,12 @@ export const Grid = ({
       );
     return null;
   };
+
   useEffect(() => {
     dispatch(
       GridActions.fetchGrid({
         module,
+        clusterId,
         params: { page: 1, ...(search && { search }) },
       })
     );
@@ -197,7 +215,7 @@ export const Grid = ({
     //   setOffset(0);
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, module, search, page, selectedNamespace]);
+  }, [setState, module, clusterId, search, page, selectedNamespace]);
 
   useEffect(
     () => () => setState(prev => ({ ...prev, search: '', page: 1 })),
@@ -221,11 +239,16 @@ export const Grid = ({
         addModal={addModal}
         handleRefresh={handleRefresh}
       />
-      {module === 'nodeList' && !isEmpty(nodes) && (
+      {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>
           <ClusterRegistryContainer>
-            <ClusterDetail data={{ name: nodeName, nifi_url }} />
-            <RegistryDetail data={registry} />
+            <ClusterDetail
+              data={{
+                name: clusterSummary.name,
+                nifi_url: clusterSummary.nifi_url,
+              }}
+            />
+            <RegistryDetail data={clusterSummary.registry} />
           </ClusterRegistryContainer>
           <Modal
             title="Event Log"
@@ -234,7 +257,7 @@ export const Grid = ({
               setState(prevState => ({ ...prevState, eventModal: false }))
             }
             size="lg"
-            primaryButtonText="Continue"
+            primaryButtonText={KDFM.CONTINUE}
             onSubmit={() =>
               setState(prevState => ({ ...prevState, eventModal: false }))
             }
@@ -254,18 +277,23 @@ export const Grid = ({
       )}
       <Breadcrumb module={module} />
       <TableContainer>
-        <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+        <CompactTable
+          data={DATA}
+          columns={columns}
+          theme={tableTheme}
+          sort={sort}
+        />
         {getLoader()}
       </TableContainer>
-      {count > 10 && (
+      {/* {gridCount > 10 && (
         <Pagination
           page={page}
           setState={setState}
-          count={count}
+          count={gridCount}
           prev={prev}
           next={next}
         />
-      )}
+      )} */}
       {/* {isNamespace
         ? count >= LIMIT && (
             <ReactPagination
@@ -311,4 +339,6 @@ Grid.propTypes = {
   offset: PropTypes.number,
   setOffset: PropTypes.func,
   isNamespace: PropTypes.bool,
+  state: PropTypes.object.isRequired,
+  // sortFns: PropTypes.func,
 };

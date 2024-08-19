@@ -9,6 +9,8 @@ export const AuthenticationActions = {
   setRoute: createAction(`${prefix}setRoute`),
   fetchCurrentUser: createAction(`${prefix}fetchCurrentUser`),
   fetchCurrentUserSuccess: createAction(`${prefix}fetchCurrentUserSuccess`),
+  fetchLicenseInfo: createAction(`${prefix}fetchLicenseInfo`),
+  fetchLicenseInfoSuccess: createAction(`${prefix}fetchLicenseInfoSuccess`),
   login: createAction(`${prefix}login`),
   loginSuccess: createAction(`${prefix}loginSuccess`),
   logout: createAction(`${prefix}logout`),
@@ -19,6 +21,7 @@ export const AuthenticationActions = {
   ),
   resetPassword: createAction(`${prefix}resetPassword`),
   setClusterLogin: createAction(`${prefix}setClusterLogin`),
+  setDestinationFlag: createAction(`${prefix}setDestinationFlag`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -26,9 +29,11 @@ export const AUTHENTICATION_INITIAL_STATE = {
   user: {},
   route: DEFAULT_ROUTE,
   license: '',
+  isLicenseValid: true,
   isLoggedIn: false,
   resetToken: '',
   clusterLogin: false,
+  destinationFlag: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -37,8 +42,10 @@ export const AuthenticationSelectors = {
   getIsLoggedIn: state => state.auth.isLoggedIn,
   getRoute: state => state.auth.route,
   getLicense: state => state.auth.license,
+  getIsLicenseValid: state => state.auth.isLicenseValid,
   getResetToken: state => state.auth.resetToken,
   getClusterLogin: state => state.auth.clusterLogin,
+  getDestinationFlag: state => state.auth.destinationFlag,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -48,6 +55,12 @@ const fetchCurrentUserSuccess = (state, { payload }) => {
     user: payload,
     license: formatDateStringToLocal(payload.license),
     isLoggedIn: true,
+  };
+};
+const fetchLicenseInfoSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    isLicenseValid: payload?.isLicenseValid,
   };
 };
 const loginSuccess = state => {
@@ -81,6 +94,12 @@ const setClusterLogin = (state, { payload }) => {
     clusterLogin: payload,
   };
 };
+const setDestinationFlag = state => {
+  return {
+    ...state,
+    destinationFlag: !state.destinationFlag,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const authenticationReducer = createReducer(
@@ -91,6 +110,10 @@ export const authenticationReducer = createReducer(
         AuthenticationActions.fetchCurrentUserSuccess,
         fetchCurrentUserSuccess
       )
+      .addCase(
+        AuthenticationActions.fetchLicenseInfoSuccess,
+        fetchLicenseInfoSuccess
+      )
       .addCase(AuthenticationActions.loginSuccess, loginSuccess)
       .addCase(AuthenticationActions.logoutSuccess, logoutSuccess)
       .addCase(
@@ -98,6 +121,7 @@ export const authenticationReducer = createReducer(
         resetPasswordRequestSuccess
       )
       .addCase(AuthenticationActions.setRoute, setRoute)
-      .addCase(AuthenticationActions.setClusterLogin, setClusterLogin);
+      .addCase(AuthenticationActions.setClusterLogin, setClusterLogin)
+      .addCase(AuthenticationActions.setDestinationFlag, setDestinationFlag);
   }
 );

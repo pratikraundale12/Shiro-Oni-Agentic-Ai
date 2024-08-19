@@ -1,13 +1,8 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-unused-vars */
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import {
-  ClusterIcon,
   QRIcons,
   SmallSearchIcon,
   TodoIcon,
@@ -19,13 +14,11 @@ import {
   Table,
   TextRender,
 } from '../../components';
-import { CLUSTERS_TOKEN } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, RadioField, SelectField } from '../../shared';
+import { Button, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   ClustersActions,
-  ClustersSelectors,
   GridActions,
   GridSelectors,
   LoadingSelectors,
@@ -33,7 +26,6 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
-import { useGlobalContext } from '../../utils';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -144,34 +136,16 @@ const Deploy = () => {
   const selectedDestNamespace = useSelector(
     NamespacesSelectors.getSelectedDestNamespace
   );
-  const loading = useSelector(state => LoadingSelectors.getLoading(state, 'checkDestCluster'));
-  const tokens = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const tokenIds = tokens.map(item => item.id);
-  const clusters = useSelector(ClustersSelectors.getClusters);
-  const filteredClusters = clusters.filter(
-    item => !tokenIds.includes(item.value)
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'checkDestCluster')
   );
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, MODULE)
   );
   const formData = useSelector(NamespacesSelectors.getFormData);
-  const {
-    control,
-    formState: { errors },
-  } = useForm();
   const [search, setSearch] = useState('');
-  const { state, setState } = useGlobalContext();
-  const [showDeployUI, setShowDeployUI] = useState(false);
-  // useEffect(() => {
-  //   handleSelectNamespace();
-  // }, [state.selectedDestinationClusterId]);
 
-  const location = useLocation();
-
-  const handleBreadcrumbClick = breadcrumb => {
-    history.push(breadcrumb.path);
-  };
   const COLUMNS = [
     {
       label: 'Namespace',
@@ -215,7 +189,6 @@ const Deploy = () => {
     {
       label: '',
       renderCell: item => {
-        console.log(item, 'Deploy item');
         return (
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <RadioField
@@ -231,13 +204,6 @@ const Deploy = () => {
     },
   ];
 
-  // const handleNamespaceSelect = item => {
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     deployNamespaceId: item,
-  //   }));
-  // };
-
   function handleSelectNamespace(item) {
     dispatch(
       NamespacesActions.setSelectedDestNamespace({
@@ -245,127 +211,13 @@ const Deploy = () => {
         value: item.id,
       })
     );
-    // setState(prev => ({
-    //   ...prev,
-    //   selectedNamespaceId: id,
-    // }));
-    // fetchGridData({
-    //   setState,
-    //   module: 'deploy',
-    //   selectedDestinationClusterId: state.selectedDestinationClusterId,
-    //   selectedNamespaceId: id,
-    // });
   }
-
-  // useEffect(() => {
-  //   // fetchGridData({
-  //   //   setState,
-  //   //   module: 'deploy',
-  //   //   search: search,
-  //   //   ...(state.selectedDestinationClusterId && {
-  //   //     selectedDestinationClusterId: state.selectedDestinationClusterId,
-  //   //   }),
-  //   // });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [setState, search]);
-
-  // useEffect(() => {
-  //   fetchGridData({
-  //     setState,
-  //     module: 'clusters',
-  //   });
-  // }, [setState]);
-
-  // useEffect(() => {
-  //   if (state?.deployData?.id && state?.deployData?.mode === 'deploy') {
-  //     onClusterCheck({
-  //       value: state.selectedClusterId,
-  //       label: state.selectedClusterName,
-  //     });
-  //   }
-  // }, [
-  //   state?.deployData?.id,
-  //   state?.deployData?.mode,
-  //   state.selectedClusterId,
-  //   state.selectedClusterName,
-  // ]);
-
-  // const options = state.clusterList
-  //   .filter(cluster => cluster?.id !== state.selectedSourceClusterId)
-  //   .map(cluster => ({
-  //     value: cluster?.id,
-  //     label: cluster?.name,
-  //   }));
 
   const handleClick = () => {
     history.push('/namespaces/upgrade');
   };
   const handleBackClick = () => {
     history.push('/namespaces');
-  };
-
-  const onClusterCheck = value => {
-    console.log('onClusterCheck', value);
-    // dispatch(NamespacesActions.setSelectedDestCluster(value));
-    dispatch(NamespacesActions.checkDestCluster());
-    // setLoading(true);
-    // const selectedClusterId = e.value;
-    // setState(prevState => ({
-    //   ...prevState,
-    //   selectedDestinationClusterId: e.value,
-    // }));
-    // const selectedClusterName = e.label;
-    // let ids = [];
-    // for (const a of state.tempNamespacesData) {
-    //   if (location?.state?.id === a?.id || state?.currentFlowId === a?.id) {
-    //     ids?.push(a.flowId);
-    //   }
-    // }
-
-    // for (const a of state.gridData.namespaces.breadcrumb) {
-    //   for (const b of state.tempNamespacesData) {
-    //     if (a.id === b.id) {
-    //       ids?.push(b.flowId);
-    //     }
-    //   }
-    // }
-    // const arrayWithoutNullsAndUndefineds = ids.filter(item => item != null);
-
-    // try {
-    //   const response = await checkCluster({
-    //     clusterId: selectedClusterId,
-    //     srcClusterId: state?.selectedSourceClusterId,
-    //     path: arrayWithoutNullsAndUndefineds,
-    //   });
-
-    //   if (response.mode === 'upgrade') {
-    //     setState(prevState => ({
-    //       ...prevState,
-    //       selectedClusterId,
-    //       upgradeData: response,
-    //       selectedClusterName,
-    //     }));
-    //     history.push('/namespaces/upgrade', {
-    //       state: {
-    //         upgradeData: response,
-    //       },
-    //       setShowDeployUI: setShowDeployUI,
-    //     });
-    //   } else if (response.mode === 'deploy') {
-    //     setState(prevState => ({
-    //       ...prevState,
-    //       selectedClusterId,
-    //       deployData: response,
-    //       selectedClusterName,
-    //     }));
-    //     setShowDeployUI(true);
-    //   } else {
-    //     setShowDeployUI(false);
-    //   }
-    //   setLoading(false);
-    // } catch (error) {
-    //   console.error('Error checking cluster:', error);
-    // }
   };
 
   useEffect(() => {
@@ -405,25 +257,8 @@ const Deploy = () => {
             icon={<QRIcons />}
             placeholder="Select Cluster"
             isDestination
-            onChange={onClusterCheck}
             required
-            // disabled={isObject(clusterLogin)}
           />
-          {/* <SelectField
-            name="selectOption"
-            label="Select Cluster"
-            options={clusters}
-            defaultValue={
-              checkDestCluster.mode === 'deploy'
-                ? {
-                    label: selectedDestCluster?.label,
-                    value: selectedDestCluster?.value,
-                  }
-                : null
-            }
-            onChange={onClusterCheck}
-            icon={<QRIcons />}
-          /> */}
           {isEmpty(checkDestCluster) && (
             <NoDataContainer>
               <WhiteBoradIcon width={200} height={195} />
@@ -449,7 +284,7 @@ const Deploy = () => {
               <Table
                 data={gridData}
                 columns={COLUMNS}
-                breadcrumb={state?.gridData?.deploy?.breadcrumb}
+                // breadcrumb={state?.gridData?.deploy?.breadcrumb}
                 onBreadcrumbClick={e => handleSelectNamespace(e.id)}
               />
             </>

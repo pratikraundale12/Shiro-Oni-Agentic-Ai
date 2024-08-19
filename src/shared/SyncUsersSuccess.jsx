@@ -1,8 +1,7 @@
 /*eslint-disable*/
 import styled from 'styled-components';
-import { ExclamationFailedTestingIcon } from '../../../assets';
-import { KDFM } from '../../../constants';
-import { Modal } from '../../../shared';
+import { RightCircleIcon } from '../assets';
+import { Modal } from './Modal';
 
 const Icon = styled.div`
   align-items: center !important;
@@ -26,37 +25,38 @@ const Title = styled.h5`
 
 const Para = styled.p`
   text-align: center;
+  text-transform: capitalize;
   margin-bottom: 0 !important;
   margin-top: 0;
   margin-bottom: 1rem;
   box-sizing: border-box;
   display: block;
-  text-transform: capitalize;
   margin-block-start: 1em;
   margin-block-end: 1em;
   margin-inline-end: 0px;
 `;
 
-export const FailedTestModal = ({ failedTest, setFailedTest, testMessage }) => {
+export const SyncUsersSuccess = ({ successTest, setSuccessTest, name }) => {
   return (
     <Modal
-      title={KDFM.TESTING_FAILED}
-      isOpen={failedTest}
-      onRequestClose={() => setFailedTest(false)}
+      title="Sync Successful"
+      isOpen={successTest}
+      onRequestClose={() => setSuccessTest(false)}
       size="sm"
-      primaryButtonText={KDFM.CONTINUE}
-      onSubmit={() => setFailedTest(false)}
+      primaryButtonText="Continue"
+      onSubmit={() => setSuccessTest(false)}
     >
       <>
         <Icon>
-          <ExclamationFailedTestingIcon color="#FF7A00" />
+          <RightCircleIcon color="#0CBF59" />
         </Icon>
-        <Title>{KDFM.CLUSTER_TEST_FAILED}</Title>
-        {testMessage != '' ? (
-          <Para>{testMessage}</Para>
-        ) : (
-          <Para>{KDFM.PFX_TEST_FAIL_MESSAGE}</Para>
-        )}
+        <Title className="text-capitalize">
+          LDAP Users Synced Successfully
+        </Title>
+        <Para>
+          Your LDAP Users are synced Successfully.
+          <br /> Click on Continue to check
+        </Para>
       </>
     </Modal>
   );

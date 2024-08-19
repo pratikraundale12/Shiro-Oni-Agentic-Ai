@@ -17,6 +17,7 @@ import {
 } from '../../assets';
 import { FullPageLoader } from '../../components';
 import { history } from '../../helpers/history';
+import CopyToClipboard from '../../shared/CopyToClipboard';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import {
   // deployCluster,
@@ -145,6 +146,19 @@ const SummaryDetailsPtag = styled.h4`
   letter-spacing: -0.005em;
   text-align: left;
   color: #7a7a7a;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  & span {
+    max-width: 18rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 const ActiveButtonContainer = styled.div`
   gap: 7px;
@@ -168,10 +182,10 @@ const ActiveButtonDiv = styled.div`
   align-items: center;
   justify-content: center;
 
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
+  // &:hover {
+  //   border: 1px solid
+  //     ${props => (props.isActive ? props.activeColor : '#FF7A00')};
+  // }
 
   & span {
     position: absolute;
@@ -311,109 +325,34 @@ const Summary = () => {
   const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
     []
   );
-
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
+
   const getParamerterContext = async () => {
     setLoading(true);
     openParameterContext();
-    dispatch(NamespacesActions.fetchParameterContext());
     setLoading(false);
   };
 
   const handleUpgradeClick = async () => {
     dispatch(NamespacesActions.upgradeCluster());
     setProgress(deployOrUpgradeDetails?.percentCompleted);
-
-    // try {
-    //   const response = await upgradeCluster({
-    //     clusterId: state.selectedClusterId,
-    //     namespaceId: state?.upgradeData?.id,
-    //     version: state.selectedVersion,
-    //   });
-    //   setLoading(true);
-    //   if (response) {
-    //     let progressData;
-    //     const intervalId = setInterval(async () => {
-    //       progressData = await getClusterProgress({
-    //         clusterId: state.selectedClusterId,
-    //         progressId: response.requestId,
-    //       });
-    //       setProgress(progressData.percentCompleted);
-    //       if (progressData.percentCompleted >= 100) {
-    //         clearInterval(intervalId);
-    //         await getClusterProgressDelete({
-    //           clusterId: state.selectedClusterId,
-    //           progressId: response.requestId,
-    //         });
-    //         const countDetails = await getCountDetails({
-    //           clusterId: state.selectedClusterId,
-    //           namespaceId: state?.upgradeData?.id,
-    //         });
-    //         setState(prevState => ({
-    //           ...prevState,
-    //           updatedCount: countDetails,
-    //         }));
-    //         setModalOpen(true);
-    //       }
-    //     }, 1000);
-    //   }
-    //   setLoading(false);
-    // } catch (error) {
-    //   toast.error('Upgrade failed:', error.message);
-    // }
   };
   const handleDeploy = () => {
     dispatch(NamespacesActions.deployCluster());
-    // try {
-    //   const result = await deployCluster({
-    //     clusterId: selectedDestCluster?.value,
-    //     namespaceId: formData.namespaceId,
-    //     flowId: checkDestCluster?.flowId,
-    //     bucketId: checkDestCluster?.bucketId,
-    //     bucketName: checkDestCluster.bucketName,
-    //     registryId: checkDestCluster?.registryId,
-    //     version: formData.version,
-    //     position: formData.position,
-    //   });
-    //   setLoading(true);
-    //   setState(prevState => ({
-    //     ...prevState,
-    //     deployCountDetails: result,
-    //   }));
-    //   setLoading(false);
-    //   setModalOpen(true);
-    // } catch (error) {
-    //   toast.error(error?.message);
-    // }
   };
 
   const handleCloseModal = () => {
-    // setState(prevState => ({
-    //   ...prevState,
-    //   selectedPaths: [],
-    //   selectedClusterId: null,
-    //   selectedVersion: null,
-    //   deployNamespaceId: null,
-    //   deployData: {
-    //     flowId: null,
-    //     bucketId: null,
-    //     bucketName: null,
-    //     registryId: null,
-    //     version: null,
-    //   },
-    //   upgradeData: {},
-    //   updatedCount: null,
-    // }));
     history.push('/namespaces');
   };
 
   const openParameterContext = () => {
     setIsParameterContextOpen(true);
-    dispatch(NamespacesActions.deployClusterSuccess());
+    dispatch(NamespacesActions.fetchParameterContext());
   };
 
   const closeParameterContext = () => {
+    // dispatch(NamespacesActions.setParameterDetails({}));
     setIsParameterContextOpen(false);
     setNewlyAddedParameterContext([]);
     dispatch(NamespacesActions.setDeployedModal());
@@ -433,21 +372,6 @@ const Summary = () => {
 
   const handleTertiaryButton = async () => {
     dispatch(NamespacesActions.fetchVariableList());
-    // const response = await fetchVariables(
-    //   state?.selectedDestinationClusterId,
-    //   state?.deployCountDetails?.data?.id || state?.updatedCount?.id
-    // );
-
-    // if (response) {
-    //   setState(prevState => ({
-    //     ...prevState,
-    //     variablesDetail: response?.data,
-    //   }));
-    //   setVariablesModalOpen({ isOpen: false, mode: 'add' });
-    //   setModalOpen(false);
-    // } else {
-    //   toast.error(response.message);
-    // }
     setVariablesModalOpen({ isOpen: true, mode: 'add' });
     setModalOpen(false);
   };
@@ -552,7 +476,12 @@ const Summary = () => {
                       Registry URL
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {checkDestCluster.registryUrl}
+                      <div>
+                        <span>{checkDestCluster.registryUrl}</span>
+                        <CopyToClipboard
+                          copyItem={checkDestCluster.registryUrl}
+                        />
+                      </div>
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -562,7 +491,10 @@ const Summary = () => {
                       NiFi URL
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {checkDestCluster.nifiUrl}
+                      <div>
+                        <span>{checkDestCluster.nifiUrl}</span>
+                        <CopyToClipboard copyItem={checkDestCluster.nifiUrl} />
+                      </div>
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -626,7 +558,7 @@ const Summary = () => {
                           Updated Version
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {state.selectedVersion}
+                          {formData.version || checkDestCluster.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -721,7 +653,7 @@ const Summary = () => {
                       activeColor="#58e715"
                       hoverColor="#58e715"
                       activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
+                      // onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
                     >
                       <TriangleIcons color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -736,12 +668,9 @@ const Summary = () => {
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
+                      // onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
                     >
-                      <SquareBoxIcon
-                        color="#B5BDC8"
-                        onClick={() => handleUpdateStatus('STOPPED')}
-                      />
+                      <SquareBoxIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
                   <div>Stopped Flow</div>
@@ -754,12 +683,9 @@ const Summary = () => {
                       activeColor="#cf9f5d"
                       hoverColor="#cf9f5d"
                       activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
+                      // onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
                     >
-                      <SmallThunderIcon
-                        color="#B5BDC8"
-                        onClick={() => handleUpdateStatus('ENABLED')}
-                      />
+                      <SmallThunderIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
                   <div>Enabled Flow</div>
@@ -772,12 +698,9 @@ const Summary = () => {
                       activeColor="#2c7cf3"
                       hoverColor="#2c7cf3"
                       activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
+                      // onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
                     >
-                      <SmallNotThunderIcon
-                        color="#B5BDC8"
-                        onClick={() => handleUpdateStatus('DISABLED')}
-                      />
+                      <SmallNotThunderIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
                   <div>Disabled Flow</div>

@@ -1,15 +1,19 @@
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { FileIcon, PlusCircleIcon } from '../../../assets';
-import { Button, SelectField } from '../../../shared';
-import { useForm } from 'react-hook-form';
 import PropTypes from 'prop-types';
-import { getOneRegistry, getRegistryList, testRegistry } from '../../../store/index1';
-import { SummaryModal } from './SummaryModal';
-import { WhiteBoradIcon } from '../../../assets';
-import { SuccessTestModal } from './SuccessTestModal';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import styled from 'styled-components';
+import { FileIcon, PlusCircleIcon, WhiteBoradIcon } from '../../../assets';
+import { KDFM } from '../../../constants';
+import { Button, SelectField } from '../../../shared';
+import {
+  getOneRegistry,
+  getRegistryList,
+  testRegistry,
+} from '../../../store/index1';
 import { FailedTestModal } from './FailedTestModal';
+import { SuccessTestModal } from './SuccessTestModal';
+import { SummaryModal } from './SummaryModal';
 
 const FlexContainer = styled.div`
   display: flex;
@@ -186,7 +190,7 @@ const Passphrase = styled.div`
 const PFXPassphrase = styled.div`
   margin-bottom: 8px;
   font-size: 13px;
-  font-weight: v500);
+  font-weight: 500;
   line-height: 15.73px;
   letter-spacing: -0.005em;
   color: var(--model-heading);
@@ -229,7 +233,6 @@ export const AddRegistry = ({
   const [openSummary, setOpenSummary] = useState(false);
   const [testMessage, setTestMessage] = useState('');
 
-  console.log(registry_id, 'reggggggggiddddddddd');
   const fetchRegistry = async () => {
     try {
       const response = await getRegistryList();
@@ -243,14 +246,11 @@ export const AddRegistry = ({
     }
   };
 
-  console.log(registryData, 'selected');
   useEffect(() => {
     fetchRegistry();
   }, []);
 
   useEffect(() => {
-    console.log('Updated registries:', registries);
-    console.log('Selected registry:', selectedRegistryId);
     if (selectedRegistryId) {
       fetchRegistryDetails(selectedRegistryId);
     }
@@ -281,19 +281,15 @@ export const AddRegistry = ({
     registryData?.passphrase &&
       payload.append('passphrase', registryData?.passphrase);
     const response = await testRegistry(payload);
-    console.log('RESPONSE', response);
     if (response.status === 204) {
       setSuccessTest(true);
       setContinueStatus(true);
       setTestLoader(false);
-      console.log('tested');
     } else {
       setContinueStatus(false);
       setTestMessage(response.message);
       setFailedTest(true);
       setTestLoader(false);
-
-      console.log('errorr');
     }
   };
 
@@ -310,10 +306,10 @@ export const AddRegistry = ({
           <SelectField
             control={control}
             name="registry"
-            label="Registry Name"
+            label={KDFM.REGISTRY_NAME}
             options={registries}
           />
-          <ORText>OR</ORText>
+          <ORText>{KDFM.SEPARATOR}</ORText>
           <button
             onClick={() => setNewRegistry(true)}
             style={{ border: 'none', background: 'none', padding: 0 }}
@@ -323,24 +319,24 @@ export const AddRegistry = ({
               // disabled={selectedRegistryId}
               icon={<PlusCircleIcon width={20} height={20} color="red" />}
             >
-              Add New Registry
+              {KDFM.ADD_NEW_REGISTRY}
             </StyledButton>
           </button>
         </FlexContainer>
         <Container>
           {selectedRegistryId ? (
             <RegistryDetailsDiv>
-              <Title>Registry Details</Title>
+              <Title>{KDFM.REGISTRY_DETAILS}</Title>
               <Row>
                 <Column size={33.33}>
                   <BoxContentArea>
-                    <p>Registry Name</p>
+                    <p>{KDFM.REGISTRY_NAME}</p>
                     <span>{registryData.name}</span>
                   </BoxContentArea>
                 </Column>
                 <Column size={66.66}>
                   <BoxContentArea>
-                    <p>Nifi Certificate</p>
+                    <p>{KDFM.NIFI_CERTIFICATE}</p>
                   </BoxContentArea>
                   <CertificateAddedDiv>
                     <div>
@@ -349,15 +345,15 @@ export const AddRegistry = ({
                     <FileInfo>
                       <FileDetails>
                         <FileTypeContainer>
-                          <FileType>PFX file</FileType>
-                          <FileSize>3.7KB</FileSize>
+                          <FileType>{KDFM.PFX_FILE}</FileType>
+                          <FileSize>{KDFM.PFX_FILE_SIZE}</FileSize>
                         </FileTypeContainer>
                         <FilePath>{registryData.file}</FilePath>
                       </FileDetails>
                     </FileInfo>
                   </CertificateAddedDiv>
                   <Passphrase>
-                    <PFXPassphrase>PFX Paraphrase:</PFXPassphrase>
+                    <PFXPassphrase>{KDFM.PFX_PASSPHRASE}:</PFXPassphrase>
                     <PasswordText>***********</PasswordText>
                   </Passphrase>
                 </Column>
@@ -368,16 +364,16 @@ export const AddRegistry = ({
                     variant="secondary"
                     onClick={() => setNewRegistry(true)}
                   >
-                    Edit
+                    {KDFM.EDIT}
                   </Button>
-                  <Button onClick={handleDelete}>Delete</Button>
+                  <Button onClick={handleDelete}>{KDFM.DELETE}</Button>
                 </ButtonDiv>
               </BottomButtonDiv>
             </RegistryDetailsDiv>
           ) : (
             <NoDataContainer>
               <WhiteBoradIcon />
-              <NoDataText>No data found</NoDataText>
+              <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
             </NoDataContainer>
           )}
         </Container>
@@ -389,7 +385,7 @@ export const AddRegistry = ({
                 setActiveTab('cluster');
               }}
             >
-              Back
+              {KDFM.BACK}
             </Button>
             <Button
               disabled={!continueStatus}
@@ -397,7 +393,7 @@ export const AddRegistry = ({
                 setOpenSummary(true);
               }}
             >
-              Continue
+              {KDFM.CONTINUE}
             </Button>
           </BtnDiv>
           <BtnDiv>
@@ -407,7 +403,7 @@ export const AddRegistry = ({
               }}
               isLoading={testLoader}
             >
-              Test Cluster
+              {KDFM.TEST_CLUSTER}
             </Button>
           </BtnDiv>
         </BottomButtonDivs>

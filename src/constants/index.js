@@ -1,3 +1,5 @@
+import { CLUSTER_CONSTANTS } from './cluster.constant';
+
 // modules constants exports
 export * from './login';
 
@@ -46,4 +48,44 @@ export const STATUS_CODE = {
 
 export const RESPONSE_DATA_CODE = {
   TOKEN_NOT_VALID: 'token_not_valid',
+};
+
+export const CLUSTER_MODULE_TABS = {
+  CLUSTER: 'cluster',
+  REGISTRY: 'registry',
+};
+
+export const KDFM = {
+  // Generic constants
+  NIFI: 'NiFi',
+  ADD: 'Add',
+  BACK: 'Back',
+  CONTINUE: 'Continue',
+  EDIT: 'Edit',
+  SAVE: 'Save',
+  VIEW: 'View',
+  DELETE: 'Delete',
+  CANCEL: 'Cancel',
+  YES: 'Yes',
+  NO: 'No',
+  USERNAME: 'Username',
+  PASSWORD: 'Password',
+  ENTER_USERNAME: 'Enter your Username',
+  ENTER_PASSWORD: 'Enter your Password',
+  NO_DATA_FOUND: 'No Data Found!!',
+  NIFI_URL: 'NiFi URL',
+  SEPARATOR: 'OR',
+  SELECT: 'SELECT',
+  TEST: 'Test',
+  TESTED: 'Tested',
+  TEST_SUCCEED: 'Test Succeeded',
+  TEST_FAILED: 'Test Failed',
+  TESTING_FAILED: 'Test Failed',
+  REFRESH: 'Refresh',
+  STATUS: 'Status',
+  ACCESS: 'Access',
+  SOMETHING_WENT_WRONG: 'Something went wrong',
+
+  // module specific constants
+  ...CLUSTER_CONSTANTS,
 };

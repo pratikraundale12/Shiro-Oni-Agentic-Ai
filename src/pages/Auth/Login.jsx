@@ -9,18 +9,18 @@ import { theme } from '../../styles';
 import { Layout } from '../../components';
 import { Button, TextButton, InputField, PasswordField } from '../../shared';
 import {
-  GoogleIcon,
+  // GoogleIcon,
   LessArrowIcon,
   MailIcon,
-  MicroSoftIcon,
+  // MicroSoftIcon,
 } from '../../assets';
 import {
   EMAIL_REGEX,
   FORGOT_PASSWORD,
-  GOOGLE,
+  // GOOGLE,
   LOGIN_TO_YOUR_ACCOUNT,
-  MICROSOFT,
-  OR_DO_IT_VIA_OTHER_ACCOUNTS,
+  // MICROSOFT,
+  // OR_DO_IT_VIA_OTHER_ACCOUNTS,
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../constants';
@@ -46,72 +46,44 @@ const SubTitle = styled.p`
   color: ${props => props.theme.colors.darker};
 `;
 
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+`;
+
 const SubmitButton = styled(Button)`
   margin-top: 1.8rem;
 `;
 
-const SmallText = styled.small`
-  display: block;
-  margin-top: 1.4rem;
-  color: ${props => props.theme.colors.darker};
-  text-align: center;
-`;
+// const SmallText = styled.small`
+//   display: block;
+//   margin-top: 1.4rem;
+//   color: ${props => props.theme.colors.darker};
+//   text-align: center;
+// `;
 
-const SSOButtonsContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.4rem;
-`;
-
-const SSOButton = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-  opacity: 0.35;
-  padding: 1rem 1.4rem;
-  border-radius: 8px;
-  border: 1px solid ${props => props.theme.colors.border};
-  background-color: ${props => props.theme.colors.white};
-  box-shadow: 0px 1px 3px ${props => props.theme.colors.shadow};
-`;
-
-// const SessionExpiry = styled.div`
-//   height: 100vh;
-//   width: 100vw;
-//   overflow: hidden;
+// const SSOButtonsContainer = styled.div`
 //   display: flex;
 //   align-items: center;
 //   justify-content: center;
+//   gap: 1rem;
+//   margin-top: 1.4rem;
 // `;
 
-// const SessionContainer = styled.div`
-//   max-width: 700px;
-//   width: 100%;
-//   border: 1px solid #dde4f0;
-//   border-radius: 8px;
-// `;
-
-// const SessionHeaderTitle = styled.div`
+// const SSOButton = styled.div`
 //   display: flex;
-//   background-color: #c52b2b;
-//   color: #fff;
-//   font-weight: 600;
-//   font-size: 28px;
-//   padding: 10px 14px;
-//   border-radius: 8px 8px 0 0;
-//   text-align: center;
-// `;
-
-// const TxtContainerDiv = styled.div`
-//   font-weight: 500;
-//   font-size: 26px;
-//   color: var(--col-444445);
-//   padding: 36px 20px;
-//   text-align: center;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 1rem;
+//   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+//   opacity: 0.35;
+//   padding: 1rem 1.4rem;
+//   border-radius: 8px;
+//   border: 1px solid ${props => props.theme.colors.border};
+//   background-color: ${props => props.theme.colors.white};
+//   box-shadow: 0px 1px 3px ${props => props.theme.colors.shadow};
 // `;
 
 const ForgetLinkContainer = styled.div`
@@ -139,7 +111,6 @@ const PATH = 'login';
 
 export const Login = () => {
   const dispatch = useDispatch();
-  // const [licensePageDisplay, setLicensePageDisplay] = useState(false);
   const { state } = useGlobalContext();
   const {
     watch,
@@ -154,33 +125,12 @@ export const Login = () => {
     dispatch(AuthenticationActions.login({ type: 'admin', ...data }));
   };
 
-  // const callApi = async () => {
-  //   const [response, error] = await checkLicense();
-  //   response;
-  //   if (error) {
-  //     setLicensePageDisplay(true);
-  //   }
-  // };
-  // useEffect(() => {
-  //   callApi();
-  // }, []);
   return (
-    <>
-      {/* {licensePageDisplay ? (
-        <SessionExpiry>
-          <SessionContainer>
-            <SessionHeaderTitle>License Expired</SessionHeaderTitle>
-            <TxtContainerDiv>
-              Please contact to Administrator to renew your license and restore
-              access.
-            </TxtContainerDiv>
-          </SessionContainer>
-        </SessionExpiry>
-      ) : ( */}
-      <Layout>
-        <Title>{`👋 ${WELCOME_BACK}`}</Title>
-        <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
-        <form onSubmit={handleSubmit(onSubmit)}>
+    <Layout>
+      <Title>{`👋 ${WELCOME_BACK}`}</Title>
+      <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <div>
           <InputField
             name="email"
             type="text"
@@ -199,7 +149,6 @@ export const Login = () => {
             watch={watch}
             required
             label="Password"
-            helperText="Must be 8 characters at least"
           />
           <ForgetLinkContainer>
             <PasswordTextMessage>
@@ -209,28 +158,27 @@ export const Login = () => {
               {FORGOT_PASSWORD}
             </TextButton>
           </ForgetLinkContainer>
-          <SubmitButton
-            iconPosition="right"
-            icon={<LessArrowIcon color={theme.colors.white} />}
-            type="submit"
-            loading={state.loaders[PATH] && 'Signing In...'}
-          >
-            {SIGN_IN_TO_YOUR_ACCOUNT}
-          </SubmitButton>
-        </form>
-        <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
-        <SSOButtonsContainer>
-          <SSOButton disabled>
-            <GoogleIcon />
-            <span>{GOOGLE}</span>
-          </SSOButton>
-          <SSOButton disabled>
-            <MicroSoftIcon />
-            <span>{MICROSOFT}</span>
-          </SSOButton>
-        </SSOButtonsContainer>
-      </Layout>
-      {/* )} */}
-    </>
+        </div>
+        <SubmitButton
+          iconPosition="right"
+          icon={<LessArrowIcon color={theme.colors.white} />}
+          type="submit"
+          loading={state.loaders[PATH] && 'Signing In...'}
+        >
+          {SIGN_IN_TO_YOUR_ACCOUNT}
+        </SubmitButton>
+      </Form>
+      {/* <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
+          <SSOButtonsContainer>
+            <SSOButton disabled>
+              <GoogleIcon />
+              <span>{GOOGLE}</span>
+            </SSOButton>
+            <SSOButton disabled>
+              <MicroSoftIcon />
+              <span>{MICROSOFT}</span>
+            </SSOButton>
+          </SSOButtonsContainer> */}
+    </Layout>
   );
 };

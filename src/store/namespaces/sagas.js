@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
-import { CLUSTERS_TOKEN } from '../../constants';
+import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from './redux';
 
@@ -13,6 +13,14 @@ export function* fetchNamespaces(api) {
     clusterId: selectedCluster?.value || '',
     namespaceId: selectedNamespace?.value || '',
   };
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   yield call(requestSaga, {
     errorSection: 'fetchNamespaces',
     loadingSection: 'fetchNamespaces',
@@ -48,7 +56,7 @@ export function* checkDestCluster(api) {
     NamespacesSelectors.getSelectedDestCluster
   );
   const path = yield select(NamespacesSelectors.getFlowPath);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const srcClusterToken = clusters?.find(
     cluster => cluster.id === selectedCluster?.value
   )?.token;
@@ -72,7 +80,7 @@ export function* checkDestCluster(api) {
     successAction: NamespacesActions.checkDestClusterSuccess,
   });
   if (response.ok && response.data.message) {
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -84,7 +92,7 @@ export function* deployCluster(api) {
     NamespacesSelectors.getCheckDestCluster
   );
   const formData = yield select(NamespacesSelectors.getFormData);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -108,17 +116,17 @@ export function* deployCluster(api) {
     successAction: NamespacesActions.deployClusterSuccess,
   });
   if (response.ok) yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message);
+  else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
 export function* updateNamespaceStatus(api, { payload }) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
-  const deployDetails = yield select(
+  const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -131,7 +139,7 @@ export function* updateNamespaceStatus(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedDestCluster?.value,
-        namespaceId: deployDetails.id,
+        namespaceId: deployOrUpgradeDetails.id,
         state: payload,
       },
     ],
@@ -148,7 +156,7 @@ export function* updateNamespaceStatus(api, { payload }) {
     yield put(NamespacesActions.deployClusterSuccess(data));
   }
   if (!response.ok) {
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -160,7 +168,7 @@ export function* upgradeCluster(api) {
     NamespacesSelectors.getCheckDestCluster
   );
   const formData = yield select(NamespacesSelectors.getFormData);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -185,7 +193,7 @@ export function* upgradeCluster(api) {
   }
 
   if (!response.ok) {
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -196,7 +204,7 @@ export function* clusterProgress(api) {
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -222,7 +230,7 @@ export function* clusterProgress(api) {
     yield call(clusterProgressDelete, api);
   }
   if (!response.ok) {
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -233,7 +241,7 @@ export function* clusterProgressDelete(api) {
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -254,7 +262,7 @@ export function* clusterProgressDelete(api) {
   if (response.ok) {
     yield call(getCountDetails, api);
   } else {
-    toast.error(response.data.message);
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
@@ -265,7 +273,7 @@ export function* getCountDetails(api) {
   const checkDestCluster = yield select(
     NamespacesSelectors.getCheckDestCluster
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -285,17 +293,20 @@ export function* getCountDetails(api) {
   });
 
   if (response.ok) yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message);
+  else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
-export function* fetchParameterContext(api, { initialCall = true }) {
+export function* fetchParameterContext(
+  api,
+  { initialCall = true, showError = false }
+) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -315,7 +326,9 @@ export function* fetchParameterContext(api, { initialCall = true }) {
   });
   if (response.ok && initialCall)
     yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message);
+  else if (!response.ok || (showError && !initialCall)) {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
 }
 
 export function* updateParameterContext(api, { payload }) {
@@ -329,7 +342,7 @@ export function* updateParameterContext(api, { payload }) {
   const parameterDetails = yield select(
     NamespacesSelectors.getParameterDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -366,7 +379,12 @@ export function* updateParameterContext(api, { payload }) {
       method: 'get',
       additionalData: { requestId: response.data?.requestId },
     });
-  } else toast.error(response.data.message);
+  } else {
+    yield call(fetchParameterContext, api, {
+      initialCall: false,
+      showError: true,
+    });
+  }
 }
 
 export function* getStatusAndDeleteParameterContext(
@@ -379,7 +397,7 @@ export function* getStatusAndDeleteParameterContext(
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -414,19 +432,25 @@ export function* getStatusAndDeleteParameterContext(
     yield call(getStatusAndDeleteParameterContext, api, {
       additionalData: { requestId: response.data?.requestId },
     });
-  } else if (response.ok && response.status === 204) {
-    yield call(fetchParameterContext, api, { initialCall: false });
-  } else toast.error(response.data.message);
+  } else {
+    yield call(fetchParameterContext, api, {
+      initialCall: false,
+      showError: !response.ok,
+    });
+  }
 }
 
-export function* fetchVariableList(api) {
+export function* fetchVariableList(
+  api,
+  { initialCall = true, showError = false }
+) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
   const deployDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -444,8 +468,90 @@ export function* fetchVariableList(api) {
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
   });
-  if (response.ok) yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message);
+  if (response.ok && initialCall)
+    yield put(NamespacesActions.setDeployedModal());
+  else if (!response.ok || (showError && !initialCall))
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+}
+
+export function* addVariableServices(api, { payload }) {
+  const { variables } = payload;
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const variableList = yield select(NamespacesSelectors.getVariableList);
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'addVariableServices',
+    loadingSection: 'addVariableServices',
+    apiMethod: api.addVariableServices,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        namespaceId: deployDetails.id,
+        version: variableList.version,
+        variables: variables,
+      },
+    ],
+  });
+  if (response.ok && response.data?.requestId) {
+    yield call(getStatusAndDeleteVariables, api, {
+      method: 'get',
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else toast.error(response.data.message);
+}
+export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const deployDetails = yield select(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'getVariableServices',
+    loadingSection: 'getVariableServices',
+    apiMethod:
+      method === 'get' ? api.getVariableServices : api.deleteVariableServices,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.value,
+        namespaceId: deployDetails?.id,
+        requestId: additionalData?.requestId,
+      },
+    ],
+  });
+  if (response.ok && !response.data?.complete && response.data?.requestId) {
+    delay(1000);
+    yield call(getStatusAndDeleteVariables, api, {
+      method: 'get',
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else if (
+    response.ok &&
+    response.data?.complete &&
+    response.data?.requestId
+  ) {
+    yield call(getStatusAndDeleteVariables, api, {
+      additionalData: { requestId: response.data?.requestId },
+    });
+  } else if (response.ok && method !== 'get') {
+    yield call(fetchVariableList, api, { initialCall: false });
+  } else toast.error(response.data.message);
 }
 
 export function* namespacesSagas(api) {
@@ -472,6 +578,7 @@ export function* namespacesSagas(api) {
       fetchParameterContext,
       api
     ),
+    takeLatest(NamespacesActions.addVariableServices, addVariableServices, api),
     takeLatest(
       NamespacesActions.updateParameterContext,
       updateParameterContext,
@@ -480,6 +587,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.getStatusAndDeleteParameterContext,
       getStatusAndDeleteParameterContext,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.getStatusAndDeleteVariables,
+      getStatusAndDeleteVariables,
       api
     ),
     takeLatest(NamespacesActions.fetchVariableList, fetchVariableList, api),

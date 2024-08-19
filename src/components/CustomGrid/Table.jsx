@@ -35,6 +35,8 @@ export const Table = ({ data, columns, className }) => {
     getTheme(),
     {
       Table: `
+        margin-bottom: 0;
+
         th, td {
           border-bottom: none !important;
         }
@@ -78,4 +80,5 @@ Table.propTypes = {
   data: PropTypes.object.isRequired,
   columns: PropTypes.arrayOf(PropTypes.shape({})),
   className: PropTypes.string,
+  syncButton: PropTypes.func,
 };

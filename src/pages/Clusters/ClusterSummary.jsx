@@ -40,38 +40,36 @@ export const ClusterSummary = () => {
     {
       label: 'Address',
       renderCell: item => <TextRender text={item.address} />,
-      sort: { sortKey: 'NAME' },
+      width: '20%',
     },
     {
       label: 'Node Id',
       renderCell: item => <TextRender text={item.nodeId} />,
+      width: '20%',
     },
     {
       label: 'Heartbeat',
       renderCell: item => <TextRender text={item.heartbeat} />,
+      width: '20%',
     },
     {
       label: 'Status',
       renderCell: item => <StatusRender status={item.status} />,
+      width: '20%',
     },
     {
       label: 'Event Log',
-      width: '10%',
       renderCell: item => getActionsMenu(item),
+      width: '20%',
     },
   ];
-
-  const SORT_FNS = {
-    NAME: array => array.sort((a, b) => a.name.localeCompare(b.name)),
-  };
 
   return (
     <Container>
       <Grid
-        module="nodeList"
+        module="nodes"
         title="Clusters Summary"
         columns={COLUMNS}
-        sortFns={SORT_FNS}
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
       />
