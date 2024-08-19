@@ -29,7 +29,7 @@ export function* requestSaga({
   } else if (
     !response.ok &&
     response.status === 500 &&
-    response.data.message.includes('Token Expired')
+    response.data.message.includes('Session Expired')
   ) {
     toast.error(response.data.message);
     const clustersToken = JSON.parse(

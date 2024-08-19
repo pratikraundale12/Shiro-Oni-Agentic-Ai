@@ -8,10 +8,12 @@ const ClusterDetail = ({ data }) => {
     {
       label: 'Cluster Name',
       renderCell: item => <TextRender text={item.name} />,
+      width: '25%',
     },
     {
       label: 'Cluster URL',
       renderCell: item => <TextRender text={item.nifi_url} />,
+      width: '75%',
     },
   ];
 

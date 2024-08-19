@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, Route } from 'react-router-dom';
 
 import AuthGaurd from './AuthGuard';
@@ -6,6 +6,7 @@ import { HistoryRouter } from './HistoryRouter';
 
 import {
   NotFound,
+  SessionExpired,
   Login,
   Forgot,
   Reset,
@@ -37,6 +38,13 @@ import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import Deploy from '../pages/Namespaces/Deploy';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import Summary from '../pages/Namespaces/Summary';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  AuthenticationActions,
+  AuthenticationSelectors,
+  LoadingSelectors,
+} from '../store';
+import { FullPageLoader } from '../components';
 
 export const ROUTES_MENU = [
   {
@@ -64,7 +72,7 @@ export const ROUTES_MENU = [
         component: <Add />,
       },
       {
-        path: ['summary'],
+        path: [':id'],
         component: <ClusterSummary />,
       },
     ],
@@ -187,6 +195,20 @@ export const ROUTES_MENU = [
 ];
 
 const Routes = () => {
+  const dispatch = useDispatch();
+  const isLicenseValid = useSelector(AuthenticationSelectors.getIsLicenseValid);
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchLicenseInfo')
+  );
+
+  useEffect(() => {
+    dispatch(AuthenticationActions.fetchLicenseInfo());
+  }, [dispatch]);
+
+  if (!isLicenseValid) return <SessionExpired />;
+
+  if (loading) return <FullPageLoader loading={loading} />;
+
   return (
     <HistoryRouter>
       {/* Public Routes */}

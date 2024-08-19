@@ -9,6 +9,7 @@ import {
   DEFAULT_ROUTE,
   PREVIOUS_PATH,
 } from '../../constants';
+import { LoadingActions } from '../helpers/loading_redux';
 
 export function* fetchCurrentUser(api) {
   const route = localStorage.getItem(PREVIOUS_PATH) || DEFAULT_ROUTE;
@@ -21,6 +22,18 @@ export function* fetchCurrentUser(api) {
   });
   if (response.status === 401) window.location.pathname = '/login';
   else yield call(history.push, `/${route}`);
+}
+
+export function* fetchLicenseInfo(api) {
+  yield put(LoadingActions.startLoading('fetchLicenseInfo'));
+  const response = yield call(api.fetchLicenseInfo);
+  if (response.ok)
+    yield put(AuthenticationActions.fetchLicenseInfoSuccess(response.data));
+  else
+    yield put(
+      AuthenticationActions.fetchLicenseInfoSuccess({ isLicenseValid: false })
+    );
+  yield put(LoadingActions.stopLoading('fetchLicenseInfo'));
 }
 
 export function* resetPasswordRequest(api, { payload }) {
@@ -94,5 +107,6 @@ export function* authenticationSagas(api) {
     ),
     takeLatest(AuthenticationActions.resetPassword, resetPassword, api),
     takeLatest(AuthenticationActions.fetchCurrentUser, fetchCurrentUser, api),
+    takeLatest(AuthenticationActions.fetchLicenseInfo, fetchLicenseInfo, api),
   ]);
 }

@@ -86,41 +86,6 @@ const SubmitButton = styled(Button)`
 //   box-shadow: 0px 1px 3px ${props => props.theme.colors.shadow};
 // `;
 
-// const SessionExpiry = styled.div`
-//   height: 100vh;
-//   width: 100vw;
-//   overflow: hidden;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-// `;
-
-// const SessionContainer = styled.div`
-//   max-width: 700px;
-//   width: 100%;
-//   border: 1px solid #dde4f0;
-//   border-radius: 8px;
-// `;
-
-// const SessionHeaderTitle = styled.div`
-//   display: flex;
-//   background-color: #c52b2b;
-//   color: #fff;
-//   font-weight: 600;
-//   font-size: 28px;
-//   padding: 10px 14px;
-//   border-radius: 8px 8px 0 0;
-//   text-align: center;
-// `;
-
-// const TxtContainerDiv = styled.div`
-//   font-weight: 500;
-//   font-size: 26px;
-//   color: var(--col-444445);
-//   padding: 36px 20px;
-//   text-align: center;
-// `;
-
 const ForgetLinkContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -146,7 +111,6 @@ const PATH = 'login';
 
 export const Login = () => {
   const dispatch = useDispatch();
-  // const [licensePageDisplay, setLicensePageDisplay] = useState(false);
   const { state } = useGlobalContext();
   const {
     watch,
@@ -161,84 +125,60 @@ export const Login = () => {
     dispatch(AuthenticationActions.login({ type: 'admin', ...data }));
   };
 
-  // const callApi = async () => {
-  //   const [response, error] = await checkLicense();
-  //   response;
-  //   if (error) {
-  //     setLicensePageDisplay(true);
-  //   }
-  // };
-  // useEffect(() => {
-  //   callApi();
-  // }, []);
   return (
-    <>
-      {/* {licensePageDisplay ? (
-        <SessionExpiry>
-          <SessionContainer>
-            <SessionHeaderTitle>License Expired</SessionHeaderTitle>
-            <TxtContainerDiv>
-              Please contact to Administrator to renew your license and restore
-              access.
-            </TxtContainerDiv>
-          </SessionContainer>
-        </SessionExpiry>
-      ) : ( */}
-      <Layout>
-        <Title>{`👋 ${WELCOME_BACK}`}</Title>
-        <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <InputField
-              name="email"
-              type="text"
-              label="E-mail Address"
-              placeholder="Enter your Email Address"
-              register={register}
-              errors={errors}
-              icon={<MailIcon />}
-              rightIcon={getRightIcon(watch, errors)}
-              required
-            />
-            <PasswordField
-              name="password"
-              register={register}
-              errors={errors}
-              watch={watch}
-              required
-              label="Password"
-            />
-            <ForgetLinkContainer>
-              <PasswordTextMessage>
-                Must be 8 characters at least
-              </PasswordTextMessage>
-              <TextButton type="button" onClick={() => history.push('/forgot')}>
-                {FORGOT_PASSWORD}
-              </TextButton>
-            </ForgetLinkContainer>
-          </div>
-          <SubmitButton
-            iconPosition="right"
-            icon={<LessArrowIcon color={theme.colors.white} />}
-            type="submit"
-            loading={state.loaders[PATH] && 'Signing In...'}
-          >
-            {SIGN_IN_TO_YOUR_ACCOUNT}
-          </SubmitButton>
-        </Form>
-        {/* <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
-        <SSOButtonsContainer>
-          <SSOButton disabled>
-            <GoogleIcon />
-            <span>{GOOGLE}</span>
-          </SSOButton>
-          <SSOButton disabled>
-            <MicroSoftIcon />
-            <span>{MICROSOFT}</span>
-          </SSOButton>
-        </SSOButtonsContainer> */}
-      </Layout>
-      {/* )} */}
-    </>
+    <Layout>
+      <Title>{`👋 ${WELCOME_BACK}`}</Title>
+      <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <InputField
+            name="email"
+            type="text"
+            label="E-mail Address"
+            placeholder="Enter your Email Address"
+            register={register}
+            errors={errors}
+            icon={<MailIcon />}
+            rightIcon={getRightIcon(watch, errors)}
+            required
+          />
+          <PasswordField
+            name="password"
+            register={register}
+            errors={errors}
+            watch={watch}
+            required
+            label="Password"
+          />
+          <ForgetLinkContainer>
+            <PasswordTextMessage>
+              Must be 8 characters at least
+            </PasswordTextMessage>
+            <TextButton type="button" onClick={() => history.push('/forgot')}>
+              {FORGOT_PASSWORD}
+            </TextButton>
+          </ForgetLinkContainer>
+        </div>
+        <SubmitButton
+          iconPosition="right"
+          icon={<LessArrowIcon color={theme.colors.white} />}
+          type="submit"
+          loading={state.loaders[PATH] && 'Signing In...'}
+        >
+          {SIGN_IN_TO_YOUR_ACCOUNT}
+        </SubmitButton>
+      </Form>
+      {/* <SmallText>{OR_DO_IT_VIA_OTHER_ACCOUNTS}</SmallText>
+          <SSOButtonsContainer>
+            <SSOButton disabled>
+              <GoogleIcon />
+              <span>{GOOGLE}</span>
+            </SSOButton>
+            <SSOButton disabled>
+              <MicroSoftIcon />
+              <span>{MICROSOFT}</span>
+            </SSOButton>
+          </SSOButtonsContainer> */}
+    </Layout>
   );
 };

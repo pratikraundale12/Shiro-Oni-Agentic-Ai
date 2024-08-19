@@ -23,7 +23,7 @@ const StyledButton = styled(Button)`
   background-color: ${props => (props.active ? theme.colors.primary : 'none')};
 `;
 
-const Pagination = ({ page, setState, count, prev, next }) => {
+const Pagination = ({ page, count }) => {
   const getPageRange = () => {
     const start = (currentPage - 1) * 10 + 1;
     const end = Math.min(count, currentPage * 10);
@@ -78,18 +78,14 @@ const Pagination = ({ page, setState, count, prev, next }) => {
       <Flex>
         <StyledButton
           size="sm"
-          onClick={() => setState(prevState => ({ ...prevState, page: prev }))}
+          onClick={() => {}}
           icon={<GreaterArrowIcon color={theme.colors.white} />}
           disabled={currentPage === 1}
         />
         {pageNumbers.map((number, index) => (
           <StyledButton
             key={index}
-            onClick={() =>
-              number != '...'
-                ? setState(prevState => ({ ...prevState, page: number }))
-                : null
-            }
+            onClick={() => (number != '...' ? {} : null)}
             size="sm"
             variant="secondary"
             active={number === currentPage}
@@ -99,7 +95,7 @@ const Pagination = ({ page, setState, count, prev, next }) => {
         ))}
         <StyledButton
           size="sm"
-          onClick={() => setState(prevState => ({ ...prevState, page: next }))}
+          onClick={() => {}}
           icon={<LessArrowIcon color={theme.colors.white} />}
           disabled={currentPage === Math.ceil(count / 10)}
         />
