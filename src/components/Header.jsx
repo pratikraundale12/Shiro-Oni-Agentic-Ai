@@ -277,6 +277,9 @@ export const Header = ({ isOpenSidebar }) => {
         <ButtonContainer>
           <div className="d-none d-lg-inline">
             <div className="d-flex">
+              <IconButton>
+                <SettingSmallIcon />
+              </IconButton>
               <IconCusterButton
                 onClick={() =>
                   dispatch(AuthenticationActions.setClusterLogin(true))
@@ -296,9 +299,6 @@ export const Header = ({ isOpenSidebar }) => {
               <IconButton>
                 <BellIcon />
               </IconButton> */}
-              <IconButton>
-                <SettingSmallIcon />
-              </IconButton>
             </div>
           </div>
           <ProfileDropdown />
