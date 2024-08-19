@@ -95,6 +95,7 @@ export const KDFM = {
   VALUE: 'Value',
   NA: 'N/A',
   DESCRIPTION: 'Description',
+  HELP_AND_SUPPORT: 'Help & Support',
   SOMETHING_WENT_WRONG: 'Something went wrong',
 
   // module specific constants

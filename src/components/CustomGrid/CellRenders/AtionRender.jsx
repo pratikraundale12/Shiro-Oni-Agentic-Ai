@@ -16,8 +16,8 @@ const ActionTd = styled.div`
 `;
 
 export const IconButton = styled.button`
-  min-width: 34px;
-  min-height: 34px;
+  min-width: 32px;
+  min-height: 32px;
   cursor: pointer;
   display: flex;
   align-items: center;

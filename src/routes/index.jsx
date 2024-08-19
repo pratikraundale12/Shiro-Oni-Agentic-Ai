@@ -4,47 +4,47 @@ import { Outlet, Route } from 'react-router-dom';
 import AuthGaurd from './AuthGuard';
 import { HistoryRouter } from './HistoryRouter';
 
-import {
-  NotFound,
-  SessionExpired,
-  Login,
-  Forgot,
-  Reset,
-  Success,
-  Dashboard,
-  ListUsers,
-  ListClusters,
-  ListNamespaces,
-  ReadyFlowGallary,
-  GenrateFlow,
-  PermissionMatrix,
-  Add,
-  UserLogin,
-  LdapConfig,
-  ActvityHistory,
-} from '../pages';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   ActivityHistoryIcon,
   ClusterIcon,
   DashboardIcon,
   GenrateFlowIcon,
+  LdapConfigIcon,
   LockIcon,
   NameSpaceIcon,
   PeopleIcon,
   ReadyFlowIcon,
-  LdapConfigIcon,
 } from '../assets';
+import { FullPageLoader } from '../components';
+import {
+  ActvityHistory,
+  Add,
+  Dashboard,
+  Forgot,
+  GenrateFlow,
+  LdapConfig,
+  ListClusters,
+  ListNamespaces,
+  ListUsers,
+  Login,
+  NotFound,
+  PermissionMatrix,
+  ReadyFlowGallary,
+  Reset,
+  SessionExpired,
+  Success,
+  UserLogin,
+} from '../pages';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import Deploy from '../pages/Namespaces/Deploy';
-import Upgrade from '../pages/Namespaces/Upgrade';
 import Summary from '../pages/Namespaces/Summary';
-import { useDispatch, useSelector } from 'react-redux';
+import Upgrade from '../pages/Namespaces/Upgrade';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
   LoadingSelectors,
 } from '../store';
-import { FullPageLoader } from '../components';
 
 export const ROUTES_MENU = [
   {
@@ -145,7 +145,7 @@ export const ROUTES_MENU = [
   },
 
   {
-    name: 'Permission Matrix',
+    name: 'Role & Permission Matrix',
     path: 'permission-matrix',
     icon: LockIcon,
     pages: [
