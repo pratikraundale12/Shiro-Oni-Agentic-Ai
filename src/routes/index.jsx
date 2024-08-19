@@ -145,7 +145,7 @@ export const ROUTES_MENU = [
   },
 
   {
-    name: 'Role & Permission Matrix',
+    name: 'Role & Permission',
     path: 'permission-matrix',
     icon: LockIcon,
     pages: [
