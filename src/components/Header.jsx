@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import {
-  BellIcon,
+  // BellIcon,
   ClusterIcon,
   DownArrowIcon,
-  HeadphoneIcon,
+  // HeadphoneIcon,
   LockIcon,
   SettingSmallIcon,
   UserIcon,
@@ -62,7 +62,8 @@ const ButtonContainer = styled.div`
 const ProfileButton = styled.button`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  min-width: 6rem;
   border-radius: 50px;
   padding: 6px;
   background-color: ${props => props.theme.colors.lightGrey};
@@ -159,7 +160,7 @@ const IconCusterButton = styled.button`
 const NameDiv = styled.div`
   font-family: ${props => props.theme.fontNato};
   color: ${props => props.theme.colors.darker};
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 500;
 `;
 
@@ -216,7 +217,7 @@ const ProfileDropdown = () => {
         <ProfileRender url={currentUser?.photo} />
         <ProfileInfo>
           <Name>{`${currentUser?.first_name || ''} ${currentUser?.last_name || ''}`}</Name>
-          <Role>{currentUser?.type}</Role>
+          <Role>{currentUser?.type || ''}</Role>
         </ProfileInfo>
         <DownArrowIcon />
       </ProfileButton>

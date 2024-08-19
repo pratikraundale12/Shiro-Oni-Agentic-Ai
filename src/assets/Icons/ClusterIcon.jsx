@@ -1,10 +1,10 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
 import { theme } from '../../styles';
 
 export const ClusterIcon = ({
-  width = 18,
+  width = 20,
   height = 20,
   color = theme.colors.darker,
 }) => (
