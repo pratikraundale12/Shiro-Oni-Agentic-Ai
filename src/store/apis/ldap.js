@@ -24,9 +24,9 @@ export const ldapConfig = async payload => {
   }
 };
 
-export const getLdapGroupAPI = async () => {
+export const getLdapGroupAPI = async payload => {
   try {
-    return await API.get(`/ldap-group`);
+    return await API.post(`/ldap-group`, payload);
   } catch (error) {
     return error?.response?.data;
   }

@@ -160,8 +160,19 @@ const IconCusterButton = styled.button`
 const NameDiv = styled.div`
   font-family: ${props => props.theme.fontNato};
   color: ${props => props.theme.colors.darker};
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 14px;
   font-weight: 500;
+  line-height: 24px;
+`;
+const StatusDiv = styled.div`
+  width: 4px;
+  height: 4px;
+  background-color: #0cbf59;
+  border-radius: 50%;
+  margin-right: 4px;
 `;
 
 const UserModal = styled(AddUserModal)`
@@ -193,7 +204,10 @@ const ProfileDropdown = () => {
     {
       label: 'Logout',
       icon: <LockIcon width={14} height={14} />,
-      onClick: () => dispatch(AuthenticationActions.logout()),
+      onClick: () => {
+        localStorage.clear();
+        dispatch(AuthenticationActions.logout());
+      },
     },
   ];
 
@@ -265,8 +279,11 @@ export const Header = ({ isOpenSidebar }) => {
               >
                 <ClusterIcon />
                 {selectedCluster?.label && (
-                  <NameDiv>{selectedCluster?.label}</NameDiv>
+                  <NameDiv>
+                    <StatusDiv /> {selectedCluster.label}
+                  </NameDiv>
                 )}
+                {selectedCluster?.label && <DownArrowIcon />}
               </IconCusterButton>
               {/* <IconButton>
                 <HeadphoneIcon />
