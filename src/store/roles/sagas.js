@@ -25,7 +25,6 @@ export function* fetchRolesClusters(api) {
 }
 
 export function* updateRolesClusters(api, { payload }) {
-  console.log('payload', payload);
   const response = yield call(requestSaga, {
     errorSection: 'updateRolesClusters',
     loadingSection: 'updateRolesClusters',
@@ -40,10 +39,28 @@ export function* updateRolesClusters(api, { payload }) {
   if (!response.ok) toast.error(response.data.message);
 }
 
+export function* createNewRole(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'createNewRole',
+    loadingSection: 'createNewRole',
+    apiMethod: api.createNewRole,
+    apiParams: [{ payload }],
+  });
+
+  if (response.ok) {
+    toast.success('New role created successfully.');
+    yield put(RolesActions.roleModal());
+    yield call(fetchRoles, api);
+  } else {
+    toast.error(response.data.message || 'Something went wrong');
+  }
+}
+
 export function* rolesSagas(api) {
   yield all([
     takeLatest(RolesActions.fetchRoles, fetchRoles, api),
     takeLatest(RolesActions.fetchRolesClusters, fetchRolesClusters, api),
     takeLatest(RolesActions.updateRolesClusters, updateRolesClusters, api),
+    takeLatest(RolesActions.createNewRole, createNewRole, api),
   ]);
 }

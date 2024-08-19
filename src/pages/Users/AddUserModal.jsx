@@ -140,7 +140,10 @@ export const AddUserModal = props => {
     { value: true, label: 'Active' },
     { value: false, label: 'Inactive' },
   ];
-  const rolesOption = roles.map(role => ({ value: role.id, label: role.name }));
+  const rolesOption = roles?.map(role => ({
+    value: role.id,
+    label: role.name,
+  }));
 
   const onSubmit = async data => {
     const formData = new FormData();
