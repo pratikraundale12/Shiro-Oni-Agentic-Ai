@@ -31,6 +31,7 @@ import {
   NameSpaceIcon,
   PeopleIcon,
   ReadyFlowIcon,
+  LdapConfigIcon,
 } from '../assets';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import Deploy from '../pages/Namespaces/Deploy';
@@ -154,7 +155,7 @@ export const ROUTES_MENU = [
   {
     name: 'LDAP Configuration',
     path: 'ldap-configuration',
-    icon: LockIcon,
+    icon: LdapConfigIcon,
     pages: [
       {
         path: '',

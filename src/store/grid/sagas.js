@@ -27,23 +27,35 @@ export function* fetchGrid(api, { payload: { module = '', params } }) {
   let payload;
   if (module === 'clusters') payload = localStorage.getItem(CLUSTERS_TOKEN);
   let queryParams;
-  if (module === 'namespaces')
+  if (module === 'namespaces') {
     queryParams = {
       clusterId: selectedCluster?.value || '',
       namespaceId: selectedNamespace?.value || '',
     };
-  if (module === 'destNamespaces')
+    const clustersToken = JSON.parse(
+      localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+    );
+    const selectedClusterToken = clustersToken.find(
+      item => item.id === selectedCluster?.value
+    );
+    api.headers['x-cluster-id'] = selectedClusterToken?.id;
+    api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  }
+  if (module === 'destNamespaces') {
     queryParams = {
       clusterId: selectedDestCluster?.value || '',
       namespaceId: selectedDestNamespace?.value || '',
     };
+    const clustersToken = JSON.parse(
+      localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+    );
+    const selectedClusterToken = clustersToken.find(
+      item => item.id === selectedDestCluster?.value
+    );
+    api.headers['x-cluster-id'] = selectedClusterToken?.id;
+    api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  }
   if (module === 'namespaces' && isEmpty(selectedCluster)) return;
-  const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
-  const selectedClusterToken = clustersToken.find(
-    item => item.id === selectedCluster?.value
-  );
-  api.headers['x-cluster-id'] = selectedClusterToken?.id;
-  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'fetchGrid',
     loadingSection: 'fetchGrid',

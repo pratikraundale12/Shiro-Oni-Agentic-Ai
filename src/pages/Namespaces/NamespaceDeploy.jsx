@@ -205,7 +205,7 @@ const NamespaceDeploy = ({
           </ModalIcon>
           <ModalHFive className="pt-4 mt-2 mb-0 ">
             {`${checkDestCluster.name} is successfully 
-            ${checkDestCluster.mode === 'upgrade' ? 'Upgraded' : 'Deployed'} to
+            ${checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'deployed'} to
             ${selectedDestCluster?.label} instance`}
           </ModalHFive>
           <RowModal>

@@ -13,7 +13,9 @@ export function* fetchNamespaces(api) {
     clusterId: selectedCluster?.value || '',
     namespaceId: selectedNamespace?.value || '',
   };
-  const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
@@ -54,7 +56,7 @@ export function* checkDestCluster(api) {
     NamespacesSelectors.getSelectedDestCluster
   );
   const path = yield select(NamespacesSelectors.getFlowPath);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const srcClusterToken = clusters?.find(
     cluster => cluster.id === selectedCluster?.value
   )?.token;
@@ -90,7 +92,7 @@ export function* deployCluster(api) {
     NamespacesSelectors.getCheckDestCluster
   );
   const formData = yield select(NamespacesSelectors.getFormData);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -124,7 +126,7 @@ export function* updateNamespaceStatus(api, { payload }) {
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -166,7 +168,7 @@ export function* upgradeCluster(api) {
     NamespacesSelectors.getCheckDestCluster
   );
   const formData = yield select(NamespacesSelectors.getFormData);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -202,7 +204,7 @@ export function* clusterProgress(api) {
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -239,7 +241,7 @@ export function* clusterProgressDelete(api) {
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -271,7 +273,7 @@ export function* getCountDetails(api) {
   const checkDestCluster = yield select(
     NamespacesSelectors.getCheckDestCluster
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -304,7 +306,7 @@ export function* fetchParameterContext(
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -340,7 +342,7 @@ export function* updateParameterContext(api, { payload }) {
   const parameterDetails = yield select(
     NamespacesSelectors.getParameterDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -395,7 +397,7 @@ export function* getStatusAndDeleteParameterContext(
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -438,14 +440,17 @@ export function* getStatusAndDeleteParameterContext(
   }
 }
 
-export function* fetchVariableList(api) {
+export function* fetchVariableList(
+  api,
+  { initialCall = true, showError = false }
+) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
   const deployDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -463,8 +468,10 @@ export function* fetchVariableList(api) {
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
   });
-  if (response.ok) yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  if (response.ok && initialCall)
+    yield put(NamespacesActions.setDeployedModal());
+  else if (!response.ok || (showError && !initialCall))
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
 export function* addVariableServices(api, { payload }) {
@@ -476,7 +483,7 @@ export function* addVariableServices(api, { payload }) {
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
   const variableList = yield select(NamespacesSelectors.getVariableList);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
@@ -509,7 +516,7 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
   const deployDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );

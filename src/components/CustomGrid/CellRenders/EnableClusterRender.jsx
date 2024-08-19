@@ -23,7 +23,7 @@ export const EnableClusterRender = ({ item }) => {
   return (
     <>
       <EnableClusterText
-        isVisible={true}
+        isVisible={item.status !== 'Connected'}
         onClick={() => {
           dispatch(
             AuthenticationActions.setClusterLogin({

@@ -83,12 +83,12 @@ export const ActionRender = ({ handleMenuClick, item, children }) => {
       <IconButton data-tooltip-id={item.id}>
         <CircleExclamationMarkIcon color={theme.colors.border} />
       </IconButton>
-     <div className="position-relative">
-      <IconButton onClick={event => handleMenuClick(event, item)}>
+      <div className="position-relative">
+        <IconButton onClick={event => handleMenuClick(event, item)}>
           <ThreedotsIcon />
         </IconButton>
         {children}
-     </div>
+      </div>
       <EnableClusterRender item={item} />
       <Tooltip
         id={item.id}

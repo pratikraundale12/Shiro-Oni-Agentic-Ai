@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import styled from 'styled-components';
-import { RightCircleIcon } from '../../../assets';
-import { Modal } from '../../../shared';
+import { RightCircleIcon } from '../assets';
+import { Modal } from './Modal';
 
 const Icon = styled.div`
   align-items: center !important;
@@ -25,6 +25,7 @@ const Title = styled.h5`
 
 const Para = styled.p`
   text-align: center;
+  text-transform: capitalize;
   margin-bottom: 0 !important;
   margin-top: 0;
   margin-bottom: 1rem;
@@ -35,10 +36,10 @@ const Para = styled.p`
   margin-inline-end: 0px;
 `;
 
-export const SuccessTestModal = ({ successTest, setSuccessTest, name }) => {
+export const SyncUsersSuccess = ({ successTest, setSuccessTest, name }) => {
   return (
     <Modal
-      title="Testing Successful"
+      title="Sync Successful"
       isOpen={successTest}
       onRequestClose={() => setSuccessTest(false)}
       size="sm"
@@ -49,10 +50,12 @@ export const SuccessTestModal = ({ successTest, setSuccessTest, name }) => {
         <Icon>
           <RightCircleIcon color="#0CBF59" />
         </Icon>
-        <Title className="text-capitalize">{name} Test Successful</Title>
+        <Title className="text-capitalize">
+          LDAP Users Synced Successfully
+        </Title>
         <Para>
-          Your {name} test was successful. You <br /> can now proceed to the
-          next steps.
+          Your LDAP Users are synced Successfully.
+          <br /> Click on Continue to check
         </Para>
       </>
     </Modal>

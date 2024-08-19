@@ -1,7 +1,5 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   CanvasXIcon,
@@ -19,7 +17,6 @@ import { history } from '../../helpers/history';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-import { useGlobalContext } from '../../utils';
 
 const Container = styled.div`
   // height: calc(100vh - 78px);
@@ -177,7 +174,6 @@ const Upgrade = () => {
   );
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const formData = useSelector(NamespacesSelectors.getFormData);
-  const { state, setState } = useGlobalContext();
   const convertDate = dateString => {
     const date = new Date(dateString);
 
@@ -195,7 +191,7 @@ const Upgrade = () => {
     return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}.${milliseconds}`;
   };
 
-  const COLUMNS = onVersionSelect => [
+  const COLUMNS = [
     {
       label: KDFM.VERSION,
       renderCell: item => <div>{item.version}</div>,
@@ -214,13 +210,8 @@ const Upgrade = () => {
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <RadioField
             name="upgrade"
-            // checked={formData.version === item.version}
-            // onChange={() => onVersionSelect(item.version)}
-            disabled={checkDestCluster.version === item.version}
-            defaultChecked={formData.namespaceId}
-            onChange={() =>
-              dispatch(NamespacesActions.setVersion(item.version))
-            }
+            checked={item.version == formData.version}
+            onChange={() => handleVersionSelect(item.version)}
           />
         </div>
       ),
@@ -270,21 +261,6 @@ const Upgrade = () => {
     checkDestCluster.state === 'LOCALLY_MODIFIED_AND_STALE' ||
     checkDestCluster.state === 'LOCALLY_MODIFIED';
 
-  const handlePositionChange = (name, value) => {
-    if (setState) {
-      setState(prevState => ({
-        ...prevState,
-        deployData: {
-          ...prevState.deployData,
-          position: {
-            ...prevState.deployData.position,
-            [name]: value,
-          },
-        },
-      }));
-    }
-  };
-  // const isDeploy = state?.upgradeData ? false : true;
   return (
     <Container>
       <TopTitleBar className=" d-flex  mb-3">
@@ -416,7 +392,7 @@ const Upgrade = () => {
             data={[...checkDestCluster.versionList].sort(
               (a, b) => a.version - b.version
             )}
-            columns={COLUMNS(handleVersionSelect)}
+            columns={COLUMNS}
           />
         </ScrollSetGrey>
       </GreyBoxNamespace>
