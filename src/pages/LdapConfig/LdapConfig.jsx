@@ -468,7 +468,7 @@ export const LdapConfig = () => {
               path={breadcrumbData}
               module="ldap"
             />
-            <SyncButton onClick={() => setOpenRoleModal(true)}>
+            <SyncButton onClick={() => dispatch(RolesActions.roleModal())}>
               Add New Role
             </SyncButton>
           </div>

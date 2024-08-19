@@ -25,7 +25,6 @@ export function* fetchRolesClusters(api) {
 }
 
 export function* updateRolesClusters(api, { payload }) {
-  console.log('payload', payload);
   const response = yield call(requestSaga, {
     errorSection: 'updateRolesClusters',
     loadingSection: 'updateRolesClusters',
@@ -41,7 +40,6 @@ export function* updateRolesClusters(api, { payload }) {
 }
 
 export function* createNewRole(api, { payload }) {
-  console.log('payload', payload);
   const response = yield call(requestSaga, {
     errorSection: 'createNewRole',
     loadingSection: 'createNewRole',
@@ -51,11 +49,10 @@ export function* createNewRole(api, { payload }) {
 
   if (response.ok) {
     toast.success('New role created successfully.');
-    yield put(RolesActions.createNewRoleSuccess(response.data));
-    yield call(fetchGrid, api, { payload: { module: 'roles' } });
+    yield put(RolesActions.roleModal());
+    yield call(fetchRoles, api);
   } else {
-    toast.error(response.data.message);
-    yield put(RolesActions.createNewRoleFailure(response.data.message));
+    toast.error(response.data.message || 'Something went wrong');
   }
 }
 

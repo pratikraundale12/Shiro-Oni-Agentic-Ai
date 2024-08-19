@@ -14,6 +14,7 @@ export const RolesActions = {
   permissionModal: createAction(`${prefix}permissionModal`),
   setAccessType: createAction(`${prefix}setAccessType`),
   createNewRole: createAction(`${prefix}createNewRole`),
+  roleModal: createAction(`${prefix}roleModal`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -23,6 +24,7 @@ export const ROLES_INITIAL_STATE = {
   rolesClusters: [],
   permissionModal: false,
   accessType: ACCESS_OPTIONS[0],
+  roleModal: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -32,6 +34,7 @@ export const RolesSelectors = {
   getRolesClusters: state => state.roles.rolesClusters,
   getPermissionModal: state => state.roles.permissionModal,
   getAccessType: state => state.roles.accessType,
+  getRoleModal: state => state.roles.roleModal,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -72,6 +75,12 @@ const setAccessType = (state, { payload }) => {
     accessType: payload,
   };
 };
+const roleModal = state => {
+  return {
+    ...state,
+    roleModal: !state.roleModal,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
@@ -80,6 +89,7 @@ export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
     .addCase(RolesActions.fetchRolesClustersSuccess, fetchRolesClustersSuccess)
     .addCase(RolesActions.setSelectedRole, setSelectedRole)
     .addCase(RolesActions.permissionModal, permissionModal)
-    .addCase(RolesActions.setAccessType, setAccessType);
+    .addCase(RolesActions.setAccessType, setAccessType)
+    .addCase(RolesActions.roleModal, roleModal);
   // .addCase(RolesActions.createNewRole, createNewRole);
 });
