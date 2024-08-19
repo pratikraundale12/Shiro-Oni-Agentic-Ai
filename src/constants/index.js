@@ -98,6 +98,14 @@ export const KDFM = {
   HELP_AND_SUPPORT: 'Help & Support',
   SOMETHING_WENT_WRONG: 'Something went wrong',
 
+  // License constants
+  TRIAL: 'Trial',
+  PURCHASED: 'Purchased',
+  LICENSE: 'License',
+  TRIAL_EXPIRED_PROMPT: arg => `Trial: Your trial will expire on ${arg}.`,
+  PURCHASED_EXPIRED_PROMPT: arg =>
+    `Licensed: Your purchased license will expire on ${arg}. Please renew it to continue using the platform.`,
+
   // module specific constants
   ...CLUSTER_CONSTANTS,
   ...NAMESPACE_CONSTANTS,

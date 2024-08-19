@@ -86,6 +86,12 @@ const HelpSupportConatiner = styled.div`
   width: 100%;
 `;
 
+const KDFMVersion = styled.div`
+  color: ${props => props.theme.colors.darker};
+  font-size: 14px;
+  font-weight: 500;
+`;
+
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
   const route = useSelector(AuthenticationSelectors.getRoute);
@@ -124,6 +130,10 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
           <span>{KDFM.HELP_AND_SUPPORT}</span>
         </Item>
       </HelpSupportConatiner>
+      <KDFMVersion>
+        {/* FIX_ME: Later will come from API */}
+        <span>Version 1.0.0</span>
+      </KDFMVersion>
     </Container>
   );
 };
