@@ -265,12 +265,12 @@ export const Header = ({ isOpenSidebar }) => {
                 <ClusterIcon />
                 <NameDiv> {selectedCluster?.label}</NameDiv>
               </IconCusterButton>
-              <IconButton>
+              {/* <IconButton>
                 <HeadphoneIcon />
               </IconButton>
               <IconButton>
                 <BellIcon />
-              </IconButton>
+              </IconButton> */}
               <IconButton>
                 <SettingSmallIcon />
               </IconButton>
