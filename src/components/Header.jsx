@@ -264,7 +264,9 @@ export const Header = ({ isOpenSidebar }) => {
                 }
               >
                 <ClusterIcon />
-                <NameDiv> {selectedCluster?.label}</NameDiv>
+                {selectedCluster?.label && (
+                  <NameDiv>{selectedCluster?.label}</NameDiv>
+                )}
               </IconCusterButton>
               {/* <IconButton>
                 <HeadphoneIcon />
