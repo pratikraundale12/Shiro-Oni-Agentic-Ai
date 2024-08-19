@@ -40,10 +40,30 @@ export function* updateRolesClusters(api, { payload }) {
   if (!response.ok) toast.error(response.data.message);
 }
 
+export function* createNewRole(api, { payload }) {
+  console.log('payload', payload);
+  const response = yield call(requestSaga, {
+    errorSection: 'createNewRole',
+    loadingSection: 'createNewRole',
+    apiMethod: api.createNewRole,
+    apiParams: [{ payload }],
+  });
+
+  if (response.ok) {
+    toast.success('New role created successfully.');
+    yield put(RolesActions.createNewRoleSuccess(response.data));
+    yield call(fetchGrid, api, { payload: { module: 'roles' } });
+  } else {
+    toast.error(response.data.message);
+    yield put(RolesActions.createNewRoleFailure(response.data.message));
+  }
+}
+
 export function* rolesSagas(api) {
   yield all([
     takeLatest(RolesActions.fetchRoles, fetchRoles, api),
     takeLatest(RolesActions.fetchRolesClusters, fetchRolesClusters, api),
     takeLatest(RolesActions.updateRolesClusters, updateRolesClusters, api),
+    takeLatest(RolesActions.createNewRole, createNewRole, api),
   ]);
 }

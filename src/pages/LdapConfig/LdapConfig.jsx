@@ -27,6 +27,7 @@ import { testConfigApi } from '../../store/apis/ldap';
 import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
 import SelectCellRender from './components/SelectCellRender';
 import { RolesActions, RolesSelectors } from '../../store';
+import AddNewRoleModal from '../../shared/AddNewRoleModal';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -93,6 +94,16 @@ const CustomTable = styled(Table)`
   }
 `;
 
+const SyncButton = styled(Button)`
+  width: auto;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-right: 17px;
+  padding-left: 17px;
+  height: 40px;
+  margin-bottom: 5px;
+`;
+
 export const schemaForm1 = Yup.object().shape({
   url: Yup.string().required('LDAP URL is required'),
   loginDn: Yup.string().required('Login DN is required'),
@@ -128,7 +139,7 @@ export const LdapConfig = () => {
   const [syncUsers, setSyncUsers] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
-
+  const [openRoleModal, setOpenRoleModal] = useState(false);
   const dispatch = useDispatch();
   const roles = useSelector(RolesSelectors.getRoles);
 
@@ -169,7 +180,7 @@ export const LdapConfig = () => {
       renderCell: data => data.ldap_group_name,
     },
     {
-      label: 'KDFM Groups',
+      label: 'DFM Groups',
       key: 'name',
       renderCell: data => (
         <SelectCellRender data={data} onChange={onChange} roles={roles} />
@@ -253,11 +264,10 @@ export const LdapConfig = () => {
     };
     const response = await getLdapGroupAPI(payload);
     if (response?.status === 200) {
-      toast.success('LDAP Data Saved Successfully');
-      const list = response?.data.groups.map((item, idx) => ({
-        id: idx,
+      // toast.success('LDAP Data Saved Successfully');
+      const list = response?.data.groups.map(item => ({
         ldap_group_name: item.name,
-        role_id: roles.find(role => role.ldap_group_name === item.name)?.id,
+        role_id: roles?.find(role => role.ldap_group_name === item.name)?.id,
       }));
       setListData(list);
       setDisplayList(false);
@@ -458,11 +468,14 @@ export const LdapConfig = () => {
               path={breadcrumbData}
               module="ldap"
             />
+            <SyncButton onClick={() => setOpenRoleModal(true)}>
+              Add New Role
+            </SyncButton>
           </div>
 
           <CustomTable data={listData} columns={EVENTCOLUMNS} />
           <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-4">
-            <Button variant="secondary" onClick={onSubmit} loading={loading}>
+            <Button onClick={onSubmit} loading={loading}>
               Save
             </Button>
           </div>
@@ -479,6 +492,11 @@ export const LdapConfig = () => {
         setSuccessTest={setSuccessTest}
       />
       <SyncUsersSuccess successTest={syncUsers} setSuccessTest={setSyncUsers} />
+
+      <AddNewRoleModal
+        openRoleModal={openRoleModal}
+        setOpenRoleModal={setOpenRoleModal}
+      />
     </Wrapper>
   );
 };

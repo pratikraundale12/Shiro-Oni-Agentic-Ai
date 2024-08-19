@@ -13,6 +13,7 @@ export const RolesActions = {
   setSelectedRole: createAction(`${prefix}setSelectedRole`),
   permissionModal: createAction(`${prefix}permissionModal`),
   setAccessType: createAction(`${prefix}setAccessType`),
+  createNewRole: createAction(`${prefix}createNewRole`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -80,4 +81,5 @@ export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
     .addCase(RolesActions.setSelectedRole, setSelectedRole)
     .addCase(RolesActions.permissionModal, permissionModal)
     .addCase(RolesActions.setAccessType, setAccessType);
+  // .addCase(RolesActions.createNewRole, createNewRole);
 });
