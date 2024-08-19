@@ -6,11 +6,12 @@ export const rolesAPI = api => {
   const updateRolesClusters = ({ params = {}, payload = {} }) =>
     api.patch('/roles_with_clusters', payload, params);
   const fetchRoles = ({ params = {} }) => api.get('/roles', params);
-
+  const createNewRole = ({ payload = {} }) => api.post('/roles', payload);
   return {
     fetchClustersRolesAccess,
     fetchRolesClusters,
     updateRolesClusters,
     fetchRoles,
+    createNewRole,
   };
 };

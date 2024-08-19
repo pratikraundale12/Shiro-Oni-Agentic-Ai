@@ -30,7 +30,9 @@ const SelectCellRender = ({ onChange, roles, data }) => {
     <>
       <StyledSelectField
         options={sortedArray}
-        defaultValue={sortedArray.find(option => option.value === data.role_id)}
+        defaultValue={sortedArray?.find(
+          option => option.value === data.role_id
+        )}
         onChange={option => onChange(data, option)}
       />
     </>
