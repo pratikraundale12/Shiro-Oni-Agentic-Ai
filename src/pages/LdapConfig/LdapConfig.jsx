@@ -312,6 +312,7 @@ export const LdapConfig = () => {
           <div className="d-flex justify-content-end me-4">
             <SwitchButton
               id="openModalInput"
+              name="LDAP"
               checked={ldapInitialConfig}
               onChange={handleCheckMark}
             />
@@ -357,7 +358,7 @@ export const LdapConfig = () => {
           <ButtonFlex>
             <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <StyledButton
-                size="md"
+                size="sm"
                 onClick={handleSubmitForm1(onSubmitForm1)}
                 disabled={!ldapInitialConfig}
                 loading={loading}
@@ -438,7 +439,7 @@ export const LdapConfig = () => {
                 disabled={!saveButtonStatus}
                 loading={saveLoading}
               >
-                Save
+                Continue
               </Button>
             </div>
           </SmallButtonFlex>

@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 const Switch = styled.label`
   position: relative;
   display: inline-block;
-  width: 36px;
-  height: 20px;
+  width: 40px;
+  height: 22px;
 `;
 
 const CheckboxInput = styled.input.attrs({ type: 'checkbox' })`
@@ -23,7 +23,7 @@ const CheckboxInput = styled.input.attrs({ type: 'checkbox' })`
   }
 
   &:checked + span:before {
-    transform: translateX(15px);
+    transform: translateX(18px);
   }
 `;
 
@@ -42,8 +42,8 @@ const Slider = styled.span`
   &:before {
     position: absolute;
     content: '';
-    height: 16px;
-    width: 16px;
+    height: 18px;
+    width: 18px;
     left: 2px;
     top: 2px;
     background-color: white;
@@ -52,16 +52,27 @@ const Slider = styled.span`
   }
 `;
 
-const ToggleSwitch = ({ id, checked, onChange }) => (
-  <Switch>
-    <CheckboxInput id={id} checked={checked} onChange={onChange} />
+const Label = styled.span`
+  margin-top: 2px;
+  margin-left: 8px;
+  width: 110px;
+  font-size: 14px;
+`;
 
-    <Slider />
-  </Switch>
+const ToggleSwitch = ({ id, name, checked, onChange }) => (
+  <>
+    <Switch>
+      <CheckboxInput id={id} checked={checked} onChange={onChange} />
+
+      <Slider />
+    </Switch>
+    <Label>{`${name} ${checked ? 'Enabled' : 'Disabled'}`}</Label>
+  </>
 );
 
 ToggleSwitch.propTypes = {
   id: PropTypes.string.isRequired,
+  name: PropTypes.string,
   checked: PropTypes.bool,
   onChange: PropTypes.func,
 };
