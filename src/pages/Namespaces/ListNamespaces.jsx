@@ -131,7 +131,7 @@ export const ListNamespaces = () => {
             }
             size="sm"
           >
-            Select
+            Deploy
           </Button>
         </div>
       ),
