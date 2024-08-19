@@ -5,7 +5,10 @@ import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
 import { GridActions } from './redux';
 
-export function* fetchGrid(api, { payload: { module = '', params } }) {
+export function* fetchGrid(
+  api,
+  { payload: { module = '', clusterId, params } }
+) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
@@ -19,6 +22,7 @@ export function* fetchGrid(api, { payload: { module = '', params } }) {
   const API = {
     users: api.fetchUsers,
     clusters: api.fetchClusters,
+    nodes: api.fetchClusterNodes,
     namespaces: api.fetchNamespaces,
     destNamespaces: api.fetchNamespaces,
     clustersRolesAccess: api.fetchClustersRolesAccess,
@@ -56,6 +60,19 @@ export function* fetchGrid(api, { payload: { module = '', params } }) {
     api.headers['x-cluster-token'] = selectedClusterToken?.token;
   }
   if (module === 'namespaces' && isEmpty(selectedCluster)) return;
+  if (module === 'nodes') {
+    queryParams = {
+      clusterId,
+    };
+    const clustersToken = JSON.parse(
+      localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+    );
+    const selectedClusterToken = clustersToken.find(
+      item => item.id === clusterId
+    );
+    api.headers['x-cluster-id'] = selectedClusterToken?.id;
+    api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  }
   const response = yield call(requestSaga, {
     errorSection: 'fetchGrid',
     loadingSection: 'fetchGrid',

@@ -12,7 +12,7 @@ import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
 import { GridActions as GridActionsComponent } from './GridActions';
-import Pagination from './Pagination';
+// import Pagination from './Pagination';
 
 import { NoDataIcon } from '../../assets';
 import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
@@ -25,6 +25,7 @@ import { useSort } from '@table-library/react-table-library/sort';
 import { KDFM } from '../../constants';
 import { TextRender } from './CellRenders';
 import { Table } from './Table';
+import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -50,6 +51,10 @@ const ClusterRegistryContainer = styled.div`
   display: flex;
   gap: 2%;
   margin-bottom: 1%;
+
+  > div {
+    width: calc(75% - ${props => props.theme.sidebar});
+  }
 `;
 
 const LoadingText = styled.div`
@@ -105,12 +110,21 @@ export const Grid = ({
   state,
 }) => {
   const dispatch = useDispatch();
+  const { id: clusterId } = useParams();
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchGrid')
   );
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, module)
   );
+  const clusterSummary = useSelector(state =>
+    GridSelectors.getGridNodes(state, module)
+  );
+  // const gridCount = useSelector(state =>
+  //   GridSelectors.getGridCount(state, module)
+  // );
+  // const prev = useSelector(state => GridSelectors.getGridPrev(state, module));
+  // const next = useSelector(state => GridSelectors.getGridNext(state, module));
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
@@ -118,19 +132,6 @@ export const Grid = ({
     state: {
       search,
       page,
-      gridData: {
-        [module]: {
-          count = 0,
-          prev = null,
-          next = null,
-          // data = [],
-          name: nodeName = '',
-          nifi_url = '',
-          registry = {},
-          nodes = [],
-          // breadcrumb = [],
-        } = {},
-      },
       eventModal,
       selectedNode,
       // nodeClusterId,
@@ -144,7 +145,7 @@ export const Grid = ({
     // nodes: isNamespace
     //   ? getData(loading, gridData, nodes).slice(offset, offset + LIMIT)
     //   : getData(loading, gridData, nodes)
-    nodes: getData(loading, gridData, nodes),
+    nodes: getData(loading, gridData, clusterSummary.nodes),
   };
 
   const tableTheme = useTheme([
@@ -201,10 +202,12 @@ export const Grid = ({
       );
     return null;
   };
+
   useEffect(() => {
     dispatch(
       GridActions.fetchGrid({
         module,
+        clusterId,
         params: { page: 1, ...(search && { search }) },
       })
     );
@@ -212,7 +215,7 @@ export const Grid = ({
     //   setOffset(0);
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, module, search, page, selectedNamespace]);
+  }, [setState, module, clusterId, search, page, selectedNamespace]);
 
   useEffect(
     () => () => setState(prev => ({ ...prev, search: '', page: 1 })),
@@ -236,11 +239,16 @@ export const Grid = ({
         addModal={addModal}
         handleRefresh={handleRefresh}
       />
-      {module === 'nodeList' && !isEmpty(nodes) && (
+      {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>
           <ClusterRegistryContainer>
-            <ClusterDetail data={{ name: nodeName, nifi_url }} />
-            <RegistryDetail data={registry} />
+            <ClusterDetail
+              data={{
+                name: clusterSummary.name,
+                nifi_url: clusterSummary.nifi_url,
+              }}
+            />
+            <RegistryDetail data={clusterSummary.registry} />
           </ClusterRegistryContainer>
           <Modal
             title="Event Log"
@@ -277,15 +285,15 @@ export const Grid = ({
         />
         {getLoader()}
       </TableContainer>
-      {count > 10 && (
+      {/* {gridCount > 10 && (
         <Pagination
           page={page}
           setState={setState}
-          count={count}
+          count={gridCount}
           prev={prev}
           next={next}
         />
-      )}
+      )} */}
       {/* {isNamespace
         ? count >= LIMIT && (
             <ReactPagination

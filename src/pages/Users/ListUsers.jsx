@@ -1,22 +1,22 @@
 import { React, useEffect } from 'react';
-import styled from 'styled-components';
 import { toast } from 'react-toastify';
+import styled from 'styled-components';
 
+import { useDispatch } from 'react-redux';
+import { DeleteDustbinIcon, DeleteSmallIcon, PencilIcon } from '../../assets';
 import {
   Grid,
-  TextRender,
-  StatusRender,
-  ProfileRender,
   IconButton,
+  ProfileRender,
+  StatusRender,
+  TextRender,
 } from '../../components';
-import { AddUserModal } from './AddUserModal';
-import { PencilIcon, DeleteSmallIcon, DeleteDustbinIcon } from '../../assets';
-import { useGlobalContext } from '../../utils';
-import { deleteUserApi } from '../../store/index1';
-import { ModalWithIcon } from '../../shared';
 import { STATUS_OPTIONS } from '../../constants';
+import { ModalWithIcon } from '../../shared';
 import { GridActions, RolesActions } from '../../store';
-import { useDispatch } from 'react-redux';
+import { deleteUserApi } from '../../store/index1';
+import { useGlobalContext } from '../../utils';
+import { AddUserModal } from './AddUserModal';
 
 const ActionTd = styled.div`
   display: flex;
@@ -127,8 +127,8 @@ export const ListUsers = () => {
         isOpen={state.userDeleteModal}
         onSubmit={deleteUserConfirmed}
         onRequestClose={() => setState({ ...state, userDeleteModal: false })}
-        primaryText="Are You Sure You Want to Delete This User?"
-        secondaryText="It Will Temporary Remove the User"
+        primaryText="Are you sure you want to delete this user?"
+        secondaryText="It will temporary remove the user"
       />
       <Grid
         module="users"

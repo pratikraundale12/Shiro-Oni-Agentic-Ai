@@ -1,13 +1,8 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-unused-vars */
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import {
-  ClusterIcon,
   QRIcons,
   SmallSearchIcon,
   TodoIcon,
@@ -19,13 +14,11 @@ import {
   Table,
   TextRender,
 } from '../../components';
-import { CLUSTERS_TOKEN } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, RadioField, SelectField } from '../../shared';
+import { Button, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   ClustersActions,
-  ClustersSelectors,
   GridActions,
   GridSelectors,
   LoadingSelectors,
@@ -33,7 +26,6 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
-import { useGlobalContext } from '../../utils';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -147,30 +139,13 @@ const Deploy = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'checkDestCluster')
   );
-  const tokens = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const tokenIds = tokens.map(item => item.id);
-  const clusters = useSelector(ClustersSelectors.getClusters);
-  const filteredClusters = clusters.filter(
-    item => !tokenIds.includes(item.value)
-  );
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, MODULE)
   );
   const formData = useSelector(NamespacesSelectors.getFormData);
-  const {
-    control,
-    formState: { errors },
-  } = useForm();
   const [search, setSearch] = useState('');
-  const { state, setState } = useGlobalContext();
-  const [showDeployUI, setShowDeployUI] = useState(false);
 
-  const location = useLocation();
-
-  const handleBreadcrumbClick = breadcrumb => {
-    history.push(breadcrumb.path);
-  };
   const COLUMNS = [
     {
       label: 'Namespace',
@@ -245,10 +220,6 @@ const Deploy = () => {
     history.push('/namespaces');
   };
 
-  const onClusterCheck = value => {
-    dispatch(NamespacesActions.checkDestCluster());
-  };
-
   useEffect(() => {
     dispatch(ClustersActions.fetchClusterList());
   }, [dispatch]);
@@ -286,25 +257,8 @@ const Deploy = () => {
             icon={<QRIcons />}
             placeholder="Select Cluster"
             isDestination
-            onChange={onClusterCheck}
             required
-            // disabled={isObject(clusterLogin)}
           />
-          {/* <SelectField
-            name="selectOption"
-            label="Select Cluster"
-            options={clusters}
-            defaultValue={
-              checkDestCluster.mode === 'deploy'
-                ? {
-                    label: selectedDestCluster?.label,
-                    value: selectedDestCluster?.value,
-                  }
-                : null
-            }
-            onChange={onClusterCheck}
-            icon={<QRIcons />}
-          /> */}
           {isEmpty(checkDestCluster) && (
             <NoDataContainer>
               <WhiteBoradIcon width={200} height={195} />
@@ -330,7 +284,7 @@ const Deploy = () => {
               <Table
                 data={gridData}
                 columns={COLUMNS}
-                breadcrumb={state?.gridData?.deploy?.breadcrumb}
+                // breadcrumb={state?.gridData?.deploy?.breadcrumb}
                 onBreadcrumbClick={e => handleSelectNamespace(e.id)}
               />
             </>

@@ -16,7 +16,12 @@ import {
   TextRender,
   UrlRender,
 } from '../../components';
-import { KDFM, REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
+import {
+  CLUSTERS_TOKEN,
+  KDFM,
+  REFRESH_OPTIONS,
+  STATUS_OPTIONS,
+} from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import { GridActions } from '../../store';
@@ -81,12 +86,12 @@ export const ListClusters = () => {
     {
       label: 'Cluster Name',
       renderCell: item => <TextRender text={item.name} />,
-      width: '18%',
+      width: '20%',
     },
     {
       label: 'NiFi URL',
       renderCell: item => <UrlRender url={item.nifi_url} />,
-      width: 'auto',
+      width: '42%',
     },
     {
       label: 'Cluster Status',
@@ -97,12 +102,12 @@ export const ListClusters = () => {
           maxCount={item.total_nodes}
         />
       ),
-      width: 'auto',
+      width: '12%',
     },
     {
       label: 'Status',
       renderCell: item => <StatusRender status={item.status} />,
-      width: 'auto',
+      width: '12%',
     },
     {
       label: 'Actions',
@@ -126,12 +131,22 @@ export const ListClusters = () => {
           )}
         </ActionRender>
       ),
-      width: 'auto',
+      width: '14%',
     },
   ];
   const deleteUserConfirmed = async () => {
     const response = await deleteCluster(state.selectedItem.id);
     if (response.status == 204) {
+      const clustersToken = JSON.parse(
+        localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+      );
+      const updatedClustersToken = clustersToken.filter(
+        cluster => cluster.id !== state.selectedItem.id
+      );
+      localStorage.setItem(
+        CLUSTERS_TOKEN,
+        JSON.stringify(updatedClustersToken)
+      );
       dispatch(GridActions.fetchGrid({ module: 'clusters' }));
       toast.success('Cluster Deleted Successfully');
       setState({ ...state, clusterDeleteModal: false });
@@ -170,7 +185,7 @@ export const ListClusters = () => {
         ...state,
         nodeClusterId: menuState.row.id,
       });
-      history.push('/clusters/summary');
+      history.push(`/clusters/${menuState.row.id}`);
     }
     if (type === 'delete') {
       setState({
