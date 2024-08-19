@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 
 import { Button, Modal, SelectField } from '../../shared';
-import { CalendarIcon, PlusCircleIcon, QRIcons, UserIcon } from '../../assets';
+import { PlusCircleIcon, QRIcons, UserIcon } from '../../assets';
 import { useGlobalContext } from '../../utils';
 import {
   userSchema,
   editUserSchema,
 } from '../../components/UserManagement/userValidation';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -27,6 +29,7 @@ const DEFAULT_VALUES = {
 
 export const AddScheduleDeploymentModal = props => {
   const { state, setState } = useGlobalContext();
+  const [startDate, setStartDate] = useState(new Date());
   const {
     // register,
     // reset,
@@ -57,7 +60,6 @@ export const AddScheduleDeploymentModal = props => {
       alert('call api');
     }
   }, [state?.scheduleModel]);
-
   return (
     <div {...props}>
       <Button
@@ -81,20 +83,6 @@ export const AddScheduleDeploymentModal = props => {
         <div className="row">
           <div className="col-6">
             <SelectField
-              label="Namespace"
-              name="namespace"
-              control={control}
-              icon={<QRIcons />}
-              errors={errors}
-              //   options={filteredClusters}
-              //   defaultValue={clusterLogin}
-              placeholder="Select Namespace"
-              required
-              //   disabled={isObject(clusterLogin)}
-            />
-          </div>
-          <div className="col-6">
-            <SelectField
               label="Source Cluster"
               name="source_cluster"
               control={control}
@@ -103,6 +91,20 @@ export const AddScheduleDeploymentModal = props => {
               //   options={filteredClusters}
               //   defaultValue={clusterLogin}
               placeholder="Select Source Cluster"
+              required
+              //   disabled={isObject(clusterLogin)}
+            />
+          </div>
+          <div className="col-6">
+            <SelectField
+              label="Namespace"
+              name="namespace"
+              control={control}
+              icon={<QRIcons />}
+              errors={errors}
+              //   options={filteredClusters}
+              //   defaultValue={clusterLogin}
+              placeholder="Select Namespace"
               required
               //   disabled={isObject(clusterLogin)}
             />
@@ -124,17 +126,14 @@ export const AddScheduleDeploymentModal = props => {
             />
           </div>
           <div className="col-6">
-            <SelectField
-              label="Destination Cluster"
-              name="source_cluster"
-              control={control}
-              icon={<CalendarIcon />}
-              errors={errors}
-              //   options={filteredClusters}
-              //   defaultValue={clusterLogin}
-              placeholder="Select  Cluster"
-              required
-              //   disabled={isObject(clusterLogin)}
+            <DatePicker
+              selected={startDate}
+              onChange={date => setStartDate(date)}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              timeCaption="time"
+              dateFormat="MMMM d, yyyy h:mm aa"
             />
           </div>
         </div>

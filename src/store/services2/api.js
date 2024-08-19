@@ -8,6 +8,7 @@ import { usersAPI } from './users';
 import { namespacesAPI } from './namespaces';
 import { rolesAPI } from './roles';
 import { policiesAPI } from './policies';
+import { schedularAPI } from './schedular';
 
 const create = (baseURL = `${API_URL}/api`) => {
   const api = apisauce.create({
@@ -49,6 +50,8 @@ const create = (baseURL = `${API_URL}/api`) => {
     ...rolesAPI(api),
     // Policies
     ...policiesAPI(api),
+    // Schedular
+    ...schedularAPI(api),
   };
 };
 
