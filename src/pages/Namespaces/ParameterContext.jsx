@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
+import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 
@@ -34,21 +35,21 @@ const ParameterContext = ({
 
   const COLUMNS = [
     {
-      label: 'Name',
-      renderCell: item => <TextRender text={item?.name || 'N/A'} />,
+      label: KDFM.NAME,
+      renderCell: item => <TextRender text={item?.name || KDFM.NA} />,
     },
     {
-      label: 'Value',
+      label: KDFM.VALUE,
       renderCell: item => (
         <TextRender
           text={
             item.sensitive === true || item.sensitive === 'true'
-              ? 'Sensitive value set'
+              ? KDFM.SENSITIVE_VALUE_SET
               : item.value
                 ? item.value
                 : item.check
-                  ? 'Empty string set'
-                  : 'No value set'
+                  ? KDFM.EMPTY_STRING_SET
+                  : KDFM.NO_VALUE_SET
           }
         />
       ),
@@ -85,15 +86,15 @@ const ParameterContext = ({
 
   return (
     <Modal
-      title="Parameter Context"
+      title={KDFM.PARAMETER_CONTEXT}
       isOpen={isOpen}
       onRequestClose={closePopup}
       size="md"
       isLoading={loading}
       onSecondarySubmit={openAddParameterContext}
-      secondaryButtonText="Add Parameter Context"
+      secondaryButtonText={KDFM.ADD_PARAMETER_CONTEXT}
       primaryButtonDisabled={!newlyAddedPrameterContext?.length || loading}
-      primaryButtonText="Save"
+      primaryButtonText={KDFM.SAVE}
       onSubmit={handleSaveParameterContext}
       secondaryButtonProps={{ icons: <PlusCircleIcon />, disabled: loading }}
     >

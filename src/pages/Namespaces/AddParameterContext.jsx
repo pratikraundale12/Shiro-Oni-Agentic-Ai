@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import { QRIcons } from '../../assets';
+import { KDFM } from '../../constants';
 import {
   CheckboxField,
   InputField,
@@ -166,7 +167,7 @@ const AddParameterContext = ({
       isAddParameterContextOpen?.mode === 'add';
 
     if (isDuplicate) {
-      toast.info('Parameter with same name already exists');
+      toast.info(KDFM.PARAMETER_ALREADY_EXISTS);
       return;
     }
 
@@ -219,14 +220,14 @@ const AddParameterContext = ({
     <Modal
       title={
         isAddParameterContextOpen?.mode === 'add'
-          ? 'Add Parameter Context'
-          : 'Edit Parameter Context'
+          ? KDFM.ADD_PARAMETER_CONTEXT
+          : KDFM.EDIT_PARAMETER_CONTEXT
       }
       isOpen={isAddParameterContextOpen?.isOpen}
       onRequestClose={closePopup}
       size="md"
-      secondaryButtonText="Back"
-      primaryButtonText="Save"
+      secondaryButtonText={KDFM.BACK}
+      primaryButtonText={KDFM.SAVE}
       onSubmit={handleSubmit(handleAddEditParameterContext)}
     >
       <ModalBody className="modal-body">
@@ -237,7 +238,7 @@ const AddParameterContext = ({
                 <InputField
                   name="name"
                   type="text"
-                  label="Name"
+                  label={KDFM.NAME}
                   icon={<QRIcons />}
                   disabled={isAddParameterContextOpen?.mode === 'edit'}
                   register={register}
@@ -250,11 +251,11 @@ const AddParameterContext = ({
                 <InputField
                   name="value"
                   type="text"
-                  label="Value"
+                  label={KDFM.VALUE}
                   icon={<QRIcons />}
                   register={register}
                   placeholder={
-                    check ? 'Empty String Set' : 'Sensitive value set'
+                    check ? KDFM.EMPTY_STRING_SET : KDFM.SENSITIVE_VALUE_SET
                   }
                   disabled={check}
                   errors={errors}
@@ -264,13 +265,13 @@ const AddParameterContext = ({
             <ColumnOneTwo className="col-12 mb-4">
               <CheckboxField
                 name="check"
-                label="Set Empty String"
+                label={KDFM.SET_EMPTY_STRING}
                 register={register}
               />
               <RedioButtonDiv>
                 <RadioSelectField
                   name="sensitive"
-                  label="Sensitive value"
+                  label={KDFM.SENSITIVE_VALUE}
                   options={OPTIONS}
                   disabled={isAddParameterContextOpen?.mode === 'edit'}
                   register={register}
@@ -282,7 +283,7 @@ const AddParameterContext = ({
                 <InputField
                   name="description"
                   type="text"
-                  label="Description"
+                  label={KDFM.DESCRIPTION}
                   icon={<QRIcons />}
                   register={register}
                   errors={errors}

@@ -1,19 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
-
-import { useDispatch, useSelector } from 'react-redux';
-// import { toast } from 'react-toastify';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 // import {
 //   DeleteVariableServices,
 //   GetVariableServices,
 //   addVariableServices,
 // } from '../../store/apis';
-// import { useGlobalContext } from '../../utils';
+import { KDFM } from '../../constants';
 import AddVariables from './AddVariables';
 
 const ModalBody = styled.div`
@@ -39,20 +37,20 @@ const Listvariables = ({
 
   const COLUMNS = [
     {
-      label: 'Name',
+      label: KDFM.NAME,
       renderCell: item => <TextRender text={item?.variable?.name} />,
     },
     {
-      label: 'Value',
+      label: KDFM.VALUE,
       renderCell: item => {
         return (
           <TextRender
             text={
               item?.variable?.check || item?.variable?.value === ''
-                ? 'Empty string set'
+                ? KDFM.EMPTY_STRING_SET
                 : item?.variable?.value
                   ? item?.variable?.value
-                  : 'No value set'
+                  : KDFM.NO_VALUE_SET
             }
           />
         );
@@ -118,7 +116,7 @@ const Listvariables = ({
   return (
     <>
       <Modal
-        title="Variables"
+        title={KDFM.VARIABLES}
         isOpen={isOpen.isOpen}
         onRequestClose={() => {
           setNewlyAddvariables([]);
@@ -127,8 +125,8 @@ const Listvariables = ({
         isLoading={loading}
         size="md"
         onSecondarySubmit={openVariable}
-        secondaryButtonText="Add Variables"
-        primaryButtonText="Save"
+        secondaryButtonText={KDFM.ADD_VARIABLES}
+        primaryButtonText={KDFM.SAVE}
         onSubmit={handleSubmit}
         primaryButtonDisabled={loading || !newlyAddVariables?.length}
         secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
