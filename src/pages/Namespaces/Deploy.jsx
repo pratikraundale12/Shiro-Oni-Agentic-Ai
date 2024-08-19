@@ -261,6 +261,7 @@ const Deploy = () => {
             placeholder={KDFM.SELECT_CLUSTER}
             isDestination
             required
+            onChange={() => dispatch(NamespacesActions.checkDestCluster())}
           />
           {isEmpty(checkDestCluster) && (
             <NoDataContainer>
