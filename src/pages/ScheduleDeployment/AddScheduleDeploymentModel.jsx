@@ -1,35 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { isEmpty } from 'lodash';
+import React, { useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 
-import { Button, Modal, SelectField } from '../../shared';
-import { PlusCircleIcon, QRIcons, UserIcon } from '../../assets';
+import { Button, DateTimeInput, Modal, SelectField } from '../../shared';
+import { PlusCircleIcon, QRIcons } from '../../assets';
 import { useGlobalContext } from '../../utils';
-import {
-  userSchema,
-  editUserSchema,
-} from '../../components/UserManagement/userValidation';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+// import {
+//   userSchema,
+// } from '../../components/UserManagement/userValidation';
+import { useSelector } from 'react-redux';
+import { ClustersSelectors, NamespacesSelectors } from '../../store';
+import { UserSelect } from '../../components';
+import * as yup from 'yup';
 
-const DEFAULT_VALUES = {
-  username: '',
-  email: '',
-  first_name: '',
-  middle_name: '',
-  last_name: '',
-  password: '',
-  is_active: '',
-  type: '',
-  photo: '',
-  phone: '',
-  confirm_password: '',
-};
+export const scheduleSchema = yup.object().shape({
+  namespace_id: yup
+    .string()
+    .trim()
+    .required('Namespace is required'),
+});
 
 export const AddScheduleDeploymentModal = props => {
   const { state, setState } = useGlobalContext();
   const [startDate, setStartDate] = useState(new Date());
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const namespaces = useSelector(NamespacesSelectors.getNamespaces);
+  const clusterList = useSelector(ClustersSelectors.getClusters);
   const {
     // register,
     // reset,
@@ -37,10 +33,7 @@ export const AddScheduleDeploymentModal = props => {
     control,
     formState: { errors },
   } = useForm({
-    defaultValues: DEFAULT_VALUES,
-    resolver: yupResolver(
-      isEmpty(state?.selectedItem) ? userSchema : editUserSchema
-    ),
+    resolver: yupResolver(scheduleSchema),
   });
 
   const openModal = () => setState({ ...state, scheduleModel: true });
@@ -55,11 +48,6 @@ export const AddScheduleDeploymentModal = props => {
     console.log(data);
   };
 
-  useEffect(() => {
-    if (state?.scheduleModel) {
-      alert('call api');
-    }
-  }, [state?.scheduleModel]);
   return (
     <div {...props}>
       <Button
@@ -67,11 +55,11 @@ export const AddScheduleDeploymentModal = props => {
         onClick={openModal}
         size="sm"
       >
-        Add New User
+        Add Schedule Deployment
       </Button>
       <Modal
         size="md"
-        title={'Add Schedule Deploymet'}
+        title={'Add Schedule Deployment'}
         isOpen={state.scheduleModel}
         onRequestClose={closeModal}
         secondaryButtonText="Cancel"
@@ -83,28 +71,31 @@ export const AddScheduleDeploymentModal = props => {
         <div className="row">
           <div className="col-6">
             <SelectField
-              label="Source Cluster"
-              name="source_cluster"
+              label="Namespace"
+              name="namespace_id"
               control={control}
               icon={<QRIcons />}
               errors={errors}
-              //   options={filteredClusters}
+              options={namespaces.map(({ id, name }) => ({
+                value: id,
+                label: name,
+              }))}
               //   defaultValue={clusterLogin}
-              placeholder="Select Source Cluster"
+              placeholder="Select Namespace"
               required
               //   disabled={isObject(clusterLogin)}
             />
           </div>
           <div className="col-6">
             <SelectField
-              label="Namespace"
-              name="namespace"
+              label="Source Cluster"
+              name="source_cluster_id"
               control={control}
               icon={<QRIcons />}
               errors={errors}
-              //   options={filteredClusters}
-              //   defaultValue={clusterLogin}
-              placeholder="Select Namespace"
+              options={clusterList}
+              defaultValue={selectedCluster}
+              placeholder="Select Source Cluster"
               required
               //   disabled={isObject(clusterLogin)}
             />
@@ -114,11 +105,11 @@ export const AddScheduleDeploymentModal = props => {
           <div className="col-6">
             <SelectField
               label="Destination Cluster"
-              name="namespace"
+              name="destination_cluster_id"
               control={control}
               icon={<QRIcons />}
               errors={errors}
-              //   options={filteredClusters}
+              options={clusterList}
               //   defaultValue={clusterLogin}
               placeholder="Select Destination Cluster"
               required
@@ -126,29 +117,16 @@ export const AddScheduleDeploymentModal = props => {
             />
           </div>
           <div className="col-6">
-            <DatePicker
-              selected={startDate}
-              onChange={date => setStartDate(date)}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              timeCaption="time"
-              dateFormat="MMMM d, yyyy h:mm aa"
+            <DateTimeInput
+              startDate={startDate}
+              setStartDate={setStartDate}
+              label="Deploy Time"
+              required
             />
           </div>
         </div>
-        <SelectField
-          label="Approver"
-          name="namespace"
-          control={control}
-          icon={<UserIcon />}
-          errors={errors}
-          //   options={filteredClusters}
-          //   defaultValue={clusterLogin}
-          placeholder="Select atleast one approver"
-          required
-          //   disabled={isObject(clusterLogin)}
-        />
+
+        <UserSelect control={control} errors={errors} />
       </Modal>
     </div>
   );

@@ -5,3 +5,4 @@ export * from './CustomGrid';
 export * from './Layout';
 export * from './FullPageLoader';
 export * from './ClusterSelect';
+export * from './UserSelect';

@@ -6,3 +6,4 @@ export { default as SelectField } from './components/SelectField';
 export { default as CheckboxField } from './components/CheckboxField';
 export { default as RadioField } from './components/RadioField';
 export { default as RadioSelectField } from './components/RadioSelectField';
+export { default as DateTimeInput } from './components/DateSelector';

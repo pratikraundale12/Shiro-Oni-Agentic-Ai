@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { DeleteSmallIcon, PencilIcon } from '../../assets';
 import { STATUS_OPTIONS } from '../../constants';
-import { GridActions, NamespacesActions } from '../../store';
+import { GridActions } from '../../store';
 import { AddScheduleDeploymentModal } from './AddScheduleDeploymentModel';
 
 const ActionTd = styled.div`
@@ -17,9 +17,6 @@ export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
-  useEffect(() => {
-    dispatch(NamespacesActions.resetDeployData());
-  }, []);
 
   const getActionsMenu = item => (
     <div>
