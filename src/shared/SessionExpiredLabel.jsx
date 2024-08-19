@@ -1,7 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { KDFM } from '../constants';
 import { AuthenticationSelectors } from '../store';
 
 const FloatingAlertBox = styled.div`
@@ -50,7 +51,7 @@ const SessionExpiredLabel = ({ closeTab }) => {
     <Container>
       <FloatingAlertBox>
         <AlertContent>
-          <AlertText>Your license will expire on {license}.</AlertText>
+          <AlertText>{KDFM.TRIAL_EXPIRED_PROMPT(license)}</AlertText>
           <IconContainer onClick={closeTab}>
             <svg
               width="33"

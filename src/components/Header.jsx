@@ -63,7 +63,7 @@ const ProfileButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-width: 6rem;
+  min-width: 8rem;
   border-radius: 50px;
   padding: 6px;
   background-color: ${props => props.theme.colors.lightGrey};
@@ -132,6 +132,10 @@ const Item = styled.div`
   color: ${props => props.theme.colors.darker};
   border-bottom: 1px solid ${props => props.theme.colors.border};
 
+  & .profile-icon {
+    flex-shrink: 0;
+  }
+
   &:hover {
     background-color: ${props => props.theme.colors.lightGrey1};
   }
@@ -191,7 +195,7 @@ const ProfileDropdown = () => {
   const options = [
     {
       label: 'Profile',
-      icon: <UserIcon width={14} height={14} />,
+      icon: <UserIcon width={18} height={18} />,
       onClick: () => {
         setState(prev => ({
           ...prev,
@@ -203,7 +207,7 @@ const ProfileDropdown = () => {
     },
     {
       label: 'Logout',
-      icon: <LockIcon width={14} height={14} />,
+      icon: <LockIcon width={18} height={18} />,
       onClick: () => {
         localStorage.clear();
         dispatch(AuthenticationActions.logout());
@@ -238,7 +242,8 @@ const ProfileDropdown = () => {
       <List show={showMenu}>
         {options.map((item, idx) => (
           <Item key={idx} onClick={item.onClick}>
-            {item.icon} <Option>{item.label}</Option>
+            <span className="profile-icon">{item.icon}</span>
+            <Option>{item.label}</Option>
           </Item>
         ))}
       </List>
