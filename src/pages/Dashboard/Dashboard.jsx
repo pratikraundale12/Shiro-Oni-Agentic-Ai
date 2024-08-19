@@ -174,6 +174,7 @@ export const Dashboard = () => {
     {
       label: 'Process Group',
       renderCell: item => <div>{item.processor_group}</div>,
+      width: '25%',
     },
     {
       label: 'Processor ID',
@@ -194,11 +195,12 @@ export const Dashboard = () => {
           />
         </div>
       ),
-      width: '20%',
+      width: '25%',
     },
     {
       label: 'Processor Name',
       renderCell: item => <div>{item.processor_name}</div>,
+      width: '25%',
     },
     {
       label: 'Error Message',
@@ -220,7 +222,7 @@ export const Dashboard = () => {
           />
         </TextEllipses>
       ),
-      width: '50%',
+      width: '25%',
     },
   ];
 

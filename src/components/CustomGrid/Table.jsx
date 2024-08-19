@@ -35,6 +35,8 @@ export const Table = ({ data, columns, className }) => {
     getTheme(),
     {
       Table: `
+        margin-bottom: 0;
+
         th, td {
           border-bottom: none !important;
         }

@@ -13,6 +13,7 @@ import {
   AuthenticationSelectors,
   ClustersSelectors,
   GridActions,
+  NamespacesActions,
 } from '../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { isObject } from 'lodash';
@@ -27,6 +28,9 @@ const DEFAULT_VALUES = { cluster_id: '', username: '', password: '' };
 
 export const ClusterLoginModal = () => {
   const dispatch = useDispatch();
+  const destinationFlag = useSelector(
+    AuthenticationSelectors.getDestinationFlag
+  );
   const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
   const tokens = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const tokenIds = tokens.map(item => item.id);
@@ -72,6 +76,16 @@ export const ClusterLoginModal = () => {
         clusterData.push(newCluster);
         localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(clusterData));
         setLoading(false);
+        if (destinationFlag) {
+          dispatch(AuthenticationActions.setDestinationFlag());
+          dispatch(
+            NamespacesActions.setSelectedDestCluster({
+              label: response.cluster_name,
+              value: response.cluster_id,
+            })
+          );
+          dispatch(NamespacesActions.checkDestCluster());
+        }
         dispatch(AuthenticationActions.setClusterLogin());
         toast.success('Cluster Enabled Successfully');
         reset(DEFAULT_VALUES);

@@ -86,12 +86,12 @@ export const ListClusters = () => {
     {
       label: 'Cluster Name',
       renderCell: item => <TextRender text={item.name} />,
-      width: '18%',
+      width: '20%',
     },
     {
       label: 'NiFi URL',
       renderCell: item => <UrlRender url={item.nifi_url} />,
-      width: 'auto',
+      width: '42%',
     },
     {
       label: 'Cluster Status',
@@ -102,12 +102,12 @@ export const ListClusters = () => {
           maxCount={item.total_nodes}
         />
       ),
-      width: 'auto',
+      width: '12%',
     },
     {
       label: 'Status',
       renderCell: item => <StatusRender status={item.status} />,
-      width: 'auto',
+      width: '12%',
     },
     {
       label: 'Actions',
@@ -131,7 +131,7 @@ export const ListClusters = () => {
           )}
         </ActionRender>
       ),
-      width: 'auto',
+      width: '14%',
     },
   ];
   const deleteUserConfirmed = async () => {
@@ -185,7 +185,7 @@ export const ListClusters = () => {
         ...state,
         nodeClusterId: menuState.row.id,
       });
-      history.push('/clusters/summary');
+      history.push(`/clusters/${menuState.row.id}`);
     }
     if (type === 'delete') {
       setState({
