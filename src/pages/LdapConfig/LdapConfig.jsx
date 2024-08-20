@@ -255,7 +255,7 @@ export const LdapConfig = () => {
       groupUniqueIdentifier: data?.groupUniqueIdentifier,
     };
 
-    dispatch(RolesActions.fetchLdap(payload));
+    dispatch(RolesActions.fetchLdap({ ...payload }));
   };
   const loadings = useSelector(state =>
     LoadingSelectors.getLoading(state, 'ldapGroups')

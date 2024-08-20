@@ -19,7 +19,7 @@ export function* fetchLdap(api, payload) {
     errorSection: 'fetchLdap',
     loadingSection: 'ldapGroups',
     apiMethod: api.fetchLdap,
-    apiParams: [{ payload, params: {} }],
+    apiParams: [{ ...payload, params: {} }],
     successAction: RolesActions.fetchLdapSuccess,
   });
 
