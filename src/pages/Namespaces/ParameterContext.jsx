@@ -11,6 +11,12 @@ import { NamespacesActions, NamespacesSelectors } from '../../store';
 const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
+
+  & .parameter-context-table {
+    th {
+      background-color: #dde4f0 !important;
+    }
+  }
 `;
 
 const ParameterContext = ({
@@ -100,7 +106,11 @@ const ParameterContext = ({
       secondaryButtonProps={{ icon: <PlusCircleIcon />, disabled: loading }}
     >
       <ModalBody className="modal-body">
-        <Table data={tableData} columns={COLUMNS} />
+        <Table
+          data={tableData}
+          columns={COLUMNS}
+          className={'parameter-context-table'}
+        />
       </ModalBody>
     </Modal>
   );

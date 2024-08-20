@@ -242,6 +242,7 @@ const AddParameterContext = ({
                   type="text"
                   label={KDFM.NAME}
                   icon={<QRIcons />}
+                  placeholder={KDFM.ENTER_PARAMETER}
                   disabled={isAddParameterContextOpen?.mode === 'edit'}
                   register={register}
                   errors={errors}
@@ -261,7 +262,9 @@ const AddParameterContext = ({
                       ? KDFM.EMPTY_STRING_SET
                       : parameterContextItem?.sensitive
                         ? KDFM.SENSITIVE_VALUE_SET
-                        : KDFM.NO_VALUE_SET
+                        : isAddParameterContextOpen?.mode === 'add'
+                          ? KDFM.ENTER_PARAMETER
+                          : KDFM.NO_VALUE_SET
                   }
                   disabled={check}
                   errors={errors}
@@ -272,7 +275,7 @@ const AddParameterContext = ({
               <CheckboxField
                 name="check"
                 label={KDFM.SET_EMPTY_STRING}
-                defaultChecked={check}
+                defaultChecked={parameterContextItem?.check || false}
                 register={register}
               />
               <RedioButtonDiv>
@@ -293,6 +296,7 @@ const AddParameterContext = ({
                   label={KDFM.DESCRIPTION}
                   icon={<QRIcons />}
                   register={register}
+                  placeholder={KDFM.ENTER_DESCRIPTION}
                   errors={errors}
                 />
               </InputBox>

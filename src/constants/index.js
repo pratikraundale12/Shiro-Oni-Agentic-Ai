@@ -35,7 +35,7 @@ export const ACCESS_OPTIONS = [
 
 export const RegexConst = {
   NAME: /^[a-zA-Z0-9 ]{3,}$/,
-  NIFI_URL: /^(https?:\/\/)/,
+  NIFI_URL: /^https?:\/\/([a-zA-Z0-9.-]+)(:[0-9]{1,5})?(\/nifi)?\/?$/,
 };
 
 export const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
