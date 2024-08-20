@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
 
@@ -110,4 +111,5 @@ export const KDFM = {
   // module specific constants
   ...CLUSTER_CONSTANTS,
   ...NAMESPACE_CONSTANTS,
+  ...ACTIVITY_HISTORY_CONSTANTS,
 };

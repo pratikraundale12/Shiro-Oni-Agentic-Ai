@@ -159,23 +159,6 @@ export const ROUTES_MENU = [
       },
     ],
   },
-
-  {
-    name: 'LDAP Configuration',
-    path: 'ldap-configuration',
-    icon: LdapConfigIcon,
-    pages: [
-      {
-        path: '',
-        component: <LdapConfig />,
-      },
-      {
-        path: ['add', 'edit/:id'],
-        component: <div>Permission</div>,
-      },
-    ],
-  },
-
   {
     name: 'Activity History',
     path: 'activity-history',
@@ -190,7 +173,21 @@ export const ROUTES_MENU = [
         component: <div>Activity History</div>,
       },
     ],
-    hidden: true,
+  },
+  {
+    name: 'LDAP Configuration',
+    path: 'ldap-configuration',
+    icon: LdapConfigIcon,
+    pages: [
+      {
+        path: '',
+        component: <LdapConfig />,
+      },
+      {
+        path: ['add', 'edit/:id'],
+        component: <div>Permission</div>,
+      },
+    ],
   },
 ];
 
