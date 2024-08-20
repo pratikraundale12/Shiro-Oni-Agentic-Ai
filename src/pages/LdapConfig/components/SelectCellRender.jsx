@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SelectField } from '../../../shared';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import AddNewRoleModal from '../../../shared/AddNewRoleModal';
+import { useDispatch } from 'react-redux';
+import { RolesActions } from '../../../store';
 
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
@@ -21,10 +24,28 @@ const StyledSelectField = styled(SelectField)`
 `;
 
 const SelectCellRender = ({ onChange, roles, data }) => {
+  const [openRoleModal, setOpenRoleModal] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('');
+  const selectedOptionRef = useRef(selectedOption);
+
+  const dispatch = useDispatch();
+
   const sortedArray = roles?.map(item => ({
     label: item.name,
     value: item.id,
   }));
+
+  const handleCreateOption = inputValue => {
+    setSelectedOption(inputValue);
+    selectedOptionRef.current = inputValue;
+    setOpenRoleModal(true);
+    dispatch(RolesActions.roleModal());
+  };
+
+  useEffect(() => {
+    // Set the ref value on every render so it persists
+    selectedOptionRef.current = selectedOption;
+  }, [selectedOption]);
 
   return (
     <>
@@ -34,15 +55,25 @@ const SelectCellRender = ({ onChange, roles, data }) => {
           option => option.value === data.role_id
         )}
         onChange={option => onChange(data, option)}
+        ldap={true}
+        handleCreateOption={handleCreateOption}
       />
+
+      {openRoleModal && (
+        <AddNewRoleModal
+          openRoleModal={openRoleModal}
+          setOpenRoleModal={setOpenRoleModal}
+          selectedOption={selectedOptionRef.current}
+        />
+      )}
     </>
   );
 };
-
-export default SelectCellRender;
 
 SelectCellRender.propTypes = {
   roles: PropTypes.array,
   data: PropTypes.object,
   onChange: PropTypes.func,
 };
+
+export default SelectCellRender;

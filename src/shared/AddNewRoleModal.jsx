@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from './Modal';
 import { useForm } from 'react-hook-form';
@@ -16,21 +16,23 @@ const RoleFormContainer = styled.div`
   flex-direction: column;
   gap: 1rem;
 `;
-// Validation schema using yup
+
 const schema = yup.object().shape({
   roleName: yup.string().required('Role Name is required'),
 });
 
-const AddNewRoleModal = () => {
+const AddNewRoleModal = ({ selectedOption }) => {
   const dispatch = useDispatch();
   const openRoleModal = useSelector(RolesSelectors.getRoleModal);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: { roleName: selectedOption || '' }, // Use selectedOption as the default value
   });
 
   const onSubmit = data => {
@@ -39,6 +41,12 @@ const AddNewRoleModal = () => {
     };
     dispatch(RolesActions.createNewRole(payload));
   };
+
+  useEffect(() => {
+    if (selectedOption) {
+      reset({ roleName: selectedOption });
+    }
+  }, [reset, selectedOption]);
 
   return (
     <Modal
@@ -72,9 +80,8 @@ const AddNewRoleModal = () => {
   );
 };
 
-// Adding PropTypes for type checking
 AddNewRoleModal.propTypes = {
-  openRoleModal: PropTypes.bool.isRequired,
+  selectedOption: PropTypes.string,
   setOpenRoleModal: PropTypes.func.isRequired,
 };
 
