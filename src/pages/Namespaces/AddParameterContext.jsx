@@ -136,7 +136,8 @@ const AddParameterContext = ({
         });
         setValue(
           'check',
-          !parameterContextItem?.sensitive && !parameterContextItem?.value
+          (!parameterContextItem?.sensitive && !parameterContextItem?.value) ||
+            parameterContextItem?.check
             ? true
             : false
         );
@@ -266,6 +267,7 @@ const AddParameterContext = ({
               <CheckboxField
                 name="check"
                 label={KDFM.SET_EMPTY_STRING}
+                defaultChecked={check}
                 register={register}
               />
               <RedioButtonDiv>
