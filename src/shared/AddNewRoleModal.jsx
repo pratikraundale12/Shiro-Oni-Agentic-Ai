@@ -8,7 +8,8 @@ import { InputField } from './FormInputs';
 import { UserIcon } from '../assets';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { RolesActions, RolesSelectors } from '../store/roles';
+// import { RolesActions, RolesSelectors, LoadingSelectors } from '../store/roles';
+import { RolesActions, RolesSelectors, LoadingSelectors } from '../store';
 
 const RoleFormContainer = styled.div`
   width: 100%;
@@ -21,10 +22,11 @@ const schema = yup.object().shape({
   roleName: yup.string().required('Role Name is required'),
 });
 
-const AddNewRoleModal = ({ selectedOption }) => {
+const AddNewRoleModal = ({ selectedOption, ldapGroupName }) => {
+  console.log(ldapGroupName, 'lll');
   const dispatch = useDispatch();
   const openRoleModal = useSelector(RolesSelectors.getRoleModal);
-
+  console.log(selectedOption, 'data');
   const {
     register,
     handleSubmit,
@@ -32,12 +34,17 @@ const AddNewRoleModal = ({ selectedOption }) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { roleName: selectedOption || '' }, // Use selectedOption as the default value
+    defaultValues: { roleName: selectedOption || '' },
   });
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'createNewRole')
+  );
 
   const onSubmit = data => {
+    console.log(data);
     const payload = {
       name: data.roleName,
+      ldapGroupName: ldapGroupName,
     };
     dispatch(RolesActions.createNewRole(payload));
   };
@@ -65,6 +72,7 @@ const AddNewRoleModal = ({ selectedOption }) => {
         maxHeight: '50%',
         maxWidth: '30%',
       }}
+      loading={loading}
     >
       <RoleFormContainer>
         <InputField
@@ -83,6 +91,7 @@ const AddNewRoleModal = ({ selectedOption }) => {
 AddNewRoleModal.propTypes = {
   selectedOption: PropTypes.string,
   setOpenRoleModal: PropTypes.func.isRequired,
+  ldapGroupName: PropTypes.string,
 };
 
 export default AddNewRoleModal;

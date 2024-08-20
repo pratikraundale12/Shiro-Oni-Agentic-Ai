@@ -6,6 +6,8 @@ export const rolesAPI = api => {
   const updateRolesClusters = ({ params = {}, payload = {} }) =>
     api.patch('/roles_with_clusters', payload, params);
   const fetchRoles = ({ params = {} }) => api.get('/roles', params);
+  const fetchLdap = ({ payload, params = {} }) =>
+    api.post('/ldap-group', payload, params);
   const createNewRole = ({ payload = {} }) => api.post('/roles', payload);
   return {
     fetchClustersRolesAccess,
@@ -13,5 +15,6 @@ export const rolesAPI = api => {
     updateRolesClusters,
     fetchRoles,
     createNewRole,
+    fetchLdap,
   };
 };

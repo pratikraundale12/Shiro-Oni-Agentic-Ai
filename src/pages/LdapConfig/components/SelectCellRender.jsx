@@ -24,6 +24,7 @@ const StyledSelectField = styled(SelectField)`
 `;
 
 const SelectCellRender = ({ onChange, roles, data }) => {
+  console.log(data, 'lllllllll');
   const [openRoleModal, setOpenRoleModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const selectedOptionRef = useRef(selectedOption);
@@ -51,9 +52,7 @@ const SelectCellRender = ({ onChange, roles, data }) => {
     <>
       <StyledSelectField
         options={sortedArray}
-        defaultValue={sortedArray?.find(
-          option => option.value === data.role_id
-        )}
+        value={sortedArray?.find(option => option.value === data.role_id)}
         onChange={option => onChange(data, option)}
         ldap={true}
         handleCreateOption={handleCreateOption}
@@ -64,6 +63,7 @@ const SelectCellRender = ({ onChange, roles, data }) => {
           openRoleModal={openRoleModal}
           setOpenRoleModal={setOpenRoleModal}
           selectedOption={selectedOptionRef.current}
+          ldapGroupName={data.ldap_group_name}
         />
       )}
     </>
