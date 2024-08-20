@@ -57,6 +57,12 @@ export const CLUSTER_MODULE_TABS = {
   REGISTRY: 'registry',
 };
 
+export const CLUSTER_STATUS = {
+  DEACTIVATED: 'Deactivated',
+  DISCONNECTED: 'Disconnected',
+  CONNECTED: 'Connected',
+};
+
 export const KDFM = {
   // Generic constants
   NIFI: 'NiFi',

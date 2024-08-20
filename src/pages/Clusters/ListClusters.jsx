@@ -100,6 +100,7 @@ export const ListClusters = () => {
           is_active={item.is_active}
           count={item.connected_nodes}
           maxCount={item.total_nodes}
+          status={item.status}
         />
       ),
       width: '12%',
