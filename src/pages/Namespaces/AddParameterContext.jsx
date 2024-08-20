@@ -227,6 +227,7 @@ const AddParameterContext = ({
       isOpen={isAddParameterContextOpen?.isOpen}
       onRequestClose={closePopup}
       size="md"
+      footerAlign="start"
       secondaryButtonText={KDFM.BACK}
       primaryButtonText={KDFM.SAVE}
       onSubmit={handleSubmit(handleAddEditParameterContext)}

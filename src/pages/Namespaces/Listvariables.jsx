@@ -129,7 +129,11 @@ const Listvariables = ({
         primaryButtonText={KDFM.SAVE}
         onSubmit={handleSubmit}
         primaryButtonDisabled={loading || !newlyAddVariables?.length}
-        secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
+        footerAlign="start"
+        secondaryButtonProps={{
+          icon: <PlusCircleIcon />,
+          iconPosition: 'left',
+        }}
       >
         <ModalBody className="modal-body">
           <Table data={variablesData} columns={COLUMNS} />

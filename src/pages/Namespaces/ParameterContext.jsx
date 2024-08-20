@@ -96,7 +96,8 @@ const ParameterContext = ({
       primaryButtonDisabled={!newlyAddedPrameterContext?.length || loading}
       primaryButtonText={KDFM.SAVE}
       onSubmit={handleSaveParameterContext}
-      secondaryButtonProps={{ icons: <PlusCircleIcon />, disabled: loading }}
+      footerAlign="start"
+      secondaryButtonProps={{ icon: <PlusCircleIcon />, disabled: loading }}
     >
       <ModalBody className="modal-body">
         <Table data={tableData} columns={COLUMNS} />
