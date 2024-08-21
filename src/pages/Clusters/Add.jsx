@@ -11,7 +11,7 @@ import {
   QRIcons,
   WhiteBoradIcon,
 } from '../../assets';
-import { CLUSTER_MODULE_TABS, KDFM, RegexConst } from '../../constants';
+import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, SelectField } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';

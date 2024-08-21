@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { KDFM, RegexConst } from '../../../constants';
+import { KDFM } from '../../../constants';
 import { Button, InputField, PasswordField } from '../../../shared';
 import { AddCertificate } from './AddCertificate';
 
