@@ -136,7 +136,8 @@ const AddParameterContext = ({
         });
         setValue(
           'check',
-          !parameterContextItem?.sensitive && !parameterContextItem?.value
+          (!parameterContextItem?.sensitive && !parameterContextItem?.value) ||
+            parameterContextItem?.check
             ? true
             : false
         );
@@ -226,6 +227,7 @@ const AddParameterContext = ({
       isOpen={isAddParameterContextOpen?.isOpen}
       onRequestClose={closePopup}
       size="md"
+      footerAlign="start"
       secondaryButtonText={KDFM.BACK}
       primaryButtonText={KDFM.SAVE}
       onSubmit={handleSubmit(handleAddEditParameterContext)}
@@ -240,6 +242,7 @@ const AddParameterContext = ({
                   type="text"
                   label={KDFM.NAME}
                   icon={<QRIcons />}
+                  placeholder={KDFM.ENTER_PARAMETER}
                   disabled={isAddParameterContextOpen?.mode === 'edit'}
                   register={register}
                   errors={errors}
@@ -255,7 +258,13 @@ const AddParameterContext = ({
                   icon={<QRIcons />}
                   register={register}
                   placeholder={
-                    check ? KDFM.EMPTY_STRING_SET : KDFM.SENSITIVE_VALUE_SET
+                    check || parameterContextItem?.check
+                      ? KDFM.EMPTY_STRING_SET
+                      : parameterContextItem?.sensitive
+                        ? KDFM.SENSITIVE_VALUE_SET
+                        : isAddParameterContextOpen?.mode === 'add'
+                          ? KDFM.ENTER_PARAMETER
+                          : KDFM.NO_VALUE_SET
                   }
                   disabled={check}
                   errors={errors}
@@ -266,6 +275,7 @@ const AddParameterContext = ({
               <CheckboxField
                 name="check"
                 label={KDFM.SET_EMPTY_STRING}
+                defaultChecked={parameterContextItem?.check || false}
                 register={register}
               />
               <RedioButtonDiv>
@@ -286,6 +296,7 @@ const AddParameterContext = ({
                   label={KDFM.DESCRIPTION}
                   icon={<QRIcons />}
                   register={register}
+                  placeholder={KDFM.ENTER_DESCRIPTION}
                   errors={errors}
                 />
               </InputBox>

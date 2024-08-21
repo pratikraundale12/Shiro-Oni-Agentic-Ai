@@ -1,9 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { ClusterLoginModal } from '../../ClusterLoginModal';
+import React from 'react';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import { CLUSTER_STATUS } from '../../../constants';
 import { AuthenticationActions } from '../../../store';
+import { ClusterLoginModal } from '../../ClusterLoginModal';
 
 const EnableClusterText = styled.div`
   display: ${props => (props.isVisible ? 'block' : 'none')};
@@ -20,25 +21,29 @@ const EnableClusterText = styled.div`
 `;
 export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
-  return (
-    <>
-      <EnableClusterText
-        isVisible={item.status !== 'Connected'}
-        onClick={() => {
-          dispatch(
-            AuthenticationActions.setClusterLogin({
-              label: item.name,
-              value: item.id,
-            })
-          );
-        }}
-      >
-        Login to Cluster
-      </EnableClusterText>
 
-      <ClusterLoginModal cluster={item} />
-    </>
-  );
+  if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
+    return (
+      <>
+        <EnableClusterText
+          isVisible={item.status !== 'Connected'}
+          onClick={() => {
+            dispatch(
+              AuthenticationActions.setClusterLogin({
+                label: item.name,
+                value: item.id,
+              })
+            );
+          }}
+        >
+          Login to Cluster
+        </EnableClusterText>
+        <ClusterLoginModal cluster={item} />
+      </>
+    );
+  }
+
+  return null;
 };
 
 EnableClusterRender.propTypes = {

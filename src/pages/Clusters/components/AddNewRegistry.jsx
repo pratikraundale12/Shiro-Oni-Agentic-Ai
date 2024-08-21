@@ -4,23 +4,23 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { InputField, Button, PasswordField } from '../../../shared';
-import { RegexConst } from '../../../constants';
-import { AddCertificate } from './AddCertificate';
-import { SummaryModal } from './SummaryModal';
 import {
-  SmallPerfileIcon,
-  QRIcons,
-  PlusCircleIcon,
-  FileIcon,
-  WhiteBoradIcon,
-  PencilIcon,
   DeleteSmallIcon,
+  FileIcon,
   LinkIcon,
+  PencilIcon,
+  PlusCircleIcon,
+  QRIcons,
+  SmallPerfileIcon,
+  WhiteBoradIcon,
 } from '../../../assets';
+import { RegexConst } from '../../../constants';
+import { Button, InputField, PasswordField } from '../../../shared';
 import { testRegistry } from '../../../store/index1';
-import { SuccessTestModal } from './SuccessTestModal';
+import { AddCertificate } from './AddCertificate';
 import { FailedTestModal } from './FailedTestModal';
+import { SuccessTestModal } from './SuccessTestModal';
+import { SummaryModal } from './SummaryModal';
 
 const InputContainer = styled.div`
   display: flex;
@@ -195,10 +195,7 @@ const registrySchema = yup.object().shape({
       'Registry Name must be at least 3 characters long'
     )
     .required('Registry Name is required'),
-  registry_url: yup
-    .string()
-    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
-    .required('registry URL is required'),
+  registry_url: yup.string().required('registry URL is required'),
 });
 
 export const AddNewRegistry = ({
