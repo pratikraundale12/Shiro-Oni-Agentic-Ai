@@ -8,37 +8,42 @@ const dummyData = [
   {
     timestamp: '2024-07-27 10:30:00',
     event: 'Login',
+    entity: 'Users',
     message: 'User logged in',
     status: 'Success',
-    update_by: 'admin',
+    updated_by: 'admin',
   },
   {
     timestamp: '2024-07-27 11:00:00',
     event: 'File Upload',
+    entity: 'Cluster',
     message: 'File uploaded successfully',
     status: 'Success',
-    update_by: 'user1',
+    updated_by: 'user1',
   },
   {
     timestamp: '2024-07-27 12:45:00',
     event: 'Password Change',
+    entity: 'Namespace',
     message: 'Password changed',
-    status: 'Success',
-    update_by: 'user2',
+    status: 'Error',
+    updated_by: 'user2',
   },
   {
     timestamp: '2024-07-27 14:30:00',
     event: 'Logout',
+    entity: 'Namespace',
     message: 'User logged out',
     status: 'Success',
-    update_by: 'admin',
+    updated_by: 'admin',
   },
   {
     timestamp: '2024-07-28 09:15:00',
     event: 'Login Attempt',
+    entity: 'Cluster',
     message: 'Invalid password',
-    status: 'Failed',
-    update_by: 'user3',
+    status: 'Error',
+    updated_by: 'user3',
   },
 ];
 
@@ -61,7 +66,7 @@ const COLUMNS = [
   },
   {
     label: 'Updated By',
-    renderCell: item => <TextRender text={item.update_by} />,
+    renderCell: item => <TextRender text={item.updated_by} />,
   },
 ];
 
@@ -72,9 +77,10 @@ const AuditLog = ({ isOpen, closePopup }) => {
       isOpen={isOpen}
       onRequestClose={closePopup}
       size="md"
-      secondaryButtonText="Back"
-      primaryButtonText="Continue"
+      // secondaryButtonText="Back"
+      primaryButtonText={KDFM.CONTINUE}
       // onSubmit={handleSubmit(onSubmit)}
+      onSubmit={closePopup}
     >
       <Table data={dummyData} columns={COLUMNS} />
     </Modal>
