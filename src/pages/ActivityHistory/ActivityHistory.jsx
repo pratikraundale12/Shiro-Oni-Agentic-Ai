@@ -1,12 +1,8 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { Grid, StatusRender, TextRender } from '../../components';
-import { KDFM, STATUS_OPTIONS } from '../../constants';
-import { GridActions } from '../../store';
+import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 
 export const ActvityHistory = () => {
-  const dispatch = useDispatch();
-
   const COLUMNS = [
     {
       label: KDFM.TIMESTAMP,
@@ -34,10 +30,6 @@ export const ActvityHistory = () => {
     },
   ];
 
-  useEffect(() => {
-    dispatch(GridActions.fetchGrid({ module: 'activityHistory' }));
-  }, [dispatch]);
-
   return (
     <>
       <Grid
@@ -45,7 +37,7 @@ export const ActvityHistory = () => {
         title={KDFM.ACTIVITY_LIST}
         columns={COLUMNS}
         placeholder={KDFM.ACTIVITY_HISTORY_SEARCH_PLACEHOLDER}
-        statusOptions={STATUS_OPTIONS}
+        statusOptions={ACTIVITY_STATUS_OPTIONS}
       />
     </>
   );

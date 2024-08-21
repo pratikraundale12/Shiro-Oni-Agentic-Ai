@@ -65,11 +65,18 @@ export const CLUSTER_STATUS = {
 };
 
 export const MODULE_LIST_MAP = [
+  { label: 'All', value: 'all' },
   { label: 'Dashboard', value: 'dashboard' },
   { label: 'Clusters', value: 'cluster' },
   { label: 'Namespaces', value: 'namespace' },
   { label: 'User Management', value: 'user' },
   // ! Add More as needed
+];
+
+export const ACTIVITY_STATUS_OPTIONS = [
+  { label: 'All', value: 'all' },
+  { label: 'Success', value: 'Success' },
+  { label: 'Failed', value: 'Failed' },
 ];
 
 export const KDFM = {
