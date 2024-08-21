@@ -96,6 +96,10 @@ export function* deployCluster(api) {
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -109,6 +113,9 @@ export function* deployCluster(api) {
         flowId: checkDestCluster?.flowId,
         bucketId: checkDestCluster?.bucketId,
         registryId: checkDestCluster?.registryId,
+        sourceNamespaceName: selectedNamespace?.label,
+        sourceNamespaceId: selectedNamespace?.value,
+        sourceClusterId: selectedCluster?.value,
         ...(formData.namespaceId && { namespaceId: formData.namespaceId }),
         ...(formData.position && { position: formData.position }),
       },
@@ -172,6 +179,10 @@ export function* upgradeCluster(api) {
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -182,6 +193,9 @@ export function* upgradeCluster(api) {
       {
         clusterId: selectedDestCluster?.value,
         namespaceId: checkDestCluster?.id,
+        sourceNamespaceName: selectedNamespace?.label,
+        sourceNamespaceId: selectedNamespace?.value,
+        sourceClusterId: selectedCluster?.value,
         version: formData.version || checkDestCluster?.version,
       },
     ],
