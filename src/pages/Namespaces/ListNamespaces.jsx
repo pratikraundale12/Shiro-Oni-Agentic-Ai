@@ -106,7 +106,7 @@ export const ListNamespaces = () => {
       label: 'Actions',
       width: '12%',
       renderCell: item => (
-        <div className="d-flex gap-4">
+        <div className="d-flex gap-3">
           <button
             onClick={() => setIsAuditLogOpen(true)}
             style={{

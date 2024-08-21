@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
-import { ACCESS_OPTIONS, KDFM } from '../../constants';
+import { ACCESS_OPTIONS, KDFM, MODULE_LIST_MAP } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, SelectField } from '../../shared';
 import {
@@ -14,6 +14,10 @@ import {
   RolesActions,
   RolesSelectors,
 } from '../../store';
+import {
+  ActivityHistoryActions,
+  ActivityHistorySelectors,
+} from '../../store/activityHistory/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { ClusterSelect } from '../ClusterSelect';
@@ -73,6 +77,10 @@ const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
   min-width: 8.5rem;
 
+  &.entity-dropdown {
+    min-width: 10rem;
+  }
+
   > div {
     margin-top: 0;
   }
@@ -117,6 +125,9 @@ export const GridActions = ({
   const dispatch = useDispatch();
   const location = useLocation();
   const accessType = useSelector(RolesSelectors.getAccessType);
+  const selectedEntity = useSelector(
+    ActivityHistorySelectors.getSelectedEntity
+  );
   const { setState } = useGlobalContext();
   const { watch, control } = useForm();
 
@@ -194,6 +205,20 @@ export const GridActions = ({
               onChange={option => dispatch(RolesActions.setAccessType(option))}
             />
           )}
+          {location.pathname.includes('activity-history') && (
+            <StyledSelectField
+              size="sm"
+              className="entity-dropdown"
+              placeholder={KDFM.SELECT_ENTITY}
+              options={MODULE_LIST_MAP}
+              defaultValue={selectedEntity}
+              backgroundColor={theme.colors.lightGrey}
+              onChange={option =>
+                dispatch(ActivityHistoryActions.setSelectedEntity(option))
+              }
+            />
+          )}
+          ,
           {!isEmpty(buttonText) && (
             <Button
               icon={<PlusCircleIcon width={16} height={16} color="white" />}

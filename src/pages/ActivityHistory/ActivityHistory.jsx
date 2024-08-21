@@ -1,11 +1,11 @@
-import React from 'react';
-// import { useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Grid, StatusRender, TextRender } from '../../components';
 import { KDFM, STATUS_OPTIONS } from '../../constants';
-// import { GridActions } from '../../store';
+import { GridActions } from '../../store';
 
 export const ActvityHistory = () => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const COLUMNS = [
     {
@@ -34,9 +34,9 @@ export const ActvityHistory = () => {
     },
   ];
 
-  // useEffect(() => {
-  //   dispatch(GridActions.fetchGrid({ module: 'activityHistory' }));
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(GridActions.fetchGrid({ module: 'activityHistory' }));
+  }, [dispatch]);
 
   return (
     <>

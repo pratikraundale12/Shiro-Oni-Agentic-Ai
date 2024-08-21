@@ -1,34 +1,40 @@
-// import { all, call, select } from 'redux-saga/effects';
-// import { CLUSTERS_TOKEN } from '../../constants';
+import { all, call, select, takeLatest } from 'redux-saga/effects';
+import { CLUSTERS_TOKEN } from '../../constants';
+import { requestSaga } from '../helpers/request_sagas';
+import { NamespacesSelectors } from '../namespaces';
+import { ActivityHistoryActions, ActivityHistorySelectors } from './redux';
 
-// export function* fetchActivityHistory(api) {
-// const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-// const selectedNamespace = yield select(
-//   NamespacesSelectors.getSelectedNamespace
-// );
-// const queryParams = {
-//   clusterId: selectedCluster?.value || '',
-//   namespaceId: selectedNamespace?.value || '',
-// };
-// const clustersToken = JSON.parse(
-//   localStorage.getItem(CLUSTERS_TOKEN) || '[]'
-// );
-// const selectedClusterToken = clustersToken.find(
-//   item => item.id === selectedCluster?.value
-// );
-// api.headers['x-cluster-id'] = selectedClusterToken?.id;
-// api.headers['x-cluster-token'] = selectedClusterToken?.token;
-// yield call(requestSaga, {
-//   errorSection: 'fetchNamespaces',
-//   loadingSection: 'fetchNamespaces',
-//   apiMethod: api.fetchNamespaces,
-//   apiParams: [{ queryParams }],
-// successAction: NamespacesActions.fetchNamespacesSuccess,
-// });
-// }
+export function* fetchActivityHistory(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedEntity = yield select(
+    ActivityHistorySelectors.getSelectedEntity
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  const queryParams = {
+    entity: selectedEntity?.value || '',
+  };
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  yield call(requestSaga, {
+    errorSection: 'fetchActivityHistory',
+    loadingSection: 'fetchActivityHistory',
+    apiMethod: api.fetchActivityHistory,
+    apiParams: [{ queryParams }],
+    successAction: ActivityHistoryActions.fetchActivityHistorySuccess,
+  });
+}
 
-// export function* activityHistorySagas(api) {
-//   yield all([
-//     takeLatest(NamespacesActions.fetchVariableList, fetchActivityHistory, api),
-//   ])
-// }
+export function* activityHistorySagas(api) {
+  yield all([
+    takeLatest(
+      ActivityHistoryActions.fetchActivityHistory,
+      fetchActivityHistory,
+      api
+    ),
+  ]);
+}

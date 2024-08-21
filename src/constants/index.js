@@ -58,6 +58,14 @@ export const CLUSTER_MODULE_TABS = {
   REGISTRY: 'registry',
 };
 
+export const MODULE_LIST_MAP = [
+  { label: 'Dashboard', value: 'dashboard' },
+  { label: 'Clusters', value: 'cluster' },
+  { label: 'Namespaces', value: 'namespace' },
+  { label: 'User Management', value: 'user' },
+  // ! Add More as needed
+];
+
 export const KDFM = {
   // Generic constants
   NIFI: 'NiFi',
