@@ -1,6 +1,6 @@
 import React from 'react';
 // import { useDispatch } from 'react-redux';
-import { Grid, TextRender } from '../../components';
+import { Grid, StatusRender, TextRender } from '../../components';
 import { KDFM, STATUS_OPTIONS } from '../../constants';
 // import { GridActions } from '../../store';
 
@@ -26,7 +26,7 @@ export const ActvityHistory = () => {
     },
     {
       label: KDFM.STATUS,
-      renderCell: item => <TextRender text={item.status || KDFM.NA} />,
+      renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
     },
     {
       label: KDFM.UPDATE_BY,
