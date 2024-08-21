@@ -10,3 +10,4 @@ export * from './PermissionMatrix';
 export * from './Icons';
 export * from './LdapConfig';
 export * from './ActivityHistory';
+export * from './HelpAndSupport';

@@ -15,6 +15,7 @@ import {
   NameSpaceIcon,
   PeopleIcon,
   ReadyFlowIcon,
+  QuestionMarkIcon,
 } from '../assets';
 import { FullPageLoader } from '../components';
 import {
@@ -23,6 +24,7 @@ import {
   Dashboard,
   Forgot,
   GenrateFlow,
+  HelpAndSupport,
   LdapConfig,
   ListClusters,
   ListNamespaces,
@@ -191,6 +193,18 @@ export const ROUTES_MENU = [
       },
     ],
     hidden: true,
+  },
+
+  {
+    name: 'Help & support',
+    path: 'helpAndSupport',
+    icon: QuestionMarkIcon,
+    pages: [
+      {
+        path: '',
+        component: <HelpAndSupport />,
+      },
+    ],
   },
 ];
 

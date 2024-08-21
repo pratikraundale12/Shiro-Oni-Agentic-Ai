@@ -80,3 +80,5 @@ export * from './UserUploadIcon';
 export * from './WhiteBoradIcon';
 export * from './canvasYIcon';
 export * from './LdapConfigIcon';
+export * from './HelpSupportIcon';
+export * from './QuestionMarkIcon';
