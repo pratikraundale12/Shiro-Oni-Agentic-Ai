@@ -218,7 +218,6 @@ export const GridActions = ({
               }
             />
           )}
-          ,
           {!isEmpty(buttonText) && (
             <Button
               icon={<PlusCircleIcon width={16} height={16} color="white" />}
