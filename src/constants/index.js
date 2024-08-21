@@ -35,7 +35,7 @@ export const ACCESS_OPTIONS = [
 
 export const RegexConst = {
   NAME: /^[a-zA-Z0-9 ]{3,}$/,
-  NIFI_URL: /^(https?:\/\/)/,
+  NIFI_URL: /^https?:\/\/([a-zA-Z0-9.-]+)(:[0-9]{1,5})?(\/nifi)?\/?$/,
 };
 
 export const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -55,6 +55,12 @@ export const RESPONSE_DATA_CODE = {
 export const CLUSTER_MODULE_TABS = {
   CLUSTER: 'cluster',
   REGISTRY: 'registry',
+};
+
+export const CLUSTER_STATUS = {
+  DEACTIVATED: 'Deactivated',
+  DISCONNECTED: 'Disconnected',
+  CONNECTED: 'Connected',
 };
 
 export const KDFM = {
