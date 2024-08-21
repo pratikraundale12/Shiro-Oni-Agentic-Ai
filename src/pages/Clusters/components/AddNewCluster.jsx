@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { KDFM, RegexConst } from '../../../constants';
+import { KDFM } from '../../../constants';
 import { Button, InputField, PasswordField } from '../../../shared';
 import { AddCertificate } from './AddCertificate';
 
@@ -189,7 +189,6 @@ const clusterSchema = yup.object().shape({
   nifi_url: yup
     .string()
     .url('Enter a valid URL')
-    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
     .required('NiFi URL is required'),
 });
 
