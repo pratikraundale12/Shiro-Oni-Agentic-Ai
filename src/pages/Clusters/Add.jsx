@@ -261,7 +261,7 @@ export const Add = () => {
   const [openSummary, setOpenSummary] = useState(false);
   const [failedTestMessage, setFailedTestMessage] = useState('');
   const location = useLocation();
-  const data = location.state || {};
+  const { state: data } = location.state || {};
   const [clusterData, setClusterData] = useState({
     clusterName: data?.name || '',
     nifiUrl: data?.nifi_url || '',

@@ -22,10 +22,10 @@ import { LoadingSelectors, NamespacesSelectors } from '../../store';
 import { GridActions, GridSelectors } from '../../store/grid';
 // import ReactPagination from './ReactPagnation';
 import { useSort } from '@table-library/react-table-library/sort';
+import { useParams } from 'react-router-dom';
 import { KDFM } from '../../constants';
 import { TextRender } from './CellRenders';
 import { Table } from './Table';
-import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -197,7 +197,7 @@ export const Grid = ({
       return (
         <LoaderContainer>
           <NoDataIcon width={140} />
-          <LoadingText>No Data Found!!</LoadingText>
+          <LoadingText>{KDFM.NO_DATA_FOUND}</LoadingText>
         </LoaderContainer>
       );
     return null;

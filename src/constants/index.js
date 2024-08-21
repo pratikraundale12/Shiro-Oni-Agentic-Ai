@@ -66,11 +66,11 @@ export const CLUSTER_STATUS = {
 
 export const MODULE_LIST_MAP = [
   { label: 'All', value: 'all' },
-  { label: 'Dashboard', value: 'dashboard' },
+  // { label: 'Dashboard', value: 'dashboard' },
   { label: 'Clusters', value: 'cluster' },
+  { label: 'Registry', value: 'registry' },
   { label: 'Namespaces', value: 'namespace' },
-  { label: 'User Management', value: 'user' },
-  // ! Add More as needed
+  { label: 'Users', value: 'user' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -81,8 +81,17 @@ export const ACTIVITY_STATUS_OPTIONS = [
 
 export const ACTIVITY_EVENTS = [
   { label: 'All', value: 'all' },
-  { label: 'Deploy', value: 'deploy' },
+  { label: 'Add Cluster', value: 'add cluster' },
+  { label: 'Edit Cluster', value: 'edit cluster' },
+  { label: 'Delete Cluster', value: 'delete cluster' },
+  { label: 'Add Registry', value: 'add registry' },
+  { label: 'Edit Registry', value: 'edit registry' },
+  { label: 'Delete Registry', value: 'delete registry' },
+  { label: 'Add User', value: 'add user' },
+  { label: 'Edit User', value: 'edit user' },
+  { label: 'Delete User', value: 'delete user' },
   { label: 'Upgrade', value: 'upgrade' },
+  { label: 'Deploy', value: 'deploy' },
 ];
 
 export const KDFM = {

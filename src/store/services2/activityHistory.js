@@ -1,6 +1,6 @@
 export const activityHistoryAPI = api => {
-  const fetchActivityHistory = ({ params = {}, payload = {} }) => {
-    return api.post('/audit', payload, { params });
+  const fetchActivityHistory = ({ params = {} }) => {
+    return api.get('/audit', { ...params });
   };
 
   return {
