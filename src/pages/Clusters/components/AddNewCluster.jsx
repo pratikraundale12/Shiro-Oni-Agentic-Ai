@@ -189,7 +189,6 @@ const clusterSchema = yup.object().shape({
   nifi_url: yup
     .string()
     .url('Enter a valid URL')
-    .matches(RegexConst.NIFI_URL, 'Enter a valid URL')
     .required('NiFi URL is required'),
 });
 
