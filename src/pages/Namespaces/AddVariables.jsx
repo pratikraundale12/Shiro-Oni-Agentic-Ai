@@ -140,6 +140,7 @@ const AddVariables = ({
       size="md"
       secondaryButtonText={KDFM.BACK}
       primaryButtonText={KDFM.SAVE}
+      footerAlign="start"
       onSubmit={handleSubmit(handleAddEditVariables)}
     >
       <ModalBody className="modal-body">

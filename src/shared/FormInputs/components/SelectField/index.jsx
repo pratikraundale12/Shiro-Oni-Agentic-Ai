@@ -4,6 +4,7 @@ import React from 'react';
 import { Controller } from 'react-hook-form';
 import Select, { components } from 'react-select';
 import makeAnimated from 'react-select/animated';
+import CreatableSelect from 'react-select/creatable';
 import styled from 'styled-components';
 
 import { DownArrowIcon } from '../../../../assets';
@@ -76,6 +77,8 @@ const SelectField = ({
   backgroundColor,
   title = '',
   isClearable = false,
+  ldap = false,
+  handleCreateOption,
   ...props
 }) => {
   const animatedComponents = makeAnimated();
@@ -168,6 +171,25 @@ const SelectField = ({
     }),
   };
 
+  if (ldap) {
+    return (
+      <CreatableSelect
+        isClearable={isClearable}
+        classNamePrefix="react-select"
+        theme={theme.reactSelecttheme}
+        isDisabled={disabled}
+        styles={customStyles}
+        options={options}
+        components={{
+          ...animatedComponents,
+          IndicatorSeparator: () => null,
+          DropdownIndicator,
+        }}
+        onCreateOption={inputValue => handleCreateOption(inputValue)}
+        {...props}
+      />
+    );
+  }
   if (isEmpty(control)) {
     return (
       <Container className={className} title={title}>
@@ -249,6 +271,8 @@ SelectField.propTypes = {
   title: PropTypes.string,
   isClearable: PropTypes.bool,
   onChange: PropTypes.func,
+  ldap: PropTypes.bool,
+  handleCreateOption: PropTypes.func,
 };
 
 export default SelectField;

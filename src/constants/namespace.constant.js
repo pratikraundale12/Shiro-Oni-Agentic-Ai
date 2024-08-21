@@ -38,4 +38,7 @@ export const NAMESPACE_CONSTANTS = {
   EDIT_VARIABLES: 'Edit Variables',
   PARAMETER_ALREADY_EXISTS: 'Parameter with same name already exists',
   VARIABLE_ALREADY_EXISTS: 'Variable with same name already exists',
+  ENTER_PARAMETER: 'Enter Parameter',
+  ENTER_VARIABLE: 'Enter Variable',
+  ENTER_DESCRIPTION: 'Enter Description',
 };

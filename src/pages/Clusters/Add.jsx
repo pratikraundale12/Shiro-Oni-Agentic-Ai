@@ -11,7 +11,7 @@ import {
   QRIcons,
   WhiteBoradIcon,
 } from '../../assets';
-import { CLUSTER_MODULE_TABS, KDFM, RegexConst } from '../../constants';
+import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, SelectField } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
@@ -232,7 +232,6 @@ const ClusterSchema = yup.object().shape({
   nifiUrl: yup
     .string()
     .url('Enter a valid NiFi URL')
-    .matches(RegexConst.NIFI_URL, 'Enter a valid NiFi URL')
     .required('NiFi URL is required'),
 });
 
@@ -245,7 +244,6 @@ const RegistrySchema = yup.object().shape({
   registryUrl: yup
     .string()
     .url('Enter a valid Registry URL')
-    .matches(RegexConst.NIFI_URL, 'Enter a valid Registry URL')
     .required('NiFi URL is required'),
 });
 
