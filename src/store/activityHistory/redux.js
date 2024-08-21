@@ -5,6 +5,7 @@ const prefix = '@@KDFM-ACTIVITY-HISTORY/';
 /* ------------- ACTIONS ------------------ */
 export const ActivityHistoryActions = {
   setSelectedEntity: createAction(`${prefix}setSelectedEntity`),
+  setSelectedEvent: createAction(`${prefix}setSelectedEvent`),
   fetchActivityHistory: createAction(`${prefix}fetchActivityHistory`),
   fetchActivityHistorySuccess: createAction(
     `${prefix}fetchActivityHistorySuccess`
@@ -15,11 +16,13 @@ export const ActivityHistoryActions = {
 /* ------------- Initial State ------------------ */
 export const ACTIVITY_HISTORY_INITIAL_STATE = {
   selectedEntity: null,
+  selectedEvent: null,
 };
 
 /* ------------- SELECTORS ------------------ */
 export const ActivityHistorySelectors = {
   getSelectedEntity: state => state.activityHistory.selectedEntity,
+  getSelectedEvent: state => state.activityHistory.selectedEvent,
 };
 
 /* ------------- Reducers ------------------ */
@@ -27,6 +30,13 @@ const setSelectedEntity = (state, { payload }) => {
   return {
     ...state,
     selectedEntity: payload,
+  };
+};
+
+const setSelectedEvent = (state, { payload }) => {
+  return {
+    ...state,
+    selectedEvent: payload,
   };
 };
 
@@ -42,6 +52,7 @@ export const activityHistoryReducer = createReducer(
   builder => {
     builder
       .addCase(ActivityHistoryActions.setSelectedEntity, setSelectedEntity)
+      .addCase(ActivityHistoryActions.setSelectedEvent, setSelectedEvent)
       .addCase(
         ActivityHistoryActions.resetActivityHistory,
         resetActivityHistory

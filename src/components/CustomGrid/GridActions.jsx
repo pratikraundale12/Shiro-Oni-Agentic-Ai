@@ -6,7 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
-import { ACCESS_OPTIONS, KDFM, MODULE_LIST_MAP } from '../../constants';
+import {
+  ACCESS_OPTIONS,
+  ACTIVITY_EVENTS,
+  KDFM,
+  MODULE_LIST_MAP,
+} from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, SelectField } from '../../shared';
 import {
@@ -128,13 +133,24 @@ export const GridActions = ({
   const selectedEntity = useSelector(
     ActivityHistorySelectors.getSelectedEntity
   );
+  const selectedEvent = useSelector(ActivityHistorySelectors.getSelectedEvent);
   const { setState } = useGlobalContext();
   const { watch, control } = useForm();
 
   const watchStatus = watch('is_active');
+  const entity = watch('entityName');
+  const event = watch('activityEvent');
+
+  const getModuleBasedStatusKey = module => {
+    if (module === 'activityHistory') {
+      return 'status';
+    } else {
+      return 'is_active';
+    }
+  };
 
   useEffect(() => {
-    if (watchStatus) {
+    if (watchStatus || entity || event) {
       dispatch(
         GridSagsActions.fetchGrid({
           module,
@@ -142,13 +158,17 @@ export const GridActions = ({
             page: 1,
             ...(search && { search }),
             ...(watchStatus &&
-              watchStatus !== 'all' && { is_active: watchStatus }),
+              watchStatus !== 'all' && {
+                [getModuleBasedStatusKey(module)]: watchStatus,
+              }),
+            ...(entity && entity !== 'all' && { entity }),
+            ...(event && event !== 'all' && { event }),
           },
         })
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchStatus]);
+  }, [watchStatus, entity, event, search]);
 
   return (
     <>
@@ -178,6 +198,7 @@ export const GridActions = ({
               <StyledSelectField
                 name="is_active"
                 size="sm"
+                title={KDFM.SELECT_STATUS}
                 control={control}
                 options={statusOptions}
                 placeholder={KDFM.STATUS}
@@ -208,7 +229,26 @@ export const GridActions = ({
           {location.pathname.includes('activity-history') && (
             <StyledSelectField
               size="sm"
+              name="activityEvent"
+              control={control}
+              title={KDFM.SELECT_EVENT}
               className="entity-dropdown"
+              placeholder={KDFM.SELECT_EVENT}
+              options={ACTIVITY_EVENTS}
+              defaultValue={selectedEvent}
+              backgroundColor={theme.colors.lightGrey}
+              onChange={option =>
+                dispatch(ActivityHistoryActions.setSelectedEvent(option))
+              }
+            />
+          )}
+          {location.pathname.includes('activity-history') && (
+            <StyledSelectField
+              size="sm"
+              name="entityName"
+              control={control}
+              className="entity-dropdown"
+              title={KDFM.SELECT_ENTITY}
               placeholder={KDFM.SELECT_ENTITY}
               options={MODULE_LIST_MAP}
               defaultValue={selectedEntity}

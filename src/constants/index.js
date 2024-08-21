@@ -79,6 +79,12 @@ export const ACTIVITY_STATUS_OPTIONS = [
   { label: 'Failed', value: 'Failed' },
 ];
 
+export const ACTIVITY_EVENTS = [
+  { label: 'All', value: 'all' },
+  { label: 'Deploy', value: 'deploy' },
+  { label: 'Upgrade', value: 'upgrade' },
+];
+
 export const KDFM = {
   // Generic constants
   NIFI: 'NiFi',
