@@ -191,6 +191,7 @@ const NamespaceDeploy = ({
         primaryButtonText="Go to Nifi Instance"
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={handleClick}
+        footerAlign="start"
         secondaryButtonProps={{
           disabled: !deployOrUpgradeDetails?.parameterContextId,
         }}
