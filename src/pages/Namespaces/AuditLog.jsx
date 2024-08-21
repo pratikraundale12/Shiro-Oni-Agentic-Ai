@@ -1,7 +1,8 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { StatusRender, Table, TextRender } from '../../components';
+import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
-import { Table } from '../../components';
 
 const dummyData = [
   {
@@ -44,23 +45,23 @@ const dummyData = [
 const COLUMNS = [
   {
     label: 'Timestamp',
-    renderCell: item => <div>{item.timestamp}</div>,
+    renderCell: item => <TextRender text={item.timestamp} />,
   },
   {
     label: 'Event',
-    renderCell: item => <div>{item.event}</div>,
+    renderCell: item => <TextRender text={item.event} />,
   },
   {
     label: 'Message',
-    renderCell: item => <div>{item.message}</div>,
+    renderCell: item => <TextRender text={item.message} />,
   },
   {
     label: 'Status',
-    renderCell: item => <div>{item.status}</div>,
+    renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
   },
   {
     label: 'Updated By',
-    renderCell: item => <div>{item.update_by}</div>,
+    renderCell: item => <TextRender text={item.update_by} />,
   },
 ];
 

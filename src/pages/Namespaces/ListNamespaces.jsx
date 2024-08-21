@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { OpenEyeIcon } from '../../assets';
+import { ActivityHistoryIcon } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
-import { REFRESH_OPTIONS } from '../../constants';
+import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import { GridActions, NamespacesActions } from '../../store';
+import AuditLog from './AuditLog';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -22,7 +23,7 @@ export const ListNamespaces = () => {
   const dispatch = useDispatch();
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
-  // const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
+  const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
   }, []);
@@ -52,7 +53,6 @@ export const ListNamespaces = () => {
   const COLUMNS = [
     {
       label: 'Namespace',
-
       renderCell: item => (
         <StyledButton
           tabIndex="0"
@@ -106,9 +106,9 @@ export const ListNamespaces = () => {
       label: 'Actions',
       width: '12%',
       renderCell: item => (
-        <div className="d-flex" style={{ gap: 8 }}>
+        <div className="d-flex gap-4">
           <button
-            // onClick={handleOpenAuditLog}
+            onClick={() => setIsAuditLogOpen(true)}
             style={{
               background: 'none',
               border: 'none',
@@ -118,7 +118,7 @@ export const ListNamespaces = () => {
             aria-label="Open Audit Log"
           >
             <IconButton>
-              <OpenEyeIcon />
+              <ActivityHistoryIcon width={16} height={16} />
             </IconButton>
           </button>
           <Button
@@ -126,12 +126,12 @@ export const ListNamespaces = () => {
             disabled={
               !item.flowId ||
               !item.version ||
-              item.flowId === 'N/A' ||
-              item.version === 'N/A'
+              item.flowId === KDFM.NA ||
+              item.version === KDFM.NA
             }
             size="sm"
           >
-            Deploy
+            {KDFM.DEPLOY}
           </Button>
         </div>
       ),
@@ -190,7 +190,10 @@ export const ListNamespaces = () => {
         // handleIconClick={handleIconClick}
       />
       {/* <Deploy /> */}
-      {/* <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} /> */}
+      <AuditLog
+        isOpen={isAuditLogOpen}
+        closePopup={() => setIsAuditLogOpen(false)}
+      />
     </>
   );
 };
