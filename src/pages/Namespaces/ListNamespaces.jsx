@@ -24,6 +24,8 @@ export const ListNamespaces = () => {
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
+  const [selectedRowId, setSelectedRowId] = useState(null);
+
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
   }, []);
@@ -108,14 +110,17 @@ export const ListNamespaces = () => {
       renderCell: item => (
         <div className="d-flex gap-3">
           <button
-            onClick={() => setIsAuditLogOpen(true)}
+            onClick={() => {
+              setIsAuditLogOpen(true);
+              setSelectedRowId(item?.id);
+            }}
             style={{
               background: 'none',
               border: 'none',
               padding: 0,
               cursor: 'pointer',
             }}
-            aria-label="Open Audit Log"
+            aria-label={KDFM.OPEN_AUDIT_LOG}
           >
             <IconButton>
               <ActivityHistoryIcon width={16} height={16} />
@@ -183,7 +188,7 @@ export const ListNamespaces = () => {
         title={KDFM.NAMESPACE_LIST}
         columns={COLUMNS}
         refreshOptions={REFRESH_OPTIONS}
-        placeholder="Search Namespace, ID, Flow Name, Bucket Name"
+        placeholder={KDFM.SEARCH_NAMESPACE_FLOW_BUCKET_NAME}
         handleRefresh={handleRefresh}
         sortFns={sortFns}
         state={state}
@@ -192,6 +197,8 @@ export const ListNamespaces = () => {
       {/* <Deploy /> */}
       {isAuditLogOpen && (
         <AuditLog
+          key={selectedRowId}
+          rowId={selectedRowId}
           isOpen={isAuditLogOpen}
           closePopup={() => setIsAuditLogOpen(false)}
         />

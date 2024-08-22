@@ -8,38 +8,45 @@ import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const COLUMNS = [
   {
-    label: 'Timestamp',
-    renderCell: item => <TextRender text={item.timestamp} />,
+    label: KDFM.TIMESTAMP,
+    renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
   },
   {
-    label: 'Event',
-    renderCell: item => <TextRender text={item.event} />,
+    label: KDFM.EVENT,
+    renderCell: item => <TextRender text={item.event || KDFM.NA} />,
   },
   {
-    label: 'Message',
-    renderCell: item => <TextRender text={item.message} />,
+    label: KDFM.MESSAGE,
+    renderCell: item => <TextRender text={item.message || KDFM.NA} />,
   },
   {
-    label: 'Status',
+    label: KDFM.STATUS,
     renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
   },
   {
-    label: 'Updated By',
-    renderCell: item => <TextRender text={item.updated_by} />,
+    label: KDFM.UPDATE_BY,
+    renderCell: item => <TextRender text={item.updated_by || KDFM.NA} />,
   },
 ];
 
-const AuditLog = ({ isOpen, closePopup }) => {
+const AuditLog = ({ isOpen, rowId, closePopup }) => {
   const dispatch = useDispatch();
   const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
 
   useEffect(() => {
     dispatch(NamespacesActions.fetchNamespaceAudit());
-  }, []);
+  }, [dispatch]);
+
+  const auditTableData =
+    (rowId &&
+      namespaceAuditLog?.data?.filter(
+        auditInfo => auditInfo?.record_id === rowId
+      )) ||
+    [];
 
   return (
     <Modal
-      title="Audit Log"
+      title={KDFM.AUDIT_LOG}
       isOpen={isOpen}
       onRequestClose={closePopup}
       size="lg"
@@ -48,7 +55,7 @@ const AuditLog = ({ isOpen, closePopup }) => {
       // onSubmit={handleSubmit(onSubmit)}
       onSubmit={closePopup}
     >
-      <Table data={namespaceAuditLog?.data} columns={COLUMNS} />
+      <Table data={auditTableData} columns={COLUMNS} />
     </Modal>
   );
 };
@@ -56,6 +63,7 @@ const AuditLog = ({ isOpen, closePopup }) => {
 // Add prop-types validation
 AuditLog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
+  rowId: PropTypes.string,
   closePopup: PropTypes.func.isRequired,
 };
 

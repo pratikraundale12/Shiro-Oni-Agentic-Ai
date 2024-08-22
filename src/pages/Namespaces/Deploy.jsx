@@ -280,7 +280,7 @@ const Deploy = () => {
                 <Search
                   type="search"
                   value={search}
-                  placeholder={KDFM.SELECT_NAMESPACE_FLOW_BUCKET_NAME}
+                  placeholder={KDFM.SEARCH_NAMESPACE_FLOW_BUCKET_NAME}
                   onChange={e => setSearch(e.target.value)}
                 />
               </SearchContainer>
