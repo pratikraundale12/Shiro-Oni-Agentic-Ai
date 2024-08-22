@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Grid, StatusRender, TextRender } from '../../components';
 import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 
@@ -18,7 +19,20 @@ export const ActvityHistory = () => {
     },
     {
       label: KDFM.MESSAGE,
-      renderCell: item => <TextRender text={item.message || KDFM.NA} />,
+      renderCell: item => (
+        <div>
+          <TextRender
+            data-tooltip-id={item.message}
+            text={item.message || KDFM.NA}
+            style={{ display: 'inline-block' }}
+          />
+          <ReactTooltip
+            id={item.message}
+            content={item.message}
+            place="bottom"
+          />
+        </div>
+      ),
     },
     {
       label: KDFM.STATUS,
