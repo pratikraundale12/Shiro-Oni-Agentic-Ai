@@ -386,42 +386,9 @@ const Summary = () => {
   };
 
   const [activeButton, setActiveButton] = useState(null);
-
-  const handleUpdateStatus = async (status, buttonId) => {
-    try {
-      const response = await updateNamespaceStatus(
-        state.selectedClusterId,
-        state?.upgradeData?.id || state.deployCountDetails?.data?.id,
-        status
-      );
-      if (response?.data) {
-        setState(prevState => ({
-          ...prevState,
-          deployCountDetails: {
-            ...prevState.deployCountDetails,
-            data: {
-              ...prevState.deployCountDetails?.data,
-              runningCount: response?.data?.status?.runningCount,
-              stoppedCount: response?.data?.status?.stoppedCount,
-              invalidCount: response?.data?.status?.invalidCount,
-              disabledCount: response?.data?.status?.disabledCount,
-            },
-          },
-          upgradeData: {
-            ...prevState.upgradeData,
-            runningCount: response?.data?.status?.runningCount,
-            stoppedCount: response?.data?.status?.stoppedCount,
-            invalidCount: response?.data?.status?.invalidCount,
-            disabledCount: response?.data?.status?.disabledCount,
-          },
-        }));
-      }
-      setActiveButton(buttonId);
-    } catch (error) {
-      console.error('Failed to update status:', error);
-    }
+  const handleUpdateStatus = status => {
+    dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
-
   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader loading={loading} />
@@ -431,7 +398,13 @@ const Summary = () => {
             <TodoIcon />
           </div>
           <MainTitleHfour className="mb-0">
-            {`${checkDestCluster.mode} ${KDFM.NAMESPACE}`}
+            {`${
+              checkDestCluster.mode === 'upgrade'
+                ? checkDestCluster.version <= formData.version
+                  ? KDFM.UPGRADE
+                  : KDFM.DOWNGRADE
+                : KDFM.DEPLOY
+            } ${KDFM.NAMESPACE}`}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
@@ -652,6 +625,7 @@ const Summary = () => {
                       activeColor="#58e715"
                       hoverColor="#58e715"
                       activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('RUNNING')}
                       // onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
                     >
                       <TriangleIcons color="#B5BDC8" />
@@ -667,6 +641,7 @@ const Summary = () => {
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('STOPPED')}
                       // onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
                     >
                       <SquareBoxIcon color="#B5BDC8" />
@@ -721,7 +696,11 @@ const Summary = () => {
                 : handleUpgradeClick
             }
           >
-            {checkDestCluster.mode !== 'upgrade' ? KDFM.DEPLOY : KDFM.UPGRADE}
+            {checkDestCluster.mode === 'upgrade'
+              ? checkDestCluster.version <= formData.version
+                ? KDFM.UPGRADE
+                : KDFM.DOWNGRADE
+              : KDFM.DEPLOY}
           </Button>
         </BottomButtonDiv>
         {checkDestCluster.mode === 'upgrade' && (

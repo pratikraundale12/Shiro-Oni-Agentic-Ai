@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
+  ActiveIcon,
   DeleteDustbinIcon,
   DeleteSmallIcon,
   OpenEyeIcon,
@@ -17,7 +18,9 @@ import {
   UrlRender,
 } from '../../components';
 import {
-  CLUSTERS_TOKEN,
+  // CLUSTERS_TOKEN,
+  // CLUSTERS_TOKEN,
+  CLUSTER_STATUS,
   KDFM,
   REFRESH_OPTIONS,
   STATUS_OPTIONS,
@@ -25,7 +28,7 @@ import {
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import { GridActions } from '../../store';
-import { deleteCluster } from '../../store/index1';
+import { updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 
 const List = styled.div`
@@ -74,6 +77,7 @@ export const ListClusters = () => {
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
   const { state, setState } = useGlobalContext();
+  const [deactiveId, setDeactiveId] = useState(null);
   const menuRef = useRef(null);
   const [menuState, setMenuState] = useState({
     isVisible: false,
@@ -112,45 +116,57 @@ export const ListClusters = () => {
     },
     {
       label: 'Actions',
-      renderCell: item => (
-        <ActionRender handleMenuClick={handleMenuClick} item={item}>
-          {menuState.isVisible && item.id == menuState.row.id && (
-            <List ref={menuRef}>
-              <Item onClick={() => handleClick('edit')}>
-                <PencilIcon width={16} height={16} />
-                <span>{KDFM.EDIT}</span>
-              </Item>
-              <Item onClick={() => handleClick('view')}>
-                <OpenEyeIcon width={18} height={18} />
-                <span>{KDFM.VIEW}</span>
-              </Item>
-              <Item onClick={() => handleClick('delete')}>
-                <DeleteSmallIcon width={18} height={18} />
-                <span>{KDFM.DELETE}</span>
-              </Item>
-            </List>
-          )}
-        </ActionRender>
-      ),
+      renderCell: item => {
+        return (
+          <ActionRender handleMenuClick={handleMenuClick} item={item}>
+            {menuState.isVisible && item.id === menuState.row.id && (
+              <List ref={menuRef}>
+                {item.is_active ? (
+                  <>
+                    <Item onClick={() => handleClick('edit')}>
+                      <PencilIcon width={16} height={16} />
+                      <span>{KDFM.EDIT}</span>
+                    </Item>
+                    <Item onClick={() => handleClick('view')}>
+                      <OpenEyeIcon width={18} height={18} />
+                      <span>{KDFM.VIEW}</span>
+                    </Item>
+                    <Item onClick={() => handleClick('delete', item.id)}>
+                      <DeleteSmallIcon width={18} height={18} />
+                      <span>{KDFM.DELETE}</span>
+                    </Item>
+                  </>
+                ) : (
+                  <>
+                    {item.status === CLUSTER_STATUS.DISCONNECTED ? (
+                      <Item onClick={() => handleClick('edit')}>
+                        <PencilIcon width={16} height={16} />
+                        <span>{KDFM.EDIT}</span>
+                      </Item>
+                    ) : (
+                      <Item onClick={() => handleClick('active', item.id)}>
+                        <ActiveIcon />
+                        <span>Activate</span>
+                      </Item>
+                    )}
+                  </>
+                )}
+              </List>
+            )}
+          </ActionRender>
+        );
+      },
       width: '14%',
     },
   ];
-  const deleteUserConfirmed = async () => {
-    const response = await deleteCluster(state.selectedItem.id);
-    if (response.status == 204) {
-      const clustersToken = JSON.parse(
-        localStorage.getItem(CLUSTERS_TOKEN) || '[]'
-      );
-      const updatedClustersToken = clustersToken.filter(
-        cluster => cluster.id !== state.selectedItem.id
-      );
-      localStorage.setItem(
-        CLUSTERS_TOKEN,
-        JSON.stringify(updatedClustersToken)
-      );
+
+  const updateClusterStatus = async id => {
+    const response = await updateCluster(id, {
+      is_active: true,
+    });
+    if (response) {
+      toast.success('Cluster Activated Successfully');
       dispatch(GridActions.fetchGrid({ module: 'clusters' }));
-      toast.success('Cluster Deleted Successfully');
-      setState({ ...state, clusterDeleteModal: false });
     } else {
       toast.error('error occured');
     }
@@ -176,7 +192,25 @@ export const ListClusters = () => {
     setMenuState({ isVisible: false, x: 0, y: 0, row: null });
   };
 
-  const handleClick = type => {
+  const deleteUserConfirmed = async id => {
+    try {
+      const response = await updateCluster(id, {
+        is_active: false,
+      });
+
+      if (response) {
+        toast.success('Cluster Deactivated Successfully');
+        dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+        setState({ ...state, clusterDeleteModal: false });
+      } else {
+        toast.error('Error occurred while Deactivated the cluster');
+      }
+    } catch (error) {
+      toast.error('An error occurred during the Deactivated process');
+    }
+  };
+
+  const handleClick = (type, id) => {
     handleCloseMenu();
     if (type === 'edit') {
       history.push('/clusters/edit', { state: menuState.row });
@@ -188,12 +222,13 @@ export const ListClusters = () => {
       });
       history.push(`/clusters/${menuState.row.id}`);
     }
+
+    if (type === 'active') {
+      updateClusterStatus(id);
+    }
     if (type === 'delete') {
-      setState({
-        ...state,
-        clusterDeleteModal: true,
-        selectedItem: menuState.row,
-      });
+      setState({ ...state, clusterDeleteModal: true });
+      setDeactiveId(id);
     }
   };
 
@@ -230,7 +265,7 @@ export const ListClusters = () => {
         secondaryButtonText={KDFM.CANCEL}
         icon={<DeleteDustbinIcon />}
         isOpen={state.clusterDeleteModal}
-        onSubmit={deleteUserConfirmed}
+        onSubmit={() => deleteUserConfirmed(deactiveId)}
         onRequestClose={() => setState({ ...state, clusterDeleteModal: false })}
         primaryText={KDFM.DELETE_CLUSTER_WARNING}
         secondaryText={KDFM.DELETE_CLUSTER_DESCRIPTION}

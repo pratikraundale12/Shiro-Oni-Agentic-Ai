@@ -10,6 +10,7 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 
@@ -182,7 +183,13 @@ const NamespaceDeploy = ({
   return (
     <>
       <Modal
-        title={`Namespace ${checkDestCluster.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
+        title={`Namespace ${
+          checkDestCluster.mode === 'upgrade'
+            ? checkDestCluster.version <= formData.version
+              ? KDFM.UPGRADE
+              : KDFM.DOWNGRADE
+            : KDFM.DEPLOY
+        }`}
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
