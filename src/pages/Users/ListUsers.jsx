@@ -2,7 +2,7 @@ import { React, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DeleteDustbinIcon, DeleteSmallIcon, PencilIcon } from '../../assets';
 import {
   Grid,
@@ -13,7 +13,11 @@ import {
 } from '../../components';
 import { STATUS_OPTIONS } from '../../constants';
 import { ModalWithIcon } from '../../shared';
-import { GridActions, RolesActions } from '../../store';
+import {
+  AuthenticationSelectors,
+  GridActions,
+  RolesActions,
+} from '../../store';
 import { deleteUserApi } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import { AddUserModal } from './AddUserModal';
@@ -27,33 +31,38 @@ const ActionTd = styled.div`
 
 export const ListUsers = () => {
   const dispatch = useDispatch();
+  const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const { state, setState } = useGlobalContext();
 
   const getActionsMenu = item => (
     <div>
       <ActionTd>
-        <IconButton
-          onClick={() =>
-            setState({
-              ...state,
-              userModal: true,
-              selectedItem: item,
-            })
-          }
-        >
-          <PencilIcon width={16} height={16} />
-        </IconButton>
-        <IconButton
-          onClick={() =>
-            setState({
-              ...state,
-              userDeleteModal: true,
-              selectedItem: item,
-            })
-          }
-        >
-          <DeleteSmallIcon color="red" />
-        </IconButton>
+        {userPermissions.includes('edit_user') && (
+          <IconButton
+            onClick={() =>
+              setState({
+                ...state,
+                userModal: true,
+                selectedItem: item,
+              })
+            }
+          >
+            <PencilIcon width={16} height={16} />
+          </IconButton>
+        )}
+        {userPermissions.includes('delete_user') && (
+          <IconButton
+            onClick={() =>
+              setState({
+                ...state,
+                userDeleteModal: true,
+                selectedItem: item,
+              })
+            }
+          >
+            <DeleteSmallIcon color="red" />
+          </IconButton>
+        )}
       </ActionTd>
     </div>
   );

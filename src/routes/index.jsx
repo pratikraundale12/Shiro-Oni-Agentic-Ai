@@ -28,8 +28,8 @@ import {
   ListNamespaces,
   ListUsers,
   Login,
+  ModuleAccess,
   NotFound,
-  PermissionMatrix,
   ReadyFlowGallary,
   Reset,
   SessionExpired,
@@ -53,7 +53,7 @@ export const ROUTES_MENU = [
     icon: DashboardIcon,
     pages: [
       {
-        path: '/dashboard',
+        path: '',
         component: <Dashboard />,
       },
     ],
@@ -76,6 +76,7 @@ export const ROUTES_MENU = [
         component: <ClusterSummary />,
       },
     ],
+    permission: 'view_cluster',
   },
   {
     name: 'Namespace',
@@ -99,6 +100,7 @@ export const ROUTES_MENU = [
         component: <Summary />,
       },
     ],
+    permission: 'view_namespace',
   },
   {
     name: 'Ready to use Flows',
@@ -125,10 +127,6 @@ export const ROUTES_MENU = [
         path: '',
         component: <GenrateFlow />,
       },
-      {
-        path: ['add', 'edit/:id'],
-        component: <div>Genrate Flow</div>,
-      },
     ],
     hidden: true,
   },
@@ -142,24 +140,20 @@ export const ROUTES_MENU = [
         component: <ListUsers />,
       },
     ],
+    permission: 'view_user',
   },
-
   {
     name: 'Role & Permission',
-    path: 'permission-matrix',
+    path: 'role-&-permission',
     icon: LockIcon,
     pages: [
       {
         path: '',
-        component: <PermissionMatrix />,
-      },
-      {
-        path: ['add', 'edit/:id'],
-        component: <div>Permission</div>,
+        component: <ModuleAccess />,
       },
     ],
+    permission: 'view_permission',
   },
-
   {
     name: 'LDAP Configuration',
     path: 'ldap-configuration',
@@ -169,13 +163,9 @@ export const ROUTES_MENU = [
         path: '',
         component: <LdapConfig />,
       },
-      {
-        path: ['add', 'edit/:id'],
-        component: <div>Permission</div>,
-      },
     ],
+    permission: 'view_ldap',
   },
-
   {
     name: 'Activity History',
     path: 'activity-history',
@@ -185,12 +175,9 @@ export const ROUTES_MENU = [
         path: '',
         component: <ActvityHistory />,
       },
-      {
-        path: ['add', 'edit/:id'],
-        component: <div>Activity History</div>,
-      },
     ],
     hidden: true,
+    permission: 'view_history',
   },
 ];
 
