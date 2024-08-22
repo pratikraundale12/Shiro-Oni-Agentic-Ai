@@ -62,8 +62,8 @@ export const namespacesAPI = api => {
   const upgradeCluster = ({ clusterId, ...rest }) =>
     api.post(`/clusters/${clusterId}/upgrade`, rest);
 
-  const clusterProgress = ({ clusterId, progressId }) =>
-    api.get(`/clusters/${clusterId}/progress/${progressId}`);
+  const clusterProgress = ({ clusterId, progressId }, queryParams) =>
+    api.get(`/clusters/${clusterId}/progress/${progressId}`, queryParams);
 
   const clusterProgressDelete = ({ clusterId, progressId }) =>
     api.delete(`/clusters/${clusterId}/progress/${progressId}`);

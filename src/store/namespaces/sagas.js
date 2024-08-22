@@ -222,6 +222,12 @@ export function* clusterProgress(api) {
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const queryParams = {
+    sourceNamespaceId: selectedNamespace?.value,
+  };
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -233,6 +239,7 @@ export function* clusterProgress(api) {
         clusterId: selectedDestCluster?.value,
         progressId: deployOrUpgradeDetails.requestId,
       },
+      queryParams,
     ],
     successAction: NamespacesActions.deployClusterSuccess,
   });
