@@ -16,7 +16,6 @@ import {
   PeopleIcon,
   ReadyFlowIcon,
   ScheduleDeploymentIcon,
-  LdapConfigIcon,
 } from '../assets';
 import { FullPageLoader } from '../components';
 import {
@@ -42,7 +41,6 @@ import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import Deploy from '../pages/Namespaces/Deploy';
 import Summary from '../pages/Namespaces/Summary';
 import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
-import { useDispatch, useSelector } from 'react-redux';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import {
   AuthenticationActions,

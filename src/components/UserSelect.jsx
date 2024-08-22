@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { UsersActions, UsersSelectors } from '../store';
 
-export const UserSelect = ({ control, errors }) => {
+export const UserSelect = ({ control, errors, name, label, placeholder }) => {
   const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
   const userList = useSelector(UsersSelectors.getUsers);
@@ -17,8 +17,8 @@ export const UserSelect = ({ control, errors }) => {
   }, [dispatch, searchText]);
   return (
     <SelectField
-      label="Approver"
-      name="namespace"
+      label={label}
+      name={name}
       control={control}
       icon={<UserIcon />}
       errors={errors}
@@ -26,9 +26,10 @@ export const UserSelect = ({ control, errors }) => {
         value: id,
         label: username,
       }))}
-      placeholder="Select atleast one approver"
+      placeholder={placeholder}
       required
       onInputChange={handleChange}
+      //   isMulti
     />
   );
 };
@@ -36,4 +37,7 @@ export const UserSelect = ({ control, errors }) => {
 UserSelect.propTypes = {
   control: PropTypes.object,
   errors: PropTypes.object,
+  name: PropTypes.string,
+  label: PropTypes.string,
+  placeholder: PropTypes.string,
 };

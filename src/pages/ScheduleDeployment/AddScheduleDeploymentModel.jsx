@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 
@@ -8,10 +8,15 @@ import { useGlobalContext } from '../../utils';
 // import {
 //   userSchema,
 // } from '../../components/UserManagement/userValidation';
-import { useSelector } from 'react-redux';
-import { ClustersSelectors, NamespacesSelectors } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  ClustersSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { UserSelect } from '../../components';
 import * as yup from 'yup';
+import { isEmpty } from 'lodash';
 
 export const scheduleSchema = yup.object().shape({
   namespace_id: yup.string().trim().required('Namespace is required'),
@@ -23,20 +28,41 @@ export const scheduleSchema = yup.object().shape({
 });
 
 export const AddScheduleDeploymentModal = props => {
+  const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
   const [startDate, setStartDate] = useState(new Date());
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const namespaces = useSelector(NamespacesSelectors.getNamespaces);
   const clusterList = useSelector(ClustersSelectors.getClusters);
+
   const {
     // register,
+    setValue,
     reset,
     handleSubmit,
     control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(scheduleSchema),
+    // defaultValues: {
+    //   source_cluster_id: selectedCluster,
+    // },
   });
+
+  const selectedNamespace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+
+  console.log(selectedCluster, selectedNamespace, 'selectedCluster>>>>>>');
+  console.log(namespaces, 'namespaces????????');
+  const onNamespaceSelect = selectedItem => {
+    dispatch(NamespacesActions.setSelectedNamespace(selectedItem));
+  };
+
+  const onClusterSelect = value => {
+    dispatch(NamespacesActions.fetchNamespaces());
+    dispatch(NamespacesActions.setSelectedCluster(value));
+  };
 
   const openModal = () => setState({ ...state, scheduleModel: true });
   const closeModal = () => {
@@ -50,6 +76,19 @@ export const AddScheduleDeploymentModal = props => {
   const onSubmit = async data => {
     console.log(data);
   };
+  useEffect(() => {
+    if (!isEmpty(selectedCluster)) {
+      dispatch(NamespacesActions.fetchNamespaces());
+    }
+  }, [dispatch, selectedCluster]);
+
+  useEffect(() => {
+    if (!isEmpty(selectedCluster)) {
+      setValue('source_cluster_id', selectedCluster.value);
+    }
+
+    return () => reset();
+  }, [selectedCluster, setValue, reset]);
 
   return (
     <div {...props}>
@@ -83,8 +122,8 @@ export const AddScheduleDeploymentModal = props => {
                 value: id,
                 label: name,
               }))}
-              //   defaultValue={clusterLogin}
               placeholder="Select Namespace"
+              onChange={onNamespaceSelect}
               required
             />
           </div>
@@ -98,6 +137,7 @@ export const AddScheduleDeploymentModal = props => {
               options={clusterList}
               defaultValue={selectedCluster}
               placeholder="Select Source Cluster"
+              onChange={onClusterSelect}
               required
             />
           </div>
@@ -125,7 +165,13 @@ export const AddScheduleDeploymentModal = props => {
             />
           </div>
         </div>
-        <UserSelect control={control} errors={errors} />
+        <UserSelect
+          control={control}
+          errors={errors}
+          name="approver_ids"
+          placeholder="Select atleast one approver"
+          label="Approver"
+        />
       </Modal>
     </div>
   );
