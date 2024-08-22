@@ -34,6 +34,7 @@ export const AUTHENTICATION_INITIAL_STATE = {
   resetToken: '',
   clusterLogin: false,
   destinationFlag: false,
+  permissions: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -46,6 +47,7 @@ export const AuthenticationSelectors = {
   getResetToken: state => state.auth.resetToken,
   getClusterLogin: state => state.auth.clusterLogin,
   getDestinationFlag: state => state.auth.destinationFlag,
+  getPermissions: state => state.auth.permissions,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -55,6 +57,7 @@ const fetchCurrentUserSuccess = (state, { payload }) => {
     user: payload,
     license: formatDateStringToLocal(payload.license),
     isLoggedIn: true,
+    permissions: payload.permissions,
   };
 };
 const fetchLicenseInfoSuccess = (state, { payload }) => {
