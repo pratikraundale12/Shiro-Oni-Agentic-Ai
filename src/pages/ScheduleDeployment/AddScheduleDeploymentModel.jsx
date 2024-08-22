@@ -14,10 +14,12 @@ import { UserSelect } from '../../components';
 import * as yup from 'yup';
 
 export const scheduleSchema = yup.object().shape({
-  namespace_id: yup
+  namespace_id: yup.string().trim().required('Namespace is required'),
+  source_cluster_id: yup.string().trim().required('Source Cluster is required'),
+  destination_cluster_id: yup
     .string()
     .trim()
-    .required('Namespace is required'),
+    .required('Destination Cluster is required'),
 });
 
 export const AddScheduleDeploymentModal = props => {
@@ -28,7 +30,7 @@ export const AddScheduleDeploymentModal = props => {
   const clusterList = useSelector(ClustersSelectors.getClusters);
   const {
     // register,
-    // reset,
+    reset,
     handleSubmit,
     control,
     formState: { errors },
@@ -38,6 +40,7 @@ export const AddScheduleDeploymentModal = props => {
 
   const openModal = () => setState({ ...state, scheduleModel: true });
   const closeModal = () => {
+    reset();
     setState({
       ...state,
       scheduleModel: false,
@@ -83,7 +86,6 @@ export const AddScheduleDeploymentModal = props => {
               //   defaultValue={clusterLogin}
               placeholder="Select Namespace"
               required
-              //   disabled={isObject(clusterLogin)}
             />
           </div>
           <div className="col-6">
@@ -97,7 +99,6 @@ export const AddScheduleDeploymentModal = props => {
               defaultValue={selectedCluster}
               placeholder="Select Source Cluster"
               required
-              //   disabled={isObject(clusterLogin)}
             />
           </div>
         </div>
@@ -113,7 +114,6 @@ export const AddScheduleDeploymentModal = props => {
               //   defaultValue={clusterLogin}
               placeholder="Select Destination Cluster"
               required
-              //   disabled={isObject(clusterLogin)}
             />
           </div>
           <div className="col-6">
@@ -125,7 +125,6 @@ export const AddScheduleDeploymentModal = props => {
             />
           </div>
         </div>
-
         <UserSelect control={control} errors={errors} />
       </Modal>
     </div>
