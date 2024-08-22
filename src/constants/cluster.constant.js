@@ -51,4 +51,6 @@ export const CLUSTER_CONSTANTS = {
   DELETE_CLUSTER: 'Delete Cluster',
   SELECTED_CLUSTER: 'Selected Cluster',
   SEARCH_CLUSTER_NAME_URL: 'Search Cluster Name, Status, URL',
+  ENTER_EMAIL: 'Enter your Email',
+  ENTER_META_TITLE: 'Enter Meta Title',
 };

@@ -15,6 +15,7 @@ import {
   NameSpaceIcon,
   PeopleIcon,
   ReadyFlowIcon,
+  SettingSmallIcon,
 } from '../assets';
 import { FullPageLoader } from '../components';
 import {
@@ -33,6 +34,7 @@ import {
   ReadyFlowGallary,
   Reset,
   SessionExpired,
+  Setting,
   Success,
   UserLogin,
 } from '../pages';
@@ -191,6 +193,18 @@ export const ROUTES_MENU = [
       },
     ],
     hidden: true,
+  },
+  {
+    name: 'Setting',
+    path: 'setting',
+    icon: SettingSmallIcon,
+    pages: [
+      {
+        path: '',
+        component: <Setting />,
+      },
+    ],
+    isSideBarHidden: true,
   },
 ];
 

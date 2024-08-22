@@ -104,6 +104,9 @@ export const KDFM = {
   DESCRIPTION: 'Description',
   HELP_AND_SUPPORT: 'Help & Support',
   SOMETHING_WENT_WRONG: 'Something went wrong',
+  SAVE_SETTINGS: 'Save Settings',
+  EMAIL: 'Email',
+  META_TITLE: 'Meta Title',
 
   // License constants
   TRIAL: 'Trial',

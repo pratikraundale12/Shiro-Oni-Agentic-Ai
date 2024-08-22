@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { history } from '../helpers/history';
 
 import {
   // BellIcon,
@@ -267,7 +268,10 @@ export const Header = ({ isOpenSidebar }) => {
 
     return () => clearTimeout(timer);
   }, []);
-
+  const handleRoute = path => {
+    dispatch(AuthenticationActions.setRoute(path));
+    history.push(`/${path}`);
+  };
   return (
     <>
       <Container>
@@ -277,7 +281,7 @@ export const Header = ({ isOpenSidebar }) => {
         <ButtonContainer>
           <div className="d-none d-lg-inline">
             <div className="d-flex">
-              <IconButton>
+              <IconButton onClick={() => handleRoute('setting')}>
                 <SettingSmallIcon />
               </IconButton>
               <IconCusterButton

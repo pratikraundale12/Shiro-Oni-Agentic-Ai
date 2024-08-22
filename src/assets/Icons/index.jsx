@@ -80,3 +80,6 @@ export * from './UserUploadIcon';
 export * from './WhiteBoradIcon';
 export * from './canvasYIcon';
 export * from './LdapConfigIcon';
+export * from './LogoFieldIcon';
+export * from './UploadIcon';
+export * from './RefreshIcon';

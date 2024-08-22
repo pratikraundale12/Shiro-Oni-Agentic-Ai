@@ -108,22 +108,25 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
       </button>
       <KsolvesDataFlowIcon width={200} height={80} />
       <List>
-        {ROUTES_MENU.filter(item => !item.hidden).map(item => {
-          const active = item.path === route;
-          return (
-            <Item
-              key={item.path}
-              active={active}
-              onClick={() => handleRoute(item.path)}
-            >
-              <item.icon
-                color={active ? theme.colors.white : theme.colors.darker}
-              />
-              <span>{item.name}</span>
-            </Item>
-          );
-        })}
+        {ROUTES_MENU.filter(item => !item.hidden && !item.isSideBarHidden).map(
+          item => {
+            const active = item.path === route;
+            return (
+              <Item
+                key={item.path}
+                active={active}
+                onClick={() => handleRoute(item.path)}
+              >
+                <item.icon
+                  color={active ? theme.colors.white : theme.colors.darker}
+                />
+                <span>{item.name}</span>
+              </Item>
+            );
+          }
+        )}
       </List>
+
       <HelpSupportConatiner>
         <Item active={false}>
           <QuestionMarkIcon />
