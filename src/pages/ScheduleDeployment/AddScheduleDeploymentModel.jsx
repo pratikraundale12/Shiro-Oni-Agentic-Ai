@@ -5,9 +5,6 @@ import { useForm } from 'react-hook-form';
 import { Button, DateTimeInput, Modal, SelectField } from '../../shared';
 import { PlusCircleIcon, QRIcons } from '../../assets';
 import { useGlobalContext } from '../../utils';
-// import {
-//   userSchema,
-// } from '../../components/UserManagement/userValidation';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   ClustersSelectors,
@@ -31,9 +28,10 @@ export const AddScheduleDeploymentModal = props => {
   const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
   const [startDate, setStartDate] = useState(new Date());
+  const [clusterList] = useState(useSelector(ClustersSelectors.getClusters));
+  const [namespaceSelected, setNamespaceSelected] = useState(null);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const namespaces = useSelector(NamespacesSelectors.getNamespaces);
-  const clusterList = useSelector(ClustersSelectors.getClusters);
 
   const {
     // register,
@@ -44,24 +42,10 @@ export const AddScheduleDeploymentModal = props => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(scheduleSchema),
-    // defaultValues: {
-    //   source_cluster_id: selectedCluster,
-    // },
   });
 
-  const selectedNamespace = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
-
-  console.log(selectedCluster, selectedNamespace, 'selectedCluster>>>>>>');
-  console.log(namespaces, 'namespaces????????');
   const onNamespaceSelect = selectedItem => {
-    dispatch(NamespacesActions.setSelectedNamespace(selectedItem));
-  };
-
-  const onClusterSelect = value => {
-    dispatch(NamespacesActions.fetchNamespaces());
-    dispatch(NamespacesActions.setSelectedCluster(value));
+    setNamespaceSelected(selectedItem?.label);
   };
 
   const openModal = () => setState({ ...state, scheduleModel: true });
@@ -74,7 +58,15 @@ export const AddScheduleDeploymentModal = props => {
   };
 
   const onSubmit = async data => {
-    console.log(data);
+    const { approver_ids, ...rest } = data;
+    const payload = {
+      ...rest,
+      scheduled_time: startDate.toISOString(),
+      namespace_name: namespaceSelected,
+      approver_ids: [approver_ids],
+      deployment_status: 'PENDING',
+    };
+    console.log(payload, '??????????');
   };
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {
@@ -137,7 +129,6 @@ export const AddScheduleDeploymentModal = props => {
               options={clusterList}
               defaultValue={selectedCluster}
               placeholder="Select Source Cluster"
-              onChange={onClusterSelect}
               required
             />
           </div>
@@ -151,7 +142,6 @@ export const AddScheduleDeploymentModal = props => {
               icon={<QRIcons />}
               errors={errors}
               options={clusterList}
-              //   defaultValue={clusterLogin}
               placeholder="Select Destination Cluster"
               required
             />
@@ -161,6 +151,8 @@ export const AddScheduleDeploymentModal = props => {
               startDate={startDate}
               setStartDate={setStartDate}
               label="Deploy Time"
+              control={control}
+              errors={errors}
               required
             />
           </div>

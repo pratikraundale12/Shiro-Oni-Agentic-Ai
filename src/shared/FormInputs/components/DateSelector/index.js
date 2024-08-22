@@ -35,11 +35,13 @@ const DateTimeInput = ({
   setStartDate,
   label,
   required = false,
+  control,
+  errors,
 }) => {
   return (
     <Container>
       {label && (
-        <label>
+        <label className="mb-2">
           {label}
           {required && <span className="required">&nbsp;*</span>}
         </label>
@@ -53,6 +55,8 @@ const DateTimeInput = ({
         timeIntervals={15}
         timeCaption="time"
         dateFormat="MMMM d, yyyy h:mm aa"
+        control={control}
+        errors={errors}
       />
     </Container>
   );
@@ -64,4 +68,6 @@ DateTimeInput.propTypes = {
   label: PropTypes.string,
   setStartDate: PropTypes.func,
   required: PropTypes.string,
+  control: PropTypes.object,
+  errors: PropTypes.object,
 };
