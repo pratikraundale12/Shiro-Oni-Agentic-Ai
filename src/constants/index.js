@@ -67,10 +67,10 @@ export const CLUSTER_STATUS = {
 export const MODULE_LIST_MAP = [
   { label: 'All', value: 'all' },
   // { label: 'Dashboard', value: 'dashboard' },
-  { label: 'Clusters', value: 'cluster' },
+  { label: 'Cluster', value: 'cluster' },
   { label: 'Registry', value: 'registry' },
-  { label: 'Namespaces', value: 'namespace' },
-  { label: 'Users', value: 'user' },
+  { label: 'Namespace', value: 'namespace' },
+  { label: 'User', value: 'user' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
