@@ -49,5 +49,6 @@ export const CLUSTER_CONSTANTS = {
   TEST_CLUSTER: 'Test Cluster',
   TEST_REGISTRY: 'Test Registry',
   DELETE_CLUSTER: 'Delete Cluster',
+  SELECTED_CLUSTER: 'Selected Cluster',
   SEARCH_CLUSTER_NAME_URL: 'Search Cluster Name, Status, URL',
 };

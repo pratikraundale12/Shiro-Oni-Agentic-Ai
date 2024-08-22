@@ -18,6 +18,8 @@ const ModalBody = styled.div`
   flex: 1 1 auto;
 `;
 const ModalIcon = styled.div`
+  width: 70px;
+  height: 70px;
   align-items: center;
   justify-content: center;
 `;
@@ -87,9 +89,9 @@ const CountDiv = styled.div`
   max-height: 48px;
   min-height: 48px;
   min-width: 48px;
-  border: 1px solid #dde4f0;
+  /* border: 1px solid #dde4f0;
   border-radius: 8px;
-  background-color: #f5f7fa;
+  background-color: #f5f7fa; */
   cursor: pointer;
   position: relative;
   display: flex;
@@ -97,13 +99,13 @@ const CountDiv = styled.div`
   justify-content: center;
 
   & span {
-    position: absolute;
     top: 0px;
     right: 2px;
     font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     line-height: 23px;
+    margin-left: 8px;
     color: #b5bdc8;
   }
 
@@ -189,6 +191,7 @@ const NamespaceDeploy = ({
         primaryButtonText="Go to Nifi Instance"
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={handleClick}
+        footerAlign="start"
         secondaryButtonProps={{
           disabled: !deployOrUpgradeDetails?.parameterContextId,
         }}
@@ -200,14 +203,16 @@ const NamespaceDeploy = ({
         }}
       >
         <ModalBody className="modal-body">
-          <ModalIcon className="d-flex ">
-            <GreenRightCircleIcon />
-          </ModalIcon>
-          <ModalHFive className="pt-4 mt-2 mb-0 ">
-            {`${checkDestCluster.name} is successfully 
-            ${checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'deployed'} to
-            ${selectedDestCluster?.label} instance`}
-          </ModalHFive>
+          <div className="d-flex justify-content-center align-items-center">
+            <ModalIcon className="d-flex me-3 ">
+              <GreenRightCircleIcon />
+            </ModalIcon>
+            <ModalHFive>
+              Namespace successfully {''}
+              {checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'deployed'} to
+              {''} {selectedDestCluster?.label}
+            </ModalHFive>
+          </div>
           <RowModal>
             <ColumnThree className="col-4 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
@@ -217,42 +222,6 @@ const NamespaceDeploy = ({
                 </SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
-            <CustomNine className="col-8 mb-3">
-              <ActiveButtonContainer className="d-flex ">
-                <CountDiv
-                  className="div-btn-1"
-                  count={deployOrUpgradeDetails?.runningCount}
-                  activeColor="#58e715"
-                >
-                  <TriangleIcons color="#B5BDC8" />
-                  <span>{deployOrUpgradeDetails?.runningCount}</span>
-                </CountDiv>
-                <CountDiv
-                  className="div-btn-2"
-                  count={deployOrUpgradeDetails?.stoppedCount}
-                  activeColor="#c52b2b"
-                >
-                  <SquareBoxIcon color="#B5BDC8" />
-                  <span>{deployOrUpgradeDetails?.stoppedCount}</span>
-                </CountDiv>
-                <CountDiv
-                  className="div-btn-3"
-                  count={deployOrUpgradeDetails?.invalidCount}
-                  activeColor="#CF9F5D"
-                >
-                  <TriangleExclamationMarkIcon color="#B5BDC8" />
-                  <span>{deployOrUpgradeDetails?.invalidCount}</span>
-                </CountDiv>
-                <CountDiv
-                  className="div-btn-4"
-                  count={deployOrUpgradeDetails?.disabledCount}
-                  activeColor="#2c7cf3"
-                >
-                  <SmallNotThunderIcon color="#B5BDC8" />
-                  <span>{deployOrUpgradeDetails?.disabledCount}</span>
-                </CountDiv>
-              </ActiveButtonContainer>
-            </CustomNine>
             <ColumnThree className="col-4 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
                 <ActionTitleSet className="mb-0 ">
@@ -261,6 +230,58 @@ const NamespaceDeploy = ({
                 <SubTitleSet className="mb-0 ">{formData?.version}</SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
+            <CustomNine className="col-8 mb-3">
+              <ActiveButtonContainer className="d-flex ">
+                <div className="col-6">
+                  <div className="d-flex align-items-center">
+                    <CountDiv
+                      className="div-btn-1"
+                      count={deployOrUpgradeDetails?.runningCount}
+                      activeColor="#58e715"
+                    >
+                      <TriangleIcons color="#B5BDC8" />
+                      <span>{deployOrUpgradeDetails?.runningCount}</span>
+                    </CountDiv>
+                    <div>Running Processors</div>
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <CountDiv
+                      className="div-btn-2"
+                      count={deployOrUpgradeDetails?.stoppedCount}
+                      activeColor="#c52b2b"
+                    >
+                      <SquareBoxIcon color="#B5BDC8" />
+                      <span>{deployOrUpgradeDetails?.stoppedCount}</span>
+                    </CountDiv>
+                    <div>Stopped Processors</div>
+                  </div>
+                </div>
+                <div className="col-6">
+                  <div className="d-flex align-items-center">
+                    <CountDiv
+                      className="div-btn-3"
+                      count={deployOrUpgradeDetails?.invalidCount}
+                      activeColor="#CF9F5D"
+                    >
+                      <TriangleExclamationMarkIcon color="#B5BDC8" />
+                      <span>{deployOrUpgradeDetails?.invalidCount}</span>
+                    </CountDiv>
+                    <div>Invalid Processors</div>
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <CountDiv
+                      className="div-btn-4"
+                      count={deployOrUpgradeDetails?.disabledCount}
+                      activeColor="#2c7cf3"
+                    >
+                      <SmallNotThunderIcon color="#B5BDC8" />
+                      <span>{deployOrUpgradeDetails?.disabledCount}</span>
+                    </CountDiv>
+                    <div>Disabled Processors</div>
+                  </div>
+                </div>
+              </ActiveButtonContainer>
+            </CustomNine>
             <CustomNine className="col-8 mb-3">
               <ActiveButtonContainer className="d-flex ">
                 <ActiveButtonDiv className="div-btn-1">

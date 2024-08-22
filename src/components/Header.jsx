@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import {
-  BellIcon,
+  // BellIcon,
   ClusterIcon,
   DownArrowIcon,
-  HeadphoneIcon,
+  // HeadphoneIcon,
   LockIcon,
   SettingSmallIcon,
   UserIcon,
@@ -62,7 +62,8 @@ const ButtonContainer = styled.div`
 const ProfileButton = styled.button`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  min-width: 8rem;
   border-radius: 50px;
   padding: 6px;
   background-color: ${props => props.theme.colors.lightGrey};
@@ -131,6 +132,10 @@ const Item = styled.div`
   color: ${props => props.theme.colors.darker};
   border-bottom: 1px solid ${props => props.theme.colors.border};
 
+  & .profile-icon {
+    flex-shrink: 0;
+  }
+
   &:hover {
     background-color: ${props => props.theme.colors.lightGrey1};
   }
@@ -159,8 +164,19 @@ const IconCusterButton = styled.button`
 const NameDiv = styled.div`
   font-family: ${props => props.theme.fontNato};
   color: ${props => props.theme.colors.darker};
-  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
   font-weight: 500;
+  line-height: 24px;
+`;
+const StatusDiv = styled.div`
+  width: 4px;
+  height: 4px;
+  background-color: #0cbf59;
+  border-radius: 50%;
+  margin-right: 4px;
 `;
 
 const UserModal = styled(AddUserModal)`
@@ -179,7 +195,7 @@ const ProfileDropdown = () => {
   const options = [
     {
       label: 'Profile',
-      icon: <UserIcon width={14} height={14} />,
+      icon: <UserIcon width={18} height={18} />,
       onClick: () => {
         setState(prev => ({
           ...prev,
@@ -191,8 +207,11 @@ const ProfileDropdown = () => {
     },
     {
       label: 'Logout',
-      icon: <LockIcon width={14} height={14} />,
-      onClick: () => dispatch(AuthenticationActions.logout()),
+      icon: <LockIcon width={18} height={18} />,
+      onClick: () => {
+        localStorage.clear();
+        dispatch(AuthenticationActions.logout());
+      },
     },
   ];
 
@@ -223,7 +242,8 @@ const ProfileDropdown = () => {
       <List show={showMenu}>
         {options.map((item, idx) => (
           <Item key={idx} onClick={item.onClick}>
-            {item.icon} <Option>{item.label}</Option>
+            <span className="profile-icon">{item.icon}</span>
+            <Option>{item.label}</Option>
           </Item>
         ))}
       </List>
@@ -257,23 +277,28 @@ export const Header = ({ isOpenSidebar }) => {
         <ButtonContainer>
           <div className="d-none d-lg-inline">
             <div className="d-flex">
+              <IconButton>
+                <SettingSmallIcon />
+              </IconButton>
               <IconCusterButton
                 onClick={() =>
                   dispatch(AuthenticationActions.setClusterLogin(true))
                 }
               >
                 <ClusterIcon />
-                <NameDiv> {selectedCluster?.label}</NameDiv>
+                {selectedCluster?.label && (
+                  <NameDiv>
+                    <StatusDiv /> {selectedCluster.label}
+                  </NameDiv>
+                )}
+                {selectedCluster?.label && <DownArrowIcon />}
               </IconCusterButton>
-              <IconButton>
+              {/* <IconButton>
                 <HeadphoneIcon />
               </IconButton>
               <IconButton>
                 <BellIcon />
-              </IconButton>
-              <IconButton>
-                <SettingSmallIcon />
-              </IconButton>
+              </IconButton> */}
             </div>
           </div>
           <ProfileDropdown />

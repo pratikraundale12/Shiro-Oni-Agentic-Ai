@@ -63,9 +63,16 @@ const StyledButton = styled.button.withConfig({
 
   &:disabled {
     cursor: not-allowed;
-    background: ${props => props.theme.colors.primaryDisabled};
-    color: ${props => props.theme.colors.white};
-    border: none;
+    background: ${props =>
+      props.variant === 'primary'
+        ? props.theme.colors.primaryDisabled
+        : props.theme.colors.white};
+    color: ${props =>
+      props.variant === 'primary'
+        ? props.theme.colors.white
+        : props.theme.colors.lightGrey3};
+    border-color: ${props =>
+      props.variant === 'primary' ? 'none' : props.theme.colors.lightGrey3};
   }
 
   svg {

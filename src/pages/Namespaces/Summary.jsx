@@ -1,13 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
-import styled from 'styled-components';
-import { TodoIcon } from '../../assets/Icons/TodoIcon';
-import { Button } from '../../shared';
-import Breadcrumb from '../../shared/Breadcrumb';
-import NamespaceDeploy from './NamespaceDeploy';
-// import AddParameterContext from './AddParameterContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import styled from 'styled-components';
 import {
   SmallNotThunderIcon,
   SmallThunderIcon,
@@ -15,8 +10,12 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { TodoIcon } from '../../assets/Icons/TodoIcon';
 import { FullPageLoader } from '../../components';
+import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
+import { Button } from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import {
@@ -32,6 +31,7 @@ import {
 import { useGlobalContext } from '../../utils';
 import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
+import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
 
 const MainContainer = styled.div`
@@ -290,10 +290,10 @@ const TextDiv = styled.div`
 `;
 
 const breadcrumbData = [
-  { label: 'Namespace List', path: '/namespaces' },
-  { label: 'Select Namespace', path: '/namespaces/deploy' },
-  { label: 'Configuration Details', path: '/namespaces/upgrade' },
-  { label: 'Summary' },
+  { label: KDFM.NAMESPACE_LIST, path: '/namespaces' },
+  { label: KDFM.SELECTED_NAMESPACE, path: '/namespaces/deploy' },
+  { label: KDFM.CONFIGURATION_DETAILS, path: '/namespaces/upgrade' },
+  { label: KDFM.SUMMARY },
 ];
 
 const Summary = () => {
@@ -431,7 +431,7 @@ const Summary = () => {
             <TodoIcon />
           </div>
           <MainTitleHfour className="mb-0">
-            {`${checkDestCluster.mode} Namespace`}
+            {`${checkDestCluster.mode} ${KDFM.NAMESPACE}`}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
@@ -444,7 +444,7 @@ const Summary = () => {
             <div className="col-12 p-3">
               <ConfigTitle className="config-title">
                 <ConfigTitleHTwo className="p-3 mb-0">
-                  <span>Summary</span>
+                  <span>{KDFM.SUMMARY}</span>
                 </ConfigTitleHTwo>
               </ConfigTitle>
             </div>
@@ -453,7 +453,7 @@ const Summary = () => {
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                   <div>
                     <SummaryDetailsHFourTag className="mb-2">
-                      Selected Cluster
+                      {KDFM.SELECTED_CLUSTER}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       {selectedDestCluster?.label}
@@ -463,7 +463,7 @@ const Summary = () => {
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                   <div>
                     <SummaryDetailsHFourTag className="mb-2">
-                      Namespace
+                      {KDFM.NAMESPACE}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       {checkDestCluster.name}
@@ -473,7 +473,7 @@ const Summary = () => {
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                   <div>
                     <SummaryDetailsHFourTag className="mb-2">
-                      Registry URL
+                      {KDFM.REGISTRY_URL}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
@@ -488,7 +488,7 @@ const Summary = () => {
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                   <div>
                     <SummaryDetailsHFourTag className="mb-2">
-                      NiFi URL
+                      {KDFM.NIFI_URL}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
@@ -501,7 +501,7 @@ const Summary = () => {
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                   <div>
                     <SummaryDetailsHFourTag className="mb-2">
-                      Current Version
+                      {KDFM.CURRENT_VERSION}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       {checkDestCluster.version || 'N/A'}
@@ -511,7 +511,7 @@ const Summary = () => {
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                   <div className="summary-details">
                     <SummaryDetailsHFourTag className="mb-2">
-                      Updated Version
+                      {KDFM.UPDATED_VERSION}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       {formData.version || checkDestCluster.version}
@@ -526,7 +526,7 @@ const Summary = () => {
                 <div className="col-12 p-3">
                   <ConfigTitle className="config-title">
                     <ConfigTitleHTwo className="p-3 mb-0">
-                      <span>Flow Control</span>
+                      <span>{KDFM.FLOW_CONTROL}</span>
                     </ConfigTitleHTwo>
                   </ConfigTitle>
                 </div>
@@ -535,7 +535,7 @@ const Summary = () => {
                     <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                       <div className="summary-details">
                         <SummaryDetailsHFourTag className="mb-2">
-                          Namespace
+                          {KDFM.NAMESPACE}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
                           {checkDestCluster.name}
@@ -545,7 +545,7 @@ const Summary = () => {
                     <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                       <div className="summary-details">
                         <SummaryDetailsHFourTag className="mb-2">
-                          Current Version
+                          {KDFM.CURRENT_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
                           {checkDestCluster.version}
@@ -555,7 +555,7 @@ const Summary = () => {
                     <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                       <div className="summary-details">
                         <SummaryDetailsHFourTag className="mb-2">
-                          Updated Version
+                          {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
                           {formData.version || checkDestCluster.version}
@@ -572,7 +572,6 @@ const Summary = () => {
               <CustomNine className="col-4 mb-3">
                 <ActiveButtonContainer className="d-flex ">
                   <TextDiv className="d-flex">
-                    {' '}
                     <CountDiv
                       className="div-btn-1 mr-2"
                       count={
@@ -587,7 +586,7 @@ const Summary = () => {
                           checkDestCluster.runningCount}
                       </span>
                     </CountDiv>
-                    <div>Running Processors</div>
+                    <div>{KDFM.RUNNING_PROCESSORS}</div>
                   </TextDiv>
                   <TextDiv className="d-flex">
                     <CountDiv
@@ -604,7 +603,7 @@ const Summary = () => {
                           state?.deployCountDetails?.data?.stoppedCount}
                       </span>
                     </CountDiv>
-                    <div>Stopped Processors</div>
+                    <div>{KDFM.STOPPED_PROCESSORS}</div>
                   </TextDiv>
                   <TextDiv className="d-flex">
                     <CountDiv
@@ -621,7 +620,7 @@ const Summary = () => {
                           state?.deployCountDetails?.data?.invalidCount}
                       </span>
                     </CountDiv>
-                    <div>Invalid Processors</div>
+                    <div>{KDFM.INVALID_PROCESSORS}</div>
                   </TextDiv>
                   <TextDiv className="d-flex">
                     <CountDiv
@@ -638,7 +637,7 @@ const Summary = () => {
                           checkDestCluster.disabledCount}
                       </span>
                     </CountDiv>
-                    <div>Disabled Processors</div>
+                    <div>{KDFM.DISABLED_PROCESSORS}</div>
                   </TextDiv>
                 </ActiveButtonContainer>
               </CustomNine>
@@ -658,7 +657,7 @@ const Summary = () => {
                       <TriangleIcons color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
-                  <div className="mr-2">Running Flow</div>
+                  <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
                 </TextsvgDiv>
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-2 mr-2">
@@ -673,7 +672,7 @@ const Summary = () => {
                       <SquareBoxIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
-                  <div>Stopped Flow</div>
+                  <div>{KDFM.STOPPED_FLOW}</div>
                 </TextsvgDiv>
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-3 mr-2">
@@ -688,7 +687,7 @@ const Summary = () => {
                       <SmallThunderIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
-                  <div>Enabled Flow</div>
+                  <div>{KDFM.ENABLED_FLOW}</div>
                 </TextsvgDiv>
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-4 mr-2">
@@ -703,7 +702,7 @@ const Summary = () => {
                       <SmallNotThunderIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
-                  <div>Disabled Flow</div>
+                  <div>{KDFM.DISABLED_FLOW}</div>
                 </TextsvgDiv>
               </ActiveButtonContainer>
             )}
@@ -713,7 +712,7 @@ const Summary = () => {
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button variant="secondary" onClick={handleBackClick}>
-            Back
+            {KDFM.BACK}
           </Button>
           <Button
             onClick={
@@ -722,13 +721,13 @@ const Summary = () => {
                 : handleUpgradeClick
             }
           >
-            {checkDestCluster.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}
+            {checkDestCluster.mode !== 'upgrade' ? KDFM.DEPLOY : KDFM.UPGRADE}
           </Button>
         </BottomButtonDiv>
         {checkDestCluster.mode === 'upgrade' && (
           <Progressox className="w-100">
             <ProgressLabel className="progress-label">
-              Updating Flow
+              {KDFM.UPDATING_FLOW}
             </ProgressLabel>
             <CustomRedProgress className="progress w-100 custom-red-progress">
               <ProgressBar

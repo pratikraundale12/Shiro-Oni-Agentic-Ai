@@ -13,6 +13,12 @@ export const RolesActions = {
   setSelectedRole: createAction(`${prefix}setSelectedRole`),
   permissionModal: createAction(`${prefix}permissionModal`),
   setAccessType: createAction(`${prefix}setAccessType`),
+  createNewRole: createAction(`${prefix}createNewRole`),
+  roleModal: createAction(`${prefix}roleModal`),
+  fetchLdap: createAction(`${prefix}fetchLdap`),
+  fetchLdapSuccess: createAction(`${prefix}fetchLdapSuccess`),
+  displayGroup: createAction(`${prefix}displayGroup`),
+  updateLdapGroup: createAction(`${prefix}updateLdapGroup`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -22,6 +28,9 @@ export const ROLES_INITIAL_STATE = {
   rolesClusters: [],
   permissionModal: false,
   accessType: ACCESS_OPTIONS[0],
+  roleModal: false,
+  formData: [],
+  displayGroup: true,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -31,6 +40,10 @@ export const RolesSelectors = {
   getRolesClusters: state => state.roles.rolesClusters,
   getPermissionModal: state => state.roles.permissionModal,
   getAccessType: state => state.roles.accessType,
+  getRoleModal: state => state.roles.roleModal,
+  getLdapGroup: state => state.roles.formData,
+  getDiplayData: state => state.roles.displayGroup,
+  getupdatedData: state => state.roles.formData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -41,6 +54,22 @@ const fetchRolesSuccess = (state, { payload }) => {
     selectedRole: payload.data?.[0]?.id,
   };
 };
+
+const fetchLdapSuccess = (state, { payload }) => {
+  const { groups } = payload;
+  const { data: roles } = state;
+
+  const formData = groups.map(item => ({
+    ldap_group_name: item.name,
+    role_id: roles.find(role => role.ldap_group_name === item.name)?.id,
+  }));
+
+  return {
+    ...state,
+    formData,
+  };
+};
+
 const fetchRolesClustersSuccess = (state, { payload }) => {
   return {
     ...state,
@@ -71,6 +100,25 @@ const setAccessType = (state, { payload }) => {
     accessType: payload,
   };
 };
+const roleModal = state => {
+  return {
+    ...state,
+    roleModal: !state.roleModal,
+  };
+};
+const displayGroup = state => {
+  return {
+    ...state,
+    displayGroup: !state.displayGroup,
+  };
+};
+const updateLdapGroup = (state, { payload }) => {
+  console.log(payload, '..........');
+  return {
+    ...state,
+    formData: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
@@ -79,5 +127,9 @@ export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
     .addCase(RolesActions.fetchRolesClustersSuccess, fetchRolesClustersSuccess)
     .addCase(RolesActions.setSelectedRole, setSelectedRole)
     .addCase(RolesActions.permissionModal, permissionModal)
-    .addCase(RolesActions.setAccessType, setAccessType);
+    .addCase(RolesActions.setAccessType, setAccessType)
+    .addCase(RolesActions.roleModal, roleModal)
+    .addCase(RolesActions.fetchLdapSuccess, fetchLdapSuccess)
+    .addCase(RolesActions.displayGroup, displayGroup)
+    .addCase(RolesActions.updateLdapGroup, updateLdapGroup);
 });

@@ -41,6 +41,11 @@ const Footer = styled.div`
   display: flex;
   gap: 1rem;
   align-self: ${props => props.footerAlign};
+  flex-wrap: wrap;
+
+  & > * {
+    flex: 1;
+  }
 `;
 
 const CloseIcon = styled(CrossIcons)`

@@ -1,14 +1,15 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 
-import { theme } from '../styles';
-import { ROUTES_MENU } from '../routes';
 import { KsolvesDataFlowIcon } from '../assets';
-import { AuthenticationActions, AuthenticationSelectors } from '../store';
-import { history } from '../helpers/history';
 import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
+import { KDFM } from '../constants';
+import { history } from '../helpers/history';
+import { ROUTES_MENU } from '../routes';
+import { AuthenticationActions, AuthenticationSelectors } from '../store';
+import { theme } from '../styles';
 
 const Container = styled.div`
   height: 100%;
@@ -85,6 +86,12 @@ const HelpSupportConatiner = styled.div`
   width: 100%;
 `;
 
+const KDFMVersion = styled.div`
+  color: ${props => props.theme.colors.darker};
+  font-size: 14px;
+  font-weight: 500;
+`;
+
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
   const route = useSelector(AuthenticationSelectors.getRoute);
@@ -118,14 +125,15 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
         })}
       </List>
       <HelpSupportConatiner>
-        <Item
-          active={false}
-          // onClick={() => }
-        >
+        <Item active={false}>
           <QuestionMarkIcon />
-          <span>Help & Support</span>
+          <span>{KDFM.HELP_AND_SUPPORT}</span>
         </Item>
       </HelpSupportConatiner>
+      <KDFMVersion>
+        {/* FIX_ME: Later will come from API */}
+        <span>Version 1.0.0</span>
+      </KDFMVersion>
     </Container>
   );
 };

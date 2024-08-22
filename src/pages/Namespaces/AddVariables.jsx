@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
+import { KDFM } from '../../constants';
 import { CheckboxField, InputField, Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-// import { useGlobalContext } from '../../utils';
 
 const ModalBody = styled.div`
   position: relative;
@@ -80,7 +80,7 @@ const AddVariables = ({
       isAddVariablesOpen?.mode === 'add';
 
     if (isDuplicate) {
-      toast.info('Parameter with same name already exists');
+      toast.info(KDFM.VARIABLE_ALREADY_EXISTS);
       return;
     }
 
@@ -131,13 +131,16 @@ const AddVariables = ({
   return (
     <Modal
       title={
-        isAddVariablesOpen?.mode === 'add' ? 'Add variables' : 'Edit Variables'
+        isAddVariablesOpen?.mode === 'add'
+          ? KDFM.ADD_VARIABLES
+          : KDFM.EDIT_VARIABLES
       }
       isOpen={isAddVariablesOpen?.isOpen}
       onRequestClose={closePopup}
       size="md"
-      secondaryButtonText="Back"
-      primaryButtonText="Add"
+      secondaryButtonText={KDFM.BACK}
+      primaryButtonText={KDFM.SAVE}
+      footerAlign="start"
       onSubmit={handleSubmit(handleAddEditVariables)}
     >
       <ModalBody className="modal-body">
@@ -145,7 +148,7 @@ const AddVariables = ({
           <InputField
             name="name"
             type="text"
-            label="Name"
+            label={KDFM.NAME}
             icon={<QRIcons />}
             disabled={isAddVariablesOpen?.mode === 'edit'}
             register={register}
@@ -153,15 +156,15 @@ const AddVariables = ({
           <InputField
             name="value"
             type="text"
-            label="Value"
+            label={KDFM.VALUE}
             icon={<QRIcons />}
-            placeholder={check ? 'Empty String Set' : ''}
+            placeholder={check ? KDFM.EMPTY_STRING_SET : ''}
             disabled={check}
             register={register}
           />
           <CheckboxField
             name="check"
-            label="Set Empty String"
+            label={KDFM.SET_EMPTY_STRING}
             register={register}
           />
           {/* Add a submit button here if not using Modal's submit functionality */}

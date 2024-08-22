@@ -12,6 +12,7 @@ import {
 import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
 import RightIcon from '../../assets/Icons/RightIcon';
 import { Table } from '../../components';
+import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
@@ -192,15 +193,15 @@ const Upgrade = () => {
 
   const COLUMNS = [
     {
-      label: 'Version',
+      label: KDFM.VERSION,
       renderCell: item => <div>{item.version}</div>,
     },
     {
-      label: 'Created',
+      label: KDFM.CREATED,
       renderCell: item => <div>{convertDate(item.createdAt)}</div>,
     },
     {
-      label: 'Comment',
+      label: KDFM.COMMENT,
       renderCell: item => <div>{item.comments}</div>,
     },
     {
@@ -218,9 +219,9 @@ const Upgrade = () => {
     },
   ];
   const breadcrumbData = [
-    { label: 'Namespace List', path: '/namespaces' },
-    { label: 'Select Namespace', path: '/namespaces/deploy' },
-    { label: 'Configuration Details' },
+    { label: KDFM.NAMESPACE_LIST, path: '/namespaces' },
+    { label: KDFM.SELECT_CLUSTER, path: '/namespaces/deploy' },
+    { label: KDFM.CONFIGURATION_DETAILS },
   ];
 
   const handleClick = () => {
@@ -268,7 +269,7 @@ const Upgrade = () => {
             <TodoIcon />
           </div>
           <MainTitleHfour className="mb-0">
-            {`${checkDestCluster.mode} Namespace`}
+            {`${checkDestCluster.mode} ${KDFM.NAMESPACE}`}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
@@ -282,7 +283,7 @@ const Upgrade = () => {
               <StyledInputField
                 name="cluster"
                 type="text"
-                label="Selected Cluster"
+                label={KDFM.SELECTED_CLUSTER}
                 value={selectedDestCluster.label}
                 icon={<QRIcons />}
                 disabled
@@ -294,7 +295,7 @@ const Upgrade = () => {
                   <InputField
                     name="namespace"
                     type="text"
-                    label="Selected Namespace"
+                    label={KDFM.SELECTED_NAMESPACE}
                     value={checkDestCluster.name}
                     icon={<QRIcons />}
                     disabled
@@ -308,7 +309,7 @@ const Upgrade = () => {
                   <InputField
                     name="x"
                     type="text"
-                    label="Canvas Position"
+                    label={KDFM.CANVAS_POSITION}
                     value={formData.position.x}
                     icon={<CanvasXIcon />}
                     disabled={checkDestCluster.mode === 'upgrade'}
@@ -338,7 +339,7 @@ const Upgrade = () => {
                       <InputField
                         name="currentVersion"
                         type="text"
-                        label="Current Version"
+                        label={KDFM.CURRENT_VERSION}
                         placeholder="N/A"
                         value={checkDestCluster.version}
                         icon={<QRIcons />}
@@ -349,7 +350,7 @@ const Upgrade = () => {
                       <InputField
                         name="currentState"
                         type="text"
-                        label="Current State"
+                        label={KDFM.CURRENT_STATE}
                         value={checkDestCluster.stateExplanation}
                         icon={getIconForState(checkDestCluster.state)}
                         disabled
@@ -365,8 +366,8 @@ const Upgrade = () => {
                   <InputField
                     name="nifiurl"
                     type="text"
-                    label="Nifi URL"
-                    placeholder="Nifi Namespace"
+                    label={KDFM.NIFI_URL}
+                    placeholder={KDFM.ENTER_NIFI_URL}
                     value={checkDestCluster.nifiUrl}
                     icon={<LinkIcon />}
                     disabled
@@ -376,8 +377,8 @@ const Upgrade = () => {
                   <InputField
                     name="registry_url"
                     type="text"
-                    label="Registry URL"
-                    placeholder="Nifi Namespace"
+                    label={KDFM.REGISTRY_URL}
+                    placeholder={KDFM.ENTER_REGISTRY_URL}
                     value={checkDestCluster.registryUrl}
                     icon={<LinkIcon />}
                     disabled
@@ -386,7 +387,7 @@ const Upgrade = () => {
               </RowConfig>
             </div>
           </RowConfig>
-          <VersionDiv>Version Control</VersionDiv>
+          <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
           <Table
             data={[...checkDestCluster.versionList].sort(
               (a, b) => a.version - b.version
@@ -398,7 +399,7 @@ const Upgrade = () => {
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button variant="secondary" onClick={handleBackClick}>
-            Back
+            {KDFM.BACK}
           </Button>
           <Button
             onClick={handleClick}
@@ -407,7 +408,7 @@ const Upgrade = () => {
               (!formData.version || isStateStale)
             }
           >
-            {checkDestCluster.mode === 'upgrade' ? 'Upgrade' : 'Deploy'}
+            {checkDestCluster.mode === 'upgrade' ? KDFM.UPGRADE : KDFM.DEPLOY}
           </Button>
         </BottomButtonDiv>
       </BottomButton>

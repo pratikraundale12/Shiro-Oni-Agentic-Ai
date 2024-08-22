@@ -36,7 +36,7 @@ const Para = styled.p`
   margin-inline-end: 0px;
 `;
 
-export const SyncUsersSuccess = ({ successTest, setSuccessTest, name }) => {
+export const SyncUsersSuccess = ({ successTest, setSuccessTest }) => {
   return (
     <Modal
       title="Sync Successful"
@@ -51,11 +51,11 @@ export const SyncUsersSuccess = ({ successTest, setSuccessTest, name }) => {
           <RightCircleIcon color="#0CBF59" />
         </Icon>
         <Title className="text-capitalize">
-          LDAP Users Synced Successfully
+          LDAP users synced successfully
         </Title>
         <Para>
-          Your LDAP Users are synced Successfully.
-          <br /> Click on Continue to check
+          your LDAP users are synced successfully.
+          <br /> click on continue to check
         </Para>
       </>
     </Modal>

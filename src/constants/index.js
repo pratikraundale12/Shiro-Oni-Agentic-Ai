@@ -1,10 +1,12 @@
+/* eslint-disable no-undef */
 import { CLUSTER_CONSTANTS } from './cluster.constant';
+import { NAMESPACE_CONSTANTS } from './namespace.constant';
 
 // modules constants exports
 export * from './login';
 
 // generalconstants
-export const API_URL = 'http://localhost:8000';
+export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 export const ACCESS_TOKEN = 'access_token';
 export const CLUSTERS_TOKEN = 'clusters';
 
@@ -33,7 +35,7 @@ export const ACCESS_OPTIONS = [
 
 export const RegexConst = {
   NAME: /^[a-zA-Z0-9 ]{3,}$/,
-  NIFI_URL: /^(https?:\/\/)/,
+  NIFI_URL: /^https?:\/\/([a-zA-Z0-9.-]+)(:[0-9]{1,5})?(\/nifi)?\/?$/,
 };
 
 export const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -55,6 +57,12 @@ export const CLUSTER_MODULE_TABS = {
   REGISTRY: 'registry',
 };
 
+export const CLUSTER_STATUS = {
+  DEACTIVATED: 'Deactivated',
+  DISCONNECTED: 'Disconnected',
+  CONNECTED: 'Connected',
+};
+
 export const KDFM = {
   // Generic constants
   NIFI: 'NiFi',
@@ -68,6 +76,8 @@ export const KDFM = {
   CANCEL: 'Cancel',
   YES: 'Yes',
   NO: 'No',
+  UPGRADE: 'Upgrade',
+  DEPLOY: 'Deploy',
   USERNAME: 'Username',
   PASSWORD: 'Password',
   ENTER_USERNAME: 'Enter your Username',
@@ -84,8 +94,26 @@ export const KDFM = {
   REFRESH: 'Refresh',
   STATUS: 'Status',
   ACCESS: 'Access',
+  VERSION: 'Version',
+  CREATED: 'Created',
+  COMMENT: 'Comment',
+  SUMMARY: 'Summary',
+  NAME: 'Name',
+  VALUE: 'Value',
+  NA: 'N/A',
+  DESCRIPTION: 'Description',
+  HELP_AND_SUPPORT: 'Help & Support',
   SOMETHING_WENT_WRONG: 'Something went wrong',
+
+  // License constants
+  TRIAL: 'Trial',
+  PURCHASED: 'Purchased',
+  LICENSE: 'License',
+  TRIAL_EXPIRED_PROMPT: arg => `Trial: Your trial will expire on ${arg}.`,
+  PURCHASED_EXPIRED_PROMPT: arg =>
+    `Licensed: Your purchased license will expire on ${arg}. Please renew it to continue using the platform.`,
 
   // module specific constants
   ...CLUSTER_CONSTANTS,
+  ...NAMESPACE_CONSTANTS,
 };

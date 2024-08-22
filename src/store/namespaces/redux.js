@@ -106,6 +106,8 @@ const setSelectedNamespace = (state, { payload }) => {
   };
 };
 const setFlowPath = (state, { payload }) => {
+  if (!payload) return state;
+
   return {
     ...state,
     flowPath: [...state.flowPath, payload],
