@@ -132,6 +132,7 @@ export const KDFM = {
   NAME: 'Name',
   VALUE: 'Value',
   NA: 'N/A',
+  ACTIONS: 'Actions',
   DESCRIPTION: 'Description',
   HELP_AND_SUPPORT: 'Help & Support',
   SOMETHING_WENT_WRONG: 'Something went wrong',

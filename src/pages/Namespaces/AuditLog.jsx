@@ -35,7 +35,7 @@ const AuditLog = ({ isOpen, closePopup }) => {
 
   useEffect(() => {
     dispatch(NamespacesActions.fetchNamespaceAudit());
-  }, [dispatch]);
+  }, []);
 
   return (
     <Modal

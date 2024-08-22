@@ -52,7 +52,7 @@ export const ListNamespaces = () => {
 
   const COLUMNS = [
     {
-      label: 'Namespace',
+      label: KDFM.NAMESPACE,
       renderCell: item => (
         <StyledButton
           tabIndex="0"
@@ -73,7 +73,7 @@ export const ListNamespaces = () => {
       sort: { sortKey: 'name' },
     },
     {
-      label: 'Namespace ID',
+      label: KDFM.NAMESPACE_ID,
       renderCell: item => (
         <div
           className="d-flex"
@@ -88,22 +88,22 @@ export const ListNamespaces = () => {
       width: '26%',
     },
     {
-      label: 'Flow Name',
-      renderCell: item => <TextRender text={item.flowName || 'N/A'} />,
+      label: KDFM.FLOW_NAME,
+      renderCell: item => <TextRender text={item.flowName || KDFM.NA} />,
       width: '18%',
     },
     {
-      label: 'Bucket Name',
-      renderCell: item => <TextRender text={item.bucketName || 'N/A'} />,
+      label: KDFM.BUCKET_NAME,
+      renderCell: item => <TextRender text={item.bucketName || KDFM.NA} />,
       width: '18%',
     },
     {
-      label: 'Version',
+      label: KDFM.VERSION,
       width: '8%',
-      renderCell: item => <TextRender text={item.version || 'N/A'} />,
+      renderCell: item => <TextRender text={item.version || KDFM.NA} />,
     },
     {
-      label: 'Actions',
+      label: KDFM.ACTIONS,
       width: '12%',
       renderCell: item => (
         <div className="d-flex gap-3">
@@ -133,14 +133,6 @@ export const ListNamespaces = () => {
           >
             {KDFM.DEPLOY}
           </Button>
-          {isAuditLogOpen && (
-            <AuditLog
-              key={item?.flowId}
-              item={item} // Add in audit log component for specific namespace
-              isOpen={isAuditLogOpen}
-              closePopup={() => setIsAuditLogOpen(false)}
-            />
-          )}
         </div>
       ),
     },
@@ -188,7 +180,7 @@ export const ListNamespaces = () => {
         // offset={offset}
         // setOffset={setOffset}
         module="namespaces"
-        title="Namespaces List"
+        title={KDFM.NAMESPACE_LIST}
         columns={COLUMNS}
         refreshOptions={REFRESH_OPTIONS}
         placeholder="Search Namespace, ID, Flow Name, Bucket Name"
@@ -198,6 +190,12 @@ export const ListNamespaces = () => {
         // handleIconClick={handleIconClick}
       />
       {/* <Deploy /> */}
+      {isAuditLogOpen && (
+        <AuditLog
+          isOpen={isAuditLogOpen}
+          closePopup={() => setIsAuditLogOpen(false)}
+        />
+      )}
     </>
   );
 };
