@@ -1,51 +1,10 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { StatusRender, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
-
-const dummyData = [
-  {
-    timestamp: '2024-07-27 10:30:00',
-    event: 'Login',
-    entity: 'Users',
-    message: 'User logged in',
-    status: 'Success',
-    updated_by: 'admin',
-  },
-  {
-    timestamp: '2024-07-27 11:00:00',
-    event: 'File Upload',
-    entity: 'Cluster',
-    message: 'File uploaded successfully',
-    status: 'Success',
-    updated_by: 'user1',
-  },
-  {
-    timestamp: '2024-07-27 12:45:00',
-    event: 'Password Change',
-    entity: 'Namespace',
-    message: 'Password changed',
-    status: 'Error',
-    updated_by: 'user2',
-  },
-  {
-    timestamp: '2024-07-27 14:30:00',
-    event: 'Logout',
-    entity: 'Namespace',
-    message: 'User logged out',
-    status: 'Success',
-    updated_by: 'admin',
-  },
-  {
-    timestamp: '2024-07-28 09:15:00',
-    event: 'Login Attempt',
-    entity: 'Cluster',
-    message: 'Invalid password',
-    status: 'Error',
-    updated_by: 'user3',
-  },
-];
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const COLUMNS = [
   {
@@ -71,18 +30,25 @@ const COLUMNS = [
 ];
 
 const AuditLog = ({ isOpen, closePopup }) => {
+  const dispatch = useDispatch();
+  const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
+
+  useEffect(() => {
+    dispatch(NamespacesActions.fetchNamespaceAudit());
+  }, [dispatch]);
+
   return (
     <Modal
       title="Audit Log"
       isOpen={isOpen}
       onRequestClose={closePopup}
-      size="md"
+      size="lg"
       // secondaryButtonText="Back"
       primaryButtonText={KDFM.CONTINUE}
       // onSubmit={handleSubmit(onSubmit)}
       onSubmit={closePopup}
     >
-      <Table data={dummyData} columns={COLUMNS} />
+      <Table data={namespaceAuditLog?.data} columns={COLUMNS} />
     </Modal>
   );
 };

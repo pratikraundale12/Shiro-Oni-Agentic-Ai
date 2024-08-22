@@ -102,6 +102,9 @@ export const namespacesAPI = api => {
       `parameter-context/${clusterId}/contextId/${parameterContextId}/requestId/${requestId}`
     );
 
+  const fetchNamespaceAudit = ({ params = {} }) =>
+    api.get('/audit', { ...params });
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -119,5 +122,6 @@ export const namespacesAPI = api => {
     addVariableServices,
     deleteVariableServices,
     getVariableServices,
+    fetchNamespaceAudit,
   };
 };

@@ -133,6 +133,14 @@ export const ListNamespaces = () => {
           >
             {KDFM.DEPLOY}
           </Button>
+          {isAuditLogOpen && (
+            <AuditLog
+              key={item?.flowId}
+              item={item} // Add in audit log component for specific namespace
+              isOpen={isAuditLogOpen}
+              closePopup={() => setIsAuditLogOpen(false)}
+            />
+          )}
         </div>
       ),
     },
@@ -190,10 +198,6 @@ export const ListNamespaces = () => {
         // handleIconClick={handleIconClick}
       />
       {/* <Deploy /> */}
-      <AuditLog
-        isOpen={isAuditLogOpen}
-        closePopup={() => setIsAuditLogOpen(false)}
-      />
     </>
   );
 };

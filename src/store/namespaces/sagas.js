@@ -568,6 +568,25 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
   } else toast.error(response.data.message);
 }
 
+export function* fetchNamespaceAudit(api) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchNamespaceAudit',
+    loadingSection: 'fetchNamespaceAudit',
+    apiMethod: api.fetchNamespaceAudit,
+    apiParams: [
+      {
+        params: {
+          entity: 'namespace',
+        },
+        payload: {},
+      },
+    ],
+  });
+  if (response.ok)
+    yield put(NamespacesActions.fetchNamespaceAuditSuccess(response.data));
+  else toast.error(response.data.message);
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -609,5 +628,6 @@ export function* namespacesSagas(api) {
       api
     ),
     takeLatest(NamespacesActions.fetchVariableList, fetchVariableList, api),
+    takeLatest(NamespacesActions.fetchNamespaceAudit, fetchNamespaceAudit, api),
   ]);
 }
