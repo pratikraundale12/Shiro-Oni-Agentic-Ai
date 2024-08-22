@@ -23,6 +23,14 @@ const NifiText = styled.h6`
   color: #425466;
 `;
 
+const ModalContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 38px;
+  margin-bottom: 35px;
+`;
+
 const DEFAULT_VALUES = {
   pfxFile: null,
   password: '',
@@ -126,16 +134,7 @@ export const Certificate = ({
         contentStyles={{ minWidth: '30%' }}
       >
         <NifiText>{KDFM.NIFI_CERTIFICATE}</NifiText>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '2rem',
-            marginTop: '38px',
-            marginBottom: '35px',
-          }}
-        >
+        <ModalContainer>
           <UploadFile
             name="pfxFile"
             watch={watch}
@@ -153,7 +152,7 @@ export const Certificate = ({
             icon={<KeyIcons />}
             errors={errors}
           />
-        </form>
+        </ModalContainer>
       </Modal>
 
       <FailedTestModal
