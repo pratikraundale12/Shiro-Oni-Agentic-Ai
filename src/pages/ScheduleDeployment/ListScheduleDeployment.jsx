@@ -7,6 +7,7 @@ import { STATUS_OPTIONS } from '../../constants';
 import { GridActions } from '../../store';
 import { AddScheduleDeploymentModal } from './AddScheduleDeploymentModel';
 import { StatusText } from './StatusText';
+import { TextWithPhotoRender } from './TextWithPhotoRender';
 
 const ActionTd = styled.div`
   display: flex;
@@ -60,12 +61,17 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Approver',
-      renderCell: item => <TextRender text={item.approver_name || 'N/A'} />,
+      renderCell: item => (
+        <TextWithPhotoRender
+          text={item.approver_name || 'N/A'}
+          content={item}
+        />
+      ),
       width: '15%',
     },
     {
       label: 'Status',
-      renderCell: item => <StatusText text={item.deployment_status} />,
+      renderCell: () => <StatusText text={'IN APPROVED'} />,
       width: '15%',
     },
     {
