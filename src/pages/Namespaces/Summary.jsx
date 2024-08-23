@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -309,6 +310,7 @@ const Summary = () => {
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
 
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
@@ -333,8 +335,11 @@ const Summary = () => {
     openParameterContext();
     setLoading(false);
   };
-
   const handleUpgradeClick = async () => {
+    if (!isEmpty(flowControlButtons)) {
+      dispatch(NamespacesActions.updateNamespaceStatus(flowControlButtons));
+    }
+
     dispatch(NamespacesActions.upgradeCluster());
     setProgress(deployOrUpgradeDetails?.percentCompleted);
   };
@@ -387,7 +392,8 @@ const Summary = () => {
 
   const [activeButton, setActiveButton] = useState(null);
   const handleUpdateStatus = status => {
-    dispatch(NamespacesActions.updateNamespaceStatus(status));
+    setActiveButton(status);
+    setFlowControlButtons(status);
   };
   return (
     <MainContainer className="main-space bg-white">
@@ -626,7 +632,6 @@ const Summary = () => {
                       hoverColor="#58e715"
                       activeTextColor="#fff"
                       onClick={() => handleUpdateStatus('RUNNING')}
-                      // onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
                     >
                       <TriangleIcons color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -657,6 +662,7 @@ const Summary = () => {
                       activeColor="#cf9f5d"
                       hoverColor="#cf9f5d"
                       activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('ENABLED')}
                       // onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
                     >
                       <SmallThunderIcon color="#B5BDC8" />
@@ -672,6 +678,7 @@ const Summary = () => {
                       activeColor="#2c7cf3"
                       hoverColor="#2c7cf3"
                       activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('DISABLED')}
                       // onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
                     >
                       <SmallNotThunderIcon color="#B5BDC8" />
