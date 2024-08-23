@@ -11,7 +11,7 @@ export const getClustersList = async ({ clusterData, ...rest }) => {
 };
 
 export const getClusters = async params => {
-  const { data } = await API.get('/list-clusters', { params });
+  const { data } = await API.get('/get-list-clusters', { params });
   return data;
 };
 
