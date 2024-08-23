@@ -241,23 +241,24 @@ const CountDiv = styled.div`
   max-height: 48px;
   min-height: 48px;
   min-width: 48px;
-  border: 1px solid #dde4f0;
+  /* border: 1px solid #dde4f0;
   border-radius: 8px;
   background-color: #f5f7fa;
-  cursor: pointer;
+  cursor: pointer; */
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 
   & span {
-    position: absolute;
+    /* position: absolute; */
     top: 0px;
     right: 2px;
     font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     line-height: 23px;
+    margin-left: 8px;
     color: #b5bdc8;
   }
 
