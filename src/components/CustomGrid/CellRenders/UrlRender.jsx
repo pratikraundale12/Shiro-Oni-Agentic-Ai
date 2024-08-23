@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { LinkIcon } from '../../../assets';
+import { OpenLinkIcon } from '../../../assets';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
-import { theme } from '../../../styles';
+// import { theme } from '../../../styles';
 
 const Container = styled.div`
   display: flex;
@@ -42,7 +42,8 @@ export const UrlRender = ({ url }) => {
       <StyleUrl data-tooltip-id={url}>{url}</StyleUrl>
       <Container>
         <StyledLink href={url} target="_blank">
-          <LinkIcon color={theme.colors.primary} />
+          {/* <LinkIcon color={theme.colors.primary} /> */}
+          <OpenLinkIcon />
         </StyledLink>
         <CopyToClipboard copyItem={url} />
       </Container>
