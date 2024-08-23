@@ -59,9 +59,9 @@ export const ClusterLoginModal = () => {
     );
 
     const payload = {
-      cluster_id: data.cluster_id,
-      username: data.username,
-      password: data.password,
+      cluster_id: data?.cluster_id,
+      username: data?.username,
+      password: data?.password,
     };
 
     try {

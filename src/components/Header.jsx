@@ -256,6 +256,7 @@ export const Header = ({ isOpenSidebar }) => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const route = useSelector(AuthenticationSelectors.getRoute);
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
 
   const closeTab = () => {
@@ -281,9 +282,11 @@ export const Header = ({ isOpenSidebar }) => {
         <ButtonContainer>
           <div className="d-none d-lg-inline">
             <div className="d-flex">
-              <IconButton onClick={() => handleRoute('setting')}>
-                <SettingSmallIcon />
-              </IconButton>
+              {currentUser.role === 'superadmin' && (
+                <IconButton onClick={() => handleRoute('setting')}>
+                  <SettingSmallIcon />
+                </IconButton>
+              )}
               <IconCusterButton
                 onClick={() =>
                   dispatch(AuthenticationActions.setClusterLogin(true))

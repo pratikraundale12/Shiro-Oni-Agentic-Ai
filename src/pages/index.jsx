@@ -6,7 +6,7 @@ export * from './Clusters';
 export * from './Namespaces';
 export * from './ReadyFlowGallary';
 export * from './GenrateFlow';
-export * from './PermissionMatrix';
+export * from './Role&Permission';
 export * from './Icons';
 export * from './LdapConfig';
 export * from './ActivityHistory';

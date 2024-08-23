@@ -95,10 +95,16 @@ const KDFMVersion = styled.div`
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
   const route = useSelector(AuthenticationSelectors.getRoute);
+  const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
 
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));
     history.push(`/${path}`);
+  };
+
+  const getFiltered = item => {
+    if (item.path === 'dashboard') return true;
+    return !item.hidden && userPermissions.includes(item.permission);
   };
 
   return (

@@ -35,7 +35,7 @@ export const currentUser = async () => {
 
 export const getClusterList = async () => {
   try {
-    return await API.get('/list-clusters');
+    return await API.get('/get-list-clusters');
   } catch (error) {
     return error.response.data;
   }
