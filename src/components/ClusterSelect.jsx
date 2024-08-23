@@ -50,9 +50,13 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
     dispatch(ClustersActions.fetchClusterList());
   }, [dispatch]);
 
+  const remainingCluster = updatedClusters?.filter(
+    cluster => cluster?.value !== selectedCluster?.value
+  );
+
   return (
     <SelectField
-      options={updatedClusters}
+      options={remainingCluster}
       value={getValue()}
       {...props}
       onChange={onChange}
