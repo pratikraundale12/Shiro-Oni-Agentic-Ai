@@ -14,6 +14,7 @@ import {
 import { UserSelect } from '../../components';
 import * as yup from 'yup';
 import { isEmpty } from 'lodash';
+import { SchedularActions } from '../../store/schedular/redux';
 
 export const scheduleSchema = yup.object().shape({
   namespace_id: yup.string().trim().required('Namespace is required'),
@@ -22,6 +23,7 @@ export const scheduleSchema = yup.object().shape({
     .string()
     .trim()
     .required('Destination Cluster is required'),
+  approver_ids: yup.string().trim().required('Approver is required'),
 });
 
 export const AddScheduleDeploymentModal = props => {
@@ -29,10 +31,10 @@ export const AddScheduleDeploymentModal = props => {
   const { state, setState } = useGlobalContext();
   const [startDate, setStartDate] = useState(new Date());
   const [clusterList] = useState(useSelector(ClustersSelectors.getClusters));
-  const [namespaceSelected, setNamespaceSelected] = useState(null);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const [selectCluster, setSelectCluster] = useState(selectedCluster);
+  const [namespaceSelected, setNamespaceSelected] = useState(null);
   const namespaces = useSelector(NamespacesSelectors.getNamespaces);
-
   const {
     // register,
     setValue,
@@ -46,6 +48,10 @@ export const AddScheduleDeploymentModal = props => {
 
   const onNamespaceSelect = selectedItem => {
     setNamespaceSelected(selectedItem?.label);
+  };
+
+  const onClusterSelect = selectedItem => {
+    setSelectCluster(selectedItem?.value);
   };
 
   const openModal = () => setState({ ...state, scheduleModel: true });
@@ -66,7 +72,8 @@ export const AddScheduleDeploymentModal = props => {
       approver_ids: [approver_ids],
       deployment_status: 'PENDING',
     };
-    console.log(payload, '??????????');
+    dispatch(SchedularActions.createScheduleDeployment(payload));
+    closeModal();
   };
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {
@@ -129,6 +136,7 @@ export const AddScheduleDeploymentModal = props => {
               options={clusterList}
               defaultValue={selectedCluster}
               placeholder="Select Source Cluster"
+              onChange={onClusterSelect}
               required
             />
           </div>

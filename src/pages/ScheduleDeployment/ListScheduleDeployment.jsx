@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Grid, IconButton, TextRender } from '../../components';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { DeleteSmallIcon, PencilIcon } from '../../assets';
+import { HoldIcon, PencilIcon } from '../../assets';
 import { STATUS_OPTIONS } from '../../constants';
 import { GridActions } from '../../store';
 import { AddScheduleDeploymentModal } from './AddScheduleDeploymentModel';
+import { StatusText } from './StatusText';
 
 const ActionTd = styled.div`
   display: flex;
@@ -13,20 +14,20 @@ const ActionTd = styled.div`
   justify-content: start;
   gap: 15px;
 `;
+
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
 
-  const getActionsMenu = item => (
+  const getActionsMenu = () => (
     <div>
-      {item}
       <ActionTd>
         <IconButton onClick={() => {}}>
           <PencilIcon width={16} height={16} />
         </IconButton>
         <IconButton onClick={() => {}}>
-          <DeleteSmallIcon color="red" />
+          <HoldIcon />
         </IconButton>
       </ActionTd>
     </div>
@@ -35,51 +36,41 @@ export const ListScheduleDeployment = () => {
   const COLUMNS = [
     {
       label: 'Namespace',
-      renderCell: item => (
-        <div
-          className="d-flex"
-          style={{ justifyContent: 'space-between', alignItems: 'center' }}
-        >
-          {console.log(item, 'Namespace')}
-        </div>
-      ),
+      renderCell: item => <TextRender text={item.username || 'N/A'} />,
       width: '15%',
     },
     {
       label: 'Source Cluster',
       renderCell: item => (
-        <div
-          className="d-flex"
-          style={{ justifyContent: 'space-between', alignItems: 'center' }}
-        >
-          {console.log(item, 'Source Cluster')}
-        </div>
+        <TextRender text={item.source_cluster_name || 'N/A'} />
       ),
       width: '15%',
     },
     {
       label: 'Dest. Cluster',
-      renderCell: item => <TextRender text={item.flowName || 'N/A'} />,
+      renderCell: item => (
+        <TextRender text={item.destination_cluster_name || 'N/A'} />
+      ),
       width: '15%',
     },
     {
       label: 'Deploy Time',
-      renderCell: item => <TextRender text={item.bucketName || 'N/A'} />,
-      width: '20%',
+      renderCell: () => <TextRender text={'26 Aug 2024,16:40:32' || 'N/A'} />,
+      width: '15%',
     },
     {
       label: 'Approver',
+      renderCell: () => <TextRender text={'Hemant Sharma' || 'N/A'} />,
       width: '15%',
-      renderCell: item => <TextRender text={item.version || 'N/A'} />,
     },
     {
       label: 'Status',
-      width: '12%',
-      renderCell: item => <TextRender text={item.version || 'N/A'} />,
+      renderCell: item => <StatusText text={item.deployment_status} />,
+      width: '15%',
     },
     {
       label: 'Actions',
-      width: '8%',
+      width: '10%',
       renderCell: item => getActionsMenu(item),
     },
   ];
