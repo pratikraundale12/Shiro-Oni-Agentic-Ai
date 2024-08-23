@@ -11,6 +11,7 @@ import { dashboardReducer } from './dashboard';
 import { namespacesReducer } from './namespaces';
 import { rolesReducer } from './roles/redux';
 import { policiesReducer } from './policies';
+import { settingsReducer } from './settings';
 
 const resettable = resettableReducer('RESET');
 
@@ -30,4 +31,5 @@ export default combineReducers({
   namespaces: resettable(namespacesReducer),
   roles: resettable(rolesReducer),
   policies: resettable(policiesReducer),
+  settings: resettable(settingsReducer),
 });

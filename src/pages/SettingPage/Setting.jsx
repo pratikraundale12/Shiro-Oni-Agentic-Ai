@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
+import { useDispatch } from 'react-redux';
 import { SelectField, Button, UploadField, InputField } from '../../shared';
+import { useSelector } from 'react-redux';
 import {
   RefreshIcon,
   LogoFieldIcon,
@@ -10,6 +12,7 @@ import {
   MailIcon,
   QRIcons,
 } from '../../assets';
+import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -46,10 +49,43 @@ export const Setting = () => {
     watch,
     formState: { errors },
   } = useForm();
+  const dispatch = useDispatch();
+  const settingData = useSelector(SettingsSelectors.getSettings);
 
   const onSubmit = data => {
-    console.log(data);
+    console.log(data, 'formDataadada');
+
+    // Create a new FormData instance
+    const payload = new FormData();
+
+    // Append each field to the FormData object
+    payload.append('logo', data.logo);
+    payload.append('favicon', data.favicon);
+    payload.append('title', data.title);
+    payload.append('refresh', data.refresh);
+    payload.append('email', data.email);
+
+    // Dispatch the action with FormData payload
+    dispatch(SettingsActions.createSettings(payload));
+
+    // const favicon = document.getElementById('favicon');
+    // favicon.href = 'path/to/new/favicon.ico';
+
+    // Change the title
+    document.title = data.title;
+
+    // Update the logo (assuming you have a state or prop to update the logo src)
+    // const logoElement = document.getElementById('logo');
+    // if (logoElement) {
+    //   logoElement.src = 'path/to/new/logo.png';
+    // }
   };
+
+  useEffect(() => {
+    dispatch(SettingsActions.fetchSettings());
+  }, [dispatch]);
+
+  console.log('Component data:', settingData);
 
   return (
     <Wrapper>

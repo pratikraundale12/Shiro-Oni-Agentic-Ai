@@ -9,6 +9,7 @@ import { dashboardSagas } from './dashboard';
 import { namespacesSagas } from './namespaces';
 import { rolesSagas } from './roles/sagas';
 import { policiesSagas } from './policies';
+import { settingsSagas } from './settings';
 
 /* ------------- API ------------- */
 export const api = API.create();
@@ -31,5 +32,7 @@ export default function* root() {
     fork(rolesSagas, api),
     // |---------------------policies-------------------------|
     fork(policiesSagas, api),
+
+    fork(settingsSagas, api),
   ]);
 }
