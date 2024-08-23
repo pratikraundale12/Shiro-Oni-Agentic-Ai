@@ -128,6 +128,9 @@ export const Grid = ({
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
   const {
     state: {
       search,
@@ -215,7 +218,15 @@ export const Grid = ({
     //   setOffset(0);
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, module, clusterId, search, page, selectedNamespace]);
+  }, [
+    setState,
+    module,
+    clusterId,
+    search,
+    page,
+    selectedNamespace,
+    selectedCluster,
+  ]);
 
   useEffect(
     () => () => setState(prev => ({ ...prev, search: '', page: 1 })),

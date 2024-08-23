@@ -8,7 +8,6 @@ import { InputField } from './FormInputs';
 import { UserIcon } from '../assets';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-// import { RolesActions, RolesSelectors, LoadingSelectors } from '../store/roles';
 import { RolesActions, RolesSelectors, LoadingSelectors } from '../store';
 
 const RoleFormContainer = styled.div`
@@ -23,10 +22,8 @@ const schema = yup.object().shape({
 });
 
 const AddNewRoleModal = ({ selectedOption, ldapGroupName }) => {
-  console.log(ldapGroupName, 'lll');
   const dispatch = useDispatch();
   const openRoleModal = useSelector(RolesSelectors.getRoleModal);
-  console.log(selectedOption, 'data');
   const {
     register,
     handleSubmit,

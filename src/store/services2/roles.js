@@ -9,6 +9,7 @@ export const rolesAPI = api => {
   const fetchLdap = ({ payload = {}, params = {} }) =>
     api.post('/ldap-group', payload, params);
   const createNewRole = ({ payload = {} }) => api.post('/roles', payload);
+
   return {
     fetchClustersRolesAccess,
     fetchRolesClusters,

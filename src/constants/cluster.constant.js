@@ -22,7 +22,7 @@ export const CLUSTER_CONSTANTS = {
   CREDENTIALS_TEST_FAILED: 'Credentials test failed',
   CREDENTIALS_TEST_FAIL_MESSAGE:
     'We encountered an issue while testing your credentials. Please check if your credentials are correct',
-  DELETE_CLUSTER_WARNING: 'Are you sure you want to delete this cluster?',
+  DELETE_CLUSTER_WARNING: 'Are you sure you want to deactivate this cluster?',
   DELETE_CLUSTER_DESCRIPTION: 'It will permanently remove the cluster',
   CLUSTER_LIST: 'Cluster List',
   ENTER_CREDENTIALS: 'Enter Credentials',
@@ -48,7 +48,7 @@ export const CLUSTER_CONSTANTS = {
   TEST_VIA_CREDENTIALS: 'Test Via Credentials',
   TEST_CLUSTER: 'Test Cluster',
   TEST_REGISTRY: 'Test Registry',
-  DELETE_CLUSTER: 'Delete Cluster',
+  DELETE_CLUSTER: 'Deactivate Cluster',
   SELECTED_CLUSTER: 'Selected Cluster',
   SEARCH_CLUSTER_NAME_URL: 'Search Cluster Name, Status, URL',
 };

@@ -1,5 +1,4 @@
 import React from 'react';
-import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { CompactTable } from '@table-library/react-table-library/compact';
@@ -29,7 +28,7 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
-export const Table = ({ data, columns, className }) => {
+export const Table = ({ data, columns, loading, className }) => {
   const DATA = { nodes: data || [] };
   const tableTheme = useTheme([
     getTheme(),
@@ -58,7 +57,7 @@ export const Table = ({ data, columns, className }) => {
   ]);
 
   const getLoader = () => {
-    if (isEmpty(DATA?.nodes))
+    if (loading)
       return (
         <LoaderContainer>
           <NoDataIcon width={130} />
@@ -79,6 +78,6 @@ export const Table = ({ data, columns, className }) => {
 Table.propTypes = {
   data: PropTypes.object.isRequired,
   columns: PropTypes.arrayOf(PropTypes.shape({})),
+  loading: PropTypes.bool,
   className: PropTypes.string,
-  syncButton: PropTypes.func,
 };
