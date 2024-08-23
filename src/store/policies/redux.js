@@ -36,7 +36,7 @@ export const PoliciesSelectors = {
 const fetchPoliciesSuccess = (state, { payload }) => {
   return {
     ...state,
-    data: payload?.data,
+    data: payload,
   };
 };
 const fetchPoliciesRolesSuccess = (state, { payload }) => {

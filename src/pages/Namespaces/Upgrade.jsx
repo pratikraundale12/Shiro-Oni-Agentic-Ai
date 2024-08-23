@@ -269,7 +269,13 @@ const Upgrade = () => {
             <TodoIcon />
           </div>
           <MainTitleHfour className="mb-0">
-            {`${checkDestCluster.mode} ${KDFM.NAMESPACE}`}
+            {`${
+              checkDestCluster.mode === 'upgrade'
+                ? checkDestCluster.version <= formData.version
+                  ? KDFM.UPGRADE
+                  : KDFM.DOWNGRADE
+                : KDFM.DEPLOY
+            } ${KDFM.NAMESPACE}`}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
@@ -408,7 +414,11 @@ const Upgrade = () => {
               (!formData.version || isStateStale)
             }
           >
-            {checkDestCluster.mode === 'upgrade' ? KDFM.UPGRADE : KDFM.DEPLOY}
+            {checkDestCluster.mode === 'upgrade'
+              ? checkDestCluster.version <= formData.version
+                ? KDFM.UPGRADE
+                : KDFM.DOWNGRADE
+              : KDFM.DEPLOY}
           </Button>
         </BottomButtonDiv>
       </BottomButton>

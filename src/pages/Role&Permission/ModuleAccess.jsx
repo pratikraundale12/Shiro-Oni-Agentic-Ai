@@ -136,6 +136,7 @@ const CellRender = ({
 
   return (
     <CheckboxField
+      disabled={isEmpty(item)}
       checked={checked}
       onChange={event => onChange(event.target.checked, item)}
     />
@@ -240,7 +241,6 @@ export const ModuleAccess = () => {
   };
 
   const handleChange = (checked, value) => {
-    console.log(checked, value);
     if (!checked) {
       setUpdatedRolePolicies(prev =>
         prev.filter(item => item.policy_id !== value.id)
