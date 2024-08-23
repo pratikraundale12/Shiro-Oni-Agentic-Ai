@@ -36,7 +36,7 @@ export const ListScheduleDeployment = () => {
   const COLUMNS = [
     {
       label: 'Namespace',
-      renderCell: item => <TextRender text={item.username || 'N/A'} />,
+      renderCell: item => <TextRender text={item.namespace_name || 'N/A'} />,
       width: '15%',
     },
     {
@@ -55,12 +55,12 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Deploy Time',
-      renderCell: () => <TextRender text={'26 Aug 2024,16:40:32' || 'N/A'} />,
+      renderCell: item => <TextRender text={item.scheduled_time || 'N/A'} />,
       width: '15%',
     },
     {
       label: 'Approver',
-      renderCell: () => <TextRender text={'Hemant Sharma' || 'N/A'} />,
+      renderCell: item => <TextRender text={item.approver_name || 'N/A'} />,
       width: '15%',
     },
     {
