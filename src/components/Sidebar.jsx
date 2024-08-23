@@ -95,10 +95,16 @@ const KDFMVersion = styled.div`
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
   const route = useSelector(AuthenticationSelectors.getRoute);
+  const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
 
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));
     history.push(`/${path}`);
+  };
+
+  const getFiltered = item => {
+    if (item.path === 'dashboard') return true;
+    return !item.hidden && userPermissions.includes(item.permission);
   };
 
   return (
@@ -108,7 +114,7 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
       </button>
       <KsolvesDataFlowIcon width={200} height={80} />
       <List>
-        {ROUTES_MENU.filter(item => !item.hidden).map(item => {
+        {ROUTES_MENU.filter(getFiltered).map(item => {
           const active = item.path === route;
           return (
             <Item

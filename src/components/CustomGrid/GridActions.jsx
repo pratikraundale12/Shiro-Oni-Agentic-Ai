@@ -10,6 +10,7 @@ import { ACCESS_OPTIONS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, SelectField } from '../../shared';
 import {
+  AuthenticationSelectors,
   GridActions as GridSagsActions,
   RolesActions,
   RolesSelectors,
@@ -17,6 +18,7 @@ import {
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { ClusterSelect } from '../ClusterSelect';
+import { getButtonPermissions } from '../../helpers/permissions';
 
 const Flex = styled.div`
   display: flex;
@@ -116,6 +118,7 @@ export const GridActions = ({
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const accessType = useSelector(RolesSelectors.getAccessType);
   const { setState } = useGlobalContext();
   const { watch, control } = useForm();
@@ -194,16 +197,17 @@ export const GridActions = ({
               onChange={option => dispatch(RolesActions.setAccessType(option))}
             />
           )}
-          {!isEmpty(buttonText) && (
-            <Button
-              icon={<PlusCircleIcon width={16} height={16} color="white" />}
-              onClick={() => history.push(`/${module}/add`)}
-              size="sm"
-            >
-              {buttonText}
-            </Button>
-          )}
-          <Modal />
+          {!isEmpty(buttonText) &&
+            userPermissions.includes(getButtonPermissions(module)) && (
+              <Button
+                icon={<PlusCircleIcon width={16} height={16} color="white" />}
+                onClick={() => history.push(`/${module}/add`)}
+                size="sm"
+              >
+                {buttonText}
+              </Button>
+            )}
+          {userPermissions.includes(getButtonPermissions(module)) && <Modal />}
         </ButtonsContainer>
       </Flex>
       <SearchContainer>
