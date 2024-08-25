@@ -21,6 +21,7 @@ import { FullPageLoader } from '../components';
 import {
   ActvityHistory,
   Add,
+  ClusterAccess,
   Dashboard,
   Forgot,
   GenrateFlow,
@@ -176,6 +177,10 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ModuleAccess />,
+      },
+      {
+        path: [':id'],
+        component: <ClusterAccess />,
       },
     ],
     permission: 'view_permission',

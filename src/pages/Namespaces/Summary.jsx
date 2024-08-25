@@ -39,6 +39,7 @@ import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDepl
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { SchedularActions } from '../../store/schedular/redux';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -342,6 +343,7 @@ const Summary = () => {
   const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
   const {
     // register,
     setValue,
@@ -363,11 +365,24 @@ const Summary = () => {
     setScheduleInitialOpen(false);
     setScheduleNamespaceDeployOpen(true);
   };
-
   const onSubmit = async data => {
     handleContinue();
-    console.log(data, startDate);
-    console.log(selectedCluster, 'selectedCluster');
+
+    const payload = {
+      namespace_id: checkDestCluster?.id, // ask
+      namespace_name: checkDestCluster?.name,
+      scheduled_time: startDate.toISOString(),
+      flowId: checkDestCluster?.flowId,
+      source_cluster_id: selectedCluster?.value,
+      destination_cluster_id: selectedDestCluster.value, // ask
+      deployment_status: 'PENDING',
+      bucket_id: checkDestCluster?.bucketId,
+      registry_id: checkDestCluster?.registryId,
+      mode: checkDestCluster?.mode,
+      version: formData.version,
+      position: checkDestCluster?.position,
+      approver_ids: data?.approver_ids,
+    };
     // const { approver_ids, ...rest } = data;
     // const payload = {
     //   ...rest,
@@ -378,7 +393,7 @@ const Summary = () => {
     //   deployment_status: 'PENDING',
     // };
     // console.log(payload, 'payload');
-    // // dispatch(SchedularActions.createScheduleDeployment(payload));
+    dispatch(SchedularActions.createScheduleDeployment(payload));
     // closeModal();
 
     // const handleClick = () => {

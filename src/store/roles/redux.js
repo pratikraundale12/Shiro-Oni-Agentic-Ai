@@ -7,9 +7,9 @@ const prefix = '@@KDFM-ROLES/';
 export const RolesActions = {
   fetchRoles: createAction(`${prefix}fetchRoles`),
   fetchRolesSuccess: createAction(`${prefix}fetchRolesSuccess`),
-  fetchRolesClusters: createAction(`${prefix}fetchRolesClusters`),
-  fetchRolesClustersSuccess: createAction(`${prefix}fetchRolesClustersSuccess`),
-  updateRolesClusters: createAction(`${prefix}updateRolesClusters`),
+  fetchRoleClusters: createAction(`${prefix}fetchRoleClusters`),
+  fetchRoleClustersSuccess: createAction(`${prefix}fetchRoleClustersSuccess`),
+  updateRoleClusters: createAction(`${prefix}updateRoleClusters`),
   setSelectedRole: createAction(`${prefix}setSelectedRole`),
   permissionModal: createAction(`${prefix}permissionModal`),
   setAccessType: createAction(`${prefix}setAccessType`),
@@ -25,7 +25,7 @@ export const RolesActions = {
 export const ROLES_INITIAL_STATE = {
   selectedRole: {},
   data: [],
-  rolesClusters: [],
+  roleClusters: [],
   permissionModal: false,
   accessType: ACCESS_OPTIONS[0],
   roleModal: false,
@@ -37,7 +37,7 @@ export const ROLES_INITIAL_STATE = {
 export const RolesSelectors = {
   getRoles: state => state.roles.data,
   getSelectedRole: state => state.roles.selectedRole,
-  getRolesClusters: state => state.roles.rolesClusters,
+  getRoleClusters: state => state.roles.roleClusters,
   getPermissionModal: state => state.roles.permissionModal,
   getAccessType: state => state.roles.accessType,
   getRoleModal: state => state.roles.roleModal,
@@ -53,7 +53,7 @@ const fetchRolesSuccess = (state, { payload }) => {
     data: payload.data,
     selectedRole: {
       label: payload.data[0]?.name,
-      value: payload.data[0]?.id,
+      value: payload.data[0]?.role_id,
     },
   };
 };
@@ -64,7 +64,7 @@ const fetchLdapSuccess = (state, { payload }) => {
 
   const formData = groups.map(item => ({
     ldap_group_name: item.name,
-    role_id: roles.find(role => role.ldap_group_name === item.name)?.id,
+    role_id: roles.find(role => role.ldap.includes(item.name))?.role_id,
   }));
 
   return {
@@ -73,16 +73,10 @@ const fetchLdapSuccess = (state, { payload }) => {
   };
 };
 
-const fetchRolesClustersSuccess = (state, { payload }) => {
+const fetchRoleClustersSuccess = (state, { payload }) => {
   return {
     ...state,
-    rolesClusters: payload.data?.map(item => ({
-      ...item,
-      clusters: item.clusters?.map(c => ({
-        label: c.cluster_name,
-        value: c.cluster_id,
-      })),
-    })),
+    roleClusters: payload.clusters,
   };
 };
 const setSelectedRole = (state, { payload }) => {
@@ -126,7 +120,7 @@ const updateLdapGroup = (state, { payload }) => {
 export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
   builder
     .addCase(RolesActions.fetchRolesSuccess, fetchRolesSuccess)
-    .addCase(RolesActions.fetchRolesClustersSuccess, fetchRolesClustersSuccess)
+    .addCase(RolesActions.fetchRoleClustersSuccess, fetchRoleClustersSuccess)
     .addCase(RolesActions.setSelectedRole, setSelectedRole)
     .addCase(RolesActions.permissionModal, permissionModal)
     .addCase(RolesActions.setAccessType, setAccessType)
