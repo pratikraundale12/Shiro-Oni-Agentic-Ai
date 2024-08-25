@@ -231,10 +231,21 @@ const Deploy = () => {
       checkDestCluster.mode === 'deploy' &&
       !isEmpty(selectedDestCluster)
     ) {
-      dispatch(GridActions.fetchGrid({ module: MODULE }));
-    }
-  }, [dispatch, checkDestCluster, selectedDestCluster, selectedDestNamespace]);
+      dispatch(
+        GridActions.fetchGrid({
+          module: MODULE,
 
+          params: { page: 1, ...(search && { search }) },
+        })
+      );
+    }
+  }, [
+    dispatch,
+    search,
+    checkDestCluster,
+    selectedDestCluster,
+    selectedDestNamespace,
+  ]);
   if (checkDestCluster.mode === 'upgrade') history.push('/namespaces/upgrade');
 
   return (
@@ -284,13 +295,19 @@ const Deploy = () => {
                   onChange={e => setSearch(e.target.value)}
                 />
               </SearchContainer>
-              <Breadcrumb module={MODULE} />
-              <Table
-                data={gridData}
-                columns={COLUMNS}
-                // breadcrumb={state?.gridData?.deploy?.breadcrumb}
-                onBreadcrumbClick={e => handleSelectNamespace(e.id)}
-              />
+
+              {isEmpty(gridData) && search ? (
+                <NoDataContainer>
+                  <WhiteBoradIcon width={200} height={195} />
+                  <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+                </NoDataContainer>
+              ) : (
+                <Table
+                  data={gridData}
+                  columns={COLUMNS}
+                  onBreadcrumbClick={e => handleSelectNamespace(e.id)}
+                />
+              )}
             </>
           )}
         </ScrollSetGrey>

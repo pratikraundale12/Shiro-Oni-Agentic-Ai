@@ -26,7 +26,7 @@ export const CLUSTER_CONSTANTS = {
   DELETE_CLUSTER_DESCRIPTION: 'It will permanently remove the cluster',
   CLUSTER_LIST: 'Cluster List',
   ENTER_CREDENTIALS: 'Enter Credentials',
-  CLUSTER_TESTED_SUCCESSFULLY: 'Cluster tested successfully',
+  CLUSTER_TESTED_SUCCESSFULLY: 'Cluster Tested Successfully',
   REGISRTY_TESTED_SUCCESSFULLY: 'Registry tested successfully',
   ADD_NEW_CLUSTER: 'Add New Cluster',
   ADD_NEW_REGISTRY: 'Add New Registry',
