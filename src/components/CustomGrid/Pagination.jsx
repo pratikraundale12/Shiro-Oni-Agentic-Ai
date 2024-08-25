@@ -23,47 +23,48 @@ const StyledButton = styled(Button)`
   background-color: ${props => (props.active ? theme.colors.primary : 'none')};
 `;
 
-const Pagination = ({ page, count }) => {
+const Pagination = ({ page, count, setCurrentPage }) => {
+  const itemsPerPage = 10;
+  const totalPage = Math.ceil(count / itemsPerPage);
+
   const getPageRange = () => {
-    const start = (currentPage - 1) * 10 + 1;
-    const end = Math.min(count, currentPage * 10);
+    const start = (page - 1) * itemsPerPage + 1;
+    const end = Math.min(count, page * itemsPerPage);
     return `${start} - ${end}`;
   };
-  const itemsPerPage = 10;
-  const currentPage = page;
-  const totalPage = Math.ceil(count / itemsPerPage);
+
   const getPageNumbers = () => {
     const pageNumbers = [];
 
-    if (currentPage > 1) {
+    if (page > 1) {
       pageNumbers.push(1);
     }
-    if (currentPage > 4) {
+    if (page > 4) {
       pageNumbers.push('...');
     }
 
-    if (currentPage > 3) {
-      pageNumbers.push(currentPage - 2);
+    if (page > 3) {
+      pageNumbers.push(page - 2);
     }
 
-    if (currentPage > 2) {
-      pageNumbers.push(currentPage - 1);
+    if (page > 2) {
+      pageNumbers.push(page - 1);
     }
 
-    pageNumbers.push(currentPage);
+    pageNumbers.push(page);
 
-    if (currentPage < totalPage - 1) {
-      pageNumbers.push(currentPage + 1);
+    if (page < totalPage - 1) {
+      pageNumbers.push(page + 1);
     }
 
-    if (currentPage < totalPage - 2) {
-      pageNumbers.push(currentPage + 2);
+    if (page < totalPage - 2) {
+      pageNumbers.push(page + 2);
     }
-    if (currentPage < totalPage - 3) {
+    if (page < totalPage - 3) {
       pageNumbers.push('...');
     }
 
-    if (currentPage < totalPage) {
+    if (page < totalPage) {
       pageNumbers.push(totalPage);
     }
 
@@ -72,32 +73,50 @@ const Pagination = ({ page, count }) => {
 
   const pageNumbers = getPageNumbers();
 
+  const handlePrev = () => {
+    if (page > 1) {
+      setCurrentPage(page - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (page < totalPage) {
+      setCurrentPage(page + 1);
+    }
+  };
+
+  const handlePageChange = number => {
+    if (number !== '...') {
+      setCurrentPage(number);
+    }
+  };
+
   return (
     <Container>
       <span>{`${getPageRange()} of ${count} List`}</span>
       <Flex>
         <StyledButton
           size="sm"
-          onClick={() => {}}
+          onClick={handlePrev}
           icon={<GreaterArrowIcon color={theme.colors.white} />}
-          disabled={currentPage === 1}
+          disabled={page === 1}
         />
         {pageNumbers.map((number, index) => (
           <StyledButton
             key={index}
-            onClick={() => (number != '...' ? {} : null)}
+            onClick={() => handlePageChange(number)}
             size="sm"
             variant="secondary"
-            active={number === currentPage}
+            active={number === page}
           >
             {number}
           </StyledButton>
         ))}
         <StyledButton
           size="sm"
-          onClick={() => {}}
+          onClick={handleNext}
           icon={<LessArrowIcon color={theme.colors.white} />}
-          disabled={currentPage === Math.ceil(count / 10)}
+          disabled={page === totalPage}
         />
       </Flex>
     </Container>
@@ -106,10 +125,8 @@ const Pagination = ({ page, count }) => {
 
 Pagination.propTypes = {
   page: PropTypes.number.isRequired,
-  setState: PropTypes.func.isRequired,
+  setCurrentPage: PropTypes.func.isRequired,
   count: PropTypes.number.isRequired,
-  prev: PropTypes.number,
-  next: PropTypes.number,
 };
 
 export default Pagination;

@@ -88,11 +88,11 @@ export function* login(api, { payload: { type, ...payload } }) {
   }
 }
 
-export function* logout() {
+export function* logout(api, { payload: { url } }) {
   yield put(AuthenticationActions.logoutSuccess());
   yield put({ type: 'RESET' });
   localStorage.removeItem(ACCESS_TOKEN);
-  history.replace('/login');
+  history.replace(url);
 }
 
 export function* authenticationSagas(api) {

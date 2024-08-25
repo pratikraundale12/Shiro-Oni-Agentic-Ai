@@ -210,7 +210,9 @@ const ProfileDropdown = () => {
       icon: <LockIcon width={18} height={18} />,
       onClick: () => {
         localStorage.clear();
-        dispatch(AuthenticationActions.logout());
+        const loginUrl =
+          currentUser?.role == 'user' ? '/login' : '/admin/login';
+        dispatch(AuthenticationActions.logout({ url: loginUrl }));
       },
     },
   ];
