@@ -44,7 +44,6 @@ const Breadcrumb = ({ module, path, onClick }) => {
   const data = isEmpty(path) ? breadcrumbs : path;
 
   const handleClick = value => {
-    console.log(value);
     if (module === 'namespaces')
       dispatch(NamespacesActions.setSelectedNamespace(value));
     else if (module === 'destNamespaces')

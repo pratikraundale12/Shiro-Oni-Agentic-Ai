@@ -125,7 +125,6 @@ const UploadField = ({
 }) => {
   const [imageSrc, setImageSrc] = useState(image || null);
   const [fileError, setFileError] = useState('');
-  console.log(image, 'immm');
   const error = hasError(errors, name);
 
   const handleRemoveImage = () => {

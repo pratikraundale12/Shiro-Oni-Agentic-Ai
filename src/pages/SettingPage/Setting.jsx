@@ -64,9 +64,8 @@ export const Setting = () => {
 
     try {
       dispatch(SettingsActions.createSettings(payload));
-      setRefreshApi(true); // Trigger the refresh after the form is submitted
+      setRefreshApi(true);
 
-      // Update favicon and title after successful submission
       if (data.favicon) changeFavicon(URL.createObjectURL(data.favicon));
       if (data.title) document.title = data.title;
     } catch (error) {
@@ -83,7 +82,6 @@ export const Setting = () => {
       changeFavicon(settingData?.favicon || '%PUBLIC_URL%/favicon.ico');
       document.title = settingData?.title || 'Data Flow Manager';
 
-      // Set form field values with the data from the API
       setValue('logo', settingData?.logo);
       setValue('favicon', settingData?.favicon);
       setValue('title', settingData?.title);

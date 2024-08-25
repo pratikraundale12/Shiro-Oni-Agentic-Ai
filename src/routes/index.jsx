@@ -200,7 +200,6 @@ const Routes = () => {
   const dispatch = useDispatch();
   const isLicenseValid = useSelector(AuthenticationSelectors.getIsLicenseValid);
   const settingsData = useSelector(SettingsSelectors.getSettings);
-  console.log(settingsData, 'data????????');
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchLicenseInfo')
   );
