@@ -90,7 +90,7 @@ export const ListScheduleDeployment = () => {
         isOpen={deleteOpenModel}
         // onSubmit={deleteUserConfirmed}
         onRequestClose={() => setDeleteOpenModel(false)}
-        primaryText="Are you sure you want to stop this Deployment?"
+        primaryText="Are you sure you want to cancel this Deployment?"
         secondaryText="This Deployment will be Cancel from Schedule Deployment Page"
       />
       <Grid

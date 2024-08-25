@@ -188,6 +188,8 @@ const ScheduleNamespaceDeploy = ({
   closePopup,
   getParamerterContext,
   handleTertiaryButton,
+  handleSubmit,
+  onSubmit,
 }) => {
   const dispatch = useDispatch();
   const deployOrUpgradeDetails = useSelector(
@@ -202,10 +204,6 @@ const ScheduleNamespaceDeploy = ({
     dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
 
-  const handleClick = () => {
-    window.open(deployOrUpgradeDetails.nifiUrl, '_blank');
-  };
-
   return (
     <>
       <Modal
@@ -215,9 +213,9 @@ const ScheduleNamespaceDeploy = ({
         size="sm"
         onSecondarySubmit={getParamerterContext}
         secondaryButtonText="Parameter Context"
-        primaryButtonText="Go to Nifi Instance"
+        primaryButtonText="Schedule"
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
-        onSubmit={handleClick}
+        onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
         secondaryButtonProps={{
           disabled: !deployOrUpgradeDetails?.parameterContextId,
@@ -419,6 +417,8 @@ ScheduleNamespaceDeploy.propTypes = {
       })
     ),
   }),
+  handleSubmit: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default ScheduleNamespaceDeploy;

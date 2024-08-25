@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -34,7 +34,10 @@ import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
 import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
-// import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
+import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -297,6 +300,9 @@ const breadcrumbData = [
   { label: KDFM.CONFIGURATION_DETAILS, path: '/namespaces/upgrade' },
   { label: KDFM.SUMMARY },
 ];
+export const scheduleSchema = yup.object().shape({
+  approver_ids: yup.string().trim().required('Approver is required'),
+});
 
 const Summary = () => {
   const dispatch = useDispatch();
@@ -329,6 +335,53 @@ const Summary = () => {
   );
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
+
+  const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const {
+    // register,
+    setValue,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(scheduleSchema),
+  });
+  const [ScheduleNamespaceDeployOpen, setScheduleNamespaceDeployOpen] =
+    useState(false);
+
+  const handleScheduleNamespaceDeployModel = () => {
+    setScheduleNamespaceDeployOpen(false);
+    history.push('/namespaces');
+  };
+
+  const handleContinue = () => {
+    setScheduleInitialOpen(false);
+    setScheduleNamespaceDeployOpen(true);
+  };
+
+  const onSubmit = async data => {
+    handleContinue();
+    console.log(data, startDate);
+    console.log(selectedCluster, 'selectedCluster');
+    // const { approver_ids, ...rest } = data;
+    // const payload = {
+    //   ...rest,
+    //   scheduled_time: startDate.toISOString(),
+    //   // namespace_name: namespaceSelected?.label,
+    //   // flow_id:namespaceSelected?.flowId,
+    //   approver_ids: [approver_ids],
+    //   deployment_status: 'PENDING',
+    // };
+    // console.log(payload, 'payload');
+    // // dispatch(SchedularActions.createScheduleDeployment(payload));
+    // closeModal();
+
+    // const handleClick = () => {
+    //   window.open(deployOrUpgradeDetails.nifiUrl, '_blank');
+    // };
+  };
 
   const getParamerterContext = async () => {
     setLoading(true);
@@ -423,7 +476,16 @@ const Summary = () => {
       console.error('Failed to update status:', error);
     }
   };
-  console.log(isDeployedModal, 'isDeployedModal');
+
+  useEffect(() => {
+    if (ScheduleNamespaceDeployOpen) {
+      checkDestCluster.mode !== 'upgrade'
+        ? handleDeploy()
+        : handleUpgradeClick();
+    }
+  }, [ScheduleNamespaceDeployOpen]);
+
+  // isDeployedModal getting true and false to open and close
   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader loading={loading} />
@@ -725,7 +787,18 @@ const Summary = () => {
           >
             {checkDestCluster.mode !== 'upgrade' ? KDFM.DEPLOY : KDFM.UPGRADE}
           </Button>
-          <AddScheduleDeploymentModal />
+          <AddScheduleDeploymentModal
+            setScheduleNamespaceDeployOpen={setScheduleNamespaceDeployOpen}
+            setValue={setValue}
+            handleSubmit={handleSubmit}
+            control={control}
+            errors={errors}
+            scheduleInitialOpen={scheduleInitialOpen}
+            setScheduleInitialOpen={setScheduleInitialOpen}
+            handleContinue={handleContinue}
+            startDate={startDate}
+            setStartDate={setStartDate}
+          />
         </BottomButtonDiv>
         {checkDestCluster.mode === 'upgrade' && (
           <Progressox className="w-100">
@@ -757,7 +830,15 @@ const Summary = () => {
         getParamerterContext={getParamerterContext}
         handleTertiaryButton={handleTertiaryButton}
       />
-      {/* <ScheduleNamespaceDeploy /> */}
+      <ScheduleNamespaceDeploy
+        isOpen={ScheduleNamespaceDeployOpen}
+        closePopup={handleScheduleNamespaceDeployModel}
+        openParameterContext={openParameterContext}
+        getParamerterContext={getParamerterContext}
+        handleTertiaryButton={handleTertiaryButton}
+        onSubmit={onSubmit}
+        handleSubmit={handleSubmit}
+      />
       <ParameterContext
         key={isParameterContextOpen}
         isOpen={isParameterContextOpen}

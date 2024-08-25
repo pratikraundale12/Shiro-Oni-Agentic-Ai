@@ -1,9 +1,9 @@
+/*eslint-disable*/
 import React, { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 
 import { Button, DateTimeInput, Modal } from '../../shared';
-import { useGlobalContext } from '../../utils';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   ClustersActions,
@@ -14,21 +14,26 @@ import { UserSelect } from '../../components';
 import * as yup from 'yup';
 import { isEmpty } from 'lodash';
 import { SchedularActions } from '../../store/schedular/redux';
+import PropTypes from 'prop-types';
 
 export const scheduleSchema = yup.object().shape({
-  // namespace_id: yup.string().trim().required('Namespace is required'),
-  // source_cluster_id: yup.string().trim().required('Source Cluster is required'),
-  // destination_cluster_id: yup
-  //   .string()
-  //   .trim()
-  //   .required('Destination Cluster is required'),
   approver_ids: yup.string().trim().required('Approver is required'),
 });
 
-export const AddScheduleDeploymentModal = props => {
+export const AddScheduleDeploymentModal = ({
+  setScheduleNamespaceDeployOpen,
+  setValue,
+  reset,
+  control,
+  errors,
+  scheduleInitialOpen,
+  setScheduleInitialOpen,
+  handleContinue = () => {},
+  startDate,
+  setStartDate,
+}) => {
   const dispatch = useDispatch();
-  const { state, setState } = useGlobalContext();
-  const [startDate, setStartDate] = useState(new Date());
+  // const [startDate, setStartDate] = useState(new Date());
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   // const [selectCluster, setSelectCluster] = useState(selectedCluster);
   // const [namespaceSelected, setNamespaceSelected] = useState(null);
@@ -37,16 +42,16 @@ export const AddScheduleDeploymentModal = props => {
   // const namespaces = useSelector(SchedularSelectors.fetchNamespaces);
   // console.log(namespaceSelected, 'namespaceSelected');
   // selectCluster;
-  const {
-    // register,
-    setValue,
-    reset,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(scheduleSchema),
-  });
+  // const {
+  //   // register,
+  //   setValue,
+  //   reset,
+  //   handleSubmit,
+  //   control,
+  //   formState: { errors },
+  // } = useForm({
+  //   resolver: yupResolver(scheduleSchema),
+  // });
 
   // const onNamespaceSelect = selectedItem => {
   //   setNamespaceSelected(selectedItem);
@@ -56,41 +61,46 @@ export const AddScheduleDeploymentModal = props => {
   //   setSelectCluster(selectedItem?.value);
   // };
 
-  const openModal = () => setState({ ...state, scheduleModel: true });
+  const openModal = () => {
+    setScheduleInitialOpen(true);
+  };
   const closeModal = () => {
-    reset();
-    setState({
-      ...state,
-      scheduleModel: false,
-    });
+    setScheduleInitialOpen(false);
   };
+  // const handleContinue = () => {
+  //   setScheduleInitialOpen(false);
+  //   setScheduleNamespaceDeployOpen(true);
+  // };
+  // const onSubmit = async data => {
+  //   handleContinue();
+  //   console.log(data);
+  // const { approver_ids, ...rest } = data;
+  // const payload = {
+  //   ...rest,
+  //   scheduled_time: startDate.toISOString(),
+  //   // namespace_name: namespaceSelected?.label,
+  //   // flow_id:namespaceSelected?.flowId,
+  //   approver_ids: [approver_ids],
+  //   deployment_status: 'PENDING',
+  // };
+  // console.log(payload, 'payload');
+  // // dispatch(SchedularActions.createScheduleDeployment(payload));
+  // closeModal();
+  // };
 
-  const onSubmit = async data => {
-    const { approver_ids, ...rest } = data;
-    const payload = {
-      ...rest,
-      scheduled_time: startDate.toISOString(),
-      // namespace_name: namespaceSelected?.label,
-      // flow_id:namespaceSelected?.flowId,
-      approver_ids: [approver_ids],
-      deployment_status: 'PENDING',
-    };
-    dispatch(SchedularActions.createScheduleDeployment(payload));
-    closeModal();
-  };
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {
       dispatch(NamespacesActions.fetchNamespaces());
     }
   }, [dispatch, selectedCluster]);
 
-  useEffect(() => {
-    if (!isEmpty(selectedCluster)) {
-      setValue('source_cluster_id', selectedCluster.value);
-    }
+  // useEffect(() => {
+  //   if (!isEmpty(selectedCluster)) {
+  //     setValue('source_cluster_id', selectedCluster.value);
+  //   }
 
-    return () => reset();
-  }, [selectedCluster, setValue, reset]);
+  //   return () => reset();
+  // }, [selectedCluster, setValue, reset]);
 
   useEffect(() => {
     dispatch(ClustersActions.fetchClusterList());
@@ -107,20 +117,20 @@ export const AddScheduleDeploymentModal = props => {
       dispatch(SchedularActions.fetchNamespaces(selectedCluster?.value));
     }
   }, [selectedCluster, dispatch]);
-
+  // handleSubmit(onSubmit)
   return (
-    <div {...props}>
+    <div>
       <Button onClick={openModal} size="md" variant="secondary">
         Schedule
       </Button>
       <Modal
         size="md"
         title={'Add Schedule Deployment'}
-        isOpen={state.scheduleModel}
+        isOpen={scheduleInitialOpen}
         onRequestClose={closeModal}
         secondaryButtonText="Cancel"
-        primaryButtonText="Submit"
-        onSubmit={handleSubmit(onSubmit)}
+        primaryButtonText="Continue"
+        onSubmit={handleContinue}
         footerAlign="start"
         contentStyles={{ minWidth: '45%' }}
       >
@@ -146,4 +156,15 @@ export const AddScheduleDeploymentModal = props => {
       </Modal>
     </div>
   );
+};
+AddScheduleDeploymentModal.propTypes = {
+  setScheduleNamespaceDeployOpen: PropTypes.func,
+  setValue: PropTypes.func.isRequired,
+  control: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired,
+  scheduleInitialOpen: PropTypes.bool,
+  setScheduleInitialOpen: PropTypes.func,
+  handleContinue: PropTypes.func,
+  startDate: PropTypes.string.isRequired,
+  setStartDate: PropTypes.object.isRequired,
 };
