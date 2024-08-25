@@ -44,8 +44,12 @@ export function* resetPasswordRequest(api, { payload }) {
     apiParams: [payload],
     successAction: AuthenticationActions.resetPasswordRequestSuccess,
   });
-  if (response.ok) yield call(history.push, '/reset');
-  if (!response.ok) toast.error(response.data.message);
+  if (response.ok) {
+    toast.success('Password reset request successful!');
+    yield call(history.push, '/reset');
+  } else {
+    toast.error(response.data.message);
+  }
 }
 
 export function* resetPassword(api, { payload: { password, resetToken } }) {
