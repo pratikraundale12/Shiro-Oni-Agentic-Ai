@@ -2,7 +2,6 @@ import { call, all, takeLatest, put, select } from 'redux-saga/effects';
 import { requestSaga } from '../helpers/request_sagas';
 import { RolesActions, RolesSelectors } from './redux';
 import { toast } from 'react-toastify';
-import { fetchGrid } from '../grid';
 
 export function* fetchRoles(api) {
   yield call(requestSaga, {
@@ -32,27 +31,28 @@ export function* fetchLdap(api, payload) {
   }
 }
 
-export function* fetchRolesClusters(api) {
+export function* fetchRoleClusters(api, { payload: { roleId, params = {} } }) {
   yield call(requestSaga, {
-    errorSection: 'fetchRolesClusters',
-    loadingSection: 'fetchRolesClusters',
-    apiMethod: api.fetchRolesClusters,
-    apiParams: [{ params: {} }],
-    successAction: RolesActions.fetchRolesClustersSuccess,
+    errorSection: 'fetchRoleClusters',
+    loadingSection: 'fetchRoleClusters',
+    apiMethod: api.fetchRoleClusters,
+    apiParams: [{ params, payload: { roleId } }],
+    successAction: RolesActions.fetchRoleClustersSuccess,
   });
 }
 
-export function* updateRolesClusters(api, { payload }) {
+export function* updateRoleClusters(api, { payload }) {
   const response = yield call(requestSaga, {
-    errorSection: 'updateRolesClusters',
-    loadingSection: 'updateRolesClusters',
-    apiMethod: api.updateRolesClusters,
+    errorSection: 'updateRoleClusters',
+    loadingSection: 'updateRoleClusters',
+    apiMethod: api.updateRoleClusters,
     apiParams: [{ params: {}, payload }],
   });
   if (response.ok) {
     toast.success('Clusters access updated.');
-    yield put(RolesActions.permissionModal());
-    yield call(fetchGrid, api, { payload: { module: 'clustersRolesAccess' } });
+    yield call(fetchRoleClusters, api, {
+      payload: { roleId: payload.roleId },
+    });
   }
   if (!response.ok) toast.error(response.data.message);
 }
@@ -117,8 +117,8 @@ export function* createNewRole(api, { payload }) {
 export function* rolesSagas(api) {
   yield all([
     takeLatest(RolesActions.fetchRoles, fetchRoles, api),
-    takeLatest(RolesActions.fetchRolesClusters, fetchRolesClusters, api),
-    takeLatest(RolesActions.updateRolesClusters, updateRolesClusters, api),
+    takeLatest(RolesActions.fetchRoleClusters, fetchRoleClusters, api),
+    takeLatest(RolesActions.updateRoleClusters, updateRoleClusters, api),
     takeLatest(RolesActions.createNewRole, createNewRole, api),
     takeLatest(RolesActions.fetchLdap, fetchLdap, api),
   ]);
