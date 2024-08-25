@@ -1,15 +1,15 @@
-import { put, call, all, takeLatest, select } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
-import { requestSaga } from '../helpers/request_sagas';
-import { AuthenticationActions, AuthenticationSelectors } from './redux';
-import { history } from '../../helpers/history';
+import { all, call, put, takeLatest } from 'redux-saga/effects';
 import {
   ACCESS_TOKEN,
   CLUSTERS_TOKEN,
   DEFAULT_ROUTE,
   PREVIOUS_PATH,
 } from '../../constants';
+import { history } from '../../helpers/history';
 import { LoadingActions } from '../helpers/loading_redux';
+import { requestSaga } from '../helpers/request_sagas';
+import { AuthenticationActions } from './redux';
 
 export function* fetchCurrentUser(api) {
   const route = localStorage.getItem(PREVIOUS_PATH) || DEFAULT_ROUTE;
@@ -48,8 +48,7 @@ export function* resetPasswordRequest(api, { payload }) {
   if (!response.ok) toast.error(response.data.message);
 }
 
-export function* resetPassword(api, { payload: { password } }) {
-  const resetToken = yield select(AuthenticationSelectors.getResetToken);
+export function* resetPassword(api, { payload: { password, resetToken } }) {
   const response = yield call(requestSaga, {
     errorSection: 'resetPassword',
     loadingSection: 'resetPassword',
