@@ -24,7 +24,6 @@ const StyledSelectField = styled(SelectField)`
 `;
 
 const SelectCellRender = ({ onChange, roles, data }) => {
-  console.log(data, 'lllllllll');
   const [openRoleModal, setOpenRoleModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const selectedOptionRef = useRef(selectedOption);
@@ -33,7 +32,7 @@ const SelectCellRender = ({ onChange, roles, data }) => {
 
   const sortedArray = roles?.map(item => ({
     label: item.name,
-    value: item.id,
+    value: item.role_id,
   }));
 
   const handleCreateOption = inputValue => {

@@ -1,23 +1,25 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
 
+import { Button, CheckboxField, SelectField } from '../../shared';
+import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { theme } from '../../styles';
 import { Table, TextRender } from '../../components';
-import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
-import { Button, CheckboxField, SelectField, TextButton } from '../../shared';
+import AddNewRoleModal from '../../shared/AddNewRoleModal';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
   LoadingSelectors,
   PoliciesActions,
   PoliciesSelectors,
   RolesActions,
   RolesSelectors,
 } from '../../store';
-import { difference, isEmpty } from 'lodash';
-import AddNewRoleModal from '../../shared/AddNewRoleModal';
-import { history } from '../../helpers/history';
+import Breadcrumb from '../../shared/Breadcrumb';
 
 const Flex = styled.div`
   display: flex;
@@ -75,69 +77,21 @@ const StyledSelectField = styled(SelectField)`
   }
 `;
 
-const LinkButton = styled(TextButton)`
-  color: ${props => props.theme.colors.primary};
-  font-family: ${props => props.theme.fontRedHat};
-  font-weight: 800;
-  font-size: 14px;
-  text-transform: capitalize;
-
-  &:hover {
-    color: ${props => props.theme.colors.primary};
-  }
-`;
-
-const MODULES = [
-  {
-    label: 'Cluster',
-    value: 'cluster',
-  },
-  {
-    label: 'Namespace',
-    value: 'namespace',
-  },
-  {
-    label: 'User Management',
-    value: 'user',
-  },
-  {
-    label: 'Role & Permission',
-    value: 'permission',
-  },
-  {
-    label: 'LDAP Configuration',
-    value: 'ldap',
-  },
-  {
-    label: 'Activity History',
-    value: 'history',
-  },
-];
-
-const EXCLUDE_ADD_PERMISSION = ['namespace', 'history'];
-const EXCLUDE_EDIT_PERMISSION = ['cluster', 'namespace', 'history'];
-const EXCLUDE_DELETE_PERMISSION = [
-  'cluster',
-  'namespace',
-  'permission',
-  'ldap',
-  'history',
-];
-
 const CellRender = ({
-  policy_name = '',
-  policies = [],
-  updatedRolePolicies = [],
+  clusterId = '',
+  policy = {},
+  roleClusters = [],
   onChange = () => {},
 }) => {
-  const item = policies.find(item => item.name === policy_name) || {};
-  const checked = !!updatedRolePolicies.find(
-    policy => policy.policy_id === item.id
-  )?.policy_id;
+  const checked = roleClusters.find(
+    roleCluster =>
+      roleCluster.cluster_id === clusterId &&
+      roleCluster.policy_id === policy.id
+  );
+  const item = { cluster_id: clusterId, policy_id: policy.id };
 
   return (
     <CheckboxField
-      disabled={isEmpty(item)}
       checked={checked}
       onChange={event => onChange(event.target.checked, item)}
     />
@@ -145,87 +99,75 @@ const CellRender = ({
 };
 
 const getDifference = (existing, updated) => {
-  const exists = existing.map(item => item.policy_id);
-  const updates = updated.map(item => item.policy_id);
-  return [difference(updates, exists), difference(exists, updates)];
+  const exists = updated.filter(
+    item =>
+      !existing.some(
+        itm =>
+          item.policy_id === itm.policy_id && item.cluster_id === itm.cluster_id
+      )
+  );
+  const updates = existing.filter(
+    item =>
+      !updated.some(
+        itm =>
+          item.policy_id === itm.policy_id && item.cluster_id === itm.cluster_id
+      )
+  );
+  return [exists, updates];
 };
 
-export const ModuleAccess = () => {
+export const ClusterAccess = () => {
   const dispatch = useDispatch();
-  const policies = useSelector(PoliciesSelectors.getPolicies);
-  const rolePolicies = useSelector(PoliciesSelectors.getPoliciesRoles);
   const roles = useSelector(RolesSelectors.getRoles);
+  const policies = useSelector(PoliciesSelectors.getPolicies);
+  const clusters = useSelector(ClustersSelectors.getClusters);
+  const roleClusters = useSelector(RolesSelectors.getRoleClusters);
   const selectedRole = useSelector(RolesSelectors.getSelectedRole);
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const openRoleModal = useSelector(RolesSelectors.getRoleModal);
   const loading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'updateRolesPolicies')
+    LoadingSelectors.getLoading(state, 'updateRoleClusters')
   );
-  const [updatedRolePolicies, setUpdatedRolePolicies] = useState([]);
+  const [updatedRoleClusters, setUpdatedRoleClusters] = useState([]);
   const [search, setSearch] = useState('');
 
-  const DFM_ACCESS_COLUMNS = [
+  const CLUSTERS_ACCESS_COLUMNS = [
     {
-      label: 'DFM Access',
+      label: 'Cluster Access',
       renderCell: item => <TextRender text={item.label} />,
     },
     {
       label: 'View',
       renderCell: item => (
         <CellRender
-          policy_name={`view_${item.value}`}
-          policies={policies}
-          updatedRolePolicies={updatedRolePolicies}
+          clusterId={item.value}
+          roleClusters={updatedRoleClusters}
+          policy={policies?.find(policy => policy.name === 'access_cluster')}
           onChange={handleChange}
         />
       ),
     },
     {
-      label: 'Add',
-      renderCell: item =>
-        !EXCLUDE_ADD_PERMISSION.includes(item.value) && (
-          <CellRender
-            policy_name={`add_${item.value}`}
-            policies={policies}
-            updatedRolePolicies={updatedRolePolicies}
-            onChange={handleChange}
-          />
-        ),
-    },
-    {
       label: 'Edit',
-      renderCell: item =>
-        !EXCLUDE_EDIT_PERMISSION.includes(item.value) && (
-          <CellRender
-            policy_name={`edit_${item.value}`}
-            policies={policies}
-            updatedRolePolicies={updatedRolePolicies}
-            onChange={handleChange}
-          />
-        ),
+      renderCell: item => (
+        <CellRender
+          clusterId={item.value}
+          roleClusters={updatedRoleClusters}
+          policy={policies?.find(policy => policy.name === 'edit_cluster')}
+          onChange={handleChange}
+        />
+      ),
     },
     {
       label: 'Delete',
-      renderCell: item =>
-        !EXCLUDE_DELETE_PERMISSION.includes(item.value) && (
-          <CellRender
-            policy_name={`delete_${item.value}`}
-            policies={policies}
-            updatedRolePolicies={updatedRolePolicies}
-            onChange={handleChange}
-          />
-        ),
-    },
-    {
-      label: '',
-      renderCell: item =>
-        item.value === 'cluster' && (
-          <LinkButton
-            onClick={() =>
-              history.push(`/role-&-permission/${selectedRole.value}`)
-            }
-          >{`Manage ${item.value} List`}</LinkButton>
-        ),
+      renderCell: item => (
+        <CellRender
+          clusterId={item.value}
+          roleClusters={updatedRoleClusters}
+          policy={policies?.find(policy => policy.name === 'delete_cluster')}
+          onChange={handleChange}
+        />
+      ),
     },
   ];
 
@@ -234,8 +176,13 @@ export const ModuleAccess = () => {
     label: role.name,
   }));
 
+  const path = [
+    { label: 'DFM Access', path: '/role-&-permission' },
+    { label: 'Cluster Management' },
+  ];
+
   const isUpdated = () => {
-    const [added, remove] = getDifference(rolePolicies, updatedRolePolicies);
+    const [added, remove] = getDifference(roleClusters, updatedRoleClusters);
     const updated = !isEmpty(added) || !isEmpty(remove);
     return loading || !updated;
   };
@@ -245,52 +192,54 @@ export const ModuleAccess = () => {
     dispatch(PoliciesActions.fetchPoliciesRoles({ roleId: option.value }));
   };
 
-  const handleChange = (checked, value) => {
+  const handleChange = (checked, item) => {
     if (!checked) {
-      setUpdatedRolePolicies(prev =>
-        prev.filter(item => item.policy_id !== value.id)
+      setUpdatedRoleClusters(prev =>
+        prev.filter(
+          policy =>
+            !(
+              policy.cluster_id === item.cluster_id &&
+              policy.policy_id === item.policy_id
+            )
+        )
       );
     } else {
-      setUpdatedRolePolicies(prev => [
-        ...prev,
-        { policy_id: value.id, policy_name: value.name },
-      ]);
+      setUpdatedRoleClusters(prev => [...prev, item]);
     }
   };
 
   const handleSubmit = () => {
     const payload = { add: [], remove: [] };
 
-    const [added, remove] = getDifference(rolePolicies, updatedRolePolicies);
+    const [added, remove] = getDifference(roleClusters, updatedRoleClusters);
 
-    payload.add = added.map(policy_id => ({
+    payload.add = added.map(item => ({
       role_id: selectedRole.value,
-      policy_id,
+      cluster_id: item.cluster_id,
+      policy_id: item.policy_id,
     }));
-    payload.remove = remove.map(policy_id => ({
+    payload.remove = remove.map(item => ({
       role_id: selectedRole.value,
-      policy_id,
+      cluster_id: item.cluster_id,
+      policy_id: item.policy_id,
     }));
     payload.roleId = selectedRole.value;
 
-    dispatch(PoliciesActions.updateRolesPolicies(payload));
+    dispatch(RolesActions.updateRoleClusters(payload));
   };
 
   useEffect(() => {
-    dispatch(RolesActions.fetchRoles());
-    dispatch(PoliciesActions.fetchPolicies());
+    dispatch(ClustersActions.fetchClusterList());
   }, [dispatch]);
 
   useEffect(() => {
     if (!isEmpty(selectedRole))
-      dispatch(
-        PoliciesActions.fetchPoliciesRoles({ roleId: selectedRole.value })
-      );
+      dispatch(RolesActions.fetchRoleClusters({ roleId: selectedRole.value }));
   }, [dispatch, selectedRole]);
 
   useEffect(() => {
-    setUpdatedRolePolicies(rolePolicies);
-  }, [rolePolicies]);
+    setUpdatedRoleClusters(roleClusters);
+  }, [roleClusters]);
 
   return (
     <div>
@@ -341,7 +290,8 @@ export const ModuleAccess = () => {
         />
       </SearchContainer>
       {openRoleModal && <AddNewRoleModal />}
-      <Table data={MODULES} columns={DFM_ACCESS_COLUMNS} />
+      <Breadcrumb module="path" path={path} />
+      <Table data={clusters} columns={CLUSTERS_ACCESS_COLUMNS} />
     </div>
   );
 };

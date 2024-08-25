@@ -176,14 +176,10 @@ export const ListNamespaces = () => {
     return () => clearInterval(intervalRef.current);
   }, [dispatch, refreshState]);
 
-  // const LIMIT = 10;
   return (
     <>
       <Grid
-        // isNamespace={true}
-        // LIMIT={LIMIT}
-        // offset={offset}
-        // setOffset={setOffset}
+        isNamespace={true}
         module="namespaces"
         title={KDFM.NAMESPACE_LIST}
         columns={COLUMNS}
