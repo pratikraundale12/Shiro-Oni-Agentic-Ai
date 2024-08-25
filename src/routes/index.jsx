@@ -47,6 +47,7 @@ import {
   AuthenticationSelectors,
   LoadingSelectors,
 } from '../store';
+import { SettingsActions, SettingsSelectors } from '../store/settings';
 
 export const ROUTES_MENU = [
   {
@@ -198,13 +199,36 @@ export const ROUTES_MENU = [
 const Routes = () => {
   const dispatch = useDispatch();
   const isLicenseValid = useSelector(AuthenticationSelectors.getIsLicenseValid);
+  const settingsData = useSelector(SettingsSelectors.getSettings);
+  console.log(settingsData, 'data????????');
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchLicenseInfo')
   );
 
   useEffect(() => {
     dispatch(AuthenticationActions.fetchLicenseInfo());
+    dispatch(SettingsActions.fetchSettings());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (settingsData) {
+      changeFavicon(settingsData?.favicon);
+      document.title = settingsData?.title || 'Data Flow Manager';
+    }
+  }, [settingsData]);
+
+  function changeFavicon(newFaviconURL) {
+    const favicon = document.getElementById('dynamic-favicon');
+    if (favicon) {
+      favicon.href = newFaviconURL;
+    } else {
+      const newFavicon = document.createElement('link');
+      newFavicon.rel = 'icon';
+      newFavicon.href = newFaviconURL || '%PUBLIC_URL%/favicon.ico';
+      newFavicon.id = 'dynamic-favicon';
+      document.head.appendChild(newFavicon);
+    }
+  }
 
   if (!isLicenseValid) return <SessionExpired />;
 

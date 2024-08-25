@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SelectField, Button, UploadField, InputField } from '../../shared';
-import { useSelector } from 'react-redux';
 import {
   RefreshIcon,
   LogoFieldIcon,
@@ -13,6 +12,7 @@ import {
   QRIcons,
 } from '../../assets';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+// import { GridActions } from '../../store';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -47,45 +47,88 @@ export const Setting = () => {
     handleSubmit,
     register,
     watch,
+    setValue,
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
+  const intervalRef = useRef(null);
   const settingData = useSelector(SettingsSelectors.getSettings);
+  const [refreshApi, setRefreshApi] = useState(false);
 
-  const onSubmit = data => {
-    console.log(data, 'formDataadada');
-
-    // Create a new FormData instance
+  const onSubmit = async data => {
+    console.log(data, 'formData');
     const payload = new FormData();
+    data.logo && payload.append('logo', data.logo);
+    data.favicon && payload.append('favicon', data.favicon);
+    data.title && payload.append('title', data.title);
+    data.refresh && payload.append('refresh', data.refresh);
+    data.email && payload.append('email', data.email);
 
-    // Append each field to the FormData object
-    payload.append('logo', data.logo);
-    payload.append('favicon', data.favicon);
-    payload.append('title', data.title);
-    payload.append('refresh', data.refresh);
-    payload.append('email', data.email);
+    try {
+      dispatch(SettingsActions.createSettings(payload));
+      setRefreshApi(true); // Trigger the refresh after the form is submitted
 
-    // Dispatch the action with FormData payload
-    dispatch(SettingsActions.createSettings(payload));
-
-    // const favicon = document.getElementById('favicon');
-    // favicon.href = 'path/to/new/favicon.ico';
-
-    // Change the title
-    document.title = data.title;
-
-    // Update the logo (assuming you have a state or prop to update the logo src)
-    // const logoElement = document.getElementById('logo');
-    // if (logoElement) {
-    //   logoElement.src = 'path/to/new/logo.png';
-    // }
+      // Update favicon and title after successful submission
+      if (data.favicon) changeFavicon(URL.createObjectURL(data.favicon));
+      if (data.title) document.title = data.title;
+    } catch (error) {
+      console.error('Failed to submit settings:', error);
+    }
   };
 
   useEffect(() => {
     dispatch(SettingsActions.fetchSettings());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (settingData) {
+      changeFavicon(settingData?.favicon);
+      document.title = settingData?.title || 'Data Flow Manager';
+
+      // Set form field values with the data from the API
+      setValue('logo', settingData?.logo);
+      setValue('favicon', settingData?.favicon);
+      setValue('title', settingData?.title);
+      setValue('refresh', settingData?.refresh);
+      setValue('email', settingData?.email);
+
+      const logoElement = document.getElementById('logo');
+      if (logoElement && settingData?.logo) {
+        logoElement.src = settingData.logo;
+      }
+    }
+  }, [settingData, setValue]);
+
+  const refreshState = settingData?.refresh;
+
+  useEffect(() => {
+    if (refreshState !== 0) {
+      intervalRef.current = setInterval(() => {
+        // dispatch(GridActions.fetchGrid({ module: 'users' }));
+        // dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+        // // dispatch(GridActions.fetchGrid({ module: 'dashboard' }));
+        dispatch(SettingsActions.refreshSetting());
+      }, refreshState);
+    } else {
+      clearInterval(intervalRef.current);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [dispatch, refreshState, refreshApi]);
+
   console.log('Component data:', settingData);
+
+  function changeFavicon(newFaviconURL) {
+    const favicon = document.getElementById('dynamic-favicon');
+    if (favicon) {
+      favicon.href = newFaviconURL;
+    } else {
+      const newFavicon = document.createElement('link');
+      newFavicon.rel = 'icon';
+      newFavicon.href = newFaviconURL || '%PUBLIC_URL%/favicon.ico';
+      newFavicon.id = 'dynamic-favicon';
+      document.head.appendChild(newFavicon);
+    }
+  }
 
   return (
     <Wrapper>
@@ -93,7 +136,6 @@ export const Setting = () => {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          // height: '100%',
           justifyContent: 'space-between',
         }}
         onSubmit={handleSubmit(onSubmit)}
@@ -105,11 +147,19 @@ export const Setting = () => {
             control={control}
             icon={<RefreshIcon />}
             errors={errors}
+            defaultValue={
+              settingData
+                ? {
+                    label: settingData.refresh,
+                    value: settingData.refresh,
+                  }
+                : null
+            }
             options={REFRESH_OPTIONS}
             placeholder="Select Cluster"
           />
           <StyledInputField
-            name="Email"
+            name="email"
             register={register}
             icon={<MailIcon />}
             label={KDFM.EMAIL}
@@ -127,6 +177,7 @@ export const Setting = () => {
             rightIcon={<UploadIcon />}
             errors={errors}
             register={register}
+            image={settingData?.logo}
           />
           <UploadField
             name="favicon"
@@ -136,6 +187,7 @@ export const Setting = () => {
             rightIcon={<UploadIcon />}
             errors={errors}
             register={register}
+            image={settingData?.favicon}
           />
         </InputFields>
 

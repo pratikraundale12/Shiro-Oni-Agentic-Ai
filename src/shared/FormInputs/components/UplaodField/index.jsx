@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -120,11 +120,12 @@ const UploadField = ({
   rightIcon = null,
   required = false,
   control,
+  image,
   ...props
 }) => {
-  const [imageSrc, setImageSrc] = useState(null);
+  const [imageSrc, setImageSrc] = useState(image || null);
   const [fileError, setFileError] = useState('');
-
+  console.log(image, 'immm');
   const error = hasError(errors, name);
 
   const handleRemoveImage = () => {
@@ -133,6 +134,13 @@ const UploadField = ({
       control.setValue(name, null);
     }
   };
+
+  useEffect(() => {
+    if (image) {
+      setImageSrc(image); // Set the initial imageSrc to the image URL from the API
+    }
+  }, [image]);
+
   return (
     <Controller
       name={name}
@@ -141,7 +149,12 @@ const UploadField = ({
       rules={{ required }}
       render={({ field: { onChange, value } }) => {
         const handlePhotoUpload = event => {
-          const validImageTypes = ['image/jpeg', 'image/png'];
+          const validImageTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/x-icon',
+            'image/ico',
+          ];
           const file = event.target.files[0];
           event.target.value = null;
 
@@ -210,6 +223,7 @@ const UploadField = ({
 
 UploadField.propTypes = {
   name: PropTypes.string.isRequired,
+  image: PropTypes.string,
   register: PropTypes.func,
   label: PropTypes.string.isRequired,
   icon: PropTypes.node,

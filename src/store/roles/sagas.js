@@ -24,7 +24,6 @@ export function* fetchLdap(api, payload) {
   });
 
   if (response.ok) {
-    console.log(response, 'sagaApi');
     yield put(RolesActions.displayGroup());
     // yield call(fetchRoles, api);
   } else {

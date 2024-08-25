@@ -6,6 +6,7 @@ export const SettingsActions = {
   createSettings: createAction(`${prefix}createSettings`),
   fetchSettings: createAction(`${prefix}fetchSettings`),
   fetchSettingsSuccess: createAction(`${prefix}fetchSettingsSuccess`),
+  refreshSetting: createAction(`${prefix}refreshSetting`),
 };
 
 // /* ------------- INITIAL STATE ------------- */
@@ -15,15 +16,14 @@ export const SETTING_INITIAL_STATE = {
 
 // /* ------------- SELECTORS ------------------ */
 export const SettingsSelectors = {
-  getSettings: state => state.data,
+  getSettings: state => state.settings.data,
 };
 
 // /* ------------- REDUCERS ------------------- */
 const fetchSettingsSuccess = (state, { payload }) => {
-  console.log(payload, 'ppp'); // Check what is being logged here
   return {
     ...state,
-    data: payload.data, // Ensure that `payload.data` actually contains the settings data
+    data: payload, // Ensure that `payload.data` actually contains the settings data
   };
 };
 
