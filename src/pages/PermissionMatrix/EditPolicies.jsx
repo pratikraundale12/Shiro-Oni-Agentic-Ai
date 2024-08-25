@@ -158,7 +158,6 @@ export const EditPolicies = () => {
     setUpdatedPoliciesAccess(policiesAccess);
   }, [policiesAccess]);
 
-  console.log(policiesAccess, updatedPoliciesAccess, policies);
   return (
     <div>
       <ButtonContainer>

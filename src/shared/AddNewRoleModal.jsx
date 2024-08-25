@@ -38,7 +38,6 @@ const AddNewRoleModal = ({ selectedOption, ldapGroupName }) => {
   );
 
   const onSubmit = data => {
-    console.log(data);
     const payload = {
       name: data.roleName,
       ldapGroupName: ldapGroupName,

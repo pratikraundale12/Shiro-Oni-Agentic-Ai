@@ -1,9 +1,9 @@
 export const rolesAPI = api => {
   const fetchClustersRolesAccess = ({ params = {} }) =>
     api.get('/clusters_role_access', params);
-  const fetchRolesClusters = ({ params = {} }) =>
-    api.get('/roles_with_clusters', params);
-  const updateRolesClusters = ({ params = {}, payload = {} }) =>
+  const fetchRoleClusters = ({ params = {}, payload: { roleId } }) =>
+    api.get(`/roles_with_clusters/${roleId}`, params);
+  const updateRoleClusters = ({ params = {}, payload = {} }) =>
     api.patch('/roles_with_clusters', payload, params);
   const fetchRoles = ({ params = {} }) => api.get('/roles', params);
   const fetchLdap = ({ payload = {}, params = {} }) =>
@@ -12,8 +12,8 @@ export const rolesAPI = api => {
 
   return {
     fetchClustersRolesAccess,
-    fetchRolesClusters,
-    updateRolesClusters,
+    fetchRoleClusters,
+    updateRoleClusters,
     fetchRoles,
     createNewRole,
     fetchLdap,
