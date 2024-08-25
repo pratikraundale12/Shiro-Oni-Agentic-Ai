@@ -33,6 +33,8 @@ import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
+import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
+// import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -421,7 +423,7 @@ const Summary = () => {
       console.error('Failed to update status:', error);
     }
   };
-
+  console.log(isDeployedModal, 'isDeployedModal');
   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader loading={loading} />
@@ -723,6 +725,7 @@ const Summary = () => {
           >
             {checkDestCluster.mode !== 'upgrade' ? KDFM.DEPLOY : KDFM.UPGRADE}
           </Button>
+          <AddScheduleDeploymentModal />
         </BottomButtonDiv>
         {checkDestCluster.mode === 'upgrade' && (
           <Progressox className="w-100">
@@ -754,6 +757,7 @@ const Summary = () => {
         getParamerterContext={getParamerterContext}
         handleTertiaryButton={handleTertiaryButton}
       />
+      {/* <ScheduleNamespaceDeploy /> */}
       <ParameterContext
         key={isParameterContextOpen}
         isOpen={isParameterContextOpen}

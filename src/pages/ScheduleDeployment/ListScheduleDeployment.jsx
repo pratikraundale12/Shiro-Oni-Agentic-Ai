@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid, IconButton, TextRender } from '../../components';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { HoldIcon, PencilIcon } from '../../assets';
+import { DeleteDustbinIcon, HoldIcon, PencilIcon } from '../../assets';
 import { STATUS_OPTIONS } from '../../constants';
-import { GridActions } from '../../store';
-import { AddScheduleDeploymentModal } from './AddScheduleDeploymentModel';
+import { AuthenticationSelectors } from '../../store';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
+import { ModalWithIcon } from '../../shared';
 
 const ActionTd = styled.div`
   display: flex;
@@ -17,17 +17,15 @@ const ActionTd = styled.div`
 `;
 
 export const ListScheduleDeployment = () => {
-  const dispatch = useDispatch();
-  const [refreshState, setRefreshSelect] = useState(false);
-  const intervalRef = useRef(null);
-
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
+  const [deleteOpenModel, setDeleteOpenModel] = useState(false);
   const getActionsMenu = () => (
     <div>
       <ActionTd>
         <IconButton onClick={() => {}}>
           <PencilIcon width={16} height={16} />
         </IconButton>
-        <IconButton onClick={() => {}}>
+        <IconButton onClick={() => setDeleteOpenModel(true)}>
           <HoldIcon />
         </IconButton>
       </ActionTd>
@@ -63,15 +61,16 @@ export const ListScheduleDeployment = () => {
       label: 'Approver',
       renderCell: item => (
         <TextWithPhotoRender
-          text={item.approver_name || 'N/A'}
-          content={item}
+          item={item}
+          content={item?.approvers}
+          currentUser={currentUser}
         />
       ),
       width: '15%',
     },
     {
       label: 'Status',
-      renderCell: () => <StatusText text={'IN APPROVED'} />,
+      renderCell: item => <StatusText text={item?.deployment_status} />,
       width: '15%',
     },
     {
@@ -81,33 +80,25 @@ export const ListScheduleDeployment = () => {
     },
   ];
 
-  const handleRefresh = event => {
-    setRefreshSelect(event.value);
-  };
-
-  useEffect(() => {
-    if (refreshState !== false) {
-      intervalRef.current = setInterval(
-        () => dispatch(GridActions.fetchGrid({ module: 'namespaces' })),
-        refreshState
-      );
-    } else {
-      clearInterval(intervalRef.current);
-    }
-
-    return () => clearInterval(intervalRef.current);
-  }, [dispatch, refreshState]);
-
   return (
     <>
+      <ModalWithIcon
+        title="Stop Schedule Deployment"
+        primaryButtonText="Stop"
+        secondaryButtonText="Cancel"
+        icon={<DeleteDustbinIcon />}
+        isOpen={deleteOpenModel}
+        // onSubmit={deleteUserConfirmed}
+        onRequestClose={() => setDeleteOpenModel(false)}
+        primaryText="Are you sure you want to stop this Deployment?"
+        secondaryText="This Deployment will be Cancel from Schedule Deployment Page"
+      />
       <Grid
         module="scheduler"
         title="Deployment List"
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
         placeholder="Search Namespace, Cluster or Approver"
-        handleRefresh={handleRefresh}
-        addModal={AddScheduleDeploymentModal}
       />
     </>
   );

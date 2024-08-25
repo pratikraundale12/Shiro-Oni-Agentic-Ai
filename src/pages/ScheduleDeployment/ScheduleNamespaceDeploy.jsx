@@ -183,7 +183,7 @@ const WarningText = styled.div`
   color: #444445;
 `;
 
-const NamespaceDeploy = ({
+const ScheduleNamespaceDeploy = ({
   isOpen,
   closePopup,
   getParamerterContext,
@@ -383,7 +383,7 @@ const NamespaceDeploy = ({
   );
 };
 
-NamespaceDeploy.propTypes = {
+ScheduleNamespaceDeploy.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
   getParamerterContext: PropTypes.func,
@@ -421,4 +421,4 @@ NamespaceDeploy.propTypes = {
   }),
 };
 
-export default NamespaceDeploy;
+export default ScheduleNamespaceDeploy;

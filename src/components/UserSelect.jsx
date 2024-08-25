@@ -9,6 +9,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
   const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
   const userList = useSelector(UsersSelectors.getUsers);
+  const AdminList = userList?.filter(item => item.role === 'Admin');
   const handleChange = value => {
     setSearchText(value);
   };
@@ -22,7 +23,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
       control={control}
       icon={<UserIcon />}
       errors={errors}
-      options={userList.map(({ id, username }) => ({
+      options={AdminList.map(({ id, username }) => ({
         value: id,
         label: username,
       }))}

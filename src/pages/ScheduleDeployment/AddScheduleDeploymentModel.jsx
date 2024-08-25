@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 
-import { Button, DateTimeInput, Modal, SelectField } from '../../shared';
-import { PlusCircleIcon, QRIcons } from '../../assets';
+import { Button, DateTimeInput, Modal } from '../../shared';
 import { useGlobalContext } from '../../utils';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  ClustersSelectors,
+  ClustersActions,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
@@ -17,12 +16,12 @@ import { isEmpty } from 'lodash';
 import { SchedularActions } from '../../store/schedular/redux';
 
 export const scheduleSchema = yup.object().shape({
-  namespace_id: yup.string().trim().required('Namespace is required'),
-  source_cluster_id: yup.string().trim().required('Source Cluster is required'),
-  destination_cluster_id: yup
-    .string()
-    .trim()
-    .required('Destination Cluster is required'),
+  // namespace_id: yup.string().trim().required('Namespace is required'),
+  // source_cluster_id: yup.string().trim().required('Source Cluster is required'),
+  // destination_cluster_id: yup
+  //   .string()
+  //   .trim()
+  //   .required('Destination Cluster is required'),
   approver_ids: yup.string().trim().required('Approver is required'),
 });
 
@@ -30,11 +29,14 @@ export const AddScheduleDeploymentModal = props => {
   const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
   const [startDate, setStartDate] = useState(new Date());
-  const [clusterList] = useState(useSelector(ClustersSelectors.getClusters));
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  const [selectCluster, setSelectCluster] = useState(selectedCluster);
-  const [namespaceSelected, setNamespaceSelected] = useState(null);
-  const namespaces = useSelector(NamespacesSelectors.getNamespaces);
+  // const [selectCluster, setSelectCluster] = useState(selectedCluster);
+  // const [namespaceSelected, setNamespaceSelected] = useState(null);
+  // const namespaces = useSelector(NamespacesSelectors.getNamespaces);
+  // const clusters = useSelector(ClustersSelectors.getClusters);
+  // const namespaces = useSelector(SchedularSelectors.fetchNamespaces);
+  // console.log(namespaceSelected, 'namespaceSelected');
+  // selectCluster;
   const {
     // register,
     setValue,
@@ -46,13 +48,13 @@ export const AddScheduleDeploymentModal = props => {
     resolver: yupResolver(scheduleSchema),
   });
 
-  const onNamespaceSelect = selectedItem => {
-    setNamespaceSelected(selectedItem?.label);
-  };
+  // const onNamespaceSelect = selectedItem => {
+  //   setNamespaceSelected(selectedItem);
+  // };
 
-  const onClusterSelect = selectedItem => {
-    setSelectCluster(selectedItem?.value);
-  };
+  // const onClusterSelect = selectedItem => {
+  //   setSelectCluster(selectedItem?.value);
+  // };
 
   const openModal = () => setState({ ...state, scheduleModel: true });
   const closeModal = () => {
@@ -68,7 +70,8 @@ export const AddScheduleDeploymentModal = props => {
     const payload = {
       ...rest,
       scheduled_time: startDate.toISOString(),
-      namespace_name: namespaceSelected,
+      // namespace_name: namespaceSelected?.label,
+      // flow_id:namespaceSelected?.flowId,
       approver_ids: [approver_ids],
       deployment_status: 'PENDING',
     };
@@ -89,14 +92,26 @@ export const AddScheduleDeploymentModal = props => {
     return () => reset();
   }, [selectedCluster, setValue, reset]);
 
+  useEffect(() => {
+    dispatch(ClustersActions.fetchClusterList());
+  }, [dispatch]);
+
+  // useEffect(() => {
+  //   if (selectCluster) {
+  //     dispatch(SchedularActions.fetchNamespaces(selectCluster));
+  //   }
+  // }, [selectCluster]);
+
+  useEffect(() => {
+    if (!isEmpty(selectedCluster)) {
+      dispatch(SchedularActions.fetchNamespaces(selectedCluster?.value));
+    }
+  }, [selectedCluster, dispatch]);
+
   return (
     <div {...props}>
-      <Button
-        icon={<PlusCircleIcon width={16} height={16} color="white" />}
-        onClick={openModal}
-        size="sm"
-      >
-        Add Schedule Deployment
+      <Button onClick={openModal} size="md" variant="secondary">
+        Schedule
       </Button>
       <Modal
         size="md"
@@ -110,51 +125,7 @@ export const AddScheduleDeploymentModal = props => {
         contentStyles={{ minWidth: '45%' }}
       >
         <div className="row">
-          <div className="col-6">
-            <SelectField
-              label="Namespace"
-              name="namespace_id"
-              control={control}
-              icon={<QRIcons />}
-              errors={errors}
-              options={namespaces.map(({ id, name }) => ({
-                value: id,
-                label: name,
-              }))}
-              placeholder="Select Namespace"
-              onChange={onNamespaceSelect}
-              required
-            />
-          </div>
-          <div className="col-6">
-            <SelectField
-              label="Source Cluster"
-              name="source_cluster_id"
-              control={control}
-              icon={<QRIcons />}
-              errors={errors}
-              options={clusterList}
-              defaultValue={selectedCluster}
-              placeholder="Select Source Cluster"
-              onChange={onClusterSelect}
-              required
-            />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-6">
-            <SelectField
-              label="Destination Cluster"
-              name="destination_cluster_id"
-              control={control}
-              icon={<QRIcons />}
-              errors={errors}
-              options={clusterList}
-              placeholder="Select Destination Cluster"
-              required
-            />
-          </div>
-          <div className="col-6">
+          <div className="col-12">
             <DateTimeInput
               startDate={startDate}
               setStartDate={setStartDate}

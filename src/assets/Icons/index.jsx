@@ -83,3 +83,7 @@ export * from './ScheduleDeploymentIcon';
 export * from './CalendarIcon';
 export * from './LdapConfigIcon';
 export * from './HoldIcon';
+export * from './DefaultUserIcon';
+export * from './TickIconWithCircle';
+export * from './ConfirmScheduleDeployment';
+export * from './ExclamationIcon';

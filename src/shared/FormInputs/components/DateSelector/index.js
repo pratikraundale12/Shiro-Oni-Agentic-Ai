@@ -25,9 +25,9 @@ const Container = styled.div`
     color: ${props => props.theme.colors.error};
     font-size: 1rem;
   }
-  //   div > div > input {
-  //     border: none;
-  //   }
+  div > div > input {
+    width: 100%;
+  }
 `;
 
 const DateTimeInput = ({
