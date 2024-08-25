@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react';
+import { isEmpty } from 'lodash';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -245,23 +246,24 @@ const CountDiv = styled.div`
   max-height: 48px;
   min-height: 48px;
   min-width: 48px;
-  border: 1px solid #dde4f0;
+  /* border: 1px solid #dde4f0;
   border-radius: 8px;
   background-color: #f5f7fa;
-  cursor: pointer;
+  cursor: pointer; */
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 
   & span {
-    position: absolute;
+    /* position: absolute; */
     top: 0px;
     right: 2px;
     font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     line-height: 23px;
+    margin-left: 8px;
     color: #b5bdc8;
   }
 
@@ -301,7 +303,7 @@ const breadcrumbData = [
   { label: KDFM.SUMMARY },
 ];
 export const scheduleSchema = yup.object().shape({
-  approver_ids: yup.string().trim().required('Approver is required'),
+  approver_ids: yup.array().required('Approver is required'),
 });
 
 const Summary = () => {
@@ -317,6 +319,7 @@ const Summary = () => {
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
 
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
@@ -388,8 +391,11 @@ const Summary = () => {
     openParameterContext();
     setLoading(false);
   };
-
   const handleUpgradeClick = async () => {
+    if (!isEmpty(flowControlButtons)) {
+      dispatch(NamespacesActions.updateNamespaceStatus(flowControlButtons));
+    }
+
     dispatch(NamespacesActions.upgradeCluster());
     setProgress(deployOrUpgradeDetails?.percentCompleted);
   };
@@ -441,49 +447,18 @@ const Summary = () => {
   };
 
   const [activeButton, setActiveButton] = useState(null);
-
-  const handleUpdateStatus = async (status, buttonId) => {
-    try {
-      const response = await updateNamespaceStatus(
-        state.selectedClusterId,
-        state?.upgradeData?.id || state.deployCountDetails?.data?.id,
-        status
-      );
-      if (response?.data) {
-        setState(prevState => ({
-          ...prevState,
-          deployCountDetails: {
-            ...prevState.deployCountDetails,
-            data: {
-              ...prevState.deployCountDetails?.data,
-              runningCount: response?.data?.status?.runningCount,
-              stoppedCount: response?.data?.status?.stoppedCount,
-              invalidCount: response?.data?.status?.invalidCount,
-              disabledCount: response?.data?.status?.disabledCount,
-            },
-          },
-          upgradeData: {
-            ...prevState.upgradeData,
-            runningCount: response?.data?.status?.runningCount,
-            stoppedCount: response?.data?.status?.stoppedCount,
-            invalidCount: response?.data?.status?.invalidCount,
-            disabledCount: response?.data?.status?.disabledCount,
-          },
-        }));
-      }
-      setActiveButton(buttonId);
-    } catch (error) {
-      console.error('Failed to update status:', error);
-    }
+  const handleUpdateStatus = status => {
+    setActiveButton(status);
+    setFlowControlButtons(status);
   };
 
-  useEffect(() => {
-    if (ScheduleNamespaceDeployOpen) {
-      checkDestCluster.mode !== 'upgrade'
-        ? handleDeploy()
-        : handleUpgradeClick();
-    }
-  }, [ScheduleNamespaceDeployOpen]);
+  // useEffect(() => {
+  //   if (ScheduleNamespaceDeployOpen) {
+  //     checkDestCluster.mode !== 'upgrade'
+  //       ? handleDeploy()
+  //       : handleUpgradeClick();
+  //   }
+  // }, [ScheduleNamespaceDeployOpen]);
 
   // isDeployedModal getting true and false to open and close
   return (
@@ -495,7 +470,13 @@ const Summary = () => {
             <TodoIcon />
           </div>
           <MainTitleHfour className="mb-0">
-            {`${checkDestCluster.mode} ${KDFM.NAMESPACE}`}
+            {`${
+              checkDestCluster.mode === 'upgrade'
+                ? checkDestCluster.version <= formData.version
+                  ? KDFM.UPGRADE
+                  : KDFM.DOWNGRADE
+                : KDFM.DEPLOY
+            } ${KDFM.NAMESPACE}`}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
@@ -716,7 +697,7 @@ const Summary = () => {
                       activeColor="#58e715"
                       hoverColor="#58e715"
                       activeTextColor="#fff"
-                      // onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
+                      onClick={() => handleUpdateStatus('RUNNING')}
                     >
                       <TriangleIcons color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -731,6 +712,7 @@ const Summary = () => {
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('STOPPED')}
                       // onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
                     >
                       <SquareBoxIcon color="#B5BDC8" />
@@ -746,6 +728,7 @@ const Summary = () => {
                       activeColor="#cf9f5d"
                       hoverColor="#cf9f5d"
                       activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('ENABLED')}
                       // onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
                     >
                       <SmallThunderIcon color="#B5BDC8" />
@@ -761,6 +744,7 @@ const Summary = () => {
                       activeColor="#2c7cf3"
                       hoverColor="#2c7cf3"
                       activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('DISABLED')}
                       // onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
                     >
                       <SmallNotThunderIcon color="#B5BDC8" />
@@ -785,7 +769,11 @@ const Summary = () => {
                 : handleUpgradeClick
             }
           >
-            {checkDestCluster.mode !== 'upgrade' ? KDFM.DEPLOY : KDFM.UPGRADE}
+            {checkDestCluster.mode === 'upgrade'
+              ? checkDestCluster.version <= formData.version
+                ? KDFM.UPGRADE
+                : KDFM.DOWNGRADE
+              : KDFM.DEPLOY}
           </Button>
           <AddScheduleDeploymentModal
             setScheduleNamespaceDeployOpen={setScheduleNamespaceDeployOpen}

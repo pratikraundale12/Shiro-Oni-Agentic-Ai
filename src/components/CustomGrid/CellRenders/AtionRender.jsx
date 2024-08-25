@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 import { CircleExclamationMarkIcon, ThreedotsIcon } from '../../../assets';
+import { CLUSTER_STATUS } from '../../../constants';
 import { Tooltip } from '../../../shared/Tooltip';
 import { theme } from '../../../styles';
 import { EnableClusterRender } from './EnableClusterRender';
@@ -80,28 +81,35 @@ const TooltipSecond = styled.div`
 export const ActionRender = ({ handleMenuClick, item, children }) => {
   return (
     <ActionTd>
-      <IconButton data-tooltip-id={item.id}>
+      <IconButton
+        data-tooltip-id={item.id}
+        disabled={
+          item.status === CLUSTER_STATUS.DISCONNECTED || !item.is_active
+        }
+      >
         <CircleExclamationMarkIcon color={theme.colors.border} />
       </IconButton>
+
+      <EnableClusterRender item={item} />
+
       <div className="position-relative">
         <IconButton onClick={event => handleMenuClick(event, item)}>
           <ThreedotsIcon />
         </IconButton>
         {children}
       </div>
-      <EnableClusterRender item={item} />
-      <Tooltip
-        id={item.id}
-        styles={{
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          padding: '8px 12px',
-          boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
-          zIndex: 10000,
-        }}
-      >
-        <div>
-          {item.is_active ? (
+      {item.status !== CLUSTER_STATUS.DISCONNECTED && item.is_active && (
+        <Tooltip
+          id={item.id}
+          styles={{
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            padding: '8px 12px',
+            boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+            zIndex: 10000,
+          }}
+        >
+          <div>
             <TooltipParent>
               <ClusterDeatils>Cluster Details</ClusterDeatils>
               <TooltipSecond>
@@ -123,11 +131,9 @@ export const ActionRender = ({ handleMenuClick, item, children }) => {
                 <Number>{item.total_nodes}</Number>
               </TooltipSecond>
             </TooltipParent>
-          ) : (
-            'This NiFi URL is not active'
-          )}
-        </div>
-      </Tooltip>
+          </div>
+        </Tooltip>
+      )}
     </ActionTd>
   );
 };

@@ -28,6 +28,9 @@ const Container = styled.div`
   div > div > input {
     width: 100%;
   }
+  div {
+    width: 100%;
+  }
 `;
 
 const DateTimeInput = ({

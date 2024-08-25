@@ -9,7 +9,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
   const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
   const userList = useSelector(UsersSelectors.getUsers);
-  const AdminList = userList?.filter(item => item.role === 'Admin');
+  const AdminList = userList?.filter(item => item.role === 'admin');
   const handleChange = value => {
     setSearchText(value);
   };
@@ -30,7 +30,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
       placeholder={placeholder}
       required
       onInputChange={handleChange}
-      //   isMulti
+      isMulti
     />
   );
 };

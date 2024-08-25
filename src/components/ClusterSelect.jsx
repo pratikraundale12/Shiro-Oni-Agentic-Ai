@@ -50,9 +50,12 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
     dispatch(ClustersActions.fetchClusterList());
   }, [dispatch]);
 
-  const remainingCluster = updatedClusters?.filter(
-    cluster => cluster?.value !== selectedCluster?.value
-  );
+  const remainingCluster =
+    location.pathname === '/login'
+      ? updatedClusters
+      : updatedClusters?.filter(
+          cluster => cluster?.value !== selectedCluster?.value
+        );
 
   return (
     <SelectField

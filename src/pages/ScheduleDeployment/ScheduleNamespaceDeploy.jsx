@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   ExclamationIcon,
-  GreenRightCircleIcon,
   SmallNotThunderIcon,
   SmallThunderIcon,
   SquareBoxIcon,
@@ -18,21 +17,21 @@ const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
 `;
-const ModalIcon = styled.div`
-  width: 70px;
-  height: 70px;
-  align-items: center;
-  justify-content: center;
-`;
-const ModalHFive = styled.h5`
-  text-align: center !important;
-  font-family: ${props => props.theme.fontNato};
-  font-size: 20px;
-  font-weight: 700;
-  color: #2d343f;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-`;
+// const ModalIcon = styled.div`
+//   width: 70px;
+//   height: 70px;
+//   align-items: center;
+//   justify-content: center;
+// `;
+// const ModalHFive = styled.h5`
+//   text-align: center !important;
+//   font-family: ${props => props.theme.fontNato};
+//   font-size: 20px;
+//   font-weight: 700;
+//   color: #2d343f;
+//   line-height: 24px;
+//   letter-spacing: -0.02em;
+// `;
 const RowModal = styled.div`
   margin-top: 1.5rem !important;
   display: flex;
@@ -197,17 +196,16 @@ const ScheduleNamespaceDeploy = ({
   );
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
-  const selectedDestCluster = useSelector(
-    NamespacesSelectors.getSelectedDestCluster
-  );
+  // const selectedDestCluster = useSelector(
+  //   NamespacesSelectors.getSelectedDestCluster
+  // );
   const handleUpdateStatus = status => {
     dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
-
   return (
     <>
       <Modal
-        title={`Namespace ${checkDestCluster.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
+        title={`Schedule Namespace `}
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
@@ -228,7 +226,7 @@ const ScheduleNamespaceDeploy = ({
         }}
       >
         <ModalBody className="modal-body">
-          <div className="d-flex justify-content-center align-items-center">
+          {/* <div className="d-flex justify-content-center align-items-center">
             <ModalIcon className="d-flex me-3 ">
               <GreenRightCircleIcon />
             </ModalIcon>
@@ -237,7 +235,7 @@ const ScheduleNamespaceDeploy = ({
               {checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'deployed'} to
               {''} {selectedDestCluster?.label}
             </ModalHFive>
-          </div>
+          </div> */}
           <RowModal>
             <ColumnThree className="col-4 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
@@ -261,22 +259,22 @@ const ScheduleNamespaceDeploy = ({
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-1"
-                      count={deployOrUpgradeDetails?.runningCount}
+                      count={checkDestCluster?.runningCount}
                       activeColor="#58e715"
                     >
                       <TriangleIcons color="#B5BDC8" />
-                      <span>{deployOrUpgradeDetails?.runningCount}</span>
+                      <span>{checkDestCluster?.runningCount}</span>
                     </CountDiv>
                     <div>Running Processors</div>
                   </div>
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-2"
-                      count={deployOrUpgradeDetails?.stoppedCount}
+                      count={checkDestCluster?.stoppedCount}
                       activeColor="#c52b2b"
                     >
                       <SquareBoxIcon color="#B5BDC8" />
-                      <span>{deployOrUpgradeDetails?.stoppedCount}</span>
+                      <span>{checkDestCluster?.stoppedCount}</span>
                     </CountDiv>
                     <div>Stopped Processors</div>
                   </div>
@@ -285,22 +283,22 @@ const ScheduleNamespaceDeploy = ({
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-3"
-                      count={deployOrUpgradeDetails?.invalidCount}
+                      count={checkDestCluster?.invalidCount}
                       activeColor="#CF9F5D"
                     >
                       <TriangleExclamationMarkIcon color="#B5BDC8" />
-                      <span>{deployOrUpgradeDetails?.invalidCount}</span>
+                      <span>{checkDestCluster?.invalidCount}</span>
                     </CountDiv>
                     <div>Invalid Processors</div>
                   </div>
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-4"
-                      count={deployOrUpgradeDetails?.disabledCount}
+                      count={checkDestCluster?.disabledCount}
                       activeColor="#2c7cf3"
                     >
                       <SmallNotThunderIcon color="#B5BDC8" />
-                      <span>{deployOrUpgradeDetails?.disabledCount}</span>
+                      <span>{checkDestCluster?.disabledCount}</span>
                     </CountDiv>
                     <div>Disabled Processors</div>
                   </div>

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -11,6 +11,7 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 
@@ -190,6 +191,7 @@ const NamespaceDeploy = ({
   handleTertiaryButton,
 }) => {
   const dispatch = useDispatch();
+  const [activeButton, setActiveButton] = useState(null);
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
@@ -199,6 +201,7 @@ const NamespaceDeploy = ({
     NamespacesSelectors.getSelectedDestCluster
   );
   const handleUpdateStatus = status => {
+    setActiveButton(status);
     dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
 
@@ -209,7 +212,13 @@ const NamespaceDeploy = ({
   return (
     <>
       <Modal
-        title={`Namespace ${checkDestCluster.mode !== 'upgrade' ? 'Deploy' : 'Upgrade'}`}
+        title={`Namespace ${
+          checkDestCluster.mode === 'upgrade'
+            ? checkDestCluster.version <= formData.version
+              ? KDFM.UPGRADE
+              : KDFM.DOWNGRADE
+            : KDFM.DEPLOY
+        }`}
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
@@ -315,7 +324,7 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-1">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    // isActive={activeButton === 'RUNNING'}
+                    isActive={activeButton === 'RUNNING'}
                     activeColor="#58e715"
                     hoverColor="#58e715"
                     activeTextColor="#fff"
@@ -327,7 +336,7 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-2">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    // isActive={activeButton === 'STOPPED'}
+                    isActive={activeButton === 'STOPPED'}
                     activeColor="#c52b2b"
                     hoverColor="#c52b2b"
                     activeTextColor="#fff"
@@ -339,7 +348,7 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-3">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    // isActive={activeButton === 'ENABLED'}
+                    isActive={activeButton === 'ENABLED'}
                     activeColor="#cf9f5d"
                     hoverColor="#cf9f5d"
                     activeTextColor="#fff"
@@ -351,7 +360,7 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-4">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    // isActive={activeButton === 'DISABLED'}
+                    isActive={activeButton === 'DISABLED'}
                     activeColor="#2c7cf3"
                     hoverColor="#2c7cf3"
                     activeTextColor="#fff"

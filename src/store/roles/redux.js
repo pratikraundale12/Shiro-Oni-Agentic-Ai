@@ -23,7 +23,7 @@ export const RolesActions = {
 
 /* ------------- INITIAL STATE ------------- */
 export const ROLES_INITIAL_STATE = {
-  selectedRole: '',
+  selectedRole: {},
   data: [],
   rolesClusters: [],
   permissionModal: false,
@@ -51,7 +51,10 @@ const fetchRolesSuccess = (state, { payload }) => {
   return {
     ...state,
     data: payload.data,
-    selectedRole: payload.data?.[0]?.id,
+    selectedRole: {
+      label: payload.data[0]?.name,
+      value: payload.data[0]?.id,
+    },
   };
 };
 
@@ -113,7 +116,6 @@ const displayGroup = state => {
   };
 };
 const updateLdapGroup = (state, { payload }) => {
-  console.log(payload, '..........');
   return {
     ...state,
     formData: payload,
