@@ -89,7 +89,6 @@ export const fetchGridData = debounce(
         error?.response?.data?.message ||
           'Something went wrong. Please try again.'
       );
-      console.log(error, 'datttt');
     } finally {
       setState(prev => ({
         ...prev,

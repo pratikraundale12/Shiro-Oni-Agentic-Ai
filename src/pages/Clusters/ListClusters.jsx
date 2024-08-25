@@ -95,7 +95,7 @@ export const ListClusters = () => {
     {
       label: 'NiFi URL',
       renderCell: item => <UrlRender url={item.nifi_url} />,
-      width: '42%',
+      width: '40%',
     },
     {
       label: 'Cluster Status',
@@ -123,20 +123,24 @@ export const ListClusters = () => {
               <List ref={menuRef}>
                 {item.is_active ? (
                   <>
-                    <Item onClick={() => handleClick('edit')}>
-                      <PencilIcon width={16} height={16} />
-                      <span>{KDFM.EDIT}</span>
-                    </Item>
+                    {item.edit_cluster && (
+                      <Item onClick={() => handleClick('edit')}>
+                        <PencilIcon width={16} height={16} />
+                        <span>{KDFM.EDIT}</span>
+                      </Item>
+                    )}
                     {item.status !== CLUSTER_STATUS.DISCONNECTED && (
                       <>
                         <Item onClick={() => handleClick('view')}>
                           <OpenEyeIcon width={18} height={18} />
                           <span>{KDFM.VIEW}</span>
                         </Item>
-                        <Item onClick={() => handleClick('delete', item.id)}>
-                          <DeleteSmallIcon width={18} height={18} />
-                          <span>{KDFM.DELETE}</span>
-                        </Item>
+                        {item.delete_cluster && (
+                          <Item onClick={() => handleClick('delete', item.id)}>
+                            <DeleteSmallIcon width={18} height={18} />
+                            <span>{KDFM.DELETE}</span>
+                          </Item>
+                        )}
                       </>
                     )}
                   </>
@@ -155,7 +159,7 @@ export const ListClusters = () => {
           </ActionRender>
         );
       },
-      width: '14%',
+      width: '16%',
     },
   ];
 

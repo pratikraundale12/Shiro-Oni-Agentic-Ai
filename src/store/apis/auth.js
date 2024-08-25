@@ -20,7 +20,6 @@ export const resetPassword = async payload => {
   try {
     return await API.post('/reset-password', payload);
   } catch (error) {
-    console.log(error);
     return error?.response?.data;
   }
 };

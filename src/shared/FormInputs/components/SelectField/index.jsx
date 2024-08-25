@@ -76,6 +76,7 @@ const SelectField = ({
   placeholder = 'Select...',
   backgroundColor,
   title = '',
+  isMulti = false,
   isClearable = false,
   ldap = false,
   handleCreateOption,
@@ -226,9 +227,14 @@ const SelectField = ({
             )}
             <Select
               ref={ref}
+              isMulti={isMulti}
               isClearable={isClearable}
               classNamePrefix="react-select"
-              value={options.find(option => option.value === value)}
+              value={
+                isMulti
+                  ? options.filter(option => value?.includes(option.value))
+                  : options.find(option => option.value === value)
+              }
               placeholder={placeholder}
               theme={theme.reactSelecttheme}
               isDisabled={disabled}
@@ -241,9 +247,10 @@ const SelectField = ({
               }}
               // formatOptionLabel={formatOptionLabel}
               {...props}
-              onChange={option => {
-                if (props.onChange) props.onChange(option);
-                onChange(option?.value);
+              onChange={selected => {
+                if (isMulti) onChange(selected.map(option => option.value));
+                else onChange(selected.value);
+                if (props.onChange) props.onChange(selected);
               }}
             />
             <FieldErrorMessage errors={errors} name={name} />
@@ -268,6 +275,7 @@ SelectField.propTypes = {
   icon: PropTypes.node,
   backgroundColor: PropTypes.string,
   title: PropTypes.string,
+  isMulti: PropTypes.bool,
   isClearable: PropTypes.bool,
   onChange: PropTypes.func,
   ldap: PropTypes.bool,
