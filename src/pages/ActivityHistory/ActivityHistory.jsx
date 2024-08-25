@@ -8,14 +8,17 @@ export const ActvityHistory = () => {
     {
       label: KDFM.TIMESTAMP,
       renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
+      width: '10%',
     },
     {
       label: KDFM.EVENT,
       renderCell: item => <TextRender text={item.event || KDFM.NA} />,
+      width: '10%',
     },
     {
       label: KDFM.ENTITY,
       renderCell: item => <TextRender text={item.entity || KDFM.NA} />,
+      width: '10%',
     },
     {
       label: KDFM.MESSAGE,
@@ -33,26 +36,27 @@ export const ActvityHistory = () => {
           />
         </div>
       ),
+      width: '50%',
     },
     {
       label: KDFM.STATUS,
       renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
+      width: '10%',
     },
     {
       label: KDFM.UPDATE_BY,
       renderCell: item => <TextRender text={item.updated_by || KDFM.NA} />,
+      width: '10%',
     },
   ];
 
   return (
-    <>
-      <Grid
-        module="activityHistory"
-        title={KDFM.ACTIVITY_LIST}
-        columns={COLUMNS}
-        placeholder={KDFM.ACTIVITY_HISTORY_SEARCH_PLACEHOLDER}
-        statusOptions={ACTIVITY_STATUS_OPTIONS}
-      />
-    </>
+    <Grid
+      module="activityHistory"
+      title={KDFM.ACTIVITY_LIST}
+      columns={COLUMNS}
+      placeholder={KDFM.ACTIVITY_HISTORY_SEARCH_PLACEHOLDER}
+      statusOptions={ACTIVITY_STATUS_OPTIONS}
+    />
   );
 };
