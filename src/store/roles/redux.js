@@ -64,7 +64,7 @@ const fetchLdapSuccess = (state, { payload }) => {
 
   const formData = groups.map(item => ({
     ldap_group_name: item.name,
-    role_id: roles.find(role => role.ldap_group_name === item.name)?.id,
+    role_id: roles.find(role => role.ldap.includes(item.name))?.role_id,
   }));
 
   return {
