@@ -42,13 +42,13 @@ export function* resetPasswordRequest(api, { payload }) {
     loadingSection: 'resetPasswordRequest',
     apiMethod: api.resetPasswordRequest,
     apiParams: [payload],
-    successAction: AuthenticationActions.resetPasswordRequestSuccess,
   });
   if (response.ok) {
     toast.success('Password reset request successful!');
-    yield call(history.push, '/reset');
+    yield put(AuthenticationActions.disableButton());
   } else {
     toast.error(response.data.message);
+    yield put(AuthenticationActions.enableButton());
   }
 }
 

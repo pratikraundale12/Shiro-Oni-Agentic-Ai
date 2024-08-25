@@ -1,28 +1,32 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 import * as yup from 'yup';
-import { useDispatch } from 'react-redux';
 
-import { theme } from '../../styles';
-import { Layout } from '../../components';
-import { Button, InputField } from '../../shared';
 import {
   GreaterArrowIcon,
   LessArrowIcon,
   MailIcon,
   RightArrowIcon,
 } from '../../assets';
+import { Layout } from '../../components';
 import {
   BACK,
-  FORGOT_PASSWORD_SUBTITLE,
-  FORGOT_PASSWORD,
-  SEND_RESET_LINK,
   EMAIL_REGEX,
+  FORGOT_PASSWORD,
+  FORGOT_PASSWORD_SUBTITLE,
+  SEND_RESET_LINK,
 } from '../../constants';
 import { history } from '../../helpers/history';
-import { AuthenticationActions } from '../../store';
+import { Button, InputField } from '../../shared';
+import {
+  AuthenticationActions,
+  AuthenticationSelectors,
+  LoadingSelectors,
+} from '../../store';
+import { theme } from '../../styles';
 
 const BackButtonContainer = styled.div`
   width: 100%;
@@ -101,9 +105,17 @@ export const Forgot = () => {
   } = useForm({
     resolver: yupResolver(resetSchema),
   });
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'resetPasswordRequest')
+  );
+  const isButtonDisabled = useSelector(
+    AuthenticationSelectors.getIsButtonDisabled
+  );
 
   const onSubmit = data => {
-    dispatch(AuthenticationActions.resetPasswordRequest(data));
+    if (!loading && !isButtonDisabled) {
+      dispatch(AuthenticationActions.resetPasswordRequest(data));
+    }
   };
 
   return (
@@ -134,8 +146,9 @@ export const Forgot = () => {
           icon={<LessArrowIcon color={theme.colors.white} />}
           type="submit"
           onClick={handleSubmit(onSubmit)}
+          disabled={isButtonDisabled || loading}
         >
-          {SEND_RESET_LINK}
+          {loading ? 'Sending...' : SEND_RESET_LINK}
         </SubmitButton>
       </Container>
     </Layout>
