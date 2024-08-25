@@ -141,7 +141,7 @@ export const AddUserModal = props => {
     { value: false, label: 'Inactive' },
   ];
   const rolesOption = roles?.map(role => ({
-    value: role.id,
+    value: role.role_id,
     label: role.name,
   }));
 
