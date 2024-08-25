@@ -8,7 +8,6 @@ import { FullPageLoader, Header, Sidebar } from '../components';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
-  GridActions,
   LoadingSelectors,
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
@@ -52,10 +51,6 @@ const AuthGuard = () => {
   useEffect(() => {
     if (refreshState !== 0) {
       intervalRef.current = setInterval(() => {
-        console.log('NNNNNNNNNN', refreshState);
-        // dispatch(GridActions.fetchGrid({ module: 'users' }));
-        // dispatch(GridActions.fetchGrid({ module: 'clusters' }));
-        // dispatch(GridActions.fetchGrid({ module: 'dashboard' }));
         dispatch(SettingsActions.refreshSetting());
       }, refreshState);
     } else {

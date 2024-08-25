@@ -181,7 +181,7 @@ const UploadField = ({
               <input
                 name={name}
                 aria-invalid={error}
-                value={value ? value.name : ''}
+                value={value ? value.name : '' || image?.split('/').pop()}
                 readOnly
                 {...props}
               />

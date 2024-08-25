@@ -24,7 +24,6 @@ const StyledSelectField = styled(SelectField)`
 `;
 
 const SelectCellRender = ({ onChange, roles, data }) => {
-  console.log(data, 'lllllllll');
   const [openRoleModal, setOpenRoleModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const selectedOptionRef = useRef(selectedOption);

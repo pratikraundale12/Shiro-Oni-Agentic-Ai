@@ -102,19 +102,10 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const route = useSelector(AuthenticationSelectors.getRoute);
   const settingsData = useSelector(SettingsSelectors.getSettings);
   const [image, setImage] = useState();
-  // const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
-  // let image = ;
-  console.log(settingsData, 'ksolvess logo');
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));
     history.push(`/${path}`);
   };
-
-  // const getFiltered = item => {
-  //   if (item.path === 'dashboard') return true;
-  //   return !item.hidden && userPermissions.includes(item.permission);
-  // };
-
   useEffect(() => {
     setImage(settingsData?.logo);
   }, [settingsData]);

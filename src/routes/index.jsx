@@ -212,7 +212,7 @@ const Routes = () => {
 
   useEffect(() => {
     if (settingsData) {
-      changeFavicon(settingsData?.favicon);
+      changeFavicon(settingsData?.favicon || '%PUBLIC_URL%/favicon.ico');
       document.title = settingsData?.title || 'Data Flow Manager';
     }
   }, [settingsData]);

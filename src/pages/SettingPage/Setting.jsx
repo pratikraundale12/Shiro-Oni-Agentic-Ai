@@ -12,7 +12,6 @@ import {
   QRIcons,
 } from '../../assets';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
-// import { GridActions } from '../../store';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -56,7 +55,6 @@ export const Setting = () => {
   const [refreshApi, setRefreshApi] = useState(false);
 
   const onSubmit = async data => {
-    console.log(data, 'formData');
     const payload = new FormData();
     data.logo && payload.append('logo', data.logo);
     data.favicon && payload.append('favicon', data.favicon);
@@ -82,7 +80,7 @@ export const Setting = () => {
 
   useEffect(() => {
     if (settingData) {
-      changeFavicon(settingData?.favicon);
+      changeFavicon(settingData?.favicon || '%PUBLIC_URL%/favicon.ico');
       document.title = settingData?.title || 'Data Flow Manager';
 
       // Set form field values with the data from the API
@@ -104,9 +102,6 @@ export const Setting = () => {
   useEffect(() => {
     if (refreshState !== 0) {
       intervalRef.current = setInterval(() => {
-        // dispatch(GridActions.fetchGrid({ module: 'users' }));
-        // dispatch(GridActions.fetchGrid({ module: 'clusters' }));
-        // // dispatch(GridActions.fetchGrid({ module: 'dashboard' }));
         dispatch(SettingsActions.refreshSetting());
       }, refreshState);
     } else {
@@ -114,8 +109,6 @@ export const Setting = () => {
     }
     return () => clearInterval(intervalRef.current);
   }, [dispatch, refreshState, refreshApi]);
-
-  console.log('Component data:', settingData);
 
   function changeFavicon(newFaviconURL) {
     const favicon = document.getElementById('dynamic-favicon');
