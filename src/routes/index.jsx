@@ -181,7 +181,6 @@ export const ROUTES_MENU = [
         component: <LdapConfig />,
       },
     ],
-    hidden: true,
     permission: 'view_ldap',
   },
 ];
