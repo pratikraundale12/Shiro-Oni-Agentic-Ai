@@ -144,6 +144,7 @@ export const ListScheduleDeployment = () => {
         scheduleInitialOpen={scheduleInitialOpen}
         setScheduleInitialOpen={setScheduleInitialOpen}
         startDate={selectedTimeStamp}
+        setStartDate={setSelectedTimeStamp}
       />
       <RejectConfirmScheduleModel
         icon={<ConfirmScheduleDeploymentIcon />}

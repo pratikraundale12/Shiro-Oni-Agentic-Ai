@@ -139,7 +139,7 @@ const DateTimeInput = ({
 export default DateTimeInput;
 
 DateTimeInput.propTypes = {
-  startDate: PropTypes.string,
+  startDate: PropTypes.instanceOf(Date),
   label: PropTypes.string,
   setStartDate: PropTypes.func,
   required: PropTypes.string,
