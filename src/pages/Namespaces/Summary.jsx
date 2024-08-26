@@ -156,8 +156,11 @@ const SummaryDetailsPtag = styled.h4`
 
   & > div {
     display: flex;
-    align-items: center;
     gap: 0.5rem;
+
+    & .summary-clipboard {
+      margin-top: -0.5rem;
+    }
   }
 
   & span {
@@ -539,6 +542,7 @@ const Summary = () => {
                       <div>
                         <span>{checkDestCluster.registryUrl}</span>
                         <CopyToClipboard
+                          className="summary-clipboard"
                           copyItem={checkDestCluster.registryUrl}
                         />
                       </div>
@@ -553,7 +557,10 @@ const Summary = () => {
                     <SummaryDetailsPtag className="mb-0">
                       <div>
                         <span>{checkDestCluster.nifiUrl}</span>
-                        <CopyToClipboard copyItem={checkDestCluster.nifiUrl} />
+                        <CopyToClipboard
+                          className="summary-clipboard"
+                          copyItem={checkDestCluster.nifiUrl}
+                        />
                       </div>
                     </SummaryDetailsPtag>
                   </div>

@@ -288,7 +288,6 @@ export const AddNewRegistry = ({
   };
 
   const onSubmit = data => {
-    console.log('cl', data);
     setRegistryFormData({
       name: data.name,
       registry_url: data.registry_url,
@@ -299,7 +298,6 @@ export const AddNewRegistry = ({
   };
 
   const handleInputChange = e => {
-    console.log('hhhhhhhhh');
     const { name, value } = e.target;
     setRegistryFormData(prevState => ({
       ...prevState,

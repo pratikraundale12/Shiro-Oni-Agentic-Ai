@@ -1,14 +1,15 @@
 import apisauce from 'apisauce';
-
-import { API_URL, ACCESS_TOKEN } from '../../constants';
+import { ACCESS_TOKEN, API_URL } from '../../constants';
+import { activityHistoryAPI } from './activityHistory';
 import { authenticationAPI } from './auth';
-import { dashboardAPI } from './dashboard';
 import { clustersAPI } from './clusters';
-import { usersAPI } from './users';
+import { dashboardAPI } from './dashboard';
 import { namespacesAPI } from './namespaces';
-import { rolesAPI } from './roles';
 import { policiesAPI } from './policies';
 import { schedularAPI } from './schedular';
+import { settingsAPI } from './setting';
+import { rolesAPI } from './roles';
+import { usersAPI } from './users';
 
 const create = (baseURL = `${API_URL}/api`) => {
   const api = apisauce.create({
@@ -52,6 +53,10 @@ const create = (baseURL = `${API_URL}/api`) => {
     ...policiesAPI(api),
     // Schedular
     ...schedularAPI(api),
+    // Settings
+    ...settingsAPI(api),
+    // Activity History
+    ...activityHistoryAPI(api),
   };
 };
 

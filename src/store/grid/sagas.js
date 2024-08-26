@@ -24,6 +24,7 @@ export function* fetchGrid(
     clusters: api.fetchClusters,
     nodes: api.fetchClusterNodes,
     namespaces: api.fetchNamespaces,
+    activityHistory: api.fetchActivityHistory,
     destNamespaces: api.fetchNamespaces,
     clustersRolesAccess: api.fetchClustersRolesAccess,
     policiesRolesAccess: api.fetchPoliciesRolesAccess,

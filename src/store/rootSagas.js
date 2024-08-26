@@ -1,15 +1,17 @@
 import { all, fork } from 'redux-saga/effects';
-import API from './services2/api';
 
+import API from './services2/api';
+import { activityHistorySagas } from './activityHistory';
 import { authenticationSagas } from './authentication/sagas';
-import { gridSagas } from './grid/sagas';
-import { usersSagas } from './users';
 import { clustersSagas } from './clusters';
 import { dashboardSagas } from './dashboard';
+import { gridSagas } from './grid/sagas';
 import { namespacesSagas } from './namespaces';
-import { rolesSagas } from './roles/sagas';
 import { policiesSagas } from './policies';
 import { schedularSagas } from './schedular';
+import { settingsSagas } from './settings';
+import { rolesSagas } from './roles/sagas';
+import { usersSagas } from './users';
 
 /* ------------- API ------------- */
 export const api = API.create();
@@ -34,5 +36,9 @@ export default function* root() {
     fork(policiesSagas, api),
     // |---------------------schedular-------------------------|
     fork(schedularSagas, api),
+    // |---------------------settings-------------------------|
+    fork(settingsSagas, api),
+    // |---------------------activityHistory-------------------------|
+    fork(activityHistorySagas, api),
   ]);
 }

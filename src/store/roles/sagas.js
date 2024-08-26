@@ -23,7 +23,6 @@ export function* fetchLdap(api, payload) {
   });
 
   if (response.ok) {
-    console.log(response, 'sagaApi');
     yield put(RolesActions.displayGroup());
     // yield call(fetchRoles, api);
   } else {
@@ -57,36 +56,10 @@ export function* updateRoleClusters(api, { payload }) {
   if (!response.ok) toast.error(response.data.message);
 }
 
-// export function* createNewRole(api, { payload }) {
-//   const ldap_group_name = payload.ldapGroupName;
-//   payload = { name: payload.name };
-//   const response = yield call(requestSaga, {
-//     errorSection: 'createNewRole',
-//     loadingSection: 'createNewRole',
-//     apiMethod: api.createNewRole,
-//     apiParams: [{ payload }],
-//   });
-
-//   if (response.ok) {
-//     const roles = yield select(RolesSelectors.getRoles);
-//     const formData = yield select(RolesSelectors.getLdapGroup);
-//     console.log(roles, formData, response.data.id, '>>>>>>>>');
-
-//     toast.success('New role created successfully.');
-//     yield put(RolesActions.roleModal());
-//     yield call(fetchRoles, fetchLdap, api);
-//   } else {
-//     toast.error(response.data.message || 'Something went wrong');
-//   }
-// }
-
 export function* createNewRole(api, { payload }) {
-  // Extract ldapGroupName from the payload
   const ldap_group_name = payload.ldapGroupName;
-  // Modify the payload for the API request
   payload = { name: payload.name };
 
-  // Make the API call to create a new role
   const response = yield call(requestSaga, {
     errorSection: 'createNewRole',
     loadingSection: 'createNewRole',
@@ -96,7 +69,6 @@ export function* createNewRole(api, { payload }) {
 
   if (response.ok) {
     yield call(fetchRoles, api);
-    // const roles = yield select(RolesSelectors.getRoles);
     const formData = yield select(RolesSelectors.getLdapGroup);
 
     const updatedFormData = formData.map(item =>

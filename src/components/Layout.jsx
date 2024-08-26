@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
@@ -6,6 +6,8 @@ import { history } from '../helpers/history';
 import { KsolvesDataFlowIcon } from '../assets';
 import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
 import { TextButton } from '../shared';
+import { useDispatch, useSelector } from 'react-redux';
+import { SettingsActions, SettingsSelectors } from '../store/settings';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -127,17 +129,28 @@ const SignInContainer = styled.div`
 `;
 
 export const Layout = ({ children }) => {
+  const dispatch = useDispatch();
   const pathname = history.location.pathname;
   const isUserLogin = pathname === '/login';
   const isAdminLogin = pathname === '/admin/login';
   const isForgotPassword = pathname === '/forgot';
   const isReset = pathname === '/reset';
+  const settingsData = useSelector(SettingsSelectors.getSettings);
+  let image = settingsData?.logo;
+
+  useEffect(() => {
+    dispatch(SettingsActions.fetchSettings());
+  }, [dispatch]);
 
   return (
     <Container>
       <div className="row">
         <LeftSection className="col-xl-5 col-lg-5">
-          <KsolvesDataFlowIcon />
+          {!image ? (
+            <KsolvesDataFlowIcon />
+          ) : (
+            <img src={image} alt="Logo" width={200} height={80} />
+          )}
           <Content>{children}</Content>
           {(isUserLogin || isAdminLogin) && (
             <RedirectionSection>

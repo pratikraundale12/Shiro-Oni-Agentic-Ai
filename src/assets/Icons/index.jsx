@@ -91,3 +91,6 @@ export * from './DefaultUserIcon';
 export * from './TickIconWithCircle';
 export * from './ConfirmScheduleDeployment';
 export * from './ExclamationIcon';
+export * from './LogoFieldIcon';
+export * from './UploadIcon';
+export * from './RefreshIcon';

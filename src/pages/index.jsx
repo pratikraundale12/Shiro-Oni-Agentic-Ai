@@ -10,3 +10,4 @@ export * from './Role&Permission';
 export * from './Icons';
 export * from './LdapConfig';
 export * from './ActivityHistory';
+export * from './SettingPage';

@@ -165,7 +165,6 @@ export const LdapConfig = () => {
     );
     dispatch(RolesActions.updateLdapGroup(updatedData));
   };
-  console.log(listData, 'listData');
   const EVENTCOLUMNS = [
     {
       label: 'LDAP Groups',
@@ -263,7 +262,6 @@ export const LdapConfig = () => {
 
   const onSubmit = async () => {
     setLoading(true);
-    console.log('PAY', formPayload);
     const response = await groupMappingApi({ data: formPayload });
     if (response?.status === 200) {
       setSyncUsers(true);

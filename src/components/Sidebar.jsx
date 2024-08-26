@@ -8,8 +8,14 @@ import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 import { KDFM } from '../constants';
 import { history } from '../helpers/history';
 import { ROUTES_MENU } from '../routes';
-import { AuthenticationActions, AuthenticationSelectors } from '../store';
+import {
+  AuthenticationActions,
+  AuthenticationSelectors,
+  LoadingSelectors,
+} from '../store';
 import { theme } from '../styles';
+import { SettingsSelectors } from '../store/settings';
+import { Loader } from './Loader';
 
 const Container = styled.div`
   height: 100%;
@@ -46,7 +52,11 @@ const List = styled.ul`
   width: 100%;
   margin-top: 20px;
   padding-left: 0;
-  overflow-y: auto;
+  overflow-y: auto;Logo
+Uploaded Preview
+×
+Favicon
+
 `;
 
 const Item = styled.li`
@@ -95,16 +105,23 @@ const KDFMVersion = styled.div`
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
   const route = useSelector(AuthenticationSelectors.getRoute);
-  const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
+  const settingsData = useSelector(SettingsSelectors.getSettings);
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'createSettings')
+  );
 
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));
     history.push(`/${path}`);
   };
 
-  const getFiltered = item => {
-    if (item.path === 'dashboard') return true;
-    return !item.hidden && userPermissions.includes(item.permission);
+  const getImage = () => {
+    if (loading) return <Loader />;
+    if (settingsData?.logo)
+      return (
+        <img src={settingsData?.logo} alt="Logo" width={200} height={80} />
+      );
+    return <KsolvesDataFlowIcon width={200} height={80} />;
   };
 
   return (
@@ -112,9 +129,26 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
       <button onClick={() => handleOpenSidebar()}>
         <img alt="menu" src="/img/Frame.png" />
       </button>
-      <KsolvesDataFlowIcon width={200} height={80} />
+      {getImage()}
       <List>
-        {ROUTES_MENU.filter(getFiltered).map(item => {
+        {ROUTES_MENU.filter(item => !item.hidden && !item.isSideBarHidden).map(
+          item => {
+            const active = item.path === route;
+            return (
+              <Item
+                key={item.path}
+                active={active}
+                onClick={() => handleRoute(item.path)}
+              >
+                <item.icon
+                  color={active ? theme.colors.white : theme.colors.darker}
+                />
+                <span>{item.name}</span>
+              </Item>
+            );
+          }
+        )}
+        {/* {ROUTES_MENU.filter(getFiltered).map(item => {
           const active = item.path === route;
           return (
             <Item
@@ -128,8 +162,9 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
               <span>{item.name}</span>
             </Item>
           );
-        })}
+        })} */}
       </List>
+
       <HelpSupportConatiner>
         <Item active={false}>
           <QuestionMarkIcon />

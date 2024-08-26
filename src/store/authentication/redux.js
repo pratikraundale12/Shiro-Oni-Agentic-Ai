@@ -1,6 +1,6 @@
-import { createReducer, createAction } from '@reduxjs/toolkit';
-import { formatDateStringToLocal } from '../../helpers';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { DEFAULT_ROUTE, PREVIOUS_PATH } from '../../constants';
+import { formatDateStringToLocal } from '../../helpers';
 
 const prefix = '@@KDFM-AUTHENTICATION/';
 
@@ -16,12 +16,10 @@ export const AuthenticationActions = {
   logout: createAction(`${prefix}logout`),
   logoutSuccess: createAction(`${prefix}logoutSuccess`),
   resetPasswordRequest: createAction(`${prefix}resetPasswordRequest`),
-  resetPasswordRequestSuccess: createAction(
-    `${prefix}resetPasswordRequestSuccess`
-  ),
   resetPassword: createAction(`${prefix}resetPassword`),
   setClusterLogin: createAction(`${prefix}setClusterLogin`),
   setDestinationFlag: createAction(`${prefix}setDestinationFlag`),
+  disableButton: createAction(`${prefix}disableButton`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -35,6 +33,7 @@ export const AUTHENTICATION_INITIAL_STATE = {
   clusterLogin: false,
   destinationFlag: false,
   permissions: [],
+  isButtonDisabled: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -48,6 +47,7 @@ export const AuthenticationSelectors = {
   getClusterLogin: state => state.auth.clusterLogin,
   getDestinationFlag: state => state.auth.destinationFlag,
   getPermissions: state => state.auth.permissions,
+  getIsButtonDisabled: state => state.auth.isButtonDisabled,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -78,12 +78,7 @@ const logoutSuccess = () => {
     isLoggedIn: false,
   };
 };
-const resetPasswordRequestSuccess = (state, { payload: { resetToken } }) => {
-  return {
-    ...state,
-    resetToken,
-  };
-};
+
 const setRoute = (state, { payload }) => {
   localStorage.setItem(PREVIOUS_PATH, payload);
   return {
@@ -104,6 +99,13 @@ const setDestinationFlag = state => {
   };
 };
 
+const disableButton = state => {
+  return {
+    ...state,
+    isButtonDisabled: true,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const authenticationReducer = createReducer(
   AUTHENTICATION_INITIAL_STATE,
@@ -119,12 +121,9 @@ export const authenticationReducer = createReducer(
       )
       .addCase(AuthenticationActions.loginSuccess, loginSuccess)
       .addCase(AuthenticationActions.logoutSuccess, logoutSuccess)
-      .addCase(
-        AuthenticationActions.resetPasswordRequestSuccess,
-        resetPasswordRequestSuccess
-      )
       .addCase(AuthenticationActions.setRoute, setRoute)
       .addCase(AuthenticationActions.setClusterLogin, setClusterLogin)
-      .addCase(AuthenticationActions.setDestinationFlag, setDestinationFlag);
+      .addCase(AuthenticationActions.setDestinationFlag, setDestinationFlag)
+      .addCase(AuthenticationActions.disableButton, disableButton);
   }
 );
