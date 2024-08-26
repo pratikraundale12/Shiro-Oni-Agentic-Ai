@@ -207,9 +207,9 @@ const UploadField = ({
                   width={200}
                   height={200}
                 />
-                <div className="remove-icon" onClick={handleRemoveImage}>
+                <button className="remove-icon" onClick={handleRemoveImage}>
                   &times;
-                </div>
+                </button>
               </div>
             )}
             {fileError && <div className="error-text">{fileError}</div>}

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -8,9 +8,14 @@ import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 import { KDFM } from '../constants';
 import { history } from '../helpers/history';
 import { ROUTES_MENU } from '../routes';
-import { AuthenticationActions, AuthenticationSelectors } from '../store';
+import {
+  AuthenticationActions,
+  AuthenticationSelectors,
+  LoadingSelectors,
+} from '../store';
 import { theme } from '../styles';
 import { SettingsSelectors } from '../store/settings';
+import { Loader } from './Loader';
 
 const Container = styled.div`
   height: 100%;
@@ -101,24 +106,30 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
   const route = useSelector(AuthenticationSelectors.getRoute);
   const settingsData = useSelector(SettingsSelectors.getSettings);
-  const [image, setImage] = useState();
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'createSettings')
+  );
+
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));
     history.push(`/${path}`);
   };
-  useEffect(() => {
-    setImage(settingsData?.logo);
-  }, [settingsData]);
+
+  const getImage = () => {
+    if (loading) return <Loader />;
+    if (settingsData?.logo)
+      return (
+        <img src={settingsData?.logo} alt="Logo" width={200} height={80} />
+      );
+    return <KsolvesDataFlowIcon width={200} height={80} />;
+  };
+
   return (
     <Container className={isOpenSidebar && 'menuOpen'}>
       <button onClick={() => handleOpenSidebar()}>
         <img alt="menu" src="/img/Frame.png" />
       </button>
-      {!image ? (
-        <KsolvesDataFlowIcon width={200} height={80} />
-      ) : (
-        <img src={settingsData?.logo} alt="Logo" width={200} height={80} />
-      )}
+      {getImage()}
       <List>
         {ROUTES_MENU.filter(item => !item.hidden && !item.isSideBarHidden).map(
           item => {

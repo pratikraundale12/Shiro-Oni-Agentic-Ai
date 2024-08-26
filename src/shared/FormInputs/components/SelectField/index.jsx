@@ -1,16 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { Controller } from 'react-hook-form';
 import Select, { components } from 'react-select';
+import makeAnimated from 'react-select/animated';
 import CreatableSelect from 'react-select/creatable';
 import styled from 'styled-components';
-import makeAnimated from 'react-select/animated';
 
-import FieldErrorMessage from '../FieldErrorMessage';
 import { DownArrowIcon } from '../../../../assets';
-import { theme } from '../../../../styles';
 import { hasError } from '../../../../helpers';
+import { theme } from '../../../../styles';
+import FieldErrorMessage from '../FieldErrorMessage';
 
 const Container = styled.div`
   position: relative;
@@ -201,6 +201,7 @@ const SelectField = ({
           isDisabled={disabled}
           styles={customStyles}
           options={options}
+          placeholder={placeholder}
           components={{
             ...animatedComponents,
             IndicatorSeparator: () => null,

@@ -21,7 +21,7 @@ export const StyledButton = styled.button`
   }
 `;
 
-const CopyToClipboard = ({ copyItem }) => {
+const CopyToClipboard = ({ copyItem, className }) => {
   const handleCopyToClipboard = async value => {
     try {
       await navigator.clipboard.writeText(value);
@@ -32,7 +32,10 @@ const CopyToClipboard = ({ copyItem }) => {
   };
 
   return (
-    <StyledButton onClick={() => handleCopyToClipboard(copyItem)}>
+    <StyledButton
+      onClick={() => handleCopyToClipboard(copyItem)}
+      className={className}
+    >
       <CopyIcon />
     </StyledButton>
   );
@@ -40,6 +43,7 @@ const CopyToClipboard = ({ copyItem }) => {
 
 CopyToClipboard.propTypes = {
   copyItem: PropTypes.string.isRequired,
+  className: PropTypes.string,
 };
 
 export default CopyToClipboard;

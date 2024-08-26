@@ -59,6 +59,10 @@ const StyledButton = styled.button.withConfig({
       props.variant === 'primary'
         ? props.theme.colors.primaryActive
         : props.theme.colors.darker};
+
+    path {
+      fill: ${props => props.theme.colors.white};
+    }
   }
 
   &:disabled {

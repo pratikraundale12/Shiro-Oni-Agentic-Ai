@@ -32,7 +32,7 @@ const SelectCellRender = ({ onChange, roles, data }) => {
 
   const sortedArray = roles?.map(item => ({
     label: item.name,
-    value: item.id,
+    value: item.role_id,
   }));
 
   const handleCreateOption = inputValue => {

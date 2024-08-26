@@ -21,6 +21,7 @@ import { FullPageLoader } from '../components';
 import {
   ActvityHistory,
   Add,
+  ClusterAccess,
   Dashboard,
   Forgot,
   GenrateFlow,
@@ -154,8 +155,24 @@ export const ROUTES_MENU = [
         path: '',
         component: <ModuleAccess />,
       },
+      {
+        path: [':id'],
+        component: <ClusterAccess />,
+      },
     ],
     permission: 'view_permission',
+  },
+  {
+    name: 'Activity History',
+    path: 'activity-history',
+    icon: ActivityHistoryIcon,
+    pages: [
+      {
+        path: '',
+        component: <ActvityHistory />,
+      },
+    ],
+    permission: 'view_history',
   },
   {
     name: 'LDAP Configuration',
@@ -168,19 +185,6 @@ export const ROUTES_MENU = [
       },
     ],
     permission: 'view_ldap',
-  },
-  {
-    name: 'Activity History',
-    path: 'activity-history',
-    icon: ActivityHistoryIcon,
-    pages: [
-      {
-        path: '',
-        component: <ActvityHistory />,
-      },
-    ],
-    hidden: true,
-    permission: 'view_history',
   },
   {
     name: 'Setting',

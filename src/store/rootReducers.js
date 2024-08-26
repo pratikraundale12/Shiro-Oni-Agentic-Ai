@@ -1,17 +1,17 @@
 import { combineReducers } from 'redux';
 import { resettableReducer } from 'reduxsauce';
-
 // import { errorsReducer } from './helpers/error_redux';
-import { loadingReducer } from './helpers/loading_redux';
+import { activityHistoryReducer } from './activityHistory/redux';
 import { authenticationReducer } from './authentication';
-import { gridReducer } from './grid/redux';
-import { usersReducer } from './users';
 import { clustersReducer } from './clusters';
 import { dashboardReducer } from './dashboard';
+import { gridReducer } from './grid/redux';
+import { loadingReducer } from './helpers/loading_redux';
 import { namespacesReducer } from './namespaces';
-import { rolesReducer } from './roles/redux';
 import { policiesReducer } from './policies';
 import { settingsReducer } from './settings';
+import { rolesReducer } from './roles/redux';
+import { usersReducer } from './users';
 
 const resettable = resettableReducer('RESET');
 
@@ -32,4 +32,5 @@ export default combineReducers({
   roles: resettable(rolesReducer),
   policies: resettable(policiesReducer),
   settings: resettable(settingsReducer),
+  activityHistory: resettable(activityHistoryReducer),
 });

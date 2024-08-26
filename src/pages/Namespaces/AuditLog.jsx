@@ -1,81 +1,61 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { StatusRender, Table, TextRender } from '../../components';
+import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
-import { Table } from '../../components';
-
-const dummyData = [
-  {
-    timestamp: '2024-07-27 10:30:00',
-    event: 'Login',
-    message: 'User logged in',
-    status: 'Success',
-    update_by: 'admin',
-  },
-  {
-    timestamp: '2024-07-27 11:00:00',
-    event: 'File Upload',
-    message: 'File uploaded successfully',
-    status: 'Success',
-    update_by: 'user1',
-  },
-  {
-    timestamp: '2024-07-27 12:45:00',
-    event: 'Password Change',
-    message: 'Password changed',
-    status: 'Success',
-    update_by: 'user2',
-  },
-  {
-    timestamp: '2024-07-27 14:30:00',
-    event: 'Logout',
-    message: 'User logged out',
-    status: 'Success',
-    update_by: 'admin',
-  },
-  {
-    timestamp: '2024-07-28 09:15:00',
-    event: 'Login Attempt',
-    message: 'Invalid password',
-    status: 'Failed',
-    update_by: 'user3',
-  },
-];
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const COLUMNS = [
   {
-    label: 'Timestamp',
-    renderCell: item => <div>{item.timestamp}</div>,
+    label: KDFM.TIMESTAMP,
+    renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
   },
   {
-    label: 'Event',
-    renderCell: item => <div>{item.event}</div>,
+    label: KDFM.EVENT,
+    renderCell: item => <TextRender text={item.event || KDFM.NA} />,
   },
   {
-    label: 'Message',
-    renderCell: item => <div>{item.message}</div>,
+    label: KDFM.MESSAGE,
+    renderCell: item => <TextRender text={item.message || KDFM.NA} />,
   },
   {
-    label: 'Status',
-    renderCell: item => <div>{item.status}</div>,
+    label: KDFM.STATUS,
+    renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
   },
   {
-    label: 'Updated By',
-    renderCell: item => <div>{item.update_by}</div>,
+    label: KDFM.UPDATE_BY,
+    renderCell: item => <TextRender text={item.updated_by || KDFM.NA} />,
   },
 ];
 
-const AuditLog = ({ isOpen, closePopup }) => {
+const AuditLog = ({ isOpen, rowId, closePopup }) => {
+  const dispatch = useDispatch();
+  const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
+
+  useEffect(() => {
+    dispatch(NamespacesActions.fetchNamespaceAudit());
+  }, [dispatch]);
+
+  const auditTableData =
+    (rowId &&
+      namespaceAuditLog?.data?.filter(
+        auditInfo => auditInfo?.record_id === rowId
+      )) ||
+    [];
+
   return (
     <Modal
-      title="Audit Log"
+      title={KDFM.AUDIT_LOG}
       isOpen={isOpen}
       onRequestClose={closePopup}
-      size="md"
-      secondaryButtonText="Back"
-      primaryButtonText="Continue"
+      size="lg"
+      // secondaryButtonText="Back"
+      primaryButtonText={KDFM.CONTINUE}
       // onSubmit={handleSubmit(onSubmit)}
+      onSubmit={closePopup}
     >
-      <Table data={dummyData} columns={COLUMNS} />
+      <Table data={auditTableData} columns={COLUMNS} />
     </Modal>
   );
 };
@@ -83,6 +63,7 @@ const AuditLog = ({ isOpen, closePopup }) => {
 // Add prop-types validation
 AuditLog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
+  rowId: PropTypes.string,
   closePopup: PropTypes.func.isRequired,
 };
 

@@ -35,7 +35,14 @@ const BreadcrumbItem = styled.span`
   }
 `;
 
-const MODULES = ['namespaces', 'destNamespaces', 'deploy', 'upgrade', 'ldap'];
+const MODULES = [
+  'namespaces',
+  'destNamespaces',
+  'deploy',
+  'upgrade',
+  'ldap',
+  'path',
+];
 const Breadcrumb = ({ module, path, onClick }) => {
   const dispatch = useDispatch();
   const breadcrumbs = useSelector(state =>
