@@ -808,6 +808,7 @@ const Summary = () => {
             handleContinue={handleContinue}
             startDate={startDate}
             setStartDate={setStartDate}
+            showButton={true}
           />
         </BottomButtonDiv>
         {checkDestCluster.mode === 'upgrade' && (

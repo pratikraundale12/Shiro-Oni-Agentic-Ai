@@ -23,27 +23,40 @@ const ImageHolder = styled.img`
   margin-right: 10px;
 `;
 
-export const TextWithPhotoRender = ({ content, currentUser, item }) => {
+const StyledButton = styled.button`
+  border: none;
+  background: transparent;
+`;
+export const TextWithPhotoRender = ({
+  content,
+  currentUser,
+  item,
+  setConfirmScheduleModelOpen,
+  setConfirmRejectModelOpen,
+}) => {
   const isApprover = content.some(
     approver => approver.approver_id === currentUser.id
   );
   return (
     <>
-      {isApprover && item.deployment_status != 'SCHEDULED' ? (
+      {isApprover && item.deployment_status == 'PENDING' ? (
         <div className="d-flex">
-          <div className="me-2">
+          <StyledButton
+            className="me-2"
+            onClick={() => setConfirmRejectModelOpen(true)}
+          >
             <CrossWithCircleIcon color="red" />
-          </div>
-          <div>
+          </StyledButton>
+          <StyledButton onClick={() => setConfirmScheduleModelOpen(true)}>
             <TickIconWithCircle />
-          </div>
+          </StyledButton>
         </div>
       ) : (
         <div className="d-flex">
           {content.map((item, index) =>
             item.approver_photo_url ? (
               <ImageHolder
-                src={`/media/users/${item.approver_photo_url}`}
+                src={`${item.approver_photo_url}`}
                 alt="img"
                 key={item.approver_photo_url}
               />
@@ -68,4 +81,6 @@ TextWithPhotoRender.propTypes = {
   content: PropTypes.object,
   currentUser: PropTypes.string,
   item: PropTypes.object,
+  setConfirmScheduleModelOpen: PropTypes.func,
+  setConfirmRejectModelOpen: PropTypes.func,
 };

@@ -31,6 +31,7 @@ export const AddScheduleDeploymentModal = ({
   handleContinue = () => {},
   startDate,
   setStartDate,
+  showButton = false,
 }) => {
   const dispatch = useDispatch();
   // const [startDate, setStartDate] = useState(new Date());
@@ -120,9 +121,11 @@ export const AddScheduleDeploymentModal = ({
   // handleSubmit(onSubmit)
   return (
     <div>
-      <Button onClick={openModal} size="md" variant="secondary">
-        Schedule
-      </Button>
+      {showButton && (
+        <Button onClick={openModal} size="md" variant="secondary">
+          Schedule
+        </Button>
+      )}
       <Modal
         size="md"
         title={'Add Schedule Deployment'}
@@ -146,13 +149,15 @@ export const AddScheduleDeploymentModal = ({
             />
           </div>
         </div>
-        <UserSelect
-          control={control}
-          errors={errors}
-          name="approver_ids"
-          placeholder="Select atleast one approver"
-          label="Approver"
-        />
+        {showButton && (
+          <UserSelect
+            control={control}
+            errors={errors}
+            name="approver_ids"
+            placeholder="Select atleast one approver"
+            label="Approver"
+          />
+        )}
       </Modal>
     </div>
   );
@@ -167,4 +172,5 @@ AddScheduleDeploymentModal.propTypes = {
   handleContinue: PropTypes.func,
   startDate: PropTypes.string.isRequired,
   setStartDate: PropTypes.object.isRequired,
+  showButton: PropTypes.bool,
 };
