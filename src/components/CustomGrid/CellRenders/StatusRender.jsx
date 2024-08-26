@@ -47,7 +47,7 @@ const RedInactive = styled(ActiveTd)`
 export const StatusRender = ({ status }) => {
   return (
     <Container>
-      {['active', 'connected'].includes(status?.toLowerCase()) ? (
+      {['active', 'connected', 'success'].includes(status?.toLowerCase()) ? (
         <GreenActiveness>{status}</GreenActiveness>
       ) : (
         <RedInactive>{status}</RedInactive>

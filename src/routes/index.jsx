@@ -160,6 +160,18 @@ export const ROUTES_MENU = [
     permission: 'view_permission',
   },
   {
+    name: 'Activity History',
+    path: 'activity-history',
+    icon: ActivityHistoryIcon,
+    pages: [
+      {
+        path: '',
+        component: <ActvityHistory />,
+      },
+    ],
+    permission: 'view_history',
+  },
+  {
     name: 'LDAP Configuration',
     path: 'ldap-configuration',
     icon: LdapConfigIcon,
@@ -170,19 +182,6 @@ export const ROUTES_MENU = [
       },
     ],
     permission: 'view_ldap',
-  },
-  {
-    name: 'Activity History',
-    path: 'activity-history',
-    icon: ActivityHistoryIcon,
-    pages: [
-      {
-        path: '',
-        component: <ActvityHistory />,
-      },
-    ],
-    hidden: true,
-    permission: 'view_history',
   },
 ];
 
