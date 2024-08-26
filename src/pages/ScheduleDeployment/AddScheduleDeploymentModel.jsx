@@ -1,20 +1,20 @@
 /*eslint-disable*/
-import React, { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Button, DateTimeInput, Modal } from '../../shared';
+import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+import * as yup from 'yup';
+import { UserSelect } from '../../components';
+import { Button, DateTimeInput, Modal } from '../../shared';
 import {
   ClustersActions,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { UserSelect } from '../../components';
-import * as yup from 'yup';
-import { isEmpty } from 'lodash';
 import { SchedularActions } from '../../store/schedular/redux';
-import PropTypes from 'prop-types';
 
 export const scheduleSchema = yup.object().shape({
   approver_ids: yup.string().trim().required('Approver is required'),
