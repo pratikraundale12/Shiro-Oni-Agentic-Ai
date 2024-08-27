@@ -25,20 +25,20 @@ export function* createSettings(api, { payload }) {
 }
 
 export function* fetchSettings(api) {
-  const response = yield call(requestSaga, {
+  yield call(requestSaga, {
     errorSection: 'fetchSettings',
     loadingSection: 'fetchSettings',
     apiMethod: api.fetchSettings,
     apiParams: [{ params: {} }],
     successAction: SettingsActions.fetchSettingsSuccess,
   });
-  console.log('Fetch settings response:', response);
 }
 
 export function* refreshSetting(api) {
-  const refresh = true;
-  yield call(fetchGrid, api, { payload: { module: 'namespaces' } }, refresh);
-  yield call(fetchDashboard, api, refresh);
+  yield call(fetchGrid, api, {
+    payload: { module: 'namespaces', refresh: true },
+  });
+  yield call(fetchDashboard, api, { payload: { refresh: true } });
 }
 
 export function* settingsSagas(api) {

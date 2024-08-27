@@ -46,8 +46,12 @@ const AuthGuard = () => {
 
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
   const settingsData = useSelector(SettingsSelectors.getSettings);
-
   const refreshState = settingsData?.refresh;
+
+  const handleOpenSidebar = () => {
+    setIsOpenSidebar(!isOpenSidebar);
+  };
+
   useEffect(() => {
     if (refreshState !== 0) {
       intervalRef.current = setInterval(() => {
@@ -59,10 +63,6 @@ const AuthGuard = () => {
 
     return () => clearInterval(intervalRef.current);
   }, [dispatch, refreshState]);
-
-  const handleOpenSidebar = () => {
-    setIsOpenSidebar(!isOpenSidebar);
-  };
 
   useEffect(() => {
     dispatch(AuthenticationActions.fetchCurrentUser());
