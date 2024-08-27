@@ -1,13 +1,12 @@
 // import { CLUSTERS_TOKEN } from '../../constants';
-import { SchedularActions } from './redux';
-import { call, all, takeLatest, select } from 'redux-saga/effects';
-import { requestSaga } from '../helpers/request_sagas';
 import { toast } from 'react-toastify';
+import { all, call, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN } from '../../constants';
+import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
+import { SchedularActions } from './redux';
 // import namespace from 'eslint-plugin-import/lib/rules/namespace';
 export function* createScheduleDeployment(api, { payload }) {
-  console.log([payload], '?????? gen fun');
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );

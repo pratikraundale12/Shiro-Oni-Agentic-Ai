@@ -373,8 +373,6 @@ const Summary = () => {
   };
   const onSubmit = async data => {
     handleContinue();
-    console.log({ data });
-    console.log(newlyAddVariables, 'abc');
     const payload = {
       namespace_id: checkDestCluster?.id, // ask
       namespace_name: checkDestCluster?.name,
@@ -394,7 +392,6 @@ const Summary = () => {
         value: item.value,
       })),
     };
-    console.log({ payload }, 'line no 123');
     // const { approver_ids, ...rest } = data;
     // const payload = {
     //   ...rest,
