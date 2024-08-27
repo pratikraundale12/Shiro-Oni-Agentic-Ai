@@ -19,6 +19,14 @@ const StyledButton = styled.button`
   text-underline-offset: 3px;
 `;
 
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-right: 0.5rem;
+`;
+
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
   const [refreshState, setRefreshSelect] = useState(false);
@@ -77,15 +85,10 @@ export const ListNamespaces = () => {
     {
       label: KDFM.NAMESPACE_ID,
       renderCell: item => (
-        <div
-          className="d-flex"
-          style={{ justifyContent: 'space-between', alignItems: 'center' }}
-        >
-          <div style={{ width: 'max-content' }}>
-            <TextRender text={item.id} />
-          </div>
+        <Flex>
+          <TextRender text={item.id} />
           <CopyToClipboard copyItem={item.id} />
-        </div>
+        </Flex>
       ),
       width: '26%',
     },
@@ -101,8 +104,8 @@ export const ListNamespaces = () => {
     },
     {
       label: KDFM.VERSION,
-      width: '8%',
       renderCell: item => <TextRender text={item.version || KDFM.NA} />,
+      width: '8%',
     },
     {
       label: KDFM.ACTIONS,

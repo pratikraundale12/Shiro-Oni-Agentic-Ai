@@ -88,17 +88,19 @@ export const ListClusters = () => {
 
   const COLUMNS = [
     {
-      label: 'Cluster Name',
-      renderCell: item => <TextRender text={item.name} />,
+      label: KDFM.CLUSTER_NAME,
+      renderCell: item => (
+        <TextRender text={item.name} capitalizeText={false} />
+      ),
       width: '20%',
     },
     {
-      label: 'NiFi URL',
+      label: KDFM.NIFI_URL,
       renderCell: item => <UrlRender url={item.nifi_url} />,
       width: '40%',
     },
     {
-      label: 'Cluster Status',
+      label: KDFM.CLUSTER_STATUS,
       renderCell: item => (
         <ProgressBarRender
           is_active={item.is_active}
@@ -110,12 +112,12 @@ export const ListClusters = () => {
       width: '12%',
     },
     {
-      label: 'Status',
+      label: KDFM.STATUS,
       renderCell: item => <StatusRender status={item.status} />,
       width: '12%',
     },
     {
-      label: 'Actions',
+      label: KDFM.ACTIONS,
       renderCell: item => {
         return (
           <ActionRender handleMenuClick={handleMenuClick} item={item}>
@@ -149,7 +151,7 @@ export const ListClusters = () => {
                     {item.status === CLUSTER_STATUS.DISCONNECTED ? null : (
                       <Item onClick={() => handleClick('active', item.id)}>
                         <ActiveIcon />
-                        <span>Activate</span>
+                        <span>{KDFM.ACTIVATE}</span>
                       </Item>
                     )}
                   </>

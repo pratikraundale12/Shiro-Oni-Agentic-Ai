@@ -53,4 +53,5 @@ export const CLUSTER_CONSTANTS = {
   SEARCH_CLUSTER_NAME_URL: 'Search Cluster Name, Status, URL',
   ENTER_EMAIL: 'Enter your Email',
   ENTER_META_TITLE: 'Enter Meta Title',
+  CLUSTER_STATUS: 'Cluster Status',
 };

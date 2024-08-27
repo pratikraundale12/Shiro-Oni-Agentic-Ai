@@ -42,7 +42,6 @@ export const UrlRender = ({ url }) => {
       <StyleUrl data-tooltip-id={url}>{url}</StyleUrl>
       <Container>
         <StyledLink href={url} target="_blank">
-          {/* <LinkIcon color={theme.colors.primary} /> */}
           <OpenLinkIcon />
         </StyledLink>
         <CopyToClipboard copyItem={url} />
