@@ -7,7 +7,8 @@ export const ActvityHistory = () => {
     {
       label: KDFM.TIMESTAMP,
       renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
-      width: '10%',
+      width: '15%',
+      sort: { sortKey: 'timestamp' },
     },
     {
       label: KDFM.EVENT,
@@ -24,17 +25,19 @@ export const ActvityHistory = () => {
       renderCell: item => (
         <TextRender text={item.message || KDFM.NA} capitalizeText={false} />
       ),
-      width: '30%',
+      width: '25%',
     },
     {
       label: KDFM.NAMESPACE,
       renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
       width: '10%',
+      // sort: { sortKey: 'namespace' },
     },
     {
       label: KDFM.CLUSTER,
       renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
       width: '10%',
+      // sort: { sortKey: 'cluster' },
     },
     {
       label: KDFM.STATUS,
@@ -48,6 +51,14 @@ export const ActvityHistory = () => {
     },
   ];
 
+  const sortFns = {
+    namespace: data =>
+      data.sort((a, b) => a.namespace.localeCompare(b.namespace)),
+    cluster: data => data.sort((a, b) => a.cluster.localeCompare(b.cluster)),
+    timestamp: data =>
+      data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)),
+  };
+
   return (
     <Grid
       module="activityHistory"
@@ -55,6 +66,7 @@ export const ActvityHistory = () => {
       columns={COLUMNS}
       placeholder={KDFM.ACTIVITY_HISTORY_SEARCH_PLACEHOLDER}
       statusOptions={ACTIVITY_STATUS_OPTIONS}
+      sortFns={sortFns}
     />
   );
 };
