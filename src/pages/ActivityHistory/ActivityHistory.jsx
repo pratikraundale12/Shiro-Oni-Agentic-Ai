@@ -21,7 +21,9 @@ export const ActvityHistory = () => {
     },
     {
       label: KDFM.MESSAGE,
-      renderCell: item => <TextRender text={item.message || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender text={item.message || KDFM.NA} capitalizeText={false} />
+      ),
       width: '30%',
     },
     {

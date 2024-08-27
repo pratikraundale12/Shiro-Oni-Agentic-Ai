@@ -140,6 +140,7 @@ export const KDFM = {
   SAVE_SETTINGS: 'Save Settings',
   EMAIL: 'Email',
   META_TITLE: 'Meta Title',
+  ACTIVATE: 'Activate',
 
   // License constants
   TRIAL: 'Trial',
