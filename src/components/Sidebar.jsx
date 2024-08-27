@@ -106,9 +106,19 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
   const route = useSelector(AuthenticationSelectors.getRoute);
   const settingsData = useSelector(SettingsSelectors.getSettings);
+  const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'createSettings')
   );
+
+  const getFiltered = item => {
+    if (item.path === 'dashboard') return true;
+    return (
+      !item.hidden &&
+      !item.isSideBarHidden &&
+      userPermissions.includes(item.permission)
+    );
+  };
 
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));
@@ -131,24 +141,7 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
       </button>
       {getImage()}
       <List>
-        {ROUTES_MENU.filter(item => !item.hidden && !item.isSideBarHidden).map(
-          item => {
-            const active = item.path === route;
-            return (
-              <Item
-                key={item.path}
-                active={active}
-                onClick={() => handleRoute(item.path)}
-              >
-                <item.icon
-                  color={active ? theme.colors.white : theme.colors.darker}
-                />
-                <span>{item.name}</span>
-              </Item>
-            );
-          }
-        )}
-        {/* {ROUTES_MENU.filter(getFiltered).map(item => {
+        {ROUTES_MENU.filter(getFiltered).map(item => {
           const active = item.path === route;
           return (
             <Item
@@ -162,7 +155,7 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
               <span>{item.name}</span>
             </Item>
           );
-        })} */}
+        })}
       </List>
 
       <HelpSupportConatiner>
