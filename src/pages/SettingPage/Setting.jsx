@@ -56,9 +56,9 @@ export const Setting = () => {
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
-    data.logo && payload.append('logo', data.logo);
-    data.favicon && payload.append('favicon', data.favicon);
-    data.title && payload.append('title', data.title);
+    payload.append('logo', data?.logo || null);
+    payload.append('favicon', data?.favicon || null);
+    payload.append('title', data?.title);
     payload.append(
       'refresh',
       data.refresh === false || data.refresh === 'Off' ? 0 : data.refresh
@@ -80,7 +80,7 @@ export const Setting = () => {
 
   useEffect(() => {
     if (settingData) {
-      changeFavicon(settingData?.favicon || '%PUBLIC_URL%/favicon.ico');
+      changeFavicon(settingData?.favicon);
       document.title = settingData?.title || 'Data Flow Manager';
 
       setValue('logo', settingData?.logo);
@@ -174,6 +174,7 @@ export const Setting = () => {
             errors={errors}
             register={register}
             image={settingData?.favicon}
+            setValue={setValue}
           />
         </InputFields>
 

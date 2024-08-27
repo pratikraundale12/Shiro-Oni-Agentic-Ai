@@ -129,7 +129,11 @@ const UploadField = ({
   const error = hasError(errors, name);
 
   const handleRemoveImage = () => {
-    setValue('logo', null);
+    if (name === 'logo') {
+      setValue('logo', null);
+    } else {
+      setValue('favicon', null);
+    }
     const input = document.querySelector(`#file-upload-${name}`);
     if (input) {
       input.value = null;
