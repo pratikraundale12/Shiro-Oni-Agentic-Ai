@@ -121,6 +121,7 @@ const UploadField = ({
   required = false,
   control,
   image,
+  setValue,
   ...props
 }) => {
   const [imageSrc, setImageSrc] = useState(image || null);
@@ -128,6 +129,7 @@ const UploadField = ({
   const error = hasError(errors, name);
 
   const handleRemoveImage = () => {
+    setValue('logo', null);
     const input = document.querySelector(`#file-upload-${name}`);
     if (input) {
       input.value = null;
@@ -249,6 +251,7 @@ UploadField.propTypes = {
   required: PropTypes.bool,
   registerOptions: PropTypes.shape({}),
   control: PropTypes.object.isRequired,
+  setValue: PropTypes.func,
 };
 
 export default UploadField;

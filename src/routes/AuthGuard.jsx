@@ -43,11 +43,11 @@ const AuthGuard = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchCurrentUser')
   );
+
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
   const settingsData = useSelector(SettingsSelectors.getSettings);
 
   const refreshState = settingsData?.refresh;
-
   useEffect(() => {
     if (refreshState !== 0) {
       intervalRef.current = setInterval(() => {
@@ -56,6 +56,7 @@ const AuthGuard = () => {
     } else {
       clearInterval(intervalRef.current);
     }
+
     return () => clearInterval(intervalRef.current);
   }, [dispatch, refreshState]);
 
