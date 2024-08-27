@@ -19,6 +19,14 @@ const StyledButton = styled.button`
   text-underline-offset: 3px;
 `;
 
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-right: 0.5rem;
+`;
+
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
   const [refreshState, setRefreshSelect] = useState(false);
@@ -77,16 +85,10 @@ export const ListNamespaces = () => {
     {
       label: KDFM.NAMESPACE_ID,
       renderCell: item => (
-        <div
-          className="d-flex"
-          style={{ justifyContent: 'space-between', alignItems: 'center' }}
-        >
+        <Flex>
           <TextRender text={item.id} />
-          {/* <div style={{ width: 'max-content' }}>
-          </div>
-          */}
-          {false && <CopyToClipboard copyItem={item.id} />}
-        </div>
+          <CopyToClipboard copyItem={item.id} />
+        </Flex>
       ),
       width: '26%',
     },
