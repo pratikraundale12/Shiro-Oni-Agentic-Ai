@@ -601,7 +601,6 @@ export const Add = () => {
                     <p>{KDFM.REGISTRY_NAME}</p>
                     <span>{registryData.name}</span>
                   </BoxContentArea>
-
                   <BoxContentArea>
                     <p>{KDFM.REGISTRY_URL}</p>
                     <span className="d-flex align-items-center gap-3">

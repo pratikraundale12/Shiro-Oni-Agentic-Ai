@@ -27,14 +27,14 @@ const Title = styled.h5`
 const Para = styled.p`
   text-align: center;
   margin-bottom: 0 !important;
-  margin-top: 0;
-  margin-bottom: 1rem;
   box-sizing: border-box;
+  font-size: 1rem;
+  font-weight: 400;
   display: block;
-  text-transform: capitalize;
   margin-block-start: 1em;
   margin-block-end: 1em;
-  margin-inline-end: 0px;
+  margin-inline: auto;
+  max-width: 75%;
 `;
 
 export const FailedTestModal = ({ failedTest, setFailedTest, testMessage }) => {
