@@ -128,6 +128,10 @@ const UploadField = ({
   const error = hasError(errors, name);
 
   const handleRemoveImage = () => {
+    const input = document.querySelector(`#file-upload-${name}`);
+    if (input) {
+      input.value = null;
+    }
     setImageSrc(null);
     if (control && control.setValue) {
       control.setValue(name, null);
@@ -146,18 +150,31 @@ const UploadField = ({
       control={control}
       defaultValue={null}
       rules={{ required }}
-      render={({ field: { onChange, value } }) => {
+      render={({ field: { onChange } }) => {
         const handlePhotoUpload = event => {
-          const validImageTypes = [
-            'image/jpeg',
-            'image/png',
-            'image/x-icon',
-            'image/ico',
-          ];
           const file = event.target.files[0];
           event.target.value = null;
 
-          if (file && validImageTypes.includes(file.type)) {
+          if (file) {
+            if (name === 'favicon' && file.type !== 'image/x-icon') {
+              toast.error('Please upload a valid favicon file (.ico)');
+              setFileError('Invalid file type for favicon');
+              return;
+            } else if (
+              name === 'logo' &&
+              ![
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'image/x-icon',
+                'image/ico',
+              ].includes(file.type)
+            ) {
+              toast.error('Please upload a valid image file (jpeg, png, ico)');
+              setFileError('Invalid file type for logo');
+              return;
+            }
+
             setImageSrc(URL.createObjectURL(file));
             onChange(file);
             setFileError('');
@@ -180,7 +197,7 @@ const UploadField = ({
               <input
                 name={name}
                 aria-invalid={error}
-                value={value ? value.name : '' || image?.split('/').pop()}
+                value={imageSrc ? imageSrc.split('/').pop() : ''}
                 readOnly
                 {...props}
               />

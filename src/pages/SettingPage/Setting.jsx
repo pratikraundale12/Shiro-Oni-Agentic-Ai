@@ -55,15 +55,20 @@ export const Setting = () => {
   const [refreshApi, setRefreshApi] = useState(false);
 
   const onSubmit = async data => {
+    console.log(data.refresh, 'ddd');
     const payload = new FormData();
     data.logo && payload.append('logo', data.logo);
     data.favicon && payload.append('favicon', data.favicon);
     data.title && payload.append('title', data.title);
-    payload.append('refresh', !data.refresh ? 0 : data.refresh);
+    payload.append(
+      'refresh',
+      data.refresh === false || data.refresh === 'Off' ? 0 : data.refresh
+    );
     data.email && payload.append('email', data.email);
 
     try {
       dispatch(SettingsActions.createSettings(payload));
+
       setRefreshApi(true);
 
       if (data.favicon) changeFavicon(URL.createObjectURL(data.favicon));
@@ -72,10 +77,6 @@ export const Setting = () => {
       console.error('Failed to submit settings:', error);
     }
   };
-
-  useEffect(() => {
-    dispatch(SettingsActions.fetchSettings());
-  }, [dispatch]);
 
   useEffect(() => {
     if (settingData) {
@@ -87,7 +88,7 @@ export const Setting = () => {
       setValue('title', settingData?.title);
       setValue(
         'refresh',
-        settingData.refresh === 0 ? 'off' : settingData?.refresh
+        settingData.refresh === 0 ? 'Off' : settingData?.refresh
       );
 
       setValue('email', settingData?.email);
@@ -110,7 +111,7 @@ export const Setting = () => {
       clearInterval(intervalRef.current);
     }
     return () => clearInterval(intervalRef.current);
-  }, [dispatch, refreshState, refreshApi]);
+  }, [refreshApi]);
 
   function changeFavicon(newFaviconURL) {
     const favicon = document.getElementById('dynamic-favicon');

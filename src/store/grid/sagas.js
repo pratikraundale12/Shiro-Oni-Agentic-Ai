@@ -7,7 +7,8 @@ import { GridActions } from './redux';
 
 export function* fetchGrid(
   api,
-  { payload: { module = '', clusterId, params } }
+  { payload: { module = '', clusterId, params } },
+  refresh
 ) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const selectedNamespace = yield select(
@@ -76,10 +77,11 @@ export function* fetchGrid(
   }
   const response = yield call(requestSaga, {
     errorSection: 'fetchGrid',
-    loadingSection: 'fetchGrid',
+    ...(!refresh && { loadingSection: 'fetchGrid' }), // Conditionally include loadingSection if refresh is true
     apiMethod: API[module],
     apiParams: [{ params, queryParams, payload }],
   });
+
   if (response.ok) {
     yield put(GridActions.fetchGridSuccess({ module, data: response.data }));
   }
