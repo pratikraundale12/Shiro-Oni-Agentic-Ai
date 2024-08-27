@@ -59,7 +59,7 @@ export const Setting = () => {
     data.logo && payload.append('logo', data.logo);
     data.favicon && payload.append('favicon', data.favicon);
     data.title && payload.append('title', data.title);
-    data.refresh && payload.append('refresh', data.refresh);
+    payload.append('refresh', !data.refresh ? 0 : data.refresh);
     data.email && payload.append('email', data.email);
 
     try {
@@ -85,7 +85,11 @@ export const Setting = () => {
       setValue('logo', settingData?.logo);
       setValue('favicon', settingData?.favicon);
       setValue('title', settingData?.title);
-      setValue('refresh', settingData?.refresh);
+      setValue(
+        'refresh',
+        settingData.refresh === 0 ? 'off' : settingData?.refresh
+      );
+
       setValue('email', settingData?.email);
 
       const logoElement = document.getElementById('logo');
@@ -141,8 +145,10 @@ export const Setting = () => {
             defaultValue={
               settingData
                 ? {
-                    label: settingData.refresh,
-                    value: settingData.refresh,
+                    label:
+                      settingData.refresh === 0 ? 'Off' : settingData?.refresh,
+                    value:
+                      settingData.refresh === 0 ? 'Off' : settingData?.refresh,
                   }
                 : null
             }
