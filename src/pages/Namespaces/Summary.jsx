@@ -369,15 +369,15 @@ const Summary = () => {
     setScheduleNamespaceDeployOpen(true);
   };
   const onSubmit = async data => {
-    handleContinue();
+    // handleContinue();
 
     const payload = {
-      namespace_id: checkDestCluster?.id, // ask
+      namespace_id: checkDestCluster?.id,
       namespace_name: checkDestCluster?.name,
       scheduled_time: startDate.toISOString(),
       flowId: checkDestCluster?.flowId,
       source_cluster_id: selectedCluster?.value,
-      destination_cluster_id: selectedDestCluster.value, // ask
+      destination_cluster_id: selectedDestCluster.value,
       deployment_status: 'PENDING',
       bucket_id: checkDestCluster?.bucketId,
       registry_id: checkDestCluster?.registryId,
@@ -386,22 +386,8 @@ const Summary = () => {
       position: checkDestCluster?.position,
       approver_ids: data?.approver_ids,
     };
-    // const { approver_ids, ...rest } = data;
-    // const payload = {
-    //   ...rest,
-    //   scheduled_time: startDate.toISOString(),
-    //   // namespace_name: namespaceSelected?.label,
-    //   // flow_id:namespaceSelected?.flowId,
-    //   approver_ids: [approver_ids],
-    //   deployment_status: 'PENDING',
-    // };
-    // console.log(payload, 'payload');
     dispatch(SchedularActions.createScheduleDeployment(payload));
-    // closeModal();
-
-    // const handleClick = () => {
-    //   window.open(deployOrUpgradeDetails.nifiUrl, '_blank');
-    // };
+    setScheduleNamespaceDeployOpen(false);
   };
 
   const getParamerterContext = async () => {
@@ -470,15 +456,6 @@ const Summary = () => {
     setFlowControlButtons(status);
   };
 
-  // useEffect(() => {
-  //   if (ScheduleNamespaceDeployOpen) {
-  //     checkDestCluster.mode !== 'upgrade'
-  //       ? handleDeploy()
-  //       : handleUpgradeClick();
-  //   }
-  // }, [ScheduleNamespaceDeployOpen]);
-
-  // isDeployedModal getting true and false to open and close
   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader loading={loading} />
@@ -800,7 +777,6 @@ const Summary = () => {
           <AddScheduleDeploymentModal
             setScheduleNamespaceDeployOpen={setScheduleNamespaceDeployOpen}
             setValue={setValue}
-            handleSubmit={handleSubmit}
             control={control}
             errors={errors}
             scheduleInitialOpen={scheduleInitialOpen}

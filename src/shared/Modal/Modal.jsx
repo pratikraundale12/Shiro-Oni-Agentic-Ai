@@ -122,7 +122,7 @@ export const Modal = ({
       style={styleObject}
     >
       <form
-        className='d-flex flex-column'
+        className="d-flex flex-column"
         onSubmit={e => {
           e.preventDefault();
           onSubmit();

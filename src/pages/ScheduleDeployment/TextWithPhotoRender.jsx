@@ -20,12 +20,18 @@ const TextColor = styled.div`
 const ImageHolder = styled.img`
   height: 24px;
   width: 24px;
-  margin-right: 10px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  margin-left: ${props => (props.makeleft ? '-10px' : '0')};
 `;
 
 const StyledButton = styled.button`
   border: none;
   background: transparent;
+`;
+
+const HolderContainer = styled.div`
+  margin-left: ${props => (props.makeleft ? '-10px' : '0')};
 `;
 export const TextWithPhotoRender = ({
   content,
@@ -33,42 +39,56 @@ export const TextWithPhotoRender = ({
   item,
   setConfirmScheduleModelOpen,
   setConfirmRejectModelOpen,
+  setSelectedData,
 }) => {
   const isApprover = content.some(
     approver => approver.approver_id === currentUser.id
   );
+
+  const handleReject = () => {
+    setConfirmRejectModelOpen(true);
+    setSelectedData(item.scheduler_id);
+  };
+
+  const handleApprove = () => {
+    setConfirmScheduleModelOpen(true);
+    setSelectedData(item.scheduler_id);
+  };
   return (
     <>
       {isApprover && item.deployment_status == 'PENDING' ? (
         <div className="d-flex">
-          <StyledButton
-            className="me-2"
-            onClick={() => setConfirmRejectModelOpen(true)}
-          >
+          <StyledButton className="me-2" onClick={() => handleReject()}>
             <CrossWithCircleIcon color="red" />
           </StyledButton>
-          <StyledButton onClick={() => setConfirmScheduleModelOpen(true)}>
+          <StyledButton onClick={() => handleApprove()}>
             <TickIconWithCircle />
           </StyledButton>
         </div>
       ) : (
-        <div className="d-flex">
-          {content.map((item, index) =>
-            item.approver_photo_url ? (
-              <ImageHolder
-                src={`${item.approver_photo_url}`}
-                alt="img"
-                key={item.approver_photo_url}
-              />
-            ) : (
-              <div className="me-1" key={index}>
-                <DefaultUserIcon />
-              </div>
-            )
-          )}
-
+        <div className="d-flex ">
+          <div className="d-flex me-1">
+            {content.slice(0, 5).map((item, index) =>
+              item.approver_photo_url ? (
+                <ImageHolder
+                  src={`${item.approver_photo_url}`}
+                  alt="img"
+                  key={item.approver_photo_url}
+                  makeleft={index != 0}
+                />
+              ) : (
+                <HolderContainer key={index} makeleft={index != 0}>
+                  <DefaultUserIcon />
+                </HolderContainer>
+              )
+            )}
+          </div>
           {content?.length > 1 ? (
-            `+ ${content?.length} People`
+            <>
+              {content?.length > 5
+                ? `+ ${content?.length - 5} People`
+                : `${content?.length} People`}
+            </>
           ) : (
             <TextColor>{content[0].approver_name || 'N/A'}</TextColor>
           )}
@@ -83,4 +103,5 @@ TextWithPhotoRender.propTypes = {
   item: PropTypes.object,
   setConfirmScheduleModelOpen: PropTypes.func,
   setConfirmRejectModelOpen: PropTypes.func,
+  setSelectedData: PropTypes.func,
 };
