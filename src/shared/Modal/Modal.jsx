@@ -122,7 +122,7 @@ export const Modal = ({
       style={styleObject}
     >
       <form
-        className='d-flex flex-column'
+        className="d-flex flex-column"
         onSubmit={e => {
           e.preventDefault();
           onSubmit();
@@ -140,6 +140,7 @@ export const Modal = ({
         >
           {secondaryButtonText && (
             <Button
+              type="button"
               variant="secondary"
               onClick={onSecondarySubmit || onRequestClose}
               disabled={secondaryButtonProps.disabled}
@@ -150,6 +151,7 @@ export const Modal = ({
           )}
           {tertiaryButton && tertiaryButtonConfig && (
             <Button
+              type="button"
               variant="secondary"
               onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
               disabled={tertiaryButtonConfig.disabled}
