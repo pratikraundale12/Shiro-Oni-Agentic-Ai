@@ -34,7 +34,7 @@ export const ListScheduleDeployment = () => {
 
   const handleEditClick = item => {
     setScheduleInitialOpen(true);
-    setSelectedTimeStamp(item?.scheduled_time);
+    setSelectedTimeStamp(item?.timestamp);
   };
 
   const getActionsMenu = item => (
