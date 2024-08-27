@@ -77,7 +77,6 @@ export const ListNamespaces = () => {
           {item.name}
         </StyledButton>
       ),
-      width: '18%',
       sort: { sortKey: 'name' },
     },
     {
@@ -88,26 +87,21 @@ export const ListNamespaces = () => {
           <CopyToClipboard copyItem={item.id} />
         </Flex>
       ),
-      width: '26%',
     },
     {
       label: KDFM.FLOW_NAME,
       renderCell: item => <TextRender text={item.flowName || KDFM.NA} />,
-      width: '18%',
     },
     {
       label: KDFM.BUCKET_NAME,
       renderCell: item => <TextRender text={item.bucketName || KDFM.NA} />,
-      width: '18%',
     },
     {
       label: KDFM.VERSION,
       renderCell: item => <TextRender text={item.version || KDFM.NA} />,
-      width: '8%',
     },
     {
       label: KDFM.ACTIONS,
-      width: '12%',
       renderCell: item => (
         <div className="d-flex gap-3">
           <button

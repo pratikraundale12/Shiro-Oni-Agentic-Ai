@@ -4,7 +4,7 @@ import { DashboardActions } from './redux';
 import { NamespacesSelectors } from '../namespaces/redux';
 import { CLUSTERS_TOKEN } from '../../constants';
 
-export function* fetchDashboard(api, { payload: { refresh } }) {
+export function* fetchDashboard(api, { payload: { refresh } = {} }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace

@@ -7,7 +7,7 @@ import { GridActions } from './redux';
 
 export function* fetchGrid(
   api,
-  { payload: { module = '', clusterId, params, refresh } }
+  { payload: { module = '', clusterId, params, refresh = false } }
 ) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const selectedNamespace = yield select(
