@@ -80,7 +80,9 @@ export const Setting = () => {
 
   useEffect(() => {
     if (settingData) {
-      changeFavicon(settingData?.favicon);
+      if (settingData?.favicon) {
+        changeFavicon(settingData?.favicon);
+      }
       document.title = settingData?.title || 'Data Flow Manager';
 
       setValue('logo', settingData?.logo);
@@ -107,7 +109,7 @@ export const Setting = () => {
     } else {
       const newFavicon = document.createElement('link');
       newFavicon.rel = 'icon';
-      newFavicon.href = newFaviconURL || '%PUBLIC_URL%/favicon.ico';
+      newFavicon.href = newFaviconURL;
       newFavicon.id = 'dynamic-favicon';
       document.head.appendChild(newFavicon);
     }

@@ -215,7 +215,9 @@ const Routes = () => {
 
   useEffect(() => {
     if (settingsData) {
-      changeFavicon(settingsData?.favicon);
+      if (settingsData?.favicon) {
+        changeFavicon(settingsData?.favicon);
+      }
       document.title = settingsData?.title || 'Data Flow Manager';
     }
   }, [settingsData]);
@@ -227,7 +229,7 @@ const Routes = () => {
     } else {
       const newFavicon = document.createElement('link');
       newFavicon.rel = 'icon';
-      newFavicon.href = newFaviconURL || '%PUBLIC_URL%/favicon.ico';
+      newFavicon.href = newFaviconURL;
       newFavicon.id = 'dynamic-favicon';
       document.head.appendChild(newFavicon);
     }
