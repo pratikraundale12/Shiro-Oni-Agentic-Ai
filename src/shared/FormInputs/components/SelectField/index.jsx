@@ -6,7 +6,6 @@ import Select, { components } from 'react-select';
 import makeAnimated from 'react-select/animated';
 import CreatableSelect from 'react-select/creatable';
 import styled from 'styled-components';
-
 import { DownArrowIcon } from '../../../../assets';
 import { hasError } from '../../../../helpers';
 import { theme } from '../../../../styles';
@@ -33,6 +32,12 @@ const Container = styled.div`
     color: ${props => props.theme.colors.error};
     font-size: 1rem;
   }
+
+  & .react-select__multi-value {
+    background-color: ${props => props.theme.colors.lightGrey} !important;
+    border-radius: 6px !important;
+    padding-block: 4px !important;
+  }
 `;
 
 const DropdownIndicator = props =>
@@ -42,8 +47,11 @@ const DropdownIndicator = props =>
         <span
           style={{
             display: 'flex',
+            alignItems: 'center',
             position: 'absolute',
-            left: 0,
+            left: 2,
+            top: 2,
+            bottom: 2,
             padding: 14,
             borderTopLeftRadius: 4,
             borderBottomLeftRadius: 4,
@@ -60,6 +68,38 @@ const DropdownIndicator = props =>
 DropdownIndicator.propTypes = {
   selectProps: PropTypes.shape({
     icon: PropTypes.node,
+  }).isRequired,
+};
+
+const StyledMultiValChip = styled.div`
+  padding: 0 4px;
+  border-radius: 4px;
+  color: #4c5055;
+
+  & img {
+    margin-right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+`;
+
+const MultiValueLabel = props => {
+  return (
+    <components.MultiValueLabel {...props}>
+      <StyledMultiValChip>
+        {props.data.avatar && <img src={props.data.avatar} alt="avatar" />}
+        <span>{props.data.label}</span>
+      </StyledMultiValChip>
+    </components.MultiValueLabel>
+  );
+};
+
+MultiValueLabel.propTypes = {
+  data: PropTypes.shape({
+    label: PropTypes.string,
+    avatar: PropTypes.string,
   }).isRequired,
 };
 
@@ -80,8 +120,11 @@ const SelectField = ({
   isClearable = false,
   ldap = false,
   handleCreateOption,
+  optionEntity = '',
   ...props
 }) => {
+  console.log(optionEntity);
+
   const animatedComponents = makeAnimated();
   const error = hasError(errors, name);
 
@@ -106,6 +149,15 @@ const SelectField = ({
       ...styles,
       display: 'flex',
       alignItems: 'center',
+    }),
+    multiValueLabel: styles => ({
+      ...styles,
+      color: theme.colors.darker,
+      fontFamily: theme.fontNato,
+      fontSize: 14,
+      display: 'flex',
+      gap: 2,
+      backgroundColor: theme.colors.lightGrey,
     }),
     clearIndicator: styles => ({
       ...styles,
@@ -244,6 +296,9 @@ const SelectField = ({
               components={{
                 ...animatedComponents,
                 IndicatorSeparator: () => null,
+                ...(optionEntity === 'user' && {
+                  MultiValueLabel: MultiValueLabel,
+                }),
                 DropdownIndicator,
               }}
               // formatOptionLabel={formatOptionLabel}
@@ -280,6 +335,7 @@ SelectField.propTypes = {
   isClearable: PropTypes.bool,
   onChange: PropTypes.func,
   ldap: PropTypes.bool,
+  optionEntity: PropTypes.string,
   handleCreateOption: PropTypes.func,
 };
 

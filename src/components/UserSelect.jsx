@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { SelectField } from '../shared';
-import { UserIcon } from '../assets';
 import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { UserIcon } from '../assets';
+import defaultAvatarURL from '../assets/images/avatar.png';
+import { SelectField } from '../shared';
 import { UsersActions, UsersSelectors } from '../store';
 
 export const UserSelect = ({ control, errors, name, label, placeholder }) => {
@@ -14,7 +15,11 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
     setSearchText(value);
   };
   useEffect(() => {
-    dispatch(UsersActions.fetchUsers({ params: { search: searchText } }));
+    dispatch(
+      UsersActions.fetchUsers({
+        params: { ...(searchText && { search: searchText }) },
+      })
+    );
   }, [dispatch, searchText]);
   return (
     <SelectField
@@ -23,13 +28,15 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
       control={control}
       icon={<UserIcon />}
       errors={errors}
-      options={AdminList.map(({ id, username }) => ({
+      options={AdminList.map(({ id, photo, username }) => ({
         value: id,
         label: username,
+        avatar: photo ? photo : defaultAvatarURL,
       }))}
       placeholder={placeholder}
       required
       onInputChange={handleChange}
+      optionEntity="user"
       isMulti
     />
   );
