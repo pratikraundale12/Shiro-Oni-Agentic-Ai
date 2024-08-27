@@ -1,20 +1,20 @@
 /*eslint-disable*/
-import React, { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Button, DateTimeInput, Modal } from '../../shared';
+import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+import * as yup from 'yup';
+import { UserSelect } from '../../components';
+import { Button, DateTimeInput, Modal } from '../../shared';
 import {
   ClustersActions,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { UserSelect } from '../../components';
-import * as yup from 'yup';
-import { isEmpty } from 'lodash';
 import { SchedularActions } from '../../store/schedular/redux';
-import PropTypes from 'prop-types';
 
 export const scheduleSchema = yup.object().shape({
   approver_ids: yup.string().trim().required('Approver is required'),
@@ -31,6 +31,7 @@ export const AddScheduleDeploymentModal = ({
   handleContinue = () => {},
   startDate,
   setStartDate,
+  showButton = false,
 }) => {
   const dispatch = useDispatch();
   // const [startDate, setStartDate] = useState(new Date());
@@ -120,9 +121,11 @@ export const AddScheduleDeploymentModal = ({
   // handleSubmit(onSubmit)
   return (
     <div>
-      <Button onClick={openModal} size="md" variant="secondary">
-        Schedule
-      </Button>
+      {showButton && (
+        <Button onClick={openModal} size="md" variant="secondary">
+          Schedule
+        </Button>
+      )}
       <Modal
         size="md"
         title={'Add Schedule Deployment'}
@@ -146,13 +149,15 @@ export const AddScheduleDeploymentModal = ({
             />
           </div>
         </div>
-        <UserSelect
-          control={control}
-          errors={errors}
-          name="approver_ids"
-          placeholder="Select atleast one approver"
-          label="Approver"
-        />
+        {showButton && (
+          <UserSelect
+            control={control}
+            errors={errors}
+            name="approver_ids"
+            placeholder="Select atleast one approver"
+            label="Approver"
+          />
+        )}
       </Modal>
     </div>
   );
@@ -167,4 +172,5 @@ AddScheduleDeploymentModal.propTypes = {
   handleContinue: PropTypes.func,
   startDate: PropTypes.string.isRequired,
   setStartDate: PropTypes.object.isRequired,
+  showButton: PropTypes.bool,
 };
