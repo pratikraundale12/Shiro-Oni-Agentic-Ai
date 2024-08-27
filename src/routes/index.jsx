@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import React, { useEffect } from 'react';
 import { Outlet, Route } from 'react-router-dom';
 
@@ -49,6 +50,7 @@ import {
   LoadingSelectors,
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
+import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 
 export const ROUTES_MENU = [
   {
@@ -247,6 +249,29 @@ const Routes = () => {
       <Route path="/reset" element={<Reset />} />
       <Route path="/success" element={<Success />} />
       <Route path="/login" element={<UserLogin />} />
+      <Route path='/policy' element={<UnAuthGuard />}>
+        {UNAUTHROUTES_MENU?.map(item => (
+          <Route key={item.path} path={item.path} exact element={<Outlet />}>
+             {item.pages.map(page =>
+              Array.isArray(page.path) ? (
+                page.path.map(subPath => (
+                  <Route
+                    key={subPath}
+                    path={subPath}
+                    element={page.component}
+                  />
+                ))
+              ) : (
+                <Route
+                  key={page.path}
+                  path={page.path}
+                  index={!!page.path}
+                  element={page.component}
+                />
+              )
+            )}
+          </Route>))}
+      </Route>
 
       {/* Private Routes */}
       <Route path="/" element={<AuthGaurd />}>

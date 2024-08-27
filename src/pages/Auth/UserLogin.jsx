@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 
 import { theme } from '../../styles';
 import { ClusterSelect, Layout } from '../../components';
-import { Button, InputField, PasswordField } from '../../shared';
+import { Button, InputField, PasswordField, TextButton } from '../../shared';
 import {
   ClusterIcon,
   // GoogleIcon,
@@ -16,7 +16,7 @@ import {
   UserIcon,
 } from '../../assets';
 import {
-  // FORGOT_PASSWORD,
+  FORGOT_PASSWORD,
   // GOOGLE,
   LOGIN_TO_YOUR_ACCOUNT,
   // MICROSOFT,
@@ -24,9 +24,10 @@ import {
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../constants';
-import { getRightIcon } from '.';
+import { getRightIcon, PasswordTextMessage } from '.';
 import { useGlobalContext } from '../../utils';
 import { AuthenticationActions } from '../../store';
+import { toast } from 'react-toastify';
 // import { history } from '../../helpers/history';
 
 const Title = styled.h3`
@@ -160,12 +161,20 @@ export const UserLogin = () => {
             watch={watch}
             required
             label="Password"
-            helperText="Must be 8 characters at least"
           />
           <ForgetLinkContainer>
-            {/* <TextButton onClick={() => history.push('/forgot')}>
+            <PasswordTextMessage>
+              Must be 8 characters at least
+            </PasswordTextMessage>
+            <TextButton
+              onClick={() =>
+                toast.error(
+                  'To change your password, Contact the administrator.'
+                )
+              }
+            >
               {FORGOT_PASSWORD}
-            </TextButton> */}
+            </TextButton>
           </ForgetLinkContainer>
         </div>
 

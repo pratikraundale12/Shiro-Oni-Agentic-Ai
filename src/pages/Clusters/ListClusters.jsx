@@ -33,7 +33,7 @@ import { useGlobalContext } from '../../utils';
 const List = styled.div`
   position: absolute;
   top: 25%;
-  left: 40px;
+  right: 100%;
   z-index: 1000;
   background: ${props => props.theme.colors.white};
   box-shadow: 0px 0px 5px 0px ${props => props.theme.colors.shadow};
@@ -89,12 +89,10 @@ export const ListClusters = () => {
       renderCell: item => (
         <TextRender text={item.name} capitalizeText={false} />
       ),
-      width: '20%',
     },
     {
       label: KDFM.NIFI_URL,
       renderCell: item => <UrlRender url={item.nifi_url} />,
-      width: '40%',
     },
     {
       label: KDFM.CLUSTER_STATUS,
@@ -106,12 +104,10 @@ export const ListClusters = () => {
           status={item.status}
         />
       ),
-      width: '12%',
     },
     {
       label: KDFM.STATUS,
       renderCell: item => <StatusRender status={item.status} />,
-      width: '12%',
     },
     {
       label: KDFM.ACTIONS,
@@ -158,7 +154,6 @@ export const ListClusters = () => {
           </ActionRender>
         );
       },
-      width: '16%',
     },
   ];
 

@@ -198,11 +198,13 @@ const ProfileDropdown = () => {
       label: 'Profile',
       icon: <UserIcon width={18} height={18} />,
       onClick: () => {
-        setState(prev => ({
-          ...prev,
-          userModal: true,
-          selectedItem: prev.currentUser,
-        }));
+        setState(prev => {
+          return {
+            ...prev,
+            userModal: true,
+            selectedItem: prev.currentUser,
+          };
+        });
         setShowMenu(prev => !prev);
       },
     },
@@ -254,12 +256,13 @@ const ProfileDropdown = () => {
   );
 };
 
-export const Header = ({ isOpenSidebar }) => {
+export const Header = ({ isOpenSidebar, currentRoute }) => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const route = useSelector(AuthenticationSelectors.getRoute);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
+  const isLoggedIn = useSelector(AuthenticationSelectors.getIsLoggedIn);
 
   const closeTab = () => {
     setDisplaySessionTab(false);
@@ -279,39 +282,43 @@ export const Header = ({ isOpenSidebar }) => {
     <>
       <Container>
         <Title className={isOpenSidebar && 'title'}>
-          {route?.replace(/-/g, ' ')}
+          {isLoggedIn
+            ? route?.replace(/-/g, ' ')
+            : currentRoute?.split('/')?.[2].replace(/-/g, ' ')}
         </Title>
-        <ButtonContainer>
-          <div className="d-none d-lg-inline">
-            <div className="d-flex">
-              {currentUser.role === 'superadmin' && (
-                <IconButton onClick={() => handleRoute('setting')}>
-                  <SettingSmallIcon />
-                </IconButton>
-              )}
-              <IconCusterButton
-                onClick={() =>
-                  dispatch(AuthenticationActions.setClusterLogin(true))
-                }
-              >
-                <ClusterIcon />
-                {selectedCluster?.label && (
-                  <NameDiv>
-                    <StatusDiv /> {selectedCluster.label}
-                  </NameDiv>
+        {isLoggedIn ? (
+          <ButtonContainer>
+            <div className="d-none d-lg-inline">
+              <div className="d-flex">
+                {currentUser.role === 'superadmin' && (
+                  <IconButton onClick={() => handleRoute('setting')}>
+                    <SettingSmallIcon />
+                  </IconButton>
                 )}
-                {selectedCluster?.label && <DownArrowIcon />}
-              </IconCusterButton>
-              {/* <IconButton>
+                <IconCusterButton
+                  onClick={() =>
+                    dispatch(AuthenticationActions.setClusterLogin(true))
+                  }
+                >
+                  <ClusterIcon />
+                  {selectedCluster?.label && (
+                    <NameDiv>
+                      <StatusDiv /> {selectedCluster.label}
+                    </NameDiv>
+                  )}
+                  {selectedCluster?.label && <DownArrowIcon />}
+                </IconCusterButton>
+                {/* <IconButton>
                 <HeadphoneIcon />
               </IconButton>
               <IconButton>
                 <BellIcon />
               </IconButton> */}
+              </div>
             </div>
-          </div>
-          <ProfileDropdown />
-        </ButtonContainer>
+            <ProfileDropdown />
+          </ButtonContainer>
+        ) : null}
       </Container>
       <ClusterLoginModal />
       {displaySessionTab && <SessionExpiredLabel closeTab={closeTab} />}
@@ -322,4 +329,5 @@ export const Header = ({ isOpenSidebar }) => {
 Header.propTypes = {
   route: PropTypes.string,
   isOpenSidebar: PropTypes.bool,
+  currentRoute: PropTypes.string,
 };

@@ -17,7 +17,7 @@ import { theme } from '../styles';
 import { SettingsSelectors } from '../store/settings';
 import { Loader } from './Loader';
 
-const Container = styled.div`
+export const Container = styled.div`
   height: 100%;
   min-width: ${props => props.theme.sidebar};
   padding: 16px 0;
@@ -48,7 +48,7 @@ const Container = styled.div`
   }
 `;
 
-const List = styled.ul`
+export const List = styled.ul`
   width: 100%;
   margin-top: 20px;
   padding-left: 0;
@@ -59,7 +59,7 @@ Favicon
 
 `;
 
-const Item = styled.li`
+export const Item = styled.li`
   display: flex;
   align-items: center;
   padding: 20px 32px;
@@ -96,7 +96,7 @@ const HelpSupportConatiner = styled.div`
   width: 100%;
 `;
 
-const KDFMVersion = styled.div`
+export const KDFMVersion = styled.div`
   color: ${props => props.theme.colors.darker};
   font-size: 14px;
   font-weight: 500;

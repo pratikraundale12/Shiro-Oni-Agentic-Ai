@@ -166,8 +166,12 @@ export const Grid = ({
 
         th, td {
           border-bottom: none !important;
+          padding: 25px !important;
         }
 
+        td{
+        max-width: 700px;
+        }
         th {
           height: 52px;
           background-color: ${theme.colors.lightGrey} !important;

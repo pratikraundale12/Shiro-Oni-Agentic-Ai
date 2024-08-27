@@ -111,11 +111,13 @@ const DropdownContainer = styled.div`
   min-width: 175px;
   max-width: 175px;
   cursor: pointer;
-
+  @media (max-width: 1040px) {
+    max-width: 100%;
+    width: 100%;
+  }
   & div > div {
     & > div {
       min-width: 175px;
-      max-width: 175px;
       cursor: pointer;
     }
   }
@@ -129,6 +131,9 @@ const DropdownContainer = styled.div`
 `;
 const DropdownWrapper = styled.div`
   display: flex;
+  @media (max-width: 1040px) {
+    width: 100%;
+  }
 `;
 
 const IdWrapper = styled.div`
