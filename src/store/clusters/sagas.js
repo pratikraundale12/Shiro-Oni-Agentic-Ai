@@ -17,10 +17,7 @@ export function* fetchClusterList(api, { payload: { params } = {} }) {
   });
   const clusterData = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
 
-  if (
-    !isEmpty(clusterData[0]) &&
-    (selectedCluster === null || isEmpty(selectedCluster))
-  ) {
+  if (!isEmpty(clusterData[0]) && isEmpty(selectedCluster)) {
     yield put(
       NamespacesActions.setSelectedCluster({
         label: clusterData[0]?.name,
