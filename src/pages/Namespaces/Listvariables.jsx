@@ -22,11 +22,19 @@ const ModalBody = styled.div`
 const Listvariables = ({
   isOpen,
   closePopup,
+  isVariablesModalOpen,
   // handleTertiaryButton,
   setVariablesModalOpen,
 }) => {
-  const [variableContextItem, setVariableContextItem] = useState({});
-  const [newlyAddVariables, setNewlyAddvariables] = useState([]);
+  // const [variableContextItem, setVariableContextItem] = useState({});
+  // const [newlyAddVariables, setNewlyAddvariables] = useState([]);
+  const variableContextItem = useSelector(
+    NamespacesSelectors.getVariableContextItem
+  );
+  const newlyAddVariables = useSelector(
+    NamespacesSelectors.getNewlyAddVariables
+  );
+  console.log(newlyAddVariables, 'newlyAddVariables');
   const variableList = useSelector(NamespacesSelectors.getVariableList);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -63,8 +71,20 @@ const Listvariables = ({
             disabled={loading}
             onClick={() => {
               setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
-              setVariablesModalOpen({ isOpen: false, mode: 'add' });
-              setVariableContextItem(item);
+              if (isVariablesModalOpen?.schedule) {
+                setVariablesModalOpen({
+                  isOpen: true,
+                  mode: 'add',
+                  schedule: true,
+                });
+              } else {
+                setVariablesModalOpen({
+                  isOpen: true,
+                  mode: 'add',
+                  schedule: false,
+                });
+              }
+              dispatch(NamespacesActions.setVariableContextItem(item));
             }}
           >
             <PencilIcon style={{ color: 'black' }} />
@@ -75,7 +95,11 @@ const Listvariables = ({
   ];
 
   let variablesData = [];
-  if (variableList && variableList.variables) {
+  console.log(isVariablesModalOpen, 'variableList');
+  if (
+    (variableList && variableList.variables) ||
+    isVariablesModalOpen.schedule
+  ) {
     const variables = newlyAddVariables.map(item => {
       return {
         variable: {
@@ -85,19 +109,31 @@ const Listvariables = ({
         },
       };
     });
-    variablesData = [...variableList.variables, ...variables];
+    if (isVariablesModalOpen.schedule) {
+      variablesData = [...variables];
+    } else {
+      variablesData = [...variableList.variables, ...variables];
+    }
   }
-
+  console.log(variablesData);
   const openVariable = () => {
     setIsAddVariablesOpen({ isOpen: true, mode: 'add' });
-    setVariableContextItem({});
-    setVariablesModalOpen({ isOpen: false, mode: 'add' });
+    dispatch(NamespacesActions.setVariableContextItem({}));
+    if (isVariablesModalOpen?.schedule) {
+      setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
+    } else {
+      setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: false });
+    }
   };
 
   const closeAddVariablesModal = () => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
-    setVariableContextItem({});
-    setVariablesModalOpen({ isOpen: true, mode: 'add' });
+    dispatch(NamespacesActions.setVariableContextItem({}));
+    if (isVariablesModalOpen?.schedule) {
+      setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: true });
+    } else {
+      setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: false });
+    }
   };
 
   const handleSubmit = async () => {
@@ -109,7 +145,13 @@ const Listvariables = ({
     );
 
     setLoading(false);
-    setNewlyAddvariables([]);
+
+    dispatch(NamespacesActions.setNewlyAddVariables([]));
+  };
+  const scheduleSubmit = async () => {
+    console.log('scheduleSubmit');
+
+    setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: true });
   };
 
   return (
@@ -118,15 +160,15 @@ const Listvariables = ({
         title={KDFM.VARIABLES}
         isOpen={isOpen.isOpen}
         onRequestClose={() => {
-          setNewlyAddvariables([]);
+          dispatch(NamespacesActions.setNewlyAddVariables([]));
           closePopup();
         }}
         isLoading={loading}
         size="md"
         onSecondarySubmit={openVariable}
         secondaryButtonText={KDFM.ADD_VARIABLES}
-        primaryButtonText={KDFM.SAVE}
-        onSubmit={handleSubmit}
+        primaryButtonText={isVariablesModalOpen.schedule ? 'BACK' : KDFM.SAVE}
+        onSubmit={isVariablesModalOpen.schedule ? scheduleSubmit : handleSubmit}
         primaryButtonDisabled={loading || !newlyAddVariables?.length}
         footerAlign="start"
         secondaryButtonProps={{
@@ -144,10 +186,11 @@ const Listvariables = ({
       </Modal>
       {isAddVariablesOpen && (
         <AddVariables
+          isVariablesModalOpen={isVariablesModalOpen}
           variableContextItem={variableContextItem}
-          setVariableContextItem={setVariableContextItem}
-          newlyAddVariables={newlyAddVariables}
-          setNewlyAddvariables={setNewlyAddvariables}
+          // setVariableContextItem={setVariableContextItem}
+          // newlyAddVariables={newlyAddVariables}
+          // setNewlyAddvariables={setNewlyAddvariables}
           isOpen={isAddVariablesOpen}
           closePopup={closeAddVariablesModal}
           isAddVariablesOpen={isAddVariablesOpen}
@@ -164,6 +207,7 @@ Listvariables.propTypes = {
   closePopup: PropTypes.func.isRequired,
   setVariablesModalOpen: PropTypes.func.isRequired,
   setVariables: PropTypes.func,
+  isVariablesModalOpen: PropTypes.object,
   variables: PropTypes.array,
   handleTertiaryButton: PropTypes.func,
 };

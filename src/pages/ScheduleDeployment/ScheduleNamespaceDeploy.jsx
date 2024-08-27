@@ -186,7 +186,7 @@ const ScheduleNamespaceDeploy = ({
   isOpen,
   closePopup,
   getParamerterContext,
-  handleTertiaryButton,
+  handleScheduleTertiaryButton,
   handleSubmit,
   onSubmit,
 }) => {
@@ -221,7 +221,7 @@ const ScheduleNamespaceDeploy = ({
         tertiaryButton={true}
         tertiaryButtonConfig={{
           tertiaryButtonTest: 'Variables',
-          tertiaryButtonSubmit: handleTertiaryButton,
+          tertiaryButtonSubmit: handleScheduleTertiaryButton,
           tertiaryButtonDisable: false,
         }}
       >
@@ -401,7 +401,7 @@ ScheduleNamespaceDeploy.propTypes = {
     name: PropTypes.string,
     id: PropTypes.string,
   }),
-  handleTertiaryButton: PropTypes.func,
+  handleScheduleTertiaryButton: PropTypes.func,
   selectedVersion: PropTypes.string,
   selectedClusterName: PropTypes.string,
   selectedClusterId: PropTypes.string,

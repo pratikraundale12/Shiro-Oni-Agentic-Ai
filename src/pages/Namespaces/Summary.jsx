@@ -1,9 +1,12 @@
 /* eslint-disable no-unused-vars */
+import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import * as yup from 'yup';
 import {
   SmallNotThunderIcon,
   SmallThunderIcon,
@@ -29,17 +32,14 @@ import {
   updateNamespaceStatus,
   upgradeCluster,
 } from '../../store/index1';
+import { SchedularActions } from '../../store/schedular/redux';
 import { useGlobalContext } from '../../utils';
+import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
+import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
-import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
-import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { SchedularActions } from '../../store/schedular/redux';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -330,10 +330,14 @@ const Summary = () => {
     isOpen: false,
     mode: 'add',
   });
+  const newlyAddVariables = useSelector(
+    NamespacesSelectors.getNewlyAddVariables
+  );
   const [parameterContextItem, setParameterContextItem] = useState({});
   const [isVariablesModalOpen, setVariablesModalOpen] = useState({
     isOpen: false,
     mode: 'add',
+    schedule: false,
   });
   const [progress, setProgress] = useState(0);
   // const navigate = useNavigate();
@@ -346,7 +350,6 @@ const Summary = () => {
   const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-
   const {
     // register,
     setValue,
@@ -370,7 +373,8 @@ const Summary = () => {
   };
   const onSubmit = async data => {
     handleContinue();
-
+    console.log({ data });
+    console.log(newlyAddVariables, 'abc');
     const payload = {
       namespace_id: checkDestCluster?.id, // ask
       namespace_name: checkDestCluster?.name,
@@ -385,7 +389,12 @@ const Summary = () => {
       version: formData.version,
       position: checkDestCluster?.position,
       approver_ids: data?.approver_ids,
+      variables: newlyAddVariables.map(item => ({
+        name: item.name,
+        value: item.value,
+      })),
     };
+    console.log({ payload }, 'line no 123');
     // const { approver_ids, ...rest } = data;
     // const payload = {
     //   ...rest,
@@ -451,12 +460,17 @@ const Summary = () => {
 
   const handleTertiaryButton = async () => {
     dispatch(NamespacesActions.fetchVariableList());
-    setVariablesModalOpen({ isOpen: true, mode: 'add' });
+    setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: false });
     setModalOpen(false);
   };
 
+  const handleScheduleTertiaryButton = async () => {
+    // dispatch(NamespacesActions.fetchVariableList());
+    setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
+    setModalOpen(false);
+  };
   const closeVariablesModal = () => {
-    setVariablesModalOpen({ isOpen: false, mode: 'add' });
+    setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: false });
     dispatch(NamespacesActions.setDeployedModal());
   };
 
@@ -846,7 +860,7 @@ const Summary = () => {
         closePopup={handleScheduleNamespaceDeployModel}
         openParameterContext={openParameterContext}
         getParamerterContext={getParamerterContext}
-        handleTertiaryButton={handleTertiaryButton}
+        handleScheduleTertiaryButton={handleScheduleTertiaryButton}
         onSubmit={onSubmit}
         handleSubmit={handleSubmit}
       />
@@ -875,6 +889,7 @@ const Summary = () => {
       <Listvariables
         isOpen={isVariablesModalOpen}
         closePopup={closeVariablesModal}
+        isVariablesModalOpen={isVariablesModalOpen}
         setVariablesModalOpen={setVariablesModalOpen}
         handleTertiaryButton={handleTertiaryButton}
       />

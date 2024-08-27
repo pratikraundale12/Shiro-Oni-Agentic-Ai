@@ -45,6 +45,9 @@ export const NamespacesActions = {
   fetchNamespaceAuditSuccess: createAction(
     `${prefix}fetchNamespaceAuditSuccess`
   ),
+
+  setVariableContextItem: createAction(`${prefix}setVariableContextItem`),
+  setNewlyAddVariables: createAction(`${prefix}setNewlyAddVariables`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -82,6 +85,8 @@ export const NAMESPACES_INITIAL_STATE = {
     breadcrumb: [],
     data: [],
   },
+  variableContextItem: {},
+  newlyAddVariables: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -100,6 +105,8 @@ export const NamespacesSelectors = {
   getDeployedModal: state => state.namespaces.isDeployedModal,
   getVariableList: state => state.namespaces.variableList,
   getNamespaceAudit: state => state.namespaces.namespaceAudit,
+  getVariableContextItem: state => state.namespaces.variableContextItem,
+  getNewlyAddVariables: state => state.namespaces.newlyAddVariables,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -233,6 +240,20 @@ const fetchNamespaceAuditSuccess = (state, { payload }) => {
   };
 };
 
+const setVariableContextItem = (state, { payload }) => {
+  return {
+    ...state,
+    variableContextItem: payload,
+  };
+};
+
+const setNewlyAddVariables = (state, { payload }) => {
+  return {
+    ...state,
+    newlyAddVariables: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -269,6 +290,8 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.fetchNamespaceAuditSuccess,
         fetchNamespaceAuditSuccess
-      );
+      )
+      .addCase(NamespacesActions.setVariableContextItem, setVariableContextItem)
+      .addCase(NamespacesActions.setNewlyAddVariables, setNewlyAddVariables);
   }
 );
