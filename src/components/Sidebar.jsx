@@ -102,6 +102,8 @@ const KDFMVersion = styled.div`
   font-weight: 500;
 `;
 
+const LOGO_HEIGHT = 80;
+
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
   const route = useSelector(AuthenticationSelectors.getRoute);
@@ -126,12 +128,17 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   };
 
   const getImage = () => {
-    if (loading) return <Loader />;
+    if (loading)
+      return (
+        <div style={{ height: LOGO_HEIGHT }}>
+          <Loader />
+        </div>
+      );
     if (settingsData?.logo)
       return (
         <img src={settingsData?.logo} alt="Logo" width={200} height={80} />
       );
-    return <KsolvesDataFlowIcon width={200} height={80} />;
+    return <KsolvesDataFlowIcon width={200} height={LOGO_HEIGHT} />;
   };
 
   return (

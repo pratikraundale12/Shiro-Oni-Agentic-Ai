@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { ActivityHistoryIcon } from '../../assets';
@@ -7,7 +7,7 @@ import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
-import { GridActions, NamespacesActions } from '../../store';
+import { NamespacesActions } from '../../store';
 import AuditLog from './AuditLog';
 
 const StyledButton = styled.button`
@@ -29,8 +29,6 @@ const Flex = styled.div`
 
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
-  const [refreshState, setRefreshSelect] = useState(false);
-  const intervalRef = useRef(null);
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
 
@@ -162,23 +160,6 @@ export const ListNamespaces = () => {
     });
   };
 
-  const handleRefresh = event => {
-    setRefreshSelect(event.value);
-  };
-
-  useEffect(() => {
-    if (refreshState !== false) {
-      intervalRef.current = setInterval(
-        () => dispatch(GridActions.fetchGrid({ module: 'namespaces' })),
-        refreshState
-      );
-    } else {
-      clearInterval(intervalRef.current);
-    }
-
-    return () => clearInterval(intervalRef.current);
-  }, [dispatch, refreshState]);
-
   return (
     <>
       <Grid
@@ -188,7 +169,6 @@ export const ListNamespaces = () => {
         columns={COLUMNS}
         refreshOptions={REFRESH_OPTIONS}
         placeholder={KDFM.SEARCH_NAMESPACE_FLOW_BUCKET_NAME}
-        handleRefresh={handleRefresh}
         sortFns={sortFns}
         state={state}
         // handleIconClick={handleIconClick}

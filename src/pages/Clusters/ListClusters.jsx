@@ -22,7 +22,6 @@ import {
   // CLUSTERS_TOKEN,
   CLUSTER_STATUS,
   KDFM,
-  REFRESH_OPTIONS,
   STATUS_OPTIONS,
 } from '../../constants';
 import { history } from '../../helpers/history';
@@ -74,8 +73,6 @@ const Item = styled.div`
 
 export const ListClusters = () => {
   const dispatch = useDispatch();
-  const [refreshState, setRefreshSelect] = useState(false);
-  const intervalRef = useRef(null);
   const { state, setState } = useGlobalContext();
   const [deactiveId, setDeactiveId] = useState(null);
   const menuRef = useRef(null);
@@ -237,10 +234,6 @@ export const ListClusters = () => {
     }
   };
 
-  const handleRefresh = event => {
-    setRefreshSelect(event.value);
-  };
-
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -248,19 +241,6 @@ export const ListClusters = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (refreshState !== false) {
-      intervalRef.current = setInterval(
-        () => dispatch(GridActions.fetchGrid({ module: 'clusters' })),
-        refreshState
-      );
-    } else {
-      clearInterval(intervalRef.current);
-    }
-
-    return () => clearInterval(intervalRef.current);
-  }, [dispatch, refreshState]);
 
   return (
     <>
@@ -281,9 +261,7 @@ export const ListClusters = () => {
         buttonText={KDFM.ADD_NEW_CLUSTER}
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
-        refreshOptions={REFRESH_OPTIONS}
         placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
-        handleRefresh={handleRefresh}
       />
     </>
   );

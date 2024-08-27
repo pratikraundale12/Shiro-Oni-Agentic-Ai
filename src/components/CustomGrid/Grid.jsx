@@ -101,7 +101,6 @@ export const Grid = ({
   buttonText = '',
   placeholder = '',
   addModal = () => {},
-  handleRefresh = () => {},
   isNamespace = false,
   // LIMIT,
   // offset,
@@ -250,7 +249,6 @@ export const Grid = ({
         placeholder={placeholder}
         buttonText={buttonText}
         addModal={addModal}
-        handleRefresh={handleRefresh}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>
@@ -329,7 +327,6 @@ Grid.propTypes = {
     })
   ),
   onBreadcrumbClick: PropTypes.func,
-  handleRefresh: PropTypes.func,
   LIMIT: PropTypes.number,
   offset: PropTypes.number,
   setOffset: PropTypes.func,
