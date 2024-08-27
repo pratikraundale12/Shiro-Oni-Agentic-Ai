@@ -1,6 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+
+import styled from 'styled-components';
 
 const TextColor = styled.div`
   color: ${props => props.theme.colors.darker};
@@ -13,7 +15,17 @@ const TextColor = styled.div`
 `;
 
 export const TextRender = ({ text, ...rest }) => {
-  return <TextColor {...rest}>{text}</TextColor>;
+  const textToRender = typeof text === 'number' ? String(text) : text;
+  return (
+    <TextColor {...rest}>
+      <span data-tooltip-id={textToRender}>{textToRender}</span>
+      <ReactTooltip
+        id={textToRender}
+        content={textToRender}
+        place="bottom-start"
+      />
+    </TextColor>
+  );
 };
 
 TextRender.propTypes = {

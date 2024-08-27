@@ -81,10 +81,11 @@ export const ListNamespaces = () => {
           className="d-flex"
           style={{ justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <div style={{ width: 'max-content' }}>
-            <TextRender text={item.id} />
+          <TextRender text={item.id} />
+          {/* <div style={{ width: 'max-content' }}>
           </div>
-          <CopyToClipboard copyItem={item.id} />
+          */}
+          {false && <CopyToClipboard copyItem={item.id} />}
         </div>
       ),
       width: '26%',
@@ -101,8 +102,8 @@ export const ListNamespaces = () => {
     },
     {
       label: KDFM.VERSION,
-      width: '8%',
       renderCell: item => <TextRender text={item.version || KDFM.NA} />,
+      width: '8%',
     },
     {
       label: KDFM.ACTIONS,
