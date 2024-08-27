@@ -96,6 +96,10 @@ export function* deployCluster(api) {
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -109,6 +113,9 @@ export function* deployCluster(api) {
         flowId: checkDestCluster?.flowId,
         bucketId: checkDestCluster?.bucketId,
         registryId: checkDestCluster?.registryId,
+        sourceNamespaceName: selectedNamespace?.label,
+        sourceNamespaceId: selectedNamespace?.value,
+        sourceClusterId: selectedCluster?.value,
         ...(formData.namespaceId && { namespaceId: formData.namespaceId }),
         ...(formData.position && { position: formData.position }),
       },
@@ -126,6 +133,9 @@ export function* updateNamespaceStatus(api, { payload }) {
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
+  const checkDestCluster = yield select(
+    NamespacesSelectors.getCheckDestCluster
+  );
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
@@ -139,7 +149,7 @@ export function* updateNamespaceStatus(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedDestCluster?.value,
-        namespaceId: deployOrUpgradeDetails.id,
+        namespaceId: deployOrUpgradeDetails.id || checkDestCluster?.id,
         state: payload,
       },
     ],
@@ -172,6 +182,10 @@ export function* upgradeCluster(api) {
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -182,6 +196,9 @@ export function* upgradeCluster(api) {
       {
         clusterId: selectedDestCluster?.value,
         namespaceId: checkDestCluster?.id,
+        sourceNamespaceName: selectedNamespace?.label,
+        sourceNamespaceId: selectedNamespace?.value,
+        sourceClusterId: selectedCluster?.value,
         version: formData.version || checkDestCluster?.version,
       },
     ],
@@ -208,6 +225,12 @@ export function* clusterProgress(api) {
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const queryParams = {
+    sourceNamespaceId: selectedNamespace?.value,
+  };
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -219,6 +242,7 @@ export function* clusterProgress(api) {
         clusterId: selectedDestCluster?.value,
         progressId: deployOrUpgradeDetails.requestId,
       },
+      queryParams,
     ],
     successAction: NamespacesActions.deployClusterSuccess,
   });
@@ -554,6 +578,25 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
   } else toast.error(response.data.message);
 }
 
+export function* fetchNamespaceAudit(api) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchNamespaceAudit',
+    loadingSection: 'fetchNamespaceAudit',
+    apiMethod: api.fetchNamespaceAudit,
+    apiParams: [
+      {
+        params: {
+          entity: 'namespace',
+        },
+        payload: {},
+      },
+    ],
+  });
+  if (response.ok)
+    yield put(NamespacesActions.fetchNamespaceAuditSuccess(response.data));
+  else toast.error(response.data.message);
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -595,5 +638,6 @@ export function* namespacesSagas(api) {
       api
     ),
     takeLatest(NamespacesActions.fetchVariableList, fetchVariableList, api),
+    takeLatest(NamespacesActions.fetchNamespaceAudit, fetchNamespaceAudit, api),
   ]);
 }

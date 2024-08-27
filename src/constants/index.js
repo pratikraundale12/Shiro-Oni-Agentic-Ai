@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
 
@@ -35,7 +36,7 @@ export const ACCESS_OPTIONS = [
 
 export const RegexConst = {
   NAME: /^[a-zA-Z0-9 ]{3,}$/,
-  NIFI_URL: /^(https?:\/\/)/,
+  NIFI_URL: /^https?:\/\/([a-zA-Z0-9.-]+)(:[0-9]{1,5})?(\/nifi)?\/?$/,
 };
 
 export const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -57,6 +58,42 @@ export const CLUSTER_MODULE_TABS = {
   REGISTRY: 'registry',
 };
 
+export const CLUSTER_STATUS = {
+  DEACTIVATED: 'Deactivated',
+  DISCONNECTED: 'Disconnected',
+  CONNECTED: 'Connected',
+};
+
+export const MODULE_LIST_MAP = [
+  { label: 'All', value: 'all' },
+  // { label: 'Dashboard', value: 'dashboard' },
+  { label: 'Cluster', value: 'cluster' },
+  { label: 'Registry', value: 'registry' },
+  { label: 'Namespace', value: 'namespace' },
+  { label: 'User', value: 'user' },
+];
+
+export const ACTIVITY_STATUS_OPTIONS = [
+  { label: 'All', value: 'all' },
+  { label: 'Success', value: 'Success' },
+  { label: 'Failed', value: 'Failed' },
+];
+
+export const ACTIVITY_EVENTS = [
+  { label: 'All', value: 'all' },
+  { label: 'Add Cluster', value: 'add cluster' },
+  { label: 'Edit Cluster', value: 'edit cluster' },
+  { label: 'Delete Cluster', value: 'delete cluster' },
+  { label: 'Add Registry', value: 'add registry' },
+  { label: 'Edit Registry', value: 'edit registry' },
+  { label: 'Delete Registry', value: 'delete registry' },
+  { label: 'Add User', value: 'add user' },
+  { label: 'Edit User', value: 'edit user' },
+  { label: 'Delete User', value: 'delete user' },
+  { label: 'Upgrade', value: 'upgrade' },
+  { label: 'Deploy', value: 'deploy' },
+];
+
 export const KDFM = {
   // Generic constants
   NIFI: 'NiFi',
@@ -66,12 +103,13 @@ export const KDFM = {
   EDIT: 'Edit',
   SAVE: 'Save',
   VIEW: 'View',
-  DELETE: 'Delete',
+  DELETE: 'Deactivated',
   CANCEL: 'Cancel',
   YES: 'Yes',
   NO: 'No',
   UPGRADE: 'Upgrade',
   DEPLOY: 'Deploy',
+  DOWNGRADE: 'Downgrade',
   USERNAME: 'Username',
   PASSWORD: 'Password',
   ENTER_USERNAME: 'Enter your Username',
@@ -95,9 +133,13 @@ export const KDFM = {
   NAME: 'Name',
   VALUE: 'Value',
   NA: 'N/A',
+  ACTIONS: 'Actions',
   DESCRIPTION: 'Description',
   HELP_AND_SUPPORT: 'Help & Support',
   SOMETHING_WENT_WRONG: 'Something went wrong',
+  SAVE_SETTINGS: 'Save Settings',
+  EMAIL: 'Email',
+  META_TITLE: 'Meta Title',
 
   // License constants
   TRIAL: 'Trial',
@@ -110,4 +152,5 @@ export const KDFM = {
   // module specific constants
   ...CLUSTER_CONSTANTS,
   ...NAMESPACE_CONSTANTS,
+  ...ACTIVITY_HISTORY_CONSTANTS,
 };

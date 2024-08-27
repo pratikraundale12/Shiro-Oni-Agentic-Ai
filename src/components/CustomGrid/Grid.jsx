@@ -3,7 +3,7 @@ import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import { default as React, useEffect } from 'react';
+import { default as React, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -12,7 +12,7 @@ import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
 import { GridActions as GridActionsComponent } from './GridActions';
-// import Pagination from './Pagination';
+import Pagination from './Pagination';
 
 import { NoDataIcon } from '../../assets';
 import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
@@ -22,10 +22,10 @@ import { LoadingSelectors, NamespacesSelectors } from '../../store';
 import { GridActions, GridSelectors } from '../../store/grid';
 // import ReactPagination from './ReactPagnation';
 import { useSort } from '@table-library/react-table-library/sort';
+import { useParams } from 'react-router-dom';
 import { KDFM } from '../../constants';
 import { TextRender } from './CellRenders';
 import { Table } from './Table';
-import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -102,7 +102,7 @@ export const Grid = ({
   placeholder = '',
   addModal = () => {},
   handleRefresh = () => {},
-  // isNamespace = false,
+  isNamespace = false,
   // LIMIT,
   // offset,
   // setOffset,
@@ -120,14 +120,20 @@ export const Grid = ({
   const clusterSummary = useSelector(state =>
     GridSelectors.getGridNodes(state, module)
   );
-  // const gridCount = useSelector(state =>
-  //   GridSelectors.getGridCount(state, module)
-  // );
-  // const prev = useSelector(state => GridSelectors.getGridPrev(state, module));
-  // const next = useSelector(state => GridSelectors.getGridNext(state, module));
+
+  const gridCount = useSelector(state =>
+    GridSelectors.getGridCount(state, module)
+  );
+  const prev = useSelector(state => GridSelectors.getGridPrev(state, module));
+  const next = useSelector(state => GridSelectors.getGridNext(state, module));
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
   const {
     state: {
       search,
@@ -142,10 +148,12 @@ export const Grid = ({
   } = useGlobalContext();
 
   const DATA = {
-    // nodes: isNamespace
-    //   ? getData(loading, gridData, nodes).slice(offset, offset + LIMIT)
-    //   : getData(loading, gridData, nodes)
-    nodes: getData(loading, gridData, clusterSummary.nodes),
+    nodes: isNamespace
+      ? getData(loading, gridData, clusterSummary.nodes).slice(
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        )
+      : getData(loading, gridData, clusterSummary.nodes),
   };
 
   const tableTheme = useTheme([
@@ -197,34 +205,39 @@ export const Grid = ({
       return (
         <LoaderContainer>
           <NoDataIcon width={140} />
-          <LoadingText>No Data Found!!</LoadingText>
+          <LoadingText>{KDFM.NO_DATA_FOUND}</LoadingText>
         </LoaderContainer>
       );
     return null;
   };
 
   useEffect(() => {
-    dispatch(
-      GridActions.fetchGrid({
-        module,
-        clusterId,
-        params: { page: 1, ...(search && { search }) },
-      })
-    );
-    // if (isNamespace) {
-    //   setOffset(0);
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setState, module, clusterId, search, page, selectedNamespace]);
+    if (isNamespace && currentPage > 1) {
+      return;
+    } else {
+      dispatch(
+        GridActions.fetchGrid({
+          module,
+          clusterId,
+          params: { page: currentPage, ...(search && { search }) },
+        })
+      );
+    }
+  }, [
+    setState,
+    module,
+    clusterId,
+    search,
+    page,
+    selectedNamespace,
+    selectedCluster,
+    currentPage,
+  ]);
 
   useEffect(
     () => () => setState(prev => ({ ...prev, search: '', page: 1 })),
     [setState]
   );
-  // const handlePageChange = newOffset => {
-  //   setOffset(newOffset);
-  //   // Additional logic can be added here if needed
-  // };
 
   return (
     <Container>
@@ -285,33 +298,15 @@ export const Grid = ({
         />
         {getLoader()}
       </TableContainer>
-      {/* {gridCount > 10 && (
+      {gridCount > itemsPerPage && (
         <Pagination
-          page={page}
-          setState={setState}
-          count={gridCount}
+          page={currentPage}
+          setCurrentPage={setCurrentPage}
+          count={gridCount ?? 0}
           prev={prev}
           next={next}
         />
-      )} */}
-      {/* {isNamespace
-        ? count >= LIMIT && (
-            <ReactPagination
-              offset={offset}
-              onPageChange={handlePageChange}
-              count={count}
-              LIMIT={LIMIT}
-            />
-          )
-        : count >= 10 && (
-            <Pagination
-              page={page}
-              setState={setState}
-              count={count}
-              prev={prev}
-              next={next}
-            />
-          )} */}
+      )}
     </Container>
   );
 };

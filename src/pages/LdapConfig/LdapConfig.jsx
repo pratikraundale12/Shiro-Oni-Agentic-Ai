@@ -14,19 +14,14 @@ import { useForm } from 'react-hook-form';
 import { Table } from '../../components/CustomGrid/Table';
 import { SwitchButton } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import {
-  checkLdapConfig,
-  groupMappingApi,
-  getLdapGroupAPI,
-  // SyncUsers,
-} from '../../store/apis/ldap';
+import { checkLdapConfig, groupMappingApi } from '../../store/apis/ldap';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { testConfigApi } from '../../store/apis/ldap';
 import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
 import SelectCellRender from './components/SelectCellRender';
-import { RolesActions, RolesSelectors } from '../../store';
+import { RolesActions, RolesSelectors, LoadingSelectors } from '../../store';
 import AddNewRoleModal from '../../shared/AddNewRoleModal';
 
 const Wrapper = styled.div`
@@ -131,17 +126,16 @@ export const LdapConfig = () => {
   const [secondFormState, setSecondFormState] = useState(false);
   const [createMappingShow, setCreatMappingShow] = useState(false);
   const [successTest, setSuccessTest] = useState(false);
-  const [displayList, setDisplayList] = useState(true);
   const [testFormData, setTestFormData] = useState({});
   const [listData, setListData] = useState();
   const [saveButtonStatus, setSaveButtonStatus] = useState(false);
   const [formPayload, setFormPayload] = useState([]);
   const [syncUsers, setSyncUsers] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [saveLoading, setSaveLoading] = useState(false);
-  const [openRoleModal, setOpenRoleModal] = useState(false);
   const dispatch = useDispatch();
   const roles = useSelector(RolesSelectors.getRoles);
+  const ldapGroup = useSelector(RolesSelectors.getLdapGroup);
+  const displayList = useSelector(RolesSelectors.getDiplayData);
 
   const {
     register: registerForm1,
@@ -164,15 +158,13 @@ export const LdapConfig = () => {
     // defaultValues: formData,
   });
   const onChange = (data, option) => {
-    const updatedData = listData.map(item =>
+    const updatedData = ldapGroup.map(item =>
       item.ldap_group_name === data.ldap_group_name
         ? { ...item, role_id: option.value }
         : item
     );
-    setListData(updatedData);
+    dispatch(RolesActions.updateLdapGroup(updatedData));
   };
-
-  console.log(listData, 'listData');
   const EVENTCOLUMNS = [
     {
       label: 'LDAP Groups',
@@ -216,8 +208,8 @@ export const LdapConfig = () => {
   };
 
   useEffect(() => {
-    setFormPayload(listData);
-  }, [listData]);
+    setFormPayload(ldapGroup);
+  }, [ldapGroup]);
 
   const handleCheckLdapConfig = async () => {
     const response = await checkLdapConfig();
@@ -250,7 +242,6 @@ export const LdapConfig = () => {
   }, []);
 
   const getLDAPGroup = async data => {
-    setSaveLoading(true);
     const payload = {
       ldapEnabled: true,
       url: testFormData.url,
@@ -262,30 +253,17 @@ export const LdapConfig = () => {
       userUniqueIdentifier: data?.userUniqueIdentifier,
       groupUniqueIdentifier: data?.groupUniqueIdentifier,
     };
-    const response = await getLdapGroupAPI(payload);
-    if (response?.status === 200) {
-      // toast.success('LDAP Data Saved Successfully');
-      const list = response?.data.groups.map(item => ({
-        ldap_group_name: item.name,
-        role_id: roles?.find(role => role.ldap_group_name === item.name)?.id,
-      }));
-      setListData(list);
-      setDisplayList(false);
-      setSaveLoading(false);
-    } else {
-      toast.error(
-        response?.message || 'Something went wrong. Please try again'
-      );
-      setSaveLoading(false);
-    }
+
+    dispatch(RolesActions.fetchLdap({ ...payload }));
   };
+  const loadings = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'ldapGroups')
+  );
 
   const onSubmit = async () => {
     setLoading(true);
-    console.log('PAY', formPayload);
     const response = await groupMappingApi({ data: formPayload });
     if (response?.status === 200) {
-      // toast.success('LDAP and KDFM Mapping is Successful');
       setSyncUsers(true);
       setLoading(false);
     } else {
@@ -298,9 +276,9 @@ export const LdapConfig = () => {
 
   const onBreadCrumbClick = ldapPath => {
     if (ldapPath === 'LDAP Configuration Fields') {
-      setDisplayList(true);
+      dispatch(RolesActions.displayGroup());
     } else {
-      setDisplayList(false);
+      dispatch(RolesActions.displayGroup());
     }
   };
 
@@ -447,7 +425,7 @@ export const LdapConfig = () => {
               <Button
                 onClick={handleSubmitForm2(getLDAPGroup)}
                 disabled={!saveButtonStatus}
-                loading={saveLoading}
+                loading={loadings}
               >
                 Continue
               </Button>
@@ -473,7 +451,7 @@ export const LdapConfig = () => {
             </SyncButton>
           </div>
 
-          <CustomTable data={listData} columns={EVENTCOLUMNS} />
+          <CustomTable data={ldapGroup} columns={EVENTCOLUMNS} />
           <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-4">
             <Button onClick={onSubmit} loading={loading}>
               Save
@@ -493,10 +471,7 @@ export const LdapConfig = () => {
       />
       <SyncUsersSuccess successTest={syncUsers} setSuccessTest={setSyncUsers} />
 
-      <AddNewRoleModal
-        openRoleModal={openRoleModal}
-        setOpenRoleModal={setOpenRoleModal}
-      />
+      <AddNewRoleModal />
     </Wrapper>
   );
 };

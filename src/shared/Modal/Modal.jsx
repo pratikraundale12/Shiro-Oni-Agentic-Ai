@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactModal from 'react-modal';
@@ -107,47 +108,69 @@ export const Modal = ({
     },
   };
 
+  const handleKeyDown = e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onSubmit(); // Prevent the default action when Enter is pressed
+    }
+  };
+
   return (
     <ReactModal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={styleObject}
     >
-      <Header>
-        <Title className="mb-0">{title}</Title>
-        <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
-      </Header>
-      <Body>{children}</Body>
-      <Footer footerAlign={footerAlign} hasSingleButton={!secondaryButtonText}>
-        {secondaryButtonText && (
-          <Button
-            variant="secondary"
-            onClick={onSecondarySubmit || onRequestClose}
-            disabled={secondaryButtonProps.disabled}
-            {...secondaryButtonProps}
-          >
-            {secondaryButtonText}
-          </Button>
-        )}
-        {tertiaryButton && tertiaryButtonConfig && (
-          <Button
-            variant="secondary"
-            onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
-            disabled={tertiaryButtonConfig.disabled}
-            {...tertiaryButtonConfig}
-          >
-            {tertiaryButtonConfig.tertiaryButtonTest}
-          </Button>
-        )}
-        <Button
-          loading={loading}
-          onClick={onSubmit}
-          disabled={primaryButtonDisabled}
-          size={!secondaryButtonText ? 'lg' : 'md'}
+      <form
+        className="d-flex flex-column"
+        onSubmit={e => {
+          e.preventDefault();
+          onSubmit();
+        }}
+        onKeyDown={handleKeyDown}
+      >
+        <Header>
+          <Title className="mb-0">{title}</Title>
+          <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
+        </Header>
+        <Body>{children}</Body>
+        <Footer
+          footerAlign={footerAlign}
+          hasSingleButton={!secondaryButtonText}
         >
-          {primaryButtonText}
-        </Button>
-      </Footer>
+          {secondaryButtonText && (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onSecondarySubmit || onRequestClose}
+              disabled={secondaryButtonProps.disabled}
+              {...secondaryButtonProps}
+            >
+              {secondaryButtonText}
+            </Button>
+          )}
+          {tertiaryButton && tertiaryButtonConfig && (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
+              disabled={tertiaryButtonConfig.disabled}
+              {...tertiaryButtonConfig}
+            >
+              {tertiaryButtonConfig.tertiaryButtonTest}
+            </Button>
+          )}
+          <Button
+            type="submit"
+            loading={loading}
+            data-dismiss="modal"
+            disabled={primaryButtonDisabled}
+            size={!secondaryButtonText ? 'lg' : 'md'}
+          >
+            {primaryButtonText}
+          </Button>
+        </Footer>
+      </form>
     </ReactModal>
   );
 };

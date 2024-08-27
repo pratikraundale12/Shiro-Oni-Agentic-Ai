@@ -7,34 +7,43 @@ const prefix = '@@KDFM-ROLES/';
 export const RolesActions = {
   fetchRoles: createAction(`${prefix}fetchRoles`),
   fetchRolesSuccess: createAction(`${prefix}fetchRolesSuccess`),
-  fetchRolesClusters: createAction(`${prefix}fetchRolesClusters`),
-  fetchRolesClustersSuccess: createAction(`${prefix}fetchRolesClustersSuccess`),
-  updateRolesClusters: createAction(`${prefix}updateRolesClusters`),
+  fetchRoleClusters: createAction(`${prefix}fetchRoleClusters`),
+  fetchRoleClustersSuccess: createAction(`${prefix}fetchRoleClustersSuccess`),
+  updateRoleClusters: createAction(`${prefix}updateRoleClusters`),
   setSelectedRole: createAction(`${prefix}setSelectedRole`),
   permissionModal: createAction(`${prefix}permissionModal`),
   setAccessType: createAction(`${prefix}setAccessType`),
   createNewRole: createAction(`${prefix}createNewRole`),
   roleModal: createAction(`${prefix}roleModal`),
+  fetchLdap: createAction(`${prefix}fetchLdap`),
+  fetchLdapSuccess: createAction(`${prefix}fetchLdapSuccess`),
+  displayGroup: createAction(`${prefix}displayGroup`),
+  updateLdapGroup: createAction(`${prefix}updateLdapGroup`),
 };
 
 /* ------------- INITIAL STATE ------------- */
 export const ROLES_INITIAL_STATE = {
-  selectedRole: '',
+  selectedRole: {},
   data: [],
-  rolesClusters: [],
+  roleClusters: [],
   permissionModal: false,
   accessType: ACCESS_OPTIONS[0],
   roleModal: false,
+  formData: [],
+  displayGroup: true,
 };
 
 /* ------------- SELECTORS ------------------ */
 export const RolesSelectors = {
   getRoles: state => state.roles.data,
   getSelectedRole: state => state.roles.selectedRole,
-  getRolesClusters: state => state.roles.rolesClusters,
+  getRoleClusters: state => state.roles.roleClusters,
   getPermissionModal: state => state.roles.permissionModal,
   getAccessType: state => state.roles.accessType,
   getRoleModal: state => state.roles.roleModal,
+  getLdapGroup: state => state.roles.formData,
+  getDiplayData: state => state.roles.displayGroup,
+  getupdatedData: state => state.roles.formData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -42,19 +51,32 @@ const fetchRolesSuccess = (state, { payload }) => {
   return {
     ...state,
     data: payload.data,
-    selectedRole: payload.data?.[0]?.id,
+    selectedRole: {
+      label: payload.data[0]?.name,
+      value: payload.data[0]?.role_id,
+    },
   };
 };
-const fetchRolesClustersSuccess = (state, { payload }) => {
+
+const fetchLdapSuccess = (state, { payload }) => {
+  const { groups } = payload;
+  const { data: roles } = state;
+
+  const formData = groups.map(item => ({
+    ldap_group_name: item.name,
+    role_id: roles.find(role => role.ldap.includes(item.name))?.role_id,
+  }));
+
   return {
     ...state,
-    rolesClusters: payload.data?.map(item => ({
-      ...item,
-      clusters: item.clusters?.map(c => ({
-        label: c.cluster_name,
-        value: c.cluster_id,
-      })),
-    })),
+    formData,
+  };
+};
+
+const fetchRoleClustersSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    roleClusters: payload.clusters,
   };
 };
 const setSelectedRole = (state, { payload }) => {
@@ -81,15 +103,29 @@ const roleModal = state => {
     roleModal: !state.roleModal,
   };
 };
+const displayGroup = state => {
+  return {
+    ...state,
+    displayGroup: !state.displayGroup,
+  };
+};
+const updateLdapGroup = (state, { payload }) => {
+  return {
+    ...state,
+    formData: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
   builder
     .addCase(RolesActions.fetchRolesSuccess, fetchRolesSuccess)
-    .addCase(RolesActions.fetchRolesClustersSuccess, fetchRolesClustersSuccess)
+    .addCase(RolesActions.fetchRoleClustersSuccess, fetchRoleClustersSuccess)
     .addCase(RolesActions.setSelectedRole, setSelectedRole)
     .addCase(RolesActions.permissionModal, permissionModal)
     .addCase(RolesActions.setAccessType, setAccessType)
-    .addCase(RolesActions.roleModal, roleModal);
-  // .addCase(RolesActions.createNewRole, createNewRole);
+    .addCase(RolesActions.roleModal, roleModal)
+    .addCase(RolesActions.fetchLdapSuccess, fetchLdapSuccess)
+    .addCase(RolesActions.displayGroup, displayGroup)
+    .addCase(RolesActions.updateLdapGroup, updateLdapGroup);
 });

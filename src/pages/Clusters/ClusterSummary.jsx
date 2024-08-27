@@ -1,10 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-
-import { Grid, StatusRender, TextRender } from '../../components';
-import { useGlobalContext } from '../../utils';
-import { OpenEyeIcon } from '../../assets';
+import { ActivityHistoryIcon } from '../../assets';
+import { Grid, IconButton, StatusRender, TextRender } from '../../components';
 import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
+import { useGlobalContext } from '../../utils';
 
 const Container = styled.div`
   height: 86%;
@@ -31,7 +30,9 @@ export const ClusterSummary = () => {
           });
         }}
       >
-        <OpenEyeIcon />
+        <IconButton>
+          <ActivityHistoryIcon width={16} height={16} />
+        </IconButton>
       </ActionTd>
     </div>
   );

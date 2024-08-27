@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -149,8 +150,11 @@ const SummaryDetailsPtag = styled.h4`
 
   & > div {
     display: flex;
-    align-items: center;
     gap: 0.5rem;
+
+    & .summary-clipboard {
+      margin-top: -0.5rem;
+    }
   }
 
   & span {
@@ -240,23 +244,24 @@ const CountDiv = styled.div`
   max-height: 48px;
   min-height: 48px;
   min-width: 48px;
-  border: 1px solid #dde4f0;
+  /* border: 1px solid #dde4f0;
   border-radius: 8px;
   background-color: #f5f7fa;
-  cursor: pointer;
+  cursor: pointer; */
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 
   & span {
-    position: absolute;
+    /* position: absolute; */
     top: 0px;
     right: 2px;
     font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     line-height: 23px;
+    margin-left: 8px;
     color: #b5bdc8;
   }
 
@@ -309,6 +314,7 @@ const Summary = () => {
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
 
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
@@ -333,8 +339,11 @@ const Summary = () => {
     openParameterContext();
     setLoading(false);
   };
-
   const handleUpgradeClick = async () => {
+    if (!isEmpty(flowControlButtons)) {
+      dispatch(NamespacesActions.updateNamespaceStatus(flowControlButtons));
+    }
+
     dispatch(NamespacesActions.upgradeCluster());
     setProgress(deployOrUpgradeDetails?.percentCompleted);
   };
@@ -386,42 +395,10 @@ const Summary = () => {
   };
 
   const [activeButton, setActiveButton] = useState(null);
-
-  const handleUpdateStatus = async (status, buttonId) => {
-    try {
-      const response = await updateNamespaceStatus(
-        state.selectedClusterId,
-        state?.upgradeData?.id || state.deployCountDetails?.data?.id,
-        status
-      );
-      if (response?.data) {
-        setState(prevState => ({
-          ...prevState,
-          deployCountDetails: {
-            ...prevState.deployCountDetails,
-            data: {
-              ...prevState.deployCountDetails?.data,
-              runningCount: response?.data?.status?.runningCount,
-              stoppedCount: response?.data?.status?.stoppedCount,
-              invalidCount: response?.data?.status?.invalidCount,
-              disabledCount: response?.data?.status?.disabledCount,
-            },
-          },
-          upgradeData: {
-            ...prevState.upgradeData,
-            runningCount: response?.data?.status?.runningCount,
-            stoppedCount: response?.data?.status?.stoppedCount,
-            invalidCount: response?.data?.status?.invalidCount,
-            disabledCount: response?.data?.status?.disabledCount,
-          },
-        }));
-      }
-      setActiveButton(buttonId);
-    } catch (error) {
-      console.error('Failed to update status:', error);
-    }
+  const handleUpdateStatus = status => {
+    setActiveButton(status);
+    setFlowControlButtons(status);
   };
-
   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader loading={loading} />
@@ -431,7 +408,13 @@ const Summary = () => {
             <TodoIcon />
           </div>
           <MainTitleHfour className="mb-0">
-            {`${checkDestCluster.mode} ${KDFM.NAMESPACE}`}
+            {`${
+              checkDestCluster.mode === 'upgrade'
+                ? checkDestCluster.version <= formData.version
+                  ? KDFM.UPGRADE
+                  : KDFM.DOWNGRADE
+                : KDFM.DEPLOY
+            } ${KDFM.NAMESPACE}`}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
@@ -479,6 +462,7 @@ const Summary = () => {
                       <div>
                         <span>{checkDestCluster.registryUrl}</span>
                         <CopyToClipboard
+                          className="summary-clipboard"
                           copyItem={checkDestCluster.registryUrl}
                         />
                       </div>
@@ -493,7 +477,10 @@ const Summary = () => {
                     <SummaryDetailsPtag className="mb-0">
                       <div>
                         <span>{checkDestCluster.nifiUrl}</span>
-                        <CopyToClipboard copyItem={checkDestCluster.nifiUrl} />
+                        <CopyToClipboard
+                          className="summary-clipboard"
+                          copyItem={checkDestCluster.nifiUrl}
+                        />
                       </div>
                     </SummaryDetailsPtag>
                   </div>
@@ -652,7 +639,7 @@ const Summary = () => {
                       activeColor="#58e715"
                       hoverColor="#58e715"
                       activeTextColor="#fff"
-                      // onClick={() => handleUpdateStatus('RUNNING', 'RUNNING')}
+                      onClick={() => handleUpdateStatus('RUNNING')}
                     >
                       <TriangleIcons color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -667,6 +654,7 @@ const Summary = () => {
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('STOPPED')}
                       // onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
                     >
                       <SquareBoxIcon color="#B5BDC8" />
@@ -682,6 +670,7 @@ const Summary = () => {
                       activeColor="#cf9f5d"
                       hoverColor="#cf9f5d"
                       activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('ENABLED')}
                       // onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
                     >
                       <SmallThunderIcon color="#B5BDC8" />
@@ -697,6 +686,7 @@ const Summary = () => {
                       activeColor="#2c7cf3"
                       hoverColor="#2c7cf3"
                       activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('DISABLED')}
                       // onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
                     >
                       <SmallNotThunderIcon color="#B5BDC8" />
@@ -721,7 +711,11 @@ const Summary = () => {
                 : handleUpgradeClick
             }
           >
-            {checkDestCluster.mode !== 'upgrade' ? KDFM.DEPLOY : KDFM.UPGRADE}
+            {checkDestCluster.mode === 'upgrade'
+              ? checkDestCluster.version <= formData.version
+                ? KDFM.UPGRADE
+                : KDFM.DOWNGRADE
+              : KDFM.DEPLOY}
           </Button>
         </BottomButtonDiv>
         {checkDestCluster.mode === 'upgrade' && (

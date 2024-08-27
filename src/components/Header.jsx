@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { history } from '../helpers/history';
 
 import {
   // BellIcon,
@@ -210,7 +211,9 @@ const ProfileDropdown = () => {
       icon: <LockIcon width={18} height={18} />,
       onClick: () => {
         localStorage.clear();
-        dispatch(AuthenticationActions.logout());
+        const loginUrl =
+          currentUser?.role == 'user' ? '/login' : '/admin/login';
+        dispatch(AuthenticationActions.logout({ url: loginUrl }));
       },
     },
   ];
@@ -255,6 +258,7 @@ export const Header = ({ isOpenSidebar }) => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const route = useSelector(AuthenticationSelectors.getRoute);
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
 
   const closeTab = () => {
@@ -267,7 +271,10 @@ export const Header = ({ isOpenSidebar }) => {
 
     return () => clearTimeout(timer);
   }, []);
-
+  const handleRoute = path => {
+    dispatch(AuthenticationActions.setRoute(path));
+    history.push(`/${path}`);
+  };
   return (
     <>
       <Container>
@@ -277,9 +284,11 @@ export const Header = ({ isOpenSidebar }) => {
         <ButtonContainer>
           <div className="d-none d-lg-inline">
             <div className="d-flex">
-              <IconButton>
-                <SettingSmallIcon />
-              </IconButton>
+              {currentUser.role === 'superadmin' && (
+                <IconButton onClick={() => handleRoute('setting')}>
+                  <SettingSmallIcon />
+                </IconButton>
+              )}
               <IconCusterButton
                 onClick={() =>
                   dispatch(AuthenticationActions.setClusterLogin(true))

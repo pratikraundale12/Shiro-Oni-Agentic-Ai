@@ -41,6 +41,10 @@ export const NamespacesActions = {
   getStatusAndDeleteVariables: createAction(
     `${prefix}getStatusAndDeleteVariables`
   ),
+  fetchNamespaceAudit: createAction(`${prefix}fetchNamespaceAudit`),
+  fetchNamespaceAuditSuccess: createAction(
+    `${prefix}fetchNamespaceAuditSuccess`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -73,6 +77,11 @@ export const NAMESPACES_INITIAL_STATE = {
   parameterDetails: {},
   isDeployedModal: false,
   variableList: [],
+  namespaceAudit: {
+    count: 0,
+    breadcrumb: [],
+    data: [],
+  },
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -90,6 +99,7 @@ export const NamespacesSelectors = {
   getParameterDetails: state => state.namespaces.parameterDetails,
   getDeployedModal: state => state.namespaces.isDeployedModal,
   getVariableList: state => state.namespaces.variableList,
+  getNamespaceAudit: state => state.namespaces.namespaceAudit,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -216,6 +226,13 @@ const resetDeployData = state => {
   };
 };
 
+const fetchNamespaceAuditSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    namespaceAudit: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -248,6 +265,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.fetchVariableListSuccess,
         fetchVariableListSuccess
+      )
+      .addCase(
+        NamespacesActions.fetchNamespaceAuditSuccess,
+        fetchNamespaceAuditSuccess
       );
   }
 );

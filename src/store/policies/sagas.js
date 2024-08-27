@@ -1,8 +1,8 @@
-import { call, all, takeLatest, put } from 'redux-saga/effects';
+import { call, all, takeLatest } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { requestSaga } from '../helpers/request_sagas';
 import { PoliciesActions } from './redux';
-import { fetchGrid } from '../grid';
+// import { fetchGrid } from '../grid';
 
 export function* fetchPolicies(api) {
   yield call(requestSaga, {
@@ -14,18 +14,27 @@ export function* fetchPolicies(api) {
   });
 }
 
-export function* fetchRolesPolicies(api) {
+export function* fetchPoliciesRoles(api, { payload: { roleId, params = {} } }) {
   yield call(requestSaga, {
-    errorSection: 'fetchRolesPolicies',
-    loadingSection: 'fetchRolesPolicies',
-    apiMethod: api.fetchRolesPolicies,
-    apiParams: [{ params: {} }],
-    successAction: PoliciesActions.fetchRolesPoliciesSuccess,
+    errorSection: 'fetchPoliciesRoles',
+    loadingSection: 'fetchPoliciesRoles',
+    apiMethod: api.fetchPoliciesRoles,
+    apiParams: [{ params, payload: { roleId } }],
+    successAction: PoliciesActions.fetchPoliciesRolesSuccess,
   });
 }
 
+// export function* fetchRolesPolicies(api) {
+//   yield call(requestSaga, {
+//     errorSection: 'fetchRolesPolicies',
+//     loadingSection: 'fetchRolesPolicies',
+//     apiMethod: api.fetchRolesPolicies,
+//     apiParams: [{ params: {} }],
+//     successAction: PoliciesActions.fetchRolesPoliciesSuccess,
+//   });
+// }
+
 export function* updateRolesPolicies(api, { payload }) {
-  console.log('payload', payload);
   const response = yield call(requestSaga, {
     errorSection: 'updateRolesPolicies',
     loadingSection: 'updateRolesPolicies',
@@ -34,8 +43,9 @@ export function* updateRolesPolicies(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Roles access updated.');
-    yield put(PoliciesActions.permissionModal());
-    yield call(fetchGrid, api, { payload: { module: 'policiesRolesAccess' } });
+    yield call(fetchPoliciesRoles, api, {
+      payload: { roleId: payload.roleId },
+    });
   }
   if (!response.ok) toast.error(response.data.message);
 }
@@ -43,7 +53,8 @@ export function* updateRolesPolicies(api, { payload }) {
 export function* policiesSagas(api) {
   yield all([
     takeLatest(PoliciesActions.fetchPolicies, fetchPolicies, api),
-    takeLatest(PoliciesActions.fetchRolesPolicies, fetchRolesPolicies, api),
+    takeLatest(PoliciesActions.fetchPoliciesRoles, fetchPoliciesRoles, api),
+    // takeLatest(PoliciesActions.fetchRolesPolicies, fetchRolesPolicies, api),
     takeLatest(PoliciesActions.updateRolesPolicies, updateRolesPolicies, api),
   ]);
 }

@@ -11,7 +11,7 @@ import {
   QRIcons,
   WhiteBoradIcon,
 } from '../../assets';
-import { CLUSTER_MODULE_TABS, KDFM, RegexConst } from '../../constants';
+import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, SelectField } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
@@ -127,7 +127,7 @@ const CertificateMessage = styled.div`
 
 const TextTest = styled.div`
   font-family: ${props => props.theme.fontNato};
-  font-weight: 500;
+  font-weight: 600;
   font-size: 20px;
   color: #444445;
   line-height: 27.24px;
@@ -232,7 +232,6 @@ const ClusterSchema = yup.object().shape({
   nifiUrl: yup
     .string()
     .url('Enter a valid NiFi URL')
-    .matches(RegexConst.NIFI_URL, 'Enter a valid NiFi URL')
     .required('NiFi URL is required'),
 });
 
@@ -245,7 +244,6 @@ const RegistrySchema = yup.object().shape({
   registryUrl: yup
     .string()
     .url('Enter a valid Registry URL')
-    .matches(RegexConst.NIFI_URL, 'Enter a valid Registry URL')
     .required('NiFi URL is required'),
 });
 
@@ -263,7 +261,7 @@ export const Add = () => {
   const [openSummary, setOpenSummary] = useState(false);
   const [failedTestMessage, setFailedTestMessage] = useState('');
   const location = useLocation();
-  const data = location.state || {};
+  const { state: data } = location.state || {};
   const [clusterData, setClusterData] = useState({
     clusterName: data?.name || '',
     nifiUrl: data?.nifi_url || '',
@@ -273,6 +271,7 @@ export const Add = () => {
     registryUrl: '',
   });
   const [clusterId, setClusterId] = useState(data?.id);
+  const [isEditDetails, setIsEditDetails] = useState(false);
 
   const {
     control,
@@ -280,6 +279,7 @@ export const Add = () => {
     register,
     reset,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(
@@ -296,6 +296,7 @@ export const Add = () => {
     setIsCredOpen(false);
     setTestSuccess(false);
     setDataFill(false);
+    setIsEditDetails(false);
 
     setTest(true);
     if (activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry) {
@@ -350,7 +351,12 @@ export const Add = () => {
           nifiUrl: nifiUrl || '',
         });
       }
-    } else if (newRegistry && activeTab === 'registry' && !data?.id) {
+    } else if (
+      newRegistry &&
+      !isEditDetails &&
+      activeTab === 'registry' &&
+      !data?.id
+    ) {
       if (
         registryName !== registryData?.registryName ||
         registryUrl !== registryData?.registryUrl
@@ -455,6 +461,7 @@ export const Add = () => {
         setLoading(false);
       }
     } else {
+      //this code needs to updateee for edit functionality
       payload.append('name', registryData?.registryName || registryData.name);
       payload.append(
         'nifi_url',
@@ -475,7 +482,11 @@ export const Add = () => {
 
   return (
     <Wrapper>
-      <Title title="Add New Cluster Details" />
+      <Title
+        title={
+          isEditDetails ? 'Edit Cluster Details' : 'Add New Cluster Details'
+        }
+      />
       <Container>
         <NavTabs id="nav-tab" role="tablist">
           <NavButton
@@ -654,6 +665,9 @@ export const Add = () => {
                         variant="secondary"
                         onClick={() => {
                           setNewRegistry(true);
+                          setIsEditDetails(true);
+                          setValue('registryName', registryData?.name);
+                          setValue('registryUrl', registryData?.registry_url);
                         }}
                       >
                         {KDFM.EDIT}
@@ -678,7 +692,6 @@ export const Add = () => {
             )}
           </FormContainer>
         )}
-
         {activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry && (
           <FormContainer>
             <InputField

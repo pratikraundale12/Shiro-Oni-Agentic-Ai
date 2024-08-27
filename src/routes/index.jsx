@@ -16,11 +16,13 @@ import {
   PeopleIcon,
   ReadyFlowIcon,
   QuestionMarkIcon,
+  SettingSmallIcon,
 } from '../assets';
 import { FullPageLoader } from '../components';
 import {
   ActvityHistory,
   Add,
+  ClusterAccess,
   Dashboard,
   Forgot,
   GenrateFlow,
@@ -30,11 +32,12 @@ import {
   ListNamespaces,
   ListUsers,
   Login,
+  ModuleAccess,
   NotFound,
-  PermissionMatrix,
   ReadyFlowGallary,
   Reset,
   SessionExpired,
+  Setting,
   Success,
   UserLogin,
 } from '../pages';
@@ -47,6 +50,7 @@ import {
   AuthenticationSelectors,
   LoadingSelectors,
 } from '../store';
+import { SettingsActions, SettingsSelectors } from '../store/settings';
 
 export const ROUTES_MENU = [
   {
@@ -55,7 +59,7 @@ export const ROUTES_MENU = [
     icon: DashboardIcon,
     pages: [
       {
-        path: '/dashboard',
+        path: '',
         component: <Dashboard />,
       },
     ],
@@ -78,6 +82,7 @@ export const ROUTES_MENU = [
         component: <ClusterSummary />,
       },
     ],
+    permission: 'view_cluster',
   },
   {
     name: 'Namespace',
@@ -101,6 +106,7 @@ export const ROUTES_MENU = [
         component: <Summary />,
       },
     ],
+    permission: 'view_namespace',
   },
   {
     name: 'Ready to use Flows',
@@ -127,10 +133,6 @@ export const ROUTES_MENU = [
         path: '',
         component: <GenrateFlow />,
       },
-      {
-        path: ['add', 'edit/:id'],
-        component: <div>Genrate Flow</div>,
-      },
     ],
     hidden: true,
   },
@@ -144,40 +146,24 @@ export const ROUTES_MENU = [
         component: <ListUsers />,
       },
     ],
+    permission: 'view_user',
   },
-
   {
     name: 'Role & Permission',
-    path: 'permission-matrix',
+    path: 'role-&-permission',
     icon: LockIcon,
     pages: [
       {
         path: '',
-        component: <PermissionMatrix />,
+        component: <ModuleAccess />,
       },
       {
-        path: ['add', 'edit/:id'],
-        component: <div>Permission</div>,
+        path: [':id'],
+        component: <ClusterAccess />,
       },
     ],
+    permission: 'view_permission',
   },
-
-  {
-    name: 'LDAP Configuration',
-    path: 'ldap-configuration',
-    icon: LdapConfigIcon,
-    pages: [
-      {
-        path: '',
-        component: <LdapConfig />,
-      },
-      {
-        path: ['add', 'edit/:id'],
-        component: <div>Permission</div>,
-      },
-    ],
-  },
-
   {
     name: 'Activity History',
     path: 'activity-history',
@@ -187,12 +173,32 @@ export const ROUTES_MENU = [
         path: '',
         component: <ActvityHistory />,
       },
+    ],
+    permission: 'view_history',
+  },
+  {
+    name: 'LDAP Configuration',
+    path: 'ldap-configuration',
+    icon: LdapConfigIcon,
+    pages: [
       {
-        path: ['add', 'edit/:id'],
-        component: <div>Activity History</div>,
+        path: '',
+        component: <LdapConfig />,
       },
     ],
-    hidden: true,
+    permission: 'view_ldap',
+  },
+  {
+    name: 'Setting',
+    path: 'setting',
+    icon: SettingSmallIcon,
+    pages: [
+      {
+        path: '',
+        component: <Setting />,
+      },
+    ],
+    isSideBarHidden: true,
   },
 
   {
@@ -211,13 +217,35 @@ export const ROUTES_MENU = [
 const Routes = () => {
   const dispatch = useDispatch();
   const isLicenseValid = useSelector(AuthenticationSelectors.getIsLicenseValid);
+  const settingsData = useSelector(SettingsSelectors.getSettings);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchLicenseInfo')
   );
 
   useEffect(() => {
     dispatch(AuthenticationActions.fetchLicenseInfo());
+    dispatch(SettingsActions.fetchSettings());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (settingsData) {
+      changeFavicon(settingsData?.favicon || '%PUBLIC_URL%/favicon.ico');
+      document.title = settingsData?.title || 'Data Flow Manager';
+    }
+  }, [settingsData]);
+
+  function changeFavicon(newFaviconURL) {
+    const favicon = document.getElementById('dynamic-favicon');
+    if (favicon) {
+      favicon.href = newFaviconURL;
+    } else {
+      const newFavicon = document.createElement('link');
+      newFavicon.rel = 'icon';
+      newFavicon.href = newFaviconURL || '%PUBLIC_URL%/favicon.ico';
+      newFavicon.id = 'dynamic-favicon';
+      document.head.appendChild(newFavicon);
+    }
+  }
 
   if (!isLicenseValid) return <SessionExpired />;
 

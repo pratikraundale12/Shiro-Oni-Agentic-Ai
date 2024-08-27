@@ -1,21 +1,22 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import * as yup from 'yup';
 
-import { theme } from '../../styles';
-import { Layout } from '../../components';
-import { Button, PasswordField } from '../../shared';
+import { useLocation } from 'react-router-dom';
 import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
+import { Layout } from '../../components';
 import {
-  RESET_PASSWORD_SUBTITLE,
   RESET_PASSWORD,
+  RESET_PASSWORD_SUBTITLE,
   RESET_YOUR_PASSWORD,
 } from '../../constants';
 import { history } from '../../helpers/history';
+import { Button, PasswordField } from '../../shared';
 import { AuthenticationActions } from '../../store';
+import { theme } from '../../styles';
 
 const BackButtonContainer = styled.div`
   width: 100%;
@@ -102,6 +103,7 @@ export const Reset = () => {
   });
 
   const onSubmit = data => {
+    data.resetToken = token;
     dispatch(AuthenticationActions.resetPassword(data));
     // const response = await resetPassword({
     //   password: data.password,
@@ -116,6 +118,12 @@ export const Reset = () => {
     // }
   };
 
+  const location = useLocation();
+  // const navigate = useNavigate();
+
+  // Extract token from query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token');
   return (
     <Layout>
       <BackButtonContainer>

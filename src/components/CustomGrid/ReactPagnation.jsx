@@ -23,7 +23,6 @@ const StyledButton = styled(Button)`
 `;
 
 const ReactPagination = ({ offset, onPageChange, count, LIMIT }) => {
-  console.log({ offset, count, LIMIT });
   const currentPage = Math.floor(offset / LIMIT) + 1;
   const totalPages = Math.ceil(count / LIMIT);
 

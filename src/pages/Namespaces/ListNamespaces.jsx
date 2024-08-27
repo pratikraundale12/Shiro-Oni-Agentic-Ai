@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { OpenEyeIcon } from '../../assets';
+import { ActivityHistoryIcon } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
-import { REFRESH_OPTIONS } from '../../constants';
+import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import { GridActions, NamespacesActions } from '../../store';
+import AuditLog from './AuditLog';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -22,7 +23,9 @@ export const ListNamespaces = () => {
   const dispatch = useDispatch();
   const [refreshState, setRefreshSelect] = useState(false);
   const intervalRef = useRef(null);
-  // const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
+  const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
+  const [selectedRowId, setSelectedRowId] = useState(null);
+
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
   }, []);
@@ -51,8 +54,7 @@ export const ListNamespaces = () => {
 
   const COLUMNS = [
     {
-      label: 'Namespace',
-
+      label: KDFM.NAMESPACE,
       renderCell: item => (
         <StyledButton
           tabIndex="0"
@@ -73,7 +75,7 @@ export const ListNamespaces = () => {
       sort: { sortKey: 'name' },
     },
     {
-      label: 'Namespace ID',
+      label: KDFM.NAMESPACE_ID,
       renderCell: item => (
         <div
           className="d-flex"
@@ -88,37 +90,40 @@ export const ListNamespaces = () => {
       width: '26%',
     },
     {
-      label: 'Flow Name',
-      renderCell: item => <TextRender text={item.flowName || 'N/A'} />,
+      label: KDFM.FLOW_NAME,
+      renderCell: item => <TextRender text={item.flowName || KDFM.NA} />,
       width: '18%',
     },
     {
-      label: 'Bucket Name',
-      renderCell: item => <TextRender text={item.bucketName || 'N/A'} />,
+      label: KDFM.BUCKET_NAME,
+      renderCell: item => <TextRender text={item.bucketName || KDFM.NA} />,
       width: '18%',
     },
     {
-      label: 'Version',
+      label: KDFM.VERSION,
       width: '8%',
-      renderCell: item => <TextRender text={item.version || 'N/A'} />,
+      renderCell: item => <TextRender text={item.version || KDFM.NA} />,
     },
     {
-      label: 'Actions',
+      label: KDFM.ACTIONS,
       width: '12%',
       renderCell: item => (
-        <div className="d-flex" style={{ gap: 8 }}>
+        <div className="d-flex gap-3">
           <button
-            // onClick={handleOpenAuditLog}
+            onClick={() => {
+              setIsAuditLogOpen(true);
+              setSelectedRowId(item?.id);
+            }}
             style={{
               background: 'none',
               border: 'none',
               padding: 0,
               cursor: 'pointer',
             }}
-            aria-label="Open Audit Log"
+            aria-label={KDFM.OPEN_AUDIT_LOG}
           >
             <IconButton>
-              <OpenEyeIcon />
+              <ActivityHistoryIcon width={16} height={16} />
             </IconButton>
           </button>
           <Button
@@ -126,12 +131,12 @@ export const ListNamespaces = () => {
             disabled={
               !item.flowId ||
               !item.version ||
-              item.flowId === 'N/A' ||
-              item.version === 'N/A'
+              item.flowId === KDFM.NA ||
+              item.version === KDFM.NA
             }
             size="sm"
           >
-            Deploy
+            {KDFM.DEPLOY}
           </Button>
         </div>
       ),
@@ -171,26 +176,29 @@ export const ListNamespaces = () => {
     return () => clearInterval(intervalRef.current);
   }, [dispatch, refreshState]);
 
-  // const LIMIT = 10;
   return (
     <>
       <Grid
-        // isNamespace={true}
-        // LIMIT={LIMIT}
-        // offset={offset}
-        // setOffset={setOffset}
+        isNamespace={true}
         module="namespaces"
-        title="Namespaces List"
+        title={KDFM.NAMESPACE_LIST}
         columns={COLUMNS}
         refreshOptions={REFRESH_OPTIONS}
-        placeholder="Search Namespace, ID, Flow Name, Bucket Name"
+        placeholder={KDFM.SEARCH_NAMESPACE_FLOW_BUCKET_NAME}
         handleRefresh={handleRefresh}
         sortFns={sortFns}
         state={state}
         // handleIconClick={handleIconClick}
       />
       {/* <Deploy /> */}
-      {/* <AuditLog isOpen={isAuditLogOpen} closePopup={handleCloseAuditLog} /> */}
+      {isAuditLogOpen && (
+        <AuditLog
+          key={selectedRowId}
+          rowId={selectedRowId}
+          isOpen={isAuditLogOpen}
+          closePopup={() => setIsAuditLogOpen(false)}
+        />
+      )}
     </>
   );
 };

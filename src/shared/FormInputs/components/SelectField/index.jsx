@@ -1,15 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { Controller } from 'react-hook-form';
 import Select, { components } from 'react-select';
-import styled from 'styled-components';
 import makeAnimated from 'react-select/animated';
+import CreatableSelect from 'react-select/creatable';
+import styled from 'styled-components';
 
-import FieldErrorMessage from '../FieldErrorMessage';
 import { DownArrowIcon } from '../../../../assets';
-import { theme } from '../../../../styles';
 import { hasError } from '../../../../helpers';
+import { theme } from '../../../../styles';
+import FieldErrorMessage from '../FieldErrorMessage';
 
 const Container = styled.div`
   position: relative;
@@ -75,7 +76,10 @@ const SelectField = ({
   placeholder = 'Select...',
   backgroundColor,
   title = '',
+  isMulti = false,
   isClearable = false,
+  ldap = false,
+  handleCreateOption,
   ...props
 }) => {
   const animatedComponents = makeAnimated();
@@ -168,6 +172,25 @@ const SelectField = ({
     }),
   };
 
+  if (ldap) {
+    return (
+      <CreatableSelect
+        isClearable={isClearable}
+        classNamePrefix="react-select"
+        theme={theme.reactSelecttheme}
+        isDisabled={disabled}
+        styles={customStyles}
+        options={options}
+        components={{
+          ...animatedComponents,
+          IndicatorSeparator: () => null,
+          DropdownIndicator,
+        }}
+        onCreateOption={inputValue => handleCreateOption(inputValue)}
+        {...props}
+      />
+    );
+  }
   if (isEmpty(control)) {
     return (
       <Container className={className} title={title}>
@@ -178,6 +201,7 @@ const SelectField = ({
           isDisabled={disabled}
           styles={customStyles}
           options={options}
+          placeholder={placeholder}
           components={{
             ...animatedComponents,
             IndicatorSeparator: () => null,
@@ -204,9 +228,14 @@ const SelectField = ({
             )}
             <Select
               ref={ref}
+              isMulti={isMulti}
               isClearable={isClearable}
               classNamePrefix="react-select"
-              value={options.find(option => option.value === value)}
+              value={
+                isMulti
+                  ? options.filter(option => value?.includes(option.value))
+                  : options.find(option => option.value === value)
+              }
               placeholder={placeholder}
               theme={theme.reactSelecttheme}
               isDisabled={disabled}
@@ -219,9 +248,10 @@ const SelectField = ({
               }}
               // formatOptionLabel={formatOptionLabel}
               {...props}
-              onChange={option => {
-                if (props.onChange) props.onChange(option);
-                onChange(option?.value);
+              onChange={selected => {
+                if (isMulti) onChange(selected.map(option => option.value));
+                else onChange(selected.value);
+                if (props.onChange) props.onChange(selected);
               }}
             />
             <FieldErrorMessage errors={errors} name={name} />
@@ -246,8 +276,11 @@ SelectField.propTypes = {
   icon: PropTypes.node,
   backgroundColor: PropTypes.string,
   title: PropTypes.string,
+  isMulti: PropTypes.bool,
   isClearable: PropTypes.bool,
   onChange: PropTypes.func,
+  ldap: PropTypes.bool,
+  handleCreateOption: PropTypes.func,
 };
 
 export default SelectField;

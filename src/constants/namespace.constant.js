@@ -7,7 +7,7 @@ export const NAMESPACE_CONSTANTS = {
   BUCKET_NAME: 'Bucket Name',
   SELECT_NAMESPACE: 'Select Namespace',
   SELECTED_NAMESPACE: 'Selected Namespace',
-  SELECT_NAMESPACE_FLOW_BUCKET_NAME: 'Search Namespace, Flow Name, Bucket Name',
+  SEARCH_NAMESPACE_FLOW_BUCKET_NAME: 'Search Namespace, Flow Name, Bucket Name',
   CONFIGURATION_DETAILS: 'Configuration Details',
   VERSION_CONTROL: 'Version Control',
   CANVAS_POSITION: 'Canvas Position',
@@ -38,4 +38,7 @@ export const NAMESPACE_CONSTANTS = {
   EDIT_VARIABLES: 'Edit Variables',
   PARAMETER_ALREADY_EXISTS: 'Parameter with same name already exists',
   VARIABLE_ALREADY_EXISTS: 'Variable with same name already exists',
+  ENTER_PARAMETER: 'Enter Parameter',
+  ENTER_VARIABLE: 'Enter Variable',
+  ENTER_DESCRIPTION: 'Enter Description',
 };

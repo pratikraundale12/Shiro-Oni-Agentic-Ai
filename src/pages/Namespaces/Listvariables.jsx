@@ -4,19 +4,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
+import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-// import {
-//   DeleteVariableServices,
-//   GetVariableServices,
-//   addVariableServices,
-// } from '../../store/apis';
-import { KDFM } from '../../constants';
 import AddVariables from './AddVariables';
 
 const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
+  & .variables-table {
+    th {
+      background-color: #dde4f0 !important;
+    }
+  }
 `;
 
 const Listvariables = ({
@@ -85,7 +85,6 @@ const Listvariables = ({
         },
       };
     });
-
     variablesData = [...variableList.variables, ...variables];
   }
 
@@ -129,10 +128,18 @@ const Listvariables = ({
         primaryButtonText={KDFM.SAVE}
         onSubmit={handleSubmit}
         primaryButtonDisabled={loading || !newlyAddVariables?.length}
-        secondaryButtonProps={{ icons: <PlusCircleIcon /> }}
+        footerAlign="start"
+        secondaryButtonProps={{
+          icon: <PlusCircleIcon />,
+          iconPosition: 'left',
+        }}
       >
         <ModalBody className="modal-body">
-          <Table data={variablesData} columns={COLUMNS} />
+          <Table
+            data={variablesData}
+            columns={COLUMNS}
+            className={'variables-table'}
+          />
         </ModalBody>
       </Modal>
       {isAddVariablesOpen && (
