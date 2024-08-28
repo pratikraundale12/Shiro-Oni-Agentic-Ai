@@ -2,6 +2,7 @@
 import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
+import { USER_CONSTANTS } from './user.constant';
 
 // modules constants exports
 export * from './login';
@@ -94,6 +95,14 @@ export const ACTIVITY_EVENTS = [
   { label: 'Deploy', value: 'deploy' },
 ];
 
+export const LICENSE_TYPE = {
+  TRIAL: 'trial',
+  PURCHASED: 'purchased',
+};
+
+export const LICENSE_DATE_ISO_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+export const LICENSE_EXPIRE_PROMPT_DAYS = 30;
+
 export const KDFM = {
   // Generic constants
   NIFI: 'NiFi',
@@ -103,7 +112,7 @@ export const KDFM = {
   EDIT: 'Edit',
   SAVE: 'Save',
   VIEW: 'View',
-  DELETE: 'Deactivated',
+  DELETE: 'Delete',
   CANCEL: 'Cancel',
   YES: 'Yes',
   NO: 'No',
@@ -141,6 +150,9 @@ export const KDFM = {
   EMAIL: 'Email',
   META_TITLE: 'Meta Title',
   ACTIVATE: 'Activate',
+  DEACTIVATE: 'Deactivate',
+  ROLE: 'Role',
+  PROFILE: 'Profile',
 
   // License constants
   TRIAL: 'Trial',
@@ -154,4 +166,5 @@ export const KDFM = {
   ...CLUSTER_CONSTANTS,
   ...NAMESPACE_CONSTANTS,
   ...ACTIVITY_HISTORY_CONSTANTS,
+  ...USER_CONSTANTS,
 };

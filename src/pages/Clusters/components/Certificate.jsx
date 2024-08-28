@@ -159,6 +159,7 @@ export const Certificate = ({
         failedTest={failedModal}
         setFailedTest={setFailedModal}
         testMessage={testMessage}
+        activeTab={activeTab}
       />
     </>
   );

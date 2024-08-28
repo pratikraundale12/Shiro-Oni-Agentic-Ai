@@ -51,7 +51,7 @@ const List = styled.div`
 `;
 
 const Item = styled.div`
-  width: 120px;
+  width: 8rem;
   position: relative;
   cursor: pointer;
   display: flex;
@@ -68,6 +68,9 @@ const Item = styled.div`
   > span {
     margin-top: 2px;
     margin-left: 10px;
+  }
+  & > svg {
+    flex-shrink: 0;
   }
 `;
 
@@ -89,10 +92,13 @@ export const ListClusters = () => {
       renderCell: item => (
         <TextRender text={item.name} capitalizeText={false} />
       ),
+      width: '15%',
+      sort: { sortKey: 'name' },
     },
     {
       label: KDFM.NIFI_URL,
       renderCell: item => <UrlRender url={item.nifi_url} />,
+      width: '40%',
     },
     {
       label: KDFM.CLUSTER_STATUS,
@@ -133,7 +139,7 @@ export const ListClusters = () => {
                         {item.delete_cluster && (
                           <Item onClick={() => handleClick('delete', item.id)}>
                             <DeleteSmallIcon width={18} height={18} />
-                            <span>{KDFM.DELETE}</span>
+                            <span>{KDFM.DEACTIVATE}</span>
                           </Item>
                         )}
                       </>
@@ -156,6 +162,10 @@ export const ListClusters = () => {
       },
     },
   ];
+
+  const sortFns = {
+    name: data => data.sort((a, b) => a.name.localeCompare(b.name)),
+  };
 
   const updateClusterStatus = async id => {
     const response = await updateCluster(id, {
@@ -257,6 +267,7 @@ export const ListClusters = () => {
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
         placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
+        sortFns={sortFns}
       />
     </>
   );

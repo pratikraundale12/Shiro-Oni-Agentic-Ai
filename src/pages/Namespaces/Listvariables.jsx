@@ -61,6 +61,7 @@ const Listvariables = ({
                   ? item?.variable?.value
                   : KDFM.NO_VALUE_SET
             }
+            capitalizeText={false}
           />
         );
       },

@@ -1,23 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { OpenLinkIcon } from '../../../assets';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
-// import { theme } from '../../../styles';
+import { TextRender } from './TextRender';
 
 const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-`;
-
-const StyleUrl = styled.span`
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 const StyledLink = styled.a`
@@ -39,14 +31,13 @@ const StyledLink = styled.a`
 export const UrlRender = ({ url }) => {
   return (
     <Container>
-      <StyleUrl data-tooltip-id={url}>{url}</StyleUrl>
+      <TextRender text={url} capitalizeText={false} />
       <Container>
         <StyledLink href={url} target="_blank">
           <OpenLinkIcon />
         </StyledLink>
         <CopyToClipboard copyItem={url} />
       </Container>
-      <ReactTooltip id={url} content={url} place="bottom" />
     </Container>
   );
 };

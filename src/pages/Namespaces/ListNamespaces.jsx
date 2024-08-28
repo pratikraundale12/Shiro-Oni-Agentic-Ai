@@ -87,6 +87,7 @@ export const ListNamespaces = () => {
           <CopyToClipboard copyItem={item.id} />
         </Flex>
       ),
+      width: '30%',
     },
     {
       label: KDFM.FLOW_NAME,

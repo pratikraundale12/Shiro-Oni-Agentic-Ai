@@ -87,6 +87,10 @@ const LinkButton = styled(TextButton)`
   }
 `;
 
+const StyledTable = styled(Table)`
+  height: 82%;
+`;
+
 const MODULES = [
   {
     label: 'Cluster',
@@ -125,6 +129,7 @@ const EXCLUDE_DELETE_PERMISSION = [
 ];
 
 const CellRender = ({
+  isEdit = false,
   policy_name = '',
   policies = [],
   updatedRolePolicies = [],
@@ -137,7 +142,7 @@ const CellRender = ({
 
   return (
     <CheckboxField
-      disabled={isEmpty(item)}
+      disabled={!isEdit || isEmpty(item)}
       checked={checked}
       onChange={event => onChange(event.target.checked, item)}
     />
@@ -161,6 +166,7 @@ export const ModuleAccess = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateRolesPolicies')
   );
+  const hasEditPermssion = userPermissions.includes('edit_permission');
   const [updatedRolePolicies, setUpdatedRolePolicies] = useState([]);
   const [search, setSearch] = useState('');
 
@@ -173,6 +179,7 @@ export const ModuleAccess = () => {
       label: 'View',
       renderCell: item => (
         <CellRender
+          isEdit={hasEditPermssion}
           policy_name={`view_${item.value}`}
           policies={policies}
           updatedRolePolicies={updatedRolePolicies}
@@ -185,6 +192,7 @@ export const ModuleAccess = () => {
       renderCell: item =>
         !EXCLUDE_ADD_PERMISSION.includes(item.value) && (
           <CellRender
+            isEdit={hasEditPermssion}
             policy_name={`add_${item.value}`}
             policies={policies}
             updatedRolePolicies={updatedRolePolicies}
@@ -197,6 +205,7 @@ export const ModuleAccess = () => {
       renderCell: item =>
         !EXCLUDE_EDIT_PERMISSION.includes(item.value) && (
           <CellRender
+            isEdit={hasEditPermssion}
             policy_name={`edit_${item.value}`}
             policies={policies}
             updatedRolePolicies={updatedRolePolicies}
@@ -209,6 +218,7 @@ export const ModuleAccess = () => {
       renderCell: item =>
         !EXCLUDE_DELETE_PERMISSION.includes(item.value) && (
           <CellRender
+            isEdit={hasEditPermssion}
             policy_name={`delete_${item.value}`}
             policies={policies}
             updatedRolePolicies={updatedRolePolicies}
@@ -221,9 +231,7 @@ export const ModuleAccess = () => {
       renderCell: item =>
         item.value === 'cluster' && (
           <LinkButton
-            onClick={() =>
-              history.push(`/role-&-permission/${selectedRole.value}`)
-            }
+            onClick={() => history.push('/role-&-permission/cluster-access')}
           >{`Manage ${item.value} List`}</LinkButton>
         ),
     },
@@ -293,7 +301,7 @@ export const ModuleAccess = () => {
   }, [rolePolicies]);
 
   return (
-    <div>
+    <>
       <Flex>
         <Flex>
           <ImageContainer>
@@ -336,12 +344,12 @@ export const ModuleAccess = () => {
         <Search
           type="search"
           value={search}
-          placeholder=""
+          placeholder="Search DFM access"
           onChange={e => setSearch(e.target.value)}
         />
       </SearchContainer>
       {openRoleModal && <AddNewRoleModal />}
-      <Table data={MODULES} columns={DFM_ACCESS_COLUMNS} />
-    </div>
+      <StyledTable data={MODULES} columns={DFM_ACCESS_COLUMNS} />
+    </>
   );
 };

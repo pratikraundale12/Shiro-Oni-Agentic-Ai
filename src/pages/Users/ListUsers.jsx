@@ -11,7 +11,7 @@ import {
   StatusRender,
   TextRender,
 } from '../../components';
-import { STATUS_OPTIONS } from '../../constants';
+import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -69,47 +69,51 @@ export const ListUsers = () => {
 
   const COLUMNS = [
     {
-      label: 'Profile',
+      label: KDFM.PROFILE,
       renderCell: item => <ProfileRender url={item.photo} />,
       width: '10%',
     },
     {
-      label: 'Name',
+      label: KDFM.NAME,
       width: '20%',
       renderCell: item => (
         <TextRender
           text={`${item?.first_name || ''} ${item?.middle_name || ''} ${item?.last_name || ''}`}
+          capitalizeText={false}
         />
       ),
     },
     {
-      label: 'Username',
+      label: KDFM.USERNAME,
       width: '20%',
-      renderCell: item => <TextRender text={item.username || ''} />,
+      renderCell: item => (
+        <TextRender text={item.username || ''} capitalizeText={false} />
+      ),
     },
     {
-      label: 'Email',
+      label: KDFM.EMAIL,
       width: '20%',
-      renderCell: item => <TextRender text={item.email} />,
+      renderCell: item => (
+        <TextRender text={item.email} capitalizeText={false} />
+      ),
     },
     {
-      label: 'Role',
-      width: '10%',
+      label: KDFM.ROLE,
       renderCell: item => <TextRender text={item.role} />,
     },
     {
-      label: 'Status',
-      width: '10%',
+      label: KDFM.STATUS,
       renderCell: item => (
         <StatusRender status={item.is_active ? 'Active' : 'Inactive'} />
       ),
     },
     {
-      label: 'Actions',
-      width: '10%',
+      label: KDFM.ACTIONS,
       renderCell: item => getActionsMenu(item),
     },
   ];
+
+  const sortFns = {};
 
   const deleteUserConfirmed = async () => {
     const response = await deleteUserApi(state.selectedItem.id);
@@ -129,23 +133,24 @@ export const ListUsers = () => {
   return (
     <>
       <ModalWithIcon
-        title="Delete User"
-        primaryButtonText="Delete"
-        secondaryButtonText="Cancel"
+        title={KDFM.DELETE_USER}
+        primaryButtonText={KDFM.DELETE}
+        secondaryButtonText={KDFM.CANCEL}
         icon={<DeleteDustbinIcon />}
         isOpen={state.userDeleteModal}
         onSubmit={deleteUserConfirmed}
         onRequestClose={() => setState({ ...state, userDeleteModal: false })}
-        primaryText="Are you sure you want to delete this user?"
-        secondaryText="It will temporary remove the user"
+        primaryText={KDFM.DELETE_USER_WARNING}
+        secondaryText={KDFM.DELETE_USER_DESCRIPTION}
       />
       <Grid
         module="users"
-        title="User List"
+        title={KDFM.USER_LIST}
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
-        placeholder="Search Name, Username, Email, Status"
+        placeholder={KDFM.SEARCH_USER_PLACEHOLDER}
         addModal={AddUserModal}
+        sortFns={sortFns}
       />
     </>
   );

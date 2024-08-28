@@ -77,7 +77,12 @@ const StyledSelectField = styled(SelectField)`
   }
 `;
 
+const StyledTable = styled(Table)`
+  height: 80%;
+`;
+
 const CellRender = ({
+  isEdit = false,
   clusterId = '',
   policy = {},
   roleClusters = [],
@@ -92,6 +97,7 @@ const CellRender = ({
 
   return (
     <CheckboxField
+      disabled={!isEdit}
       checked={checked}
       onChange={event => onChange(event.target.checked, item)}
     />
@@ -128,6 +134,7 @@ export const ClusterAccess = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateRoleClusters')
   );
+  const hasEditPermssion = userPermissions.includes('edit_permission');
   const [updatedRoleClusters, setUpdatedRoleClusters] = useState([]);
   const [search, setSearch] = useState('');
 
@@ -140,6 +147,7 @@ export const ClusterAccess = () => {
       label: 'View',
       renderCell: item => (
         <CellRender
+          isEdit={hasEditPermssion}
           clusterId={item.value}
           roleClusters={updatedRoleClusters}
           policy={policies?.find(policy => policy.name === 'access_cluster')}
@@ -151,6 +159,7 @@ export const ClusterAccess = () => {
       label: 'Edit',
       renderCell: item => (
         <CellRender
+          isEdit={hasEditPermssion}
           clusterId={item.value}
           roleClusters={updatedRoleClusters}
           policy={policies?.find(policy => policy.name === 'edit_cluster')}
@@ -162,6 +171,7 @@ export const ClusterAccess = () => {
       label: 'Delete',
       renderCell: item => (
         <CellRender
+          isEdit={hasEditPermssion}
           clusterId={item.value}
           roleClusters={updatedRoleClusters}
           policy={policies?.find(policy => policy.name === 'delete_cluster')}
@@ -228,6 +238,15 @@ export const ClusterAccess = () => {
     dispatch(RolesActions.updateRoleClusters(payload));
   };
 
+  const getFilteredData = () => {
+    if (!isEmpty(search)) {
+      return clusters.filter(item =>
+        item.label.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    return clusters;
+  };
+
   useEffect(() => {
     dispatch(ClustersActions.fetchClusterList());
   }, [dispatch]);
@@ -242,7 +261,7 @@ export const ClusterAccess = () => {
   }, [roleClusters]);
 
   return (
-    <div>
+    <>
       <Flex>
         <Flex>
           <ImageContainer>
@@ -285,13 +304,13 @@ export const ClusterAccess = () => {
         <Search
           type="search"
           value={search}
-          placeholder=""
+          placeholder="Search cluster name"
           onChange={e => setSearch(e.target.value)}
         />
       </SearchContainer>
       {openRoleModal && <AddNewRoleModal />}
       <Breadcrumb module="path" path={path} />
-      <Table data={clusters} columns={CLUSTERS_ACCESS_COLUMNS} />
-    </div>
+      <StyledTable data={getFilteredData()} columns={CLUSTERS_ACCESS_COLUMNS} />
+    </>
   );
 };
