@@ -429,6 +429,7 @@ export const AddRegistry = ({
         failedTest={failedTest}
         setFailedTest={setFailedTest}
         testMessage={testMessage}
+        activeTab="registry"
       />
     </>
   );

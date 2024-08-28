@@ -14,8 +14,8 @@ export const CLUSTER_CONSTANTS = {
   ENTER_REGISTRY_NAME: 'Enter your Registry Name',
   ENTER_NIFI_URL: 'Enter your NiFi URL',
   ENTER_REGISTRY_URL: 'Enter your Registry URL',
-  PFX_TEST_FAIL_MESSAGE:
-    'We encountered an issue while testing your cluster. Please check if your file is correct',
+  PFX_TEST_FAIL_MESSAGE: arg =>
+    `We encountered an issue while testing your ${arg}. Please check if your file is correct`,
   CLUSTER_TEST_FAILED: 'Cluster test failed',
   REGISTRY_TEST_FAILED: 'Registry test failed',
   CREDENTIALS_TESTED_SUCCESSFULLY: 'Credentials tested successfully',

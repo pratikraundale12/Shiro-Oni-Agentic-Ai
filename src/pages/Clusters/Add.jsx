@@ -828,6 +828,7 @@ export const Add = () => {
         failedTest={failedModal}
         setFailedTest={setFailedModal}
         testMessage={failedTestMessage}
+        activeTab={activeTab}
       />
     </Wrapper>
   );

@@ -455,6 +455,7 @@ export const AddNewCluster = ({
         failedTest={failedTest}
         setFailedTest={setFailedTest}
         testMessage={testMessage}
+        activeTab="cluster"
       />
 
       <AddCertificate
