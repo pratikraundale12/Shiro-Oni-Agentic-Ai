@@ -1,69 +1,230 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { HelpSupportIcon } from '../../assets';
 import { Button } from '../../shared';
+import { PlusIcon } from '../../assets';
+import { MinusIcon } from '../../assets/Icons/MinusIcon';
 
-const HelpAndSupportContainer = styled.div`
+const Container = styled.div`
+  border-radius: 20px;
+  padding-top: 10px;
+  margin-bottom: 2rem;
+  height: 88%;
+  overflow: auto;
+`;
+
+const NavTabs = styled.div`
+  border-bottom: 1px solid ${props => props.theme.colors.border};
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 7rem; /* You can adjust the margin here if needed */
 `;
 
-const Text = styled.div`
-  font-family: Noto Sans;
-  font-size: 24px;
+const NavButton = styled.button`
+  border: 0;
+  background: none;
+  padding: 16px;
+  font-size: 16px;
   font-weight: 600;
-  line-height: 32.69px;
-  text-align: center;
-  margin-top: 2rem;
+  font-family: ${props => props.theme.fontNato};
+  color: ${props =>
+    props.active ? props.theme.colors.primary : props.theme.colors.darkGrey2};
+  cursor: pointer;
+  transition:
+    color 0.3s,
+    border-bottom 0.3s;
+  ${props =>
+    props.active &&
+    `border-bottom: 1px solid ${props.theme.colors.primaryActive};`}
 `;
 
-const TextTwo = styled.div`
+const FlexWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  background-color: #f5f7fa;
+  padding: 5px;
+  position: sticky;
+  bottom: 0;
+`;
+
+const FormContainer = styled.div`
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 65px);
+  min-height: 500px;
+`;
+
+const FAQHeading = styled.div`
   font-family: Noto Sans;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 21.85px;
+  text-align: left;
+  margin-top: 30px;
+`;
+
+const AccordionItem = styled.div`
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #b9c3d3;
+`;
+
+const AccordionButton = styled.button`
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 20px;
+  font-weight: 700;
+  line-height: 21.85px;
+  text-align: left;
+`;
+
+const AccordionContent = styled.div`
+  padding: 0 1rem;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 27.24px;
-  text-align: center;
-  margin-top: 1rem; /* Added margin-top for better spacing */
+  line-height: 23.41px;
+  text-align: left;
 `;
 
 const StyledButton = styled(Button)`
   width: auto;
-`;
-
-const ButtonDiv = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%; /* Ensure ButtonDiv takes the full width */
-  margin-top: 1rem; /* Added margin-top for spacing */
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-right: 17px;
+  padding-left: 17px;
+  height: 55px;
+  span {
+    font-size: 18px;
+  }
 `;
 
 export const HelpAndSupport = () => {
-  const handleEmailClick = () => {
-    window.location.href = 'mailto:support@ksolves.com';
+  const [activeTab, setActiveTab] = useState('FAQs');
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+
+  const faqs = [
+    {
+      question: 'What is Data Flow Manager?',
+      answer:
+        'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
+    },
+    {
+      question: 'Lorem Ipsum dolor sit amet lorem ipsum dolor sit amet?',
+      answer:
+        'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
+    },
+    {
+      question: 'Lorem Ipsum dolor sit amet lorem ipsum dolor sit amet?',
+      answer:
+        'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
+    },
+    {
+      question: 'Lorem Ipsum dolor sit amet lorem ipsum dolor sit amet?',
+      answer:
+        'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
+    },
+    {
+      question: 'Lorem Ipsum dolor sit amet lorem ipsum dolor sit amet?',
+      answer:
+        'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
+    },
+    {
+      question: 'Lorem Ipsum dolor sit amet lorem ipsum dolor sit amet?',
+      answer:
+        'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
+    },
+  ];
+
+  const toggleFaq = index => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
   return (
     <>
-      <HelpAndSupportContainer>
-        <HelpSupportIcon />
-      </HelpAndSupportContainer>
-      <Text>
-        If you have any questions or need assistance, our support team is here
-        <br />
-        to help! You can reach us via email at:
-      </Text>
-      <ButtonDiv>
-        <StyledButton onClick={handleEmailClick}>
-          support@ksolves.com
-        </StyledButton>
-      </ButtonDiv>
-      <TextTwo>
-        We aim to respond to all inquiries within 24 hours. Please provide as
-        much detail <br />
-        as possible in your email to help us assist you more efficiently.
-      </TextTwo>
+      <Container>
+        <NavTabs id="nav-tab" role="tablist">
+          <NavButton
+            active={activeTab === 'FAQs'}
+            onClick={() => setActiveTab('FAQs')}
+          >
+            FAQs
+          </NavButton>
+          <NavButton
+            active={activeTab === 'Videos'}
+            onClick={() => setActiveTab('Videos')}
+          >
+            Videos
+          </NavButton>
+        </NavTabs>
+
+        {activeTab === 'FAQs' && (
+          <>
+            <FormContainer>
+              <FAQHeading>Frequently Asked Questions</FAQHeading>
+              <div className="row mt-5">
+                {faqs.map((faq, index) => (
+                  <div
+                    key={index}
+                    className="col-6"
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <AccordionItem>
+                      <AccordionButton onClick={() => toggleFaq(index)}>
+                        <span
+                          style={
+                            openFaqIndex === index ? { color: 'orange' } : null
+                          }
+                        >
+                          {faq.question}
+                        </span>
+                        <div>
+                          {openFaqIndex === index ? (
+                            <MinusIcon color="#000000" />
+                          ) : (
+                            <PlusIcon color="#000000" />
+                          )}
+                        </div>
+                      </AccordionButton>
+                      <div
+                        style={{
+                          height: openFaqIndex === index ? 'auto' : '0',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <AccordionContent>{faq.answer}</AccordionContent>
+                      </div>
+                    </AccordionItem>
+                  </div>
+                ))}
+              </div>
+            </FormContainer>
+          </>
+        )}
+
+        {activeTab === 'Videos' && <FormContainer>Videos</FormContainer>}
+      </Container>
+      <FlexWrapper>
+        {/* <div style={{ display: 'flex', gap: '5rem' }}> */}
+        <div>
+          <FAQHeading>Still have questions?</FAQHeading>
+          <div style={{ marginTop: '15px' }}>
+            We aim to respond to all inquiries within 24 hours. Please provide
+            as much <br />
+            detail as possible in your email to help us assist you more
+            efficiently.
+          </div>
+        </div>
+        <div>
+          <StyledButton>Support@ksolves.com</StyledButton>
+        </div>
+        {/* </div> */}
+      </FlexWrapper>
     </>
   );
 };

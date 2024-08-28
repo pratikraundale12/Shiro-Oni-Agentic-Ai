@@ -211,6 +211,7 @@ export const ROUTES_MENU = [
         component: <HelpAndSupport />,
       },
     ],
+    permission: 'view_ldap',
   },
 ];
 
@@ -229,7 +230,7 @@ const Routes = () => {
 
   useEffect(() => {
     if (settingsData) {
-      changeFavicon(settingsData?.favicon || '%PUBLIC_URL%/favicon.ico');
+      changeFavicon(settingsData?.favicon);
       document.title = settingsData?.title || 'Data Flow Manager';
     }
   }, [settingsData]);
@@ -241,7 +242,7 @@ const Routes = () => {
     } else {
       const newFavicon = document.createElement('link');
       newFavicon.rel = 'icon';
-      newFavicon.href = newFaviconURL || '%PUBLIC_URL%/favicon.ico';
+      newFavicon.href = newFaviconURL;
       newFavicon.id = 'dynamic-favicon';
       document.head.appendChild(newFavicon);
     }

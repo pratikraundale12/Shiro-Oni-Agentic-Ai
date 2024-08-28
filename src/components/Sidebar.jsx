@@ -161,12 +161,6 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
         })}
       </List>
 
-      <HelpSupportConatiner>
-        <Item active={false}>
-          <QuestionMarkIcon />
-          <span>{KDFM.HELP_AND_SUPPORT}</span>
-        </Item>
-      </HelpSupportConatiner>
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
         <span>Version 1.0.0</span>
