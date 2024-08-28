@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Button } from '../../shared';
-import { PlusIcon } from '../../assets';
+import { PlusIcon, SmallSearchIcon } from '../../assets';
 import { MinusIcon } from '../../assets/Icons/MinusIcon';
+import dashboardErrorVideo from '../../assets/videos/DashboardError.mp4';
+import dashboardFlowMetricsVideo from '../../assets/videos/DashboardFlowMetrics.mp4';
+import dashboardQuickInsight from '../../assets/videos/DashboardQuickInsight.mp4';
+import loginToDFMThroughAdmin from '../../assets/videos/LoginToDFMThroughAdmin.mp4';
+import loginToDFMThroughUser from '../../assets/videos/LoginToDFMThroughUser.mp4';
+import { theme } from '../../styles';
 
 const Container = styled.div`
   border-radius: 20px;
@@ -104,6 +110,39 @@ const StyledButton = styled(Button)`
   }
 `;
 
+const Title = styled.div`
+  font-family: Red Hat Display;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 22.06px;
+  text-align: left;
+  margin-bottom: 20px;
+`;
+const SearchContainer = styled.div`
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
+`;
+
+const Search = styled.input`
+  width: 100%;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
+
+  &:focus-visible {
+    outline: none;
+  }
+`;
 export const HelpAndSupport = () => {
   const [activeTab, setActiveTab] = useState('FAQs');
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
@@ -115,29 +154,58 @@ export const HelpAndSupport = () => {
         'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
     },
     {
-      question: 'Lorem Ipsum dolor sit amet lorem ipsum dolor sit amet?',
+      question: 'What is the purpose of the DFM?',
       answer:
         'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
     },
     {
-      question: 'Lorem Ipsum dolor sit amet lorem ipsum dolor sit amet?',
+      question: 'What is namespace?',
       answer:
         'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
     },
     {
-      question: 'Lorem Ipsum dolor sit amet lorem ipsum dolor sit amet?',
+      question: ' How to manage namespace?',
       answer:
         'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
     },
     {
-      question: 'Lorem Ipsum dolor sit amet lorem ipsum dolor sit amet?',
+      question:
+        'How DFM promote the namespace from one cluster to the another cluster?',
       answer:
         'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
     },
     {
-      question: 'Lorem Ipsum dolor sit amet lorem ipsum dolor sit amet?',
+      question: 'What is cluster and how do we suppose to login?',
       answer:
         'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
+    },
+    {
+      question: ' What is the meaning of activate/deactive cluster?',
+      answer:
+        'Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere.',
+    },
+  ];
+
+  const videos = [
+    {
+      title: 'How do I change my account email?',
+      video: dashboardErrorVideo,
+    },
+    {
+      title: 'How do I change my account email?',
+      video: dashboardFlowMetricsVideo,
+    },
+    {
+      title: 'How do I change my account email?',
+      video: dashboardQuickInsight,
+    },
+    {
+      title: 'How do I change my account email?',
+      video: loginToDFMThroughAdmin,
+    },
+    {
+      title: 'How do I change my account email?',
+      video: loginToDFMThroughUser,
     },
   ];
 
@@ -166,7 +234,18 @@ export const HelpAndSupport = () => {
         {activeTab === 'FAQs' && (
           <>
             <FormContainer>
-              <FAQHeading>Frequently Asked Questions</FAQHeading>
+              <div className="d-flex gap-5">
+                <FAQHeading>Frequently Asked Questions</FAQHeading>
+                <SearchContainer>
+                  <SmallSearchIcon
+                    width={18}
+                    height={18}
+                    color={theme.colors.darkGrey1}
+                  />
+                  <Search type="search" placeholder="search" />
+                </SearchContainer>
+              </div>
+
               <div className="row mt-5">
                 {faqs.map((faq, index) => (
                   <div
@@ -207,10 +286,42 @@ export const HelpAndSupport = () => {
           </>
         )}
 
-        {activeTab === 'Videos' && <FormContainer>Videos</FormContainer>}
+        {activeTab === 'Videos' && (
+          <FormContainer>
+            <div className="d-flex gap-5">
+              <FAQHeading>DFM videos</FAQHeading>
+              <SearchContainer>
+                <SmallSearchIcon
+                  width={18}
+                  height={18}
+                  color={theme.colors.darkGrey1}
+                />
+                <Search type="search" placeholder="search" />
+              </SearchContainer>
+            </div>
+            <div className="row mt-3">
+              {videos.map((video, index) => (
+                <div key={index} className="col-4 gap-2">
+                  <video
+                    width="100%"
+                    controls
+                    style={{
+                      borderRadius: '10px',
+                      marginBottom: '5px',
+                      // marginRight: '20px',
+                      paddingRight: '50px',
+                    }}
+                  >
+                    <source src={video.video} type="video/mp4" />
+                  </video>
+                  <Title>How do I change my account email?</Title>
+                </div>
+              ))}
+            </div>
+          </FormContainer>
+        )}
       </Container>
       <FlexWrapper>
-        {/* <div style={{ display: 'flex', gap: '5rem' }}> */}
         <div>
           <FAQHeading>Still have questions?</FAQHeading>
           <div style={{ marginTop: '15px' }}>
@@ -223,7 +334,6 @@ export const HelpAndSupport = () => {
         <div>
           <StyledButton>Support@ksolves.com</StyledButton>
         </div>
-        {/* </div> */}
       </FlexWrapper>
     </>
   );
