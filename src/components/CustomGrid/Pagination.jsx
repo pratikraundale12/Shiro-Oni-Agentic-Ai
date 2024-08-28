@@ -1,9 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
+import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
 import { Button } from '../../shared';
 import { theme } from '../../styles';
-import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
 
 const Container = styled.div`
   display: flex;
@@ -15,12 +15,56 @@ const Container = styled.div`
 const Flex = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.5rem;
 `;
 
-const StyledButton = styled(Button)`
-  height: 30px;
-  background-color: ${props => (props.active ? theme.colors.primary : 'none')};
+const StyledButton = styled.button`
+  height: 2rem;
+  width: 2rem;
+  border-radius: 4px;
+  border: ${props =>
+    props.active
+      ? `2px solid ${theme.colors.primary}`
+      : `2px solid ${theme.colors.border}`};
+  background-color: transparent;
+  color: ${props =>
+    props.active ? theme.colors.primary : theme.colors.darker};
+  font-weight: 700;
+  font-size: 14px;
+
+  &:disabled {
+    background-color: ${theme.colors.border};
+  }
+`;
+
+const StyledButtonWithIcon = styled(Button)`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 4px;
+  border: ${props =>
+    props.active
+      ? `2px solid ${theme.colors.primary}`
+      : `2px solid ${theme.colors.border}`};
+  background-color: transparent !important;
+  color: ${props =>
+    props.active ? theme.colors.primary : theme.colors.darker};
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:disabled {
+    background-color: ${theme.colors.border} !important;
+
+    & svg path {
+      fill: ${theme.colors.white} !important;
+    }
+  }
+
+  & svg path {
+    fill: ${theme.colors.border} !important;
+  }
 `;
 
 const Pagination = ({ page, count, setCurrentPage }) => {
@@ -95,7 +139,7 @@ const Pagination = ({ page, count, setCurrentPage }) => {
     <Container>
       <span>{`${getPageRange()} of ${count} List`}</span>
       <Flex>
-        <StyledButton
+        <StyledButtonWithIcon
           size="sm"
           onClick={handlePrev}
           icon={<GreaterArrowIcon color={theme.colors.white} />}
@@ -112,7 +156,7 @@ const Pagination = ({ page, count, setCurrentPage }) => {
             {number}
           </StyledButton>
         ))}
-        <StyledButton
+        <StyledButtonWithIcon
           size="sm"
           onClick={handleNext}
           icon={<LessArrowIcon color={theme.colors.white} />}
