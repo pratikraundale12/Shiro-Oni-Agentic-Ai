@@ -544,6 +544,9 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
   const deployDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
@@ -560,6 +563,7 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
         clusterId: selectedDestCluster?.value,
         namespaceId: deployDetails?.id,
         requestId: additionalData?.requestId,
+        sourceNamespaceName: selectedNamespace?.label,
       },
     ],
   });
