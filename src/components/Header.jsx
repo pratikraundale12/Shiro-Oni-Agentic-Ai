@@ -1,18 +1,21 @@
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { history } from '../helpers/history';
-
 import {
-  // BellIcon,
   ClusterIcon,
   DownArrowIcon,
-  // HeadphoneIcon,
   LockIcon,
   SettingSmallIcon,
   UserIcon,
 } from '../assets';
+import {
+  LICENSE_DATE_ISO_FORMAT,
+  LICENSE_EXPIRE_PROMPT_DAYS,
+  LICENSE_TYPE,
+} from '../constants';
+import { history } from '../helpers/history';
 import { AddUserModal } from '../pages/Users/AddUserModal';
 import SessionExpiredLabel from '../shared/SessionExpiredLabel';
 import {
@@ -263,17 +266,49 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
   const isLoggedIn = useSelector(AuthenticationSelectors.getIsLoggedIn);
+  const { licenseExpireDate, licenseType } = useSelector(
+    AuthenticationSelectors.getLicense
+  );
 
   const closeTab = () => {
     setDisplaySessionTab(false);
   };
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDisplaySessionTab(true);
-    }, 2000);
 
+  // Function to calculate remaining days before expiration using moment.js
+  const calculateRemainingDays = expirationDateString => {
+    if (!expirationDateString) return NaN;
+    const expirationDate = moment(
+      expirationDateString,
+      LICENSE_DATE_ISO_FORMAT
+    ); // Use moment to parse the date
+    if (!expirationDate.isValid()) {
+      console.error('Invalid date format:', expirationDateString);
+      return NaN;
+    }
+    const currentDate = moment();
+    const remainingDays = expirationDate.diff(currentDate, 'days'); // Calculate difference in days
+    return remainingDays;
+  };
+
+  useEffect(() => {
+    let timer;
+    if (licenseType === LICENSE_TYPE.TRIAL) {
+      timer = setTimeout(() => {
+        setDisplaySessionTab(true);
+      }, 2000);
+    } else if (licenseType !== LICENSE_TYPE.PURCHASED) {
+      const remainingDays = calculateRemainingDays(licenseExpireDate);
+      if (remainingDays <= LICENSE_EXPIRE_PROMPT_DAYS && remainingDays > 0) {
+        timer = setTimeout(() => {
+          setDisplaySessionTab(true);
+        }, 2000);
+      }
+    } else {
+      setDisplaySessionTab(false);
+    }
     return () => clearTimeout(timer);
-  }, []);
+  }, [licenseType, licenseExpireDate]);
+
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));
     history.push(`/${path}`);
