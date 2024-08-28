@@ -51,7 +51,7 @@ const List = styled.div`
 `;
 
 const Item = styled.div`
-  width: 120px;
+  width: 8rem;
   position: relative;
   cursor: pointer;
   display: flex;
@@ -68,6 +68,9 @@ const Item = styled.div`
   > span {
     margin-top: 2px;
     margin-left: 10px;
+  }
+  & > svg {
+    flex-shrink: 0;
   }
 `;
 
@@ -133,7 +136,7 @@ export const ListClusters = () => {
                         {item.delete_cluster && (
                           <Item onClick={() => handleClick('delete', item.id)}>
                             <DeleteSmallIcon width={18} height={18} />
-                            <span>{KDFM.DELETE}</span>
+                            <span>{KDFM.DEACTIVATE}</span>
                           </Item>
                         )}
                       </>

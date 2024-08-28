@@ -103,7 +103,7 @@ export const KDFM = {
   EDIT: 'Edit',
   SAVE: 'Save',
   VIEW: 'View',
-  DELETE: 'Deactivated',
+  DELETE: 'Delete',
   CANCEL: 'Cancel',
   YES: 'Yes',
   NO: 'No',
@@ -141,6 +141,7 @@ export const KDFM = {
   EMAIL: 'Email',
   META_TITLE: 'Meta Title',
   ACTIVATE: 'Activate',
+  DEACTIVATE: 'Deactivate',
 
   // License constants
   TRIAL: 'Trial',
