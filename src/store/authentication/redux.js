@@ -62,7 +62,10 @@ const fetchCurrentUserSuccess = (state, { payload }) => {
   return {
     ...state,
     user: payload,
-    license: formatDateStringToLocal(payload.license),
+    license: {
+      licenseExpireDate: formatDateStringToLocal(payload.license),
+      licenseType: payload.licenseType,
+    },
     isLoggedIn: true,
     permissions: payload.permissions,
     hasTermsAndPoliciesAccepted:
