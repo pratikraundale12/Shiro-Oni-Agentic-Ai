@@ -5,17 +5,22 @@ import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 export const ActvityHistory = () => {
   const COLUMNS = [
     {
-      label: KDFM.TIMESTAMP,
-      renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
-      sort: { sortKey: 'timestamp' },
-    },
-    {
-      label: KDFM.EVENT,
+      label: KDFM.EVENT_OR_ACTIVITY,
       renderCell: item => <TextRender text={item.event || KDFM.NA} />,
     },
     {
       label: KDFM.ENTITY,
       renderCell: item => <TextRender text={item.entity || KDFM.NA} />,
+    },
+    {
+      label: KDFM.NAMESPACE,
+      renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
+      sort: { sortKey: 'namespace' },
+    },
+    {
+      label: KDFM.CLUSTER,
+      renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
+      sort: { sortKey: 'cluster' },
     },
     {
       label: KDFM.MESSAGE,
@@ -25,18 +30,13 @@ export const ActvityHistory = () => {
       width: '25%',
     },
     {
-      label: KDFM.NAMESPACE,
-      renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
-      // sort: { sortKey: 'namespace' },
-    },
-    {
-      label: KDFM.CLUSTER,
-      renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
-      // sort: { sortKey: 'cluster' },
-    },
-    {
       label: KDFM.STATUS,
       renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
+    },
+    {
+      label: KDFM.TIMESTAMP,
+      renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
+      sort: { sortKey: 'timestamp' },
     },
     {
       label: KDFM.UPDATE_BY,
