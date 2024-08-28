@@ -4,7 +4,7 @@ import { requestSaga } from '../helpers/request_sagas';
 import { SettingsActions } from './redux';
 import { toast } from 'react-toastify';
 import { fetchGrid } from '../grid';
-// import { DashboardActions } from '../dashboard';
+import { fetchDashboard } from '../dashboard';
 
 export function* createSettings(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -25,19 +25,20 @@ export function* createSettings(api, { payload }) {
 }
 
 export function* fetchSettings(api) {
-  const response = yield call(requestSaga, {
+  yield call(requestSaga, {
     errorSection: 'fetchSettings',
     loadingSection: 'fetchSettings',
     apiMethod: api.fetchSettings,
     apiParams: [{ params: {} }],
     successAction: SettingsActions.fetchSettingsSuccess,
   });
-  console.log('Fetch settings response:', response);
 }
 
 export function* refreshSetting(api) {
-  yield call(fetchGrid, api, { payload: { module: 'namespaces' } });
-  // yield call(DashboardActions.fetchDashboard());
+  yield call(fetchGrid, api, {
+    payload: { module: 'namespaces', refresh: true },
+  });
+  yield call(fetchDashboard, api, { payload: { refresh: true } });
 }
 
 export function* settingsSagas(api) {

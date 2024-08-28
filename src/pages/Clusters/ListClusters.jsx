@@ -22,7 +22,6 @@ import {
   // CLUSTERS_TOKEN,
   CLUSTER_STATUS,
   KDFM,
-  REFRESH_OPTIONS,
   STATUS_OPTIONS,
 } from '../../constants';
 import { history } from '../../helpers/history';
@@ -34,7 +33,7 @@ import { useGlobalContext } from '../../utils';
 const List = styled.div`
   position: absolute;
   top: 25%;
-  left: 40px;
+  right: 100%;
   z-index: 1000;
   background: ${props => props.theme.colors.white};
   box-shadow: 0px 0px 5px 0px ${props => props.theme.colors.shadow};
@@ -74,8 +73,6 @@ const Item = styled.div`
 
 export const ListClusters = () => {
   const dispatch = useDispatch();
-  const [refreshState, setRefreshSelect] = useState(false);
-  const intervalRef = useRef(null);
   const { state, setState } = useGlobalContext();
   const [deactiveId, setDeactiveId] = useState(null);
   const menuRef = useRef(null);
@@ -88,17 +85,17 @@ export const ListClusters = () => {
 
   const COLUMNS = [
     {
-      label: 'Cluster Name',
-      renderCell: item => <TextRender text={item.name} />,
-      width: '20%',
+      label: KDFM.CLUSTER_NAME,
+      renderCell: item => (
+        <TextRender text={item.name} capitalizeText={false} />
+      ),
     },
     {
-      label: 'NiFi URL',
+      label: KDFM.NIFI_URL,
       renderCell: item => <UrlRender url={item.nifi_url} />,
-      width: '40%',
     },
     {
-      label: 'Cluster Status',
+      label: KDFM.CLUSTER_STATUS,
       renderCell: item => (
         <ProgressBarRender
           is_active={item.is_active}
@@ -107,15 +104,13 @@ export const ListClusters = () => {
           status={item.status}
         />
       ),
-      width: '12%',
     },
     {
-      label: 'Status',
+      label: KDFM.STATUS,
       renderCell: item => <StatusRender status={item.status} />,
-      width: '12%',
     },
     {
-      label: 'Actions',
+      label: KDFM.ACTIONS,
       renderCell: item => {
         return (
           <ActionRender handleMenuClick={handleMenuClick} item={item}>
@@ -149,7 +144,7 @@ export const ListClusters = () => {
                     {item.status === CLUSTER_STATUS.DISCONNECTED ? null : (
                       <Item onClick={() => handleClick('active', item.id)}>
                         <ActiveIcon />
-                        <span>Activate</span>
+                        <span>{KDFM.ACTIVATE}</span>
                       </Item>
                     )}
                   </>
@@ -159,7 +154,6 @@ export const ListClusters = () => {
           </ActionRender>
         );
       },
-      width: '16%',
     },
   ];
 
@@ -235,10 +229,6 @@ export const ListClusters = () => {
     }
   };
 
-  const handleRefresh = event => {
-    setRefreshSelect(event.value);
-  };
-
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -246,19 +236,6 @@ export const ListClusters = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (refreshState !== false) {
-      intervalRef.current = setInterval(
-        () => dispatch(GridActions.fetchGrid({ module: 'clusters' })),
-        refreshState
-      );
-    } else {
-      clearInterval(intervalRef.current);
-    }
-
-    return () => clearInterval(intervalRef.current);
-  }, [dispatch, refreshState]);
 
   return (
     <>
@@ -279,9 +256,7 @@ export const ListClusters = () => {
         buttonText={KDFM.ADD_NEW_CLUSTER}
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
-        refreshOptions={REFRESH_OPTIONS}
         placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
-        handleRefresh={handleRefresh}
       />
     </>
   );

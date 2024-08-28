@@ -20,6 +20,10 @@ export const AuthenticationActions = {
   setClusterLogin: createAction(`${prefix}setClusterLogin`),
   setDestinationFlag: createAction(`${prefix}setDestinationFlag`),
   disableButton: createAction(`${prefix}disableButton`),
+  updateTermsAndPolicies: createAction(`${prefix}updateTermsAndPolicies`),
+  updateTermsAndPoliciesSuccess: createAction(
+    `${prefix}updateTermsAndPoliciesSuccess`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -34,6 +38,7 @@ export const AUTHENTICATION_INITIAL_STATE = {
   destinationFlag: false,
   permissions: [],
   isButtonDisabled: false,
+  hasTermsAndPoliciesAccepted: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -48,6 +53,8 @@ export const AuthenticationSelectors = {
   getDestinationFlag: state => state.auth.destinationFlag,
   getPermissions: state => state.auth.permissions,
   getIsButtonDisabled: state => state.auth.isButtonDisabled,
+  getHasTermsAndPoliciesAccepted: state =>
+    state.auth.hasTermsAndPoliciesAccepted,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -58,6 +65,10 @@ const fetchCurrentUserSuccess = (state, { payload }) => {
     license: formatDateStringToLocal(payload.license),
     isLoggedIn: true,
     permissions: payload.permissions,
+    hasTermsAndPoliciesAccepted:
+      typeof payload.has_accepted_terms == 'boolean'
+        ? payload.has_accepted_terms
+        : JSON.parse(payload.has_accepted_terms || ''),
   };
 };
 const fetchLicenseInfoSuccess = (state, { payload }) => {
@@ -106,6 +117,17 @@ const disableButton = state => {
   };
 };
 
+const updateTermsAndPoliciesSuccess = (state, { payload }) => {
+  console.log(payload, '----payloaddddd');
+  return {
+    ...state,
+    hasTermsAndPoliciesAccepted:
+      typeof payload.has_accepted_terms == 'boolean'
+        ? payload.has_accepted_terms
+        : JSON.parse(payload.has_accepted_terms || ''),
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const authenticationReducer = createReducer(
   AUTHENTICATION_INITIAL_STATE,
@@ -124,6 +146,10 @@ export const authenticationReducer = createReducer(
       .addCase(AuthenticationActions.setRoute, setRoute)
       .addCase(AuthenticationActions.setClusterLogin, setClusterLogin)
       .addCase(AuthenticationActions.setDestinationFlag, setDestinationFlag)
-      .addCase(AuthenticationActions.disableButton, disableButton);
+      .addCase(AuthenticationActions.disableButton, disableButton)
+      .addCase(
+        AuthenticationActions.updateTermsAndPoliciesSuccess,
+        updateTermsAndPoliciesSuccess
+      );
   }
 );

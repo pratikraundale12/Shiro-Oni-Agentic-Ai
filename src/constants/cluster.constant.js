@@ -27,7 +27,7 @@ export const CLUSTER_CONSTANTS = {
   CLUSTER_LIST: 'Cluster List',
   ENTER_CREDENTIALS: 'Enter Credentials',
   CLUSTER_TESTED_SUCCESSFULLY: 'Cluster Tested Successfully',
-  REGISRTY_TESTED_SUCCESSFULLY: 'Registry tested successfully',
+  REGISRTY_TESTED_SUCCESSFULLY: 'Registry Tested Successfully',
   ADD_NEW_CLUSTER: 'Add New Cluster',
   ADD_NEW_REGISTRY: 'Add New Registry',
   ADD_CLUSTER_CERTIFICATE: 'Add Cluster Certificate',
@@ -53,4 +53,5 @@ export const CLUSTER_CONSTANTS = {
   SEARCH_CLUSTER_NAME_URL: 'Search Cluster Name, Status, URL',
   ENTER_EMAIL: 'Enter your Email',
   ENTER_META_TITLE: 'Enter Meta Title',
+  CLUSTER_STATUS: 'Cluster Status',
 };
