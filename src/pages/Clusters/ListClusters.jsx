@@ -29,6 +29,7 @@ import { ModalWithIcon } from '../../shared';
 import { GridActions } from '../../store';
 import { updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
+import ClusterSuccessModal from './components/ClusterSuccessModal';
 
 const List = styled.div`
   position: absolute;
@@ -269,6 +270,7 @@ export const ListClusters = () => {
         placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
         sortFns={sortFns}
       />
+      <ClusterSuccessModal />
     </>
   );
 };

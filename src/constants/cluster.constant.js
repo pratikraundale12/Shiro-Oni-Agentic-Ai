@@ -54,4 +54,8 @@ export const CLUSTER_CONSTANTS = {
   ENTER_EMAIL: 'Enter your Email',
   ENTER_META_TITLE: 'Enter Meta Title',
   CLUSTER_STATUS: 'Cluster Status',
+  CLUSTER_ADDED: 'Cluster Added',
+  CLUSTER_ADDED_SUCCESSFULLY: 'Cluster Successfully Added',
+  CLUSTER_SUCCESS_DESCRIPTION:
+    'You can check your cluster in the cluster list.',
 };
