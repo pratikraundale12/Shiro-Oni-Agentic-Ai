@@ -25,6 +25,7 @@ const ParameterContext = ({
   openAddParameterContext,
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
+  isParameterContextOpen,
   // setParameterContextItem,
   // newlyAddedPrameterContext,
   // setNewlyAddedParameterContext,
@@ -73,7 +74,11 @@ const ParameterContext = ({
             disabled={loading}
             onClick={() => {
               setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
-              setIsParameterContextOpen(false);
+              if (isParameterContextOpen?.schedule) {
+                setIsParameterContextOpen({ isOpen: false, schedule: true });
+              } else {
+                setIsParameterContextOpen({ isOpen: false, schedule: false });
+              }
               dispatch(NamespacesActions.setParameterContextItem(item));
               // setParameterContextItem(item);
             }}
@@ -84,7 +89,7 @@ const ParameterContext = ({
       ),
     },
   ];
-
+  console.log({ isParameterContextOpen });
   const handleSaveParameterContext = async () => {
     if (!newlyAddParameters) return;
     setLoading(true);
@@ -98,6 +103,10 @@ const ParameterContext = ({
     // setNewlyAddedParameterContext([]);
   };
 
+  const backSchedule = () => {
+    setIsParameterContextOpen({ isOpen: false, schedule: true });
+  };
+  isParameterContextOpen?.schedule;
   return (
     <Modal
       title={KDFM.PARAMETER_CONTEXT}
@@ -108,8 +117,12 @@ const ParameterContext = ({
       onSecondarySubmit={openAddParameterContext}
       secondaryButtonText={KDFM.ADD_PARAMETER_CONTEXT}
       primaryButtonDisabled={!newlyAddParameters?.length || loading}
-      primaryButtonText={KDFM.SAVE}
-      onSubmit={handleSaveParameterContext}
+      primaryButtonText={isParameterContextOpen?.schedule ? 'Back' : KDFM.SAVE}
+      onSubmit={
+        isParameterContextOpen?.schedule
+          ? backSchedule
+          : handleSaveParameterContext
+      }
       footerAlign="start"
       secondaryButtonProps={{ icon: <PlusCircleIcon />, disabled: loading }}
     >
@@ -136,6 +149,7 @@ ParameterContext.propTypes = {
   newlyAddedPrameterContext: PropTypes.array,
   getParamerterContext: PropTypes.func.isRequired,
   setNewlyAddedParameterContext: PropTypes.func.isRequired,
+  isParameterContextOpen: PropTypes.object,
 };
 
 export default ParameterContext;

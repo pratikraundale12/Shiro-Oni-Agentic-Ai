@@ -185,15 +185,15 @@ const WarningText = styled.div`
 const ScheduleNamespaceDeploy = ({
   isOpen,
   closePopup,
-  getParamerterContext,
+  getScheduleParamerterContext,
   handleScheduleTertiaryButton,
   handleSubmit,
   onSubmit,
 }) => {
   const dispatch = useDispatch();
-  const deployOrUpgradeDetails = useSelector(
-    NamespacesSelectors.getDeployOrUpgradeDetails
-  );
+  // const deployOrUpgradeDetails = useSelector(
+  //   NamespacesSelectors.getDeployOrUpgradeDetails
+  // );
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   // const selectedDestCluster = useSelector(
@@ -209,15 +209,15 @@ const ScheduleNamespaceDeploy = ({
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
-        onSecondarySubmit={getParamerterContext}
+        onSecondarySubmit={getScheduleParamerterContext}
         secondaryButtonText="Parameter Context"
         primaryButtonText="Schedule"
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
-        secondaryButtonProps={{
-          disabled: !deployOrUpgradeDetails?.parameterContextId,
-        }}
+        // secondaryButtonProps={{
+        //   disabled: !deployOrUpgradeDetails?.parameterContextId,
+        // }}
         tertiaryButton={true}
         tertiaryButtonConfig={{
           tertiaryButtonTest: 'Variables',
@@ -382,7 +382,7 @@ const ScheduleNamespaceDeploy = ({
 ScheduleNamespaceDeploy.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
-  getParamerterContext: PropTypes.func,
+  getScheduleParamerterContext: PropTypes.func,
   countDetails: PropTypes.shape({
     data: PropTypes.arrayOf(
       PropTypes.shape({

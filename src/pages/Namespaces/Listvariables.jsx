@@ -34,7 +34,7 @@ const Listvariables = ({
   const newlyAddVariables = useSelector(
     NamespacesSelectors.getNewlyAddVariables
   );
-  console.log(newlyAddVariables, 'newlyAddVariables');
+  // console.log(newlyAddVariables, 'newlyAddVariables');
   const variableList = useSelector(NamespacesSelectors.getVariableList);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -95,7 +95,7 @@ const Listvariables = ({
   ];
 
   let variablesData = [];
-  console.log(isVariablesModalOpen, 'variableList');
+  // console.log(isVariablesModalOpen, 'variableList');
   if (
     (variableList && variableList.variables) ||
     isVariablesModalOpen.schedule
@@ -115,7 +115,7 @@ const Listvariables = ({
       variablesData = [...variableList.variables, ...variables];
     }
   }
-  console.log(variablesData);
+  // console.log(variablesData);
   const openVariable = () => {
     setIsAddVariablesOpen({ isOpen: true, mode: 'add' });
     dispatch(NamespacesActions.setVariableContextItem({}));
@@ -149,7 +149,7 @@ const Listvariables = ({
     dispatch(NamespacesActions.setNewlyAddVariables([]));
   };
   const scheduleSubmit = async () => {
-    console.log('scheduleSubmit');
+    // console.log('scheduleSubmit');
 
     setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: true });
   };

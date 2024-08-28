@@ -324,7 +324,10 @@ const Summary = () => {
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [isModalOpen, setModalOpen] = useState(false);
   const [flowControlButtons, setFlowControlButtons] = useState('');
-  const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
+  const [isParameterContextOpen, setIsParameterContextOpen] = useState({
+    isOpen: false,
+    schedule: false,
+  });
 
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
@@ -381,6 +384,7 @@ const Summary = () => {
     setScheduleNamespaceDeployOpen(true);
   };
   const onSubmit = async data => {
+    console.log({ newlyAddParameters });
     handleContinue();
     const payload = {
       namespace_id: checkDestCluster?.id, // ask
@@ -399,6 +403,12 @@ const Summary = () => {
       variables: newlyAddVariables.map(item => ({
         name: item.name,
         value: item.value,
+      })),
+      params: newlyAddParameters.map(item => ({
+        name: item.name,
+        value: item.value,
+        description: item.description,
+        sensitive: item.sensitive,
       })),
     };
     // const { approver_ids, ...rest } = data;
@@ -424,6 +434,15 @@ const Summary = () => {
     openParameterContext();
     setLoading(false);
   };
+  console.log(isParameterContextOpen, 'isParameterContextOpen');
+  const getScheduleParamerterContext = async () => {
+    console.log('schedule one');
+    // setIsParameterContextOpen(true);
+    setIsParameterContextOpen({ isOpen: true, schedule: true });
+    setLoading(true);
+    // openParameterContext();
+    setLoading(false);
+  };
   const handleUpgradeClick = async () => {
     if (!isEmpty(flowControlButtons)) {
       dispatch(NamespacesActions.updateNamespaceStatus(flowControlButtons));
@@ -441,27 +460,45 @@ const Summary = () => {
   };
 
   const openParameterContext = () => {
-    setIsParameterContextOpen(true);
+    // setIsParameterContextOpen(true);
+    setIsParameterContextOpen({ isOpen: true, schedule: false });
     dispatch(NamespacesActions.fetchParameterContext());
   };
 
   const closeParameterContext = () => {
     // dispatch(NamespacesActions.setParameterDetails({}));
-    setIsParameterContextOpen(false);
+    // setIsParameterContextOpen(false);
+    if (isParameterContextOpen.schedule) {
+      setIsParameterContextOpen({ isOpen: false, schedule: true });
+    } else {
+      setIsParameterContextOpen({ isOpen: false, schedule: false });
+    }
+
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
     dispatch(NamespacesActions.setDeployedModal());
   };
 
   const openAddParameterContext = () => {
+    console.log('Hi');
     setIsAddParameterContextOpen({ isOpen: true, mode: 'add' });
     dispatch(NamespacesActions.setParameterContextItem({}));
-    setIsParameterContextOpen(false);
+    if (isParameterContextOpen.schedule) {
+      console.log('Hi');
+      setIsParameterContextOpen({ isOpen: false, schedule: true });
+    } else {
+      setIsParameterContextOpen({ isOpen: false, schedule: false });
+    }
   };
 
   const closeAddParameterContext = () => {
     setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
     dispatch(NamespacesActions.setParameterContextItem({}));
-    setIsParameterContextOpen(true);
+    // setIsParameterContextOpen(true);
+    if (isParameterContextOpen.schedule) {
+      setIsParameterContextOpen({ isOpen: true, schedule: true });
+    } else {
+      setIsParameterContextOpen({ isOpen: true, schedule: false });
+    }
   };
 
   const handleTertiaryButton = async () => {
@@ -862,17 +899,19 @@ const Summary = () => {
         handleTertiaryButton={handleTertiaryButton}
       />
       <ScheduleNamespaceDeploy
+        isParameterContextOpen={isParameterContextOpen}
         isOpen={ScheduleNamespaceDeployOpen}
         closePopup={handleScheduleNamespaceDeployModel}
         openParameterContext={openParameterContext}
-        getParamerterContext={getParamerterContext}
+        getScheduleParamerterContext={getScheduleParamerterContext}
         handleScheduleTertiaryButton={handleScheduleTertiaryButton}
         onSubmit={onSubmit}
         handleSubmit={handleSubmit}
       />
       <ParameterContext
-        key={isParameterContextOpen}
-        isOpen={isParameterContextOpen}
+        isParameterContextOpen={isParameterContextOpen}
+        key={isParameterContextOpen.isOpen}
+        isOpen={isParameterContextOpen.isOpen}
         closePopup={closeParameterContext}
         openAddParameterContext={openAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
@@ -884,6 +923,7 @@ const Summary = () => {
       />
       <AddParameterContext
         key={isParameterContextOpen.mode}
+        isParameterContextOpen={isParameterContextOpen}
         parameterContextItem={parameterContextItem}
         isAddParameterContextOpen={isAddParameterContextOpen}
         closePopup={closeAddParameterContext}

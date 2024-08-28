@@ -62,7 +62,7 @@ const AddVariables = ({
   ]);
 
   const handleAddEditVariables = async data => {
-    console.log('data', data);
+    // console.log('data', data);
     if (!data) return;
     const nameExists = (contextList, name) =>
       contextList.some(

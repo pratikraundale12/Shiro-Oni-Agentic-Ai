@@ -90,6 +90,7 @@ const AddParameterContext = ({
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   parameterContextItem,
+  isParameterContextOpen,
   // newlyAddedPrameterContext,
   // setNewlyAddedParameterContext,
 }) => {
@@ -221,8 +222,13 @@ const AddParameterContext = ({
       );
       // setNewlyAddedParameterContext([...newlyAddedPrameterContext, data]);
     }
+    console.log('isParameterContextOpen', isParameterContextOpen);
+    if (isParameterContextOpen?.schedule) {
+      setIsParameterContextOpen({ isOpen: true, schedule: true });
+    } else {
+      setIsParameterContextOpen({ isOpen: true, schedule: false });
+    }
     setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
-    setIsParameterContextOpen(true);
     reset(DEFAULT_VALUES);
   };
 
@@ -334,6 +340,7 @@ AddParameterContext.propTypes = {
   parameterContextItem: PropTypes.object,
   newlyAddedPrameterContext: PropTypes.array,
   setNewlyAddedParameterContext: PropTypes.func,
+  isParameterContextOpen: PropTypes.object,
 };
 
 export default AddParameterContext;
