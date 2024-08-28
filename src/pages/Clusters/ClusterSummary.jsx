@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { ActivityHistoryIcon } from '../../assets';
 import { Grid, IconButton, StatusRender, TextRender } from '../../components';
-import { REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
+import { KDFM, REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
 import { useGlobalContext } from '../../utils';
 
 const Container = styled.div`
@@ -70,6 +70,7 @@ export const ClusterSummary = () => {
       <Grid
         module="nodes"
         title="Clusters Summary"
+        placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
