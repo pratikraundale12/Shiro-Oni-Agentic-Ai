@@ -506,6 +506,9 @@ export function* addVariableServices(api, { payload }) {
   const deployDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const variableList = yield select(NamespacesSelectors.getVariableList);
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
@@ -523,6 +526,7 @@ export function* addVariableServices(api, { payload }) {
         namespaceId: deployDetails.id,
         version: variableList.version,
         variables: variables,
+        sourceNamespaceName: selectedNamespace?.label,
       },
     ],
   });
