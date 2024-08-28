@@ -2,6 +2,7 @@
 import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
+import { USER_CONSTANTS } from './user.constant';
 
 // modules constants exports
 export * from './login';
@@ -142,6 +143,8 @@ export const KDFM = {
   META_TITLE: 'Meta Title',
   ACTIVATE: 'Activate',
   DEACTIVATE: 'Deactivate',
+  ROLE: 'Role',
+  PROFILE: 'Profile',
 
   // License constants
   TRIAL: 'Trial',
@@ -155,4 +158,5 @@ export const KDFM = {
   ...CLUSTER_CONSTANTS,
   ...NAMESPACE_CONSTANTS,
   ...ACTIVITY_HISTORY_CONSTANTS,
+  ...USER_CONSTANTS,
 };

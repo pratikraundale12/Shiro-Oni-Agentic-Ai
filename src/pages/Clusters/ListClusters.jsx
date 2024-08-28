@@ -92,11 +92,13 @@ export const ListClusters = () => {
       renderCell: item => (
         <TextRender text={item.name} capitalizeText={false} />
       ),
+      width: '15%',
       sort: { sortKey: 'name' },
     },
     {
       label: KDFM.NIFI_URL,
       renderCell: item => <UrlRender url={item.nifi_url} />,
+      width: '40%',
     },
     {
       label: KDFM.CLUSTER_STATUS,
