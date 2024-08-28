@@ -10,6 +10,8 @@ export const authenticationAPI = api => {
 
   const fetchLicenseInfo = () => api.get('/license-info');
   const fetchCurrentUser = () => api.get('/current-user');
+  const updateTermsAndPolicies = ({ userId, payload }) =>
+    api.patch(`/users/${userId}`, payload);
 
   return {
     loginAdmin,
@@ -18,5 +20,6 @@ export const authenticationAPI = api => {
     resetPassword,
     fetchLicenseInfo,
     fetchCurrentUser,
+    updateTermsAndPolicies,
   };
 };

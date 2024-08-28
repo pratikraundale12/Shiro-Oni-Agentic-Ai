@@ -11,5 +11,6 @@ export const ACTIVITY_HISTORY_CONSTANTS = {
   MESSAGE: 'Message',
   UPDATE_BY: 'Updated By',
   AUDIT_LOG: 'Audit Log',
+  CREATED_BY: 'Created By',
   OPEN_AUDIT_LOG: 'Open Audit Log',
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { ActivityHistoryIcon } from '../../assets';
@@ -7,7 +7,7 @@ import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
-import { GridActions, NamespacesActions } from '../../store';
+import { NamespacesActions } from '../../store';
 import AuditLog from './AuditLog';
 
 const StyledButton = styled.button`
@@ -19,10 +19,16 @@ const StyledButton = styled.button`
   text-underline-offset: 3px;
 `;
 
+const Flex = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-right: 0.5rem;
+`;
+
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
-  const [refreshState, setRefreshSelect] = useState(false);
-  const intervalRef = useRef(null);
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
 
@@ -71,42 +77,32 @@ export const ListNamespaces = () => {
           {item.name}
         </StyledButton>
       ),
-      width: '18%',
       sort: { sortKey: 'name' },
     },
     {
       label: KDFM.NAMESPACE_ID,
       renderCell: item => (
-        <div
-          className="d-flex"
-          style={{ justifyContent: 'space-between', alignItems: 'center' }}
-        >
-          <div style={{ width: 'max-content' }}>
-            <TextRender text={item.id} />
-          </div>
+        <Flex>
+          <TextRender text={item.id} />
           <CopyToClipboard copyItem={item.id} />
-        </div>
+        </Flex>
       ),
-      width: '26%',
+      width: '30%',
     },
     {
       label: KDFM.FLOW_NAME,
       renderCell: item => <TextRender text={item.flowName || KDFM.NA} />,
-      width: '18%',
     },
     {
       label: KDFM.BUCKET_NAME,
       renderCell: item => <TextRender text={item.bucketName || KDFM.NA} />,
-      width: '18%',
     },
     {
       label: KDFM.VERSION,
-      width: '8%',
       renderCell: item => <TextRender text={item.version || KDFM.NA} />,
     },
     {
       label: KDFM.ACTIONS,
-      width: '12%',
       renderCell: item => (
         <div className="d-flex gap-3">
           <button
@@ -159,23 +155,6 @@ export const ListNamespaces = () => {
     });
   };
 
-  const handleRefresh = event => {
-    setRefreshSelect(event.value);
-  };
-
-  useEffect(() => {
-    if (refreshState !== false) {
-      intervalRef.current = setInterval(
-        () => dispatch(GridActions.fetchGrid({ module: 'namespaces' })),
-        refreshState
-      );
-    } else {
-      clearInterval(intervalRef.current);
-    }
-
-    return () => clearInterval(intervalRef.current);
-  }, [dispatch, refreshState]);
-
   return (
     <>
       <Grid
@@ -185,7 +164,6 @@ export const ListNamespaces = () => {
         columns={COLUMNS}
         refreshOptions={REFRESH_OPTIONS}
         placeholder={KDFM.SEARCH_NAMESPACE_FLOW_BUCKET_NAME}
-        handleRefresh={handleRefresh}
         sortFns={sortFns}
         state={state}
         // handleIconClick={handleIconClick}

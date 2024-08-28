@@ -501,6 +501,7 @@ export const AddNewRegistry = ({
         failedTest={failedTest}
         setFailedTest={setFailedTest}
         testMessage={testMessage}
+        activeTab="registry"
       />
 
       <AddCertificate

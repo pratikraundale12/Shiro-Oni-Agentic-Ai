@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import styled from 'styled-components';
 import { ExclamationFailedTestingIcon } from '../../../assets';
-import { KDFM } from '../../../constants';
+import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import { Modal } from '../../../shared';
 
 const Icon = styled.div`
@@ -27,17 +27,22 @@ const Title = styled.h5`
 const Para = styled.p`
   text-align: center;
   margin-bottom: 0 !important;
-  margin-top: 0;
-  margin-bottom: 1rem;
   box-sizing: border-box;
+  font-size: 1rem;
+  font-weight: 400;
   display: block;
-  text-transform: capitalize;
   margin-block-start: 1em;
   margin-block-end: 1em;
-  margin-inline-end: 0px;
+  margin-inline: auto;
+  max-width: 75%;
 `;
 
-export const FailedTestModal = ({ failedTest, setFailedTest, testMessage }) => {
+export const FailedTestModal = ({
+  failedTest,
+  setFailedTest,
+  testMessage,
+  activeTab = CLUSTER_MODULE_TABS.CLUSTER,
+}) => {
   return (
     <Modal
       title={KDFM.TESTING_FAILED}
@@ -51,11 +56,17 @@ export const FailedTestModal = ({ failedTest, setFailedTest, testMessage }) => {
         <Icon>
           <ExclamationFailedTestingIcon color="#FF7A00" />
         </Icon>
-        <Title>{KDFM.CLUSTER_TEST_FAILED}</Title>
+        <Title>
+          {activeTab === CLUSTER_MODULE_TABS.CLUSTER
+            ? KDFM.CLUSTER_TEST_FAILED
+            : KDFM.REGISTRY_TEST_FAILED}
+        </Title>
         {testMessage != '' ? (
           <Para>{testMessage}</Para>
         ) : (
-          <Para>{KDFM.PFX_TEST_FAIL_MESSAGE}</Para>
+          <Para>
+            {KDFM.PFX_TEST_FAIL_MESSAGE(activeTab?.toLocaleUpperCase())}
+          </Para>
         )}
       </>
     </Modal>
