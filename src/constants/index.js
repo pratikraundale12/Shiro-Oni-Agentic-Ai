@@ -67,10 +67,10 @@ export const CLUSTER_STATUS = {
 
 export const MODULE_LIST_MAP = [
   { label: 'All', value: 'all' },
-  { label: 'Cluster', value: 'cluster' },
-  { label: 'Registry', value: 'registry' },
-  { label: 'Namespace', value: 'namespace' },
-  { label: 'User', value: 'user' },
+  { label: 'Cluster', value: 'Cluster' },
+  { label: 'Registry', value: 'Registry' },
+  { label: 'Namespace', value: 'Namespace' },
+  { label: 'User', value: 'User' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -81,11 +81,11 @@ export const ACTIVITY_STATUS_OPTIONS = [
 
 export const ACTIVITY_EVENTS = [
   { label: 'All', value: 'all' },
-  { label: 'Add', value: 'add' },
-  { label: 'Edit', value: 'edit' },
-  { label: 'Delete', value: 'delete' },
-  { label: 'Upgrade', value: 'upgrade' },
-  { label: 'Deploy', value: 'deploy' },
+  { label: 'Add', value: 'Add' },
+  { label: 'Edit', value: 'Edit' },
+  { label: 'Delete', value: 'Delete' },
+  { label: 'Upgrade', value: 'Upgrade' },
+  { label: 'Deploy', value: 'Deploy' },
 ];
 
 export const LICENSE_TYPE = {
