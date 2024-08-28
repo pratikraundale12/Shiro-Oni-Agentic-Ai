@@ -3,7 +3,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CrossIcon } from '../assets';
-import { KDFM } from '../constants';
+import { KDFM, LICENSE_TYPE } from '../constants';
 import { AuthenticationSelectors } from '../store';
 
 const FloatingAlertBox = styled.div`
@@ -46,13 +46,22 @@ const Container = styled.div`
 `;
 
 const SessionExpiredLabel = ({ closeTab }) => {
-  const license = useSelector(AuthenticationSelectors.getLicense);
+  const { licenseExpireDate, licenseType } = useSelector(
+    AuthenticationSelectors.getLicense
+  );
+
+  const promptMessage = {
+    [LICENSE_TYPE.TRIAL]: KDFM.TRIAL_EXPIRED_PROMPT(licenseExpireDate),
+    [LICENSE_TYPE.PURCHASED]: KDFM.PURCHASED_EXPIRED_PROMPT(licenseExpireDate),
+  };
 
   return (
     <Container>
       <FloatingAlertBox>
         <AlertContent>
-          <AlertText>{KDFM.TRIAL_EXPIRED_PROMPT(license)}</AlertText>
+          <AlertText>
+            {promptMessage[licenseType] || promptMessage[LICENSE_TYPE.TRIAL]}
+          </AlertText>
           <IconContainer onClick={closeTab}>
             <CrossIcon width={24} height={24} />
           </IconContainer>

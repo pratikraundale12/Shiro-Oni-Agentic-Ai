@@ -268,7 +268,7 @@ export const AddUserModal = props => {
             <FormTitle className="mb-0">User Information</FormTitle>
             <FormSection className="container">
               <div className="row">
-                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                   <StyledInputField
                     name="first_name"
                     type="text"
@@ -280,7 +280,7 @@ export const AddUserModal = props => {
                     icon={<UserIcon />}
                   />
                 </div>
-                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                   <StyledInputField
                     name="middle_name"
                     type="text"
@@ -291,7 +291,7 @@ export const AddUserModal = props => {
                     icon={<UserIcon />}
                   />
                 </div>
-                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                   <StyledInputField
                     name="last_name"
                     type="text"
@@ -303,7 +303,7 @@ export const AddUserModal = props => {
                     icon={<UserIcon />}
                   />
                 </div>
-                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                   <StyledInputField
                     name="username"
                     type="text"
@@ -315,7 +315,7 @@ export const AddUserModal = props => {
                     icon={<UserIcon />}
                   />
                 </div>
-                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                   <StyledInputField
                     name="email"
                     type="email"
@@ -327,7 +327,7 @@ export const AddUserModal = props => {
                     icon={<MailIcon />}
                   />
                 </div>
-                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                   <StyledPasswordField
                     name="password"
                     register={register}
@@ -338,7 +338,7 @@ export const AddUserModal = props => {
                   />
                 </div>
                 {(!state?.selectedItem || password) && (
-                  <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                  <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                     <StyledPasswordField
                       name="confirm_password"
                       register={register}
@@ -349,7 +349,7 @@ export const AddUserModal = props => {
                     />
                   </div>
                 )}
-                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                   <StyledPhoneField
                     name="phone_number"
                     errors={errors}

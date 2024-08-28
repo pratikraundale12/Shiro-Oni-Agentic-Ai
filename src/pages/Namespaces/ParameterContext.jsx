@@ -57,6 +57,7 @@ const ParameterContext = ({
                   ? KDFM.EMPTY_STRING_SET
                   : KDFM.NO_VALUE_SET
           }
+          capitalizeText={false}
         />
       ),
     },

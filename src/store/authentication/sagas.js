@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import {
   ACCESS_TOKEN,
   CLUSTERS_TOKEN,
@@ -9,7 +9,7 @@ import {
 import { history } from '../../helpers/history';
 import { LoadingActions } from '../helpers/loading_redux';
 import { requestSaga } from '../helpers/request_sagas';
-import { AuthenticationActions } from './redux';
+import { AuthenticationActions, AuthenticationSelectors } from './redux';
 
 export function* fetchCurrentUser(api) {
   const route = localStorage.getItem(PREVIOUS_PATH) || DEFAULT_ROUTE;
@@ -22,6 +22,24 @@ export function* fetchCurrentUser(api) {
   });
   if (response.status === 401) window.location.pathname = '/login';
   else yield call(history.push, `/${route}`);
+}
+
+export function* updateTermsAndPolicies(api, { payload }) {
+  console.log('-----calleddddd');
+  const currentUser = yield select(AuthenticationSelectors.getCurrentUser);
+  console.log(currentUser?.id, '---currentUser');
+
+  const queryParams = {
+    userId: currentUser?.id || '',
+  };
+
+  yield call(requestSaga, {
+    errorSection: 'updateTermsAndPolicies',
+    loadingSection: 'updateTermsAndPolicies',
+    apiMethod: api.updateTermsAndPolicies,
+    apiParams: [{ userId: queryParams.userId, payload }],
+    successAction: AuthenticationActions.updateTermsAndPoliciesSuccess,
+  });
 }
 
 export function* fetchLicenseInfo(api) {
@@ -111,5 +129,10 @@ export function* authenticationSagas(api) {
     takeLatest(AuthenticationActions.resetPassword, resetPassword, api),
     takeLatest(AuthenticationActions.fetchCurrentUser, fetchCurrentUser, api),
     takeLatest(AuthenticationActions.fetchLicenseInfo, fetchLicenseInfo, api),
+    takeLatest(
+      AuthenticationActions.updateTermsAndPolicies,
+      updateTermsAndPolicies,
+      api
+    ),
   ]);
 }

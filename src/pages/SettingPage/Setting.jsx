@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
@@ -50,42 +50,49 @@ export const Setting = () => {
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
-  const intervalRef = useRef(null);
   const settingData = useSelector(SettingsSelectors.getSettings);
-  const [refreshApi, setRefreshApi] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async data => {
+    setLoading(true);
     const payload = new FormData();
-    data.logo && payload.append('logo', data.logo);
-    data.favicon && payload.append('favicon', data.favicon);
-    data.title && payload.append('title', data.title);
-    data.refresh && payload.append('refresh', data.refresh);
+    payload.append('logo', data?.logo || null);
+    payload.append('favicon', data?.favicon || null);
+    payload.append('title', data?.title);
+    payload.append(
+      'refresh',
+      data.refresh === false || data.refresh === 'Off' ? 0 : data.refresh
+    );
     data.email && payload.append('email', data.email);
 
     try {
       dispatch(SettingsActions.createSettings(payload));
-      setRefreshApi(true);
 
+      setLoading(false);
       if (data.favicon) changeFavicon(URL.createObjectURL(data.favicon));
       if (data.title) document.title = data.title;
     } catch (error) {
+      setLoading(false);
+
       console.error('Failed to submit settings:', error);
     }
   };
 
   useEffect(() => {
-    dispatch(SettingsActions.fetchSettings());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (settingData) {
-      changeFavicon(settingData?.favicon || '%PUBLIC_URL%/favicon.ico');
+      if (settingData?.favicon) {
+        changeFavicon(settingData?.favicon);
+      }
       document.title = settingData?.title || 'Data Flow Manager';
 
       setValue('logo', settingData?.logo);
       setValue('favicon', settingData?.favicon);
       setValue('title', settingData?.title);
-      setValue('refresh', settingData?.refresh);
+      setValue(
+        'refresh',
+        settingData.refresh === 0 ? 'Off' : settingData?.refresh
+      );
+
       setValue('email', settingData?.email);
 
       const logoElement = document.getElementById('logo');
@@ -95,19 +102,6 @@ export const Setting = () => {
     }
   }, [settingData, setValue]);
 
-  const refreshState = settingData?.refresh;
-
-  useEffect(() => {
-    if (refreshState !== 0) {
-      intervalRef.current = setInterval(() => {
-        dispatch(SettingsActions.refreshSetting());
-      }, refreshState);
-    } else {
-      clearInterval(intervalRef.current);
-    }
-    return () => clearInterval(intervalRef.current);
-  }, [dispatch, refreshState, refreshApi]);
-
   function changeFavicon(newFaviconURL) {
     const favicon = document.getElementById('dynamic-favicon');
     if (favicon) {
@@ -115,7 +109,7 @@ export const Setting = () => {
     } else {
       const newFavicon = document.createElement('link');
       newFavicon.rel = 'icon';
-      newFavicon.href = newFaviconURL || '%PUBLIC_URL%/favicon.ico';
+      newFavicon.href = newFaviconURL;
       newFavicon.id = 'dynamic-favicon';
       document.head.appendChild(newFavicon);
     }
@@ -141,8 +135,10 @@ export const Setting = () => {
             defaultValue={
               settingData
                 ? {
-                    label: settingData.refresh,
-                    value: settingData.refresh,
+                    label:
+                      settingData.refresh === 0 ? 'Off' : settingData?.refresh,
+                    value:
+                      settingData.refresh === 0 ? 'Off' : settingData?.refresh,
                   }
                 : null
             }
@@ -169,6 +165,7 @@ export const Setting = () => {
             errors={errors}
             register={register}
             image={settingData?.logo}
+            setValue={setValue}
           />
           <UploadField
             name="favicon"
@@ -179,6 +176,7 @@ export const Setting = () => {
             errors={errors}
             register={register}
             image={settingData?.favicon}
+            setValue={setValue}
           />
         </InputFields>
 
@@ -194,7 +192,9 @@ export const Setting = () => {
         <FlexWrapper>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Button variant="secondary">{KDFM.CANCEL}</Button>
-            <Button type="submit">{KDFM.SAVE_SETTINGS}</Button>
+            <Button type="submit" loading={loading}>
+              {KDFM.SAVE_SETTINGS}
+            </Button>
           </div>
         </FlexWrapper>
       </form>

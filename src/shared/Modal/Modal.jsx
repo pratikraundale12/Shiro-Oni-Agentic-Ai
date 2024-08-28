@@ -62,6 +62,7 @@ export const Modal = ({
   title,
   children,
   isOpen,
+  closeIcon= true,
   onRequestClose,
   loading = false,
   secondaryButtonText = '',
@@ -99,7 +100,8 @@ export const Modal = ({
       overflow: 'hidden',
       borderRadius: 16,
       minWidth: '30%',
-      maxWidth: '75%',
+      maxWidth: '546px',  
+      width: '90%',
       maxHeight: '90%',
       transform: 'translate(-50%, -50%)',
       backgroundColor: theme.colors.white,
@@ -124,7 +126,7 @@ export const Modal = ({
       style={styleObject}
     >
       <form
-        className="d-flex flex-column"
+        className="d-flex flex-column overflow-auto"
         onSubmit={e => {
           e.preventDefault();
           onSubmit();
@@ -133,7 +135,7 @@ export const Modal = ({
       >
         <Header>
           <Title className="mb-0">{title}</Title>
-          <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
+          {closeIcon && <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />}
         </Header>
         <Body>{children}</Body>
         <Footer
@@ -142,6 +144,7 @@ export const Modal = ({
         >
           {secondaryButtonText && (
             <Button
+              type="button"
               variant="secondary"
               onClick={onSecondarySubmit || onRequestClose}
               disabled={secondaryButtonProps.disabled}
@@ -152,6 +155,7 @@ export const Modal = ({
           )}
           {tertiaryButton && tertiaryButtonConfig && (
             <Button
+              type="button"
               variant="secondary"
               onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
               disabled={tertiaryButtonConfig.disabled}

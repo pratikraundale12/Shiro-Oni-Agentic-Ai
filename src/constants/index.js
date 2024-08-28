@@ -2,6 +2,7 @@
 import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
+import { USER_CONSTANTS } from './user.constant';
 
 // modules constants exports
 export * from './login';
@@ -25,8 +26,8 @@ export const STATUS_OPTIONS = [
 export const REFRESH_OPTIONS = [
   { value: false, label: 'Off' },
   { value: 5000, label: '5 Seconds' },
-  { value: 3000, label: '3 Seconds' },
-  { value: 1000, label: '1 Seconds' },
+  { value: 30000, label: '30 Seconds' },
+  { value: 60000, label: '1 Minute' },
 ];
 
 export const ACCESS_OPTIONS = [
@@ -94,6 +95,14 @@ export const ACTIVITY_EVENTS = [
   { label: 'Deploy', value: 'deploy' },
 ];
 
+export const LICENSE_TYPE = {
+  TRIAL: 'trial',
+  PURCHASED: 'purchased',
+};
+
+export const LICENSE_DATE_ISO_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+export const LICENSE_EXPIRE_PROMPT_DAYS = 30;
+
 export const KDFM = {
   // Generic constants
   NIFI: 'NiFi',
@@ -103,7 +112,7 @@ export const KDFM = {
   EDIT: 'Edit',
   SAVE: 'Save',
   VIEW: 'View',
-  DELETE: 'Deactivated',
+  DELETE: 'Delete',
   CANCEL: 'Cancel',
   YES: 'Yes',
   NO: 'No',
@@ -140,6 +149,10 @@ export const KDFM = {
   SAVE_SETTINGS: 'Save Settings',
   EMAIL: 'Email',
   META_TITLE: 'Meta Title',
+  ACTIVATE: 'Activate',
+  DEACTIVATE: 'Deactivate',
+  ROLE: 'Role',
+  PROFILE: 'Profile',
 
   // License constants
   TRIAL: 'Trial',
@@ -153,4 +166,5 @@ export const KDFM = {
   ...CLUSTER_CONSTANTS,
   ...NAMESPACE_CONSTANTS,
   ...ACTIVITY_HISTORY_CONSTANTS,
+  ...USER_CONSTANTS,
 };
