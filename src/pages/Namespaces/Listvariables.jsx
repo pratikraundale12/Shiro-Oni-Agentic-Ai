@@ -39,7 +39,11 @@ const Listvariables = ({
     {
       label: KDFM.NAME,
       renderCell: item => (
-        <TextRender text={item?.variable?.name} capitalizeText={false} />
+        <TextRender
+          key={item?.variable?.name}
+          text={item?.variable?.name}
+          capitalizeText={false}
+        />
       ),
     },
     {
@@ -47,6 +51,7 @@ const Listvariables = ({
       renderCell: item => {
         return (
           <TextRender
+            key={item?.variable?.value}
             text={
               item?.variable?.check || item?.variable?.value === ''
                 ? KDFM.EMPTY_STRING_SET

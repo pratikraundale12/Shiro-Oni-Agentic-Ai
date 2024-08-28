@@ -43,7 +43,11 @@ const ParameterContext = ({
     {
       label: KDFM.NAME,
       renderCell: item => (
-        <TextRender text={item?.name || KDFM.NA} capitalizeText={false} />
+        <TextRender
+          key={item?.name}
+          text={item?.name || KDFM.NA}
+          capitalizeText={false}
+        />
       ),
       width: '35%',
     },
@@ -51,6 +55,7 @@ const ParameterContext = ({
       label: KDFM.VALUE,
       renderCell: item => (
         <TextRender
+          key={item?.value}
           text={
             item.sensitive === true || item.sensitive === 'true'
               ? KDFM.SENSITIVE_VALUE_SET
