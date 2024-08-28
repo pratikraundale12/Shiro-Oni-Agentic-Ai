@@ -49,7 +49,6 @@ const ParameterContext = ({
           capitalizeText={false}
         />
       ),
-      width: '35%',
     },
     {
       label: KDFM.VALUE,
@@ -68,7 +67,6 @@ const ParameterContext = ({
           capitalizeText={false}
         />
       ),
-      width: '60%',
     },
     {
       renderCell: item => (
@@ -85,7 +83,6 @@ const ParameterContext = ({
           </IconButton>
         </div>
       ),
-      width: '5%',
     },
   ];
 
