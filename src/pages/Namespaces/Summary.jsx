@@ -22,16 +22,6 @@ import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-import {
-  // deployCluster,
-  fetchParameterContext,
-  fetchVariables,
-  getClusterProgress,
-  getClusterProgressDelete,
-  getCountDetails,
-  updateNamespaceStatus,
-  upgradeCluster,
-} from '../../store/index1';
 import { SchedularActions } from '../../store/schedular/redux';
 import { useGlobalContext } from '../../utils';
 import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
@@ -41,14 +31,7 @@ import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
 
-const MainContainer = styled.div`
-  // height: calc(100vh - 78px);
-  // width: calc(100vw - 250px);
-  // overflow: hidden;
-  // padding: 37px 50px 22px 20px;
-  // --bs-bg-opacity: 1;
-  // background-color: white !important;
-`;
+const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
   height: 37px;
   align-items: center;
@@ -192,11 +175,6 @@ const ActiveButtonDiv = styled.div`
   align-items: center;
   justify-content: center;
 
-  // &:hover {
-  //   border: 1px solid
-  //     ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  // }
-
   & span {
     position: absolute;
     top: 0px;
@@ -250,17 +228,12 @@ const CountDiv = styled.div`
   max-height: 48px;
   min-height: 48px;
   min-width: 48px;
-  /* border: 1px solid #dde4f0;
-  border-radius: 8px;
-  background-color: #f5f7fa;
-  cursor: pointer; */
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 
   & span {
-    /* position: absolute; */
     top: 0px;
     right: 2px;
     font-family: ${props => props.theme.fontNato};
@@ -343,19 +316,12 @@ const Summary = () => {
     NamespacesSelectors.getNewlyAddedParameterContext
   );
 
-  console.log(newlyAddParameters, 'newlyAddParameters');
-
-  // const [parameterContextItem, setParameterContextItem] = useState({});
   const [isVariablesModalOpen, setVariablesModalOpen] = useState({
     isOpen: false,
     mode: 'add',
     schedule: false,
   });
   const [progress, setProgress] = useState(0);
-  // const navigate = useNavigate();
-  // const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
-  //   []
-  // );
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
@@ -363,7 +329,6 @@ const Summary = () => {
   const [startDate, setStartDate] = useState(new Date());
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const {
-    // register,
     setValue,
     handleSubmit,
     control,
@@ -411,22 +376,7 @@ const Summary = () => {
         sensitive: item.sensitive,
       })),
     };
-    // const { approver_ids, ...rest } = data;
-    // const payload = {
-    //   ...rest,
-    //   scheduled_time: startDate.toISOString(),
-    //   // namespace_name: namespaceSelected?.label,
-    //   // flow_id:namespaceSelected?.flowId,
-    //   approver_ids: [approver_ids],
-    //   deployment_status: 'PENDING',
-    // };
-    // console.log(payload, 'payload');
     dispatch(SchedularActions.createScheduleDeployment(payload));
-    // closeModal();
-
-    // const handleClick = () => {
-    //   window.open(deployOrUpgradeDetails.nifiUrl, '_blank');
-    // };
   };
 
   const getParamerterContext = async () => {
@@ -434,13 +384,9 @@ const Summary = () => {
     openParameterContext();
     setLoading(false);
   };
-  console.log(isParameterContextOpen, 'isParameterContextOpen');
   const getScheduleParamerterContext = async () => {
-    console.log('schedule one');
-    // setIsParameterContextOpen(true);
     setIsParameterContextOpen({ isOpen: true, schedule: true });
     setLoading(true);
-    // openParameterContext();
     setLoading(false);
   };
   const handleUpgradeClick = async () => {
@@ -460,14 +406,11 @@ const Summary = () => {
   };
 
   const openParameterContext = () => {
-    // setIsParameterContextOpen(true);
     setIsParameterContextOpen({ isOpen: true, schedule: false });
     dispatch(NamespacesActions.fetchParameterContext());
   };
 
   const closeParameterContext = () => {
-    // dispatch(NamespacesActions.setParameterDetails({}));
-    // setIsParameterContextOpen(false);
     if (isParameterContextOpen.schedule) {
       setIsParameterContextOpen({ isOpen: false, schedule: true });
     } else {
@@ -493,7 +436,6 @@ const Summary = () => {
   const closeAddParameterContext = () => {
     setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
     dispatch(NamespacesActions.setParameterContextItem({}));
-    // setIsParameterContextOpen(true);
     if (isParameterContextOpen.schedule) {
       setIsParameterContextOpen({ isOpen: true, schedule: true });
     } else {
@@ -508,7 +450,6 @@ const Summary = () => {
   };
 
   const handleScheduleTertiaryButton = async () => {
-    // dispatch(NamespacesActions.fetchVariableList());
     setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
     setModalOpen(false);
   };
@@ -527,15 +468,6 @@ const Summary = () => {
     setFlowControlButtons(status);
   };
 
-  // useEffect(() => {
-  //   if (ScheduleNamespaceDeployOpen) {
-  //     checkDestCluster.mode !== 'upgrade'
-  //       ? handleDeploy()
-  //       : handleUpgradeClick();
-  //   }
-  // }, [ScheduleNamespaceDeployOpen]);
-
-  // isDeployedModal getting true and false to open and close
   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader loading={loading} />
@@ -644,7 +576,6 @@ const Summary = () => {
                 </UseColXl>
               </RowConfig>
             </UseColLg>
-            {/* versions */}
             {checkDestCluster.mode === 'upgrade' && (
               <>
                 <div className="col-12 p-3">
@@ -792,7 +723,6 @@ const Summary = () => {
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"
                       onClick={() => handleUpdateStatus('STOPPED')}
-                      // onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
                     >
                       <SquareBoxIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -808,7 +738,6 @@ const Summary = () => {
                       hoverColor="#cf9f5d"
                       activeTextColor="#fff"
                       onClick={() => handleUpdateStatus('ENABLED')}
-                      // onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
                     >
                       <SmallThunderIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -824,7 +753,6 @@ const Summary = () => {
                       hoverColor="#2c7cf3"
                       activeTextColor="#fff"
                       onClick={() => handleUpdateStatus('DISABLED')}
-                      // onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
                     >
                       <SmallNotThunderIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -916,10 +844,7 @@ const Summary = () => {
         openAddParameterContext={openAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
-        // setParameterContextItem={setParameterContextItem}
-        // newlyAddedPrameterContext={newlyAddedPrameterContext}
         getParamerterContext={getParamerterContext}
-        // setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
       <AddParameterContext
         key={isParameterContextOpen.mode}
@@ -929,8 +854,6 @@ const Summary = () => {
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
-        // newlyAddedPrameterContext={newlyAddedPrameterContext}
-        // setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
       <Listvariables
         isOpen={isVariablesModalOpen}
