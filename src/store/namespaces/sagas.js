@@ -230,6 +230,7 @@ export function* clusterProgress(api) {
   );
   const queryParams = {
     sourceNamespaceId: selectedNamespace?.value,
+    sourceNamespaceName: selectedNamespace?.label,
   };
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
