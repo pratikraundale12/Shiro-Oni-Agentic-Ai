@@ -24,8 +24,8 @@ const COLUMNS = [
     renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
   },
   {
-    label: KDFM.UPDATE_BY,
-    renderCell: item => <TextRender text={item.updated_by || KDFM.NA} />,
+    label: KDFM.CREATED_BY,
+    renderCell: item => <TextRender text={item.created_by || KDFM.NA} />,
   },
 ];
 

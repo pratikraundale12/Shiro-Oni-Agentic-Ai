@@ -31,6 +31,7 @@ const ActiveTd = styled.div`
 
 const GreenActiveness = styled(ActiveTd)`
   color: ${props => props.theme.colors.success};
+  text-transform: capitalize;
   &::after {
     background-color: ${props => props.theme.colors.success};
   }
@@ -38,6 +39,7 @@ const GreenActiveness = styled(ActiveTd)`
 
 const RedInactive = styled(ActiveTd)`
   color: ${props => props.theme.colors.error};
+  text-transform: capitalize;
   &::after {
     background-color: ${props => props.theme.colors.error};
   }
@@ -45,12 +47,13 @@ const RedInactive = styled(ActiveTd)`
 
 // Usage in your component
 export const StatusRender = ({ status }) => {
+  const statusText = status?.toLowerCase();
   return (
     <Container>
-      {['active', 'connected', 'success'].includes(status?.toLowerCase()) ? (
-        <GreenActiveness>{status}</GreenActiveness>
+      {['active', 'connected', 'success'].includes(statusText) ? (
+        <GreenActiveness>{statusText}</GreenActiveness>
       ) : (
-        <RedInactive>{status}</RedInactive>
+        <RedInactive>{statusText}</RedInactive>
       )}
     </Container>
   );
