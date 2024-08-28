@@ -333,7 +333,16 @@ const Summary = () => {
   const newlyAddVariables = useSelector(
     NamespacesSelectors.getNewlyAddVariables
   );
-  const [parameterContextItem, setParameterContextItem] = useState({});
+  const parameterContextItem = useSelector(
+    NamespacesSelectors.getParameterContextItem
+  );
+  const newlyAddParameters = useSelector(
+    NamespacesSelectors.getNewlyAddedParameterContext
+  );
+
+  console.log(newlyAddParameters, 'newlyAddParameters');
+
+  // const [parameterContextItem, setParameterContextItem] = useState({});
   const [isVariablesModalOpen, setVariablesModalOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -341,9 +350,9 @@ const Summary = () => {
   });
   const [progress, setProgress] = useState(0);
   // const navigate = useNavigate();
-  const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
-    []
-  );
+  // const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
+  //   []
+  // );
   const { state, setState } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
@@ -439,19 +448,19 @@ const Summary = () => {
   const closeParameterContext = () => {
     // dispatch(NamespacesActions.setParameterDetails({}));
     setIsParameterContextOpen(false);
-    setNewlyAddedParameterContext([]);
+    dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
     dispatch(NamespacesActions.setDeployedModal());
   };
 
   const openAddParameterContext = () => {
     setIsAddParameterContextOpen({ isOpen: true, mode: 'add' });
-    setParameterContextItem({});
+    dispatch(NamespacesActions.setParameterContextItem({}));
     setIsParameterContextOpen(false);
   };
 
   const closeAddParameterContext = () => {
     setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
-    setParameterContextItem({});
+    dispatch(NamespacesActions.setParameterContextItem({}));
     setIsParameterContextOpen(true);
   };
 
@@ -868,10 +877,10 @@ const Summary = () => {
         openAddParameterContext={openAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
-        setParameterContextItem={setParameterContextItem}
-        newlyAddedPrameterContext={newlyAddedPrameterContext}
+        // setParameterContextItem={setParameterContextItem}
+        // newlyAddedPrameterContext={newlyAddedPrameterContext}
         getParamerterContext={getParamerterContext}
-        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
+        // setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
       <AddParameterContext
         key={isParameterContextOpen.mode}
@@ -880,8 +889,8 @@ const Summary = () => {
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
-        newlyAddedPrameterContext={newlyAddedPrameterContext}
-        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
+        // newlyAddedPrameterContext={newlyAddedPrameterContext}
+        // setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
       <Listvariables
         isOpen={isVariablesModalOpen}

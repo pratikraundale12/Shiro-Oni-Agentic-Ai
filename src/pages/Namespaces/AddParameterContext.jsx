@@ -90,13 +90,16 @@ const AddParameterContext = ({
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   parameterContextItem,
-  newlyAddedPrameterContext,
-  setNewlyAddedParameterContext,
+  // newlyAddedPrameterContext,
+  // setNewlyAddedParameterContext,
 }) => {
   const dispatch = useDispatch();
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const newlyAddParameters = useSelector(
+    NamespacesSelectors.getNewlyAddedParameterContext
   );
   const parameterContextList =
     parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
@@ -159,7 +162,7 @@ const AddParameterContext = ({
       );
     const parameterAlreadyExist = nameExists(parameterContextList, data?.name);
     const parameterAlreadyExistInNewlyAddedContext = nameExists(
-      newlyAddedPrameterContext,
+      newlyAddParameters,
       data?.name
     );
 
@@ -173,7 +176,7 @@ const AddParameterContext = ({
     }
 
     if (isAddParameterContextOpen?.mode === 'edit') {
-      const updatedData = newlyAddedPrameterContext.map(item =>
+      const updatedData = newlyAddParameters.map(item =>
         item?.name?.toLowerCase() === data?.name?.toLowerCase()
           ? { ...item, ...data }
           : item
@@ -196,12 +199,27 @@ const AddParameterContext = ({
               filteredParameterContextList,
           })
         );
-        setNewlyAddedParameterContext([...updatedData, data]);
+        dispatch(
+          NamespacesActions.setNewlyAddedParameterContext([
+            ...updatedData,
+            data,
+          ])
+        );
+        // setNewlyAddedParameterContext([...updatedData, data]);
       } else {
-        setNewlyAddedParameterContext([...updatedData]);
+        dispatch(
+          NamespacesActions.setNewlyAddedParameterContext([...updatedData])
+        );
+        // setNewlyAddedParameterContext([...updatedData]);
       }
     } else {
-      setNewlyAddedParameterContext([...newlyAddedPrameterContext, data]);
+      dispatch(
+        NamespacesActions.setNewlyAddedParameterContext([
+          ...newlyAddParameters,
+          data,
+        ])
+      );
+      // setNewlyAddedParameterContext([...newlyAddedPrameterContext, data]);
     }
     setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
     setIsParameterContextOpen(true);

@@ -25,19 +25,25 @@ const ParameterContext = ({
   openAddParameterContext,
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
-  setParameterContextItem,
-  newlyAddedPrameterContext,
-  setNewlyAddedParameterContext,
+  // setParameterContextItem,
+  // newlyAddedPrameterContext,
+  // setNewlyAddedParameterContext,
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  // const parameterContextItem = useSelector(
+  //   NamespacesSelectors.getParameterContextItem
+  // );
+  const newlyAddParameters = useSelector(
+    NamespacesSelectors.getNewlyAddedParameterContext
+  );
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
   const copyParameterDetailsData =
     parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
-  const tableData = [...copyParameterDetailsData, ...newlyAddedPrameterContext];
+  const tableData = [...copyParameterDetailsData, ...newlyAddParameters];
 
   const COLUMNS = [
     {
@@ -68,7 +74,8 @@ const ParameterContext = ({
             onClick={() => {
               setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
               setIsParameterContextOpen(false);
-              setParameterContextItem(item);
+              dispatch(NamespacesActions.setParameterContextItem(item));
+              // setParameterContextItem(item);
             }}
           >
             <PencilIcon color="black" />
@@ -79,15 +86,16 @@ const ParameterContext = ({
   ];
 
   const handleSaveParameterContext = async () => {
-    if (!newlyAddedPrameterContext) return;
+    if (!newlyAddParameters) return;
     setLoading(true);
     dispatch(
       NamespacesActions.updateParameterContext({
-        modifiedPayloadData: [...newlyAddedPrameterContext],
+        modifiedPayloadData: [...newlyAddParameters],
       })
     );
     setLoading(false);
-    setNewlyAddedParameterContext([]);
+    dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
+    // setNewlyAddedParameterContext([]);
   };
 
   return (
@@ -99,7 +107,7 @@ const ParameterContext = ({
       isLoading={loading}
       onSecondarySubmit={openAddParameterContext}
       secondaryButtonText={KDFM.ADD_PARAMETER_CONTEXT}
-      primaryButtonDisabled={!newlyAddedPrameterContext?.length || loading}
+      primaryButtonDisabled={!newlyAddParameters?.length || loading}
       primaryButtonText={KDFM.SAVE}
       onSubmit={handleSaveParameterContext}
       footerAlign="start"

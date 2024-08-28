@@ -48,6 +48,10 @@ export const NamespacesActions = {
 
   setVariableContextItem: createAction(`${prefix}setVariableContextItem`),
   setNewlyAddVariables: createAction(`${prefix}setNewlyAddVariables`),
+  setParameterContextItem: createAction(`${prefix}setParameterContextItem`),
+  setNewlyAddedParameterContext: createAction(
+    `${prefix}setNewlyAddedParameterContext`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -87,6 +91,8 @@ export const NAMESPACES_INITIAL_STATE = {
   },
   variableContextItem: {},
   newlyAddVariables: [],
+  parameterContextItem: {},
+  newlyAddedParameterContext: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -107,6 +113,9 @@ export const NamespacesSelectors = {
   getNamespaceAudit: state => state.namespaces.namespaceAudit,
   getVariableContextItem: state => state.namespaces.variableContextItem,
   getNewlyAddVariables: state => state.namespaces.newlyAddVariables,
+  getParameterContextItem: state => state.namespaces.parameterContextItem,
+  getNewlyAddedParameterContext: state =>
+    state.namespaces.newlyAddedParameterContext,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -246,6 +255,18 @@ const setVariableContextItem = (state, { payload }) => {
     variableContextItem: payload,
   };
 };
+const setParameterContextItem = (state, { payload }) => {
+  return {
+    ...state,
+    parameterContextItem: payload,
+  };
+};
+const setNewlyAddedParameterContext = (state, { payload }) => {
+  return {
+    ...state,
+    newlyAddedParameterContext: payload,
+  };
+};
 
 const setNewlyAddVariables = (state, { payload }) => {
   return {
@@ -292,6 +313,14 @@ export const namespacesReducer = createReducer(
         fetchNamespaceAuditSuccess
       )
       .addCase(NamespacesActions.setVariableContextItem, setVariableContextItem)
-      .addCase(NamespacesActions.setNewlyAddVariables, setNewlyAddVariables);
+      .addCase(NamespacesActions.setNewlyAddVariables, setNewlyAddVariables)
+      .addCase(
+        NamespacesActions.setParameterContextItem,
+        setParameterContextItem
+      )
+      .addCase(
+        NamespacesActions.setNewlyAddedParameterContext,
+        setNewlyAddedParameterContext
+      );
   }
 );
