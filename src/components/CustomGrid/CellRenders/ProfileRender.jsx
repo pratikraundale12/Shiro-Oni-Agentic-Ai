@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
 
 import { ProfileIcon } from '../../../assets';
@@ -14,7 +14,7 @@ const ImageContainer = styled.div`
 `;
 
 const ProfileImage = styled.img`
-  object-fit: contain;
+  object-fit: cover;
   height: 40px;
   width: 40px;
   border-radius: 50%;
