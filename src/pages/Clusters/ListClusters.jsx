@@ -92,6 +92,7 @@ export const ListClusters = () => {
       renderCell: item => (
         <TextRender text={item.name} capitalizeText={false} />
       ),
+      sort: { sortKey: 'name' },
     },
     {
       label: KDFM.NIFI_URL,
@@ -159,6 +160,10 @@ export const ListClusters = () => {
       },
     },
   ];
+
+  const sortFns = {
+    name: data => data.sort((a, b) => a.name.localeCompare(b.name)),
+  };
 
   const updateClusterStatus = async id => {
     const response = await updateCluster(id, {
@@ -260,6 +265,7 @@ export const ListClusters = () => {
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
         placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
+        sortFns={sortFns}
       />
     </>
   );
