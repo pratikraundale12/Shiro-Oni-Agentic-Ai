@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import React, { useEffect } from 'react';
 import { Outlet, Route } from 'react-router-dom';
 
@@ -158,7 +157,7 @@ export const ROUTES_MENU = [
         component: <ModuleAccess />,
       },
       {
-        path: [':id'],
+        path: ['cluster-access'],
         component: <ClusterAccess />,
       },
     ],
@@ -249,10 +248,10 @@ const Routes = () => {
       <Route path="/reset" element={<Reset />} />
       <Route path="/success" element={<Success />} />
       <Route path="/login" element={<UserLogin />} />
-      <Route path='/policy' element={<UnAuthGuard />}>
+      <Route path="/policy" element={<UnAuthGuard />}>
         {UNAUTHROUTES_MENU?.map(item => (
           <Route key={item.path} path={item.path} exact element={<Outlet />}>
-             {item.pages.map(page =>
+            {item.pages.map(page =>
               Array.isArray(page.path) ? (
                 page.path.map(subPath => (
                   <Route
@@ -270,7 +269,8 @@ const Routes = () => {
                 />
               )
             )}
-          </Route>))}
+          </Route>
+        ))}
       </Route>
 
       {/* Private Routes */}

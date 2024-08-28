@@ -5,7 +5,7 @@ import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 export const ActvityHistory = () => {
   const COLUMNS = [
     {
-      label: KDFM.EVENT_OR_ACTIVITY,
+      label: KDFM.EVENT,
       renderCell: item => <TextRender text={item.event || KDFM.NA} />,
     },
     {
