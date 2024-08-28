@@ -77,7 +77,9 @@ export const Modal = ({
     tertiaryButtonTest: '',
     tertiaryButtonSubmit: () => null,
     tertiaryButtonDisable: false,
+    tertiaryButtonLoading: false,
   },
+  tertiaryButtonLoading,
 }) => {
   const styleObject = {
     overlay: {
@@ -153,6 +155,7 @@ export const Modal = ({
               variant="secondary"
               onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
               disabled={tertiaryButtonConfig.disabled}
+              loading={tertiaryButtonConfig.tertiaryButtonLoading}
               {...tertiaryButtonConfig}
             >
               {tertiaryButtonConfig.tertiaryButtonTest}
@@ -193,5 +196,6 @@ Modal.propTypes = {
     tertiaryButtonTest: PropTypes.string,
     tertiaryButtonSubmit: PropTypes.func,
     tertiaryButtonDisable: PropTypes.bool,
+    tertiaryButtonLoading: PropTypes.bool,
   }),
 };

@@ -6,6 +6,9 @@ import {
   DefaultUserIcon,
   TickIconWithCircle,
 } from '../../assets';
+import { Tooltip } from 'react-tooltip';
+import { SchedularActions } from '../../store/schedular/redux';
+import { useDispatch } from 'react-redux';
 
 const TextColor = styled.div`
   color: ${props => props.theme.colors.darker};
@@ -29,6 +32,9 @@ const StyledButton = styled.button`
   border: none;
   background: transparent;
 `;
+const NameWrapper = styled.span`
+  cursor: pointer;
+`;
 
 const HolderContainer = styled.div`
   margin-left: ${props => (props.makeleft ? '-10px' : '0')};
@@ -37,21 +43,20 @@ export const TextWithPhotoRender = ({
   content,
   currentUser,
   item,
-  setConfirmScheduleModelOpen,
-  setConfirmRejectModelOpen,
   setSelectedData,
 }) => {
+  const dispatch = useDispatch();
   const isApprover = content.some(
     approver => approver.approver_id === currentUser.id
   );
 
   const handleReject = () => {
-    setConfirmRejectModelOpen(true);
     setSelectedData(item.scheduler_id);
+    dispatch(SchedularActions.setRejectScheduleModal());
   };
 
   const handleApprove = () => {
-    setConfirmScheduleModelOpen(true);
+    dispatch(SchedularActions.setScheduleConfirmModel());
     setSelectedData(item.scheduler_id);
   };
   return (
@@ -70,28 +75,78 @@ export const TextWithPhotoRender = ({
           <div className="d-flex me-1">
             {content.slice(0, 5).map((item, index) =>
               item.approver_photo_url ? (
-                <ImageHolder
-                  src={`${item.approver_photo_url}`}
-                  alt="img"
-                  key={item.approver_photo_url}
-                  makeleft={index != 0}
-                />
+                <>
+                  <ImageHolder
+                    src={`${item.approver_photo_url}`}
+                    alt="img"
+                    key={item.approver_photo_url}
+                    makeleft={index != 0}
+                    data-tooltip-id={item?.approver_id}
+                  />
+                  <Tooltip
+                    id={item.approver_id}
+                    styles={{
+                      backgroundColor: 'white',
+                      borderRadius: '8px',
+                      padding: '8px 12px',
+                      boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+                      zIndex: 10000,
+                    }}
+                  >
+                    <div>{item.approver_name}</div>
+                  </Tooltip>
+                </>
               ) : (
                 <HolderContainer key={index} makeleft={index != 0}>
-                  <DefaultUserIcon />
+                  <span data-tooltip-id={content[index].approver_id}>
+                    <DefaultUserIcon />
+                  </span>
+
+                  <Tooltip
+                    id={content[index].approver_id}
+                    styles={{
+                      backgroundColor: 'white',
+                      borderRadius: '8px',
+                      padding: '8px 12px',
+                      boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+                      zIndex: 10000,
+                    }}
+                  >
+                    <div>{content[index].approver_name}</div>
+                  </Tooltip>
                 </HolderContainer>
               )
             )}
           </div>
           {content?.length > 1 ? (
             <>
-              {content?.length > 5
-                ? `+ ${content?.length - 5} People`
-                : `${content?.length} People`}
+              {content?.length > 5 ? (
+                <NameWrapper
+                  data-tooltip-id={'demoId311'}
+                >{`+ ${content?.length - 5} People`}</NameWrapper>
+              ) : (
+                `${content?.length} People`
+              )}
             </>
           ) : (
-            <TextColor>{content[0].approver_name || 'N/A'}</TextColor>
+            <>
+              <TextColor>{content[0].approver_name || 'N/A'}</TextColor>
+            </>
           )}
+          <Tooltip
+            id={'demoId311'}
+            styles={{
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              padding: '8px 12px',
+              boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+              zIndex: 10000,
+            }}
+          >
+            {content?.slice(5)?.map(element => (
+              <div key={element?.approver_id}>{element?.approver_name}</div>
+            ))}
+          </Tooltip>
         </div>
       )}
     </>
@@ -101,7 +156,5 @@ TextWithPhotoRender.propTypes = {
   content: PropTypes.object,
   currentUser: PropTypes.string,
   item: PropTypes.object,
-  setConfirmScheduleModelOpen: PropTypes.func,
-  setConfirmRejectModelOpen: PropTypes.func,
   setSelectedData: PropTypes.func,
 };

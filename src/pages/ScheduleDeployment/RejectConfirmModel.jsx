@@ -27,10 +27,11 @@ export const RejectConfirmScheduleModel = ({
   primaryText = '',
   errors,
   register,
+  loadingButton,
   ...rest
 }) => {
   return (
-    <Modal size="sm" {...rest}>
+    <Modal size="sm" {...rest} loading={loadingButton}>
       <IconWrapper>{icon}</IconWrapper>
       <PrimaryText>{primaryText}</PrimaryText>
       <div className="col-xl-12 col-lg-12 col-md-6 col-sm-6 col-6 form-ele">
@@ -57,4 +58,5 @@ RejectConfirmScheduleModel.propTypes = {
   control: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
   register: PropTypes.object.isRequired,
+  loadingButton: PropTypes.bool,
 };

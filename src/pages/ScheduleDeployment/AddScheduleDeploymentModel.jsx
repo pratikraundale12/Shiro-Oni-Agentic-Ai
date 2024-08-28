@@ -24,14 +24,23 @@ export const AddScheduleDeploymentModal = ({
   startDate,
   setStartDate,
   showButton = false,
+  loadingButton,
 }) => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   const openModal = () => {
+    if (window.location.pathname.includes('schedule-deployment')) {
+      dispatch(SchedularActions.setEditScheduleModel());
+      return;
+    }
     setScheduleInitialOpen(true);
   };
   const closeModal = () => {
+    if (window.location.pathname.includes('schedule-deployment')) {
+      dispatch(SchedularActions.setEditScheduleModel());
+      return;
+    }
     setScheduleInitialOpen(false);
   };
 
@@ -68,6 +77,7 @@ export const AddScheduleDeploymentModal = ({
         onSubmit={handleContinue}
         footerAlign="start"
         contentStyles={{ minWidth: '45%' }}
+        loading={loadingButton}
       >
         <Container>
           <div className="row">
@@ -105,4 +115,5 @@ AddScheduleDeploymentModal.propTypes = {
   startDate: PropTypes.string.isRequired,
   setStartDate: PropTypes.object.isRequired,
   showButton: PropTypes.bool,
+  loadingButton: PropTypes.bool,
 };

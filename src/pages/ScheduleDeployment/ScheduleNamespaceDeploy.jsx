@@ -175,6 +175,7 @@ const ScheduleNamespaceDeploy = ({
   handleTertiaryButton,
   handleSubmit,
   onSubmit,
+  loadingButton,
 }) => {
   const dispatch = useDispatch();
   const deployOrUpgradeDetails = useSelector(
@@ -185,6 +186,7 @@ const ScheduleNamespaceDeploy = ({
   const handleUpdateStatus = status => {
     dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
+
   return (
     <>
       <Modal
@@ -206,7 +208,9 @@ const ScheduleNamespaceDeploy = ({
           tertiaryButtonTest: 'Variables',
           tertiaryButtonSubmit: handleTertiaryButton,
           tertiaryButtonDisable: false,
+          tertiaryButtonLoading: loadingButton,
         }}
+        loading={loadingButton}
       >
         <ModalBody className="modal-body">
           <RowModal>
@@ -390,6 +394,7 @@ ScheduleNamespaceDeploy.propTypes = {
   }),
   handleSubmit: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  loadingButton: PropTypes.bool,
 };
 
 export default ScheduleNamespaceDeploy;

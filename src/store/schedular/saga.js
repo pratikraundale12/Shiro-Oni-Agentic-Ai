@@ -1,9 +1,10 @@
 // import { CLUSTERS_TOKEN } from '../../constants';
-import { SchedularActions } from './redux';
-import { call, all, takeLatest } from 'redux-saga/effects';
+import { SchedularActions, SchedularSelectors } from './redux';
+import { call, all, takeLatest, put, select } from 'redux-saga/effects';
 import { requestSaga } from '../helpers/request_sagas';
 import { toast } from 'react-toastify';
 import { CLUSTERS_TOKEN } from '../../constants';
+import { history } from '../../helpers/history';
 
 export function* createScheduleDeployment(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -13,7 +14,9 @@ export function* createScheduleDeployment(api, { payload }) {
     apiParams: [{ payload }],
   });
   if (response.ok) {
+    yield put(SchedularActions.setScheduleModal());
     toast.success('Successfully Scheduled Deployment');
+    history.push('/namespaces');
   } else toast.error(response.data.message);
 }
 
@@ -50,8 +53,30 @@ export function* editScheduleDeployment(api, { payload }) {
       },
     ],
   });
+  const rejectModelState = yield select(
+    SchedularSelectors.getRejectScheduleModel
+  );
+  const editModelState = yield select(SchedularSelectors.getEditScheduleModel);
+  const confirmRejectModel = yield select(
+    SchedularSelectors.getRejectConfirmScheduleModel
+  );
+  const confirmScheduleModel = yield select(
+    SchedularSelectors.getScheduleCofirmModel
+  );
   if (response.ok) {
     toast.success('Successfully Updated Scheduled Deployment');
+    if (rejectModelState) {
+      yield put(SchedularActions.setRejectScheduleModal());
+    }
+    if (editModelState) {
+      yield put(SchedularActions.setEditScheduleModel());
+    }
+    if (confirmRejectModel) {
+      yield put(SchedularActions.setConfirmRejectScheduleModel());
+    }
+    if (confirmScheduleModel) {
+      yield put(SchedularActions.setScheduleConfirmModel());
+    }
   } else toast.error(response.data.message);
 }
 

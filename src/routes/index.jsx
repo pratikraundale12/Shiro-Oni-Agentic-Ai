@@ -110,7 +110,7 @@ export const ROUTES_MENU = [
   },
   {
     name: 'Schedule Deployment',
-    path: 'sechedule-deployment',
+    path: 'schedule-deployment',
     icon: ScheduleDeploymentIcon,
     pages: [
       {
