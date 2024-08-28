@@ -27,15 +27,9 @@ const ParameterContext = ({
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   isParameterContextOpen,
-  // setParameterContextItem,
-  // newlyAddedPrameterContext,
-  // setNewlyAddedParameterContext,
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  // const parameterContextItem = useSelector(
-  //   NamespacesSelectors.getParameterContextItem
-  // );
   const newlyAddParameters = useSelector(
     NamespacesSelectors.getNewlyAddedParameterContext
   );
@@ -65,7 +59,6 @@ const ParameterContext = ({
                   ? KDFM.EMPTY_STRING_SET
                   : KDFM.NO_VALUE_SET
           }
-          capitalizeText={false}
         />
       ),
     },
@@ -82,7 +75,6 @@ const ParameterContext = ({
                 setIsParameterContextOpen({ isOpen: false, schedule: false });
               }
               dispatch(NamespacesActions.setParameterContextItem(item));
-              // setParameterContextItem(item);
             }}
           >
             <PencilIcon color="black" />
