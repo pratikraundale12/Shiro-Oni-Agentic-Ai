@@ -100,7 +100,7 @@ export const LICENSE_TYPE = {
   PURCHASED: 'purchased',
 };
 
-export const LICENSE_DATE_ISO_FORMAT = '';
+export const LICENSE_DATE_ISO_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 export const LICENSE_EXPIRE_PROMPT_DAYS = 30;
 
 export const KDFM = {
