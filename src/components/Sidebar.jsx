@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-
 import { KsolvesDataFlowIcon } from '../assets';
 import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 import { KDFM } from '../constants';

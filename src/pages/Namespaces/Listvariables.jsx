@@ -38,7 +38,9 @@ const Listvariables = ({
   const COLUMNS = [
     {
       label: KDFM.NAME,
-      renderCell: item => <TextRender text={item?.variable?.name} />,
+      renderCell: item => (
+        <TextRender text={item?.variable?.name} capitalizeText={false} />
+      ),
     },
     {
       label: KDFM.VALUE,

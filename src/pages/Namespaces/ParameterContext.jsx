@@ -42,7 +42,10 @@ const ParameterContext = ({
   const COLUMNS = [
     {
       label: KDFM.NAME,
-      renderCell: item => <TextRender text={item?.name || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender text={item?.name || KDFM.NA} capitalizeText={false} />
+      ),
+      width: '35%',
     },
     {
       label: KDFM.VALUE,
@@ -60,6 +63,7 @@ const ParameterContext = ({
           capitalizeText={false}
         />
       ),
+      width: '60%',
     },
     {
       renderCell: item => (
@@ -76,6 +80,7 @@ const ParameterContext = ({
           </IconButton>
         </div>
       ),
+      width: '5%',
     },
   ];
 
