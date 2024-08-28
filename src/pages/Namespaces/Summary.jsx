@@ -21,8 +21,21 @@ import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
-import { SchedularActions } from '../../store/schedular/redux';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
+import {
+  // deployCluster,
+  fetchParameterContext,
+  fetchVariables,
+  getClusterProgress,
+  getClusterProgressDelete,
+  getCountDetails,
+  updateNamespaceStatus,
+  upgradeCluster,
+} from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
@@ -30,6 +43,16 @@ import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
+// import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
+// import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
+// import { useForm } from 'react-hook-form';
+// import * as yup from 'yup';
+// import { yupResolver } from '@hookform/resolvers/yup';
+import { useNavigate } from 'react-router-dom';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -328,6 +351,11 @@ const Summary = () => {
   const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const isScheduleModal = useSelector(SchedularSelectors.getScheduleModal);
+  const loadingButton = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'createScheduleDeployment')
+  );
+
   const {
     setValue,
     handleSubmit,
@@ -336,28 +364,24 @@ const Summary = () => {
   } = useForm({
     resolver: yupResolver(scheduleSchema),
   });
-  const [ScheduleNamespaceDeployOpen, setScheduleNamespaceDeployOpen] =
-    useState(false);
 
   const handleScheduleNamespaceDeployModel = () => {
-    setScheduleNamespaceDeployOpen(false);
+    dispatch(SchedularActions.setScheduleModal());
     history.push('/namespaces');
   };
 
   const handleContinue = () => {
     setScheduleInitialOpen(false);
-    setScheduleNamespaceDeployOpen(true);
+    dispatch(SchedularActions.setScheduleModal());
   };
   const onSubmit = async data => {
-    console.log({ newlyAddParameters });
-    handleContinue();
     const payload = {
-      namespace_id: checkDestCluster?.id, // ask
+      namespace_id: checkDestCluster?.id,
       namespace_name: checkDestCluster?.name,
       scheduled_time: startDate.toISOString(),
-      flowId: checkDestCluster?.flowId,
+      flow_id: checkDestCluster?.flowId,
       source_cluster_id: selectedCluster?.value,
-      destination_cluster_id: selectedDestCluster.value, // ask
+      destination_cluster_id: selectedDestCluster.value,
       deployment_status: 'PENDING',
       bucket_id: checkDestCluster?.bucketId,
       registry_id: checkDestCluster?.registryId,
@@ -386,6 +410,7 @@ const Summary = () => {
   };
   const getScheduleParamerterContext = async () => {
     setIsParameterContextOpen({ isOpen: true, schedule: true });
+    dispatch(SchedularActions.setScheduleModal());
     setLoading(true);
     setLoading(false);
   };
@@ -413,8 +438,10 @@ const Summary = () => {
   const closeParameterContext = () => {
     if (isParameterContextOpen.schedule) {
       setIsParameterContextOpen({ isOpen: false, schedule: true });
+      dispatch(SchedularActions.setScheduleModal());
     } else {
       setIsParameterContextOpen({ isOpen: false, schedule: false });
+      dispatch(SchedularActions.setScheduleModal());
     }
 
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
@@ -422,11 +449,9 @@ const Summary = () => {
   };
 
   const openAddParameterContext = () => {
-    console.log('Hi');
     setIsAddParameterContextOpen({ isOpen: true, mode: 'add' });
     dispatch(NamespacesActions.setParameterContextItem({}));
     if (isParameterContextOpen.schedule) {
-      console.log('Hi');
       setIsParameterContextOpen({ isOpen: false, schedule: true });
     } else {
       setIsParameterContextOpen({ isOpen: false, schedule: false });
@@ -451,6 +476,7 @@ const Summary = () => {
 
   const handleScheduleTertiaryButton = async () => {
     setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
+    dispatch(SchedularActions.setScheduleModal());
     setModalOpen(false);
   };
   const closeVariablesModal = () => {
@@ -783,9 +809,7 @@ const Summary = () => {
               : KDFM.DEPLOY}
           </Button>
           <AddScheduleDeploymentModal
-            setScheduleNamespaceDeployOpen={setScheduleNamespaceDeployOpen}
             setValue={setValue}
-            handleSubmit={handleSubmit}
             control={control}
             errors={errors}
             scheduleInitialOpen={scheduleInitialOpen}
@@ -828,13 +852,14 @@ const Summary = () => {
       />
       <ScheduleNamespaceDeploy
         isParameterContextOpen={isParameterContextOpen}
-        isOpen={ScheduleNamespaceDeployOpen}
+        isOpen={isScheduleModal}
         closePopup={handleScheduleNamespaceDeployModel}
         openParameterContext={openParameterContext}
         getScheduleParamerterContext={getScheduleParamerterContext}
         handleScheduleTertiaryButton={handleScheduleTertiaryButton}
         onSubmit={onSubmit}
         handleSubmit={handleSubmit}
+        loadingButton={loadingButton}
       />
       <ParameterContext
         isParameterContextOpen={isParameterContextOpen}

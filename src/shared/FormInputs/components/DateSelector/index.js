@@ -12,6 +12,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  // height: 250px;
 
   path {
     fill: ${props => props.theme.colors.darkGrey1};
@@ -105,6 +106,9 @@ const DateTimeInput = ({
   control,
   errors,
 }) => {
+  const handleDateChange = date => {
+    setStartDate(date);
+  };
   return (
     <Container>
       {label && (
@@ -119,7 +123,7 @@ const DateTimeInput = ({
         </div>
         <StyledDatePicker
           selected={startDate}
-          onChange={date => setStartDate(date)}
+          onChange={date => handleDateChange(date)}
           showTimeSelect
           timeFormat="HH:mm"
           timeIntervals={15}
@@ -128,6 +132,7 @@ const DateTimeInput = ({
           wrapperClassName="date-picker-wrapper"
           control={control}
           errors={errors}
+          popperPlacement="bottom-start"
         />
         <div className="date-picker-icon arrow-down">
           <DownArrowIcon />

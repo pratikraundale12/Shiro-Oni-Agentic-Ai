@@ -7,6 +7,7 @@ import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { SchedularActions } from '../../store/schedular/redux';
 import AddVariables from './AddVariables';
 
 const ModalBody = styled.div`
@@ -149,9 +150,8 @@ const Listvariables = ({
     dispatch(NamespacesActions.setNewlyAddVariables([]));
   };
   const scheduleSubmit = async () => {
-    // console.log('scheduleSubmit');
-
     setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: true });
+    dispatch(SchedularActions.setScheduleModal());
   };
 
   return (

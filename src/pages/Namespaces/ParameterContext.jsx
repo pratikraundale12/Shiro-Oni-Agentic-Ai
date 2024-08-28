@@ -7,6 +7,7 @@ import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { SchedularActions } from '../../store/schedular/redux';
 
 const ModalBody = styled.div`
   position: relative;
@@ -89,7 +90,6 @@ const ParameterContext = ({
       ),
     },
   ];
-  console.log({ isParameterContextOpen });
   const handleSaveParameterContext = async () => {
     if (!newlyAddParameters) return;
     setLoading(true);
@@ -105,6 +105,7 @@ const ParameterContext = ({
 
   const backSchedule = () => {
     setIsParameterContextOpen({ isOpen: false, schedule: true });
+    dispatch(SchedularActions.setScheduleModal());
   };
   isParameterContextOpen?.schedule;
   return (
