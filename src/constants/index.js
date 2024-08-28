@@ -95,6 +95,11 @@ export const ACTIVITY_EVENTS = [
   { label: 'Deploy', value: 'deploy' },
 ];
 
+export const LICENSE_TYPE = {
+  TRIAL: 'trial',
+  PURCHASED: 'purchased',
+};
+
 export const KDFM = {
   // Generic constants
   NIFI: 'NiFi',
