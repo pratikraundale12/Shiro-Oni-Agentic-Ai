@@ -8,12 +8,16 @@ import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const COLUMNS = [
   {
-    label: KDFM.TIMESTAMP,
-    renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
-  },
-  {
     label: KDFM.EVENT,
     renderCell: item => <TextRender text={item.event || KDFM.NA} />,
+  },
+  {
+    label: KDFM.NAMESPACE,
+    renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
+  },
+  {
+    label: KDFM.CLUSTER,
+    renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
   },
   {
     label: KDFM.MESSAGE,
@@ -22,6 +26,10 @@ const COLUMNS = [
   {
     label: KDFM.STATUS,
     renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
+  },
+  {
+    label: KDFM.TIMESTAMP,
+    renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
   },
   {
     label: KDFM.CREATED_BY,
