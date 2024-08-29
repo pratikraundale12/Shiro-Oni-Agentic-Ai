@@ -6,6 +6,7 @@ import { clustersAPI } from './clusters';
 import { dashboardAPI } from './dashboard';
 import { namespacesAPI } from './namespaces';
 import { policiesAPI } from './policies';
+import { schedularAPI } from './schedular';
 import { settingsAPI } from './setting';
 import { rolesAPI } from './roles';
 import { usersAPI } from './users';
@@ -50,6 +51,8 @@ const create = (baseURL = `${API_URL}/api`) => {
     ...rolesAPI(api),
     // Policies
     ...policiesAPI(api),
+    // Schedular
+    ...schedularAPI(api),
     // Settings
     ...settingsAPI(api),
     // Activity History

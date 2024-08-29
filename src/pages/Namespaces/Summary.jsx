@@ -1,9 +1,10 @@
-/* eslint-disable no-unused-vars */
+import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import * as yup from 'yup';
 import {
   SmallNotThunderIcon,
   SmallThunderIcon,
@@ -18,31 +19,24 @@ import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
 import {
-  // deployCluster,
-  fetchParameterContext,
-  fetchVariables,
-  getClusterProgress,
-  getClusterProgressDelete,
-  getCountDetails,
-  updateNamespaceStatus,
-  upgradeCluster,
-} from '../../store/index1';
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux';
 import { useGlobalContext } from '../../utils';
+import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
+import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
 
-const MainContainer = styled.div`
-  // height: calc(100vh - 78px);
-  // width: calc(100vw - 250px);
-  // overflow: hidden;
-  // padding: 37px 50px 22px 20px;
-  // --bs-bg-opacity: 1;
-  // background-color: white !important;
-`;
+const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
   height: 37px;
   align-items: center;
@@ -186,11 +180,6 @@ const ActiveButtonDiv = styled.div`
   align-items: center;
   justify-content: center;
 
-  // &:hover {
-  //   border: 1px solid
-  //     ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  // }
-
   & span {
     position: absolute;
     top: 0px;
@@ -244,17 +233,12 @@ const CountDiv = styled.div`
   max-height: 48px;
   min-height: 48px;
   min-width: 48px;
-  /* border: 1px solid #dde4f0;
-  border-radius: 8px;
-  background-color: #f5f7fa;
-  cursor: pointer; */
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 
   & span {
-    /* position: absolute; */
     top: 0px;
     right: 2px;
     font-family: ${props => props.theme.fontNato};
@@ -300,6 +284,9 @@ const breadcrumbData = [
   { label: KDFM.CONFIGURATION_DETAILS, path: '/namespaces/upgrade' },
   { label: KDFM.SUMMARY },
 ];
+export const scheduleSchema = yup.object().shape({
+  approver_ids: yup.array().required('Approver is required'),
+});
 
 const Summary = () => {
   const dispatch = useDispatch();
@@ -313,30 +300,98 @@ const Summary = () => {
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
-  const [isModalOpen, setModalOpen] = useState(false);
   const [flowControlButtons, setFlowControlButtons] = useState('');
-  const [isParameterContextOpen, setIsParameterContextOpen] = useState(false);
+  const [isParameterContextOpen, setIsParameterContextOpen] = useState({
+    isOpen: false,
+    schedule: false,
+  });
 
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
-  const [parameterContextItem, setParameterContextItem] = useState({});
+  const newlyAddVariables = useSelector(
+    NamespacesSelectors.getNewlyAddVariables
+  );
+  const parameterContextItem = useSelector(
+    NamespacesSelectors.getParameterContextItem
+  );
+  const newlyAddParameters = useSelector(
+    NamespacesSelectors.getNewlyAddedParameterContext
+  );
+
   const [isVariablesModalOpen, setVariablesModalOpen] = useState({
     isOpen: false,
     mode: 'add',
+    schedule: false,
   });
-  const [progress, setProgress] = useState(0);
-  // const navigate = useNavigate();
-  const [newlyAddedPrameterContext, setNewlyAddedParameterContext] = useState(
-    []
-  );
-  const { state, setState } = useGlobalContext();
+  const { state } = useGlobalContext();
   const [loading, setLoading] = useState(false);
+
+  const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const isScheduleModal = useSelector(SchedularSelectors.getScheduleModal);
+  const loadingButton = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'createScheduleDeployment')
+  );
+
+  const {
+    setValue,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(scheduleSchema),
+  });
+
+  const handleScheduleNamespaceDeployModel = () => {
+    dispatch(SchedularActions.setScheduleModal());
+    history.push('/namespaces');
+  };
+
+  const handleContinue = () => {
+    setScheduleInitialOpen(false);
+    dispatch(SchedularActions.setScheduleModal());
+  };
+  const onSubmit = async data => {
+    const payload = {
+      namespace_id: checkDestCluster?.id,
+      namespace_name: checkDestCluster?.name,
+      scheduled_time: startDate.toISOString(),
+      flow_id: checkDestCluster?.flowId,
+      source_cluster_id: selectedCluster?.value,
+      destination_cluster_id: selectedDestCluster.value,
+      deployment_status: 'PENDING',
+      bucket_id: checkDestCluster?.bucketId,
+      registry_id: checkDestCluster?.registryId,
+      mode: checkDestCluster?.mode,
+      version: formData.version,
+      position: checkDestCluster?.position,
+      approver_ids: data?.approver_ids,
+      variables: newlyAddVariables.map(item => ({
+        name: item.name,
+        value: item.value,
+      })),
+      params: newlyAddParameters.map(item => ({
+        name: item.name,
+        value: item.value,
+        description: item.description,
+        sensitive: item.sensitive,
+      })),
+    };
+    dispatch(SchedularActions.createScheduleDeployment(payload));
+  };
 
   const getParamerterContext = async () => {
     setLoading(true);
     openParameterContext();
+    setLoading(false);
+  };
+  const getScheduleParamerterContext = async () => {
+    setIsParameterContextOpen({ isOpen: true, schedule: true });
+    dispatch(SchedularActions.setScheduleModal());
+    setLoading(true);
     setLoading(false);
   };
   const handleUpgradeClick = async () => {
@@ -345,7 +400,6 @@ const Summary = () => {
     }
 
     dispatch(NamespacesActions.upgradeCluster());
-    setProgress(deployOrUpgradeDetails?.percentCompleted);
   };
   const handleDeploy = () => {
     dispatch(NamespacesActions.deployCluster());
@@ -356,38 +410,57 @@ const Summary = () => {
   };
 
   const openParameterContext = () => {
-    setIsParameterContextOpen(true);
+    setIsParameterContextOpen({ isOpen: true, schedule: false });
     dispatch(NamespacesActions.fetchParameterContext());
   };
 
   const closeParameterContext = () => {
-    // dispatch(NamespacesActions.setParameterDetails({}));
-    setIsParameterContextOpen(false);
-    setNewlyAddedParameterContext([]);
-    dispatch(NamespacesActions.setDeployedModal());
+    setIsParameterContextOpen(prev => ({ ...prev, isOpen: false }));
+    if (isParameterContextOpen.schedule) {
+      dispatch(SchedularActions.setScheduleModal());
+    } else {
+      dispatch(NamespacesActions.setDeployedModal());
+    }
+
+    dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
   };
 
   const openAddParameterContext = () => {
     setIsAddParameterContextOpen({ isOpen: true, mode: 'add' });
-    setParameterContextItem({});
-    setIsParameterContextOpen(false);
+    dispatch(NamespacesActions.setParameterContextItem({}));
+    if (isParameterContextOpen.schedule) {
+      setIsParameterContextOpen({ isOpen: false, schedule: true });
+    } else {
+      setIsParameterContextOpen({ isOpen: false, schedule: false });
+    }
   };
 
   const closeAddParameterContext = () => {
     setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
-    setParameterContextItem({});
-    setIsParameterContextOpen(true);
+    dispatch(NamespacesActions.setParameterContextItem({}));
+    if (isParameterContextOpen.schedule) {
+      setIsParameterContextOpen({ isOpen: true, schedule: true });
+    } else {
+      setIsParameterContextOpen({ isOpen: true, schedule: false });
+    }
   };
 
   const handleTertiaryButton = async () => {
     dispatch(NamespacesActions.fetchVariableList());
-    setVariablesModalOpen({ isOpen: true, mode: 'add' });
-    setModalOpen(false);
+    setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: false });
   };
 
+  const handleScheduleTertiaryButton = async () => {
+    setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
+    dispatch(SchedularActions.setScheduleModal());
+  };
   const closeVariablesModal = () => {
-    setVariablesModalOpen({ isOpen: false, mode: 'add' });
-    dispatch(NamespacesActions.setDeployedModal());
+    setVariablesModalOpen(prev => ({ ...prev, isOpen: false }));
+    if (isVariablesModalOpen.schedule) {
+      dispatch(SchedularActions.setScheduleModal());
+    } else {
+      dispatch(NamespacesActions.setDeployedModal());
+    }
   };
 
   const handleBackClick = () => {
@@ -399,6 +472,7 @@ const Summary = () => {
     setActiveButton(status);
     setFlowControlButtons(status);
   };
+
   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader loading={loading} />
@@ -507,7 +581,6 @@ const Summary = () => {
                 </UseColXl>
               </RowConfig>
             </UseColLg>
-            {/* versions */}
             {checkDestCluster.mode === 'upgrade' && (
               <>
                 <div className="col-12 p-3">
@@ -655,7 +728,6 @@ const Summary = () => {
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"
                       onClick={() => handleUpdateStatus('STOPPED')}
-                      // onClick={() => handleUpdateStatus('STOPPED', 'STOPPED')}
                     >
                       <SquareBoxIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -671,7 +743,6 @@ const Summary = () => {
                       hoverColor="#cf9f5d"
                       activeTextColor="#fff"
                       onClick={() => handleUpdateStatus('ENABLED')}
-                      // onClick={() => handleUpdateStatus('ENABLED', 'ENABLED')}
                     >
                       <SmallThunderIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -687,7 +758,6 @@ const Summary = () => {
                       hoverColor="#2c7cf3"
                       activeTextColor="#fff"
                       onClick={() => handleUpdateStatus('DISABLED')}
-                      // onClick={() => handleUpdateStatus('DISABLED', 'DISABLED')}
                     >
                       <SmallNotThunderIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -717,6 +787,17 @@ const Summary = () => {
                 : KDFM.DOWNGRADE
               : KDFM.DEPLOY}
           </Button>
+          <AddScheduleDeploymentModal
+            setValue={setValue}
+            control={control}
+            errors={errors}
+            scheduleInitialOpen={scheduleInitialOpen}
+            setScheduleInitialOpen={setScheduleInitialOpen}
+            handleContinue={handleContinue}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            showButton={true}
+          />
         </BottomButtonDiv>
         {checkDestCluster.mode === 'upgrade' && (
           <Progressox className="w-100">
@@ -743,36 +824,42 @@ const Summary = () => {
       <NamespaceDeploy
         isOpen={isDeployedModal}
         closePopup={handleCloseModal}
-        setModalOpen={setModalOpen}
         openParameterContext={openParameterContext}
         getParamerterContext={getParamerterContext}
         handleTertiaryButton={handleTertiaryButton}
       />
+      <ScheduleNamespaceDeploy
+        isOpen={isScheduleModal}
+        closePopup={handleScheduleNamespaceDeployModel}
+        getScheduleParamerterContext={getScheduleParamerterContext}
+        handleScheduleTertiaryButton={handleScheduleTertiaryButton}
+        onSubmit={onSubmit}
+        handleSubmit={handleSubmit}
+        loadingButton={loadingButton}
+      />
       <ParameterContext
-        key={isParameterContextOpen}
-        isOpen={isParameterContextOpen}
+        isParameterContextOpen={isParameterContextOpen}
+        key={isParameterContextOpen.isOpen}
+        isOpen={isParameterContextOpen.isOpen}
         closePopup={closeParameterContext}
         openAddParameterContext={openAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
-        setParameterContextItem={setParameterContextItem}
-        newlyAddedPrameterContext={newlyAddedPrameterContext}
         getParamerterContext={getParamerterContext}
-        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
       <AddParameterContext
         key={isParameterContextOpen.mode}
+        isParameterContextOpen={isParameterContextOpen}
         parameterContextItem={parameterContextItem}
         isAddParameterContextOpen={isAddParameterContextOpen}
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
-        newlyAddedPrameterContext={newlyAddedPrameterContext}
-        setNewlyAddedParameterContext={setNewlyAddedParameterContext}
       />
       <Listvariables
         isOpen={isVariablesModalOpen}
         closePopup={closeVariablesModal}
+        isVariablesModalOpen={isVariablesModalOpen}
         setVariablesModalOpen={setVariablesModalOpen}
         handleTertiaryButton={handleTertiaryButton}
       />
