@@ -276,7 +276,7 @@ const Upgrade = () => {
                 name="cluster"
                 type="text"
                 label={KDFM.SELECTED_CLUSTER}
-                value={selectedDestCluster.label}
+                value={selectedDestCluster?.label}
                 icon={<QRIcons />}
                 disabled
               />
