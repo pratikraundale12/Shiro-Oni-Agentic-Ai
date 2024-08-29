@@ -146,7 +146,7 @@ const UploadField = ({
 
   useEffect(() => {
     if (image) {
-      setImageSrc(image); // Set the initial imageSrc to the image URL from the API
+      setImageSrc(image);
     }
   }, [image]);
 
@@ -168,15 +168,9 @@ const UploadField = ({
               return;
             } else if (
               name === 'logo' &&
-              ![
-                'image/jpeg',
-                'image/png',
-                'image/webp',
-                'image/x-icon',
-                'image/ico',
-              ].includes(file.type)
+              !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
             ) {
-              toast.error('Please upload a valid image file (jpeg, png, ico)');
+              toast.error('Please upload a valid image file (jpeg, png, webp)');
               setFileError('Invalid file type for logo');
               return;
             }

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import { KDFM, REFRESH_OPTIONS } from '../../constants';
+import * as yup from 'yup';
+import { EMAIL_REGEX, KDFM, REFRESH_OPTIONS } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { SelectField, Button, UploadField, InputField } from '../../shared';
 import {
@@ -12,6 +13,7 @@ import {
   QRIcons,
 } from '../../assets';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -40,6 +42,15 @@ const StyledInputTitle = styled(InputField)`
   width: 50%;
 `;
 
+export const settingSchema = yup.object().shape({
+  email: yup
+    .string()
+    .matches(EMAIL_REGEX, 'Invalid email address')
+    .max(25, 'Email can not be greater than 25 characters'),
+
+  title: yup.string().max(25, 'Title must be 25 characters or less'),
+});
+
 export const Setting = () => {
   const {
     control,
@@ -48,10 +59,11 @@ export const Setting = () => {
     watch,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
+  const [isChanged, setIsChanged] = useState(false);
 
   const onSubmit = async data => {
     setLoading(true);
@@ -67,13 +79,11 @@ export const Setting = () => {
 
     try {
       dispatch(SettingsActions.createSettings(payload));
-
       setLoading(false);
       if (data.favicon) changeFavicon(URL.createObjectURL(data.favicon));
       if (data.title) document.title = data.title;
     } catch (error) {
       setLoading(false);
-
       console.error('Failed to submit settings:', error);
     }
   };
@@ -92,7 +102,6 @@ export const Setting = () => {
         'refresh',
         settingData.refresh === 0 ? 'Off' : settingData?.refresh
       );
-
       setValue('email', settingData?.email);
 
       const logoElement = document.getElementById('logo');
@@ -101,6 +110,22 @@ export const Setting = () => {
       }
     }
   }, [settingData, setValue]);
+
+  useEffect(() => {
+    const subscription = watch(value => {
+      const isModified =
+        value.logo !== settingData?.logo ||
+        value.favicon !== settingData?.favicon ||
+        value.title !== settingData?.title ||
+        value.refresh !==
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
+        value.email !== settingData?.email;
+
+      setIsChanged(isModified);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch, settingData]);
 
   function changeFavicon(newFaviconURL) {
     const favicon = document.getElementById('dynamic-favicon');
@@ -191,8 +216,7 @@ export const Setting = () => {
 
         <FlexWrapper>
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <Button variant="secondary">{KDFM.CANCEL}</Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" loading={loading} disabled={!isChanged}>
               {KDFM.SAVE_SETTINGS}
             </Button>
           </div>
