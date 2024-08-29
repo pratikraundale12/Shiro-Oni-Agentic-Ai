@@ -28,6 +28,7 @@ export function* fetchGrid(
     destNamespaces: api.fetchNamespaces,
     clustersRolesAccess: api.fetchClustersRolesAccess,
     policiesRolesAccess: api.fetchPoliciesRolesAccess,
+    scheduler: api.fetchSchedular,
   };
   let payload;
   if (module === 'clusters') payload = localStorage.getItem(CLUSTERS_TOKEN);

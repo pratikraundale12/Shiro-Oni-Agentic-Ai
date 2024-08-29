@@ -7,6 +7,7 @@ import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { SchedularActions } from '../../store/schedular/redux';
 
 const ModalBody = styled.div`
   position: relative;
@@ -25,19 +26,20 @@ const ParameterContext = ({
   openAddParameterContext,
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
-  setParameterContextItem,
-  newlyAddedPrameterContext,
-  setNewlyAddedParameterContext,
+  isParameterContextOpen,
 }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const newlyAddParameters = useSelector(
+    NamespacesSelectors.getNewlyAddedParameterContext
+  );
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
   const copyParameterDetailsData =
     parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
-  const tableData = [...copyParameterDetailsData, ...newlyAddedPrameterContext];
+  const tableData = [...copyParameterDetailsData, ...newlyAddParameters];
 
   const COLUMNS = [
     {
@@ -57,7 +59,6 @@ const ParameterContext = ({
                   ? KDFM.EMPTY_STRING_SET
                   : KDFM.NO_VALUE_SET
           }
-          capitalizeText={false}
         />
       ),
     },
@@ -68,8 +69,12 @@ const ParameterContext = ({
             disabled={loading}
             onClick={() => {
               setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
-              setIsParameterContextOpen(false);
-              setParameterContextItem(item);
+              if (isParameterContextOpen?.schedule) {
+                setIsParameterContextOpen({ isOpen: false, schedule: true });
+              } else {
+                setIsParameterContextOpen({ isOpen: false, schedule: false });
+              }
+              dispatch(NamespacesActions.setParameterContextItem(item));
             }}
           >
             <PencilIcon color="black" />
@@ -78,17 +83,21 @@ const ParameterContext = ({
       ),
     },
   ];
-
   const handleSaveParameterContext = async () => {
-    if (!newlyAddedPrameterContext) return;
+    if (!newlyAddParameters) return;
     setLoading(true);
     dispatch(
       NamespacesActions.updateParameterContext({
-        modifiedPayloadData: [...newlyAddedPrameterContext],
+        modifiedPayloadData: [...newlyAddParameters],
       })
     );
     setLoading(false);
-    setNewlyAddedParameterContext([]);
+    dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
+  };
+
+  const backSchedule = () => {
+    setIsParameterContextOpen({ isOpen: false, schedule: true });
+    dispatch(SchedularActions.setScheduleModal());
   };
 
   return (
@@ -100,9 +109,13 @@ const ParameterContext = ({
       isLoading={loading}
       onSecondarySubmit={openAddParameterContext}
       secondaryButtonText={KDFM.ADD_PARAMETER_CONTEXT}
-      primaryButtonDisabled={!newlyAddedPrameterContext?.length || loading}
-      primaryButtonText={KDFM.SAVE}
-      onSubmit={handleSaveParameterContext}
+      primaryButtonDisabled={!newlyAddParameters?.length || loading}
+      primaryButtonText={isParameterContextOpen?.schedule ? 'Back' : KDFM.SAVE}
+      onSubmit={
+        isParameterContextOpen?.schedule
+          ? backSchedule
+          : handleSaveParameterContext
+      }
       footerAlign="start"
       secondaryButtonProps={{ icon: <PlusCircleIcon />, disabled: loading }}
     >
@@ -129,6 +142,7 @@ ParameterContext.propTypes = {
   newlyAddedPrameterContext: PropTypes.array,
   getParamerterContext: PropTypes.func.isRequired,
   setNewlyAddedParameterContext: PropTypes.func.isRequired,
+  isParameterContextOpen: PropTypes.object,
 };
 
 export default ParameterContext;
