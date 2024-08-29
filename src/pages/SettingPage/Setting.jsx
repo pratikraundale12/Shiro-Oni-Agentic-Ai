@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { EMAIL_REGEX, KDFM, REFRESH_OPTIONS } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -9,10 +11,9 @@ import {
   RefreshIcon,
   UploadIcon,
 } from '../../assets';
-import { KDFM, REFRESH_OPTIONS } from '../../constants';
-import { changeFavicon } from '../../helpers';
 import { Button, InputField, SelectField, UploadField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -31,6 +32,8 @@ const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: fixed;
+  bottom: 20px;
 `;
 
 const StyledInputField = styled(InputField)`
@@ -41,6 +44,19 @@ const StyledInputTitle = styled(InputField)`
   width: 50%;
 `;
 
+export const settingSchema = yup.object().shape({
+  email: yup
+    .string()
+    .matches(EMAIL_REGEX, 'Invalid email address')
+    .max(25, 'Email can not be greater than 25 characters'),
+
+  title: yup
+    .string()
+    .max(25, 'Title must be 25 characters or less')
+    .matches(/^[a-zA-Z0-9\s]+$/, 'Title must not contain special characters')
+    .required('Title is required'),
+});
+
 export const Setting = () => {
   const {
     control,
@@ -49,10 +65,11 @@ export const Setting = () => {
     watch,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
+  const [isChanged, setIsChanged] = useState(false);
 
   const onSubmit = async data => {
     setLoading(true);
@@ -95,6 +112,35 @@ export const Setting = () => {
       }
     }
   }, [settingData, setValue]);
+
+  useEffect(() => {
+    const subscription = watch(value => {
+      const isModified =
+        value.logo !== settingData?.logo ||
+        value.favicon !== settingData?.favicon ||
+        value.title !== settingData?.title ||
+        value.refresh !==
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
+        value.email !== settingData?.email;
+
+      setIsChanged(isModified);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch, settingData]);
+
+  function changeFavicon(newFaviconURL) {
+    const favicon = document.getElementById('dynamic-favicon');
+    if (favicon) {
+      favicon.href = newFaviconURL;
+    } else {
+      const newFavicon = document.createElement('link');
+      newFavicon.rel = 'icon';
+      newFavicon.href = newFaviconURL;
+      newFavicon.id = 'dynamic-favicon';
+      document.head.appendChild(newFavicon);
+    }
+  }
 
   return (
     <Wrapper>
@@ -170,10 +216,7 @@ export const Setting = () => {
         />
         <FlexWrapper>
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <Button type="reset" variant="secondary">
-              {KDFM.CANCEL}
-            </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" loading={loading} disabled={!isChanged}>
               {KDFM.SAVE_SETTINGS}
             </Button>
           </div>

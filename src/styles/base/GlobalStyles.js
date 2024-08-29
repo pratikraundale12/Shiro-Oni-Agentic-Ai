@@ -424,7 +424,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   img {
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .bg-white {
