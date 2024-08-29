@@ -128,7 +128,7 @@ export const UserLogin = () => {
 
   return (
     <Layout>
-      <Title>{`👋 ${WELCOME_BACK}`}</Title>
+      <Title>{`${WELCOME_BACK} 👋`}</Title>
       <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <div>

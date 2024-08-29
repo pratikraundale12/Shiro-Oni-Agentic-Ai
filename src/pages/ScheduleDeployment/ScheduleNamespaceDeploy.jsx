@@ -1,17 +1,15 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   ExclamationIcon,
-  GreenRightCircleIcon,
   SmallNotThunderIcon,
   SmallThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
-import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 
@@ -19,21 +17,7 @@ const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
 `;
-const ModalIcon = styled.div`
-  width: 70px;
-  height: 70px;
-  align-items: center;
-  justify-content: center;
-`;
-const ModalHFive = styled.h5`
-  text-align: center !important;
-  font-family: ${props => props.theme.fontNato};
-  font-size: 20px;
-  font-weight: 700;
-  color: #2d343f;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-`;
+
 const RowModal = styled.div`
   margin-top: 1.5rem !important;
   display: flex;
@@ -184,71 +168,45 @@ const WarningText = styled.div`
   color: #444445;
 `;
 
-const NamespaceDeploy = ({
+const ScheduleNamespaceDeploy = ({
   isOpen,
   closePopup,
-  getParamerterContext,
-  handleTertiaryButton,
+  getScheduleParamerterContext,
+  handleScheduleTertiaryButton,
+  handleSubmit,
+  onSubmit,
+  loadingButton,
 }) => {
   const dispatch = useDispatch();
-  const [activeButton, setActiveButton] = useState(null);
-  const deployOrUpgradeDetails = useSelector(
-    NamespacesSelectors.getDeployOrUpgradeDetails
-  );
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
-  const selectedDestCluster = useSelector(
-    NamespacesSelectors.getSelectedDestCluster
-  );
   const handleUpdateStatus = status => {
-    setActiveButton(status);
     dispatch(NamespacesActions.updateNamespaceStatus(status));
-  };
-
-  const handleClick = () => {
-    window.open(deployOrUpgradeDetails.nifiUrl, '_blank');
   };
 
   return (
     <>
       <Modal
-        title={`Namespace ${
-          checkDestCluster.mode === 'upgrade'
-            ? checkDestCluster.version <= formData.version
-              ? KDFM.UPGRADE
-              : KDFM.DOWNGRADE
-            : KDFM.DEPLOY
-        }`}
+        title={`Schedule Namespace `}
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
-        onSecondarySubmit={getParamerterContext}
+        onSecondarySubmit={getScheduleParamerterContext}
         secondaryButtonText="Parameter Context"
-        primaryButtonText="Go to Nifi Instance"
+        primaryButtonText="Schedule"
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
-        onSubmit={handleClick}
+        onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
-        secondaryButtonProps={{
-          disabled: !deployOrUpgradeDetails?.parameterContextId,
-        }}
         tertiaryButton={true}
         tertiaryButtonConfig={{
           tertiaryButtonTest: 'Variables',
-          tertiaryButtonSubmit: handleTertiaryButton,
+          tertiaryButtonSubmit: handleScheduleTertiaryButton,
           tertiaryButtonDisable: false,
+          tertiaryButtonLoading: loadingButton,
         }}
+        loading={loadingButton}
       >
         <ModalBody className="modal-body">
-          <div className="d-flex justify-content-center align-items-center">
-            <ModalIcon className="d-flex me-3 ">
-              <GreenRightCircleIcon />
-            </ModalIcon>
-            <ModalHFive>
-              Namespace successfully {''}
-              {checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'deployed'} to
-              {''} {selectedDestCluster?.label}
-            </ModalHFive>
-          </div>
           <RowModal>
             <ColumnThree className="col-4 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
@@ -272,22 +230,22 @@ const NamespaceDeploy = ({
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-1"
-                      count={deployOrUpgradeDetails?.runningCount}
+                      count={checkDestCluster?.runningCount}
                       activeColor="#58e715"
                     >
                       <TriangleIcons color="#B5BDC8" />
-                      <span>{deployOrUpgradeDetails?.runningCount}</span>
+                      <span>{checkDestCluster?.runningCount}</span>
                     </CountDiv>
                     <div>Running Processors</div>
                   </div>
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-2"
-                      count={deployOrUpgradeDetails?.stoppedCount}
+                      count={checkDestCluster?.stoppedCount}
                       activeColor="#c52b2b"
                     >
                       <SquareBoxIcon color="#B5BDC8" />
-                      <span>{deployOrUpgradeDetails?.stoppedCount}</span>
+                      <span>{checkDestCluster?.stoppedCount}</span>
                     </CountDiv>
                     <div>Stopped Processors</div>
                   </div>
@@ -296,22 +254,22 @@ const NamespaceDeploy = ({
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-3"
-                      count={deployOrUpgradeDetails?.invalidCount}
+                      count={checkDestCluster?.invalidCount}
                       activeColor="#CF9F5D"
                     >
                       <TriangleExclamationMarkIcon color="#B5BDC8" />
-                      <span>{deployOrUpgradeDetails?.invalidCount}</span>
+                      <span>{checkDestCluster?.invalidCount}</span>
                     </CountDiv>
                     <div>Invalid Processors</div>
                   </div>
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-4"
-                      count={deployOrUpgradeDetails?.disabledCount}
+                      count={checkDestCluster?.disabledCount}
                       activeColor="#2c7cf3"
                     >
                       <SmallNotThunderIcon color="#B5BDC8" />
-                      <span>{deployOrUpgradeDetails?.disabledCount}</span>
+                      <span>{checkDestCluster?.disabledCount}</span>
                     </CountDiv>
                     <div>Disabled Processors</div>
                   </div>
@@ -324,7 +282,7 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-1">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'RUNNING'}
+                    // isActive={activeButton === 'RUNNING'}
                     activeColor="#58e715"
                     hoverColor="#58e715"
                     activeTextColor="#fff"
@@ -336,7 +294,7 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-2">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'STOPPED'}
+                    // isActive={activeButton === 'STOPPED'}
                     activeColor="#c52b2b"
                     hoverColor="#c52b2b"
                     activeTextColor="#fff"
@@ -348,7 +306,7 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-3">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'ENABLED'}
+                    // isActive={activeButton === 'ENABLED'}
                     activeColor="#cf9f5d"
                     hoverColor="#cf9f5d"
                     activeTextColor="#fff"
@@ -360,7 +318,7 @@ const NamespaceDeploy = ({
                 <ActiveButtonDiv className="div-btn-4">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'DISABLED'}
+                    // isActive={activeButton === 'DISABLED'}
                     activeColor="#2c7cf3"
                     hoverColor="#2c7cf3"
                     activeTextColor="#fff"
@@ -392,10 +350,10 @@ const NamespaceDeploy = ({
   );
 };
 
-NamespaceDeploy.propTypes = {
+ScheduleNamespaceDeploy.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
-  getParamerterContext: PropTypes.func,
+  getScheduleParamerterContext: PropTypes.func,
   countDetails: PropTypes.shape({
     data: PropTypes.arrayOf(
       PropTypes.shape({
@@ -414,7 +372,7 @@ NamespaceDeploy.propTypes = {
     name: PropTypes.string,
     id: PropTypes.string,
   }),
-  handleTertiaryButton: PropTypes.func,
+  handleScheduleTertiaryButton: PropTypes.func,
   selectedVersion: PropTypes.string,
   selectedClusterName: PropTypes.string,
   selectedClusterId: PropTypes.string,
@@ -428,6 +386,9 @@ NamespaceDeploy.propTypes = {
       })
     ),
   }),
+  handleSubmit: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  loadingButton: PropTypes.bool,
 };
 
-export default NamespaceDeploy;
+export default ScheduleNamespaceDeploy;
