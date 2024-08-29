@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import {
   ClusterIcon,
   DownArrowIcon,
-  LockIcon,
+  LogoutIcon,
   SettingSmallIcon,
   UserIcon,
 } from '../assets';
@@ -122,7 +122,7 @@ const List = styled.div`
   border-radius: 4px;
   border: 1px solid ${props => props.theme.colors.border};
   display: ${props => (props.show ? 'block' : 'none')};
-  background: ${props => props.theme.colors.lightGrey};
+  background: #fff;
   box-shadow: 0px 0px 5px 0px ${props => props.theme.colors.shadow};
 `;
 
@@ -213,7 +213,7 @@ const ProfileDropdown = () => {
     },
     {
       label: 'Logout',
-      icon: <LockIcon width={18} height={18} />,
+      icon: <LogoutIcon />,
       onClick: () => {
         localStorage.clear();
         const loginUrl =

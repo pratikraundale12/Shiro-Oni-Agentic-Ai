@@ -18,14 +18,6 @@ import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 
-const Container = styled.div`
-  // height: calc(100vh - 78px);
-  // width: calc(100vw - 250px);
-  // overflow: hidden;
-  // padding: 37px 50px 22px 20px;
-  // --bs-bg-opacity: 1;
-  // background-color: white !important;
-`;
 const TopTitleBar = styled.div`
   height: 37px;
   align-items: center;
@@ -234,12 +226,6 @@ const Upgrade = () => {
 
   const handleVersionSelect = version => {
     dispatch(NamespacesActions.setVersion(version));
-    // if (setState) {
-    //   setState(prevState => ({
-    //     ...prevState,
-    //     selectedVersion: version,
-    //   }));
-    // }
   };
 
   const getIconForState = state => {
@@ -262,7 +248,7 @@ const Upgrade = () => {
     checkDestCluster.state === 'LOCALLY_MODIFIED';
 
   return (
-    <Container>
+    <div>
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
           <div>
@@ -422,7 +408,7 @@ const Upgrade = () => {
           </Button>
         </BottomButtonDiv>
       </BottomButton>
-    </Container>
+    </div>
   );
 };
 

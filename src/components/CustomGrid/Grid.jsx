@@ -176,7 +176,7 @@ export const Grid = ({
         }
 
         td {
-          height: 65px;
+          height: 73px;
         }
 
         tbody tr:nth-of-type(even) td {
