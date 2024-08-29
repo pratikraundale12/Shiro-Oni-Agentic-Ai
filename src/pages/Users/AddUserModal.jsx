@@ -152,7 +152,7 @@ export const AddUserModal = props => {
     formData.append('last_name', data.last_name);
     formData.append('email', data.email);
     formData.append('password', data.password);
-    formData.append('phone', data.phone_number);
+    formData.append('phone', data.phone);
     formData.append('is_active', data.is_active !== false);
     formData.append('role_id', data?.role_id);
     formData.append('username', data.username);
@@ -351,11 +351,14 @@ export const AddUserModal = props => {
                 )}
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                   <StyledPhoneField
-                    name="phone_number"
+                    name="phone"
                     errors={errors}
                     control={control}
                     register={register}
                     icon={<PhoneIcon />}
+                    {...(state.selectedItem
+                      ? { value: state.selectedItem.phone }
+                      : {})}
                   />
                 </div>
               </div>

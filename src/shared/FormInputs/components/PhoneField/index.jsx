@@ -88,6 +88,7 @@ const PhoneField = ({
   icon = null,
   required,
   className,
+  value = '',
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -114,6 +115,7 @@ const PhoneField = ({
           })}
           placeholder="Enter your phone number"
           defaultCountry="IN"
+          value={value}
           {...props}
         />
       </div>
@@ -130,6 +132,7 @@ PhoneField.propTypes = {
   icon: PropTypes.node,
   required: PropTypes.string,
   className: PropTypes.string,
+  value: PropTypes.string,
 };
 
 export default PhoneField;
