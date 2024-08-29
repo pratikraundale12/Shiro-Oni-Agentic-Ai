@@ -1,10 +1,11 @@
 // sagas.js
-import { call, all, takeLatest } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+import { all, call, takeLatest } from 'redux-saga/effects';
+import { changeFavicon } from '../../helpers';
+import { fetchDashboard } from '../dashboard';
+import { fetchGrid } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SettingsActions } from './redux';
-import { toast } from 'react-toastify';
-import { fetchGrid } from '../grid';
-import { fetchDashboard } from '../dashboard';
 
 export function* createSettings(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -16,6 +17,8 @@ export function* createSettings(api, { payload }) {
   });
 
   if (response.ok) {
+    if (payload.favicon) changeFavicon(URL.createObjectURL(payload.favicon));
+    if (payload.title) document.title = payload.title;
     toast.success('Settings updated.');
     // yield put(RolesActions.permissionModal());
     // yield call(api, { payload: { module: 'fetchSettingsSuccess' } });

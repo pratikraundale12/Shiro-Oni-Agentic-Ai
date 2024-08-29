@@ -1,9 +1,8 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
-import { Button } from '../../shared';
-import { theme } from '../../styles';
 import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
+import { theme } from '../../styles';
 
 const Container = styled.div`
   display: flex;
@@ -15,12 +14,47 @@ const Container = styled.div`
 const Flex = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.5rem;
 `;
 
-const StyledButton = styled(Button)`
-  height: 30px;
-  background-color: ${props => (props.active ? theme.colors.primary : 'none')};
+const StyledButton = styled.button`
+  height: 2rem;
+  width: 2rem;
+  border-radius: 4px;
+  border: ${props =>
+    props.active
+      ? `2px solid ${theme.colors.primary}`
+      : `2px solid ${theme.colors.border}`};
+  background-color: transparent;
+  color: ${props =>
+    props.active ? theme.colors.primary : theme.colors.darker};
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: ${theme.colors.primary};
+    color: ${theme.colors.white};
+    border: 2px solid ${theme.colors.primary};
+
+    & svg path {
+      fill: ${theme.colors.white} !important;
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: ${theme.colors.border};
+    border: 2px solid ${theme.colors.border};
+    & svg path {
+      fill: ${theme.colors.white} !important;
+    }
+  }
+  & svg path {
+    fill: ${theme.colors.border} !important;
+  }
 `;
 
 const Pagination = ({ page, count, setCurrentPage }) => {
@@ -95,12 +129,9 @@ const Pagination = ({ page, count, setCurrentPage }) => {
     <Container>
       <span>{`${getPageRange()} of ${count} List`}</span>
       <Flex>
-        <StyledButton
-          size="sm"
-          onClick={handlePrev}
-          icon={<GreaterArrowIcon color={theme.colors.white} />}
-          disabled={page === 1}
-        />
+        <StyledButton onClick={handlePrev} disabled={page === 1}>
+          <GreaterArrowIcon color={theme.colors.white} />
+        </StyledButton>
         {pageNumbers.map((number, index) => (
           <StyledButton
             key={index}
@@ -112,12 +143,9 @@ const Pagination = ({ page, count, setCurrentPage }) => {
             {number}
           </StyledButton>
         ))}
-        <StyledButton
-          size="sm"
-          onClick={handleNext}
-          icon={<LessArrowIcon color={theme.colors.white} />}
-          disabled={page === totalPage}
-        />
+        <StyledButton onClick={handleNext} disabled={page === totalPage}>
+          <LessArrowIcon color={theme.colors.white} />
+        </StyledButton>
       </Flex>
     </Container>
   );

@@ -13,6 +13,7 @@ import {
   MODULE_LIST_MAP,
 } from '../../constants';
 import { history } from '../../helpers/history';
+import { getButtonPermissions } from '../../helpers/permissions';
 import { Button, SelectField } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -27,12 +28,12 @@ import {
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { ClusterSelect } from '../ClusterSelect';
-import { getButtonPermissions } from '../../helpers/permissions';
 
 const Flex = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
 `;
 
 const ButtonsContainer = styled(Flex)`
@@ -43,7 +44,7 @@ const Title = styled.h3`
   font-family: ${props => props.theme.fontNato};
   font-weight: 500;
   font-size: 20px;
-  margin-left: 10px;
+  margin: 0;
 `;
 
 const SearchContainer = styled.div`

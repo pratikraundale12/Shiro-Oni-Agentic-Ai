@@ -1,4 +1,4 @@
-import { createReducer, createAction } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
 const prefix = '@@KDFM-CLUSTERS/';
 
@@ -8,18 +8,21 @@ export const ClustersActions = {
   fetchClusterListSuccess: createAction(`${prefix}fetchClusterListSuccess`),
   fetchClusterNodes: createAction(`${prefix}fetchClusterNodes`),
   fetchClusterNodesSuccess: createAction(`${prefix}fetchClusterNodesSuccess`),
+  updateClusterSuccessModal: createAction(`${prefix}updateClusterSuccessModal`),
 };
 
 /* ------------- INITIAL STATE ------------- */
 export const CLUSTERS_INITIAL_STATE = {
   list: [],
   nodes: [],
+  clusterSuccessModal: false,
 };
 
 /* ------------- SELECTORS ------------------ */
 export const ClustersSelectors = {
   getClusters: state => state.clusters.list,
   getClusterNodes: state => state.clusters.nodes,
+  getClusterSuccessModal: state => state.clusters.clusterSuccessModal,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -37,6 +40,13 @@ const fetchClusterNodesSuccess = (state, { payload }) => {
   };
 };
 
+const updateClusterSuccessModal = (state, { payload }) => {
+  return {
+    ...state,
+    clusterSuccessModal: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -46,6 +56,10 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.fetchClusterNodesSuccess,
         fetchClusterNodesSuccess
+      )
+      .addCase(
+        ClustersActions.updateClusterSuccessModal,
+        updateClusterSuccessModal
       );
   }
 );

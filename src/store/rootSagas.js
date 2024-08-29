@@ -8,6 +8,7 @@ import { dashboardSagas } from './dashboard';
 import { gridSagas } from './grid/sagas';
 import { namespacesSagas } from './namespaces';
 import { policiesSagas } from './policies';
+import { schedularSagas } from './schedular';
 import { settingsSagas } from './settings';
 import { rolesSagas } from './roles/sagas';
 import { usersSagas } from './users';
@@ -33,6 +34,8 @@ export default function* root() {
     fork(rolesSagas, api),
     // |---------------------policies-------------------------|
     fork(policiesSagas, api),
+    // |---------------------schedular-------------------------|
+    fork(schedularSagas, api),
     // |---------------------settings-------------------------|
     fork(settingsSagas, api),
     // |---------------------activityHistory-------------------------|
