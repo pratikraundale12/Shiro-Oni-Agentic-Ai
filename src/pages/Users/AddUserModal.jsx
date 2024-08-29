@@ -11,7 +11,6 @@ import {
   Modal,
   SelectField,
   PasswordField,
-  PhoneField,
 } from '../../shared';
 import { PlusCircleIcon, UserIcon, MailIcon, PhoneIcon } from '../../assets';
 import { createUserApi, editUserDataApi } from '../../store/index1';
@@ -97,10 +96,6 @@ const StyledPasswordField = styled(PasswordField)`
   margin-bottom: 0.4rem;
 `;
 
-const StyledPhoneField = styled(PhoneField)`
-  margin-bottom: 0.4rem;
-`;
-
 const DropDownWrapper = styled.div`
   min-width: 15%;
   margin-right: 10px;
@@ -152,7 +147,7 @@ export const AddUserModal = props => {
     formData.append('last_name', data.last_name);
     formData.append('email', data.email);
     formData.append('password', data.password);
-    formData.append('phone', data.phone);
+    formData.append('phone', data.phone || null);
     formData.append('is_active', data.is_active !== false);
     formData.append('role_id', data?.role_id);
     formData.append('username', data.username);
@@ -350,15 +345,14 @@ export const AddUserModal = props => {
                   </div>
                 )}
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
-                  <StyledPhoneField
+                  <StyledInputField
                     name="phone"
-                    errors={errors}
-                    control={control}
+                    type="text"
+                    label="Mobile Number"
+                    placeholder="Enter Mobile No"
                     register={register}
+                    errors={errors}
                     icon={<PhoneIcon />}
-                    {...(state.selectedItem
-                      ? { value: state.selectedItem.phone }
-                      : {})}
                   />
                 </div>
               </div>
