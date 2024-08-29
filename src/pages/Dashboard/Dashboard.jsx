@@ -3,10 +3,6 @@ import styled from 'styled-components';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
-import styled from 'styled-components';
 
 import { ClusterSelect, FullPageLoader, Table } from '../../components';
 import { SelectField } from '../../shared';
