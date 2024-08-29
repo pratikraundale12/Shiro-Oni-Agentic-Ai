@@ -3,8 +3,8 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { KsolvesDataFlowIcon } from '../assets';
-import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
-import { KDFM } from '../constants';
+// import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
+// import { KDFM } from '../constants';
 import { history } from '../helpers/history';
 import { ROUTES_MENU } from '../routes';
 import {
@@ -84,17 +84,11 @@ export const Item = styled.li`
   }
 `;
 
-const HelpSupportConatiner = styled.div`
-  display: flex;
-  align-items: flex-end;
-  margin-top: auto;
-  width: 100%;
-`;
-
 export const KDFMVersion = styled.div`
   color: ${props => props.theme.colors.darker};
   font-size: 14px;
   font-weight: 500;
+  margin-top: auto;
 `;
 
 const LOGO_HEIGHT = 80;
@@ -155,6 +149,15 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
               key={item.path}
               active={active}
               onClick={() => handleRoute(item.path)}
+              style={
+                item.path === 'helpAndSupport'
+                  ? {
+                      position: 'absolute',
+                      bottom: '50px',
+                      display: 'flex',
+                    }
+                  : {}
+              }
             >
               <item.icon
                 color={active ? theme.colors.white : theme.colors.darker}
@@ -165,12 +168,6 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
         })}
       </List>
 
-      <HelpSupportConatiner>
-        <Item active={false}>
-          <QuestionMarkIcon />
-          <span>{KDFM.HELP_AND_SUPPORT}</span>
-        </Item>
-      </HelpSupportConatiner>
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
         <span>Version 1.0.0</span>

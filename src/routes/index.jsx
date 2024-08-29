@@ -15,6 +15,7 @@ import {
   NameSpaceIcon,
   PeopleIcon,
   ReadyFlowIcon,
+  QuestionMarkIcon,
   ScheduleDeploymentIcon,
   SettingSmallIcon,
 } from '../assets';
@@ -26,6 +27,7 @@ import {
   Dashboard,
   Forgot,
   GenrateFlow,
+  HelpAndSupport,
   LdapConfig,
   ListClusters,
   ListNamespaces,
@@ -212,6 +214,19 @@ export const ROUTES_MENU = [
       },
     ],
     isSideBarHidden: true,
+  },
+
+  {
+    name: 'Help & support',
+    path: 'helpAndSupport',
+    icon: QuestionMarkIcon,
+    pages: [
+      {
+        path: '',
+        component: <HelpAndSupport />,
+      },
+    ],
+    permission: 'view_ldap',
   },
 ];
 
