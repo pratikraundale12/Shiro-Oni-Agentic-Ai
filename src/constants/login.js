@@ -1,5 +1,5 @@
 export const VERSION = 'Version 1.5.7';
-export const WELCOME_BACK = 'Welcome back';
+export const WELCOME_BACK = 'Hello there!';
 export const LOGIN_TO_YOUR_ACCOUNT = 'Login to your account';
 export const FORGOT_PASSWORD = 'Forgot password?';
 export const SIGN_IN_TO_YOUR_ACCOUNT = 'Sign in to your Account';
