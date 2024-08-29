@@ -178,9 +178,6 @@ const ScheduleNamespaceDeploy = ({
   loadingButton,
 }) => {
   const dispatch = useDispatch();
-  // const deployOrUpgradeDetails = useSelector(
-  //   NamespacesSelectors.getDeployOrUpgradeDetails
-  // );
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const handleUpdateStatus = status => {
@@ -200,9 +197,6 @@ const ScheduleNamespaceDeploy = ({
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
-        // secondaryButtonProps={{
-        //   disabled: !deployOrUpgradeDetails?.parameterContextId,
-        // }}
         tertiaryButton={true}
         tertiaryButtonConfig={{
           tertiaryButtonTest: 'Variables',

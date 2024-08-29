@@ -100,7 +100,7 @@ const ParameterContext = ({
     setIsParameterContextOpen({ isOpen: false, schedule: true });
     dispatch(SchedularActions.setScheduleModal());
   };
-  isParameterContextOpen?.schedule;
+
   return (
     <Modal
       title={KDFM.PARAMETER_CONTEXT}

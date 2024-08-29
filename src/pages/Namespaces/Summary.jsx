@@ -436,16 +436,14 @@ const Summary = () => {
   };
 
   const closeParameterContext = () => {
+    setIsParameterContextOpen(prev => ({ ...prev, isOpen: false }));
     if (isParameterContextOpen.schedule) {
-      setIsParameterContextOpen({ isOpen: false, schedule: true });
       dispatch(SchedularActions.setScheduleModal());
     } else {
-      setIsParameterContextOpen({ isOpen: false, schedule: false });
-      dispatch(SchedularActions.setScheduleModal());
+      dispatch(NamespacesActions.setDeployedModal());
     }
 
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
-    dispatch(NamespacesActions.setDeployedModal());
   };
 
   const openAddParameterContext = () => {
@@ -480,8 +478,12 @@ const Summary = () => {
     setModalOpen(false);
   };
   const closeVariablesModal = () => {
-    setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: false });
-    dispatch(NamespacesActions.setDeployedModal());
+    setVariablesModalOpen(prev => ({ ...prev, isOpen: false }));
+    if (isVariablesModalOpen.schedule) {
+      dispatch(SchedularActions.setScheduleModal());
+    } else {
+      dispatch(NamespacesActions.setDeployedModal());
+    }
   };
 
   const handleBackClick = () => {
@@ -851,10 +853,8 @@ const Summary = () => {
         handleTertiaryButton={handleTertiaryButton}
       />
       <ScheduleNamespaceDeploy
-        isParameterContextOpen={isParameterContextOpen}
         isOpen={isScheduleModal}
         closePopup={handleScheduleNamespaceDeployModel}
-        openParameterContext={openParameterContext}
         getScheduleParamerterContext={getScheduleParamerterContext}
         handleScheduleTertiaryButton={handleScheduleTertiaryButton}
         onSubmit={onSubmit}

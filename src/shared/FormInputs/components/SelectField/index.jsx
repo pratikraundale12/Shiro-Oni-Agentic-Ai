@@ -123,8 +123,6 @@ const SelectField = ({
   optionEntity = '',
   ...props
 }) => {
-  console.log(optionEntity);
-
   const animatedComponents = makeAnimated();
   const error = hasError(errors, name);
 

@@ -117,7 +117,7 @@ const Listvariables = ({
       variablesData = [...variableList.variables, ...variables];
     }
   }
-  // console.log(variablesData);
+
   const openVariable = () => {
     setIsAddVariablesOpen({ isOpen: true, mode: 'add' });
     dispatch(NamespacesActions.setVariableContextItem({}));
