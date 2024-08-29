@@ -91,8 +91,6 @@ const AddParameterContext = ({
   setIsParameterContextOpen,
   parameterContextItem,
   isParameterContextOpen,
-  // newlyAddedPrameterContext,
-  // setNewlyAddedParameterContext,
 }) => {
   const dispatch = useDispatch();
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
@@ -207,12 +205,10 @@ const AddParameterContext = ({
             data,
           ])
         );
-        // setNewlyAddedParameterContext([...updatedData, data]);
       } else {
         dispatch(
           NamespacesActions.setNewlyAddedParameterContext([...updatedData])
         );
-        // setNewlyAddedParameterContext([...updatedData]);
       }
     } else {
       dispatch(
@@ -221,7 +217,6 @@ const AddParameterContext = ({
           data,
         ])
       );
-      // setNewlyAddedParameterContext([...newlyAddedPrameterContext, data]);
     }
     console.log('isParameterContextOpen', isParameterContextOpen);
     if (isParameterContextOpen?.schedule) {

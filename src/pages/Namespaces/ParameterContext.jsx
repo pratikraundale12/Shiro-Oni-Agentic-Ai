@@ -93,7 +93,6 @@ const ParameterContext = ({
     );
     setLoading(false);
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
-    // setNewlyAddedParameterContext([]);
   };
 
   const backSchedule = () => {

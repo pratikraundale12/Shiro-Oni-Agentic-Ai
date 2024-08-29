@@ -1,10 +1,8 @@
-/* eslint-disable no-unused-vars */
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -27,15 +25,9 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import {
-  // deployCluster,
-  fetchParameterContext,
-  fetchVariables,
-  getClusterProgress,
-  getClusterProgressDelete,
-  getCountDetails,
-  updateNamespaceStatus,
-  upgradeCluster,
-} from '../../store/index1';
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux';
 import { useGlobalContext } from '../../utils';
 import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
@@ -43,16 +35,6 @@ import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
-// import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
-// import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
-// import { useForm } from 'react-hook-form';
-// import * as yup from 'yup';
-// import { yupResolver } from '@hookform/resolvers/yup';
-import { useNavigate } from 'react-router-dom';
-import {
-  SchedularActions,
-  SchedularSelectors,
-} from '../../store/schedular/redux';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -318,7 +300,6 @@ const Summary = () => {
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
-  const [isModalOpen, setModalOpen] = useState(false);
   const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState({
     isOpen: false,
@@ -344,8 +325,7 @@ const Summary = () => {
     mode: 'add',
     schedule: false,
   });
-  const [progress, setProgress] = useState(0);
-  const { state, setState } = useGlobalContext();
+  const { state } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
   const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
@@ -420,7 +400,6 @@ const Summary = () => {
     }
 
     dispatch(NamespacesActions.upgradeCluster());
-    setProgress(deployOrUpgradeDetails?.percentCompleted);
   };
   const handleDeploy = () => {
     dispatch(NamespacesActions.deployCluster());
@@ -469,13 +448,11 @@ const Summary = () => {
   const handleTertiaryButton = async () => {
     dispatch(NamespacesActions.fetchVariableList());
     setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: false });
-    setModalOpen(false);
   };
 
   const handleScheduleTertiaryButton = async () => {
     setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
     dispatch(SchedularActions.setScheduleModal());
-    setModalOpen(false);
   };
   const closeVariablesModal = () => {
     setVariablesModalOpen(prev => ({ ...prev, isOpen: false }));
@@ -847,7 +824,6 @@ const Summary = () => {
       <NamespaceDeploy
         isOpen={isDeployedModal}
         closePopup={handleCloseModal}
-        setModalOpen={setModalOpen}
         openParameterContext={openParameterContext}
         getParamerterContext={getParamerterContext}
         handleTertiaryButton={handleTertiaryButton}

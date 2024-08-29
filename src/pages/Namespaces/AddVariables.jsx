@@ -62,7 +62,6 @@ const AddVariables = ({
   ]);
 
   const handleAddEditVariables = async data => {
-    // console.log('data', data);
     if (!data) return;
     const nameExists = (contextList, name) =>
       contextList.some(
@@ -114,7 +113,6 @@ const AddVariables = ({
         dispatch(
           NamespacesActions.setNewlyAddVariables([...updatedData, data])
         );
-        // setNewlyAddvariables([...updatedData, data]);
       } else {
         dispatch(NamespacesActions.setNewlyAddVariables([...updatedData]));
       }
@@ -122,7 +120,6 @@ const AddVariables = ({
       dispatch(
         NamespacesActions.setNewlyAddVariables([...newlyAddVariables, data])
       );
-      // setNewlyAddvariables([...newlyAddVariables, data]);
     }
 
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
@@ -181,7 +178,6 @@ const AddVariables = ({
             label={KDFM.SET_EMPTY_STRING}
             register={register}
           />
-          {/* Add a submit button here if not using Modal's submit functionality */}
         </form>
       </ModalBody>
     </Modal>

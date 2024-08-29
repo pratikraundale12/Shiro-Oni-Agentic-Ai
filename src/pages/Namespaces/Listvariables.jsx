@@ -24,18 +24,15 @@ const Listvariables = ({
   isOpen,
   closePopup,
   isVariablesModalOpen,
-  // handleTertiaryButton,
   setVariablesModalOpen,
 }) => {
-  // const [variableContextItem, setVariableContextItem] = useState({});
-  // const [newlyAddVariables, setNewlyAddvariables] = useState([]);
   const variableContextItem = useSelector(
     NamespacesSelectors.getVariableContextItem
   );
   const newlyAddVariables = useSelector(
     NamespacesSelectors.getNewlyAddVariables
   );
-  // console.log(newlyAddVariables, 'newlyAddVariables');
+
   const variableList = useSelector(NamespacesSelectors.getVariableList);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -97,7 +94,6 @@ const Listvariables = ({
   ];
 
   let variablesData = [];
-  // console.log(isVariablesModalOpen, 'variableList');
   if (
     (variableList && variableList.variables) ||
     isVariablesModalOpen.schedule
@@ -189,9 +185,6 @@ const Listvariables = ({
         <AddVariables
           isVariablesModalOpen={isVariablesModalOpen}
           variableContextItem={variableContextItem}
-          // setVariableContextItem={setVariableContextItem}
-          // newlyAddVariables={newlyAddVariables}
-          // setNewlyAddvariables={setNewlyAddvariables}
           isOpen={isAddVariablesOpen}
           closePopup={closeAddVariablesModal}
           isAddVariablesOpen={isAddVariablesOpen}
