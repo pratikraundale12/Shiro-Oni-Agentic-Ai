@@ -67,6 +67,14 @@ export const Item = styled.li`
   cursor: pointer;
   transition: all 0.3s ease-in-out;
 
+  ${props =>
+    props.path === 'help-&-support' &&
+    `
+      position: absolute;
+      bottom: 50px;
+      width: 100%;
+    `}
+
   &::before {
     content: '';
     position: absolute;
@@ -149,15 +157,7 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
               key={item.path}
               active={active}
               onClick={() => handleRoute(item.path)}
-              style={
-                item.path === 'helpAndSupport'
-                  ? {
-                      position: 'absolute',
-                      bottom: '50px',
-                      display: 'flex',
-                    }
-                  : {}
-              }
+              path={item.path}
             >
               <item.icon
                 color={active ? theme.colors.white : theme.colors.darker}

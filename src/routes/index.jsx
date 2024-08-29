@@ -218,7 +218,7 @@ export const ROUTES_MENU = [
 
   {
     name: 'Help & support',
-    path: 'helpAndSupport',
+    path: 'help-&-support',
     icon: QuestionMarkIcon,
     pages: [
       {

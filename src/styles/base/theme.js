@@ -71,7 +71,7 @@ const theme = {
     desktop: '1024px',
     desktopHD: '1440px',
   },
-  sidebar: '250px',
+  sidebar: '280px',
   header: '78px',
   zIndex: {},
 };
