@@ -1,3 +1,7 @@
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -173,6 +177,8 @@ export const Dashboard = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchDashboard')
   );
+  const [updatedErrors, setUpdatedErrors] = useState([]);
+
   const COLUMNS = [
     {
       label: 'Process Group',
@@ -210,11 +216,11 @@ export const Dashboard = () => {
       renderCell: item => (
         <TextEllipses>
           <CrossIcon color="red" />
-          <ErrorTexts data-tooltip-id={`tooltip-${item.processor_group_id}-m`}>
+          <ErrorTexts data-tooltip-id={`tooltip-${item.index}-m`}>
             {item.message}
           </ErrorTexts>
           <ReactTooltip
-            id={`tooltip-${item.processor_group_id}-m`}
+            id={`tooltip-${item.index}-m`}
             place="right"
             content={item.message}
             style={{
@@ -245,6 +251,15 @@ export const Dashboard = () => {
     }
   }, [dispatch, selectedCluster]);
 
+  useEffect(() => {
+    if (dashboardData?.errors) {
+      let updatedError = dashboardData?.errors.map((element, index) => ({
+        ...element,
+        index: index,
+      }));
+      setUpdatedErrors(updatedError);
+    }
+  }, [dashboardData]);
   return (
     <>
       <Loader loading={loading} />
@@ -345,7 +360,7 @@ export const Dashboard = () => {
 
         <HeaderText>Errors</HeaderText>
       </ErrorsHeader>
-      <StyledTable data={dashboardData.errors || []} columns={COLUMNS} />
+      <StyledTable data={updatedErrors || []} columns={COLUMNS} />
     </>
   );
 };
