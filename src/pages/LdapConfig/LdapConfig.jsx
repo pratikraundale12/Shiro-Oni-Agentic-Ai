@@ -425,7 +425,7 @@ export const LdapConfig = () => {
               <Button
                 onClick={handleSubmitForm2(getLDAPGroup)}
                 disabled={!saveButtonStatus || !ldapInitialConfig}
-                loading={loadings}
+                loading={loadings && 'Fetching..'}
               >
                 Continue
               </Button>
