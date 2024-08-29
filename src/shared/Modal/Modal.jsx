@@ -62,7 +62,7 @@ export const Modal = ({
   title,
   children,
   isOpen,
-  closeIcon= true,
+  closeIcon = true,
   onRequestClose,
   loading = false,
   secondaryButtonText = '',
@@ -100,7 +100,7 @@ export const Modal = ({
       overflow: 'hidden',
       borderRadius: 16,
       minWidth: '30%',
-      maxWidth: '546px',  
+      maxWidth: '546px',
       width: '90%',
       maxHeight: '90%',
       transform: 'translate(-50%, -50%)',
@@ -135,7 +135,9 @@ export const Modal = ({
       >
         <Header>
           <Title className="mb-0">{title}</Title>
-          {closeIcon && <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />}
+          {closeIcon && (
+            <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
+          )}
         </Header>
         <Body>{children}</Body>
         <Footer

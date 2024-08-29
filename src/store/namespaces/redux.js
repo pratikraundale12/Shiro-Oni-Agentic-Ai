@@ -45,6 +45,13 @@ export const NamespacesActions = {
   fetchNamespaceAuditSuccess: createAction(
     `${prefix}fetchNamespaceAuditSuccess`
   ),
+
+  setVariableContextItem: createAction(`${prefix}setVariableContextItem`),
+  setNewlyAddVariables: createAction(`${prefix}setNewlyAddVariables`),
+  setParameterContextItem: createAction(`${prefix}setParameterContextItem`),
+  setNewlyAddedParameterContext: createAction(
+    `${prefix}setNewlyAddedParameterContext`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -82,6 +89,10 @@ export const NAMESPACES_INITIAL_STATE = {
     breadcrumb: [],
     data: [],
   },
+  variableContextItem: {},
+  newlyAddVariables: [],
+  parameterContextItem: {},
+  newlyAddedParameterContext: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -100,6 +111,11 @@ export const NamespacesSelectors = {
   getDeployedModal: state => state.namespaces.isDeployedModal,
   getVariableList: state => state.namespaces.variableList,
   getNamespaceAudit: state => state.namespaces.namespaceAudit,
+  getVariableContextItem: state => state.namespaces.variableContextItem,
+  getNewlyAddVariables: state => state.namespaces.newlyAddVariables,
+  getParameterContextItem: state => state.namespaces.parameterContextItem,
+  getNewlyAddedParameterContext: state =>
+    state.namespaces.newlyAddedParameterContext,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -233,6 +249,32 @@ const fetchNamespaceAuditSuccess = (state, { payload }) => {
   };
 };
 
+const setVariableContextItem = (state, { payload }) => {
+  return {
+    ...state,
+    variableContextItem: payload,
+  };
+};
+const setParameterContextItem = (state, { payload }) => {
+  return {
+    ...state,
+    parameterContextItem: payload,
+  };
+};
+const setNewlyAddedParameterContext = (state, { payload }) => {
+  return {
+    ...state,
+    newlyAddedParameterContext: payload,
+  };
+};
+
+const setNewlyAddVariables = (state, { payload }) => {
+  return {
+    ...state,
+    newlyAddVariables: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -269,6 +311,16 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.fetchNamespaceAuditSuccess,
         fetchNamespaceAuditSuccess
+      )
+      .addCase(NamespacesActions.setVariableContextItem, setVariableContextItem)
+      .addCase(NamespacesActions.setNewlyAddVariables, setNewlyAddVariables)
+      .addCase(
+        NamespacesActions.setParameterContextItem,
+        setParameterContextItem
+      )
+      .addCase(
+        NamespacesActions.setNewlyAddedParameterContext,
+        setNewlyAddedParameterContext
       );
   }
 );

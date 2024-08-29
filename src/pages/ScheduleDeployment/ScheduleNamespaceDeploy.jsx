@@ -171,16 +171,13 @@ const WarningText = styled.div`
 const ScheduleNamespaceDeploy = ({
   isOpen,
   closePopup,
-  getParamerterContext,
-  handleTertiaryButton,
+  getScheduleParamerterContext,
+  handleScheduleTertiaryButton,
   handleSubmit,
   onSubmit,
   loadingButton,
 }) => {
   const dispatch = useDispatch();
-  const deployOrUpgradeDetails = useSelector(
-    NamespacesSelectors.getDeployOrUpgradeDetails
-  );
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const handleUpdateStatus = status => {
@@ -194,19 +191,16 @@ const ScheduleNamespaceDeploy = ({
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
-        onSecondarySubmit={getParamerterContext}
+        onSecondarySubmit={getScheduleParamerterContext}
         secondaryButtonText="Parameter Context"
         primaryButtonText="Schedule"
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
-        secondaryButtonProps={{
-          disabled: !deployOrUpgradeDetails?.parameterContextId,
-        }}
         tertiaryButton={true}
         tertiaryButtonConfig={{
           tertiaryButtonTest: 'Variables',
-          tertiaryButtonSubmit: handleTertiaryButton,
+          tertiaryButtonSubmit: handleScheduleTertiaryButton,
           tertiaryButtonDisable: false,
           tertiaryButtonLoading: loadingButton,
         }}
@@ -359,7 +353,7 @@ const ScheduleNamespaceDeploy = ({
 ScheduleNamespaceDeploy.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closePopup: PropTypes.func.isRequired,
-  getParamerterContext: PropTypes.func,
+  getScheduleParamerterContext: PropTypes.func,
   countDetails: PropTypes.shape({
     data: PropTypes.arrayOf(
       PropTypes.shape({
@@ -378,7 +372,7 @@ ScheduleNamespaceDeploy.propTypes = {
     name: PropTypes.string,
     id: PropTypes.string,
   }),
-  handleTertiaryButton: PropTypes.func,
+  handleScheduleTertiaryButton: PropTypes.func,
   selectedVersion: PropTypes.string,
   selectedClusterName: PropTypes.string,
   selectedClusterId: PropTypes.string,
