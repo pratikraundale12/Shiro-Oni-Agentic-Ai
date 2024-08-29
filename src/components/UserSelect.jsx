@@ -11,6 +11,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
   const dispatch = useDispatch();
   const userList = useSelector(UsersSelectors.getUsers);
   const AdminList = userList?.filter(item => item.role === 'admin');
+  console.log(AdminList, 'AdminList');
   const handleChange = value => {
     setSearchText(value);
   };
@@ -18,6 +19,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
     dispatch(
       UsersActions.fetchUsers({
         params: { ...(searchText && { search: searchText }) },
+        admin_role_id: AdminList[0]?.role_id,
       })
     );
   }, [dispatch, searchText]);
