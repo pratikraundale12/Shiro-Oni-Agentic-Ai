@@ -1,10 +1,10 @@
 // import { CLUSTERS_TOKEN } from '../../constants';
-import { SchedularActions, SchedularSelectors } from './redux';
-import { call, all, takeLatest, put, select } from 'redux-saga/effects';
-import { requestSaga } from '../helpers/request_sagas';
 import { toast } from 'react-toastify';
+import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN } from '../../constants';
 import { history } from '../../helpers/history';
+import { requestSaga } from '../helpers/request_sagas';
+import { SchedularActions, SchedularSelectors } from './redux';
 
 export function* createScheduleDeployment(api, { payload }) {
   const response = yield call(requestSaga, {
