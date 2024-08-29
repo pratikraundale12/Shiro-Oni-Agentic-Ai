@@ -94,7 +94,8 @@ export const LICENSE_TYPE = {
 };
 
 export const LICENSE_DATE_ISO_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
-export const LICENSE_EXPIRE_PROMPT_DAYS = 30;
+export const LICENSE_EXPIRE_PROMPT_DAYS =
+  process.env.REACT_APP_LICENSE_EXPIRE_TIMESPAN_IN_DAYS || 30;
 
 export const KDFM = {
   // Generic constants
