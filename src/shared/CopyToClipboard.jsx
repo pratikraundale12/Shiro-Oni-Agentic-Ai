@@ -24,8 +24,12 @@ export const StyledButton = styled.button`
 const CopyToClipboard = ({ copyItem, className }) => {
   const handleCopyToClipboard = async value => {
     try {
+      if (!navigator.clipboard) {
+        console.error('Clipboard API not supported in this browser.');
+        return;
+      }
       await navigator.clipboard.writeText(value);
-      toast.info(`${value} is copied to clipboard`);
+      toast.info(`Copied to Clipboard`);
     } catch (err) {
       console.error('Failed to copy: ', err);
     }

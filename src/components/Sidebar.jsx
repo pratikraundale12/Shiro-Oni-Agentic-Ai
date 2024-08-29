@@ -2,10 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-
 import { KsolvesDataFlowIcon } from '../assets';
-import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
-import { KDFM } from '../constants';
+// import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
+// import { KDFM } from '../constants';
 import { history } from '../helpers/history';
 import { ROUTES_MENU } from '../routes';
 import {
@@ -13,8 +12,8 @@ import {
   AuthenticationSelectors,
   LoadingSelectors,
 } from '../store';
-import { theme } from '../styles';
 import { SettingsSelectors } from '../store/settings';
+import { theme } from '../styles';
 import { Loader } from './Loader';
 
 export const Container = styled.div`
@@ -52,11 +51,7 @@ export const List = styled.ul`
   width: 100%;
   margin-top: 20px;
   padding-left: 0;
-  overflow-y: auto;Logo
-Uploaded Preview
-×
-Favicon
-
+  overflow-y: auto;
 `;
 
 export const Item = styled.li`
@@ -89,17 +84,11 @@ export const Item = styled.li`
   }
 `;
 
-const HelpSupportConatiner = styled.div`
-  display: flex;
-  align-items: flex-end;
-  margin-top: auto;
-  width: 100%;
-`;
-
 export const KDFMVersion = styled.div`
   color: ${props => props.theme.colors.darker};
   font-size: 14px;
   font-weight: 500;
+  margin-top: auto;
 `;
 
 const LOGO_HEIGHT = 80;
@@ -136,7 +125,12 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
       );
     if (settingsData?.logo)
       return (
-        <img src={settingsData?.logo} alt="Logo" width={200} height={80} />
+        <img
+          src={settingsData?.logo}
+          alt="Logo"
+          width={200}
+          height={LOGO_HEIGHT}
+        />
       );
     return <KsolvesDataFlowIcon width={200} height={LOGO_HEIGHT} />;
   };
@@ -155,6 +149,15 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
               key={item.path}
               active={active}
               onClick={() => handleRoute(item.path)}
+              style={
+                item.path === 'helpAndSupport'
+                  ? {
+                      position: 'absolute',
+                      bottom: '50px',
+                      display: 'flex',
+                    }
+                  : {}
+              }
             >
               <item.icon
                 color={active ? theme.colors.white : theme.colors.darker}
@@ -165,12 +168,6 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
         })}
       </List>
 
-      <HelpSupportConatiner>
-        <Item active={false}>
-          <QuestionMarkIcon />
-          <span>{KDFM.HELP_AND_SUPPORT}</span>
-        </Item>
-      </HelpSupportConatiner>
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
         <span>Version 1.0.0</span>

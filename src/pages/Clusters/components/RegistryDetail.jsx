@@ -1,18 +1,20 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-
-import { Table, TextRender } from '../../../components';
+import React from 'react';
+import { Table, TextRender, UrlRender } from '../../../components';
+import { KDFM } from '../../../constants';
 
 const RegistryDetail = ({ data }) => {
   const REGISTRYCOLUMNS = [
     {
-      label: 'Registry Name',
-      renderCell: item => <TextRender text={item.name} />,
+      label: KDFM.REGISTRY_NAME,
+      renderCell: item => (
+        <TextRender text={item.name} tooltipPlacement="right" />
+      ),
       width: '25%',
     },
     {
-      label: 'Registry URL',
-      renderCell: item => <TextRender text={item.registry_url} />,
+      label: KDFM.REGISTRY_URL,
+      renderCell: item => <UrlRender url={item.registry_url} />,
       width: '75%',
     },
   ];

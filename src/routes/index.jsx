@@ -15,6 +15,8 @@ import {
   NameSpaceIcon,
   PeopleIcon,
   ReadyFlowIcon,
+  QuestionMarkIcon,
+  ScheduleDeploymentIcon,
   SettingSmallIcon,
 } from '../assets';
 import { FullPageLoader } from '../components';
@@ -25,6 +27,7 @@ import {
   Dashboard,
   Forgot,
   GenrateFlow,
+  HelpAndSupport,
   LdapConfig,
   ListClusters,
   ListNamespaces,
@@ -42,6 +45,7 @@ import {
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import Deploy from '../pages/Namespaces/Deploy';
 import Summary from '../pages/Namespaces/Summary';
+import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import {
   AuthenticationActions,
@@ -103,6 +107,18 @@ export const ROUTES_MENU = [
       {
         path: 'summary',
         component: <Summary />,
+      },
+    ],
+    permission: 'view_namespace',
+  },
+  {
+    name: 'Schedule Deployment',
+    path: 'schedule-deployment',
+    icon: ScheduleDeploymentIcon,
+    pages: [
+      {
+        path: '',
+        component: <ListScheduleDeployment />,
       },
     ],
     permission: 'view_namespace',
@@ -198,6 +214,19 @@ export const ROUTES_MENU = [
       },
     ],
     isSideBarHidden: true,
+  },
+
+  {
+    name: 'Help & support',
+    path: 'helpAndSupport',
+    icon: QuestionMarkIcon,
+    pages: [
+      {
+        path: '',
+        component: <HelpAndSupport />,
+      },
+    ],
+    permission: 'view_ldap',
   },
 ];
 

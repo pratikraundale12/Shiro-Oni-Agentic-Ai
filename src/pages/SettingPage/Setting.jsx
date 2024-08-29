@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { EMAIL_REGEX, KDFM, REFRESH_OPTIONS } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { SelectField, Button, UploadField, InputField } from '../../shared';
+import styled from 'styled-components';
 import {
-  RefreshIcon,
   LogoFieldIcon,
-  UploadIcon,
   MailIcon,
   QRIcons,
+  RefreshIcon,
+  UploadIcon,
 } from '../../assets';
+import { Button, InputField, SelectField, UploadField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -86,8 +86,6 @@ export const Setting = () => {
     try {
       dispatch(SettingsActions.createSettings(payload));
       setLoading(false);
-      if (data.favicon) changeFavicon(URL.createObjectURL(data.favicon));
-      if (data.title) document.title = data.title;
     } catch (error) {
       setLoading(false);
       console.error('Failed to submit settings:', error);
@@ -100,7 +98,6 @@ export const Setting = () => {
         changeFavicon(settingData?.favicon);
       }
       document.title = settingData?.title || 'Data Flow Manager';
-
       setValue('logo', settingData?.logo);
       setValue('favicon', settingData?.favicon);
       setValue('title', settingData?.title);
@@ -109,7 +106,6 @@ export const Setting = () => {
         settingData.refresh === 0 ? 'Off' : settingData?.refresh
       );
       setValue('email', settingData?.email);
-
       const logoElement = document.getElementById('logo');
       if (logoElement && settingData?.logo) {
         logoElement.src = settingData.logo;
@@ -218,7 +214,6 @@ export const Setting = () => {
           placeholder={KDFM.ENTER_META_TITLE}
           errors={errors}
         />
-
         <FlexWrapper>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Button type="submit" loading={loading} disabled={!isChanged}>

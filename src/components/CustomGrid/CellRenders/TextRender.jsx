@@ -15,7 +15,12 @@ const TextColor = styled.div`
   overflow: hidden;
 `;
 
-export const TextRender = ({ text, capitalizeText = true, ...rest }) => {
+export const TextRender = ({
+  text,
+  capitalizeText = true,
+  tooltipPlacement = 'bottom-start',
+  ...rest
+}) => {
   const textToRender = typeof text === 'number' ? String(text) : text;
   return (
     <TextColor {...rest} capitalizeText={capitalizeText}>
@@ -23,7 +28,7 @@ export const TextRender = ({ text, capitalizeText = true, ...rest }) => {
       <ReactTooltip
         id={textToRender}
         content={textToRender}
-        place="bottom-start"
+        place={tooltipPlacement}
       />
     </TextColor>
   );
@@ -32,4 +37,5 @@ export const TextRender = ({ text, capitalizeText = true, ...rest }) => {
 TextRender.propTypes = {
   text: PropTypes.string,
   capitalizeText: PropTypes.bool,
+  tooltipPlacement: PropTypes.string,
 };

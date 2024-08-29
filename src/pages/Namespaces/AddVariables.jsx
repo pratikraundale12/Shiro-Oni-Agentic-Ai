@@ -20,19 +20,23 @@ const DEFAULT_VALUES = {
   value: '',
 };
 const AddVariables = ({
-  newlyAddVariables,
-  setNewlyAddvariables,
   closePopup,
   isAddVariablesOpen,
   setVariablesModalOpen,
+  isVariablesModalOpen,
   setIsAddVariablesOpen,
-  variableContextItem,
 }) => {
   const { register, handleSubmit, reset, control, setValue } = useForm({
     defaultValues: DEFAULT_VALUES,
   });
   const variableList = useSelector(NamespacesSelectors.getVariableList);
   const variablesDetailsData = variableList?.variables || [];
+  const variableContextItem = useSelector(
+    NamespacesSelectors.getVariableContextItem
+  );
+  const newlyAddVariables = useSelector(
+    NamespacesSelectors.getNewlyAddVariables
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -106,17 +110,24 @@ const AddVariables = ({
             variables: filteredVariableList,
           })
         );
-
-        setNewlyAddvariables([...updatedData, data]);
+        dispatch(
+          NamespacesActions.setNewlyAddVariables([...updatedData, data])
+        );
       } else {
-        setNewlyAddvariables([...updatedData]);
+        dispatch(NamespacesActions.setNewlyAddVariables([...updatedData]));
       }
     } else {
-      setNewlyAddvariables([...newlyAddVariables, data]);
+      dispatch(
+        NamespacesActions.setNewlyAddVariables([...newlyAddVariables, data])
+      );
     }
 
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
-    setVariablesModalOpen({ isOpen: true, mode: 'add' });
+    if (isVariablesModalOpen?.schedule) {
+      setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
+    } else {
+      setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: false });
+    }
     reset(DEFAULT_VALUES);
   };
 
@@ -167,7 +178,6 @@ const AddVariables = ({
             label={KDFM.SET_EMPTY_STRING}
             register={register}
           />
-          {/* Add a submit button here if not using Modal's submit functionality */}
         </form>
       </ModalBody>
     </Modal>
@@ -181,6 +191,7 @@ AddVariables.propTypes = {
   setNewlyAddvariables: PropTypes.func,
   setVariablesModalOpen: PropTypes.func.isRequired,
   setIsAddVariablesOpen: PropTypes.func,
+  isVariablesModalOpen: PropTypes.object,
   variableContextItem: PropTypes.func,
 };
 
