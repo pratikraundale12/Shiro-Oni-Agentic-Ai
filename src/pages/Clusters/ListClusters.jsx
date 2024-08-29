@@ -251,8 +251,8 @@ export const ListClusters = () => {
   return (
     <>
       <ModalWithIcon
-        title={KDFM.DELETE_CLUSTER}
-        primaryButtonText={KDFM.DELETE}
+        title={KDFM.DEACTIVATE_CLUSTER}
+        primaryButtonText={KDFM.DEACTIVATE}
         secondaryButtonText={KDFM.CANCEL}
         icon={<DeleteDustbinIcon />}
         isOpen={state.clusterDeleteModal}
