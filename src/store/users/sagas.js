@@ -5,7 +5,6 @@ import { requestSaga } from '../helpers/request_sagas';
 import { UsersActions } from './redux';
 
 export function* fetchUsers(api, { payload }) {
-  console.log(payload, '----payloaddddd');
   const updatePayload = payload?.admin_role_id
     ? { admin_role_id: payload?.admin_role_id }
     : payload;

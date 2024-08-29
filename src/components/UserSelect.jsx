@@ -4,14 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UserIcon } from '../assets';
 import defaultAvatarURL from '../assets/images/avatar.png';
 import { SelectField } from '../shared';
-import { UsersActions, UsersSelectors } from '../store';
+import { RolesSelectors, UsersActions, UsersSelectors } from '../store';
 
 export const UserSelect = ({ control, errors, name, label, placeholder }) => {
   const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
+  const RoleList = useSelector(RolesSelectors.getRoles);
   const userList = useSelector(UsersSelectors.getUsers);
-  const AdminList = userList?.filter(item => item.role === 'admin');
-  console.log(AdminList, 'AdminList');
+  const AdminList = RoleList?.filter(
+    item => item.name.toLowerCase() === 'admin'
+  );
   const handleChange = value => {
     setSearchText(value);
   };
@@ -30,7 +32,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
       control={control}
       icon={<UserIcon />}
       errors={errors}
-      options={AdminList.map(({ id, photo, username }) => ({
+      options={userList.map(({ id, photo, username }) => ({
         value: id,
         label: username,
         avatar: photo ? photo : defaultAvatarURL,
