@@ -147,6 +147,7 @@ export const KDFM = {
   DEACTIVATE: 'Deactivate',
   ROLE: 'Role',
   PROFILE: 'Profile',
+  LOADING: 'Loading...',
 
   // License constants
   TRIAL: 'Trial',

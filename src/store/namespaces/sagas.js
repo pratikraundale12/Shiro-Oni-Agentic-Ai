@@ -595,7 +595,7 @@ export function* fetchNamespaceAudit(api) {
     apiParams: [
       {
         params: {
-          entity: 'namespace',
+          entity: 'Namespace',
         },
         payload: {},
       },

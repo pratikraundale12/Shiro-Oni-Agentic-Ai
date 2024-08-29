@@ -160,7 +160,6 @@ export const Setting = () => {
             setValue={setValue}
           />
         </InputFields>
-
         <StyledInputTitle
           name="title"
           register={register}
