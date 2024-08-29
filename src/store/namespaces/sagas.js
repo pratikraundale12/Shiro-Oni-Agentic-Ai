@@ -230,6 +230,7 @@ export function* clusterProgress(api) {
   );
   const queryParams = {
     sourceNamespaceId: selectedNamespace?.value,
+    sourceNamespaceName: selectedNamespace?.label,
   };
   api.headers['x-cluster-id'] = destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
@@ -506,6 +507,9 @@ export function* addVariableServices(api, { payload }) {
   const deployDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const variableList = yield select(NamespacesSelectors.getVariableList);
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
@@ -523,6 +527,7 @@ export function* addVariableServices(api, { payload }) {
         namespaceId: deployDetails.id,
         version: variableList.version,
         variables: variables,
+        sourceNamespaceName: selectedNamespace?.label,
       },
     ],
   });
@@ -540,6 +545,9 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
   const deployDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
@@ -556,6 +564,7 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
         clusterId: selectedDestCluster?.value,
         namespaceId: deployDetails?.id,
         requestId: additionalData?.requestId,
+        sourceNamespaceName: selectedNamespace?.label,
       },
     ],
   });

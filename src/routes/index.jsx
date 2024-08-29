@@ -118,18 +118,6 @@ export const ROUTES_MENU = [
         path: '',
         component: <ListScheduleDeployment />,
       },
-      {
-        path: 'deploy',
-        component: <Deploy />,
-      },
-      {
-        path: 'upgrade',
-        component: <Upgrade />,
-      },
-      {
-        path: 'summary',
-        component: <Summary />,
-      },
     ],
     permission: 'view_namespace',
   },
