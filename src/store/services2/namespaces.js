@@ -35,8 +35,10 @@ export const namespacesAPI = api => {
     namespaceId,
     version,
     variables,
+    sourceNamespaceName,
   }) =>
     api.post(`clusters/${clusterId}/namespaces/${namespaceId}/variables`, {
+      sourceNamespaceName,
       version,
       variables: variables.map(variable => ({
         variable: {
@@ -46,9 +48,15 @@ export const namespacesAPI = api => {
       })),
     });
 
-  const getVariableServices = ({ clusterId, namespaceId, requestId }) =>
+  const getVariableServices = ({
+    clusterId,
+    namespaceId,
+    requestId,
+    sourceNamespaceName,
+  }) =>
     api.get(
-      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`
+      `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`,
+      { sourceNamespaceName }
     );
 
   const deleteVariableServices = ({ clusterId, namespaceId, requestId }) =>

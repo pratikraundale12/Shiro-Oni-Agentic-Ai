@@ -48,10 +48,15 @@ export const CLUSTER_CONSTANTS = {
   TEST_VIA_CREDENTIALS: 'Test Via Credentials',
   TEST_CLUSTER: 'Test Cluster',
   TEST_REGISTRY: 'Test Registry',
-  DELETE_CLUSTER: 'Deactivate Cluster',
+  DELETE_CLUSTER: 'Delete Cluster',
   SELECTED_CLUSTER: 'Selected Cluster',
+  DEACTIVATE_CLUSTER: 'Deactivate Cluster',
   SEARCH_CLUSTER_NAME_URL: 'Search Cluster Name, Status, URL',
   ENTER_EMAIL: 'Enter your Email',
   ENTER_META_TITLE: 'Enter Meta Title',
   CLUSTER_STATUS: 'Cluster Status',
+  CLUSTER_ADDED: 'Cluster Added',
+  CLUSTER_ADDED_SUCCESSFULLY: 'Cluster Successfully Added',
+  CLUSTER_SUCCESS_DESCRIPTION:
+    'You can check your cluster in the cluster list.',
 };

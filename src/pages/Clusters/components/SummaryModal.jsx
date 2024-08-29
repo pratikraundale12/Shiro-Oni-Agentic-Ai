@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { KDFM } from '../../../constants';
 import { history } from '../../../helpers/history';
 import { Modal } from '../../../shared';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
+import { ClustersActions } from '../../../store';
 import {
   createCluster,
   createRegistry,
@@ -151,6 +153,7 @@ export const SummaryModal = ({
   registry_id,
   edit,
 }) => {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const addRegistry = async () => {
     const data = {
@@ -177,8 +180,8 @@ export const SummaryModal = ({
     const response = await createCluster(data);
     if (response?.status === 201) {
       setLoading(false);
-
       history.push('/clusters');
+      dispatch(ClustersActions.updateClusterSuccessModal(true));
       toast.success(response.message);
     } else {
       setLoading(false);
