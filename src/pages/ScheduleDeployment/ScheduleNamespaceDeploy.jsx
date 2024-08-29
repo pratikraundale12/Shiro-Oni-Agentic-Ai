@@ -17,21 +17,7 @@ const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
 `;
-// const ModalIcon = styled.div`
-//   width: 70px;
-//   height: 70px;
-//   align-items: center;
-//   justify-content: center;
-// `;
-// const ModalHFive = styled.h5`
-//   text-align: center !important;
-//   font-family: ${props => props.theme.fontNato};
-//   font-size: 20px;
-//   font-weight: 700;
-//   color: #2d343f;
-//   line-height: 24px;
-//   letter-spacing: -0.02em;
-// `;
+
 const RowModal = styled.div`
   margin-top: 1.5rem !important;
   display: flex;
@@ -189,6 +175,7 @@ const ScheduleNamespaceDeploy = ({
   handleTertiaryButton,
   handleSubmit,
   onSubmit,
+  loadingButton,
 }) => {
   const dispatch = useDispatch();
   const deployOrUpgradeDetails = useSelector(
@@ -196,12 +183,10 @@ const ScheduleNamespaceDeploy = ({
   );
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
-  // const selectedDestCluster = useSelector(
-  //   NamespacesSelectors.getSelectedDestCluster
-  // );
   const handleUpdateStatus = status => {
     dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
+
   return (
     <>
       <Modal
@@ -223,19 +208,11 @@ const ScheduleNamespaceDeploy = ({
           tertiaryButtonTest: 'Variables',
           tertiaryButtonSubmit: handleTertiaryButton,
           tertiaryButtonDisable: false,
+          tertiaryButtonLoading: loadingButton,
         }}
+        loading={loadingButton}
       >
         <ModalBody className="modal-body">
-          {/* <div className="d-flex justify-content-center align-items-center">
-            <ModalIcon className="d-flex me-3 ">
-              <GreenRightCircleIcon />
-            </ModalIcon>
-            <ModalHFive>
-              Namespace successfully {''}
-              {checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'deployed'} to
-              {''} {selectedDestCluster?.label}
-            </ModalHFive>
-          </div> */}
           <RowModal>
             <ColumnThree className="col-4 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
@@ -417,6 +394,7 @@ ScheduleNamespaceDeploy.propTypes = {
   }),
   handleSubmit: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  loadingButton: PropTypes.bool,
 };
 
 export default ScheduleNamespaceDeploy;

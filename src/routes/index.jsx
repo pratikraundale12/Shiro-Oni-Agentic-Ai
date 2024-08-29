@@ -51,6 +51,7 @@ import {
   LoadingSelectors,
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
+import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 
 export const ROUTES_MENU = [
   {
@@ -110,7 +111,7 @@ export const ROUTES_MENU = [
   },
   {
     name: 'Schedule Deployment',
-    path: 'sechedule-deployment',
+    path: 'schedule-deployment',
     icon: ScheduleDeploymentIcon,
     pages: [
       {
@@ -182,7 +183,7 @@ export const ROUTES_MENU = [
         component: <ModuleAccess />,
       },
       {
-        path: [':id'],
+        path: ['cluster-access'],
         component: <ClusterAccess />,
       },
     ],
@@ -241,7 +242,9 @@ const Routes = () => {
 
   useEffect(() => {
     if (settingsData) {
-      changeFavicon(settingsData?.favicon || '%PUBLIC_URL%/favicon.ico');
+      if (settingsData?.favicon) {
+        changeFavicon(settingsData?.favicon);
+      }
       document.title = settingsData?.title || 'Data Flow Manager';
     }
   }, [settingsData]);
@@ -253,7 +256,7 @@ const Routes = () => {
     } else {
       const newFavicon = document.createElement('link');
       newFavicon.rel = 'icon';
-      newFavicon.href = newFaviconURL || '%PUBLIC_URL%/favicon.ico';
+      newFavicon.href = newFaviconURL;
       newFavicon.id = 'dynamic-favicon';
       document.head.appendChild(newFavicon);
     }
@@ -271,6 +274,30 @@ const Routes = () => {
       <Route path="/reset" element={<Reset />} />
       <Route path="/success" element={<Success />} />
       <Route path="/login" element={<UserLogin />} />
+      <Route path="/policy" element={<UnAuthGuard />}>
+        {UNAUTHROUTES_MENU?.map(item => (
+          <Route key={item.path} path={item.path} exact element={<Outlet />}>
+            {item.pages.map(page =>
+              Array.isArray(page.path) ? (
+                page.path.map(subPath => (
+                  <Route
+                    key={subPath}
+                    path={subPath}
+                    element={page.component}
+                  />
+                ))
+              ) : (
+                <Route
+                  key={page.path}
+                  path={page.path}
+                  index={!!page.path}
+                  element={page.component}
+                />
+              )
+            )}
+          </Route>
+        ))}
+      </Route>
 
       {/* Private Routes */}
       <Route path="/" element={<AuthGaurd />}>

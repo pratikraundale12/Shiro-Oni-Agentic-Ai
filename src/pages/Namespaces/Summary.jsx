@@ -18,7 +18,11 @@ import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import {
   // deployCluster,
   fetchParameterContext,
@@ -39,7 +43,11 @@ import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDepl
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { SchedularActions } from '../../store/schedular/redux';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux';
+import { useNavigate } from 'react-router-dom';
 
 const MainContainer = styled.div`
   // height: calc(100vh - 78px);
@@ -346,6 +354,10 @@ const Summary = () => {
   const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const isScheduleModal = useSelector(SchedularSelectors.getScheduleModal);
+  const loadingButton = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'createScheduleDeployment')
+  );
 
   const {
     // register,
@@ -356,28 +368,26 @@ const Summary = () => {
   } = useForm({
     resolver: yupResolver(scheduleSchema),
   });
-  const [ScheduleNamespaceDeployOpen, setScheduleNamespaceDeployOpen] =
-    useState(false);
 
   const handleScheduleNamespaceDeployModel = () => {
-    setScheduleNamespaceDeployOpen(false);
+    dispatch(SchedularActions.setScheduleModal());
     history.push('/namespaces');
   };
 
   const handleContinue = () => {
     setScheduleInitialOpen(false);
-    setScheduleNamespaceDeployOpen(true);
+    dispatch(SchedularActions.setScheduleModal());
   };
   const onSubmit = async data => {
-    handleContinue();
+    // handleContinue();
 
     const payload = {
-      namespace_id: checkDestCluster?.id, // ask
+      namespace_id: checkDestCluster?.id,
       namespace_name: checkDestCluster?.name,
       scheduled_time: startDate.toISOString(),
-      flowId: checkDestCluster?.flowId,
+      flow_id: checkDestCluster?.flowId,
       source_cluster_id: selectedCluster?.value,
-      destination_cluster_id: selectedDestCluster.value, // ask
+      destination_cluster_id: selectedDestCluster.value,
       deployment_status: 'PENDING',
       bucket_id: checkDestCluster?.bucketId,
       registry_id: checkDestCluster?.registryId,
@@ -386,22 +396,8 @@ const Summary = () => {
       position: checkDestCluster?.position,
       approver_ids: data?.approver_ids,
     };
-    // const { approver_ids, ...rest } = data;
-    // const payload = {
-    //   ...rest,
-    //   scheduled_time: startDate.toISOString(),
-    //   // namespace_name: namespaceSelected?.label,
-    //   // flow_id:namespaceSelected?.flowId,
-    //   approver_ids: [approver_ids],
-    //   deployment_status: 'PENDING',
-    // };
-    // console.log(payload, 'payload');
     dispatch(SchedularActions.createScheduleDeployment(payload));
-    // closeModal();
-
-    // const handleClick = () => {
-    //   window.open(deployOrUpgradeDetails.nifiUrl, '_blank');
-    // };
+    // setIsLoadingSchedule(true);
   };
 
   const getParamerterContext = async () => {
@@ -470,15 +466,6 @@ const Summary = () => {
     setFlowControlButtons(status);
   };
 
-  // useEffect(() => {
-  //   if (ScheduleNamespaceDeployOpen) {
-  //     checkDestCluster.mode !== 'upgrade'
-  //       ? handleDeploy()
-  //       : handleUpgradeClick();
-  //   }
-  // }, [ScheduleNamespaceDeployOpen]);
-
-  // isDeployedModal getting true and false to open and close
   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader loading={loading} />
@@ -798,9 +785,7 @@ const Summary = () => {
               : KDFM.DEPLOY}
           </Button>
           <AddScheduleDeploymentModal
-            setScheduleNamespaceDeployOpen={setScheduleNamespaceDeployOpen}
             setValue={setValue}
-            handleSubmit={handleSubmit}
             control={control}
             errors={errors}
             scheduleInitialOpen={scheduleInitialOpen}
@@ -842,13 +827,14 @@ const Summary = () => {
         handleTertiaryButton={handleTertiaryButton}
       />
       <ScheduleNamespaceDeploy
-        isOpen={ScheduleNamespaceDeployOpen}
+        isOpen={isScheduleModal}
         closePopup={handleScheduleNamespaceDeployModel}
         openParameterContext={openParameterContext}
         getParamerterContext={getParamerterContext}
         handleTertiaryButton={handleTertiaryButton}
         onSubmit={onSubmit}
         handleSubmit={handleSubmit}
+        loadingButton={loadingButton}
       />
       <ParameterContext
         key={isParameterContextOpen}

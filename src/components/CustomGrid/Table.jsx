@@ -11,9 +11,15 @@ import { NoDataIcon } from '../../assets';
 
 const TableContainer = styled.div`
   height: 90%;
-  overflow: auto;
+  overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
+
+  @media (max-width: 991px) {
+    table {
+      min-width: 800px;
+    }
+  }
 
   table {
     overflow: visible;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Grid, IconButton, TextRender } from '../../components';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   ConfirmScheduleDeploymentIcon,
@@ -9,12 +9,23 @@ import {
   PencilIcon,
 } from '../../assets';
 import { STATUS_OPTIONS } from '../../constants';
-import { AuthenticationSelectors } from '../../store';
+import {
+  AuthenticationSelectors,
+  GridActions,
+  LoadingSelectors,
+} from '../../store';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { ModalWithIcon } from '../../shared';
 import { AddScheduleDeploymentModal } from './AddScheduleDeploymentModel';
 import { RejectConfirmScheduleModel } from './RejectConfirmModel';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 const ActionTd = styled.div`
   display: flex;
@@ -22,19 +33,48 @@ const ActionTd = styled.div`
   justify-content: start;
   gap: 15px;
 `;
-
+const scheduleSchema = yup.object().shape({
+  note: yup.string().required('Note is required'),
+});
 export const ListScheduleDeployment = () => {
+  const dispatch = useDispatch();
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
-  const [deleteOpenModel, setDeleteOpenModel] = useState(false);
-  const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
   const [selectedTimeStamp, setSelectedTimeStamp] = useState(new Date());
-  const [confirmScheduleModelOpen, setConfirmScheduleModelOpen] =
-    useState(false);
-  const [confirmRejectModelOpen, setConfirmRejectModelOpen] = useState(false);
-
+  const [selectedData, setSelectedData] = useState(null);
+  const loadingButton = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'editScheduleDeployment')
+  );
+  const isRejectScheduleModal = useSelector(
+    SchedularSelectors.getRejectScheduleModel
+  );
+  const isEditScheduleModal = useSelector(
+    SchedularSelectors.getEditScheduleModel
+  );
+  const isRjectConfirmScheduleModal = useSelector(
+    SchedularSelectors.getRejectConfirmScheduleModel
+  );
+  const isConfirmScheduleModal = useSelector(
+    SchedularSelectors.getScheduleCofirmModel
+  );
+  // dispatch(SchedularActions.setScheduleConfirmModel());
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(scheduleSchema),
+  });
   const handleEditClick = item => {
-    setScheduleInitialOpen(true);
-    setSelectedTimeStamp(item?.scheduled_time);
+    dispatch(SchedularActions.setEditScheduleModel());
+    setSelectedData(item.scheduler_id);
+    setSelectedTimeStamp(new Date(item?.timestamp));
+  };
+
+  const handleCancelModel = item => {
+    dispatch(SchedularActions.setConfirmRejectScheduleModel());
+    setSelectedData(item.scheduler_id);
   };
 
   const getActionsMenu = item => (
@@ -44,10 +84,14 @@ export const ListScheduleDeployment = () => {
           onClick={() => {
             handleEditClick(item);
           }}
+          disabled={item.deployment_status != 'PENDING'}
         >
           <PencilIcon width={16} height={16} />
         </IconButton>
-        <IconButton onClick={() => setDeleteOpenModel(true)}>
+        <IconButton
+          onClick={() => handleCancelModel(item)}
+          disabled={item.deployment_status != 'SCHEDULED'}
+        >
           <HoldIcon />
         </IconButton>
       </ActionTd>
@@ -86,8 +130,7 @@ export const ListScheduleDeployment = () => {
           item={item}
           content={item?.approvers}
           currentUser={currentUser}
-          setConfirmScheduleModelOpen={setConfirmScheduleModelOpen}
-          setConfirmRejectModelOpen={setConfirmRejectModelOpen}
+          setSelectedData={setSelectedData}
         />
       ),
       width: '15%',
@@ -105,55 +148,102 @@ export const ListScheduleDeployment = () => {
   ];
 
   const handleCloseModel = () => {
-    setDeleteOpenModel(false);
-    setConfirmScheduleModelOpen(false);
+    if (isRjectConfirmScheduleModal) {
+      dispatch(SchedularActions.setConfirmRejectScheduleModel());
+    }
+    if (isConfirmScheduleModal) {
+      dispatch(SchedularActions.setScheduleConfirmModel());
+    }
   };
 
+  const handleApproveClick = () => {
+    const payload = { is_approved: true, schedularId: selectedData };
+    dispatch(SchedularActions.editScheduleDeployment(payload));
+    setSelectedData(null);
+    dispatch(GridActions.fetchGrid({ module: 'scheduler' }));
+  };
+  const handleCancelClick = () => {
+    const payload = { is_approved: false, schedularId: selectedData };
+    dispatch(SchedularActions.editScheduleDeployment(payload));
+    setSelectedData(null);
+    dispatch(GridActions.fetchGrid({ module: 'scheduler' }));
+  };
+  const onSubmit = async data => {
+    const payload = { is_approved: false, schedularId: selectedData, ...data };
+    dispatch(SchedularActions.editScheduleDeployment(payload));
+    setSelectedData(null);
+    dispatch(GridActions.fetchGrid({ module: 'scheduler' }));
+  };
+
+  const editConfirmSchedule = () => {
+    const payload = {
+      scheduled_time: selectedTimeStamp.toISOString(),
+      schedularId: selectedData,
+    };
+    dispatch(SchedularActions.editScheduleDeployment(payload));
+    dispatch(GridActions.fetchGrid({ module: 'scheduler' }));
+  };
+
+  const handleRejecModalClose = () => {
+    dispatch(SchedularActions.setRejectScheduleModal());
+  };
   return (
     <>
       <ModalWithIcon
         title={
-          confirmScheduleModelOpen
+          isConfirmScheduleModal
             ? 'Schedule Deployment Confirmation'
             : 'Cancel Schedule Deployment'
         }
-        primaryButtonText={confirmScheduleModelOpen ? 'Confirm' : 'Stop'}
+        primaryButtonText={isConfirmScheduleModal ? 'Confirm' : 'Stop'}
         secondaryButtonText="Cancel"
         icon={
-          confirmScheduleModelOpen ? (
+          isConfirmScheduleModal ? (
             <ConfirmScheduleDeploymentIcon />
           ) : (
             <DeleteDustbinIcon />
           )
         }
-        isOpen={deleteOpenModel || confirmScheduleModelOpen}
+        isOpen={isRjectConfirmScheduleModal || isConfirmScheduleModal}
         // onSubmit={deleteUserConfirmed}
         onRequestClose={() => handleCloseModel()}
         primaryText={
-          confirmScheduleModelOpen
+          isConfirmScheduleModal
             ? 'Are you sure you want to Approve this Deployment'
             : 'Are you sure you want to cancel this Deployment?'
         }
         secondaryText={
-          confirmScheduleModelOpen
+          isConfirmScheduleModal
             ? 'Once Approved it will automatically Schedule according to process'
             : 'This Deployment will be Cancel from Schedule Deployment Page'
         }
+        onSubmit={
+          isConfirmScheduleModal ? handleApproveClick : handleCancelClick
+        }
+        loading={loadingButton}
       />
       <AddScheduleDeploymentModal
-        scheduleInitialOpen={scheduleInitialOpen}
-        setScheduleInitialOpen={setScheduleInitialOpen}
+        scheduleInitialOpen={isEditScheduleModal}
         startDate={selectedTimeStamp}
         setStartDate={setSelectedTimeStamp}
+        handleContinue={editConfirmSchedule}
+        loadingButton={loadingButton}
       />
       <RejectConfirmScheduleModel
         icon={<ConfirmScheduleDeploymentIcon />}
         title={'Schedule Deployment Confirmation'}
         primaryText={'Are you sure you want to Reject this Deployment'}
-        isOpen={confirmRejectModelOpen}
-        onRequestClose={() => setConfirmRejectModelOpen(false)}
+        isOpen={isRejectScheduleModal}
+        onRequestClose={() => handleRejecModalClose()}
         primaryButtonText={'Confirm'}
         secondaryButtonText="Cancel"
+        onSubmit={handleSubmit(onSubmit)}
+        setValue={setValue}
+        handleSubmit={handleSubmit}
+        control={control}
+        errors={errors}
+        register={register}
+        loadingButton={loadingButton}
       />
       <Grid
         module="scheduler"

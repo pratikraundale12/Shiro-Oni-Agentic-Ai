@@ -138,6 +138,7 @@ export const Creditionals = ({
         failedTest={failedModal}
         setFailedTest={setFailedModal}
         testMessage={testMessage}
+        activeTab={activeTab}
       />
     </>
   );

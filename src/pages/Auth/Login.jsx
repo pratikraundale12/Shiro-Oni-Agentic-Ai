@@ -92,7 +92,7 @@ const ForgetLinkContainer = styled.div`
   align-items: center;
 `;
 
-const PasswordTextMessage = styled.span`
+export const PasswordTextMessage = styled.span`
   font-size: 10px;
   font-weight: 400;
   color: #7a7a9d;

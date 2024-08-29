@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { useDispatch, useSelector } from 'react-redux';
@@ -111,11 +111,13 @@ const DropdownContainer = styled.div`
   min-width: 175px;
   max-width: 175px;
   cursor: pointer;
-
+  @media (max-width: 1040px) {
+    max-width: 100%;
+    width: 100%;
+  }
   & div > div {
     & > div {
       min-width: 175px;
-      max-width: 175px;
       cursor: pointer;
     }
   }
@@ -129,6 +131,9 @@ const DropdownContainer = styled.div`
 `;
 const DropdownWrapper = styled.div`
   display: flex;
+  @media (max-width: 1040px) {
+    width: 100%;
+  }
 `;
 
 const IdWrapper = styled.div`
@@ -168,8 +173,6 @@ export const Dashboard = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchDashboard')
   );
-  const [refreshState, setRefreshSelect] = useState(false);
-  const intervalRef = useRef(null);
   const COLUMNS = [
     {
       label: 'Process Group',
@@ -229,31 +232,6 @@ export const Dashboard = () => {
   const onNamespaceSelect = selectedItem => {
     dispatch(NamespacesActions.setSelectedNamespace(selectedItem));
   };
-  const onRefreshSelect = selectedItem => {
-    if (selectedItem) {
-      setRefreshSelect(selectedItem.value);
-    }
-  };
-  const RefreshArray = [
-    { value: false, label: 'Off' },
-    { value: 5000, label: '5 Seconds' },
-    { value: 30000, label: '30 Seconds' },
-    { value: 100000, label: '1 Minute' },
-  ];
-
-  useEffect(() => {
-    if (refreshState !== false) {
-      intervalRef.current = setInterval(() => {
-        if (!isEmpty(selectedCluster)) {
-          dispatch(DashboardActions.fetchDashboard());
-        }
-      }, refreshState);
-    } else {
-      clearInterval(intervalRef.current);
-    }
-
-    return () => clearInterval(intervalRef.current);
-  }, [dispatch, selectedCluster, refreshState]);
 
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {
@@ -299,16 +277,7 @@ export const Dashboard = () => {
               size="sm"
             />
           </DropdownContainer>
-          <DropdownContainer>
-            <SelectField
-              options={RefreshArray}
-              onChange={onRefreshSelect}
-              placeholder={` Refresh`}
-              title="Refresh"
-              backgroundColor={theme.colors.lightGrey}
-              size="sm"
-            />
-          </DropdownContainer>
+          <DropdownContainer></DropdownContainer>
         </DropdownWrapper>
       </TopSection>
       <InsightDataContiner>

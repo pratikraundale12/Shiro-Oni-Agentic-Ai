@@ -177,8 +177,14 @@ const TitleRegistry = styled.h6`
 const BoxContentArea = styled.div`
   margin-bottom: 20px;
 
+  & .copy-button {
+    position: absolute;
+    right: -3rem;
+    top: -0.5rem;
+  }
+
   p {
-    margin-bottom: 8px;
+    margin-bottom: 16px;
     font-size: 13px;
     font-weight: 500;
     line-height: 15.73px;
@@ -187,6 +193,8 @@ const BoxContentArea = styled.div`
   }
 
   span {
+    display: flex;
+    position: relative;
     font-size: 12px;
     font-weight: 400;
     line-height: 14.52px;
@@ -601,12 +609,14 @@ export const Add = () => {
                     <p>{KDFM.REGISTRY_NAME}</p>
                     <span>{registryData.name}</span>
                   </BoxContentArea>
-
                   <BoxContentArea>
                     <p>{KDFM.REGISTRY_URL}</p>
-                    <span className="d-flex align-items-center gap-3">
+                    <span>
                       {registryData.registry_url}
-                      <CopyToClipboard copyItem={registryData.registry_url} />
+                      <CopyToClipboard
+                        className="copy-button"
+                        copyItem={registryData.registry_url}
+                      />
                     </span>
                   </BoxContentArea>
                 </Flex>
@@ -818,6 +828,7 @@ export const Add = () => {
         failedTest={failedModal}
         setFailedTest={setFailedModal}
         testMessage={failedTestMessage}
+        activeTab={activeTab}
       />
     </Wrapper>
   );

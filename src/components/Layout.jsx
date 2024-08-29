@@ -57,10 +57,12 @@ const Image = styled.div`
   @media (max-width: 1800px) and (min-width: 1661px) {
     background-size: 75%;
   }
+  @media (max-width: 1300px), and (max-height: 990px) {
+    background-size: 75%;
+  }
 `;
 
 const Content = styled.div`
-  flex: 0.8;
   display: flex;
   flex-direction: column;
   max-width: 470px;
@@ -111,6 +113,14 @@ const HeadingRightText = styled.p`
   line-height: 47.63px;
   letter-spacing: 0.08em;
   text-align: center;
+  @media (max-width: 1024px) {
+    font-size: 2rem;
+    line-height: 24.63px;
+  }
+  @media (max-width: 1300px) and (max-height: 990px) {
+    font-size: 1.5rem;
+    line-height: 32px;
+  }
 `;
 
 const SignInContainer = styled.div`
@@ -126,6 +136,14 @@ const SignInContainer = styled.div`
     margin-left: 5px;
     text-decoration: none;
   }
+`;
+
+const PolicyContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 470px;
+  margin-top: 40px;
 `;
 
 export const Layout = ({ children }) => {
@@ -171,6 +189,20 @@ export const Layout = ({ children }) => {
                 {SIGN_IN}
               </TextButton>
             </SignInContainer>
+          )}
+          {(isUserLogin || isAdminLogin) && (
+            <PolicyContainer>
+              <RedirectionText
+                onClick={() => history.push('/policy/privacy-policy')}
+              >
+                Privacy Policy
+              </RedirectionText>
+              <RedirectionText
+                onClick={() => history.push('/policy/terms-of-use')}
+              >
+                Terms Of Use
+              </RedirectionText>
+            </PolicyContainer>
           )}
         </LeftSection>
         <RightSection className="col-xl-7 col-lg-7 d-none d-lg-inline">

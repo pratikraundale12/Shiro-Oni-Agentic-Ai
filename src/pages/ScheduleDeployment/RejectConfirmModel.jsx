@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { InputField, Modal } from '../../shared';
 import { QRIcons } from '../../assets';
-import { useForm } from 'react-hook-form';
 
 const IconWrapper = styled.div`
   text-align: center;
@@ -26,14 +25,13 @@ const StyledInputField = styled(InputField)`
 export const RejectConfirmScheduleModel = ({
   icon,
   primaryText = '',
+  errors,
+  register,
+  loadingButton,
   ...rest
 }) => {
-  const {
-    register,
-    formState: { errors },
-  } = useForm({});
   return (
-    <Modal size="sm" {...rest}>
+    <Modal size="sm" {...rest} loading={loadingButton}>
       <IconWrapper>{icon}</IconWrapper>
       <PrimaryText>{primaryText}</PrimaryText>
       <div className="col-xl-12 col-lg-12 col-md-6 col-sm-6 col-6 form-ele">
@@ -56,4 +54,9 @@ RejectConfirmScheduleModel.propTypes = {
   icon: PropTypes.elementType.isRequired,
   primaryText: PropTypes.string,
   secondaryText: PropTypes.string,
+  setValue: PropTypes.func.isRequired,
+  control: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired,
+  register: PropTypes.object.isRequired,
+  loadingButton: PropTypes.bool,
 };
