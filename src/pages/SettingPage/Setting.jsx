@@ -48,7 +48,11 @@ export const settingSchema = yup.object().shape({
     .matches(EMAIL_REGEX, 'Invalid email address')
     .max(25, 'Email can not be greater than 25 characters'),
 
-  title: yup.string().max(25, 'Title must be 25 characters or less'),
+  title: yup
+    .string()
+    .max(25, 'Title must be 25 characters or less')
+    .matches(/^[a-zA-Z0-9\s]+$/, 'Title must not contain special characters')
+    .required('Title is required'),
 });
 
 export const Setting = () => {
