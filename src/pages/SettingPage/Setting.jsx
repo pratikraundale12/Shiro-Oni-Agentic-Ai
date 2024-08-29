@@ -32,6 +32,8 @@ const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: fixed;
+  bottom: 20px;
 `;
 
 const StyledInputField = styled(InputField)`
@@ -208,7 +210,6 @@ export const Setting = () => {
             setValue={setValue}
           />
         </InputFields>
-
         <StyledInputTitle
           name="title"
           register={register}

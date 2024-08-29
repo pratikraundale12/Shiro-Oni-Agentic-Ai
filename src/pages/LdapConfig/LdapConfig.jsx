@@ -208,7 +208,10 @@ export const LdapConfig = () => {
   };
 
   useEffect(() => {
-    setFormPayload(ldapGroup);
+    const filteredPayload = ldapGroup.filter(
+      group => group.role_id !== undefined
+    );
+    setFormPayload(filteredPayload);
   }, [ldapGroup]);
 
   const handleCheckLdapConfig = async () => {
