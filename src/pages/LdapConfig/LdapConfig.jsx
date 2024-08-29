@@ -367,7 +367,7 @@ export const LdapConfig = () => {
                 label="Base DN"
                 placeholder="Enter your Base DN"
                 icon={<LinkIcon />}
-                disabled={!secondFormState}
+                disabled={!secondFormState || !ldapInitialConfig}
                 errors={errorsForm2}
               />
             </div>
@@ -379,7 +379,7 @@ export const LdapConfig = () => {
                 label="Groups DN"
                 placeholder="Enter your Groups DN"
                 icon={<QRIcons />}
-                disabled={!secondFormState}
+                disabled={!secondFormState || !ldapInitialConfig}
                 errors={errorsForm2}
               />
             </div>
@@ -391,7 +391,7 @@ export const LdapConfig = () => {
                 label="Users DN"
                 placeholder="Enter your Users DN"
                 icon={<QRIcons />}
-                disabled={!secondFormState}
+                disabled={!secondFormState || !ldapInitialConfig}
                 errors={errorsForm2}
               />
             </div>
@@ -406,7 +406,7 @@ export const LdapConfig = () => {
                 placeholder="Enter User Identifier"
                 icon={<LinkIcon />}
                 errors={errorsForm2}
-                disabled={!secondFormState}
+                disabled={!secondFormState || !ldapInitialConfig}
               />
             </div>
 
@@ -419,7 +419,7 @@ export const LdapConfig = () => {
                 placeholder="Enter Group Identifier"
                 icon={<LinkIcon />}
                 errors={errorsForm2}
-                disabled={!secondFormState}
+                disabled={!secondFormState || !ldapInitialConfig}
               />
             </div>
           </InputFieldFlex>
@@ -427,8 +427,8 @@ export const LdapConfig = () => {
             <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <Button
                 onClick={handleSubmitForm2(getLDAPGroup)}
-                disabled={!saveButtonStatus}
-                loading={loadings}
+                disabled={!saveButtonStatus || !ldapInitialConfig}
+                loading={loadings && 'Fetching..'}
               >
                 Continue
               </Button>

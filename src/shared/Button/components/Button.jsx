@@ -120,7 +120,7 @@ const Button = ({
         disabled
         {...buttonProps}
       >
-        <LoadingText>{loading && 'Loading...'}</LoadingText>
+        <LoadingText>{loading === true ? 'Loading' : loading}</LoadingText>
         <StyledLoader size="sm" color="white" />
       </StyledButton>
     );
