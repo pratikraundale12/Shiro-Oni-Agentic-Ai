@@ -11,9 +11,11 @@ import { CLUSTERS_TOKEN } from '../constants';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
+  ClustersActions,
   ClustersSelectors,
   GridActions,
   NamespacesActions,
+  NamespacesSelectors,
 } from '../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { isObject } from 'lodash';
@@ -32,13 +34,21 @@ export const ClusterLoginModal = () => {
     AuthenticationSelectors.getDestinationFlag
   );
   const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
-  const tokens = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const tokenIds = tokens.map(item => item.id);
-  const clusters = useSelector(ClustersSelectors.getClusters);
-  const filteredClusters = clusters.filter(
-    item => !tokenIds.includes(item.value)
-  );
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const clusters = useSelector(ClustersSelectors.getAllClustersList);
+
+  const sortClustersByStatus = clusters => {
+    const clustersCopy = [...clusters];
+    return clustersCopy.sort((a, b) => {
+      if (a.status === b.status) return 0;
+      return a.status === 'Connected' ? -1 : 1;
+    });
+  };
+
+  const sortedClusters = sortClustersByStatus(clusters);
+
   const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -46,11 +56,18 @@ export const ClusterLoginModal = () => {
     watch,
     setValue,
     reset,
+    getValues,
     formState: { errors },
   } = useForm({
     defaultValues: DEFAULT_VALUES,
     resolver: yupResolver(clusterSchema),
   });
+
+  const clusterId = watch('cluster_id');
+  const selectedClusterData = sortedClusters.find(
+    cluster => cluster.value === clusterId
+  );
+  const isFieldsDisabled = selectedClusterData?.status === 'Connected';
 
   const onSubmit = async data => {
     setLoading(true);
@@ -75,6 +92,12 @@ export const ClusterLoginModal = () => {
         };
         clusterData.push(newCluster);
         localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(clusterData));
+        dispatch(
+          NamespacesActions.setSelectedCluster({
+            label: response?.cluster_name,
+            value: response?.cluster_id,
+          })
+        );
         setLoading(false);
         if (destinationFlag) {
           dispatch(AuthenticationActions.setDestinationFlag());
@@ -108,6 +131,27 @@ export const ClusterLoginModal = () => {
     return () => reset(DEFAULT_VALUES);
   }, [clusterLogin, setValue, reset]);
 
+  useEffect(() => {
+    dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
+  }, [dispatch]);
+
+  const onSwitchCluster = () => {
+    const clusterData = JSON.parse(
+      localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+    );
+    const clusterName = clusterData.find(
+      cluster => cluster?.id == getValues()?.cluster_id
+    )?.name;
+    dispatch(AuthenticationActions.setClusterLogin());
+    toast.success('Cluster Enabled Successfully');
+    dispatch(
+      NamespacesActions.setSelectedCluster({
+        label: clusterName,
+        value: getValues()?.cluster_id,
+      })
+    );
+  };
+
   return (
     <Modal
       title="Enable Cluster"
@@ -116,8 +160,9 @@ export const ClusterLoginModal = () => {
       size="sm"
       loading={loading}
       secondaryButtonText="Back"
-      primaryButtonText="Submit"
-      onSubmit={handleSubmit(onSubmit)}
+      primaryButtonText={isFieldsDisabled ? 'Switch' : 'Submit'}
+      primaryButtonDisabled={selectedCluster?.value == clusterId}
+      onSubmit={isFieldsDisabled ? onSwitchCluster : handleSubmit(onSubmit)}
       footerAlign="start"
       contentStyles={{ minWidth: '30%' }}
     >
@@ -127,11 +172,12 @@ export const ClusterLoginModal = () => {
         control={control}
         icon={<ClusterIcon />}
         errors={errors}
-        options={filteredClusters}
+        options={sortedClusters}
         defaultValue={clusterLogin}
         placeholder="Select Cluster"
         required
         disabled={isObject(clusterLogin)}
+        showCircleIcon={true}
       />
 
       <InputField
@@ -142,15 +188,17 @@ export const ClusterLoginModal = () => {
         register={register}
         errors={errors}
         icon={<UserIcon />}
-        required
+        required={!isFieldsDisabled}
+        disabled={isFieldsDisabled}
       />
       <PasswordField
         name="password"
         register={register}
         errors={errors}
         watch={watch}
-        required
+        required={!isFieldsDisabled}
         label="Password"
+        disabled={isFieldsDisabled}
       />
     </Modal>
   );

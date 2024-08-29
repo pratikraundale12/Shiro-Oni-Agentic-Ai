@@ -31,7 +31,7 @@ export const Container = styled.div`
     display: none;
     top: 22px;
   }
-  left: -250px;
+  left: -281px;
   @media (max-width: 992px) {
     position: fixed;
     transition: 0.3s;

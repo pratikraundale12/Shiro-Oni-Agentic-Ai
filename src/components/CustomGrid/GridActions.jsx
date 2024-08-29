@@ -27,7 +27,7 @@ import {
 } from '../../store/activityHistory/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
-import { ClusterSelect } from '../ClusterSelect';
+// import { ClusterSelect } from '../ClusterSelect';
 
 const Flex = styled.div`
   display: flex;
@@ -73,13 +73,13 @@ const Search = styled.input`
   }
 `;
 
-const StyledClusterSelect = styled(ClusterSelect)`
-  margin-bottom: 0;
+// const StyledClusterSelect = styled(ClusterSelect)`
+//   margin-bottom: 0;
 
-  > div {
-    margin-top: 0;
-  }
-`;
+//   > div {
+//     margin-top: 0;
+//   }
+// `;
 
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
@@ -210,7 +210,7 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
-          {location.pathname.includes('namespaces') && (
+          {/* {location.pathname.includes('namespaces') && (
             <DropdownContainer>
               <StyledClusterSelect
                 size="sm"
@@ -219,7 +219,7 @@ export const GridActions = ({
                 backgroundColor={theme.colors.lightGrey}
               />
             </DropdownContainer>
-          )}
+          )} */}
           {location.pathname.includes('permission-matrix') && (
             <StyledSelectField
               size="sm"

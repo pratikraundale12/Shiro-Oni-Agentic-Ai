@@ -29,7 +29,7 @@ const CopyToClipboard = ({ copyItem, className }) => {
         return;
       }
       await navigator.clipboard.writeText(value);
-      toast.info(`Copied to Clipboard`);
+      toast.info(`Copied to clipboard`);
     } catch (err) {
       console.error('Failed to copy: ', err);
     }

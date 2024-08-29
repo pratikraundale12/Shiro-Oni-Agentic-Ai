@@ -39,7 +39,7 @@ const Container = styled.header`
   @media (max-width: 992px) {
     padding-left: 50px;
     .title {
-      margin-left: 15.5rem;
+      margin-left: 17.5rem;
       font-size: 23px;
     }
   }
@@ -205,7 +205,8 @@ const ProfileDropdown = () => {
           return {
             ...prev,
             userModal: true,
-            selectedItem: prev.currentUser,
+            selectedItem: currentUser,
+            label: 'Profile',
           };
         });
         setShowMenu(prev => !prev);
@@ -262,6 +263,7 @@ const ProfileDropdown = () => {
 export const Header = ({ isOpenSidebar, currentRoute }) => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
   const route = useSelector(AuthenticationSelectors.getRoute);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [displaySessionTab, setDisplaySessionTab] = useState(false);
@@ -313,6 +315,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     dispatch(AuthenticationActions.setRoute(path));
     history.push(`/${path}`);
   };
+
   return (
     <>
       <Container>
@@ -355,7 +358,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
           </ButtonContainer>
         ) : null}
       </Container>
-      <ClusterLoginModal />
+      {clusterLogin && <ClusterLoginModal />}
       {displaySessionTab && <SessionExpiredLabel closeTab={closeTab} />}
     </>
   );

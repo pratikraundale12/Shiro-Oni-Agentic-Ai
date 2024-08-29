@@ -44,6 +44,7 @@ export const ListUsers = () => {
                 ...state,
                 userModal: true,
                 selectedItem: item,
+                label: 'User',
               })
             }
           >

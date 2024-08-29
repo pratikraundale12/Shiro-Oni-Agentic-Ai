@@ -26,6 +26,17 @@ export function* fetchClusterList(api, { payload: { params } = {} }) {
     );
   }
 }
+export function* fetchClusters(api, { params }) {
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+
+  yield call(requestSaga, {
+    errorSection: 'fetchClusters',
+    loadingSection: 'fetchClusters',
+    apiMethod: api.fetchClusters,
+    apiParams: [{ params, payload: clusters }],
+    successAction: ClustersActions.fetchClustersSuccess,
+  });
+}
 
 export function* fetchClusterNodes(api, { payload }) {
   yield call(requestSaga, {
@@ -41,5 +52,6 @@ export function* clustersSagas(api) {
   yield all([
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
     takeLatest(ClustersActions.fetchClusterNodes, fetchClusterNodes, api),
+    takeLatest(ClustersActions.fetchClusters, fetchClusters, api),
   ]);
 }

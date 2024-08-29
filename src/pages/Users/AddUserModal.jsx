@@ -23,7 +23,11 @@ import { ProfileUpload } from './ProfileUpload';
 import { theme } from '../../styles';
 import { API_URL } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { GridActions, RolesSelectors } from '../../store';
+import {
+  AuthenticationActions,
+  GridActions,
+  RolesSelectors,
+} from '../../store';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -175,6 +179,8 @@ export const AddUserModal = props => {
       const response = await editUserDataApi(state.selectedItem?.id, formData);
       if (response.status == 200) {
         dispatch(GridActions.fetchGrid({ module: 'users' }));
+        state?.label == 'Profile' &&
+          dispatch(AuthenticationActions.setCurrentUser(response?.data));
         toast.success('User Updated Successfully');
         setState({
           ...state,
@@ -213,7 +219,7 @@ export const AddUserModal = props => {
       </Button>
       <Modal
         size="lg"
-        title={state.selectedItem ? 'Edit User' : 'Add New User'}
+        title={state.selectedItem ? `Edit ${state.label}` : 'Add New User'}
         isOpen={state.userModal}
         onRequestClose={closeModal}
         secondaryButtonText="Cancel"

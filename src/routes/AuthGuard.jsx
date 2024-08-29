@@ -22,7 +22,7 @@ const Container = styled.div`
 `;
 
 const Content = styled.main`
-  width: calc(100% - 250px);
+  width: calc(100% - 282px);
   height: 100%;
   position: relative;
   border-top-left-radius: 30px;

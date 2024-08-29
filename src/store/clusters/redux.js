@@ -9,6 +9,8 @@ export const ClustersActions = {
   fetchClusterNodes: createAction(`${prefix}fetchClusterNodes`),
   fetchClusterNodesSuccess: createAction(`${prefix}fetchClusterNodesSuccess`),
   updateClusterSuccessModal: createAction(`${prefix}updateClusterSuccessModal`),
+  fetchClusters: createAction(`${prefix}fetchClusters`),
+  fetchClustersSuccess: createAction(`${prefix}fetchClustersSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -16,6 +18,7 @@ export const CLUSTERS_INITIAL_STATE = {
   list: [],
   nodes: [],
   clusterSuccessModal: false,
+  clusterList: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -23,6 +26,7 @@ export const ClustersSelectors = {
   getClusters: state => state.clusters.list,
   getClusterNodes: state => state.clusters.nodes,
   getClusterSuccessModal: state => state.clusters.clusterSuccessModal,
+  getAllClustersList: state => state.clusters.clusterList,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -31,6 +35,17 @@ const fetchClusterListSuccess = (state, { payload }) => {
   return {
     ...state,
     list,
+  };
+};
+const fetchClustersSuccess = (state, { payload }) => {
+  const list = payload?.data?.map(item => ({
+    ...item,
+    label: item.name,
+    value: item.id,
+  }));
+  return {
+    ...state,
+    clusterList: list,
   };
 };
 const fetchClusterNodesSuccess = (state, { payload }) => {
@@ -60,6 +75,7 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.updateClusterSuccessModal,
         updateClusterSuccessModal
-      );
+      )
+      .addCase(ClustersActions.fetchClustersSuccess, fetchClustersSuccess);
   }
 );
