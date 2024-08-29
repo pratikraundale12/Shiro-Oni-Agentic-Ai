@@ -132,9 +132,9 @@ const Listvariables = ({
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
     dispatch(NamespacesActions.setVariableContextItem({}));
     if (isVariablesModalOpen?.schedule) {
-      setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: true });
+      setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
     } else {
-      setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: false });
+      setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: false });
     }
   };
 
