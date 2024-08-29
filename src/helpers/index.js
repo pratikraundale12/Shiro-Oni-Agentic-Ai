@@ -5,6 +5,19 @@ export const hasError = (errors, name) => {
   return !isEmpty(error?.message);
 };
 
+export const changeFavicon = newFaviconURL => {
+  const favicon = document.getElementById('dynamic-favicon');
+  if (favicon) {
+    favicon.href = newFaviconURL;
+  } else {
+    const newFavicon = document.createElement('link');
+    newFavicon.rel = 'icon';
+    newFavicon.href = newFaviconURL;
+    newFavicon.id = 'dynamic-favicon';
+    document.head.appendChild(newFavicon);
+  }
+};
+
 export const getFileSize = size => {
   if (size < 1024) {
     return `${size}B`;

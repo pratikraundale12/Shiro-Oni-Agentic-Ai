@@ -5,6 +5,7 @@ import { CLUSTERS_TOKEN } from '../../constants';
 import { history } from '../../helpers/history';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularActions, SchedularSelectors } from './redux';
+import { AuthenticationActions } from '../authentication';
 
 export function* createScheduleDeployment(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -14,9 +15,10 @@ export function* createScheduleDeployment(api, { payload }) {
     apiParams: [{ payload }],
   });
   if (response.ok) {
-    yield put(SchedularActions.setScheduleModal());
     toast.success('Successfully Scheduled Deployment');
-    history.push('/namespaces');
+    yield put(SchedularActions.setScheduleModal());
+    yield call(history.push, '/schedule-deployment');
+    yield put(AuthenticationActions.setRoute('schedule-deployment'));
   } else toast.error(response.data.message);
 }
 

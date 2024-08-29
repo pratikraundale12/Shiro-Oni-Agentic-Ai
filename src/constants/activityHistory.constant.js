@@ -9,7 +9,7 @@ export const ACTIVITY_HISTORY_CONSTANTS = {
   EVENT: 'Event',
   ENTITY: 'Entity',
   MESSAGE: 'Message',
-  UPDATE_BY: 'Updated By',
+  CREATE_BY: 'Created By',
   AUDIT_LOG: 'Audit Log',
   CREATED_BY: 'Created By',
   OPEN_AUDIT_LOG: 'Open Audit Log',

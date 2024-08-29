@@ -202,7 +202,6 @@ const ScheduleNamespaceDeploy = ({
           tertiaryButtonTest: 'Variables',
           tertiaryButtonSubmit: handleScheduleTertiaryButton,
           tertiaryButtonDisable: false,
-          tertiaryButtonLoading: loadingButton,
         }}
         loading={loadingButton}
       >

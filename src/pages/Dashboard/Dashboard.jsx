@@ -3,11 +3,15 @@ import styled from 'styled-components';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import styled from 'styled-components';
 
-import { theme } from '../../styles';
-import { SelectField } from '../../shared';
 import { ClusterSelect, FullPageLoader, Table } from '../../components';
-import { InsightContainer, FlowMetrics } from './components';
+import { SelectField } from '../../shared';
+import { theme } from '../../styles';
+import { FlowMetrics, InsightContainer } from './components';
 
 import {
   ActiveThreadIcon,
@@ -174,7 +178,6 @@ export const Dashboard = () => {
     LoadingSelectors.getLoading(state, 'fetchDashboard')
   );
   const [updatedErrors, setUpdatedErrors] = useState([]);
-  let updatedError = [];
 
   const COLUMNS = [
     {
@@ -250,7 +253,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (dashboardData?.errors) {
-      updatedError = dashboardData?.errors.map((element, index) => ({
+      let updatedError = dashboardData?.errors.map((element, index) => ({
         ...element,
         index: index,
       }));
@@ -278,7 +281,7 @@ export const Dashboard = () => {
           </DropdownContainer>
           <DropdownContainer>
             <SelectField
-              options={namespaces.map(({ id, name }) => ({
+              options={namespaces?.map(({ id, name }) => ({
                 value: id,
                 label: name,
               }))}
