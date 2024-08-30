@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+import { useWatch } from 'react-hook-form';
 import { UserSelect } from '../../components';
 import { Button, DateTimeInput, Modal } from '../../shared';
 import {
@@ -27,7 +28,14 @@ export const AddScheduleDeploymentModal = ({
   loadingButton,
 }) => {
   const dispatch = useDispatch();
+  const [disableButton, setDisableButton] = useState(true);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
+  const approvers = useWatch({
+    control,
+    name: 'approver_ids',
+    defaultValue: [],
+  });
 
   const openModal = () => {
     if (window.location.pathname.includes('schedule-deployment')) {
@@ -60,6 +68,11 @@ export const AddScheduleDeploymentModal = ({
     }
   }, [selectedCluster, dispatch]);
 
+  useEffect(() => {
+    const isFormValid = approvers.length > 0;
+    setDisableButton(!isFormValid);
+  }, [approvers]);
+
   return (
     <div>
       {showButton && (
@@ -74,6 +87,7 @@ export const AddScheduleDeploymentModal = ({
         onRequestClose={closeModal}
         secondaryButtonText="Cancel"
         primaryButtonText="Continue"
+        primaryButtonDisabled={disableButton}
         onSubmit={handleContinue}
         footerAlign="start"
         contentStyles={{ minWidth: '45%' }}
@@ -113,7 +127,7 @@ AddScheduleDeploymentModal.propTypes = {
   setScheduleInitialOpen: PropTypes.func,
   handleContinue: PropTypes.func,
   startDate: PropTypes.string.isRequired,
-  setStartDate: PropTypes.object.isRequired,
+  setStartDate: PropTypes.func.isRequired,
   showButton: PropTypes.bool,
   loadingButton: PropTypes.bool,
 };
