@@ -6,10 +6,16 @@ import PropTypes from 'prop-types';
 import { default as React, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { NoDataIcon, SortDownIcon, SortIcon, SortUpIcon } from '../../assets';
+import {
+  NoDataIcon,
+  QRIcons,
+  SortDownIcon,
+  SortIcon,
+  SortUpIcon,
+} from '../../assets';
 import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
 import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
-import { Modal } from '../../shared';
+import { InputField, Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { LoadingSelectors, NamespacesSelectors } from '../../store';
 import { GridActions, GridSelectors } from '../../store/grid';
@@ -63,19 +69,27 @@ const LoadingText = styled.div`
   text-align: center;
 `;
 
+const FLexWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  @media screen and (min-width: 1024px) {
+    flex-direction: row;
+  }
+`;
+
 const EVENTCOLUMNS = [
-  {
-    label: 'Address',
-    renderCell: item => <TextRender text={item.address} />,
-  },
-  {
-    label: 'Node ID',
-    renderCell: item => <TextRender text={item.nodeId} />,
-  },
   {
     label: 'Node Events',
     renderCell: item => (
-      <TextRender text={`${item.timestamp}: ${item.message}`} />
+      <TextRender
+        text={`${item.timestamp}: ${item.message}`}
+        tooltipPlacement="bottom-start"
+      />
     ),
   },
 ];
@@ -278,6 +292,20 @@ export const Grid = ({
               setState(prevState => ({ ...prevState, eventModal: false }))
             }
           >
+            <FLexWrapper>
+              <InputField
+                label="Address"
+                disabled={true}
+                icon={<QRIcons />}
+                value={selectedNode?.address}
+              />
+              <InputField
+                label="Node ID"
+                disabled={true}
+                icon={<QRIcons />}
+                value={selectedNode?.nodeId}
+              />
+            </FLexWrapper>
             <Table
               data={
                 selectedNode?.events?.slice(0, 10).map(item => ({
