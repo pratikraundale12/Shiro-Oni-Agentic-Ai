@@ -199,13 +199,21 @@ export const Grid = ({
     }
   );
 
+  const messages = {
+    namespaces: 'No Namespaces Available',
+    clusters: 'No Cluster Available',
+    users: 'No User Available',
+    activityHistory: 'No Activity History Available',
+    scheduler: 'No Schedulers Available',
+  };
+
   const getLoader = () => {
     if (loading) return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
       return (
         <LoaderContainer>
           <NoDataIcon width={140} />
-          <LoadingText>{KDFM.NO_DATA_FOUND}</LoadingText>
+          <LoadingText>{messages[module]}</LoadingText>
         </LoaderContainer>
       );
     return null;

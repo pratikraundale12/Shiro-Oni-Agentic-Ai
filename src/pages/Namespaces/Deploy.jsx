@@ -277,7 +277,7 @@ const Deploy = () => {
           {isEmpty(checkDestCluster) && (
             <NoDataContainer>
               <WhiteBoradIcon width={200} height={195} />
-              <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+              <NoDataText>{KDFM.NO_NAMESPACE_AVAILABLE}</NoDataText>
             </NoDataContainer>
           )}
           {checkDestCluster.mode === 'deploy' && (
@@ -299,7 +299,7 @@ const Deploy = () => {
               {isEmpty(gridData) && search ? (
                 <NoDataContainer>
                   <WhiteBoradIcon width={200} height={195} />
-                  <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+                  <NoDataText>{KDFM.NO_NAMESPACE_AVAILABLE}</NoDataText>
                 </NoDataContainer>
               ) : (
                 <Table
