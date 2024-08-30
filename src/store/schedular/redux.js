@@ -16,6 +16,7 @@ export const SchedularActions = {
     `${prefix}setConfirmRejectScheduleModel`
   ),
   setScheduleConfirmModel: createAction(`${prefix}setScheduleConfirmModel`),
+  checkApproverToken: createAction(`${prefix}checkApproverToken`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -27,6 +28,7 @@ export const SCHEDULAR_INITIAL_STATE = {
   isEditScheduleModel: false,
   isRejectConfirmScheduleModel: false,
   isScheduleConfirmModel: false,
+  isCheckApproverToken: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -40,6 +42,7 @@ export const SchedularSelectors = {
   getRejectConfirmScheduleModel: state =>
     state.schedular.isRejectConfirmScheduleModel,
   getScheduleCofirmModel: state => state.schedular.isScheduleConfirmModel,
+  checkApproverToken: state => state.schedular.isCheckApproverToken,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -93,6 +96,12 @@ const setScheduleConfirmModel = state => {
     isScheduleConfirmModel: !state.isScheduleConfirmModel,
   };
 };
+const checkApproverToken = (state, { payload }) => {
+  return {
+    ...state,
+    isCheckApproverToken: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const schedularReducer = createReducer(
   SCHEDULAR_INITIAL_STATE,
@@ -114,6 +123,7 @@ export const schedularReducer = createReducer(
       .addCase(
         SchedularActions.setScheduleConfirmModel,
         setScheduleConfirmModel
-      );
+      )
+      .addCase(SchedularActions.checkApproverToken, checkApproverToken);
   }
 );
