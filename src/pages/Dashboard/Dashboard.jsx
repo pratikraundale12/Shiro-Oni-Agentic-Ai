@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import styled from 'styled-components';
 
-import { theme } from '../../styles';
-import { SelectField } from '../../shared';
 import { FullPageLoader, Table } from '../../components';
-import { InsightContainer, FlowMetrics } from './components';
+import { SelectField } from '../../shared';
+import { theme } from '../../styles';
+import { FlowMetrics, InsightContainer } from './components';
 
 import {
   ActiveThreadIcon,
@@ -223,6 +223,7 @@ export const Dashboard = () => {
               width: '400px',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
+              zIndex: theme.zIndex,
             }}
           />
         </TextEllipses>

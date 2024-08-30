@@ -153,7 +153,8 @@ export const KDFM = {
   TRIAL: 'Trial',
   PURCHASED: 'Purchased',
   LICENSE: 'License',
-  TRIAL_EXPIRED_PROMPT: arg => `Trial: Your trial will expire on ${arg}.`,
+  TRIAL_EXPIRED_PROMPT: arg =>
+    `Trial: Your trial license will expire on ${arg}.`,
   PURCHASED_EXPIRED_PROMPT: arg =>
     `Licensed: Your purchased license will expire on ${arg}. Please renew it to continue using the platform.`,
 
