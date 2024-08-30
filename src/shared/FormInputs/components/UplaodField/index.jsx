@@ -124,21 +124,19 @@ const UploadField = ({
   setValue,
   ...props
 }) => {
-  const [imageSrc, setImageSrc] = useState(image || null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [fileName, setFileName] = useState('');
   const [fileError, setFileError] = useState('');
   const error = hasError(errors, name);
 
   const handleRemoveImage = () => {
-    if (name === 'logo') {
-      setValue('logo', null);
-    } else {
-      setValue('favicon', null);
-    }
+    setValue(name, null);
     const input = document.querySelector(`#file-upload-${name}`);
     if (input) {
       input.value = null;
     }
     setImageSrc(null);
+    setFileName('');
     if (control && control.setValue) {
       control.setValue(name, null);
     }
@@ -146,9 +144,20 @@ const UploadField = ({
 
   useEffect(() => {
     if (image) {
-      setImageSrc(image);
+      if (image instanceof Blob) {
+        const objectURL = URL.createObjectURL(image);
+        setImageSrc(objectURL);
+        setFileName(`uploaded-${Date.now()}`);
+      } else {
+        setImageSrc(image);
+        setFileName(getFileNameFromUrl(image));
+      }
     }
   }, [image]);
+
+  const getFileNameFromUrl = url => {
+    return url.substring(url.lastIndexOf('/') + 1);
+  };
 
   return (
     <Controller
@@ -175,7 +184,9 @@ const UploadField = ({
               return;
             }
 
-            setImageSrc(URL.createObjectURL(file));
+            const objectURL = URL.createObjectURL(file);
+            setImageSrc(objectURL);
+            setFileName(file.name);
             onChange(file);
             setFileError('');
           } else {
@@ -197,7 +208,7 @@ const UploadField = ({
               <input
                 name={name}
                 aria-invalid={error}
-                value={imageSrc ? imageSrc.split('/').pop() : ''}
+                value={fileName}
                 readOnly
                 {...props}
               />

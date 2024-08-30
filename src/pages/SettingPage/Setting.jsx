@@ -111,7 +111,7 @@ export const Setting = () => {
         logoElement.src = settingData.logo;
       }
     }
-  }, [settingData, setValue]);
+  }, [settingData, setValue, dispatch]);
 
   useEffect(() => {
     const subscription = watch(value => {
