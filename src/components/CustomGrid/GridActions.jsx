@@ -230,7 +230,9 @@ export const GridActions = ({
           </ImageContainer>
           <Title>
             <span>{title}</span>
-            {Boolean(gridCount) && <span>({gridCount})</span>}
+            {module === 'namespaces' && Boolean(gridCount) && (
+              <span>({gridCount})</span>
+            )}
           </Title>
         </Flex>
         <ButtonsContainer>
