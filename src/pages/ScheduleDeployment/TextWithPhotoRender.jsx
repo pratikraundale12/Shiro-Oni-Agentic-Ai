@@ -86,12 +86,13 @@ export const TextWithPhotoRender = ({
                   />
                   <Tooltip
                     id={item.approver_id}
+                    place="right"
                     styles={{
                       backgroundColor: 'white',
                       borderRadius: '8px',
                       padding: '8px 12px',
                       boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
-                      zIndex: 10000,
+                      zIndex: theme.zIndex,
                     }}
                   >
                     <div>{item.approver_name}</div>
@@ -105,15 +106,16 @@ export const TextWithPhotoRender = ({
 
                   <Tooltip
                     id={content[index].approver_id}
+                    place="right"
                     styles={{
                       backgroundColor: 'white',
                       borderRadius: '8px',
                       padding: '8px 12px',
                       boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
-                      zIndex: theme.zIndex,
+                      zIndex: 10000,
                     }}
                   >
-                    <div data-tooltip-id>{content[index].approver_name}</div>
+                    <div>{content[index].approver_name}</div>
                   </Tooltip>
                 </HolderContainer>
               )
@@ -136,6 +138,7 @@ export const TextWithPhotoRender = ({
           )}
           <Tooltip
             id={'demoId311'}
+            place="right"
             styles={{
               backgroundColor: 'white',
               borderRadius: '8px',
