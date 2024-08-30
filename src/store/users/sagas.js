@@ -5,11 +5,16 @@ import { requestSaga } from '../helpers/request_sagas';
 import { UsersActions } from './redux';
 
 export function* fetchUsers(api, { payload }) {
+  const updatePayload = payload?.admin_role_id
+    ? { admin_role_id: payload?.admin_role_id }
+    : payload;
   const response = yield call(requestSaga, {
     errorSection: 'fetchUsers',
     loadingSection: 'fetchUsers',
-    apiMethod: api.fetchUsers,
-    apiParams: [payload],
+    apiMethod: payload?.admin_role_id
+      ? api.fetchUsersWithAdminId
+      : api.fetchUsers,
+    apiParams: [updatePayload],
   });
 
   if (response.ok) {
