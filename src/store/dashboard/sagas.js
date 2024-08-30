@@ -11,7 +11,6 @@ export function* fetchDashboard(api, { payload: { refresh } = {} }) {
   );
 
   if (!selectedCluster?.value) {
-    console.log('No cluster ID available, aborting API call.');
     return;
   }
 
