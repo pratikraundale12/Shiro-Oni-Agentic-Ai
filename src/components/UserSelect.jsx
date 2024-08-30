@@ -11,20 +11,23 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
   const dispatch = useDispatch();
   const RoleList = useSelector(RolesSelectors.getRoles);
   const userList = useSelector(UsersSelectors.getUsers);
-  const AdminList = RoleList?.filter(
-    item => item.name.toLowerCase() === 'admin'
-  );
+  const AdminRole = RoleList?.find(item => item.name.toLowerCase() === 'admin');
+
   const handleChange = value => {
     setSearchText(value);
   };
+
   useEffect(() => {
     dispatch(
       UsersActions.fetchUsers({
-        params: { ...(searchText && { search: searchText }) },
-        admin_role_id: AdminList[0]?.role_id,
+        params: {
+          ...(searchText && { search: searchText }),
+          role_id: AdminRole?.role_id,
+        },
       })
     );
-  }, [dispatch, searchText]);
+  }, [dispatch, searchText, AdminRole]);
+
   return (
     <SelectField
       label={label}

@@ -73,14 +73,6 @@ const Search = styled.input`
   }
 `;
 
-// const StyledClusterSelect = styled(ClusterSelect)`
-//   margin-bottom: 0;
-
-//   > div {
-//     margin-top: 0;
-//   }
-// `;
-
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
   min-width: 8.5rem;
@@ -122,13 +114,11 @@ const ImageContainer = styled.div`
 export const GridActions = ({
   title,
   module,
-  refreshOptions,
   statusOptions,
   search,
   placeholder = 'Search...',
   buttonText,
   addModal: Modal,
-  handleRefresh = () => {},
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -184,19 +174,6 @@ export const GridActions = ({
           <Title>{title}</Title>
         </Flex>
         <ButtonsContainer>
-          {!isEmpty(refreshOptions) && (
-            <DropdownContainer>
-              <StyledSelectField
-                name="refresh"
-                size="sm"
-                control={control}
-                options={refreshOptions}
-                placeholder={KDFM.REFRESH}
-                backgroundColor={theme.colors.lightGrey}
-                onChange={handleRefresh}
-              />
-            </DropdownContainer>
-          )}
           {!isEmpty(statusOptions) && (
             <DropdownContainer>
               <StyledSelectField
@@ -210,16 +187,6 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
-          {/* {location.pathname.includes('namespaces') && (
-            <DropdownContainer>
-              <StyledClusterSelect
-                size="sm"
-                placeholder={KDFM.CLUSTER}
-                title={KDFM.SELECT_CLUSTER}
-                backgroundColor={theme.colors.lightGrey}
-              />
-            </DropdownContainer>
-          )} */}
           {location.pathname.includes('permission-matrix') && (
             <StyledSelectField
               size="sm"
