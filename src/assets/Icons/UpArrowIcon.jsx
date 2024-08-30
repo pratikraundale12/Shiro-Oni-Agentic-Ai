@@ -1,7 +1,12 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
-export const UpArrowIcon = ({ width = 14, height = 8, color = '#444445' }) => (
+export const UpArrowIcon = ({
+  width = 14,
+  height = 8,
+  color = '#444445',
+  ...prop
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}

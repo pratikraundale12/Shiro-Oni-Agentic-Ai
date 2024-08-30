@@ -6,20 +6,18 @@ import PropTypes from 'prop-types';
 import { default as React, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-
+import { NoDataIcon, SortDownIcon, SortIcon, SortUpIcon } from '../../assets';
+import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
+import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
+import { Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
+import { LoadingSelectors, NamespacesSelectors } from '../../store';
+import { GridActions, GridSelectors } from '../../store/grid';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
 import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
-
-import { NoDataIcon } from '../../assets';
-import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
-import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
-import { Modal } from '../../shared';
-import { LoadingSelectors, NamespacesSelectors } from '../../store';
-import { GridActions, GridSelectors } from '../../store/grid';
 // import ReactPagination from './ReactPagnation';
 import { useSort } from '@table-library/react-table-library/sort';
 import { useParams } from 'react-router-dom';
@@ -196,6 +194,11 @@ export const Grid = ({
     },
     {
       sortFns,
+      sortIcon: {
+        iconDefault: <SortIcon />,
+        iconUp: <SortUpIcon />,
+        iconDown: <SortDownIcon />,
+      },
     }
   );
 
@@ -249,6 +252,7 @@ export const Grid = ({
         search={search}
         placeholder={placeholder}
         buttonText={buttonText}
+        gridCount={gridCount}
         addModal={addModal}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (

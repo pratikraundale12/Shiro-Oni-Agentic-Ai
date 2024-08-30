@@ -148,6 +148,7 @@ export const KDFM = {
   ROLE: 'Role',
   PROFILE: 'Profile',
   LOADING: 'Loading...',
+  NIFI_FLOW: 'NiFi Flow',
 
   // License constants
   TRIAL: 'Trial',
