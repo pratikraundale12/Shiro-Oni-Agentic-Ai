@@ -22,16 +22,48 @@ export const StyledButton = styled.button`
 `;
 
 const CopyToClipboard = ({ copyItem, className }) => {
-  const handleCopyToClipboard = async value => {
+  const fallbackCopyTextToClipboard = text => {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+
+    // Avoid scrolling to bottom of page in some cases
+    textArea.style.position = 'fixed';
+    textArea.style.top = 0;
+    textArea.style.left = 0;
+    // Hide the textarea out of view
+    textArea.style.width = '2em';
+    textArea.style.height = '2em';
+    textArea.style.padding = 0;
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none';
+    textArea.style.background = 'transparent';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
     try {
-      if (!navigator.clipboard) {
-        console.error('Clipboard API not supported in this browser.');
-        return;
-      }
-      await navigator.clipboard.writeText(value);
-      toast.info(`Copied to clipboard`);
+      const successful = document.execCommand('copy');
+      const msg = successful ? 'Copied to Clipboard' : 'Failed to copy';
+      toast.info(msg);
     } catch (err) {
       console.error('Failed to copy: ', err);
+    }
+
+    document.body.removeChild(textArea);
+  };
+
+  const handleCopyToClipboard = async value => {
+    if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(value);
+        toast.info('Copied to Clipboard');
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    } else {
+      console.warn('Clipboard API not supported, using fallback.');
+      fallbackCopyTextToClipboard(value);
     }
   };
 

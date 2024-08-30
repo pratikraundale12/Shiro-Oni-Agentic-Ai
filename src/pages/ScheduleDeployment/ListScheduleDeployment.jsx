@@ -223,6 +223,7 @@ export const ListScheduleDeployment = () => {
         loading={loadingButton}
       />
       <AddScheduleDeploymentModal
+        control={control}
         scheduleInitialOpen={isEditScheduleModal}
         startDate={selectedTimeStamp}
         setStartDate={setSelectedTimeStamp}
