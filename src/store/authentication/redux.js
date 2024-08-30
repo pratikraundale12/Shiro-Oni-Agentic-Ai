@@ -24,6 +24,7 @@ export const AuthenticationActions = {
   updateTermsAndPoliciesSuccess: createAction(
     `${prefix}updateTermsAndPoliciesSuccess`
   ),
+  setCurrentUser: createAction(`${prefix}setCurrentUser`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -113,6 +114,13 @@ const setDestinationFlag = state => {
   };
 };
 
+const setCurrentUser = (state, { payload }) => {
+  return {
+    ...state,
+    user: { ...state.user, ...payload },
+  };
+};
+
 const disableButton = state => {
   return {
     ...state,
@@ -153,6 +161,7 @@ export const authenticationReducer = createReducer(
       .addCase(
         AuthenticationActions.updateTermsAndPoliciesSuccess,
         updateTermsAndPoliciesSuccess
-      );
+      )
+      .addCase(AuthenticationActions.setCurrentUser, setCurrentUser);
   }
 );

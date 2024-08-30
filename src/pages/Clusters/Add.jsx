@@ -492,7 +492,9 @@ export const Add = () => {
     <Wrapper>
       <Title
         title={
-          isEditDetails ? 'Edit Cluster Details' : 'Add New Cluster Details'
+          data
+            ? `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`
+            : 'Add New Cluster Details'
         }
       />
       <Container>
@@ -503,7 +505,14 @@ export const Add = () => {
           >
             {KDFM.CLUSTER_DETAILS}
           </NavButton>
-          <NavButton active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}>
+          <NavButton
+            active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
+            onClick={() =>
+              Object.keys(data || {})?.length
+                ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
+                : {}
+            }
+          >
             {KDFM.REGISTRY_DETAILS}
           </NavButton>
         </NavTabs>

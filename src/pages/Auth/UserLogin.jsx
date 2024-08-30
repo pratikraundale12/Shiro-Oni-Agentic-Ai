@@ -142,6 +142,7 @@ export const UserLogin = () => {
             icon={<ClusterIcon />}
             label="Select Cluster"
             errors={errors}
+            required
           />
           <InputField
             name="username"

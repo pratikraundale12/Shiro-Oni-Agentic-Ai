@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -121,6 +122,7 @@ const SelectField = ({
   ldap = false,
   handleCreateOption,
   optionEntity = '',
+  showCircleIcon = false,
   ...props
 }) => {
   const animatedComponents = makeAnimated();
@@ -132,6 +134,22 @@ const SelectField = ({
     return theme.colors.border;
   };
 
+  const dot = (color) => ({
+    alignItems: 'center',
+    display: 'flex',
+    // justifyContent: 'space-between', 
+  
+    ':before': {
+      backgroundColor: color,
+      borderRadius: 10,
+      content: '" "',
+      display: 'block',
+      marginRight: 8,
+      height: 10,
+      width: 10,
+    },
+  });
+  
   const customStyles = {
     indicatorSeparator: () => ({ display: 'none' }),
     indicatorsContainer: styles => ({
@@ -199,8 +217,10 @@ const SelectField = ({
         fill: theme.colors.darker,
       },
     }),
-    option: (styles, state) => ({
+    option: (styles, state) => {
+      return{
       ...styles,
+      ...(showCircleIcon && state.data?.is_active !== undefined ? dot(state.data.status == 'Connected' ? '#0CBF59' : '#FF0000') : {}),
       fontWeight: 500,
       fontFamily: theme.fontNato,
       backgroundColor: state.isFocused
@@ -210,7 +230,7 @@ const SelectField = ({
           : 'transparent',
       color: state.isSelected && theme.colors.darker,
       cursor: disabled ? 'not-allowed' : 'pointer',
-    }),
+    }},
     singleValue: styles => ({
       ...styles,
       fontFamily: theme.fontNato,
@@ -299,7 +319,6 @@ const SelectField = ({
                 }),
                 DropdownIndicator,
               }}
-              // formatOptionLabel={formatOptionLabel}
               {...props}
               onChange={selected => {
                 if (isMulti) onChange(selected.map(option => option.value));

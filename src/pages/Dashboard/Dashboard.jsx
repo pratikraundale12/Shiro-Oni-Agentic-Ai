@@ -4,10 +4,10 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 
-import { ClusterSelect, FullPageLoader, Table } from '../../components';
-import { SelectField } from '../../shared';
 import { theme } from '../../styles';
-import { FlowMetrics, InsightContainer } from './components';
+import { SelectField } from '../../shared';
+import { FullPageLoader, Table } from '../../components';
+import { InsightContainer, FlowMetrics } from './components';
 
 import {
   ActiveThreadIcon,
@@ -268,14 +268,6 @@ export const Dashboard = () => {
         </QuickInsightHeading>
         <DropdownWrapper>
           <DropdownContainer>
-            <ClusterSelect
-              placeholder="Select Cluster"
-              title="Select Cluster"
-              backgroundColor={theme.colors.lightGrey}
-              size="sm"
-            />
-          </DropdownContainer>
-          <DropdownContainer>
             <SelectField
               options={namespaces?.map(({ id, name }) => ({
                 value: id,
@@ -288,7 +280,6 @@ export const Dashboard = () => {
               size="sm"
             />
           </DropdownContainer>
-          <DropdownContainer></DropdownContainer>
         </DropdownWrapper>
       </TopSection>
       <InsightDataContiner>

@@ -1,6 +1,6 @@
 export const clustersAPI = api => {
   const fetchClusters = ({ params = {}, payload = {} }) => {
-    const body = JSON.parse(payload) || [];
+    const body = payload || [];
     return api.post('/list-clusters', body, { params });
   };
   const fetchClusterList = ({ params = {} }) =>
