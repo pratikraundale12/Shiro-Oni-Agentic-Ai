@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid, IconButton, TextRender } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -26,6 +26,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useLocation } from 'react-router-dom';
 
 const ActionTd = styled.div`
   display: flex;
@@ -57,6 +58,20 @@ export const ListScheduleDeployment = () => {
     SchedularSelectors.getScheduleCofirmModel
   );
   // dispatch(SchedularActions.setScheduleConfirmModel());
+
+  const location = useLocation();
+  // const [urlToken, setUrlToken] = useState('');
+
+  const params = new URLSearchParams(location.search);
+  const token = params.get('token');
+  // setUrlToken(token);
+
+  useEffect(() => {
+    if (token) {
+      dispatch(SchedularActions.checkApproverToken({ params: { token } }));
+    }
+  }, [token]);
+
   const {
     register,
     setValue,
@@ -187,6 +202,7 @@ export const ListScheduleDeployment = () => {
   const handleRejecModalClose = () => {
     dispatch(SchedularActions.setRejectScheduleModal());
   };
+
   return (
     <>
       <ModalWithIcon

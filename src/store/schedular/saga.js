@@ -83,23 +83,17 @@ export function* editScheduleDeployment(api, { payload }) {
 }
 
 export function* checkApproverToken(api, { payload: { params } }) {
-  console.log(params, 'params from the saga');
-  // const token = {
-  //   token: payload,
-  // };
   const response = yield call(requestSaga, {
     errorSection: 'checkApproverToken',
     loadingSection: 'checkApproverToken',
     apiMethod: api.checkApproverToken,
     apiParams: [{ params: params }],
   });
-  response;
-  // if (response.ok) {
-  //   toast.success('Successfully Scheduled Deployment');
-  //   yield put(SchedularActions.setScheduleModal());
-  //   yield call(history.push, '/schedule-deployment');
-  //   yield put(AuthenticationActions.setRoute('schedule-deployment'));
-  // } else toast.error(response.data.message);
+  if (response.ok) {
+    yield call(history.push, '/schedule-deployment');
+    yield put(AuthenticationActions.setRoute('schedule-deployment'));
+  }
+  // else yield call(history.push, '/login');
 }
 
 export function* schedularSagas(api) {
