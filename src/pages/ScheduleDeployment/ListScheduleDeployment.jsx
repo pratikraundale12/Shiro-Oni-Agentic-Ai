@@ -28,6 +28,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useLocation } from 'react-router-dom';
 import { isEmpty } from 'lodash';
+import { TokenScheduleDeploymentConfirmationModel } from './TokenScheduleDeploymentModel';
 
 const ActionTd = styled.div`
   display: flex;
@@ -43,6 +44,8 @@ export const ListScheduleDeployment = () => {
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [selectedTimeStamp, setSelectedTimeStamp] = useState(new Date());
   const [selectedData, setSelectedData] = useState(null);
+  const [dateToken, setDateToken] = useState(new Date());
+  const [scheduleData, setScheduleData] = useState({});
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const loadingButton = useSelector(state =>
     LoadingSelectors.getLoading(state, 'editScheduleDeployment')
@@ -59,6 +62,9 @@ export const ListScheduleDeployment = () => {
   const isConfirmScheduleModal = useSelector(
     SchedularSelectors.getScheduleCofirmModel
   );
+  const isTokenScheduleModal = useSelector(
+    SchedularSelectors.getTokenScheduleMOdel
+  );
 
   const location = useLocation();
 
@@ -73,9 +79,10 @@ export const ListScheduleDeployment = () => {
 
   useEffect(() => {
     if (!isEmpty(selectedSchedule)) {
+      setScheduleData(selectedSchedule);
       setSelectedData(selectedSchedule.scheduler_id);
-      setSelectedTimeStamp(new Date(selectedSchedule?.scheduled_time));
-      dispatch(SchedularActions.setEditScheduleModel());
+      setDateToken(new Date(selectedSchedule?.scheduled_time));
+      dispatch(SchedularActions.setTokenScheduleModel());
     }
   }, [dispatch, selectedSchedule]);
 
@@ -210,6 +217,23 @@ export const ListScheduleDeployment = () => {
     dispatch(SchedularActions.setRejectScheduleModal());
   };
 
+  const handleTokenConfirm = () => {
+    const payload = {
+      scheduled_time: dateToken.toISOString(),
+      is_approved: true,
+      schedularId: scheduleData.scheduler_id,
+    };
+    dispatch(SchedularActions.editScheduleDeployment(payload));
+  };
+
+  const handleTokenScheduleDecline = () => {
+    dispatch(SchedularActions.setTokenScheduleModel());
+    dispatch(SchedularActions.setRejectScheduleModal());
+  };
+
+  const handleCloseTokenModel = () => {
+    dispatch(SchedularActions.setTokenScheduleModel());
+  };
   return (
     <>
       <ModalWithIcon
@@ -252,6 +276,15 @@ export const ListScheduleDeployment = () => {
         setStartDate={setSelectedTimeStamp}
         handleContinue={editConfirmSchedule}
         loadingButton={loadingButton}
+      />
+      <TokenScheduleDeploymentConfirmationModel
+        scheduleInitialOpen={isTokenScheduleModal}
+        dateToken={dateToken}
+        setDateToken={setDateToken}
+        handleContinue={handleTokenConfirm}
+        loadingButton={loadingButton}
+        handleDecline={handleTokenScheduleDecline}
+        handleCloseModel={handleCloseTokenModel}
       />
       <RejectConfirmScheduleModel
         icon={<ConfirmScheduleDeploymentIcon />}

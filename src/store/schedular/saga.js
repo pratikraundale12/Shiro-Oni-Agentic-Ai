@@ -65,6 +65,9 @@ export function* editScheduleDeployment(api, { payload }) {
   const confirmScheduleModel = yield select(
     SchedularSelectors.getScheduleCofirmModel
   );
+  const tokenScheduleMOdel = yield select(
+    SchedularSelectors.getTokenScheduleMOdel
+  );
   if (response.ok) {
     toast.success('Successfully Updated Scheduled Deployment');
     if (rejectModelState) {
@@ -78,6 +81,9 @@ export function* editScheduleDeployment(api, { payload }) {
     }
     if (confirmScheduleModel) {
       yield put(SchedularActions.setScheduleConfirmModel());
+    }
+    if (tokenScheduleMOdel) {
+      yield put(SchedularActions.setTokenScheduleModel());
     }
   } else toast.error(response.data.message);
 }

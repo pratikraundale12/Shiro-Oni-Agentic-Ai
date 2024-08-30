@@ -103,10 +103,10 @@ const DateTimeInput = ({
   setStartDate,
   label,
   required = false,
-  control,
-  errors,
+  control = {},
+  errors = {},
 }) => {
-  const now = new Date();
+  // const now = new Date();
   const handleDateChange = date => {
     setStartDate(date);
   };
@@ -134,13 +134,13 @@ const DateTimeInput = ({
           control={control}
           errors={errors}
           popperPlacement="bottom-start"
-          minDate={now}
-          minTime={
-            startDate && now.toDateString() === startDate.toDateString()
-              ? now
-              : new Date().setHours(0, 0, 0, 0)
-          }
-          maxTime={new Date().setHours(23, 59, 59, 999)}
+          // minDate={now}
+          // minTime={
+          //   startDate && now.toDateString() === startDate.toDateString()
+          //     ? now
+          //     : new Date().setHours(0, 0, 0, 0)
+          // }
+          // maxTime={new Date().setHours(23, 59, 59, 999)}
         />
         <div className="date-picker-icon arrow-down">
           <DownArrowIcon />
