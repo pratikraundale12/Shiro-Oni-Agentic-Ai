@@ -90,8 +90,9 @@ export function* checkApproverToken(api, { payload: { params } }) {
     apiParams: [{ params: params }],
   });
   if (response.ok) {
-    yield call(history.push, '/schedule-deployment');
-    yield put(AuthenticationActions.setRoute('schedule-deployment'));
+    // yield call(history.push, '/schedule-deployment');
+    // yield put(AuthenticationActions.setRoute('schedule-deployment'));
+    yield put(SchedularActions.setSelectedSchedule(response.data));
   }
   // else yield call(history.push, '/login');
 }

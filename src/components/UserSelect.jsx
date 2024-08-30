@@ -4,7 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UserIcon } from '../assets';
 import defaultAvatarURL from '../assets/images/avatar.png';
 import { SelectField } from '../shared';
-import { RolesSelectors, UsersActions, UsersSelectors } from '../store';
+import {
+  RolesActions,
+  RolesSelectors,
+  UsersActions,
+  UsersSelectors,
+} from '../store';
 
 export const UserSelect = ({ control, errors, name, label, placeholder }) => {
   const [searchText, setSearchText] = useState('');
@@ -27,6 +32,10 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
       })
     );
   }, [dispatch, searchText, AdminRole]);
+
+  useEffect(() => {
+    dispatch(RolesActions.fetchRoles());
+  }, [dispatch]);
 
   return (
     <SelectField

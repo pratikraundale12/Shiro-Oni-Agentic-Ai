@@ -27,6 +27,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useLocation } from 'react-router-dom';
+import { isEmpty } from 'lodash';
 
 const ActionTd = styled.div`
   display: flex;
@@ -42,6 +43,7 @@ export const ListScheduleDeployment = () => {
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [selectedTimeStamp, setSelectedTimeStamp] = useState(new Date());
   const [selectedData, setSelectedData] = useState(null);
+  const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const loadingButton = useSelector(state =>
     LoadingSelectors.getLoading(state, 'editScheduleDeployment')
   );
@@ -57,20 +59,24 @@ export const ListScheduleDeployment = () => {
   const isConfirmScheduleModal = useSelector(
     SchedularSelectors.getScheduleCofirmModel
   );
-  // dispatch(SchedularActions.setScheduleConfirmModel());
 
   const location = useLocation();
-  // const [urlToken, setUrlToken] = useState('');
 
   const params = new URLSearchParams(location.search);
   const token = params.get('token');
-  // setUrlToken(token);
 
   useEffect(() => {
     if (token) {
       dispatch(SchedularActions.checkApproverToken({ params: { token } }));
     }
-  }, [token]);
+  }, [dispatch, token]);
+
+  useEffect(() => {
+    if (!isEmpty(selectedSchedule)) {
+      setSelectedData(selectedSchedule.scheduler_id);
+      dispatch(SchedularActions.setEditScheduleModel());
+    }
+  }, [dispatch, selectedSchedule]);
 
   const {
     register,
