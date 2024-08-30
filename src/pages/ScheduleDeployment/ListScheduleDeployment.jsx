@@ -74,6 +74,7 @@ export const ListScheduleDeployment = () => {
   useEffect(() => {
     if (!isEmpty(selectedSchedule)) {
       setSelectedData(selectedSchedule.scheduler_id);
+      setSelectedTimeStamp(new Date(selectedSchedule?.scheduled_time));
       dispatch(SchedularActions.setEditScheduleModel());
     }
   }, [dispatch, selectedSchedule]);
