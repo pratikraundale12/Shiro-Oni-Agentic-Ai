@@ -9,6 +9,7 @@ import {
   NoDataIcon,
   PlusCircleIcon,
   QRIcons,
+  RightCircleIcon,
   WhiteBoradIcon,
 } from '../../assets';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
@@ -127,10 +128,11 @@ const CertificateMessage = styled.div`
 
 const TextTest = styled.div`
   font-family: ${props => props.theme.fontNato};
-  font-weight: 600;
-  font-size: 20px;
+  font-weight: 500;
+  font-size: 1.25rem;
   color: #444445;
   line-height: 27.24px;
+  max-width: 55%;
 `;
 
 const StyledButton = styled(Button)`
@@ -195,7 +197,7 @@ const BoxContentArea = styled.div`
   span {
     display: flex;
     position: relative;
-    font-size: 12px;
+    font-size: 1rem;
     font-weight: 400;
     line-height: 14.52px;
     letter-spacing: -0.005em;
@@ -205,6 +207,7 @@ const BoxContentArea = styled.div`
 
 const RegistryDetailsDivTwo = styled.div`
   padding-left: -4px;
+  margin-top: 1.5rem;
 `;
 
 const ButtonDiv = styled.div`
@@ -571,11 +574,11 @@ export const Add = () => {
             {testSuccess && !suceessModal && (
               <UploadCertificateContainer>
                 <CertificateMessage>
-                  <WhiteBoradIcon />
+                  <RightCircleIcon width={60} height={60} />
                   <TextTest>
                     {activeTab === CLUSTER_MODULE_TABS.CLUSTER
-                      ? KDFM.CLUSTER_TESTED_SUCCESSFULLY
-                      : KDFM.REGISRTY_TESTED_SUCCESSFULLY}
+                      ? KDFM.CLUSTER_TESTED_SUCCES_PROMPT
+                      : KDFM.REGISTRY_TESTED_SUCCESS_PROMPT}
                   </TextTest>
                 </CertificateMessage>
               </UploadCertificateContainer>
@@ -659,10 +662,10 @@ export const Add = () => {
                         {testSuccess && !suceessModal && (
                           <UploadCertificateContainer>
                             <CertificateMessage>
-                              <WhiteBoradIcon />
+                              <RightCircleIcon width={60} height={60} />
                               <TextTest>
                                 {activeTab === CLUSTER_MODULE_TABS.REGISTRY
-                                  ? KDFM.REGISRTY_TESTED_SUCCESSFULLY
+                                  ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
                                   : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
                               </TextTest>
                             </CertificateMessage>
@@ -671,10 +674,10 @@ export const Add = () => {
                       </Flex>
                     ) : (
                       <CertificateMessage>
-                        <WhiteBoradIcon />
+                        <RightCircleIcon width={60} height={60} />
                         <TextTest>
                           {activeTab === CLUSTER_MODULE_TABS.REGISTRY
-                            ? KDFM.REGISRTY_TESTED_SUCCESSFULLY
+                            ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
                             : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
                         </TextTest>
                       </CertificateMessage>

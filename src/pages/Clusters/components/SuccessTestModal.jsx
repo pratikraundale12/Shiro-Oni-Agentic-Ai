@@ -13,7 +13,6 @@ const Title = styled.h5`
   font-family: noto sans;
   font-size: 20px;
   font-weight: 700;
-  text-transform: capitalize;
   color: #2d343f;
   line-height: 24px;
   letter-spacing: -0.02em;
@@ -49,7 +48,7 @@ export const SuccessTestModal = ({ successTest, setSuccessTest, name }) => {
         <Icon>
           <RightCircleIcon color="#0CBF59" />
         </Icon>
-        <Title className="text-capitalize">{name} Test Successful</Title>
+        <Title className="text-capitalize">{name} test Successful</Title>
         <Para>
           Your {name} test was successful. You <br /> can now proceed to the
           next steps.
