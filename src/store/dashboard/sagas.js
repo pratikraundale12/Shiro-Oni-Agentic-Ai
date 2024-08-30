@@ -9,6 +9,12 @@ export function* fetchDashboard(api, { payload: { refresh } = {} }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+
+  if (!selectedCluster?.value) {
+    console.log('No cluster ID available, aborting API call.');
+    return;
+  }
+
   const queryParams = {
     clusterId: selectedCluster?.value || '',
     namespaceId: selectedNamespace?.value || '',
