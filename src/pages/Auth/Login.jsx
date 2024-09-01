@@ -137,6 +137,7 @@ export const Login = () => {
             label="E-mail Address"
             placeholder="Enter your Email Address"
             register={register}
+            watch={watch}
             errors={errors}
             icon={<MailIcon />}
             rightIcon={getRightIcon(watch, errors)}

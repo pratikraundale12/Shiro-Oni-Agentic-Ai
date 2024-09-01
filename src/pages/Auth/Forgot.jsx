@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import * as yup from 'yup';
 
 import {
+  CrossIcons,
   GreaterArrowIcon,
   LessArrowIcon,
   MailIcon,
@@ -90,9 +91,17 @@ const resetSchema = yup.object().shape({
 });
 
 export const getRightIcon = (watch, errors) => {
-  return watch('email') && !errors.email ? (
-    <RightArrowIcon color={theme.colors.primary} />
-  ) : null;
+  const emailValue = watch('email');
+  const isEmailValid = !errors.email && EMAIL_REGEX.test(emailValue);
+
+  if (emailValue) {
+    return isEmailValid ? (
+      <RightArrowIcon color={theme.colors.primary} />
+    ) : (
+      <CrossIcons color={theme.colors.primary} width={16} height={16} /> // Add CrossIcon or similar
+    );
+  }
+  return null;
 };
 
 export const Forgot = () => {
