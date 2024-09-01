@@ -21,6 +21,7 @@ import SessionExpiredLabel from '../shared/SessionExpiredLabel';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
+  NamespacesActions,
   NamespacesSelectors,
 } from '../store';
 import { useGlobalContext } from '../utils';
@@ -275,6 +276,14 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   const closeTab = () => {
     setDisplaySessionTab(false);
   };
+
+  useEffect(() => {
+    const cluster = localStorage.getItem('selected_cluster');
+    const enableCluster = JSON.parse(cluster) ?? {};
+    if (Object.keys(enableCluster)?.length > 0) {
+      dispatch(NamespacesActions.setSelectedCluster(enableCluster));
+    }
+  }, [dispatch]);
 
   // Function to calculate remaining days before expiration using moment.js
   const calculateRemainingDays = expirationDateString => {

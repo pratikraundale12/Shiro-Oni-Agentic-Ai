@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import { hasError } from '../../../../helpers';
 
 const Container = styled.div`
-  width: 25%;
   margin-bottom: 1.4rem;
 
   label {
