@@ -8,6 +8,7 @@ import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import { NamespacesActions } from '../../store';
+import { useGlobalContext } from '../../utils';
 import AuditLog from './AuditLog';
 
 const StyledButton = styled.button`
@@ -31,6 +32,7 @@ export const ListNamespaces = () => {
   const dispatch = useDispatch();
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
+  const { setState } = useGlobalContext();
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
@@ -63,8 +65,10 @@ export const ListNamespaces = () => {
       label: KDFM.NAMESPACE,
       renderCell: item => (
         <StyledButton
+          key={item.flowId}
           tabIndex="0"
           onClick={() => {
+            setState(prev => ({ ...prev, search: '' }));
             dispatch(NamespacesActions.setFlowPath(item.flowId));
             dispatch(
               NamespacesActions.setSelectedNamespace({
