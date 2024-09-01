@@ -58,10 +58,9 @@ const AuditLog = ({ isOpen, rowId, closePopup }) => {
       isOpen={isOpen}
       onRequestClose={closePopup}
       size="lg"
-      // secondaryButtonText="Back"
-      primaryButtonText={KDFM.CONTINUE}
-      // onSubmit={handleSubmit(onSubmit)}
+      primaryButtonText={KDFM.OK}
       onSubmit={closePopup}
+      contentStyles={{ maxWidth: '65%', maxHeight: '65%' }}
     >
       <Table data={auditTableData} columns={COLUMNS} />
     </Modal>

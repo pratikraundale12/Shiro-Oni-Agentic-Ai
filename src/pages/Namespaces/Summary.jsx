@@ -356,7 +356,8 @@ const Summary = () => {
   };
   const onSubmit = async data => {
     const payload = {
-      namespace_id: checkDestCluster?.id,
+      // namespace_id: checkDestCluster?.id,
+      ...(formData.namespaceId && { namespaceId: formData.namespaceId }),
       namespace_name: checkDestCluster?.name,
       scheduled_time: startDate.toISOString(),
       flow_id: checkDestCluster?.flowId,

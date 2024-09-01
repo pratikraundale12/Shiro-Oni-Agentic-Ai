@@ -18,7 +18,7 @@ const TextColor = styled.div`
 export const TextRender = ({
   text,
   capitalizeText = true,
-  tooltipPlacement = 'bottom-start',
+  tooltipPlacement = 'right',
   ...rest
 }) => {
   const textToRender = typeof text === 'number' ? String(text) : text;
