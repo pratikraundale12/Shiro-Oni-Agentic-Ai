@@ -7,7 +7,7 @@ export const NAMESPACE_CONSTANTS = {
   BUCKET_NAME: 'Bucket Name',
   SELECT_NAMESPACE: 'Select Namespace',
   SELECTED_NAMESPACE: 'Selected Namespace',
-  SEARCH_NAMESPACE_FLOW_BUCKET_NAME: 'Search Namespace, Flow Name, Bucket Name',
+  SEARCH_NAMESPACE_FLOW_BUCKET_NAME: 'Search Namespace, Flow Name',
   CONFIGURATION_DETAILS: 'Configuration Details',
   VERSION_CONTROL: 'Version Control',
   CANVAS_POSITION: 'Canvas Position',

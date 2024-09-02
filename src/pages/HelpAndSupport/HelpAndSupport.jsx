@@ -94,7 +94,6 @@ const AccordionButton = styled.button`
   justify-content: space-between;
   align-items: center;
   font-size: 20px;
-  font-weight: 700;
   line-height: 21.85px;
   text-align: left;
 `;
