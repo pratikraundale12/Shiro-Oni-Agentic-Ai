@@ -23,6 +23,12 @@ export const STATUS_OPTIONS = [
   { value: 'false', label: 'Inactive' },
 ];
 
+export const Cluster_STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'true', label: 'Connected/Disconnected' },
+  { value: 'false', label: 'Deactivate' },
+];
+
 export const REFRESH_OPTIONS = [
   { value: false, label: 'Off' },
   { value: 5000, label: '5 Seconds' },
@@ -151,6 +157,7 @@ export const KDFM = {
   OK: 'OK',
   KINDLY_SELECT_DESTINATION: 'Kindly select your destination cluster',
   NO_NAMESPACES_AVAILABLE: 'No Namespace Available',
+  SEARCH_NODES: 'Search NodeId , Address',
 
   // License constants
   TRIAL: 'Trial',

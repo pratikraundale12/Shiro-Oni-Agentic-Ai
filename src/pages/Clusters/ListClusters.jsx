@@ -21,8 +21,8 @@ import {
   // CLUSTERS_TOKEN,
   // CLUSTERS_TOKEN,
   CLUSTER_STATUS,
+  Cluster_STATUS_OPTIONS,
   KDFM,
-  STATUS_OPTIONS,
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
@@ -266,7 +266,7 @@ export const ListClusters = () => {
         title={KDFM.CLUSTER_LIST}
         buttonText={KDFM.ADD_NEW_CLUSTER}
         columns={COLUMNS}
-        statusOptions={STATUS_OPTIONS}
+        statusOptions={Cluster_STATUS_OPTIONS}
         placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
         sortFns={sortFns}
       />

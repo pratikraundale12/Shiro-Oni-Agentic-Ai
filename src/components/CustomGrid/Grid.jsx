@@ -246,7 +246,24 @@ export const Grid = ({
     () => () => setState(prev => ({ ...prev, search: '', page: 1 })),
     [setState]
   );
-
+  const filterClusterView = data => {
+    if (!data) return;
+    const { nodes } = data;
+    const filtered = nodes?.filter(
+      item =>
+        item?.nodeId?.includes(search) ||
+        item?.address?.includes(search.toLowerCase())
+    );
+    return {
+      nodes: filtered,
+    };
+  };
+  const TABLE_DATA = !clusterId
+    ? DATA
+    : search
+      ? filterClusterView(DATA)
+      : DATA;
+  console.log(TABLE_DATA, 'TABLE_DATA');
   return (
     <Container>
       <GridActionsComponent
@@ -298,7 +315,7 @@ export const Grid = ({
       <Breadcrumb module={module} />
       <TableContainer>
         <CompactTable
-          data={DATA}
+          data={TABLE_DATA}
           columns={columns}
           theme={tableTheme}
           sort={sort}

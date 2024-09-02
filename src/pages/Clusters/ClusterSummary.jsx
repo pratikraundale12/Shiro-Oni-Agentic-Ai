@@ -70,7 +70,7 @@ export const ClusterSummary = () => {
       <Grid
         module="nodes"
         title="Clusters Summary"
-        placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
+        placeholder={KDFM.SEARCH_NODES}
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}

@@ -11,7 +11,6 @@ const ClusterDetail = ({ data }) => {
       renderCell: item => (
         <TextRender text={item.name} tooltipPlacement="right" />
       ),
-      width: '10%',
     },
     {
       label: KDFM.CLUSTER_URL,
