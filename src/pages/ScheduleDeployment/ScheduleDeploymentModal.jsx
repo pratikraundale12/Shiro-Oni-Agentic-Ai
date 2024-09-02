@@ -7,7 +7,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import styled from 'styled-components';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import moment from 'moment';
 
 import { UserSelect } from '../../components';
 import { Button, DateField, Modal } from '../../shared';
@@ -102,7 +101,7 @@ export const ScheduleDeploymentModal = () => {
   // }, [approvers]);
 
   const onSubmit = data => {
-    const formattedDate = moment(data.scheduled_time).format();
+    const formattedDate = new Date(data.scheduled_time).toUTCString();
     const { approver_ids } = data;
 
     if (!isEmpty(selectedSchedule)) {
