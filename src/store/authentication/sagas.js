@@ -100,6 +100,13 @@ export function* login(api, { payload: { type, ...payload } }) {
         token: response.data.cluster_token,
       };
       localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify([cluster]));
+      localStorage.setItem(
+        'selected_cluster',
+        JSON.stringify({
+          label: cluster.name,
+          value: cluster.id,
+        })
+      );
       yield put(
         NamespacesActions.setSelectedCluster({
           label: cluster.name,
