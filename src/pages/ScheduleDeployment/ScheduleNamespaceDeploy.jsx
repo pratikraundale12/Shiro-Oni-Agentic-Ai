@@ -201,7 +201,10 @@ const ScheduleNamespaceDeploy = ({ getScheduleParamerterContext }) => {
 
   const onSubmit = () => {
     const payload = {
-      namespace_id: checkDestCluster?.id,
+      ...(checkDestCluster?.mode === 'upgrade' && {
+        namespaceId: checkDestCluster?.id,
+      }),
+      ...(formData.namespaceId && { namespaceId: formData.namespaceId }),
       namespace_name: checkDestCluster?.name,
       scheduled_time: new Date(formData?.scheduled_time).toISOString(),
       flow_id: checkDestCluster?.flowId,
