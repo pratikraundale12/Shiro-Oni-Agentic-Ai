@@ -240,7 +240,7 @@ const ProfileDropdown = () => {
 
   return (
     <ProfileContainer ref={menuRef}>
-      {!window.location.pathname.includes('user-management') && <UserModal />}
+      <UserModal />
       <ProfileButton type="button" onClick={() => setShowMenu(prev => !prev)}>
         <ProfileRender url={currentUser?.photo} />
         <ProfileInfo>
