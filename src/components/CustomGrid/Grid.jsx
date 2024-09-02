@@ -280,7 +280,6 @@ export const Grid = ({
     : search
       ? filterClusterView(DATA)
       : DATA;
-  console.log(TABLE_DATA, 'TABLE_DATA');
   return (
     <Container>
       <GridActionsComponent
