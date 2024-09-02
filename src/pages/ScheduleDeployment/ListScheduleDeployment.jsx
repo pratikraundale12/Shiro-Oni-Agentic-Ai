@@ -111,7 +111,8 @@ export const ListScheduleDeployment = () => {
           onClick={() => handleCancelModel(item)}
           disabled={
             item.deployer_id != currentUser.id ||
-            item.deployment_status === 'NOT APPROVED'
+            item.deployment_status === 'NOT APPROVED' ||
+            item.deployment_status === 'CANCELLED'
           }
         >
           <HoldIcon />
