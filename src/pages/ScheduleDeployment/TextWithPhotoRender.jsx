@@ -1,14 +1,15 @@
-import React from 'react';
-import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { Tooltip } from 'react-tooltip';
+import styled from 'styled-components';
 import {
   CrossWithCircleIcon,
   DefaultUserIcon,
   TickIconWithCircle,
 } from '../../assets';
-import { Tooltip } from 'react-tooltip';
 import { SchedularActions } from '../../store/schedular/redux';
-import { useDispatch } from 'react-redux';
+import { theme } from '../../styles';
 
 const TextColor = styled.div`
   color: ${props => props.theme.colors.darker};
@@ -85,12 +86,13 @@ export const TextWithPhotoRender = ({
                   />
                   <Tooltip
                     id={item.approver_id}
+                    place="right"
                     styles={{
                       backgroundColor: 'white',
                       borderRadius: '8px',
                       padding: '8px 12px',
                       boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
-                      zIndex: 10000,
+                      zIndex: theme.zIndex,
                     }}
                   >
                     <div>{item.approver_name}</div>
@@ -104,12 +106,13 @@ export const TextWithPhotoRender = ({
 
                   <Tooltip
                     id={content[index].approver_id}
+                    place="right"
                     styles={{
                       backgroundColor: 'white',
                       borderRadius: '8px',
                       padding: '8px 12px',
                       boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
-                      zIndex: 10000,
+                      zIndex: theme.zIndex,
                     }}
                   >
                     <div>{content[index].approver_name}</div>
@@ -135,6 +138,7 @@ export const TextWithPhotoRender = ({
           )}
           <Tooltip
             id={'demoId311'}
+            place="right"
             styles={{
               backgroundColor: 'white',
               borderRadius: '8px',

@@ -9,6 +9,11 @@ export function* fetchDashboard(api, { payload: { refresh } = {} }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+
+  if (!selectedCluster?.value) {
+    return;
+  }
+
   const queryParams = {
     clusterId: selectedCluster?.value || '',
     namespaceId: selectedNamespace?.value || '',

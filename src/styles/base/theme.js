@@ -73,6 +73,6 @@ const theme = {
   },
   sidebar: '280px',
   header: '78px',
-  zIndex: {},
+  zIndex: 2,
 };
 export default theme;

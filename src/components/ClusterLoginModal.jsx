@@ -92,6 +92,13 @@ export const ClusterLoginModal = () => {
         };
         clusterData.push(newCluster);
         localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(clusterData));
+        localStorage.setItem(
+          'selected_cluster',
+          JSON.stringify({
+            label: response.cluster_name,
+            value: response?.cluster_id,
+          })
+        );
         dispatch(
           NamespacesActions.setSelectedCluster({
             label: response?.cluster_name,
@@ -146,6 +153,13 @@ export const ClusterLoginModal = () => {
     toast.success('Cluster Enabled Successfully');
     dispatch(
       NamespacesActions.setSelectedCluster({
+        label: clusterName,
+        value: getValues()?.cluster_id,
+      })
+    );
+    localStorage.setItem(
+      'selected_cluster',
+      JSON.stringify({
         label: clusterName,
         value: getValues()?.cluster_id,
       })

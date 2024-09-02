@@ -178,9 +178,8 @@ const Upgrade = () => {
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
     const seconds = pad(date.getSeconds());
-    const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
 
-    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}.${milliseconds}`;
+    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
   };
 
   const COLUMNS = [
