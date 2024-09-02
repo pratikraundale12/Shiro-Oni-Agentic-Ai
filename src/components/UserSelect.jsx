@@ -15,6 +15,7 @@ import {
 
 export const UserSelect = ({ control, errors, name, label, placeholder }) => {
   const dispatch = useDispatch();
+  const [selected, setSelected] = useState([]);
   const RoleList = useSelector(RolesSelectors.getRoles);
   const userList = useSelector(UsersSelectors.getUsers);
   const AdminRole = RoleList?.find(item => item.name.toLowerCase() === 'admin');
@@ -47,7 +48,14 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
       control={control}
       icon={<UserIcon />}
       errors={errors}
-      options={userList.map(({ id, photo, username }) => ({
+      options={[
+        ...userList,
+        ...selected.map(item => ({
+          id: item.value,
+          username: item.label,
+          photo: item.avatar,
+        })),
+      ].map(({ id, photo, username }) => ({
         value: id,
         label: username,
         avatar: photo ? photo : defaultAvatarURL,
@@ -57,6 +65,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
       onInputChange={handleChange}
       optionEntity="user"
       isMulti
+      onChange={values => setSelected(values)}
     />
   );
 };
