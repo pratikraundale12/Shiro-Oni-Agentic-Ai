@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
+
 import { UserIcon } from '../assets';
 import defaultAvatarURL from '../assets/images/avatar.png';
 import { SelectField } from '../shared';
@@ -12,30 +14,31 @@ import {
 } from '../store';
 
 export const UserSelect = ({ control, errors, name, label, placeholder }) => {
-  const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
   const RoleList = useSelector(RolesSelectors.getRoles);
   const userList = useSelector(UsersSelectors.getUsers);
   const AdminRole = RoleList?.find(item => item.name.toLowerCase() === 'admin');
+  const [searchText, setSearchText] = useState('');
 
   const handleChange = value => {
     setSearchText(value);
   };
 
   useEffect(() => {
-    dispatch(
-      UsersActions.fetchUsers({
-        params: {
-          ...(searchText && { search: searchText }),
-          role_id: AdminRole?.role_id,
-        },
-      })
-    );
+    if (!isEmpty(AdminRole))
+      dispatch(
+        UsersActions.fetchUsers({
+          params: {
+            ...(searchText && { search: searchText }),
+            role_id: AdminRole?.role_id,
+          },
+        })
+      );
   }, [dispatch, searchText, AdminRole]);
 
   useEffect(() => {
-    dispatch(RolesActions.fetchRoles());
-  }, [dispatch]);
+    if (isEmpty(AdminRole)) dispatch(RolesActions.fetchRoles());
+  }, [dispatch, AdminRole]);
 
   return (
     <SelectField

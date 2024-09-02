@@ -112,6 +112,8 @@ export const UserLogin = () => {
   const dispatch = useDispatch();
   // setState
   const { state } = useGlobalContext();
+  const params = new URLSearchParams(location.search);
+  const token = params.get('token');
   const {
     watch,
     register,
@@ -123,9 +125,10 @@ export const UserLogin = () => {
   });
 
   const onSubmit = data => {
-    dispatch(AuthenticationActions.login(data));
+    dispatch(AuthenticationActions.login({ ...data, token }));
   };
 
+  console.log(token);
   return (
     <Layout>
       <Title>{`${WELCOME_BACK} 👋`}</Title>

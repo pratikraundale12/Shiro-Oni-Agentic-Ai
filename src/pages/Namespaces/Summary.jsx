@@ -1,7 +1,7 @@
-import { yupResolver } from '@hookform/resolvers/yup';
+// import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+// import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
@@ -20,21 +20,22 @@ import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
-  LoadingSelectors,
+  // LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
 import {
   SchedularActions,
-  SchedularSelectors,
+  // SchedularSelectors,
 } from '../../store/schedular/redux';
 import { useGlobalContext } from '../../utils';
-import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
+// import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
+import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymentModal';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -310,15 +311,15 @@ const Summary = () => {
     isOpen: false,
     mode: 'add',
   });
-  const newlyAddVariables = useSelector(
-    NamespacesSelectors.getNewlyAddVariables
-  );
+  // const newlyAddVariables = useSelector(
+  //   NamespacesSelectors.getNewlyAddVariables
+  // );
   const parameterContextItem = useSelector(
     NamespacesSelectors.getParameterContextItem
   );
-  const newlyAddParameters = useSelector(
-    NamespacesSelectors.getNewlyAddedParameterContext
-  );
+  // const newlyAddParameters = useSelector(
+  //   NamespacesSelectors.getNewlyAddedParameterContext
+  // );
 
   const [isVariablesModalOpen, setVariablesModalOpen] = useState({
     isOpen: false,
@@ -328,60 +329,60 @@ const Summary = () => {
   const { state } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
-  const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
-  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  const isScheduleModal = useSelector(SchedularSelectors.getScheduleModal);
-  const loadingButton = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'createScheduleDeployment')
-  );
+  // const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
+  // const [startDate, setStartDate] = useState(new Date());
+  // const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  // const isScheduleModal = useSelector(SchedularSelectors.getScheduleModal);
+  // const loadingButton = useSelector(state =>
+  //   LoadingSelectors.getLoading(state, 'createScheduleDeployment')
+  // );
 
-  const {
-    setValue,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(scheduleSchema),
-  });
+  // const {
+  //   // setValue,
+  //   // handleSubmit,
+  //   // control,
+  //   // formState: { errors },
+  // } = useForm({
+  //   resolver: yupResolver(scheduleSchema),
+  // });
 
-  const handleScheduleNamespaceDeployModel = () => {
-    dispatch(SchedularActions.setScheduleModal());
-    history.push('/namespaces');
-  };
+  // const handleScheduleNamespaceDeployModel = () => {
+  //   dispatch(SchedularActions.setScheduleModal());
+  //   history.push('/namespaces');
+  // };
 
-  const handleContinue = () => {
-    setScheduleInitialOpen(false);
-    dispatch(SchedularActions.setScheduleModal());
-  };
-  const onSubmit = async data => {
-    const payload = {
-      namespace_id: checkDestCluster?.id,
-      namespace_name: checkDestCluster?.name,
-      scheduled_time: startDate.toISOString(),
-      flow_id: checkDestCluster?.flowId,
-      source_cluster_id: selectedCluster?.value,
-      destination_cluster_id: selectedDestCluster.value,
-      deployment_status: 'PENDING',
-      bucket_id: checkDestCluster?.bucketId,
-      registry_id: checkDestCluster?.registryId,
-      mode: checkDestCluster?.mode,
-      version: formData.version,
-      position: checkDestCluster?.position,
-      approver_ids: data?.approver_ids,
-      variables: newlyAddVariables.map(item => ({
-        name: item.name,
-        value: item.value,
-      })),
-      params: newlyAddParameters.map(item => ({
-        name: item.name,
-        value: item.value,
-        description: item.description,
-        sensitive: item.sensitive,
-      })),
-    };
-    dispatch(SchedularActions.createScheduleDeployment(payload));
-  };
+  // const handleContinue = () => {
+  //   setScheduleInitialOpen(false);
+  //   dispatch(SchedularActions.setScheduleModal());
+  // };
+  // const onSubmit = async data => {
+  //   const payload = {
+  //     namespace_id: checkDestCluster?.id,
+  //     namespace_name: checkDestCluster?.name,
+  //     scheduled_time: startDate.toISOString(),
+  //     flow_id: checkDestCluster?.flowId,
+  //     source_cluster_id: selectedCluster?.value,
+  //     destination_cluster_id: selectedDestCluster.value,
+  //     deployment_status: 'PENDING',
+  //     bucket_id: checkDestCluster?.bucketId,
+  //     registry_id: checkDestCluster?.registryId,
+  //     mode: checkDestCluster?.mode,
+  //     version: formData.version,
+  //     position: checkDestCluster?.position,
+  //     approver_ids: data?.approver_ids,
+  //     variables: newlyAddVariables.map(item => ({
+  //       name: item.name,
+  //       value: item.value,
+  //     })),
+  //     params: newlyAddParameters.map(item => ({
+  //       name: item.name,
+  //       value: item.value,
+  //       description: item.description,
+  //       sensitive: item.sensitive,
+  //     })),
+  //   };
+  //   dispatch(SchedularActions.createScheduleDeployment(payload));
+  // };
 
   const getParamerterContext = async () => {
     setLoading(true);
@@ -390,9 +391,7 @@ const Summary = () => {
   };
   const getScheduleParamerterContext = async () => {
     setIsParameterContextOpen({ isOpen: true, schedule: true });
-    dispatch(SchedularActions.setScheduleModal());
-    setLoading(true);
-    setLoading(false);
+    dispatch(SchedularActions.setScheduleDeployModal());
   };
   const handleUpgradeClick = async () => {
     if (!isEmpty(flowControlButtons)) {
@@ -417,7 +416,7 @@ const Summary = () => {
   const closeParameterContext = () => {
     setIsParameterContextOpen(prev => ({ ...prev, isOpen: false }));
     if (isParameterContextOpen.schedule) {
-      dispatch(SchedularActions.setScheduleModal());
+      dispatch(SchedularActions.setScheduleDeployModal());
     } else {
       dispatch(NamespacesActions.setDeployedModal());
     }
@@ -450,10 +449,10 @@ const Summary = () => {
     setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: false });
   };
 
-  const handleScheduleTertiaryButton = async () => {
-    setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
-    dispatch(SchedularActions.setScheduleModal());
-  };
+  // const handleScheduleTertiaryButton = async () => {
+  //   setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
+  //   dispatch(SchedularActions.setScheduleModal());
+  // };
   const closeVariablesModal = () => {
     setVariablesModalOpen(prev => ({ ...prev, isOpen: false }));
     if (isVariablesModalOpen.schedule) {
@@ -787,7 +786,14 @@ const Summary = () => {
                 : KDFM.DOWNGRADE
               : KDFM.DEPLOY}
           </Button>
-          <AddScheduleDeploymentModal
+          <Button
+            size="md"
+            variant="secondary"
+            onClick={() => dispatch(SchedularActions.setScheduleModal())}
+          >
+            Schedule
+          </Button>
+          {/* <AddScheduleDeploymentModal
             setValue={setValue}
             control={control}
             errors={errors}
@@ -797,7 +803,7 @@ const Summary = () => {
             startDate={startDate}
             setStartDate={setStartDate}
             showButton={true}
-          />
+          /> */}
         </BottomButtonDiv>
         {checkDestCluster.mode === 'upgrade' && (
           <Progressox className="w-100">
@@ -821,6 +827,7 @@ const Summary = () => {
           </Progressox>
         )}
       </BottomButton>
+      <ScheduleDeploymentModal />
       <NamespaceDeploy
         isOpen={isDeployedModal}
         closePopup={handleCloseModal}
@@ -829,13 +836,13 @@ const Summary = () => {
         handleTertiaryButton={handleTertiaryButton}
       />
       <ScheduleNamespaceDeploy
-        isOpen={isScheduleModal}
-        closePopup={handleScheduleNamespaceDeployModel}
+        // isOpen={isScheduleModal}
+        // closePopup={handleScheduleNamespaceDeployModel}
         getScheduleParamerterContext={getScheduleParamerterContext}
-        handleScheduleTertiaryButton={handleScheduleTertiaryButton}
-        onSubmit={onSubmit}
-        handleSubmit={handleSubmit}
-        loadingButton={loadingButton}
+        // handleScheduleTertiaryButton={handleScheduleTertiaryButton}
+        // onSubmit={onSubmit}
+        // handleSubmit={handleSubmit}
+        // loadingButton={loadingButton}
       />
       <ParameterContext
         isParameterContextOpen={isParameterContextOpen}
