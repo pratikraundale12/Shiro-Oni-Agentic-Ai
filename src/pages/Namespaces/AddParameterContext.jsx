@@ -156,14 +156,21 @@ const AddParameterContext = ({
 
   const handleAddEditParameterContext = async data => {
     if (!data) return;
+    const processData = {
+      ...data,
+      value: !data?.value || !data?.check ? null : data?.value,
+    };
     const nameExists = (contextList, name) =>
       contextList.some(
         parameter => parameter?.name?.toLowerCase() === name?.toLowerCase()
       );
-    const parameterAlreadyExist = nameExists(parameterContextList, data?.name);
+    const parameterAlreadyExist = nameExists(
+      parameterContextList,
+      processData?.name
+    );
     const parameterAlreadyExistInNewlyAddedContext = nameExists(
       newlyAddParameters,
-      data?.name
+      processData?.name
     );
 
     const isDuplicate =
@@ -177,15 +184,15 @@ const AddParameterContext = ({
 
     if (isAddParameterContextOpen?.mode === 'edit') {
       const updatedData = newlyAddParameters.map(item =>
-        item?.name?.toLowerCase() === data?.name?.toLowerCase()
-          ? { ...item, ...data }
+        item?.name?.toLowerCase() === processData?.name?.toLowerCase()
+          ? { ...item, ...processData }
           : item
       );
       const filteredParameterContextList = parameterContextList.filter(
-        item => item?.name?.toLowerCase() !== data?.name?.toLowerCase()
+        item => item?.name?.toLowerCase() !== processData?.name?.toLowerCase()
       );
       const existingParameterContext = parameterContextList.find(
-        item => item?.name?.toLowerCase() === data?.name?.toLowerCase()
+        item => item?.name?.toLowerCase() === processData?.name?.toLowerCase()
       );
 
       if (
@@ -202,7 +209,7 @@ const AddParameterContext = ({
         dispatch(
           NamespacesActions.setNewlyAddedParameterContext([
             ...updatedData,
-            data,
+            processData,
           ])
         );
       } else {
@@ -214,11 +221,10 @@ const AddParameterContext = ({
       dispatch(
         NamespacesActions.setNewlyAddedParameterContext([
           ...newlyAddParameters,
-          data,
+          processData,
         ])
       );
     }
-    console.log('isParameterContextOpen', isParameterContextOpen);
     if (isParameterContextOpen?.schedule) {
       setIsParameterContextOpen({ isOpen: true, schedule: true });
     } else {
