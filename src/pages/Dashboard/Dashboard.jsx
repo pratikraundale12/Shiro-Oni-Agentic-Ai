@@ -270,10 +270,17 @@ export const Dashboard = () => {
         <DropdownWrapper>
           <DropdownContainer>
             <SelectField
-              options={namespaces?.map(({ id, name }) => ({
-                value: id,
-                label: name,
-              }))}
+              options={
+                Array.isArray(namespaces)
+                  ? [
+                      { value: '', label: 'All Namespaces' },
+                      ...namespaces.map(({ id, name }) => ({
+                        value: id,
+                        label: name,
+                      })),
+                    ]
+                  : [{ value: '', label: 'All Namespaces' }]
+              }
               onChange={onNamespaceSelect}
               placeholder="Select Namespace"
               title="Select Namespace"

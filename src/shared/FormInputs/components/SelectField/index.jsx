@@ -39,6 +39,23 @@ const Container = styled.div`
     border-radius: 6px !important;
     padding-block: 4px !important;
   }
+  /* Apply fixed width to dropdown options */
+  .react-select__menu {
+    width: 175px;
+  }
+
+  .react-select__menu-list {
+    max-width: 175px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .react-select__option {
+    max-width: 175px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 
 const DropdownIndicator = props =>
@@ -134,11 +151,11 @@ const SelectField = ({
     return theme.colors.border;
   };
 
-  const dot = (color) => ({
+  const dot = color => ({
     alignItems: 'center',
     display: 'flex',
-    // justifyContent: 'space-between', 
-  
+    // justifyContent: 'space-between',
+
     ':before': {
       backgroundColor: color,
       borderRadius: 10,
@@ -149,7 +166,7 @@ const SelectField = ({
       width: 10,
     },
   });
-  
+
   const customStyles = {
     indicatorSeparator: () => ({ display: 'none' }),
     indicatorsContainer: styles => ({
@@ -218,19 +235,22 @@ const SelectField = ({
       },
     }),
     option: (styles, state) => {
-      return{
-      ...styles,
-      ...(showCircleIcon && state.data?.is_active !== undefined ? dot(state.data.status == 'Connected' ? '#0CBF59' : '#FF0000') : {}),
-      fontWeight: 500,
-      fontFamily: theme.fontNato,
-      backgroundColor: state.isFocused
-        ? theme.colors.lightGrey1
-        : state.isSelected
+      return {
+        ...styles,
+        ...(showCircleIcon && state.data?.is_active !== undefined
+          ? dot(state.data.status == 'Connected' ? '#0CBF59' : '#FF0000')
+          : {}),
+        fontWeight: 500,
+        fontFamily: theme.fontNato,
+        backgroundColor: state.isFocused
           ? theme.colors.lightGrey1
-          : 'transparent',
-      color: state.isSelected && theme.colors.darker,
-      cursor: disabled ? 'not-allowed' : 'pointer',
-    }},
+          : state.isSelected
+            ? theme.colors.lightGrey1
+            : 'transparent',
+        color: state.isSelected && theme.colors.darker,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      };
+    },
     singleValue: styles => ({
       ...styles,
       fontFamily: theme.fontNato,
