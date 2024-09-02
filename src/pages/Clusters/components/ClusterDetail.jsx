@@ -15,9 +15,7 @@ const ClusterDetail = ({ data }) => {
     },
     {
       label: KDFM.CLUSTER_URL,
-      renderCell: item => (
-        <UrlRender url={item.nifi_url} tooltipPlacement="left" />
-      ),
+      renderCell: item => <UrlRender key={item.nifi_url} url={item.nifi_url} />,
       width: '75%',
     },
   ];

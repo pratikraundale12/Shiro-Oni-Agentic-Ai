@@ -28,10 +28,14 @@ const StyledLink = styled.a`
   }
 `;
 
-export const UrlRender = ({ url }) => {
+export const UrlRender = ({ url, tooltipPlacement = 'bottom-start' }) => {
   return (
     <Container>
-      <TextRender text={url} capitalizeText={false} />
+      <TextRender
+        text={url}
+        capitalizeText={false}
+        tooltipPlacement={tooltipPlacement}
+      />
       <Container>
         <StyledLink href={url} target="_blank">
           <OpenLinkIcon />
@@ -44,4 +48,5 @@ export const UrlRender = ({ url }) => {
 
 UrlRender.propTypes = {
   url: PropTypes.string.isRequired,
+  tooltipPlacement: PropTypes.string,
 };

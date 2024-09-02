@@ -14,7 +14,9 @@ const RegistryDetail = ({ data }) => {
     },
     {
       label: KDFM.REGISTRY_URL,
-      renderCell: item => <UrlRender url={item.registry_url} />,
+      renderCell: item => (
+        <UrlRender key={item.registry_url} url={item.registry_url} />
+      ),
       width: '75%',
     },
   ];
