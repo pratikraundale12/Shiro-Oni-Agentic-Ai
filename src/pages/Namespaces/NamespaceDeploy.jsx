@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
-  ExclamationIcon,
   GreenRightCircleIcon,
   SmallNotThunderIcon,
   SmallThunderIcon,
@@ -157,32 +157,6 @@ const ActiveButtonDiv = styled.div`
     fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
 `;
-const WarningContainer = styled.div`
-  height: 85px;
-  border-radius: 20px;
-  border: 1px solid #dde4f0;
-  margin: 5px;
-  display: flex;
-`;
-
-const WarningHeading = styled.div`
-  font-family: Noto Sans;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 27.24px;
-  text-align: left;
-  color: #444445;
-`;
-
-const WarningText = styled.div`
-  font-family: Red Hat Display;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-  text-align: left;
-  color: #444445;
-`;
 
 const NamespaceDeploy = ({
   isOpen,
@@ -320,8 +294,11 @@ const NamespaceDeploy = ({
             </CustomNine>
 
             <CustomNine className="col-8 mb-3">
-              <ActiveButtonContainer className="d-flex ">
+              <ActiveButtonContainer className="d-flex">
                 <ActiveButtonDiv className="div-btn-1">
+                  <Tooltip id="running-tooltip" place="top">
+                    Running
+                  </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
                     isActive={activeButton === 'RUNNING'}
@@ -329,11 +306,16 @@ const NamespaceDeploy = ({
                     hoverColor="#58e715"
                     activeTextColor="#fff"
                     onClick={() => handleUpdateStatus('RUNNING')}
+                    data-tooltip-id="running-tooltip"
                   >
                     <TriangleIcons color="#B5BDC8" />
                   </ActiveButtonDiv>
                 </ActiveButtonDiv>
+
                 <ActiveButtonDiv className="div-btn-2">
+                  <Tooltip id="stopped-tooltip" place="top">
+                    Stopped
+                  </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
                     isActive={activeButton === 'STOPPED'}
@@ -341,11 +323,16 @@ const NamespaceDeploy = ({
                     hoverColor="#c52b2b"
                     activeTextColor="#fff"
                     onClick={() => handleUpdateStatus('STOPPED')}
+                    data-tooltip-id="stopped-tooltip"
                   >
                     <SquareBoxIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
                 </ActiveButtonDiv>
+
                 <ActiveButtonDiv className="div-btn-3">
+                  <Tooltip id="enabled-tooltip" place="top">
+                    Enabled
+                  </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
                     isActive={activeButton === 'ENABLED'}
@@ -353,11 +340,16 @@ const NamespaceDeploy = ({
                     hoverColor="#cf9f5d"
                     activeTextColor="#fff"
                     onClick={() => handleUpdateStatus('ENABLED')}
+                    data-tooltip-id="enabled-tooltip"
                   >
                     <SmallThunderIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
                 </ActiveButtonDiv>
+
                 <ActiveButtonDiv className="div-btn-4">
+                  <Tooltip id="disabled-tooltip" place="top">
+                    Disabled
+                  </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
                     isActive={activeButton === 'DISABLED'}
@@ -365,6 +357,7 @@ const NamespaceDeploy = ({
                     hoverColor="#2c7cf3"
                     activeTextColor="#fff"
                     onClick={() => handleUpdateStatus('DISABLED')}
+                    data-tooltip-id="disabled-tooltip"
                   >
                     <SmallNotThunderIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
@@ -372,20 +365,6 @@ const NamespaceDeploy = ({
               </ActiveButtonContainer>
             </CustomNine>
           </RowModal>
-          <WarningContainer>
-            <div className="col-2 d-flex justify-content-center align-items-center">
-              <ExclamationIcon />
-            </div>
-            <div className="col-8 d-flex align-items-center">
-              <div>
-                <WarningHeading>Warning !!!</WarningHeading>
-                <WarningText>
-                  Add Parameter Context and Variables before Scheduling this
-                  Deployment
-                </WarningText>
-              </div>
-            </div>
-          </WarningContainer>
         </ModalBody>
       </Modal>
     </>

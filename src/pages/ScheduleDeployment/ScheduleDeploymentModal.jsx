@@ -102,8 +102,8 @@ export const ScheduleDeploymentModal = () => {
     if (!isEmpty(selectedSchedule)) {
       const payload = {
         schedularId: selectedSchedule.scheduler_id,
-        is_approved: true,
-        scheduled_time: data.scheduled_time,
+        // is_approved: true,
+        scheduled_time: new Date(data.scheduled_time).toISOString(),
       };
       dispatch(SchedularActions.editScheduleDeployment(payload));
     } else {
