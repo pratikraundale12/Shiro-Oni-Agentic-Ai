@@ -65,6 +65,7 @@ export const ListNamespaces = () => {
       label: KDFM.NAMESPACE,
       renderCell: item => (
         <StyledButton
+          key={item.flowId}
           tabIndex="0"
           onClick={() => {
             setState(prev => ({ ...prev, search: '' }));
