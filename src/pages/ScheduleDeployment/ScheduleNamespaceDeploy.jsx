@@ -206,7 +206,7 @@ const ScheduleNamespaceDeploy = ({ getScheduleParamerterContext }) => {
       }),
       ...(formData.namespaceId && { namespaceId: formData.namespaceId }),
       namespace_name: checkDestCluster?.name,
-      scheduled_time: new Date(formData?.scheduled_time).toISOString(),
+      scheduled_time: formData?.scheduled_time,
       flow_id: checkDestCluster?.flowId,
       source_cluster_id: selectedCluster?.value,
       destination_cluster_id: selectedDestCluster.value,

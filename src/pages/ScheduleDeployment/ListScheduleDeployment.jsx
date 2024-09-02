@@ -9,7 +9,6 @@ import {
   HoldIcon,
   PencilIcon,
 } from '../../assets';
-import { STATUS_OPTIONS } from '../../constants';
 import {
   AuthenticationSelectors,
   GridActions,
@@ -239,6 +238,13 @@ export const ListScheduleDeployment = () => {
   // const handleCloseTokenModel = () => {
   //   dispatch(SchedularActions.setTokenScheduleModel());
   // };
+
+  const STATUS_OPTIONS = [
+    { value: 'PENDING', label: 'Pending' },
+    { value: 'SUCCESS', label: 'Success' },
+    { value: 'SCHEDULED', label: 'Scheduled' },
+    { value: 'IN PROGRESS', label: 'In Progress' },
+  ];
   return (
     <>
       <ModalWithIcon

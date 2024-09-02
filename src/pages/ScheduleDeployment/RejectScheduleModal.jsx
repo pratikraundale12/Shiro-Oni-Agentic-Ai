@@ -65,8 +65,7 @@ export const RejectScheduleModal = () => {
   const onSubmit = data => {
     data.is_approved = false;
     data.schedularId = selectedSchedule.scheduler_id;
-    console.log(data);
-    // dispatch(SchedularActions.editScheduleDeployment(payload));
+    dispatch(SchedularActions.editScheduleDeployment(data));
   };
 
   return (

@@ -15,6 +15,7 @@ import {
 } from '../../store/schedular/redux';
 import { LoadingSelectors } from '../../store';
 import { QRIcons } from '../../assets';
+import moment from 'moment';
 
 const Container = styled.div`
   height: 350px;
@@ -64,10 +65,11 @@ export const TokenScheduleDeploymentModal = () => {
   };
 
   const onSubmit = data => {
+    const formattedDate = moment(data.scheduled_time).format();
     const payload = {
       schedularId: selectedSchedule.scheduler_id,
       is_approved: true,
-      scheduled_time: data.scheduled_time,
+      scheduled_time: formattedDate,
     };
     dispatch(SchedularActions.editScheduleDeployment(payload));
   };

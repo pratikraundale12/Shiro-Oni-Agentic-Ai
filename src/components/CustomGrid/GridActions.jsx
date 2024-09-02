@@ -138,6 +138,8 @@ export const GridActions = ({
   const getModuleBasedStatusKey = module => {
     if (module === 'activityHistory') {
       return 'status';
+    } else if (module === 'scheduler') {
+      return 'deployment_status';
     } else {
       return 'is_active';
     }
