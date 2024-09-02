@@ -228,7 +228,9 @@ export const ListClusters = () => {
         ...state,
         nodeClusterId: menuState.row.id,
       });
-      history.push(`/clusters/${menuState.row.id}`);
+      history.push(`/clusters/${menuState.row.id}`, {
+        clusterSummaryPage: true,
+      });
     }
 
     if (type === 'active') {

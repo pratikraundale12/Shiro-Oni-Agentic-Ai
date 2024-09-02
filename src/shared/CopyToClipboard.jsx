@@ -70,6 +70,7 @@ const CopyToClipboard = ({ copyItem, className }) => {
 
   return (
     <StyledButton
+      type="button"
       onClick={() => handleCopyToClipboard(copyItem)}
       className={className}
     >

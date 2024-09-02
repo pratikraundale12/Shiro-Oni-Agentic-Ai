@@ -1,11 +1,11 @@
-import React from 'react';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 
-import { GridSelectors, NamespacesActions } from '../store';
 import { history } from '../helpers/history';
+import { GridSelectors, NamespacesActions } from '../store';
 
 const BreadcrumbContainer = styled.div`
   display: flex;
@@ -63,9 +63,13 @@ const Breadcrumb = ({ module, path, onClick }) => {
   if (data.length <= 1) return null;
 
   return (
-    <BreadcrumbContainer>
+    <BreadcrumbContainer id={module}>
       {data?.map((breadcrumb, index) => (
-        <BreadcrumbItem key={index} onClick={() => handleClick(breadcrumb)}>
+        <BreadcrumbItem
+          key={index}
+          id={module + breadcrumb?.label}
+          onClick={() => handleClick(breadcrumb)}
+        >
           {breadcrumb.label}
         </BreadcrumbItem>
       ))}

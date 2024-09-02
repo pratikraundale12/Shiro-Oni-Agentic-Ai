@@ -5,7 +5,12 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
+import {
+  GreaterArrowIcon,
+  PlusCircleIcon,
+  SmallSearchIcon,
+  TodoIcon,
+} from '../../assets';
 import {
   ACCESS_OPTIONS,
   ACTIVITY_EVENTS,
@@ -18,6 +23,8 @@ import { Button, SelectField } from '../../shared';
 import {
   AuthenticationSelectors,
   GridActions as GridSagsActions,
+  NamespacesActions,
+  NamespacesSelectors,
   RolesActions,
   RolesSelectors,
 } from '../../store';
@@ -44,6 +51,9 @@ const Title = styled.h3`
   font-family: ${props => props.theme.fontNato};
   font-weight: 500;
   font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin: 0;
 `;
 
@@ -111,6 +121,51 @@ const ImageContainer = styled.div`
   margin-bottom: 0.5rem;
 `;
 
+const StyledGoBackButton = styled.button`
+  width: 2rem;
+  height: 2rem;
+  background-color: ${theme.colors.white};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${theme.colors.lightGrey};
+  }
+`;
+
+const GoBackButton = () => {
+  const naviagate = useLocation();
+  const dispatch = useDispatch();
+  const selectedNamespace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const isChildNamespace =
+    selectedNamespace && selectedNamespace?.label !== KDFM.NIFI_FLOW;
+  const { clusterSummaryPage = false } = naviagate?.state || {};
+  const handleGoBack = () => {
+    if (clusterSummaryPage) {
+      history.push('/clusters');
+    }
+    if (isChildNamespace) {
+      dispatch(NamespacesActions.setSelectedNamespace(null));
+      history.push('/namespaces');
+    }
+  };
+
+  if (clusterSummaryPage || isChildNamespace) {
+    return (
+      <StyledGoBackButton onClick={handleGoBack}>
+        <GreaterArrowIcon />
+      </StyledGoBackButton>
+    );
+  }
+  return null;
+};
+
 export const GridActions = ({
   title,
   module,
@@ -118,6 +173,7 @@ export const GridActions = ({
   search,
   placeholder = 'Search...',
   buttonText,
+  gridCount,
   addModal: Modal,
 }) => {
   const dispatch = useDispatch();
@@ -170,10 +226,16 @@ export const GridActions = ({
     <>
       <Flex className="flex-wrap gap-2">
         <Flex>
+          <GoBackButton />
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>
-          <Title>{title}</Title>
+          <Title>
+            <span>{title}</span>
+            {module === 'namespaces' && Boolean(gridCount) && (
+              <span>({gridCount})</span>
+            )}
+          </Title>
         </Flex>
         <ButtonsContainer>
           {!isEmpty(statusOptions) && (
@@ -273,5 +335,6 @@ GridActions.propTypes = {
   placeholder: PropTypes.string,
   buttonText: PropTypes.string,
   addModal: PropTypes.func,
+  gridCount: PropTypes.number,
   handleRefresh: PropTypes.func,
 };

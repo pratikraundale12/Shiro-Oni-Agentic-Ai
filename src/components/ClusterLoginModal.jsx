@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, PasswordField, InputField, SelectField } from '../shared';
-import PropTypes from 'prop-types';
-import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ClusterIcon, UserIcon } from '../assets';
+import { isObject } from 'lodash';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { getClusterToken } from '../store/apis';
+import * as yup from 'yup';
+import { ClusterIcon, UserIcon } from '../assets';
 import { CLUSTERS_TOKEN } from '../constants';
+import { InputField, Modal, PasswordField, SelectField } from '../shared';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
@@ -17,8 +18,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../store';
-import { useDispatch, useSelector } from 'react-redux';
-import { isObject } from 'lodash';
+import { getClusterToken } from '../store/apis';
 
 const clusterSchema = yup.object().shape({
   cluster_id: yup.string().required('Cluster is required'),
@@ -99,12 +99,14 @@ export const ClusterLoginModal = () => {
             value: response?.cluster_id,
           })
         );
-        dispatch(
-          NamespacesActions.setSelectedCluster({
-            label: response?.cluster_name,
-            value: response?.cluster_id,
-          })
-        );
+        if (!destinationFlag) {
+          dispatch(
+            NamespacesActions.setSelectedCluster({
+              label: response?.cluster_name,
+              value: response?.cluster_id,
+            })
+          );
+        }
         setLoading(false);
         if (destinationFlag) {
           dispatch(AuthenticationActions.setDestinationFlag());

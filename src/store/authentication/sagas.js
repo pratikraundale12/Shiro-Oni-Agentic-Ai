@@ -10,6 +10,7 @@ import { history } from '../../helpers/history';
 import { LoadingActions } from '../helpers/loading_redux';
 import { requestSaga } from '../helpers/request_sagas';
 import { AuthenticationActions, AuthenticationSelectors } from './redux';
+import { NamespacesActions } from '../namespaces';
 
 export function* fetchCurrentUser(api) {
   const route = localStorage.getItem(PREVIOUS_PATH) || DEFAULT_ROUTE;
@@ -99,6 +100,19 @@ export function* login(api, { payload: { type, token, ...payload } }) {
         token: response.data.cluster_token,
       };
       localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify([cluster]));
+      localStorage.setItem(
+        'selected_cluster',
+        JSON.stringify({
+          label: cluster.name,
+          value: cluster.id,
+        })
+      );
+      yield put(
+        NamespacesActions.setSelectedCluster({
+          label: cluster.name,
+          value: cluster.id,
+        })
+      );
     }
     yield call(fetchCurrentUser, api);
     if (!token) {

@@ -14,7 +14,6 @@ const Title = styled.h5`
   font-family: noto sans;
   font-size: 20px;
   font-weight: 700;
-  text-transform: capitalize;
   color: #2d343f;
   line-height: 24px;
   letter-spacing: -0.02em;

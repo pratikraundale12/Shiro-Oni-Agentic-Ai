@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { KsolvesDataFlowIcon } from '../assets';
 // import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 // import { KDFM } from '../constants';
+import { useLocation } from 'react-router-dom';
 import { history } from '../helpers/history';
 import { ROUTES_MENU } from '../routes';
 import {
@@ -103,12 +104,19 @@ const LOGO_HEIGHT = 80;
 
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
+  const location = useLocation(); // Hook to get the current location
   const route = useSelector(AuthenticationSelectors.getRoute);
   const settingsData = useSelector(SettingsSelectors.getSettings);
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'createSettings')
   );
+
+  // Update the active route when the URL changes
+  useEffect(() => {
+    const currentPath = location.pathname.substring(1);
+    dispatch(AuthenticationActions.setRoute(currentPath));
+  }, [location.pathname, dispatch]);
 
   const getFiltered = item => {
     if (item.path === 'dashboard') return true;
