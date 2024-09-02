@@ -449,10 +449,10 @@ const Summary = () => {
     setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: false });
   };
 
-  // const handleScheduleTertiaryButton = async () => {
-  //   setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
-  //   dispatch(SchedularActions.setScheduleModal());
-  // };
+  const handleScheduleTertiaryButton = async () => {
+    setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
+    dispatch(SchedularActions.setScheduleModal());
+  };
   const closeVariablesModal = () => {
     setVariablesModalOpen(prev => ({ ...prev, isOpen: false }));
     if (isVariablesModalOpen.schedule) {
@@ -839,7 +839,7 @@ const Summary = () => {
         // isOpen={isScheduleModal}
         // closePopup={handleScheduleNamespaceDeployModel}
         getScheduleParamerterContext={getScheduleParamerterContext}
-        // handleScheduleTertiaryButton={handleScheduleTertiaryButton}
+        handleScheduleTertiaryButton={handleScheduleTertiaryButton}
         // onSubmit={onSubmit}
         // handleSubmit={handleSubmit}
         // loadingButton={loadingButton}

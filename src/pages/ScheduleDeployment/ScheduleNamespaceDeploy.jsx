@@ -172,7 +172,10 @@ const WarningText = styled.div`
   color: #444445;
 `;
 
-const ScheduleNamespaceDeploy = ({ getScheduleParamerterContext }) => {
+const ScheduleNamespaceDeploy = ({
+  getScheduleParamerterContext,
+  handleScheduleTertiaryButton,
+}) => {
   const dispatch = useDispatch();
   const selectedVersion = useSelector(NamespacesSelectors.getFormData);
   const formData = useSelector(SchedularSelectors.getFormData);
@@ -244,12 +247,12 @@ const ScheduleNamespaceDeploy = ({ getScheduleParamerterContext }) => {
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={onSubmit}
         footerAlign="start"
-        // tertiaryButton={true}
-        // tertiaryButtonConfig={{
-        //   tertiaryButtonTest: 'Variables',
-        //   tertiaryButtonSubmit: handleScheduleTertiaryButton,
-        //   tertiaryButtonDisable: false,
-        // }}
+        tertiaryButton={true}
+        tertiaryButtonConfig={{
+          tertiaryButtonTest: 'Variables',
+          tertiaryButtonSubmit: handleScheduleTertiaryButton,
+          tertiaryButtonDisable: false,
+        }}
         // loading={loadingButton}
       >
         <ModalBody className="modal-body">
