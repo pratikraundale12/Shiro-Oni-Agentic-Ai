@@ -21,11 +21,6 @@ const Wrapper = styled.div`
 `;
 const InputFields = styled.div`
   display: flex;
-  gap: 50px;
-`;
-
-const StyledSelectField = styled(SelectField)`
-  width: 25%;
 `;
 
 const FlexWrapper = styled.div`
@@ -34,14 +29,6 @@ const FlexWrapper = styled.div`
   justify-content: space-between;
   position: fixed;
   bottom: 20px;
-`;
-
-const StyledInputField = styled(InputField)`
-  width: 25%;
-`;
-
-const StyledInputTitle = styled(InputField)`
-  width: 50%;
 `;
 
 export const settingSchema = yup.object().shape({
@@ -111,7 +98,7 @@ export const Setting = () => {
         logoElement.src = settingData.logo;
       }
     }
-  }, [settingData, setValue]);
+  }, [settingData, setValue, dispatch]);
 
   useEffect(() => {
     const subscription = watch(value => {
@@ -152,68 +139,82 @@ export const Setting = () => {
         }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <InputFields>
-          <StyledSelectField
-            label="Refresh"
-            name="refresh"
-            control={control}
-            icon={<RefreshIcon />}
-            errors={errors}
-            defaultValue={
-              settingData
-                ? {
-                    label:
-                      settingData.refresh === 0 ? 'Off' : settingData?.refresh,
-                    value:
-                      settingData.refresh === 0 ? 'Off' : settingData?.refresh,
-                  }
-                : null
-            }
-            options={REFRESH_OPTIONS}
-            placeholder="Select Cluster"
-          />
-          <StyledInputField
-            name="email"
-            register={register}
-            icon={<MailIcon />}
-            label={KDFM.EMAIL}
-            placeholder={KDFM.ENTER_EMAIL}
-            errors={errors}
-          />
+        <InputFields className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <SelectField
+              label="Refresh"
+              name="refresh"
+              control={control}
+              icon={<RefreshIcon />}
+              errors={errors}
+              defaultValue={
+                settingData
+                  ? {
+                      label:
+                        settingData.refresh === 0
+                          ? 'Off'
+                          : settingData?.refresh,
+                      value:
+                        settingData.refresh === 0
+                          ? 'Off'
+                          : settingData?.refresh,
+                    }
+                  : null
+              }
+              options={REFRESH_OPTIONS}
+              placeholder="Select Cluster"
+            />
+          </div>
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <InputField
+              name="email"
+              register={register}
+              icon={<MailIcon />}
+              label={KDFM.EMAIL}
+              placeholder={KDFM.ENTER_EMAIL}
+              errors={errors}
+            />
+          </div>
         </InputFields>
-        <InputFields>
-          <UploadField
-            name="logo"
-            label="Logo"
-            control={control}
-            watch={watch}
-            icon={<LogoFieldIcon />}
-            rightIcon={<UploadIcon />}
-            errors={errors}
-            register={register}
-            image={settingData?.logo}
-            setValue={setValue}
-          />
-          <UploadField
-            name="favicon"
-            label="Favicon"
-            control={control}
-            icon={<LogoFieldIcon />}
-            rightIcon={<UploadIcon />}
-            errors={errors}
-            register={register}
-            image={settingData?.favicon}
-            setValue={setValue}
-          />
+        <InputFields className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <UploadField
+              name="logo"
+              label="Logo"
+              control={control}
+              watch={watch}
+              icon={<LogoFieldIcon />}
+              rightIcon={<UploadIcon />}
+              errors={errors}
+              register={register}
+              image={settingData?.logo}
+              setValue={setValue}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <UploadField
+              name="favicon"
+              label="Favicon"
+              control={control}
+              icon={<LogoFieldIcon />}
+              rightIcon={<UploadIcon />}
+              errors={errors}
+              register={register}
+              image={settingData?.favicon}
+              setValue={setValue}
+            />
+          </div>
         </InputFields>
-        <StyledInputTitle
-          name="title"
-          register={register}
-          icon={<QRIcons />}
-          label={KDFM.META_TITLE}
-          placeholder={KDFM.ENTER_META_TITLE}
-          errors={errors}
-        />
+        <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-8">
+          <InputField
+            name="title"
+            register={register}
+            icon={<QRIcons />}
+            label={KDFM.META_TITLE}
+            placeholder={KDFM.ENTER_META_TITLE}
+            errors={errors}
+          />
+        </div>
         <FlexWrapper>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Button type="submit" loading={loading} disabled={!isChanged}>

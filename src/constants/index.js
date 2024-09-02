@@ -148,7 +148,7 @@ export const KDFM = {
   ROLE: 'Role',
   PROFILE: 'Profile',
   LOADING: 'Loading...',
-  NO_NAMESPACE_AVAILABLE: 'No Namespace Available',
+  OK: 'OK',
 
   // License constants
   TRIAL: 'Trial',
