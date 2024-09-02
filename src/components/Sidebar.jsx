@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { KsolvesDataFlowIcon } from '../assets';
 // import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 // import { KDFM } from '../constants';
+import { useLocation } from 'react-router-dom';
 import { history } from '../helpers/history';
 import { ROUTES_MENU } from '../routes';
 import {
@@ -103,6 +104,7 @@ const LOGO_HEIGHT = 80;
 
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   const dispatch = useDispatch();
+  const { pathname } = useLocation();
   const route = useSelector(AuthenticationSelectors.getRoute);
   const settingsData = useSelector(SettingsSelectors.getSettings);
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
@@ -118,6 +120,17 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
       userPermissions.includes(item.permission)
     );
   };
+
+  useEffect(() => {
+    if (!route || !pathname) return;
+    function extractFirstPart(path) {
+      const parts = path.split('/');
+      return parts[1] || '';
+    }
+    if (pathname !== route) {
+      dispatch(AuthenticationActions.setRoute(extractFirstPart(pathname)));
+    }
+  }, [pathname, dispatch, route]);
 
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));

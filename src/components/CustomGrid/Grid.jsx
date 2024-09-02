@@ -57,6 +57,7 @@ const ClusterRegistryContainer = styled.div`
   margin-bottom: 1%;
 
   > div {
+    flex: 1;
     width: calc(75% - ${props => props.theme.sidebar});
   }
 `;
