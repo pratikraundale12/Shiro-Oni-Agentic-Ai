@@ -112,6 +112,8 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
 
   const getFiltered = item => {
     if (item.path === 'dashboard') return true;
+    if (item.path === 'help-&-support') return true;
+
     return (
       !item.hidden &&
       !item.isSideBarHidden &&
