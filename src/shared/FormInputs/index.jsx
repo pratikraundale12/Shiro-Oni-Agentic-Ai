@@ -8,3 +8,4 @@ export { default as RadioField } from './components/RadioField';
 export { default as RadioSelectField } from './components/RadioSelectField';
 export { default as DateTimeInput } from './components/DateSelector';
 export { default as UploadField } from './components/UplaodField';
+export { default as DateField } from './components/DateField';

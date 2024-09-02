@@ -82,7 +82,7 @@ export function* resetPassword(api, { payload: { password, resetToken } }) {
   if (!response.ok) toast.error(response.data.message);
 }
 
-export function* login(api, { payload: { type, ...payload } }) {
+export function* login(api, { payload: { type, token, ...payload } }) {
   const response = yield call(requestSaga, {
     errorSection: 'login',
     loadingSection: 'login',
@@ -115,9 +115,12 @@ export function* login(api, { payload: { type, ...payload } }) {
       );
     }
     yield call(fetchCurrentUser, api);
-    if (response.ok) {
+    if (!token) {
       yield put(AuthenticationActions.setRoute(DEFAULT_ROUTE));
       window.location.pathname = DEFAULT_ROUTE;
+    } else {
+      yield put(AuthenticationActions.setRoute('schedule-deployment'));
+      yield call(history.push, `schedule-deployment?token=${token}`);
     }
   } else {
     toast.error(response.data.message);
