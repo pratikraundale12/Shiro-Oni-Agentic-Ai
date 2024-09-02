@@ -1,12 +1,11 @@
-/*eslint-disable*/
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-import { Container, Header, Item, KDFMVersion, List, } from '../components';
+import { Container, Header, Item, KDFMVersion, List } from '../components';
 import { useSelector } from 'react-redux';
 import { PrivacyPolicy } from '../pages/PolicyAndTermsOfUse/PrivacyPolicy';
-import {  KsolvesDataFlowIcon, LoginIcon } from '../assets';
+import { KsolvesDataFlowIcon, LoginIcon } from '../assets';
 import { TermsOfUse } from '../pages/PolicyAndTermsOfUse/TermsOfUse';
 import { SettingsSelectors } from '../store/settings';
 import { useLocation } from 'react-router-dom';
@@ -37,7 +36,6 @@ const Wrapper = styled.div`
   overflow-y: auto;
 `;
 
-
 export const UNAUTHROUTES_MENU = [
   {
     name: 'Privacy Policy',
@@ -64,11 +62,18 @@ export const UNAUTHROUTES_MENU = [
 ];
 
 const LoginButton = styled.div`
-    margin-top: auto;
-    margin-bottom: 20px;
-    cursor: pointer;
-    font-weight: 600;
-`
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 11px;
+  margin-top: 2px !important ;
+
+  span {
+    margin-left: 18px;
+  }
+`;
 
 const UnAuthGuard = () => {
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
@@ -115,13 +120,11 @@ const UnAuthGuard = () => {
               </Item>
             );
           })}
+          <LoginButton onClick={() => history.push('/login')}>
+            <LoginIcon color={'#444445'} />
+            <span>Login Account</span>
+          </LoginButton>
         </List>
-        <LoginButton onClick={() => history.push('/login')}>
-          <LoginIcon color={"#444445"} />
-          <span style={{
-            marginLeft: "10px",
-          }}>Login Account</span>
-        </LoginButton>
         <KDFMVersion>
           {/* FIX_ME: Later will come from API */}
           <span>Version 1.0.0</span>
