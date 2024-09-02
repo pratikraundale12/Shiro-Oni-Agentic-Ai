@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { EMAIL_REGEX, KDFM, REFRESH_OPTIONS } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
+import favicon from '../../assets/images/favicon.ico';
 import styled from 'styled-components';
 import {
   LogoFieldIcon,
@@ -73,6 +74,11 @@ export const Setting = () => {
     try {
       dispatch(SettingsActions.createSettings(payload));
       setLoading(false);
+      if (data?.favicon) {
+        changeFavicon(data.favicon);
+      } else {
+        changeFavicon(favicon);
+      }
     } catch (error) {
       setLoading(false);
       console.error('Failed to submit settings:', error);
