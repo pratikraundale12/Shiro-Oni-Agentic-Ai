@@ -4,93 +4,90 @@ const prefix = '@@KDFM-SCHEDULAR/';
 
 /* ------------- ACTIONS ------------------ */
 export const SchedularActions = {
-  scheduleDeployment: createAction(`${prefix}scheduleDeployment`),
-  createScheduleDeployment: createAction(`${prefix}createScheduleDeployment`),
-  fetchNamespaces: createAction(`${prefix}fetchNamespaces`),
-  fetchNamespacesSuccess: createAction(`${prefix}fetchNamespacesSuccess`),
-  editScheduleDeployment: createAction(`${prefix}editScheduleDeployment`),
+  setFormData: createAction(`${prefix}setFormData`),
+  setSelectedSchedule: createAction(`${prefix}setSelectedSchedule`),
+  setScheduleDeployModal: createAction(`${prefix}setScheduleDeployModal`),
   setScheduleModal: createAction(`${prefix}setScheduleModal`),
+  setCancelScheduleModal: createAction(`${prefix}setCancelScheduleModal`),
   setRejectScheduleModal: createAction(`${prefix}setRejectScheduleModal`),
-  setEditScheduleModel: createAction(`${prefix}setEditScheduleModel`),
-  setConfirmRejectScheduleModel: createAction(
-    `${prefix}setConfirmRejectScheduleModel`
-  ),
-  setScheduleConfirmModel: createAction(`${prefix}setScheduleConfirmModel`),
+  setApproveScheduleModal: createAction(`${prefix}setApproveScheduleModal`),
+  setTokenScheduleModal: createAction(`${prefix}setTokenScheduleModal`),
+  createScheduleDeployment: createAction(`${prefix}createScheduleDeployment`),
+  editScheduleDeployment: createAction(`${prefix}editScheduleDeployment`),
+  checkApproverToken: createAction(`${prefix}checkApproverToken`),
 };
 
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
-  data: {},
-  createdScheduleData: {},
-  isScheduleModel: false,
-  isRejectScheduleModel: false,
-  isEditScheduleModel: false,
-  isRejectConfirmScheduleModel: false,
-  isScheduleConfirmModel: false,
+  formData: {},
+  selectedSchedule: {},
+  scheduleDeployModal: false,
+  scheduleModal: false,
+  cancelScheduleModal: false,
+  rejectScheduleModal: false,
+  approveScheduleModal: false,
+  tokenScheduleModal: false,
 };
 
 /* ------------- SELECTORS ------------------ */
 export const SchedularSelectors = {
-  createScheduleDeployment: state => state.schedular.schedularDeployment,
-  fetchNamespaces: state => state.schedular.clusterNamespaces?.data,
-  editScheduleDeployment: state => state.schedular.editSchedularDeployment,
-  getScheduleModal: state => state.schedular.isScheduleModel,
-  getRejectScheduleModel: state => state.schedular.isRejectScheduleModel,
-  getEditScheduleModel: state => state.schedular.isEditScheduleModel,
-  getRejectConfirmScheduleModel: state =>
-    state.schedular.isRejectConfirmScheduleModel,
-  getScheduleCofirmModel: state => state.schedular.isScheduleConfirmModel,
+  getFormData: state => state.schedular.formData,
+  getSelectedSchedule: state => state.schedular.selectedSchedule,
+  getScheduleDeployModal: state => state.schedular.scheduleDeployModal,
+  getScheduleModal: state => state.schedular.scheduleModal,
+  getCancelScheduleModal: state => state.schedular.cancelScheduleModal,
+  getRejectScheduleModal: state => state.schedular.rejectScheduleModal,
+  getApproveScheduleModal: state => state.schedular.approveScheduleModal,
+  getTokenScheduleModal: state => state.schedular.tokenScheduleModal,
 };
 
 /* ------------- REDUCERS ------------------- */
-const createScheduleDeployment = (state, { payload }) => {
+const setFormData = (state, { payload }) => {
   return {
     ...state,
-    schedularDeployment: payload,
+    formData: payload,
   };
 };
-const fetchNamespacesSuccess = (state, { payload }) => {
+const setSelectedSchedule = (state, { payload }) => {
   return {
     ...state,
-    clusterNamespaces: payload,
+    selectedSchedule: payload,
   };
 };
-
-const editScheduleDeployment = (state, { payload }) => {
+const setScheduleDeployModal = state => {
   return {
     ...state,
-    editSchedularDeployment: payload,
+    scheduleDeployModal: !state.scheduleDeployModal,
   };
 };
-
 const setScheduleModal = state => {
   return {
     ...state,
-    isScheduleModel: !state.isScheduleModel,
+    scheduleModal: !state.scheduleModal,
+  };
+};
+const setCancelScheduleModal = state => {
+  return {
+    ...state,
+    cancelScheduleModal: !state.cancelScheduleModal,
   };
 };
 const setRejectScheduleModal = state => {
   return {
     ...state,
-    isRejectScheduleModel: !state.isRejectScheduleModel,
+    rejectScheduleModal: !state.rejectScheduleModal,
   };
 };
-const setEditScheduleModel = state => {
+const setApproveScheduleModal = state => {
   return {
     ...state,
-    isEditScheduleModel: !state.isEditScheduleModel,
+    approveScheduleModal: !state.approveScheduleModal,
   };
 };
-const setConfirmRejectScheduleModel = state => {
+const setTokenScheduleModal = (state, { payload }) => {
   return {
     ...state,
-    isRejectConfirmScheduleModel: !state.isRejectConfirmScheduleModel,
-  };
-};
-const setScheduleConfirmModel = state => {
-  return {
-    ...state,
-    isScheduleConfirmModel: !state.isScheduleConfirmModel,
+    tokenScheduleModal: payload,
   };
 };
 /* ------------- Hookup Reducers To Types ------------- */
@@ -98,22 +95,16 @@ export const schedularReducer = createReducer(
   SCHEDULAR_INITIAL_STATE,
   builder => {
     builder
-      .addCase(
-        SchedularActions.createScheduleDeployment,
-        createScheduleDeployment
-      )
-      .addCase(SchedularActions.fetchNamespacesSuccess, fetchNamespacesSuccess)
-      .addCase(SchedularActions.editScheduleDeployment, editScheduleDeployment)
+      .addCase(SchedularActions.setFormData, setFormData)
+      .addCase(SchedularActions.setSelectedSchedule, setSelectedSchedule)
+      .addCase(SchedularActions.setScheduleDeployModal, setScheduleDeployModal)
       .addCase(SchedularActions.setScheduleModal, setScheduleModal)
+      .addCase(SchedularActions.setCancelScheduleModal, setCancelScheduleModal)
       .addCase(SchedularActions.setRejectScheduleModal, setRejectScheduleModal)
-      .addCase(SchedularActions.setEditScheduleModel, setEditScheduleModel)
       .addCase(
-        SchedularActions.setConfirmRejectScheduleModel,
-        setConfirmRejectScheduleModel
+        SchedularActions.setApproveScheduleModal,
+        setApproveScheduleModal
       )
-      .addCase(
-        SchedularActions.setScheduleConfirmModel,
-        setScheduleConfirmModel
-      );
+      .addCase(SchedularActions.setTokenScheduleModal, setTokenScheduleModal);
   }
 );

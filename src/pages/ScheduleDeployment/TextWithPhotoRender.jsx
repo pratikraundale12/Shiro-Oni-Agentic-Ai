@@ -40,26 +40,22 @@ const NameWrapper = styled.span`
 const HolderContainer = styled.div`
   margin-left: ${props => (props.makeleft ? '-10px' : '0')};
 `;
-export const TextWithPhotoRender = ({
-  content,
-  currentUser,
-  item,
-  setSelectedData,
-}) => {
+export const TextWithPhotoRender = ({ content, currentUser, item }) => {
   const dispatch = useDispatch();
   const isApprover = content.some(
     approver => approver.approver_id === currentUser.id
   );
 
   const handleReject = () => {
-    setSelectedData(item.scheduler_id);
+    dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setRejectScheduleModal());
   };
 
   const handleApprove = () => {
-    dispatch(SchedularActions.setScheduleConfirmModel());
-    setSelectedData(item.scheduler_id);
+    dispatch(SchedularActions.setSelectedSchedule(item));
+    dispatch(SchedularActions.setApproveScheduleModal());
   };
+
   return (
     <>
       {isApprover && item.deployment_status == 'PENDING' ? (

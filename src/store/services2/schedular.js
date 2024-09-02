@@ -5,9 +5,13 @@ export const schedularAPI = api => {
     api.post('/schedule-deployment', payload);
   const editScheduleDeployment = ({ schedularId, payloadData }) =>
     api.patch(`/schedule-deployment/${schedularId}`, payloadData);
+  const checkApproverToken = ({ params }) => {
+    return api.get('/schedule-deployment/token', params);
+  };
   return {
     fetchSchedular,
     createScheduleDeployment,
     editScheduleDeployment,
+    checkApproverToken,
   };
 };

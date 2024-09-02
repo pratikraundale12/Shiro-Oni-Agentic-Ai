@@ -54,6 +54,7 @@ import {
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import TokenPage from '../pages/ScheduleDeployment/Token';
 
 export const ROUTES_MENU = [
   {
@@ -277,6 +278,7 @@ const Routes = () => {
       <Route path="/reset" element={<Reset />} />
       <Route path="/success" element={<Success />} />
       <Route path="/login" element={<UserLogin />} />
+      <Route path="/schedule-deployment/token" element={<TokenPage />} />
       <Route path="/policy" element={<UnAuthGuard />}>
         {UNAUTHROUTES_MENU?.map(item => (
           <Route key={item.path} path={item.path} exact element={<Outlet />}>

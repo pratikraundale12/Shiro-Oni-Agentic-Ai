@@ -7,6 +7,7 @@ const statusColors = {
   'NOT APPROVED': 'red',
   'IN PROGRESS': '#444445',
   DEFAULT: '#F2891F',
+  SUCCESS: '#0cbf59',
 };
 
 const StatusTexts = styled.div`

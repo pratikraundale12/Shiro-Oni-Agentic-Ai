@@ -1,11 +1,11 @@
-// import { CLUSTERS_TOKEN } from '../../constants';
+/* eslint-disable no-unused-vars */
 import { toast } from 'react-toastify';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
-import { CLUSTERS_TOKEN } from '../../constants';
 import { history } from '../../helpers/history';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularActions, SchedularSelectors } from './redux';
 import { AuthenticationActions } from '../authentication';
+import { fetchGrid } from '../grid';
 
 export function* createScheduleDeployment(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -16,30 +16,10 @@ export function* createScheduleDeployment(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Successfully Scheduled Deployment');
-    yield put(SchedularActions.setScheduleModal());
+    yield put(SchedularActions.setScheduleDeployModal());
     yield call(history.push, '/schedule-deployment');
     yield put(AuthenticationActions.setRoute('schedule-deployment'));
   } else toast.error(response.data.message);
-}
-
-export function* fetchNamespaces(api, { payload }) {
-  const queryParams = {
-    clusterId: payload || '',
-    namespaceId: '',
-  };
-  const clustersToken = JSON.parse(
-    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
-  );
-  const selectedClusterToken = clustersToken.find(item => item.id === payload);
-  api.headers['x-cluster-id'] = selectedClusterToken?.id;
-  api.headers['x-cluster-token'] = selectedClusterToken?.token;
-  yield call(requestSaga, {
-    errorSection: 'fetchNamespaces',
-    loadingSection: 'fetchNamespaces',
-    apiMethod: api.fetchNamespaces,
-    apiParams: [{ queryParams }],
-    successAction: SchedularActions.fetchNamespacesSuccess,
-  });
 }
 
 export function* editScheduleDeployment(api, { payload }) {
@@ -55,31 +35,45 @@ export function* editScheduleDeployment(api, { payload }) {
       },
     ],
   });
-  const rejectModelState = yield select(
-    SchedularSelectors.getRejectScheduleModel
+  const rejectScheduleModal = yield select(
+    SchedularSelectors.getRejectScheduleModal
   );
-  const editModelState = yield select(SchedularSelectors.getEditScheduleModel);
-  const confirmRejectModel = yield select(
-    SchedularSelectors.getRejectConfirmScheduleModel
+  const cancelScheduleModal = yield select(
+    SchedularSelectors.getCancelScheduleModal
   );
-  const confirmScheduleModel = yield select(
-    SchedularSelectors.getScheduleCofirmModel
+  const approveScheduleModal = yield select(
+    SchedularSelectors.getApproveScheduleModal
   );
+  const tokenScheduleModal = yield select(
+    SchedularSelectors.getTokenScheduleModal
+  );
+  const scheduleModal = yield select(SchedularSelectors.getScheduleModal);
   if (response.ok) {
     toast.success('Successfully Updated Scheduled Deployment');
-    if (rejectModelState) {
+    if (rejectScheduleModal)
       yield put(SchedularActions.setRejectScheduleModal());
-    }
-    if (editModelState) {
-      yield put(SchedularActions.setEditScheduleModel());
-    }
-    if (confirmRejectModel) {
-      yield put(SchedularActions.setConfirmRejectScheduleModel());
-    }
-    if (confirmScheduleModel) {
-      yield put(SchedularActions.setScheduleConfirmModel());
-    }
+    if (cancelScheduleModal)
+      yield put(SchedularActions.setCancelScheduleModal());
+    if (approveScheduleModal)
+      yield put(SchedularActions.setApproveScheduleModal());
+    if (scheduleModal) yield put(SchedularActions.setScheduleModal());
+    if (tokenScheduleModal) yield put(SchedularActions.setTokenScheduleModal());
+    yield call(fetchGrid, api, {
+      payload: { module: 'scheduler' },
+    });
   } else toast.error(response.data.message);
+}
+
+export function* checkApproverToken(api, { payload: { params } }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'checkApproverToken',
+    loadingSection: 'checkApproverToken',
+    apiMethod: api.checkApproverToken,
+    apiParams: [{ params: params }],
+  });
+  if (response.ok) {
+    yield put(SchedularActions.setSelectedSchedule(response.data));
+  }
 }
 
 export function* schedularSagas(api) {
@@ -94,6 +88,6 @@ export function* schedularSagas(api) {
       editScheduleDeployment,
       api
     ),
-    takeLatest(SchedularActions.fetchNamespaces, fetchNamespaces, api),
+    takeLatest(SchedularActions.checkApproverToken, checkApproverToken, api),
   ]);
 }

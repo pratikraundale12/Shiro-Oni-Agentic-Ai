@@ -104,7 +104,7 @@ const ParameterContext = ({
 
   const backSchedule = () => {
     setIsParameterContextOpen({ isOpen: false, schedule: true });
-    dispatch(SchedularActions.setScheduleModal());
+    dispatch(SchedularActions.setScheduleDeployModal());
   };
 
   return (

@@ -219,7 +219,7 @@ const ProfileDropdown = () => {
       onClick: () => {
         localStorage.clear();
         const loginUrl =
-          currentUser?.role == 'user' ? '/login' : '/admin/login';
+          currentUser?.role === 'superadmin' ? '/admin/login' : '/login';
         dispatch(AuthenticationActions.logout({ url: loginUrl }));
       },
     },

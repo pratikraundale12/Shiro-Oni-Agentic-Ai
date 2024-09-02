@@ -5,13 +5,17 @@ import styled from 'styled-components';
 import {
   ExclamationIcon,
   SmallNotThunderIcon,
-  SmallThunderIcon,
+  // SmallThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
 import { Modal } from '../../shared';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { NamespacesSelectors } from '../../store';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux';
 
 const ModalBody = styled.div`
   position: relative;
@@ -105,42 +109,42 @@ const ActiveButtonContainer = styled.div`
   gap: 7px;
 `;
 
-const ActiveButtonDiv = styled.div`
-  height: 48px;
-  width: 48px;
-  max-width: 48px;
-  max-height: 48px;
-  min-height: 48px;
-  min-width: 48px;
-  border: 1px solid #dde4f0;
-  border-radius: 8px;
-  background-color: #f5f7fa;
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+// const ActiveButtonDiv = styled.div`
+//   height: 48px;
+//   width: 48px;
+//   max-width: 48px;
+//   max-height: 48px;
+//   min-height: 48px;
+//   min-width: 48px;
+//   border: 1px solid #dde4f0;
+//   border-radius: 8px;
+//   background-color: #f5f7fa;
+//   cursor: pointer;
+//   position: relative;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
 
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#c52b2b')};
-  }
+//   &:hover {
+//     border: 1px solid
+//       ${props => (props.isActive ? props.activeColor : '#c52b2b')};
+//   }
 
-  & span {
-    position: absolute;
-    top: 0px;
-    right: 2px;
-    font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 23px;
-    color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
-  }
+//   & span {
+//     position: absolute;
+//     top: 0px;
+//     right: 2px;
+//     font-family: ${props => props.theme.fontNato};
+//     font-size: 14px;
+//     font-weight: 500;
+//     line-height: 23px;
+//     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
+//   }
 
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
-  }
-`;
+//   svg path {
+//     fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
+//   }
+// `;
 const WarningContainer = styled.div`
   height: 85px;
   border-radius: 20px;
@@ -168,42 +172,85 @@ const WarningText = styled.div`
   color: #444445;
 `;
 
-const ScheduleNamespaceDeploy = ({
-  isOpen,
-  closePopup,
-  getScheduleParamerterContext,
-  handleScheduleTertiaryButton,
-  handleSubmit,
-  onSubmit,
-  loadingButton,
-}) => {
+const ScheduleNamespaceDeploy = ({ getScheduleParamerterContext }) => {
   const dispatch = useDispatch();
-  const formData = useSelector(NamespacesSelectors.getFormData);
+  const selectedVersion = useSelector(NamespacesSelectors.getFormData);
+  const formData = useSelector(SchedularSelectors.getFormData);
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const selectedDestCluster = useSelector(
+    NamespacesSelectors.getSelectedDestCluster
+  );
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
-  const handleUpdateStatus = status => {
-    dispatch(NamespacesActions.updateNamespaceStatus(status));
+  const scheduleDeployModal = useSelector(
+    SchedularSelectors.getScheduleDeployModal
+  );
+  const newlyAddParameters = useSelector(
+    NamespacesSelectors.getNewlyAddedParameterContext
+  );
+  const newlyAddVariables = useSelector(
+    NamespacesSelectors.getNewlyAddVariables
+  );
+
+  // const handleUpdateStatus = status => {
+  //   dispatch(NamespacesActions.updateNamespaceStatus(status));
+  // };
+
+  const onRequestClose = () => {
+    dispatch(SchedularActions.setScheduleDeployModal());
+  };
+
+  const onSubmit = () => {
+    const payload = {
+      ...(checkDestCluster?.mode === 'upgrade' && {
+        namespaceId: checkDestCluster?.id,
+      }),
+      ...(formData.namespaceId && { namespaceId: formData.namespaceId }),
+      namespace_name: checkDestCluster?.name,
+      scheduled_time: formData?.scheduled_time,
+      flow_id: checkDestCluster?.flowId,
+      source_cluster_id: selectedCluster?.value,
+      destination_cluster_id: selectedDestCluster.value,
+      deployment_status: 'PENDING',
+      bucket_id: checkDestCluster?.bucketId,
+      registry_id: checkDestCluster?.registryId,
+      mode: checkDestCluster?.mode,
+      version: selectedVersion.version,
+      position: checkDestCluster?.position,
+      approver_ids: formData?.approver_ids,
+      variables: newlyAddVariables.map(item => ({
+        name: item.name,
+        value: item.value,
+      })),
+      params: newlyAddParameters.map(item => ({
+        name: item.name,
+        value: item.value,
+        description: item.description,
+        sensitive: item.sensitive,
+      })),
+    };
+    console.log(payload);
+    dispatch(SchedularActions.createScheduleDeployment(payload));
   };
 
   return (
     <>
       <Modal
-        title={`Schedule Namespace `}
-        isOpen={isOpen}
-        onRequestClose={closePopup}
-        size="sm"
+        title={`Schedule Namespace`}
+        isOpen={scheduleDeployModal}
+        onRequestClose={onRequestClose}
         onSecondarySubmit={getScheduleParamerterContext}
         secondaryButtonText="Parameter Context"
         primaryButtonText="Schedule"
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={onSubmit}
         footerAlign="start"
-        tertiaryButton={true}
-        tertiaryButtonConfig={{
-          tertiaryButtonTest: 'Variables',
-          tertiaryButtonSubmit: handleScheduleTertiaryButton,
-          tertiaryButtonDisable: false,
-        }}
-        loading={loadingButton}
+        // tertiaryButton={true}
+        // tertiaryButtonConfig={{
+        //   tertiaryButtonTest: 'Variables',
+        //   tertiaryButtonSubmit: handleScheduleTertiaryButton,
+        //   tertiaryButtonDisable: false,
+        // }}
+        // loading={loadingButton}
       >
         <ModalBody className="modal-body">
           <RowModal>
@@ -220,7 +267,9 @@ const ScheduleNamespaceDeploy = ({
                 <ActionTitleSet className="mb-0 ">
                   Current Version
                 </ActionTitleSet>
-                <SubTitleSet className="mb-0 ">{formData?.version}</SubTitleSet>
+                <SubTitleSet className="mb-0 ">
+                  {selectedVersion?.version}
+                </SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
             <CustomNine className="col-8 mb-3">
@@ -276,7 +325,7 @@ const ScheduleNamespaceDeploy = ({
               </ActiveButtonContainer>
             </CustomNine>
 
-            <CustomNine className="col-8 mb-3">
+            {/* <CustomNine className="col-8 mb-3">
               <ActiveButtonContainer className="d-flex ">
                 <ActiveButtonDiv className="div-btn-1">
                   <ActiveButtonDiv
@@ -327,7 +376,7 @@ const ScheduleNamespaceDeploy = ({
                   </ActiveButtonDiv>
                 </ActiveButtonDiv>
               </ActiveButtonContainer>
-            </CustomNine>
+            </CustomNine> */}
           </RowModal>
           <WarningContainer>
             <div className="col-2 d-flex justify-content-center align-items-center">
