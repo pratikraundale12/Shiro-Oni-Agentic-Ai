@@ -59,4 +59,8 @@ export const CLUSTER_CONSTANTS = {
   CLUSTER_ADDED_SUCCESSFULLY: 'Cluster Successfully Added',
   CLUSTER_SUCCESS_DESCRIPTION:
     'You can check your cluster in the cluster list.',
+  CLUSTER_TESTED_SUCCES_PROMPT:
+    'Your cluster test was successful. You can now proceed to the next steps.',
+  REGISTRY_TESTED_SUCCESS_PROMPT:
+    'Your registry test was successful. You can now proceed to the next steps.',
 };

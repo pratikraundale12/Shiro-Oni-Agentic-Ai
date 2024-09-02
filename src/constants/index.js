@@ -154,6 +154,7 @@ export const KDFM = {
   ROLE: 'Role',
   PROFILE: 'Profile',
   LOADING: 'Loading...',
+  NIFI_FLOW: 'NiFi Flow',
   OK: 'OK',
   KINDLY_SELECT_DESTINATION: 'Kindly select your destination cluster',
   NO_NAMESPACES_AVAILABLE: 'No Namespace Available',

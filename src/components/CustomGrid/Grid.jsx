@@ -6,20 +6,24 @@ import PropTypes from 'prop-types';
 import { default as React, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-
+import {
+  NoDataIcon,
+  QRIcons,
+  SortDownIcon,
+  SortIcon,
+  SortUpIcon,
+} from '../../assets';
+import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
+import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
+import { InputField, Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
+import { LoadingSelectors, NamespacesSelectors } from '../../store';
+import { GridActions, GridSelectors } from '../../store/grid';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
 import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
-
-import { NoDataIcon } from '../../assets';
-import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
-import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
-import { Modal } from '../../shared';
-import { LoadingSelectors, NamespacesSelectors } from '../../store';
-import { GridActions, GridSelectors } from '../../store/grid';
 // import ReactPagination from './ReactPagnation';
 import { useSort } from '@table-library/react-table-library/sort';
 import { useParams } from 'react-router-dom';
@@ -65,19 +69,27 @@ const LoadingText = styled.div`
   text-align: center;
 `;
 
+const FLexWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  @media screen and (min-width: 1024px) {
+    flex-direction: row;
+  }
+`;
+
 const EVENTCOLUMNS = [
-  {
-    label: 'Address',
-    renderCell: item => <TextRender text={item.address} />,
-  },
-  {
-    label: 'Node ID',
-    renderCell: item => <TextRender text={item.nodeId} />,
-  },
   {
     label: 'Node Events',
     renderCell: item => (
-      <TextRender text={`${item.timestamp}: ${item.message}`} />
+      <TextRender
+        text={`${item.timestamp}: ${item.message}`}
+        tooltipPlacement="bottom-start"
+      />
     ),
   },
 ];
@@ -196,6 +208,11 @@ export const Grid = ({
     },
     {
       sortFns,
+      sortIcon: {
+        iconDefault: <SortIcon />,
+        iconUp: <SortUpIcon />,
+        iconDown: <SortDownIcon />,
+      },
     }
   );
 
@@ -274,6 +291,7 @@ export const Grid = ({
         search={search}
         placeholder={placeholder}
         buttonText={buttonText}
+        gridCount={gridCount}
         addModal={addModal}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
@@ -299,6 +317,20 @@ export const Grid = ({
               setState(prevState => ({ ...prevState, eventModal: false }))
             }
           >
+            <FLexWrapper>
+              <InputField
+                label="Address"
+                disabled={true}
+                icon={<QRIcons />}
+                value={selectedNode?.address}
+              />
+              <InputField
+                label="Node ID"
+                disabled={true}
+                icon={<QRIcons />}
+                value={selectedNode?.nodeId}
+              />
+            </FLexWrapper>
             <Table
               data={
                 selectedNode?.events?.slice(0, 10).map(item => ({
