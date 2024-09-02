@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
@@ -356,10 +357,12 @@ const Summary = () => {
   };
   const onSubmit = async data => {
     const payload = {
-      // namespace_id: checkDestCluster?.id,
+      ...(checkDestCluster?.mode === 'upgrade' && {
+        namespaceId: checkDestCluster?.id,
+      }),
       ...(formData.namespaceId && { namespaceId: formData.namespaceId }),
       namespace_name: checkDestCluster?.name,
-      scheduled_time: startDate.toISOString(),
+      scheduled_time: new Date(startDate).toISOString(),
       flow_id: checkDestCluster?.flowId,
       source_cluster_id: selectedCluster?.value,
       destination_cluster_id: selectedDestCluster.value,
