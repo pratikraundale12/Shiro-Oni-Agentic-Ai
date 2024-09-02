@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
