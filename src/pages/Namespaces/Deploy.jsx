@@ -169,6 +169,7 @@ const Deploy = () => {
           {item?.name}
         </div>
       ),
+      width: '15%',
     },
     {
       label: KDFM.NAMESPACE_ID,
@@ -178,10 +179,12 @@ const Deploy = () => {
     {
       label: KDFM.FLOW_NAME,
       renderCell: item => <TextRender text={item?.flowName || 'N/A'} />,
+      width: '19%',
     },
     {
       label: KDFM.BUCKET_NAME,
       renderCell: item => <TextRender text={item?.bucketName || 'N/A'} />,
+      width: '22%',
     },
     {
       label: KDFM.VERSION,
@@ -277,7 +280,7 @@ const Deploy = () => {
           {isEmpty(checkDestCluster) && (
             <NoDataContainer>
               <WhiteBoradIcon width={200} height={195} />
-              <NoDataText>{KDFM.NO_NAMESPACE_AVAILABLE}</NoDataText>
+              <NoDataText>{KDFM.KINDLY_SELECT_DESTINATION}</NoDataText>
             </NoDataContainer>
           )}
           {checkDestCluster.mode === 'deploy' && (
@@ -299,7 +302,7 @@ const Deploy = () => {
               {isEmpty(gridData) && search ? (
                 <NoDataContainer>
                   <WhiteBoradIcon width={200} height={195} />
-                  <NoDataText>{KDFM.NO_NAMESPACE_AVAILABLE}</NoDataText>
+                  <NoDataText>{KDFM.NO_NAMESPACES_AVAILABLE}</NoDataText>
                 </NoDataContainer>
               ) : (
                 <Table

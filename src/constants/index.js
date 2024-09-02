@@ -149,6 +149,8 @@ export const KDFM = {
   PROFILE: 'Profile',
   LOADING: 'Loading...',
   OK: 'OK',
+  KINDLY_SELECT_DESTINATION: 'Kindly select your destination cluster',
+  NO_NAMESPACES_AVAILABLE: 'No Namespace Available',
 
   // License constants
   TRIAL: 'Trial',
