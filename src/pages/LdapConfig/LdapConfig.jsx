@@ -471,6 +471,7 @@ export const LdapConfig = () => {
       <SuccessTestModal
         successTest={successTest}
         setSuccessTest={setSuccessTest}
+        name="Configuration"
       />
       <SyncUsersSuccess successTest={syncUsers} setSuccessTest={setSyncUsers} />
 
