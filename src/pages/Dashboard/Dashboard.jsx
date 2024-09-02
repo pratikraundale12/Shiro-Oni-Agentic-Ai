@@ -279,7 +279,7 @@ export const Dashboard = () => {
                         label: name,
                       })),
                     ]
-                  : [{ value: 'namespaces', label: 'All Namespaces' }]
+                  : [{ value: '', label: 'All Namespaces' }]
               }
               onChange={onNamespaceSelect}
               placeholder="Select Namespace"
