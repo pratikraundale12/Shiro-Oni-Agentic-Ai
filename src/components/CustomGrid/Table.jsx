@@ -1,13 +1,13 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import { getTheme } from '@table-library/react-table-library/baseline';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
-import { getTheme } from '@table-library/react-table-library/baseline';
+import PropTypes from 'prop-types';
+import React from 'react';
+import styled from 'styled-components';
 
-import { LoaderContainer } from '../Loader';
-import { theme } from '../../styles';
 import { NoDataIcon } from '../../assets';
+import { theme } from '../../styles';
+import { LoaderContainer } from '../Loader';
 
 const TableContainer = styled.div`
   height: 90%;
@@ -40,6 +40,9 @@ export const Table = ({ data, columns, loading, className }) => {
     getTheme(),
     {
       Table: `
+      --data-table-library_grid-template-columns: ${columns
+        .map(column => column.width || 'auto')
+        .join(' ')} !important;
         margin-bottom: 0;
 
         th, td {
