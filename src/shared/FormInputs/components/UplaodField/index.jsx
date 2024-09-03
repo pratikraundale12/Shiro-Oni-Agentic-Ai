@@ -167,10 +167,13 @@ const UploadField = ({
       render={({ field: { onChange } }) => {
         const handlePhotoUpload = event => {
           const file = event.target.files[0];
-          event.target.value = null;
 
           if (file) {
-            if (name === 'favicon' && file.type !== 'image/x-icon') {
+            if (
+              name === 'favicon' &&
+              file.type !== 'image/x-icon' &&
+              file.type !== 'image/vnd.microsoft.icon'
+            ) {
               toast.error('Please upload a valid favicon file (.ico)');
               setFileError('Invalid file type for favicon');
               return;
@@ -219,7 +222,7 @@ const UploadField = ({
                   <input
                     id={`file-upload-${name}`}
                     type="file"
-                    accept="image/*"
+                    accept="image/*, .ico,image/x-icon,image/vnd.microsoft.icon"
                     style={{ display: 'none' }}
                     onChange={handlePhotoUpload}
                   />

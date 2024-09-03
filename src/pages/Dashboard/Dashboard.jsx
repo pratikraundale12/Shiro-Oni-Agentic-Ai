@@ -128,6 +128,21 @@ const DropdownContainer = styled.div`
       cursor: pointer;
     }
   }
+  /* Apply fixed width to dropdown options */
+  .react-select__menu {
+    width: 175px;
+  }
+
+  .react-select__menu-list {
+    max-width: 175px;
+    white-space: wrap;
+  }
+
+  .react-select__option {
+    max-width: 175px;
+    word-break: break-all;
+    overflow: hidden;
+  }
 `;
 const DropdownWrapper = styled.div`
   display: flex;
@@ -279,7 +294,7 @@ export const Dashboard = () => {
                         label: name,
                       })),
                     ]
-                  : [{ value: '', label: 'All Namespaces' }]
+                  : []
               }
               onChange={onNamespaceSelect}
               placeholder="Select Namespace"

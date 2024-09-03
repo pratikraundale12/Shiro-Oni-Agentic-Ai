@@ -127,9 +127,9 @@ const AddParameterContext = ({
           ...parameterContextItem,
           name: parameterContextItem?.name,
           value:
-            parameterContextItem?.sensitive === 'true' ||
-            parameterContextItem?.sensitive
-              ? ''
+            parameterContextItem?.sensitive === 'true'
+              ? //  || parameterContextItem?.sensitive
+                ''
               : parameterContextItem?.value,
           sensitive: isString(parameterContextItem?.sensitive)
             ? parameterContextItem?.sensitive
@@ -153,12 +153,11 @@ const AddParameterContext = ({
     parameterContextItem,
     setValue,
   ]);
-
   const handleAddEditParameterContext = async data => {
     if (!data) return;
     const processData = {
       ...data,
-      value: !data?.value || !data?.check ? null : data?.value,
+      value: !data?.value || data?.check ? null : data?.value,
     };
     const nameExists = (contextList, name) =>
       contextList.some(
