@@ -39,23 +39,6 @@ const Container = styled.div`
     border-radius: 6px !important;
     padding-block: 4px !important;
   }
-  /* Apply fixed width to dropdown options */
-  .react-select__menu {
-    width: 175px;
-  }
-
-  .react-select__menu-list {
-    max-width: 175px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .react-select__option {
-    max-width: 175px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 `;
 
 const DropdownIndicator = props =>

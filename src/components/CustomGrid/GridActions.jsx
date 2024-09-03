@@ -94,6 +94,24 @@ const StyledSelectField = styled(SelectField)`
   > div {
     margin-top: 0;
   }
+  /* Apply fixed width to dropdown options */
+  .react-select__menu {
+    width: 175px;
+  }
+
+  .react-select__menu-list {
+    max-width: 175px;
+    white-space: wrap;
+    text-overflow: ellipsis;
+  }
+
+  .react-select__option {
+    max-width: 175px;
+    word-break: break-all;
+    /* white-space: nowrap; */
+    overflow: hidden;
+    /* text-overflow: ellipsis; */
+  }
 `;
 const DropdownContainer = styled.div`
   margin-left: 10px;
