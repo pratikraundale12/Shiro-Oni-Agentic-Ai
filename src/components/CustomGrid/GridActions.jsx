@@ -108,9 +108,7 @@ const StyledSelectField = styled(SelectField)`
   .react-select__option {
     max-width: 175px;
     word-break: break-all;
-    /* white-space: nowrap; */
     overflow: hidden;
-    /* text-overflow: ellipsis; */
   }
 `;
 const DropdownContainer = styled.div`
