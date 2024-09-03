@@ -207,7 +207,9 @@ const ScheduleNamespaceDeploy = ({
       ...(checkDestCluster?.mode === 'upgrade' && {
         namespaceId: checkDestCluster?.id,
       }),
-      ...(formData.namespaceId && { namespaceId: formData.namespaceId }),
+      ...(selectedVersion?.namespaceId && {
+        namespaceId: selectedVersion?.namespaceId,
+      }),
       namespace_name: checkDestCluster?.name,
       scheduled_time: formData?.scheduled_time,
       flow_id: checkDestCluster?.flowId,
@@ -231,7 +233,6 @@ const ScheduleNamespaceDeploy = ({
         sensitive: item.sensitive,
       })),
     };
-    console.log(payload);
     dispatch(SchedularActions.createScheduleDeployment(payload));
   };
 
