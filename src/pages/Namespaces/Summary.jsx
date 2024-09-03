@@ -451,12 +451,12 @@ const Summary = () => {
 
   const handleScheduleTertiaryButton = async () => {
     setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
-    dispatch(SchedularActions.setScheduleModal());
+    // dispatch(SchedularActions.setScheduleModal());
   };
   const closeVariablesModal = () => {
     setVariablesModalOpen(prev => ({ ...prev, isOpen: false }));
     if (isVariablesModalOpen.schedule) {
-      dispatch(SchedularActions.setScheduleModal());
+      // dispatch(SchedularActions.setScheduleModal());
     } else {
       dispatch(NamespacesActions.setDeployedModal());
     }

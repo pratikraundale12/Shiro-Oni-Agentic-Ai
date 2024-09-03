@@ -9,6 +9,7 @@ import { QRIcons } from '../../assets';
 import { KDFM } from '../../constants';
 import { CheckboxField, InputField, Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { SchedularSelectors } from '../../store/schedular/redux';
 
 const ModalBody = styled.div`
   position: relative;
@@ -38,7 +39,7 @@ const AddVariables = ({
     NamespacesSelectors.getNewlyAddVariables
   );
   const dispatch = useDispatch();
-
+  const scheduleFormData = useSelector(SchedularSelectors.getFormData);
   useEffect(() => {
     if (isAddVariablesOpen?.isOpen) {
       if (isEmpty(variableContextItem) && isAddVariablesOpen?.mode === 'add') {
@@ -88,7 +89,7 @@ const AddVariables = ({
       return;
     }
 
-    if (isAddVariablesOpen?.mode === 'edit') {
+    if (isAddVariablesOpen?.mode === 'edit' && isEmpty(scheduleFormData)) {
       const updatedData = newlyAddVariables.map(item =>
         item?.variable?.toLowerCase() === data?.name?.toLowerCase()
           ? { ...item, ...data }
@@ -116,6 +117,20 @@ const AddVariables = ({
       } else {
         dispatch(NamespacesActions.setNewlyAddVariables([...updatedData]));
       }
+    } else {
+      dispatch(
+        NamespacesActions.setNewlyAddVariables([...newlyAddVariables, data])
+      );
+    }
+
+    if (isAddVariablesOpen?.mode === 'edit' && !isEmpty(scheduleFormData)) {
+      const updatedData = newlyAddVariables.map(item =>
+        item.name.toLowerCase() === data.name.toLowerCase()
+          ? { ...item, ...data }
+          : item
+      );
+
+      dispatch(NamespacesActions.setNewlyAddVariables(updatedData));
     } else {
       dispatch(
         NamespacesActions.setNewlyAddVariables([...newlyAddVariables, data])
