@@ -9,6 +9,8 @@ import dashboardQuickInsight from '../../assets/videos/DashboardQuickInsight.mp4
 import loginToDFMThroughAdmin from '../../assets/videos/LoginToDFMThroughAdmin.mp4';
 import loginToDFMThroughUser from '../../assets/videos/LoginToDFMThroughUser.mp4';
 import { theme } from '../../styles';
+import { useSelector } from 'react-redux';
+import { SettingsSelectors } from '../../store/settings';
 
 const Container = styled.div`
   border-radius: 20px;
@@ -166,7 +168,7 @@ export const HelpAndSupport = () => {
   const [activeTab, setActiveTab] = useState('FAQs');
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const mail = useSelector(SettingsSelectors.getSettings);
   const faqs = [
     {
       question: 'What is Data Flow Manager?',
@@ -425,11 +427,9 @@ export const HelpAndSupport = () => {
         </div>
         <div>
           <StyledButton
-            onClick={() =>
-              (window.location.href = 'mailto:Support@ksolves.com')
-            }
+            onClick={() => (window.location.href = `mailto:${mail.email}`)}
           >
-            Support@ksolves.com
+            {mail.email}
           </StyledButton>
         </div>
       </FlexWrapper>
