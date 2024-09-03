@@ -107,9 +107,11 @@ const DateField = ({
         control={control}
         render={({ field }) => {
           const onChange = value => {
-            console.log(value);
             field.onChange(value);
           };
+          const isToday =
+            field.value &&
+            new Date(field.value).toDateString() === new Date().toDateString();
           return (
             <DatePicker
               showIcon
@@ -119,8 +121,10 @@ const DateField = ({
               selected={field.value}
               placeholderText={placeholder}
               minDate={new Date()}
-              minTime={new Date()}
-              maxTime={new Date().setHours(23, 59, 59, 0)}
+              minTime={
+                isToday ? new Date() : new Date(new Date().setHours(0, 0, 0, 0))
+              }
+              maxTime={new Date(new Date().setHours(23, 59, 59, 0))}
               dateFormat="MMMM d, yyyy h:mm aa"
               popperPlacement="bottom-start"
               icon={
