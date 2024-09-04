@@ -127,6 +127,7 @@ export const ListNamespaces = () => {
             </IconButton>
           </button>
           <Button
+            style={{ minWidth: '113px', maxWidth: '113px' }}
             onClick={() => handleSelect(item)}
             disabled={
               !item.flowId ||
