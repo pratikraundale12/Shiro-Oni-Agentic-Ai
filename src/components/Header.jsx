@@ -330,7 +330,9 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
       <Container>
         <Title className={isOpenSidebar && 'title'}>
           {isLoggedIn
-            ? route?.replace(/-/g, ' ')
+            ? route === 'ldap-configuration'
+              ? 'LDAP Configuration'
+              : route?.replace(/-/g, ' ')
             : currentRoute?.split('/')?.[2].replace(/-/g, ' ')}
         </Title>
         {isLoggedIn ? (
