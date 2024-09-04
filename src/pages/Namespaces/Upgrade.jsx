@@ -212,7 +212,7 @@ const Upgrade = () => {
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/namespaces' },
     ...(checkDestCluster.mode !== 'upgrade'
-      ? [{ label: KDFM.SELECT_CLUSTER, path: '/namespaces/deploy' }]
+      ? [{ label: KDFM.SELECT_NAMESPACE, path: '/namespaces/deploy' }]
       : []),
     { label: KDFM.CONFIGURATION_DETAILS },
   ];
