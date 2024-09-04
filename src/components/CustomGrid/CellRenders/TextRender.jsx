@@ -8,7 +8,7 @@ const TextColor = styled.div`
   color: ${props => props.theme.colors.darker};
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.lg};
-  font-weight: 500;
+  font-weight: 400;
   text-transform: ${props => (props.capitalizeText ? 'capitalize' : 'none')};
   text-overflow: ellipsis;
   white-space: nowrap;

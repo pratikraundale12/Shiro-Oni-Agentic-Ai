@@ -6,6 +6,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { NoDataIcon } from '../../assets';
+import Breadcrumb from '../../shared/Breadcrumb';
 import { theme } from '../../styles';
 import { LoaderContainer } from '../Loader';
 
@@ -77,10 +78,13 @@ export const Table = ({ data, columns, loading, className }) => {
   };
 
   return (
-    <TableContainer className={className}>
-      <CompactTable data={DATA} columns={columns} theme={tableTheme} />
-      {getLoader()}
-    </TableContainer>
+    <>
+      <Breadcrumb module="destNamespaces" />
+      <TableContainer className={className}>
+        <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+        {getLoader()}
+      </TableContainer>
+    </>
   );
 };
 

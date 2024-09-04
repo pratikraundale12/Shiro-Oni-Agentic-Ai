@@ -110,7 +110,7 @@ const DropdownContainer = styled.div`
   margin-left: 10px;
   min-width: 175px;
   max-width: 175px;
-  cursor: pointer;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   @media (max-width: 1040px) {
     max-width: 100%;
     width: 100%;
@@ -272,6 +272,7 @@ export const Dashboard = () => {
       setUpdatedErrors(updatedError);
     }
   }, [dashboardData]);
+  let ClusterActivated = localStorage.getItem('clusters');
   return (
     <>
       <Loader loading={loading} />
@@ -283,12 +284,12 @@ export const Dashboard = () => {
           <QuickInsightHeadingText>Quick Insight</QuickInsightHeadingText>
         </QuickInsightHeading>
         <DropdownWrapper>
-          <DropdownContainer>
+          <DropdownContainer disabled={!ClusterActivated}>
             <SelectField
               options={
                 Array.isArray(namespaces)
                   ? [
-                      { value: '', label: 'All Namespaces' },
+                      ClusterActivated ? { value: '', label: 'All' } : [],
                       ...namespaces.map(({ id, name }) => ({
                         value: id,
                         label: name,
@@ -301,6 +302,7 @@ export const Dashboard = () => {
               title="Select Namespace"
               backgroundColor={theme.colors.lightGrey}
               size="sm"
+              disabled={!ClusterActivated}
             />
           </DropdownContainer>
         </DropdownWrapper>
