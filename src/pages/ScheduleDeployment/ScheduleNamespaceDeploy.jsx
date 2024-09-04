@@ -200,6 +200,7 @@ const ScheduleNamespaceDeploy = ({
 
   const onRequestClose = () => {
     dispatch(SchedularActions.setScheduleDeployModal());
+    dispatch(SchedularActions.setScheduleModal());
   };
 
   const onSubmit = () => {

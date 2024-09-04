@@ -31,10 +31,22 @@ const StatusTexts = styled.div`
 `;
 export const StatusText = ({ text = '' }) => {
   const color = statusColors[text] || statusColors.DEFAULT;
+  function capitalizeFirstLetter(text) {
+    if (!text) return '';
+
+    text = text.toLowerCase();
+
+    return text
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
   return (
     <StatusTexts color={color}>
       <div></div>
-      {text}
+      {capitalizeFirstLetter(text)}
     </StatusTexts>
   );
 };
