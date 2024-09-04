@@ -57,8 +57,8 @@ const StyledButton = styled(Button)`
   width: auto;
   padding-top: 14px;
   padding-bottom: 14px;
-  padding-right: 17px;
-  padding-left: 17px;
+  padding-right: 28px;
+  padding-left: 28px;
   height: 55px;
   span {
     font-size: 18px;
@@ -97,6 +97,18 @@ const SyncButton = styled(Button)`
   padding-left: 17px;
   height: 40px;
   margin-bottom: 5px;
+`;
+
+const StyledSecondButton = styled(Button)`
+  width: auto;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-right: 70px;
+  padding-left: 70px;
+  height: 55px;
+  span {
+    font-size: 18px;
+  }
 `;
 
 export const schemaForm1 = Yup.object().shape({
@@ -366,7 +378,7 @@ export const LdapConfig = () => {
                 type="text"
                 label="Base DN"
                 placeholder="Enter your Base DN"
-                icon={<LinkIcon />}
+                icon={<QRIcons />}
                 disabled={!secondFormState || !ldapInitialConfig}
                 errors={errorsForm2}
               />
@@ -404,7 +416,7 @@ export const LdapConfig = () => {
                 register={registerForm2}
                 label="User Unique Identifier"
                 placeholder="Enter User Identifier"
-                icon={<LinkIcon />}
+                icon={<QRIcons />}
                 errors={errorsForm2}
                 disabled={!secondFormState || !ldapInitialConfig}
               />
@@ -417,7 +429,7 @@ export const LdapConfig = () => {
                 register={registerForm2}
                 label="Group Unique Identifier"
                 placeholder="Enter Group Identifier"
-                icon={<LinkIcon />}
+                icon={<QRIcons />}
                 errors={errorsForm2}
                 disabled={!secondFormState || !ldapInitialConfig}
               />
@@ -425,13 +437,13 @@ export const LdapConfig = () => {
           </InputFieldFlex>
           <SmallButtonFlex className="row">
             <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-              <Button
+              <StyledSecondButton
                 onClick={handleSubmitForm2(getLDAPGroup)}
                 disabled={!saveButtonStatus || !ldapInitialConfig}
                 loading={loadings && 'Fetching..'}
               >
                 Continue
-              </Button>
+              </StyledSecondButton>
             </div>
           </SmallButtonFlex>
         </>
