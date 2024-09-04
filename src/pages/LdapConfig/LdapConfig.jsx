@@ -1,28 +1,32 @@
 /* eslint-disable no-unused-vars */
+import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { LinkIcon, QRIcons, TodoIcon } from '../../assets';
+import * as Yup from 'yup';
+import { LinkIcon, PlusCircleIcon, QRIcons, TodoIcon } from '../../assets';
+import { FullPageLoader } from '../../components';
+import { Table } from '../../components/CustomGrid/Table';
 import {
   Button,
   InputField,
   PasswordField,
+  SwitchButton,
   SyncUsersSuccess,
 } from '../../shared';
-import { CreateMapping } from './components/CreateMapping';
-import { useForm } from 'react-hook-form';
-import { Table } from '../../components/CustomGrid/Table';
-import { SwitchButton } from '../../shared';
-import Breadcrumb from '../../shared/Breadcrumb';
-import { checkLdapConfig, groupMappingApi } from '../../store/apis/ldap';
-import { toast } from 'react-toastify';
-import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { testConfigApi } from '../../store/apis/ldap';
-import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
-import SelectCellRender from './components/SelectCellRender';
-import { RolesActions, RolesSelectors, LoadingSelectors } from '../../store';
 import AddNewRoleModal from '../../shared/AddNewRoleModal';
+import Breadcrumb from '../../shared/Breadcrumb';
+import { LoadingSelectors, RolesActions, RolesSelectors } from '../../store';
+import {
+  checkLdapConfig,
+  groupMappingApi,
+  testConfigApi,
+} from '../../store/apis/ldap';
+import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
+import { CreateMapping } from './components/CreateMapping';
+import SelectCellRender from './components/SelectCellRender';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -290,6 +294,7 @@ export const LdapConfig = () => {
   }, [dispatch]);
   return (
     <Wrapper>
+      {loading && <FullPageLoader loading={loading} />}
       <Heading>
         <Flex>
           <ImageContainer>
@@ -449,15 +454,25 @@ export const LdapConfig = () => {
               path={breadcrumbData}
               module="ldap"
             />
-            <SyncButton onClick={() => dispatch(RolesActions.roleModal())}>
+            <SyncButton
+              icon={<PlusCircleIcon width={16} height={16} color="black" />}
+              onClick={() => dispatch(RolesActions.roleModal())}
+              variant="secondary"
+              size="sm"
+            >
               Add New Role
             </SyncButton>
           </div>
 
           <CustomTable data={ldapGroup} columns={EVENTCOLUMNS} />
-          <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-4">
-            <Button onClick={onSubmit} loading={loading}>
-              Save
+          <div className=" form-ele mt-4">
+            <Button
+              className="w-auto"
+              onClick={onSubmit}
+              loading={loading}
+              size="sm"
+            >
+              Save Mapping
             </Button>
           </div>
         </>
