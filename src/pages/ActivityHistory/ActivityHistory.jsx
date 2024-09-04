@@ -46,10 +46,15 @@ export const ActvityHistory = () => {
 
   const sortFns = {
     namespace: data =>
-      data.sort((a, b) => a.namespace.localeCompare(b.namespace)),
-    cluster: data => data.sort((a, b) => a.cluster.localeCompare(b.cluster)),
+      data.sort((a, b) =>
+        (a?.namespace || '').localeCompare(b?.namespace || '')
+      ),
+    cluster: data =>
+      data.sort((a, b) => (a?.cluster || '').localeCompare(b?.cluster || '')),
     timestamp: data =>
-      data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)),
+      data.sort(
+        (a, b) => new Date(a?.timestamp || 0) - new Date(b?.timestamp || 0)
+      ),
   };
 
   return (

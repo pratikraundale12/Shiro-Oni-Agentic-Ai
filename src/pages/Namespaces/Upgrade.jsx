@@ -211,7 +211,9 @@ const Upgrade = () => {
   ];
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/namespaces' },
-    { label: KDFM.SELECT_CLUSTER, path: '/namespaces/deploy' },
+    ...(checkDestCluster.mode !== 'upgrade'
+      ? [{ label: KDFM.SELECT_CLUSTER, path: '/namespaces/deploy' }]
+      : []),
     { label: KDFM.CONFIGURATION_DETAILS },
   ];
 
@@ -220,7 +222,11 @@ const Upgrade = () => {
   };
 
   const handleBackClick = () => {
-    history.push('/namespaces/deploy');
+    if (checkDestCluster.mode === 'upgrade') {
+      history.push('/namespaces');
+    } else {
+      history.push('/namespaces/deploy');
+    }
   };
 
   const handleVersionSelect = version => {
