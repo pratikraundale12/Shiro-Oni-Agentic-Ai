@@ -241,6 +241,7 @@ export const ListScheduleDeployment = () => {
   // };
 
   const STATUS_OPTIONS = [
+    { value: 'all', label: 'All' },
     { value: 'PENDING', label: 'Pending' },
     { value: 'SUCCESS', label: 'Success' },
     { value: 'SCHEDULED', label: 'Scheduled' },
