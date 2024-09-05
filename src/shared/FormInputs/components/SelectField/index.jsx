@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import { isEmpty } from 'lodash';
+import { isEmpty, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Controller } from 'react-hook-form';
@@ -205,7 +205,7 @@ const SelectField = ({
       minHeight: 0,
       minWidth: 'max-content',
       boxShadow: 'none',
-      cursor: disabled ? 'not-allowed' : 'pointer',
+      cursor: disabled ? 'not-allowed !important' : 'pointer',
       borderColor: getBorderColor(state),
       backgroundColor: disabled
         ? theme.colors.lightGrey2
@@ -231,7 +231,7 @@ const SelectField = ({
             ? theme.colors.lightGrey1
             : 'transparent',
         color: state.isSelected && theme.colors.darker,
-        cursor: disabled ? 'not-allowed' : 'pointer',
+        cursor: disabled ? 'not-allowed !important' : 'pointer',
       };
     },
     singleValue: styles => ({
@@ -324,9 +324,13 @@ const SelectField = ({
               }}
               {...props}
               onChange={selected => {
-                if (isMulti) onChange(selected.map(option => option.value));
+                const uniqueValues = uniqBy(selected, 'value');
+                if (isMulti)
+                  onChange(uniqueValues.map(option => option?.value));
                 else onChange(selected.value);
-                if (props.onChange) props.onChange(selected);
+                if (props.onChange)
+                  if (isMulti) props.onChange(uniqueValues);
+                  else props.onChange(selected);
               }}
             />
             <FieldErrorMessage errors={errors} name={name} />

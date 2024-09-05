@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 const Switch = styled.label`
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 22px;
+  width: 50px;
+  height: 28px;
 `;
 
 const CheckboxInput = styled.input.attrs({ type: 'checkbox' })`
@@ -23,7 +23,7 @@ const CheckboxInput = styled.input.attrs({ type: 'checkbox' })`
   }
 
   &:checked + span:before {
-    transform: translateX(18px);
+    transform: translateX(22px);
   }
 `;
 
@@ -42,8 +42,8 @@ const Slider = styled.span`
   &:before {
     position: absolute;
     content: '';
-    height: 18px;
-    width: 18px;
+    height: 24px;
+    width: 24px;
     left: 2px;
     top: 2px;
     background-color: white;
@@ -60,14 +60,15 @@ const Label = styled.span`
 `;
 
 const ToggleSwitch = ({ id, name, checked, onChange }) => (
-  <>
-    <Switch>
-      <CheckboxInput id={id} checked={checked} onChange={onChange} />
-
-      <Slider />
-    </Switch>
+  <div className="d-flex align-items-center gap-2">
+    <div className="d-flex align-items-center gap-2">
+      <Switch>
+        <CheckboxInput id={id} checked={checked} onChange={onChange} />
+        <Slider />
+      </Switch>
+    </div>
     <Label>{`${name} ${checked ? 'Enabled' : 'Disabled'}`}</Label>
-  </>
+  </div>
 );
 
 ToggleSwitch.propTypes = {
@@ -76,4 +77,5 @@ ToggleSwitch.propTypes = {
   checked: PropTypes.bool,
   onChange: PropTypes.func,
 };
+
 export default ToggleSwitch;

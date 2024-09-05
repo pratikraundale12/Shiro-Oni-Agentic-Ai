@@ -112,6 +112,7 @@ export const UploadFile = ({ name, control, watch }) => {
                   <StyledButton
                     variant="secondary"
                     onClick={() => ref.current.click()}
+                    type="button"
                   >
                     Select file
                   </StyledButton>

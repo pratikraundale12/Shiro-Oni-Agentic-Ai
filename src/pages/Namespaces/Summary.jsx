@@ -24,18 +24,14 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import {
-  SchedularActions,
-  // SchedularSelectors,
-} from '../../store/schedular/redux';
+import { SchedularActions } from '../../store/schedular/redux';
 import { useGlobalContext } from '../../utils';
-// import { AddScheduleDeploymentModal } from '../ScheduleDeployment/AddScheduleDeploymentModel';
+import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymentModal';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
-import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymentModal';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -279,12 +275,6 @@ const TextDiv = styled.div`
   align-items: center;
 `;
 
-const breadcrumbData = [
-  { label: KDFM.NAMESPACE_LIST, path: '/namespaces' },
-  { label: KDFM.SELECTED_NAMESPACE, path: '/namespaces/deploy' },
-  { label: KDFM.CONFIGURATION_DETAILS, path: '/namespaces/upgrade' },
-  { label: KDFM.SUMMARY },
-];
 export const scheduleSchema = yup.object().shape({
   approver_ids: yup.array().required('Approver is required'),
 });
@@ -329,60 +319,14 @@ const Summary = () => {
   const { state } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
-  // const [scheduleInitialOpen, setScheduleInitialOpen] = useState(false);
-  // const [startDate, setStartDate] = useState(new Date());
-  // const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  // const isScheduleModal = useSelector(SchedularSelectors.getScheduleModal);
-  // const loadingButton = useSelector(state =>
-  //   LoadingSelectors.getLoading(state, 'createScheduleDeployment')
-  // );
-
-  // const {
-  //   // setValue,
-  //   // handleSubmit,
-  //   // control,
-  //   // formState: { errors },
-  // } = useForm({
-  //   resolver: yupResolver(scheduleSchema),
-  // });
-
-  // const handleScheduleNamespaceDeployModel = () => {
-  //   dispatch(SchedularActions.setScheduleModal());
-  //   history.push('/namespaces');
-  // };
-
-  // const handleContinue = () => {
-  //   setScheduleInitialOpen(false);
-  //   dispatch(SchedularActions.setScheduleModal());
-  // };
-  // const onSubmit = async data => {
-  //   const payload = {
-  //     namespace_id: checkDestCluster?.id,
-  //     namespace_name: checkDestCluster?.name,
-  //     scheduled_time: startDate.toISOString(),
-  //     flow_id: checkDestCluster?.flowId,
-  //     source_cluster_id: selectedCluster?.value,
-  //     destination_cluster_id: selectedDestCluster.value,
-  //     deployment_status: 'PENDING',
-  //     bucket_id: checkDestCluster?.bucketId,
-  //     registry_id: checkDestCluster?.registryId,
-  //     mode: checkDestCluster?.mode,
-  //     version: formData.version,
-  //     position: checkDestCluster?.position,
-  //     approver_ids: data?.approver_ids,
-  //     variables: newlyAddVariables.map(item => ({
-  //       name: item.name,
-  //       value: item.value,
-  //     })),
-  //     params: newlyAddParameters.map(item => ({
-  //       name: item.name,
-  //       value: item.value,
-  //       description: item.description,
-  //       sensitive: item.sensitive,
-  //     })),
-  //   };
-  //   dispatch(SchedularActions.createScheduleDeployment(payload));
-  // };
+  const breadcrumbData = [
+    { label: KDFM.NAMESPACE_LIST, path: '/namespaces' },
+    ...(checkDestCluster?.mode !== 'upgrade'
+      ? [{ label: KDFM.SELECT_NAMESPACE, path: '/namespaces/deploy' }]
+      : []),
+    { label: KDFM.CONFIGURATION_DETAILS, path: '/namespaces/upgrade' },
+    { label: KDFM.SUMMARY },
+  ];
 
   const getParamerterContext = async () => {
     setLoading(true);
@@ -483,7 +427,7 @@ const Summary = () => {
           <MainTitleHfour className="mb-0">
             {`${
               checkDestCluster.mode === 'upgrade'
-                ? checkDestCluster.version <= formData.version
+                ? checkDestCluster?.version <= formData.version
                   ? KDFM.UPGRADE
                   : KDFM.DOWNGRADE
                 : KDFM.DEPLOY
@@ -793,17 +737,6 @@ const Summary = () => {
           >
             Schedule
           </Button>
-          {/* <AddScheduleDeploymentModal
-            setValue={setValue}
-            control={control}
-            errors={errors}
-            scheduleInitialOpen={scheduleInitialOpen}
-            setScheduleInitialOpen={setScheduleInitialOpen}
-            handleContinue={handleContinue}
-            startDate={startDate}
-            setStartDate={setStartDate}
-            showButton={true}
-          /> */}
         </BottomButtonDiv>
         {checkDestCluster.mode === 'upgrade' && (
           <Progressox className="w-100">
@@ -836,13 +769,8 @@ const Summary = () => {
         handleTertiaryButton={handleTertiaryButton}
       />
       <ScheduleNamespaceDeploy
-        // isOpen={isScheduleModal}
-        // closePopup={handleScheduleNamespaceDeployModel}
         getScheduleParamerterContext={getScheduleParamerterContext}
         handleScheduleTertiaryButton={handleScheduleTertiaryButton}
-        // onSubmit={onSubmit}
-        // handleSubmit={handleSubmit}
-        // loadingButton={loadingButton}
       />
       <ParameterContext
         isParameterContextOpen={isParameterContextOpen}
