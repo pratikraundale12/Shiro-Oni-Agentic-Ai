@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import { isEmpty } from 'lodash';
+import { isEmpty, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Controller } from 'react-hook-form';
@@ -324,9 +324,10 @@ const SelectField = ({
               }}
               {...props}
               onChange={selected => {
-                if (isMulti) onChange(selected.map(option => option.value));
-                else onChange(selected.value);
-                if (props.onChange) props.onChange(selected);
+                const uniqueValues = uniqBy(selected, 'value');
+                if (isMulti) onChange(uniqueValues.map(option => option.value));
+                else onChange(uniqueValues.value);
+                if (props.onChange) props.onChange(uniqueValues);
               }}
             />
             <FieldErrorMessage errors={errors} name={name} />
