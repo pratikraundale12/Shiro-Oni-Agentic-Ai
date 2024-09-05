@@ -78,6 +78,7 @@ const PasswordInputField = ({
   icon = <BagIcon />,
   ...props
 }) => {
+  console.log(props);
   const error = hasError(errors, name);
   const [show, setShow] = useState(false);
   const [strength, setStrength] = useState(0);
@@ -101,7 +102,9 @@ const PasswordInputField = ({
         {...props}
         icon={icon}
         placeholder={placeholder || 'Enter Your Password'}
-        rightIcon={<TogglePassword show={show} onToggle={togglePassword} />}
+        rightIcon={
+          <TogglePassword show={show} onToggle={togglePassword} {...props} />
+        }
         registerOptions={{
           onChange,
         }}
