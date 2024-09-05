@@ -293,6 +293,7 @@ export const Grid = ({
         buttonText={buttonText}
         gridCount={gridCount}
         addModal={addModal}
+        clusterId={clusterId}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>
