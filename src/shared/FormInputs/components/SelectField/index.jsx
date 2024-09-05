@@ -325,9 +325,12 @@ const SelectField = ({
               {...props}
               onChange={selected => {
                 const uniqueValues = uniqBy(selected, 'value');
-                if (isMulti) onChange(uniqueValues.map(option => option.value));
-                else onChange(uniqueValues.value);
-                if (props.onChange) props.onChange(uniqueValues);
+                if (isMulti)
+                  onChange(uniqueValues.map(option => option?.value));
+                else onChange(selected.value);
+                if (props.onChange)
+                  if (isMulti) props.onChange(uniqueValues);
+                  else props.onChange(selected);
               }}
             />
             <FieldErrorMessage errors={errors} name={name} />
