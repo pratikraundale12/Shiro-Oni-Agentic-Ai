@@ -81,6 +81,7 @@ export const Modal = ({
     tertiaryButtonLoading: false,
   },
   tertiaryButtonLoading,
+  thirdVarint = false,
 }) => {
   const styleObject = {
     overlay: {
@@ -102,7 +103,7 @@ export const Modal = ({
       minWidth: '30%',
       maxWidth: '546px',
       width: '90%',
-      maxHeight: '90%',
+      maxHeight: '60%',
       transform: 'translate(-50%, -50%)',
       backgroundColor: theme.colors.white,
       boxShadow: `0px 4px 18px 0px ${theme.colors.shadow}`,
@@ -147,7 +148,7 @@ export const Modal = ({
           {secondaryButtonText && (
             <Button
               type="button"
-              variant="secondary"
+              variant={thirdVarint ? 'tertiary' : 'secondary'}
               onClick={onSecondarySubmit || onRequestClose}
               disabled={secondaryButtonProps.disabled}
               {...secondaryButtonProps}
@@ -158,7 +159,7 @@ export const Modal = ({
           {tertiaryButton && tertiaryButtonConfig && (
             <Button
               type="button"
-              variant="secondary"
+              variant={thirdVarint ? 'tertiary' : 'secondary'}
               onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
               disabled={tertiaryButtonConfig.disabled}
               loading={tertiaryButtonConfig.tertiaryButtonLoading}
