@@ -78,7 +78,6 @@ const PasswordInputField = ({
   icon = <BagIcon />,
   ...props
 }) => {
-  console.log(props);
   const error = hasError(errors, name);
   const [show, setShow] = useState(false);
   const [strength, setStrength] = useState(0);
