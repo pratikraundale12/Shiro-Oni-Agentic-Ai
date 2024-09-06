@@ -49,12 +49,12 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
       icon={<UserIcon />}
       errors={errors}
       options={[
-        ...userList,
         ...selected.map(item => ({
           id: item.value,
           username: item.label,
           photo: item.avatar,
         })),
+        ...userList,
       ].map(({ id, photo, username }) => ({
         value: id,
         label: username,
