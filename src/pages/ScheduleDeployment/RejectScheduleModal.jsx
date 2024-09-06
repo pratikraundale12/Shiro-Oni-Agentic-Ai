@@ -53,6 +53,7 @@ export const RejectScheduleModal = () => {
     register,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm({
     resolver: yupResolver(Schema),
     defaultValues: DEFAULT_VALUES,
@@ -60,12 +61,14 @@ export const RejectScheduleModal = () => {
 
   const onRequestClose = () => {
     dispatch(SchedularActions.setRejectScheduleModal());
+    reset();
   };
 
   const onSubmit = data => {
     data.is_approved = false;
     data.schedularId = selectedSchedule.scheduler_id;
     dispatch(SchedularActions.editScheduleDeployment(data));
+    reset();
   };
 
   return (
