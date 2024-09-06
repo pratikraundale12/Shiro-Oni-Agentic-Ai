@@ -81,6 +81,7 @@ export const Modal = ({
     tertiaryButtonLoading: false,
   },
   tertiaryButtonLoading,
+  thirdVarint = false,
 }) => {
   const styleObject = {
     overlay: {
@@ -147,7 +148,7 @@ export const Modal = ({
           {secondaryButtonText && (
             <Button
               type="button"
-              variant="secondary"
+              variant={thirdVarint ? 'tertiary' : 'secondary'}
               onClick={onSecondarySubmit || onRequestClose}
               disabled={secondaryButtonProps.disabled}
               {...secondaryButtonProps}
@@ -158,7 +159,7 @@ export const Modal = ({
           {tertiaryButton && tertiaryButtonConfig && (
             <Button
               type="button"
-              variant="secondary"
+              variant={thirdVarint ? 'tertiary' : 'secondary'}
               onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
               disabled={tertiaryButtonConfig.disabled}
               loading={tertiaryButtonConfig.tertiaryButtonLoading}

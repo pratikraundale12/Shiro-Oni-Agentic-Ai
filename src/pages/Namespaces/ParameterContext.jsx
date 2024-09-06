@@ -125,6 +125,7 @@ const ParameterContext = ({
       }
       footerAlign="start"
       secondaryButtonProps={{ icon: <PlusCircleIcon />, disabled: loading }}
+      contentStyles={{ maxWidth: '45%', maxHeight: '60%' }}
     >
       <ModalBody className="modal-body">
         <Table

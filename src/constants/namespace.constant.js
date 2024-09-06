@@ -24,7 +24,7 @@ export const NAMESPACE_CONSTANTS = {
   UPDATING_FLOW: 'Updating Flow',
   DISABLED_FLOW: 'Disabled Flow',
   STOPPED_FLOW: 'Stopped Flow',
-  RUNNING_FLOW: 'Running Flow',
+  RUNNING_FLOW: 'Start Flow',
   SENSITIVE_VALUE_SET: 'Sensitive value set',
   EMPTY_STRING_SET: 'Empty string set',
   NO_VALUE_SET: 'No value set',
