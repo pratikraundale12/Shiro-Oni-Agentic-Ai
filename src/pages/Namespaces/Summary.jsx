@@ -176,6 +176,10 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  &:hover {
+    border: 1px solid
+      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
+  }
 
   & span {
     position: absolute;
@@ -338,11 +342,10 @@ const Summary = () => {
     dispatch(SchedularActions.setScheduleDeployModal());
   };
   const handleUpgradeClick = async () => {
+    dispatch(NamespacesActions.upgradeCluster());
     if (!isEmpty(flowControlButtons)) {
       dispatch(NamespacesActions.updateNamespaceStatus(flowControlButtons));
     }
-
-    dispatch(NamespacesActions.upgradeCluster());
   };
   const handleDeploy = () => {
     dispatch(NamespacesActions.deployCluster());

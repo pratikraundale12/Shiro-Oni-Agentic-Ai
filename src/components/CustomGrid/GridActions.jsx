@@ -191,11 +191,13 @@ export const GridActions = ({
   buttonText,
   gridCount,
   addModal: Modal,
+  clusterId,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const accessType = useSelector(RolesSelectors.getAccessType);
+
   const selectedEntity = useSelector(
     ActivityHistorySelectors.getSelectedEntity
   );
@@ -222,6 +224,7 @@ export const GridActions = ({
       dispatch(
         GridSagsActions.fetchGrid({
           module,
+          clusterId,
           params: {
             page: 1,
             ...(search && { search }),
@@ -353,4 +356,5 @@ GridActions.propTypes = {
   addModal: PropTypes.func,
   gridCount: PropTypes.number,
   handleRefresh: PropTypes.func,
+  clusterId: PropTypes.string,
 };

@@ -25,6 +25,7 @@ import { API_URL } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   AuthenticationActions,
+  AuthenticationSelectors,
   GridActions,
   RolesSelectors,
 } from '../../store';
@@ -110,6 +111,7 @@ export const AddUserModal = props => {
   const roles = useSelector(RolesSelectors.getRoles);
   const { state, setState } = useGlobalContext();
   const currentUser = state.currentUser;
+  const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
   const {
     register,
     reset,
@@ -179,7 +181,8 @@ export const AddUserModal = props => {
       const response = await editUserDataApi(state.selectedItem?.id, formData);
       if (response.status == 200) {
         dispatch(GridActions.fetchGrid({ module: 'users' }));
-        state?.label == 'Profile' &&
+        (state?.label == 'Profile' ||
+          response?.data?.id == currentUserData?.id) &&
           dispatch(AuthenticationActions.setCurrentUser(response?.data));
         toast.success('User Updated Successfully');
         setState({
