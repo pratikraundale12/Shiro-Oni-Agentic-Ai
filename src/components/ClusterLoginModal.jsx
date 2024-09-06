@@ -123,12 +123,13 @@ export const ClusterLoginModal = () => {
         reset(DEFAULT_VALUES);
         dispatch(GridActions.fetchGrid({ module: 'clusters' }));
       } else {
-        toast.error('Error while getting data');
+        toast.error(response.message || 'Error while getting data');
         setLoading(false);
       }
     } catch (error) {
       setLoading(false);
-      toast.error(error.message);
+      const errorMessage = error?.response?.data?.message || error.message;
+      toast.error(errorMessage);
     }
   };
 

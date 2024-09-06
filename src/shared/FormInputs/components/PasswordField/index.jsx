@@ -101,7 +101,9 @@ const PasswordInputField = ({
         {...props}
         icon={icon}
         placeholder={placeholder || 'Enter Your Password'}
-        rightIcon={<TogglePassword show={show} onToggle={togglePassword} />}
+        rightIcon={
+          <TogglePassword show={show} onToggle={togglePassword} {...props} />
+        }
         registerOptions={{
           onChange,
         }}
