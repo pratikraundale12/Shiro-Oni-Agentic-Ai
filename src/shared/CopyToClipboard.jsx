@@ -1,7 +1,7 @@
 /* eslint-disable */
 import PropTypes from 'prop-types';
 import React from 'react';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { CopyIcon } from '../assets';
 
@@ -69,13 +69,24 @@ const CopyToClipboard = ({ copyItem, className }) => {
   };
 
   return (
-    <StyledButton
-      type="button"
-      onClick={() => handleCopyToClipboard(copyItem)}
-      className={className}
-    >
-      <CopyIcon />
-    </StyledButton>
+    <>
+      <ToastContainer
+        theme="colored"
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
+      <StyledButton
+        type="button"
+        onClick={() => handleCopyToClipboard(copyItem)}
+        className={className}
+      >
+        <CopyIcon />
+      </StyledButton>
+    </>
   );
 };
 
