@@ -103,7 +103,7 @@ export const Modal = ({
       minWidth: '30%',
       maxWidth: '546px',
       width: '90%',
-      maxHeight: '60%',
+      maxHeight: '90%',
       transform: 'translate(-50%, -50%)',
       backgroundColor: theme.colors.white,
       boxShadow: `0px 4px 18px 0px ${theme.colors.shadow}`,
