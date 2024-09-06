@@ -62,6 +62,8 @@ const ButtonContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: auto;
+  margin-right: 16px;
 `;
 
 const ProfileButton = styled.button`
@@ -88,6 +90,11 @@ const Title = styled.h2`
   font-size: 26px;
   font-weight: 500;
   text-transform: capitalize;
+
+  @media (max-width: 890px) {
+    display: ${props => (props.isOpenSidebar ? 'none' : 'block')};
+  }
+
   @media (max-width: 992px) {
     font-size: 23px;
     transition: 0.3s;
@@ -328,16 +335,17 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   return (
     <>
       <Container>
-        <Title className={isOpenSidebar && 'title'}>
+        <Title isOpenSidebar={isOpenSidebar}>
           {isLoggedIn
             ? route === 'ldap-configuration'
               ? 'LDAP Configuration'
               : route?.replace(/-/g, ' ')
             : currentRoute?.split('/')?.[2].replace(/-/g, ' ')}
         </Title>
+
         {isLoggedIn ? (
           <ButtonContainer>
-            <div className="d-none d-lg-inline">
+            <div className="d-none d-md-inline">
               <div className="d-flex">
                 {currentUser.role === 'superadmin' && (
                   <IconButton onClick={() => handleRoute('setting')}>
