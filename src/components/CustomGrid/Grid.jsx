@@ -34,13 +34,17 @@ import { Table } from './Table';
 const Container = styled.div`
   background-color: ${theme.colors.white};
   height: inherit;
+  display: flex;
+  flex-direction: column;
 `;
 
 const TableContainer = styled.div`
-  height: 90%;
+  min-height: ${props => (props.module === 'nodes' ? '680px' : '784px')};
+  max-height: ${props => (props.module === 'nodes' ? '680px' : '784px')};
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
+
   @media (max-width: 991px) {
     table {
       min-width: 800px;
@@ -121,6 +125,7 @@ export const Grid = ({
   sortFns = () => {},
   state,
 }) => {
+  console.log(module, '..');
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
   const loading = useSelector(state =>
@@ -354,7 +359,7 @@ export const Grid = ({
         </>
       )}
       <Breadcrumb module={module} />
-      <TableContainer>
+      <TableContainer module={module}>
         <CompactTable
           data={TABLE_DATA}
           columns={columns}
