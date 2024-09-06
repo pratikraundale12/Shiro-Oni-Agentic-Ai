@@ -175,6 +175,7 @@ const WarningText = styled.div`
 const ScheduleNamespaceDeploy = ({
   getScheduleParamerterContext,
   handleScheduleTertiaryButton,
+  flowControlState = '',
 }) => {
   const dispatch = useDispatch();
   const selectedVersion = useSelector(NamespacesSelectors.getFormData);
@@ -233,6 +234,7 @@ const ScheduleNamespaceDeploy = ({
         description: item.description,
         sensitive: item.sensitive,
       })),
+      state: flowControlState,
     };
     dispatch(SchedularActions.createScheduleDeployment(payload));
   };
@@ -442,6 +444,7 @@ ScheduleNamespaceDeploy.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   loadingButton: PropTypes.bool,
+  flowControlState: PropTypes.string,
 };
 
 export default ScheduleNamespaceDeploy;

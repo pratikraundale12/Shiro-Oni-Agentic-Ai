@@ -774,6 +774,7 @@ const Summary = () => {
       <ScheduleNamespaceDeploy
         getScheduleParamerterContext={getScheduleParamerterContext}
         handleScheduleTertiaryButton={handleScheduleTertiaryButton}
+        flowControlState={flowControlButtons}
       />
       <ParameterContext
         isParameterContextOpen={isParameterContextOpen}
