@@ -34,10 +34,12 @@ import { Table } from './Table';
 const Container = styled.div`
   background-color: ${theme.colors.white};
   height: inherit;
+  display: flex;
+  flex-direction: column;
 `;
 
 const TableContainer = styled.div`
-  height: auto;
+  min-height: 784px;
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
