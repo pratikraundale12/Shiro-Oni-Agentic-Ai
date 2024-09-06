@@ -37,7 +37,7 @@ const Container = styled.div`
 `;
 
 const TableContainer = styled.div`
-  height: 90%;
+  height: auto;
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
