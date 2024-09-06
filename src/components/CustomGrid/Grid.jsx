@@ -281,6 +281,14 @@ export const Grid = ({
     : search
       ? filterClusterView(DATA)
       : DATA;
+
+  useEffect(() => {
+    if (next) {
+      setCurrentPage(next - 1);
+    } else {
+      setCurrentPage(prev + 1);
+    }
+  }, [next, prev]);
   return (
     <Container>
       <GridActionsComponent
