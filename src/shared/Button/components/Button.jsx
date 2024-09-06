@@ -40,26 +40,36 @@ const StyledButton = styled.button.withConfig({
     ${props =>
       props.variant === 'primary'
         ? props.theme.colors.primary
-        : props.theme.colors.darker};
+        : props.variant === 'secondary'
+          ? props.theme.colors.darker
+          : '#DDE4F0'}; /* Tertiary border color */
   color: ${props =>
     props.variant === 'primary'
       ? props.theme.colors.white
-      : props.theme.colors.darker};
+      : props.variant === 'secondary'
+        ? props.theme.colors.darker
+        : props.theme.colors.darker}; /* Tertiary text color */
   background-color: ${props =>
     props.variant === 'primary'
       ? props.theme.colors.primary
-      : props.theme.colors.white};
+      : props.variant === 'secondary'
+        ? props.theme.colors.white
+        : '#F5F7FA'}; /* Tertiary background color */
   transition:
     background 0.3s ease-in-out,
     color 0.3s ease-in-out;
 
   &:hover {
-    color: ${props => props.theme.colors.white};
+    color: ${props =>
+      props.variant === 'tertiary'
+        ? 'props.theme.colors.darker'
+        : props.theme.colors.white};
     background: ${props =>
       props.variant === 'primary'
         ? props.theme.colors.primaryActive
-        : props.theme.colors.darker};
-
+        : props.variant === 'secondary'
+          ? props.theme.colors.darker
+          : '#DDE4F0'};
     path {
       fill: ${props => props.theme.colors.white};
     }
@@ -70,13 +80,21 @@ const StyledButton = styled.button.withConfig({
     background: ${props =>
       props.variant === 'primary'
         ? props.theme.colors.primaryDisabled
-        : props.theme.colors.white};
+        : props.variant === 'secondary'
+          ? props.theme.colors.white
+          : props.theme.colors.white};
     color: ${props =>
       props.variant === 'primary'
         ? props.theme.colors.white
-        : props.theme.colors.lightGrey3};
+        : props.variant === 'secondary'
+          ? props.theme.colors.lightGrey3
+          : props.theme.colors.lightGrey3};
     border-color: ${props =>
-      props.variant === 'primary' ? 'none' : props.theme.colors.lightGrey3};
+      props.variant === 'primary'
+        ? 'none'
+        : props.variant === 'secondary'
+          ? props.theme.colors.lightGrey3
+          : props.theme.colors.lightGrey3};
   }
 
   svg {
@@ -145,9 +163,9 @@ Button.propTypes = {
   type: PropTypes.string,
   size: PropTypes.oneOf(['md', 'sm', 'lg']),
   iconPosition: PropTypes.oneOf(['left', 'right']),
-  variant: PropTypes.oneOf(['primary', 'secondary']),
+  variant: PropTypes.oneOf(['primary', 'secondary', 'tertiary']), // Added 'tertiary'
   loading: PropTypes.bool,
-  disabled: PropTypes.bool, // Add PropTypes for the disabled prop
+  disabled: PropTypes.bool,
 };
 
 export default Button;

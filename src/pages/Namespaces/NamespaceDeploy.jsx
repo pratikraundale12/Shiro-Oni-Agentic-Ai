@@ -139,7 +139,7 @@ const ActiveButtonDiv = styled.div`
 
   &:hover {
     border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#c52b2b')};
+      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
   }
 
   & span {
@@ -206,6 +206,7 @@ const NamespaceDeploy = ({
           disabled: !deployOrUpgradeDetails?.parameterContextId,
         }}
         tertiaryButton={true}
+        thirdVarint={true}
         tertiaryButtonConfig={{
           tertiaryButtonTest: 'Variables',
           tertiaryButtonSubmit: handleTertiaryButton,
