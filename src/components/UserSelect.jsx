@@ -14,7 +14,6 @@ import {
 } from '../store';
 
 export const UserSelect = ({ control, errors, name, label, placeholder }) => {
-  
   const dispatch = useDispatch();
   const [selected, setSelected] = useState([]);
   const RoleList = useSelector(RolesSelectors.getRoles);
