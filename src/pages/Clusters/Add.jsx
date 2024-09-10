@@ -439,7 +439,7 @@ export const Add = () => {
     if (selectedRegistryId) {
       fetchRegistryDetails(selectedRegistryId);
     }
-  }, [registries, selectedRegistryId, activeTab]);
+  }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const fetchRegistryDetails = async () => {
     try {
@@ -611,6 +611,11 @@ export const Add = () => {
                 }
                 onClick={() => {
                   setNewRegistry(true);
+                  reset({
+                    registryName: '',
+                    registryUrl: '',
+                  });
+                  setRegistryData('');
                 }}
               >
                 {KDFM.ADD_NEW_REGISTRY}
