@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -10,6 +11,7 @@ import {
   PlusCircleIcon,
   QRIcons,
   RightCircleIcon,
+  TagIcon,
   WhiteBoradIcon,
 } from '../../assets';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
@@ -530,18 +532,31 @@ export const Add = () => {
   };
 
   function handleKeyDown(e) {
+    const value = e.target.value;
+
     if (e.key === 'Backspace') {
-      const currentTags = tags.split(',').filter(tag => tag);
-      if (currentTags.length > 0) {
-        currentTags.pop();
-        setTags(currentTags.join(','));
+      if (value === '') {
+        const currentTags = tags.split(',').filter(tag => tag);
+        if (currentTags.length > 0) {
+          currentTags.pop();
+          setTags(currentTags.join(','));
+        }
       }
-    } else if (e.key !== 'Enter') return;
-    const value = e.target.value.trim();
-    if (!value) return;
+      return;
+    }
+    if (e.key !== 'Enter') return;
+
+    const trimmedValue = value.trim();
+    if (!trimmedValue) return;
+    if (trimmedValue.length > 20) {
+      toast.error('Maximum 20 characters allowed');
+      return;
+    }
+
     const currentTags = tags.split(',').filter(tag => tag);
     if (currentTags.length >= 5) return;
-    setTags(currentTags.concat(value).join(','));
+
+    setTags(currentTags.concat(trimmedValue).join(','));
     e.target.value = '';
   }
 
@@ -561,6 +576,7 @@ export const Add = () => {
       payload.append('nifi_url', clusterData.nifiUrl);
 
       const response = await testCluster(payload);
+      console.log(response, 'ressss');
       if (response.status === 204) {
         setTestSuccess(true);
         setSuccessModal(true);
@@ -643,7 +659,7 @@ export const Add = () => {
             </label>
             <TagsInputContainer className="tags-input-container">
               <IconTag className="icon-placeholder">
-                <LinkIcon />
+                <TagIcon />
               </IconTag>
               {tags
                 .split(',')
@@ -678,6 +694,7 @@ export const Add = () => {
                 onKeyDown={handleKeyDown}
                 aria-label="Add a tag"
               />
+
               {tags.split(',').filter(tag => tag).length >= 5 && (
                 <p
                   className="mb-0"
@@ -695,7 +712,7 @@ export const Add = () => {
 
             <CheckboxField
               name="check"
-              label="Notification"
+              label="Do you want any notification for this cluster?"
               register={register}
             />
 
