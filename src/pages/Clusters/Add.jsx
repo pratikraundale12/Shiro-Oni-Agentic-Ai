@@ -10,7 +10,6 @@ import {
   PlusCircleIcon,
   QRIcons,
   RightCircleIcon,
-  WhiteBoradIcon,
 } from '../../assets';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -780,10 +779,10 @@ export const Add = () => {
             {testSuccess && !suceessModal && (
               <UploadCertificateContainer>
                 <CertificateMessage>
-                  <WhiteBoradIcon />
+                  <RightCircleIcon width={60} height={60} />
                   <TextTest>
                     {activeTab === CLUSTER_MODULE_TABS.REGISTRY
-                      ? KDFM.REGISRTY_TESTED_SUCCESSFULLY
+                      ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
                       : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
                   </TextTest>
                 </CertificateMessage>
