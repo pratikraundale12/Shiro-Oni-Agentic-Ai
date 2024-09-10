@@ -131,7 +131,7 @@ const TextTest = styled.div`
   font-size: 1.25rem;
   color: #444445;
   line-height: 27.24px;
-  max-width: 55%;
+  max-width: 100%;
 `;
 
 const StyledButton = styled(Button)`
