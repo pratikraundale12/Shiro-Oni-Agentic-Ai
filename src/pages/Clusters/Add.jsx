@@ -576,7 +576,6 @@ export const Add = () => {
       payload.append('nifi_url', clusterData.nifiUrl);
 
       const response = await testCluster(payload);
-      console.log(response, 'ressss');
       if (response.status === 204) {
         setTestSuccess(true);
         setSuccessModal(true);
