@@ -1,20 +1,20 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
+import { QRIcons } from '../../assets';
 import { DateField, InputField, Modal } from '../../shared';
+import { LoadingSelectors } from '../../store';
 import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
-import { LoadingSelectors } from '../../store';
-import { QRIcons } from '../../assets';
 
 const Container = styled.div`
   height: 350px;
@@ -100,7 +100,7 @@ export const TokenScheduleDeploymentModal = () => {
       <Container className="row">
         <div className="col-12">
           <InputField
-            label="Namespace"
+            label="Process Group"
             name="namespace_name"
             register={register}
             errors={errors}
