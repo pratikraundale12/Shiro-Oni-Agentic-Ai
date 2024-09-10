@@ -18,18 +18,22 @@ export const TextRender = ({
   text,
   capitalizeText = true,
   tooltipPlacement = 'right',
+  toolTip = true,
   ...rest
 }) => {
   const textToRender = typeof text === 'number' ? String(text) : text;
   return (
     <TextColor {...rest} capitalizeText={capitalizeText}>
       <span data-tooltip-id={textToRender}>{textToRender}</span>
-      <ReactTooltip
-        id={textToRender}
-        content={textToRender}
-        place={tooltipPlacement}
-        positionStrategy="fixed"
-      />
+
+      {toolTip && (
+        <ReactTooltip
+          id={textToRender}
+          content={textToRender}
+          place={tooltipPlacement}
+          positionStrategy="fixed"
+        />
+      )}
     </TextColor>
   );
 };
@@ -38,4 +42,5 @@ TextRender.propTypes = {
   text: PropTypes.string,
   capitalizeText: PropTypes.bool,
   tooltipPlacement: PropTypes.string,
+  toolTip: PropTypes.bool,
 };

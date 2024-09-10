@@ -6,41 +6,59 @@ export const ActvityHistory = () => {
   const COLUMNS = [
     {
       label: KDFM.EVENT,
-      renderCell: item => <TextRender text={item.event || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender text={item.event || KDFM.NA} toolTip={false} />
+      ),
     },
     {
       label: KDFM.ENTITY,
-      renderCell: item => <TextRender text={item.entity || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender text={item.entity || KDFM.NA} toolTip={false} />
+      ),
     },
     {
       label: KDFM.NAMESPACE,
-      renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender text={item.namespace || KDFM.NA} toolTip={false} />
+      ),
       sort: { sortKey: 'namespace' },
     },
     {
       label: KDFM.CLUSTER,
-      renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender text={item.cluster || KDFM.NA} toolTip={false} />
+      ),
       sort: { sortKey: 'cluster' },
     },
     {
       label: KDFM.MESSAGE,
       renderCell: item => (
-        <TextRender text={item.message || KDFM.NA} capitalizeText={false} />
+        <TextRender
+          text={item.message || KDFM.NA}
+          capitalizeText={false}
+          toolTip={false}
+        />
       ),
       width: '25%',
     },
     {
       label: KDFM.STATUS,
-      renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
+      renderCell: item => (
+        <StatusRender status={item.status || KDFM.NA} toolTip={false} />
+      ),
     },
     {
       label: KDFM.TIMESTAMP,
-      renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender text={item.timestamp || KDFM.NA} toolTip={false} />
+      ),
       sort: { sortKey: 'timestamp' },
     },
     {
       label: KDFM.CREATED_BY,
-      renderCell: item => <TextRender text={item.created_by || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender text={item.created_by || KDFM.NA} toolTip={false} />
+      ),
     },
   ];
 
