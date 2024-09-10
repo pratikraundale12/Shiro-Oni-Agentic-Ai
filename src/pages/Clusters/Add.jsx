@@ -150,7 +150,11 @@ const StyledButton = styled(Button)`
   &:hover {
     background-color: transparent;
     color: ${props => props.theme.colors.primaryActive};
+    path {
+      fill: ${props => props.theme.colors.primaryActive};
+    }
   }
+
   span {
     font-size: 20px;
     font-weight: 500;
