@@ -324,11 +324,11 @@ const Summary = () => {
   const [loading, setLoading] = useState(false);
 
   const breadcrumbData = [
-    { label: KDFM.NAMESPACE_LIST, path: '/namespaces' },
+    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     ...(checkDestCluster?.mode !== 'upgrade'
-      ? [{ label: KDFM.SELECT_NAMESPACE, path: '/namespaces/deploy' }]
+      ? [{ label: KDFM.SELECT_NAMESPACE, path: '/process-group/deploy' }]
       : []),
-    { label: KDFM.CONFIGURATION_DETAILS, path: '/namespaces/upgrade' },
+    { label: KDFM.CONFIGURATION_DETAILS, path: '/process-group/upgrade' },
     { label: KDFM.SUMMARY },
   ];
 
@@ -352,7 +352,7 @@ const Summary = () => {
   };
 
   const handleCloseModal = () => {
-    history.push('/namespaces');
+    history.push('/process-group');
   };
 
   const openParameterContext = () => {
@@ -410,7 +410,7 @@ const Summary = () => {
   };
 
   const handleBackClick = () => {
-    history.push('/namespaces/upgrade');
+    history.push('/process-group/upgrade');
   };
 
   const [activeButton, setActiveButton] = useState(null);

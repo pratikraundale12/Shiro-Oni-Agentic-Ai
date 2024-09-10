@@ -90,7 +90,7 @@ export const ROUTES_MENU = [
   },
   {
     name: 'Process Group',
-    path: 'namespaces',
+    path: 'process-group',
     icon: NameSpaceIcon,
     pages: [
       {

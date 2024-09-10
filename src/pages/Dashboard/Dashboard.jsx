@@ -117,7 +117,7 @@ const DropdownContainer = styled.div`
   }
   & div > div {
     & > div {
-      min-width: 175px;
+      min-width: 194px;
       cursor: pointer;
     }
   }
