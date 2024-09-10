@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import {
   GreaterArrowIcon,
   PlusCircleIcon,
+  RefreshIcon,
   SmallSearchIcon,
   TodoIcon,
 } from '../../assets';
@@ -152,6 +153,18 @@ const StyledGoBackButton = styled.button`
     background-color: ${theme.colors.lightGrey};
   }
 `;
+const RefreshIocn = styled.div`
+  cursor: pointer;
+  background-color: #f5f7fa;
+  border: 1px solid #dde4f0;
+  width: 37px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  border-radius: 4px;
+`;
 
 const GoBackButton = () => {
   const naviagate = useLocation();
@@ -218,6 +231,9 @@ export const GridActions = ({
       return 'is_active';
     }
   };
+  const handleRefresh = () => {
+    window.location.reload(true); // Hard reload
+  };
 
   useEffect(() => {
     if (watchStatus || entity || event) {
@@ -256,6 +272,7 @@ export const GridActions = ({
             )}
           </Title>
         </Flex>
+
         <ButtonsContainer>
           {!isEmpty(statusOptions) && (
             <DropdownContainer>
@@ -324,6 +341,12 @@ export const GridActions = ({
             )}
           {userPermissions.includes(getButtonPermissions(module)) && <Modal />}
         </ButtonsContainer>
+        {module === 'namespaces' ? (
+          <RefreshIocn onClick={handleRefresh}>
+            {' '}
+            <RefreshIcon style={{ cursor: 'pointer' }} />
+          </RefreshIocn>
+        ) : null}
       </Flex>
       <SearchContainer>
         <SmallSearchIcon
