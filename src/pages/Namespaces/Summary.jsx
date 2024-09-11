@@ -293,7 +293,6 @@ const Summary = () => {
 
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
-  console.log(checkDestCluster, 'checkDestCluster');
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState({
