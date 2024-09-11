@@ -90,10 +90,10 @@ export const ListScheduleDeployment = () => {
   };
 
   const handleCancelModel = item => {
-    if (item.deployer_id === currentUser.id) {
-      dispatch(SchedularActions.setSelectedSchedule(item));
-      dispatch(SchedularActions.setCancelScheduleModal());
-    }
+    // if (item.deployer_id === currentUser.id) {
+    dispatch(SchedularActions.setSelectedSchedule(item));
+    dispatch(SchedularActions.setCancelScheduleModal());
+    // }
   };
 
   const getActionsMenu = item => {
@@ -110,9 +110,10 @@ export const ListScheduleDeployment = () => {
         <IconButton
           onClick={() => handleCancelModel(item)}
           disabled={
-            item.deployer_id != currentUser.id ||
-            item.deployment_status ===
-              ('CANCELLED' || 'SUCCESS' || 'NOT APPROVED')
+            item.deployment_status != 'PENDING' &&
+            item.deployment_status != 'SCHEDULED'
+            //  &&
+            // item.deployer_id === currentUser.id
           }
         >
           <HoldIcon />

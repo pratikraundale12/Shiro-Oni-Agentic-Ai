@@ -7,6 +7,7 @@ import { UserIcon } from '../assets';
 import defaultAvatarURL from '../assets/images/avatar.png';
 import { SelectField } from '../shared';
 import {
+  AuthenticationSelectors,
   RolesActions,
   RolesSelectors,
   UsersActions,
@@ -20,6 +21,8 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
   const userList = useSelector(UsersSelectors.getUsers);
   const AdminRole = RoleList?.find(item => item.name.toLowerCase() === 'admin');
   const [searchText, setSearchText] = useState('');
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
+  const updatedArray = userList.filter(item => item.id !== currentUser.id);
 
   const handleChange = value => {
     setSearchText(value);
@@ -54,7 +57,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
           username: item.label,
           photo: item.avatar,
         })),
-        ...userList,
+        ...updatedArray,
       ].map(({ id, photo, username }) => ({
         value: id,
         label: username,
