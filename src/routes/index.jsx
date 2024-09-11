@@ -14,8 +14,8 @@ import {
   LockIcon,
   NameSpaceIcon,
   PeopleIcon,
-  ReadyFlowIcon,
   QuestionMarkIcon,
+  ReadyFlowIcon,
   ScheduleDeploymentIcon,
   SettingSmallIcon,
 } from '../assets';
@@ -45,8 +45,9 @@ import {
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import Deploy from '../pages/Namespaces/Deploy';
 import Summary from '../pages/Namespaces/Summary';
-import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
 import Upgrade from '../pages/Namespaces/Upgrade';
+import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
+import TokenPage from '../pages/ScheduleDeployment/Token';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
@@ -54,7 +55,6 @@ import {
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
-import TokenPage from '../pages/ScheduleDeployment/Token';
 
 export const ROUTES_MENU = [
   {
@@ -89,8 +89,8 @@ export const ROUTES_MENU = [
     permission: 'view_cluster',
   },
   {
-    name: 'Namespace',
-    path: 'namespaces',
+    name: 'Process Group',
+    path: 'process-group',
     icon: NameSpaceIcon,
     pages: [
       {

@@ -1,12 +1,14 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 
-import { theme } from '../../styles';
-import { Table, TextRender } from '../../components';
+import { difference, isEmpty } from 'lodash';
 import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
+import { Table, TextRender } from '../../components';
+import { history } from '../../helpers/history';
 import { Button, CheckboxField, SelectField, TextButton } from '../../shared';
+import AddNewRoleModal from '../../shared/AddNewRoleModal';
 import {
   AuthenticationSelectors,
   LoadingSelectors,
@@ -15,9 +17,7 @@ import {
   RolesActions,
   RolesSelectors,
 } from '../../store';
-import { difference, isEmpty } from 'lodash';
-import AddNewRoleModal from '../../shared/AddNewRoleModal';
-import { history } from '../../helpers/history';
+import { theme } from '../../styles';
 
 const Flex = styled.div`
   display: flex;
@@ -97,7 +97,7 @@ const MODULES = [
     value: 'cluster',
   },
   {
-    label: 'Namespace',
+    label: 'Process Group',
     value: 'namespace',
   },
   {

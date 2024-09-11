@@ -117,7 +117,7 @@ const DropdownContainer = styled.div`
   }
   & div > div {
     & > div {
-      min-width: 175px;
+      min-width: 194px;
       cursor: pointer;
     }
   }
@@ -298,8 +298,8 @@ export const Dashboard = () => {
                   : []
               }
               onChange={onNamespaceSelect}
-              placeholder="Select Namespace"
-              title="Select Namespace"
+              placeholder="Select Process Group" // TODO: change it to Process Group
+              title="Select Process Group"
               backgroundColor={theme.colors.lightGrey}
               size="sm"
               disabled={!ClusterActivated}

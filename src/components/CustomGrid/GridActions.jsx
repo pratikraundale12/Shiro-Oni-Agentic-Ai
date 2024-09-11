@@ -168,7 +168,7 @@ const GoBackButton = () => {
     }
     if (isChildNamespace) {
       dispatch(NamespacesActions.setSelectedNamespace(null));
-      history.push('/namespaces');
+      history.push('/process-group');
     }
   };
 

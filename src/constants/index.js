@@ -75,7 +75,7 @@ export const MODULE_LIST_MAP = [
   { label: 'All', value: 'all' },
   { label: 'Cluster', value: 'Cluster' },
   { label: 'Registry', value: 'Registry' },
-  { label: 'Namespace', value: 'Namespace' },
+  { label: 'Process Group', value: 'Namespace' }, // TODO: change it to Process Group
   { label: 'User', value: 'User' },
 ];
 
@@ -157,7 +157,7 @@ export const KDFM = {
   NIFI_FLOW: 'NiFi Flow',
   OK: 'OK',
   KINDLY_SELECT_DESTINATION: 'Kindly select your destination cluster',
-  NO_NAMESPACES_AVAILABLE: 'No Namespace Available',
+  NO_NAMESPACES_AVAILABLE: 'No Process Groups Available', // TODO: change it to Process Groups
   SEARCH_NODES: 'Search NodeId , Address',
 
   // License constants

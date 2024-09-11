@@ -153,7 +153,7 @@ export const ListNamespaces = () => {
       })
     );
 
-    history.push('/namespaces/deploy', {
+    history.push('/process-group/deploy', {
       state: {
         id: item.id,
       },

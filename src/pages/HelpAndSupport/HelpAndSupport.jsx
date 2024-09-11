@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Button } from '../../shared';
 import { NoDataIcon, PlusIcon, SmallSearchIcon } from '../../assets';
 import { MinusIcon } from '../../assets/Icons/MinusIcon';
 import dashboardErrorVideo from '../../assets/videos/DashboardError.mp4';
@@ -8,9 +8,9 @@ import dashboardFlowMetricsVideo from '../../assets/videos/DashboardFlowMetrics.
 import dashboardQuickInsight from '../../assets/videos/DashboardQuickInsight.mp4';
 import loginToDFMThroughAdmin from '../../assets/videos/LoginToDFMThroughAdmin.mp4';
 import loginToDFMThroughUser from '../../assets/videos/LoginToDFMThroughUser.mp4';
-import { theme } from '../../styles';
-import { useSelector } from 'react-redux';
+import { Button } from '../../shared';
 import { SettingsSelectors } from '../../store/settings';
+import { theme } from '../../styles';
 
 const Container = styled.div`
   border-radius: 20px;
@@ -181,20 +181,20 @@ export const HelpAndSupport = () => {
         'The purpose of the DFM (Design for Manufacturing) is to optimize the design of a product to make it easier and more cost-effective to manufacture. It focuses on simplifying the design, reducing production costs, and improving the overall efficiency of the manufacturing process.',
     },
     {
-      question: 'What is namespace?',
+      question: 'What is process group?',
       answer:
-        'A namespace is a container that holds a set of identifiers (names) and allows them to be organized and distinguished from other identifiers. It helps avoid naming conflicts by providing a scope in which names can be defined and used, particularly in programming languages and XML.',
+        'A process group is a container that holds a set of identifiers (names) and allows them to be organized and distinguished from other identifiers. It helps avoid naming conflicts by providing a scope in which names can be defined and used, particularly in programming languages and XML.',
     },
     {
-      question: 'How to manage namespace?',
+      question: 'How to manage process group?',
       answer:
         'Define Clear Names: Use descriptive names to avoid conflicts and make code more understandable.',
     },
     {
       question:
-        'How DFM promote the namespace from one cluster to another cluster?',
+        'How DFM promote the process group from one cluster to another cluster?',
       answer:
-        'DFM doesn’t directly promote namespaces between clusters. To do this, export the namespace configuration from one cluster and import it into another using tools like kubectl or Helm charts.',
+        'DFM doesn’t directly promote process group between clusters. To do this, export the process group configuration from one cluster and import it into another using tools like kubectl or Helm charts.',
     },
     {
       question: 'What is cluster and how do we suppose to login?',
@@ -217,9 +217,9 @@ export const HelpAndSupport = () => {
         'To log in to a Kubernetes cluster, use kubectl with a configured kubeconfig file. For cloud services, access the cluster through the provider’s console or CLI tools.',
     },
     {
-      question: 'How can I see the nested namespaces?',
+      question: 'How can I see the nested process group?',
       answer:
-        'Namespaces in Kubernetes are not inherently nested. To view namespaces, use kubectl get namespaces to list all namespaces in a flat structure.',
+        'Process group in Kubernetes are not inherently nested. To view process group, use kubectl get process group to list all process group in a flat structure.',
     },
     {
       question: 'What is flow matrix?',

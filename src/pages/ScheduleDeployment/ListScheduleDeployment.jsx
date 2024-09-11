@@ -1,33 +1,33 @@
 /* eslint-disable no-unused-vars */
+import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
-import { Grid, IconButton, TextRender } from '../../components';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
+import * as yup from 'yup';
 import {
   ConfirmScheduleDeploymentIcon,
   DeleteDustbinIcon,
   HoldIcon,
   PencilIcon,
 } from '../../assets';
+import { Grid, IconButton, TextRender } from '../../components';
+import { ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
   GridActions,
   LoadingSelectors,
 } from '../../store';
-import { StatusText } from './StatusText';
-import { TextWithPhotoRender } from './TextWithPhotoRender';
-import { ModalWithIcon } from '../../shared';
-import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
-import { RejectScheduleModal } from './RejectScheduleModal';
 import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useLocation } from 'react-router-dom';
-import { isEmpty } from 'lodash';
+import { RejectScheduleModal } from './RejectScheduleModal';
+import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
+import { StatusText } from './StatusText';
+import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
 
 const ActionTd = styled.div`
@@ -123,7 +123,7 @@ export const ListScheduleDeployment = () => {
 
   const COLUMNS = [
     {
-      label: 'Namespace',
+      label: 'Process Group',
       renderCell: item => <TextRender text={item.namespace_name || 'N/A'} />,
       width: '15%',
     },
@@ -287,7 +287,7 @@ export const ListScheduleDeployment = () => {
         title="Deployment List"
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
-        placeholder="Search Namespace, Cluster or Approver"
+        placeholder="Search Process Group, Cluster or Approver"
       />
     </>
   );
