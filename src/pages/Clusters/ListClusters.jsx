@@ -131,20 +131,21 @@ export const ListClusters = () => {
                         <span>{KDFM.EDIT}</span>
                       </Item>
                     )}
-                    {item.status !== CLUSTER_STATUS.DISCONNECTED && (
-                      <>
+
+                    <>
+                      {item.status !== CLUSTER_STATUS.DISCONNECTED && (
                         <Item onClick={() => handleClick('view')}>
                           <OpenEyeIcon width={18} height={18} />
                           <span>{KDFM.VIEW}</span>
                         </Item>
-                        {item.delete_cluster && (
-                          <Item onClick={() => handleClick('delete', item.id)}>
-                            <DeleteSmallIcon width={18} height={18} />
-                            <span>{KDFM.DEACTIVATE}</span>
-                          </Item>
-                        )}
-                      </>
-                    )}
+                      )}
+                      {item.delete_cluster && (
+                        <Item onClick={() => handleClick('delete', item.id)}>
+                          <DeleteSmallIcon width={18} height={18} />
+                          <span>{KDFM.DEACTIVATE}</span>
+                        </Item>
+                      )}
+                    </>
                   </>
                 ) : (
                   <>

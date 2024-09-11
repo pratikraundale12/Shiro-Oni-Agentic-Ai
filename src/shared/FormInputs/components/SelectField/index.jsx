@@ -203,7 +203,7 @@ const SelectField = ({
       padding: size === 'sm' ? 2 : '8px 4px',
       paddingLeft: props.icon ? 44 : 4,
       minHeight: 0,
-      minWidth: 'max-content',
+      // minWidth: 'max-content',
       boxShadow: 'none',
       cursor: disabled ? 'not-allowed !important' : 'pointer',
       borderColor: getBorderColor(state),

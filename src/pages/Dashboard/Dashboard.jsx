@@ -17,6 +17,7 @@ import {
   FlowMetricHeaderIcon,
   InvalidProcessorIcon,
   LensIcon,
+  RefreshIcon,
   RunnigProcessorIcon,
   StoppedProcessorIcon,
   TotalProcessorIcon,
@@ -117,7 +118,7 @@ const DropdownContainer = styled.div`
   }
   & div > div {
     & > div {
-      min-width: 175px;
+      min-width: 194px;
       cursor: pointer;
     }
   }
@@ -175,6 +176,19 @@ const Loader = styled(FullPageLoader)`
   top: ${props => props.theme.header};
   width: 100%;
   height: calc(100% - ${props => props.theme.header});
+`;
+
+const RefreshIocn = styled.div`
+  cursor: pointer;
+  background-color: #f5f7fa;
+  border: 1px solid #dde4f0;
+  width: 37px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  border-radius: 4px;
 `;
 
 export const Dashboard = () => {
@@ -272,6 +286,9 @@ export const Dashboard = () => {
       setUpdatedErrors(updatedError);
     }
   }, [dashboardData]);
+  const handleRefresh = () => {
+    window.location.reload(true); // Hard reload
+  };
   let ClusterActivated = localStorage.getItem('clusters');
   return (
     <>
@@ -298,13 +315,17 @@ export const Dashboard = () => {
                   : []
               }
               onChange={onNamespaceSelect}
-              placeholder="Select Namespace"
-              title="Select Namespace"
+              placeholder="Select Process Group" // TODO: change it to Process Group
+              title="Select Process Group"
               backgroundColor={theme.colors.lightGrey}
               size="sm"
               disabled={!ClusterActivated}
             />
           </DropdownContainer>
+          <RefreshIocn onClick={handleRefresh}>
+            {' '}
+            <RefreshIcon style={{ cursor: 'pointer' }} />
+          </RefreshIocn>
         </DropdownWrapper>
       </TopSection>
       <InsightDataContiner>

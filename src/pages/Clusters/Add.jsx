@@ -10,7 +10,6 @@ import {
   PlusCircleIcon,
   QRIcons,
   RightCircleIcon,
-  WhiteBoradIcon,
 } from '../../assets';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -132,7 +131,7 @@ const TextTest = styled.div`
   font-size: 1.25rem;
   color: #444445;
   line-height: 27.24px;
-  max-width: 55%;
+  max-width: 100%;
 `;
 
 const StyledButton = styled(Button)`
@@ -150,7 +149,11 @@ const StyledButton = styled(Button)`
   &:hover {
     background-color: transparent;
     color: ${props => props.theme.colors.primaryActive};
+    path {
+      fill: ${props => props.theme.colors.primaryActive};
+    }
   }
+
   span {
     font-size: 20px;
     font-weight: 500;
@@ -435,7 +438,7 @@ export const Add = () => {
     if (selectedRegistryId) {
       fetchRegistryDetails(selectedRegistryId);
     }
-  }, [registries, selectedRegistryId, activeTab]);
+  }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const fetchRegistryDetails = async () => {
     try {
@@ -607,6 +610,11 @@ export const Add = () => {
                 }
                 onClick={() => {
                   setNewRegistry(true);
+                  reset({
+                    registryName: '',
+                    registryUrl: '',
+                  });
+                  setRegistryData('');
                 }}
               >
                 {KDFM.ADD_NEW_REGISTRY}
@@ -771,10 +779,10 @@ export const Add = () => {
             {testSuccess && !suceessModal && (
               <UploadCertificateContainer>
                 <CertificateMessage>
-                  <WhiteBoradIcon />
+                  <RightCircleIcon width={60} height={60} />
                   <TextTest>
                     {activeTab === CLUSTER_MODULE_TABS.REGISTRY
-                      ? KDFM.REGISRTY_TESTED_SUCCESSFULLY
+                      ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
                       : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
                   </TextTest>
                 </CertificateMessage>

@@ -210,22 +210,22 @@ const Upgrade = () => {
     },
   ];
   const breadcrumbData = [
-    { label: KDFM.NAMESPACE_LIST, path: '/namespaces' },
+    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     ...(checkDestCluster.mode !== 'upgrade'
-      ? [{ label: KDFM.SELECT_NAMESPACE, path: '/namespaces/deploy' }]
+      ? [{ label: KDFM.SELECT_NAMESPACE, path: '/process-group/deploy' }]
       : []),
     { label: KDFM.CONFIGURATION_DETAILS },
   ];
 
   const handleClick = () => {
-    history.push('/namespaces/summary');
+    history.push('/process-group/summary');
   };
 
   const handleBackClick = () => {
     if (checkDestCluster.mode === 'upgrade') {
-      history.push('/namespaces');
+      history.push('/process-group');
     } else {
-      history.push('/namespaces/deploy');
+      history.push('/process-group/deploy');
     }
   };
 

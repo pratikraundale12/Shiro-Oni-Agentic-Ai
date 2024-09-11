@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-
 import styled from 'styled-components';
 
 const TextColor = styled.div`
@@ -26,11 +25,13 @@ export const TextRender = ({
   return (
     <TextColor {...rest} capitalizeText={capitalizeText}>
       <span data-tooltip-id={textToRender}>{textToRender}</span>
+
       {toolTip && (
         <ReactTooltip
           id={textToRender}
           content={textToRender}
           place={tooltipPlacement}
+          positionStrategy="fixed"
         />
       )}
     </TextColor>
