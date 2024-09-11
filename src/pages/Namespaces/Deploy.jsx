@@ -306,11 +306,14 @@ const Deploy = () => {
                   <NoDataText>{KDFM.NO_NAMESPACES_AVAILABLE}</NoDataText>
                 </NoDataContainer>
               ) : (
-                <Table
-                  data={gridData}
-                  columns={COLUMNS}
-                  onBreadcrumbClick={e => handleSelectNamespace(e.id)}
-                />
+                <>
+                  <Breadcrumb module="destNamespaces" />
+                  <Table
+                    data={gridData}
+                    columns={COLUMNS}
+                    onBreadcrumbClick={e => handleSelectNamespace(e.id)}
+                  />
+                </>
               )}
             </>
           )}
