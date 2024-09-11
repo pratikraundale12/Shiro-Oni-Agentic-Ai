@@ -205,7 +205,7 @@ export const ListScheduleDeployment = () => {
   // };
   const handleCancelClick = () => {
     const payload = {
-      is_approved: false,
+      is_cancelled: true,
       schedularId: selectedSchedule.scheduler_id,
     };
     dispatch(SchedularActions.editScheduleDeployment(payload));
