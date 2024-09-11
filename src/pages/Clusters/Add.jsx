@@ -350,9 +350,9 @@ export const Add = () => {
   const [dataFill, setDataFill] = useState(false);
   const [openSummary, setOpenSummary] = useState(false);
   const [failedTestMessage, setFailedTestMessage] = useState('');
-  const [tags, setTags] = useState('');
   const location = useLocation();
   const { state: data } = location.state || {};
+  const [tags, setTags] = useState(data?.tag || '');
   const [clusterData, setClusterData] = useState({
     clusterName: data?.name || '',
     nifiUrl: data?.nifi_url || '',
@@ -363,7 +363,9 @@ export const Add = () => {
   });
   const [clusterId, setClusterId] = useState(data?.id);
   const [isEditDetails, setIsEditDetails] = useState(false);
-  const [notificationEnable, setNotificationEnable] = useState(false);
+  const [notificationEnable, setNotificationEnable] = useState(
+    data?.notification_enable || false
+  );
 
   const {
     control,
@@ -714,7 +716,7 @@ export const Add = () => {
             <CheckboxField
               name="check"
               label="Do you want any notification for this cluster?"
-              // register={register}
+              checked={notificationEnable}
               onChange={e => setNotificationEnable(e.target.checked)}
             />
 

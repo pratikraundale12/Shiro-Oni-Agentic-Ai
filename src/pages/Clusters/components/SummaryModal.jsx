@@ -156,7 +156,6 @@ export const SummaryModal = ({
   notificationEnable,
   tags,
 }) => {
-  console.log(tags, 'tags', notificationEnable, 'notificationEnable');
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const addRegistry = async () => {
@@ -216,6 +215,8 @@ export const SummaryModal = ({
     const payload = {
       name: clusterData.clusterName,
       nifi_url: clusterData.nifiUrl,
+      tag: tags,
+      notification_enable: notificationEnable,
     };
 
     const id = clusterId;
