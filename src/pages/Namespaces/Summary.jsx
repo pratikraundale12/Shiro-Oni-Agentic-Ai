@@ -25,7 +25,6 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
-import { useGlobalContext } from '../../utils';
 import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymentModal';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
@@ -320,7 +319,6 @@ const Summary = () => {
     mode: 'add',
     schedule: false,
   });
-  const { state } = useGlobalContext();
   const [loading, setLoading] = useState(false);
 
   const breadcrumbData = [
@@ -580,68 +578,44 @@ const Summary = () => {
                   <TextDiv className="d-flex">
                     <CountDiv
                       className="div-btn-1 mr-2"
-                      count={
-                        state?.deployCountDetails?.data?.runningCount ||
-                        checkDestCluster.runningCount
-                      }
+                      count={checkDestCluster?.runningCount}
                       activeColor="#58e715"
                     >
                       <TriangleIcons color="#B5BDC8" />
-                      <span>
-                        {state?.deployCountDetails?.data?.runningCount ||
-                          checkDestCluster.runningCount}
-                      </span>
+                      <span>{checkDestCluster?.runningCount}</span>
                     </CountDiv>
                     <div>{KDFM.RUNNING_PROCESSORS}</div>
                   </TextDiv>
                   <TextDiv className="d-flex">
                     <CountDiv
                       className="div-btn-2 mr-2"
-                      count={
-                        checkDestCluster.stoppedCount ||
-                        state?.deployCountDetails?.data?.stoppedCount
-                      }
+                      count={checkDestCluster?.stoppedCount}
                       activeColor="#c52b2b"
                     >
                       <SquareBoxIcon color="#B5BDC8" />
-                      <span>
-                        {checkDestCluster.stoppedCount ||
-                          state?.deployCountDetails?.data?.stoppedCount}
-                      </span>
+                      <span>{checkDestCluster?.stoppedCount}</span>
                     </CountDiv>
                     <div>{KDFM.STOPPED_PROCESSORS}</div>
                   </TextDiv>
                   <TextDiv className="d-flex">
                     <CountDiv
                       className="div-btn-3 mr-2"
-                      count={
-                        checkDestCluster.invalidCount ||
-                        state?.deployCountDetails?.data?.invalidCount
-                      }
+                      count={checkDestCluster?.invalidCount}
                       activeColor="#CF9F5D"
                     >
                       <TriangleExclamationMarkIcon color="#B5BDC8" />
-                      <span>
-                        {checkDestCluster.invalidCount ||
-                          state?.deployCountDetails?.data?.invalidCount}
-                      </span>
+                      <span>{checkDestCluster?.invalidCount}</span>
                     </CountDiv>
                     <div>{KDFM.INVALID_PROCESSORS}</div>
                   </TextDiv>
                   <TextDiv className="d-flex">
                     <CountDiv
                       className="div-btn-4 mr-2"
-                      count={
-                        checkDestCluster.disabledCount ||
-                        state?.deployCountDetails?.data?.disabledCount
-                      }
+                      count={checkDestCluster?.disabledCount}
                       activeColor="#2c7cf3"
                     >
                       <SmallNotThunderIcon color="#B5BDC8" />
-                      <span>
-                        {state?.deployCountDetails?.data?.disabledCount ||
-                          checkDestCluster.disabledCount}
-                      </span>
+                      <span>{checkDestCluster?.disabledCount}</span>
                     </CountDiv>
                     <div>{KDFM.DISABLED_PROCESSORS}</div>
                   </TextDiv>
@@ -735,7 +709,7 @@ const Summary = () => {
           </Button>
           <Button
             size="md"
-            variant="secondary"
+            variant="tertiary"
             onClick={() => dispatch(SchedularActions.setScheduleModal())}
           >
             Schedule

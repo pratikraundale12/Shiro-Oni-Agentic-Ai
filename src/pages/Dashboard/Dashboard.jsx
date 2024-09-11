@@ -187,7 +187,7 @@ const RefreshIocn = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 10px;
+  margin-left: 27px;
   border-radius: 4px;
 `;
 
