@@ -223,7 +223,7 @@ export const Grid = ({
   );
 
   const messages = {
-    namespaces: 'No Namespaces Available',
+    namespaces: 'No Process Group Available',
     clusters: 'No Cluster Available',
     users: 'No User Available',
     activityHistory: 'No Activity History Available',

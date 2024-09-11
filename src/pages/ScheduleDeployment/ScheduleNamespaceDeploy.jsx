@@ -242,7 +242,7 @@ const ScheduleNamespaceDeploy = ({
   return (
     <>
       <Modal
-        title={`Schedule Namespace`}
+        title={`Schedule Process Group`}
         isOpen={scheduleDeployModal}
         onRequestClose={onRequestClose}
         onSecondarySubmit={getScheduleParamerterContext}
@@ -263,7 +263,7 @@ const ScheduleNamespaceDeploy = ({
           <RowModal>
             <ColumnThree className="col-4 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
-                <ActionTitleSet className="mb-0 ">Namespace</ActionTitleSet>
+                <ActionTitleSet className="mb-0 ">Process Group</ActionTitleSet>
                 <SubTitleSet className="mb-0 ">
                   {checkDestCluster?.name}
                 </SubTitleSet>

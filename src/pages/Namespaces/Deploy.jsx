@@ -123,8 +123,8 @@ const handleKeyPress = event => {
 };
 
 const breadcrumbData = [
-  { label: KDFM.NAMESPACE_LIST, path: '/namespaces' },
-  { label: KDFM.SELECT_NAMESPACE, path: '/namespaces/deploy' },
+  { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+  { label: KDFM.SELECT_NAMESPACE, path: '/process-group/deploy' },
 ];
 
 const MODULE = 'destNamespaces';
@@ -218,10 +218,10 @@ const Deploy = () => {
   }
 
   const handleClick = () => {
-    history.push('/namespaces/upgrade');
+    history.push('/process-group/upgrade');
   };
   const handleBackClick = () => {
-    history.push('/namespaces');
+    history.push('/process-group');
   };
 
   useEffect(() => {
@@ -249,7 +249,8 @@ const Deploy = () => {
     selectedDestCluster,
     selectedDestNamespace,
   ]);
-  if (checkDestCluster.mode === 'upgrade') history.push('/namespaces/upgrade');
+  if (checkDestCluster.mode === 'upgrade')
+    history.push('/process-group/upgrade');
 
   return (
     <div>
@@ -305,11 +306,14 @@ const Deploy = () => {
                   <NoDataText>{KDFM.NO_NAMESPACES_AVAILABLE}</NoDataText>
                 </NoDataContainer>
               ) : (
-                <Table
-                  data={gridData}
-                  columns={COLUMNS}
-                  onBreadcrumbClick={e => handleSelectNamespace(e.id)}
-                />
+                <>
+                  <Breadcrumb module="destNamespaces" />
+                  <Table
+                    data={gridData}
+                    columns={COLUMNS}
+                    onBreadcrumbClick={e => handleSelectNamespace(e.id)}
+                  />
+                </>
               )}
             </>
           )}
