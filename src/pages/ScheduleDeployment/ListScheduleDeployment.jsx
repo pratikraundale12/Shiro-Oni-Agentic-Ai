@@ -77,7 +77,9 @@ export const ListScheduleDeployment = () => {
   useEffect(() => {
     if (token) {
       dispatch(SchedularActions.checkApproverToken({ params: { token } }));
-      dispatch(SchedularActions.setTokenScheduleModal(true));
+      // if (!isEmpty(selectedSchedule)) {
+      //   dispatch(SchedularActions.setTokenScheduleModal(true));
+      // }
     }
   }, [dispatch, token]);
 
@@ -96,6 +98,26 @@ export const ListScheduleDeployment = () => {
     // }
   };
 
+  const handleEnableEdit = item => {
+    if (item.deployment_status === 'PENDING') {
+      return false;
+    } else if (item.deployment_status === 'NOT APPROVED' && item.can_approve) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  const handeEnableCancel = item => {
+    if (item.deployment_status === 'PENDING') {
+      return false;
+    } else if (item.deployment_status === 'SCHEDULED') {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   const getActionsMenu = item => {
     return (
       <ActionTd>
@@ -103,18 +125,13 @@ export const ListScheduleDeployment = () => {
           onClick={() => {
             handleEditClick(item);
           }}
-          disabled={item.deployment_status != 'PENDING'}
+          disabled={handleEnableEdit(item)}
         >
           <PencilIcon width={16} height={16} />
         </IconButton>
         <IconButton
           onClick={() => handleCancelModel(item)}
-          disabled={
-            item.deployment_status != 'PENDING' &&
-            item.deployment_status != 'SCHEDULED'
-            //  &&
-            // item.deployer_id === currentUser.id
-          }
+          disabled={handeEnableCancel(item)}
         >
           <HoldIcon />
         </IconButton>

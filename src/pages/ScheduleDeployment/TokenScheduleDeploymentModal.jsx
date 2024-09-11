@@ -133,17 +133,19 @@ export const TokenScheduleDeploymentModal = () => {
             />
           </div>
         </div>
-        <div className="col-12">
-          <DateField
-            name="scheduled_time"
-            control={control}
-            errors={errors}
-            label="Deploy Time"
-            placeholder="Select deploy time"
-            required
-            // disabled={true}
-          />
-        </div>
+        {selectedSchedule?.scheduled_time && (
+          <div className="col-12">
+            <DateField
+              name="scheduled_time"
+              control={control}
+              errors={errors}
+              label="Deploy Time"
+              placeholder="Select deploy time"
+              required
+              // disabled={true}
+            />
+          </div>
+        )}
       </Container>
     </Modal>
   );
