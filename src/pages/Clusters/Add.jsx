@@ -363,6 +363,7 @@ export const Add = () => {
   });
   const [clusterId, setClusterId] = useState(data?.id);
   const [isEditDetails, setIsEditDetails] = useState(false);
+  const [notificationEnable, setNotificationEnable] = useState(false);
 
   const {
     control,
@@ -569,8 +570,6 @@ export const Add = () => {
     setTags(updatedTags.join(','));
   }
 
-  console.log(tags, 'tags');
-
   const testData = async () => {
     setLoading(true);
     const payload = new FormData();
@@ -715,7 +714,8 @@ export const Add = () => {
             <CheckboxField
               name="check"
               label="Do you want any notification for this cluster?"
-              register={register}
+              // register={register}
+              onChange={e => setNotificationEnable(e.target.checked)}
             />
 
             <Flex>
@@ -1012,6 +1012,8 @@ export const Add = () => {
         registry_id={selectedRegistryId}
         clusterId={clusterId}
         edit={clusterId ? true : false}
+        notificationEnable={notificationEnable}
+        tags={tags}
       />
       {suceessModal && (
         <SuccessTestModal
