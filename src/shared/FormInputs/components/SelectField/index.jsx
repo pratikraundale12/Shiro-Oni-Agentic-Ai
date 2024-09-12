@@ -239,6 +239,7 @@ const SelectField = ({
       fontFamily: theme.fontNato,
       fontWeight: 500,
       fontSize: 14,
+      color: '#444445',
     }),
     valueContainer: styles => ({
       ...styles,

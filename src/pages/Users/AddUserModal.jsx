@@ -27,6 +27,7 @@ import {
   AuthenticationActions,
   AuthenticationSelectors,
   GridActions,
+  RolesActions,
   RolesSelectors,
 } from '../../store';
 
@@ -205,6 +206,8 @@ export const AddUserModal = props => {
   };
 
   useEffect(() => {
+    dispatch(RolesActions.fetchRoles());
+
     if (state.userModal) {
       if (isEmpty(state.selectedItem)) reset(DEFAULT_VALUES);
       else reset(state.selectedItem);
@@ -253,6 +256,7 @@ export const AddUserModal = props => {
                 placeholder="Status"
                 backgroundColor={theme.colors.lightGrey}
                 title="Select Status"
+                disabled={currentUserData.role === 'superadmin' ? true : false}
               />
             </DropDownWrapper>
             <DropDownWrapper>
@@ -262,9 +266,12 @@ export const AddUserModal = props => {
                 options={rolesOption}
                 errors={errors}
                 control={control}
-                placeholder="Role"
+                placeholder={
+                  currentUserData.role === 'superadmin' ? 'Superadmin' : 'Role'
+                }
                 backgroundColor={theme.colors.lightGrey}
                 title="Select Role"
+                disabled={currentUserData.role === 'superadmin' ? true : false}
               />
             </DropDownWrapper>
           </SelectFieldWrapper>
@@ -317,6 +324,9 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
+                    disabled={
+                      currentUserData.role === 'superadmin' ? true : false
+                    }
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
@@ -329,6 +339,9 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<MailIcon />}
+                    disabled={
+                      currentUserData.role === 'superadmin' ? true : false
+                    }
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
