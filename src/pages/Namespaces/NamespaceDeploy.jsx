@@ -180,7 +180,10 @@ const NamespaceDeploy = ({
   };
 
   const handleClick = () => {
-    window.open(deployOrUpgradeDetails.nifiUrl, '_blank');
+    const updatedUrl = deployOrUpgradeDetails.nifiUrl.endsWith('/nifi')
+      ? deployOrUpgradeDetails.nifiUrl
+      : `${deployOrUpgradeDetails.nifiUrl}/nifi`;
+    window.open(updatedUrl, '_blank');
   };
 
   return (
