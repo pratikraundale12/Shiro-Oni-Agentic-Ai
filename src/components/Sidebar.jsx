@@ -49,6 +49,7 @@ export const Container = styled.div`
 `;
 
 export const List = styled.ul`
+  max-height: calc(100vh - 250px);
   width: 100%;
   margin-top: 20px;
   padding-left: 0;

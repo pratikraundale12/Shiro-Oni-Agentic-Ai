@@ -17,7 +17,6 @@ const Container = styled.div`
   padding-top: 10px;
   margin-bottom: 2rem;
   height: 88%;
-  overflow: auto;
 `;
 
 const NavTabs = styled.div`
@@ -131,7 +130,7 @@ const Title = styled.div`
 `;
 const SearchContainer = styled.div`
   position: relative;
-  margin-left: auto;
+  margin-left: 25%;
   flex: 1;
   svg {
     position: absolute;
@@ -290,7 +289,7 @@ export const HelpAndSupport = () => {
             active={activeTab === 'FAQs'}
             onClick={() => setActiveTab('FAQs')}
           >
-            FAQs
+            FAQ&#39;s
           </NavButton>
           <NavButton
             active={activeTab === 'Videos'}

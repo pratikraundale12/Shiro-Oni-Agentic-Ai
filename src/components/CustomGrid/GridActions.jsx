@@ -31,7 +31,7 @@ import {
 } from '../../store';
 import {
   ActivityHistoryActions,
-  ActivityHistorySelectors,
+  // ActivityHistorySelectors,
 } from '../../store/activityHistory/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
@@ -211,10 +211,10 @@ export const GridActions = ({
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const accessType = useSelector(RolesSelectors.getAccessType);
 
-  const selectedEntity = useSelector(
-    ActivityHistorySelectors.getSelectedEntity
-  );
-  const selectedEvent = useSelector(ActivityHistorySelectors.getSelectedEvent);
+  // const selectedEntity = useSelector(
+  //   ActivityHistorySelectors.getSelectedEntity
+  // );
+  // const selectedEvent = useSelector(ActivityHistorySelectors.getSelectedEvent);
   const { setState } = useGlobalContext();
   const { watch, control } = useForm();
 
@@ -306,7 +306,7 @@ export const GridActions = ({
               className="entity-dropdown"
               placeholder={KDFM.SELECT_EVENT}
               options={ACTIVITY_EVENTS}
-              defaultValue={selectedEvent}
+              // defaultValue={selectedEvent}
               backgroundColor={theme.colors.lightGrey}
               onChange={option =>
                 dispatch(ActivityHistoryActions.setSelectedEvent(option))
@@ -322,7 +322,7 @@ export const GridActions = ({
               title={KDFM.SELECT_ENTITY}
               placeholder={KDFM.SELECT_ENTITY}
               options={MODULE_LIST_MAP}
-              defaultValue={selectedEntity}
+              // defaultValue={selectedEntity}
               backgroundColor={theme.colors.lightGrey}
               onChange={option =>
                 dispatch(ActivityHistoryActions.setSelectedEntity(option))

@@ -295,15 +295,19 @@ export const LdapConfig = () => {
 
   const onBreadCrumbClick = ldapPath => {
     if (ldapPath === 'LDAP Configuration Fields') {
-      dispatch(RolesActions.displayGroup());
+      dispatch(RolesActions.displayGroup(true));
     } else {
-      dispatch(RolesActions.displayGroup());
+      dispatch(RolesActions.displayGroup(false));
     }
   };
 
   useEffect(() => {
     dispatch(RolesActions.fetchRoles());
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(RolesActions.displayGroup(true));
+  }, []);
   return (
     <Wrapper>
       {loading && <FullPageLoader loading={loading} />}
