@@ -114,7 +114,13 @@ export const ListClusters = () => {
     },
     {
       label: KDFM.NIFI_URL,
-      renderCell: item => <UrlRender url={item.nifi_url} />,
+      renderCell: item => {
+        const updatedUrl = item.nifi_url.endsWith('/nifi')
+          ? item.nifi_url
+          : `${item.nifi_url}/nifi`;
+
+        return <UrlRender url={updatedUrl} />;
+      },
       width: '35%',
     },
     {
