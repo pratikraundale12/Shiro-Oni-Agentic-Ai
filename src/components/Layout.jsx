@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
-import { history } from '../helpers/history';
+import { useDispatch, useSelector } from 'react-redux';
 import { KsolvesDataFlowIcon } from '../assets';
 import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
+import { history } from '../helpers/history';
 import { TextButton } from '../shared';
-import { useDispatch, useSelector } from 'react-redux';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 
 const Container = styled.div`
@@ -47,19 +47,19 @@ const Image = styled.div`
   background-image: url('/img/right-logo.png');
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 65%;
-  @media (max-width: 1440px) and (min-width: 992px) {
+  background-size: contain;
+  /* @media (max-width: 1440px) and (min-width: 992px) {
     background-size: 90%;
-  }
-  @media (max-width: 1660px) and (min-width: 1441px) {
+  } */
+  /* @media (max-width: 1660px) and (min-width: 1441px) {
     background-size: 80%;
   }
   @media (max-width: 1800px) and (min-width: 1661px) {
     background-size: 75%;
   }
-  @media (max-width: 1300px), and (max-height: 990px) {
+  @media (max-width: 1300px) and (max-height: 990px) {
     background-size: 75%;
-  }
+  } */
 `;
 
 const Content = styled.div`
@@ -70,8 +70,8 @@ const Content = styled.div`
   background-color: ${props => props.theme.colors.lightGrey};
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 16px;
-  padding: 32px;
-  margin-top: 20px;
+  padding: 25px 32px 32px 32px;
+  /* margin-top: 20px; */
 `;
 
 const RedirectionSection = styled.div`
@@ -81,7 +81,7 @@ const RedirectionSection = styled.div`
   line-height: 21.17px;
   text-align: left;
   color: #757575;
-  margin-top: 14px;
+  margin-top: 10px;
 `;
 
 const RedirectionText = styled.button`
@@ -98,17 +98,17 @@ const RedirectionText = styled.button`
 `;
 
 const RightSectionTextContainer = styled.div`
-  position: absolute;
+  /* position: absolute;
   bottom: 20px;
   left: 50%;
   transform: translate(-50%, 0);
   width: 100%;
-  text-align: center;
+  text-align: center; */
 `;
 
 const HeadingRightText = styled.p`
   font-family: Red Hat Display;
-  font-size: 36px;
+  font-size: 25px;
   font-weight: 700;
   line-height: 47.63px;
   letter-spacing: 0.08em;
@@ -143,7 +143,7 @@ const PolicyContainer = styled.div`
   justify-content: space-between;
   width: 100%;
   max-width: 470px;
-  margin-top: 40px;
+  margin-top: 20px;
 `;
 
 export const Layout = ({ children }) => {
@@ -165,7 +165,7 @@ export const Layout = ({ children }) => {
       <div className="row">
         <LeftSection className="col-xl-5 col-lg-5">
           {!image ? (
-            <KsolvesDataFlowIcon />
+            <KsolvesDataFlowIcon width={160} height={110} />
           ) : (
             <img src={image} alt="Logo" width={200} height={80} />
           )}
@@ -205,14 +205,15 @@ export const Layout = ({ children }) => {
             </PolicyContainer>
           )}
         </LeftSection>
-        <RightSection className="col-xl-7 col-lg-7 d-none d-lg-inline">
+
+        <RightSection className="col-xl-7 col-lg-7 d-none d-lg-flex flex-column">
+          <Image />
           <RightSectionTextContainer>
             <HeadingRightText>
               Check out the Best Data <br /> Flow Management Tool!
             </HeadingRightText>
             <br />
           </RightSectionTextContainer>
-          <Image />
         </RightSection>
       </div>
     </Container>

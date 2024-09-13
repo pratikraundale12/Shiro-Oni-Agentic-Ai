@@ -1,13 +1,12 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import * as yup from 'yup';
 
-import { theme } from '../../styles';
-import { ClusterSelect, Layout } from '../../components';
-import { Button, InputField, PasswordField, TextButton } from '../../shared';
+import { toast } from 'react-toastify';
+import { PasswordTextMessage, getRightIcon } from '.';
 import {
   ClusterIcon,
   // GoogleIcon,
@@ -15,6 +14,7 @@ import {
   // MicroSoftIcon,
   UserIcon,
 } from '../../assets';
+import { ClusterSelect, Layout } from '../../components';
 import {
   FORGOT_PASSWORD,
   // GOOGLE,
@@ -24,24 +24,24 @@ import {
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../constants';
-import { getRightIcon, PasswordTextMessage } from '.';
-import { useGlobalContext } from '../../utils';
+import { Button, InputField, PasswordField, TextButton } from '../../shared';
 import { AuthenticationActions } from '../../store';
-import { toast } from 'react-toastify';
+import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
 // import { history } from '../../helpers/history';
 
 const Title = styled.h3`
   font-weight: 500;
-  font-size: 36px;
+  font-size: 25px;
   text-align: center;
   color: ${props => props.theme.colors.darker};
   border-bottom: 1px dashed ${props => props.theme.colors.border};
-  padding-bottom: 0.8rem;
-  margin-bottom: 1rem;
+  padding-bottom: 5px;
+  /* margin-bottom: 1rem; */
 `;
 
 const SubTitle = styled.p`
-  font-size: 28px;
+  font-size: 20px;
   margin-bottom: 0.8rem;
   font-weight: 500;
   color: ${props => props.theme.colors.darker};

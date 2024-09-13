@@ -298,7 +298,7 @@ const NamespaceDeploy = ({
               <ActiveButtonContainer className="d-flex">
                 <ActiveButtonDiv className="div-btn-1">
                   <Tooltip id="running-tooltip" place="top">
-                    Running
+                    Start
                   </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
@@ -315,7 +315,7 @@ const NamespaceDeploy = ({
 
                 <ActiveButtonDiv className="div-btn-2">
                   <Tooltip id="stopped-tooltip" place="top">
-                    Stopped
+                    Stop
                   </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
@@ -332,7 +332,7 @@ const NamespaceDeploy = ({
 
                 <ActiveButtonDiv className="div-btn-3">
                   <Tooltip id="enabled-tooltip" place="top">
-                    Enabled
+                    Enable
                   </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
@@ -349,7 +349,7 @@ const NamespaceDeploy = ({
 
                 <ActiveButtonDiv className="div-btn-4">
                   <Tooltip id="disabled-tooltip" place="top">
-                    Disabled
+                    Disable
                   </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
