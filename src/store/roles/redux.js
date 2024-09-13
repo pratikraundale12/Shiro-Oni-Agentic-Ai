@@ -103,10 +103,10 @@ const roleModal = state => {
     roleModal: !state.roleModal,
   };
 };
-const displayGroup = state => {
+const displayGroup = (state, { payload }) => {
   return {
     ...state,
-    displayGroup: !state.displayGroup,
+    displayGroup: payload,
   };
 };
 const updateLdapGroup = (state, { payload }) => {

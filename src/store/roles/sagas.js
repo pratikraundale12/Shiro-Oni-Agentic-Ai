@@ -23,7 +23,7 @@ export function* fetchLdap(api, payload) {
   });
 
   if (response.ok) {
-    yield put(RolesActions.displayGroup());
+    yield put(RolesActions.displayGroup(false));
     // yield call(fetchRoles, api);
   } else {
     toast.error(response.data.message || 'Something went wrong');
