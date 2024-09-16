@@ -83,12 +83,15 @@ const StyledTag = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 70px;
+  min-width: 70px;
 `;
 const StyledTagContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  flex-wrap: nowrap;
+  overflow: auto;
+  width: 100%;
 `;
 
 export const ListClusters = () => {
