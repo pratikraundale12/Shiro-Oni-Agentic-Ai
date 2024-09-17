@@ -1,4 +1,4 @@
-import { React, useEffect } from 'react';
+import { React, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
@@ -33,6 +33,7 @@ export const ListUsers = () => {
   const dispatch = useDispatch();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const { state, setState } = useGlobalContext();
+  const [currentPage, setCurrentPage] = useState(1);
 
   const getActionsMenu = item => (
     <div>
@@ -152,6 +153,8 @@ export const ListUsers = () => {
         placeholder={KDFM.SEARCH_USER_PLACEHOLDER}
         addModal={AddUserModal}
         sortFns={sortFns}
+        setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
       />
     </>
   );

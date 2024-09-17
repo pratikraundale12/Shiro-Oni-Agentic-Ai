@@ -3,7 +3,7 @@ import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import { default as React, useEffect, useState } from 'react';
+import { default as React, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -28,7 +28,7 @@ import Pagination from './Pagination';
 import { useSort } from '@table-library/react-table-library/sort';
 import { useParams } from 'react-router-dom';
 import { KDFM } from '../../constants';
-import { TextRender } from './CellRenders';
+// import { TextRender } from './CellRenders';
 import { Table } from './Table';
 
 const Container = styled.div`
@@ -90,12 +90,7 @@ const FLexWrapper = styled.div`
 const EVENTCOLUMNS = [
   {
     label: 'Node Events',
-    renderCell: item => (
-      <TextRender
-        text={`${item.timestamp}: ${item.message}`}
-        tooltipPlacement="bottom-start"
-      />
-    ),
+    renderCell: item => <div>{`${item.timestamp}: ${item.message}`}</div>,
   },
 ];
 
@@ -119,13 +114,14 @@ export const Grid = ({
   placeholder = '',
   addModal = () => {},
   isNamespace = false,
+  currentPage = 1,
+  setCurrentPage = () => {},
   // LIMIT,
   // offset,
   // setOffset,
   sortFns = () => {},
   state,
 }) => {
-  console.log(module, '..');
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
   const loading = useSelector(state =>
@@ -146,7 +142,6 @@ export const Grid = ({
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
@@ -264,6 +259,11 @@ export const Grid = ({
     selectedCluster,
     currentPage,
   ]);
+  useEffect(() => {
+    if (search) {
+      setCurrentPage(1);
+    }
+  }, [search]);
 
   useEffect(
     () => () => setState(prev => ({ ...prev, search: '', page: 1 })),
@@ -325,11 +325,12 @@ export const Grid = ({
             onRequestClose={() =>
               setState(prevState => ({ ...prevState, eventModal: false }))
             }
-            size="lg"
+            size="md"
             primaryButtonText={KDFM.CONTINUE}
             onSubmit={() =>
               setState(prevState => ({ ...prevState, eventModal: false }))
             }
+            contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
           >
             <FLexWrapper>
               <InputField
@@ -392,6 +393,8 @@ Grid.propTypes = {
   placeholder: PropTypes.string,
   buttonText: PropTypes.string,
   addModal: PropTypes.func,
+  currentPage: PropTypes.number.isRequired,
+  setCurrentPage: PropTypes.func.isRequired,
   breadcrumbs: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -404,5 +407,6 @@ Grid.propTypes = {
   setOffset: PropTypes.func,
   isNamespace: PropTypes.bool,
   state: PropTypes.object.isRequired,
+
   // sortFns: PropTypes.func,
 };

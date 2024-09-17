@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid, StatusRender, TextRender } from '../../components';
 import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 
 export const ActvityHistory = () => {
+  const [currentPage, setCurrentPage] = useState(1);
   const COLUMNS = [
     {
       label: KDFM.EVENT,
@@ -83,6 +84,8 @@ export const ActvityHistory = () => {
       placeholder={KDFM.ACTIVITY_HISTORY_SEARCH_PLACEHOLDER}
       statusOptions={ACTIVITY_STATUS_OPTIONS}
       sortFns={sortFns}
+      currentPage={currentPage}
+      setCurrentPage={setCurrentPage}
     />
   );
 };
