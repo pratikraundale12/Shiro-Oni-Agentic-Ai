@@ -325,6 +325,9 @@ export function* fetchParameterContext(
   api,
   { initialCall = true, showError = false }
 ) {
+  const parentParameterSelectData = yield select(
+    NamespacesSelectors.getParameterEditParent
+  );
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
@@ -344,7 +347,10 @@ export function* fetchParameterContext(
     apiParams: [
       {
         clusterId: selectedDestCluster?.value,
-        parameterId: deployOrUpgradeDetails?.parameterContextId,
+        parameterId: parentParameterSelectData?.parent
+          ? parentParameterSelectData?.id
+          : deployOrUpgradeDetails?.parameterContextId,
+        includeInherited: !parentParameterSelectData?.parent,
       },
     ],
     successAction: NamespacesActions.setParameterDetails,
@@ -367,6 +373,10 @@ export function* updateParameterContext(api, { payload }) {
   const parameterDetails = yield select(
     NamespacesSelectors.getParameterDetails
   );
+  const parentParameterSelectData = yield select(
+    NamespacesSelectors.getParameterEditParent
+  );
+  const parentList = yield select(NamespacesSelectors.getParentListItems);
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
@@ -380,7 +390,10 @@ export function* updateParameterContext(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedDestCluster?.value,
-        parameterContextId: deployOrUpgradeDetails?.parameterContextId,
+        parameterContextId: parentParameterSelectData?.parent
+          ? parentParameterSelectData?.id
+          : parentList[0]?.parentParameterId ||
+            deployOrUpgradeDetails?.parameterContextId,
         payloadData: {
           revision: { version: parameterDetails?.version },
           parameters:

@@ -22,7 +22,6 @@ const TokenPage = () => {
       dispatch(
         SchedularActions.checkApproverToken({ params: { token: urlToken } })
       );
-      //   console.log(urlToken, 'urlToken');
     }
   }, [urlToken]);
 

@@ -42,29 +42,14 @@ const scheduleSchema = yup.object().shape({
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
-  // const [selectedTimeStamp, setSelectedTimeStamp] = useState(new Date());
-  // const [selectedData, setSelectedData] = useState(null);
-  // const [dateToken, setDateToken] = useState(new Date());
-  // const [scheduleData, setScheduleData] = useState({});
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
-  // const loadingButton = useSelector(state =>
-  //   LoadingSelectors.getLoading(state, 'editScheduleDeployment')
-  // );
-  // const isRejectScheduleModal = useSelector(
-  //   SchedularSelectors.getRejectScheduleModel
-  // );
-  // const isEditScheduleModal = useSelector(
-  //   SchedularSelectors.getEditScheduleModel
-  // );
   const cancelScheduleModal = useSelector(
     SchedularSelectors.getCancelScheduleModal
   );
   const approveScheduleModal = useSelector(
     SchedularSelectors.getApproveScheduleModal
   );
-  // const isConfirmScheduleModal = useSelector(
-  //   SchedularSelectors.getScheduleCofirmModel
-  // );
+
   const tokenScheduleModal = useSelector(
     SchedularSelectors.getTokenScheduleModal
   );
@@ -81,9 +66,6 @@ export const ListScheduleDeployment = () => {
     }
   }, [dispatch, token]);
 
-  // const { control } = useForm({
-  //   resolver: yupResolver(scheduleSchema),
-  // });
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setScheduleModal());
@@ -170,21 +152,6 @@ export const ListScheduleDeployment = () => {
     },
   ];
 
-  // const handleCloseModel = () => {
-  //   if (isRjectConfirmScheduleModal) {
-  //     dispatch(SchedularActions.setConfirmRejectScheduleModel());
-  //   }
-  //   if (isConfirmScheduleModal) {
-  //     dispatch(SchedularActions.setScheduleConfirmModel());
-  //   }
-  // };
-
-  // const handleApproveClick = () => {
-  //   const payload = { is_approved: true, schedularId: selectedData };
-  //   dispatch(SchedularActions.editScheduleDeployment(payload));
-  //   setSelectedData(null);
-  //   dispatch(GridActions.fetchGrid({ module: 'scheduler' }));
-  // };
   const handleCancelClick = () => {
     const payload = {
       is_approved: false,
@@ -199,46 +166,6 @@ export const ListScheduleDeployment = () => {
     };
     dispatch(SchedularActions.editScheduleDeployment(payload));
   };
-  // const onSubmit = async data => {
-  //   const payload = { is_approved: false, schedularId: selectedData, ...data };
-  //   dispatch(SchedularActions.editScheduleDeployment(payload));
-  //   setSelectedData(null);
-  //   dispatch(GridActions.fetchGrid({ module: 'scheduler' }));
-  // };
-
-  //// check this edit
-
-  // const editConfirmSchedule = () => {
-  //   const payload = {
-  //     scheduled_time: selectedTimeStamp.toISOString(),
-  //     schedularId: selectedData,
-  //   };
-  //   dispatch(SchedularActions.editScheduleDeployment(payload));
-  //   dispatch(GridActions.fetchGrid({ module: 'scheduler' }));
-  // };
-
-  // const handleRejecModalClose = () => {
-  //   dispatch(SchedularActions.setRejectScheduleModal());
-  // };
-
-  // const handleTokenConfirm = () => {
-  //   const payload = {
-  //     scheduled_time: dateToken.toISOString(),
-  //     is_approved: true,
-  //     schedularId: scheduleData.scheduler_id,
-  //   };
-  //   console.log(payload);
-  //   // dispatch(SchedularActions.editScheduleDeployment(payload));
-  // };
-
-  // const handleTokenScheduleDecline = () => {
-  //   dispatch(SchedularActions.setTokenScheduleModel());
-  //   dispatch(SchedularActions.setRejectScheduleModal());
-  // };
-
-  // const handleCloseTokenModel = () => {
-  //   dispatch(SchedularActions.setTokenScheduleModel());
-  // };
 
   const STATUS_OPTIONS = [
     { value: 'all', label: 'All' },

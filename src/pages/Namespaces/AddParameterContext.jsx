@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { isEmpty, isString } from 'lodash';
+import { isArray, isEmpty, isString, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -94,14 +94,16 @@ const AddParameterContext = ({
 }) => {
   const dispatch = useDispatch();
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
+  const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
   const newlyAddParameters = useSelector(
     NamespacesSelectors.getNewlyAddedParameterContext
   );
-  const parameterContextList =
-    parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
+  const parameterContextList = isParentEdit?.parent
+    ? parameterDetails?.[isParentEdit?.id]
+    : parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
   const {
     register,
     handleSubmit,
@@ -182,11 +184,31 @@ const AddParameterContext = ({
     }
 
     if (isAddParameterContextOpen?.mode === 'edit') {
+
       const updatedData = newlyAddParameters.map(item =>
         item?.name?.toLowerCase() === processData?.name?.toLowerCase()
           ? { ...item, ...processData }
           : item
       );
+      const sortedArry = uniqBy(updatedData, item => item.name.toLowerCase());
+      const updatedDataUnique = isEmpty(sortedArry) ? processData : sortedArry;
+      if (isArray(updatedDataUnique)) {
+        const exists = updatedDataUnique.some(
+          obj => obj.name.toLowerCase() === processData.name.toLowerCase()
+        );
+
+        if (!exists) {
+          updatedDataUnique.push(processData);
+        }
+      } else {
+        const exists = [updatedDataUnique].some(
+          obj => obj.name.toLowerCase() === processData.name.toLowerCase()
+        );
+
+        if (!exists) {
+          updatedDataUnique.push(processData);
+        }
+      }
       const filteredParameterContextList = parameterContextList.filter(
         item => item?.name?.toLowerCase() !== processData?.name?.toLowerCase()
       );
@@ -198,19 +220,36 @@ const AddParameterContext = ({
         existingParameterContext &&
         Object.values(existingParameterContext)?.length !== 0
       ) {
-        dispatch(
-          NamespacesActions.setParameterDetails({
-            ...parameterDetails,
-            [deployOrUpgradeDetails?.parameterContextId]:
-              filteredParameterContextList,
-          })
-        );
-        dispatch(
-          NamespacesActions.setNewlyAddedParameterContext([
-            ...updatedData,
-            processData,
-          ])
-        );
+        if (isParentEdit?.parent) {
+          dispatch(
+            NamespacesActions.setParameterDetails({
+              ...parameterDetails,
+              [isParentEdit?.id]: filteredParameterContextList,
+            })
+          );
+          dispatch(
+            NamespacesActions.setNewlyAddedParameterContext([
+              ...(isArray(updatedDataUnique)
+                ? updatedDataUnique
+                : [updatedDataUnique]),
+              // processData,
+            ])
+          );
+        } else {
+          dispatch(
+            NamespacesActions.setParameterDetails({
+              ...parameterDetails,
+              [deployOrUpgradeDetails?.parameterContextId]:
+                filteredParameterContextList,
+            })
+          );
+          dispatch(
+            NamespacesActions.setNewlyAddedParameterContext([
+              ...updatedData,
+              processData,
+            ])
+          );
+        }
       } else {
         dispatch(
           NamespacesActions.setNewlyAddedParameterContext([...updatedData])

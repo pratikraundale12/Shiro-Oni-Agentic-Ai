@@ -299,7 +299,7 @@ const Summary = () => {
     isOpen: false,
     schedule: false,
   });
-
+  const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -365,8 +365,12 @@ const Summary = () => {
     } else {
       dispatch(NamespacesActions.setDeployedModal());
     }
-
+    if (isParentEdit?.parent) {
+      dispatch(NamespacesActions.setDeployedModal());
+    }
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
+    dispatch(NamespacesActions.setParameterEditParent(false));
+    dispatch(NamespacesActions.setParentParameterList([]));
   };
 
   const openAddParameterContext = () => {
@@ -759,6 +763,7 @@ const Summary = () => {
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
         getParamerterContext={getParamerterContext}
+        parameterContextId={deployOrUpgradeDetails?.parameterContextId}
       />
       <AddParameterContext
         key={isParameterContextOpen.mode}

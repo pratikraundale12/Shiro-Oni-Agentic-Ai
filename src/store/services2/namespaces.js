@@ -79,8 +79,14 @@ export const namespacesAPI = api => {
   const getCountDetails = ({ clusterId, namespaceId }) =>
     api.get(`/clusters/${clusterId}/namespace/${namespaceId}`);
 
-  const fetchParameterContext = ({ clusterId, parameterId }) =>
-    api.get(`parameter-context/${clusterId}?contextId=${parameterId}`);
+  const fetchParameterContext = ({
+    clusterId,
+    parameterId,
+    includeInherited,
+  }) =>
+    api.get(
+      `parameter-context/${clusterId}?contextId=${parameterId}&includeInherited=${includeInherited}`
+    );
 
   const updateParameterContext = ({
     clusterId,

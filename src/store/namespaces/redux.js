@@ -52,6 +52,8 @@ export const NamespacesActions = {
   setNewlyAddedParameterContext: createAction(
     `${prefix}setNewlyAddedParameterContext`
   ),
+  setParentParameterList: createAction(`${prefix}setParentParameterList`),
+  setParameterEditParent: createAction(`${prefix}setParameterEditParent`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -93,6 +95,12 @@ export const NAMESPACES_INITIAL_STATE = {
   newlyAddVariables: [],
   parameterContextItem: {},
   newlyAddedParameterContext: [],
+  parentParameterList: [],
+  parameterEditParent: {
+    parent: false,
+    id: '',
+  },
+  // parameterEditParent: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -116,6 +124,8 @@ export const NamespacesSelectors = {
   getParameterContextItem: state => state.namespaces.parameterContextItem,
   getNewlyAddedParameterContext: state =>
     state.namespaces.newlyAddedParameterContext,
+  getParentListItems: state => state.namespaces.parentParameterList,
+  getParameterEditParent: state => state.namespaces.parameterEditParent,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -275,6 +285,23 @@ const setNewlyAddVariables = (state, { payload }) => {
   };
 };
 
+const setParentParameterList = (state, { payload }) => {
+  return {
+    ...state,
+    parentParameterList: [...state.parentParameterList, ...payload],
+  };
+};
+
+const setParameterEditParent = (state, { payload }) => {
+  return {
+    ...state,
+    parameterEditParent: {
+      parent: payload.parent,
+      id: payload.id,
+    },
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -321,6 +348,11 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setNewlyAddedParameterContext,
         setNewlyAddedParameterContext
+      )
+      .addCase(NamespacesActions.setParentParameterList, setParentParameterList)
+      .addCase(
+        NamespacesActions.setParameterEditParent,
+        setParameterEditParent
       );
   }
 );
