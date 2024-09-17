@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -41,6 +41,8 @@ const scheduleSchema = yup.object().shape({
 });
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
+
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   // const [selectedTimeStamp, setSelectedTimeStamp] = useState(new Date());
   // const [selectedData, setSelectedData] = useState(null);
@@ -306,6 +308,8 @@ export const ListScheduleDeployment = () => {
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
         placeholder="Search Process Group, Cluster or Approver"
+        setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
       />
     </>
   );

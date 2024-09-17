@@ -99,6 +99,8 @@ export const ListClusters = () => {
   const { state, setState } = useGlobalContext();
   const [deactiveId, setDeactiveId] = useState(null);
   const menuRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [menuState, setMenuState] = useState({
     isVisible: false,
     x: 0,
@@ -311,6 +313,8 @@ export const ListClusters = () => {
         statusOptions={Cluster_STATUS_OPTIONS}
         placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
         sortFns={sortFns}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
       <ClusterSuccessModal />
     </>
