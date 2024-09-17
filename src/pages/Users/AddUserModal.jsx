@@ -1,28 +1,24 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import styled from 'styled-components';
 import { toast } from 'react-toastify';
+import styled from 'styled-components';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { MailIcon, PhoneIcon, PlusCircleIcon, UserIcon } from '../../assets';
+import {
+  editUserSchema,
+  userSchema,
+} from '../../components/UserManagement/userValidation';
+import { API_URL } from '../../constants';
 import {
   Button,
   InputField,
   Modal,
-  SelectField,
   PasswordField,
+  SelectField,
 } from '../../shared';
-import { PlusCircleIcon, UserIcon, MailIcon, PhoneIcon } from '../../assets';
-import { createUserApi, editUserDataApi } from '../../store/index1';
-import { useGlobalContext } from '../../utils';
-import {
-  userSchema,
-  editUserSchema,
-} from '../../components/UserManagement/userValidation';
-import { ProfileUpload } from './ProfileUpload';
-import { theme } from '../../styles';
-import { API_URL } from '../../constants';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
@@ -30,6 +26,10 @@ import {
   RolesActions,
   RolesSelectors,
 } from '../../store';
+import { createUserApi, editUserDataApi } from '../../store/index1';
+import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
+import { ProfileUpload } from './ProfileUpload';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -256,7 +256,9 @@ export const AddUserModal = props => {
                 placeholder="Status"
                 backgroundColor={theme.colors.lightGrey}
                 title="Select Status"
-                disabled={currentUserData.role === 'superadmin' ? true : false}
+                disabled={
+                  currentUserData?.id === state?.selectedItem?.id ? true : false
+                }
               />
             </DropDownWrapper>
             <DropDownWrapper>
@@ -271,7 +273,9 @@ export const AddUserModal = props => {
                 }
                 backgroundColor={theme.colors.lightGrey}
                 title="Select Role"
-                disabled={currentUserData.role === 'superadmin' ? true : false}
+                disabled={
+                  currentUserData?.id === state?.selectedItem?.id ? true : false
+                }
               />
             </DropDownWrapper>
           </SelectFieldWrapper>
@@ -325,7 +329,9 @@ export const AddUserModal = props => {
                     errors={errors}
                     icon={<UserIcon />}
                     disabled={
-                      currentUserData.role === 'superadmin' ? true : false
+                      currentUserData?.id === state?.selectedItem?.id
+                        ? true
+                        : false
                     }
                   />
                 </div>
@@ -340,7 +346,9 @@ export const AddUserModal = props => {
                     errors={errors}
                     icon={<MailIcon />}
                     disabled={
-                      currentUserData.role === 'superadmin' ? true : false
+                      currentUserData?.id === state?.selectedItem?.id
+                        ? true
+                        : false
                     }
                   />
                 </div>
