@@ -13,7 +13,7 @@ const FloatingAlertBox = styled.div`
   font-weight: 600;
   top: 25px;
   left: 271px;
-  width: calc(100vw - 712px) !important;
+  /* width: calc(100vw - 712px) !important; */
   padding: 16px;
 
   @media screen and (max-width: 991px) {
