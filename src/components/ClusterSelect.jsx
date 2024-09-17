@@ -29,12 +29,14 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
 
   const onChange = value => {
     if (value.is_active || location.pathname === '/login')
-      if (!isDestination) dispatch(NamespacesActions.setSelectedCluster(value));
-      else {
+      if (!isDestination) {
+        dispatch(NamespacesActions.setSelectedCluster(value));
+      } else {
         dispatch(NamespacesActions.setSelectedDestCluster(value));
         if (props.onChange) props.onChange(value);
       }
     else {
+      value.is_deploy = true;
       dispatch(AuthenticationActions.setClusterLogin(value));
       if (isDestination) dispatch(AuthenticationActions.setDestinationFlag());
     }
@@ -56,7 +58,6 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
       : updatedClusters?.filter(
           cluster => cluster?.value !== selectedCluster?.value
         );
-
   return (
     <SelectField
       options={remainingCluster}

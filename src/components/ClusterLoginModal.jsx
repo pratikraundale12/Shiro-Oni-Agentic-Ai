@@ -92,13 +92,16 @@ export const ClusterLoginModal = () => {
         };
         clusterData.push(newCluster);
         localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(clusterData));
-        localStorage.setItem(
-          'selected_cluster',
-          JSON.stringify({
-            label: response.cluster_name,
-            value: response?.cluster_id,
-          })
-        );
+        if (!clusterLogin.is_deploy) {
+          localStorage.setItem(
+            'selected_cluster',
+            JSON.stringify({
+              label: response.cluster_name,
+              value: response?.cluster_id,
+            })
+          );
+        }
+
         if (!destinationFlag) {
           dispatch(
             NamespacesActions.setSelectedCluster({
@@ -144,7 +147,6 @@ export const ClusterLoginModal = () => {
   useEffect(() => {
     dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
   }, [dispatch]);
-
   const onSwitchCluster = () => {
     const clusterData = JSON.parse(
       localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -160,13 +162,15 @@ export const ClusterLoginModal = () => {
         value: getValues()?.cluster_id,
       })
     );
-    localStorage.setItem(
-      'selected_cluster',
-      JSON.stringify({
-        label: clusterName,
-        value: getValues()?.cluster_id,
-      })
-    );
+    if (!clusterLogin.is_deploy) {
+      localStorage.setItem(
+        'selected_cluster',
+        JSON.stringify({
+          label: clusterName,
+          value: getValues()?.cluster_id,
+        })
+      );
+    }
   };
 
   return (

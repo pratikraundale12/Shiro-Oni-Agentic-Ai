@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -10,10 +11,11 @@ import {
   PlusCircleIcon,
   QRIcons,
   RightCircleIcon,
+  TagIcon,
 } from '../../assets';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, InputField, SelectField } from '../../shared';
+import { Button, CheckboxField, InputField, SelectField } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
   getOneRegistry,
@@ -237,6 +239,80 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
+const TagsInputContainer = styled.div`
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #ffffff;
+  padding: 0.5em 0.5em 0.5em 56px;
+  border-radius: 3px;
+  width: 100%;
+  font-size: 14px;
+  color: #444445;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin-bottom: 40px;
+  input::placeholder {
+    color: ${props => props.theme.colors.grey};
+    font-family: ${props => props.theme.fontNato};
+    font-size: 14px;
+  }
+  input:focus-visible {
+    outline: none;
+  }
+  input:focus {
+    border: none;
+  }
+`;
+const IconTag = styled.span`
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  bottom: 2px;
+  z-index: 1;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  padding: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f7fa;
+`;
+const TagItem = styled.div`
+  background-color: rgb(218, 216, 216);
+  display: flex;
+  padding: 0.5em 0.75em;
+  border-radius: 20px;
+`;
+const CloseButton = styled.span`
+  padding-top: 3px;
+  height: 20px;
+  width: 20px;
+  background-color: rgb(48, 48, 48);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 0.5em;
+  font-size: 18px;
+  cursor: pointer;
+`;
+const TagsInput = styled.input`
+  flex-grow: 1;
+  padding: 0.5em 0;
+  border: none;
+  outline: none;
+`;
+const CharacterCount = styled.span`
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+`;
+
 const ClusterSchema = yup.object().shape({
   clusterName: yup
     .string()
@@ -276,6 +352,7 @@ export const Add = () => {
   const [failedTestMessage, setFailedTestMessage] = useState('');
   const location = useLocation();
   const { state: data } = location.state || {};
+  const [tags, setTags] = useState(data?.tag || '');
   const [clusterData, setClusterData] = useState({
     clusterName: data?.name || '',
     nifiUrl: data?.nifi_url || '',
@@ -286,6 +363,9 @@ export const Add = () => {
   });
   const [clusterId, setClusterId] = useState(data?.id);
   const [isEditDetails, setIsEditDetails] = useState(false);
+  const [notificationEnable, setNotificationEnable] = useState(
+    data?.notification_enable || false
+  );
 
   const {
     control,
@@ -457,6 +537,41 @@ export const Add = () => {
     setOpenSummary(true);
   };
 
+  function handleKeyDown(e) {
+    const value = e.target.value;
+
+    if (e.key === 'Backspace') {
+      if (value === '') {
+        const currentTags = tags.split(',').filter(tag => tag);
+        if (currentTags.length > 0) {
+          currentTags.pop();
+          setTags(currentTags.join(','));
+        }
+      }
+      return;
+    }
+    if (e.key !== 'Enter') return;
+
+    const trimmedValue = value.trim();
+    if (!trimmedValue) return;
+    if (trimmedValue.length > 20) {
+      toast.error('Maximum 20 characters allowed');
+      return;
+    }
+
+    const currentTags = tags.split(',').filter(tag => tag);
+    if (currentTags.length >= 5) return;
+
+    setTags(currentTags.concat(trimmedValue).join(','));
+    e.target.value = '';
+  }
+
+  function removeTag(tagToRemove) {
+    const currentTags = tags.split(',').filter(tag => tag);
+    const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
+    setTags(updatedTags.join(','));
+  }
+
   const testData = async () => {
     setLoading(true);
     const payload = new FormData();
@@ -542,6 +657,69 @@ export const Add = () => {
               placeholder={KDFM.ENTER_NIFI_URL}
               errors={errors}
             />
+            <label htmlFor="tags-input" className="tags-input-label">
+              Cluster Tags
+            </label>
+            <TagsInputContainer className="tags-input-container">
+              <IconTag className="icon-placeholder">
+                <TagIcon />
+              </IconTag>
+              {tags
+                .split(',')
+                .filter(tag => tag)
+                .map((tag, index) => (
+                  <TagItem className="tag-item" key={index}>
+                    <CharacterCount className="text">
+                      {tag.length > 10 ? `${tag.substring(0, 10)}...` : tag}
+                    </CharacterCount>
+                    <CloseButton
+                      className="close"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => removeTag(tag)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          removeTag(tag);
+                        }
+                      }}
+                      aria-label={`Remove tag ${tag}`}
+                    >
+                      &times;
+                    </CloseButton>
+                  </TagItem>
+                ))}
+
+              <TagsInput
+                type="text"
+                placeholder="Cluster Tags"
+                name="tags"
+                {...register('tags')}
+                onKeyDown={handleKeyDown}
+                aria-label="Add a tag"
+              />
+
+              {tags.split(',').filter(tag => tag).length >= 5 && (
+                <p
+                  className="mb-0"
+                  style={{
+                    color: 'red',
+                    position: 'absolute',
+                    bottom: '-25px',
+                    left: '0px',
+                  }}
+                >
+                  Tag limit reached (5 tags max)
+                </p>
+              )}
+            </TagsInputContainer>
+
+            <CheckboxField
+              name="check"
+              label="Do you want any notification for this cluster?"
+              checked={notificationEnable}
+              onChange={e => setNotificationEnable(e.target.checked)}
+            />
+
             <Flex>
               {test ? (
                 <>
@@ -836,6 +1014,8 @@ export const Add = () => {
         registry_id={selectedRegistryId}
         clusterId={clusterId}
         edit={clusterId ? true : false}
+        notificationEnable={notificationEnable}
+        tags={tags}
       />
       {suceessModal && (
         <SuccessTestModal

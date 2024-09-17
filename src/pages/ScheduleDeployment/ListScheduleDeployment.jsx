@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -41,6 +41,8 @@ const scheduleSchema = yup.object().shape({
 });
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
+
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const cancelScheduleModal = useSelector(
@@ -62,7 +64,9 @@ export const ListScheduleDeployment = () => {
   useEffect(() => {
     if (token) {
       dispatch(SchedularActions.checkApproverToken({ params: { token } }));
-      dispatch(SchedularActions.setTokenScheduleModal(true));
+      // if (!isEmpty(selectedSchedule)) {
+      //   dispatch(SchedularActions.setTokenScheduleModal(true));
+      // }
     }
   }, [dispatch, token]);
 
@@ -72,9 +76,29 @@ export const ListScheduleDeployment = () => {
   };
 
   const handleCancelModel = item => {
-    if (item.deployer_id === currentUser.id) {
-      dispatch(SchedularActions.setSelectedSchedule(item));
-      dispatch(SchedularActions.setCancelScheduleModal());
+    // if (item.deployer_id === currentUser.id) {
+    dispatch(SchedularActions.setSelectedSchedule(item));
+    dispatch(SchedularActions.setCancelScheduleModal());
+    // }
+  };
+
+  const handleEnableEdit = item => {
+    if (item.deployment_status === 'PENDING') {
+      return false;
+    } else if (item.deployment_status === 'NOT APPROVED' && item.can_approve) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  const handeEnableCancel = item => {
+    if (item.deployment_status === 'PENDING') {
+      return false;
+    } else if (item.deployment_status === 'SCHEDULED') {
+      return false;
+    } else {
+      return true;
     }
   };
 
@@ -85,17 +109,13 @@ export const ListScheduleDeployment = () => {
           onClick={() => {
             handleEditClick(item);
           }}
-          disabled={item.deployment_status != 'PENDING'}
+          disabled={handleEnableEdit(item)}
         >
           <PencilIcon width={16} height={16} />
         </IconButton>
         <IconButton
           onClick={() => handleCancelModel(item)}
-          disabled={
-            item.deployer_id != currentUser.id ||
-            item.deployment_status ===
-              ('CANCELLED' || 'SUCCESS' || 'NOT APPROVED')
-          }
+          disabled={handeEnableCancel(item)}
         >
           <HoldIcon />
         </IconButton>
@@ -154,7 +174,7 @@ export const ListScheduleDeployment = () => {
 
   const handleCancelClick = () => {
     const payload = {
-      is_approved: false,
+      is_cancelled: true,
       schedularId: selectedSchedule.scheduler_id,
     };
     dispatch(SchedularActions.editScheduleDeployment(payload));
@@ -215,6 +235,8 @@ export const ListScheduleDeployment = () => {
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
         placeholder="Search Process Group, Cluster or Approver"
+        setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
       />
     </>
   );

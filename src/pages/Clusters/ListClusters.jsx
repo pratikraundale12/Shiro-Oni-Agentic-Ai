@@ -75,11 +75,32 @@ const Item = styled.div`
   }
 `;
 
+const StyledTag = styled.div`
+  background-color: rgb(218, 216, 216);
+  display: flex;
+  padding: 1px 6px;
+  border-radius: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 70px;
+`;
+const StyledTagContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow: auto;
+  width: 100%;
+`;
+
 export const ListClusters = () => {
   const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
   const [deactiveId, setDeactiveId] = useState(null);
   const menuRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [menuState, setMenuState] = useState({
     isVisible: false,
     x: 0,
@@ -98,8 +119,28 @@ export const ListClusters = () => {
     },
     {
       label: KDFM.NIFI_URL,
-      renderCell: item => <UrlRender url={item.nifi_url} />,
-      width: '40%',
+      renderCell: item => {
+        const updatedUrl = item.nifi_url.endsWith('/nifi')
+          ? item.nifi_url
+          : `${item.nifi_url}/nifi`;
+
+        return <UrlRender url={updatedUrl} />;
+      },
+      width: '35%',
+    },
+    {
+      label: KDFM.TAG,
+      renderCell: item =>
+        item?.tag ? (
+          <StyledTagContainer>
+            {item.tag.split(',').map((tag, index) => (
+              <StyledTag key={index}>
+                <TextRender text={tag.trim()} capitalizeText={false} />
+              </StyledTag>
+            ))}
+          </StyledTagContainer>
+        ) : null,
+      width: '20%',
     },
     {
       label: KDFM.CLUSTER_STATUS,
@@ -272,6 +313,8 @@ export const ListClusters = () => {
         statusOptions={Cluster_STATUS_OPTIONS}
         placeholder={KDFM.SEARCH_CLUSTER_NAME_URL}
         sortFns={sortFns}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
       <ClusterSuccessModal />
     </>

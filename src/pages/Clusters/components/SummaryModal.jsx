@@ -153,6 +153,8 @@ export const SummaryModal = ({
   clusterId,
   registry_id,
   edit,
+  notificationEnable,
+  tags,
 }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -177,6 +179,8 @@ export const SummaryModal = ({
       name: clusterData.clusterName,
       nifi_url: clusterData.nifiUrl,
       registry_id: registry_id,
+      tag: tags,
+      notification_enable: notificationEnable,
     };
     const response = await createCluster(data);
     if (response?.status === 201) {
@@ -211,6 +215,8 @@ export const SummaryModal = ({
     const payload = {
       name: clusterData.clusterName,
       nifi_url: clusterData.nifiUrl,
+      tag: tags,
+      notification_enable: notificationEnable,
     };
 
     const id = clusterId;
@@ -324,4 +330,6 @@ SummaryModal.propTypes = {
   clusterId: PropTypes.string,
   registry_id: PropTypes.string,
   edit: PropTypes.bool,
+  notificationEnable: PropTypes.bool,
+  tags: PropTypes.string,
 };

@@ -1,34 +1,35 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import styled from 'styled-components';
 import { toast } from 'react-toastify';
+import styled from 'styled-components';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { MailIcon, PhoneIcon, PlusCircleIcon, UserIcon } from '../../assets';
+import {
+  editUserSchema,
+  userSchema,
+} from '../../components/UserManagement/userValidation';
+import { API_URL } from '../../constants';
 import {
   Button,
   InputField,
   Modal,
-  SelectField,
   PasswordField,
+  SelectField,
 } from '../../shared';
-import { PlusCircleIcon, UserIcon, MailIcon, PhoneIcon } from '../../assets';
-import { createUserApi, editUserDataApi } from '../../store/index1';
-import { useGlobalContext } from '../../utils';
-import {
-  userSchema,
-  editUserSchema,
-} from '../../components/UserManagement/userValidation';
-import { ProfileUpload } from './ProfileUpload';
-import { theme } from '../../styles';
-import { API_URL } from '../../constants';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
   GridActions,
+  RolesActions,
   RolesSelectors,
 } from '../../store';
+import { createUserApi, editUserDataApi } from '../../store/index1';
+import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
+import { ProfileUpload } from './ProfileUpload';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -205,6 +206,8 @@ export const AddUserModal = props => {
   };
 
   useEffect(() => {
+    dispatch(RolesActions.fetchRoles());
+
     if (state.userModal) {
       if (isEmpty(state.selectedItem)) reset(DEFAULT_VALUES);
       else reset(state.selectedItem);
@@ -253,6 +256,9 @@ export const AddUserModal = props => {
                 placeholder="Status"
                 backgroundColor={theme.colors.lightGrey}
                 title="Select Status"
+                disabled={
+                  currentUserData?.id === state?.selectedItem?.id ? true : false
+                }
               />
             </DropDownWrapper>
             <DropDownWrapper>
@@ -262,9 +268,14 @@ export const AddUserModal = props => {
                 options={rolesOption}
                 errors={errors}
                 control={control}
-                placeholder="Role"
+                placeholder={
+                  currentUserData.role === 'superadmin' ? 'Superadmin' : 'Role'
+                }
                 backgroundColor={theme.colors.lightGrey}
                 title="Select Role"
+                disabled={
+                  currentUserData?.id === state?.selectedItem?.id ? true : false
+                }
               />
             </DropDownWrapper>
           </SelectFieldWrapper>
@@ -317,6 +328,11 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
+                    disabled={
+                      currentUserData?.id === state?.selectedItem?.id
+                        ? true
+                        : false
+                    }
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
@@ -329,29 +345,38 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<MailIcon />}
+                    disabled={
+                      currentUserData?.id === state?.selectedItem?.id
+                        ? true
+                        : false
+                    }
                   />
                 </div>
-                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
-                  <StyledPasswordField
-                    name="password"
-                    register={register}
-                    required
-                    errors={errors}
-                    watch={watch}
-                    label="Password"
-                  />
-                </div>
-                {(!state?.selectedItem || password) && (
-                  <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
-                    <StyledPasswordField
-                      name="confirm_password"
-                      register={register}
-                      errors={errors}
-                      watch={watch}
-                      required
-                      label="Confirm Password"
-                    />
-                  </div>
+                {currentUserData.role === 'superadmin' && (
+                  <>
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
+                      <StyledPasswordField
+                        name="password"
+                        register={register}
+                        required
+                        errors={errors}
+                        watch={watch}
+                        label="Password"
+                      />
+                    </div>
+                    {(!state?.selectedItem || password) && (
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
+                        <StyledPasswordField
+                          name="confirm_password"
+                          register={register}
+                          errors={errors}
+                          watch={watch}
+                          required
+                          label="Confirm Password"
+                        />
+                      </div>
+                    )}
+                  </>
                 )}
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                   <StyledInputField

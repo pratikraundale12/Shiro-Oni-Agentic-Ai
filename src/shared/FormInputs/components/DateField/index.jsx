@@ -87,6 +87,7 @@ const DateField = ({
   errors,
   placeholder = '',
   required = false,
+  ...props
 }) => {
   const error = hasError(errors, name);
 
@@ -132,6 +133,7 @@ const DateField = ({
                   <CalendarIcon />
                 </span>
               }
+              {...props}
             />
           );
         }}

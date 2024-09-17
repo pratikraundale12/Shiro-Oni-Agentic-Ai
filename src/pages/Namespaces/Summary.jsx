@@ -299,7 +299,7 @@ const Summary = () => {
     isOpen: false,
     schedule: false,
   });
-  const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
+  // const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -365,12 +365,14 @@ const Summary = () => {
     } else {
       dispatch(NamespacesActions.setDeployedModal());
     }
-    if (isParentEdit?.parent) {
-      dispatch(NamespacesActions.setDeployedModal());
-    }
+    // if (isParentEdit?.parent) {
+    //   dispatch(NamespacesActions.setDeployedModal());
+    // }
+    // isParentEdit;
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
     dispatch(NamespacesActions.setParameterEditParent(false));
     dispatch(NamespacesActions.setParentParameterList([]));
+    // dispatch(NamespacesActions.setDeployedModal()); // adding to open namespace deploy
   };
 
   const openAddParameterContext = () => {

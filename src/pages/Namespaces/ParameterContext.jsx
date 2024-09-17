@@ -48,6 +48,9 @@ const ParameterContext = ({
     parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
   const tableData = [...copyParameterDetailsData, ...newlyAddParameters];
   const targetId = deployOrUpgradeDetails?.parameterContextId;
+  // const isParameterDeployOpen = useSelector(
+  //   NamespacesSelectors.getDeployedModal
+  // );
 
   const sortedArray = tableData.sort((a, b) => {
     if (a.parentParameterId === targetId) return -1;
@@ -138,9 +141,10 @@ const ParameterContext = ({
                     id: item.parentParameterId,
                   })
                 );
-                if (isParameterContextOpen?.schedule) {
-                  setIsParameterContextOpen({ isOpen: false, schedule: true });
-                }
+                dispatch(NamespacesActions.setDeployedModal());
+                // if (isParameterContextOpen?.schedule) {
+                //   setIsParameterContextOpen({ isOpen: false, schedule: false });
+                // }
               }}
             >
               <ArrowIcon />

@@ -73,7 +73,8 @@ export function* checkApproverToken(api, { payload: { params } }) {
   });
   if (response.ok) {
     yield put(SchedularActions.setSelectedSchedule(response.data));
-  }
+    yield put(SchedularActions.setTokenScheduleModal(true));
+  } else toast.error(response.data.message);
 }
 
 export function* schedularSagas(api) {
