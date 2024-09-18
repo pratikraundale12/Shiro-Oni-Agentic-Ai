@@ -44,6 +44,7 @@ import {
 } from '../pages';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import Deploy from '../pages/Namespaces/Deploy';
+import ProcessGroupSummary from '../pages/Namespaces/ProcessGroupSummary';
 import Summary from '../pages/Namespaces/Summary';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
@@ -96,6 +97,10 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <ListNamespaces />,
+      },
+      {
+        path: [':id'],
+        component: <ProcessGroupSummary />,
       },
       {
         path: 'deploy',

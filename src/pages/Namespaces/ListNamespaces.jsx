@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+// import { Link } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { ActivityHistoryIcon } from '../../assets';
@@ -108,7 +109,15 @@ export const ListNamespaces = () => {
       label: KDFM.NAMESPACE_ID,
       renderCell: item => (
         <Flex>
-          <TextRender text={item.id} />
+          <TextRender
+            text={item.id}
+            onClick={() => history.push(`/process-group/${item.id}`)}
+            style={{
+              cursor: 'pointer',
+              // color: 'blue',
+              // textDecoration: 'underline',
+            }}
+          />
           <CopyToClipboard copyItem={item.id} />
         </Flex>
       ),
@@ -116,15 +125,40 @@ export const ListNamespaces = () => {
     },
     {
       label: KDFM.FLOW_NAME,
-      renderCell: item => <TextRender text={item.flowName || KDFM.NA} />,
+
+      renderCell: item => (
+        <TextRender
+          onClick={() => history.push(`/process-group/${item.id}`)}
+          style={{
+            cursor: 'pointer',
+          }}
+          text={item.flowName || KDFM.NA}
+        />
+      ),
     },
     {
       label: KDFM.BUCKET_NAME,
-      renderCell: item => <TextRender text={item.bucketName || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender
+          onClick={() => history.push(`/process-group/${item.id}`)}
+          style={{
+            cursor: 'pointer',
+          }}
+          text={item.bucketName || KDFM.NA}
+        />
+      ),
     },
     {
       label: KDFM.VERSION,
-      renderCell: item => <TextRender text={item.version || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender
+          onClick={() => history.push(`/process-group/${item.id}`)}
+          style={{
+            cursor: 'pointer',
+          }}
+          text={item.version || KDFM.NA}
+        />
+      ),
     },
     {
       label: KDFM.ACTIONS,
