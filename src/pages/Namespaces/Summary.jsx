@@ -24,7 +24,10 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { SchedularActions } from '../../store/schedular/redux';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux';
 import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymentModal';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
@@ -291,6 +294,7 @@ const Summary = () => {
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
 
+  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
@@ -700,19 +704,21 @@ const Summary = () => {
           <Button variant="secondary" onClick={handleBackClick}>
             {KDFM.BACK}
           </Button>
-          <Button
-            onClick={
-              checkDestCluster.mode !== 'upgrade'
-                ? handleDeploy
-                : handleUpgradeClick
-            }
-          >
-            {checkDestCluster.mode === 'upgrade'
-              ? checkDestCluster.version <= formData.version
-                ? KDFM.UPGRADE
-                : KDFM.DOWNGRADE
-              : KDFM.DEPLOY}
-          </Button>
+          {!schedularFromList && (
+            <Button
+              onClick={
+                checkDestCluster.mode !== 'upgrade'
+                  ? handleDeploy
+                  : handleUpgradeClick
+              }
+            >
+              {checkDestCluster.mode === 'upgrade'
+                ? checkDestCluster.version <= formData.version
+                  ? KDFM.UPGRADE
+                  : KDFM.DOWNGRADE
+                : KDFM.DEPLOY}
+            </Button>
+          )}
           <Button
             size="md"
             variant="tertiary"

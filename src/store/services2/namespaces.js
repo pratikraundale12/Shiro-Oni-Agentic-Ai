@@ -14,11 +14,13 @@ export const namespacesAPI = api => {
     srcClusterId,
     srcClusterToken,
     path,
+    is_scheduled,
   }) =>
     api.post(`/clusters/${clusterId}/check`, {
       srcClusterId,
       srcClusterToken,
       path,
+      is_scheduled,
     });
 
   const updateNamespaceStatus = ({ clusterId, namespaceId, state }) => {
