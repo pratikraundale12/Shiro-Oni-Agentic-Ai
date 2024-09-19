@@ -119,6 +119,13 @@ export const namespacesAPI = api => {
   const fetchNamespaceAudit = ({ params = {} }) =>
     api.get('/audit', { ...params });
 
+  const singleNamespaceData = ({
+    params = {},
+    queryParams: { clusterId, namespaceId },
+  }) => {
+    return api.get(`/clusters/${clusterId}/namespace/${namespaceId}`, params);
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -137,5 +144,6 @@ export const namespacesAPI = api => {
     deleteVariableServices,
     getVariableServices,
     fetchNamespaceAudit,
+    singleNamespaceData,
   };
 };

@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   SmallNotThunderIcon,
@@ -10,7 +11,7 @@ import {
 } from '../../assets';
 import { StatusRender, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
-import { NamespacesActions } from '../../store';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 // import { KDFM } from '../../constants';
 
 const GreyBoxNamespace = styled.div`
@@ -231,20 +232,34 @@ const ProcessGroupSummary = () => {
       renderCell: item => <TextRender text={item.created_by || KDFM.NA} />,
     },
   ];
-
+  const { id } = useParams();
+  const [activeButton, setActiveButton] = useState(null);
   const dispatch = useDispatch();
-  // const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
+  useEffect(() => {
+    dispatch(NamespacesActions.setSourceNamespaceId(id));
+    dispatch(NamespacesActions.singleNamespaceData(id));
+  }, [id]);
+
+  const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
+
+  console.log(singleNamespaceData, 'singleNamespaceData');
 
   useEffect(() => {
     dispatch(NamespacesActions.fetchNamespaceAudit());
   }, [dispatch]);
 
-  // const auditTableData =
-  //   (rowId &&
-  //     namespaceAuditLog?.data?.filter(
-  //       auditInfo => auditInfo?.record_id === rowId
-  //     )) ||
-  //   [];
+  const auditTableData =
+    namespaceAuditLog?.data?.filter(auditInfo => auditInfo?.record_id === id) ||
+    [];
+
+  const handleUpdateStatus = status => {
+    setActiveButton(status);
+    dispatch(NamespacesActions.updateNamespaceStatus(status));
+  };
+
   return (
     <>
       <GreyBoxNamespace className="w-100  mb-3">
@@ -253,7 +268,7 @@ const ProcessGroupSummary = () => {
             <div className="col-12 p-3">
               <ConfigTitle className="config-title">
                 <ConfigTitleHTwo className="p-3 mb-0">
-                  <span>Data1</span>
+                  <span>{singleNamespaceData?.name} Summary</span>
                 </ConfigTitleHTwo>
               </ConfigTitle>
             </div>
@@ -265,7 +280,7 @@ const ProcessGroupSummary = () => {
                       Process Group
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      Procress Group 1
+                      {singleNamespaceData?.name}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -275,7 +290,7 @@ const ProcessGroupSummary = () => {
                       Process Group Id
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      88979897896
+                      {singleNamespaceData?.id}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -286,11 +301,7 @@ const ProcessGroupSummary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>Flow Name one</span>
-                        {/* <CopyToClipboard
-                          className="summary-clipboard"
-                          copyItem={checkDestCluster.registryUrl}
-                        /> */}
+                        <span>{singleNamespaceData?.flowName}</span>
                       </div>
                     </SummaryDetailsPtag>
                   </div>
@@ -302,7 +313,7 @@ const ProcessGroupSummary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>9989887787675</span>
+                        <span>{singleNamespaceData?.flowId}</span>
                       </div>
                     </SummaryDetailsPtag>
                   </div>
@@ -313,7 +324,7 @@ const ProcessGroupSummary = () => {
                       Bucket Name
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      Bucket Name one
+                      {singleNamespaceData?.bucketName}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -323,7 +334,7 @@ const ProcessGroupSummary = () => {
                       version
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      v1
+                      {singleNamespaceData?.version}
                       {/* {formData.version || checkDestCluster.version} */}
                     </SummaryDetailsPtag>
                   </div>
@@ -334,7 +345,7 @@ const ProcessGroupSummary = () => {
                       State
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      up to date
+                      {singleNamespaceData?.state}
                       {/* {formData.version || checkDestCluster.version} */}
                     </SummaryDetailsPtag>
                   </div>
@@ -345,7 +356,7 @@ const ProcessGroupSummary = () => {
                       State Explaination
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      local changes has been made
+                      {singleNamespaceData?.stateExplanation}
                       {/* {formData.version || checkDestCluster.version} */}
                     </SummaryDetailsPtag>
                   </div>
@@ -355,7 +366,7 @@ const ProcessGroupSummary = () => {
             <div className="col-12 p-3">
               <ConfigTitle className="config-title">
                 <ConfigTitleHTwo className="p-3 mb-0">
-                  <span>Data1</span>
+                  <span>Flow Control</span>
                 </ConfigTitleHTwo>
               </ConfigTitle>
             </div>
@@ -367,46 +378,46 @@ const ProcessGroupSummary = () => {
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-1 mr-2"
-                    count={2}
+                    count={singleNamespaceData?.runningCount}
                     activeColor="#58e715"
                   >
                     <TriangleIcons color="#B5BDC8" />
-                    <span>{2}</span>
+                    <span>{singleNamespaceData?.runningCount}</span>
                   </CountDiv>
-                  <div>RUNNING_PROCESSORS</div>
+                  <div>{KDFM.RUNNING_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-2 mr-2"
-                    count={0}
+                    count={singleNamespaceData?.stoppedCount}
                     activeColor="#c52b2b"
                   >
                     <SquareBoxIcon color="#B5BDC8" />
-                    <span>{0}</span>
+                    <span>{singleNamespaceData?.stoppedCount}</span>
                   </CountDiv>
-                  <div>STOPPED_PROCESSORS</div>
+                  <div>{KDFM.STOPPED_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-3 mr-2"
-                    count={0}
+                    count={singleNamespaceData?.invalidCount}
                     activeColor="#CF9F5D"
                   >
                     <TriangleExclamationMarkIcon color="#B5BDC8" />
-                    <span>{0}</span>
+                    <span>{singleNamespaceData?.invalidCount}</span>
                   </CountDiv>
-                  <div>INVALID_PROCESSORS</div>
+                  <div>{KDFM.INVALID_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-4 mr-2"
-                    count={0}
+                    count={singleNamespaceData?.disabledCount}
                     activeColor="#2c7cf3"
                   >
                     <SmallNotThunderIcon color="#B5BDC8" />
-                    <span>{0}</span>
+                    <span>{singleNamespaceData?.disabledCount}</span>
                   </CountDiv>
-                  <div>DISABLED_PROCESSORS</div>
+                  <div>{KDFM.DISABLED_PROCESSORS}</div>
                 </TextDiv>
               </ActiveButtonContainer>
             </CustomNine>
@@ -415,65 +426,72 @@ const ProcessGroupSummary = () => {
                 <ActiveButtonDiv className="div-btn-1 mr-2">
                   <ActiveButtonDiv
                     className="div-btn-1 "
-                    // isActive={activeButton === 'RUNNING'}
+                    isActive={activeButton === 'RUNNING'}
                     activeColor="#58e715"
                     hoverColor="#58e715"
                     activeTextColor="#fff"
-                    // onClick={() => handleUpdateStatus('RUNNING')}
+                    onClick={() => handleUpdateStatus('RUNNING')}
                   >
                     <TriangleIcons color="#B5BDC8" />
                   </ActiveButtonDiv>
                 </ActiveButtonDiv>
-                <div className="mr-2">RUNNING_FLOW</div>
+                <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
               </TextsvgDiv>
               <TextsvgDiv className="d-flex">
                 <ActiveButtonDiv className="div-btn-2 mr-2">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    // isActive={activeButton === 'STOPPED'}
+                    isActive={activeButton === 'STOPPED'}
                     activeColor="#c52b2b"
                     hoverColor="#c52b2b"
                     activeTextColor="#fff"
-                    // onClick={() => handleUpdateStatus('STOPPED')}
+                    onClick={() => handleUpdateStatus('STOPPED')}
                   >
                     <SquareBoxIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
                 </ActiveButtonDiv>
-                <div>STOPPED_FLOW</div>
+                <div>{KDFM.STOPPED_FLOW}</div>
               </TextsvgDiv>
               <TextsvgDiv className="d-flex">
                 <ActiveButtonDiv className="div-btn-3 mr-2">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    // isActive={activeButton === 'ENABLED'}
+                    isActive={activeButton === 'ENABLED'}
                     activeColor="#cf9f5d"
                     hoverColor="#cf9f5d"
                     activeTextColor="#fff"
-                    // onClick={() => handleUpdateStatus('ENABLED')}
+                    onClick={() => handleUpdateStatus('ENABLED')}
                   >
                     <SmallThunderIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
                 </ActiveButtonDiv>
-                <div>ENABLED_FLOW</div>
+                <div>{KDFM.ENABLED_FLOW}</div>
               </TextsvgDiv>
               <TextsvgDiv className="d-flex">
                 <ActiveButtonDiv className="div-btn-4 mr-2">
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    // isActive={activeButton === 'DISABLED'}
+                    isActive={activeButton === 'DISABLED'}
                     activeColor="#2c7cf3"
                     hoverColor="#2c7cf3"
                     activeTextColor="#fff"
-                    // onClick={() => handleUpdateStatus('DISABLED')}
+                    onClick={() => handleUpdateStatus('DISABLED')}
                   >
                     <SmallNotThunderIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
                 </ActiveButtonDiv>
-                <div>DISABLED_FLOW</div>
+                <div>{KDFM.DISABLED_FLOW}</div>
               </TextsvgDiv>
             </ActiveButtonContainer>
           </IconsvgDiv>
-          <Table columns={COLUMNS} />
+          <div className="col-12 p-3">
+            <ConfigTitle className="config-title">
+              <ConfigTitleHTwo className="p-3 mb-0">
+                <span>Audit Log</span>
+              </ConfigTitleHTwo>
+            </ConfigTitle>
+          </div>
+          <Table data={auditTableData} columns={COLUMNS} />
         </ScrollSetGrey>
       </GreyBoxNamespace>
     </>

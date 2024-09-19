@@ -54,6 +54,11 @@ export const NamespacesActions = {
   ),
   setParentParameterList: createAction(`${prefix}setParentParameterList`),
   setParameterEditParent: createAction(`${prefix}setParameterEditParent`),
+  setSourceNamespaceId: createAction(`${prefix}setSourceNamespaceId`),
+  singleNamespaceData: createAction(`${prefix}singleNamespaceData`),
+  singleNamespaceDataSuccess: createAction(
+    `${prefix}singleNamespaceDataSuccess`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -100,6 +105,8 @@ export const NAMESPACES_INITIAL_STATE = {
     parent: false,
     id: '',
   },
+  sourceNamespaceId: '',
+  singleNamespaceData: {},
   // parameterEditParent: false,
 };
 
@@ -126,6 +133,8 @@ export const NamespacesSelectors = {
     state.namespaces.newlyAddedParameterContext,
   getParentListItems: state => state.namespaces.parentParameterList,
   getParameterEditParent: state => state.namespaces.parameterEditParent,
+  getSelectedSourceNamespace: state => state.namespaces.sourceNamespaceId,
+  getSingleNamespaceData: state => state.namespaces.singleNamespaceData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -173,6 +182,7 @@ const fetchDestNamespacesSuccess = (state, { payload }) => {
     destClusterNamespaces: payload,
   };
 };
+
 const checkDestClusterSuccess = (state, { payload }) => {
   return {
     ...state,
@@ -301,6 +311,19 @@ const setParameterEditParent = (state, { payload }) => {
     },
   };
 };
+const setSourceNamespaceId = (state, { payload }) => {
+  return {
+    ...state,
+    sourceNamespaceId: payload,
+  };
+};
+
+const singleNamespaceDataSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    singleNamespaceData: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -350,9 +373,11 @@ export const namespacesReducer = createReducer(
         setNewlyAddedParameterContext
       )
       .addCase(NamespacesActions.setParentParameterList, setParentParameterList)
+      .addCase(NamespacesActions.setParameterEditParent, setParameterEditParent)
+      .addCase(NamespacesActions.setSourceNamespaceId, setSourceNamespaceId)
       .addCase(
-        NamespacesActions.setParameterEditParent,
-        setParameterEditParent
+        NamespacesActions.singleNamespaceDataSuccess,
+        singleNamespaceDataSuccess
       );
   }
 );

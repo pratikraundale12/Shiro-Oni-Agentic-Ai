@@ -3,7 +3,6 @@ import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from './redux';
-
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const selectedNamespace = yield select(
@@ -125,31 +124,40 @@ export function* deployCluster(api) {
   if (response.ok) yield put(NamespacesActions.setDeployedModal());
   else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
-
 export function* updateNamespaceStatus(api, { payload }) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
   const checkDestCluster = yield select(
     NamespacesSelectors.getCheckDestCluster
   );
+  const srcNamespaceId = yield select(
+    NamespacesSelectors.getSelectedSourceNamespace
+  );
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
-  api.headers['x-cluster-id'] = destClusterToken?.id;
-  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const srcClusterToken = clusters?.find(
+    cluster => cluster.id === selectedCluster?.value
+  );
+  console.log(srcClusterToken, 'srcClusterToken');
+  api.headers['x-cluster-id'] = destClusterToken?.id || selectedCluster?.value;
+  api.headers['x-cluster-token'] =
+    destClusterToken?.token || srcClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'updateNamespaceStatus',
     loadingSection: 'updateNamespaceStatus',
     apiMethod: api.updateNamespaceStatus,
     apiParams: [
       {
-        clusterId: selectedDestCluster?.value,
-        namespaceId: deployOrUpgradeDetails.id || checkDestCluster?.id,
+        clusterId: selectedDestCluster?.value || selectedCluster?.value,
+        namespaceId:
+          deployOrUpgradeDetails.id || checkDestCluster?.id || srcNamespaceId,
         state: payload,
       },
     ],
@@ -619,9 +627,39 @@ export function* fetchNamespaceAudit(api) {
   else toast.error(response.data.message);
 }
 
+export function* singleNamespaceData(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  // const selectedNamespace = yield select(
+  //   NamespacesSelectors.getSelectedNamespace
+  // );
+  const srcNamespaceId = yield select(
+    NamespacesSelectors.getSelectedSourceNamespace
+  );
+  const queryParams = {
+    clusterId: selectedCluster?.value,
+    namespaceId: srcNamespaceId,
+  };
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  yield call(requestSaga, {
+    errorSection: 'singleNamespaceData',
+    loadingSection: 'singleNamespaceData',
+    apiMethod: api.singleNamespaceData,
+    apiParams: [{ queryParams }],
+    successAction: NamespacesActions.singleNamespaceDataSuccess,
+  });
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
+    takeLatest(NamespacesActions.singleNamespaceData, singleNamespaceData, api),
     takeLatest(NamespacesActions.fetchDestNamespaces, fetchDestNamespaces, api),
     takeLatest(NamespacesActions.checkDestCluster, checkDestCluster, api),
     takeLatest(NamespacesActions.deployCluster, deployCluster, api),
