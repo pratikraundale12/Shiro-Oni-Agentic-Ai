@@ -11,6 +11,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../store';
+import { SchedularSelectors } from '../store/schedular/redux';
 
 export const ClusterSelect = ({ isDestination = false, ...props }) => {
   const dispatch = useDispatch();
@@ -26,6 +27,9 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
   const selectedDestCluster = useSelector(
     NamespacesSelectors.getSelectedDestCluster
   );
+  const namespaceDirectSchedular = useSelector(
+    SchedularSelectors.getScheduleFromList
+  );
 
   const onChange = value => {
     if (value.is_active || location.pathname === '/login')
@@ -37,7 +41,18 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
       }
     else {
       value.is_deploy = true;
-      dispatch(AuthenticationActions.setClusterLogin(value));
+      if (namespaceDirectSchedular) {
+        dispatch(
+          NamespacesActions.setSelectedDestCluster({
+            label: value.label,
+            value: value.value,
+          })
+        );
+        dispatch(NamespacesActions.checkDestCluster()); // CALL CHECK API
+      } else {
+        dispatch(AuthenticationActions.setClusterLogin(value)); // OPEN THE POPUP
+      }
+
       if (isDestination) dispatch(AuthenticationActions.setDestinationFlag());
     }
   };
