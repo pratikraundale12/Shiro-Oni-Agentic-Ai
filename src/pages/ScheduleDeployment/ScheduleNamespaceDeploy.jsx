@@ -194,6 +194,9 @@ const ScheduleNamespaceDeploy = ({
   const newlyAddVariables = useSelector(
     NamespacesSelectors.getNewlyAddVariables
   );
+  const selectedNamespace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
 
   // const handleUpdateStatus = status => {
   //   dispatch(NamespacesActions.updateNamespaceStatus(status));
@@ -235,6 +238,7 @@ const ScheduleNamespaceDeploy = ({
         sensitive: item.sensitive,
       })),
       state: flowControlState,
+      source_namespace_id: selectedNamespace?.value,
     };
     dispatch(SchedularActions.createScheduleDeployment(payload));
   };
