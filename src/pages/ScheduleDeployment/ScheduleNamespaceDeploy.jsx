@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import {
   ExclamationIcon,
   SmallNotThunderIcon,
-  // SmallThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
@@ -109,42 +108,6 @@ const ActiveButtonContainer = styled.div`
   gap: 7px;
 `;
 
-// const ActiveButtonDiv = styled.div`
-//   height: 48px;
-//   width: 48px;
-//   max-width: 48px;
-//   max-height: 48px;
-//   min-height: 48px;
-//   min-width: 48px;
-//   border: 1px solid #dde4f0;
-//   border-radius: 8px;
-//   background-color: #f5f7fa;
-//   cursor: pointer;
-//   position: relative;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-
-//   &:hover {
-//     border: 1px solid
-//       ${props => (props.isActive ? props.activeColor : '#c52b2b')};
-//   }
-
-//   & span {
-//     position: absolute;
-//     top: 0px;
-//     right: 2px;
-//     font-family: ${props => props.theme.fontNato};
-//     font-size: 14px;
-//     font-weight: 500;
-//     line-height: 23px;
-//     color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
-//   }
-
-//   svg path {
-//     fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
-//   }
-// `;
 const WarningContainer = styled.div`
   height: 85px;
   border-radius: 20px;
@@ -335,59 +298,6 @@ const ScheduleNamespaceDeploy = ({
                 </div>
               </ActiveButtonContainer>
             </CustomNine>
-
-            {/* <CustomNine className="col-8 mb-3">
-              <ActiveButtonContainer className="d-flex ">
-                <ActiveButtonDiv className="div-btn-1">
-                  <ActiveButtonDiv
-                    className="div-btn-1"
-                    // isActive={activeButton === 'RUNNING'}
-                    activeColor="#58e715"
-                    hoverColor="#58e715"
-                    activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('RUNNING')}
-                  >
-                    <TriangleIcons color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
-                <ActiveButtonDiv className="div-btn-2">
-                  <ActiveButtonDiv
-                    className="div-btn-1"
-                    // isActive={activeButton === 'STOPPED'}
-                    activeColor="#c52b2b"
-                    hoverColor="#c52b2b"
-                    activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('STOPPED')}
-                  >
-                    <SquareBoxIcon color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
-                <ActiveButtonDiv className="div-btn-3">
-                  <ActiveButtonDiv
-                    className="div-btn-1"
-                    // isActive={activeButton === 'ENABLED'}
-                    activeColor="#cf9f5d"
-                    hoverColor="#cf9f5d"
-                    activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('ENABLED')}
-                  >
-                    <SmallThunderIcon color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
-                <ActiveButtonDiv className="div-btn-4">
-                  <ActiveButtonDiv
-                    className="div-btn-1"
-                    // isActive={activeButton === 'DISABLED'}
-                    activeColor="#2c7cf3"
-                    hoverColor="#2c7cf3"
-                    activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('DISABLED')}
-                  >
-                    <SmallNotThunderIcon color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
-              </ActiveButtonContainer>
-            </CustomNine> */}
           </RowModal>
           <WarningContainer>
             <div className="col-2 d-flex justify-content-center align-items-center">
