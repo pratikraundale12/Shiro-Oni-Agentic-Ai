@@ -321,6 +321,10 @@ const setSourceNamespaceId = (state, { payload }) => {
 const singleNamespaceDataSuccess = (state, { payload }) => {
   return {
     ...state,
+    // deployOrUpgradeDetails: {
+    //   ...state.deployOrUpgradeDetails,
+    //   ...payload,
+    // },
     singleNamespaceData: payload,
   };
 };

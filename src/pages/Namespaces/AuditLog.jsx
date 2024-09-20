@@ -62,7 +62,7 @@ const AuditLog = ({ isOpen, rowId, closePopup }) => {
       onSubmit={closePopup}
       contentStyles={{ maxWidth: '65%', maxHeight: '65%' }}
     >
-      <Table data={auditTableData} columns={COLUMNS} />
+      <Table data={auditTableData.slice(0, 10)} columns={COLUMNS} />
     </Modal>
   );
 };

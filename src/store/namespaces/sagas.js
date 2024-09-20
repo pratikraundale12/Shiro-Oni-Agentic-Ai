@@ -145,7 +145,6 @@ export function* updateNamespaceStatus(api, { payload }) {
   const srcClusterToken = clusters?.find(
     cluster => cluster.id === selectedCluster?.value
   );
-  console.log(srcClusterToken, 'srcClusterToken');
   api.headers['x-cluster-id'] = destClusterToken?.id || selectedCluster?.value;
   api.headers['x-cluster-token'] =
     destClusterToken?.token || srcClusterToken?.token;

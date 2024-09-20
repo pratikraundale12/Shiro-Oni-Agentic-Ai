@@ -6,11 +6,14 @@ import {
   SmallNotThunderIcon,
   SmallThunderIcon,
   SquareBoxIcon,
+  TodoIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
 import { StatusRender, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
+import { history } from '../../helpers/history';
+import { Button } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 // import { KDFM } from '../../constants';
 
@@ -20,8 +23,8 @@ const GreyBoxNamespace = styled.div`
   border-radius: 20px;
 `;
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
-  max-height: calc(100vh - 341px);
+  min-height: calc(100vh - 315px);
+  max-height: calc(100vh - 315px);
   overflow-x: hidden;
   overflow-y: auto;
 `;
@@ -200,6 +203,31 @@ const ActiveButtonDiv = styled.div`
     fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
 `;
+const TopTitleBar = styled.div`
+  height: 37px;
+  align-items: center;
+  justify-content: space-between !important;
+`;
+const MainTitleDiv = styled.div`
+  gap: 10px;
+  align-items: center;
+`;
+const MainTitleHfour = styled.h4`
+  font-family: ${props => props.theme.fontNato};
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 27.24px;
+  color: #444445;
+  text-transform: capitalize;
+`;
+const BottomButtonDiv = styled.div`
+  gap: 16px;
+  align-items: center;
+`;
+const BottomButton = styled.div`
+  align-items: center;
+  justify-content: space-between !important;
+`;
 
 const ProcessGroupSummary = () => {
   const COLUMNS = [
@@ -239,13 +267,22 @@ const ProcessGroupSummary = () => {
     dispatch(NamespacesActions.setSourceNamespaceId(id));
     dispatch(NamespacesActions.singleNamespaceData(id));
   }, [id]);
-
   const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
-
-  console.log(singleNamespaceData, 'singleNamespaceData');
+  const [countData, setCountData] = useState(singleNamespaceData);
+  useEffect(() => {
+    setCountData(singleNamespaceData);
+  }, [singleNamespaceData]);
+  const deployOrUpgradeDetails = useSelector(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  useEffect(() => {
+    if (deployOrUpgradeDetails) {
+      setCountData(deployOrUpgradeDetails);
+    }
+  }, [deployOrUpgradeDetails]);
 
   useEffect(() => {
     dispatch(NamespacesActions.fetchNamespaceAudit());
@@ -259,16 +296,29 @@ const ProcessGroupSummary = () => {
     setActiveButton(status);
     dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
+  const handleBackClick = () => {
+    history.push('/process-group');
+  };
 
   return (
     <>
+      <TopTitleBar className=" d-flex  mb-3">
+        <MainTitleDiv className="d-flex">
+          <div className="mb-2">
+            <TodoIcon width={22} height={24} />
+          </div>
+          <MainTitleHfour className="mb-0">
+            {singleNamespaceData?.name} Details
+          </MainTitleHfour>
+        </MainTitleDiv>
+      </TopTitleBar>
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className=" pe-1">
           <RowConfig>
             <div className="col-12 p-3">
               <ConfigTitle className="config-title">
                 <ConfigTitleHTwo className="p-3 mb-0">
-                  <span>{singleNamespaceData?.name} Summary</span>
+                  <span>Summary</span>
                 </ConfigTitleHTwo>
               </ConfigTitle>
             </div>
@@ -335,7 +385,6 @@ const ProcessGroupSummary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       {singleNamespaceData?.version}
-                      {/* {formData.version || checkDestCluster.version} */}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -346,7 +395,6 @@ const ProcessGroupSummary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       {singleNamespaceData?.state}
-                      {/* {formData.version || checkDestCluster.version} */}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -378,44 +426,44 @@ const ProcessGroupSummary = () => {
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-1 mr-2"
-                    count={singleNamespaceData?.runningCount}
+                    count={countData?.runningCount}
                     activeColor="#58e715"
                   >
                     <TriangleIcons color="#B5BDC8" />
-                    <span>{singleNamespaceData?.runningCount}</span>
+                    <span>{countData?.runningCount}</span>
                   </CountDiv>
                   <div>{KDFM.RUNNING_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-2 mr-2"
-                    count={singleNamespaceData?.stoppedCount}
+                    count={countData?.stoppedCount}
                     activeColor="#c52b2b"
                   >
                     <SquareBoxIcon color="#B5BDC8" />
-                    <span>{singleNamespaceData?.stoppedCount}</span>
+                    <span>{countData?.stoppedCount}</span>
                   </CountDiv>
                   <div>{KDFM.STOPPED_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-3 mr-2"
-                    count={singleNamespaceData?.invalidCount}
+                    count={countData?.invalidCount}
                     activeColor="#CF9F5D"
                   >
                     <TriangleExclamationMarkIcon color="#B5BDC8" />
-                    <span>{singleNamespaceData?.invalidCount}</span>
+                    <span>{countData?.invalidCount}</span>
                   </CountDiv>
                   <div>{KDFM.INVALID_PROCESSORS}</div>
                 </TextDiv>
                 <TextDiv className="d-flex">
                   <CountDiv
                     className="div-btn-4 mr-2"
-                    count={singleNamespaceData?.disabledCount}
+                    count={countData?.disabledCount}
                     activeColor="#2c7cf3"
                   >
                     <SmallNotThunderIcon color="#B5BDC8" />
-                    <span>{singleNamespaceData?.disabledCount}</span>
+                    <span>{countData?.disabledCount}</span>
                   </CountDiv>
                   <div>{KDFM.DISABLED_PROCESSORS}</div>
                 </TextDiv>
@@ -491,9 +539,16 @@ const ProcessGroupSummary = () => {
               </ConfigTitleHTwo>
             </ConfigTitle>
           </div>
-          <Table data={auditTableData} columns={COLUMNS} />
+          <Table data={auditTableData.slice(0, 10)} columns={COLUMNS} />
         </ScrollSetGrey>
       </GreyBoxNamespace>
+      <BottomButton className="bottom-button-divs d-flex">
+        <BottomButtonDiv className="btn-div d-flex">
+          <Button variant="secondary" onClick={handleBackClick}>
+            {KDFM.BACK}
+          </Button>
+        </BottomButtonDiv>
+      </BottomButton>
     </>
   );
 };
