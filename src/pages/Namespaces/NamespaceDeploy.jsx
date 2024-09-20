@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { Tooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -13,7 +13,7 @@ import {
 } from '../../assets';
 import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { NamespacesSelectors } from '../../store';
 
 const ModalBody = styled.div`
   position: relative;
@@ -163,9 +163,9 @@ const NamespaceDeploy = ({
   closePopup,
   getParamerterContext,
   handleTertiaryButton,
+  handleFlowConfirmPopup = () => {},
+  activeButtonPopup,
 }) => {
-  const dispatch = useDispatch();
-  const [activeButton, setActiveButton] = useState(null);
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
@@ -174,10 +174,6 @@ const NamespaceDeploy = ({
   const selectedDestCluster = useSelector(
     NamespacesSelectors.getSelectedDestCluster
   );
-  const handleUpdateStatus = status => {
-    setActiveButton(status);
-    dispatch(NamespacesActions.updateNamespaceStatus(status));
-  };
 
   const handleClick = () => {
     const updatedUrl = deployOrUpgradeDetails.nifiUrl.endsWith('/nifi')
@@ -305,11 +301,13 @@ const NamespaceDeploy = ({
                   </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'RUNNING'}
+                    isActive={activeButtonPopup === 'RUNNING'}
                     activeColor="#58e715"
                     hoverColor="#58e715"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('RUNNING')}
+                    onClick={() => {
+                      handleFlowConfirmPopup('RUNNING');
+                    }}
                     data-tooltip-id="running-tooltip"
                   >
                     <TriangleIcons color="#B5BDC8" />
@@ -322,11 +320,13 @@ const NamespaceDeploy = ({
                   </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'STOPPED'}
+                    isActive={activeButtonPopup === 'STOPPED'}
                     activeColor="#c52b2b"
                     hoverColor="#c52b2b"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('STOPPED')}
+                    onClick={() => {
+                      handleFlowConfirmPopup('STOPPED');
+                    }}
                     data-tooltip-id="stopped-tooltip"
                   >
                     <SquareBoxIcon color="#B5BDC8" />
@@ -339,11 +339,13 @@ const NamespaceDeploy = ({
                   </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'ENABLED'}
+                    isActive={activeButtonPopup === 'ENABLED'}
                     activeColor="#cf9f5d"
                     hoverColor="#cf9f5d"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('ENABLED')}
+                    onClick={() => {
+                      handleFlowConfirmPopup('ENABLED');
+                    }}
                     data-tooltip-id="enabled-tooltip"
                   >
                     <SmallThunderIcon color="#B5BDC8" />
@@ -356,11 +358,13 @@ const NamespaceDeploy = ({
                   </Tooltip>
                   <ActiveButtonDiv
                     className="div-btn-1"
-                    isActive={activeButton === 'DISABLED'}
+                    isActive={activeButtonPopup === 'DISABLED'}
                     activeColor="#2c7cf3"
                     hoverColor="#2c7cf3"
                     activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('DISABLED')}
+                    onClick={() => {
+                      handleFlowConfirmPopup('DISABLED');
+                    }}
                     data-tooltip-id="disabled-tooltip"
                   >
                     <SmallNotThunderIcon color="#B5BDC8" />
@@ -411,6 +415,8 @@ NamespaceDeploy.propTypes = {
       })
     ),
   }),
+  handleFlowConfirmPopup: PropTypes.func,
+  activeButtonPopup: PropTypes.string,
 };
 
 export default NamespaceDeploy;

@@ -1,10 +1,10 @@
 export const namespacesAPI = api => {
   const fetchNamespaces = ({
     params = {},
-    queryParams: { clusterId, namespaceId },
+    queryParams: { clusterId, namespaceId, is_scheduled },
   }) => {
     return api.get(
-      `/clusters/${clusterId}/namespaces${namespaceId && `/${namespaceId}`}`,
+      `/clusters/${clusterId}/namespaces${namespaceId && `/${namespaceId}`}?is_scheduled=${is_scheduled || false}`,
       params
     );
   };

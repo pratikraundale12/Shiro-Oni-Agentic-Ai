@@ -16,7 +16,7 @@ import { TodoIcon } from '../../assets/Icons/TodoIcon';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button } from '../../shared';
+import { Button, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
@@ -34,6 +34,10 @@ import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
+import StartIconImage from '../../assets/images/start.png';
+import StopIconImage from '../../assets/images/stop.png';
+import EnableIconImage from '../../assets/images/enable.png';
+import DisbaleIconImage from '../../assets/images/disable.png';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -324,6 +328,12 @@ const Summary = () => {
     schedule: false,
   });
   const [loading, setLoading] = useState(false);
+  const [confirmDialogue, setConfirmDialogue] = useState({
+    state: false,
+    action: '',
+    text: '',
+    forPopup: false,
+  });
 
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
@@ -422,9 +432,64 @@ const Summary = () => {
   };
 
   const [activeButton, setActiveButton] = useState(null);
+  const [activeButtonPopup, setActiveButtonPopup] = useState(null);
+
   const handleUpdateStatus = status => {
-    setActiveButton(status);
-    setFlowControlButtons(status);
+    const text =
+      status === 'STOPPED'
+        ? 'stop'
+        : status === 'RUNNING'
+          ? 'start'
+          : status === 'ENABLED'
+            ? 'enable'
+            : status === 'DISABLED'
+              ? 'disable'
+              : '';
+    setConfirmDialogue({
+      state: true,
+      action: status,
+      text,
+      forPopup: false,
+    });
+  };
+
+  const handleConfirmUpdateStatus = () => {
+    if (confirmDialogue.forPopup) {
+      dispatch(
+        NamespacesActions.updateNamespaceStatus(confirmDialogue?.action)
+      );
+    } else {
+      setActiveButton(confirmDialogue.action);
+      setFlowControlButtons(confirmDialogue.action);
+    }
+
+    setConfirmDialogue({
+      state: false,
+      action: '',
+      text: '',
+      forPopup: false,
+    });
+  };
+
+  const handleFlowConfirmPopup = status => {
+    setActiveButtonPopup(status);
+    const text =
+      status === 'STOPPED'
+        ? 'stop'
+        : status === 'RUNNING'
+          ? 'start'
+          : status === 'ENABLED'
+            ? 'enable'
+            : status === 'DISABLED'
+              ? 'disable'
+              : '';
+    setConfirmDialogue({
+      state: true,
+      action: status,
+      text,
+      forPopup: true,
+    });
+    // dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
 
   return (
@@ -756,6 +821,9 @@ const Summary = () => {
         openParameterContext={openParameterContext}
         getParamerterContext={getParamerterContext}
         handleTertiaryButton={handleTertiaryButton}
+        activeButtonPopup={activeButtonPopup}
+        setActiveButtonPopup={setActiveButtonPopup}
+        handleFlowConfirmPopup={handleFlowConfirmPopup}
       />
       <ScheduleNamespaceDeploy
         getScheduleParamerterContext={getScheduleParamerterContext}
@@ -788,6 +856,39 @@ const Summary = () => {
         isVariablesModalOpen={isVariablesModalOpen}
         setVariablesModalOpen={setVariablesModalOpen}
         handleTertiaryButton={handleTertiaryButton}
+      />
+      <ModalWithIcon
+        title={'Flow Confirmation'}
+        primaryButtonText={'Confirm'}
+        secondaryButtonText="Cancel"
+        icon={
+          <img
+            src={
+              confirmDialogue?.action === 'STOPPED'
+                ? StopIconImage
+                : confirmDialogue?.action === 'RUNNING'
+                  ? StartIconImage
+                  : confirmDialogue?.action === 'ENABLED'
+                    ? EnableIconImage
+                    : DisbaleIconImage
+            }
+            height="80px"
+            width="80px"
+            alt="img"
+          />
+        }
+        isOpen={confirmDialogue?.state}
+        onRequestClose={() => {
+          setConfirmDialogue({
+            state: false,
+            action: '',
+            text: '',
+            forPopup: false,
+          });
+          setActiveButtonPopup(null);
+        }}
+        primaryText={`Do you really want to ${confirmDialogue?.text}?`}
+        onSubmit={handleConfirmUpdateStatus}
       />
     </MainContainer>
   );
