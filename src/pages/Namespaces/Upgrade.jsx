@@ -17,6 +17,7 @@ import { history } from '../../helpers/history';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { SchedularSelectors } from '../../store/schedular/redux';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -165,6 +166,8 @@ const Upgrade = () => {
     NamespacesSelectors.getSelectedDestCluster
   );
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
+
   const formData = useSelector(NamespacesSelectors.getFormData);
   const convertDate = dateString => {
     const date = new Date(dateString);
@@ -405,11 +408,13 @@ const Upgrade = () => {
               (!formData.version || isStateStale)
             }
           >
-            {checkDestCluster.mode === 'upgrade'
-              ? checkDestCluster.version <= formData.version
-                ? KDFM.UPGRADE
-                : KDFM.DOWNGRADE
-              : KDFM.DEPLOY}
+            {schedularFromList
+              ? KDFM.CONTINUE
+              : checkDestCluster.mode === 'upgrade'
+                ? checkDestCluster.version <= formData.version
+                  ? KDFM.UPGRADE
+                  : KDFM.DOWNGRADE
+                : KDFM.DEPLOY}
           </Button>
         </BottomButtonDiv>
       </BottomButton>
