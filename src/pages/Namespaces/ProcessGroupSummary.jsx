@@ -10,10 +10,14 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
+import DisbaleIconImage from '../../assets/images/disable.png';
+import EnableIconImage from '../../assets/images/enable.png';
+import StartIconImage from '../../assets/images/start.png';
+import StopIconImage from '../../assets/images/stop.png';
 import { StatusRender, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button } from '../../shared';
+import { Button, ModalWithIcon } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 // import { KDFM } from '../../constants';
 
@@ -272,6 +276,12 @@ const ProcessGroupSummary = () => {
     NamespacesSelectors.getSingleNamespaceData
   );
   const [countData, setCountData] = useState(singleNamespaceData);
+  const [confirmDialogue, setConfirmDialogue] = useState({
+    state: false,
+    action: '',
+    text: '',
+    forPopup: false,
+  });
   useEffect(() => {
     setCountData(singleNamespaceData);
   }, [singleNamespaceData]);
@@ -294,10 +304,36 @@ const ProcessGroupSummary = () => {
 
   const handleUpdateStatus = status => {
     setActiveButton(status);
-    dispatch(NamespacesActions.updateNamespaceStatus(status));
+    const text =
+      status === 'STOPPED'
+        ? 'stop'
+        : status === 'RUNNING'
+          ? 'start'
+          : status === 'ENABLED'
+            ? 'enable'
+            : status === 'DISABLED'
+              ? 'disable'
+              : '';
+    setConfirmDialogue({
+      state: true,
+      action: status,
+      text,
+      forPopup: true,
+    });
   };
   const handleBackClick = () => {
     history.push('/process-group');
+  };
+  console.log(confirmDialogue.action);
+
+  const handleConfirmUpdateStatus = () => {
+    dispatch(NamespacesActions.updateNamespaceStatus(confirmDialogue.action));
+    setConfirmDialogue({
+      state: false,
+      action: '',
+      text: '',
+      forPopup: false,
+    });
   };
 
   return (
@@ -351,7 +387,7 @@ const ProcessGroupSummary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>{singleNamespaceData?.flowName}</span>
+                        <span>{singleNamespaceData?.flowName || 'N/A'}</span>
                       </div>
                     </SummaryDetailsPtag>
                   </div>
@@ -363,7 +399,7 @@ const ProcessGroupSummary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>{singleNamespaceData?.flowId}</span>
+                        <span>{singleNamespaceData?.flowId || 'N/A'}</span>
                       </div>
                     </SummaryDetailsPtag>
                   </div>
@@ -374,7 +410,7 @@ const ProcessGroupSummary = () => {
                       Bucket Name
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {singleNamespaceData?.bucketName}
+                      {singleNamespaceData?.bucketName || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -384,7 +420,7 @@ const ProcessGroupSummary = () => {
                       version
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {singleNamespaceData?.version}
+                      {singleNamespaceData?.version || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -394,7 +430,7 @@ const ProcessGroupSummary = () => {
                       State
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {singleNamespaceData?.state}
+                      {singleNamespaceData?.state || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -404,7 +440,7 @@ const ProcessGroupSummary = () => {
                       State Explaination
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {singleNamespaceData?.stateExplanation}
+                      {singleNamespaceData?.stateExplanation || 'N/A'}
                       {/* {formData.version || checkDestCluster.version} */}
                     </SummaryDetailsPtag>
                   </div>
@@ -549,6 +585,38 @@ const ProcessGroupSummary = () => {
           </Button>
         </BottomButtonDiv>
       </BottomButton>
+      <ModalWithIcon
+        title={'Flow Confirmation'}
+        primaryButtonText={'Confirm'}
+        secondaryButtonText="Cancel"
+        icon={
+          <img
+            src={
+              confirmDialogue?.action === 'STOPPED'
+                ? StopIconImage
+                : confirmDialogue?.action === 'RUNNING'
+                  ? StartIconImage
+                  : confirmDialogue?.action === 'ENABLED'
+                    ? EnableIconImage
+                    : DisbaleIconImage
+            }
+            height="80px"
+            width="80px"
+            alt="img"
+          />
+        }
+        isOpen={confirmDialogue?.state}
+        onRequestClose={() => {
+          setConfirmDialogue({
+            state: false,
+            action: '',
+            text: '',
+            forPopup: false,
+          });
+        }}
+        primaryText={`Do you really want to ${confirmDialogue?.text}?`}
+        onSubmit={handleConfirmUpdateStatus}
+      />
     </>
   );
 };

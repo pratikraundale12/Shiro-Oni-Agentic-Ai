@@ -355,7 +355,6 @@ export const Add = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { state: data } = location.state || {};
-  console.log({ location });
   const [tags, setTags] = useState(data?.tag || '');
   const [clusterData, setClusterData] = useState({
     clusterName: data?.name || '',
@@ -525,7 +524,6 @@ export const Add = () => {
   }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const fetchRegistryDetails = async () => {
-    console.log('hi');
     try {
       const response = await getOneRegistry(selectedRegistryId);
       setRegistryData(response);

@@ -156,11 +156,9 @@ export const SummaryModal = ({
   notificationEnable,
   tags,
 }) => {
-  // console.log('clusterData', clusterData);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const clusterData = useSelector(ClustersSelectors.getAddEditClusterData);
-  console.log('clusterData', clusterData);
   const addRegistry = async () => {
     const data = {
       name: registryData?.registryName,
@@ -176,8 +174,6 @@ export const SummaryModal = ({
       toast.error(response.message);
     }
   };
-
-  console.log({ clusterData });
 
   const addCluster = async ({ registry_id }) => {
     const data = {
@@ -204,10 +200,8 @@ export const SummaryModal = ({
       name: registryData.registryName,
       registry_url: registryData.registryUrl,
     };
-    console.log({ payload });
     const id = registry_id;
     const response = await updateRegistry(id, payload);
-    console.log({ response }, 'line');
     if (response?.id) {
       setLoading(false);
       toast.success(response.message);
@@ -225,11 +219,8 @@ export const SummaryModal = ({
       tag: tags,
       notification_enable: notificationEnable,
     };
-
-    console.log({ payload });
     const id = clusterId;
     const response = await updateCluster(id, payload);
-    console.log({ response });
     if (response?.id) {
       await editRegistryData();
     } else {
@@ -239,19 +230,12 @@ export const SummaryModal = ({
   };
 
   const handleSubmit = async () => {
-    console.log('hi');
     setLoading(true);
     if (edit) {
-      console.log('edit');
-      const a = await editClusterData();
-      console.log(a);
+      editClusterData();
     } else if (registry_id) {
-      console.log('addCluste');
-
       addCluster({ registry_id: registry_id });
     } else {
-      console.log('addCluster2');
-
       addRegistry();
     }
   };

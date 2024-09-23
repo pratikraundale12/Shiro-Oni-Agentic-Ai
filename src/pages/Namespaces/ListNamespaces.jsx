@@ -3,16 +3,16 @@ import { useDispatch } from 'react-redux';
 // import { Link } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { ActivityHistoryIcon } from '../../assets';
+import { ActivityHistoryIcon, OpenEyeIcon } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
+import { DoubleButton } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import { NamespacesActions } from '../../store';
+import { SchedularActions } from '../../store/schedular/redux';
 import { useGlobalContext } from '../../utils';
 import AuditLog from './AuditLog';
-import { SchedularActions } from '../../store/schedular/redux';
-import { DoubleButton } from '../../shared';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -21,6 +21,20 @@ const StyledButton = styled.button`
   border: none;
   text-decoration: underline;
   text-underline-offset: 3px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+`;
+const FlowNameDiv = styled.div`
+  color: ${props => props.theme.colors.darker};
+  font-family: ${props => props.theme.fontNato};
+  font-size: ${props => props.theme.size.lg};
+  font-weight: 400;
+  text-transform: ${props => (props.capitalizeText ? 'capitalize' : 'none')};
+  background: none;
+  border: none;
   display: inline-block;
   white-space: nowrap;
   overflow: hidden;
@@ -119,56 +133,24 @@ export const ListNamespaces = () => {
       label: KDFM.NAMESPACE_ID,
       renderCell: item => (
         <Flex>
-          <TextRender
-            text={item.id}
-            onClick={() => history.push(`/process-group/${item.id}`)}
-            style={{
-              cursor: 'pointer',
-              // color: 'blue',
-              // textDecoration: 'underline',
-            }}
-          />
+          <TextRender text={item.id} />
           <CopyToClipboard copyItem={item.id} />
         </Flex>
       ),
-      width: '30%',
+      width: '25%',
     },
     {
       label: KDFM.FLOW_NAME,
-
-      renderCell: item => (
-        <TextRender
-          onClick={() => history.push(`/process-group/${item.id}`)}
-          style={{
-            cursor: 'pointer',
-          }}
-          text={item.flowName || KDFM.NA}
-        />
-      ),
+      renderCell: item => <FlowNameDiv>{item.flowName || KDFM.NA}</FlowNameDiv>,
+      // renderCell: item => <TextRender text={item.flowName || KDFM.NA} />,
     },
     {
       label: KDFM.BUCKET_NAME,
-      renderCell: item => (
-        <TextRender
-          onClick={() => history.push(`/process-group/${item.id}`)}
-          style={{
-            cursor: 'pointer',
-          }}
-          text={item.bucketName || KDFM.NA}
-        />
-      ),
+      renderCell: item => <TextRender text={item.bucketName || KDFM.NA} />,
     },
     {
       label: KDFM.VERSION,
-      renderCell: item => (
-        <TextRender
-          onClick={() => history.push(`/process-group/${item.id}`)}
-          style={{
-            cursor: 'pointer',
-          }}
-          text={item.version || KDFM.NA}
-        />
-      ),
+      renderCell: item => <TextRender text={item.version || KDFM.NA} />,
     },
     {
       label: KDFM.ACTIONS,
@@ -189,6 +171,19 @@ export const ListNamespaces = () => {
           >
             <IconButton>
               <ActivityHistoryIcon width={16} height={16} />
+            </IconButton>
+          </button>
+          <button
+            onClick={() => history.push(`/process-group/${item.id}`)}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+            }}
+          >
+            <IconButton>
+              <OpenEyeIcon width={16} height={16} />
             </IconButton>
           </button>
           <DoubleButton
