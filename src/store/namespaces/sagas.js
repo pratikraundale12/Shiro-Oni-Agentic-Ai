@@ -2,7 +2,9 @@ import { toast } from 'react-toastify';
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
+import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
+
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const selectedNamespace = yield select(
@@ -51,6 +53,7 @@ export function* fetchDestNamespaces(api) {
 
 export function* checkDestCluster(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const scheduleFromList = yield select(SchedularSelectors.getScheduleFromList);
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
@@ -62,7 +65,9 @@ export function* checkDestCluster(api) {
   const destClusterToken = clusters?.find(
     cluster => cluster.id === selectedDestCluster?.value
   );
-  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-id'] = scheduleFromList
+    ? selectedDestCluster.value
+    : destClusterToken?.id;
   api.headers['x-cluster-token'] = destClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'checkDestCluster',
@@ -74,6 +79,7 @@ export function* checkDestCluster(api) {
         srcClusterId: selectedCluster?.value,
         srcClusterToken,
         path,
+        is_scheduled: scheduleFromList,
       },
     ],
     successAction: NamespacesActions.checkDestClusterSuccess,

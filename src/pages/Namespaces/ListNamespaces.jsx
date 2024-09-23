@@ -7,11 +7,12 @@ import { ActivityHistoryIcon } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import { NamespacesActions } from '../../store';
 import { useGlobalContext } from '../../utils';
 import AuditLog from './AuditLog';
+import { SchedularActions } from '../../store/schedular/redux';
+import { DoubleButton } from '../../shared';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -66,6 +67,15 @@ export const ListNamespaces = () => {
     );
     return [...sortedWithVersion, ...sortedWithoutVersion];
   }
+
+  const handleScheduleClick = item => {
+    dispatch(SchedularActions.setScheduleFromList(true));
+    handleSelect(item);
+  };
+
+  useEffect(() => {
+    dispatch(SchedularActions.setScheduleFromList(false));
+  }, []);
 
   const COLUMNS = [
     {
@@ -181,19 +191,17 @@ export const ListNamespaces = () => {
               <ActivityHistoryIcon width={16} height={16} />
             </IconButton>
           </button>
-          <Button
-            style={{ minWidth: '113px', maxWidth: '113px' }}
-            onClick={() => handleSelect(item)}
-            disabled={
+          <DoubleButton
+            disable={
               !item.flowId ||
               !item.version ||
               item.flowId === KDFM.NA ||
               item.version === KDFM.NA
             }
-            size="sm"
-          >
-            {KDFM.DEPLOY}
-          </Button>
+            item={item}
+            handleLeftClick={handleSelect}
+            handleRightClick={handleScheduleClick}
+          />
         </div>
       ),
     },

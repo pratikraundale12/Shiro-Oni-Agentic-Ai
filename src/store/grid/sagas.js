@@ -4,6 +4,7 @@ import { CLUSTERS_TOKEN, DEBOUNCE_DELAY } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
 import { GridActions } from './redux';
+import { SchedularSelectors } from '../schedular/redux';
 
 export function* fetchGrid(
   api,
@@ -19,6 +20,7 @@ export function* fetchGrid(
   const selectedDestNamespace = yield select(
     NamespacesSelectors.getSelectedDestNamespace
   );
+  const scheduleFromList = yield select(SchedularSelectors.getScheduleFromList);
   const API = {
     users: api.fetchUsers,
     clusters: api.fetchClusters,
@@ -51,6 +53,7 @@ export function* fetchGrid(
     queryParams = {
       clusterId: selectedDestCluster?.value || '',
       namespaceId: selectedDestNamespace?.value || '',
+      is_scheduled: scheduleFromList || false,
     };
     const clustersToken = JSON.parse(
       localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -58,8 +61,12 @@ export function* fetchGrid(
     const selectedClusterToken = clustersToken.find(
       item => item.id === selectedDestCluster?.value
     );
-    api.headers['x-cluster-id'] = selectedClusterToken?.id;
-    api.headers['x-cluster-token'] = selectedClusterToken?.token;
+    api.headers['x-cluster-id'] = scheduleFromList
+      ? selectedDestCluster?.value
+      : selectedClusterToken?.id;
+    api.headers['x-cluster-token'] = scheduleFromList
+      ? undefined
+      : selectedClusterToken?.token;
   }
   if (module === 'namespaces' && isEmpty(selectedCluster)) return;
   if (module === 'nodes') {
