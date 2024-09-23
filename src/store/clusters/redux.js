@@ -11,6 +11,7 @@ export const ClustersActions = {
   updateClusterSuccessModal: createAction(`${prefix}updateClusterSuccessModal`),
   fetchClusters: createAction(`${prefix}fetchClusters`),
   fetchClustersSuccess: createAction(`${prefix}fetchClustersSuccess`),
+  addEditClusterData: createAction(`${prefix}addEditClusterData`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -19,6 +20,7 @@ export const CLUSTERS_INITIAL_STATE = {
   nodes: [],
   clusterSuccessModal: false,
   clusterList: [],
+  addEditClusterData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -27,6 +29,7 @@ export const ClustersSelectors = {
   getClusterNodes: state => state.clusters.nodes,
   getClusterSuccessModal: state => state.clusters.clusterSuccessModal,
   getAllClustersList: state => state.clusters.clusterList,
+  getAddEditClusterData: state => state.clusters.addEditClusterData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -62,6 +65,13 @@ const updateClusterSuccessModal = (state, { payload }) => {
   };
 };
 
+const addEditClusterData = (state, { payload }) => {
+  return {
+    ...state,
+    addEditClusterData: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -76,6 +86,7 @@ export const clustersReducer = createReducer(
         ClustersActions.updateClusterSuccessModal,
         updateClusterSuccessModal
       )
-      .addCase(ClustersActions.fetchClustersSuccess, fetchClustersSuccess);
+      .addCase(ClustersActions.fetchClustersSuccess, fetchClustersSuccess)
+      .addCase(ClustersActions.addEditClusterData, addEditClusterData);
   }
 );

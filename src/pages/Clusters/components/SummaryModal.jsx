@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { toast, ToastContainer } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { KDFM } from '../../../constants';
 import { history } from '../../../helpers/history';
 import { Modal } from '../../../shared';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
-import { ClustersActions } from '../../../store';
+import { ClustersActions, ClustersSelectors } from '../../../store';
 import {
   createCluster,
   createRegistry,
@@ -146,7 +146,7 @@ const TextEllipses = styled.div`
 `;
 
 export const SummaryModal = ({
-  clusterData,
+  // clusterData,
   registryData,
   openSummary,
   setOpenSummary,
@@ -156,8 +156,11 @@ export const SummaryModal = ({
   notificationEnable,
   tags,
 }) => {
+  // console.log('clusterData', clusterData);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const clusterData = useSelector(ClustersSelectors.getAddEditClusterData);
+  console.log('clusterData', clusterData);
   const addRegistry = async () => {
     const data = {
       name: registryData?.registryName,
@@ -174,10 +177,12 @@ export const SummaryModal = ({
     }
   };
 
+  console.log({ clusterData });
+
   const addCluster = async ({ registry_id }) => {
     const data = {
-      name: clusterData.clusterName,
-      nifi_url: clusterData.nifiUrl,
+      name: clusterData?.clusterName,
+      nifi_url: clusterData?.nifiUrl,
       registry_id: registry_id,
       tag: tags,
       notification_enable: notificationEnable,
@@ -199,8 +204,10 @@ export const SummaryModal = ({
       name: registryData.registryName,
       registry_url: registryData.registryUrl,
     };
+    console.log({ payload });
     const id = registry_id;
     const response = await updateRegistry(id, payload);
+    console.log({ response }, 'line');
     if (response?.id) {
       setLoading(false);
       toast.success(response.message);
@@ -219,23 +226,32 @@ export const SummaryModal = ({
       notification_enable: notificationEnable,
     };
 
+    console.log({ payload });
     const id = clusterId;
     const response = await updateCluster(id, payload);
+    console.log({ response });
     if (response?.id) {
-      editRegistryData();
+      await editRegistryData();
     } else {
       setLoading(false);
       toast.error(response.message);
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    console.log('hi');
     setLoading(true);
     if (edit) {
-      editClusterData();
+      console.log('edit');
+      const a = await editClusterData();
+      console.log(a);
     } else if (registry_id) {
+      console.log('addCluste');
+
       addCluster({ registry_id: registry_id });
     } else {
+      console.log('addCluster2');
+
       addRegistry();
     }
   };

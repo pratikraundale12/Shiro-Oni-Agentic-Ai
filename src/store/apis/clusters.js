@@ -1,5 +1,6 @@
 /*eslint-disable*/
 
+import { toast } from 'react-toastify';
 import { API_URL } from '../../constants';
 import API from './api';
 

@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -17,6 +18,7 @@ import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, CheckboxField, InputField, SelectField } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
+import { ClustersActions } from '../../store';
 import {
   getOneRegistry,
   getRegistryList,
@@ -351,12 +353,19 @@ export const Add = () => {
   const [openSummary, setOpenSummary] = useState(false);
   const [failedTestMessage, setFailedTestMessage] = useState('');
   const location = useLocation();
+  const dispatch = useDispatch();
   const { state: data } = location.state || {};
+  console.log({ location });
   const [tags, setTags] = useState(data?.tag || '');
   const [clusterData, setClusterData] = useState({
     clusterName: data?.name || '',
     nifiUrl: data?.nifi_url || '',
   });
+  useEffect(() => {
+    if (clusterData) {
+      dispatch(ClustersActions.addEditClusterData(clusterData));
+    }
+  }, [clusterData]);
   const [registryData, setRegistryData] = useState({
     registryName: '',
     registryUrl: '',
@@ -402,12 +411,7 @@ export const Add = () => {
       setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
     }
   };
-
   const onSubmit = data => {
-    setClusterData({
-      clusterName: data.clusterName,
-      nifiUrl: data.nifiUrl,
-    });
     setRegistryData({
       registryName: data.registryName,
       registryUrl: data.registryUrl,
@@ -521,6 +525,7 @@ export const Add = () => {
   }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const fetchRegistryDetails = async () => {
+    console.log('hi');
     try {
       const response = await getOneRegistry(selectedRegistryId);
       setRegistryData(response);
