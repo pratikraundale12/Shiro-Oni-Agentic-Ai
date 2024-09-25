@@ -20,13 +20,22 @@ const ClusterDetail = ({ data }) => {
     },
     {
       label: KDFM.CLUSTER_URL,
-      renderCell: item => <UrlRender key={item.nifi_url} url={item.nifi_url} />,
+      renderCell: item => (
+        <UrlRender
+          key={item.nifi_url}
+          url={
+            item?.nifi_url?.includes('/nifi')
+              ? item?.nifi_url
+              : `${item.nifi_url}/nifi`
+          }
+        />
+      ),
       width: '75%',
     },
   ];
 
   return (
-    <Container>
+    <Container className="col-6">
       <Table
         data={[data || {}]}
         columns={CLUSTERCOLUMNS}

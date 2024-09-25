@@ -21,14 +21,21 @@ const RegistryDetail = ({ data }) => {
     {
       label: KDFM.REGISTRY_URL,
       renderCell: item => (
-        <UrlRender key={item.registry_url} url={item.registry_url} />
+        <UrlRender
+          key={item.registry_url}
+          url={
+            item?.registry_url?.includes('/nifi-registry')
+              ? item.registry_url
+              : `${item.registry_url}/nifi-registry`
+          }
+        />
       ),
       width: '75%',
     },
   ];
 
   return (
-    <Container>
+    <Container className="col-6">
       <Table
         data={[data || {}]}
         columns={REGISTRYCOLUMNS}

@@ -28,7 +28,7 @@ const StyledLink = styled.a`
   }
 `;
 
-export const UrlRender = ({ url, tooltipPlacement = 'bottom-start' }) => {
+export const UrlRender = ({ url, tooltipPlacement = 'bottom' }) => {
   return (
     <Container>
       <TextRender
