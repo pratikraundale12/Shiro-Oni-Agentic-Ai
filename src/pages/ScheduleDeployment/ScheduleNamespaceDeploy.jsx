@@ -143,6 +143,7 @@ const ScheduleNamespaceDeploy = ({
   const dispatch = useDispatch();
   const selectedVersion = useSelector(NamespacesSelectors.getFormData);
   const formData = useSelector(SchedularSelectors.getFormData);
+  const formDataNamespace = useSelector(NamespacesSelectors.getFormData);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const selectedDestCluster = useSelector(
     NamespacesSelectors.getSelectedDestCluster
@@ -160,10 +161,6 @@ const ScheduleNamespaceDeploy = ({
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-
-  // const handleUpdateStatus = status => {
-  //   dispatch(NamespacesActions.updateNamespaceStatus(status));
-  // };
 
   const onRequestClose = () => {
     dispatch(SchedularActions.setScheduleDeployModal());
@@ -188,7 +185,7 @@ const ScheduleNamespaceDeploy = ({
       registry_id: checkDestCluster?.registryId,
       mode: checkDestCluster?.mode,
       version: selectedVersion.version,
-      position: checkDestCluster?.position,
+      position: formDataNamespace?.position,
       approver_ids: formData?.approver_ids,
       variables: newlyAddVariables.map(item => ({
         name: item.name,
@@ -224,7 +221,6 @@ const ScheduleNamespaceDeploy = ({
           tertiaryButtonSubmit: handleScheduleTertiaryButton,
           tertiaryButtonDisable: false,
         }}
-        // loading={loadingButton}
       >
         <ModalBody className="modal-body">
           <RowModal>
