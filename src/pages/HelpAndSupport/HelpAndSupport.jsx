@@ -101,6 +101,7 @@ const AccordionButton = styled.button`
 `;
 
 const AccordionContent = styled.div`
+  white-space: normal;
   padding: 0 1rem;
   font-size: 16px;
   font-weight: 400;
