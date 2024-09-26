@@ -56,14 +56,7 @@ const TableContainer = styled.div`
 `;
 
 const ClusterRegistryContainer = styled.div`
-  display: flex;
-  gap: 2%;
-  margin-bottom: 1%;
-
-  > div {
-    flex: 1;
-    width: calc(75% - ${props => props.theme.sidebar});
-  }
+  margin-bottom: 10px;
 `;
 
 const LoadingText = styled.div`
@@ -87,10 +80,22 @@ const FLexWrapper = styled.div`
   }
 `;
 
+const NodeEvent = styled.div`
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+`;
 const EVENTCOLUMNS = [
   {
     label: 'Node Events',
-    renderCell: item => <div>{`${item.timestamp}: ${item.message}`}</div>,
+    renderCell: item => {
+      const date = new Date(item.timestamp);
+      const formattedDate = date.toLocaleString();
+      return <NodeEvent>{`${formattedDate} : ${item.message}`}</NodeEvent>;
+    },
   },
 ];
 
@@ -310,7 +315,7 @@ export const Grid = ({
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>
-          <ClusterRegistryContainer>
+          <ClusterRegistryContainer className="row">
             <ClusterDetail
               data={{
                 name: clusterSummary.name,

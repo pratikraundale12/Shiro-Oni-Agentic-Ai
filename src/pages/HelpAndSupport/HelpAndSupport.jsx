@@ -55,6 +55,7 @@ const FlexWrapper = styled.div`
 `;
 
 const FormContainer = styled.div`
+  white-space: nowrap;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -100,6 +101,7 @@ const AccordionButton = styled.button`
 `;
 
 const AccordionContent = styled.div`
+  white-space: normal;
   padding: 0 1rem;
   font-size: 16px;
   font-weight: 400;
@@ -130,8 +132,10 @@ const Title = styled.div`
 `;
 const SearchContainer = styled.div`
   position: relative;
-  margin-left: 25%;
   flex: 1;
+  @media screen and (min-width: 1400px) {
+    max-width: 625px;
+  }
   svg {
     position: absolute;
     top: 50%;
@@ -304,52 +308,103 @@ export const HelpAndSupport = () => {
             <FormContainer>
               <div className="d-flex gap-5">
                 <FAQHeading>Frequently Asked Questions?</FAQHeading>
-                <SearchContainer>
-                  <SmallSearchIcon
-                    width={18}
-                    height={18}
-                    color={theme.colors.darkGrey1}
-                  />
-                  <Search
-                    type="search"
-                    placeholder="Search Questions ...."
-                    value={searchQuery}
-                    onChange={handleSearch}
-                  />
-                </SearchContainer>
+                <div className="w-100 d-flex justify-content-end">
+                  <SearchContainer>
+                    <SmallSearchIcon
+                      width={18}
+                      height={18}
+                      color={theme.colors.darkGrey1}
+                    />
+                    <Search
+                      type="search"
+                      placeholder="Search Questions ...."
+                      value={searchQuery}
+                      onChange={handleSearch}
+                    />
+                  </SearchContainer>
+                </div>
               </div>
 
               <div className="row mt-5">
                 {filteredFaqs.length > 0 ? (
-                  filteredFaqs.map((faq, index) => (
-                    <div
-                      key={index}
-                      className="col-6"
-                      style={{ overflow: 'hidden' }}
-                    >
-                      <AccordionItem key={index}>
-                        <AccordionButton onClick={() => toggleFaq(index)}>
-                          <span
-                            style={
-                              openFaqIndex === index
-                                ? { color: 'orange' }
-                                : null
-                            }
-                          >
-                            {faq.question}
-                          </span>
-                          {openFaqIndex === index ? (
-                            <MinusIcon />
-                          ) : (
-                            <PlusIcon color="#000000" />
-                          )}
-                        </AccordionButton>
-                        {openFaqIndex === index && (
-                          <AccordionContent>{faq.answer}</AccordionContent>
-                        )}
-                      </AccordionItem>
+                  <>
+                    {/* First Column */}
+                    <div className="col-6">
+                      {filteredFaqs
+                        .slice(0, Math.ceil(filteredFaqs.length / 2))
+                        .map((faq, index) => (
+                          <div key={index} style={{ overflow: 'hidden' }}>
+                            <AccordionItem key={index}>
+                              <AccordionButton onClick={() => toggleFaq(index)}>
+                                <span
+                                  style={
+                                    openFaqIndex === index
+                                      ? { color: 'orange' }
+                                      : null
+                                  }
+                                >
+                                  {faq.question}
+                                </span>
+                                {openFaqIndex === index ? (
+                                  <MinusIcon />
+                                ) : (
+                                  <PlusIcon color="#000000" />
+                                )}
+                              </AccordionButton>
+                              {openFaqIndex === index && (
+                                <AccordionContent>
+                                  {faq.answer}
+                                </AccordionContent>
+                              )}
+                            </AccordionItem>
+                          </div>
+                        ))}
                     </div>
-                  ))
+
+                    {/* Second Column */}
+                    <div className="col-6">
+                      {filteredFaqs
+                        .slice(Math.ceil(filteredFaqs.length / 2))
+                        .map((faq, index) => (
+                          <div key={index} style={{ overflow: 'hidden' }}>
+                            <AccordionItem
+                              key={index + Math.ceil(filteredFaqs.length / 2)}
+                            >
+                              <AccordionButton
+                                onClick={() =>
+                                  toggleFaq(
+                                    index + Math.ceil(filteredFaqs.length / 2)
+                                  )
+                                }
+                              >
+                                <span
+                                  style={
+                                    openFaqIndex ===
+                                    index + Math.ceil(filteredFaqs.length / 2)
+                                      ? { color: 'orange' }
+                                      : null
+                                  }
+                                >
+                                  {faq.question}
+                                </span>
+                                {openFaqIndex ===
+                                index + Math.ceil(filteredFaqs.length / 2) ? (
+                                  <MinusIcon />
+                                ) : (
+                                  <PlusIcon color="#000000" />
+                                )}
+                              </AccordionButton>
+                              {openFaqIndex ===
+                                index + Math.ceil(filteredFaqs.length / 2) && (
+                                <AccordionContent>
+                                  {faq.answer}
+                                </AccordionContent>
+                              )}
+                            </AccordionItem>
+                          </div>
+                        ))}
+                    </div>
+                  </>
                 ) : (
                   <>
                     <NoDataIcon width={130} />

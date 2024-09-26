@@ -75,24 +75,24 @@ const Item = styled.div`
   }
 `;
 
-const StyledTag = styled.div`
-  background-color: rgb(218, 216, 216);
-  display: flex;
-  padding: 1px 6px;
-  border-radius: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 70px;
-`;
-const StyledTagContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  flex-wrap: nowrap;
-  overflow: auto;
-  width: 100%;
-`;
+// const StyledTag = styled.div`
+//   background-color: rgb(218, 216, 216);
+//   display: flex;
+//   padding: 1px 6px;
+//   border-radius: 20px;
+//   white-space: nowrap;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   min-width: 70px;
+// `;
+// const StyledTagContainer = styled.div`
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 6px;
+//   flex-wrap: nowrap;
+//   overflow: auto;
+//   width: 100%;
+// `;
 
 export const ListClusters = () => {
   const dispatch = useDispatch();
@@ -128,20 +128,20 @@ export const ListClusters = () => {
       },
       width: '35%',
     },
-    {
-      label: KDFM.TAG,
-      renderCell: item =>
-        item?.tag ? (
-          <StyledTagContainer>
-            {item.tag.split(',').map((tag, index) => (
-              <StyledTag key={index}>
-                <TextRender text={tag.trim()} capitalizeText={false} />
-              </StyledTag>
-            ))}
-          </StyledTagContainer>
-        ) : null,
-      width: '20%',
-    },
+    // {
+    //   label: KDFM.TAG,
+    //   renderCell: item =>
+    //     item?.tag ? (
+    //       <StyledTagContainer>
+    //         {item.tag.split(',').map((tag, index) => (
+    //           <StyledTag key={index}>
+    //             <TextRender text={tag.trim()} capitalizeText={false} />
+    //           </StyledTag>
+    //         ))}
+    //       </StyledTagContainer>
+    //     ) : null,
+    //   width: '20%',
+    // },
     {
       label: KDFM.CLUSTER_STATUS,
       renderCell: item => (

@@ -12,6 +12,7 @@ const TextColor = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  z-index: 2;
 `;
 
 export const TextRender = ({
