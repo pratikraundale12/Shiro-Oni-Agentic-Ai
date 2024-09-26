@@ -26,6 +26,7 @@ const StyledButton = styled.button`
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 220px;
+  z-index: 3;
 `;
 const FlowNameDiv = styled.div`
   color: ${props => props.theme.colors.darker};
@@ -39,7 +40,7 @@ const FlowNameDiv = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 220px;
+  max-width: 185px;
 `;
 
 const Flex = styled.div`
@@ -127,6 +128,7 @@ export const ListNamespaces = () => {
           />
         </>
       ),
+      width: '16%',
       sort: { sortKey: 'name' },
     },
     {
@@ -141,16 +143,27 @@ export const ListNamespaces = () => {
     },
     {
       label: KDFM.FLOW_NAME,
-      renderCell: item => <FlowNameDiv>{item.flowName || KDFM.NA}</FlowNameDiv>,
+      renderCell: item => (
+        <FlowNameDiv data-tooltip-id={`tooltip-${item?.flowName}`}>
+          {item.flowName || KDFM.NA}
+        </FlowNameDiv>
+      ),
+      width: '16%',
       // renderCell: item => <TextRender text={item.flowName || KDFM.NA} />,
     },
     {
       label: KDFM.BUCKET_NAME,
-      renderCell: item => <TextRender text={item.bucketName || KDFM.NA} />,
+      renderCell: item => (
+        <FlowNameDiv data-tooltip-id={`tooltip-${item?.bucketName}`}>
+          {item?.bucketName || KDFM.NA}
+        </FlowNameDiv>
+      ),
+      width: '16%',
     },
     {
       label: KDFM.VERSION,
       renderCell: item => <TextRender text={item.version || KDFM.NA} />,
+      width: '10%',
     },
     {
       label: KDFM.ACTIONS,
