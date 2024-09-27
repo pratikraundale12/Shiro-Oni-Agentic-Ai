@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+// import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -205,6 +205,9 @@ export const GridActions = ({
   gridCount,
   addModal: Modal,
   clusterId,
+  watchStatus,
+  watch,
+  control,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -216,9 +219,7 @@ export const GridActions = ({
   // );
   // const selectedEvent = useSelector(ActivityHistorySelectors.getSelectedEvent);
   const { setState } = useGlobalContext();
-  const { watch, control } = useForm();
 
-  const watchStatus = watch('is_active');
   const entity = watch('entityName');
   const event = watch('activityEvent');
 
@@ -380,4 +381,7 @@ GridActions.propTypes = {
   gridCount: PropTypes.number,
   handleRefresh: PropTypes.func,
   clusterId: PropTypes.string,
+  watchStatus: PropTypes.string,
+  watch: PropTypes.func.isRequired,
+  control: PropTypes.object.isRequired,
 };
