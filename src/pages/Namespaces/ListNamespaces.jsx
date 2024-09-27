@@ -144,19 +144,43 @@ export const ListNamespaces = () => {
     {
       label: KDFM.FLOW_NAME,
       renderCell: item => (
-        <FlowNameDiv data-tooltip-id={`tooltip-${item?.flowName}`}>
-          {item.flowName || KDFM.NA}
-        </FlowNameDiv>
+        <>
+          <FlowNameDiv data-tooltip-id={`tooltip-${item.flowName}`}>
+            {item.flowName || KDFM.NA}
+          </FlowNameDiv>
+          <ReactTooltip
+            id={`tooltip-${item?.flowName}`}
+            place="right"
+            // effect="solid"
+            content={item?.flowName}
+            style={{
+              width: '320px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        </>
       ),
       width: '16%',
-      // renderCell: item => <TextRender text={item.flowName || KDFM.NA} />,
     },
     {
       label: KDFM.BUCKET_NAME,
       renderCell: item => (
-        <FlowNameDiv data-tooltip-id={`tooltip-${item?.bucketName}`}>
-          {item?.bucketName || KDFM.NA}
-        </FlowNameDiv>
+        <>
+          <FlowNameDiv data-tooltip-id={`tooltip-${item.bucketName}`}>
+            {item.bucketName || KDFM.NA}
+          </FlowNameDiv>
+          <ReactTooltip
+            id={`tooltip-${item?.bucketName}`}
+            place="right"
+            content={item?.bucketName}
+            style={{
+              width: '320px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        </>
       ),
       width: '16%',
     },
