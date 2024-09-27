@@ -300,6 +300,11 @@ export const ModuleAccess = () => {
     setUpdatedRolePolicies(rolePolicies);
   }, [rolePolicies]);
 
+  // Filter the modules based on the search query
+  const filteredModules = MODULES.filter(module =>
+    module.label.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <>
       <Flex>
@@ -349,7 +354,7 @@ export const ModuleAccess = () => {
         />
       </SearchContainer>
       {openRoleModal && <AddNewRoleModal />}
-      <StyledTable data={MODULES} columns={DFM_ACCESS_COLUMNS} />
+      <StyledTable data={filteredModules} columns={DFM_ACCESS_COLUMNS} />
     </>
   );
 };
