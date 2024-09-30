@@ -8,6 +8,7 @@ import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
+import { has } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -102,10 +103,9 @@ const ParameterContext = ({
     {
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          {}
-
           {item.parentParameterId == parameterContextId ||
-          isParentEdit?.parent ? (
+          isParentEdit?.parent ||
+          !has(item, 'parentParameterId') ? (
             <IconButton
               disabled={loading}
               onClick={() => {
