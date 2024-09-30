@@ -30,6 +30,7 @@ import { useParams } from 'react-router-dom';
 import { KDFM } from '../../constants';
 // import { TextRender } from './CellRenders';
 import { Table } from './Table';
+import { useForm } from 'react-hook-form';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -150,7 +151,8 @@ export const Grid = ({
   const itemsPerPage = 10;
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-
+  const { watch, control } = useForm();
+  const watchStatus = watch('is_active');
   const {
     state: {
       search,
@@ -230,6 +232,16 @@ export const Grid = ({
     scheduler: 'No Schedulers Available',
   };
 
+  const getModuleBasedStatusKey = module => {
+    if (module === 'activityHistory') {
+      return 'status';
+    } else if (module === 'scheduler') {
+      return 'deployment_status';
+    } else {
+      return 'is_active';
+    }
+  };
+
   const getLoader = () => {
     if (loading) return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
@@ -250,7 +262,14 @@ export const Grid = ({
         GridActions.fetchGrid({
           module,
           clusterId,
-          params: { page: currentPage, ...(search && { search }) },
+          params: {
+            page: currentPage,
+            ...(search && { search }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && {
+                [getModuleBasedStatusKey(module)]: watchStatus,
+              }),
+          },
         })
       );
     }
@@ -312,6 +331,9 @@ export const Grid = ({
         gridCount={gridCount}
         addModal={addModal}
         clusterId={clusterId}
+        watchStatus={watchStatus}
+        watch={watch}
+        control={control}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>
