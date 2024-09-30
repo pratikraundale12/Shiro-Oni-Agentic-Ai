@@ -7,7 +7,7 @@ export function* fetchDashboard(api, action) {
   const { payload } = action; // Now you can access payload here
   const { refresh } = payload || {}; // Destructure refresh from payload safely
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const selectedNamespace = payload.payload.selectedNamespace;
+  const selectedNamespace = payload?.payload?.selectedNamespace;
 
   if (!selectedCluster?.value) {
     return;
