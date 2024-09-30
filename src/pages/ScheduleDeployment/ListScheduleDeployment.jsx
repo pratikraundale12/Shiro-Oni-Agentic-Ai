@@ -193,6 +193,8 @@ export const ListScheduleDeployment = () => {
     { value: 'SUCCESS', label: 'Success' },
     { value: 'SCHEDULED', label: 'Scheduled' },
     { value: 'IN PROGRESS', label: 'In Progress' },
+    { value: 'NOT APPROVED', label: 'Not Approved' },
+    { value: 'CANCELLED', label: 'Cancelled' },
   ];
   return (
     <>
