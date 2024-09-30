@@ -271,7 +271,6 @@ export const Dashboard = () => {
       const payload = {
         selectedNamespace: selectedNamespace,
       };
-      console.log({ payload });
       dispatch(
         DashboardActions.fetchDashboard({
           payload,
