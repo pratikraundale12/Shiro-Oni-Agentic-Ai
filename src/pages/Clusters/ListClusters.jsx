@@ -26,7 +26,7 @@ import {
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
-import { GridActions, NamespacesActions } from '../../store';
+import { DashboardActions, GridActions, NamespacesActions } from '../../store';
 import { updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
@@ -263,6 +263,10 @@ export const ListClusters = () => {
                 value: '',
               })
             );
+            dispatch(
+              GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
+            );
+            dispatch(DashboardActions.fetchDashboardSuccess({ data: {} }));
           }
         }
       } else {
