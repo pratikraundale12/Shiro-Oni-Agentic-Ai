@@ -58,48 +58,6 @@ export const ScheduleDeploymentModal = () => {
     dispatch(SchedularActions.setSelectedSchedule({}));
   };
 
-  // const approvers = useWatch({
-  //   control,
-  //   name: 'approver_ids',
-  //   defaultValue: [],
-  // });
-
-  // const openModal = () => {
-  //   if (window.location.pathname.includes('schedule-deployment')) {
-  //     dispatch(SchedularActions.setEditScheduleModel());
-  //     return;
-  //   }
-  //   setScheduleInitialOpen(true);
-  // };
-  // const closeModal = () => {
-  //   if (window.location.pathname.includes('schedule-deployment')) {
-  //     dispatch(SchedularActions.setEditScheduleModel());
-  //     return;
-  //   }
-  //   setScheduleInitialOpen(false);
-  // };
-
-  // useEffect(() => {
-  //   if (!isEmpty(selectedCluster)) {
-  //     dispatch(NamespacesActions.fetchNamespaces());
-  //   }
-  // }, [dispatch, selectedCluster]);
-
-  // useEffect(() => {
-  //   dispatch(ClustersActions.fetchClusterList());
-  // }, [dispatch]);
-
-  // useEffect(() => {
-  //   if (!isEmpty(selectedCluster)) {
-  //     dispatch(SchedularActions.fetchNamespaces(selectedCluster?.value));
-  //   }
-  // }, [selectedCluster, dispatch]);
-
-  // useEffect(() => {
-  //   const isFormValid = approvers.length > 0;
-  //   setDisableButton(!isFormValid);
-  // }, [approvers]);
-
   const onSubmit = data => {
     const formattedDate = new Date(data.scheduled_time).toUTCString();
     const { approver_ids } = data;
