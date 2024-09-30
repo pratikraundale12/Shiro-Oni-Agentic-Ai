@@ -255,6 +255,7 @@ export function* clusterProgress(api) {
       {
         clusterId: selectedDestCluster?.value,
         progressId: deployOrUpgradeDetails.requestId,
+        auditId: deployOrUpgradeDetails?.auditId,
       },
       queryParams,
     ],
