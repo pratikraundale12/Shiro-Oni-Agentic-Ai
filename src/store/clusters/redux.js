@@ -34,7 +34,11 @@ export const ClustersSelectors = {
 
 /* ------------- REDUCERS ------------------- */
 const fetchClusterListSuccess = (state, { payload }) => {
-  const list = payload?.map(item => ({ label: item.name, value: item.id }));
+  const list = payload?.map(item => ({
+    label: item.name,
+    value: item.id,
+    status: item.status,
+  }));
   return {
     ...state,
     list,
