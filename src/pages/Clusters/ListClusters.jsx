@@ -211,10 +211,13 @@ export const ListClusters = () => {
   };
 
   const updateClusterStatus = async id => {
+    const clusters = JSON.parse(localStorage.getItem('clusters')) || [];
     const response = await updateCluster(id, {
       is_active: true,
     });
     if (response) {
+      const updatedClusters = clusters.filter(cluster => cluster.id !== id);
+      localStorage.setItem('clusters', JSON.stringify(updatedClusters));
       toast.success('Cluster Activated Successfully');
       dispatch(GridActions.fetchGrid({ module: 'clusters' }));
     } else {
@@ -223,7 +226,7 @@ export const ListClusters = () => {
   };
 
   const handleMenuClick = (event, item) => {
-    event.stopPropagation(); // Prevent triggering row click if any
+    event.stopPropagation();
     setMenuState({
       isVisible: true,
       x: event.clientX,
