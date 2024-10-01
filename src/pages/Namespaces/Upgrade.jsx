@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -16,8 +16,14 @@ import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, RadioField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  GridSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { SchedularSelectors } from '../../store/schedular/redux';
+import RectangleGraph from './birdEyeViewGraph';
+import { theme } from '../../styles';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -167,8 +173,31 @@ const Upgrade = () => {
   );
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
-
   const formData = useSelector(NamespacesSelectors.getFormData);
+  const gridDataDest = useSelector(state =>
+    GridSelectors.getGridData(state, 'destNamespaces')
+  );
+
+  const [xStateCoordinate, setXStateCoordiate] = useState(
+    formData?.position?.x
+  );
+  const [yStateCoordinate, setYStateCoordiate] = useState(
+    formData?.position?.y
+  );
+
+  const sortedArray = gridDataDest?.map(element => ({
+    ...element?.position,
+    width: 80,
+    height: 40,
+    color: 'teal',
+  }));
+
+  useEffect(() => {
+    if (selectedDestCluster) {
+      dispatch(NamespacesActions.fetchDestNamespaces);
+    }
+  }, [dispatch]);
+
   const convertDate = dateString => {
     const date = new Date(dateString);
 
@@ -255,6 +284,29 @@ const Upgrade = () => {
     checkDestCluster.state === 'LOCALLY_MODIFIED_AND_STALE' ||
     checkDestCluster.state === 'LOCALLY_MODIFIED';
 
+  const updatedDataForGraph = [
+    ...sortedArray,
+    ...[
+      {
+        x: xStateCoordinate || formData?.position?.x,
+        y: yStateCoordinate || formData?.position?.y,
+        width: 80,
+        height: 40,
+        color: theme.colors.primary,
+      },
+    ],
+  ];
+
+  const handleXCoordinateChangeInput = e => {
+    setXStateCoordiate(Number(e.target.value));
+    dispatch(NamespacesActions.setPosition({ x: e.target.value }));
+  };
+
+  const handleYCoordinateChangeInput = e => {
+    setYStateCoordiate(Number(e.target.value));
+    dispatch(NamespacesActions.setPosition({ y: e.target.value }));
+  };
+
   return (
     <div>
       <TopTitleBar className=" d-flex  mb-3">
@@ -310,29 +362,32 @@ const Upgrade = () => {
                     name="x"
                     type="text"
                     label={KDFM.CANVAS_POSITION}
-                    value={formData.position.x}
+                    value={xStateCoordinate || formData.position.x}
                     icon={<CanvasXIcon />}
                     disabled={checkDestCluster.mode === 'upgrade'}
-                    onChange={e =>
-                      dispatch(
-                        NamespacesActions.setPosition({ x: e.target.value })
-                      )
+                    onChange={
+                      e => handleXCoordinateChangeInput(e)
+                      // dispatch(
+                      //   NamespacesActions.setPosition({ x: e.target.value })
+                      // )
                     }
                   />
                   <InputField
                     name="y"
                     type="text"
                     label=""
-                    value={formData.position.y}
+                    value={yStateCoordinate || formData.position.y}
                     icon={<CanvasYIcon />}
                     disabled={checkDestCluster.mode === 'upgrade'}
-                    onChange={e =>
-                      dispatch(
-                        NamespacesActions.setPosition({ y: e.target.value })
-                      )
+                    onChange={
+                      e => handleYCoordinateChangeInput(e)
+                      // dispatch(
+                      //   NamespacesActions.setPosition({ y: e.target.value })
+                      // )
                     }
                   />
                 </ColXlFive>
+
                 {checkDestCluster.mode === 'upgrade' && (
                   <>
                     <ColXlTwo className="col-xl-2 col-6">
@@ -360,6 +415,15 @@ const Upgrade = () => {
                 )}
               </RowConfig>
             </div>
+            {checkDestCluster.mode !== 'upgrade' && (
+              <div className="ms-4">
+                <RectangleGraph
+                  data={updatedDataForGraph}
+                  setXStateCoordiate={setXStateCoordiate}
+                  setYStateCoordiate={setYStateCoordiate}
+                />
+              </div>
+            )}
             <div className="col-12 p-3">
               <RowConfig className="row">
                 <ColLgSix className="col-lg-6 col-12">
