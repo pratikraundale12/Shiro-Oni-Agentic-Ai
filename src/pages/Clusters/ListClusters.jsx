@@ -26,7 +26,7 @@ import {
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
-import { GridActions } from '../../store';
+import { DashboardActions, GridActions, NamespacesActions } from '../../store';
 import { updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
@@ -252,6 +252,23 @@ export const ListClusters = () => {
         toast.success('Cluster Deactivated Successfully');
         dispatch(GridActions.fetchGrid({ module: 'clusters' }));
         setState({ ...state, clusterDeleteModal: false });
+        const clusterItem = localStorage.getItem('selected_cluster');
+        if (clusterItem) {
+          const cluster = JSON.parse(clusterItem);
+          if (cluster.value === id) {
+            localStorage.removeItem('selected_cluster');
+            dispatch(
+              NamespacesActions.setSelectedCluster({
+                label: '',
+                value: '',
+              })
+            );
+            dispatch(
+              GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
+            );
+            dispatch(DashboardActions.fetchDashboardSuccess({ data: {} }));
+          }
+        }
       } else {
         toast.error('Error occurred while Deactivated the cluster');
       }

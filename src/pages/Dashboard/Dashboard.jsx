@@ -194,9 +194,10 @@ const RefreshIocn = styled.div`
 export const Dashboard = () => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  const selectedNamespace = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
+  const [selectedNamespace, setSelectedNamespace] = useState(null);
+  // const selectedNamespace = useSelector(
+  //   NamespacesSelectors.getSelectedNamespace
+  // );
   const namespaces = useSelector(NamespacesSelectors.getNamespaces);
   const dashboardData = useSelector(DashboardSelectors.getDashboardData);
   const loading = useSelector(state =>
@@ -262,12 +263,19 @@ export const Dashboard = () => {
   ];
 
   const onNamespaceSelect = selectedItem => {
-    dispatch(NamespacesActions.setSelectedNamespace(selectedItem));
+    setSelectedNamespace(selectedItem);
+    // dispatch(NamespacesActions.setSelectedNamespace(selectedItem));
   };
-
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {
-      dispatch(DashboardActions.fetchDashboard());
+      const payload = {
+        selectedNamespace: selectedNamespace,
+      };
+      dispatch(
+        DashboardActions.fetchDashboard({
+          payload,
+        })
+      );
     }
   }, [dispatch, selectedCluster, selectedNamespace]);
 

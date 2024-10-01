@@ -1,14 +1,13 @@
-import { call, all, takeLatest, select } from 'redux-saga/effects';
-import { requestSaga } from '../helpers/request_sagas';
-import { DashboardActions } from './redux';
-import { NamespacesSelectors } from '../namespaces/redux';
+import { all, call, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN } from '../../constants';
-
-export function* fetchDashboard(api, { payload: { refresh } = {} }) {
+import { requestSaga } from '../helpers/request_sagas';
+import { NamespacesSelectors } from '../namespaces/redux';
+import { DashboardActions } from './redux';
+export function* fetchDashboard(api, action) {
+  const { payload } = action; // Now you can access payload here
+  const { refresh } = payload || {}; // Destructure refresh from payload safely
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const selectedNamespace = yield select(
-    NamespacesSelectors.getSelectedNamespace
-  );
+  const selectedNamespace = payload?.payload?.selectedNamespace;
 
   if (!selectedCluster?.value) {
     return;
