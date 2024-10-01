@@ -14,7 +14,7 @@ const DoubleButton = ({ disable, item, handleLeftClick, handleRightClick }) => {
           onClick={() => handleLeftClick(item)}
           style={{
             backgroundColor: theme.colors.primary,
-            borderColor: '#fff',
+            borderColor: theme.colors.primary,
           }}
           disabled={disable}
         >
@@ -27,7 +27,7 @@ const DoubleButton = ({ disable, item, handleLeftClick, handleRightClick }) => {
           aria-expanded="false"
           style={{
             backgroundColor: theme.colors.primary,
-            borderColor: '#fff',
+            borderColor: `${theme.colors.primary} ${theme.colors.primary} ${theme.colors.primary} #fff`,
           }}
           disabled={disable}
         ></button>
