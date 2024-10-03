@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+
 const statusColors = {
   PENDING: '#b5b5bd',
   SCHEDULED: '#0cbf59',
@@ -20,6 +22,7 @@ const StatusTexts = styled.div`
   color: ${props => props.color || '#b5b5bd'};
   display: flex;
   align-items: center;
+  cursor: pointer;
   div {
     align-items: center;
     height: 8px;
@@ -29,7 +32,7 @@ const StatusTexts = styled.div`
     border-radius: 50%;
   }
 `;
-export const StatusText = ({ text = '' }) => {
+export const StatusText = ({ text = '', item }) => {
   const color = statusColors[text] || statusColors.DEFAULT;
   function capitalizeFirstLetter(text) {
     if (!text) return '';
@@ -42,15 +45,31 @@ export const StatusText = ({ text = '' }) => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
-
+  const tooltipData = item.approvers.map(element => (
+    <div key={element.scheduler_id}>
+      {capitalizeFirstLetter(element.approver_name)} : &nbsp;
+      {element.is_approved === true
+        ? 'Approved'
+        : element.is_approved === false
+          ? 'Not Approved'
+          : 'N/A'}{' '}
+    </div>
+  ));
   return (
-    <StatusTexts color={color}>
-      <div></div>
-      {capitalizeFirstLetter(text)}
-    </StatusTexts>
+    <>
+      <StatusTexts color={color} data-tooltip-id={item.scheduler_id}>
+        {capitalizeFirstLetter(text)}
+      </StatusTexts>{' '}
+      <ReactTooltip
+        id={item.scheduler_id}
+        content={tooltipData}
+        place={'left'}
+      />
+    </>
   );
 };
 
 StatusText.propTypes = {
   text: PropTypes.string,
+  item: PropTypes.array,
 };

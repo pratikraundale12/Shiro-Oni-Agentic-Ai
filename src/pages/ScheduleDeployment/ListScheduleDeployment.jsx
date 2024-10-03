@@ -122,7 +122,9 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Status',
-      renderCell: item => <StatusText text={item?.deployment_status} />,
+      renderCell: item => (
+        <StatusText text={item?.deployment_status} item={item} />
+      ),
       width: '15%',
     },
     {
