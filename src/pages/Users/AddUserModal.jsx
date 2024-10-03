@@ -153,7 +153,9 @@ export const AddUserModal = props => {
     formData.append('middle_name', data.middle_name);
     formData.append('last_name', data.last_name);
     formData.append('email', data.email);
-    formData.append('password', data.password);
+    if (data.role === 'superadmin') {
+      formData.append('password', data.password);
+    }
     formData.append('phone', data.phone || null);
     formData.append('is_active', data.is_active !== false);
     formData.append('role_id', data?.role_id);
