@@ -321,13 +321,17 @@ const AddParameterContext = ({
                   icon={<QRIcons />}
                   register={register}
                   placeholder={
-                    check || parameterContextItem?.check
-                      ? KDFM.EMPTY_STRING_SET
-                      : parameterContextItem?.sensitive
-                        ? KDFM.SENSITIVE_VALUE_SET
-                        : isAddParameterContextOpen?.mode === 'add'
-                          ? KDFM.ENTER_PARAMETER
-                          : KDFM.NO_VALUE_SET
+                    (parameterContextItem?.sensitive == 'true' ||
+                      parameterContextItem?.sensitive == true) &&
+                    !parameterContextItem?.value
+                      ? KDFM.NO_VALUE_SET
+                      : check || parameterContextItem?.check
+                        ? KDFM.EMPTY_STRING_SET
+                        : parameterContextItem?.sensitive
+                          ? KDFM.SENSITIVE_VALUE_SET
+                          : isAddParameterContextOpen?.mode === 'add'
+                            ? KDFM.ENTER_PARAMETER
+                            : KDFM.NO_VALUE_SET
                   }
                   disabled={check}
                   errors={errors}

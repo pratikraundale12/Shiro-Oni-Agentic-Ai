@@ -85,20 +85,25 @@ const ParameterContext = ({
     },
     {
       label: KDFM.VALUE,
-      renderCell: item => (
-        <TextRender
-          key={item?.value}
-          text={
-            item.sensitive === true || item.sensitive === 'true'
-              ? KDFM.SENSITIVE_VALUE_SET
-              : item.value
-                ? truncateString(item.value, 40)
-                : item.check
-                  ? KDFM.EMPTY_STRING_SET
-                  : KDFM.NO_VALUE_SET
-          }
-        />
-      ),
+      renderCell: item => {
+        return (
+          <TextRender
+            key={item?.value}
+            text={
+              (item.sensitive === true || item.sensitive === 'true') &&
+              !item?.value
+                ? KDFM.NO_VALUE_SET
+                : item.sensitive === true || item.sensitive === 'true'
+                  ? KDFM.SENSITIVE_VALUE_SET
+                  : item.value
+                    ? truncateString(item.value, 40)
+                    : item.check
+                      ? KDFM.EMPTY_STRING_SET
+                      : KDFM.NO_VALUE_SET
+            }
+          />
+        );
+      },
     },
     {
       renderCell: item => (
