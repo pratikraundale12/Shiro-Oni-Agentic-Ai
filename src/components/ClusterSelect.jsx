@@ -22,6 +22,7 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
   const updatedClusters = clusters.map(item => ({
     ...item,
     is_active: tokenIds.includes(item.value),
+    status: item.status,
   }));
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const selectedDestCluster = useSelector(
@@ -69,10 +70,13 @@ export const ClusterSelect = ({ isDestination = false, ...props }) => {
 
   const remainingCluster =
     location.pathname === '/login'
-      ? updatedClusters
+      ? updatedClusters.filter(cluster => cluster.status !== 'Deactivated')
       : updatedClusters?.filter(
-          cluster => cluster?.value !== selectedCluster?.value
+          cluster =>
+            cluster?.value !== selectedCluster?.value &&
+            cluster.status !== 'Deactivated' // Exclude deactivated clusters
         );
+
   return (
     <SelectField
       options={remainingCluster}

@@ -39,14 +39,18 @@ export const ClusterLoginModal = () => {
 
   const sortClustersByStatus = clusters => {
     const clustersCopy = [...clusters];
-    return clustersCopy.sort((a, b) => {
+    const clustersArray = clustersCopy.filter(
+      item => item.status !== 'Deactivated'
+    );
+
+    return clustersArray.sort((a, b) => {
       if (a.status === b.status) return 0;
       return a.status === 'Connected' ? -1 : 1;
     });
   };
 
   const sortedClusters = sortClustersByStatus(clusters);
-
+  // const sortedClusterList =
   const [loading, setLoading] = useState(false);
 
   const {
@@ -67,6 +71,7 @@ export const ClusterLoginModal = () => {
   const selectedClusterData = sortedClusters.find(
     cluster => cluster.value === clusterId
   );
+
   const isFieldsDisabled = selectedClusterData?.status === 'Connected';
 
   const onSubmit = async data => {
