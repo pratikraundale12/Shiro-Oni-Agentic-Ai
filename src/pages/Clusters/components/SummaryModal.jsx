@@ -8,7 +8,11 @@ import { KDFM } from '../../../constants';
 import { history } from '../../../helpers/history';
 import { Modal } from '../../../shared';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
-import { ClustersActions, ClustersSelectors } from '../../../store';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  NamespacesActions,
+} from '../../../store';
 import {
   createCluster,
   createRegistry,
@@ -222,6 +226,30 @@ export const SummaryModal = ({
     const id = clusterId;
     const response = await updateCluster(id, payload);
     if (response?.id) {
+      const cluster = localStorage.getItem('selected_cluster');
+
+      // Check if the cluster exists in localStorage
+      if (cluster) {
+        const parsedCluster = JSON.parse(cluster); // Parse the string into an object
+
+        // Now you can safely check if the value matches clusterId
+        if (parsedCluster.value === clusterId) {
+          localStorage.setItem(
+            'selected_cluster',
+            JSON.stringify({
+              label: response.name,
+              value: response.id,
+            })
+          );
+          dispatch(
+            NamespacesActions.setSelectedCluster({
+              label: response.name,
+              value: response.id,
+            })
+          );
+        }
+      }
+
       await editRegistryData();
     } else {
       setLoading(false);

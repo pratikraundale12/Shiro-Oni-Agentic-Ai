@@ -26,7 +26,7 @@ import {
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
-import { GridActions } from '../../store';
+import { DashboardActions, GridActions, NamespacesActions } from '../../store';
 import { updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
@@ -211,10 +211,13 @@ export const ListClusters = () => {
   };
 
   const updateClusterStatus = async id => {
+    const clusters = JSON.parse(localStorage.getItem('clusters')) || [];
     const response = await updateCluster(id, {
       is_active: true,
     });
     if (response) {
+      const updatedClusters = clusters.filter(cluster => cluster.id !== id);
+      localStorage.setItem('clusters', JSON.stringify(updatedClusters));
       toast.success('Cluster Activated Successfully');
       dispatch(GridActions.fetchGrid({ module: 'clusters' }));
     } else {
@@ -223,7 +226,7 @@ export const ListClusters = () => {
   };
 
   const handleMenuClick = (event, item) => {
-    event.stopPropagation(); // Prevent triggering row click if any
+    event.stopPropagation();
     setMenuState({
       isVisible: true,
       x: event.clientX,
@@ -252,6 +255,23 @@ export const ListClusters = () => {
         toast.success('Cluster Deactivated Successfully');
         dispatch(GridActions.fetchGrid({ module: 'clusters' }));
         setState({ ...state, clusterDeleteModal: false });
+        const clusterItem = localStorage.getItem('selected_cluster');
+        if (clusterItem) {
+          const cluster = JSON.parse(clusterItem);
+          if (cluster.value === id) {
+            localStorage.removeItem('selected_cluster');
+            dispatch(
+              NamespacesActions.setSelectedCluster({
+                label: '',
+                value: '',
+              })
+            );
+            dispatch(
+              GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
+            );
+            dispatch(DashboardActions.fetchDashboardSuccess({ data: {} }));
+          }
+        }
       } else {
         toast.error('Error occurred while Deactivated the cluster');
       }

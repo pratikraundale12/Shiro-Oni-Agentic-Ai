@@ -1,36 +1,48 @@
+/*eslint-disable*/
 import React from 'react';
 import PropTypes from 'prop-types';
 import { theme } from '../../../styles';
 import { KDFM } from '../../../constants';
-import { DownArrowIcon } from '../../../assets';
 
 const DoubleButton = ({ disable, item, handleLeftClick, handleRightClick }) => {
   return (
     <div className="btn-group" role="group" aria-label="Basic example">
-      <button
-        type="button"
-        className="btn btn-primary"
-        onClick={() => handleLeftClick(item)}
-        style={{
-          backgroundColor: theme.colors.primary,
-          borderColor: '#fff',
-        }}
-        disabled={disable}
-      >
-        {KDFM.DEPLOY}
-      </button>
-      <button
-        type="button"
-        className="btn btn-primary"
-        style={{
-          backgroundColor: theme.colors.primary,
-          borderColor: '#fff',
-        }}
-        disabled={disable}
-        onClick={() => handleRightClick(item)}
-      >
-        <DownArrowIcon color="#fff" />
-      </button>
+      <div className="btn-group">
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => handleLeftClick(item)}
+          style={{
+            backgroundColor: theme.colors.primary,
+            borderColor: theme.colors.primary,
+          }}
+          disabled={disable}
+        >
+          {KDFM.DEPLOY}
+        </button>
+        <button
+          type="button"
+          className="btn btn-primary dropdown-toggle dropdown-toggle-split"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          style={{
+            backgroundColor: theme.colors.primary,
+            borderColor: `${theme.colors.primary} ${theme.colors.primary} ${theme.colors.primary} #fff`,
+          }}
+          disabled={disable}
+        ></button>
+        <ul className="dropdown-menu">
+          <li>
+            <div
+              className="p-1"
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleRightClick(item)}
+            >
+              Schedule Deployment
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };
