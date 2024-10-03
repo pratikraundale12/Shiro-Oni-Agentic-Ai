@@ -58,7 +58,7 @@ export const TextWithPhotoRender = ({ content, currentUser, item }) => {
 
   return (
     <>
-      {isApprover && item.deployment_status == 'PENDING' ? (
+      {isApprover && item.can_edit ? (
         <div className="d-flex">
           <StyledButton className="me-2" onClick={() => handleReject()}>
             <CrossWithCircleIcon color="red" />
