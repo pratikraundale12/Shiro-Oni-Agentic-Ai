@@ -15,6 +15,7 @@ const DoubleButton = ({ disable, item, handleLeftClick, handleRightClick }) => {
           style={{
             backgroundColor: theme.colors.primary,
             borderColor: theme.colors.primary,
+            borderRight: '1px solid #fff',
           }}
           disabled={disable}
         >
