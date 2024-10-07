@@ -49,7 +49,7 @@ export function* editScheduleDeployment(api, { payload }) {
   );
   const scheduleModal = yield select(SchedularSelectors.getScheduleModal);
   if (response.ok) {
-    toast.success('Successfully Updated Scheduled Deployment');
+    toast.success(response?.data?.message);
     if (rejectScheduleModal)
       yield put(SchedularActions.setRejectScheduleModal());
     if (cancelScheduleModal)
