@@ -56,6 +56,7 @@ import {
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import { ListControllerService } from '../pages/ControllerService';
 
 export const ROUTES_MENU = [
   {
@@ -220,6 +221,18 @@ export const ROUTES_MENU = [
       },
     ],
     isSideBarHidden: true,
+  },
+  {
+    name: 'Controller Service',
+    path: 'controller-service',
+    icon: ScheduleDeploymentIcon,
+    pages: [
+      {
+        path: '',
+        component: <ListControllerService />,
+      },
+    ],
+    permission: 'view_namespace',
   },
 
   {

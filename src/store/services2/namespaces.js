@@ -31,6 +31,8 @@ export const namespacesAPI = api => {
 
   const getVariableList = ({ clusterId, namespaceId }) =>
     api.get(`clusters/${clusterId}/namespaces/${namespaceId}/variables`);
+  const getAllRootControllerServiceNamespace = ({ clusterId }) =>
+    api.get(`controller-services/${clusterId}/namespace/`);
 
   const addVariableServices = ({
     clusterId,
@@ -150,5 +152,6 @@ export const namespacesAPI = api => {
     getVariableServices,
     fetchNamespaceAudit,
     singleNamespaceData,
+    getAllRootControllerServiceNamespace,
   };
 };
