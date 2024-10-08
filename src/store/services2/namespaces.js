@@ -133,6 +133,9 @@ export const namespacesAPI = api => {
     return api.get(`/clusters/${clusterId}/namespace/${namespaceId}`, params);
   };
 
+  const getAllControllerServiceToAdd = ({ clusterId }) =>
+    api.get(`/list-controller-services/${clusterId}`);
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -153,5 +156,6 @@ export const namespacesAPI = api => {
     fetchNamespaceAudit,
     singleNamespaceData,
     getAllRootControllerServiceNamespace,
+    getAllControllerServiceToAdd,
   };
 };

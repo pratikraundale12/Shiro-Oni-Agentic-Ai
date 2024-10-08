@@ -692,6 +692,34 @@ export function* getControllerServiceList(api) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
+export function* getAllControllerServiceListToAdd(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'getAllControllerServiceToAdd',
+    loadingSection: 'getAllControllerServiceToAdd',
+    apiMethod: api.getAllControllerServiceToAdd,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+      },
+    ],
+    successAction: NamespacesActions.fetchVariableListSuccess,
+  });
+  if (response.ok)
+    yield put(NamespacesActions.setAddControllerServiceList(response?.data));
+  else if (!response.ok)
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -740,5 +768,11 @@ export function* namespacesSagas(api) {
       getControllerServiceList,
       api
     ),
+    takeLatest(
+      NamespacesActions.getAllControllerServiceListToAdd,
+      getAllControllerServiceListToAdd,
+      api
+    ),
   ]);
 }
+//

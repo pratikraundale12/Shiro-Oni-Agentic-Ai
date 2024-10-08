@@ -63,8 +63,17 @@ export const NamespacesActions = {
   getRootControllerServiceNamespace: createAction(
     `${prefix}getRootControllerServiceNamespace`
   ),
+  setIsAddControllerServiceModal: createAction(
+    `${prefix}setIsAddControllerServiceModal`
+  ),
+  getAllControllerServiceListToAdd: createAction(
+    `${prefix}getAllControllerServiceListToAdd`
+  ),
+  setAddControllerServiceList: createAction(
+    `${prefix}setAddControllerServiceList`
+  ),
 };
-// NamespacesActions.getControllerServiceList
+//
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -112,6 +121,8 @@ export const NAMESPACES_INITIAL_STATE = {
   sourceNamespaceId: '',
   singleNamespaceData: {},
   rootControllerServiceNamespace: [],
+  isAddControllerServiceModal: false,
+  addControllerServiceList: [],
   // parameterEditParent: false,
 };
 
@@ -142,6 +153,10 @@ export const NamespacesSelectors = {
   getSingleNamespaceData: state => state.namespaces.singleNamespaceData,
   getRootControllerServiceNamespace: state =>
     state.namespaces.rootControllerServiceNamespace,
+  getIsAddControllerServiceMOdalOpen: state =>
+    state.namespaces.isAddControllerServiceModal,
+  getAddControllerServiceList: state =>
+    state.namespaces.addControllerServiceList,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -342,6 +357,19 @@ const getRootControllerServiceNamespace = (state, { payload }) => {
     rootControllerServiceNamespace: payload,
   };
 };
+//
+const setIsAddControllerServiceModal = (state, { payload }) => {
+  return {
+    ...state,
+    isAddControllerServiceModal: payload,
+  };
+};
+const setAddControllerServiceList = (state, { payload }) => {
+  return {
+    ...state,
+    addControllerServiceList: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -400,6 +428,14 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.getRootControllerServiceNamespace,
         getRootControllerServiceNamespace
+      )
+      .addCase(
+        NamespacesActions.setIsAddControllerServiceModal,
+        setIsAddControllerServiceModal
+      )
+      .addCase(
+        NamespacesActions.setAddControllerServiceList,
+        setAddControllerServiceList
       );
   }
 );
