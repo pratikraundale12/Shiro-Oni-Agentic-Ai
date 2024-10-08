@@ -662,6 +662,36 @@ export function* singleNamespaceData(api) {
   });
 }
 
+export function* getControllerServiceList(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'getAllRootControllerServiceNamespace',
+    loadingSection: 'getAllRootControllerServiceNamespace',
+    apiMethod: api.getAllRootControllerServiceNamespace,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+      },
+    ],
+    successAction: NamespacesActions.fetchVariableListSuccess,
+  });
+  if (response.ok)
+    yield put(
+      NamespacesActions.getRootControllerServiceNamespace(response?.data)
+    );
+  else if (!response.ok)
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -705,5 +735,10 @@ export function* namespacesSagas(api) {
     ),
     takeLatest(NamespacesActions.fetchVariableList, fetchVariableList, api),
     takeLatest(NamespacesActions.fetchNamespaceAudit, fetchNamespaceAudit, api),
+    takeLatest(
+      NamespacesActions.getControllerServiceList,
+      getControllerServiceList,
+      api
+    ),
   ]);
 }

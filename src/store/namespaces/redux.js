@@ -59,8 +59,12 @@ export const NamespacesActions = {
   singleNamespaceDataSuccess: createAction(
     `${prefix}singleNamespaceDataSuccess`
   ),
+  getControllerServiceList: createAction(`${prefix}getControllerServiceList`),
+  getRootControllerServiceNamespace: createAction(
+    `${prefix}getRootControllerServiceNamespace`
+  ),
 };
-
+// NamespacesActions.getControllerServiceList
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -107,6 +111,7 @@ export const NAMESPACES_INITIAL_STATE = {
   },
   sourceNamespaceId: '',
   singleNamespaceData: {},
+  rootControllerServiceNamespace: [],
   // parameterEditParent: false,
 };
 
@@ -135,6 +140,8 @@ export const NamespacesSelectors = {
   getParameterEditParent: state => state.namespaces.parameterEditParent,
   getSelectedSourceNamespace: state => state.namespaces.sourceNamespaceId,
   getSingleNamespaceData: state => state.namespaces.singleNamespaceData,
+  getRootControllerServiceNamespace: state =>
+    state.namespaces.rootControllerServiceNamespace,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -329,6 +336,13 @@ const singleNamespaceDataSuccess = (state, { payload }) => {
   };
 };
 
+const getRootControllerServiceNamespace = (state, { payload }) => {
+  return {
+    ...state,
+    rootControllerServiceNamespace: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -382,6 +396,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.singleNamespaceDataSuccess,
         singleNamespaceDataSuccess
+      )
+      .addCase(
+        NamespacesActions.getRootControllerServiceNamespace,
+        getRootControllerServiceNamespace
       );
   }
 );
