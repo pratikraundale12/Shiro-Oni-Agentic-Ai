@@ -1,12 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { yupResolver } from '@hookform/resolvers/yup';
-import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import * as yup from 'yup';
 import {
   ConfirmScheduleDeploymentIcon,
   DeleteDustbinIcon,
@@ -15,11 +11,7 @@ import {
 } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
 import { ModalWithIcon } from '../../shared';
-import {
-  AuthenticationSelectors,
-  GridActions,
-  LoadingSelectors,
-} from '../../store';
+import { AuthenticationSelectors } from '../../store';
 import {
   SchedularActions,
   SchedularSelectors,
@@ -36,9 +28,7 @@ const ActionTd = styled.div`
   justify-content: start;
   gap: 15px;
 `;
-const scheduleSchema = yup.object().shape({
-  note: yup.string().required('Note is required'),
-});
+
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,10 +42,6 @@ export const ListScheduleDeployment = () => {
     SchedularSelectors.getApproveScheduleModal
   );
 
-  const tokenScheduleModal = useSelector(
-    SchedularSelectors.getTokenScheduleModal
-  );
-
   const location = useLocation();
 
   const params = new URLSearchParams(location.search);
@@ -64,9 +50,6 @@ export const ListScheduleDeployment = () => {
   useEffect(() => {
     if (token) {
       dispatch(SchedularActions.checkApproverToken({ params: { token } }));
-      // if (!isEmpty(selectedSchedule)) {
-      //   dispatch(SchedularActions.setTokenScheduleModal(true));
-      // }
     }
   }, [dispatch, token]);
 
@@ -76,30 +59,8 @@ export const ListScheduleDeployment = () => {
   };
 
   const handleCancelModel = item => {
-    // if (item.deployer_id === currentUser.id) {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setCancelScheduleModal());
-    // }
-  };
-
-  const handleEnableEdit = item => {
-    if (item.deployment_status === 'PENDING') {
-      return false;
-    } else if (item.deployment_status === 'NOT APPROVED' && item.can_approve) {
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const handeEnableCancel = item => {
-    if (item.deployment_status === 'PENDING') {
-      return false;
-    } else if (item.deployment_status === 'SCHEDULED') {
-      return false;
-    } else {
-      return true;
-    }
   };
 
   const getActionsMenu = item => {
@@ -109,13 +70,13 @@ export const ListScheduleDeployment = () => {
           onClick={() => {
             handleEditClick(item);
           }}
-          disabled={handleEnableEdit(item)}
+          disabled={!item?.can_edit}
         >
           <PencilIcon width={16} height={16} />
         </IconButton>
         <IconButton
           onClick={() => handleCancelModel(item)}
-          disabled={handeEnableCancel(item)}
+          disabled={!item?.can_cancel}
         >
           <HoldIcon />
         </IconButton>
@@ -155,14 +116,15 @@ export const ListScheduleDeployment = () => {
           item={item}
           content={item?.approvers}
           currentUser={currentUser}
-          // setSelectedData={setSelectedData}
         />
       ),
       width: '15%',
     },
     {
       label: 'Status',
-      renderCell: item => <StatusText text={item?.deployment_status} />,
+      renderCell: item => (
+        <StatusText text={item?.deployment_status} item={item} />
+      ),
       width: '15%',
     },
     {

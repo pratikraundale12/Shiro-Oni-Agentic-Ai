@@ -40,11 +40,8 @@ const NameWrapper = styled.span`
 const HolderContainer = styled.div`
   margin-left: ${props => (props.makeleft ? '-10px' : '0')};
 `;
-export const TextWithPhotoRender = ({ content, currentUser, item }) => {
+export const TextWithPhotoRender = ({ content, item }) => {
   const dispatch = useDispatch();
-  const isApprover = content.some(
-    approver => approver.approver_id === currentUser.id
-  );
 
   const handleReject = () => {
     dispatch(SchedularActions.setSelectedSchedule(item));
@@ -58,7 +55,7 @@ export const TextWithPhotoRender = ({ content, currentUser, item }) => {
 
   return (
     <>
-      {isApprover && item.deployment_status == 'PENDING' ? (
+      {item?.can_approve ? (
         <div className="d-flex">
           <StyledButton className="me-2" onClick={() => handleReject()}>
             <CrossWithCircleIcon color="red" />
@@ -154,7 +151,6 @@ export const TextWithPhotoRender = ({ content, currentUser, item }) => {
 };
 TextWithPhotoRender.propTypes = {
   content: PropTypes.object,
-  currentUser: PropTypes.string,
   item: PropTypes.object,
   setSelectedData: PropTypes.func,
 };
