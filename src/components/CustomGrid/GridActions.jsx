@@ -29,10 +29,7 @@ import {
   RolesActions,
   RolesSelectors,
 } from '../../store';
-import {
-  ActivityHistoryActions,
-  // ActivityHistorySelectors,
-} from '../../store/activityHistory/redux';
+import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 // import { ClusterSelect } from '../ClusterSelect';
@@ -257,12 +254,21 @@ export const GridActions = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchStatus, entity, event, search]);
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
 
   return (
     <>
       <Flex className="flex-wrap gap-2">
         <Flex>
           <GoBackButton />
+          <button
+            className="d-flex bg-white border-0"
+            onClick={handleBackButtonClick}
+          >
+            <GreaterArrowIcon />
+          </button>
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>
