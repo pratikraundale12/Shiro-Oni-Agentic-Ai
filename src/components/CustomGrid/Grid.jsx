@@ -29,8 +29,8 @@ import { useSort } from '@table-library/react-table-library/sort';
 import { useParams } from 'react-router-dom';
 import { KDFM } from '../../constants';
 // import { TextRender } from './CellRenders';
-import { Table } from './Table';
 import { useForm } from 'react-hook-form';
+import { Table } from './Table';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -40,8 +40,8 @@ const Container = styled.div`
 `;
 
 const TableContainer = styled.div`
-  min-height: ${props => (props.module === 'nodes' ? '680px' : '784px')};
-  max-height: ${props => (props.module === 'nodes' ? '680px' : '784px')};
+  min-height: ${props => (props.module === 'nodes' ? '590px' : '690px')};
+  max-height: ${props => (props.module === 'nodes' ? '590px' : '690px')};
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};

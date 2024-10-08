@@ -6,7 +6,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import * as Yup from 'yup';
-import { LinkIcon, PlusCircleIcon, QRIcons, TodoIcon } from '../../assets';
+import {
+  GreaterArrowIcon,
+  LinkIcon,
+  PlusCircleIcon,
+  QRIcons,
+  TodoIcon,
+} from '../../assets';
 import { FullPageLoader } from '../../components';
 import { Table } from '../../components/CustomGrid/Table';
 import {
@@ -308,11 +314,21 @@ export const LdapConfig = () => {
   useEffect(() => {
     dispatch(RolesActions.displayGroup(true));
   }, []);
+
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
   return (
     <Wrapper>
       {loading && <FullPageLoader loading={loading} />}
       <Heading>
         <Flex>
+          <button
+            className="d-flex border-0 bg-white"
+            onClick={handleBackButtonClick}
+          >
+            <GreaterArrowIcon />
+          </button>
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>

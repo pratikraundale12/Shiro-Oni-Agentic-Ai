@@ -15,6 +15,7 @@ import {
   ErrorIcon,
   FlowFiledQuedIcon,
   FlowMetricHeaderIcon,
+  GreaterArrowIcon,
   InvalidProcessorIcon,
   LensIcon,
   RefreshIcon,
@@ -51,12 +52,15 @@ const QuickInsightHeadingText = styled.h4`
   font-weight: 600;
   line-height: 27.24px;
   text-align: left;
-  padding-bottom: 5px;
 `;
 
 const InsightIconContiner = styled.div`
   padding-top: 5px;
   margin-bottom: 0.5rem;
+  display: flex;
+  align-items: start;
+  gap: 16px;
+  margin-left: 10px;
 `;
 
 const InsightDataContiner = styled.div`
@@ -298,12 +302,21 @@ export const Dashboard = () => {
     window.location.reload(true); // Hard reload
   };
   let ClusterActivated = localStorage.getItem('clusters');
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
   return (
     <>
       <Loader loading={loading} />
       <TopSection>
         <QuickInsightHeading>
           <InsightIconContiner>
+            <button
+              className="d-flex border-0 bg-white"
+              onClick={handleBackButtonClick}
+            >
+              <GreaterArrowIcon />
+            </button>
             <LensIcon />
           </InsightIconContiner>
           <QuickInsightHeadingText>Quick Insight</QuickInsightHeadingText>

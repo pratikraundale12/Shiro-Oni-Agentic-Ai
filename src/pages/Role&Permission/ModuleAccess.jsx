@@ -4,7 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { difference, isEmpty } from 'lodash';
-import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
+import {
+  GreaterArrowIcon,
+  PlusCircleIcon,
+  SmallSearchIcon,
+  TodoIcon,
+} from '../../assets';
 import { Table, TextRender } from '../../components';
 import { history } from '../../helpers/history';
 import { Button, CheckboxField, SelectField, TextButton } from '../../shared';
@@ -23,6 +28,7 @@ const Flex = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
 `;
 
 const ImageContainer = styled.div`
@@ -305,10 +311,21 @@ export const ModuleAccess = () => {
     module.label.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
+
   return (
     <>
       <Flex>
         <Flex>
+          <button
+            className="d-flex border-0 bg-white"
+            onClick={handleBackButtonClick}
+            style={{ marginBottom: '0.5rem' }}
+          >
+            <GreaterArrowIcon />
+          </button>
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>

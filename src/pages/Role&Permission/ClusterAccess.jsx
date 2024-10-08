@@ -1,14 +1,19 @@
 /* eslint-disable react/prop-types */
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { isEmpty } from 'lodash';
 
-import { Button, CheckboxField, SelectField } from '../../shared';
-import { PlusCircleIcon, SmallSearchIcon, TodoIcon } from '../../assets';
-import { theme } from '../../styles';
-import { Table, TextRender } from '../../components';
-import AddNewRoleModal from '../../shared/AddNewRoleModal';
 import { useDispatch, useSelector } from 'react-redux';
+import {
+  GreaterArrowIcon,
+  PlusCircleIcon,
+  SmallSearchIcon,
+  TodoIcon,
+} from '../../assets';
+import { Table, TextRender } from '../../components';
+import { Button, CheckboxField, SelectField } from '../../shared';
+import AddNewRoleModal from '../../shared/AddNewRoleModal';
+import Breadcrumb from '../../shared/Breadcrumb';
 import {
   AuthenticationSelectors,
   ClustersActions,
@@ -19,12 +24,13 @@ import {
   RolesActions,
   RolesSelectors,
 } from '../../store';
-import Breadcrumb from '../../shared/Breadcrumb';
+import { theme } from '../../styles';
 
 const Flex = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
 `;
 
 const ImageContainer = styled.div`
@@ -260,10 +266,21 @@ export const ClusterAccess = () => {
     setUpdatedRoleClusters(roleClusters);
   }, [roleClusters]);
 
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
+
   return (
     <>
       <Flex>
         <Flex>
+          <button
+            className="d-flex border-0 bg-white"
+            onClick={handleBackButtonClick}
+            style={{ marginBottom: '0.5rem' }}
+          >
+            <GreaterArrowIcon />
+          </button>
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>
