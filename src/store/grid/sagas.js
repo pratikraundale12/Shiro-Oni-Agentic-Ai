@@ -3,8 +3,8 @@ import { all, call, debounce, put, select } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, DEBOUNCE_DELAY } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesSelectors } from '../namespaces';
-import { GridActions } from './redux';
 import { SchedularSelectors } from '../schedular/redux';
+import { GridActions } from './redux';
 
 export function* fetchGrid(
   api,
@@ -87,7 +87,29 @@ export function* fetchGrid(
     apiMethod: API[module],
     apiParams: [{ params, queryParams, payload }],
   });
-
+  if (module === 'clusters') {
+    let clusterData = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
+    if (Array.isArray(response.data.data)) {
+      const processedClusters = response.data.data;
+      const disconnectedData = processedClusters.filter(
+        cluster => cluster.status === 'Disconnected'
+      );
+      const tempData = [];
+      for (const item of clusterData) {
+        const itemMatch = disconnectedData.find(
+          childItem => item.id === childItem.id
+        );
+        if (!itemMatch) {
+          tempData.push({
+            id: item.id,
+            name: item.name,
+            token: item.token,
+          });
+        }
+      }
+      localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(tempData));
+    }
+  }
   if (response.ok) {
     yield put(GridActions.fetchGridSuccess({ module, data: response.data }));
   }
