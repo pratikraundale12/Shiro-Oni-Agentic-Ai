@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SettingSmallIcon } from '../../assets';
 import { Table } from '../../components';
+import { Button } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import AddControllerServiceModal from './AddControllerServiceModal';
 import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
 
@@ -40,7 +42,7 @@ export const ListControllerService = () => {
     },
     {
       label: 'Scope',
-      renderCell: () => 'hello',
+      renderCell: item => item?.scope,
       width: '15%',
     },
     {
@@ -81,6 +83,22 @@ export const ListControllerService = () => {
 
   return (
     <>
+      <div className="row mb-2 d-flex justify-content-end">
+        <div className="col-1">
+          <Button
+            type="button"
+            // data-dismiss="modal"
+            size={'md'}
+            onClick={() =>
+              dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
+            }
+          >
+            Add
+          </Button>
+        </div>
+      </div>
+      <AddControllerServiceModal />
+
       <Table data={listData || []} columns={COLUMNS} />
       <ConfigControllerService
         isOpen={isModalOpen}
