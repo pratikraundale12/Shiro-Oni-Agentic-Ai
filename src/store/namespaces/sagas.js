@@ -720,6 +720,65 @@ export function* getAllControllerServiceListToAdd(api) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
+export function* addControllerServiceRootLevel(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'addControllerServiceRootLevel',
+    loadingSection: 'addControllerServiceRootLevel',
+    apiMethod: api.addControllerServiceRootLevel,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        payloadData: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    console.log(response);
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+
+export function* addPropertyControllerService(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const { id, ...rest } = payload;
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'addPropertyControllerService',
+    loadingSection: 'addPropertyControllerService',
+    apiMethod: api.addPropertyControllerService,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        controllerId: id,
+        payloadData: rest,
+      },
+    ],
+  });
+  if (response.ok) {
+    console.log(response);
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -771,6 +830,16 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.getAllControllerServiceListToAdd,
       getAllControllerServiceListToAdd,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.addControllerServiceRootLevel,
+      addControllerServiceRootLevel,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.addPropertyControllerService,
+      addPropertyControllerService,
       api
     ),
   ]);

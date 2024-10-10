@@ -136,6 +136,19 @@ export const namespacesAPI = api => {
   const getAllControllerServiceToAdd = ({ clusterId }) =>
     api.get(`/list-controller-services/${clusterId}`);
 
+  const addControllerServiceRootLevel = ({ clusterId, payloadData }) =>
+    api.post(`controller-services/${clusterId}/namespace/`, payloadData);
+
+  const addPropertyControllerService = ({
+    clusterId,
+    controllerId,
+    payloadData,
+  }) =>
+    api.put(
+      `controller-services/${clusterId}/service/${controllerId}`,
+      payloadData
+    );
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -157,5 +170,7 @@ export const namespacesAPI = api => {
     singleNamespaceData,
     getAllRootControllerServiceNamespace,
     getAllControllerServiceToAdd,
+    addControllerServiceRootLevel,
+    addPropertyControllerService,
   };
 };

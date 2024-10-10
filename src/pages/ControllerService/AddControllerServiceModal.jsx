@@ -130,7 +130,14 @@ const AddControllerServiceModal = () => {
   const filteredModulesData = controllerAddList.filter(module =>
     module.name.toLowerCase().includes(search.toLowerCase())
   );
-  console.log(filteredModulesData, 'filteredModulesData');
+
+  const handleSubmit = () => {
+    const { name, type, bundle } = selectedItem;
+    dispatch(
+      NamespacesActions.addControllerServiceRootLevel({ name, type, bundle })
+    );
+    closeModal();
+  };
   return (
     <>
       <Modal
@@ -141,8 +148,9 @@ const AddControllerServiceModal = () => {
         primaryButtonText={'Add'}
         secondaryButtonText="Back"
         // onSecondarySubmit={closeModal}
-        // onSubmit={closePopup}
-        contentStyles={{ maxWidth: '65%', maxHeight: '80%' }}
+        onSubmit={() => handleSubmit()}
+        contentStyles={{ maxWidth: '70%', maxHeight: '80%' }}
+        primaryButtonDisabled={!selectedItem?.name}
       >
         <SearchContainer>
           <SmallSearchIcon

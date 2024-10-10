@@ -1,23 +1,65 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { SettingSmallIcon } from '../../assets';
+import { SettingSmallIcon, SmallSearchIcon } from '../../assets';
 import { Table } from '../../components';
 import { Button } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import AddControllerServiceModal from './AddControllerServiceModal';
 import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
+import styled from 'styled-components';
+import { theme } from '../../styles';
+import PropertyDropdownModal from './ProprtyDropdownModel';
 
+const SearchContainer = styled.div`
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
+`;
+const Search = styled.input`
+  width: 100%;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
+
+  &:focus-visible {
+    outline: none;
+  }
+`;
 export const ListControllerService = () => {
+  const [search, setSearch] = useState('');
   const dispatch = useDispatch();
   const listData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
   );
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
     useState(false);
-  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [selectedItemFromList, setSelectedItemFromList] = useState({});
+  const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
+  const modalOpenState = useSelector(
+    NamespacesSelectors.getIsAddControllerServiceMOdalOpen
+  );
+  const [listPropertyTableData, setListPropertTableData] = useState(
+    selectedItemFromList?.properties
+  );
+  const filteredModulesData = listData.filter(
+    module =>
+      module.name.toLowerCase().includes(search.toLowerCase()) ||
+      module.type.toLowerCase().includes(search.toLowerCase())
+  );
+  const isListProprtyModel = useSelector(
+    NamespacesSelectors.getControllerServicePropertyModel
+  );
 
   const COLUMNS = [
     {
@@ -50,7 +92,7 @@ export const ListControllerService = () => {
       renderCell: item => (
         <button
           className="border-0 bg-white"
-          onClick={() => handleSettingClick(item?.id)}
+          onClick={() => handleSettingClick(item)}
         >
           <SettingSmallIcon />
         </button>
@@ -61,26 +103,24 @@ export const ListControllerService = () => {
 
   useEffect(() => {
     dispatch(NamespacesActions.getControllerServiceList());
-  }, [dispatch]);
+  }, [dispatch, modalOpenState]);
 
-  const handleSettingClick = id => {
-    setSelectedItemId(id); // Set the selected item ID
-    setIsModalOpen(true); // Open the modal
+  const handleSettingClick = item => {
+    setSelectedItemFromList(item);
+    dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
   const handleCloseModal = () => {
     dispatch(NamespacesActions.setNewlyAddVariables([]));
-    setIsModalOpen(false);
+    dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
   };
 
-  const handleAddPropertiesModal = () => {
-    console.log(isAddpropertiesModalOpen, 'isAddpropertiesModalOpen');
+  const handleAddValueModal = item => {
     setIsAddpropertiesModalOpen(true);
-    setIsModalOpen(false);
+    setSelectedPropertyToEdit(item);
+    // dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
   };
-
-  console.log(selectedItemId, 'selectedItemId');
-
+  console.log(listPropertyTableData, 'listPropertyTableData');
   return (
     <>
       <div className="row mb-2 d-flex justify-content-end">
@@ -97,21 +137,45 @@ export const ListControllerService = () => {
           </Button>
         </div>
       </div>
+      <SearchContainer>
+        <SmallSearchIcon
+          width={18}
+          height={18}
+          color={theme.colors.darkGrey1}
+        />
+        <Search
+          type="search"
+          value={search}
+          placeholder="Search Controller Service by Name and Type"
+          onChange={e => setSearch(e.target.value)}
+        />
+      </SearchContainer>
       <AddControllerServiceModal />
 
-      <Table data={listData || []} columns={COLUMNS} />
+      <Table data={filteredModulesData || []} columns={COLUMNS} />
       <ConfigControllerService
-        isOpen={isModalOpen}
+        isOpen={isListProprtyModel}
         onClose={handleCloseModal}
-        onSubmit={handleAddPropertiesModal}
-        selectedItemId={selectedItemId}
+        selectedItemFromList={selectedItemFromList}
+        handleAddValueModal={handleAddValueModal}
+        listPropertyTableData={listPropertyTableData}
+        setListPropertTableData={setListPropertTableData}
+        setSelectedPropertyToEdit={setSelectedPropertyToEdit}
       />
       <AddProperties
         isOpen={isAddpropertiesModalOpen}
         onClose={() => {
           setIsAddpropertiesModalOpen(false);
-          setIsModalOpen(true);
+          dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
         }}
+        selectedPropertyToEdit={selectedPropertyToEdit}
+        listPropertyTableData={listPropertyTableData}
+        setListPropertTableData={setListPropertTableData}
+        setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
+      />
+      <PropertyDropdownModal
+        selectedPropertyToEdit={selectedPropertyToEdit}
+        setListPropertTableData={setListPropertTableData}
       />
     </>
   );

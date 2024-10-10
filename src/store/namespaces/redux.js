@@ -72,6 +72,18 @@ export const NamespacesActions = {
   setAddControllerServiceList: createAction(
     `${prefix}setAddControllerServiceList`
   ),
+  addControllerServiceRootLevel: createAction(
+    `${prefix}addControllerServiceRootLevel`
+  ),
+  setIsControllerServicePropertyModel: createAction(
+    `${prefix}setIsControllerServicePropertyModel`
+  ),
+  addPropertyControllerService: createAction(
+    `${prefix}addPropertyControllerService`
+  ),
+  setIsAddPropertyDropdownModalOpen: createAction(
+    `${prefix}setIsAddPropertyDropdownModalOpen`
+  ),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -123,6 +135,8 @@ export const NAMESPACES_INITIAL_STATE = {
   rootControllerServiceNamespace: [],
   isAddControllerServiceModal: false,
   addControllerServiceList: [],
+  isControllerServicePropertyModel: false,
+  isAddPropertyDropdownModalOpen: false,
   // parameterEditParent: false,
 };
 
@@ -157,6 +171,10 @@ export const NamespacesSelectors = {
     state.namespaces.isAddControllerServiceModal,
   getAddControllerServiceList: state =>
     state.namespaces.addControllerServiceList,
+  getControllerServicePropertyModel: state =>
+    state.namespaces.isControllerServicePropertyModel,
+  getAddPropertyDropdownModal: state =>
+    state.namespaces.isAddPropertyDropdownModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -370,6 +388,19 @@ const setAddControllerServiceList = (state, { payload }) => {
     addControllerServiceList: payload,
   };
 };
+const setIsControllerServicePropertyModel = (state, { payload }) => {
+  return {
+    ...state,
+    isControllerServicePropertyModel: payload,
+  };
+};
+
+const setIsAddPropertyDropdownModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isAddPropertyDropdownModalOpen: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -436,6 +467,14 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setAddControllerServiceList,
         setAddControllerServiceList
+      )
+      .addCase(
+        NamespacesActions.setIsControllerServicePropertyModel,
+        setIsControllerServicePropertyModel
+      )
+      .addCase(
+        NamespacesActions.setIsAddPropertyDropdownModalOpen,
+        setIsAddPropertyDropdownModalOpen
       );
   }
 );

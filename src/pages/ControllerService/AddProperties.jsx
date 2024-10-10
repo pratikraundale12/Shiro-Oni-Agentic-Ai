@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
-import { InputField, Modal, RadioSelectField } from '../../shared';
+import { CheckboxField, InputField, Modal } from '../../shared';
+import { useForm, useWatch } from 'react-hook-form';
 
 const ModalBody = styled.div`
   position: relative;
@@ -13,39 +14,63 @@ const ModalBody = styled.div`
     }
   }
 `;
-const RedioButtonDiv = styled.div`
-  margin-top: 30px;
-`;
-const OPTIONS = [
-  { label: 'Yes', value: 'yes' },
-  { label: 'No', value: 'no' },
-];
-const AddProperties = ({ isOpen, onClose }) => {
+
+const AddProperties = ({
+  isOpen,
+  onClose,
+  selectedPropertyToEdit,
+  setListPropertTableData,
+  setIsAddpropertiesModalOpen,
+}) => {
+  const { register, handleSubmit, control, reset, setValue } = useForm({});
+  const handleFormSubmit = data => {
+    setListPropertTableData(prevData =>
+      prevData.map(item =>
+        item.name === selectedPropertyToEdit.name
+          ? { ...item, value: data?.value }
+          : item
+      )
+    );
+    setIsAddpropertiesModalOpen(false);
+  };
+  const check = useWatch({
+    control,
+    name: 'check',
+  });
+
+  if (check) {
+    setValue('value', '');
+  }
+  useEffect(() => {
+    reset({ value: selectedPropertyToEdit?.value || '' });
+  }, [reset, isOpen]);
+
   return (
     <div>
       <Modal
-        title="Add Properties"
+        title={`Edit  : ${selectedPropertyToEdit?.displayName}`}
         isOpen={isOpen}
         onRequestClose={onClose}
         size="md"
         primaryButtonText="Save"
-        // onSubmit={}
+        onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
       >
         <ModalBody className="modal-body">
           <InputField
-            name="name"
+            name="value"
             type="text"
-            label="Property Name"
+            label="Value"
             icon={<QRIcons />}
+            register={register}
+            disabled={check}
           />
-          <RedioButtonDiv>
-            <RadioSelectField
-              name="sensitive"
-              label="Sensitive"
-              options={OPTIONS}
-            />
-          </RedioButtonDiv>
+          <CheckboxField
+            name="check"
+            label={'Set empty string'}
+            defaultChecked={false}
+            register={register}
+          />
         </ModalBody>
       </Modal>
     </div>

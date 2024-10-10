@@ -1,10 +1,13 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+// import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Table } from '../../components';
 import { Modal } from '../../shared';
-import { NamespacesSelectors } from '../../store';
+// import { NamespacesSelectors } from '../../store';
+import ValueRender from './ValueRender';
+import { NamespacesActions } from '../../store';
+import { useDispatch } from 'react-redux';
 // import AddProperties from './AddProperties';
 
 const ModalBody = styled.div`
@@ -20,27 +23,51 @@ const ModalBody = styled.div`
 export const ConfigControllerService = ({
   isOpen,
   onClose,
-  onSubmit,
-  selectedItemId,
+  handleAddValueModal,
+  selectedItemFromList,
+  listPropertyTableData,
+  setListPropertTableData,
+  setSelectedPropertyToEdit,
 }) => {
+  const dispatch = useDispatch();
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => item?.name,
+      renderCell: item => item?.displayName,
+      // width: '40%',
     },
     {
       label: 'Value',
-      renderCell: item => item?.value,
+      renderCell: item => (
+        <ValueRender
+          item={item}
+          handleAddValueModal={handleAddValueModal}
+          setSelectedPropertyToEdit={setSelectedPropertyToEdit}
+        />
+      ),
+      // width: '60%',
     },
   ];
-  const listData = useSelector(
-    NamespacesSelectors?.getRootControllerServiceNamespace
-  );
-  const selectedItem = listData.find(item => item.id === selectedItemId);
-  console.log(selectedItem, 'selectedItem');
-  const properties = selectedItem ? selectedItem.properties : {};
-  console.log(properties, 'properties');
-  console.log(listData, 'listData');
+  const handleSubmit = () => {
+    const nameValueObject = listPropertyTableData.reduce((acc, obj) => {
+      acc[obj.name] = obj.value;
+      return acc;
+    }, {});
+
+    const payload = {
+      id: selectedItemFromList.id,
+      version: selectedItemFromList?.version,
+      properties: nameValueObject,
+    };
+    dispatch(NamespacesActions.addPropertyControllerService(payload));
+    onClose();
+    setTimeout(() => {
+      dispatch(NamespacesActions.getControllerServiceList());
+    }, 500);
+  };
+  useEffect(() => {
+    setListPropertTableData(selectedItemFromList?.properties);
+  }, [selectedItemFromList?.properties]);
   return (
     <Modal
       title="Properties"
@@ -48,12 +75,14 @@ export const ConfigControllerService = ({
       onRequestClose={onClose}
       size="md"
       primaryButtonText="Add"
-      onSubmit={onSubmit}
+      onSubmit={() => handleSubmit()}
       footerAlign="start"
+      contentStyles={{ maxWidth: '60%', maxHeight: '70%' }}
+      secondaryButtonText="Back"
     >
       <ModalBody className="modal-body">
         <Table
-          data={properties ? properties : []}
+          data={listPropertyTableData || []}
           columns={COLUMNS}
           className="variables-table"
         />
