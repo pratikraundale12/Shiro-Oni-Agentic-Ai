@@ -7,6 +7,7 @@ import { HistoryRouter } from './HistoryRouter';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   ActivityHistoryIcon,
+  BookIcon,
   ClusterIcon,
   DashboardIcon,
   GenrateFlowIcon,
@@ -225,7 +226,7 @@ export const ROUTES_MENU = [
   {
     name: 'Controller Service',
     path: 'controller-service',
-    icon: ScheduleDeploymentIcon,
+    icon: BookIcon,
     pages: [
       {
         path: '',

@@ -70,7 +70,7 @@ export const ConfigControllerService = ({
   }, [selectedItemFromList?.properties]);
   return (
     <Modal
-      title="Properties"
+      title={` ${selectedItemFromList?.name} : Properties`}
       isOpen={isOpen}
       onRequestClose={onClose}
       size="md"

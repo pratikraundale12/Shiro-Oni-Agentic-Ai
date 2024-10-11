@@ -102,3 +102,4 @@ export * from './UserUploadIcon';
 export * from './WhiteBoradIcon';
 export * from './ArrowIcon';
 export * from './canvasYIcon';
+export * from './BookIcon';

@@ -84,8 +84,20 @@ export const NamespacesActions = {
   setIsAddPropertyDropdownModalOpen: createAction(
     `${prefix}setIsAddPropertyDropdownModalOpen`
   ),
+  getNewPropertyControllerService: createAction(
+    `${prefix}getNewPropertyControllerService`
+  ),
+  setNewProperToAddControllerService: createAction(
+    `${prefix}setNewProperToAddControllerService`
+  ),
+  addControllerServicePropertyByDropdown: createAction(
+    `${prefix}addControllerServicePropertyByDropdown`
+  ),
+  setResponseNewAddedProprty: createAction(
+    `${prefix}setResponseNewAddedProprty`
+  ),
 };
-//
+
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -137,6 +149,8 @@ export const NAMESPACES_INITIAL_STATE = {
   addControllerServiceList: [],
   isControllerServicePropertyModel: false,
   isAddPropertyDropdownModalOpen: false,
+  newPropertyToAddControllerService: [],
+  responseNewAddedProperty: {},
   // parameterEditParent: false,
 };
 
@@ -175,6 +189,10 @@ export const NamespacesSelectors = {
     state.namespaces.isControllerServicePropertyModel,
   getAddPropertyDropdownModal: state =>
     state.namespaces.isAddPropertyDropdownModalOpen,
+  getNewProprtyToAddControllerService: state =>
+    state.namespaces.newPropertyToAddControllerService,
+  getResponseNewAddedProperty: state =>
+    state.namespaces.responseNewAddedProperty,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -401,7 +419,20 @@ const setIsAddPropertyDropdownModalOpen = (state, { payload }) => {
     isAddPropertyDropdownModalOpen: payload,
   };
 };
+const setNewProperToAddControllerService = (state, { payload }) => {
+  return {
+    ...state,
+    newPropertyToAddControllerService: payload,
+  };
+};
+const setResponseNewAddedProprty = (state, { payload }) => {
+  return {
+    ...state,
+    responseNewAddedProperty: payload,
+  };
+};
 
+//
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -475,6 +506,15 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setIsAddPropertyDropdownModalOpen,
         setIsAddPropertyDropdownModalOpen
+      )
+      .addCase(
+        NamespacesActions.setNewProperToAddControllerService,
+        setNewProperToAddControllerService
+      )
+      .addCase(
+        NamespacesActions.setResponseNewAddedProprty,
+        setResponseNewAddedProprty
       );
   }
 );
+//

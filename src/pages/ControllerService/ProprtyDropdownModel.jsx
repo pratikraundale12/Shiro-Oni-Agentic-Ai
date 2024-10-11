@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-import { Modal, SelectField } from '../../shared';
+import { Button, Modal, SelectField } from '../../shared';
 import { theme } from '../../styles';
 import { useForm } from 'react-hook-form';
+import { isEmpty } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -25,21 +26,41 @@ const PropertyDropdownModal = ({
   setListPropertTableData,
 }) => {
   const dispatch = useDispatch();
+  const [addNewProperty, setAddNewProperty] = useState(false);
+  const [proprtyOptionsArray, setPropertyOptionsArray] = useState([]);
+  useEffect(() => {
+    if (selectedPropertyToEdit?.allowableValues) {
+      const optionArrayToUpdate = selectedPropertyToEdit?.allowableValues?.map(
+        element => ({
+          value: element?.allowableValue?.value,
+          label: element?.allowableValue?.displayName,
+        })
+      );
+      setPropertyOptionsArray(optionArrayToUpdate);
+    }
+  }, [selectedPropertyToEdit]);
   const isModalOpen = useSelector(
     NamespacesSelectors.getAddPropertyDropdownModal
   );
-  console.log(selectedPropertyToEdit.displayName, 'selectedPropertyToEdit');
-  const optionArray = selectedPropertyToEdit?.allowableValues?.map(element => ({
-    value: element?.allowableValue?.value,
-    label: element?.allowableValue?.displayName,
+  const newPropertyToAdd = useSelector(
+    NamespacesSelectors.getNewProprtyToAddControllerService
+  );
+  const newResponseAddedProperty = useSelector(
+    NamespacesSelectors.getResponseNewAddedProperty
+  );
+  const optionsToNewPropertyAdd = newPropertyToAdd?.map(element => ({
+    value: element?.name,
+    label: element?.name,
   }));
+
   const handleClose = () => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(false));
   };
-  const { handleSubmit, control } = useForm({});
+  const { handleSubmit, control, watch } = useForm({});
+  const selectedNewValue = watch('newService');
+
   const handleFormSubmit = data => {
-    console.log(data, 'data');
-    const selectedName = optionArray.find(
+    const selectedName = proprtyOptionsArray.find(
       element => element.value === data.value
     )?.label;
     setListPropertTableData(prevData =>
@@ -52,10 +73,42 @@ const PropertyDropdownModal = ({
     handleClose();
   };
 
+  const handleNewService = () => {
+    const selectedObject = newPropertyToAdd.find(
+      element => element.name === selectedNewValue
+    );
+    dispatch(
+      NamespacesActions.addControllerServicePropertyByDropdown(selectedObject)
+    );
+    setAddNewProperty(false);
+  };
+  useEffect(() => {
+    if (selectedPropertyToEdit?.add && isModalOpen) {
+      dispatch(
+        NamespacesActions.getNewPropertyControllerService(
+          selectedPropertyToEdit
+        )
+      );
+      setAddNewProperty(false);
+    }
+  }, [selectedPropertyToEdit?.add, isModalOpen]);
+
+  useEffect(() => {
+    if (!isEmpty(newResponseAddedProperty)) {
+      setPropertyOptionsArray(prevArray => [
+        ...prevArray,
+        newResponseAddedProperty,
+      ]);
+    }
+  }, [newResponseAddedProperty]);
   return (
     <div>
       <Modal
-        title={`Edit  : ${selectedPropertyToEdit?.displayName}`}
+        title={
+          addNewProperty
+            ? 'Create New Service'
+            : `Edit  : ${selectedPropertyToEdit?.displayName}`
+        }
         isOpen={isModalOpen}
         onRequestClose={handleClose}
         size="md"
@@ -64,19 +117,70 @@ const PropertyDropdownModal = ({
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
         contentStyles={{ maxWidth: '35%', maxHeight: '50%' }}
+        primaryButtonDisabled={addNewProperty}
       >
         <ModalBody className="modal-body">
           <div style={{ height: '150px' }} className="mb-4">
-            <StyledSelectField
-              name="value"
-              size="sm"
-              options={optionArray}
-              // errors={errors}
-              control={control}
-              placeholder="Select Value"
-              backgroundColor={theme.colors.lightGrey}
-              title="Select Status"
-            />
+            {!addNewProperty && (
+              <>
+                <StyledSelectField
+                  name="value"
+                  size="sm"
+                  options={proprtyOptionsArray}
+                  // errors={errors}
+                  control={control}
+                  placeholder="Select Value"
+                  backgroundColor={theme.colors.lightGrey}
+                  title="Select Status"
+                />
+                <div className="col-4 mt-3">
+                  <Button
+                    type="button"
+                    size={'md'}
+                    variant="tertiary"
+                    onClick={() => setAddNewProperty(true)}
+                  >
+                    Create New Service
+                  </Button>
+                </div>
+              </>
+            )}
+            {addNewProperty && (
+              <>
+                <StyledSelectField
+                  name="newService"
+                  size="sm"
+                  options={optionsToNewPropertyAdd}
+                  // errors={errors}
+                  control={control}
+                  placeholder="Select Value"
+                  backgroundColor={theme.colors.lightGrey}
+                  title="Select Status"
+                />
+                <div className="row">
+                  <div className="col-4 mt-3">
+                    <Button
+                      type="button"
+                      size={'md'}
+                      variant="tertiary"
+                      onClick={() => handleNewService()}
+                    >
+                      Add New Service
+                    </Button>
+                  </div>
+                  <div className="col-2 mt-3">
+                    <Button
+                      type="button"
+                      size={'md'}
+                      variant="secondary"
+                      onClick={() => setAddNewProperty(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </ModalBody>
       </Modal>

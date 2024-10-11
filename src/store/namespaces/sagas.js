@@ -743,7 +743,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
     ],
   });
   if (response.ok) {
-    console.log(response);
+    toast.success(' Added Controller Service Successfully');
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
@@ -773,12 +773,77 @@ export function* addPropertyControllerService(api, { payload }) {
     ],
   });
   if (response.ok) {
-    console.log(response);
+    toast.success('Proprty Added Successfully');
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 
+export function* getNewPropertyControllerService(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'getNewPropertyControllerService',
+    loadingSection: 'getNewPropertyControllerService',
+    apiMethod: api.getNewPropertyControllerService,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        type: payload?.type,
+        group: payload.identifiesControllerServiceBundle.group,
+        artifact: payload.identifiesControllerServiceBundle.artifact,
+        version: payload.identifiesControllerServiceBundle.version,
+      },
+    ],
+    successAction: NamespacesActions.fetchVariableListSuccess,
+  });
+  if (response.ok)
+    yield put(
+      NamespacesActions.setNewProperToAddControllerService(response?.data)
+    );
+  else if (!response.ok)
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+}
+
+export function* addControllerServicePropertyByDropdown(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'addControllerServicePropertyByDropdown',
+    loadingSection: 'addControllerServicePropertyByDropdown',
+    apiMethod: api.addControllerServicePropertyByDropdown,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        payloadData: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success('Proprty Added Successfully');
+    yield put(NamespacesActions.setResponseNewAddedProprty(response?.data));
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+
+//
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -840,6 +905,16 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.addPropertyControllerService,
       addPropertyControllerService,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.getNewPropertyControllerService,
+      getNewPropertyControllerService,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.addControllerServicePropertyByDropdown,
+      addControllerServicePropertyByDropdown,
       api
     ),
   ]);

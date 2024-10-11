@@ -118,9 +118,7 @@ export const ListControllerService = () => {
   const handleAddValueModal = item => {
     setIsAddpropertiesModalOpen(true);
     setSelectedPropertyToEdit(item);
-    // dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
   };
-  console.log(listPropertyTableData, 'listPropertyTableData');
   return (
     <>
       <div className="row mb-2 d-flex justify-content-end">
