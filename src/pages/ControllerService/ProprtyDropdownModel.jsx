@@ -24,10 +24,15 @@ const StyledSelectField = styled(SelectField)`
 const PropertyDropdownModal = ({
   selectedPropertyToEdit,
   setListPropertTableData,
+  setUpdatedData,
+  updatedData,
 }) => {
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
   const [proprtyOptionsArray, setPropertyOptionsArray] = useState([]);
+  const filterData = updatedData.filter(item => {
+    return item.name != selectedPropertyToEdit.name;
+  });
   useEffect(() => {
     if (selectedPropertyToEdit?.allowableValues) {
       const optionArrayToUpdate = selectedPropertyToEdit?.allowableValues?.map(
@@ -60,6 +65,15 @@ const PropertyDropdownModal = ({
   const selectedNewValue = watch('newService');
 
   const handleFormSubmit = data => {
+    setUpdatedData(() => [
+      ...filterData,
+      {
+        name: selectedPropertyToEdit.name,
+        value: data.value,
+        sensitive: false,
+      },
+    ]);
+
     const selectedName = proprtyOptionsArray.find(
       element => element.value === data.value
     )?.label;

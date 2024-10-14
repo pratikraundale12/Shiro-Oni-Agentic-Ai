@@ -96,6 +96,9 @@ export const NamespacesActions = {
   setResponseNewAddedProprty: createAction(
     `${prefix}setResponseNewAddedProprty`
   ),
+  setIsConfigurePropertyControllerServiceModalOpen: createAction(
+    `${prefix}setIsConfigurePropertyControllerServiceModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -151,6 +154,7 @@ export const NAMESPACES_INITIAL_STATE = {
   isAddPropertyDropdownModalOpen: false,
   newPropertyToAddControllerService: [],
   responseNewAddedProperty: {},
+  isConfigurePropertyControllerServiceModalOpen: false,
   // parameterEditParent: false,
 };
 
@@ -193,6 +197,8 @@ export const NamespacesSelectors = {
     state.namespaces.newPropertyToAddControllerService,
   getResponseNewAddedProperty: state =>
     state.namespaces.responseNewAddedProperty,
+  getIsConfigurePropertyControllerServiceModalOpen: state =>
+    state.namespaces.isConfigurePropertyControllerServiceModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -431,6 +437,15 @@ const setResponseNewAddedProprty = (state, { payload }) => {
     responseNewAddedProperty: payload,
   };
 };
+const setIsConfigurePropertyControllerServiceModalOpen = (
+  state,
+  { payload }
+) => {
+  return {
+    ...state,
+    isConfigurePropertyControllerServiceModalOpen: payload,
+  };
+};
 
 //
 /* ------------- Hookup Reducers To Types ------------- */
@@ -514,6 +529,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setResponseNewAddedProprty,
         setResponseNewAddedProprty
+      )
+      .addCase(
+        NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen,
+        setIsConfigurePropertyControllerServiceModalOpen
       );
   }
 );

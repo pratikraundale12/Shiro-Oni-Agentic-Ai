@@ -10,6 +10,7 @@ import ConfigControllerService from './ConfigControllerService';
 import styled from 'styled-components';
 import { theme } from '../../styles';
 import PropertyDropdownModal from './ProprtyDropdownModel';
+import ConfigurePropertyModal from './ConfigurePropertyModal';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -37,6 +38,7 @@ const Search = styled.input`
 `;
 export const ListControllerService = () => {
   const [search, setSearch] = useState('');
+  const [updatedData, setUpdatedData] = useState([]);
   const dispatch = useDispatch();
   const listData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
@@ -159,6 +161,7 @@ export const ListControllerService = () => {
         listPropertyTableData={listPropertyTableData}
         setListPropertTableData={setListPropertTableData}
         setSelectedPropertyToEdit={setSelectedPropertyToEdit}
+        updatedData={updatedData}
       />
       <AddProperties
         isOpen={isAddpropertiesModalOpen}
@@ -170,10 +173,19 @@ export const ListControllerService = () => {
         listPropertyTableData={listPropertyTableData}
         setListPropertTableData={setListPropertTableData}
         setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
+        setUpdatedData={setUpdatedData}
+        updatedData={updatedData}
       />
       <PropertyDropdownModal
         selectedPropertyToEdit={selectedPropertyToEdit}
         setListPropertTableData={setListPropertTableData}
+        setUpdatedData={setUpdatedData}
+        updatedData={updatedData}
+      />
+      <ConfigurePropertyModal
+        setListPropertTableData={setListPropertTableData}
+        setUpdatedData={setUpdatedData}
+        updatedData={updatedData}
       />
     </>
   );

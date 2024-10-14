@@ -28,6 +28,7 @@ export const ConfigControllerService = ({
   listPropertyTableData,
   setListPropertTableData,
   setSelectedPropertyToEdit,
+  updatedData,
 }) => {
   const dispatch = useDispatch();
   const COLUMNS = [
@@ -49,15 +50,20 @@ export const ConfigControllerService = ({
     },
   ];
   const handleSubmit = () => {
-    const nameValueObject = listPropertyTableData.reduce((acc, obj) => {
-      acc[obj.name] = obj.value;
+    const resultObject = updatedData.reduce((acc, curr) => {
+      acc[curr.name] = curr.value;
       return acc;
     }, {});
+
+    const sensitiveNames = updatedData
+      .filter(item => item.sensitive === true)
+      .map(item => item.name);
 
     const payload = {
       id: selectedItemFromList.id,
       version: selectedItemFromList?.version,
-      properties: nameValueObject,
+      properties: resultObject,
+      sensitiveDynamicPropertyNames: sensitiveNames,
     };
     dispatch(NamespacesActions.addPropertyControllerService(payload));
     onClose();
@@ -81,10 +87,20 @@ export const ConfigControllerService = ({
       secondaryButtonText="Back"
     >
       <ModalBody className="modal-body">
-        {/* <button>+</button> */}
         <div className=" row d-flex justify-content-end">
           <div className=" col-1 mb-2">
-            <Button>+</Button>
+            <Button
+              type="button"
+              onClick={() =>
+                dispatch(
+                  NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(
+                    true
+                  )
+                )
+              }
+            >
+              +
+            </Button>
           </div>
         </div>
         <Table
