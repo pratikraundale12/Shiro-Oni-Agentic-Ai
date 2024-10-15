@@ -234,6 +234,7 @@ export const ROUTES_MENU = [
       },
     ],
     permission: 'view_namespace',
+    //permission: 'view_controller_services',
   },
 
   {

@@ -48,14 +48,6 @@ const ConfigurePropertyModal = ({
     dispatch(
       NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(false)
     );
-    // setListPropertTableData(prevData =>
-    //   prevData.map(item =>
-    //     item.name === selectedPropertyToEdit.name
-    //       ? { ...item, value: data?.value }
-    //       : item
-    //   )
-    // );
-    // setIsAddpropertiesModalOpen(false);
   };
 
   const handleCloseAction = () => {

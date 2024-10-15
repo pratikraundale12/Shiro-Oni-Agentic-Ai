@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { SettingSmallIcon, SmallSearchIcon } from '../../assets';
+import {
+  ConfirmScheduleDeploymentIcon,
+  DeleteDustbinIcon,
+  DeleteSmallIcon,
+  FlashCutIcon,
+  FlashIcon,
+  SettingSmallIcon,
+  SmallSearchIcon,
+} from '../../assets';
 import { Table } from '../../components';
-import { Button } from '../../shared';
+import { Button, ModalWithIcon } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import AddControllerServiceModal from './AddControllerServiceModal';
 import AddProperties from './AddProperties';
@@ -39,6 +47,8 @@ const Search = styled.input`
 export const ListControllerService = () => {
   const [search, setSearch] = useState('');
   const [updatedData, setUpdatedData] = useState([]);
+  const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const dispatch = useDispatch();
   const listData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
@@ -62,6 +72,42 @@ export const ListControllerService = () => {
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
   );
+  const handleEnableClick = item => {
+    setSelectedItemFromList(item);
+    setIsEnableModalOpen(true);
+  };
+
+  const handleDeleteClick = item => {
+    setSelectedItemFromList(item);
+    setIsDeleteModalOpen(true);
+  };
+  const handleStatusClick = () => {
+    dispatch(
+      NamespacesActions.changeStatusControllerService({
+        state:
+          selectedItemFromList?.state == 'DISABLED' ? 'ENABLED' : 'DISABLED',
+        version: selectedItemFromList?.version,
+        id: selectedItemFromList?.id,
+      })
+    );
+    setTimeout(() => {
+      dispatch(NamespacesActions.getControllerServiceList());
+    }, 500);
+    setIsEnableModalOpen(false);
+  };
+  const handleDeleteControllerServiceClick = () => {
+    dispatch(
+      NamespacesActions.deleteControllerService({
+        version: selectedItemFromList?.version,
+        id: selectedItemFromList?.id,
+      })
+    );
+
+    setTimeout(() => {
+      dispatch(NamespacesActions.getControllerServiceList());
+    }, 500);
+    setIsDeleteModalOpen(false);
+  };
 
   const COLUMNS = [
     {
@@ -92,12 +138,30 @@ export const ListControllerService = () => {
     {
       label: 'Actions',
       renderCell: item => (
-        <button
-          className="border-0 bg-white"
-          onClick={() => handleSettingClick(item)}
-        >
-          <SettingSmallIcon />
-        </button>
+        <>
+          <button
+            className="border-0 bg-white"
+            onClick={() => handleSettingClick(item)}
+          >
+            <SettingSmallIcon />
+          </button>
+          {item?.state != 'INVALID' && (
+            <button
+              className="border-0 bg-white ms-1"
+              onClick={() => handleEnableClick(item)}
+            >
+              {item?.state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
+            </button>
+          )}
+          {item?.state != 'ENABLED' && (
+            <button
+              className="border-0 bg-white ms-1"
+              onClick={() => handleDeleteClick(item)}
+            >
+              <DeleteSmallIcon color="black" height="28" />
+            </button>
+          )}
+        </>
       ),
       width: '10%',
     },
@@ -186,6 +250,28 @@ export const ListControllerService = () => {
         setListPropertTableData={setListPropertTableData}
         setUpdatedData={setUpdatedData}
         updatedData={updatedData}
+      />
+      <ModalWithIcon
+        title={`${selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
+        primaryButtonText={
+          selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'
+        }
+        secondaryButtonText="Cancel"
+        icon={<ConfirmScheduleDeploymentIcon />}
+        isOpen={isEnableModalOpen}
+        onRequestClose={() => setIsEnableModalOpen(false)}
+        primaryText={`Are you sure you want to ${selectedItemFromList?.state !== 'DISABLED' ? 'disable' : 'enable'} ${selectedItemFromList?.name}?`}
+        onSubmit={handleStatusClick}
+      />
+      <ModalWithIcon
+        title={`Delete : ${selectedItemFromList?.name}`}
+        primaryButtonText={'Delete'}
+        secondaryButtonText="Cancel"
+        icon={<DeleteDustbinIcon />}
+        isOpen={isDeleteModalOpen}
+        onRequestClose={() => setIsDeleteModalOpen(true)}
+        primaryText={`Are you sure you want to delete ${selectedItemFromList?.name}?`}
+        onSubmit={handleDeleteControllerServiceClick}
       />
     </>
   );

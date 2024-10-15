@@ -161,6 +161,22 @@ export const namespacesAPI = api => {
     );
   const addControllerServicePropertyByDropdown = ({ clusterId, payloadData }) =>
     api.post(`controller-services/${clusterId}/namespace/`, payloadData);
+
+  const changeStatusControllerService = ({
+    clusterId,
+    payloadData,
+    controllerId,
+  }) =>
+    api.put(
+      `controller-services/status/${clusterId}/service/${controllerId}`,
+      payloadData
+    );
+  const deleteControllerService = ({ clusterId, payloadData, controllerId }) =>
+    api.delete(
+      `controller-services/${clusterId}/service/${controllerId}`,
+      payloadData
+    );
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -186,5 +202,7 @@ export const namespacesAPI = api => {
     addPropertyControllerService,
     getNewPropertyControllerService,
     addControllerServicePropertyByDropdown,
+    changeStatusControllerService,
+    deleteControllerService,
   };
 };
