@@ -13,6 +13,7 @@ import { NamespacesActions } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
 import { useGlobalContext } from '../../utils';
 import AuditLog from './AuditLog';
+// import { logout } from '../../store/authentication';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -86,6 +87,17 @@ export const ListNamespaces = () => {
   const handleScheduleClick = item => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
+  };
+
+  const handleControllerService = item => {
+    dispatch(NamespacesActions.getControllerServiceList());
+    history.push('process-group/controller');
+    dispatch(
+      NamespacesActions.setSelectedNamespace({
+        label: item.name,
+        value: item.id,
+      })
+    );
   };
 
   useEffect(() => {
@@ -233,6 +245,7 @@ export const ListNamespaces = () => {
             item={item}
             handleLeftClick={handleSelect}
             handleRightClick={handleScheduleClick}
+            handleControllerService={handleControllerService}
           />
         </div>
       ),

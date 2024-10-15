@@ -44,6 +44,8 @@ import {
   UserLogin,
 } from '../pages';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
+import { ListControllerService } from '../pages/ControllerService';
+import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
 import Deploy from '../pages/Namespaces/Deploy';
 import ProcessGroupSummary from '../pages/Namespaces/ProcessGroupSummary';
 import Summary from '../pages/Namespaces/Summary';
@@ -57,7 +59,6 @@ import {
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
-import { ListControllerService } from '../pages/ControllerService';
 
 export const ROUTES_MENU = [
   {
@@ -111,6 +112,10 @@ export const ROUTES_MENU = [
       {
         path: 'upgrade',
         component: <Upgrade />,
+      },
+      {
+        path: 'controller',
+        component: <ControllerServicesNamespace />,
       },
       {
         path: 'summary',
