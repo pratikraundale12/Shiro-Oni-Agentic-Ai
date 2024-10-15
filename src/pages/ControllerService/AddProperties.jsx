@@ -21,9 +21,35 @@ const AddProperties = ({
   selectedPropertyToEdit,
   setListPropertTableData,
   setIsAddpropertiesModalOpen,
+  setUpdatedData,
+  updatedData,
 }) => {
   const { register, handleSubmit, control, reset, setValue } = useForm({});
+  const filterData = updatedData.filter(item => {
+    return item.name != selectedPropertyToEdit.name;
+  });
   const handleFormSubmit = data => {
+    // setUpdatedData(prevState => {
+    //   return [
+    //     ...prevState,
+    //     {
+    //       name: selectedPropertyToEdit.name,
+    //       value: data.value,
+    //       sensitive: false,
+    //     },
+    //   ];
+    // });
+    setUpdatedData(() => {
+      return [
+        ...filterData,
+        {
+          name: selectedPropertyToEdit.name,
+          value: data.value,
+          sensitive: false,
+        },
+      ];
+    });
+
     setListPropertTableData(prevData =>
       prevData.map(item =>
         item.name === selectedPropertyToEdit.name

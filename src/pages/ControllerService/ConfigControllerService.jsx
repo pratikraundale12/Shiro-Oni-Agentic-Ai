@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 // import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Table } from '../../components';
-import { Modal } from '../../shared';
+import { Button, Modal } from '../../shared';
 // import { NamespacesSelectors } from '../../store';
 import ValueRender from './ValueRender';
 import { NamespacesActions } from '../../store';
@@ -28,6 +28,7 @@ export const ConfigControllerService = ({
   listPropertyTableData,
   setListPropertTableData,
   setSelectedPropertyToEdit,
+  updatedData,
 }) => {
   const dispatch = useDispatch();
   const COLUMNS = [
@@ -49,15 +50,20 @@ export const ConfigControllerService = ({
     },
   ];
   const handleSubmit = () => {
-    const nameValueObject = listPropertyTableData.reduce((acc, obj) => {
-      acc[obj.name] = obj.value;
+    const resultObject = updatedData.reduce((acc, curr) => {
+      acc[curr.name] = curr.value;
       return acc;
     }, {});
+
+    const sensitiveNames = updatedData
+      .filter(item => item.sensitive === true)
+      .map(item => item.name);
 
     const payload = {
       id: selectedItemFromList.id,
       version: selectedItemFromList?.version,
-      properties: nameValueObject,
+      properties: resultObject,
+      sensitiveDynamicPropertyNames: sensitiveNames,
     };
     dispatch(NamespacesActions.addPropertyControllerService(payload));
     onClose();
@@ -74,13 +80,29 @@ export const ConfigControllerService = ({
       isOpen={isOpen}
       onRequestClose={onClose}
       size="md"
-      primaryButtonText="Add"
+      primaryButtonText="Apply"
       onSubmit={() => handleSubmit()}
       footerAlign="start"
       contentStyles={{ maxWidth: '60%', maxHeight: '70%' }}
       secondaryButtonText="Back"
     >
       <ModalBody className="modal-body">
+        <div className=" row d-flex justify-content-end">
+          <div className=" col-1 mb-2">
+            <Button
+              type="button"
+              onClick={() =>
+                dispatch(
+                  NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(
+                    true
+                  )
+                )
+              }
+            >
+              +
+            </Button>
+          </div>
+        </div>
         <Table
           data={listPropertyTableData || []}
           columns={COLUMNS}

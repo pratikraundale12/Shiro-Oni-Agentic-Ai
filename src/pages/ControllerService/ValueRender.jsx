@@ -24,6 +24,8 @@ const ValueRender = ({
     >
       {item?.dropDownName ? (
         <div>{item?.dropDownName}</div>
+      ) : item?.sensitive ? (
+        'Sensitive value set'
       ) : item?.value ? (
         <div>{item?.value}</div>
       ) : (
@@ -37,4 +39,4 @@ ValueRender.propTypes = {
   handleAddValueModal: PropTypes.func,
 };
 export default ValueRender;
-// item?.dropDownName
+
