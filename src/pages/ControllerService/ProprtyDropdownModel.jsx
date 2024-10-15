@@ -61,7 +61,7 @@ const PropertyDropdownModal = ({
   const handleClose = () => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(false));
   };
-  const { handleSubmit, control, watch } = useForm({});
+  const { handleSubmit, control, watch, reset } = useForm({});
   const selectedNewValue = watch('newService');
 
   const handleFormSubmit = data => {
@@ -115,6 +115,11 @@ const PropertyDropdownModal = ({
       ]);
     }
   }, [newResponseAddedProperty]);
+  useEffect(() => {
+    if (!isModalOpen) {
+      reset();
+    }
+  }, [isModalOpen]);
   return (
     <div>
       <Modal

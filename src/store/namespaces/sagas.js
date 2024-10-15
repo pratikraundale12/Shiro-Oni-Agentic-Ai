@@ -688,8 +688,9 @@ export function* getControllerServiceList(api) {
     yield put(
       NamespacesActions.getRootControllerServiceNamespace(response?.data)
     );
-  else if (!response.ok)
+  else if (!response.ok) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
 }
 
 export function* getAllControllerServiceListToAdd(api) {
