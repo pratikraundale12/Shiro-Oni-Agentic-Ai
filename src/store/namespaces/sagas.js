@@ -664,7 +664,6 @@ export function* singleNamespaceData(api) {
 
 export function* getControllerServiceList(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  // console.log(srcNamespaceId, '----srcNamespaceId');
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -737,7 +736,6 @@ export function* addControllerServiceRootLevel(api, { payload }) {
   const selectedNamespaceId = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
-  console.log(selectedNamespaceId, '----selectedNamespaceId');
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -832,6 +830,9 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  const selectedNamespaceId = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -842,6 +843,7 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
       {
         clusterId: selectedCluster?.value,
         payloadData: payload,
+        namespaceId: selectedNamespaceId?.value,
       },
     ],
   });

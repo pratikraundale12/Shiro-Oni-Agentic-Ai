@@ -173,8 +173,17 @@ export const namespacesAPI = api => {
     api.get(
       `/controller-services/${clusterId}/service-type?type=${type}&group=${group}&artifact=${artifact}&version=${version}`
     );
-  const addControllerServicePropertyByDropdown = ({ clusterId, payloadData }) =>
-    api.post(`controller-services/${clusterId}/namespace/`, payloadData);
+  const addControllerServicePropertyByDropdown = ({
+    clusterId,
+    payloadData,
+    namespaceId,
+  }) => {
+    const url = namespaceId
+      ? `controller-services/${clusterId}/namespace/${namespaceId}`
+      : `controller-services/${clusterId}/namespace`;
+
+    return api.post(url, payloadData);
+  };
 
   const changeStatusControllerService = ({
     clusterId,
