@@ -103,3 +103,5 @@ export * from './WhiteBoradIcon';
 export * from './ArrowIcon';
 export * from './canvasYIcon';
 export * from './BookIcon';
+export * from './FlashIcon';
+export * from './FlashCutIcon';

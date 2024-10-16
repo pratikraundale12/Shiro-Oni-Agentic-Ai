@@ -692,8 +692,9 @@ export function* getControllerServiceList(api) {
     yield put(
       NamespacesActions.getRootControllerServiceNamespace(response?.data)
     );
-  else if (!response.ok)
+  else if (!response.ok) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
 }
 
 export function* getAllControllerServiceListToAdd(api) {
@@ -852,7 +853,66 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
   }
 }
 
-//
+export function* changeStatusControllerService(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const { id, ...rest } = payload;
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'changeStatusControllerService',
+    loadingSection: 'changeStatusControllerService',
+    apiMethod: api.changeStatusControllerService,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        payloadData: rest,
+        controllerId: id,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success('Status updated Successfully');
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+
+export function* deleteControllerService(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const { id, ...rest } = payload;
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteControllerService',
+    loadingSection: 'deleteControllerService',
+    apiMethod: api.deleteControllerService,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        payloadData: rest,
+        controllerId: id,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success('Controller service deleted Successfully');
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+//deleteControllerService
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -926,6 +986,15 @@ export function* namespacesSagas(api) {
       addControllerServicePropertyByDropdown,
       api
     ),
+    takeLatest(
+      NamespacesActions.changeStatusControllerService,
+      changeStatusControllerService,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.deleteControllerService,
+      deleteControllerService,
+      api
+    ),
   ]);
 }
-//

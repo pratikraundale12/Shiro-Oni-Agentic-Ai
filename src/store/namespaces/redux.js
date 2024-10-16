@@ -99,6 +99,10 @@ export const NamespacesActions = {
   setIsConfigurePropertyControllerServiceModalOpen: createAction(
     `${prefix}setIsConfigurePropertyControllerServiceModalOpen`
   ),
+  changeStatusControllerService: createAction(
+    `${prefix}changeStatusControllerService`
+  ),
+  deleteControllerService: createAction(`${prefix}deleteControllerService`),
 };
 
 /* ------------- INITIAL STATE ------------- */
