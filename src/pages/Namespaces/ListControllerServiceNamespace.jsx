@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { SettingSmallIcon, SmallSearchIcon } from '../../assets';
@@ -6,11 +6,11 @@ import { Table } from '../../components';
 import { Button } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { theme } from '../../styles';
-// import { Add } from '../Clusters';
-import AddControllerService from './AddControllerService';
-// import AddControllerServiceModal from './';
-// import AddProperties from './AddProperties';
-// import ConfigControllerService from './ConfigControllerService';
+import AddControllerServiceModal from './AddControllerServiceModal';
+import AddProperties from './AddProperties';
+import ConfigControllerService from './ConfigControllerService';
+import ConfigurePropertyModal from './ConfigurePropertyModal';
+import PropertyDropdownModal from './ProprtyDropdownModal';
 // import PropertyDropdownModal from './ProprtyDropdownModel';
 
 const SearchContainer = styled.div`
@@ -37,31 +37,32 @@ const Search = styled.input`
     outline: none;
   }
 `;
-export const ControllerServicesNamespace = () => {
+export const ListControllerServiceNamespace = () => {
   const [search, setSearch] = useState('');
+  const [updatedData, setUpdatedData] = useState([]);
   const dispatch = useDispatch();
   const listData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
   );
 
-  // const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
-  //   useState(false);
-  // const [selectedItemFromList, setSelectedItemFromList] = useState({});
-  // const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
-  // const modalOpenState = useSelector(
-  //   NamespacesSelectors.getIsAddControllerServiceMOdalOpen
-  // );
-  // const [listPropertyTableData, setListPropertTableData] = useState(
-  //   selectedItemFromList?.properties
-  // );
+  const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
+    useState(false);
+  const [selectedItemFromList, setSelectedItemFromList] = useState({});
+  const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
+  const modalOpenState = useSelector(
+    NamespacesSelectors.getIsAddControllerServiceMOdalOpen
+  );
+  const [listPropertyTableData, setListPropertTableData] = useState(
+    selectedItemFromList?.properties
+  );
   const filteredModulesData = listData.filter(
     module =>
       module.name.toLowerCase().includes(search.toLowerCase()) ||
       module.type.toLowerCase().includes(search.toLowerCase())
   );
-  // const isListProprtyModel = useSelector(
-  //   NamespacesSelectors.getControllerServicePropertyModel
-  // );
+  const isListProprtyModel = useSelector(
+    NamespacesSelectors.getControllerServicePropertyModel
+  );
 
   const COLUMNS = [
     {
@@ -103,25 +104,24 @@ export const ControllerServicesNamespace = () => {
     },
   ];
 
-  // useEffect(() => {
-  //   dispatch(NamespacesActions.getControllerServiceList());
-  // }, [dispatch, modalOpenState]);
+  useEffect(() => {
+    dispatch(NamespacesActions.getControllerServiceList());
+  }, [dispatch, modalOpenState]);
 
   const handleSettingClick = item => {
-    // setSelectedItemFromList(item);
-    console.log(item, 'item');
+    setSelectedItemFromList(item);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
-  // const handleCloseModal = () => {
-  //   dispatch(NamespacesActions.setNewlyAddVariables([]));
-  //   dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
-  // };
+  const handleCloseModal = () => {
+    dispatch(NamespacesActions.setNewlyAddVariables([]));
+    dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
+  };
 
-  // const handleAddValueModal = item => {
-  //   setIsAddpropertiesModalOpen(true);
-  //   setSelectedPropertyToEdit(item);
-  // };
+  const handleAddValueModal = item => {
+    setIsAddpropertiesModalOpen(true);
+    setSelectedPropertyToEdit(item);
+  };
   return (
     <>
       <div className="row mb-2 d-flex justify-content-end">
@@ -130,6 +130,7 @@ export const ControllerServicesNamespace = () => {
             type="button"
             // data-dismiss="modal"
             size={'md'}
+            PropertyDropdownModal
             onClick={() =>
               dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
             }
@@ -151,11 +152,10 @@ export const ControllerServicesNamespace = () => {
           onChange={e => setSearch(e.target.value)}
         />
       </SearchContainer>
-      {/* <AddControllerServiceModal /> */}
-      <AddControllerService />
+      <AddControllerServiceModal />
 
       <Table data={filteredModulesData || []} columns={COLUMNS} />
-      {/* <ConfigControllerService
+      <ConfigControllerService
         isOpen={isListProprtyModel}
         onClose={handleCloseModal}
         selectedItemFromList={selectedItemFromList}
@@ -163,8 +163,9 @@ export const ControllerServicesNamespace = () => {
         listPropertyTableData={listPropertyTableData}
         setListPropertTableData={setListPropertTableData}
         setSelectedPropertyToEdit={setSelectedPropertyToEdit}
-      /> */}
-      {/* <AddProperties
+        updatedData={updatedData}
+      />
+      <AddProperties
         isOpen={isAddpropertiesModalOpen}
         onClose={() => {
           setIsAddpropertiesModalOpen(false);
@@ -174,13 +175,22 @@ export const ControllerServicesNamespace = () => {
         listPropertyTableData={listPropertyTableData}
         setListPropertTableData={setListPropertTableData}
         setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
-      /> */}
-      {/* <PropertyDropdownModal
+        setUpdatedData={setUpdatedData}
+        updatedData={updatedData}
+      />
+      <PropertyDropdownModal
         selectedPropertyToEdit={selectedPropertyToEdit}
         setListPropertTableData={setListPropertTableData}
-      /> */}
+        setUpdatedData={setUpdatedData}
+        updatedData={updatedData}
+      />
+      <ConfigurePropertyModal
+        setListPropertTableData={setListPropertTableData}
+        setUpdatedData={setUpdatedData}
+        updatedData={updatedData}
+      />
     </>
   );
 };
 
-export default ControllerServicesNamespace;
+export default ListControllerServiceNamespace;

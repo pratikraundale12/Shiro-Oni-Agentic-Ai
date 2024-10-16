@@ -45,8 +45,9 @@ import {
 } from '../pages';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
-import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
+// import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
 import Deploy from '../pages/Namespaces/Deploy';
+import ListControllerServiceNamespace from '../pages/Namespaces/ListControllerServiceNamespace';
 import ProcessGroupSummary from '../pages/Namespaces/ProcessGroupSummary';
 import Summary from '../pages/Namespaces/Summary';
 import Upgrade from '../pages/Namespaces/Upgrade';
@@ -115,7 +116,7 @@ export const ROUTES_MENU = [
       },
       {
         path: 'controller',
-        component: <ControllerServicesNamespace />,
+        component: <ListControllerServiceNamespace />,
       },
       {
         path: 'summary',

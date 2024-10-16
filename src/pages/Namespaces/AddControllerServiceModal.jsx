@@ -76,7 +76,7 @@ const Search = styled.input`
   }
 `;
 
-const AddControllerService = () => {
+const AddControllerServiceModal = () => {
   const [selectedItem, setSelectedItem] = useState({});
   const [search, setSearch] = useState('');
   const dispatch = useDispatch();
@@ -138,11 +138,6 @@ const AddControllerService = () => {
     );
     closeModal();
   };
-  useEffect(() => {
-    if (!modalOpenState) {
-      dispatch(NamespacesActions.getControllerServiceList());
-    }
-  }, [modalOpenState]);
   return (
     <>
       <Modal
@@ -205,4 +200,4 @@ const AddControllerService = () => {
     </>
   );
 };
-export default AddControllerService;
+export default AddControllerServiceModal;
