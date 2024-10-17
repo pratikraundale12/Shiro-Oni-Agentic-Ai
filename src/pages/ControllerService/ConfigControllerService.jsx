@@ -64,6 +64,7 @@ export const ConfigControllerService = ({
       version: selectedItemFromList?.version,
       properties: resultObject,
       sensitiveDynamicPropertyNames: sensitiveNames,
+      currentState: selectedItemFromList?.state,
     };
     dispatch(NamespacesActions.addPropertyControllerService(payload));
     onClose();
