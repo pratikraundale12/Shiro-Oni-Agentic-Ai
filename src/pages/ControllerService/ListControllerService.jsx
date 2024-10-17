@@ -124,12 +124,12 @@ export const ListControllerService = () => {
     },
     {
       label: 'Type',
-      renderCell: item => item?.type,
+      renderCell: item => item?.typeValue,
       width: '20%',
     },
     {
       label: 'Bundle',
-      renderCell: item => item?.bundle?.group,
+      renderCell: item => item?.bundleValue,
       width: '18%',
     },
     {

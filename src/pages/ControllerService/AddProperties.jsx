@@ -29,7 +29,6 @@ const AddProperties = ({
     return item.name != selectedPropertyToEdit.name;
   });
   const handleFormSubmit = data => {
-   
     setUpdatedData(() => {
       return [
         ...filterData,
