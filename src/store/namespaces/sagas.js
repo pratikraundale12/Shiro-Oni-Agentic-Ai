@@ -664,12 +664,14 @@ export function* singleNamespaceData(api) {
 
 export function* getControllerServiceList(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
+  );
+  const selectedNamespaceId = yield select(
+    NamespacesSelectors.getSelectedNamespace
   );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -680,6 +682,7 @@ export function* getControllerServiceList(api) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
+        namespaceId: selectedNamespaceId?.value,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
@@ -730,6 +733,9 @@ export function* addControllerServiceRootLevel(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  const selectedNamespaceId = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -739,6 +745,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
+        namespaceId: selectedNamespaceId?.value,
         payloadData: payload,
       },
     ],
@@ -823,6 +830,9 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  const selectedNamespaceId = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -833,6 +843,7 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
       {
         clusterId: selectedCluster?.value,
         payloadData: payload,
+        namespaceId: selectedNamespaceId?.value,
       },
     ],
   });

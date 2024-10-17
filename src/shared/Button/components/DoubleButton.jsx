@@ -1,10 +1,16 @@
 /*eslint-disable*/
-import React from 'react';
 import PropTypes from 'prop-types';
-import { theme } from '../../../styles';
+import React from 'react';
 import { KDFM } from '../../../constants';
+import { theme } from '../../../styles';
 
-const DoubleButton = ({ disable, item, handleLeftClick, handleRightClick }) => {
+const DoubleButton = ({
+  disable,
+  item,
+  handleLeftClick,
+  handleRightClick,
+  handleControllerService,
+}) => {
   return (
     <div className="btn-group" role="group" aria-label="Basic example">
       <div className="btn-group">
@@ -40,6 +46,15 @@ const DoubleButton = ({ disable, item, handleLeftClick, handleRightClick }) => {
               onClick={() => handleRightClick(item)}
             >
               Schedule Deployment
+            </div>
+          </li>
+          <li>
+            <div
+              className="p-1"
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleControllerService(item)}
+            >
+              Controller Services
             </div>
           </li>
         </ul>
