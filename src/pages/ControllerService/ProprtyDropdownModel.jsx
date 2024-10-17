@@ -80,7 +80,12 @@ const PropertyDropdownModal = ({
     setListPropertTableData(prevData =>
       prevData.map(item =>
         item.name === selectedPropertyToEdit.name
-          ? { ...item, value: data?.value, dropDownName: selectedName }
+          ? {
+              ...item,
+              value: data?.value,
+              dropDownName: selectedName,
+              empty_string_set: false,
+            }
           : item
       )
     );

@@ -22,14 +22,16 @@ const ValueRender = ({
       }
       style={{ cursor: 'pointer' }}
     >
-      {item?.dropDownName ? (
+      {item?.empty_string_set ? (
+        'Empty String Set'
+      ) : item?.dropDownName ? (
         <div>{item?.dropDownName}</div>
       ) : item?.sensitive ? (
         'Sensitive value set'
       ) : item?.value ? (
         <div>{item?.value}</div>
       ) : (
-        'No Set Value'
+        'No Value Set'
       )}
     </div>
   );
@@ -39,4 +41,3 @@ ValueRender.propTypes = {
   handleAddValueModal: PropTypes.func,
 };
 export default ValueRender;
-

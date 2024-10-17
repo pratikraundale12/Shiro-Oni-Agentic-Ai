@@ -43,7 +43,12 @@ const ConfigurePropertyModal = ({
     ]);
     setListPropertTableData(prevArray => [
       ...prevArray,
-      { ...data, displayName: data?.name, sensitive: data?.sensitive },
+      {
+        ...data,
+        displayName: data?.name,
+        sensitive: data?.sensitive,
+        empty_string_set: false,
+      },
     ]);
     dispatch(
       NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(false)

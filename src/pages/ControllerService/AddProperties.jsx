@@ -29,16 +29,7 @@ const AddProperties = ({
     return item.name != selectedPropertyToEdit.name;
   });
   const handleFormSubmit = data => {
-    // setUpdatedData(prevState => {
-    //   return [
-    //     ...prevState,
-    //     {
-    //       name: selectedPropertyToEdit.name,
-    //       value: data.value,
-    //       sensitive: false,
-    //     },
-    //   ];
-    // });
+   
     setUpdatedData(() => {
       return [
         ...filterData,
@@ -53,7 +44,7 @@ const AddProperties = ({
     setListPropertTableData(prevData =>
       prevData.map(item =>
         item.name === selectedPropertyToEdit.name
-          ? { ...item, value: data?.value }
+          ? { ...item, value: data?.value, empty_string_set: data?.check }
           : item
       )
     );
@@ -68,7 +59,10 @@ const AddProperties = ({
     setValue('value', '');
   }
   useEffect(() => {
-    reset({ value: selectedPropertyToEdit?.value || '' });
+    reset({
+      value: selectedPropertyToEdit?.value || '',
+      check: selectedPropertyToEdit?.empty_string_set || false,
+    });
   }, [reset, isOpen]);
 
   return (
