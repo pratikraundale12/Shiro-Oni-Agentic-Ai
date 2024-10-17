@@ -233,8 +233,7 @@ export const ROUTES_MENU = [
         component: <ListControllerService />,
       },
     ],
-    permission: 'view_namespace',
-    //permission: 'view_controller_services',
+    permission: 'view_controller_services',
   },
 
   {

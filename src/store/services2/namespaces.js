@@ -32,7 +32,7 @@ export const namespacesAPI = api => {
   const getVariableList = ({ clusterId, namespaceId }) =>
     api.get(`clusters/${clusterId}/namespaces/${namespaceId}/variables`);
   const getAllRootControllerServiceNamespace = ({ clusterId }) =>
-    api.get(`controller-services/${clusterId}/namespace/`);
+    api.get(`controller-services/${clusterId}/namespace`);
 
   const addVariableServices = ({
     clusterId,
@@ -137,7 +137,7 @@ export const namespacesAPI = api => {
     api.get(`/list-controller-services/${clusterId}`);
 
   const addControllerServiceRootLevel = ({ clusterId, payloadData }) =>
-    api.post(`controller-services/${clusterId}/namespace/`, payloadData);
+    api.post(`controller-services/${clusterId}/namespace`, payloadData);
 
   const addPropertyControllerService = ({
     clusterId,

@@ -11,7 +11,11 @@ import {
 } from '../../assets';
 import { Table } from '../../components';
 import { Button, ModalWithIcon } from '../../shared';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  AuthenticationSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import AddControllerServiceModal from './AddControllerServiceModal';
 import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
@@ -19,7 +23,6 @@ import styled from 'styled-components';
 import { theme } from '../../styles';
 import PropertyDropdownModal from './ProprtyDropdownModel';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
-
 const SearchContainer = styled.div`
   position: relative;
 
@@ -44,6 +47,7 @@ const Search = styled.input`
     outline: none;
   }
 `;
+
 export const ListControllerService = () => {
   const [search, setSearch] = useState('');
   const [updatedData, setUpdatedData] = useState([]);
@@ -109,6 +113,9 @@ export const ListControllerService = () => {
     setIsDeleteModalOpen(false);
   };
 
+  const controllerPermissions = useSelector(
+    AuthenticationSelectors.getPermissions
+  );
   const COLUMNS = [
     {
       label: 'Name',
@@ -139,28 +146,32 @@ export const ListControllerService = () => {
       label: 'Actions',
       renderCell: item => (
         <>
-          <button
-            className="border-0 bg-white"
-            onClick={() => handleSettingClick(item)}
-          >
-            <SettingSmallIcon />
-          </button>
-          {item?.state != 'INVALID' && (
+          {controllerPermissions.includes('edit_controller_services') && (
             <button
-              className="border-0 bg-white ms-1"
-              onClick={() => handleEnableClick(item)}
+              className="border-0 bg-white"
+              onClick={() => handleSettingClick(item)}
             >
-              {item?.state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
+              <SettingSmallIcon />
             </button>
           )}
-          {item?.state != 'ENABLED' && (
-            <button
-              className="border-0 bg-white ms-1"
-              onClick={() => handleDeleteClick(item)}
-            >
-              <DeleteSmallIcon color="black" height="28" />
-            </button>
-          )}
+          {item?.state != 'INVALID' &&
+            controllerPermissions.includes('edit_controller_services') && (
+              <button
+                className="border-0 bg-white ms-1"
+                onClick={() => handleEnableClick(item)}
+              >
+                {item?.state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
+              </button>
+            )}
+          {item?.state != 'ENABLED' &&
+            controllerPermissions.includes('delete_controller_services') && (
+              <button
+                className="border-0 bg-white ms-1"
+                onClick={() => handleDeleteClick(item)}
+              >
+                <DeleteSmallIcon color="black" height="28" />
+              </button>
+            )}
         </>
       ),
       width: '10%',
@@ -187,20 +198,22 @@ export const ListControllerService = () => {
   };
   return (
     <>
-      <div className="row mb-2 d-flex justify-content-end">
-        <div className="col-1">
-          <Button
-            type="button"
-            // data-dismiss="modal"
-            size={'md'}
-            onClick={() =>
-              dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
-            }
-          >
-            Add
-          </Button>
+      {controllerPermissions.includes('add_controller_services') && (
+        <div className="row mb-2 d-flex justify-content-end">
+          <div className="col-1">
+            <Button
+              type="button"
+              // data-dismiss="modal"
+              size={'md'}
+              onClick={() =>
+                dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
+              }
+            >
+              Add
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
       <SearchContainer>
         <SmallSearchIcon
           width={18}
@@ -215,7 +228,6 @@ export const ListControllerService = () => {
         />
       </SearchContainer>
       <AddControllerServiceModal />
-
       <Table data={filteredModulesData || []} columns={COLUMNS} />
       <ConfigControllerService
         isOpen={isListProprtyModel}

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { difference, isEmpty } from 'lodash';
+import { difference, isEmpty, unionBy, uniqBy } from 'lodash';
 import {
   GreaterArrowIcon,
   PlusCircleIcon,
@@ -122,6 +122,10 @@ const MODULES = [
     label: 'Activity History',
     value: 'history',
   },
+  {
+    label: 'Controller Service',
+    value: 'controller_services',
+  },
 ];
 
 const EXCLUDE_ADD_PERMISSION = ['namespace', 'history'];
@@ -145,7 +149,6 @@ const CellRender = ({
   const checked = !!updatedRolePolicies.find(
     policy => policy.policy_id === item.id
   )?.policy_id;
-
   return (
     <CheckboxField
       disabled={!isEdit || isEmpty(item)}
@@ -258,6 +261,53 @@ export const ModuleAccess = () => {
     dispatch(RolesActions.setSelectedRole(option));
     dispatch(PoliciesActions.fetchPoliciesRoles({ roleId: option.value }));
   };
+  useEffect(() => {
+    const uniqueArray = unionBy(updatedRolePolicies, 'policy_id');
+    if (
+      updatedRolePolicies.length !==
+      uniqBy(updatedRolePolicies, 'policy_id').length
+    ) {
+      setUpdatedRolePolicies(uniqueArray);
+    }
+  }, [updatedRolePolicies]);
+
+  const handleCheckboxAutoClick = value => {
+    const controllerPolicies = [
+      'delete_controller_services',
+      'add_controller_services',
+      'edit_controller_services',
+    ];
+
+    const userPolicies = ['add_user', 'edit_user', 'delete_user'];
+    const clusterPolicies = ['add_cluster'];
+    const ldapPolicies = ['add_ldap', 'edit_ldap'];
+    const rolesPolicies = ['add_permission', 'edit_permission'];
+
+    const handlePolicyCheck = (policiesArray, viewPolicyName) => {
+      if (policiesArray.some(element => element.includes(value.name))) {
+        const item = policies.find(element => element.name === viewPolicyName);
+        if (item) {
+          const stateObject = {
+            policy_id: item.id,
+            policy_name: item.name,
+          };
+          const testCheck = updatedRolePolicies.some(
+            item => item.policy_name === value.name
+          );
+          if (!testCheck) {
+            setUpdatedRolePolicies(prevState => [...prevState, stateObject]);
+          }
+        }
+      }
+    };
+
+    handlePolicyCheck(controllerPolicies, 'view_controller_services');
+    handlePolicyCheck(userPolicies, 'view_user');
+    handlePolicyCheck(clusterPolicies, 'view_cluster');
+    handlePolicyCheck(ldapPolicies, 'view_ldap');
+    handlePolicyCheck(rolesPolicies, 'view_permission');
+    //
+  };
 
   const handleChange = (checked, value) => {
     if (!checked) {
@@ -270,6 +320,8 @@ export const ModuleAccess = () => {
         { policy_id: value.id, policy_name: value.name },
       ]);
     }
+
+    handleCheckboxAutoClick(value);
   };
 
   const handleSubmit = () => {
