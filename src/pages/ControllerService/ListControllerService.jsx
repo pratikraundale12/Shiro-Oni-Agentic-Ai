@@ -1,5 +1,7 @@
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 import {
   ConfirmScheduleDeploymentIcon,
   DeleteDustbinIcon,
@@ -9,20 +11,19 @@ import {
   SettingSmallIcon,
   SmallSearchIcon,
 } from '../../assets';
-import { Table } from '../../components';
+import { Loader, Table } from '../../components';
 import { Button, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { theme } from '../../styles';
 import AddControllerServiceModal from './AddControllerServiceModal';
 import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
-import styled from 'styled-components';
-import { theme } from '../../styles';
-import PropertyDropdownModal from './ProprtyDropdownModel';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
+import PropertyDropdownModal from './ProprtyDropdownModel';
 const SearchContainer = styled.div`
   position: relative;
 
@@ -53,6 +54,7 @@ export const ListControllerService = () => {
   const [updatedData, setUpdatedData] = useState([]);
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const listData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
@@ -181,6 +183,13 @@ export const ListControllerService = () => {
   useEffect(() => {
     dispatch(NamespacesActions.getControllerServiceList());
   }, [dispatch, modalOpenState]);
+  useEffect(() => {
+    if (isEmpty(filteredModulesData)) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [filteredModulesData]);
 
   const handleSettingClick = item => {
     setSelectedItemFromList(item);
@@ -198,37 +207,52 @@ export const ListControllerService = () => {
   };
   return (
     <>
-      {controllerPermissions.includes('add_controller_services') && (
-        <div className="row mb-2 d-flex justify-content-end">
-          <div className="col-1">
-            <Button
-              type="button"
-              // data-dismiss="modal"
-              size={'md'}
-              onClick={() =>
-                dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
-              }
-            >
-              Add
-            </Button>
-          </div>
-        </div>
+      {loading || !filteredModulesData || filteredModulesData.length === 0 ? (
+        <Loader loading={loading} />
+      ) : (
+        <>
+          {controllerPermissions.includes('add_controller_services') && (
+            <div className="row mb-2 d-flex justify-content-end">
+              <div className="col-1">
+                <Button
+                  type="button"
+                  size={'md'}
+                  onClick={() =>
+                    dispatch(
+                      NamespacesActions.setIsAddControllerServiceModal(true)
+                    )
+                  }
+                >
+                  Add
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <SearchContainer>
+            <SmallSearchIcon
+              width={18}
+              height={18}
+              color={theme.colors.darkGrey1}
+            />
+            <Search
+              type="search"
+              value={search}
+              placeholder="Search Controller Service by Name and Type"
+              onChange={e => setSearch(e.target.value)}
+            />
+          </SearchContainer>
+
+          <AddControllerServiceModal />
+
+          <Table
+            data={filteredModulesData || []}
+            columns={COLUMNS}
+            loading={loading}
+          />
+        </>
       )}
-      <SearchContainer>
-        <SmallSearchIcon
-          width={18}
-          height={18}
-          color={theme.colors.darkGrey1}
-        />
-        <Search
-          type="search"
-          value={search}
-          placeholder="Search Controller Service by Name and Type"
-          onChange={e => setSearch(e.target.value)}
-        />
-      </SearchContainer>
-      <AddControllerServiceModal />
-      <Table data={filteredModulesData || []} columns={COLUMNS} />
+
       <ConfigControllerService
         isOpen={isListProprtyModel}
         onClose={handleCloseModal}
