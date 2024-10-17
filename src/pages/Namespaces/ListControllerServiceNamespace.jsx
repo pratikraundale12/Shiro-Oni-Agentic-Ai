@@ -14,12 +14,11 @@ import { Table } from '../../components';
 import { Button, ModalWithIcon } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { theme } from '../../styles';
-import AddControllerServiceModal from './AddControllerServiceModal';
-import AddProperties from './AddProperties';
-import ConfigControllerService from './ConfigControllerService';
-import ConfigurePropertyModal from './ConfigurePropertyModal';
-import PropertyDropdownModal from './ProprtyDropdownModal';
-// import PropertyDropdownModal from './ProprtyDropdownModel';
+import AddControllerServiceModal from '../ControllerService/AddControllerServiceModal';
+import AddProperties from '../ControllerService/AddProperties';
+import ConfigControllerService from '../ControllerService/ConfigControllerService';
+import ConfigurePropertyModal from '../ControllerService/ConfigurePropertyModal';
+import PropertyDropdownModal from '../ControllerService/ProprtyDropdownModel';
 
 const SearchContainer = styled.div`
   position: relative;
