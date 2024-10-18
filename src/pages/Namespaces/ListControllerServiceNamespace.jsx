@@ -98,7 +98,6 @@ export const ListControllerService = () => {
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  console.log(selectedNamespace, 'selectedNamespace');
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
     setIsEnableModalOpen(true);
