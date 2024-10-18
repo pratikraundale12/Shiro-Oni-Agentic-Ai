@@ -692,7 +692,7 @@ export function* getControllerServiceList(api) {
       NamespacesActions.getRootControllerServiceNamespace(response?.data)
     );
   else if (!response.ok) {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response.data.message || 'Please login to cluster');
   }
 }
 

@@ -3,11 +3,13 @@ import React, { useEffect } from 'react';
 // import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Table } from '../../components';
-import { Button, Modal } from '../../shared';
+import { Button, InputField, Modal } from '../../shared';
 // import { NamespacesSelectors } from '../../store';
 import ValueRender from './ValueRender';
 import { NamespacesActions } from '../../store';
 import { useDispatch } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { QRIcons } from '../../assets';
 // import AddProperties from './AddProperties';
 
 const ModalBody = styled.div`
@@ -49,7 +51,9 @@ export const ConfigControllerService = ({
       // width: '60%',
     },
   ];
-  const handleSubmit = () => {
+
+  const { register, handleSubmit, reset } = useForm({});
+  const handleFormSubmit = data => {
     const resultObject = updatedData.reduce((acc, curr) => {
       acc[curr.name] = curr.value;
       return acc;
@@ -65,6 +69,7 @@ export const ConfigControllerService = ({
       properties: resultObject,
       sensitiveDynamicPropertyNames: sensitiveNames,
       currentState: selectedItemFromList?.state,
+      name: data?.name,
     };
     dispatch(NamespacesActions.addPropertyControllerService(payload));
     onClose();
@@ -75,6 +80,11 @@ export const ConfigControllerService = ({
   useEffect(() => {
     setListPropertTableData(selectedItemFromList?.properties);
   }, [selectedItemFromList?.properties]);
+  useEffect(() => {
+    reset({
+      name: selectedItemFromList?.name || '',
+    });
+  }, [reset, isOpen]);
   return (
     <Modal
       title={` ${selectedItemFromList?.name} : Properties`}
@@ -82,14 +92,24 @@ export const ConfigControllerService = ({
       onRequestClose={onClose}
       size="md"
       primaryButtonText="Apply"
-      onSubmit={() => handleSubmit()}
+      onSubmit={handleSubmit(handleFormSubmit)}
       footerAlign="start"
       contentStyles={{ maxWidth: '60%', maxHeight: '70%' }}
       secondaryButtonText="Back"
     >
       <ModalBody className="modal-body">
-        <div className=" row d-flex justify-content-end">
-          <div className=" col-1 mb-2">
+        <div className=" row d-flex justify-content-between">
+          <div className="col-8 ">
+            <InputField
+              name="name"
+              type="text"
+              label="Name"
+              icon={<QRIcons />}
+              register={register}
+            />
+          </div>
+
+          <div className=" col-1 mt-4 pt-3">
             <Button
               type="button"
               onClick={() =>

@@ -51,12 +51,15 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
 
     const initialScale = Math.min(svgWidth / dataWidth, svgHeight / dataHeight);
 
+    const zoomOutFactor = 0.2;
+    const adjustedScale = initialScale * zoomOutFactor;
+
     const initialTransform = d3.zoomIdentity
       .translate(
-        (svgWidth - dataWidth * initialScale) / 2,
-        (svgHeight - dataHeight * initialScale) / 2
+        (svgWidth - dataWidth * adjustedScale) / 2,
+        (svgHeight - dataHeight * adjustedScale) / 2
       )
-      .scale(initialScale);
+      .scale(adjustedScale);
 
     renderRectangles();
 

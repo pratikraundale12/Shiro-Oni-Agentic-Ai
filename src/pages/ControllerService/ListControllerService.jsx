@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,7 +49,54 @@ const Search = styled.input`
     outline: none;
   }
 `;
+const StatusTexts = styled.div`
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 19.36px;
+  letter-spacing: -0.005em;
+  text-align: left;
+  color: ${props => props.color || '#b5b5bd'};
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  div {
+    align-items: center;
+    height: 8px;
+    width: 8px;
+    background: ${props => props.color || '#b5b5bd'};
+    margin-right: 5px;
+    border-radius: 50%;
+  }
+`;
+const statusColors = {
+  DISABLED: '#b5b5bd',
+  SCHEDULED: '#0cbf59',
+  INVALID: 'red',
+  'IN PROGRESS': '#444445',
+  DEFAULT: '#F2891F',
+  ENABLED: '#0cbf59',
+};
+const StatusText = ({ text = '' }) => {
+  const color = statusColors[text] || statusColors.DEFAULT;
+  function capitalizeFirstLetter(text) {
+    if (!text) return '';
 
+    text = text.toLowerCase();
+
+    return text
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  return (
+    <>
+      <StatusTexts color={color}>{capitalizeFirstLetter(text)}</StatusTexts>{' '}
+    </>
+  );
+};
 export const ListControllerService = () => {
   const [search, setSearch] = useState('');
   const [updatedData, setUpdatedData] = useState([]);
@@ -118,6 +166,7 @@ export const ListControllerService = () => {
   const controllerPermissions = useSelector(
     AuthenticationSelectors.getPermissions
   );
+
   const COLUMNS = [
     {
       label: 'Name',
@@ -136,7 +185,7 @@ export const ListControllerService = () => {
     },
     {
       label: 'State',
-      renderCell: item => item?.state,
+      renderCell: item => <StatusText text={item?.state} item={item} />,
       width: '16%',
     },
     {
