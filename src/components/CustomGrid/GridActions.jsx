@@ -257,18 +257,25 @@ export const GridActions = ({
   const handleBackButtonClick = () => {
     window.history.back();
   };
+  const selectedNamespace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const isChildNamespace =
+    selectedNamespace && selectedNamespace?.label !== KDFM.NIFI_FLOW;
 
   return (
     <>
       <Flex className="flex-wrap gap-2">
         <Flex>
           <GoBackButton />
-          <button
-            className="d-flex bg-white border-0"
-            onClick={handleBackButtonClick}
-          >
-            <GreaterArrowIcon />
-          </button>
+          {!isChildNamespace && (
+            <button
+              className="d-flex bg-white border-0"
+              onClick={handleBackButtonClick}
+            >
+              <GreaterArrowIcon />
+            </button>
+          )}
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>

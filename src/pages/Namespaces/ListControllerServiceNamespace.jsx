@@ -8,10 +8,12 @@ import {
   DeleteSmallIcon,
   FlashCutIcon,
   FlashIcon,
+  GreaterArrowIcon,
   SettingSmallIcon,
   SmallSearchIcon,
+  TodoIcon,
 } from '../../assets';
-import { Loader, Table } from '../../components';
+import { Table } from '../../components';
 import { Button, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -53,6 +55,15 @@ const Search = styled.input`
     outline: none;
   }
 `;
+const HeadingStyle = styled.h3`
+  font-family: 'Nato Sans', sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+`;
 
 export const ListControllerService = () => {
   const [search, setSearch] = useState('');
@@ -64,6 +75,7 @@ export const ListControllerService = () => {
   const listData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
   );
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
     useState(false);
@@ -82,6 +94,9 @@ export const ListControllerService = () => {
   );
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
+  );
+  const selectedNamespace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
   );
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
@@ -187,7 +202,7 @@ export const ListControllerService = () => {
 
   useEffect(() => {
     dispatch(NamespacesActions.getControllerServiceList());
-  }, [dispatch, modalOpenState]);
+  }, [dispatch, modalOpenState, selectedCluster]);
   useEffect(() => {
     if (isEmpty(filteredModulesData)) {
       setLoading(true);
@@ -210,53 +225,70 @@ export const ListControllerService = () => {
     setIsAddpropertiesModalOpen(true);
     setSelectedPropertyToEdit(item);
   };
+
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
   return (
     <>
-      {loading || !filteredModulesData || filteredModulesData.length === 0 ? (
-        <Loader loading={loading} />
-      ) : (
-        <>
-          {controllerPermissions.includes('add_controller_services') && (
-            <div className="row mb-2 d-flex justify-content-end">
-              <div className="col-1">
-                <Button
-                  type="button"
-                  size={'md'}
-                  onClick={() =>
-                    dispatch(
-                      NamespacesActions.setIsAddControllerServiceModal(true)
-                    )
-                  }
+      <>
+        {controllerPermissions.includes('add_controller_services') && (
+          <>
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex  align-items-center gap-2">
+                <button
+                  className="d-flex bg-white border-0 "
+                  onClick={handleBackButtonClick}
                 >
-                  Add
-                </Button>
+                  <GreaterArrowIcon />
+                </button>
+                <div className="d-flex  align-items-center gap-2">
+                  <TodoIcon width={22} height={24} />
+                  <HeadingStyle>{selectedNamespace?.label}</HeadingStyle>
+                </div>
+              </div>
+              <div className="row mb-2 d-flex justify-content-end">
+                <div>
+                  <Button
+                    type="button"
+                    size={'md'}
+                    onClick={() =>
+                      dispatch(
+                        NamespacesActions.setIsAddControllerServiceModal(true)
+                      )
+                    }
+                  >
+                    Add
+                  </Button>
+                </div>
               </div>
             </div>
-          )}
+          </>
+        )}
 
-          <SearchContainer>
-            <SmallSearchIcon
-              width={18}
-              height={18}
-              color={theme.colors.darkGrey1}
-            />
-            <Search
-              type="search"
-              value={search}
-              placeholder="Search Controller Service by Name and Type"
-              onChange={e => setSearch(e.target.value)}
-            />
-          </SearchContainer>
-
-          <AddControllerServiceModal />
-
-          <Table
-            data={filteredModulesData || []}
-            columns={COLUMNS}
-            loading={loading}
+        <SearchContainer>
+          <SmallSearchIcon
+            width={18}
+            height={18}
+            color={theme.colors.darkGrey1}
           />
-        </>
-      )}
+          <Search
+            type="search"
+            value={search}
+            placeholder="Search Controller Service by Name and Type"
+            onChange={e => setSearch(e.target.value)}
+          />
+        </SearchContainer>
+
+        <AddControllerServiceModal />
+
+        <Table
+          data={filteredModulesData || []}
+          columns={COLUMNS}
+          loading={loading}
+          controllerModule={true}
+        />
+      </>
 
       <ConfigControllerService
         isOpen={isListProprtyModel}

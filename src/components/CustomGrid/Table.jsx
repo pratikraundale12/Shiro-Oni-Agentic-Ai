@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import { NoDataIcon } from '../../assets';
 import { theme } from '../../styles';
-import { LoaderContainer } from '../Loader';
+import { Loader, LoaderContainer } from '../Loader';
 
 const TableContainer = styled.div`
   height: 90%;
@@ -34,7 +34,13 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
-export const Table = ({ data, columns, loading, className }) => {
+export const Table = ({
+  data,
+  columns,
+  loading,
+  className,
+  controllerModule = false,
+}) => {
   const DATA = { nodes: data || [] };
   const tableTheme = useTheme([
     getTheme(),
@@ -65,13 +71,21 @@ export const Table = ({ data, columns, loading, className }) => {
     },
   ]);
 
-  const getLoader = () => {
+  const getLoader = controllerModule => {
     if (loading)
       return (
-        <LoaderContainer>
-          <NoDataIcon width={130} />
-          <NoDataText>No Data Found!!</NoDataText>
-        </LoaderContainer>
+        <>
+          <LoaderContainer>
+            {!controllerModule && (
+              <>
+                <NoDataIcon width={130} />
+                <NoDataText>No Data Found!!</NoDataText>
+              </>
+            )}
+
+            <Loader />
+          </LoaderContainer>
+        </>
       );
     return null;
   };
@@ -79,7 +93,7 @@ export const Table = ({ data, columns, loading, className }) => {
   return (
     <TableContainer className={className}>
       <CompactTable data={DATA} columns={columns} theme={tableTheme} />
-      {getLoader()}
+      {getLoader(controllerModule)}
     </TableContainer>
   );
 };
@@ -89,4 +103,5 @@ Table.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.shape({})),
   loading: PropTypes.bool,
   className: PropTypes.string,
+  controllerModule: PropTypes.bool,
 };
