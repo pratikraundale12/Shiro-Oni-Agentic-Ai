@@ -95,7 +95,6 @@ export const Table = ({
       );
     return null;
   };
-  console.log(data);
   return (
     <TableContainer className={className}>
       {data.length === 0 ? (
