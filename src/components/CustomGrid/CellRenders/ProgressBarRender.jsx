@@ -28,7 +28,7 @@ const Indicator = styled.div`
   height: 12px;
   width: ${props => props.width}%;
   transition: width 0.2s ease-in-out;
-  background-color: #b8b7b7;
+  background-color: ${props => props.color || props.theme.colors.background};
 `;
 
 export const ProgressBarRender = ({ is_active, count, maxCount, status }) => {
@@ -42,7 +42,7 @@ export const ProgressBarRender = ({ is_active, count, maxCount, status }) => {
   if (status === CLUSTER_STATUS.DISCONNECTED) {
     return (
       <ProgressContainer>
-        <Indicator width={100} color={theme.colors.error} />
+        <Indicator width={100} color={theme.colors.lightGrey4} />
       </ProgressContainer>
     );
   }
@@ -58,7 +58,7 @@ export const ProgressBarRender = ({ is_active, count, maxCount, status }) => {
             <Indicator
               key={i}
               width={width}
-              color={i < count ? theme.colors.success : theme.colors.error}
+              color={i < count ? theme.colors.success : theme.colors.lightGrey4}
             />
           ))
       )}
