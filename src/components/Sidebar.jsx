@@ -101,6 +101,10 @@ export const KDFMVersion = styled.div`
   margin-top: auto;
 `;
 
+const StyleButton = styled.div`
+  cursor: pointer;
+`;
+
 const LOGO_HEIGHT = 80;
 
 export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
@@ -141,6 +145,9 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   };
 
   const getImage = () => {
+    const handleClick = () => {
+      history.push('/dashboard');
+    };
     if (loading)
       return (
         <div style={{ height: LOGO_HEIGHT }}>
@@ -149,14 +156,20 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
       );
     if (settingsData?.logo)
       return (
-        <img
-          src={settingsData?.logo}
-          alt="Logo"
-          width={200}
-          height={LOGO_HEIGHT}
-        />
+        <button>
+          <img
+            src={settingsData?.logo}
+            alt="Logo"
+            width={200}
+            height={LOGO_HEIGHT}
+          />
+        </button>
       );
-    return <KsolvesDataFlowIcon width={200} height={LOGO_HEIGHT} />;
+    return (
+      <StyleButton onClick={handleClick}>
+        <KsolvesDataFlowIcon width={200} height={LOGO_HEIGHT} />
+      </StyleButton>
+    );
   };
 
   return (

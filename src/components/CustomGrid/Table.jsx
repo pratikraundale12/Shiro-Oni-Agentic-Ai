@@ -33,6 +33,12 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
+const NoDataFoundStyled = styled.div`
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  flex-direction: column;
+`;
 
 export const Table = ({
   data,
@@ -65,7 +71,7 @@ export const Table = ({
         }
 
         tbody tr:nth-of-type(even) td {
-          background-color: ${theme.colors.lightGrey} !important;          
+          background-color: ${theme.colors.lightGrey} !important;
         }
       `,
     },
@@ -89,10 +95,17 @@ export const Table = ({
       );
     return null;
   };
-
+  console.log(data);
   return (
     <TableContainer className={className}>
-      <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+      {data.length === 0 ? (
+        <NoDataFoundStyled>
+          <NoDataIcon width={130} />
+          <NoDataText>No Data Found!!</NoDataText>
+        </NoDataFoundStyled>
+      ) : (
+        <CompactTable data={DATA} columns={columns} theme={tableTheme} />
+      )}
       {getLoader(controllerModule)}
     </TableContainer>
   );
