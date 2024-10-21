@@ -368,7 +368,8 @@ export const AddUserModal = props => {
                         />
                       </div>
                     )}
-                    {(!state?.selectedItem || password) && (
+                    {(currentUserData?.id === state?.selectedItem?.id ||
+                      password) && (
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
                         <StyledPasswordField
                           name="confirm_password"

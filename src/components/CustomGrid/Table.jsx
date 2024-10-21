@@ -65,7 +65,7 @@ export const Table = ({
         }
 
         tbody tr:nth-of-type(even) td {
-          background-color: ${theme.colors.lightGrey} !important;          
+          background-color: ${theme.colors.lightGrey} !important;
         }
       `,
     },
@@ -89,7 +89,6 @@ export const Table = ({
       );
     return null;
   };
-
   return (
     <TableContainer className={className}>
       <CompactTable data={DATA} columns={columns} theme={tableTheme} />
