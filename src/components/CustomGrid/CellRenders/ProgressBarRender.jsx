@@ -28,7 +28,7 @@ const Indicator = styled.div`
   height: 12px;
   width: ${props => props.width}%;
   transition: width 0.2s ease-in-out;
-  background-color: ${props => props.color || props.theme.colors.background};
+  background-color: #b8b7b7;
 `;
 
 export const ProgressBarRender = ({ is_active, count, maxCount, status }) => {

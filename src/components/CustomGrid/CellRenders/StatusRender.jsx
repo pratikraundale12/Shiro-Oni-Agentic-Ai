@@ -38,10 +38,10 @@ const GreenActiveness = styled(ActiveTd)`
 `;
 
 const RedInactive = styled(ActiveTd)`
-  color: ${props => props.theme.colors.error};
+  color: #808080;
   text-transform: capitalize;
   &::after {
-    background-color: ${props => props.theme.colors.error};
+    background-color: #808080;
   }
 `;
 
