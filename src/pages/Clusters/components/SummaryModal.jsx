@@ -274,14 +274,20 @@ export const SummaryModal = ({
       entityNameLabel: KDFM.CLUSTER_NAME,
       entityNameValue: clusterData.clusterName,
       entityUrlLabel: KDFM.CLUSTER_URL,
-      entityUrlValue: clusterData.nifiUrl,
+      entityUrlValue: clusterData?.nifiUrl?.includes('/nifi')
+        ? clusterData.nifiUrl
+        : `${clusterData.nifiUrl}/nifi`,
     },
     {
       title: KDFM.REGISTRY_DETAILS,
       entityNameLabel: KDFM.REGISTRY_NAME,
       entityNameValue: registryData?.registryName || registryData?.name,
       entityUrlLabel: KDFM.REGISTRY_URL,
-      entityUrlValue: registryData?.registryUrl || registryData?.registry_url,
+      entityUrlValue: (
+        registryData?.registryUrl || registryData?.registry_url
+      )?.includes('/nifi-registry')
+        ? registryData?.registryUrl || registryData?.registry_url
+        : `${registryData?.registryUrl || registryData?.registry_url}/nifi-registry`,
     },
   ];
 
@@ -316,11 +322,7 @@ export const SummaryModal = ({
                       </TextEllipses>
                       <CopyToClipboard
                         className="copy-button"
-                        copyItem={
-                          registryData.registry_url
-                            ? `${registryData.registry_url}/nifi-registry`
-                            : registryData.registry_url
-                        }
+                        copyItem={data?.entityUrlValue}
                       />
                       <ReactTooltip
                         id={data?.entityUrlValue}

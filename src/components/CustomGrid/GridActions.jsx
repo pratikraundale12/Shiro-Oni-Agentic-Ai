@@ -262,13 +262,15 @@ export const GridActions = ({
   );
   const isChildNamespace =
     selectedNamespace && selectedNamespace?.label !== KDFM.NIFI_FLOW;
+  const naviagate = useLocation();
+  const { clusterSummaryPage = false } = naviagate?.state || {};
 
   return (
     <>
       <Flex className="flex-wrap gap-2">
         <Flex>
           <GoBackButton />
-          {!isChildNamespace && (
+          {!isChildNamespace && !clusterSummaryPage && (
             <button
               className="d-flex bg-white border-0"
               onClick={handleBackButtonClick}
