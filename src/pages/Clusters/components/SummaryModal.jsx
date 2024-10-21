@@ -316,7 +316,11 @@ export const SummaryModal = ({
                       </TextEllipses>
                       <CopyToClipboard
                         className="copy-button"
-                        copyItem={registryData?.registry_url || ''}
+                        copyItem={
+                          registryData.registry_url
+                            ? `${registryData.registry_url}/nifi-registry`
+                            : registryData.registry_url
+                        }
                       />
                       <ReactTooltip
                         id={data?.entityUrlValue}

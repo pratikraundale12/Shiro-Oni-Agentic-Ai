@@ -816,7 +816,11 @@ export const Add = () => {
                       {registryData.registry_url}
                       <CopyToClipboard
                         className="copy-button"
-                        copyItem={registryData.registry_url}
+                        copyItem={
+                          registryData.registry_url
+                            ? `${registryData.registry_url}/nifi-registry`
+                            : registryData.registry_url
+                        }
                       />
                     </span>
                   </BoxContentArea>
