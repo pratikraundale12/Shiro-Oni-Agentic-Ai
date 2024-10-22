@@ -271,7 +271,9 @@ export const AddUserModal = props => {
                 errors={errors}
                 control={control}
                 placeholder={
-                  currentUserData.role === 'superadmin' ? 'Superadmin' : 'Role'
+                  currentUserData?.id === state?.selectedItem?.id
+                    ? 'Superadmin'
+                    : 'Role'
                 }
                 backgroundColor={theme.colors.lightGrey}
                 title="Select Role"
