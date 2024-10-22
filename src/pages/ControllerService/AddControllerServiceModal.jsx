@@ -98,6 +98,13 @@ const AddControllerServiceModal = () => {
     }
   }, [modalOpenState]);
 
+  const truncateWithEllipsis = (text, maxLength) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + '...';
+    }
+    return text;
+  };
+
   const COLUMNS = [
     {
       label: 'Type',
@@ -121,7 +128,7 @@ const AddControllerServiceModal = () => {
       label: 'Tags',
       renderCell: item => (
         <TextDisplay onClick={() => setSelectedItem(item)}>
-          {item?.tags.join(', ')}
+          {truncateWithEllipsis(item?.tags.join(', '), 70)}
         </TextDisplay>
       ),
       width: '50%',

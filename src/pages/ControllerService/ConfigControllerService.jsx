@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable  */
 import React, { useEffect } from 'react';
 // import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -9,7 +9,7 @@ import ValueRender from './ValueRender';
 import { NamespacesActions } from '../../store';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { QRIcons } from '../../assets';
+import { DeleteSmallIcon, QRIcons } from '../../assets';
 // import AddProperties from './AddProperties';
 
 const ModalBody = styled.div`
@@ -31,13 +31,39 @@ export const ConfigControllerService = ({
   setListPropertTableData,
   setSelectedPropertyToEdit,
   updatedData,
+  setUpdatedData,
 }) => {
   const dispatch = useDispatch();
+  const handleDeleteClick = item => {
+    const filterData = updatedData.filter(ele => {
+      return ele.name != item.name;
+    });
+
+    const sortedList = listPropertyTableData.filter(
+      element => element.displayName !== item.displayName
+    );
+    setListPropertTableData(sortedList);
+    if (item?.dynamic) {
+      setUpdatedData(() => [
+        ...filterData,
+        {
+          name: item?.name,
+          value: null,
+          sensitive: item?.sensitive || false,
+        },
+      ]);
+    } else {
+      const sortedUpdatedList = updatedData.filter(
+        element => element.name !== item.displayName
+      );
+      setUpdatedData(sortedUpdatedList);
+    }
+  };
   const COLUMNS = [
     {
       label: 'Name',
       renderCell: item => item?.displayName,
-      // width: '40%',
+      width: '40%',
     },
     {
       label: 'Value',
@@ -48,7 +74,18 @@ export const ConfigControllerService = ({
           setSelectedPropertyToEdit={setSelectedPropertyToEdit}
         />
       ),
-      // width: '60%',
+      width: '50%',
+    },
+    {
+      label: 'Action',
+      renderCell: item =>
+        (item?.new_added || item.dynamic) && (
+          <div onClick={() => handleDeleteClick(item)}>
+            {' '}
+            <DeleteSmallIcon color="black" height="28" />
+          </div>
+        ),
+      width: '10%',
     },
   ];
 
@@ -76,6 +113,7 @@ export const ConfigControllerService = ({
     setTimeout(() => {
       dispatch(NamespacesActions.getControllerServiceList());
     }, 500);
+    setUpdatedData([]);
   };
   useEffect(() => {
     setListPropertTableData(selectedItemFromList?.properties);
@@ -99,7 +137,7 @@ export const ConfigControllerService = ({
     >
       <ModalBody className="modal-body">
         <div className=" row d-flex justify-content-between">
-          <div className="col-8 ">
+          <div className="col-11 ">
             <InputField
               name="name"
               type="text"

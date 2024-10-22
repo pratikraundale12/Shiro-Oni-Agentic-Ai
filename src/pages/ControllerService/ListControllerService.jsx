@@ -260,6 +260,7 @@ export const ListControllerService = () => {
   const handleCloseModal = () => {
     dispatch(NamespacesActions.setNewlyAddVariables([]));
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
+    dispatch(NamespacesActions.getControllerServiceList());
   };
 
   const handleAddValueModal = item => {
@@ -336,6 +337,7 @@ export const ListControllerService = () => {
         setListPropertTableData={setListPropertTableData}
         setSelectedPropertyToEdit={setSelectedPropertyToEdit}
         updatedData={updatedData}
+        setUpdatedData={setUpdatedData}
       />
       <AddProperties
         isOpen={isAddpropertiesModalOpen}
@@ -379,7 +381,7 @@ export const ListControllerService = () => {
         secondaryButtonText="Cancel"
         icon={<DeleteDustbinIcon />}
         isOpen={isDeleteModalOpen}
-        onRequestClose={() => setIsDeleteModalOpen(true)}
+        onRequestClose={() => setIsDeleteModalOpen(false)}
         primaryText={`Are you sure you want to delete ${selectedItemFromList?.name}?`}
         onSubmit={handleDeleteControllerServiceClick}
       />

@@ -48,6 +48,7 @@ const ConfigurePropertyModal = ({
         displayName: data?.name,
         sensitive: data?.sensitive,
         empty_string_set: false,
+        new_added: true,
       },
     ]);
     dispatch(

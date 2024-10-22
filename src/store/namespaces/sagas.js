@@ -781,7 +781,7 @@ export function* addPropertyControllerService(api, { payload }) {
     ],
   });
   if (response.ok) {
-    toast.success('Proprty Added Successfully');
+    toast.success(response?.data?.message);
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
