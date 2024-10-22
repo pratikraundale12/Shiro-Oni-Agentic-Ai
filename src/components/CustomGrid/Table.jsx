@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 
+import { isEmpty } from 'lodash';
 import { NoDataIcon } from '../../assets';
 import { theme } from '../../styles';
 import { Loader, LoaderContainer } from '../Loader';
@@ -34,13 +35,7 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
-export const Table = ({
-  data,
-  columns,
-  loading,
-  className,
-  controllerModule = false,
-}) => {
+export const Table = ({ data, columns, loading, className }) => {
   const DATA = { nodes: data || [] };
   const tableTheme = useTheme([
     getTheme(),
@@ -71,28 +66,21 @@ export const Table = ({
     },
   ]);
 
-  const getLoader = controllerModule => {
-    if (loading)
+  const getLoader = () => {
+    if (loading) return <Loader size="lg" />;
+    if (isEmpty(DATA.nodes))
       return (
-        <>
-          <LoaderContainer>
-            {!controllerModule && (
-              <>
-                <NoDataIcon width={130} />
-                <NoDataText>No Data Found!!</NoDataText>
-              </>
-            )}
-
-            <Loader />
-          </LoaderContainer>
-        </>
+        <LoaderContainer>
+          <NoDataIcon width={140} />
+          <NoDataText>No Data Found!!</NoDataText>
+        </LoaderContainer>
       );
     return null;
   };
   return (
     <TableContainer className={className}>
       <CompactTable data={DATA} columns={columns} theme={tableTheme} />
-      {getLoader(controllerModule)}
+      {getLoader()}
     </TableContainer>
   );
 };
