@@ -125,11 +125,21 @@ const DropdownContainer = styled.div`
       cursor: pointer;
     }
   }
+  .react-select__menu-list {
+    max-width: 100% !important;
+    .react-select__option {
+      max-width: 100% !important;
+    }
+  }
+
   & div > div {
     & > div > * {
       min-width: unset;
       max-width: unset;
       cursor: pointer;
+      .react-select__placeholder {
+        white-space: nowrap !important;
+      }
     }
   }
   /* Apply fixed width to dropdown options */
@@ -269,6 +279,7 @@ export const Dashboard = () => {
     setSelectedNamespace(selectedItem);
     // dispatch(NamespacesActions.setSelectedNamespace(selectedItem));
   };
+  console.log(selectedCluster);
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {
       const payload = {
