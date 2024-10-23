@@ -31,6 +31,10 @@ import { KDFM } from '../../constants';
 // import { TextRender } from './CellRenders';
 import { useForm } from 'react-hook-form';
 import { Table } from './Table';
+import {
+  ActivityHistoryActions,
+  ActivityHistorySelectors,
+} from '../../store/activityHistory/redux';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -151,6 +155,11 @@ export const Grid = ({
   const itemsPerPage = 10;
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const selectedEvent = useSelector(ActivityHistorySelectors.getSelectedEvent);
+  const selectedEntity = useSelector(
+    ActivityHistorySelectors.getSelectedEntity
+  );
+
   const { watch, control } = useForm();
   const watchStatus = watch('is_active');
   const {
@@ -269,6 +278,12 @@ export const Grid = ({
               watchStatus !== 'all' && {
                 [getModuleBasedStatusKey(module)]: watchStatus,
               }),
+            ...(location?.pathname?.includes('activity-history') && {
+              event: selectedEvent?.value,
+            }),
+            ...(location?.pathname?.includes('activity-history') && {
+              entity: selectedEntity?.value,
+            }),
           },
         })
       );
@@ -283,6 +298,12 @@ export const Grid = ({
     selectedCluster,
     currentPage,
   ]);
+
+  useEffect(() => {
+    dispatch(ActivityHistoryActions.setSelectedEvent(null));
+    dispatch(ActivityHistoryActions.setSelectedEntity(null));
+  }, []);
+
   useEffect(() => {
     if (search) {
       setCurrentPage(1);
