@@ -139,6 +139,9 @@ export const ListControllerService = () => {
     NamespacesSelectors.getControllerServicePropertyModel
   );
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespaceId = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
     setIsEnableModalOpen(true);
@@ -162,6 +165,7 @@ export const ListControllerService = () => {
     }, 500);
     setIsEnableModalOpen(false);
   };
+
   const handleDeleteControllerServiceClick = () => {
     dispatch(
       NamespacesActions.deleteControllerService({
@@ -284,7 +288,7 @@ export const ListControllerService = () => {
             </button>
             <div className="d-flex  align-items-center gap-2">
               <TodoIcon width={22} height={24} />
-              <HeadingStyle>Controller Services List</HeadingStyle>
+              <HeadingStyle>{selectedNamespaceId?.label}</HeadingStyle>
             </div>
           </div>
           <div className="row mb-2 d-flex justify-content-end">
