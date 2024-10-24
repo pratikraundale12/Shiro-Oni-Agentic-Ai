@@ -51,7 +51,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
 
     const initialScale = Math.min(svgWidth / dataWidth, svgHeight / dataHeight);
 
-    const zoomOutFactor = 0.2;
+    const zoomOutFactor = data?.length == 1 ? 0.2 : 1;
     const adjustedScale = initialScale * zoomOutFactor;
 
     const initialTransform = d3.zoomIdentity
