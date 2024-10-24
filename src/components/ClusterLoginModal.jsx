@@ -136,8 +136,15 @@ export const ClusterLoginModal = () => {
       }
     } catch (error) {
       setLoading(false);
-      const errorMessage = error?.response?.data?.message || error.message;
-      toast.error(errorMessage);
+      // const errorMessage = error?.response?.data?.message || error.message;
+      // toast.error(errorMessage);
+      toast.error(
+        <div>
+          The supplied username and
+          <br />
+          password are not valid.
+        </div>
+      );
     }
   };
 
