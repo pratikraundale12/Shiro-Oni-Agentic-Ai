@@ -2,12 +2,13 @@ import { call, put } from 'redux-saga/effects';
 // import { ErrorsActions } from './error_redux';
 import { LoadingActions } from './loading_redux';
 // import { AuthorizationActions } from '../authorization/redux';
+import { toast } from 'react-toastify';
 import {
   CLUSTERS_TOKEN,
   RESPONSE_DATA_CODE,
   STATUS_CODE,
 } from '../../constants';
-import { toast } from 'react-toastify';
+import { AuthenticationActions } from '../authentication';
 
 export function* requestSaga({
   // errorSection,
@@ -26,12 +27,9 @@ export function* requestSaga({
     if (action) {
       yield put(action);
     }
-  } else if (
-    !response.ok &&
-    response.status === 500 &&
-    response.data.message.includes('Session Expired')
-  ) {
+  } else if (!response.ok && response.status === 500 && response.data.message) {
     toast.error(response.data.message);
+    yield put(AuthenticationActions.logout({ url: '/login' }));
     const clustersToken = JSON.parse(
       localStorage.getItem(CLUSTERS_TOKEN) || '[]'
     );

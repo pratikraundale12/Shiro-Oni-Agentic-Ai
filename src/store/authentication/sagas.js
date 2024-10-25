@@ -9,8 +9,8 @@ import {
 import { history } from '../../helpers/history';
 import { LoadingActions } from '../helpers/loading_redux';
 import { requestSaga } from '../helpers/request_sagas';
-import { AuthenticationActions, AuthenticationSelectors } from './redux';
 import { NamespacesActions } from '../namespaces';
+import { AuthenticationActions, AuthenticationSelectors } from './redux';
 
 export function* fetchCurrentUser(api) {
   const route = localStorage.getItem(PREVIOUS_PATH) || DEFAULT_ROUTE;
@@ -130,7 +130,7 @@ export function* login(api, { payload: { type, token, ...payload } }) {
 export function* logout(api, { payload: { url } }) {
   yield put(AuthenticationActions.logoutSuccess());
   yield put({ type: 'RESET' });
-  localStorage.removeItem(ACCESS_TOKEN);
+  localStorage.clear();
   history.replace(url);
 }
 
