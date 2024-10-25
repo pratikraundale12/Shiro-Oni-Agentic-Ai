@@ -22,8 +22,8 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { SchedularSelectors } from '../../store/schedular/redux';
-import RectangleGraph from './birdEyeViewGraph';
 import { theme } from '../../styles';
+import RectangleGraph from './birdEyeViewGraph';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -453,7 +453,7 @@ const Upgrade = () => {
           </RowConfig>
           <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
           <Table
-            data={[...checkDestCluster.versionList].sort(
+            data={[...(checkDestCluster?.versionList || [])].sort(
               (a, b) => a.version - b.version
             )}
             columns={COLUMNS}
