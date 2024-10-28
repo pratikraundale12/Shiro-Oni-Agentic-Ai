@@ -132,8 +132,8 @@ export const ListControllerService = () => {
   );
   const filteredModulesData = listData.filter(
     module =>
-      module.name.toLowerCase().includes(search.toLowerCase()) ||
-      module.type.toLowerCase().includes(search.toLowerCase())
+      module?.name?.toLowerCase().includes(search.toLowerCase()) ||
+      module?.type?.toLowerCase().includes(search.toLowerCase())
   );
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
