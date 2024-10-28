@@ -17,6 +17,7 @@ import {
   AuthenticationSelectors,
   GridActions,
   RolesActions,
+  UsersActions,
 } from '../../store';
 import { deleteUserApi } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
@@ -40,14 +41,15 @@ export const ListUsers = () => {
       <ActionTd>
         {userPermissions.includes('edit_user') && (
           <IconButton
-            onClick={() =>
+            onClick={() => {
               setState({
                 ...state,
                 userModal: true,
                 selectedItem: item,
                 label: 'User',
-              })
-            }
+              });
+              dispatch(UsersActions.setUserModalOpen(true));
+            }}
           >
             <PencilIcon width={16} height={16} />
           </IconButton>

@@ -123,7 +123,7 @@ export function* login(api, { payload: { type, token, ...payload } }) {
       yield call(history.push, `schedule-deployment?token=${token}`);
     }
   } else {
-    toast.error(response.data.message);
+    toast.error(response.data.message, { toastId: 'login-toast-error1' });
   }
 }
 

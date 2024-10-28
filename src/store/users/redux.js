@@ -6,6 +6,7 @@ const prefix = '@@KDFM-USERS/';
 export const UsersActions = {
   fetchUsers: createAction(`${prefix}fetchUsers`),
   fetchUsersSuccess: createAction(`${prefix}fetchUsersSuccess`),
+  setUserModalOpen: createAction(`${prefix}setUserModalOpen`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -14,12 +15,14 @@ export const USERS_INITIAL_STATE = {
   data: [],
   prev: null,
   next: null,
+  isUserModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
 export const UsersSelectors = {
   getCount: state => state.users.count,
   getUsers: state => state.users.data,
+  getUserModalOpen: state => state.users.isUserModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -31,8 +34,16 @@ const fetchUsersSuccess = (state, { payload }) => {
     next: payload.next,
   };
 };
+const setUserModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isUserModalOpen: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const usersReducer = createReducer(USERS_INITIAL_STATE, builder => {
-  builder.addCase(UsersActions.fetchUsersSuccess, fetchUsersSuccess);
+  builder
+    .addCase(UsersActions.fetchUsersSuccess, fetchUsersSuccess)
+    .addCase(UsersActions.setUserModalOpen, setUserModalOpen);
 });

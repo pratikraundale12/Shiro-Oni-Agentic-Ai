@@ -28,6 +28,7 @@ import {
   NamespacesSelectors,
   RolesActions,
   RolesSelectors,
+  UsersSelectors,
 } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { theme } from '../../styles';
@@ -210,7 +211,7 @@ export const GridActions = ({
   const location = useLocation();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const accessType = useSelector(RolesSelectors.getAccessType);
-
+  const userModalOpen = useSelector(UsersSelectors.getUserModalOpen);
   // const selectedEntity = useSelector(
   //   ActivityHistorySelectors.getSelectedEntity
   // );
@@ -355,7 +356,8 @@ export const GridActions = ({
                 {buttonText}
               </Button>
             )}
-          {userPermissions.includes(getButtonPermissions(module)) && <Modal />}
+          {userPermissions.includes(getButtonPermissions(module)) &&
+            !userModalOpen && <Modal />}
         </ButtonsContainer>
         {module === 'namespaces' ? (
           <RefreshIocn onClick={handleRefresh}>

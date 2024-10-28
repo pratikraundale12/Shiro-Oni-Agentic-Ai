@@ -23,6 +23,7 @@ import {
   AuthenticationSelectors,
   NamespacesActions,
   NamespacesSelectors,
+  UsersActions,
 } from '../store';
 import { useGlobalContext } from '../utils';
 import { ClusterLoginModal } from './ClusterLoginModal';
@@ -218,6 +219,7 @@ const ProfileDropdown = () => {
           };
         });
         setShowMenu(prev => !prev);
+        dispatch(UsersActions.setUserModalOpen(true));
       },
     },
     {
