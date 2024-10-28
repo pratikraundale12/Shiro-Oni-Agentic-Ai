@@ -163,7 +163,6 @@ export const ListNamespaces = () => {
           <ReactTooltip
             id={`tooltip-${item?.flowName}`}
             place="right"
-            // effect="solid"
             content={item?.flowName}
             style={{
               width: '320px',
