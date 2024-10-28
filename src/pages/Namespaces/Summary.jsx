@@ -13,6 +13,10 @@ import {
   TriangleIcons,
 } from '../../assets';
 import { TodoIcon } from '../../assets/Icons/TodoIcon';
+import DisbaleIconImage from '../../assets/images/disable.png';
+import EnableIconImage from '../../assets/images/enable.png';
+import StartIconImage from '../../assets/images/start.png';
+import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -34,10 +38,6 @@ import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
-import StartIconImage from '../../assets/images/start.png';
-import StopIconImage from '../../assets/images/stop.png';
-import EnableIconImage from '../../assets/images/enable.png';
-import DisbaleIconImage from '../../assets/images/disable.png';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -312,6 +312,7 @@ const Summary = () => {
     isOpen: false,
     mode: 'add',
   });
+  const [isUpgrading, setIsUpgrading] = useState(false);
   // const newlyAddVariables = useSelector(
   //   NamespacesSelectors.getNewlyAddVariables
   // );
@@ -358,9 +359,11 @@ const Summary = () => {
     if (!isEmpty(flowControlButtons)) {
       dispatch(NamespacesActions.updateNamespaceStatus(flowControlButtons));
     }
+    setIsUpgrading(true);
   };
   const handleDeploy = () => {
     dispatch(NamespacesActions.deployCluster());
+    setIsUpgrading(false);
   };
 
   const handleCloseModal = () => {
@@ -792,26 +795,30 @@ const Summary = () => {
             Schedule
           </Button>
         </BottomButtonDiv>
-        {checkDestCluster.mode === 'upgrade' && (
-          <Progressox className="w-100">
-            <ProgressLabel className="progress-label">
-              {KDFM.UPDATING_FLOW}
-            </ProgressLabel>
-            <CustomRedProgress className="progress w-100 custom-red-progress">
-              <ProgressBar
-                className="progress-bar"
-                role="progressbar"
-                style={{
-                  width: `${deployOrUpgradeDetails?.percentCompleted || 0}%`,
-                }}
-                aria-valuenow={40}
-                aria-valuemin={0}
-                aria-valuemax={100}
-              >
-                {deployOrUpgradeDetails?.percentCompleted || 0}%
-              </ProgressBar>
-            </CustomRedProgress>
-          </Progressox>
+        {isUpgrading && (
+          <div className="w-100 mt-3">
+            <Progressox className="w-100">
+              <ProgressLabel className="progress-label">
+                {deployOrUpgradeDetails?.percentCompleted < 100
+                  ? 'Upgrading'
+                  : 'Upgraded'}
+              </ProgressLabel>
+              <CustomRedProgress className="progress w-100 custom-red-progress">
+                <ProgressBar
+                  className="progress-bar"
+                  role="progressbar"
+                  style={{
+                    width: `${deployOrUpgradeDetails?.percentCompleted || 0}%`,
+                  }}
+                  aria-valuenow={deployOrUpgradeDetails?.percentCompleted || 0}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  {deployOrUpgradeDetails?.percentCompleted || 0}%
+                </ProgressBar>
+              </CustomRedProgress>
+            </Progressox>
+          </div>
         )}
       </BottomButton>
       <ScheduleDeploymentModal />

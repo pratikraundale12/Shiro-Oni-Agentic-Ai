@@ -30,11 +30,11 @@ import { useParams } from 'react-router-dom';
 import { KDFM } from '../../constants';
 // import { TextRender } from './CellRenders';
 import { useForm } from 'react-hook-form';
-import { Table } from './Table';
 import {
   ActivityHistoryActions,
   ActivityHistorySelectors,
 } from '../../store/activityHistory/redux';
+import { Table } from './Table';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -175,9 +175,13 @@ export const Grid = ({
     setState,
   } = useGlobalContext();
 
+  const prioritizedData = gridData.filter(item => item.version);
+  const remainingData = gridData.filter(item => !item.version);
+  const sortedData = [...prioritizedData, ...remainingData];
+
   const DATA = {
     nodes: isNamespace
-      ? getData(loading, gridData, clusterSummary.nodes).slice(
+      ? getData(loading, sortedData, clusterSummary.nodes).slice(
           (currentPage - 1) * itemsPerPage,
           currentPage * itemsPerPage
         )
