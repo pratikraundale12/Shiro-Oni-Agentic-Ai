@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 // import { Link } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { ActivityHistoryIcon, OpenEyeIcon } from '../../assets';
+import { ActivityHistoryIcon, BookIcon, OpenEyeIcon } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
@@ -204,7 +204,7 @@ export const ListNamespaces = () => {
     {
       label: KDFM.ACTIONS,
       renderCell: item => (
-        <div className="d-flex gap-3">
+        <div className="d-flex gap-2">
           <button
             onClick={() => {
               setIsAuditLogOpen(true);
@@ -219,7 +219,7 @@ export const ListNamespaces = () => {
             aria-label={KDFM.OPEN_AUDIT_LOG}
           >
             <IconButton>
-              <ActivityHistoryIcon width={16} height={16} />
+              <ActivityHistoryIcon width={14} height={14} />
             </IconButton>
           </button>
           <button
@@ -232,7 +232,20 @@ export const ListNamespaces = () => {
             }}
           >
             <IconButton>
-              <OpenEyeIcon width={16} height={16} />
+              <OpenEyeIcon width={14} height={14} />
+            </IconButton>
+          </button>
+          <button
+            onClick={() => handleControllerService(item)}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+            }}
+          >
+            <IconButton>
+              <BookIcon color="grey" />
             </IconButton>
           </button>
           <DoubleButton
