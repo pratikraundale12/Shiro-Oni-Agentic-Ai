@@ -27,7 +27,7 @@ export function* requestSaga({
     if (action) {
       yield put(action);
     }
-  } else if (!response.ok && response.status === 500 && response.data.message) {
+  } else if (!response.ok && response.data.message === 'Session Expired') {
     toast.error(response.data.message);
     yield put(AuthenticationActions.logout({ url: '/login' }));
     const clustersToken = JSON.parse(
@@ -36,13 +36,20 @@ export function* requestSaga({
     const filteredClustersToken = clustersToken.filter(
       cluster => cluster.id !== clusterId
     );
+    const selectedCluster = localStorage.getItem('selected_cluster');
+
+    const cluster = filteredClustersToken.find(
+      item => item?.id === selectedCluster?.value
+    );
+    if (!cluster) {
+      localStorage.removeItem('selected_cluster');
+    }
     localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(filteredClustersToken));
   } else if (
     response?.status === STATUS_CODE.UNAUTHORIZED &&
     response?.data?.code === RESPONSE_DATA_CODE.TOKEN_NOT_VALID
   ) {
-    console.log('logout');
-    // yield put(AuthorizationActions.logout());
+    yield put(AuthenticationActions.logout({ url: '/login' }));
   } else {
     // yield put(
     //   ErrorsActions.showError(errorSection, response.data, response.problem)
