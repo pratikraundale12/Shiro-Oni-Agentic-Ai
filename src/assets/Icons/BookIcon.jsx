@@ -1,11 +1,12 @@
 import React from 'react';
-export const BookIcon = () => {
+import PropTypes from 'prop-types';
+export const BookIcon = ({ color = 'black' }) => {
   return (
     <>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        fill="currentColor"
+        fill={color}
         width={24}
         height={24}
       >
@@ -13,4 +14,7 @@ export const BookIcon = () => {
       </svg>
     </>
   );
+};
+BookIcon.propTypes = {
+  color: PropTypes.string,
 };
