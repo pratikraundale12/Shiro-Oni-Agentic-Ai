@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { LoginIcon } from '../../../assets';
 import { CLUSTER_STATUS } from '../../../constants';
-import { AuthenticationActions, NamespacesActions } from '../../../store';
+import { AuthenticationActions } from '../../../store';
 import { ClusterLoginModal } from '../../ClusterLoginModal';
 import { IconButton } from './AtionRender';
 
@@ -24,19 +24,6 @@ const EnableClusterText = styled.div`
 
 export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
-  const clusterCheck = localStorage.getItem('selected_cluster');
-
-  useEffect(() => {
-    if (item?.status === CLUSTER_STATUS.DISCONNECTED && clusterCheck) {
-      localStorage.removeItem('selected_cluster');
-      dispatch(
-        NamespacesActions.setSelectedCluster({
-          label: '',
-          value: '',
-        })
-      );
-    }
-  }, []);
 
   return (
     <>

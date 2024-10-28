@@ -107,6 +107,17 @@ export function* fetchGrid(
           });
         }
       }
+      const selectedCluster = localStorage.getItem('selected_cluster');
+      if (selectedCluster) {
+        const cluster = tempData?.find(
+          item => item?.id !== selectedCluster?.value
+        );
+        console.log({ cluster });
+        if (!cluster) {
+          localStorage.removeItem('selected_cluster');
+        }
+      }
+
       localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(tempData));
     }
   }
