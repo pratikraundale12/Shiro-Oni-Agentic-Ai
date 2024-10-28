@@ -25,6 +25,8 @@ import {
   GridActions,
   RolesActions,
   RolesSelectors,
+  UsersActions,
+  UsersSelectors,
 } from '../../store';
 import { createUserApi, editUserDataApi } from '../../store/index1';
 import { theme } from '../../styles';
@@ -113,6 +115,7 @@ export const AddUserModal = props => {
   const { state, setState } = useGlobalContext();
   const currentUser = state.currentUser;
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
+  const userModalOpen = useSelector(UsersSelectors.getUserModalOpen);
   const {
     register,
     reset,
@@ -135,6 +138,7 @@ export const AddUserModal = props => {
       userModal: false,
       selectedItem: null,
     });
+    dispatch(UsersActions.setUserModalOpen(false));
   };
 
   const password = watch('password');
@@ -153,7 +157,7 @@ export const AddUserModal = props => {
     formData.append('middle_name', data.middle_name);
     formData.append('last_name', data.last_name);
     formData.append('email', data.email);
-    if (data.role === 'superadmin') {
+    if (data.role === 'superadmin' && data?.password) {
       formData.append('password', data.password);
     }
     formData.append('phone', data.phone || null);
@@ -177,6 +181,7 @@ export const AddUserModal = props => {
           userModal: false,
           selectedItem: null,
         });
+        dispatch(UsersActions.setUserModalOpen(false));
       } else {
         toast.error(response.message);
       }
@@ -193,6 +198,7 @@ export const AddUserModal = props => {
           userModal: false,
           selectedItem: null,
         });
+        dispatch(UsersActions.setUserModalOpen(false));
         if (response?.data?.id == currentUser?.id) {
           setState({
             ...state,
@@ -200,6 +206,7 @@ export const AddUserModal = props => {
             userModal: false,
             selectedItem: null,
           });
+          dispatch(UsersActions.setUserModalOpen(false));
         }
       } else {
         toast.error(response.message);
@@ -228,7 +235,7 @@ export const AddUserModal = props => {
       <Modal
         size="lg"
         title={state.selectedItem ? `Edit ${state.label}` : 'Add New User'}
-        isOpen={state.userModal}
+        isOpen={userModalOpen}
         onRequestClose={closeModal}
         secondaryButtonText="Cancel"
         primaryButtonText="Submit"
