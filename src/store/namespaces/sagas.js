@@ -622,7 +622,7 @@ export function* fetchNamespaceAudit(api) {
     apiParams: [
       {
         params: {
-          entity: 'Namespace',
+          entity: 'Process Group',
         },
         payload: {},
       },
