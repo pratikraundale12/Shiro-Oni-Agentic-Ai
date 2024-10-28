@@ -170,7 +170,9 @@ const Listvariables = ({
         isLoading={loading}
         size="md"
         onSecondarySubmit={openVariable}
-        // secondaryButtonText={KDFM.ADD_VARIABLES}
+        secondaryButtonText={
+          isVariablesModalOpen.schedule ? KDFM.ADD_VARIABLES : null
+        }
         primaryButtonText={isVariablesModalOpen.schedule ? 'Back' : KDFM.SAVE}
         onSubmit={isVariablesModalOpen.schedule ? scheduleSubmit : handleSubmit}
         primaryButtonDisabled={loading || !newlyAddVariables?.length}
