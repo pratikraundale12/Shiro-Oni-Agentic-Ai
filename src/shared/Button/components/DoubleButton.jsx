@@ -9,7 +9,7 @@ const DoubleButton = ({
   item,
   handleLeftClick,
   handleRightClick,
-  handleControllerService,
+  // handleControllerService,
 }) => {
   return (
     <div className="btn-group" role="group" aria-label="Basic example">
@@ -48,7 +48,7 @@ const DoubleButton = ({
               Schedule Deployment
             </div>
           </li>
-          <li>
+          {/* <li>
             <div
               className="p-1"
               style={{ cursor: 'pointer' }}
@@ -56,7 +56,7 @@ const DoubleButton = ({
             >
               Controller Services
             </div>
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>
