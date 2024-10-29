@@ -1,3 +1,4 @@
+import { has } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +12,6 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
-import { has } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -66,8 +66,7 @@ const ParameterContext = ({
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const schduleParameterData =
     checkDestCluster?.additionalData?.filteredParameterData;
-  console.log({ schduleParameterData }, 'outtttt');
-  console.log(schedularFromList, 'schedularFromList');
+
   useEffect(() => {
     if (schedularFromList) {
       setTableStateData(schduleParameterData);
@@ -195,10 +194,11 @@ const ParameterContext = ({
   };
 
   selectedParentContextId;
-
   useEffect(() => {
     if (isParentEdit?.parent) {
       dispatch(NamespacesActions.fetchParameterContext());
+    } else {
+      setTableStateData([...schduleParameterData, ...newlyAddParameters]);
     }
   }, [isParentEdit?.id]);
   useEffect(() => {

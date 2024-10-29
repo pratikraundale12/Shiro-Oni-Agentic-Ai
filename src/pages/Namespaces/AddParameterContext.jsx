@@ -98,6 +98,7 @@ const AddParameterContext = ({
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
+  console.log({ deployOrUpgradeDetails });
   const newlyAddParameters = useSelector(
     NamespacesSelectors.getNewlyAddedParameterContext
   );
@@ -156,11 +157,13 @@ const AddParameterContext = ({
     setValue,
   ]);
   const handleAddEditParameterContext = async data => {
+    console.log(data, '158');
     if (!data) return;
     const processData = {
       ...data,
       value: !data?.value || data?.check ? null : data?.value,
     };
+    console.log(processData, 'processData');
     const nameExists = (contextList, name) =>
       contextList.some(
         parameter => parameter?.name?.toLowerCase() === name?.toLowerCase()
@@ -182,6 +185,7 @@ const AddParameterContext = ({
       toast.info(KDFM.PARAMETER_ALREADY_EXISTS);
       return;
     }
+    console.log(isAddParameterContextOpen, 'isAddParameterContextOpen');
 
     if (isAddParameterContextOpen?.mode === 'edit') {
       const updatedData = newlyAddParameters.map(item =>
@@ -189,7 +193,9 @@ const AddParameterContext = ({
           ? { ...item, ...processData }
           : item
       );
+      console.log(updatedData, 'updatedData');
       const sortedArry = uniqBy(updatedData, item => item.name.toLowerCase());
+      console.log(sortedArry, 'sortedArry', parameterDetails);
       const updatedDataUnique = isEmpty(sortedArry) ? processData : sortedArry;
       if (isArray(updatedDataUnique)) {
         const exists = updatedDataUnique.some(
@@ -211,6 +217,7 @@ const AddParameterContext = ({
       const filteredParameterContextList = parameterContextList.filter(
         item => item?.name?.toLowerCase() !== processData?.name?.toLowerCase()
       );
+      console.log(filteredParameterContextList, 'filteredParameterContextList');
       const existingParameterContext = parameterContextList.find(
         item => item?.name?.toLowerCase() === processData?.name?.toLowerCase()
       );
