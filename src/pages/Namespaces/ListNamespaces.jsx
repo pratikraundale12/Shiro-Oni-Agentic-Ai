@@ -242,11 +242,22 @@ export const ListNamespaces = () => {
               padding: 0,
               cursor: 'pointer',
             }}
+            data-tooltip-id={`tooltip-controller-service`}
           >
             <IconButton>
               <BookIcon color="grey" />
             </IconButton>
           </button>
+          <ReactTooltip
+            id={`tooltip-controller-service`}
+            place="right"
+            content={'Controller Service'}
+            style={{
+              width: '120px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
           <DoubleButton
             disable={
               !item.flowId ||

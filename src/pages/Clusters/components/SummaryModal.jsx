@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { KDFM } from '../../../constants';
@@ -342,7 +342,7 @@ export const SummaryModal = ({
           ))}
         </ModalBody>
       </Modal>
-      <ToastContainer
+      {/* <ToastContainer
         theme="colored"
         position="top-center"
         autoClose={3000}
@@ -350,7 +350,7 @@ export const SummaryModal = ({
         closeOnClick
         pauseOnHover
         draggable
-      />
+      /> */}
     </>
   );
 };
