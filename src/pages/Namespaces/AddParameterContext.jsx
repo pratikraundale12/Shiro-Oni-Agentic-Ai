@@ -16,6 +16,7 @@ import {
   RadioSelectField,
 } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { SchedularSelectors } from '../../store/schedular/redux';
 
 const ModalBody = styled.div`
   position: relative;
@@ -92,19 +93,26 @@ const AddParameterContext = ({
   parameterContextItem,
   isParameterContextOpen,
 }) => {
+  
   const dispatch = useDispatch();
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
   const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  console.log({ deployOrUpgradeDetails });
   const newlyAddParameters = useSelector(
     NamespacesSelectors.getNewlyAddedParameterContext
   );
-  const parameterContextList = isParentEdit?.parent
-    ? parameterDetails?.[isParentEdit?.id]
-    : parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
+  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
+  const schduleParameterData =
+    checkDestCluster?.additionalData?.filteredParameterData;
+  const parameterContextList = schedularFromList
+    ? schduleParameterData
+    : isParentEdit?.parent
+      ? parameterDetails?.[isParentEdit?.id]
+      : parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
+
   const {
     register,
     handleSubmit,
@@ -156,14 +164,13 @@ const AddParameterContext = ({
     parameterContextItem,
     setValue,
   ]);
+
   const handleAddEditParameterContext = async data => {
-    console.log(data, '158');
     if (!data) return;
     const processData = {
       ...data,
       value: !data?.value || data?.check ? null : data?.value,
     };
-    console.log(processData, 'processData');
     const nameExists = (contextList, name) =>
       contextList.some(
         parameter => parameter?.name?.toLowerCase() === name?.toLowerCase()
@@ -185,7 +192,6 @@ const AddParameterContext = ({
       toast.info(KDFM.PARAMETER_ALREADY_EXISTS);
       return;
     }
-    console.log(isAddParameterContextOpen, 'isAddParameterContextOpen');
 
     if (isAddParameterContextOpen?.mode === 'edit') {
       const updatedData = newlyAddParameters.map(item =>
@@ -193,9 +199,8 @@ const AddParameterContext = ({
           ? { ...item, ...processData }
           : item
       );
-      console.log(updatedData, 'updatedData');
+
       const sortedArry = uniqBy(updatedData, item => item.name.toLowerCase());
-      console.log(sortedArry, 'sortedArry', parameterDetails);
       const updatedDataUnique = isEmpty(sortedArry) ? processData : sortedArry;
       if (isArray(updatedDataUnique)) {
         const exists = updatedDataUnique.some(
@@ -217,15 +222,15 @@ const AddParameterContext = ({
       const filteredParameterContextList = parameterContextList.filter(
         item => item?.name?.toLowerCase() !== processData?.name?.toLowerCase()
       );
-      console.log(filteredParameterContextList, 'filteredParameterContextList');
       const existingParameterContext = parameterContextList.find(
         item => item?.name?.toLowerCase() === processData?.name?.toLowerCase()
       );
-
+      console.log(parameterDetails, 'parameterDetails');
       if (
         existingParameterContext &&
         Object.values(existingParameterContext)?.length !== 0
       ) {
+        console.log('244 >>>>>>>');
         if (isParentEdit?.parent) {
           dispatch(
             NamespacesActions.setParameterDetails({
@@ -257,11 +262,14 @@ const AddParameterContext = ({
           );
         }
       } else {
+        console.log('256 called');
+        console.log(updatedData, 'updatedData');
         dispatch(
           NamespacesActions.setNewlyAddedParameterContext([...updatedData])
         );
       }
     } else {
+      console.log('262 called');
       dispatch(
         NamespacesActions.setNewlyAddedParameterContext([
           ...newlyAddParameters,
