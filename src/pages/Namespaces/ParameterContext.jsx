@@ -1,3 +1,4 @@
+import { has } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,8 +8,10 @@ import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-import { SchedularActions } from '../../store/schedular/redux';
-import { has } from 'lodash';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux';
 
 const ModalBody = styled.div`
   position: relative;
@@ -59,8 +62,27 @@ const ParameterContext = ({
     return 0;
   });
   const [tableStateData, setTableStateData] = useState();
+  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
+  const schduleParameterData =
+    checkDestCluster?.additionalData?.filteredParameterData;
+
   useEffect(() => {
-    setTableStateData(sortedArray);
+    if (schedularFromList) {
+      setTableStateData(schduleParameterData);
+      dispatch(
+        NamespacesActions.setScheduleNamespaceParameterContext(
+          schduleParameterData
+        )
+      );
+      //setScheduleNamespaceParameterContext
+    }
+  }, [schedularFromList, schduleParameterData]);
+
+  useEffect(() => {
+    if (!schedularFromList) {
+      setTableStateData(sortedArray);
+    }
   }, [parameterDetails?.[deployOrUpgradeDetails?.parameterContextId]]);
 
   const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
@@ -110,6 +132,7 @@ const ParameterContext = ({
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {item.parentParameterId == parameterContextId ||
           isParentEdit?.parent ||
+          schedularFromList ||
           !has(item, 'parentParameterId') ? (
             <IconButton
               disabled={loading}
@@ -169,6 +192,8 @@ const ParameterContext = ({
     );
     setLoading(false);
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
+    setIsParameterContextOpen({ isOpen: false, schedule: false });
+    // close modal
   };
 
   const backSchedule = () => {
@@ -177,14 +202,17 @@ const ParameterContext = ({
   };
 
   selectedParentContextId;
-
   useEffect(() => {
     if (isParentEdit?.parent) {
       dispatch(NamespacesActions.fetchParameterContext());
     }
+    // else {
+    //   setTableStateData([...schduleParameterData, ...newlyAddParameters]);
+    // }
   }, [isParentEdit?.id]);
+
   useEffect(() => {
-    if (isParentEdit?.parent) {
+    if (isParentEdit?.parent && !schedularFromList) {
       const copyParameterDetailsData =
         parameterDetails?.[isParentEdit?.id] || [];
       const updatedData = copyParameterDetailsData.map(copyItem => {
@@ -206,6 +234,28 @@ const ParameterContext = ({
         }
       });
       setTableStateData(updatedData);
+    } else {
+      const updatedData = schduleParameterData.map(copyItem => {
+        const match = newlyAddParameters.find(
+          newItem => newItem.name.toLowerCase() === copyItem.name.toLowerCase()
+        );
+        return match ? match : copyItem;
+      });
+      newlyAddParameters.forEach(newItem => {
+        const exists = updatedData.some(
+          updatedItem =>
+            updatedItem.name.toLowerCase() === newItem.name.toLowerCase()
+        );
+
+        if (!exists) {
+          updatedData.push(newItem);
+        }
+      });
+      setTableStateData([...updatedData]);
+      dispatch(
+        NamespacesActions.setScheduleNamespaceParameterContext([...updatedData])
+      );
+      // setTableStateData([...updatedData, ...newlyAddParameters]); setScheduleNamespaceParameterContext
     }
   }, [parameterDetails, isOpen, newlyAddParameters]);
 
