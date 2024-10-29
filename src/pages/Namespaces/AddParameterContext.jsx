@@ -93,7 +93,6 @@ const AddParameterContext = ({
   parameterContextItem,
   isParameterContextOpen,
 }) => {
-  
   const dispatch = useDispatch();
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
   const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
@@ -225,12 +224,10 @@ const AddParameterContext = ({
       const existingParameterContext = parameterContextList.find(
         item => item?.name?.toLowerCase() === processData?.name?.toLowerCase()
       );
-      console.log(parameterDetails, 'parameterDetails');
       if (
         existingParameterContext &&
         Object.values(existingParameterContext)?.length !== 0
       ) {
-        console.log('244 >>>>>>>');
         if (isParentEdit?.parent) {
           dispatch(
             NamespacesActions.setParameterDetails({
@@ -262,14 +259,11 @@ const AddParameterContext = ({
           );
         }
       } else {
-        console.log('256 called');
-        console.log(updatedData, 'updatedData');
         dispatch(
           NamespacesActions.setNewlyAddedParameterContext([...updatedData])
         );
       }
     } else {
-      console.log('262 called');
       dispatch(
         NamespacesActions.setNewlyAddedParameterContext([
           ...newlyAddParameters,

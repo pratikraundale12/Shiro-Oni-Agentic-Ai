@@ -70,6 +70,12 @@ const ParameterContext = ({
   useEffect(() => {
     if (schedularFromList) {
       setTableStateData(schduleParameterData);
+      dispatch(
+        NamespacesActions.setScheduleNamespaceParameterContext(
+          schduleParameterData
+        )
+      );
+      //setScheduleNamespaceParameterContext
     }
   }, [schedularFromList, schduleParameterData]);
 
@@ -186,6 +192,8 @@ const ParameterContext = ({
     );
     setLoading(false);
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
+    setIsParameterContextOpen({ isOpen: false, schedule: false });
+    // close modal
   };
 
   const backSchedule = () => {
@@ -197,10 +205,12 @@ const ParameterContext = ({
   useEffect(() => {
     if (isParentEdit?.parent) {
       dispatch(NamespacesActions.fetchParameterContext());
-    } else {
-      setTableStateData([...schduleParameterData, ...newlyAddParameters]);
     }
+    // else {
+    //   setTableStateData([...schduleParameterData, ...newlyAddParameters]);
+    // }
   }, [isParentEdit?.id]);
+
   useEffect(() => {
     if (isParentEdit?.parent && !schedularFromList) {
       const copyParameterDetailsData =
@@ -224,6 +234,28 @@ const ParameterContext = ({
         }
       });
       setTableStateData(updatedData);
+    } else {
+      const updatedData = schduleParameterData.map(copyItem => {
+        const match = newlyAddParameters.find(
+          newItem => newItem.name.toLowerCase() === copyItem.name.toLowerCase()
+        );
+        return match ? match : copyItem;
+      });
+      newlyAddParameters.forEach(newItem => {
+        const exists = updatedData.some(
+          updatedItem =>
+            updatedItem.name.toLowerCase() === newItem.name.toLowerCase()
+        );
+
+        if (!exists) {
+          updatedData.push(newItem);
+        }
+      });
+      setTableStateData([...updatedData]);
+      dispatch(
+        NamespacesActions.setScheduleNamespaceParameterContext([...updatedData])
+      );
+      // setTableStateData([...updatedData, ...newlyAddParameters]); setScheduleNamespaceParameterContext
     }
   }, [parameterDetails, isOpen, newlyAddParameters]);
 
