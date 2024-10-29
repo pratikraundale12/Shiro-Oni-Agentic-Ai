@@ -64,10 +64,10 @@ export function* resetPasswordRequest(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Password reset request successful!');
-    yield put(AuthenticationActions.disableButton());
+    // yield put(AuthenticationActions.disableButton());
   } else {
-    toast.error(response.data.message);
-    yield put(AuthenticationActions.enableButton());
+    toast.error(response?.data?.message);
+    // yield put(AuthenticationActions.enableButton());
   }
 }
 

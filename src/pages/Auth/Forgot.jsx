@@ -86,9 +86,13 @@ const Container = styled.div`
 const resetSchema = yup.object().shape({
   email: yup
     .string()
-    .matches(EMAIL_REGEX, 'Invalid email address')
-    .required('Email is required'),
+    .required('Email is required')
+    .matches(EMAIL_REGEX, 'Invalid email address'),
 });
+
+const DEFAULT_VALUES = {
+  email: '',
+};
 
 export const getRightIcon = (watch, errors) => {
   const emailValue = watch('email');
@@ -110,9 +114,11 @@ export const Forgot = () => {
     register,
     watch,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(resetSchema),
+    defaultValues: DEFAULT_VALUES,
   });
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'resetPasswordRequest')
@@ -124,6 +130,7 @@ export const Forgot = () => {
   const onSubmit = data => {
     if (!loading && !isButtonDisabled) {
       dispatch(AuthenticationActions.resetPasswordRequest(data));
+      reset(DEFAULT_VALUES);
     }
   };
 
