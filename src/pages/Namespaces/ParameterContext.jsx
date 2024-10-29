@@ -7,7 +7,10 @@ import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-import { SchedularActions } from '../../store/schedular/redux';
+import {
+  SchedularActions,
+  SchedularSelectors,
+} from '../../store/schedular/redux';
 import { has } from 'lodash';
 
 const ModalBody = styled.div`
@@ -59,8 +62,22 @@ const ParameterContext = ({
     return 0;
   });
   const [tableStateData, setTableStateData] = useState();
+  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
+  const schduleParameterData =
+    checkDestCluster?.additionalData?.filteredParameterData;
+  console.log({ schduleParameterData }, 'outtttt');
+  console.log(schedularFromList, 'schedularFromList');
   useEffect(() => {
-    setTableStateData(sortedArray);
+    if (schedularFromList) {
+      setTableStateData(schduleParameterData);
+    }
+  }, [schedularFromList, schduleParameterData]);
+
+  useEffect(() => {
+    if (!schedularFromList) {
+      setTableStateData(sortedArray);
+    }
   }, [parameterDetails?.[deployOrUpgradeDetails?.parameterContextId]]);
 
   const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
@@ -110,6 +127,7 @@ const ParameterContext = ({
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {item.parentParameterId == parameterContextId ||
           isParentEdit?.parent ||
+          schedularFromList ||
           !has(item, 'parentParameterId') ? (
             <IconButton
               disabled={loading}
@@ -184,7 +202,7 @@ const ParameterContext = ({
     }
   }, [isParentEdit?.id]);
   useEffect(() => {
-    if (isParentEdit?.parent) {
+    if (isParentEdit?.parent && !schedularFromList) {
       const copyParameterDetailsData =
         parameterDetails?.[isParentEdit?.id] || [];
       const updatedData = copyParameterDetailsData.map(copyItem => {
