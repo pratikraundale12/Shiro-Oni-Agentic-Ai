@@ -106,6 +106,9 @@ export const NamespacesActions = {
   setScheduleNamespaceParameterContext: createAction(
     `${prefix}setScheduleNamespaceParameterContext`
   ),
+  setScheduleNamespaceVariable: createAction(
+    `${prefix}setScheduleNamespaceVariable`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -163,6 +166,7 @@ export const NAMESPACES_INITIAL_STATE = {
   responseNewAddedProperty: {},
   isConfigurePropertyControllerServiceModalOpen: false,
   scheduleNamespaceParameterContext: [],
+  scheduleNamespaceVariables: {},
   // parameterEditParent: false,
 };
 
@@ -209,6 +213,8 @@ export const NamespacesSelectors = {
     state.namespaces.isConfigurePropertyControllerServiceModalOpen,
   getScheduleNamespaceParameterContext: state =>
     state.namespaces.scheduleNamespaceParameterContext,
+  getScheduleNamespaceVariables: state =>
+    state.namespaces.scheduleNamespaceVariables,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -463,6 +469,12 @@ const setScheduleNamespaceParameterContext = (state, { payload }) => {
     scheduleNamespaceParameterContext: payload,
   };
 };
+const setScheduleNamespaceVariable = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleNamespaceVariables: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -553,6 +565,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setScheduleNamespaceParameterContext,
         setScheduleNamespaceParameterContext
+      )
+      .addCase(
+        NamespacesActions.setScheduleNamespaceVariable,
+        setScheduleNamespaceVariable
       );
   }
 );

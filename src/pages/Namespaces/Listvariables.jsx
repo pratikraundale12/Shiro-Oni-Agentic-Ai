@@ -1,5 +1,6 @@
+/*eslint-disable*/
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
@@ -9,6 +10,8 @@ import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 // import { SchedularActions } from '../../store/schedular/redux';
 import AddVariables from './AddVariables';
+import { SchedularSelectors } from '../../store/schedular/redux';
+import { isEmpty, uniqBy } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -40,6 +43,83 @@ const Listvariables = ({
     isOpen: false,
     mode: 'add',
   });
+  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
+  const schduleVariableData = checkDestCluster?.additionalData?.variables;
+  const combinedVaribalesListSchedule = useSelector(
+    NamespacesSelectors.getScheduleNamespaceVariables
+  );
+  console.log(newlyAddVariables, 'newlyAddVariables');
+
+  // const sortedScheduleVariableArray = schduleVariableData.map(item => ({
+  //   variable: {
+  //     name: item?.name,
+  //     value: item?.value,
+  //     check: item?.check || false,
+  //   },
+  // }));
+  const sortedScheduleVariableArray = useMemo(
+    () =>
+      schduleVariableData.map(item => ({
+        variable: {
+          name: item?.name,
+          value: item?.value,
+          check: item?.check || false,
+        },
+      })),
+    [schduleVariableData]
+  );
+  const sortednewlyAddVariables = newlyAddVariables.map(item => ({
+    variable: {
+      name: item?.name,
+      value: item?.value,
+      check: item?.check || false,
+    },
+  }));
+  // console.log(combinedVaribalesListSchedule, 'combinedVaribalesListSchedule');
+  // console.log(sortednewlyAddVariables, 'sortednewlyAddVariables');
+  useEffect(() => {
+    if (schedularFromList) {
+      dispatch(
+        NamespacesActions.setScheduleNamespaceVariable({
+          ...variableList,
+          variables: sortedScheduleVariableArray,
+        })
+      );
+    }
+  }, [variableList, sortedScheduleVariableArray, isOpen.isOpen]);
+
+  // useEffect(() => {
+  //   if ((schedularFromList, !isEmpty(newlyAddVariables))) {
+  //     dispatch(
+  //       NamespacesActions.setScheduleNamespaceVariable({
+  //         ...combinedVaribalesListSchedule,
+  //         variables: [
+  //           ...(combinedVaribalesListSchedule?.variables || []),
+  //           ...sortednewlyAddVariables,
+  //         ],
+  //       })
+  //     );
+  //   }
+  // }, [newlyAddVariables, isVariablesModalOpen]);
+  useEffect(() => {
+    if (schedularFromList && !_.isEmpty(newlyAddVariables)) {
+      const uniqueVariables = uniqBy(
+        [
+          ...(combinedVaribalesListSchedule?.variables || []),
+          ...sortednewlyAddVariables,
+        ],
+        item => item.variable.name
+      );
+
+      dispatch(
+        NamespacesActions.setScheduleNamespaceVariable({
+          ...combinedVaribalesListSchedule,
+          variables: uniqueVariables,
+        })
+      );
+    }
+  }, [newlyAddVariables, isVariablesModalOpen]);
 
   const COLUMNS = [
     {
@@ -101,7 +181,9 @@ const Listvariables = ({
   ];
 
   let variablesData = [];
-  if (
+  if (schedularFromList && !isEmpty(combinedVaribalesListSchedule?.variables)) {
+    variablesData = [...combinedVaribalesListSchedule?.variables] || [];
+  } else if (
     (variableList && variableList.variables) ||
     isVariablesModalOpen.schedule
   ) {
