@@ -10,6 +10,7 @@ import {
 } from '../../assets';
 import {
   ClusterSelect,
+  DeployClusterSelect,
   FullPageLoader,
   Table,
   TextRender,
@@ -26,6 +27,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { SchedularSelectors } from '../../store/schedular/redux';
 import { theme } from '../../styles';
 
 const TopTitleBar = styled.div`
@@ -144,6 +146,8 @@ const Deploy = () => {
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, MODULE)
   );
+  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
+
   const formData = useSelector(NamespacesSelectors.getFormData);
   const [search, setSearch] = useState('');
 
@@ -225,7 +229,7 @@ const Deploy = () => {
   };
 
   useEffect(() => {
-    dispatch(ClustersActions.fetchClusterList());
+    dispatch(ClustersActions.fetchClusters());
   }, [dispatch]);
 
   useEffect(() => {
@@ -270,14 +274,25 @@ const Deploy = () => {
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100 mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
-          <ClusterSelect
-            label={KDFM.SELECT_CLUSTER}
-            icon={<QRIcons />}
-            placeholder={KDFM.SELECT_CLUSTER}
-            isDestination
-            required
-            onChange={() => dispatch(NamespacesActions.checkDestCluster())}
-          />
+          {schedularFromList ? (
+            <ClusterSelect
+              label={KDFM.SELECT_CLUSTER}
+              icon={<QRIcons />}
+              placeholder={KDFM.SELECT_CLUSTER}
+              isDestination
+              required
+              onChange={() => dispatch(NamespacesActions.checkDestCluster())}
+            />
+          ) : (
+            <DeployClusterSelect
+              label={KDFM.SELECT_CLUSTER}
+              icon={<QRIcons />}
+              placeholder={KDFM.SELECT_CLUSTER}
+              isDestination
+              required
+              onChange={() => dispatch(NamespacesActions.checkDestCluster())}
+            />
+          )}
           {isEmpty(checkDestCluster) && (
             <NoDataContainer>
               <WhiteBoradIcon width={200} height={195} />
