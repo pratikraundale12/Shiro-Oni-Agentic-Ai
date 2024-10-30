@@ -36,7 +36,7 @@ export const settingSchema = yup.object().shape({
   email: yup
     .string()
     .matches(EMAIL_REGEX, 'Invalid email address')
-    .max(25, 'Email can not be greater than 25 characters'),
+    .max(50, 'Email can not be greater than 25 characters'),
 
   title: yup
     .string()
