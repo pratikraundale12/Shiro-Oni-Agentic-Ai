@@ -49,15 +49,7 @@ const Listvariables = ({
   const combinedVaribalesListSchedule = useSelector(
     NamespacesSelectors.getScheduleNamespaceVariables
   );
-  console.log(newlyAddVariables, 'newlyAddVariables');
 
-  // const sortedScheduleVariableArray = schduleVariableData.map(item => ({
-  //   variable: {
-  //     name: item?.name,
-  //     value: item?.value,
-  //     check: item?.check || false,
-  //   },
-  // }));
   const sortedScheduleVariableArray = useMemo(
     () =>
       schduleVariableData.map(item => ({
@@ -76,8 +68,7 @@ const Listvariables = ({
       check: item?.check || false,
     },
   }));
-  // console.log(combinedVaribalesListSchedule, 'combinedVaribalesListSchedule');
-  // console.log(sortednewlyAddVariables, 'sortednewlyAddVariables');
+
   useEffect(() => {
     if (schedularFromList) {
       dispatch(
@@ -89,19 +80,6 @@ const Listvariables = ({
     }
   }, [variableList, sortedScheduleVariableArray, isOpen.isOpen]);
 
-  // useEffect(() => {
-  //   if ((schedularFromList, !isEmpty(newlyAddVariables))) {
-  //     dispatch(
-  //       NamespacesActions.setScheduleNamespaceVariable({
-  //         ...combinedVaribalesListSchedule,
-  //         variables: [
-  //           ...(combinedVaribalesListSchedule?.variables || []),
-  //           ...sortednewlyAddVariables,
-  //         ],
-  //       })
-  //     );
-  //   }
-  // }, [newlyAddVariables, isVariablesModalOpen]);
   useEffect(() => {
     if (schedularFromList && !_.isEmpty(newlyAddVariables)) {
       const uniqueVariables = uniqBy(
@@ -237,7 +215,6 @@ const Listvariables = ({
   };
   const scheduleSubmit = async () => {
     setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: true });
-    // dispatch(SchedularActions.setScheduleModal());
   };
 
   return (
@@ -270,6 +247,7 @@ const Listvariables = ({
             columns={COLUMNS}
             className={'variables-table'}
           />
+          {console.log(variableList, 'variableList')}
         </ModalBody>
       </Modal>
       {isAddVariablesOpen && (
