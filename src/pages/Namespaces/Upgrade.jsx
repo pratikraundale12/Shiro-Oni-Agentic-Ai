@@ -255,7 +255,7 @@ const Upgrade = () => {
       formData?.version === checkDestCluster?.version &&
       checkDestCluster?.mode === 'upgrade'
     ) {
-      toast.info('The selected version is already deploy.');
+      toast.info('The selected version is already deployed.');
     } else {
       history.push('/process-group/summary');
     }
