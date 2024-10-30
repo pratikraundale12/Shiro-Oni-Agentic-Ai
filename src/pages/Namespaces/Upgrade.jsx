@@ -251,8 +251,11 @@ const Upgrade = () => {
   ];
 
   const handleClick = () => {
-    if (formData?.version === checkDestCluster?.version) {
-      toast.info('The selected version is already the current version.');
+    if (
+      formData?.version === checkDestCluster?.version &&
+      checkDestCluster?.mode === 'upgrade'
+    ) {
+      toast.info('The selected version is already deploy.');
     } else {
       history.push('/process-group/summary');
     }
