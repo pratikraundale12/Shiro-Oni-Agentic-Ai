@@ -199,24 +199,13 @@ const AddVariables = ({
           variables: sortedCombinedArray,
         })
       );
-
-      // console.log(sortedCombinedArray, 'sortedCombinedArray');
-      // const updatedData = newlyAddVariables.map(item =>
-      //   item?.variable?.toLowerCase() === data?.name?.toLowerCase()
-      //     ? { ...item, ...data }
-      //     : item
-      // );
       const sortedUpdatedData = newlyAddVariables.filter(
         item => item.name !== data?.name
       );
-      // console.log(sortedUpdatedData, 'sortedUpdatedData');
-      // console.log([...updatedData, data], '[...updatedData, data]');
       dispatch(
         NamespacesActions.setNewlyAddVariables([...sortedUpdatedData, data])
       );
     }
-
-    // return;
     if (!scheduleFromListNameAlreadyExist) {
       if (isAddVariablesOpen?.mode === 'edit' && isEmpty(scheduleFormData)) {
         const updatedData = newlyAddVariables.map(item =>
