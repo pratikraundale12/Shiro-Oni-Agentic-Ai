@@ -131,7 +131,10 @@ export const AddUserModal = props => {
     ),
   });
 
-  const openModal = () => setState({ ...state, userModal: true });
+  const openModal = () => {
+    setState({ ...state, userModal: true });
+    dispatch(UsersActions.setUserModalOpen(true));
+  };
   const closeModal = () => {
     setState({
       ...state,
