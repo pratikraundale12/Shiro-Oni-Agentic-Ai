@@ -103,7 +103,8 @@ const loginSchema = yup.object().shape({
     .string()
     .required('Email is required')
     .matches(EMAIL_REGEX, 'Invalid email address')
-    .max(25, 'Email can not be greater than 25 characters'),
+    .max(50, 'Email can not be greater than 25 characters')
+    .required('Email is required'),
   password: yup.string().required('Password is required'),
 });
 

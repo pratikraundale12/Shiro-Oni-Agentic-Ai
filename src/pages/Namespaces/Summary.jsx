@@ -328,13 +328,15 @@ const Summary = () => {
     mode: 'add',
     schedule: false,
   });
-  const [loading, setLoading] = useState(false);
   const [confirmDialogue, setConfirmDialogue] = useState({
     state: false,
     action: '',
     text: '',
     forPopup: false,
   });
+  const summaryLoadingStateRedux = useSelector(
+    NamespacesSelectors.getNamespaceSummaryLoadingState
+  );
 
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
@@ -346,15 +348,16 @@ const Summary = () => {
   ];
 
   const getParamerterContext = async () => {
-    setLoading(true);
+    dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
     openParameterContext();
-    setLoading(false);
+    dispatch(NamespacesActions.setNamespaceSummaryLoadingState(false));
   };
   const getScheduleParamerterContext = async () => {
     setIsParameterContextOpen({ isOpen: true, schedule: true });
     dispatch(SchedularActions.setScheduleDeployModal());
   };
   const handleUpgradeClick = async () => {
+    dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
     dispatch(NamespacesActions.upgradeCluster());
     if (!isEmpty(flowControlButtons)) {
       dispatch(NamespacesActions.updateNamespaceStatus(flowControlButtons));
@@ -362,6 +365,7 @@ const Summary = () => {
     setIsUpgrading(true);
   };
   const handleDeploy = () => {
+    dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
     dispatch(NamespacesActions.deployCluster());
     setIsUpgrading(false);
   };
@@ -497,7 +501,7 @@ const Summary = () => {
 
   return (
     <MainContainer className="main-space bg-white">
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={summaryLoadingStateRedux} />
       <TopTitleBar className="d-flex mb-3">
         <MainTitleDiv className="d-flex">
           <div>
