@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   CanvasXIcon,
@@ -250,7 +251,14 @@ const Upgrade = () => {
   ];
 
   const handleClick = () => {
-    history.push('/process-group/summary');
+    if (
+      formData?.version === checkDestCluster?.version &&
+      checkDestCluster?.mode === 'upgrade'
+    ) {
+      toast.info('The selected version is already deployed.');
+    } else {
+      history.push('/process-group/summary');
+    }
   };
 
   const handleBackClick = () => {
@@ -309,6 +317,15 @@ const Upgrade = () => {
 
   return (
     <div>
+      <ToastContainer
+        theme="colored"
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
           <div>

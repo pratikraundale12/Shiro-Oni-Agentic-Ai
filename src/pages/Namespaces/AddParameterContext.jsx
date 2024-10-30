@@ -16,6 +16,7 @@ import {
   RadioSelectField,
 } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { SchedularSelectors } from '../../store/schedular/redux';
 
 const ModalBody = styled.div`
   position: relative;
@@ -101,9 +102,16 @@ const AddParameterContext = ({
   const newlyAddParameters = useSelector(
     NamespacesSelectors.getNewlyAddedParameterContext
   );
-  const parameterContextList = isParentEdit?.parent
-    ? parameterDetails?.[isParentEdit?.id]
-    : parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
+  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
+  const schduleParameterData =
+    checkDestCluster?.additionalData?.filteredParameterData;
+  const parameterContextList = schedularFromList
+    ? schduleParameterData
+    : isParentEdit?.parent
+      ? parameterDetails?.[isParentEdit?.id]
+      : parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
+
   const {
     register,
     handleSubmit,
@@ -155,6 +163,7 @@ const AddParameterContext = ({
     parameterContextItem,
     setValue,
   ]);
+
   const handleAddEditParameterContext = async data => {
     if (!data) return;
     const processData = {
@@ -189,6 +198,7 @@ const AddParameterContext = ({
           ? { ...item, ...processData }
           : item
       );
+
       const sortedArry = uniqBy(updatedData, item => item.name.toLowerCase());
       const updatedDataUnique = isEmpty(sortedArry) ? processData : sortedArry;
       if (isArray(updatedDataUnique)) {
@@ -214,7 +224,6 @@ const AddParameterContext = ({
       const existingParameterContext = parameterContextList.find(
         item => item?.name?.toLowerCase() === processData?.name?.toLowerCase()
       );
-
       if (
         existingParameterContext &&
         Object.values(existingParameterContext)?.length !== 0

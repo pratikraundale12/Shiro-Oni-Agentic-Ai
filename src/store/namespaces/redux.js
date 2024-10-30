@@ -103,6 +103,12 @@ export const NamespacesActions = {
     `${prefix}changeStatusControllerService`
   ),
   deleteControllerService: createAction(`${prefix}deleteControllerService`),
+  setScheduleNamespaceParameterContext: createAction(
+    `${prefix}setScheduleNamespaceParameterContext`
+  ),
+  setNamespaceSummaryLoadingState: createAction(
+    `${prefix}setNamespaceSummaryLoadingState`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -159,6 +165,8 @@ export const NAMESPACES_INITIAL_STATE = {
   newPropertyToAddControllerService: [],
   responseNewAddedProperty: {},
   isConfigurePropertyControllerServiceModalOpen: false,
+  scheduleNamespaceParameterContext: [],
+  namespaceSummaryLoadingState: false,
   // parameterEditParent: false,
 };
 
@@ -203,6 +211,10 @@ export const NamespacesSelectors = {
     state.namespaces.responseNewAddedProperty,
   getIsConfigurePropertyControllerServiceModalOpen: state =>
     state.namespaces.isConfigurePropertyControllerServiceModalOpen,
+  getScheduleNamespaceParameterContext: state =>
+    state.namespaces.scheduleNamespaceParameterContext,
+  getNamespaceSummaryLoadingState: state =>
+    state.namespaces.namespaceSummaryLoadingState,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -451,6 +463,19 @@ const setIsConfigurePropertyControllerServiceModalOpen = (
   };
 };
 
+const setScheduleNamespaceParameterContext = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleNamespaceParameterContext: payload,
+  };
+};
+
+const setNamespaceSummaryLoadingState = (state, { payload }) => {
+  return {
+    ...state,
+    namespaceSummaryLoadingState: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -537,6 +562,14 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen,
         setIsConfigurePropertyControllerServiceModalOpen
+      )
+      .addCase(
+        NamespacesActions.setScheduleNamespaceParameterContext,
+        setScheduleNamespaceParameterContext
+      )
+      .addCase(
+        NamespacesActions.setNamespaceSummaryLoadingState,
+        setNamespaceSummaryLoadingState
       );
   }
 );

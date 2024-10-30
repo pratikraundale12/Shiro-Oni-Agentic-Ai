@@ -15,6 +15,7 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
+import { unionBy } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -168,6 +169,7 @@ const ScheduleNamespaceDeploy = ({
   };
 
   const onSubmit = () => {
+    const sortedParamterArray = unionBy(newlyAddParameters, 'name');
     const payload = {
       ...(checkDestCluster?.mode === 'upgrade' && {
         namespaceId: checkDestCluster?.id,
@@ -191,11 +193,12 @@ const ScheduleNamespaceDeploy = ({
         name: item.name,
         value: item.value,
       })),
-      params: newlyAddParameters.map(item => ({
+      params: sortedParamterArray.map(item => ({
         name: item.name,
-        value: item.value,
-        description: item.description,
+        value: item?.value,
+        description: item?.description,
         sensitive: item.sensitive,
+        parameterName: item?.parameterName || null,
       })),
       state: flowControlState,
       source_namespace_id: selectedNamespace?.value,

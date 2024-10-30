@@ -22,6 +22,8 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
+
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import AddControllerServiceModal from '../ControllerService/AddControllerServiceModal';
 import AddProperties from '../ControllerService/AddProperties';
 import ConfigControllerService from '../ControllerService/ConfigControllerService';
@@ -89,7 +91,7 @@ const statusColors = {
   DEFAULT: '#F2891F',
   ENABLED: '#0cbf59',
 };
-const StatusText = ({ text = '' }) => {
+const StatusText = ({ text = '', item }) => {
   const color = statusColors[text] || statusColors.DEFAULT;
   function capitalizeFirstLetter(text) {
     if (!text) return '';
@@ -102,10 +104,23 @@ const StatusText = ({ text = '' }) => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
-
   return (
     <>
-      <StatusTexts color={color}>{capitalizeFirstLetter(text)}</StatusTexts>{' '}
+      <StatusTexts color={color} data-tooltip-id={`tooltip-cs-${item?.id}`}>
+        {capitalizeFirstLetter(text)}
+      </StatusTexts>{' '}
+      {!isEmpty(item?.tooltip) && (
+        <ReactTooltip
+          id={`tooltip-cs-${item?.id}`}
+          place="right"
+          content={item?.tooltip ? item?.tooltip : null}
+          style={{
+            width: '520px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+          }}
+        />
+      )}
     </>
   );
 };

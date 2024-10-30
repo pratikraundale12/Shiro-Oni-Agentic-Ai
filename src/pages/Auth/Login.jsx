@@ -101,6 +101,7 @@ export const PasswordTextMessage = styled.span`
 const loginSchema = yup.object().shape({
   email: yup
     .string()
+    .required('Email is required')
     .matches(EMAIL_REGEX, 'Invalid email address')
     .max(50, 'Email can not be greater than 25 characters')
     .required('Email is required'),
