@@ -437,6 +437,13 @@ export function* updateParameterContext(api, { payload }) {
       method: 'get',
       additionalData: { requestId: response.data?.requestId },
     });
+
+    yield put(
+      NamespacesActions.setParameterEditParent({
+        parent: false,
+        id: '',
+      })
+    );
   } else {
     yield call(fetchParameterContext, api, {
       initialCall: false,
