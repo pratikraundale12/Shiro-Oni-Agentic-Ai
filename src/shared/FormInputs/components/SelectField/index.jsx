@@ -39,6 +39,11 @@ const Container = styled.div`
     border-radius: 6px !important;
     padding-block: 4px !important;
   }
+  // Wrapper for the select component
+
+  .css-uvrstl {
+    max-height: calc(100vh - 810px) !important;
+  }
 `;
 
 const DropdownIndicator = props =>
