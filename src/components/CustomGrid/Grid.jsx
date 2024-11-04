@@ -302,17 +302,17 @@ export const Grid = ({
     selectedCluster,
     currentPage,
   ]);
-
+  console.log(selectedCluster, 'line no.305');
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
     dispatch(ActivityHistoryActions.setSelectedEntity(null));
   }, []);
 
   useEffect(() => {
-    if (search) {
+    if (search || selectedCluster) {
       setCurrentPage(1);
     }
-  }, [search]);
+  }, [search, selectedCluster]);
 
   useEffect(
     () => () => setState(prev => ({ ...prev, search: '', page: 1 })),
