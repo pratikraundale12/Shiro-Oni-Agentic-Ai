@@ -156,14 +156,14 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
       );
     if (settingsData?.logo)
       return (
-        <button>
+        <StyleButton onClick={handleClick}>
           <img
             src={settingsData?.logo}
             alt="Logo"
             width={200}
             height={LOGO_HEIGHT}
           />
-        </button>
+        </StyleButton>
       );
     return (
       <StyleButton onClick={handleClick}>
