@@ -112,6 +112,9 @@ export const NamespacesActions = {
   setNamespaceSummaryLoadingState: createAction(
     `${prefix}setNamespaceSummaryLoadingState`
   ),
+  setParameterContextListAtDeploy: createAction(
+    `${prefix}setParameterContextListAtDeploy`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -171,6 +174,7 @@ export const NAMESPACES_INITIAL_STATE = {
   scheduleNamespaceParameterContext: [],
   scheduleNamespaceVariables: {},
   namespaceSummaryLoadingState: false,
+  parameterContextListAtDeploy: {},
   // parameterEditParent: false,
 };
 
@@ -221,8 +225,10 @@ export const NamespacesSelectors = {
     state.namespaces.scheduleNamespaceVariables,
   getNamespaceSummaryLoadingState: state =>
     state.namespaces.namespaceSummaryLoadingState,
+  getParameterContextListAtDeploy: state =>
+    state.namespaces.parameterContextListAtDeploy,
 };
-
+//
 /* ------------- REDUCERS ------------------- */
 const setSelectedCluster = (state, { payload }) => {
   return {
@@ -488,7 +494,14 @@ const setNamespaceSummaryLoadingState = (state, { payload }) => {
     namespaceSummaryLoadingState: payload,
   };
 };
-//
+
+const setParameterContextListAtDeploy = (state, { payload }) => {
+  return {
+    ...state,
+    parameterContextListAtDeploy: payload,
+  };
+};
+//setParameterContextListAtDeploy
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -586,6 +599,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setNamespaceSummaryLoadingState,
         setNamespaceSummaryLoadingState
+      )
+      .addCase(
+        NamespacesActions.setParameterContextListAtDeploy,
+        setParameterContextListAtDeploy
       );
   }
 );

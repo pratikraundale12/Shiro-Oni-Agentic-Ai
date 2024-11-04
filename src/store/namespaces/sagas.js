@@ -372,9 +372,12 @@ export function* fetchParameterContext(
     ],
     successAction: NamespacesActions.setParameterDetails,
   });
-  if (response.ok && initialCall)
+  if (response.ok && initialCall) {
     yield put(NamespacesActions.setDeployedModal());
-  else if (!response.ok || (showError && !initialCall)) {
+    yield put(
+      NamespacesActions.setParameterContextListAtDeploy(response?.data)
+    );
+  } else if (!response.ok || (showError && !initialCall)) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
