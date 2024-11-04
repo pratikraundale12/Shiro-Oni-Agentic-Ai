@@ -1,4 +1,4 @@
-import { has } from 'lodash';
+import { has, isEmpty, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,19 +48,26 @@ const ParameterContext = ({
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
+  // const parentParameterSelectData = useSelector(
+  //   NamespacesSelectors.getParameterEditParent
+  // );
+  const parameterContextObjectAtDeloy = useSelector(
+    NamespacesSelectors.getParameterContextListAtDeploy
+  );
   const copyParameterDetailsData =
-    parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
+    parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] ||
+    parameterContextObjectAtDeloy?.parameterContexts ||
+    [];
+
   const tableData = [...copyParameterDetailsData, ...newlyAddParameters];
   const targetId = deployOrUpgradeDetails?.parameterContextId;
-  // const isParameterDeployOpen = useSelector(
-  //   NamespacesSelectors.getDeployedModal
-  // );
 
   const sortedArray = tableData.sort((a, b) => {
     if (a.parentParameterId === targetId) return -1;
     if (b.parentParameterId === targetId) return 1;
     return 0;
   });
+
   const [tableStateData, setTableStateData] = useState();
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
@@ -81,9 +88,13 @@ const ParameterContext = ({
 
   useEffect(() => {
     if (!schedularFromList) {
-      setTableStateData(sortedArray);
+      const uniqueData = uniqBy(sortedArray, 'name');
+      setTableStateData(uniqueData);
     }
-  }, [parameterDetails?.[deployOrUpgradeDetails?.parameterContextId]]);
+  }, [
+    parameterDetails?.[deployOrUpgradeDetails?.parameterContextId],
+    parameterContextObjectAtDeloy?.parameterContexts,
+  ]);
 
   const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
 
@@ -185,9 +196,10 @@ const ParameterContext = ({
   const handleSaveParameterContext = async () => {
     if (!newlyAddParameters) return;
     setLoading(true);
+    const uniqueDataSorted = uniqBy(newlyAddParameters, 'name');
     dispatch(
       NamespacesActions.updateParameterContext({
-        modifiedPayloadData: [...newlyAddParameters],
+        modifiedPayloadData: [...uniqueDataSorted],
       })
     );
     setLoading(false);
@@ -214,7 +226,7 @@ const ParameterContext = ({
   useEffect(() => {
     if (isParentEdit?.parent && !schedularFromList) {
       const copyParameterDetailsData =
-        parameterDetails?.[isParentEdit?.id] || [];
+        parameterDetails?.parameterContexts || [];
       const updatedData = copyParameterDetailsData.map(copyItem => {
         const match = newlyAddParameters.find(
           newItem => newItem.name.toLowerCase() === copyItem.name.toLowerCase()
@@ -233,8 +245,10 @@ const ParameterContext = ({
           updatedData.push(newItem);
         }
       });
-      setTableStateData(updatedData);
-    } else {
+      if (!isEmpty(updatedData)) {
+        setTableStateData(updatedData);
+      }
+    } else if (schedularFromList) {
       const updatedData = schduleParameterData.map(copyItem => {
         const match = newlyAddParameters.find(
           newItem => newItem.name.toLowerCase() === copyItem.name.toLowerCase()
@@ -258,7 +272,6 @@ const ParameterContext = ({
       // setTableStateData([...updatedData, ...newlyAddParameters]); setScheduleNamespaceParameterContext
     }
   }, [parameterDetails, isOpen, newlyAddParameters]);
-
   return (
     <Modal
       title={KDFM.PARAMETER_CONTEXT}

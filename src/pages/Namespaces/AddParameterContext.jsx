@@ -109,9 +109,8 @@ const AddParameterContext = ({
   const parameterContextList = schedularFromList
     ? schduleParameterData
     : isParentEdit?.parent
-      ? parameterDetails?.[isParentEdit?.id]
-      : parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] || [];
-
+      ? parameterDetails?.parameterContexts
+      : parameterDetails?.parameterContexts || [];
   const {
     register,
     handleSubmit,
@@ -251,9 +250,10 @@ const AddParameterContext = ({
                 filteredParameterContextList,
             })
           );
+          const uniqueDataSorted = uniqBy(updatedData, 'name');
           dispatch(
             NamespacesActions.setNewlyAddedParameterContext([
-              ...updatedData,
+              ...uniqueDataSorted,
               processData,
             ])
           );
