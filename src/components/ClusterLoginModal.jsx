@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import * as yup from 'yup';
 import { ClusterIcon, UserIcon } from '../assets';
 import { CLUSTERS_TOKEN } from '../constants';
@@ -136,15 +136,8 @@ export const ClusterLoginModal = () => {
       }
     } catch (error) {
       setLoading(false);
-      // const errorMessage = error?.response?.data?.message || error.message;
-      // toast.error(errorMessage);
-      toast.error(
-        <div>
-          The supplied username and
-          <br />
-          password are not valid.
-        </div>
-      );
+      const errorMessage = error?.response?.data?.message || error.message;
+      toast.error(errorMessage);
     }
   };
 
@@ -186,54 +179,65 @@ export const ClusterLoginModal = () => {
   };
 
   return (
-    <Modal
-      title="Enable Cluster"
-      isOpen={isObject(clusterLogin) || clusterLogin}
-      onRequestClose={() => dispatch(AuthenticationActions.setClusterLogin())}
-      size="sm"
-      loading={loading}
-      secondaryButtonText="Back"
-      primaryButtonText={isFieldsDisabled ? 'Switch' : 'Submit'}
-      primaryButtonDisabled={selectedCluster?.value == clusterId}
-      onSubmit={isFieldsDisabled ? onSwitchCluster : handleSubmit(onSubmit)}
-      footerAlign="start"
-      contentStyles={{ minWidth: '30%' }}
-    >
-      <SelectField
-        label="Select Cluster"
-        name="cluster_id"
-        control={control}
-        icon={<ClusterIcon />}
-        errors={errors}
-        options={sortedClusters}
-        defaultValue={clusterLogin}
-        placeholder="Select Cluster"
-        required
-        disabled={isObject(clusterLogin)}
-        showCircleIcon={true}
+    <>
+      <ToastContainer
+        theme="colored"
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable
       />
+      <Modal
+        title="Enable Cluster"
+        isOpen={isObject(clusterLogin) || clusterLogin}
+        onRequestClose={() => dispatch(AuthenticationActions.setClusterLogin())}
+        size="sm"
+        loading={loading}
+        secondaryButtonText="Back"
+        primaryButtonText={isFieldsDisabled ? 'Switch' : 'Submit'}
+        primaryButtonDisabled={selectedCluster?.value == clusterId}
+        onSubmit={isFieldsDisabled ? onSwitchCluster : handleSubmit(onSubmit)}
+        footerAlign="start"
+        contentStyles={{ minWidth: '30%' }}
+      >
+        <SelectField
+          label="Select Cluster"
+          name="cluster_id"
+          control={control}
+          icon={<ClusterIcon />}
+          errors={errors}
+          options={sortedClusters}
+          defaultValue={clusterLogin}
+          placeholder="Select Cluster"
+          required
+          disabled={isObject(clusterLogin)}
+          showCircleIcon={true}
+        />
 
-      <InputField
-        name="username"
-        type="text"
-        label="Username"
-        placeholder="Enter your Username"
-        register={register}
-        errors={errors}
-        icon={<UserIcon />}
-        required={!isFieldsDisabled}
-        disabled={isFieldsDisabled}
-      />
-      <PasswordField
-        name="password"
-        register={register}
-        errors={errors}
-        watch={watch}
-        required={!isFieldsDisabled}
-        label="Password"
-        disabled={isFieldsDisabled}
-      />
-    </Modal>
+        <InputField
+          name="username"
+          type="text"
+          label="Username"
+          placeholder="Enter your Username"
+          register={register}
+          errors={errors}
+          icon={<UserIcon />}
+          required={!isFieldsDisabled}
+          disabled={isFieldsDisabled}
+        />
+        <PasswordField
+          name="password"
+          register={register}
+          errors={errors}
+          watch={watch}
+          required={!isFieldsDisabled}
+          label="Password"
+          disabled={isFieldsDisabled}
+        />
+      </Modal>
+    </>
   );
 };
 
