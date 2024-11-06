@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
 import { theme } from '../styles';
 
@@ -29,7 +29,7 @@ export const LoaderContainer = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 90%;
+  height: auto;
   background-color: transparent;
 `;
 

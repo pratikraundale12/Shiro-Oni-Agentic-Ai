@@ -65,10 +65,8 @@ const GreyBoxNamespace = styled.div`
 `;
 
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
-  max-height: calc(100vh - 341px);
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
 `;
 
 const SearchContainer = styled.div`
@@ -327,6 +325,7 @@ const Deploy = () => {
                     data={gridData}
                     columns={COLUMNS}
                     onBreadcrumbClick={e => handleSelectNamespace(e.id)}
+                    deployTable={true}
                   />
                 </>
               )}

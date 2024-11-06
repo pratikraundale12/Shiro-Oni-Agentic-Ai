@@ -11,7 +11,9 @@ import { theme } from '../../styles';
 import { Loader, LoaderContainer } from '../Loader';
 
 const TableContainer = styled.div`
-  height: 90%;
+  /* height: 90%; */
+  height: ${props => (props.deployTable ? 'calc(100vh - 475px)' : '83%')};
+  /* height: calc(100vh - 475px); */
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
@@ -35,7 +37,13 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
-export const Table = ({ data, columns, loading, className }) => {
+export const Table = ({
+  data,
+  columns,
+  loading,
+  className,
+  deployTable = false,
+}) => {
   const DATA = { nodes: data || [] };
   const tableTheme = useTheme([
     getTheme(),
@@ -78,7 +86,7 @@ export const Table = ({ data, columns, loading, className }) => {
     return null;
   };
   return (
-    <TableContainer className={className}>
+    <TableContainer className={className} deployTable={deployTable}>
       <CompactTable data={DATA} columns={columns} theme={tableTheme} />
       {getLoader()}
     </TableContainer>
@@ -90,5 +98,6 @@ Table.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.shape({})),
   loading: PropTypes.bool,
   className: PropTypes.string,
+  deployTable: PropTypes.bool,
   controllerModule: PropTypes.bool,
 };
