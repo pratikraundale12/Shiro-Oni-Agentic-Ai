@@ -19,6 +19,7 @@ import {
   Button,
   InputField,
   PasswordField,
+  SelectField,
   SwitchButton,
   SyncUsersSuccess,
 } from '../../shared';
@@ -121,6 +122,17 @@ const StyledSecondButton = styled(Button)`
   }
 `;
 
+const StyledSelectField = styled(SelectField)`
+  margin-bottom: 0.9rem;
+`;
+
+const LabelSelect = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+`;
+
 export const schemaForm1 = Yup.object().shape({
   url: Yup.string().required('LDAP URL is required'),
   loginDn: Yup.string().required('Login DN is required'),
@@ -171,6 +183,7 @@ export const LdapConfig = () => {
 
   // Second form
   const {
+    control,
     register: registerForm2,
     handleSubmit: handleSubmitForm2,
     formState: { errors: errorsForm2 },
@@ -320,6 +333,20 @@ export const LdapConfig = () => {
   const handleBackButtonClick = () => {
     window.history.back();
   };
+  const scopeOptions = [
+    {
+      label: 'Subtree',
+      value: 'sub',
+    },
+    {
+      label: 'One',
+      value: 'one',
+    },
+    {
+      label: 'Base',
+      value: 'base',
+    },
+  ];
   return (
     <Wrapper>
       {loading && <FullPageLoader loading={loading} />}
@@ -473,16 +500,20 @@ export const LdapConfig = () => {
                 disabled={!secondFormState || !ldapInitialConfig}
               />
             </div>
-            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-              <InputField
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-1 mb-2">
+              <LabelSelect className="mb-3">Select Scope</LabelSelect>
+              <StyledSelectField
                 name="scope"
-                type="text"
-                register={registerForm2}
-                label="Scope"
-                placeholder="Enter Scope"
-                icon={<QRIcons />}
-                errors={errorsForm2}
+                size="sm"
+                options={scopeOptions || []}
+                control={control}
+                placeholder="Select Scope"
+                title="Select Status"
                 disabled={!secondFormState || !ldapInitialConfig}
+                defaultValue={{
+                  label: 'One',
+                  value: 'one',
+                }}
               />
             </div>
           </InputFieldFlex>
