@@ -133,6 +133,7 @@ const SelectField = ({
   handleCreateOption,
   optionEntity = '',
   showCircleIcon = false,
+  defaultValue = null,
   ...props
 }) => {
   const animatedComponents = makeAnimated();
@@ -301,6 +302,7 @@ const SelectField = ({
       <Controller
         control={control}
         name={name}
+        defaultValue={defaultValue ? defaultValue.value : null}
         render={({ field: { onChange, value, ref } }) => (
           <>
             {label && (
@@ -317,7 +319,8 @@ const SelectField = ({
               value={
                 isMulti
                   ? options.filter(option => value?.includes(option.value))
-                  : options.find(option => option.value === value)
+                  : options.find(option => option.value === value) ||
+                    defaultValue
               }
               placeholder={placeholder}
               theme={theme.reactSelecttheme}
