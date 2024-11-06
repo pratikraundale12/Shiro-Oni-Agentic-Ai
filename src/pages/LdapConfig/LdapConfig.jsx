@@ -277,6 +277,8 @@ export const LdapConfig = () => {
       userDn: data?.userDn,
       userUniqueIdentifier: data?.userUniqueIdentifier,
       groupUniqueIdentifier: data?.groupUniqueIdentifier,
+      ...(data?.filter && { filter: data.filter }),
+      ...(data?.scope && { scope: data.scope }),
     };
 
     dispatch(RolesActions.fetchLdap({ ...payload }));
@@ -454,6 +456,30 @@ export const LdapConfig = () => {
                 register={registerForm2}
                 label="Group Unique Identifier"
                 placeholder="Enter Group Identifier"
+                icon={<QRIcons />}
+                errors={errorsForm2}
+                disabled={!secondFormState || !ldapInitialConfig}
+              />
+            </div>
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="filter"
+                type="text"
+                register={registerForm2}
+                label="Filter"
+                placeholder="Enter Filter"
+                icon={<QRIcons />}
+                errors={errorsForm2}
+                disabled={!secondFormState || !ldapInitialConfig}
+              />
+            </div>
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="scope"
+                type="text"
+                register={registerForm2}
+                label="Scope"
+                placeholder="Enter Scope"
                 icon={<QRIcons />}
                 errors={errorsForm2}
                 disabled={!secondFormState || !ldapInitialConfig}
