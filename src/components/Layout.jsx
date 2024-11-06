@@ -10,6 +10,8 @@ import { TextButton } from '../shared';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 
 const Container = styled.div`
+  max-height: 100vh;
+  overflow-y: auto;
   min-height: 100vh;
   padding: 0px 15px;
 `;

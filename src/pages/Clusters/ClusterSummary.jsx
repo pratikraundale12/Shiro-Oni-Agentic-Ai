@@ -6,7 +6,7 @@ import { KDFM, REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
 import { useGlobalContext } from '../../utils';
 
 const Container = styled.div`
-  height: 86%;
+  height: 100%;
 `;
 
 const ActionTd = styled.div`

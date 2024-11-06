@@ -38,14 +38,16 @@ import { Table } from './Table';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
-  height: inherit;
+  height: 100%;
   display: flex;
   flex-direction: column;
 `;
 
 const TableContainer = styled.div`
-  min-height: ${props => (props.module === 'nodes' ? '590px' : '690px')};
-  max-height: ${props => (props.module === 'nodes' ? '590px' : '690px')};
+  min-height: ${props =>
+    props.module === 'nodes' ? 'calc(100% - 160px);' : 'auto'};
+  max-height: ${props =>
+    props.module === 'nodes' ? 'calc(100% - 160px);' : 'auto'};
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
@@ -206,6 +208,7 @@ export const Grid = ({
           height: 52px;
           background-color: ${theme.colors.lightGrey} !important;
           color:  ${theme.colors.darker} !important;
+          z-index:2
         }
 
         td {

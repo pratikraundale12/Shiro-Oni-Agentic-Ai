@@ -2,6 +2,7 @@
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   ConfirmScheduleDeploymentIcon,
@@ -27,7 +28,6 @@ import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const SearchContainer = styled.div`
   position: relative;
