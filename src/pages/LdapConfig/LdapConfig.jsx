@@ -336,7 +336,7 @@ export const LdapConfig = () => {
   const scopeOptions = [
     {
       label: 'Subtree',
-      value: 'subtree',
+      value: 'sub',
     },
     {
       label: 'One',
@@ -511,8 +511,8 @@ export const LdapConfig = () => {
                 title="Select Status"
                 disabled={!secondFormState || !ldapInitialConfig}
                 defaultValue={{
-                  label: 'Subtree',
-                  value: 'subtree',
+                  label: 'One',
+                  value: 'one',
                 }}
               />
             </div>
