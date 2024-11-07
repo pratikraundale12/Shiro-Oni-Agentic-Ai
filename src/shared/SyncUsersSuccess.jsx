@@ -2,6 +2,8 @@
 import styled from 'styled-components';
 import { RightCircleIcon } from '../assets';
 import { Modal } from './Modal';
+import { useDispatch } from 'react-redux';
+import { RolesActions } from '../store';
 
 const Icon = styled.div`
   align-items: center !important;
@@ -36,6 +38,11 @@ const Para = styled.p`
 `;
 
 export const SyncUsersSuccess = ({ successTest, setSuccessTest }) => {
+  const dispatch = useDispatch();
+  const handleSubmit = () => {
+    dispatch(RolesActions.displayGroup(true));
+    setSuccessTest(false);
+  };
   return (
     <Modal
       title="Sync Successful"
@@ -43,7 +50,7 @@ export const SyncUsersSuccess = ({ successTest, setSuccessTest }) => {
       onRequestClose={() => setSuccessTest(false)}
       size="sm"
       primaryButtonText="Continue"
-      onSubmit={() => setSuccessTest(false)}
+      onSubmit={() => handleSubmit()}
     >
       <>
         <Icon>
