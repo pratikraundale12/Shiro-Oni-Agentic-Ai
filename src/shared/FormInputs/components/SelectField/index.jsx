@@ -49,7 +49,7 @@ const Container = styled.div`
       max-height: calc(100vh - 446px) !important;
     }
     @media (max-width: 1200px) {
-      max-height: calc(100vh - 400px) !important;
+      max-height: calc(100vh - 350px) !important;
     }
   }
 `;
