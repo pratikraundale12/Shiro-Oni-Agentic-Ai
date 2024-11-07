@@ -47,7 +47,6 @@ const Container = styled.div`
     // Media query for smaller screens
     @media (max-width: 1400px) {
       max-height: calc(100% - 446px) !important;
-      z-index: 1000;
     }
   }
 `;
