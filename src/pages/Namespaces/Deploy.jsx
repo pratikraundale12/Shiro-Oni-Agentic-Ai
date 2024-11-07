@@ -198,9 +198,9 @@ const Deploy = () => {
         return (
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <RadioField
-              defaultChecked={formData.namespaceId}
+              defaultChecked={formData?.namespaceId === item?.id}
               onChange={() =>
-                dispatch(NamespacesActions.setNamespaceId(item.id))
+                dispatch(NamespacesActions.setNamespaceId(item?.id))
               }
             />
           </div>
