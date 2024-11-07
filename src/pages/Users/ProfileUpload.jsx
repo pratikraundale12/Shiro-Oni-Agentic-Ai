@@ -69,7 +69,11 @@ export const ProfileUpload = ({ name, control, watch, url, setValue }) => {
           const file = event.target.files[0];
           event.target.value = null;
           if (file && validImageTypes.includes(file.type)) {
-            onChange(file);
+            if (file.size < 2 * 1024 * 1024) {
+              onChange(file);
+            } else {
+              toast.error('Please upload a valid image below 2 MB');
+            }
           } else {
             toast.error('Please upload a valid image');
           }
