@@ -122,7 +122,7 @@ export const NamespacesActions = {
     `${prefix}setChildLevelDeployProcessorData`
   ),
 };
-//childLevelDeployProcessorData
+//
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -516,7 +516,7 @@ const setChildLevelDeployProcessorData = (state, { payload }) => {
     childLevelDeployProcessorData: payload,
   };
 };
-//setChildLevelDeployProcessorData
+//
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -625,4 +625,4 @@ export const namespacesReducer = createReducer(
       );
   }
 );
-//setChildLevelDeployProcessorData
+//
