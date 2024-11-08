@@ -17,11 +17,13 @@ import {
   AuthenticationSelectors,
   GridActions,
   RolesActions,
+  RolesSelectors,
   UsersActions,
 } from '../../store';
 import { deleteUserApi } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import { AddUserModal } from './AddUserModal';
+import { isEmpty } from 'lodash';
 
 const ActionTd = styled.div`
   display: flex;
@@ -35,6 +37,7 @@ export const ListUsers = () => {
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const { state, setState } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
+  const roleData = useSelector(RolesSelectors.getRoles);
 
   const getActionsMenu = item => (
     <div>
@@ -131,7 +134,9 @@ export const ListUsers = () => {
   };
 
   useEffect(() => {
-    dispatch(RolesActions.fetchRoles());
+    if (isEmpty(roleData)) {
+      dispatch(RolesActions.fetchRoles());
+    }
   }, [dispatch]);
 
   return (

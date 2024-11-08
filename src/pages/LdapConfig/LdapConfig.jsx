@@ -45,6 +45,7 @@ const Title = styled.h3`
   font-weight: 500;
   font-size: 20px;
   line-height: 27.24px;
+  margin-bottom: 0px !important;
 `;
 
 const Flex = styled.div`
