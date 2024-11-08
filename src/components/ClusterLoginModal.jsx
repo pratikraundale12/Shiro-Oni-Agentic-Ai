@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { isObject } from 'lodash';
+import { isEmpty, isObject } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -36,7 +36,7 @@ export const ClusterLoginModal = () => {
   const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const clusters = useSelector(ClustersSelectors.getAllClustersList);
-
+  console.log(clusters, clusters);
   const sortClustersByStatus = clusters => {
     const clustersCopy = [...clusters];
     const clustersArray = clustersCopy.filter(
@@ -150,7 +150,9 @@ export const ClusterLoginModal = () => {
   }, [clusterLogin, setValue, reset]);
 
   useEffect(() => {
-    dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
+    if (isEmpty(clusters)) {
+      dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
+    }
   }, [dispatch]);
   const onSwitchCluster = () => {
     const clusterData = JSON.parse(

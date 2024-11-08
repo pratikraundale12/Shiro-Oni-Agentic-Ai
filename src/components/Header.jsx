@@ -91,6 +91,9 @@ const Title = styled.h2`
   font-size: 26px;
   font-weight: 500;
   text-transform: capitalize;
+  @media screen and (max-width: 1400px) {
+    font-size: 20px !important;
+  }
 
   @media (max-width: 890px) {
     display: ${props => (props.isOpenSidebar ? 'none' : 'block')};
