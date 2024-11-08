@@ -36,7 +36,6 @@ export const ClusterLoginModal = () => {
   const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const clusters = useSelector(ClustersSelectors.getAllClustersList);
-  console.log(clusters, clusters);
   const sortClustersByStatus = clusters => {
     const clustersCopy = [...clusters];
     const clustersArray = clustersCopy.filter(
