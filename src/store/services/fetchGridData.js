@@ -1,14 +1,14 @@
 import debounce from 'lodash/debounce';
 import { toast } from 'react-toastify';
+import { DEBOUNCE_DELAY } from '../../constants';
 import {
-  getClustersList,
   getClustersAccess,
+  getClustersList,
   getNamespacesList,
   getNodeList,
-  getUsersList,
   getPoliciesAccess,
+  getUsersList,
 } from '../apis';
-import { DEBOUNCE_DELAY } from '../../constants';
 
 const fetchListData = {
   users: getUsersList,
