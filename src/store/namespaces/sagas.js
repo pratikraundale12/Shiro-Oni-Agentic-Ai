@@ -765,6 +765,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
   });
   if (response.ok) {
     toast.success(' Added Controller Service Successfully');
+    yield put(NamespacesActions.getControllerServiceList());
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }

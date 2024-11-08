@@ -144,9 +144,6 @@ const AddControllerServiceModal = () => {
       NamespacesActions.addControllerServiceRootLevel({ name, type, bundle })
     );
     closeModal();
-    setTimeout(() => {
-      dispatch(NamespacesActions.getControllerServiceList());
-    }, 500);
   };
   return (
     <>
