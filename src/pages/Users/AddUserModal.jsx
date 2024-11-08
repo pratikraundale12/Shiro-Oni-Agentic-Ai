@@ -342,7 +342,12 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
-                    disabled={state.selectedItem}
+                    disabled={
+                      currentUserData?.role === 'superadmin' &&
+                      currentUserData?.id === state?.selectedItem?.id
+                        ? false
+                        : state.selectedItem
+                    }
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
