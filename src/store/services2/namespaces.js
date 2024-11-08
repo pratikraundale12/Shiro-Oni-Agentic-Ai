@@ -199,6 +199,9 @@ export const namespacesAPI = api => {
       `controller-services/${clusterId}/service/${controllerId}`,
       payloadData
     );
+  const fetchNamespacesForDestiationCluster = ({ clusterId, namespaceId }) => {
+    return api.get(`/clusters/${clusterId}/namespaces${`/${namespaceId}`}`);
+  };
 
   return {
     fetchNamespaces,
@@ -227,5 +230,6 @@ export const namespacesAPI = api => {
     addControllerServicePropertyByDropdown,
     changeStatusControllerService,
     deleteControllerService,
+    fetchNamespacesForDestiationCluster,
   };
 };

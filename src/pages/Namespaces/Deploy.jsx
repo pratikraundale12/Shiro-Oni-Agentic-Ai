@@ -254,6 +254,16 @@ const Deploy = () => {
   if (checkDestCluster.mode === 'upgrade')
     history.push('/process-group/upgrade');
 
+  useEffect(() => {
+    if (formData?.namespaceId) {
+      dispatch(
+        NamespacesActions.fetchNamespacesForDestiationCluster(
+          formData?.namespaceId
+        )
+      );
+    }
+  }, [formData?.namespaceId]);
+
   return (
     <div>
       <FullPageLoader loading={loading} />

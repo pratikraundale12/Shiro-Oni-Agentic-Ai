@@ -115,8 +115,14 @@ export const NamespacesActions = {
   setParameterContextListAtDeploy: createAction(
     `${prefix}setParameterContextListAtDeploy`
   ),
+  fetchNamespacesForDestiationCluster: createAction(
+    `${prefix}fetchNamespacesForDestiationCluster`
+  ),
+  setChildLevelDeployProcessorData: createAction(
+    `${prefix}setChildLevelDeployProcessorData`
+  ),
 };
-
+//childLevelDeployProcessorData
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -175,6 +181,7 @@ export const NAMESPACES_INITIAL_STATE = {
   scheduleNamespaceVariables: {},
   namespaceSummaryLoadingState: false,
   parameterContextListAtDeploy: {},
+  childLevelDeployProcessorData: {},
   // parameterEditParent: false,
 };
 
@@ -227,6 +234,8 @@ export const NamespacesSelectors = {
     state.namespaces.namespaceSummaryLoadingState,
   getParameterContextListAtDeploy: state =>
     state.namespaces.parameterContextListAtDeploy,
+  getChildLevelDeployProcessorData: state =>
+    state.namespaces.childLevelDeployProcessorData,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -501,7 +510,13 @@ const setParameterContextListAtDeploy = (state, { payload }) => {
     parameterContextListAtDeploy: payload,
   };
 };
-//setParameterContextListAtDeploy
+const setChildLevelDeployProcessorData = (state, { payload }) => {
+  return {
+    ...state,
+    childLevelDeployProcessorData: payload,
+  };
+};
+//setChildLevelDeployProcessorData
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -603,7 +618,11 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setParameterContextListAtDeploy,
         setParameterContextListAtDeploy
+      )
+      .addCase(
+        NamespacesActions.setChildLevelDeployProcessorData,
+        setChildLevelDeployProcessorData
       );
   }
 );
-//
+//setChildLevelDeployProcessorData

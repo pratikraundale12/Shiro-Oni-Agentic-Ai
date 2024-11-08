@@ -927,6 +927,37 @@ export function* deleteControllerService(api, { payload }) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
+
+export function* fetchNamespacesForDestiationCluster(api, { payload }) {
+  const selectedDestCluster = yield select(
+    NamespacesSelectors.getSelectedDestCluster
+  );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const destClusterToken = clusters?.find(
+    cluster => cluster.id === selectedDestCluster?.value
+  );
+  api.headers['x-cluster-id'] = destClusterToken?.id;
+  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchNamespacesForDestiationCluster',
+    loadingSection: 'fetchNamespacesForDestiationCluster',
+    apiMethod: api.fetchNamespacesForDestiationCluster,
+    apiParams: [
+      {
+        clusterId: selectedDestCluster?.id,
+        namespaceId: payload,
+      },
+    ],
+    successAction: NamespacesActions.fetchNamespacesSuccess,
+  });
+  if (response.ok) {
+    yield put(
+      NamespacesActions.setChildLevelDeployProcessorData(response?.data)
+    );
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
 //deleteControllerService
 export function* namespacesSagas(api) {
   yield all([
@@ -1009,6 +1040,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.deleteControllerService,
       deleteControllerService,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchNamespacesForDestiationCluster,
+      fetchNamespacesForDestiationCluster,
       api
     ),
   ]);

@@ -174,6 +174,10 @@ const Upgrade = () => {
   );
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
+  const childLevelDeployProcessorData = useSelector(
+    NamespacesSelectors.getChildLevelDeployProcessorData
+  );
+
   const formData = useSelector(NamespacesSelectors.getFormData);
   const gridDataDest = useSelector(state =>
     GridSelectors.getGridData(state, 'destNamespaces')
@@ -193,6 +197,14 @@ const Upgrade = () => {
     color: 'teal',
   }));
 
+  const childLevelSortedData = childLevelDeployProcessorData?.data?.map(
+    element => ({
+      ...element?.position,
+      width: 80,
+      height: 40,
+      color: 'teal',
+    })
+  );
   useEffect(() => {
     if (selectedDestCluster) {
       dispatch(NamespacesActions.fetchDestNamespaces);
@@ -291,9 +303,9 @@ const Upgrade = () => {
   const isStateStale =
     checkDestCluster.state === 'LOCALLY_MODIFIED_AND_STALE' ||
     checkDestCluster.state === 'LOCALLY_MODIFIED';
-
+  const baseData = formData?.namespaceId ? childLevelSortedData : sortedArray;
   const updatedDataForGraph = [
-    ...sortedArray,
+    ...baseData,
     ...[
       {
         x: xStateCoordinate || formData?.position?.x,
