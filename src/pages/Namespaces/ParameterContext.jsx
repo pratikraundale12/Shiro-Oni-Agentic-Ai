@@ -37,6 +37,7 @@ const ParameterContext = ({
   setIsParameterContextOpen,
   isParameterContextOpen,
   parameterContextId = '',
+  getParamerterContext,
 }) => {
   const [loading, setLoading] = useState(false);
   const [selectedParentContextId, setSelectedParentContextId] = useState('');
@@ -181,9 +182,6 @@ const ParameterContext = ({
                   })
                 );
                 dispatch(NamespacesActions.setDeployedModal());
-                // if (isParameterContextOpen?.schedule) {
-                //   setIsParameterContextOpen({ isOpen: false, schedule: false });
-                // }
               }}
             >
               <ArrowIcon />
@@ -205,7 +203,12 @@ const ParameterContext = ({
     setLoading(false);
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
     setIsParameterContextOpen({ isOpen: false, schedule: false });
-    // close modal
+    dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
+    setTimeout(() => {
+      // setIsParameterContextOpen({ isOpen: true, schedule: false });
+      dispatch(NamespacesActions.setNamespaceSummaryLoadingState(false));
+      getParamerterContext();
+    }, 1000);
   };
 
   const backSchedule = () => {
@@ -218,9 +221,6 @@ const ParameterContext = ({
     if (isParentEdit?.parent) {
       dispatch(NamespacesActions.fetchParameterContext());
     }
-    // else {
-    //   setTableStateData([...schduleParameterData, ...newlyAddParameters]);
-    // }
   }, [isParentEdit?.id]);
 
   useEffect(() => {
@@ -269,7 +269,6 @@ const ParameterContext = ({
       dispatch(
         NamespacesActions.setScheduleNamespaceParameterContext([...updatedData])
       );
-      // setTableStateData([...updatedData, ...newlyAddParameters]); setScheduleNamespaceParameterContext
     }
   }, [parameterDetails, isOpen, newlyAddParameters]);
   return (

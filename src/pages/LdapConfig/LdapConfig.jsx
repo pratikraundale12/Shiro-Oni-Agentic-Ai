@@ -508,7 +508,7 @@ export const LdapConfig = () => {
                 options={scopeOptions || []}
                 control={control}
                 placeholder="Select Scope"
-                title="Select Status"
+                title="Select Scope"
                 disabled={!secondFormState || !ldapInitialConfig}
                 defaultValue={{
                   label: 'One',
