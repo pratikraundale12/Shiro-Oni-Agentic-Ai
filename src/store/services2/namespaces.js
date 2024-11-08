@@ -32,9 +32,10 @@ export const namespacesAPI = api => {
   const getVariableList = ({ clusterId, namespaceId }) =>
     api.get(`clusters/${clusterId}/namespaces/${namespaceId}/variables`);
   const getAllRootControllerServiceNamespace = ({ clusterId, namespaceId }) => {
-    const url = namespaceId
-      ? `controller-services/${clusterId}/namespace/${namespaceId}`
-      : `controller-services/${clusterId}/namespace`;
+    const url =
+      namespaceId && window?.location?.pathname != '/controller-service'
+        ? `controller-services/${clusterId}/namespace/${namespaceId}`
+        : `controller-services/${clusterId}/namespace`;
 
     return api.get(url);
   };
