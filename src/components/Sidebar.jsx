@@ -92,6 +92,9 @@ export const Item = styled.li`
   > svg {
     margin-right: 20px;
   }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 
 export const KDFMVersion = styled.div`
@@ -99,6 +102,9 @@ export const KDFMVersion = styled.div`
   font-size: 14px;
   font-weight: 500;
   margin-top: auto;
+  @media screen and (max-width: 1400px) {
+    font-size: 12px !important;
+  }
 `;
 
 const StyleButton = styled.div`

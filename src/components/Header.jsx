@@ -111,6 +111,9 @@ const Name = styled.span`
   font-size: 18px;
   font-weight: 500;
   text-transform: capitalize;
+  @media screen and (max-width: 1400px) {
+    font-size: 16px !important;
+  }
 `;
 
 const Role = styled.span`
@@ -186,6 +189,9 @@ const NameDiv = styled.div`
   font-size: 14px;
   font-weight: 500;
   line-height: 24px;
+  @media screen and (max-width: 1400px) {
+    font-size: 12px !important;
+  }
 `;
 const StatusDiv = styled.div`
   width: 4px;

@@ -20,6 +20,9 @@ const EnableClusterText = styled.div`
   font-weight: 500;
   line-height: 19.36px;
   cursor: pointer;
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 
 export const EnableClusterRender = ({ item }) => {

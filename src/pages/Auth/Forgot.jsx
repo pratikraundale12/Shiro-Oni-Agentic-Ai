@@ -50,6 +50,9 @@ const BackButton = styled.button`
   span {
     margin-left: 10px;
   }
+  @media screen and (max-width: 1400px) {
+    font-size: 18px !important;
+  }
 `;
 
 const Title = styled.p`
