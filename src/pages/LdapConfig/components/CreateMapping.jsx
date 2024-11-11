@@ -77,7 +77,6 @@ export const CreateMapping = ({
         getLdapGroupAPI(),
         getRolesAPI(),
       ]);
-      console.log(ldapResponse, 'ldapResponse');
 
       if (ldapResponse?.status === 200) {
         setLdapList(ldapResponse.data.groups);
