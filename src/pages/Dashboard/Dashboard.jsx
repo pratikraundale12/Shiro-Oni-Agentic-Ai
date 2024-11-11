@@ -51,6 +51,9 @@ const QuickInsightHeadingText = styled.h4`
   font-weight: 600;
   line-height: 27.24px;
   text-align: left;
+  @media screen and (max-width: 1400px) {
+    font-size: 16px !important;
+  }
 `;
 
 const InsightIconContiner = styled.div`

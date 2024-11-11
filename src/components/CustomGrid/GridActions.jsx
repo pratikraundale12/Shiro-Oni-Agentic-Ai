@@ -54,6 +54,9 @@ const Title = styled.h3`
   align-items: center;
   gap: 0.5rem;
   margin: 0;
+  @media screen and (max-width: 1400px) {
+    font-size: 16px !important;
+  }
 `;
 
 const SearchContainer = styled.div`
@@ -134,6 +137,11 @@ const DropdownContainer = styled.div`
 
 const ImageContainer = styled.div`
   margin-bottom: 0.5rem;
+  @media screen and (max-width: 1400px) {
+    & svg {
+      height: 20px;
+    }
+  }
 `;
 
 const StyledGoBackButton = styled.button`

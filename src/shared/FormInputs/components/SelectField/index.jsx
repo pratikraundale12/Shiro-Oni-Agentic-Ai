@@ -41,12 +41,13 @@ const Container = styled.div`
   }
   // Wrapper for the select component
 
-  .css-uvrstl {
-    max-height: calc(100% - 810px) !important;
-
+  .react-select__menu-list {
+    max-height: 120px !important;
+    height: 120px !important;
     // Media query for smaller screens
     @media (max-width: 1400px) {
-      max-height: calc(100% - 446px) !important;
+      max-height: 120px !important;
+      height: 120px !important;
     }
   }
 `;
