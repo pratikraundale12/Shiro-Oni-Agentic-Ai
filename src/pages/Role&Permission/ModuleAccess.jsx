@@ -346,8 +346,12 @@ export const ModuleAccess = () => {
   };
 
   useEffect(() => {
-    dispatch(RolesActions.fetchRoles());
-    dispatch(PoliciesActions.fetchPolicies());
+    if (isEmpty(roles)) {
+      dispatch(RolesActions.fetchRoles());
+    }
+    if (isEmpty(policies)) {
+      dispatch(PoliciesActions.fetchPolicies());
+    }
   }, [dispatch]);
 
   useEffect(() => {

@@ -34,6 +34,7 @@ import {
 import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
 import { CreateMapping } from './components/CreateMapping';
 import SelectCellRender from './components/SelectCellRender';
+import { isEmpty } from 'lodash';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -171,7 +172,6 @@ export const LdapConfig = () => {
   const roles = useSelector(RolesSelectors.getRoles);
   const ldapGroup = useSelector(RolesSelectors.getLdapGroup);
   const displayList = useSelector(RolesSelectors.getDiplayData);
-
   const {
     register: registerForm1,
     handleSubmit: handleSubmitForm1,
@@ -324,8 +324,10 @@ export const LdapConfig = () => {
   };
 
   useEffect(() => {
-    dispatch(RolesActions.fetchRoles());
-  }, [dispatch]);
+    if (isEmpty(roles)) {
+      dispatch(RolesActions.fetchRoles());
+    }
+  }, [dispatch, roles]);
 
   useEffect(() => {
     dispatch(RolesActions.displayGroup(true));
