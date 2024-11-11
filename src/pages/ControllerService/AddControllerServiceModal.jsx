@@ -1,12 +1,12 @@
 /*eslint-disable*/
 import React, { useEffect, useState } from 'react';
-import { Modal } from '../../shared';
 import { useDispatch, useSelector } from 'react-redux';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
-import { Table } from '../../components';
 import styled from 'styled-components';
-import { theme } from '../../styles';
 import { CrossIcon, SmallSearchIcon } from '../../assets';
+import { Table } from '../../components';
+import { Modal } from '../../shared';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { theme } from '../../styles';
 
 const TextDisplay = styled.div`
   cursor: pointer;
@@ -73,6 +73,9 @@ const Search = styled.input`
 
   &:focus-visible {
     outline: none;
+  }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
   }
 `;
 

@@ -28,11 +28,16 @@ const StyledButton = styled.button`
   text-overflow: ellipsis;
   max-width: 220px;
   z-index: 3;
+  font-size: 14px;
+  font-weight: 400;
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 const FlowNameDiv = styled.div`
   color: ${props => props.theme.colors.darker};
   font-family: ${props => props.theme.fontNato};
-  font-size: ${props => props.theme.size.lg};
+  font-size: 16px;
   font-weight: 400;
   text-transform: ${props => (props.capitalizeText ? 'capitalize' : 'none')};
   background: none;
@@ -42,6 +47,9 @@ const FlowNameDiv = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 185px;
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 
 const Flex = styled.div`

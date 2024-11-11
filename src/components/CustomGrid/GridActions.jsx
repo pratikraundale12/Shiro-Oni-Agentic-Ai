@@ -83,6 +83,9 @@ const Search = styled.input`
   &:focus-visible {
     outline: none;
   }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 
 const StyledSelectField = styled(SelectField)`
