@@ -15,7 +15,7 @@ import FieldErrorMessage from '../FieldErrorMessage';
 const Container = styled.div`
   position: relative;
   width: 100%;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
 
   path {
     fill: ${props => props.theme.colors.darkGrey1};
@@ -43,11 +43,11 @@ const Container = styled.div`
 
   .react-select__menu-list {
     max-height: 120px !important;
-    height: 120px !important;
+    height: 100% !important;
     // Media query for smaller screens
     @media (max-width: 1400px) {
       max-height: 120px !important;
-      height: 120px !important;
+      height: 100% !important;
     }
   }
 `;

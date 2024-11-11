@@ -84,6 +84,9 @@ const RedirectionSection = styled.div`
   text-align: left;
   color: #757575;
   margin-top: 10px;
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 
 const RedirectionText = styled.button`
