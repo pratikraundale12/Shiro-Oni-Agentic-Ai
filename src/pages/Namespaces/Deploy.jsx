@@ -47,6 +47,17 @@ const MainTitleHfour = styled.h4`
   font-weight: 600;
   line-height: 27.24px;
   color: #444445;
+  @media screen and (max-width: 1400px) {
+    font-size: 16px !important;
+  }
+`;
+const ImageContainer = styled.div`
+  margin-bottom: 0.5rem;
+  @media screen and (max-width: 1400px) {
+    & svg {
+      height: 20px;
+    }
+  }
 `;
 
 const BreadcrumbContainer = styled.div`
@@ -272,9 +283,9 @@ const Deploy = () => {
       <FullPageLoader loading={loading} />
       <TopTitleBar className="d-flex mb-3">
         <MainTitleDiv className="d-flex">
-          <div>
+          <ImageContainer>
             <TodoIcon />
-          </div>
+          </ImageContainer>
           <MainTitleHfour className="mb-0">
             {KDFM.DEPLOY_NAMESPACE}
           </MainTitleHfour>
