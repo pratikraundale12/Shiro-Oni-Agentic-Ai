@@ -47,6 +47,9 @@ const Title = styled.h3`
   font-size: 20px;
   line-height: 27.24px;
   margin-bottom: 0px !important;
+  @media screen and (max-width: 1400px) {
+    font-size: 18px !important;
+  }
 `;
 
 const Flex = styled.div`
@@ -57,6 +60,11 @@ const Flex = styled.div`
 
 const ImageContainer = styled.div`
   margin-bottom: 0.5rem;
+  @media screen and (max-width: 1400px) {
+    & svg {
+      height: 20px;
+    }
+  }
 `;
 
 const InputFieldFlex = styled.div`

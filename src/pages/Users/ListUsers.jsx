@@ -2,6 +2,7 @@ import { React, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
+import { isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { DeleteDustbinIcon, DeleteSmallIcon, PencilIcon } from '../../assets';
 import {
@@ -23,7 +24,6 @@ import {
 import { deleteUserApi } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import { AddUserModal } from './AddUserModal';
-import { isEmpty } from 'lodash';
 
 const ActionTd = styled.div`
   display: flex;
@@ -87,6 +87,7 @@ export const ListUsers = () => {
         <TextRender
           text={`${item?.first_name || ''} ${item?.middle_name || ''} ${item?.last_name || ''}`}
           capitalizeText={false}
+          toolTip={false}
         />
       ),
     },
@@ -94,19 +95,23 @@ export const ListUsers = () => {
       label: KDFM.USERNAME,
       width: '20%',
       renderCell: item => (
-        <TextRender text={item.username || ''} capitalizeText={false} />
+        <TextRender
+          text={item.username || ''}
+          capitalizeText={false}
+          toolTip={false}
+        />
       ),
     },
     {
       label: KDFM.EMAIL,
       width: '20%',
       renderCell: item => (
-        <TextRender text={item.email} capitalizeText={false} />
+        <TextRender text={item.email} capitalizeText={false} toolTip={false} />
       ),
     },
     {
       label: KDFM.ROLE,
-      renderCell: item => <TextRender text={item.role} />,
+      renderCell: item => <TextRender text={item.role} toolTip={false} />,
     },
     {
       label: KDFM.STATUS,

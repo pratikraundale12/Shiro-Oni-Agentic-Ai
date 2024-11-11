@@ -42,7 +42,19 @@ const MainTitleHfour = styled.h4`
   line-height: 27.24px;
   color: #444445;
   text-transform: capitalize;
+  @media screen and (max-width: 1400px) {
+    font-size: 16px !important;
+  }
 `;
+const ImageContainer = styled.div`
+  margin-bottom: 0.5rem;
+  @media screen and (max-width: 1400px) {
+    & svg {
+      height: 20px;
+    }
+  }
+`;
+
 const GreyBoxNamespace = styled.div`
   background-color: #f5f7fa;
   padding: 22px 19px;
@@ -340,9 +352,9 @@ const Upgrade = () => {
       />
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
-          <div>
+          <ImageContainer>
             <TodoIcon />
-          </div>
+          </ImageContainer>
           <MainTitleHfour className="mb-0">
             {`${
               checkDestCluster.mode === 'upgrade'

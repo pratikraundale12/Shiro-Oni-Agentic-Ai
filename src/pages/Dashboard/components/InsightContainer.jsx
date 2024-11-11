@@ -1,9 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
-  height: fit-content;
+  /* height: fit-content; */
   padding-left: 8px;
   padding-right: 8px;
 `;
@@ -17,6 +17,7 @@ const InnerContainer = styled.div`
   color: #444445;
   background-color: ${props => props.backgroundCss || 'white'};
   position: relative;
+  height: 100%;
 `;
 
 const IconContainer = styled.div`
