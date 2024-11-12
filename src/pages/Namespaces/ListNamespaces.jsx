@@ -216,6 +216,7 @@ export const ListNamespaces = () => {
             onClick={() => {
               setIsAuditLogOpen(true);
               setSelectedRowId(item?.id);
+              dispatch(NamespacesActions.setSourceNamespaceId(item.id));
             }}
             style={{
               background: 'none',

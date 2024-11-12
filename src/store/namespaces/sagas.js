@@ -628,6 +628,9 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
 }
 
 export function* fetchNamespaceAudit(api) {
+  const selectedNamespaceId = yield select(
+    NamespacesSelectors.getSelectedSourceNamespace
+  );
   const response = yield call(requestSaga, {
     errorSection: 'fetchNamespaceAudit',
     loadingSection: 'fetchNamespaceAudit',
@@ -635,7 +638,7 @@ export function* fetchNamespaceAudit(api) {
     apiParams: [
       {
         params: {
-          entity: 'Process Group',
+          recordId: selectedNamespaceId,
         },
         payload: {},
       },

@@ -28,8 +28,13 @@ const COLUMNS = [
   {
     label: KDFM.MESSAGE,
     renderCell: item => (
-      <TextRender text={item.message || KDFM.NA} toolTip={false} />
+      <TextRender
+        text={item.message || KDFM.NA}
+        capitalizeText={false}
+        toolTip={false}
+      />
     ),
+    width: '25%',
   },
   {
     label: KDFM.STATUS,
