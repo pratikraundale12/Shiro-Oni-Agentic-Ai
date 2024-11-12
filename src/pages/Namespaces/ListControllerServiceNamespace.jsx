@@ -132,7 +132,6 @@ export const ListControllerService = () => {
   const [updatedData, setUpdatedData] = useState([]);
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const listData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
@@ -266,13 +265,6 @@ export const ListControllerService = () => {
   useEffect(() => {
     dispatch(NamespacesActions.getControllerServiceList());
   }, [dispatch, modalOpenState, selectedCluster]);
-  useEffect(() => {
-    if (isEmpty(filteredModulesData)) {
-      setLoading(true);
-    } else {
-      setLoading(false);
-    }
-  }, [filteredModulesData]);
 
   const handleSettingClick = item => {
     setSelectedItemFromList(item);
@@ -346,7 +338,6 @@ export const ListControllerService = () => {
       <Table
         data={filteredModulesData || []}
         columns={COLUMNS}
-        loading={loading}
         controllerModule={true}
       />
 
