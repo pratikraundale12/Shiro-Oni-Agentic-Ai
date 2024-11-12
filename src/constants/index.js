@@ -75,7 +75,8 @@ export const MODULE_LIST_MAP = [
   { label: 'All', value: 'all' },
   { label: 'Cluster', value: 'Cluster' },
   { label: 'Registry', value: 'Registry' },
-  { label: 'Process Group', value: 'Process Group' }, // TODO: change it to Process Group
+  { label: 'Process Group', value: 'Process Group' },
+  { label: 'Controller Services', value: 'Controller Services' },
   { label: 'User', value: 'User' },
 ];
 
