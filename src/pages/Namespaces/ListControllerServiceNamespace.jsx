@@ -225,7 +225,7 @@ export const ListControllerService = () => {
     {
       label: 'Scope',
       renderCell: item => item?.scope,
-      width: '15%',
+      width: '11%',
     },
     {
       label: 'Actions',
@@ -259,7 +259,7 @@ export const ListControllerService = () => {
             )}
         </>
       ),
-      width: '10%',
+      width: '14%',
     },
   ];
 
