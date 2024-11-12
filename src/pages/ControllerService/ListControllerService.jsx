@@ -52,6 +52,9 @@ const Search = styled.input`
   &:focus-visible {
     outline: none;
   }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 const HeadingStyle = styled.h3`
   font-family: 'Nato Sans', sans-serif;
