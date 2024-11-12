@@ -19,7 +19,9 @@ export function* createScheduleDeployment(api, { payload }) {
     yield put(SchedularActions.setScheduleDeployModal());
     yield call(history.push, '/schedule-deployment');
     yield put(AuthenticationActions.setRoute('schedule-deployment'));
-  } else toast.error(response.data.message);
+  } else {
+    toast.error(response?.data?.error);
+  }
 }
 
 export function* editScheduleDeployment(api, { payload }) {
