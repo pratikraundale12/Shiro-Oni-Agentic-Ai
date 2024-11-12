@@ -57,6 +57,7 @@ export const List = styled.ul`
 `;
 
 export const Item = styled.li`
+  position: relative;
   display: flex;
   align-items: center;
   padding: 20px 32px;
