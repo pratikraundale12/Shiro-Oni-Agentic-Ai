@@ -259,7 +259,11 @@ const ProfileDropdown = () => {
   return (
     <ProfileContainer ref={menuRef}>
       <UserModal />
-      <ProfileButton type="button" onClick={() => setShowMenu(prev => !prev)}>
+      <ProfileButton
+        type="button"
+        onClick={() => setShowMenu(prev => !prev)}
+        title="Profile"
+      >
         <ProfileRender url={currentUser?.photo} />
         <ProfileInfo>
           <Name>{`${currentUser?.first_name || ''} ${currentUser?.middle_name || ''} ${currentUser?.last_name || ''}`}</Name>
@@ -359,14 +363,20 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
             <div className="d-none d-md-inline">
               <div className="d-flex">
                 {currentUser.role === 'superadmin' && (
-                  <IconButton onClick={() => handleRoute('setting')}>
-                    <SettingSmallIcon />
-                  </IconButton>
+                  <>
+                    <IconButton
+                      onClick={() => handleRoute('setting')}
+                      title="Settings"
+                    >
+                      <SettingSmallIcon />
+                    </IconButton>
+                  </>
                 )}
                 <IconCusterButton
                   onClick={() =>
                     dispatch(AuthenticationActions.setClusterLogin(true))
                   }
+                  title="Cluster"
                 >
                   <ClusterIcon />
                   {selectedCluster?.label && (

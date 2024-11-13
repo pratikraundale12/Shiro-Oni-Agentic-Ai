@@ -102,12 +102,12 @@ export const ListScheduleDeployment = () => {
       renderCell: item => (
         <TextRender text={item.destination_cluster_name || 'N/A'} />
       ),
-      width: '15%',
+      width: '14%',
     },
     {
       label: 'Deploy Time',
       renderCell: item => <TextRender text={item.scheduled_time || 'N/A'} />,
-      width: '15%',
+      width: '14%',
     },
     {
       label: 'Approver',
@@ -118,18 +118,18 @@ export const ListScheduleDeployment = () => {
           currentUser={currentUser}
         />
       ),
-      width: '15%',
+      width: '13%',
     },
     {
       label: 'Status',
       renderCell: item => (
         <StatusText text={item?.deployment_status} item={item} />
       ),
-      width: '15%',
+      width: '12%',
     },
     {
       label: 'Actions',
-      width: '10%',
+      width: '17%',
       renderCell: item => getActionsMenu(item),
     },
   ];

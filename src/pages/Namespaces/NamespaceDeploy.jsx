@@ -224,7 +224,7 @@ const NamespaceDeploy = ({
             </ModalHFive>
           </div>
           <RowModal>
-            <ColumnThree className="col-4 mb-3">
+            <ColumnThree className="col-5 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
                 <ActionTitleSet className="mb-0 ">Process Group</ActionTitleSet>
                 <SubTitleSet className="mb-0 ">
@@ -232,7 +232,7 @@ const NamespaceDeploy = ({
                 </SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
-            <ColumnThree className="col-4 mb-3">
+            <ColumnThree className="col-5 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
                 <ActionTitleSet className="mb-0 ">
                   Current Version
@@ -240,7 +240,7 @@ const NamespaceDeploy = ({
                 <SubTitleSet className="mb-0 ">{formData?.version}</SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
-            <CustomNine className="col-8 mb-3">
+            <CustomNine className="col-10 mb-3">
               <ActiveButtonContainer className="d-flex ">
                 <div className="col-6">
                   <div className="d-flex align-items-center">

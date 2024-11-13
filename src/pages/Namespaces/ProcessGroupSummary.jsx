@@ -124,7 +124,6 @@ const CustomNine = styled.div`
   &.col-4 {
     flex: 0 0 auto;
     width: 33%;
-    text-align: end;
   }
 `;
 const ActiveButtonContainer = styled.div`
