@@ -802,13 +802,15 @@ const Summary = () => {
                 : KDFM.DEPLOY}
             </Button>
           )}
-          <Button
-            size="md"
-            variant="tertiary"
-            onClick={() => dispatch(SchedularActions.setScheduleModal())}
-          >
-            Schedule
-          </Button>
+          {schedularFromList && (
+            <Button
+              size="md"
+              variant="tertiary"
+              onClick={() => dispatch(SchedularActions.setScheduleModal())}
+            >
+              Schedule
+            </Button>
+          )}
         </BottomButtonDiv>
         {isUpgrading && (
           <div className="w-100 mt-3">
