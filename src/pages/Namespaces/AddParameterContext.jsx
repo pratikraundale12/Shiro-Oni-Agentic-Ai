@@ -170,7 +170,7 @@ const AddParameterContext = ({
       value: !data?.value || data?.check ? null : data?.value,
     };
     const nameExists = (contextList, name) =>
-      contextList.some(
+      contextList?.some(
         parameter => parameter?.name?.toLowerCase() === name?.toLowerCase()
       );
     const parameterAlreadyExist = nameExists(
@@ -192,7 +192,7 @@ const AddParameterContext = ({
     }
 
     if (isAddParameterContextOpen?.mode === 'edit') {
-      const updatedData = newlyAddParameters.map(item =>
+      const updatedData = newlyAddParameters?.map(item =>
         item?.name?.toLowerCase() === processData?.name?.toLowerCase()
           ? { ...item, ...processData }
           : item

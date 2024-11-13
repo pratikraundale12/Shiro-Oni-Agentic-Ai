@@ -9,9 +9,9 @@ import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 // import { SchedularActions } from '../../store/schedular/redux';
-import AddVariables from './AddVariables';
-import { SchedularSelectors } from '../../store/schedular/redux';
 import { isEmpty, uniqBy } from 'lodash';
+import { SchedularSelectors } from '../../store/schedular/redux';
+import AddVariables from './AddVariables';
 
 const ModalBody = styled.div`
   position: relative;
@@ -52,7 +52,7 @@ const Listvariables = ({
 
   const sortedScheduleVariableArray = useMemo(
     () =>
-      schduleVariableData.map(item => ({
+      schduleVariableData?.map(item => ({
         variable: {
           name: item?.name,
           value: item?.value,
@@ -61,7 +61,7 @@ const Listvariables = ({
       })),
     [schduleVariableData]
   );
-  const sortednewlyAddVariables = newlyAddVariables.map(item => ({
+  const sortednewlyAddVariables = newlyAddVariables?.map(item => ({
     variable: {
       name: item?.name,
       value: item?.value,
@@ -247,7 +247,6 @@ const Listvariables = ({
             columns={COLUMNS}
             className={'variables-table'}
           />
-          {console.log(variableList, 'variableList')}
         </ModalBody>
       </Modal>
       {isAddVariablesOpen && (
