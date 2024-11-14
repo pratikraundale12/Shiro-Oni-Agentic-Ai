@@ -121,6 +121,7 @@ export const NamespacesActions = {
   setChildLevelDeployProcessorData: createAction(
     `${prefix}setChildLevelDeployProcessorData`
   ),
+  setVariableListLoading: createAction(`${prefix}setVariableListLoading`),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -182,6 +183,7 @@ export const NAMESPACES_INITIAL_STATE = {
   namespaceSummaryLoadingState: false,
   parameterContextListAtDeploy: {},
   childLevelDeployProcessorData: {},
+  variableListLoading: false,
   // parameterEditParent: false,
 };
 
@@ -236,6 +238,7 @@ export const NamespacesSelectors = {
     state.namespaces.parameterContextListAtDeploy,
   getChildLevelDeployProcessorData: state =>
     state.namespaces.childLevelDeployProcessorData,
+  getVariableListLoading: state => state.namespaces.variableListLoading,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -516,6 +519,12 @@ const setChildLevelDeployProcessorData = (state, { payload }) => {
     childLevelDeployProcessorData: payload,
   };
 };
+const setVariableListLoading = (state, { payload }) => {
+  return {
+    ...state,
+    variableListLoading: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -622,6 +631,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setChildLevelDeployProcessorData,
         setChildLevelDeployProcessorData
+      )
+      .addCase(
+        NamespacesActions.setVariableListLoading,
+        setVariableListLoading
       );
   }
 );

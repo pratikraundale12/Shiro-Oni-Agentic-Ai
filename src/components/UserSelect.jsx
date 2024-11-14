@@ -38,7 +38,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
           },
         })
       );
-  }, [dispatch, searchText, AdminRole]);
+  }, [dispatch, AdminRole]);
 
   useEffect(() => {
     if (isEmpty(AdminRole)) dispatch(RolesActions.fetchRoles());

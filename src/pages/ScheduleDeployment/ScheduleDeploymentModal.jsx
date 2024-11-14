@@ -79,6 +79,8 @@ export const ScheduleDeploymentModal = () => {
       dispatch(SchedularActions.setScheduleModal());
       dispatch(SchedularActions.setScheduleDeployModal());
     }
+    reset();
+    dispatch(SchedularActions.setSelectedSchedule({}));
   };
 
   useEffect(() => {
