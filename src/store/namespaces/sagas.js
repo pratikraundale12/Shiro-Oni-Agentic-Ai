@@ -509,6 +509,7 @@ export function* fetchVariableList(
   api,
   { initialCall = true, showError = false }
 ) {
+  yield put(NamespacesActions.setVariableListLoading(true));
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
@@ -528,7 +529,7 @@ export function* fetchVariableList(
     apiParams: [
       {
         clusterId: selectedDestCluster?.value,
-        namespaceId: deployDetails.id,
+        namespaceId: deployDetails?.id,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
@@ -537,9 +538,13 @@ export function* fetchVariableList(
     yield put(NamespacesActions.setDeployedModal());
   else if (!response.ok || (showError && !initialCall))
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  if (response) {
+    yield put(NamespacesActions.setVariableListLoading(false));
+  }
 }
 
 export function* addVariableServices(api, { payload }) {
+  yield put(NamespacesActions.setVariableListLoading(true));
   const { variables } = payload;
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
@@ -577,6 +582,9 @@ export function* addVariableServices(api, { payload }) {
       additionalData: { requestId: response.data?.requestId },
     });
   } else toast.error(response.data.message);
+  if (response) {
+    yield put(NamespacesActions.setVariableListLoading(false));
+  }
 }
 export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
   const selectedDestCluster = yield select(

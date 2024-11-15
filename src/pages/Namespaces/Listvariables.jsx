@@ -49,7 +49,9 @@ const Listvariables = ({
   const combinedVaribalesListSchedule = useSelector(
     NamespacesSelectors.getScheduleNamespaceVariables
   );
-
+  const variableLoadingStateAPI = useSelector(
+    NamespacesSelectors.getVariableListLoading
+  );
   const sortedScheduleVariableArray = useMemo(
     () =>
       schduleVariableData?.map(item => ({
@@ -246,6 +248,7 @@ const Listvariables = ({
             data={variablesData}
             columns={COLUMNS}
             className={'variables-table'}
+            loading={variableLoadingStateAPI}
           />
         </ModalBody>
       </Modal>
