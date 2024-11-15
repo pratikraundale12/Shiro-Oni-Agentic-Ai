@@ -7,22 +7,26 @@ import { UserIcon } from '../assets';
 import defaultAvatarURL from '../assets/images/avatar.png';
 import { SelectField } from '../shared';
 import {
-  AuthenticationSelectors,
   RolesActions,
   RolesSelectors,
   UsersActions,
   UsersSelectors,
 } from '../store';
 
-export const UserSelect = ({ control, errors, name, label, placeholder }) => {
+export const UserSelect = ({
+  control,
+  errors,
+  name,
+  label,
+  placeholder,
+  disabled,
+}) => {
   const dispatch = useDispatch();
   const [selected, setSelected] = useState([]);
   const RoleList = useSelector(RolesSelectors.getRoles);
   const userList = useSelector(UsersSelectors.getUsers);
   const AdminRole = RoleList?.find(item => item.name.toLowerCase() === 'admin');
   const [searchText, setSearchText] = useState('');
-  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
-  const updatedArray = userList.filter(item => item.id !== currentUser.id);
 
   const handleChange = value => {
     setSearchText(value);
@@ -57,7 +61,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
           username: item.label,
           photo: item.avatar,
         })),
-        ...updatedArray,
+        ...userList,
       ].map(({ id, photo, username }) => ({
         value: id,
         label: username,
@@ -69,6 +73,7 @@ export const UserSelect = ({ control, errors, name, label, placeholder }) => {
       optionEntity="user"
       isMulti
       onChange={values => setSelected(values)}
+      disabled={disabled}
     />
   );
 };
@@ -79,4 +84,5 @@ UserSelect.propTypes = {
   name: PropTypes.string,
   label: PropTypes.string,
   placeholder: PropTypes.string,
+  disabled: PropTypes.bool,
 };

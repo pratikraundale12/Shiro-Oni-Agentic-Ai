@@ -11,6 +11,7 @@ import * as yup from 'yup';
 import { UserSelect } from '../../components';
 import { Button, DateField, Modal } from '../../shared';
 import {
+  AuthenticationSelectors,
   ClustersActions,
   LoadingSelectors,
   NamespacesActions,
@@ -42,6 +43,7 @@ export const ScheduleDeploymentModal = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'editScheduleDeployment')
   );
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const {
     control,
     formState: { errors, isDirty },
@@ -98,6 +100,10 @@ export const ScheduleDeploymentModal = () => {
     }
   }, [dispatch, reset, selectedSchedule]);
 
+  const needToDisable = selectedSchedule?.approvers?.some(
+    item => item.approver_id === currentUser?.id
+  );
+
   return (
     <Modal
       size="md"
@@ -135,6 +141,9 @@ export const ScheduleDeploymentModal = () => {
           name="approver_ids"
           placeholder="Select atleast one approver"
           label="Approver"
+          disabled={
+            currentUser?.role === 'superadmin' || !needToDisable ? false : true
+          }
           required
         />
       </Container>
