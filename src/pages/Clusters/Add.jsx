@@ -1,7 +1,8 @@
+/*eslint-disable*/
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -18,7 +19,7 @@ import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, CheckboxField, InputField, SelectField } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
-import { ClustersActions } from '../../store';
+import { ClustersActions, ClustersSelectors } from '../../store';
 import {
   getOneRegistry,
   getRegistryList,
@@ -374,7 +375,7 @@ export const Add = () => {
   const [notificationEnable, setNotificationEnable] = useState(
     data?.notification_enable || false
   );
-
+  const registryURLs = useSelector(ClustersSelectors.getClusterFormData);
   const {
     control,
     watch,
@@ -424,7 +425,11 @@ export const Add = () => {
     if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
       setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
     } else if (activeTab === CLUSTER_MODULE_TABS.REGISTRY) {
-      setOpenSummary(true);
+      if (registryURLs.data.includes(new URL(data?.registryUrl)?.origin)) {
+        setOpenSummary(true);
+      } else {
+        toast.error('This registry do not  exist!');
+      }
     }
   };
 
@@ -533,11 +538,15 @@ export const Add = () => {
   };
 
   const handleRegistry = () => {
-    setIsCertificateOpen(false);
-    setIsCredOpen(false);
-    setTestSuccess(false);
-    setTest(true);
-    setOpenSummary(true);
+    if (registryURLs.data.includes(registryData?.registry_url)) {
+      setIsCertificateOpen(false);
+      setIsCredOpen(false);
+      setTestSuccess(false);
+      setTest(true);
+      setOpenSummary(true);
+    } else {
+      toast.error('This registry do not  exist!');
+    }
   };
 
   function handleKeyDown(e) {
@@ -801,105 +810,105 @@ export const Add = () => {
                 {KDFM.ADD_NEW_REGISTRY}
               </StyledButton>
             </div>
-
             {selectedRegistryId ? (
-              <RegistryDetailsDiv>
-                <TitleRegistry>{KDFM.REGISTRY_DETAILS}</TitleRegistry>
-                <Flex>
-                  <BoxContentArea>
-                    <p>{KDFM.REGISTRY_NAME}</p>
-                    <span>{registryData.name}</span>
-                  </BoxContentArea>
-                  <BoxContentArea>
-                    <p>{KDFM.REGISTRY_URL}</p>
-                    <span>
-                      {registryData.registry_url}
-                      <CopyToClipboard
-                        className="copy-button"
-                        copyItem={
-                          registryData.registry_url
-                            ? `${registryData.registry_url}/nifi-registry`
-                            : registryData.registry_url
-                        }
-                      />
-                    </span>
-                  </BoxContentArea>
-                </Flex>
-                <RegistryDetailsDivTwo>
-                  <FlexTwo>
-                    {!testSuccess ? (
-                      <Flex>
-                        <div>
-                          <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
-                          <Button
-                            onClick={() => {
-                              setIsCertificateOpen(true);
-                            }}
-                            disabled={testSuccess}
-                          >
-                            {KDFM.ADD_CERTIFICATE}
-                          </Button>
-                        </div>
-                        <ORText>{KDFM.SEPARATOR}</ORText>
-                        <div>
-                          <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
-                          <Button
-                            onClick={() => {
-                              setIsCredOpen(true);
-                            }}
-                            disabled={testSuccess}
-                          >
-                            {KDFM.ENTER_CREDENTIALS}
-                          </Button>
-                        </div>
-                        {testSuccess && !suceessModal && (
-                          <UploadCertificateContainer>
-                            <CertificateMessage>
-                              <RightCircleIcon width={60} height={60} />
-                              <TextTest>
-                                {activeTab === CLUSTER_MODULE_TABS.REGISTRY
-                                  ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
-                                  : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
-                              </TextTest>
-                            </CertificateMessage>
-                          </UploadCertificateContainer>
-                        )}
-                      </Flex>
-                    ) : (
-                      <CertificateMessage>
-                        <RightCircleIcon width={60} height={60} />
-                        <TextTest>
-                          {activeTab === CLUSTER_MODULE_TABS.REGISTRY
-                            ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
-                            : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
-                        </TextTest>
-                      </CertificateMessage>
-                    )}
-                    <ButtonDiv>
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          setNewRegistry(true);
-                          setIsEditDetails(true);
-                          setValue('registryName', registryData?.name);
-                          setValue('registryUrl', registryData?.registry_url);
-                        }}
-                      >
-                        {KDFM.EDIT}
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          reset({ registry: '' });
-                          setRegistryData('');
-                        }}
-                      >
-                        {KDFM.DELETE}
-                      </Button>
-                    </ButtonDiv>
-                  </FlexTwo>
-                </RegistryDetailsDivTwo>
-              </RegistryDetailsDiv>
+              <></>
             ) : (
+              // <RegistryDetailsDiv>
+              //   <TitleRegistry>{KDFM.REGISTRY_DETAILS} </TitleRegistry>
+              //   {/* <Flex>
+              //     <BoxContentArea>
+              //       <p>{KDFM.REGISTRY_NAME}</p>
+              //       <span>{registryData.name}</span>
+              //     </BoxContentArea>
+              //     <BoxContentArea>
+              //       <p>{KDFM.REGISTRY_URL}</p>
+              //       <span>
+              //         {registryData.registry_url}
+              //         <CopyToClipboard
+              //           className="copy-button"
+              //           copyItem={
+              //             registryData.registry_url
+              //               ? `${registryData.registry_url}/nifi-registry`
+              //               : registryData.registry_url
+              //           }
+              //         />
+              //       </span>
+              //     </BoxContentArea>
+              //   </Flex>
+              //   <RegistryDetailsDivTwo>
+              //     <FlexTwo>
+              //       {!testSuccess ? (
+              //         <Flex>
+              //           <div>
+              //             <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
+              //             <Button
+              //               onClick={() => {
+              //                 setIsCertificateOpen(true);
+              //               }}
+              //               disabled={testSuccess}
+              //             >
+              //               {KDFM.ADD_CERTIFICATE}
+              //             </Button>
+              //           </div>
+              //           <ORText>{KDFM.SEPARATOR}</ORText>
+              //           <div>
+              //             <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
+              //             <Button
+              //               onClick={() => {
+              //                 setIsCredOpen(true);
+              //               }}
+              //               disabled={testSuccess}
+              //             >
+              //               {KDFM.ENTER_CREDENTIALS}
+              //             </Button>
+              //           </div>
+              //           {testSuccess && !suceessModal && (
+              //             <UploadCertificateContainer>
+              //               <CertificateMessage>
+              //                 <RightCircleIcon width={60} height={60} />
+              //                 <TextTest>
+              //                   {activeTab === CLUSTER_MODULE_TABS.REGISTRY
+              //                     ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
+              //                     : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
+              //                 </TextTest>
+              //               </CertificateMessage>
+              //             </UploadCertificateContainer>
+              //           )}
+              //         </Flex>
+              //       ) : (
+              //         <CertificateMessage>
+              //           <RightCircleIcon width={60} height={60} />
+              //           <TextTest>
+              //             {activeTab === CLUSTER_MODULE_TABS.REGISTRY
+              //               ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
+              //               : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
+              //           </TextTest>
+              //         </CertificateMessage>
+              //       )}
+              //       <ButtonDiv>
+              //         <Button
+              //           variant="secondary"
+              //           onClick={() => {
+              //             setNewRegistry(true);
+              //             setIsEditDetails(true);
+              //             setValue('registryName', registryData?.name);
+              //             setValue('registryUrl', registryData?.registry_url);
+              //           }}
+              //         >
+              //           {KDFM.EDIT}
+              //         </Button>
+              //         <Button
+              //           onClick={() => {
+              //             reset({ registry: '' });
+              //             setRegistryData('');
+              //           }}
+              //         >
+              //           {KDFM.DELETE}
+              //         </Button>
+              //       </ButtonDiv>
+              //     </FlexTwo>
+              //   </RegistryDetailsDivTwo> */}
+              // </RegistryDetailsDiv>
               <NoDataContainer>
                 <NoDataIcon />
                 <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
@@ -987,7 +996,11 @@ export const Add = () => {
             </Button>
           )}
           {!newRegistry && activeTab === 'registry' && (
-            <Button onClick={handleRegistry} disabled={!testSuccess}>
+            <Button
+              onClick={handleRegistry}
+              // disabled={ !testSuccess}
+              disabled={!selectedRegistryId}
+            >
               {KDFM.CONTINUE}
             </Button>
           )}

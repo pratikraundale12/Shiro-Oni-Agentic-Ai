@@ -274,6 +274,8 @@ export const LdapConfig = () => {
           userDn: response?.data?.userDn,
           userUniqueIdentifier: response?.data?.userUniqueIdentifier,
           groupUniqueIdentifier: response?.data?.groupUniqueIdentifier,
+          filter: response?.data?.filter,
+          scope: response?.data?.scope,
         });
       }
     } else {

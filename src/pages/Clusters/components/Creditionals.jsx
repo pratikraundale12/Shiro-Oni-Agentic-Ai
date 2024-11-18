@@ -8,6 +8,8 @@ import { KDFM } from '../../../constants';
 import { InputField, Modal, PasswordField } from '../../../shared';
 import { testCluster, testRegistry } from '../../../store/index1';
 import { FailedTestModal } from './FailedTestModal';
+import { useDispatch } from 'react-redux';
+import { ClustersActions } from '../../../store';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -29,6 +31,7 @@ export const Creditionals = ({
   registryData,
   setSuccessModal,
 }) => {
+  const dispatch = useDispatch();
   const [failedModal, setFailedModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [testMessage, setTestMessage] = useState('');
@@ -53,11 +56,12 @@ export const Creditionals = ({
       payload.append('password', data.password);
 
       const response = await testCluster(payload);
-      if (response.status === 204) {
+      if (response.status === 200) {
         setTestSuccess(true);
         setIsCredOpen(false);
         setSuccessModal(true);
         setLoading(false);
+        dispatch(ClustersActions.setClusterFormData(response?.data));
       } else {
         setTestMessage(response.message);
         setIsCredOpen(false);
