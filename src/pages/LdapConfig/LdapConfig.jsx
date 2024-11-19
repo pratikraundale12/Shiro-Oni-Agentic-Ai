@@ -160,6 +160,8 @@ export const schemaForm2 = Yup.object().shape({
   groupUniqueIdentifier: Yup.string().required(
     'Group Unique Identifier is required'
   ),
+  groupObjectClass: Yup.string().required('Group Object Class is required'),
+  usernameIdentifier: Yup.string().required('Username Identifier is required'),
 });
 const breadcrumbData = [
   { label: 'LDAP Configuration Fields' },
@@ -406,6 +408,7 @@ export const LdapConfig = () => {
                 placeholder="Enter your LDAP URL"
                 icon={<LinkIcon />}
                 disabled={!ldapInitialConfig}
+                required
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -418,6 +421,7 @@ export const LdapConfig = () => {
                 placeholder="Enter your Login DN"
                 icon={<QRIcons />}
                 disabled={!ldapInitialConfig}
+                required
               />
             </div>
 
@@ -523,7 +527,7 @@ export const LdapConfig = () => {
                 icon={<QRIcons />}
                 errors={errorsForm2}
                 disabled={!secondFormState || !ldapInitialConfig}
-                // required
+                required
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -536,7 +540,7 @@ export const LdapConfig = () => {
                 icon={<QRIcons />}
                 errors={errorsForm2}
                 disabled={!secondFormState || !ldapInitialConfig}
-                // required
+                required
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
