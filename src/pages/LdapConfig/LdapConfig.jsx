@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,7 +35,6 @@ import {
 import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
 import { CreateMapping } from './components/CreateMapping';
 import SelectCellRender from './components/SelectCellRender';
-import { isEmpty } from 'lodash';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -276,6 +276,8 @@ export const LdapConfig = () => {
           groupUniqueIdentifier: response?.data?.groupUniqueIdentifier,
           filter: response?.data?.filter,
           scope: response?.data?.scope,
+          groupObjectClass: response?.data?.groupObjectClass,
+          usernameIdentifier: response?.data?.usernameIdentifier,
         });
       }
     } else {
@@ -303,6 +305,12 @@ export const LdapConfig = () => {
       groupUniqueIdentifier: data?.groupUniqueIdentifier,
       ...(data?.filter && { filter: data.filter }),
       ...(data?.scope && { scope: data.scope }),
+      ...(data?.groupObjectClass && {
+        groupObjectClass: data.groupObjectClass,
+      }),
+      ...(data?.usernameIdentifier && {
+        usernameIdentifier: data.usernameIdentifier,
+      }),
     };
 
     dispatch(RolesActions.fetchLdap({ ...payload }));
@@ -437,6 +445,7 @@ export const LdapConfig = () => {
               </StyledButton>
             </div>
           </ButtonFlex>
+
           <InputFieldFlex className="row">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
@@ -448,6 +457,7 @@ export const LdapConfig = () => {
                 icon={<QRIcons />}
                 disabled={!secondFormState || !ldapInitialConfig}
                 errors={errorsForm2}
+                required
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -460,6 +470,7 @@ export const LdapConfig = () => {
                 icon={<QRIcons />}
                 disabled={!secondFormState || !ldapInitialConfig}
                 errors={errorsForm2}
+                required
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -472,10 +483,9 @@ export const LdapConfig = () => {
                 icon={<QRIcons />}
                 disabled={!secondFormState || !ldapInitialConfig}
                 errors={errorsForm2}
+                required
               />
             </div>
-          </InputFieldFlex>
-          <InputFieldFlex className="row">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
                 name="userUniqueIdentifier"
@@ -486,6 +496,7 @@ export const LdapConfig = () => {
                 icon={<QRIcons />}
                 errors={errorsForm2}
                 disabled={!secondFormState || !ldapInitialConfig}
+                required
               />
             </div>
 
@@ -499,6 +510,33 @@ export const LdapConfig = () => {
                 icon={<QRIcons />}
                 errors={errorsForm2}
                 disabled={!secondFormState || !ldapInitialConfig}
+                required
+              />
+            </div>
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="groupObjectClass"
+                type="text"
+                register={registerForm2}
+                label="Group Object Class"
+                placeholder="Enter Group Object Class"
+                icon={<QRIcons />}
+                errors={errorsForm2}
+                disabled={!secondFormState || !ldapInitialConfig}
+                // required
+              />
+            </div>
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+              <InputField
+                name="usernameIdentifier"
+                type="text"
+                register={registerForm2}
+                label="Username identifier"
+                placeholder="Enter Username identifier"
+                icon={<QRIcons />}
+                errors={errorsForm2}
+                disabled={!secondFormState || !ldapInitialConfig}
+                // required
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
