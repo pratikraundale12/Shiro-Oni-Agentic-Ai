@@ -74,7 +74,7 @@ export const Certificate = ({
       payload.append('passphrase', data.password);
 
       const response = await testCluster(payload);
-      if (response.status === 204) {
+      if (response.status === 200) {
         setTestSuccess(true);
         setIsCertificateOpen(false);
         setSuccessModal(true);

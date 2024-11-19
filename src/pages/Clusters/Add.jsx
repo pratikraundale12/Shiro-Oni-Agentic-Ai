@@ -425,7 +425,7 @@ export const Add = () => {
     if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
       setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
     } else if (activeTab === CLUSTER_MODULE_TABS.REGISTRY) {
-      if (registryURLs.data.includes(new URL(data?.registryUrl)?.origin)) {
+      if (registryURLs?.data?.includes(new URL(data?.registryUrl)?.origin)) {
         setOpenSummary(true);
       } else {
         toast.error('This registry do not  exist!');
@@ -538,7 +538,8 @@ export const Add = () => {
   };
 
   const handleRegistry = () => {
-    if (registryURLs.data.includes(registryData?.registry_url)) {
+    console.log(registryURLs?.data?.includes(registryData?.registry_url), 'hi');
+    if (registryURLs?.data?.includes(registryData?.registry_url)) {
       setIsCertificateOpen(false);
       setIsCredOpen(false);
       setTestSuccess(false);
@@ -592,7 +593,7 @@ export const Add = () => {
       payload.append('nifi_url', clusterData.nifiUrl);
 
       const response = await testCluster(payload);
-      if (response.status === 204) {
+      if (response.status === 200) {
         setTestSuccess(true);
         setSuccessModal(true);
         setLoading(false);

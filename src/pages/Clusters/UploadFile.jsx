@@ -4,8 +4,8 @@ import { Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { CrossIcon, FileIcon } from '../../assets';
-import { Button, SvgButton } from '../../shared';
 import { getFileSize } from '../../helpers';
+import { Button, SvgButton } from '../../shared';
 
 const StyledButton = styled(Button)`
   height: 36px;
@@ -40,7 +40,6 @@ const FlexBetween = styled.div`
 
 const FileLabel = styled.span`
   color: ${props => props.theme.colors.darker};
-  // font-family: ${props => props.theme.fontNato};
   font-size: 12px;
   font-weight: 700;
   line-height: 14px;
@@ -64,6 +63,15 @@ const RemoveButton = styled(SvgButton)`
   height: 14px;
 `;
 
+const ErrorText = styled.span`
+  margin-top: 2px;
+  margin-left: 2px;
+  color: #ff0000;
+  font-weight: 500;
+  font-size: 10px;
+  display: block;
+`;
+
 export const UploadFile = ({ name, control, watch }) => {
   const ref = useRef();
   const file = watch(name);
@@ -72,7 +80,7 @@ export const UploadFile = ({ name, control, watch }) => {
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange } }) => {
+      render={({ field: { onChange }, fieldState: { error } }) => {
         const handleChange = event => {
           const uploadedFile = event.target.files[0];
           if (uploadedFile?.type !== 'application/x-pkcs12') {
@@ -126,6 +134,7 @@ export const UploadFile = ({ name, control, watch }) => {
               onChange={handleChange}
               hidden
             />
+            {error && <ErrorText>{error.message}</ErrorText>}
           </div>
         );
       }}
@@ -137,7 +146,5 @@ UploadFile.propTypes = {
   name: PropTypes.string.isRequired,
   control: PropTypes.object.isRequired,
   watch: PropTypes.func.isRequired,
-  setValue: PropTypes.func.isRequired,
-  url: PropTypes.string,
   errors: PropTypes.object.isRequired,
 };
