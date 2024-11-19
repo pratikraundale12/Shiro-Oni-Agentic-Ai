@@ -10,6 +10,8 @@ import { Modal, PasswordField } from '../../../shared';
 import { testCluster, testRegistry } from '../../../store/apis/clusters';
 import { UploadFile } from '../UploadFile';
 import { FailedTestModal } from './FailedTestModal';
+import { useDispatch } from 'react-redux';
+import { ClustersActions } from '../../../store';
 
 const schema = yup.object().shape({
   pfxFile: yup.mixed().required('PFX file is required'),
@@ -46,6 +48,7 @@ export const Certificate = ({
   registryData,
   setSuccessModal,
 }) => {
+  const dispatch = useDispatch();
   const [failedModal, setFailedModal] = useState(false);
   const [testMessage, setTestMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -79,6 +82,7 @@ export const Certificate = ({
         setIsCertificateOpen(false);
         setSuccessModal(true);
         setLoading(false);
+        dispatch(ClustersActions.setClusterFormData(response?.data));
       } else {
         setIsCertificateOpen(false);
         setFailedModal(true);

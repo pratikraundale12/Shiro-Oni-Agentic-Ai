@@ -538,7 +538,6 @@ export const Add = () => {
   };
 
   const handleRegistry = () => {
-    console.log(registryURLs?.data?.includes(registryData?.registry_url), 'hi');
     if (registryURLs?.data?.includes(registryData?.registry_url)) {
       setIsCertificateOpen(false);
       setIsCredOpen(false);
