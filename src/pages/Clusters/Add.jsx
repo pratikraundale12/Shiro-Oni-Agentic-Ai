@@ -562,20 +562,22 @@ export const Add = () => {
       }
       return;
     }
-    if (e.key !== 'Enter') return;
 
-    const trimmedValue = value.trim();
-    if (!trimmedValue) return;
-    if (trimmedValue.length > 20) {
-      toast.error('Maximum 20 characters allowed');
-      return;
+    if (e.key === 'Enter' || e.key === ',' || e.type === 'blur') {
+      const trimmedValue = value.trim().replace(/,$/, ''); // Remove trailing comma if any
+      if (!trimmedValue) return;
+
+      if (trimmedValue.length > 20) {
+        toast.error('Maximum 20 characters allowed');
+        return;
+      }
+
+      const currentTags = tags.split(',').filter(tag => tag);
+      if (currentTags.length >= 5) return;
+
+      setTags([...currentTags, trimmedValue].join(','));
+      e.target.value = '';
     }
-
-    const currentTags = tags.split(',').filter(tag => tag);
-    if (currentTags.length >= 5) return;
-
-    setTags(currentTags.concat(trimmedValue).join(','));
-    e.target.value = '';
   }
 
   function removeTag(tagToRemove) {
@@ -703,10 +705,15 @@ export const Add = () => {
 
               <TagsInput
                 type="text"
-                placeholder="Cluster Tags"
+                placeholder={
+                  tags.split(',').filter(tag => tag).length === 0
+                    ? 'Cluster Tags'
+                    : ''
+                }
                 name="tags"
                 {...register('tags')}
                 onKeyDown={handleKeyDown}
+                onBlur={handleKeyDown}
                 aria-label="Add a tag"
               />
 
