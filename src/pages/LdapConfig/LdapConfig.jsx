@@ -216,6 +216,12 @@ const CharacterCount = styled.span`
   white-space: nowrap;
   overflow: hidden;
 `;
+const TagLable = styled.label`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: #444445;
+`;
 
 export const schemaForm1 = Yup.object().shape({
   url: Yup.string().required('LDAP URL is required'),
@@ -612,9 +618,9 @@ export const LdapConfig = () => {
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-              <label htmlFor="tags-input" className="tags-input-label">
+              <TagLable htmlFor="tags-input" className="tags-input-label">
                 Group Object Class
-              </label>
+              </TagLable>
 
               <TagsInputContainer>
                 <IconTag>
