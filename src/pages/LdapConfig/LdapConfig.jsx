@@ -358,7 +358,7 @@ export const LdapConfig = () => {
           groupUniqueIdentifier: response?.data?.groupUniqueIdentifier,
           filter: response?.data?.filter,
           scope: response?.data?.scope,
-          groupObjectClass: tags,
+          groupObjectClass: response?.data?.groupObjectClass,
           usernameIdentifier: response?.data?.usernameIdentifier,
         });
       }
