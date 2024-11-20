@@ -255,6 +255,7 @@ export const LdapConfig = () => {
   const roles = useSelector(RolesSelectors.getRoles);
   const ldapGroup = useSelector(RolesSelectors.getLdapGroup);
   const displayList = useSelector(RolesSelectors.getDiplayData);
+  const [tags, setTags] = useState([]);
   const {
     register: registerForm1,
     handleSubmit: handleSubmitForm1,
@@ -441,11 +442,10 @@ export const LdapConfig = () => {
       value: 'base',
     },
   ];
-  const [tags, setTags] = useState([]);
   const handleKeyDown = e => {
     const value = e.target.value.trim();
 
-    if (e.key === 'Enter' && value) {
+    if (e.key === 'Enter' || e.key === ',' || (e.type === 'blur' && value)) {
       if (tags.length >= 5) {
         toast.error('Maximum 5 tags allowed');
         e.target.value = '';
@@ -612,17 +612,6 @@ export const LdapConfig = () => {
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-              {/* <InputField
-                name="groupObjectClass"
-                type="text"
-                register={registerForm2}
-                label="Group Object Class"
-                placeholder="Enter Group Object Class"
-                icon={<QRIcons />}
-                errors={errorsForm2}
-                disabled={!secondFormState || !ldapInitialConfig}
-                required
-              /> */}
               <label htmlFor="tags-input" className="tags-input-label">
                 Group Object Class
               </label>
@@ -645,9 +634,10 @@ export const LdapConfig = () => {
                   type="text"
                   name="groupObjectClass"
                   onKeyDown={handleKeyDown}
-                  placeholder="Group Object Class"
+                  placeholder={tags.length === 0 ? 'Group Object Class' : ''}
                   disabled={!secondFormState || !ldapInitialConfig}
                   register={registerForm2}
+                  onBlur={handleKeyDown}
                   aria-label="Group Object Class"
                 />
               </TagsInputContainer>
