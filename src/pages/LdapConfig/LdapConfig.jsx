@@ -12,6 +12,7 @@ import {
   LinkIcon,
   PlusCircleIcon,
   QRIcons,
+  TagIcon,
   TodoIcon,
 } from '../../assets';
 import { FullPageLoader } from '../../components';
@@ -142,6 +143,79 @@ const LabelSelect = styled.div`
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
 `;
+const TagsInput = styled.input`
+  flex-grow: 1;
+  padding: 0.5em 0;
+  border: none;
+  outline: none;
+`;
+
+const TagsInputContainer = styled.div`
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #ffffff;
+  border-radius: 3px;
+  width: 100%;
+  font-size: 14px;
+  color: #444445;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  gap: 0.5em;
+  margin-bottom: 40px;
+  input::placeholder {
+    color: ${props => props.theme.colors.grey};
+    font-family: ${props => props.theme.fontNato};
+    font-size: 14px;
+  }
+  input:focus-visible {
+    outline: none;
+  }
+  input:focus {
+    border: none;
+  }
+`;
+const IconTag = styled.span`
+  position: sticky;
+  top: 2px;
+  left: 2px;
+  bottom: 2px;
+  z-index: 1;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  padding: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f7fa;
+`;
+const TagItem = styled.div`
+  background-color: rgb(218, 216, 216);
+  display: flex;
+  padding: 0.5em 0.75em;
+  border-radius: 20px;
+`;
+const CloseButton = styled.span`
+  padding-top: 3px;
+  height: 20px;
+  width: 20px;
+  background-color: rgb(48, 48, 48);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 0.5em;
+  font-size: 18px;
+  cursor: pointer;
+`;
+const CharacterCount = styled.span`
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+`;
 
 export const schemaForm1 = Yup.object().shape({
   url: Yup.string().required('LDAP URL is required'),
@@ -160,7 +234,6 @@ export const schemaForm2 = Yup.object().shape({
   groupUniqueIdentifier: Yup.string().required(
     'Group Unique Identifier is required'
   ),
-  groupObjectClass: Yup.string().required('Group Object Class is required'),
   usernameIdentifier: Yup.string().required('Username Identifier is required'),
 });
 const breadcrumbData = [
@@ -278,7 +351,7 @@ export const LdapConfig = () => {
           groupUniqueIdentifier: response?.data?.groupUniqueIdentifier,
           filter: response?.data?.filter,
           scope: response?.data?.scope,
-          groupObjectClass: response?.data?.groupObjectClass,
+          groupObjectClass: tags,
           usernameIdentifier: response?.data?.usernameIdentifier,
         });
       }
@@ -307,9 +380,7 @@ export const LdapConfig = () => {
       groupUniqueIdentifier: data?.groupUniqueIdentifier,
       ...(data?.filter && { filter: data.filter }),
       ...(data?.scope && { scope: data.scope }),
-      ...(data?.groupObjectClass && {
-        groupObjectClass: data.groupObjectClass,
-      }),
+      groupObjectClass: tags,
       ...(data?.usernameIdentifier && {
         usernameIdentifier: data.usernameIdentifier,
       }),
@@ -370,6 +441,29 @@ export const LdapConfig = () => {
       value: 'base',
     },
   ];
+  const [tags, setTags] = useState([]);
+  const handleKeyDown = e => {
+    const value = e.target.value.trim();
+
+    if (e.key === 'Enter' && value) {
+      if (tags.length >= 5) {
+        toast.error('Maximum 5 tags allowed');
+        e.target.value = '';
+        return;
+      }
+      if (!tags.includes(value)) {
+        setTags([...tags, value]);
+        e.target.value = '';
+      } else {
+        toast.error('Tag already exists');
+      }
+    } else if (e.key === 'Backspace' && !value) {
+      removeTag(tags[tags.length - 1]);
+    }
+  };
+  const removeTag = tagToRemove => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
   return (
     <Wrapper>
       {loading && <FullPageLoader loading={loading} />}
@@ -518,7 +612,7 @@ export const LdapConfig = () => {
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-              <InputField
+              {/* <InputField
                 name="groupObjectClass"
                 type="text"
                 register={registerForm2}
@@ -528,7 +622,35 @@ export const LdapConfig = () => {
                 errors={errorsForm2}
                 disabled={!secondFormState || !ldapInitialConfig}
                 required
-              />
+              /> */}
+              <label htmlFor="tags-input" className="tags-input-label">
+                Group Object Class
+              </label>
+
+              <TagsInputContainer>
+                <IconTag>
+                  <TagIcon />
+                </IconTag>
+                {tags.map((tag, index) => (
+                  <TagItem key={index}>
+                    <CharacterCount>
+                      {tag.length > 10 ? `${tag.substring(0, 10)}...` : tag}
+                    </CharacterCount>
+                    <CloseButton onClick={() => removeTag(tag)}>
+                      &times;
+                    </CloseButton>
+                  </TagItem>
+                ))}
+                <TagsInput
+                  type="text"
+                  name="groupObjectClass"
+                  onKeyDown={handleKeyDown}
+                  placeholder="Group Object Class"
+                  disabled={!secondFormState || !ldapInitialConfig}
+                  register={registerForm2}
+                  aria-label="Group Object Class"
+                />
+              </TagsInputContainer>
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
