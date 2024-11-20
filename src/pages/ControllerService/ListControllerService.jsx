@@ -92,6 +92,9 @@ const statusColors = {
   'IN PROGRESS': '#444445',
   DEFAULT: '#F2891F',
   ENABLED: '#0cbf59',
+  DISABLING: '#F2891F',
+  ENABLING: '#F2891F',
+  VALIDATING: '#F2891F',
 };
 const StatusText = ({ text = '', item }) => {
   const color = statusColors[text] || statusColors.DEFAULT;
@@ -168,14 +171,15 @@ export const ListControllerService = () => {
     dispatch(
       NamespacesActions.changeStatusControllerService({
         state:
-          selectedItemFromList?.state == 'DISABLED' ? 'ENABLED' : 'DISABLED',
+          selectedItemFromList?.state == 'DISABLED' ||
+          selectedItemFromList?.state == 'DISABLING'
+            ? 'ENABLED'
+            : 'DISABLED',
         version: selectedItemFromList?.version,
         id: selectedItemFromList?.id,
       })
     );
-    setTimeout(() => {
-      dispatch(NamespacesActions.getControllerServiceList());
-    }, 500);
+
     setIsEnableModalOpen(false);
   };
   const handleDeleteControllerServiceClick = () => {
@@ -186,9 +190,6 @@ export const ListControllerService = () => {
       })
     );
 
-    setTimeout(() => {
-      dispatch(NamespacesActions.getControllerServiceList());
-    }, 500);
     setIsDeleteModalOpen(false);
   };
 
@@ -235,6 +236,8 @@ export const ListControllerService = () => {
             </button>
           )}
           {item?.state != 'INVALID' &&
+            item?.state != 'VALIDATING' &&
+            item?.state != 'DISABLING' &&
             controllerPermissions.includes('edit_controller_services') && (
               <button
                 className="border-0 bg-white ms-1"
@@ -244,6 +247,8 @@ export const ListControllerService = () => {
               </button>
             )}
           {item?.state != 'ENABLED' &&
+            item?.state != 'ENABLING' &&
+            item?.state != 'DISABLING' &&
             controllerPermissions.includes('delete_controller_services') && (
               <button
                 className="border-0 bg-white ms-1"
@@ -373,7 +378,7 @@ export const ListControllerService = () => {
         updatedData={updatedData}
       />
       <ModalWithIcon
-        title={`${selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
+        title={`${selectedItemFromList?.state !== 'DISABLED' || selectedItemFromList?.state !== 'DISABLING' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
         primaryButtonText={
           selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'
         }
@@ -381,7 +386,7 @@ export const ListControllerService = () => {
         icon={<ConfirmScheduleDeploymentIcon />}
         isOpen={isEnableModalOpen}
         onRequestClose={() => setIsEnableModalOpen(false)}
-        primaryText={`Are you sure you want to ${selectedItemFromList?.state !== 'DISABLED' ? 'disable' : 'enable'} ${selectedItemFromList?.name}?`}
+        primaryText={`Are you sure you want to ${selectedItemFromList?.state !== 'DISABLED' || selectedItemFromList?.state !== 'DISABLING' ? 'disable' : 'enable'} ${selectedItemFromList?.name}?`}
         onSubmit={handleStatusClick}
       />
       <ModalWithIcon
