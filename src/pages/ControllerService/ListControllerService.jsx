@@ -259,7 +259,9 @@ export const ListControllerService = () => {
   ];
 
   useEffect(() => {
-    dispatch(NamespacesActions.getControllerServiceList());
+    if (!modalOpenState) {
+      dispatch(NamespacesActions.getControllerServiceList());
+    }
   }, [dispatch, modalOpenState, selectedCluster]);
 
   const handleSettingClick = item => {
