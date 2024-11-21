@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,7 +35,6 @@ import {
 import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
 import { CreateMapping } from './components/CreateMapping';
 import SelectCellRender from './components/SelectCellRender';
-import { isEmpty } from 'lodash';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -437,6 +437,7 @@ export const LdapConfig = () => {
               </StyledButton>
             </div>
           </ButtonFlex>
+
           <InputFieldFlex className="row">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
@@ -499,6 +500,7 @@ export const LdapConfig = () => {
                 icon={<QRIcons />}
                 errors={errorsForm2}
                 disabled={!secondFormState || !ldapInitialConfig}
+                required
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
