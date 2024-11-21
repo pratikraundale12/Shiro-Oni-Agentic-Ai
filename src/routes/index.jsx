@@ -265,6 +265,7 @@ const Routes = () => {
   );
 
   useEffect(() => {
+    dispatch(AuthenticationActions.fetchCurrentUser());
     dispatch(AuthenticationActions.fetchLicenseInfo());
     dispatch(SettingsActions.fetchSettings());
   }, [dispatch]);

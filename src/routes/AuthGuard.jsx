@@ -1,18 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Outlet } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { FullPageLoader, Header, Sidebar } from '../components';
+import { TermsOfUse } from '../pages/PolicyAndTermsOfUse/TermsOfUse';
+import { CheckboxField, Modal } from '../shared';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
   LoadingSelectors,
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
-import { CheckboxField, Modal } from '../shared';
-import { TermsOfUse } from '../pages/PolicyAndTermsOfUse/TermsOfUse';
 
 const Container = styled.div`
   width: 100%;
@@ -78,9 +78,9 @@ const AuthGuard = () => {
     return () => clearInterval(intervalRef.current);
   }, [dispatch, refreshState]);
 
-  useEffect(() => {
-    dispatch(AuthenticationActions.fetchCurrentUser());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(AuthenticationActions.fetchCurrentUser());
+  // }, [dispatch]);
 
   if (loading || !isLoggedIn) {
     return <FullPageLoader loading={loading || !isLoggedIn} />;
