@@ -44,10 +44,7 @@ const Container = styled.div`
 `;
 
 const TableContainer = styled.div`
-  min-height: ${props =>
-    props.module === 'nodes' ? 'calc(100% - 160px);' : 'auto'};
-  max-height: ${props =>
-    props.module === 'nodes' ? 'calc(100% - 160px);' : 'auto'};
+  height: 100%;
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
