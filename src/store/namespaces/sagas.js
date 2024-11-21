@@ -905,6 +905,8 @@ export function* changeStatusControllerService(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Status updated Successfully');
+    yield delay(400);
+    yield put(NamespacesActions.getControllerServiceList());
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
@@ -935,6 +937,8 @@ export function* deleteControllerService(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Controller service deleted Successfully');
+    yield delay(100);
+    yield put(NamespacesActions.getControllerServiceList());
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
