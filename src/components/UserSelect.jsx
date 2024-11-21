@@ -47,7 +47,7 @@ export const UserSelect = ({
   useEffect(() => {
     if (isEmpty(AdminRole)) dispatch(RolesActions.fetchRoles());
   }, [dispatch, AdminRole]);
-
+  console.log(userList, 'userList');
   return (
     <SelectField
       label={label}

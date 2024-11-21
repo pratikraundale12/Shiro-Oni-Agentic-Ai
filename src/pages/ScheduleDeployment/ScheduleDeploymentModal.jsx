@@ -46,14 +46,14 @@ export const ScheduleDeploymentModal = () => {
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const {
     control,
-    formState: { errors, isDirty },
+    formState: { errors },
     reset,
+    watch,
     handleSubmit,
   } = useForm({
     resolver: yupResolver(Schema),
     defaultValues: DEFAULT_VALUES,
   });
-
   const onRequestClose = () => {
     dispatch(SchedularActions.setScheduleModal());
     reset();
@@ -103,6 +103,8 @@ export const ScheduleDeploymentModal = () => {
   const needToDisable = selectedSchedule?.approvers?.some(
     item => item.approver_id === currentUser?.id
   );
+  const approver_ids = watch('approver_ids');
+  console.log(approver_ids, 'approver_ids');
 
   return (
     <Modal
@@ -116,7 +118,7 @@ export const ScheduleDeploymentModal = () => {
       onRequestClose={onRequestClose}
       secondaryButtonText="Cancel"
       primaryButtonText={!isEmpty(selectedSchedule) ? 'Update' : 'Continue'}
-      primaryButtonDisabled={!isDirty}
+      primaryButtonDisabled={isEmpty(approver_ids)}
       onSubmit={handleSubmit(onSubmit)}
       footerAlign="start"
       contentStyles={{ minWidth: '45%', minHeight: '40%' }}
