@@ -26,9 +26,7 @@ export function* fetchCurrentUser(api) {
 }
 
 export function* updateTermsAndPolicies(api, { payload }) {
-  console.log('-----calleddddd');
   const currentUser = yield select(AuthenticationSelectors.getCurrentUser);
-  console.log(currentUser?.id, '---currentUser');
 
   const queryParams = {
     userId: currentUser?.id || '',

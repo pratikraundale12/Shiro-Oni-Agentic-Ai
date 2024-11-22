@@ -71,6 +71,8 @@ export const ScheduleDeploymentModal = () => {
         approver_ids: approver_ids,
       };
       dispatch(SchedularActions.editScheduleDeployment(payload));
+      reset();
+      dispatch(SchedularActions.setSelectedSchedule({}));
     } else {
       dispatch(
         SchedularActions.setFormData({
@@ -81,8 +83,6 @@ export const ScheduleDeploymentModal = () => {
       dispatch(SchedularActions.setScheduleModal());
       dispatch(SchedularActions.setScheduleDeployModal());
     }
-    reset();
-    dispatch(SchedularActions.setSelectedSchedule({}));
   };
 
   useEffect(() => {
@@ -104,8 +104,6 @@ export const ScheduleDeploymentModal = () => {
     item => item.approver_id === currentUser?.id
   );
   const approver_ids = watch('approver_ids');
-  console.log(approver_ids, 'approver_ids');
-
   return (
     <Modal
       size="md"

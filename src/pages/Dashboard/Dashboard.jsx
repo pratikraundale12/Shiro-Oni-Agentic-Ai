@@ -282,7 +282,6 @@ export const Dashboard = () => {
     setSelectedNamespace(selectedItem);
     // dispatch(NamespacesActions.setSelectedNamespace(selectedItem));
   };
-  console.log(selectedCluster);
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {
       const payload = {

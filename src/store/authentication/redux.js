@@ -129,7 +129,6 @@ const disableButton = state => {
 };
 
 const updateTermsAndPoliciesSuccess = (state, { payload }) => {
-  console.log(payload, '----payloaddddd');
   return {
     ...state,
     hasTermsAndPoliciesAccepted:

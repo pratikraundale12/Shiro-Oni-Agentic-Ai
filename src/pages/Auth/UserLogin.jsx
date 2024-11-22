@@ -128,7 +128,6 @@ export const UserLogin = () => {
     dispatch(AuthenticationActions.login({ ...data, token }));
   };
 
-  console.log(token);
   return (
     <Layout>
       <Title>{`${WELCOME_BACK} 👋`}</Title>
