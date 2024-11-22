@@ -78,9 +78,9 @@ const AuthGuard = () => {
     return () => clearInterval(intervalRef.current);
   }, [dispatch, refreshState]);
 
-  // useEffect(() => {
-  //   dispatch(AuthenticationActions.fetchCurrentUser());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(AuthenticationActions.fetchCurrentUser());
+  }, [dispatch]);
 
   if (loading || !isLoggedIn) {
     return <FullPageLoader loading={loading || !isLoggedIn} />;
