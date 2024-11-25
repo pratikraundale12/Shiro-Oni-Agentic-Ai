@@ -323,7 +323,6 @@ const ProcessGroupSummary = () => {
   const handleBackClick = () => {
     history.push('/process-group');
   };
-  console.log(confirmDialogue.action);
 
   const handleConfirmUpdateStatus = () => {
     dispatch(NamespacesActions.updateNamespaceStatus(confirmDialogue.action));

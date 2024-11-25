@@ -112,7 +112,6 @@ export function* fetchGrid(
         const cluster = tempData?.find(
           item => item?.id !== selectedCluster?.value
         );
-        console.log({ cluster });
         if (!cluster) {
           localStorage.removeItem('selected_cluster');
         }

@@ -7,11 +7,14 @@ import { UserIcon } from '../assets';
 import defaultAvatarURL from '../assets/images/avatar.png';
 import { SelectField } from '../shared';
 import {
+  AuthenticationSelectors,
   RolesActions,
   RolesSelectors,
   UsersActions,
   UsersSelectors,
 } from '../store';
+import { useLocation } from 'react-router-dom';
+import { SchedularSelectors } from '../store/schedular';
 
 export const UserSelect = ({
   control,
@@ -22,11 +25,24 @@ export const UserSelect = ({
   disabled,
 }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const [selected, setSelected] = useState([]);
   const RoleList = useSelector(RolesSelectors.getRoles);
   const userList = useSelector(UsersSelectors.getUsers);
   const AdminRole = RoleList?.find(item => item.name.toLowerCase() === 'admin');
   const [searchText, setSearchText] = useState('');
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
+  const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
+  const updatedArray = userList.filter(item => item.id !== currentUser.id);
+  const schedularExcludedList = userList.filter(
+    item => item.id !== selectedSchedule?.deployer_id
+  );
+  schedularExcludedList;
+  const displayArray = location?.pathname?.includes('/summary')
+    ? updatedArray
+    : !isEmpty(selectedSchedule)
+      ? schedularExcludedList
+      : userList;
 
   const handleChange = value => {
     setSearchText(value);
@@ -47,7 +63,6 @@ export const UserSelect = ({
   useEffect(() => {
     if (isEmpty(AdminRole)) dispatch(RolesActions.fetchRoles());
   }, [dispatch, AdminRole]);
-
   return (
     <SelectField
       label={label}
@@ -61,7 +76,7 @@ export const UserSelect = ({
           username: item.label,
           photo: item.avatar,
         })),
-        ...userList,
+        ...displayArray,
       ].map(({ id, photo, username }) => ({
         value: id,
         label: username,

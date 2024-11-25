@@ -46,14 +46,14 @@ export const ScheduleDeploymentModal = () => {
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const {
     control,
-    formState: { errors, isDirty },
+    formState: { errors },
     reset,
+    watch,
     handleSubmit,
   } = useForm({
     resolver: yupResolver(Schema),
     defaultValues: DEFAULT_VALUES,
   });
-
   const onRequestClose = () => {
     dispatch(SchedularActions.setScheduleModal());
     reset();
@@ -71,6 +71,8 @@ export const ScheduleDeploymentModal = () => {
         approver_ids: approver_ids,
       };
       dispatch(SchedularActions.editScheduleDeployment(payload));
+      reset();
+      dispatch(SchedularActions.setSelectedSchedule({}));
     } else {
       dispatch(
         SchedularActions.setFormData({
@@ -81,8 +83,6 @@ export const ScheduleDeploymentModal = () => {
       dispatch(SchedularActions.setScheduleModal());
       dispatch(SchedularActions.setScheduleDeployModal());
     }
-    reset();
-    dispatch(SchedularActions.setSelectedSchedule({}));
   };
 
   useEffect(() => {
@@ -103,7 +103,7 @@ export const ScheduleDeploymentModal = () => {
   const needToDisable = selectedSchedule?.approvers?.some(
     item => item.approver_id === currentUser?.id
   );
-
+  const approver_ids = watch('approver_ids');
   return (
     <Modal
       size="md"
@@ -116,7 +116,7 @@ export const ScheduleDeploymentModal = () => {
       onRequestClose={onRequestClose}
       secondaryButtonText="Cancel"
       primaryButtonText={!isEmpty(selectedSchedule) ? 'Update' : 'Continue'}
-      primaryButtonDisabled={!isDirty}
+      primaryButtonDisabled={isEmpty(approver_ids)}
       onSubmit={handleSubmit(onSubmit)}
       footerAlign="start"
       contentStyles={{ minWidth: '45%', minHeight: '40%' }}

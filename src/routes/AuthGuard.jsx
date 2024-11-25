@@ -87,7 +87,6 @@ const AuthGuard = () => {
   }
 
   const handleAcceptTerms = e => {
-    console.log(e.target.checked);
     setHasAcceptedTerms(e.target.checked);
   };
 
