@@ -100,12 +100,5 @@ export const EnableClusterRender = ({ item }) => {
 };
 
 EnableClusterRender.propTypes = {
-  item: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    status: PropTypes.oneOf([
-      CLUSTER_STATUS.DISCONNECTED,
-      CLUSTER_STATUS.CONNECTED,
-    ]).isRequired,
-  }).isRequired,
+  item: PropTypes.object.isRequired,
 };
