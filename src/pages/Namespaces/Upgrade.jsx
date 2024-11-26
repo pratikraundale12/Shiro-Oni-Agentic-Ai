@@ -204,8 +204,8 @@ const Upgrade = () => {
 
   const sortedArray = gridDataDest?.map(element => ({
     ...element?.position,
-    width: 183,
-    height: 68,
+    width: 384,
+    height: 176,
     color: 'teal',
   }));
 
@@ -215,8 +215,8 @@ const Upgrade = () => {
   const childLevelSortedData = childLevelDeployProcessorData?.data?.map(
     element => ({
       ...element?.position,
-      width: 183,
-      height: 68,
+      width: 384,
+      height: 176,
       color: 'teal',
     })
   );
@@ -325,8 +325,8 @@ const Upgrade = () => {
       {
         x: xStateCoordinate || formData?.position?.x,
         y: yStateCoordinate || formData?.position?.y,
-        width: 183,
-        height: 68,
+        width: 384,
+        height: 176,
         color: theme.colors.primary,
       },
     ],
