@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -34,7 +34,7 @@ const EnableClusterText = styled.div`
 export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
 
-  const handleClusterAction = useCallback(() => {
+  const handleClusterAction = () => {
     if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
       dispatch(
         AuthenticationActions.setClusterLogin({
@@ -48,6 +48,7 @@ export const EnableClusterRender = ({ item }) => {
         GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
       dispatch(DashboardActions.fetchDashboardSuccess({ data: {} }));
+
       const clusterItem = localStorage.getItem('selected_cluster');
       const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
 
@@ -63,6 +64,7 @@ export const EnableClusterRender = ({ item }) => {
           );
         }
       }
+
       // Remove the matching cluster from clustersToken
       const updatedClustersToken = clustersToken.filter(
         token => token.id !== item.id
@@ -71,9 +73,10 @@ export const EnableClusterRender = ({ item }) => {
         CLUSTERS_TOKEN,
         JSON.stringify(updatedClustersToken)
       );
+
       toast.success('Cluster Disconnected Successfully');
     }
-  }, [dispatch, item]);
+  };
 
   return (
     <>
