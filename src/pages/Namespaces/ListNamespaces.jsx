@@ -225,11 +225,22 @@ export const ListNamespaces = () => {
               cursor: 'pointer',
             }}
             aria-label={KDFM.OPEN_AUDIT_LOG}
+            data-tooltip-id={`tooltip-audit-log1`}
           >
             <IconButton>
               <ActivityHistoryIcon width={14} height={14} />
             </IconButton>
           </button>
+          <ReactTooltip
+            id={`tooltip-audit-log1`}
+            place="left"
+            content={'Audit Logs'}
+            style={{
+              width: '120px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
           <button
             onClick={() => history.push(`/process-group/${item.id}`)}
             style={{
@@ -238,11 +249,22 @@ export const ListNamespaces = () => {
               padding: 0,
               cursor: 'pointer',
             }}
+            data-tooltip-id={`tooltip-group-details`}
           >
             <IconButton>
               <OpenEyeIcon width={14} height={14} />
             </IconButton>
           </button>
+          <ReactTooltip
+            id={`tooltip-group-details`}
+            place="left"
+            content={'Group Details'}
+            style={{
+              width: '120px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
           <button
             onClick={() => handleControllerService(item)}
             style={{
