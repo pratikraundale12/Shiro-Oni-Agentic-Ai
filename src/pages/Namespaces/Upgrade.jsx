@@ -204,16 +204,19 @@ const Upgrade = () => {
 
   const sortedArray = gridDataDest?.map(element => ({
     ...element?.position,
-    width: 80,
-    height: 40,
+    width: 183,
+    height: 68,
     color: 'teal',
   }));
 
+  /* width: 183,
+    height: 66, */
+  //160*70
   const childLevelSortedData = childLevelDeployProcessorData?.data?.map(
     element => ({
       ...element?.position,
-      width: 80,
-      height: 40,
+      width: 183,
+      height: 68,
       color: 'teal',
     })
   );
@@ -322,13 +325,16 @@ const Upgrade = () => {
       {
         x: xStateCoordinate || formData?.position?.x,
         y: yStateCoordinate || formData?.position?.y,
-        width: 80,
-        height: 40,
+        width: 183,
+        height: 68,
         color: theme.colors.primary,
       },
     ],
   ];
 
+  // 183  75
+  /*  width: 350,
+        height: 75, */
   const handleXCoordinateChangeInput = e => {
     setXStateCoordiate(Number(e.target.value));
     dispatch(NamespacesActions.setPosition({ x: e.target.value }));
