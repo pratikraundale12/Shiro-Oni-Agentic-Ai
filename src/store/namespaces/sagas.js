@@ -54,6 +54,10 @@ export function* fetchDestNamespaces(api) {
 export function* checkDestCluster(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const scheduleFromList = yield select(SchedularSelectors.getScheduleFromList);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
@@ -80,6 +84,7 @@ export function* checkDestCluster(api) {
         srcClusterToken,
         path,
         is_scheduled: scheduleFromList,
+        sourceNamespaceId: selectedNamespace?.value,
       },
     ],
     successAction: NamespacesActions.checkDestClusterSuccess,
