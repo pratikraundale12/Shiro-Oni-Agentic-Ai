@@ -315,7 +315,15 @@ const Upgrade = () => {
   const isStateStale =
     checkDestCluster.state === 'LOCALLY_MODIFIED_AND_STALE' ||
     checkDestCluster.state === 'LOCALLY_MODIFIED';
-  const baseData = formData?.namespaceId ? childLevelSortedData : sortedArray;
+
+  const baseData = Array.isArray(
+    formData?.namespaceId ? childLevelSortedData : sortedArray
+  )
+    ? formData?.namespaceId
+      ? childLevelSortedData
+      : sortedArray
+    : [];
+
   const updatedDataForGraph = [
     ...baseData,
     ...[
