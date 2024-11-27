@@ -262,9 +262,8 @@ export const ListControllerService = () => {
       width: '14%',
     },
   ];
-
   useEffect(() => {
-    if (!modalOpenState) {
+    if (!modalOpenState && selectedCluster?.value) {
       dispatch(NamespacesActions.getControllerServiceList());
     }
   }, [dispatch, modalOpenState, selectedCluster]);
