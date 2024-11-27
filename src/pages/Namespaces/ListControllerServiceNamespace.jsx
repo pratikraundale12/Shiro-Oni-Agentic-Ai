@@ -18,6 +18,7 @@ import { Table } from '../../components';
 import { Button, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
+  LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
@@ -158,6 +159,9 @@ export const ListControllerService = () => {
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const selectedNamespaceId = useSelector(
     NamespacesSelectors.getSelectedNamespace
+  );
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
@@ -339,6 +343,7 @@ export const ListControllerService = () => {
         data={filteredModulesData || []}
         columns={COLUMNS}
         controllerModule={true}
+        loading={loading}
       />
 
       <ConfigControllerService
