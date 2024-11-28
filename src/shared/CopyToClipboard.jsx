@@ -84,7 +84,6 @@ const CopyToClipboard = ({ copyItem, className, tooltipPlacement }) => {
         type="button"
         onClick={() => handleCopyToClipboard(copyItem)}
         className={className}
-        title="Copy URL"
       >
         <CopyIcon />
       </StyledButton>
