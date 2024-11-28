@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { OpenLinkIcon } from '../../../assets';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
@@ -37,11 +38,24 @@ export const UrlRender = ({ url, tooltipPlacement = 'bottom' }) => {
         tooltipPlacement={tooltipPlacement}
       />
       <Container>
-        <StyledLink href={url} target="_blank">
+        <StyledLink href={url} target="_blank" data-tooltip-id={`${url}1`}>
           <OpenLinkIcon />
         </StyledLink>
+
         <CopyToClipboard copyItem={url} />
       </Container>
+      <ReactTooltip
+        id={`${url}1`}
+        place="bottom"
+        effect="solid"
+        content={'Navigate to URL'}
+        style={{
+          width: '140px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          zIndex: 10000,
+        }}
+      />
     </Container>
   );
 };

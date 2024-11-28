@@ -28,6 +28,7 @@ const ClusterDetail = ({ data }) => {
               ? item?.nifi_url
               : `${item.nifi_url}/nifi`
           }
+          tooltipPlacement="top"
         />
       ),
       width: '75%',

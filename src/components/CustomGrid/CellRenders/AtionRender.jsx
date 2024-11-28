@@ -13,7 +13,7 @@ const ActionTd = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-  gap: 8px;
+  gap: 3px;
 `;
 
 export const IconButton = styled.button`
