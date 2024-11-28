@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { LoginIcon, LogoutIcon } from '../../../assets';
 import { CLUSTERS_TOKEN, CLUSTER_STATUS } from '../../../constants';
@@ -81,13 +82,7 @@ export const EnableClusterRender = ({ item }) => {
   return (
     <>
       <EnableClusterText onClick={handleClusterAction}>
-        <IconButton
-          title={
-            item?.status === CLUSTER_STATUS.DISCONNECTED
-              ? 'Login to Cluster'
-              : 'Logout from Cluster'
-          }
-        >
+        <IconButton data-tooltip-id={`${item?.id}1`}>
           {item?.status === CLUSTER_STATUS.DISCONNECTED ? (
             <LoginIcon />
           ) : (
@@ -98,6 +93,21 @@ export const EnableClusterRender = ({ item }) => {
       {item?.status === CLUSTER_STATUS.DISCONNECTED && (
         <ClusterLoginModal cluster={item} />
       )}
+      <ReactTooltip
+        id={`${item?.id}1`}
+        place="left"
+        effect="solid"
+        content={
+          item?.status === CLUSTER_STATUS.DISCONNECTED
+            ? 'Cluster login'
+            : 'Cluster logout'
+        }
+        style={{
+          width: '130px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+        }}
+      />
     </>
   );
 };

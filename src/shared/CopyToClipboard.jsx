@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { toast, ToastContainer } from 'react-toastify';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { CopyIcon } from '../assets';
 
@@ -22,7 +23,7 @@ export const StyledButton = styled.button`
   }
 `;
 
-const CopyToClipboard = ({ copyItem, className }) => {
+const CopyToClipboard = ({ copyItem, className, tooltipPlacement }) => {
   const fallbackCopyTextToClipboard = text => {
     const textArea = document.createElement('textarea');
     textArea.value = text;
@@ -83,9 +84,21 @@ const CopyToClipboard = ({ copyItem, className }) => {
         type="button"
         onClick={() => handleCopyToClipboard(copyItem)}
         className={className}
+        title="Copy URL"
       >
         <CopyIcon />
       </StyledButton>
+      <ReactTooltip
+        id={tooltipPlacement}
+        place="right"
+        effect="solid"
+        content={'Copy URL'}
+        style={{
+          width: '130px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+        }}
+      />
     </>
   );
 };

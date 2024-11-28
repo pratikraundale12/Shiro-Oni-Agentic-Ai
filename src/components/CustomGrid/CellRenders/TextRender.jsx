@@ -36,6 +36,9 @@ export const TextRender = ({
           content={textToRender}
           place={tooltipPlacement}
           positionStrategy="fixed"
+          style={{
+            zIndex: 9999,
+          }}
         />
       )}
     </TextColor>

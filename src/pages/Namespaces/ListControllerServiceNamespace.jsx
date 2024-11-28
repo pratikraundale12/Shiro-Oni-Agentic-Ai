@@ -231,30 +231,77 @@ export const ListControllerService = () => {
       renderCell: item => (
         <>
           {controllerPermissions.includes('edit_controller_services') && (
-            <button
-              className="border-0 bg-white"
-              onClick={() => handleSettingClick(item)}
-            >
-              <SettingSmallIcon />
-            </button>
+            <>
+              <button
+                className="border-0 bg-white"
+                onClick={() => handleSettingClick(item)}
+                data-tooltip-id={'Settings'}
+              >
+                <SettingSmallIcon />
+              </button>
+              <ReactTooltip
+                id={'Settings'}
+                place="left"
+                content={'Settings'}
+                style={{
+                  width: '100px',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
           )}
           {item?.state != 'INVALID' &&
+            item?.state != 'VALIDATING' &&
+            item?.state != 'DISABLING' &&
             controllerPermissions.includes('edit_controller_services') && (
-              <button
-                className="border-0 bg-white ms-1"
-                onClick={() => handleEnableClick(item)}
-              >
-                {item?.state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
-              </button>
+              <>
+                <button
+                  className="border-0 bg-white ms-1"
+                  onClick={() => handleEnableClick(item)}
+                  data-tooltip-id={item?.id}
+                >
+                  {item?.state !== 'DISABLED' ? (
+                    <FlashCutIcon />
+                  ) : (
+                    <FlashIcon />
+                  )}
+                </button>
+                <ReactTooltip
+                  id={item?.id}
+                  place="left"
+                  content={item?.state !== 'DISABLED' ? 'Enable' : 'Disable'}
+                  style={{
+                    width: '100px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
             )}
           {item?.state != 'ENABLED' &&
+            item?.state != 'ENABLING' &&
+            item?.state != 'DISABLING' &&
             controllerPermissions.includes('delete_controller_services') && (
-              <button
-                className="border-0 bg-white ms-1"
-                onClick={() => handleDeleteClick(item)}
-              >
-                <DeleteSmallIcon color="black" height="28" />
-              </button>
+              <>
+                <button
+                  className="border-0 bg-white ms-1"
+                  onClick={() => handleDeleteClick(item)}
+                  data-tooltip-id={'Delete'}
+                >
+                  <DeleteSmallIcon color="black" height="28" />
+                </button>
+                <ReactTooltip
+                  id={'Delete'}
+                  place="left"
+                  content={'Delete'}
+                  style={{
+                    width: '80px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
             )}
         </>
       ),
