@@ -384,10 +384,24 @@ export const GridActions = ({
             !userModalOpen && <Modal />}
         </ButtonsContainer>
         {module === 'namespaces' ? (
-          <RefreshIocn onClick={handleRefresh}>
-            {' '}
-            <RefreshIcon style={{ cursor: 'pointer' }} />
-          </RefreshIocn>
+          <>
+            <RefreshIocn
+              onClick={handleRefresh}
+              data-tooltip-id={`tooltip-group-namespace-refresh`}
+            >
+              <RefreshIcon style={{ cursor: 'pointer' }} />
+            </RefreshIocn>
+            <ReactTooltip
+              id={`tooltip-group-namespace-refresh`}
+              place="left"
+              content={'Refresh'}
+              style={{
+                width: '100px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+          </>
         ) : null}
       </Flex>
       <SearchContainer>
