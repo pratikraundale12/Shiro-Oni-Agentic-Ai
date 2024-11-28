@@ -156,19 +156,7 @@ export const ListNamespaces = () => {
       renderCell: item => (
         <Flex>
           <TextRender text={item.id} />
-          <span data-tooltip-id={`tooltip-copy-icon`}>
-            <CopyToClipboard copyItem={item.id} />
-          </span>
-          <ReactTooltip
-            id={`tooltip-copy-icon`}
-            place="right"
-            content={'Copy group Id'}
-            style={{
-              width: '125px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
+          <CopyToClipboard copyItem={item.id} />
         </Flex>
       ),
       width: '25%',
