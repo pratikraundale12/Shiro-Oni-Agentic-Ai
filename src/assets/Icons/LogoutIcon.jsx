@@ -1,5 +1,7 @@
+import PropTypes from 'prop-types';
 import React from 'react';
-export const LogoutIcon = () => {
+
+export const LogoutIcon = ({ color = '#444445' }) => {
   return (
     <svg
       width="12"
@@ -10,8 +12,12 @@ export const LogoutIcon = () => {
     >
       <path
         d="M6 11C3.23857 11 1 8.7614 1 6C1 3.23857 3.23857 1 6 1C7.63565 1 9.08785 1.78539 10.0001 2.99961L8.64545 2.99966C7.94035 2.3775 7.01425 2 6 2C3.79086 2 2 3.79086 2 6C2 8.20915 3.79086 10 6 10C7.0145 10 7.9408 9.6223 8.64595 8.9999H10.0005C9.08825 10.2144 7.63585 11 6 11ZM9.5 8V6.5H5.5V5.5H9.5V4L12 6L9.5 8Z"
-        fill="#444445"
+        fill={color}
       />
     </svg>
   );
+};
+
+LogoutIcon.propTypes = {
+  color: PropTypes.string,
 };
