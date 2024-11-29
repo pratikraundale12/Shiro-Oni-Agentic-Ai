@@ -24,6 +24,7 @@ import {
 import { deleteUserApi } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import { AddUserModal } from './AddUserModal';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const ActionTd = styled.div`
   display: flex;
@@ -43,32 +44,58 @@ export const ListUsers = () => {
     <div>
       <ActionTd>
         {userPermissions.includes('edit_user') && (
-          <IconButton
-            onClick={() => {
-              setState({
-                ...state,
-                userModal: true,
-                selectedItem: item,
-                label: 'User',
-              });
-              dispatch(UsersActions.setUserModalOpen(true));
-            }}
-          >
-            <PencilIcon width={16} height={16} />
-          </IconButton>
+          <>
+            <IconButton
+              onClick={() => {
+                setState({
+                  ...state,
+                  userModal: true,
+                  selectedItem: item,
+                  label: 'User',
+                });
+                dispatch(UsersActions.setUserModalOpen(true));
+              }}
+              data-tooltip-id={`tooltip-group-edit-user`}
+            >
+              <PencilIcon width={16} height={16} />
+            </IconButton>
+            <ReactTooltip
+              id={`tooltip-group-edit-user`}
+              place="left"
+              content={'Edit user'}
+              style={{
+                width: '90px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+          </>
         )}
         {userPermissions.includes('delete_user') && (
-          <IconButton
-            onClick={() =>
-              setState({
-                ...state,
-                userDeleteModal: true,
-                selectedItem: item,
-              })
-            }
-          >
-            <DeleteSmallIcon color="red" />
-          </IconButton>
+          <>
+            <IconButton
+              onClick={() =>
+                setState({
+                  ...state,
+                  userDeleteModal: true,
+                  selectedItem: item,
+                })
+              }
+              data-tooltip-id={`tooltip-group-delete-user`}
+            >
+              <DeleteSmallIcon color="red" />
+            </IconButton>
+            <ReactTooltip
+              id={`tooltip-group-delete-user`}
+              place="left"
+              content={'Delete user'}
+              style={{
+                width: '110px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+          </>
         )}
       </ActionTd>
     </div>

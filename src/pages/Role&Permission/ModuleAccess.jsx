@@ -23,6 +23,7 @@ import {
   RolesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const Flex = styled.div`
   display: flex;
@@ -382,9 +383,20 @@ export const ModuleAccess = () => {
             className="d-flex border-0 bg-white"
             onClick={handleBackButtonClick}
             style={{ marginBottom: '0.5rem' }}
+            data-tooltip-id={`tooltip-group-role-module`}
           >
             <GreaterArrowIcon />
           </button>
+          <ReactTooltip
+            id={`tooltip-group-role-module`}
+            place="right"
+            content={'Back'}
+            style={{
+              width: '65px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>

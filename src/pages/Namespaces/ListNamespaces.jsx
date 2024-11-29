@@ -236,7 +236,7 @@ export const ListNamespaces = () => {
             place="left"
             content={'Audit Logs'}
             style={{
-              width: '120px',
+              width: '105px',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}
@@ -284,7 +284,7 @@ export const ListNamespaces = () => {
             place="right"
             content={'Controller Service'}
             style={{
-              width: '120px',
+              width: '150px',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}

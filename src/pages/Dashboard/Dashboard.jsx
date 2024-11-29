@@ -347,10 +347,23 @@ export const Dashboard = () => {
               disabled={!ClusterActivated}
             />
           </DropdownContainer>
-          <RefreshIocn onClick={handleRefresh}>
+          <RefreshIocn
+            onClick={handleRefresh}
+            data-tooltip-id={`tooltip-group-dashboard-refresh`}
+          >
             {' '}
             <RefreshIcon style={{ cursor: 'pointer' }} />
           </RefreshIocn>
+          <ReactTooltip
+            id={`tooltip-group-dashboard-refresh`}
+            place="left"
+            content={'Refresh'}
+            style={{
+              width: '100px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
         </DropdownWrapper>
       </TopSection>
       <InsightDataContiner>
