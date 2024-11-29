@@ -320,9 +320,26 @@ export const SummaryModal = ({
                       <TextEllipses data-tooltip-id={data?.entityUrlValue}>
                         {data?.entityUrlValue}
                       </TextEllipses>
-                      <CopyToClipboard
-                        className="copy-button"
-                        copyItem={data?.entityUrlValue}
+                      <span
+                        data-tooltip-id={`copy-board-summary-modal${data?.entityUrlValue}`}
+                      >
+                        <CopyToClipboard
+                          className="copy-button"
+                          copyItem={data?.entityUrlValue}
+                        />
+                      </span>
+                      <ReactTooltip
+                        id={`copy-board-summary-modal${data?.entityUrlValue}`}
+                        place="bottom"
+                        effect="solid"
+                        // content={'Copy URL'}
+                        content={`${data?.title == 'Registry Details' ? 'Copy registry URL' : 'Copy cluster URL'}`}
+                        style={{
+                          width: '120px',
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
+                          zIndex: 10000,
+                        }}
                       />
                       <ReactTooltip
                         id={data?.entityUrlValue}

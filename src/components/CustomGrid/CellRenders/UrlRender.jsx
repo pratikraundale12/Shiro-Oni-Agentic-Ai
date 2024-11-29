@@ -29,7 +29,7 @@ const StyledLink = styled.a`
   }
 `;
 
-export const UrlRender = ({ url, tooltipPlacement = 'bottom' }) => {
+export const UrlRender = ({ url, tooltipPlacement = 'bottom', type }) => {
   return (
     <Container>
       <TextRender
@@ -41,8 +41,9 @@ export const UrlRender = ({ url, tooltipPlacement = 'bottom' }) => {
         <StyledLink href={url} target="_blank" data-tooltip-id={`${url}1`}>
           <OpenLinkIcon />
         </StyledLink>
-
-        <CopyToClipboard copyItem={url} />
+        <span data-tooltip-id={`${url}copy-board`}>
+          <CopyToClipboard copyItem={url} />
+        </span>
       </Container>
       <ReactTooltip
         id={`${url}1`}
@@ -56,6 +57,19 @@ export const UrlRender = ({ url, tooltipPlacement = 'bottom' }) => {
           zIndex: 10000,
         }}
       />
+      <ReactTooltip
+        id={`${url}copy-board`}
+        place="bottom"
+        effect="solid"
+        // content={'Copy URL '}
+        content={`${type === 'Registry' ? 'Copy registry URL' : 'Copy cluster URL'}`}
+        style={{
+          width: '150px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          zIndex: 10000,
+        }}
+      />
     </Container>
   );
 };
@@ -63,4 +77,5 @@ export const UrlRender = ({ url, tooltipPlacement = 'bottom' }) => {
 UrlRender.propTypes = {
   url: PropTypes.string.isRequired,
   tooltipPlacement: PropTypes.string,
+  type: PropTypes.string,
 };
