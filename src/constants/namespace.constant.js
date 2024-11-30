@@ -41,4 +41,6 @@ export const NAMESPACE_CONSTANTS = {
   ENTER_PARAMETER: 'Enter Parameter',
   ENTER_VARIABLE: 'Enter Variable',
   ENTER_DESCRIPTION: 'Enter Description',
+  SCHEDULE_DEPLOYMENT: 'Schedule Deployment',
+  DEPLOY: 'Deploy',
 };

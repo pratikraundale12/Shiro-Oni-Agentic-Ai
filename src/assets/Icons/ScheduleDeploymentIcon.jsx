@@ -1,11 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const ScheduleDeploymentIcon = ({ color = '#444445' }) => {
+export const ScheduleDeploymentIcon = ({
+  color = '#444445',
+  width = 20,
+  height = 20,
+}) => {
   return (
     <svg
-      width={20}
-      height={20}
+      width={width}
+      height={height}
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -19,4 +23,6 @@ export const ScheduleDeploymentIcon = ({ color = '#444445' }) => {
 };
 ScheduleDeploymentIcon.propTypes = {
   color: PropTypes.string,
+  width: PropTypes.number,
+  height: PropTypes.number,
 };

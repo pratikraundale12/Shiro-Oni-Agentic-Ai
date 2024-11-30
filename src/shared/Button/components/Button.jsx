@@ -127,6 +127,7 @@ const Button = ({
   size = 'md',
   loading = false,
   children,
+  style,
   ...buttonProps
 }) => {
   if (loading) {
@@ -148,6 +149,7 @@ const Button = ({
       size={size}
       variant={variant}
       iconPosition={iconPosition}
+      style={style}
       {...buttonProps}
     >
       {iconPosition === 'left' && icon}
@@ -166,6 +168,7 @@ Button.propTypes = {
   variant: PropTypes.oneOf(['primary', 'secondary', 'tertiary']), // Added 'tertiary'
   loading: PropTypes.bool,
   disabled: PropTypes.bool,
+  style: PropTypes.object,
 };
 
 export default Button;

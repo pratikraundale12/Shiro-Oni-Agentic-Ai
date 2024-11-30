@@ -9,6 +9,7 @@ import {
   GreaterArrowIcon,
   PlusCircleIcon,
   RefreshIcon,
+  ScheduleDeploymentIcon,
   SmallSearchIcon,
   TodoIcon,
 } from '../../assets';
@@ -173,6 +174,23 @@ const RefreshIocn = styled.div`
   justify-content: center;
   margin-left: 10px;
   border-radius: 4px;
+`;
+
+const ScheduleButton = styled.div`
+  width: Fixed (201px) px;
+  height: Fixed (37px) px;
+  top: 107px;
+  left: 1054px;
+  padding: 10px 12px 10px 12px;
+  gap: 0px;
+  border-radius: 4px 0px 0px 0px;
+  justify: space-between;
+  opacity: 0px;
+  border: 1px solid var(--Border, rgba(221, 228, 240, 1));
+  opacity: 0px;
+  color: rgba(75, 85, 100, 1);
+  cursor: pointer;
+  background: rgba(245, 247, 250, 1);
 `;
 
 const GoBackButton = () => {
@@ -384,7 +402,21 @@ export const GridActions = ({
             !userModalOpen && <Modal />}
         </ButtonsContainer>
         {module === 'namespaces' ? (
-          <>
+          <ButtonsContainer>
+            <ScheduleButton
+              className="d-flex items-center gap-3"
+              onClick={() => console.log('Clicked on Schedule Deployment')}
+            >
+              <ScheduleDeploymentIcon height={19} width={19} />
+              {KDFM.SCHEDULE_DEPLOYMENT}
+            </ScheduleButton>
+            <Button
+              size="sm"
+              style={{ width: '84px' }}
+              onClick={() => console.log('Clicked on Deploy')}
+            >
+              {KDFM.DEPLOY}
+            </Button>
             <RefreshIocn
               onClick={handleRefresh}
               data-tooltip-id={`tooltip-group-namespace-refresh`}
@@ -401,7 +433,7 @@ export const GridActions = ({
                 wordWrap: 'break-word',
               }}
             />
-          </>
+          </ButtonsContainer>
         ) : null}
       </Flex>
       <SearchContainer>
