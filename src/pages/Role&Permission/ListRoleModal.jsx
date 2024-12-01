@@ -77,17 +77,9 @@ const ListRoleModal = () => {
         isOpen={modalOpen}
         onRequestClose={closePopup}
         size="md"
-        // isLoading={loading}
-        // onSecondarySubmit={openAddParameterContext}
         secondaryButtonText={'Cancel'}
-        // primaryButtonDisabled={
-        //   !newlyAddParameters?.length || !newlyAddParameters?.length || loading
-        // }
         primaryButtonText={'Add Role'}
         onSubmit={handleOpenAddModal}
-        // footerAlign="start"
-        // secondaryButtonProps={{ icon: <PlusCircleIcon />, disabled: loading }}
-        // contentStyles={{ maxWidth: '45%', maxHeight: '60%' }}
       >
         <ModalBody className="modal-body">
           <Table
