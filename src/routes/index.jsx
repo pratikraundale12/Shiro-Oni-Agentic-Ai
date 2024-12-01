@@ -49,6 +49,7 @@ import { ListControllerService } from '../pages/ControllerService';
 import Deploy from '../pages/Namespaces/Deploy';
 import ListControllerServiceNamespace from '../pages/Namespaces/ListControllerServiceNamespace';
 import ProcessGroupSummary from '../pages/Namespaces/ProcessGroupSummary';
+import DeployPage from '../pages/Namespaces/DeployPage.jsx';
 import Summary from '../pages/Namespaces/Summary';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
@@ -121,6 +122,10 @@ export const ROUTES_MENU = [
       {
         path: 'summary',
         component: <Summary />,
+      },
+      {
+        path: 'deploypage',
+        component: <DeployPage />,
       },
     ],
     permission: 'view_namespace',

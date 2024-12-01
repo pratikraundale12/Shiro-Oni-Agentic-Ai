@@ -294,6 +294,9 @@ export const GridActions = ({
     selectedNamespace && selectedNamespace?.label !== KDFM.NIFI_FLOW;
   const naviagate = useLocation();
   const { clusterSummaryPage = false } = naviagate?.state || {};
+  const handleClick = () => {
+    history.push('/process-group/DeployPage');
+  };
 
   return (
     <>
@@ -410,11 +413,7 @@ export const GridActions = ({
               <ScheduleDeploymentIcon height={19} width={19} />
               {KDFM.SCHEDULE_DEPLOYMENT}
             </ScheduleButton>
-            <Button
-              size="sm"
-              style={{ width: '84px' }}
-              onClick={() => console.log('Clicked on Deploy')}
-            >
+            <Button size="sm" style={{ width: '84px' }} onClick={handleClick}>
               {KDFM.DEPLOY}
             </Button>
             <RefreshIocn
