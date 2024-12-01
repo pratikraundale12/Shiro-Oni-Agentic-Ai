@@ -9,6 +9,7 @@ import { UserIcon } from '../assets';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { RolesActions, RolesSelectors, LoadingSelectors } from '../store';
+import { isEmpty } from 'lodash';
 
 const RoleFormContainer = styled.div`
   width: 100%;
@@ -24,6 +25,7 @@ const schema = yup.object().shape({
 const AddNewRoleModal = ({ selectedOption, ldapGroupName }) => {
   const dispatch = useDispatch();
   const openRoleModal = useSelector(RolesSelectors.getRoleModal);
+  const selectedItem = useSelector(RolesSelectors.getRoleListSelectedItem);
   const {
     register,
     handleSubmit,
@@ -38,10 +40,16 @@ const AddNewRoleModal = ({ selectedOption, ldapGroupName }) => {
   );
 
   const onSubmit = data => {
+    if (!isEmpty(selectedItem)) {
+      dispatch(RolesActions.editRole({ name: data?.roleName }));
+      dispatch(RolesActions.setIsRoleListModalOpen(true));
+      return;
+    }
     const payload = {
       name: data.roleName,
       ldapGroupName: ldapGroupName,
     };
+
     dispatch(RolesActions.createNewRole(payload));
   };
 
@@ -51,12 +59,35 @@ const AddNewRoleModal = ({ selectedOption, ldapGroupName }) => {
     }
   }, [reset, selectedOption]);
 
+  useEffect(() => {
+    if (!isEmpty(selectedItem)) {
+      reset({ roleName: selectedItem?.name });
+    }
+  }, [reset, selectedItem]);
+
+  const capitalizeFirstLetter = text => {
+    if (!text) return '';
+
+    text = text.toLowerCase();
+
+    return text
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   return (
     <Modal
-      title="Add New Role"
+      title={
+        isEmpty(selectedItem)
+          ? 'Add New Role'
+          : `Edit ${capitalizeFirstLetter(selectedItem?.name)}`
+      }
       isOpen={openRoleModal}
       onRequestClose={() => {
-        dispatch(RolesActions.roleModal());
+        dispatch(RolesActions.roleModal(false));
+        dispatch(RolesActions.setIsRoleListModalOpen(true));
       }}
       secondaryButtonText="Back"
       primaryButtonText="Submit"

@@ -4,15 +4,9 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  GreaterArrowIcon,
-  PlusCircleIcon,
-  SmallSearchIcon,
-  TodoIcon,
-} from '../../assets';
+import { GreaterArrowIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { Button, CheckboxField, SelectField } from '../../shared';
-import AddNewRoleModal from '../../shared/AddNewRoleModal';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   AuthenticationSelectors,
@@ -140,7 +134,6 @@ export const ClusterAccess = () => {
   const roleClusters = useSelector(RolesSelectors.getRoleClusters);
   const selectedRole = useSelector(RolesSelectors.getSelectedRole);
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
-  const openRoleModal = useSelector(RolesSelectors.getRoleModal);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateRoleClusters')
   );
@@ -310,16 +303,6 @@ export const ClusterAccess = () => {
             backgroundColor={theme.colors.lightGrey}
             onChange={onChange}
           />
-          {userPermissions.includes('add_permission') && (
-            <Button
-              icon={<PlusCircleIcon width={16} height={16} />}
-              onClick={() => dispatch(RolesActions.roleModal())}
-              variant="secondary"
-              size="sm"
-            >
-              Add New Role
-            </Button>
-          )}
           {userPermissions.includes('edit_permission') && (
             <Button disabled={isUpdated()} onClick={handleSubmit} size="sm">
               Save Changes
@@ -340,7 +323,6 @@ export const ClusterAccess = () => {
           onChange={e => setSearch(e.target.value)}
         />
       </SearchContainer>
-      {openRoleModal && <AddNewRoleModal />}
       <Breadcrumb module="path" path={path} />
       <StyledTable data={getFilteredData()} columns={CLUSTERS_ACCESS_COLUMNS} />
     </>
