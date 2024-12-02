@@ -266,6 +266,7 @@ const Upgrade = () => {
       width: '10%',
     },
   ];
+  console.log('checkDestCluster--', checkDestCluster?.mode);
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     ...(checkDestCluster.mode !== 'upgrade'
