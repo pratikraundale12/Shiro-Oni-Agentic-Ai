@@ -31,12 +31,15 @@ const DEFAULT_VALUES = {
   approver_ids: [],
 };
 
-const Schema = yup.object().shape({
+const SchemaWithApprover = yup.object().shape({
   scheduled_time: yup.string().required('Deploy time is required'),
   approver_ids: yup.array().required('Approvers is required'),
 });
+const SchemaWithoutApprover = yup.object().shape({
+  scheduled_time: yup.string().required('Deploy time is required'),
+});
 
-export const ScheduleDeploymentModal = () => {
+export const ScheduleDeploymentModal = ({ showApprover }) => {
   const dispatch = useDispatch();
   const scheduleModal = useSelector(SchedularSelectors.getScheduleModal);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
@@ -51,7 +54,9 @@ export const ScheduleDeploymentModal = () => {
     watch,
     handleSubmit,
   } = useForm({
-    resolver: yupResolver(Schema),
+    resolver: showApprover
+      ? yupResolver(SchemaWithApprover)
+      : yupResolver(SchemaWithoutApprover),
     defaultValues: DEFAULT_VALUES,
   });
   const onRequestClose = () => {
@@ -76,7 +81,7 @@ export const ScheduleDeploymentModal = () => {
     } else {
       dispatch(
         SchedularActions.setFormData({
-          approver_ids: approver_ids,
+          approver_ids: approver_ids || [],
           scheduled_time: formattedDate,
         })
       );
@@ -116,7 +121,7 @@ export const ScheduleDeploymentModal = () => {
       onRequestClose={onRequestClose}
       secondaryButtonText="Cancel"
       primaryButtonText={!isEmpty(selectedSchedule) ? 'Update' : 'Continue'}
-      primaryButtonDisabled={isEmpty(approver_ids)}
+      primaryButtonDisabled={showApprover && isEmpty(approver_ids)}
       onSubmit={handleSubmit(onSubmit)}
       footerAlign="start"
       contentStyles={{ minWidth: '45%', minHeight: '40%' }}
@@ -135,17 +140,21 @@ export const ScheduleDeploymentModal = () => {
             />
           </div>
         </div>
-        <UserSelect
-          control={control}
-          errors={errors}
-          name="approver_ids"
-          placeholder="Select atleast one approver"
-          label="Approver"
-          disabled={
-            currentUser?.role === 'superadmin' || !needToDisable ? false : true
-          }
-          required
-        />
+        {showApprover && (
+          <UserSelect
+            control={control}
+            errors={errors}
+            name="approver_ids"
+            placeholder="Select atleast one approver"
+            label="Approver"
+            disabled={
+              currentUser?.role === 'superadmin' || !needToDisable
+                ? false
+                : true
+            }
+            required
+          />
+        )}
       </Container>
     </Modal>
   );
@@ -160,4 +169,5 @@ ScheduleDeploymentModal.propTypes = {
   setStartDate: PropTypes.func.isRequired,
   showButton: PropTypes.bool,
   loadingButton: PropTypes.bool,
+  showApprover: PropTypes.bool,
 };
