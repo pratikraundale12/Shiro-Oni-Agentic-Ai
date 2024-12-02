@@ -13,6 +13,7 @@ import {
 } from '../../shared';
 import { Table } from '../../components';
 import { theme } from '../../styles';
+import { history } from '../../helpers/history';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -129,6 +130,10 @@ const approverOptions = [
   { label: 'Group B', value: 'group_b' },
   { label: 'Group C', value: 'group_c' },
 ];
+
+const handleContinue = () => {
+  history.push('/process-group/flow-details');
+};
 
 function DeployPage() {
   const [selectedVersion, setSelectedVersion] = useState(null);
@@ -340,7 +345,7 @@ function DeployPage() {
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button variant="secondary">{KDFM.BACK}</Button>
-          <Button>{KDFM.CONTINUE}</Button>
+          <Button onClick={handleContinue}>{KDFM.CONTINUE}</Button>
         </BottomButtonDiv>
       </BottomButton>
     </div>
