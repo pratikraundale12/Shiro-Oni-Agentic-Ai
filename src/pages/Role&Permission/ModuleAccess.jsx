@@ -5,14 +5,22 @@ import styled from 'styled-components';
 
 import { difference, isEmpty, unionBy, uniqBy } from 'lodash';
 import {
+  DeleteDustbinIcon,
   GreaterArrowIcon,
+  GreenRightCircleIcon,
   PlusCircleIcon,
   SmallSearchIcon,
   TodoIcon,
 } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { history } from '../../helpers/history';
-import { Button, CheckboxField, SelectField, TextButton } from '../../shared';
+import {
+  Button,
+  CheckboxField,
+  ModalWithIcon,
+  SelectField,
+  TextButton,
+} from '../../shared';
 import AddNewRoleModal from '../../shared/AddNewRoleModal';
 import {
   AuthenticationSelectors,
@@ -24,6 +32,7 @@ import {
 } from '../../store';
 import { theme } from '../../styles';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import ListRoleModal from './ListRoleModal';
 
 const Flex = styled.div`
   display: flex;
@@ -179,6 +188,13 @@ export const ModuleAccess = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateRolesPolicies')
   );
+  const deleteConfirmtionModelOpen = useSelector(
+    RolesSelectors.getIsDeleteConfirmationModelOpen
+  );
+  const duplicateUserModalUser = useSelector(
+    RolesSelectors.getInActiveUserIdModelOpen
+  );
+  const selectedItem = useSelector(RolesSelectors.getRoleListSelectedItem);
   const hasEditPermssion = userPermissions.includes('edit_permission');
   const [updatedRolePolicies, setUpdatedRolePolicies] = useState([]);
   const [search, setSearch] = useState('');
@@ -375,6 +391,17 @@ export const ModuleAccess = () => {
     window.history.back();
   };
 
+  const capitalizeFirstLetter = text => {
+    if (!text) return '';
+
+    text = text.toLowerCase();
+
+    return text
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
   return (
     <>
       <Flex>
@@ -414,11 +441,14 @@ export const ModuleAccess = () => {
           {userPermissions.includes('add_permission') && (
             <Button
               icon={<PlusCircleIcon width={16} height={16} />}
-              onClick={() => dispatch(RolesActions.roleModal())}
+              onClick={() => {
+                // setIsRoleListModalOpen
+                dispatch(RolesActions.setIsRoleListModalOpen(true));
+              }}
               variant="secondary"
               size="sm"
             >
-              Add New Role
+              Roles
             </Button>
           )}
           {userPermissions.includes('edit_permission') && (
@@ -442,6 +472,44 @@ export const ModuleAccess = () => {
         />
       </SearchContainer>
       {openRoleModal && <AddNewRoleModal />}
+      <ListRoleModal />
+      <ModalWithIcon
+        title={'Delete role'}
+        primaryButtonText={'Delete'}
+        secondaryButtonText={'Cancel'}
+        icon={<DeleteDustbinIcon />}
+        isOpen={deleteConfirmtionModelOpen}
+        onSubmit={() => {
+          dispatch(RolesActions.deleteRole());
+          dispatch(RolesActions.setIsDeleteConfirmationModelOpen(false));
+          dispatch(RolesActions.setRoleListSelectedItem({}));
+          dispatch(RolesActions.setIsRoleListModalOpen(true));
+        }}
+        onRequestClose={() => {
+          dispatch(RolesActions.setIsDeleteConfirmationModelOpen(false));
+          dispatch(RolesActions.setRoleListSelectedItem({}));
+          dispatch(RolesActions.setIsRoleListModalOpen(true));
+        }}
+        primaryText={`Are you sure you want to delete ${capitalizeFirstLetter(selectedItem?.name)} role`}
+      />
+      <ModalWithIcon
+        title={'Inactive Role'}
+        primaryButtonText={'Active'}
+        secondaryButtonText={'Cancel'}
+        icon={<GreenRightCircleIcon />}
+        isOpen={duplicateUserModalUser}
+        onSubmit={() => {
+          dispatch(RolesActions.editRole({ is_active: true }));
+          dispatch(RolesActions.setInActiveUserIdModelOpen(false));
+          dispatch(RolesActions.setIsRoleListModalOpen(true));
+        }}
+        onRequestClose={() => {
+          dispatch(RolesActions.setInActiveUserIdModelOpen(false));
+          dispatch(RolesActions.setInactiveUserId(''));
+          dispatch(RolesActions.setIsRoleListModalOpen(true));
+        }}
+        primaryText={`This role is inactive, would you like to activate it?`}
+      />
       <StyledTable data={filteredModules} columns={DFM_ACCESS_COLUMNS} />
     </>
   );
