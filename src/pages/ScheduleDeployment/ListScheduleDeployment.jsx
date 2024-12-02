@@ -21,6 +21,7 @@ import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const ActionTd = styled.div`
   display: flex;
@@ -71,15 +72,41 @@ export const ListScheduleDeployment = () => {
             handleEditClick(item);
           }}
           disabled={!item?.can_edit}
+          data-tooltip-id={`${item?.can_edit && `tooltip-group-edit-schedule`}`}
         >
           <PencilIcon width={16} height={16} />
         </IconButton>
+        {
+          <ReactTooltip
+            id={`tooltip-group-edit-schedule`}
+            place="left"
+            content={'Edit'}
+            style={{
+              width: '60px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        }
         <IconButton
           onClick={() => handleCancelModel(item)}
           disabled={!item?.can_cancel}
+          data-tooltip-id={`${item?.can_cancel && `tooltip-group-cancel-schedule`}`}
         >
           <HoldIcon />
         </IconButton>
+        {
+          <ReactTooltip
+            id={`tooltip-group-cancel-schedule`}
+            place="left"
+            content={'Cancel'}
+            style={{
+              width: '80px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        }
       </ActionTd>
     );
   };

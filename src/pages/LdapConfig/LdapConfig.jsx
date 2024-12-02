@@ -36,6 +36,7 @@ import {
 import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
 import { CreateMapping } from './components/CreateMapping';
 import SelectCellRender from './components/SelectCellRender';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -478,9 +479,20 @@ export const LdapConfig = () => {
           <button
             className="d-flex border-0 bg-white"
             onClick={handleBackButtonClick}
+            data-tooltip-id={`tooltip-group-ldap-back`}
           >
             <GreaterArrowIcon />
           </button>
+          <ReactTooltip
+            id={`tooltip-group-ldap-back`}
+            place="right"
+            content={'Back'}
+            style={{
+              width: '65px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>

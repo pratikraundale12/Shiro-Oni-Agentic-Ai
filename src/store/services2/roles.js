@@ -10,6 +10,11 @@ export const rolesAPI = api => {
     api.post('/ldap-group', payload, params);
   const createNewRole = ({ payload = {} }) => api.post('/roles', payload);
 
+  const deleteRole = ({ roleId }) => api.delete(`/roles/${roleId}`);
+
+  const editRole = ({ payload = {}, roleId }) =>
+    api.patch(`roles/${roleId}`, payload);
+
   return {
     fetchClustersRolesAccess,
     fetchRoleClusters,
@@ -17,5 +22,7 @@ export const rolesAPI = api => {
     fetchRoles,
     createNewRole,
     fetchLdap,
+    deleteRole,
+    editRole,
   };
 };

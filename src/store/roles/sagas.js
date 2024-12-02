@@ -2,6 +2,7 @@ import { call, all, takeLatest, put, select } from 'redux-saga/effects';
 import { requestSaga } from '../helpers/request_sagas';
 import { RolesActions, RolesSelectors } from './redux';
 import { toast } from 'react-toastify';
+import { KDFM } from '../../constants';
 
 export function* fetchRoles(api) {
   yield call(requestSaga, {
@@ -24,7 +25,6 @@ export function* fetchLdap(api, payload) {
 
   if (response.ok) {
     yield put(RolesActions.displayGroup(false));
-    // yield call(fetchRoles, api);
   } else {
     toast.error(response.data.message || 'Something went wrong');
   }
@@ -68,22 +68,79 @@ export function* createNewRole(api, { payload }) {
   });
 
   if (response.ok) {
-    yield call(fetchRoles, api);
-    const formData = yield select(RolesSelectors.getLdapGroup);
+    if (response?.status === 201) {
+      yield call(fetchRoles, api);
+      const formData = yield select(RolesSelectors.getLdapGroup);
 
-    const updatedFormData = formData.map(item =>
-      item.ldap_group_name === ldap_group_name
-        ? { ...item, role_id: response.data.id }
-        : item
-    );
+      const updatedFormData = formData.map(item =>
+        item.ldap_group_name === ldap_group_name
+          ? { ...item, role_id: response.data.id }
+          : item
+      );
 
-    yield put(RolesActions.updateLdapGroup(updatedFormData));
+      yield put(RolesActions.updateLdapGroup(updatedFormData));
 
-    toast.success('New role created successfully.');
-    yield put(RolesActions.roleModal());
-  } else {
+      toast.success('New role created successfully.');
+      yield put(RolesActions.roleModal(false));
+      yield put(RolesActions.setIsRoleListModalOpen(true));
+    } else if (response?.status === 200) {
+      yield put(RolesActions.roleModal(false));
+      yield put(RolesActions.setInactiveUserId(response?.data?.id));
+      yield put(RolesActions.setInActiveUserIdModelOpen(true));
+    }
+  } else if (!response.ok) {
     toast.error(response.data.message || 'Something went wrong');
   }
+}
+
+export function* deleteRole(api) {
+  const selectedrole = yield select(RolesSelectors.getRoleListSelectedItem);
+
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteRole',
+    loadingSection: 'deleteRole',
+    apiMethod: api.deleteRole,
+    apiParams: [
+      {
+        roleId: selectedrole?.role_id,
+      },
+    ],
+  });
+
+  if (response.ok) {
+    yield put(RolesActions.fetchRoles());
+    toast.success('Role deleted succesfully');
+  } else if (!response.ok)
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+}
+
+export function* editRole(api, { payload }) {
+  const selectedrole = yield select(RolesSelectors.getRoleListSelectedItem);
+  const inActiveRoleId = yield select(RolesSelectors.getInActiveUserId);
+  const response = yield call(requestSaga, {
+    errorSection: 'editRole',
+    loadingSection: 'editRole',
+    apiMethod: api.editRole,
+    apiParams: [
+      {
+        payload: payload,
+        roleId: inActiveRoleId ? inActiveRoleId : selectedrole?.role_id,
+      },
+    ],
+  });
+
+  if (response.ok) {
+    yield put(RolesActions.fetchRoles());
+    toast.success('Role edited succesfully');
+    yield put(RolesActions.roleModal(false));
+  } else if (!response.ok) {
+    {
+      toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+      yield put(RolesActions.roleModal(false));
+    }
+  }
+  yield put(RolesActions.setInactiveUserId(''));
+  yield put(RolesActions.setInActiveUserIdModelOpen(false));
 }
 
 export function* rolesSagas(api) {
@@ -93,5 +150,7 @@ export function* rolesSagas(api) {
     takeLatest(RolesActions.updateRoleClusters, updateRoleClusters, api),
     takeLatest(RolesActions.createNewRole, createNewRole, api),
     takeLatest(RolesActions.fetchLdap, fetchLdap, api),
+    takeLatest(RolesActions.deleteRole, deleteRole, api),
+    takeLatest(RolesActions.editRole, editRole, api),
   ]);
 }

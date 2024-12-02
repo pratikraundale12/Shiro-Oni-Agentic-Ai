@@ -4,15 +4,9 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  GreaterArrowIcon,
-  PlusCircleIcon,
-  SmallSearchIcon,
-  TodoIcon,
-} from '../../assets';
+import { GreaterArrowIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { Button, CheckboxField, SelectField } from '../../shared';
-import AddNewRoleModal from '../../shared/AddNewRoleModal';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   AuthenticationSelectors,
@@ -25,6 +19,7 @@ import {
   RolesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const Flex = styled.div`
   display: flex;
@@ -139,7 +134,6 @@ export const ClusterAccess = () => {
   const roleClusters = useSelector(RolesSelectors.getRoleClusters);
   const selectedRole = useSelector(RolesSelectors.getSelectedRole);
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
-  const openRoleModal = useSelector(RolesSelectors.getRoleModal);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateRoleClusters')
   );
@@ -281,9 +275,20 @@ export const ClusterAccess = () => {
             className="d-flex border-0 bg-white"
             onClick={handleBackButtonClick}
             style={{ marginBottom: '0.5rem' }}
+            data-tooltip-id={`tooltip-group-role-cluster`}
           >
             <GreaterArrowIcon />
           </button>
+          <ReactTooltip
+            id={`tooltip-group-role-cluster`}
+            place="right"
+            content={'Back'}
+            style={{
+              width: '65px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>
@@ -298,16 +303,6 @@ export const ClusterAccess = () => {
             backgroundColor={theme.colors.lightGrey}
             onChange={onChange}
           />
-          {userPermissions.includes('add_permission') && (
-            <Button
-              icon={<PlusCircleIcon width={16} height={16} />}
-              onClick={() => dispatch(RolesActions.roleModal())}
-              variant="secondary"
-              size="sm"
-            >
-              Add New Role
-            </Button>
-          )}
           {userPermissions.includes('edit_permission') && (
             <Button disabled={isUpdated()} onClick={handleSubmit} size="sm">
               Save Changes
@@ -328,7 +323,6 @@ export const ClusterAccess = () => {
           onChange={e => setSearch(e.target.value)}
         />
       </SearchContainer>
-      {openRoleModal && <AddNewRoleModal />}
       <Breadcrumb module="path" path={path} />
       <StyledTable data={getFilteredData()} columns={CLUSTERS_ACCESS_COLUMNS} />
     </>
