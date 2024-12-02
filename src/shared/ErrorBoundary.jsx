@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import styled from 'styled-components';
 
 import { theme } from '../styles';
@@ -12,6 +12,32 @@ const ErrorContainer = styled.main`
   height: 90vh;
 `;
 
+const ErrorTitle = styled.h2`
+  color: ${theme.colors.primary};
+  margin-bottom: 10px;
+`;
+
+const ErrorText = styled.p`
+  margin: 5px 0;
+`;
+
+const Button = styled.button`
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  background-color: ${theme.colors.primary};
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+`;
+
+const Link = styled.a`
+  display: inline-block;
+  margin-top: 10px;
+  text-decoration: none;
+  color: ${theme.colors.primary};
+`;
+
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -20,25 +46,46 @@ class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true, errorMessage: error?.message || '' };
+    return {
+      hasError: true,
+      errorMessage: error?.message || 'An unexpected error occurred.',
+    };
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error({ error, errorInfo });
+    console.error('Error captured in ErrorBoundary:', { error, errorInfo });
   }
 
+  handleNavigation = url => {
+    if (url === window.location.href) {
+      return;
+    }
+
+    this.setState({ hasError: false, errorMessage: '' }, () => {
+      window.location.href = url;
+    });
+  };
+
   render() {
-    if (this.state.hasError) {
+    const { hasError } = this.state;
+
+    if (hasError) {
       return (
         <ErrorContainer>
-          <h2 color={theme.colors.primary} className="mb-1">
-            Something went wrong!
-          </h2>
-          <h5>Sorry, there was an error loading the page.</h5>
-          <h5>
+          <ErrorTitle>Something went wrong!</ErrorTitle>
+          <ErrorText>We encountered an issue loading the page.</ErrorText>
+          <ErrorText>
             <i>{`Error message: ${this.state.errorMessage}`}</i>
-          </h5>
-          <a href={window.location.href}>Retry again</a>
+          </ErrorText>
+          <div>
+            <Button onClick={() => this.handleNavigation(window.location.href)}>
+              Retry Again
+            </Button>
+            <Button onClick={() => this.handleNavigation('/dashboard')}>
+              Back to Dashboard
+            </Button>
+          </div>
+          <Link href="mailto:support@ksolves.com">Contact Support</Link>
         </ErrorContainer>
       );
     }
