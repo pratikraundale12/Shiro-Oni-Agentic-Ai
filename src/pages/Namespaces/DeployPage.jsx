@@ -12,6 +12,7 @@ import {
   SelectField,
 } from '../../shared';
 import { Table } from '../../components';
+import { theme } from '../../styles';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -96,7 +97,7 @@ const LabelSelect = styled.div`
   line-height: 16px;
   margin-bottom: 0.9rem;
   margin-top: 0.25rem;
-  color: ${props => props.theme.colors.darker};
+  color: ${props => (props?.color ? props?.color : props.theme.colors.darker)};
 `;
 
 const StyledTableCell = styled.div`
@@ -149,45 +150,6 @@ function DeployPage() {
   };
   const COLUMNS = [
     {
-      label: KDFM.VERSION,
-      renderCell: item => (
-        <StyledTableCell
-          role="button"
-          tabIndex="0"
-          onClick={() => handleRowClick(item)}
-          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
-        >
-          {item.version}
-        </StyledTableCell>
-      ),
-    },
-    {
-      label: KDFM.CREATED,
-      renderCell: item => (
-        <StyledTableCell
-          role="button"
-          tabIndex="0"
-          onClick={() => handleRowClick(item)}
-          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
-        >
-          {convertDate(item.createdAt)}
-        </StyledTableCell>
-      ),
-    },
-    {
-      label: KDFM.COMMENT,
-      renderCell: item => (
-        <StyledTableCell
-          role="button"
-          tabIndex="0"
-          onClick={() => handleRowClick(item)}
-          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
-        >
-          {item.comments}
-        </StyledTableCell>
-      ),
-    },
-    {
       label: '',
       renderCell: item => (
         <StyledTableCell
@@ -207,7 +169,48 @@ function DeployPage() {
           />
         </StyledTableCell>
       ),
-      width: '10%',
+      width: '5%',
+    },
+    {
+      label: KDFM.VERSION,
+      renderCell: item => (
+        <StyledTableCell
+          role="button"
+          tabIndex="0"
+          onClick={() => handleRowClick(item)}
+          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
+        >
+          {item.version}
+        </StyledTableCell>
+      ),
+      width: '12%',
+    },
+    {
+      label: KDFM.CREATED,
+      renderCell: item => (
+        <StyledTableCell
+          role="button"
+          tabIndex="0"
+          onClick={() => handleRowClick(item)}
+          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
+        >
+          {convertDate(item.createdAt)}
+        </StyledTableCell>
+      ),
+      width: '28%',
+    },
+    {
+      label: KDFM.COMMENT,
+      renderCell: item => (
+        <StyledTableCell
+          role="button"
+          tabIndex="0"
+          onClick={() => handleRowClick(item)}
+          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
+        >
+          {item.comments}
+        </StyledTableCell>
+      ),
     },
   ];
   const handleRowClick = item => {
@@ -315,9 +318,9 @@ function DeployPage() {
               />
             </div>
 
-            <div className="col-6 p-3">
-              <div>
-                <div className="d-flex justify-content-between align-items-center">
+            <div className="mt-4 col-6 p-3">
+              <div className="mt-4">
+                <div className="mt-4 d-flex justify-content-between align-items-center">
                   <CheckboxField
                     name="check"
                     label="Keep existing Parameter Contexts"
@@ -327,8 +330,8 @@ function DeployPage() {
               </div>
             </div>
           </RowConfig>
-          {/* <LabelSelect>Flow Name</LabelSelect>
-          <LabelSelect>No Description Provided</LabelSelect> */}
+          <LabelSelect color={theme.colors.darkGrey4}>Flow Name</LabelSelect>
+          <LabelSelect className="mb-4">No Description Provided</LabelSelect>
 
           <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
           <CustomTable data={data} columns={COLUMNS} />
