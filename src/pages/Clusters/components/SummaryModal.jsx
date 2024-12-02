@@ -224,6 +224,7 @@ export const SummaryModal = ({
       nifi_url: clusterData.nifiUrl,
       tag: tags,
       notification_enable: notificationEnable,
+      approver_enable: approverEnable,
     };
     const id = clusterId;
     const response = await updateCluster(id, payload);
