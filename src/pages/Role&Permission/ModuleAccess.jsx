@@ -32,7 +32,6 @@ import {
   RolesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 import ListRoleModal from './ListRoleModal';
 
 const Flex = styled.div`
