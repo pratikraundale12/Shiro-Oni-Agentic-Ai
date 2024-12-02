@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { difference, isEmpty, unionBy, uniqBy } from 'lodash';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import {
   DeleteDustbinIcon,
   GreaterArrowIcon,
@@ -31,7 +32,6 @@ import {
   RolesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 import ListRoleModal from './ListRoleModal';
 
 const Flex = styled.div`
@@ -141,14 +141,15 @@ const MODULES = [
   },
 ];
 
-const EXCLUDE_ADD_PERMISSION = ['namespace', 'history'];
-const EXCLUDE_EDIT_PERMISSION = ['cluster', 'namespace', 'history'];
+const EXCLUDE_ADD_PERMISSION = ['namespace', 'history', 'user'];
+const EXCLUDE_EDIT_PERMISSION = ['cluster', 'namespace', 'history', 'user'];
 const EXCLUDE_DELETE_PERMISSION = [
   'cluster',
   'namespace',
   'permission',
   'ldap',
   'history',
+  'user',
 ];
 
 const CellRender = ({
