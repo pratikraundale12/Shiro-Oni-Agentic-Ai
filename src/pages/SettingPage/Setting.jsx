@@ -1,10 +1,9 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
-import { EMAIL_REGEX, KDFM, REFRESH_OPTIONS } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
-import favicon from '../../assets/images/favicon.ico';
 import styled from 'styled-components';
+import * as yup from 'yup';
 import {
   LogoFieldIcon,
   MailIcon,
@@ -12,9 +11,11 @@ import {
   RefreshIcon,
   UploadIcon,
 } from '../../assets';
+import favicon from '../../assets/images/favicon.ico';
+import { EMAIL_REGEX, KDFM, REFRESH_OPTIONS } from '../../constants';
 import { Button, InputField, SelectField, UploadField } from '../../shared';
+import { RolesSelectors } from '../../store';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
-import { yupResolver } from '@hookform/resolvers/yup';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -58,6 +59,12 @@ export const Setting = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
+  const RoleList = useSelector(RolesSelectors.getRoles);
+
+  const approverOptions = RoleList.map(role => ({
+    label: role.name, // Display name
+    value: role.role_id, // Unique identifier
+  }));
 
   const onSubmit = async data => {
     setLoading(true);
@@ -70,9 +77,14 @@ export const Setting = () => {
       data.refresh === false || data.refresh === 'Off' ? 0 : data.refresh
     );
     data.email && payload.append('email', data.email);
+    payload.append(
+      'approver_groups',
+      JSON.stringify(data?.approver_groups || null)
+    );
 
     try {
       dispatch(SettingsActions.createSettings(payload));
+      dispatch(SettingsActions.fetchSettings());
       setLoading(false);
       if (data?.favicon) {
         changeFavicon(data.favicon);
@@ -99,6 +111,18 @@ export const Setting = () => {
         settingData.refresh === 0 ? 'Off' : settingData?.refresh
       );
       setValue('email', settingData?.email);
+      if (settingData?.approver_groups) {
+        console.log(
+          settingData?.approver_groups,
+          'settingData?.approver_groups'
+        );
+        const selectedApprovers = settingData?.approver_groups.map(group => ({
+          label: group.name,
+          value: group.id,
+        }));
+
+        setValue('approver_groups', selectedApprovers);
+      }
       const logoElement = document.getElementById('logo');
       if (logoElement && settingData?.logo) {
         logoElement.src = settingData.logo;
@@ -114,7 +138,8 @@ export const Setting = () => {
         value.title !== settingData?.title ||
         value.refresh !==
           (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
-        value.email !== settingData?.email;
+        value.email !== settingData?.email ||
+        value.approver_groups !== settingData?.approver_groups;
 
       setIsChanged(isModified);
     });
@@ -219,6 +244,18 @@ export const Setting = () => {
             label={KDFM.META_TITLE}
             placeholder={KDFM.ENTER_META_TITLE}
             errors={errors}
+          />
+        </div>
+        <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-8">
+          <SelectField
+            isMulti
+            name="approver_groups"
+            control={control}
+            icon={<QRIcons />}
+            label="Approver Groups"
+            errors={errors}
+            options={approverOptions}
+            placeholder="Select Approver Groups"
           />
         </div>
         <FlexWrapper>

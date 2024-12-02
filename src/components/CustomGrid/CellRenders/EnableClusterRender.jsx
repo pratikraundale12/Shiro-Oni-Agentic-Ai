@@ -86,7 +86,7 @@ export const EnableClusterRender = ({ item }) => {
           {item?.status === CLUSTER_STATUS.DISCONNECTED ? (
             <LoginIcon />
           ) : (
-            <LogoutIcon />
+            <LogoutIcon color="#a51e1e" />
           )}
         </IconButton>
       </EnableClusterText>

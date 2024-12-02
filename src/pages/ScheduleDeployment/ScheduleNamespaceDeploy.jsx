@@ -1,3 +1,4 @@
+import { unionBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,7 +16,6 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
-import { unionBy } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -188,7 +188,7 @@ const ScheduleNamespaceDeploy = ({
       mode: checkDestCluster?.mode,
       version: selectedVersion.version,
       position: formDataNamespace?.position,
-      approver_ids: formData?.approver_ids,
+      approver_group_ids: formData?.approver_ids,
       variables: newlyAddVariables.map(item => ({
         name: item.name,
         value: item.value,
