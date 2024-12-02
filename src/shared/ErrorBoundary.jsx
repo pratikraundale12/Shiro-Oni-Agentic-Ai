@@ -34,7 +34,6 @@ const Button = styled.button`
 const Link = styled.a`
   display: inline-block;
   margin-top: 10px;
-  text-decoration: none;
   color: ${theme.colors.primary};
 `;
 
@@ -50,10 +49,6 @@ class ErrorBoundary extends React.Component {
       hasError: true,
       errorMessage: error?.message || 'An unexpected error occurred.',
     };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('Error captured in ErrorBoundary:', { error, errorInfo });
   }
 
   handleNavigation = url => {
@@ -74,9 +69,6 @@ class ErrorBoundary extends React.Component {
         <ErrorContainer>
           <ErrorTitle>Something went wrong!</ErrorTitle>
           <ErrorText>We encountered an issue loading the page.</ErrorText>
-          <ErrorText>
-            <i>{`Error message: ${this.state.errorMessage}`}</i>
-          </ErrorText>
           <div>
             <Button onClick={() => this.handleNavigation(window.location.href)}>
               Retry Again
