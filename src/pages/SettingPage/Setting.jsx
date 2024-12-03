@@ -85,7 +85,9 @@ export const Setting = () => {
 
     try {
       dispatch(SettingsActions.createSettings(payload));
-      dispatch(SettingsActions.fetchSettings());
+      setTimeout(() => {
+        dispatch(SettingsActions.fetchSettings());
+      }, 1000);
       setLoading(false);
       if (data?.favicon) {
         changeFavicon(data.favicon);
