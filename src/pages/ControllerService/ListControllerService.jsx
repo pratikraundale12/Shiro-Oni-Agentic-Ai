@@ -271,7 +271,7 @@ export const ListControllerService = () => {
                 <ReactTooltip
                   id={item?.id}
                   place="left"
-                  content={item?.state !== 'DISABLED' ? 'Enable' : 'Disable'}
+                  content={item?.state !== 'DISABLED' ? 'Disable' : 'Enable'}
                   style={{
                     width: '130px',
                     whiteSpace: 'normal',

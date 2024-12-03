@@ -1,20 +1,17 @@
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { isEmpty } from 'lodash';
-
 import { UserIcon } from '../assets';
-import defaultAvatarURL from '../assets/images/avatar.png';
 import { SelectField } from '../shared';
 import {
-  AuthenticationSelectors,
   RolesActions,
   RolesSelectors,
   UsersActions,
   UsersSelectors,
 } from '../store';
-import { useLocation } from 'react-router-dom';
 import { SchedularSelectors } from '../store/schedular';
+import { SettingsSelectors } from '../store/settings';
 
 export const UserSelect = ({
   control,
@@ -25,24 +22,23 @@ export const UserSelect = ({
   disabled,
 }) => {
   const dispatch = useDispatch();
-  const location = useLocation();
   const [selected, setSelected] = useState([]);
+  console.log(selected, 'selected');
+  const settingData = useSelector(SettingsSelectors.getSettings);
+  const approverGroups = settingData?.approver_groups || [];
+  const approverOptions = approverGroups.map(({ id, name }) => ({
+    value: id,
+    label: name,
+  }));
   const RoleList = useSelector(RolesSelectors.getRoles);
   const userList = useSelector(UsersSelectors.getUsers);
   const AdminRole = RoleList?.find(item => item.name.toLowerCase() === 'admin');
   const [searchText, setSearchText] = useState('');
-  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
-  const updatedArray = userList.filter(item => item.id !== currentUser.id);
   const schedularExcludedList = userList.filter(
     item => item.id !== selectedSchedule?.deployer_id
   );
   schedularExcludedList;
-  const displayArray = location?.pathname?.includes('/summary')
-    ? updatedArray
-    : !isEmpty(selectedSchedule)
-      ? schedularExcludedList
-      : userList;
 
   const handleChange = value => {
     setSearchText(value);
@@ -70,18 +66,7 @@ export const UserSelect = ({
       control={control}
       icon={<UserIcon />}
       errors={errors}
-      options={[
-        ...selected.map(item => ({
-          id: item.value,
-          username: item.label,
-          photo: item.avatar,
-        })),
-        ...displayArray,
-      ].map(({ id, photo, username }) => ({
-        value: id,
-        label: username,
-        avatar: photo ? photo : defaultAvatarURL,
-      }))}
+      options={approverOptions}
       placeholder={placeholder}
       required
       onInputChange={handleChange}
