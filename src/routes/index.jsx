@@ -62,6 +62,7 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 import FlowDetailsPage from '../pages/Namespaces/FlowDetailsPage.jsx';
+import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -131,6 +132,10 @@ export const ROUTES_MENU = [
       {
         path: 'flow-details',
         component: <FlowDetailsPage />,
+      },
+      {
+        path: 'config-details',
+        component: <ConfigDetailsPage />,
       },
     ],
     permission: 'view_namespace',
