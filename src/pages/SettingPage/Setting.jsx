@@ -53,6 +53,7 @@ export const Setting = () => {
     register,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
@@ -62,8 +63,8 @@ export const Setting = () => {
   const RoleList = useSelector(RolesSelectors.getRoles);
 
   const approverOptions = RoleList.map(role => ({
-    label: role.name, // Display name
-    value: role.role_id, // Unique identifier
+    label: role.name,
+    value: role.role_id,
   }));
 
   const onSubmit = async data => {
@@ -111,24 +112,18 @@ export const Setting = () => {
         settingData.refresh === 0 ? 'Off' : settingData?.refresh
       );
       setValue('email', settingData?.email);
-      if (settingData?.approver_groups) {
-        console.log(
-          settingData?.approver_groups,
-          'settingData?.approver_groups'
-        );
-        const selectedApprovers = settingData?.approver_groups.map(group => ({
-          label: group.name,
-          value: group.id,
-        }));
-
-        setValue('approver_groups', selectedApprovers);
-      }
       const logoElement = document.getElementById('logo');
       if (logoElement && settingData?.logo) {
         logoElement.src = settingData.logo;
       }
     }
   }, [settingData, setValue, dispatch]);
+
+  useEffect(() => {
+    reset({
+      approver_groups: settingData?.approver_groups.map(item => item.id),
+    });
+  }, [settingData, reset]);
 
   useEffect(() => {
     const subscription = watch(value => {
