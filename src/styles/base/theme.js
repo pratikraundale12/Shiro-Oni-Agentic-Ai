@@ -34,6 +34,7 @@ const theme = {
     darkGrey1: '#B5B5BD',
     darkGrey2: '#988C8C',
     darkGrey3: '#EBF0F7',
+    darkGrey4: '#425466',
 
     // variants
     primaryActive: '#E4842B',

@@ -59,7 +59,7 @@ const ScrollSetGrey = styled.div`
   min-height: calc(100vh - 341px);
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
 `;
 const RowConfig = styled.div`
   display: flex;
@@ -110,11 +110,13 @@ const CustomTable = styled(Table)`
     padding: 0;
     height: 0;
   }
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const breadcrumbData = [
-  { label: 'Process Group List', path: '/' },
-  { label: 'Deploy Process Group', path: '/' },
+  { label: 'Process Group List', path: '/process-group' },
+  { label: 'Registry & Flow Name', path: '/process-group/DeployPage' },
 ];
 
 // const bucketLabel = 'Bucket';
@@ -241,6 +243,7 @@ function DeployPage() {
       selected: false,
     },
   ];
+
   return (
     <div>
       <ToastContainer
@@ -277,12 +280,13 @@ function DeployPage() {
                 icon={<QRIcons />}
                 placeholder="Registry Name"
                 disabled
+                className="mb-0"
               />
             </div>
             <div className="col-6 p-3">
               <div>
                 <div className="justify-content-between align-items-center">
-                  <LabelSelect>Select Scope</LabelSelect>
+                  <LabelSelect>Bucket</LabelSelect>
                   <SelectField
                     label="Approver Groups"
                     name="bucket"
@@ -302,7 +306,7 @@ function DeployPage() {
           </RowConfig>
 
           <RowConfig>
-            <div className="col-6 p-3">
+            <div className="col-6 p-3 mb-">
               <LabelSelect>Flow Label</LabelSelect>
               <SelectField
                 label="Flow Name"
@@ -318,9 +322,9 @@ function DeployPage() {
               />
             </div>
 
-            <div className="mt-4 col-6 p-3">
+            <div className="mt-3 col-6 p-3">
               <div className="mt-4">
-                <div className="mt-4 d-flex justify-content-between align-items-center">
+                <div className="mt-5 d-flex justify-content-between align-items-center">
                   <CheckboxField
                     name="check"
                     label="Keep existing Parameter Contexts"
