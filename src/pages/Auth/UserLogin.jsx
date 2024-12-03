@@ -7,20 +7,11 @@ import * as yup from 'yup';
 
 import { toast } from 'react-toastify';
 import { PasswordTextMessage, getRightIcon } from '.';
-import {
-  // ClusterIcon,
-  // GoogleIcon,
-  LessArrowIcon,
-  // MicroSoftIcon,
-  UserIcon,
-} from '../../assets';
+import { LessArrowIcon, UserIcon } from '../../assets';
 import { Layout } from '../../components';
 import {
   FORGOT_PASSWORD,
-  // GOOGLE,
   LOGIN_TO_YOUR_ACCOUNT,
-  // MICROSOFT,
-  // OR_DO_IT_VIA_OTHER_ACCOUNTS,
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../constants';
@@ -28,7 +19,6 @@ import { Button, InputField, PasswordField, TextButton } from '../../shared';
 import { AuthenticationActions } from '../../store';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
-// import { history } from '../../helpers/history';
 
 const Title = styled.h3`
   font-weight: 500;
