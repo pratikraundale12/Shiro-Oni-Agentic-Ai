@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { KDFM } from '../../constants';
 import styled from 'styled-components';
+import { TodoIcon } from '../../assets';
+import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
-import { TodoIcon } from '../../assets';
 import Breadcrumb from '../../shared/Breadcrumb';
+import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import VariableTab from './VariableTab';
 
 const TopTitleBar = styled.div`
@@ -116,7 +117,7 @@ const ConfigDetailsPage = () => {
       case KDFM.VARIABLES:
         return <VariableTab />;
       case KDFM.CONTROLLER_SERVICE:
-        return <p>This is the content for Tab 3.</p>;
+        return <ControllerServiceTab />;
       default:
         return null;
     }
