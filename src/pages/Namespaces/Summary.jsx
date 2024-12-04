@@ -24,6 +24,7 @@ import { Button, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
+  ClustersSelectors,
   // LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
@@ -305,6 +306,10 @@ const Summary = () => {
   const selectedDestCluster = useSelector(
     NamespacesSelectors.getSelectedDestCluster
   );
+  const selectedCluster = useSelector(
+    ClustersSelectors.getAllClustersList
+  ).filter(cluster => cluster.id === selectedDestCluster.value)[0];
+
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
@@ -866,7 +871,7 @@ const Summary = () => {
           </div>
         )}
       </BottomButton>
-      <ScheduleDeploymentModal />
+      <ScheduleDeploymentModal showApprover={selectedCluster.approver_enable} />
       <NamespaceDeploy
         isOpen={isDeployedModal}
         closePopup={handleCloseModal}

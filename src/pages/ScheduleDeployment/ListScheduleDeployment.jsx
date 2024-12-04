@@ -22,6 +22,7 @@ import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { isEmpty } from 'lodash';
 
 const ActionTd = styled.div`
   display: flex;
@@ -138,13 +139,16 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Approver',
-      renderCell: item => (
-        <TextWithPhotoRender
-          item={item}
-          content={item?.approvers}
-          currentUser={currentUser}
-        />
-      ),
+      renderCell: item =>
+        !isEmpty(item?.approvers) ? (
+          <TextWithPhotoRender
+            item={item}
+            content={item?.approvers}
+            currentUser={currentUser}
+          />
+        ) : (
+          <TextRender text={'N/A'} />
+        ),
       width: '13%',
     },
     {

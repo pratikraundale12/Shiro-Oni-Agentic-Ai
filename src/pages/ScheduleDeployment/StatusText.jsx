@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { isEmpty } from 'lodash';
 
 const statusColors = {
   PENDING: '#b5b5bd',
@@ -45,16 +46,20 @@ export const StatusText = ({ text = '', item }) => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
-  const tooltipData = item.approvers.map(element => (
-    <div key={element.scheduler_id}>
-      {capitalizeFirstLetter(element.approver_name)} : &nbsp;
-      {element.is_approved === true
-        ? 'Approved'
-        : element.is_approved === false
-          ? 'Not Approved'
-          : 'N/A'}{' '}
-    </div>
-  ));
+  const tooltipData = !isEmpty(item.approvers) ? (
+    item.approvers.map(element => (
+      <div key={element.scheduler_id}>
+        {capitalizeFirstLetter(element.approver_name)} : &nbsp;
+        {element.is_approved === true
+          ? 'Approved'
+          : element.is_approved === false
+            ? 'Not Approved'
+            : 'N/A'}{' '}
+      </div>
+    ))
+  ) : (
+    <div>{'N/A'}</div>
+  );
   return (
     <>
       <StatusTexts color={color} data-tooltip-id={item.scheduler_id}>

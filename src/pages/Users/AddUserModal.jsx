@@ -265,38 +265,48 @@ export const AddUserModal = props => {
         <Continer>
           <SelectFieldWrapper>
             <DropDownWrapper>
-              <StyledSelectField
-                name="is_active"
-                size="sm"
-                options={statusOption}
-                errors={errors}
-                control={control}
-                placeholder="Status"
-                backgroundColor={theme.colors.lightGrey}
-                title="Select Status"
-              />
+              {currentUserData?.role !== 'superadmin' && (
+                <StyledSelectField
+                  name="is_active"
+                  size="sm"
+                  options={statusOption}
+                  errors={errors}
+                  control={control}
+                  placeholder="Status"
+                  backgroundColor={theme.colors.lightGrey}
+                  title="Select Status"
+                  disabled={
+                    currentUserData?.role === 'superadmin' &&
+                    currentUserData?.id === state?.selectedItem?.id
+                      ? false
+                      : state.selectedItem
+                  }
+                />
+              )}
             </DropDownWrapper>
             <DropDownWrapper>
-              <StyledSelectField
-                name="role_id"
-                size="sm"
-                options={rolesOption}
-                errors={errors}
-                control={control}
-                placeholder={
-                  currentUserData?.id === state?.selectedItem?.id
-                    ? 'Superadmin'
-                    : 'Role'
-                }
-                backgroundColor={theme.colors.lightGrey}
-                title="Select Role"
-                disabled={
-                  currentUserData?.role === 'superadmin' &&
-                  currentUserData?.id === state?.selectedItem?.id
-                    ? false
-                    : state.selectedItem
-                }
-              />
+              {currentUserData?.role !== 'superadmin' && (
+                <StyledSelectField
+                  name="role_id"
+                  size="sm"
+                  options={rolesOption}
+                  errors={errors}
+                  control={control}
+                  placeholder={
+                    currentUserData?.id === state?.selectedItem?.id
+                      ? 'Superadmin'
+                      : 'Role'
+                  }
+                  backgroundColor={theme.colors.lightGrey}
+                  title="Select Role"
+                  disabled={
+                    currentUserData?.role === 'superadmin' &&
+                    currentUserData?.id === state?.selectedItem?.id
+                      ? false
+                      : state.selectedItem
+                  }
+                />
+              )}
             </DropDownWrapper>
           </SelectFieldWrapper>
           <FormWrapper>
