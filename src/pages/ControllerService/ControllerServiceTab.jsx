@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { SettingSmallIcon } from '../../assets';
 import { Table } from '../../components';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { NamespacesActions } from '../../store';
 import Collapsible from '../Namespaces/Collapsible';
 import ConfigurePage from './ConfigurePage';
 import NewAddControllerService from './NewAddControllerService';
@@ -42,21 +40,42 @@ const ControllerServiceTab = () => {
   const [openIndex, setOpenIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
-  const registryAllDetails = useSelector(
-    NamespacesSelectors.getRegistryAllDetails
-  );
 
-  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  const modalOpenState = useSelector(
-    NamespacesSelectors.getIsNewAddControllerServiceMOdalOpen
-  );
+  const controllerServicesData = [
+    {
+      id: 1,
+      name: 'Service A',
+      typeValue: '',
+      bundleValue: '',
+      state: '',
+      scope: '',
+    },
+    {
+      id: 2,
+      name: 'Service B',
+      typeValue: '',
+      bundleValue: '',
+      state: '',
+      scope: '',
+    },
+    {
+      id: 3,
+      name: 'Service C',
+      typeValue: '',
+      bundleValue: '',
+      state: '',
+      scope: '',
+    },
+    {
+      id: 4,
+      name: 'Service D',
+      typeValue: '',
+      bundleValue: '',
+      state: '',
+      scope: '',
+    },
+  ];
 
-  const [controllerServicesData, setControllerServicesData] = useState(
-    registryAllDetails?.controllerServicesData?.externalControllerServices
-  );
-
-  const [externalControllerServiceArray, setExternalControllerServiceArray] =
-    useState();
   const COLUMNS = [
     { label: 'Name', renderCell: item => item?.name, width: '21%' },
     { label: 'Type', renderCell: item => item?.typeValue, width: '20%' },
@@ -73,81 +92,10 @@ const ControllerServiceTab = () => {
       width: '14%',
     },
   ];
-  const COLUMNS_2 = [
-    {
-      label: 'Name',
-      renderCell: item => item?.name || 'N/A',
-      width: '21%',
-    },
-    {
-      label: 'Type',
-      renderCell: item => item?.typeValue || 'N/A',
-      width: '20%',
-    },
-    {
-      label: 'Bundle',
-      renderCell: item => item?.bundleValue || 'N/A',
-      width: '18%',
-    },
-    {
-      label: 'State',
-      renderCell: item => item?.state || 'N/A',
-      width: '16%',
-    },
-    {
-      label: 'Scope',
-      renderCell: item => item?.scope || 'N/A',
-      width: '11%',
-    },
-    {
-      label: 'Action',
-      renderCell: item => (
-        <>
-          <button
-            className="border-0 bg-white"
-            // onClick={() => handleSettingClick(item)}
-            data-tooltip-id={`Settings-${item?.id}`}
-            aria-label="Settings"
-          >
-            <SettingSmallIcon />
-          </button>
-          <ReactTooltip
-            id={`Settings-${item?.id}`} // Match tooltip ID
-            place="left"
-            content="Settings"
-            style={{
-              width: '130px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
-        </>
-      ),
-      width: '14%',
-    },
-  ];
 
   const handleConfigure = item => {
     setSelectedService(item);
     setIsModalOpen(true);
-    if (!modalOpenState && selectedCluster?.value) {
-      dispatch(NamespacesActions.getControllerServiceList());
-    }
-  };
-
-  const handleConfigureSubmit = data => {
-    const updatedData = controllerServicesData.map(service =>
-      service.identifier === selectedService.identifier
-        ? { ...service, controllerService: [data] }
-        : service
-    );
-    setControllerServicesData(updatedData);
-    const newExternalControllerServiceArray = updatedData.map(
-      service => service.controllerService
-    );
-    setExternalControllerServiceArray(newExternalControllerServiceArray);
-    setIsModalOpen(false);
-    setSelectedService(null);
   };
 
   const handleCloseModal = () => {
@@ -159,47 +107,30 @@ const ControllerServiceTab = () => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
 
-  const [collapsibles, setCollapsibles] = useState([]);
-
-  useEffect(() => {
-    const newCollapsibles = [
-      {
-        id: 1,
-        title: 'External Controller Service',
-        content: externalControllerServiceArray?.length ? (
-          <Table
-            data={externalControllerServiceArray[0]}
-            columns={COLUMNS_2}
-            className={'variables-table'}
-          />
-        ) : (
-          <Table
-            data={controllerServicesData}
-            columns={COLUMNS}
-            className={'variables-table'}
-          />
-        ),
-      },
-      ...(registryAllDetails?.controllerServicesData?.localServices?.map(
-        (service, index) => ({
-          id: `child-${index + 3}`,
-          title: service?.processGroupName || 'Unnamed Group',
-          content: (
-            <Table
-              data={service?.controllerService || []}
-              columns={COLUMNS_2}
-              className={'variables-table'}
-            />
-          ),
-        })
-      ) || []),
-    ];
-    setCollapsibles(newCollapsibles);
-  }, [
-    controllerServicesData,
-    registryAllDetails,
-    externalControllerServiceArray,
-  ]);
+  const collapsibles = [
+    {
+      id: 1,
+      title: 'External Controller Service',
+      content: (
+        <Table
+          data={controllerServicesData}
+          columns={COLUMNS}
+          className={'variables-table'}
+        />
+      ),
+    },
+    {
+      id: 2,
+      title: 'Controller Service Flow',
+      content: (
+        <Table
+          data={controllerServicesData}
+          columns={COLUMNS}
+          className={'variables-table'}
+        />
+      ),
+    },
+  ];
 
   return (
     <DataWrapper>
@@ -226,7 +157,6 @@ const ControllerServiceTab = () => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           service={selectedService}
-          handleConfigureSubmit={handleConfigureSubmit}
         />
       )}
       <NewAddControllerService />
