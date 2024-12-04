@@ -24,6 +24,7 @@ import { Button, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
+  ClustersSelectors,
   // LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
@@ -38,6 +39,7 @@ import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -304,6 +306,10 @@ const Summary = () => {
   const selectedDestCluster = useSelector(
     NamespacesSelectors.getSelectedDestCluster
   );
+  const selectedCluster = useSelector(
+    ClustersSelectors.getAllClustersList
+  ).filter(cluster => cluster.id === selectedDestCluster.value)[0];
+
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
@@ -571,9 +577,23 @@ const Summary = () => {
                     <SummaryDetailsPtag className="mb-0">
                       <div>
                         <span>{checkDestCluster.registryUrl}</span>
-                        <CopyToClipboard
-                          className="summary-clipboard"
-                          copyItem={checkDestCluster.registryUrl}
+                        <div data-tooltip-id={`copy-board-namespace-summary1`}>
+                          <CopyToClipboard
+                            className="summary-clipboard"
+                            copyItem={checkDestCluster.registryUrl}
+                          />
+                        </div>
+                        <ReactTooltip
+                          id={`copy-board-namespace-summary1`}
+                          place="bottom"
+                          effect="solid"
+                          content={'Copy registry URL'}
+                          style={{
+                            width: '150px',
+                            whiteSpace: 'normal',
+                            wordWrap: 'break-word',
+                            zIndex: 10000,
+                          }}
                         />
                       </div>
                     </SummaryDetailsPtag>
@@ -586,10 +606,24 @@ const Summary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>{checkDestCluster.nifiUrl}</span>
-                        <CopyToClipboard
-                          className="summary-clipboard"
-                          copyItem={checkDestCluster.nifiUrl}
+                        <span>{checkDestCluster.nifiUrl}</span>{' '}
+                        <div data-tooltip-id={`copy-board-namespace-summary2`}>
+                          <CopyToClipboard
+                            className="summary-clipboard"
+                            copyItem={checkDestCluster.nifiUrl}
+                          />
+                        </div>
+                        <ReactTooltip
+                          id={`copy-board-namespace-summary2`}
+                          place="bottom"
+                          effect="solid"
+                          content={'Copy cluster URL'}
+                          style={{
+                            width: '150px',
+                            whiteSpace: 'normal',
+                            wordWrap: 'break-word',
+                            zIndex: 10000,
+                          }}
                         />
                       </div>
                     </SummaryDetailsPtag>
@@ -837,7 +871,7 @@ const Summary = () => {
           </div>
         )}
       </BottomButton>
-      <ScheduleDeploymentModal />
+      <ScheduleDeploymentModal showApprover={selectedCluster.approver_enable} />
       <NamespaceDeploy
         isOpen={isDeployedModal}
         closePopup={handleCloseModal}

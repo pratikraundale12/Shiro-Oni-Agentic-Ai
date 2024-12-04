@@ -204,16 +204,16 @@ const Upgrade = () => {
 
   const sortedArray = gridDataDest?.map(element => ({
     ...element?.position,
-    width: 80,
-    height: 40,
+    width: 384,
+    height: 176,
     color: 'teal',
   }));
 
   const childLevelSortedData = childLevelDeployProcessorData?.data?.map(
     element => ({
       ...element?.position,
-      width: 80,
-      height: 40,
+      width: 384,
+      height: 176,
       color: 'teal',
     })
   );
@@ -315,15 +315,23 @@ const Upgrade = () => {
   const isStateStale =
     checkDestCluster.state === 'LOCALLY_MODIFIED_AND_STALE' ||
     checkDestCluster.state === 'LOCALLY_MODIFIED';
-  const baseData = formData?.namespaceId ? childLevelSortedData : sortedArray;
+
+  const baseData = Array.isArray(
+    formData?.namespaceId ? childLevelSortedData : sortedArray
+  )
+    ? formData?.namespaceId
+      ? childLevelSortedData
+      : sortedArray
+    : [];
+
   const updatedDataForGraph = [
     ...baseData,
     ...[
       {
         x: xStateCoordinate || formData?.position?.x,
         y: yStateCoordinate || formData?.position?.y,
-        width: 80,
-        height: 40,
+        width: 384,
+        height: 176,
         color: theme.colors.primary,
       },
     ],

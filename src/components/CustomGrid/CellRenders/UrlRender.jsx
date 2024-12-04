@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { OpenLinkIcon } from '../../../assets';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
@@ -28,7 +29,7 @@ const StyledLink = styled.a`
   }
 `;
 
-export const UrlRender = ({ url, tooltipPlacement = 'bottom' }) => {
+export const UrlRender = ({ url, tooltipPlacement = 'bottom', type }) => {
   return (
     <Container>
       <TextRender
@@ -37,11 +38,38 @@ export const UrlRender = ({ url, tooltipPlacement = 'bottom' }) => {
         tooltipPlacement={tooltipPlacement}
       />
       <Container>
-        <StyledLink href={url} target="_blank">
+        <StyledLink href={url} target="_blank" data-tooltip-id={`${url}1`}>
           <OpenLinkIcon />
         </StyledLink>
-        <CopyToClipboard copyItem={url} />
+        <span data-tooltip-id={`${url}copy-board`}>
+          <CopyToClipboard copyItem={url} />
+        </span>
       </Container>
+      <ReactTooltip
+        id={`${url}1`}
+        place="bottom"
+        effect="solid"
+        content={'Navigate to URL'}
+        style={{
+          width: '140px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          zIndex: 10000,
+        }}
+      />
+      <ReactTooltip
+        id={`${url}copy-board`}
+        place="bottom"
+        effect="solid"
+        // content={'Copy URL '}
+        content={`${type === 'Registry' ? 'Copy registry URL' : 'Copy cluster URL'}`}
+        style={{
+          width: '150px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          zIndex: 10000,
+        }}
+      />
     </Container>
   );
 };
@@ -49,4 +77,5 @@ export const UrlRender = ({ url, tooltipPlacement = 'bottom' }) => {
 UrlRender.propTypes = {
   url: PropTypes.string.isRequired,
   tooltipPlacement: PropTypes.string,
+  type: PropTypes.string,
 };

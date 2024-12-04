@@ -19,6 +19,7 @@ import { Table } from '../../components';
 import { Button, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
+  LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
@@ -157,6 +158,9 @@ export const ListControllerService = () => {
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
   );
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
+  );
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
@@ -228,43 +232,85 @@ export const ListControllerService = () => {
       renderCell: item => (
         <>
           {controllerPermissions.includes('edit_controller_services') && (
-            <button
-              className="border-0 bg-white"
-              onClick={() => handleSettingClick(item)}
-            >
-              <SettingSmallIcon />
-            </button>
+            <>
+              <button
+                className="border-0 bg-white"
+                onClick={() => handleSettingClick(item)}
+                data-tooltip-id={'Settings'}
+              >
+                <SettingSmallIcon />
+              </button>
+              <ReactTooltip
+                id={'Settings'}
+                place="left"
+                content={'Settings'}
+                style={{
+                  width: '130px',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
           )}
           {item?.state != 'INVALID' &&
             item?.state != 'VALIDATING' &&
             item?.state != 'DISABLING' &&
             controllerPermissions.includes('edit_controller_services') && (
-              <button
-                className="border-0 bg-white ms-1"
-                onClick={() => handleEnableClick(item)}
-              >
-                {item?.state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
-              </button>
+              <>
+                <button
+                  className="border-0 bg-white ms-1"
+                  onClick={() => handleEnableClick(item)}
+                  data-tooltip-id={item?.id}
+                >
+                  {item?.state !== 'DISABLED' ? (
+                    <FlashCutIcon />
+                  ) : (
+                    <FlashIcon />
+                  )}
+                </button>
+                <ReactTooltip
+                  id={item?.id}
+                  place="left"
+                  content={item?.state !== 'DISABLED' ? 'Disable' : 'Enable'}
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
             )}
           {item?.state != 'ENABLED' &&
             item?.state != 'ENABLING' &&
             item?.state != 'DISABLING' &&
             controllerPermissions.includes('delete_controller_services') && (
-              <button
-                className="border-0 bg-white ms-1"
-                onClick={() => handleDeleteClick(item)}
-              >
-                <DeleteSmallIcon color="black" height="28" />
-              </button>
+              <>
+                <button
+                  className="border-0 bg-white ms-1"
+                  onClick={() => handleDeleteClick(item)}
+                  data-tooltip-id={'Delete'}
+                >
+                  <DeleteSmallIcon color="black" height="28" />
+                </button>
+                <ReactTooltip
+                  id={'Delete'}
+                  place="left"
+                  content={'Delete'}
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
             )}
         </>
       ),
       width: '14%',
     },
   ];
-
   useEffect(() => {
-    if (!modalOpenState) {
+    if (!modalOpenState && selectedCluster?.value) {
       dispatch(NamespacesActions.getControllerServiceList());
     }
   }, [dispatch, modalOpenState, selectedCluster]);
@@ -296,9 +342,20 @@ export const ListControllerService = () => {
             <button
               className="d-flex bg-white border-0 "
               onClick={handleBackButtonClick}
+              data-tooltip-id={`tooltip-group-controller-service-back`}
             >
               <GreaterArrowIcon />
             </button>
+            <ReactTooltip
+              id={`tooltip-group-controller-service-back`}
+              place="right"
+              content={'Back'}
+              style={{
+                width: '65px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
             <div className="d-flex  align-items-center gap-2">
               <TodoIcon width={22} height={24} />
               <HeadingStyle>Controller Services List</HeadingStyle>
@@ -342,6 +399,7 @@ export const ListControllerService = () => {
         data={filteredModulesData || []}
         columns={COLUMNS}
         controllerModule={true}
+        loading={loading}
       />
 
       <ConfigControllerService

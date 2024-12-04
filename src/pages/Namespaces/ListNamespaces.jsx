@@ -156,7 +156,22 @@ export const ListNamespaces = () => {
       renderCell: item => (
         <Flex>
           <TextRender text={item.id} />
-          <CopyToClipboard copyItem={item.id} />
+          <span data-tooltip-id={`copy-board-namespace-list`}>
+            <CopyToClipboard copyItem={item.id} />
+          </span>
+
+          <ReactTooltip
+            id={`copy-board-namespace-list`}
+            place="bottom"
+            effect="solid"
+            content={'Copy group Id'}
+            style={{
+              width: '125px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
         </Flex>
       ),
       width: '25%',
@@ -236,7 +251,7 @@ export const ListNamespaces = () => {
             place="left"
             content={'Audit Logs'}
             style={{
-              width: '120px',
+              width: '105px',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}
@@ -284,7 +299,7 @@ export const ListNamespaces = () => {
             place="right"
             content={'Controller Service'}
             style={{
-              width: '120px',
+              width: '150px',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}

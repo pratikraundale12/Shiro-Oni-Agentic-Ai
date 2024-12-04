@@ -1,10 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { LoginIcon } from '../../../assets';
-import { CLUSTER_STATUS } from '../../../constants';
-import { AuthenticationActions } from '../../../store';
+import { LoginIcon, LogoutIcon } from '../../../assets';
+import { CLUSTERS_TOKEN, CLUSTER_STATUS } from '../../../constants';
+import {
+  AuthenticationActions,
+  DashboardActions,
+  GridActions,
+  NamespacesActions,
+} from '../../../store';
 import { ClusterLoginModal } from '../../ClusterLoginModal';
 import { IconButton } from './AtionRender';
 
@@ -28,28 +35,79 @@ const EnableClusterText = styled.div`
 export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
 
+  const handleClusterAction = () => {
+    if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
+      dispatch(
+        AuthenticationActions.setClusterLogin({
+          label: item.name,
+          value: item.id,
+        })
+      );
+    } else if (item?.status === CLUSTER_STATUS.CONNECTED) {
+      dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+      dispatch(
+        GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
+      );
+      dispatch(DashboardActions.fetchDashboardSuccess({ data: {} }));
+
+      const clusterItem = localStorage.getItem('selected_cluster');
+      const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+
+      if (clusterItem) {
+        const cluster = JSON.parse(clusterItem);
+        if (cluster.value === item.id) {
+          localStorage.removeItem('selected_cluster');
+          dispatch(
+            NamespacesActions.setSelectedCluster({
+              label: '',
+              value: '',
+            })
+          );
+        }
+      }
+
+      // Remove the matching cluster from clustersToken
+      const updatedClustersToken = clustersToken.filter(
+        token => token.id !== item.id
+      );
+      localStorage.setItem(
+        CLUSTERS_TOKEN,
+        JSON.stringify(updatedClustersToken)
+      );
+
+      toast.success('Cluster Disconnected Successfully');
+    }
+  };
+
   return (
     <>
-      <EnableClusterText
-        onClick={() => {
-          if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
-            dispatch(
-              AuthenticationActions.setClusterLogin({
-                label: item.name,
-                value: item.id,
-              })
-            );
-          }
-        }}
-      >
-        <IconButton disabled={item.status !== CLUSTER_STATUS.DISCONNECTED}>
-          {' '}
-          <LoginIcon />
+      <EnableClusterText onClick={handleClusterAction}>
+        <IconButton data-tooltip-id={`${item?.id}1`}>
+          {item?.status === CLUSTER_STATUS.DISCONNECTED ? (
+            <LoginIcon />
+          ) : (
+            <LogoutIcon color="#a51e1e" />
+          )}
         </IconButton>
       </EnableClusterText>
       {item?.status === CLUSTER_STATUS.DISCONNECTED && (
         <ClusterLoginModal cluster={item} />
       )}
+      <ReactTooltip
+        id={`${item?.id}1`}
+        place="left"
+        effect="solid"
+        content={
+          item?.status === CLUSTER_STATUS.DISCONNECTED
+            ? 'Cluster login'
+            : 'Cluster logout'
+        }
+        style={{
+          width: '130px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+        }}
+      />
     </>
   );
 };

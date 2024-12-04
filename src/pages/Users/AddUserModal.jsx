@@ -254,43 +254,59 @@ export const AddUserModal = props => {
             setValue={setValue}
             errors={errors}
             url={`${API_URL}${state.selectedItem?.photo}`}
+            disabled={
+              currentUserData?.role === 'superadmin' &&
+              currentUserData?.id === state?.selectedItem?.id
+                ? false
+                : state.selectedItem
+            }
           />
         </ImageContainer>
         <Continer>
           <SelectFieldWrapper>
             <DropDownWrapper>
-              <StyledSelectField
-                name="is_active"
-                size="sm"
-                options={statusOption}
-                errors={errors}
-                control={control}
-                placeholder="Status"
-                backgroundColor={theme.colors.lightGrey}
-                title="Select Status"
-                disabled={
-                  currentUserData?.id === state?.selectedItem?.id ? true : false
-                }
-              />
+              {currentUserData?.role !== 'superadmin' && (
+                <StyledSelectField
+                  name="is_active"
+                  size="sm"
+                  options={statusOption}
+                  errors={errors}
+                  control={control}
+                  placeholder="Status"
+                  backgroundColor={theme.colors.lightGrey}
+                  title="Select Status"
+                  disabled={
+                    currentUserData?.role === 'superadmin' &&
+                    currentUserData?.id === state?.selectedItem?.id
+                      ? false
+                      : state.selectedItem
+                  }
+                />
+              )}
             </DropDownWrapper>
             <DropDownWrapper>
-              <StyledSelectField
-                name="role_id"
-                size="sm"
-                options={rolesOption}
-                errors={errors}
-                control={control}
-                placeholder={
-                  currentUserData?.id === state?.selectedItem?.id
-                    ? 'Superadmin'
-                    : 'Role'
-                }
-                backgroundColor={theme.colors.lightGrey}
-                title="Select Role"
-                disabled={
-                  currentUserData?.id === state?.selectedItem?.id ? true : false
-                }
-              />
+              {currentUserData?.role !== 'superadmin' && (
+                <StyledSelectField
+                  name="role_id"
+                  size="sm"
+                  options={rolesOption}
+                  errors={errors}
+                  control={control}
+                  placeholder={
+                    currentUserData?.id === state?.selectedItem?.id
+                      ? 'Superadmin'
+                      : 'Role'
+                  }
+                  backgroundColor={theme.colors.lightGrey}
+                  title="Select Role"
+                  disabled={
+                    currentUserData?.role === 'superadmin' &&
+                    currentUserData?.id === state?.selectedItem?.id
+                      ? false
+                      : state.selectedItem
+                  }
+                />
+              )}
             </DropDownWrapper>
           </SelectFieldWrapper>
           <FormWrapper>
@@ -307,6 +323,12 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
+                    disabled={
+                      currentUserData?.role === 'superadmin' &&
+                      currentUserData?.id === state?.selectedItem?.id
+                        ? false
+                        : state.selectedItem
+                    }
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
@@ -318,6 +340,12 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
+                    disabled={
+                      currentUserData?.role === 'superadmin' &&
+                      currentUserData?.id === state?.selectedItem?.id
+                        ? false
+                        : state.selectedItem
+                    }
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
@@ -330,6 +358,12 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
+                    disabled={
+                      currentUserData?.role === 'superadmin' &&
+                      currentUserData?.id === state?.selectedItem?.id
+                        ? false
+                        : state.selectedItem
+                    }
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
@@ -360,6 +394,12 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<MailIcon />}
+                    disabled={
+                      currentUserData?.role === 'superadmin' &&
+                      currentUserData?.id === state?.selectedItem?.id
+                        ? false
+                        : state.selectedItem
+                    }
                   />
                 </div>
                 {currentUserData.role === 'superadmin' && (
@@ -400,6 +440,12 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<PhoneIcon />}
+                    disabled={
+                      currentUserData?.role === 'superadmin' &&
+                      currentUserData?.id === state?.selectedItem?.id
+                        ? false
+                        : state.selectedItem
+                    }
                   />
                 </div>
               </div>

@@ -135,7 +135,10 @@ export function* deployCluster(api) {
   if (response.ok) {
     yield put(NamespacesActions.setDeployedModal());
     yield put(NamespacesActions.setNamespaceSummaryLoadingState(false));
-  } else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    yield put(NamespacesActions.setNamespaceSummaryLoadingState(false));
+  }
 }
 export function* updateNamespaceStatus(api, { payload }) {
   const selectedDestCluster = yield select(

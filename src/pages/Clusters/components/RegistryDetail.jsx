@@ -28,6 +28,8 @@ const RegistryDetail = ({ data }) => {
               ? item.registry_url
               : `${item.registry_url}/nifi-registry`
           }
+          tooltipPlacement="top"
+          type="Registry"
         />
       ),
       width: '75%',

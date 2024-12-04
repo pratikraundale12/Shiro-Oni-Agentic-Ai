@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { ActivityHistoryIcon } from '../../assets';
 import { Grid, IconButton, StatusRender, TextRender } from '../../components';
@@ -20,7 +21,7 @@ export const ClusterSummary = () => {
   const { state, setState } = useGlobalContext();
 
   const getActionsMenu = item => (
-    <div>
+    <div data-tooltip-id={`${item?.nodeId}1`}>
       <ActionTd
         onClick={() => {
           setState({
@@ -34,6 +35,16 @@ export const ClusterSummary = () => {
           <ActivityHistoryIcon width={16} height={16} />
         </IconButton>
       </ActionTd>
+      <ReactTooltip
+        id={`${item?.nodeId}1`}
+        place="left"
+        content={'Node details'}
+        style={{
+          width: '130px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+        }}
+      />
     </div>
   );
 

@@ -33,7 +33,7 @@ import {
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
-// import { ClusterSelect } from '../ClusterSelect';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const Flex = styled.div`
   display: flex;
@@ -283,12 +283,25 @@ export const GridActions = ({
         <Flex>
           <GoBackButton />
           {!isChildNamespace && !clusterSummaryPage && (
-            <button
-              className="d-flex bg-white border-0"
-              onClick={handleBackButtonClick}
-            >
-              <GreaterArrowIcon />
-            </button>
+            <>
+              <button
+                className="d-flex bg-white border-0"
+                onClick={handleBackButtonClick}
+                data-tooltip-id={`tooltip-group-navigate-back`}
+              >
+                <GreaterArrowIcon />
+              </button>
+              <ReactTooltip
+                id={`tooltip-group-navigate-back`}
+                place="right"
+                content={'Back'}
+                style={{
+                  width: '65px',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
           )}
           <ImageContainer>
             <TodoIcon width={22} height={24} />
@@ -371,10 +384,24 @@ export const GridActions = ({
             !userModalOpen && <Modal />}
         </ButtonsContainer>
         {module === 'namespaces' ? (
-          <RefreshIocn onClick={handleRefresh}>
-            {' '}
-            <RefreshIcon style={{ cursor: 'pointer' }} />
-          </RefreshIocn>
+          <>
+            <RefreshIocn
+              onClick={handleRefresh}
+              data-tooltip-id={`tooltip-group-namespace-refresh`}
+            >
+              <RefreshIcon style={{ cursor: 'pointer' }} />
+            </RefreshIocn>
+            <ReactTooltip
+              id={`tooltip-group-namespace-refresh`}
+              place="left"
+              content={'Refresh'}
+              style={{
+                width: '100px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+          </>
         ) : null}
       </Flex>
       <SearchContainer>
