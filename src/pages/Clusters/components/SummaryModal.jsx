@@ -362,15 +362,6 @@ export const SummaryModal = ({
           ))}
         </ModalBody>
       </Modal>
-      {/* <ToastContainer
-        theme="colored"
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable
-      /> */}
     </>
   );
 };
