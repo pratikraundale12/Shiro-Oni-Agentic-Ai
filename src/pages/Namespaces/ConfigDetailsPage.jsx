@@ -86,7 +86,6 @@ const Tab = styled.div`
 
 const TabContent = styled.div`
   width: 100%;
-
   padding: 1rem;
   border-radius: 0.25rem;
   background-color: #f8f9fa;

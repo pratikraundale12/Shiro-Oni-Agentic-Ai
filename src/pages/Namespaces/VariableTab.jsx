@@ -55,8 +55,6 @@ const VariableTab = ({ variableData, setVariableData }) => {
     setCurrentPgId(pgId);
   };
 
-  const dispatch = useDispatch();
-
   const handleAddVariables = (tableId, index) => {
     setCurrentPgId(tableId);
     handleToggle(tableId, index);
@@ -134,7 +132,6 @@ const VariableTab = ({ variableData, setVariableData }) => {
 
   const closeAddVariablesModal = () => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
-    dispatch(NamespacesActions.setVariableContextItem({}));
   };
 
   return (
