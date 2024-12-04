@@ -6,6 +6,7 @@ import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import { TodoIcon } from '../../assets';
 import Breadcrumb from '../../shared/Breadcrumb';
+import VariableTab from './VariableTab';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -61,6 +62,7 @@ const TabWrapper = styled.div`
   display: flex;
   margin-bottom: 1rem;
   align-items: flex-start;
+  border-bottom: 1px solid rgba(221, 228, 240, 1);
 `;
 
 const Tab = styled.div`
@@ -81,8 +83,9 @@ const Tab = styled.div`
 `;
 
 const TabContent = styled.div`
+  width: 100%;
+
   padding: 1rem;
-  border: 1px solid #ddd;
   border-radius: 0.25rem;
   background-color: #f8f9fa;
 `;
@@ -111,7 +114,7 @@ const ConfigDetailsPage = () => {
       case KDFM.PARAMETER_CONTEXT:
         return <p>This is the content for Tab 1.</p>;
       case KDFM.VARIABLES:
-        return <p>This is the content for Tab 2.</p>;
+        return <VariableTab />;
       case KDFM.CONTROLLER_SERVICE:
         return <p>This is the content for Tab 3.</p>;
       default:

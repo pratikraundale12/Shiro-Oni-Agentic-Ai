@@ -94,6 +94,9 @@ const InputField = ({
   required = false,
   registerOptions = {},
   className,
+  value,
+  onChange,
+  placeholder,
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -114,9 +117,12 @@ const InputField = ({
       <div className="wrapper">
         <span className="icon-placeholder">{icon}</span>
         <input
+          value={value}
           name={name}
           type={type}
           aria-invalid={error}
+          placeholder={placeholder}
+          onChange={onChange}
           {...props}
           {...(isFunction(register) && register(name, { ...registerOptions }))}
         />
@@ -138,6 +144,9 @@ InputField.propTypes = {
   required: PropTypes.string,
   registerOptions: PropTypes.shape({}),
   className: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+  placeholder: PropTypes.string,
 };
 
 export default InputField;
