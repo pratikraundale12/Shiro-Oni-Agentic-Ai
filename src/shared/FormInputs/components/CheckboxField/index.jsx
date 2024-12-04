@@ -31,6 +31,7 @@ const CheckboxField = ({
   register,
   label,
   className = null,
+  onCheckBoxChange,
   ...props
 }) => (
   <Wrapper className={className}>
@@ -38,6 +39,7 @@ const CheckboxField = ({
       id={label?.toLowerCase()}
       type="checkbox"
       name={name}
+      onChange={onCheckBoxChange}
       {...props}
       {...(typeof register === 'function' && register(name))}
     />
@@ -50,6 +52,7 @@ CheckboxField.propTypes = {
   register: PropTypes.func.isRequired,
   label: PropTypes.string,
   className: PropTypes.string,
+  onCheckBoxChange: PropTypes.func,
 };
 
 export default CheckboxField;

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
-// import { Modal } from '../../shared';
 import Collapsible from './Collapsible';
+import { NamespacesActions } from '../../store';
+import AddOrEditVariablesModal from './AddOrEditVariablesModal';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -29,103 +31,115 @@ const VariableTab = () => {
     mode: 'add',
   });
 
-  const [openIndex, setOpenIndex] = useState(null);
+  const variablesMockData = [
+    {
+      pgId: '12345',
+      parent: true,
+      pgname: 'Parent',
+      variables: [
+        {
+          name: 'var1',
+          value: 'abcd',
+        },
+        {
+          name: 'var2',
+          value: 'abcd',
+        },
+      ],
+    },
+    {
+      pgId: '3214',
+      parent: false,
+      pgname: 'Child1',
+      variables: [
+        {
+          name: 'var3',
+          value: 'abcd',
+        },
+        {
+          name: 'var4',
+          value: 'abcd',
+        },
+      ],
+    },
+    {
+      pgId: '3215',
+      parent: false,
+      pgname: 'Child2',
+      variables: [
+        {
+          name: 'var5',
+          value: 'abcd',
+        },
+        {
+          name: 'var6',
+          value: 'abcd',
+        },
+      ],
+    },
+    {
+      pgId: '3216',
+      parent: false,
+      pgname: 'Child4',
+      variables: [
+        {
+          name: 'var7',
+          value: 'abcd',
+        },
+        {
+          name: 'var8',
+          value: 'abcd',
+        },
+      ],
+    },
+    {
+      pgId: '3217',
+      parent: false,
+      pgname: 'Child5',
+      variables: [
+        {
+          name: 'var9',
+          value: 'abcd',
+        },
+        {
+          name: 'var10',
+          value: 'abcd',
+        },
+      ],
+    },
+  ];
 
-  const handleToggle = index => {
+  const [openIndex, setOpenIndex] = useState(null);
+  const [currentEditData, setCurrentEditData] = useState({});
+  const [variableData, setVariableData] = useState(variablesMockData);
+  const [currentPgId, setCurrentPgId] = useState('');
+
+  const handleToggle = (pgId, index) => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
+    setCurrentPgId(pgId);
   };
 
-  const handleAddVariables = () => {
+  const dispatch = useDispatch();
+
+  const handleAddVariables = (tableId, index) => {
+    setCurrentPgId(tableId);
+    handleToggle(tableId, index);
     setIsAddVariablesOpen({
       isOpen: true,
       mode: 'add',
     });
   };
 
-  const variableTableData = [
-    {
-      variable: {
-        name: 'var',
-        value: '1',
-        processGroupId: '8b21e2ec-0193-1000-0000-00003edd6348',
-        affectedComponents: [],
-      },
-      canWrite: true,
-    },
-    {
-      variable: {
-        name: 'var 1',
-        value: '1',
-        processGroupId: '8b21e2ec-0193-1000-0000-00003edd6348',
-        affectedComponents: [],
-      },
-      canWrite: true,
-    },
-    {
-      variable: {
-        name: 'var 2',
-        value: '2',
-        processGroupId: '8b21e2ec-0193-1000-0000-00003edd6348',
-        affectedComponents: [],
-      },
-      canWrite: true,
-    },
-    {
-      variable: {
-        name: 'var 3',
-        value: '1',
-        processGroupId: '8b21e2ec-0193-1000-0000-00003edd6348',
-        affectedComponents: [],
-      },
-      canWrite: true,
-    },
-    {
-      variable: {
-        name: 'var',
-        value: '1',
-        processGroupId: '8b21e2ec-0193-1000-0000-00003edd6348',
-        affectedComponents: [],
-      },
-      canWrite: true,
-    },
-    {
-      variable: {
-        name: 'var 1',
-        value: '1',
-        processGroupId: '8b21e2ec-0193-1000-0000-00003edd6348',
-        affectedComponents: [],
-      },
-      canWrite: true,
-    },
-    {
-      variable: {
-        name: 'var 2',
-        value: '2',
-        processGroupId: '8b21e2ec-0193-1000-0000-00003edd6348',
-        affectedComponents: [],
-      },
-      canWrite: true,
-    },
-    {
-      variable: {
-        name: 'var 3',
-        value: '1',
-        processGroupId: '8b21e2ec-0193-1000-0000-00003edd6348',
-        affectedComponents: [],
-      },
-      canWrite: true,
-    },
-  ];
+  const handleEditClick = item => {
+    setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
+    setCurrentEditData(item);
+  };
 
   const VARIABLE_COLUMNS = [
     {
       label: KDFM.NAME,
       renderCell: item => (
-        <TextRender
-          key={item?.variable?.name}
-          text={item?.variable?.name}
-          capitalizeText={false}
-        />
+        <TextRender key={item?.name} text={item?.name} capitalizeText={false} />
       ),
     },
     {
@@ -133,12 +147,12 @@ const VariableTab = () => {
       renderCell: item => {
         return (
           <TextRender
-            key={item?.variable?.value}
+            key={item?.value}
             text={
-              item?.variable?.check || item?.variable?.value === ''
+              item?.check || item?.value === ''
                 ? KDFM.EMPTY_STRING_SET
-                : item?.variable?.value
-                  ? item?.variable?.value
+                : item?.value
+                  ? item?.value
                   : KDFM.NO_VALUE_SET
             }
             capitalizeText={false}
@@ -147,12 +161,11 @@ const VariableTab = () => {
       },
     },
     {
-      renderCell: () => (
+      renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <IconButton
-            // disabled={loading}
             onClick={() => {
-              setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
+              handleEditClick(item);
             }}
           >
             <PencilIcon style={{ color: 'black' }} />
@@ -162,57 +175,61 @@ const VariableTab = () => {
     },
   ];
 
-  const collapsibles = [
-    {
-      id: 1,
-      title: 'Variables Parent',
-      content: (
-        <Table
-          data={variableTableData}
-          columns={VARIABLE_COLUMNS}
-          className={'variables-table'}
-        />
-      ),
-    },
-    {
-      id: 2,
-      title: 'Variables Child',
-      content: (
-        <Table
-          data={variableTableData}
-          columns={VARIABLE_COLUMNS}
-          className={'variables-table'}
-        />
-      ),
-    },
-    {
-      id: 3,
-      title: 'Variables Child',
-      content: (
-        <Table
-          data={variableTableData}
-          columns={VARIABLE_COLUMNS}
-          className={'variables-table'}
-        />
-      ),
-    },
-  ];
+  const handleAddOrEditVariableSave = data => {
+    setVariableData(prev =>
+      prev.map(item =>
+        item.pgId === currentPgId
+          ? {
+              ...item,
+              variables: item.variables.some(
+                variable => variable.name === data.name
+              )
+                ? item.variables.map(variable =>
+                    variable.name === data.name
+                      ? { ...variable, value: data.value }
+                      : variable
+                  )
+                : [...item.variables, data],
+            }
+          : item
+      )
+    );
+  };
+
+  const closeAddVariablesModal = () => {
+    setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
+    dispatch(NamespacesActions.setVariableContextItem({}));
+  };
 
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {collapsibles.map((item, index) => (
+        {variableData.map((item, index) => (
           <Collapsible
-            onBtnClick={handleAddVariables}
-            key={item.id}
-            title={item.title}
+            onBtnClick={() => handleAddVariables(item.pgId, index)}
+            key={item.pgId}
+            title={item.pgname}
             isTableOpen={openIndex === index}
-            toggleCollapsible={() => handleToggle(index)}
+            toggleCollapsible={() => handleToggle(item?.pgId, index)}
           >
-            <p>{item.content}</p>
+            <Table
+              data={item.variables}
+              columns={VARIABLE_COLUMNS}
+              className={'variables-table'}
+            />
           </Collapsible>
         ))}
-        {isAddVariablesOpen.isOpen && <p>Test</p>}
+        {isAddVariablesOpen.isOpen && (
+          <AddOrEditVariablesModal
+            isOpen={isAddVariablesOpen}
+            closePopup={closeAddVariablesModal}
+            isAddVariablesOpen={isAddVariablesOpen}
+            setIsAddVariablesOpen={setIsAddVariablesOpen}
+            handleSave={handleAddOrEditVariableSave}
+            variablesDetailsData={variableData}
+            editVariableData={currentEditData}
+          />
+        )}
       </ScrollSetGrey>
     </DataWrapper>
   );
