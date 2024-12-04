@@ -1040,7 +1040,6 @@ export function* fetchFlowNameList(api, { payload }) {
   });
   if (response.ok) {
     yield put(NamespacesActions.setFlowListRegistry(response?.data));
-    yield put(NamespacesActions.setVersionListData({}));
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
@@ -1080,7 +1079,38 @@ export function* fetchVerionData(api, { payload }) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
-// fetchVerionData
+
+export function* fetchRegistryFlowDetails(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchRegistryFlowDetails',
+    loadingSection: 'fetchRegistryFlowDetails',
+    apiMethod: api.fetchRegistryFlowDetails,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        bucketId: payload?.bucketId,
+        flowId: payload?.flowId,
+        version: payload?.version,
+      },
+    ],
+  });
+  if (response.ok) {
+    yield put(NamespacesActions.setRegistryAllDetails(response?.data));
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+//
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -1172,6 +1202,11 @@ export function* namespacesSagas(api) {
     takeLatest(NamespacesActions.fetchRegistryData, fetchRegistryData, api),
     takeLatest(NamespacesActions.fetchFlowNameList, fetchFlowNameList, api),
     takeLatest(NamespacesActions.fetchVerionData, fetchVerionData, api),
+    takeLatest(
+      NamespacesActions.fetchRegistryFlowDetails,
+      fetchRegistryFlowDetails,
+      api
+    ),
   ]);
 }
-//fetchVerionData
+//

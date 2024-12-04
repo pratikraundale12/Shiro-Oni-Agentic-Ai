@@ -292,12 +292,17 @@ function DeployPage() {
 
   const handleContinue = () => {
     if (!isEmpty(versionSelected)) {
+      const flowname = flowListOptions?.filter(
+        item => item.value === selectedValueFlowId
+      );
       dispatch(
         NamespacesActions.setDeployFormData({
           bucketId: selectedValuebucketId,
           flow_name: selectedValueFlowId,
+          selectedFlowName: flowname[0].label,
         })
       );
+      dispatch(NamespacesActions.fetchRegistryFlowDetails(versionSelected));
       history.push('/process-group/flow-details');
     } else {
       toast.error('Please select any version');

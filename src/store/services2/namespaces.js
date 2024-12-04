@@ -220,6 +220,17 @@ export const namespacesAPI = api => {
     );
   };
 
+  const fetchRegistryFlowDetails = ({
+    clusterId,
+    bucketId,
+    flowId,
+    version,
+  }) => {
+    return api.get(
+      `/exports/${clusterId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`
+    );
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -251,5 +262,6 @@ export const namespacesAPI = api => {
     fetchRegistryData,
     fetchFlowNameList,
     fetchVerionData,
+    fetchRegistryFlowDetails,
   };
 };
