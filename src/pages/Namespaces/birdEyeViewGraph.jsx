@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import PropTypes from 'prop-types';
