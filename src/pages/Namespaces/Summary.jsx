@@ -1,4 +1,5 @@
 // import { yupResolver } from '@hookform/resolvers/yup';
+/*eslint-disable*/
 import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
 // import { useForm } from 'react-hook-form';
@@ -25,6 +26,7 @@ import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
   ClustersSelectors,
+  GridSelectors,
   // LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
@@ -303,9 +305,8 @@ export const scheduleSchema = yup.object().shape({
 
 const Summary = () => {
   const dispatch = useDispatch();
-  const selectedDestCluster = useSelector(
-    NamespacesSelectors.getSelectedDestCluster
-  );
+  const selectedDestCluster =
+    useSelector(NamespacesSelectors.getSelectedDestCluster) || [];
   const selectedCluster = useSelector(
     ClustersSelectors.getAllClustersList
   ).filter(cluster => cluster.id === selectedDestCluster.value)[0];
@@ -313,7 +314,10 @@ const Summary = () => {
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-
+  const currentSelectedCluster = useSelector(
+    NamespacesSelectors.getSelectedCluster
+  );
+  const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
@@ -323,21 +327,26 @@ const Summary = () => {
     isOpen: false,
     schedule: false,
   });
-  // const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
+  const deploByRegistryFlow = useSelector(
+    NamespacesSelectors.getdeployRegistryFlow
+  );
+  const registryAllDetails = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+
+  const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
+  const registryData = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
+
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
   const [isUpgrading, setIsUpgrading] = useState(false);
-  // const newlyAddVariables = useSelector(
-  //   NamespacesSelectors.getNewlyAddVariables
-  // );
   const parameterContextItem = useSelector(
     NamespacesSelectors.getParameterContextItem
   );
-  // const newlyAddParameters = useSelector(
-  //   NamespacesSelectors.getNewlyAddedParameterContext
-  // );
 
   const [isVariablesModalOpen, setVariablesModalOpen] = useState({
     isOpen: false,
@@ -451,7 +460,11 @@ const Summary = () => {
   };
 
   const handleBackClick = () => {
-    history.push('/process-group/upgrade');
+    if (deploByRegistryFlow) {
+      history.push('/process-group/config-details');
+    } else {
+      history.push('/process-group/upgrade');
+    }
   };
 
   const [activeButton, setActiveButton] = useState(null);
@@ -555,7 +568,9 @@ const Summary = () => {
                       {KDFM.SELECTED_CLUSTER}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {selectedDestCluster?.label}
+                      {deploByRegistryFlow
+                        ? currentSelectedCluster?.label
+                        : selectedDestCluster?.label}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -565,7 +580,9 @@ const Summary = () => {
                       {KDFM.NAMESPACE}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {checkDestCluster.name}
+                      {deploByRegistryFlow
+                        ? formDataRegistry?.selectedFlowName
+                        : checkDestCluster.name}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -576,11 +593,19 @@ const Summary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>{checkDestCluster.registryUrl}</span>
+                        <span>
+                          {deploByRegistryFlow
+                            ? registryData?.url
+                            : checkDestCluster.registryUrl}
+                        </span>
                         <div data-tooltip-id={`copy-board-namespace-summary1`}>
                           <CopyToClipboard
                             className="summary-clipboard"
-                            copyItem={checkDestCluster.registryUrl}
+                            copyItem={
+                              deploByRegistryFlow
+                                ? registryData?.url
+                                : checkDestCluster.registryUrl
+                            }
                           />
                         </div>
                         <ReactTooltip
@@ -606,11 +631,19 @@ const Summary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>{checkDestCluster.nifiUrl}</span>{' '}
+                        <span>
+                          {deploByRegistryFlow
+                            ? registryAllDetails?.nifi_url
+                            : checkDestCluster.nifiUrl}
+                        </span>{' '}
                         <div data-tooltip-id={`copy-board-namespace-summary2`}>
                           <CopyToClipboard
                             className="summary-clipboard"
-                            copyItem={checkDestCluster.nifiUrl}
+                            copyItem={
+                              deploByRegistryFlow
+                                ? registryAllDetails?.nifi_url
+                                : checkDestCluster.nifiUrl
+                            }
                           />
                         </div>
                         <ReactTooltip
@@ -632,23 +665,29 @@ const Summary = () => {
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                   <div>
                     <SummaryDetailsHFourTag className="mb-2">
-                      {KDFM.CURRENT_VERSION}
+                      {deploByRegistryFlow
+                        ? KDFM.SELECTED_VERSION
+                        : KDFM.CURRENT_VERSION}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {checkDestCluster.version || 'N/A'}
+                      {deploByRegistryFlow
+                        ? versionSelected?.version
+                        : checkDestCluster.version || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
-                <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                  <div className="summary-details">
-                    <SummaryDetailsHFourTag className="mb-2">
-                      {KDFM.UPDATED_VERSION}
-                    </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">
-                      {formData.version || checkDestCluster.version}
-                    </SummaryDetailsPtag>
-                  </div>
-                </UseColXl>
+                {!deploByRegistryFlow && (
+                  <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                    <div className="summary-details">
+                      <SummaryDetailsHFourTag className="mb-2">
+                        {KDFM.UPDATED_VERSION}
+                      </SummaryDetailsHFourTag>
+                      <SummaryDetailsPtag className="mb-0">
+                        {formData.version || checkDestCluster.version}
+                      </SummaryDetailsPtag>
+                    </div>
+                  </UseColXl>
+                )}
               </RowConfig>
             </UseColLg>
             {checkDestCluster.mode === 'upgrade' && (
@@ -871,7 +910,9 @@ const Summary = () => {
           </div>
         )}
       </BottomButton>
-      <ScheduleDeploymentModal showApprover={selectedCluster.approver_enable} />
+      <ScheduleDeploymentModal
+        showApprover={selectedCluster?.approver_enable}
+      />
       <NamespaceDeploy
         isOpen={isDeployedModal}
         closePopup={handleCloseModal}

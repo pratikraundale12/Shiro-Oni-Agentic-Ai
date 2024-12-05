@@ -161,6 +161,7 @@ export const KDFM = {
   NO_NAMESPACES_AVAILABLE: 'No Process Groups Available', // TODO: change it to Process Groups
   SEARCH_NODES: 'Search NodeId , Address',
   TAG: 'Tag',
+  SELECTED_VERSION: 'Selected Version',
 
   // License constants
   TRIAL: 'Trial',

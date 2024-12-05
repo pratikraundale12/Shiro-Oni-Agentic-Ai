@@ -108,6 +108,8 @@ const StyledTableCell = styled.div`
 `;
 
 const CustomTable = styled(Table)`
+  max-height: 400px;
+  overflow: auto;
   tr {
     padding: 0;
     height: 0;
@@ -290,6 +292,10 @@ function DeployPage() {
     }
   }, [formData, setValue]);
 
+  const handleBackAction = () => {
+    history.push('/process-group');
+  };
+
   const handleContinue = () => {
     if (!isEmpty(versionSelected)) {
       const flowname = flowListOptions?.filter(
@@ -399,7 +405,13 @@ function DeployPage() {
         </GreyBoxNamespace>
         <BottomButton className="bottom-button-divs d-flex">
           <BottomButtonDiv className="btn-div d-flex">
-            <Button variant="secondary">{KDFM.BACK}</Button>
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={handleBackAction}
+            >
+              {KDFM.BACK}
+            </Button>
             <Button type="submit">{KDFM.CONTINUE}</Button>
           </BottomButtonDiv>
         </BottomButton>

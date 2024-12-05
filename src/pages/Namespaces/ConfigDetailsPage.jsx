@@ -7,6 +7,8 @@ import { Button } from '../../shared';
 import { TodoIcon } from '../../assets';
 import Breadcrumb from '../../shared/Breadcrumb';
 import VariableTab from './VariableTab';
+import { useDispatch } from 'react-redux';
+import { NamespacesActions } from '../../store';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -91,13 +93,14 @@ const TabContent = styled.div`
 `;
 
 const ConfigDetailsPage = () => {
+  const dispatch = useDispatch();
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
-
+  const [variableData, setVariableData] = useState([]);
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
 
   const handleBackClick = () => {
@@ -105,6 +108,7 @@ const ConfigDetailsPage = () => {
   };
 
   const handleContinue = () => {
+    dispatch(NamespacesActions.setRegistryDeployVariable(variableData));
     history.push('/process-group/summary');
   };
 
@@ -114,7 +118,12 @@ const ConfigDetailsPage = () => {
       case KDFM.PARAMETER_CONTEXT:
         return <p>This is the content for Tab 1.</p>;
       case KDFM.VARIABLES:
-        return <VariableTab />;
+        return (
+          <VariableTab
+            variableData={variableData}
+            setVariableData={setVariableData}
+          />
+        );
       case KDFM.CONTROLLER_SERVICE:
         return <p>This is the content for Tab 3.</p>;
       default:
