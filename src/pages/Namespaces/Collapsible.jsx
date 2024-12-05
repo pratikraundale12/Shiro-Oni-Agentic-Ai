@@ -79,25 +79,22 @@ const Collapsible = ({
   onBtnClick,
   isTableOpen,
   toggleCollapsible,
+  isAddBtnVisible = true,
 }) => {
-  // const [isOpen, setIsOpen] = useState(isTableOpen ? isTableOpen : false);
-
-  // const toggleCollapsible = () => {
-  //   setIsOpen(!isOpen);
-  // };
-
   return (
     <CollapsibleWrapper>
       <Header>
         <Title>{title}</Title>
         <div className="d-flex gap-3 w-70">
-          <Button
-            icon={<PlusCircleIcon width={16} height={16} color="white" />}
-            onClick={onBtnClick}
-            size="sm"
-          >
-            {btnText}
-          </Button>
+          {isAddBtnVisible && (
+            <Button
+              icon={<PlusCircleIcon width={16} height={16} color="white" />}
+              onClick={onBtnClick}
+              size="sm"
+            >
+              {btnText}
+            </Button>
+          )}
           <ToggleButton aria-expanded={isTableOpen} onClick={toggleCollapsible}>
             {isTableOpen ? (
               <IconButton>
@@ -123,6 +120,7 @@ Collapsible.propTypes = {
   onBtnClick: PropTypes.func,
   isTableOpen: PropTypes.bool,
   toggleCollapsible: PropTypes.func,
+  isAddBtnVisible: PropTypes.bool,
 };
 
 export default Collapsible;

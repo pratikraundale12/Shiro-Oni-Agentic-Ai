@@ -274,6 +274,7 @@ const ParameterContextTab = () => {
       <ScrollSetGrey className="scroll-set-grey pe-1">
         {PcData.inherited.map(item => (
           <Collapsible
+            isAddBtnVisible={false}
             onBtnClick={() => {
               handleAddPc(item?.name);
             }}
@@ -287,6 +288,7 @@ const ParameterContextTab = () => {
         ))}
         {PcData.parent.map(item => (
           <Collapsible
+            isAddBtnVisible={false}
             onBtnClick={() => {
               handleAddPc(item?.name);
             }}
