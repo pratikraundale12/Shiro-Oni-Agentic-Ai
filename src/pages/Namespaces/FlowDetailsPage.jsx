@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   CanvasXIcon,
   CanvasYIcon,
@@ -16,7 +16,7 @@ import { Button, InputField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
-  NamespacesActions,
+  // NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
 // import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
@@ -161,8 +161,6 @@ const BreadcrumbContainer = styled.div`
 `;
 
 const FlowDetailsPage = () => {
-  const dispatch = useDispatch();
-  const formData = useSelector(NamespacesSelectors.getFormData);
   const registryAllDetails = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
@@ -170,19 +168,22 @@ const FlowDetailsPage = () => {
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+  const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
 
-  const [xStateCoordinate, setXStateCoordiate] = useState(
-    formData?.position?.x
-  );
-  const [yStateCoordinate, setYStateCoordiate] = useState(
-    formData?.position?.y
-  );
+  console.log(registryDetailsData, 'registryDetailsData');
+  // registryDetailsData?.positions[0].x
+  const [xStateCoordinate, setXStateCoordiate] = useState(null);
+  // registryDetailsData?.positions[0].y
+  const [yStateCoordinate, setYStateCoordiate] = useState(null);
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
     { label: 'Flow Details' },
   ];
-
+  console.log(xStateCoordinate, 'xStateCoordinate', yStateCoordinate);
   const handleClick = () => {
     history.push('/process-group/config-details');
   };
@@ -192,12 +193,21 @@ const FlowDetailsPage = () => {
   };
 
   const handleXCoordinateChangeInput = e => {
-    setXStateCoordiate(Number(e.target.value));
+    if (e.target.value) {
+      setXStateCoordiate(Number(e.target.value));
+    } else {
+      setXStateCoordiate(null);
+    }
   };
 
   const handleYCoordinateChangeInput = e => {
-    setYStateCoordiate(Number(e.target.value));
-    dispatch(NamespacesActions.setPosition({ y: e.target.value }));
+    if (e.target.value) {
+      setYStateCoordiate(Number(e.target.value));
+    } else {
+      setYStateCoordiate(null);
+    }
+
+    // dispatch(NamespacesActions.setPosition({ y: e.target.value }));
   };
 
   // const getIconForState = state => {
@@ -261,7 +271,7 @@ const FlowDetailsPage = () => {
                     name="x"
                     type="text"
                     label={KDFM.CANVAS_POSITION}
-                    value={xStateCoordinate || formData.position.x}
+                    value={xStateCoordinate}
                     icon={<CanvasXIcon />}
                     onChange={e => handleXCoordinateChangeInput(e)}
                   />
@@ -269,7 +279,7 @@ const FlowDetailsPage = () => {
                     name="y"
                     type="text"
                     label=""
-                    value={yStateCoordinate || formData.position.y}
+                    value={yStateCoordinate}
                     icon={<CanvasYIcon />}
                     onChange={e => handleYCoordinateChangeInput(e)}
                   />
@@ -281,7 +291,7 @@ const FlowDetailsPage = () => {
                       type="text"
                       label={KDFM.CURRENT_VERSION}
                       placeholder="N/A"
-                      value={''}
+                      value={versionSelected?.version}
                       icon={<QRIcons />}
                       disabled
                     />

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import Collapsible from './Collapsible';
-import { NamespacesActions } from '../../store';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import AddOrEditVariablesModal from './AddOrEditVariablesModal';
 
 const DataWrapper = styled.div`
@@ -26,6 +26,10 @@ const ScrollSetGrey = styled.div`
 `;
 
 const VariableTab = () => {
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+  console.log(registryDetailsData, 'registryDetailsData');
   const [isAddVariablesOpen, setIsAddVariablesOpen] = useState({
     isOpen: false,
     mode: 'add',
