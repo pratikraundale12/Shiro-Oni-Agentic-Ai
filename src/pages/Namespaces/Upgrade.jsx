@@ -206,7 +206,7 @@ const Upgrade = () => {
     ...element?.position,
     width: 384,
     height: 176,
-    color: 'teal',
+    color: element?.isProcessor ? '#BFDFDF' : 'teal',
   }));
 
   const childLevelSortedData = childLevelDeployProcessorData?.data?.map(
