@@ -7,20 +7,11 @@ import * as yup from 'yup';
 
 import { toast } from 'react-toastify';
 import { PasswordTextMessage, getRightIcon } from '.';
-import {
-  ClusterIcon,
-  // GoogleIcon,
-  LessArrowIcon,
-  // MicroSoftIcon,
-  UserIcon,
-} from '../../assets';
-import { ClusterSelect, Layout } from '../../components';
+import { LessArrowIcon, UserIcon } from '../../assets';
+import { Layout } from '../../components';
 import {
   FORGOT_PASSWORD,
-  // GOOGLE,
   LOGIN_TO_YOUR_ACCOUNT,
-  // MICROSOFT,
-  // OR_DO_IT_VIA_OTHER_ACCOUNTS,
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../constants';
@@ -28,7 +19,6 @@ import { Button, InputField, PasswordField, TextButton } from '../../shared';
 import { AuthenticationActions } from '../../store';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
-// import { history } from '../../helpers/history';
 
 const Title = styled.h3`
   font-weight: 500;
@@ -101,7 +91,6 @@ const ForgetLinkContainer = styled.div`
 // `;
 
 const loginSchema = yup.object().shape({
-  cluster_id: yup.string().required('Cluster is required'),
   username: yup.string().required('Username is required'),
   password: yup.string().required('Password is required'),
 });
@@ -118,7 +107,6 @@ export const UserLogin = () => {
     watch,
     register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(loginSchema),
@@ -134,18 +122,6 @@ export const UserLogin = () => {
       <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <ClusterSelect
-            name="cluster_id"
-            control={control}
-            placeholder="Select a Cluster"
-            title="Select Cluster"
-            backgroundColor={theme.colors.white}
-            size="lg"
-            icon={<ClusterIcon />}
-            label="Select Cluster"
-            errors={errors}
-            required
-          />
           <InputField
             name="username"
             type="text"

@@ -75,7 +75,13 @@ const Flex = styled.div`
   gap: 2rem;
   align-items: center;
 `;
-
+const CheckBoxFlex = styled.div`
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
 const FlexTwo = styled.div`
   display: flex;
   gap: 2rem;
@@ -374,6 +380,9 @@ export const Add = () => {
   const [isEditDetails, setIsEditDetails] = useState(false);
   const [notificationEnable, setNotificationEnable] = useState(
     data?.notification_enable || false
+  );
+  const [approverEnable, setApproverEnable] = useState(
+    data?.approver_enable || false
   );
   const registryURLs = useSelector(ClustersSelectors.getClusterFormData);
   const {
@@ -732,12 +741,20 @@ export const Add = () => {
               )}
             </TagsInputContainer>
 
-            <CheckboxField
-              name="check"
-              label="Do you want any notification for this cluster?"
-              checked={notificationEnable}
-              onChange={e => setNotificationEnable(e.target.checked)}
-            />
+            <CheckBoxFlex>
+              <CheckboxField
+                name="check"
+                label="Need approval for the schedule deployment?"
+                checked={approverEnable}
+                onChange={e => setApproverEnable(e.target.checked)}
+              />
+              <CheckboxField
+                name="check"
+                label="Do you want any notification for this cluster?"
+                checked={notificationEnable}
+                onChange={e => setNotificationEnable(e.target.checked)}
+              />
+            </CheckBoxFlex>
 
             <Flex>
               {test ? (
@@ -1042,6 +1059,7 @@ export const Add = () => {
         clusterId={clusterId}
         edit={clusterId ? true : false}
         notificationEnable={notificationEnable}
+        approverEnable={approverEnable}
         tags={tags}
       />
       {suceessModal && (
