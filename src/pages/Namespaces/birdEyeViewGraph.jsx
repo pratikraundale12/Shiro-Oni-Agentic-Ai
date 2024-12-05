@@ -49,26 +49,99 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
     const xScale = xScaleRef.current;
     const yScale = yScaleRef.current;
 
-    const renderRectangles = () => {
-      g.selectAll('rect').remove();
+    // Drag Behavior
+    const drag = d3
+      .drag()
+      .on('start', function (event, d) {
+        const transform = d3.zoomTransform(svgRef.current);
+        const [cursorX, cursorY] = d3.pointer(event, svgRef.current);
+        const dataX = xScale.invert((cursorX - transform.x) / transform.k);
+        const dataY = yScale.invert((cursorY - transform.y) / transform.k);
+        d.offsetX = dataX - d.x;
+        d.offsetY = dataY - d.y;
+      })
+      .on('drag', function (event, d) {
+        const transform = d3.zoomTransform(svgRef.current);
+        const [cursorX, cursorY] = d3.pointer(event, svgRef.current);
+        const dataX =
+          xScale.invert((cursorX - transform.x) / transform.k) - d.offsetX;
+        const dataY =
+          yScale.invert((cursorY - transform.y) / transform.k) - d.offsetY;
 
-      g.selectAll('rect')
-        .data(data)
+        d.x = dataX;
+        d.y = dataY;
+
+        d3.select(this).attr(
+          'transform',
+          `translate(${xScale(d.x)}, ${yScale(d.y)})`
+        );
+
+        setXStateCoordiate(dataX);
+        setYStateCoordiate(dataY);
+        dispatch(NamespacesActions.setPosition({ x: dataX }));
+        dispatch(NamespacesActions.setPosition({ y: dataY }));
+
+        const updatedData = data.map(rect =>
+          rect.color === '#FF7A00'
+            ? { ...rect, x: d.x, y: d.y, overflow: 'visible' }
+            : rect
+        );
+        renderRectangles(updatedData);
+      })
+      .on('end', function (event, d) {
+        const transform = d3.zoomTransform(svgRef.current);
+        const [cursorX, cursorY] = d3.pointer(event, svgRef.current);
+        const dataX = xScale.invert((cursorX - transform.x) / transform.k);
+        const dataY = yScale.invert((cursorY - transform.y) / transform.k);
+
+        d.x = dataX;
+        d.y = dataY;
+
+        d3.select(this).attr(
+          'transform',
+          `translate(${xScale(d.x)}, ${yScale(d.y)})`
+        );
+
+        setXStateCoordiate(dataX);
+        setYStateCoordiate(dataY);
+        dispatch(NamespacesActions.setPosition({ x: dataX + d.offsetX }));
+        dispatch(NamespacesActions.setPosition({ y: dataY + d.offsetY }));
+      });
+
+    const orangeRect = data.find(rect => rect.color === '#FF7A00');
+
+    const renderRectangles = (currentData = data) => {
+      g.selectAll('rect').remove();
+      const rects = g
+        .selectAll('rect')
+        .data(currentData, d => d.id)
         .join('rect')
-        .attr('x', d => xScale(d.x))
-        .attr('y', d => yScale(d.y))
+        .attr('x', d => xScale(d.x) - (xScale(d.x + d.width) - xScale(d.x)) / 2)
+        .attr(
+          'y',
+          d => yScale(d.y) - (yScale(d.y + d.height) - yScale(d.y)) / 2
+        )
         .attr('width', d => xScale(d.x + d.width) - xScale(d.x))
         .attr('height', d => yScale(d.y + d.height) - yScale(d.y))
         .attr('fill', d => d.color)
-        .style('stroke', '#fff');
+        .style('stroke', d => d.color)
+        .call(d => {
+          d.each(function (d) {
+            if (d.color === '#FF7A00') {
+              d3.select(this).call(drag);
+            }
+          });
+        });
     };
+
+    renderRectangles(data);
 
     const initialScale = Math.min(
       svgWidth / (xScale.domain()[1] - xScale.domain()[0]),
       svgHeight / (yScale.domain()[1] - yScale.domain()[0])
     );
 
-    const zoomOutFactor = data?.length === 1 ? 0.2 : 1;
+    const zoomOutFactor = data?.length === 1 ? 0.2 : 1.7;
     const adjustedScale = initialScale * zoomOutFactor;
 
     const initialTransform = d3.zoomIdentity
@@ -81,8 +154,6 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       )
       .scale(adjustedScale);
 
-    renderRectangles();
-
     const zoom = d3
       .zoom()
       .scaleExtent([0.1, 10])
@@ -93,24 +164,21 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
 
     svg.call(zoom);
 
-    if (isFirstRender.current) {
+    const initialZoomLevel = 0.8;
+    if (isFirstRender.current && orangeRect) {
+      const orangeCenterX = xScale(orangeRect.x);
+      const orangeCenterY = yScale(orangeRect.y);
+
+      const initialTransform = d3.zoomIdentity
+        .translate(
+          svgWidth / 2 - orangeCenterX * initialZoomLevel,
+          svgHeight / 2 - orangeCenterY * initialZoomLevel
+        )
+        .scale(initialZoomLevel);
+
       svg.call(zoom.transform, initialTransform);
       isFirstRender.current = false;
     }
-
-    svg.on('click', event => {
-      const transform = d3.zoomTransform(svg.node());
-
-      const [x, y] = d3.pointer(event);
-
-      const dataX = xScale.invert((x - transform.x) / transform.k);
-      const dataY = yScale.invert((y - transform.y) / transform.k);
-
-      setXStateCoordiate(dataX);
-      setYStateCoordiate(dataY);
-      dispatch(NamespacesActions.setPosition({ x: dataX }));
-      dispatch(NamespacesActions.setPosition({ y: dataY }));
-    });
   }, [data]);
 
   return <svg ref={svgRef}></svg>;
