@@ -125,8 +125,18 @@ export const NamespacesActions = {
   setIsNewAddControllerServiceModal: createAction(
     `${prefix}setIsNewAddControllerServiceModal`
   ),
+  fetchRegistryData: createAction(`${prefix}fetchRegistryData`),
+  setBucketListDropDownData: createAction(`${prefix}setBucketListDropDownData`),
+  fetchFlowNameList: createAction(`${prefix}fetchFlowNameList`),
+  setFlowListRegistry: createAction(`${prefix}setFlowListRegistry`),
+  fetchVerionData: createAction(`${prefix}fetchVerionData`),
+  setVersionListData: createAction(`${prefix}setVersionListData`),
+  setVersionSelect: createAction(`${prefix}setVersionSelect`),
+  setDeployFormData: createAction(`${prefix}setDeployFormData`),
+  fetchRegistryFlowDetails: createAction(`${prefix}fetchRegistryFlowDetails`),
+  setRegistryAllDetails: createAction(`${prefix}setRegistryAllDetails`),
 };
-//
+//fetchFlowNameList
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -188,6 +198,12 @@ export const NAMESPACES_INITIAL_STATE = {
   parameterContextListAtDeploy: {},
   childLevelDeployProcessorData: {},
   variableListLoading: false,
+  bucketListDropDownData: {},
+  flowListRegistry: {},
+  versionListData: {},
+  versionSelect: {},
+  deployFormData: {},
+  registryAllDetails: {},
   // parameterEditParent: false,
 };
 
@@ -245,6 +261,12 @@ export const NamespacesSelectors = {
   getChildLevelDeployProcessorData: state =>
     state.namespaces.childLevelDeployProcessorData,
   getVariableListLoading: state => state.namespaces.variableListLoading,
+  getBucketListDropDownData: state => state.namespaces.bucketListDropDownData,
+  getFlowListRegistry: state => state.namespaces.flowListRegistry,
+  getVersionListData: state => state.namespaces.versionListData,
+  getVersionSelect: state => state.namespaces.versionSelect,
+  getDeployFormData: state => state.namespaces.deployFormData,
+  getRegistryAllDetails: state => state.namespaces.registryAllDetails,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -537,6 +559,44 @@ const setVariableListLoading = (state, { payload }) => {
     variableListLoading: payload,
   };
 };
+const setBucketListDropDownData = (state, { payload }) => {
+  return {
+    ...state,
+    bucketListDropDownData: payload,
+  };
+};
+const setFlowListRegistry = (state, { payload }) => {
+  return {
+    ...state,
+    flowListRegistry: payload,
+  };
+};
+const setVersionListData = (state, { payload }) => {
+  return {
+    ...state,
+    versionListData: payload,
+  };
+};
+
+const setVersionSelect = (state, { payload }) => {
+  return {
+    ...state,
+    versionSelect: payload,
+  };
+};
+const setDeployFormData = (state, { payload }) => {
+  return {
+    ...state,
+    deployFormData: payload,
+  };
+};
+
+const setRegistryAllDetails = (state, { payload }) => {
+  return {
+    ...state,
+    registryAllDetails: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -648,10 +708,16 @@ export const namespacesReducer = createReducer(
         NamespacesActions.setChildLevelDeployProcessorData,
         setChildLevelDeployProcessorData
       )
+      .addCase(NamespacesActions.setVariableListLoading, setVariableListLoading)
       .addCase(
-        NamespacesActions.setVariableListLoading,
-        setVariableListLoading
-      );
+        NamespacesActions.setBucketListDropDownData,
+        setBucketListDropDownData
+      )
+      .addCase(NamespacesActions.setFlowListRegistry, setFlowListRegistry)
+      .addCase(NamespacesActions.setVersionListData, setVersionListData)
+      .addCase(NamespacesActions.setVersionSelect, setVersionSelect)
+      .addCase(NamespacesActions.setDeployFormData, setDeployFormData)
+      .addCase(NamespacesActions.setRegistryAllDetails, setRegistryAllDetails);
   }
 );
 //

@@ -7,16 +7,20 @@ import {
   CanvasYIcon,
   LinkIcon,
   QRIcons,
-  UpsideSquareIcon,
+  // UpsideSquareIcon,
   TodoIcon,
 } from '../../assets';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
-import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
-import RightIcon from '../../assets/Icons/RightIcon';
+import {
+  GridSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
+// import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
+// import RightIcon from '../../assets/Icons/RightIcon';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -159,6 +163,14 @@ const BreadcrumbContainer = styled.div`
 const FlowDetailsPage = () => {
   const dispatch = useDispatch();
   const formData = useSelector(NamespacesSelectors.getFormData);
+  const registryAllDetails = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+  const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
+  const registryData = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
+
   const [xStateCoordinate, setXStateCoordiate] = useState(
     formData?.position?.x
   );
@@ -188,20 +200,20 @@ const FlowDetailsPage = () => {
     dispatch(NamespacesActions.setPosition({ y: e.target.value }));
   };
 
-  const getIconForState = state => {
-    switch (state) {
-      case 'LOCALLY_MODIFIED_AND_STALE':
-        return <LocalChangesIcon />;
-      case 'STALE':
-        return <UpsideSquareIcon color="#BB564A" />;
-      case 'LOCALLY_MODIFIED':
-        return <LocalChangesIcon />;
-      case 'UP_TO_DATE':
-        return <RightIcon />;
-      default:
-        return null;
-    }
-  };
+  // const getIconForState = state => {
+  //   switch (state) {
+  //     case 'LOCALLY_MODIFIED_AND_STALE':
+  //       return <LocalChangesIcon />;
+  //     case 'STALE':
+  //       return <UpsideSquareIcon color="#BB564A" />;
+  //     case 'LOCALLY_MODIFIED':
+  //       return <LocalChangesIcon />;
+  //     case 'UP_TO_DATE':
+  //       return <RightIcon />;
+  //     default:
+  //       return null;
+  //   }
+  // };
 
   return (
     <div>
@@ -235,7 +247,7 @@ const FlowDetailsPage = () => {
                     name="namespace"
                     type="text"
                     label={'Selected Flow Name'}
-                    value={'Nifi Flow'}
+                    value={formDataRegistry?.selectedFlowName}
                     icon={<QRIcons />}
                     disabled
                   />
@@ -275,14 +287,14 @@ const FlowDetailsPage = () => {
                     />
                   </ColXlTwo>
                   <ColXlSix className="col-xl-5 col-6">
-                    <InputField
+                    {/* <InputField
                       name="currentState"
                       type="text"
                       label={KDFM.CURRENT_STATE}
                       value={'Version is Up to Date'}
                       icon={getIconForState('UP_TO_DATE')}
                       disabled
-                    />
+                    /> */}
                   </ColXlSix>
                 </>
               </RowConfig>
@@ -295,7 +307,7 @@ const FlowDetailsPage = () => {
                     type="text"
                     label={KDFM.NIFI_URL}
                     placeholder={KDFM.ENTER_NIFI_URL}
-                    value={'xyz.nifi.url'}
+                    value={registryAllDetails?.nifi_url}
                     icon={<LinkIcon />}
                     disabled
                   />
@@ -306,7 +318,7 @@ const FlowDetailsPage = () => {
                     type="text"
                     label={KDFM.REGISTRY_URL}
                     placeholder={KDFM.ENTER_REGISTRY_URL}
-                    value={'xyz.registry.url'}
+                    value={registryData?.url}
                     icon={<LinkIcon />}
                     disabled
                   />

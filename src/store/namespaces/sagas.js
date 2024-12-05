@@ -4,6 +4,7 @@ import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
+import { GridSelectors } from '../grid';
 
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -982,7 +983,139 @@ export function* fetchNamespacesForDestiationCluster(api, { payload }) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
-//deleteControllerService
+
+export function* fetchRegistryData(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const gridData = yield select(
+    GridSelectors.getNamespaceGridRegistry,
+    'namespaces'
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchRegistryData',
+    loadingSection: 'fetchRegistryData',
+    apiMethod: api.fetchRegistryData,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        registriesId: gridData?.id,
+      },
+    ],
+  });
+  if (response.ok) {
+    yield put(NamespacesActions.setBucketListDropDownData(response?.data));
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+
+export function* fetchFlowNameList(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const gridData = yield select(
+    GridSelectors.getNamespaceGridRegistry,
+    'namespaces'
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchFlowNameList',
+    loadingSection: 'fetchFlowNameList',
+    apiMethod: api.fetchFlowNameList,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        registriesId: gridData?.id,
+        bucketId: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    yield put(NamespacesActions.setFlowListRegistry(response?.data));
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+
+export function* fetchVerionData(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const gridData = yield select(
+    GridSelectors.getNamespaceGridRegistry,
+    'namespaces'
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchVerionData',
+    loadingSection: 'fetchVerionData',
+    apiMethod: api.fetchVerionData,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        registriesId: gridData?.id,
+        bucketId: payload?.bucketId,
+        flowId: payload?.flowId,
+      },
+    ],
+  });
+  if (response.ok) {
+    yield put(NamespacesActions.setVersionListData(response?.data));
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+
+export function* fetchRegistryFlowDetails(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchRegistryFlowDetails',
+    loadingSection: 'fetchRegistryFlowDetails',
+    apiMethod: api.fetchRegistryFlowDetails,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        bucketId: payload?.bucketId,
+        flowId: payload?.flowId,
+        version: payload?.version,
+      },
+    ],
+  });
+  if (response.ok) {
+    yield put(NamespacesActions.setRegistryAllDetails(response?.data));
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+//
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -1071,5 +1204,14 @@ export function* namespacesSagas(api) {
       fetchNamespacesForDestiationCluster,
       api
     ),
+    takeLatest(NamespacesActions.fetchRegistryData, fetchRegistryData, api),
+    takeLatest(NamespacesActions.fetchFlowNameList, fetchFlowNameList, api),
+    takeLatest(NamespacesActions.fetchVerionData, fetchVerionData, api),
+    takeLatest(
+      NamespacesActions.fetchRegistryFlowDetails,
+      fetchRegistryFlowDetails,
+      api
+    ),
   ]);
 }
+//

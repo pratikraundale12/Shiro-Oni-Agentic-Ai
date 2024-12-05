@@ -206,6 +206,33 @@ export const namespacesAPI = api => {
     return api.get(`/clusters/${clusterId}/namespaces${`/${namespaceId}`}`);
   };
 
+  const fetchRegistryData = ({ clusterId, registriesId }) => {
+    return api.get(`/buckets/${clusterId}/registry/${registriesId}`);
+  };
+
+  const fetchFlowNameList = ({ clusterId, registriesId, bucketId }) => {
+    return api.get(
+      `/flows/${clusterId}/registry/${registriesId}/buckets/${bucketId}`
+    );
+  };
+
+  const fetchVerionData = ({ clusterId, registriesId, bucketId, flowId }) => {
+    return api.get(
+      `/versions/${clusterId}/registry/${registriesId}/buckets/${bucketId}/flows/${flowId}`
+    );
+  };
+
+  const fetchRegistryFlowDetails = ({
+    clusterId,
+    bucketId,
+    flowId,
+    version,
+  }) => {
+    return api.get(
+      `/exports/${clusterId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`
+    );
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -234,5 +261,9 @@ export const namespacesAPI = api => {
     changeStatusControllerService,
     deleteControllerService,
     fetchNamespacesForDestiationCluster,
+    fetchRegistryData,
+    fetchFlowNameList,
+    fetchVerionData,
+    fetchRegistryFlowDetails,
   };
 };

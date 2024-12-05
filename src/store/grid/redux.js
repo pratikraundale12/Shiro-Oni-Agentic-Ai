@@ -23,6 +23,8 @@ export const GridSelectors = {
       label: item.name,
       value: item.id,
     })) || [],
+  getNamespaceGridRegistry: (state, module) =>
+    state.grid?.[module]?.registry || [],
 };
 
 /* ------------- REDUCERS ------------------- */

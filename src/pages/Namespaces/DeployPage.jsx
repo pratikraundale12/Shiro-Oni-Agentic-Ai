@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { KDFM } from '../../constants';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import styled from 'styled-components';
 import { QRIcons, TodoIcon } from '../../assets';
 import Breadcrumb from '../../shared/Breadcrumb';
@@ -12,8 +12,17 @@ import {
   SelectField,
 } from '../../shared';
 import { Table } from '../../components';
-import { theme } from '../../styles';
 import { history } from '../../helpers/history';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  GridSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -92,14 +101,6 @@ const VersionDiv = styled.div`
   line-height: 16px;
   color: #444445;
 `;
-const LabelSelect = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 16px;
-  margin-bottom: 0.9rem;
-  margin-top: 0.25rem;
-  color: ${props => (props?.color ? props?.color : props.theme.colors.darker)};
-`;
 
 const StyledTableCell = styled.div`
   cursor: pointer;
@@ -120,25 +121,45 @@ const breadcrumbData = [
   { label: 'Registry & Flow Name', path: '/process-group/DeployPage' },
 ];
 
-// const bucketLabel = 'Bucket';
-
-const flowOptions = [
-  { label: 'Flow A', value: 'flow_a' },
-  { label: 'Flow B', value: 'flow_b' },
-  { label: 'Flow C', value: 'flow_c' },
-];
-const approverOptions = [
-  { label: 'Group A', value: 'group_a' },
-  { label: 'Group B', value: 'group_b' },
-  { label: 'Group C', value: 'group_c' },
-];
-
-const handleContinue = () => {
-  history.push('/process-group/flow-details');
-};
-
 function DeployPage() {
-  const [selectedVersion, setSelectedVersion] = useState(null);
+  const dispatch = useDispatch();
+  const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
+  const [selectedVersion, setSelectedVersion] = useState(
+    versionSelected.version
+  );
+  const bucketListData = useSelector(
+    NamespacesSelectors.getBucketListDropDownData
+  );
+  const flowListData = useSelector(NamespacesSelectors.getFlowListRegistry);
+  const registryData = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
+  const versionListData = useSelector(NamespacesSelectors.getVersionListData);
+
+  const formData = useSelector(NamespacesSelectors.getDeployFormData);
+
+  const bucketListOptions = bucketListData?.bucketList?.map(item => ({
+    label: item?.name,
+    value: item?.id,
+  }));
+
+  const flowListOptions = flowListData?.flowsList?.map(item => ({
+    label: item?.flowName,
+    value: item?.flowId,
+  }));
+  const registrySchema = yup.object().shape({
+    bucketId: yup.string().required('Select Bucket'),
+    flow_name: yup.string().required('Select Flow'),
+  });
+  const {
+    control,
+    watch,
+    formState: { errors },
+    setValue,
+    handleSubmit,
+  } = useForm({
+    resolver: yupResolver(registrySchema),
+  });
 
   const convertDate = dateString => {
     const date = new Date(dateString);
@@ -155,6 +176,10 @@ function DeployPage() {
 
     return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
   };
+  const sortedData = versionListData?.versionList
+    ?.slice()
+    .sort((a, b) => a.version - b.version);
+
   const COLUMNS = [
     {
       label: '',
@@ -172,11 +197,13 @@ function DeployPage() {
           <RadioField
             name="upgrade"
             checked={item.version === selectedVersion}
-            onChange={() => handleRadioChange(item)}
+            onChange={() => {
+              handleRadioChange(item);
+            }}
           />
         </StyledTableCell>
       ),
-      width: '5%',
+      width: '10%',
     },
     {
       label: KDFM.VERSION,
@@ -218,36 +245,69 @@ function DeployPage() {
           {item.comments}
         </StyledTableCell>
       ),
+      width: '50%',
     },
   ];
   const handleRowClick = item => {
     setSelectedVersion(item.version);
+    dispatch(NamespacesActions.setVersionSelect(item));
   };
 
   const handleRadioChange = item => {
     setSelectedVersion(item.version);
   };
 
-  const data = [
-    {
-      version: '1.0.0',
-      createdAt: '2023-11-01T14:00:00Z',
-      comments: 'Initial release',
-      selected: true,
-    },
-    {
-      version: '1.1.0',
-      createdAt: '2023-12-01T10:30:00Z',
-      comments: 'Bug fixes and improvements',
-      selected: true,
-    },
-    {
-      version: '2.0.0',
-      createdAt: '2024-01-15T09:00:00Z',
-      comments: 'Major upgrade with new features',
-      selected: false,
-    },
-  ];
+  const selectedValuebucketId = watch('bucketId');
+  const selectedValueFlowId = watch('flow_name');
+
+  useEffect(() => {
+    if (selectedValuebucketId) {
+      dispatch(NamespacesActions.fetchFlowNameList(selectedValuebucketId));
+    }
+  }, [selectedValuebucketId]);
+
+  useEffect(() => {
+    if (selectedValueFlowId) {
+      dispatch(
+        NamespacesActions.fetchVerionData({
+          bucketId: selectedValuebucketId,
+          flowId: selectedValueFlowId,
+        })
+      );
+    }
+  }, [selectedValueFlowId]);
+
+  useEffect(() => {
+    dispatch(NamespacesActions.fetchRegistryData());
+  }, [dispatch]);
+
+  const hasRunOnce = useRef(false);
+  useEffect(() => {
+    if (!isEmpty(formData) && !hasRunOnce.current) {
+      setValue('bucketId', formData?.bucketId);
+      setValue('flow_name', formData?.flow_name);
+      hasRunOnce.current = true;
+    }
+  }, [formData, setValue]);
+
+  const handleContinue = () => {
+    if (!isEmpty(versionSelected)) {
+      const flowname = flowListOptions?.filter(
+        item => item.value === selectedValueFlowId
+      );
+      dispatch(
+        NamespacesActions.setDeployFormData({
+          bucketId: selectedValuebucketId,
+          flow_name: selectedValueFlowId,
+          selectedFlowName: flowname[0].label,
+        })
+      );
+      dispatch(NamespacesActions.fetchRegistryFlowDetails(versionSelected));
+      history.push('/process-group/flow-details');
+    } else {
+      toast.error('Please select any version');
+    }
+  };
 
   return (
     <div>
@@ -273,85 +333,77 @@ function DeployPage() {
       <BreadcrumbContainer className="d-flex  mb-3">
         <Breadcrumb module="upgrade" path={breadcrumbData} />
       </BreadcrumbContainer>
-      <GreyBoxNamespace className="w-100  mb-3">
-        <ScrollSetGrey className="scroll-set-grey pe-1">
-          <RowConfig>
-            <div className="col-6 p-3">
-              <StyledInputField
-                name="registry"
-                type="text"
-                label="Registry"
-                // value={selectedDestCluster?.label}
-                icon={<QRIcons />}
-                placeholder="Registry Name"
-                disabled
-                className="mb-0"
-              />
-            </div>
-            <div className="col-6 p-3">
-              <div>
-                <div className="justify-content-between align-items-center">
-                  <LabelSelect>Bucket</LabelSelect>
-                  <SelectField
-                    label="Approver Groups"
-                    name="bucket"
-                    icon={<QRIcons />}
-                    title="Bucket"
-                    // errors={errors}
-                    options={approverOptions}
-                    // defaultValue={clusterLogin}
-                    placeholder="Data Analytics"
-                    //required
-                    // disabled={isObject(clusterLogin)}
-                    // showCircleIcon={true}
-                  />
+      <form onSubmit={handleSubmit(handleContinue)}>
+        <GreyBoxNamespace className="w-100  mb-3">
+          <ScrollSetGrey className="scroll-set-grey pe-1">
+            <RowConfig>
+              <div className="col-6 p-3">
+                <StyledInputField
+                  name="registry"
+                  type="text"
+                  label="Registry"
+                  value={registryData?.name || ''}
+                  icon={<QRIcons />}
+                  placeholder="Registry Name"
+                  disabled
+                  className="mb-0"
+                />
+              </div>
+              <div className="col-6 p-3">
+                <div>
+                  <div className="justify-content-between align-items-center">
+                    <SelectField
+                      label="Bucket"
+                      name="bucketId"
+                      icon={<QRIcons />}
+                      title="Bucket"
+                      errors={errors}
+                      options={bucketListOptions || []}
+                      placeholder="Select Bucket"
+                      control={control}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </RowConfig>
+            </RowConfig>
 
-          <RowConfig>
-            <div className="col-6 p-3 mb-">
-              <LabelSelect>Flow Label</LabelSelect>
-              <SelectField
-                label="Flow Name"
-                name="flow_name"
-                icon={<QRIcons />}
-                options={flowOptions}
-                // errors={errors}
-                // defaultValue={clusterLogin}
-                placeholder="ABC"
-                required
-                // disabled={isObject(clusterLogin)}
-                // showCircleIcon={true}
-              />
-            </div>
+            <RowConfig>
+              <div className="col-6 p-3 mb-">
+                <SelectField
+                  label="Flow Name"
+                  name="flow_name"
+                  icon={<QRIcons />}
+                  options={flowListOptions || []}
+                  errors={errors}
+                  control={control}
+                  placeholder="Select Flow"
+                />
+              </div>
 
-            <div className="mt-3 col-6 p-3">
-              <div className="mt-4">
-                <div className="mt-5 d-flex justify-content-between align-items-center">
-                  <CheckboxField
-                    name="check"
-                    label="Keep existing Parameter Contexts"
-                    checked
-                  />
+              <div className="mt-3 col-6 p-3">
+                <div className="mt-4">
+                  <div className="mt-5 d-flex justify-content-between align-items-center">
+                    <CheckboxField
+                      name="check"
+                      label="Keep existing Parameter Contexts"
+                      checked
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </RowConfig>
-          <LabelSelect color={theme.colors.darkGrey4}>Flow Name</LabelSelect>
-          <LabelSelect className="mb-4">No Description Provided</LabelSelect>
+            </RowConfig>
 
-          <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
-          <CustomTable data={data} columns={COLUMNS} />
-        </ScrollSetGrey>
-      </GreyBoxNamespace>
-      <BottomButton className="bottom-button-divs d-flex">
-        <BottomButtonDiv className="btn-div d-flex">
-          <Button variant="secondary">{KDFM.BACK}</Button>
-          <Button onClick={handleContinue}>{KDFM.CONTINUE}</Button>
-        </BottomButtonDiv>
-      </BottomButton>
+            <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
+            <CustomTable data={sortedData || []} columns={COLUMNS} />
+          </ScrollSetGrey>
+        </GreyBoxNamespace>
+        <BottomButton className="bottom-button-divs d-flex">
+          <BottomButtonDiv className="btn-div d-flex">
+            <Button variant="secondary">{KDFM.BACK}</Button>
+            <Button type="submit">{KDFM.CONTINUE}</Button>
+          </BottomButtonDiv>
+        </BottomButton>
+      </form>
     </div>
   );
 }
