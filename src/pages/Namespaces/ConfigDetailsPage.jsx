@@ -9,6 +9,7 @@ import Breadcrumb from '../../shared/Breadcrumb';
 import VariableTab from './VariableTab';
 import { useDispatch } from 'react-redux';
 import { NamespacesActions } from '../../store';
+import ParameterContextTab from './ParameterContextTab';
 
 const TopTitleBar = styled.div`
   height: 37px;
