@@ -115,7 +115,7 @@ const ConfigDetailsPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
-        return <p>This is the content for Tab 1.</p>;
+        return <ParameterContextTab />;
       case KDFM.VARIABLES:
         return (
           <VariableTab
