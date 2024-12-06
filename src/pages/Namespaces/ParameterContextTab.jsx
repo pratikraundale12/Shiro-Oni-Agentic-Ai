@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import Collapsible from './Collapsible';
 import AddOrEditParameterContextModal from './AddOrEditParameterContextModal';
+import { useSelector } from 'react-redux';
+import { NamespacesSelectors } from '../../store';
+import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -23,141 +27,34 @@ const ScrollSetGrey = styled.div`
   overflow-y: auto;
 `;
 
-const ParameterContextTab = () => {
-  const PC_DATA = {
-    inherited: [
-      {
-        name: 'test 1',
-        parameters: [
-          {
-            description: '',
-            name: 'var1',
-            provided: false,
-            sensitive: false,
-            value: '8443nifi',
-          },
-        ],
-      },
-    ],
-    parent: [
-      {
-        name: 'VD_parameter_test',
-        parameters: [
-          {
-            description: '',
-            name: 'vd_1',
-            provided: false,
-            sensitive: true,
-            value: 'test v1\n',
-          },
-        ],
-      },
-      {
-        name: 'NEW_PARAM',
-        parameters: [
-          {
-            description: 'we',
-            name: 'abc',
-            provided: false,
-            sensitive: false,
-            value: 'abew',
-          },
-          {
-            description: 'this is description',
-            name: 'one parameter',
-            provided: false,
-            sensitive: false,
-            value: 'one parameter222',
-          },
-          {
-            description: '',
-            name: 'def',
-            provided: false,
-            sensitive: false,
-            value: 'df',
-          },
-          {
-            description: '',
-            name: 'abcde',
-            provided: false,
-            sensitive: false,
-            value: 'aaaaaaaaaaaabbb',
-          },
-          {
-            description: '',
-            name: 'data3',
-            provided: false,
-            sensitive: false,
-            value: 'kung fu Panda pro max',
-          },
-          {
-            description: 'new',
-            name: 'newTestsss',
-            provided: false,
-            sensitive: false,
-          },
-          {
-            description: '',
-            name: 'abcd',
-            provided: false,
-            sensitive: false,
-            value: 'new test66',
-          },
-          {
-            description: '',
-            name: 'File_Size',
-            provided: false,
-            sensitive: false,
-            value: '0B',
-          },
-          {
-            description: 'Ksolves India Limited123',
-            name: 'KKKKK',
-            provided: false,
-            sensitive: false,
-            value: 'OOOOOO111',
-          },
-          {
-            description: '',
-            name: 'v1',
-            provided: false,
-            sensitive: false,
-            value: 'V1 Value',
-          },
-          {
-            description: '',
-            name: 'abcdef',
-            provided: false,
-            sensitive: false,
-            value: '888881',
-          },
-          {
-            description: 'kjkj',
-            name: 'Name 5',
-            provided: false,
-            sensitive: false,
-            value: 'Peter Parker',
-          },
-          {
-            description: '',
-            name: 'data3567',
-            provided: false,
-            sensitive: false,
-            value: 'data',
-          },
-        ],
-      },
-    ],
-  };
-
+const ParameterContextTab = ({ PcData, setPcData }) => {
   const [isAddPcOpen, setIsAddPcOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
   const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
-  const [PcData, setPcData] = useState(PC_DATA);
   const [currentPgId, setCurrentPgId] = useState('');
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+  const parameterReduxData = useSelector(
+    NamespacesSelectors.getRegistryDeployParameterContext
+  );
+  const paramterDeployArray = [
+    ...(parameterReduxData?.inherited || []),
+    ...(parameterReduxData?.parent || []),
+  ];
+  console.log(parameterReduxData, 'parameterReduxData');
+  console.log(paramterDeployArray, 'paramterDeployArray');
+
+  useEffect(() => {
+    if (isEmpty(parameterReduxData)) {
+      setPcData(registryDetailsData?.parameterContextData);
+    } else {
+      setPcData(parameterReduxData);
+    }
+  }, [registryDetailsData?.parameterContextData]);
 
   const handleToggle = index => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
@@ -248,7 +145,12 @@ const ParameterContextTab = () => {
               )
                 ? group.parameters.map(parameter =>
                     parameter.name === data.name
-                      ? { ...parameter, value: data.value, check: data.check }
+                      ? {
+                          ...parameter,
+                          value: data.value,
+                          check: data.check,
+                          description: data.description,
+                        }
                       : parameter
                   )
                 : [...group.parameters, data],
@@ -272,28 +174,28 @@ const ParameterContextTab = () => {
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {PcData.inherited.map(item => (
+        {PcData?.inherited?.map(item => (
           <Collapsible
             isAddBtnVisible={false}
             onBtnClick={() => {
               handleAddPc(item?.name);
             }}
             key={item?.name}
-            title={item?.name}
+            title={`Inherited : ${item?.name}`}
             isTableOpen={openIndex === item?.name}
             toggleCollapsible={() => handleToggle(item?.name)}
           >
             <Table data={item?.parameters} columns={PC_COLUMNS} />
           </Collapsible>
         ))}
-        {PcData.parent.map(item => (
+        {PcData?.parent?.map(item => (
           <Collapsible
             isAddBtnVisible={false}
             onBtnClick={() => {
               handleAddPc(item?.name);
             }}
             key={item?.name}
-            title={item?.name}
+            title={`Parent : ${item?.name}`}
             isTableOpen={openIndex === item?.name}
             toggleCollapsible={() => handleToggle(item?.name)}
           >
@@ -313,5 +215,8 @@ const ParameterContextTab = () => {
     </DataWrapper>
   );
 };
-
+ParameterContextTab.propTypes = {
+  PcData: PropTypes.func,
+  setPcData: PropTypes.object,
+};
 export default ParameterContextTab;

@@ -338,7 +338,27 @@ const Summary = () => {
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
-
+  const isRegistryDeploy = useSelector(
+    NamespacesSelectors.getdeployRegistryFlow
+  );
+  const XcordUpdated = useSelector(NamespacesSelectors.getregistryFlowXCord);
+  const YcordUpdated = useSelector(NamespacesSelectors.getregistryFlowYCord);
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+  const variblesReduxData = useSelector(
+    NamespacesSelectors.getRegistryDeployVariable
+  );
+  const parameterReduxData = useSelector(
+    NamespacesSelectors.getRegistryDeployParameterContext
+  );
+  const paramterDeployArray = [
+    ...(parameterReduxData?.inherited || []),
+    ...(parameterReduxData?.parent || []),
+  ];
+  /*  : state => state.namespaces.registryFlowXCord,
+  : state => state.namespaces.registryFlowYCord, */
+  const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -526,6 +546,22 @@ const Summary = () => {
       forPopup: true,
     });
     // dispatch(NamespacesActions.updateNamespaceStatus(status));
+  };
+
+  const handledeployByRegistry = () => {
+    const payload = {
+      version: registryFlowVerion?.version,
+      flowId: registryFlowVerion?.flowId,
+      bucketId: registryFlowVerion?.bucketId,
+      registryId: registryData?.id,
+      position: {
+        x: XcordUpdated || registryDetailsData.positions[0].x,
+        y: YcordUpdated || registryDetailsData.positions[0].y,
+      },
+      variablesData: variblesReduxData,
+      parameterData: paramterDeployArray,
+    };
+    dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
 
   return (
@@ -859,7 +895,7 @@ const Summary = () => {
           <Button variant="secondary" onClick={handleBackClick}>
             {KDFM.BACK}
           </Button>
-          {!schedularFromList && (
+          {!schedularFromList && !isRegistryDeploy && (
             <Button
               onClick={
                 checkDestCluster.mode !== 'upgrade'
@@ -873,6 +909,9 @@ const Summary = () => {
                   : KDFM.DOWNGRADE
                 : KDFM.DEPLOY}
             </Button>
+          )}
+          {isRegistryDeploy && (
+            <Button onClick={handledeployByRegistry}>{KDFM.DEPLOY}</Button>
           )}
           {schedularFromList && (
             <Button

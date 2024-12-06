@@ -112,6 +112,7 @@ export const ListNamespaces = () => {
     dispatch(SchedularActions.setScheduleFromList(false));
     dispatch(NamespacesActions.setdeployRegistryFlow(false));
     dispatch(NamespacesActions.setRegistryDeployVariable([]));
+    dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
   }, []);
 
   const COLUMNS = [

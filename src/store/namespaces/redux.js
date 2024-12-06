@@ -136,6 +136,12 @@ export const NamespacesActions = {
   setRegistryFlowYCord: createAction(`${prefix}setRegistryFlowYCord`),
   setdeployRegistryFlow: createAction(`${prefix}setdeployRegistryFlow`),
   setRegistryDeployVariable: createAction(`${prefix}setRegistryDeployVariable`),
+  setRegistryDeployParameterContext: createAction(
+    `${prefix}setRegistryDeployParameterContext`
+  ),
+  deployNamespaceByRegistryFlow: createAction(
+    `${prefix}deployNamespaceByRegistryFlow`
+  ),
 };
 // registryFlowXCord:null,
 //registryFlowYCord:null
@@ -209,6 +215,7 @@ export const NAMESPACES_INITIAL_STATE = {
   registryFlowYCord: null,
   deployRegistryFlow: false,
   registryDeployVariable: [],
+  registryDeployParameterContext: [],
   // parameterEditParent: false,
 };
 
@@ -274,6 +281,8 @@ export const NamespacesSelectors = {
   getregistryFlowYCord: state => state.namespaces.registryFlowYCord,
   getdeployRegistryFlow: state => state.namespaces.deployRegistryFlow,
   getRegistryDeployVariable: state => state.namespaces.registryDeployVariable,
+  getRegistryDeployParameterContext: state =>
+    state.namespaces.registryDeployParameterContext,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -626,6 +635,13 @@ const setRegistryDeployVariable = (state, { payload }) => {
     registryDeployVariable: payload,
   };
 };
+const setRegistryDeployParameterContext = (state, { payload }) => {
+  return {
+    ...state,
+    registryDeployParameterContext: payload,
+  };
+};
+
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -749,6 +765,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setRegistryDeployVariable,
         setRegistryDeployVariable
+      )
+      .addCase(
+        NamespacesActions.setRegistryDeployParameterContext,
+        setRegistryDeployParameterContext
       );
   }
 );

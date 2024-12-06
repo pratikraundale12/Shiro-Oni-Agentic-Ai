@@ -100,7 +100,9 @@ const ConfigDetailsPage = () => {
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
+
   const [variableData, setVariableData] = useState([]);
+  const [PcData, setPcData] = useState({});
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
 
   const handleBackClick = () => {
@@ -109,6 +111,7 @@ const ConfigDetailsPage = () => {
 
   const handleContinue = () => {
     dispatch(NamespacesActions.setRegistryDeployVariable(variableData));
+    dispatch(NamespacesActions.setRegistryDeployParameterContext(PcData));
     history.push('/process-group/summary');
   };
 
@@ -116,7 +119,7 @@ const ConfigDetailsPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
-        return <ParameterContextTab />;
+        return <ParameterContextTab PcData={PcData} setPcData={setPcData} />;
       case KDFM.VARIABLES:
         return (
           <VariableTab
