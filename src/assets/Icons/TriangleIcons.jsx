@@ -11,6 +11,7 @@ export const TriangleIcons = ({
     width={width}
     height={height}
     fill="none"
+    viewBox="0 0 20 25"
   >
     <path
       fill={color}

@@ -6,6 +6,7 @@ export * from './BagIcon';
 export * from './BellIcon';
 export * from './BrandLogoIcon';
 export * from './CalendarIcon';
+export * from './CalenderIcon2';
 export * from './CanvasXIcon';
 export * from './ChatBoxIcon';
 export * from './CircleExclamationMarkIcon';
