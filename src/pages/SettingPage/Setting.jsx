@@ -10,10 +10,17 @@ import {
   QRIcons,
   RefreshIcon,
   UploadIcon,
+  UserIcon,
 } from '../../assets';
 import favicon from '../../assets/images/favicon.ico';
 import { EMAIL_REGEX, KDFM, REFRESH_OPTIONS } from '../../constants';
-import { Button, InputField, SelectField, UploadField } from '../../shared';
+import {
+  Button,
+  InputField,
+  SelectField,
+  UploadField,
+  PasswordField,
+} from '../../shared';
 import { RolesSelectors } from '../../store';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
@@ -31,6 +38,12 @@ const FlexWrapper = styled.div`
   justify-content: space-between;
   position: fixed;
   bottom: 20px;
+`;
+const LabelSelect = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
 `;
 
 export const settingSchema = yup.object().shape({
@@ -73,6 +86,9 @@ export const Setting = () => {
     payload.append('logo', data?.logo || null);
     payload.append('favicon', data?.favicon || null);
     payload.append('title', data?.title);
+    payload.append('username', data?.username);
+    payload.append('password', data?.password);
+
     payload.append(
       'refresh',
       data.refresh === false || data.refresh === 'Off' ? 0 : data.refresh
@@ -85,9 +101,7 @@ export const Setting = () => {
 
     try {
       dispatch(SettingsActions.createSettings(payload));
-      setTimeout(() => {
-        dispatch(SettingsActions.fetchSettings());
-      }, 1000);
+      dispatch(SettingsActions.fetchSettings());
       setLoading(false);
       if (data?.favicon) {
         changeFavicon(data.favicon);
@@ -109,6 +123,9 @@ export const Setting = () => {
       setValue('logo', settingData?.logo);
       setValue('favicon', settingData?.favicon);
       setValue('title', settingData?.title);
+      setValue('username', settingData?.username);
+      setValue('password', settingData?.password);
+
       setValue(
         'refresh',
         settingData.refresh === 0 ? 'Off' : settingData?.refresh
@@ -133,6 +150,8 @@ export const Setting = () => {
         value.logo !== settingData?.logo ||
         value.favicon !== settingData?.favicon ||
         value.title !== settingData?.title ||
+        value.username !== settingData?.username ||
+        value.password !== settingData?.password ||
         value.refresh !==
           (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
         value.email !== settingData?.email ||
@@ -243,7 +262,7 @@ export const Setting = () => {
             errors={errors}
           />
         </div>
-        <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-8">
+        <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-8 mb-2">
           <SelectField
             isMulti
             name="approver_groups"
@@ -255,6 +274,33 @@ export const Setting = () => {
             placeholder="Select Approver Groups"
           />
         </div>
+        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-1 mb-2">
+          <LabelSelect className="mb-3">Nifi Service Account Scope</LabelSelect>
+        </div>
+        <InputFields className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <InputField
+              name="username"
+              type="text"
+              label="Username"
+              placeholder="Enter your Username"
+              register={register}
+              errors={errors}
+              icon={<UserIcon />}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <PasswordField
+              name="password"
+              register={register}
+              errors={errors}
+              watch={watch}
+              label="Password"
+              disableToggle={true}
+              placeholder="Enter your Password"
+            />
+          </div>
+        </InputFields>
         <FlexWrapper>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Button type="submit" loading={loading} disabled={!isChanged}>
