@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   CollapseSidebarIcon,
-  // DfmCollapsedIcon,
+  DfmCollapsedIcon,
   KsolvesDataFlowIcon,
 } from '../assets';
 // import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
@@ -226,7 +226,11 @@ export const Sidebar = ({
       );
     return (
       <StyleButton onClick={handleClick}>
-        <KsolvesDataFlowIcon width={200} height={LOGO_HEIGHT} />
+        {collapsed ? (
+          <DfmCollapsedIcon />
+        ) : (
+          <KsolvesDataFlowIcon width={200} height={LOGO_HEIGHT} />
+        )}
       </StyleButton>
     );
   };
