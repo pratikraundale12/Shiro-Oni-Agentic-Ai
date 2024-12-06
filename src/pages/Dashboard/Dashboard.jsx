@@ -18,7 +18,7 @@ import {
   InvalidProcessorIcon,
   LensIcon,
   RefreshIcon,
-  RunnigProcessorIcon,
+  RunningProcessorIcon,
   StoppedProcessorIcon,
   TotalProcessorIcon,
   TotalQuedIcon,
@@ -375,7 +375,7 @@ export const Dashboard = () => {
         />
         <InsightContainer
           backgroundCss="#FEFBEC"
-          icon={RunnigProcessorIcon}
+          icon={RunningProcessorIcon}
           count={dashboardData?.running_processors || '0'}
           text="Running Processor"
         />

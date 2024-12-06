@@ -38,6 +38,7 @@ const Container = styled.header`
   justify-content: space-between;
   background-color: ${props => props.theme.colors.white};
   border-bottom: 1px solid ${props => props.theme.colors.border};
+  border-top-left-radius: 30px;
   @media (max-width: 992px) {
     padding-left: 50px;
     .title {
@@ -266,7 +267,7 @@ const ProfileDropdown = () => {
       >
         <ProfileRender url={currentUser?.photo} />
         <ProfileInfo>
-          <Name>{`${currentUser?.first_name || ''} ${currentUser?.middle_name || ''} ${currentUser?.last_name || ''}`}</Name>
+          <Name className="text-truncate">{`${currentUser?.first_name || ''} ${currentUser?.middle_name || ''} ${currentUser?.last_name || ''}`}</Name>
           <Role>{currentUser?.role}</Role>
         </ProfileInfo>
         <DownArrowIcon />

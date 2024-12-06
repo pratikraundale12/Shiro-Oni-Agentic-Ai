@@ -2,7 +2,11 @@ import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { KsolvesDataFlowIcon } from '../assets';
+import {
+  CollapseSidebarIconLeft,
+  DfmCollapsedIcon,
+  KsolvesDataFlowIcon,
+} from '../assets';
 // import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 // import { KDFM } from '../constants';
 import { useLocation } from 'react-router-dom';
@@ -16,27 +20,74 @@ import {
 import { SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
 import { Loader } from './Loader';
+import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRight';
 
 export const Container = styled.div`
   height: 100%;
-  min-width: ${props => props.theme.sidebar};
+  // min-width: ${props => props.theme.sidebar};
   padding: 16px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: ${props => props.theme.colors.lighter};
-  button {
-    background-color: transparent;
-    border: none;
-    padding: 0 10px;
+  position: relative;
+  width: ${props => props.theme.sidebar};
+  .logo-small {
     display: none;
-    top: 22px;
   }
-  left: -281px;
+  &.toggleSidebar {
+    .sidebar-navigation {
+      li {
+        padding: 1rem 23px !important;
+      }
+    }
+    .version-content {
+      text-align: center;
+      display: block;
+    }
+    @media (min-width: 992px) {
+      max-width: 70px;
+      .logo-large {
+        display: none;
+      }
+      .logo-small {
+        display: block;
+      }
+      .nav-text {
+        display: none;
+      }
+    }
+  }
+  .btn-toggle {
+    position: absolute;
+    background: #fff !important;
+    border: 1px solid #e9e0e0;
+    width: 30px;
+    height: 30px;
+    padding: 0px;
+    right: -18px;
+    top: 5px;
+    z-index: 20;
+    &:hover {
+      background: #f5f7fa !important;
+    }
+  }
+  .btn-hamburger {
+    background: #fff !important;
+    border: 1px solid #e9e0e0;
+    width: 30px;
+    height: 30px;
+    padding: 0px;
+    margin-top: 5px;
+    &:hover {
+      background: #fff !important;
+    }
+  }
   @media (max-width: 992px) {
     position: fixed;
     transition: 0.3s;
     z-index: 99;
+    left: -281px;
     &.menuOpen {
       left: 0px;
     }
@@ -60,7 +111,7 @@ export const Item = styled.li`
   position: relative;
   display: flex;
   align-items: center;
-  padding: 20px 32px;
+  padding: 1rem 32px;
   font-size: 16px;
   font-weight: 600;
   color: ${({ theme, active }) =>
@@ -68,7 +119,8 @@ export const Item = styled.li`
   background-color: ${({ theme, active }) =>
     active ? theme.colors.primaryFocus : 'transparent'};
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  // transition: all 0.3s ease-in-out;
+  gap: 20px;
 
   ${props =>
     props.path === 'help-&-support' &&
@@ -88,10 +140,6 @@ export const Item = styled.li`
     border-bottom-right-radius: 10px;
     background-color: ${({ theme, active }) =>
       active ? theme.colors.white : 'transparent'};
-  }
-
-  > svg {
-    margin-right: 20px;
   }
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
@@ -114,7 +162,12 @@ const StyleButton = styled.div`
 
 const LOGO_HEIGHT = 80;
 
-export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
+export const Sidebar = ({
+  handleOpenSidebar,
+  isOpenSidebar,
+  toggleCollapse,
+  collapsed,
+}) => {
   const dispatch = useDispatch();
   const { pathname } = useLocation();
   const route = useSelector(AuthenticationSelectors.getRoute);
@@ -174,18 +227,33 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
       );
     return (
       <StyleButton onClick={handleClick}>
-        <KsolvesDataFlowIcon width={200} height={LOGO_HEIGHT} />
+        {collapsed ? (
+          <DfmCollapsedIcon />
+        ) : (
+          <KsolvesDataFlowIcon width={200} height={LOGO_HEIGHT} />
+        )}
       </StyleButton>
     );
   };
 
   return (
-    <Container className={isOpenSidebar && 'menuOpen'}>
-      <button onClick={() => handleOpenSidebar()}>
+    <Container
+      className={`${isOpenSidebar ? 'menuOpen' : ''} ${collapsed ? 'toggleSidebar' : ''}`}
+    >
+      <button
+        className="btn btn-hamburger d-lg-none"
+        onClick={() => handleOpenSidebar()}
+      >
         <img alt="menu" src="/img/Frame.png" />
       </button>
+      <button
+        className="btn btn-toggle d-none d-lg-block"
+        onClick={toggleCollapse}
+      >
+        {collapsed ? <CollapseSidebarIconRight /> : <CollapseSidebarIconLeft />}
+      </button>
       {getImage()}
-      <List>
+      <List className="sidebar-navigation">
         {ROUTES_MENU.filter(getFiltered).map(item => {
           const active = item.path === route;
           return (
@@ -198,7 +266,7 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
               <item.icon
                 color={active ? theme.colors.white : theme.colors.darker}
               />
-              <span>{item.name}</span>
+              <span className="nav-text">{item.name}</span>
             </Item>
           );
         })}
@@ -206,7 +274,7 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
 
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
-        <span>Version 1.0.0</span>
+        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 1.0.0`}</span>
       </KDFMVersion>
     </Container>
   );
@@ -217,4 +285,10 @@ Sidebar.propTypes = {
   handleRoute: PropTypes.func,
   handleOpenSidebar: PropTypes.func,
   isOpenSidebar: PropTypes.bool,
+  toggleCollapse: PropTypes.func,
+  collapsed: PropTypes.bool,
+};
+Item.propTypes = {
+  active: PropTypes.bool,
+  path: PropTypes.string,
 };
