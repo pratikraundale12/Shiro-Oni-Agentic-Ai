@@ -10,6 +10,7 @@ import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import VariableTab from './VariableTab';
 import { useDispatch } from 'react-redux';
 import { NamespacesActions } from '../../store';
+import ParameterContextTab from './ParameterContextTab';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -87,7 +88,6 @@ const Tab = styled.div`
 
 const TabContent = styled.div`
   width: 100%;
-
   padding: 1rem;
   border-radius: 0.25rem;
   background-color: #f8f9fa;
@@ -117,7 +117,7 @@ const ConfigDetailsPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
-        return <p>This is the content for Tab 1.</p>;
+        return <ParameterContextTab />;
       case KDFM.VARIABLES:
         return (
           <VariableTab

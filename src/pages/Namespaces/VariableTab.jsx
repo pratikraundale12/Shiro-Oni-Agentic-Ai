@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import Collapsible from './Collapsible';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { NamespacesSelectors } from '../../store';
 import AddOrEditVariablesModal from './AddOrEditVariablesModal';
 import { isEmpty } from 'lodash';
 
@@ -54,8 +54,6 @@ const VariableTab = ({ variableData, setVariableData }) => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
     setCurrentPgId(pgId);
   };
-
-  const dispatch = useDispatch();
 
   const handleAddVariables = (tableId, index) => {
     setCurrentPgId(tableId);
@@ -134,7 +132,6 @@ const VariableTab = ({ variableData, setVariableData }) => {
 
   const closeAddVariablesModal = () => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
-    dispatch(NamespacesActions.setVariableContextItem({}));
   };
 
   return (
@@ -142,6 +139,7 @@ const VariableTab = ({ variableData, setVariableData }) => {
       <ScrollSetGrey className="scroll-set-grey pe-1">
         {variableData.map((item, index) => (
           <Collapsible
+            isAddBtnVisible={false}
             onBtnClick={() => handleAddVariables(item.pgId, index)}
             key={item.pgId}
             title={item?.pgName}
