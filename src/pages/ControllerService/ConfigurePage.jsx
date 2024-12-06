@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PlusCircleIcon } from '../../assets';
 import { Table } from '../../components';
 import { Button, CheckboxField, Modal } from '../../shared'; // Import Button correctly
-import { NamespacesActions } from '../../store';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import NewAddControllerService from './NewAddControllerService';
 
 const NewClassAddes = styled.div`
@@ -14,44 +14,13 @@ const NewClassAddes = styled.div`
   }
 `;
 
-const controllerServicesData = [
-  {
-    id: 1,
-    name: 'Data Enrichment Service',
-    typeValue: 'Data Processor',
-    bundleValue: 'Standard Utilities 1.0',
-    state: 'Active',
-    scope: 'Global',
-  },
-  {
-    id: 2,
-    name: 'Notification Service',
-    typeValue: 'Event Listener',
-    bundleValue: 'Event Handlers 2.3',
-    state: 'Inactive',
-    scope: 'Local',
-  },
-  {
-    id: 3,
-    name: 'Logging Service',
-    typeValue: 'Logger',
-    bundleValue: 'Debug Toolkit 1.2',
-    state: 'Active',
-    scope: 'Cluster',
-  },
-  {
-    id: 4,
-    name: 'Cache Manager Service',
-    typeValue: 'Resource Manager',
-    bundleValue: 'Resource Tools 3.1',
-    state: 'Paused',
-    scope: 'Global',
-  },
-];
-
 const ConfigurePage = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
-  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null); // Updated state to hold full selected item
+  const listData = useSelector(
+    NamespacesSelectors?.getRootControllerServiceNamespace
+  );
+  console.log(listData, 'listData');
 
   const COLUMNS = [
     {
@@ -61,8 +30,8 @@ const ConfigurePage = ({ isOpen, onClose }) => {
           <CheckboxField
             name={`check-${item.id}`}
             label=""
-            checked={selectedItemId === item.id}
-            onChange={() => handleCheckboxChange(item.id)}
+            checked={selectedItem?.id === item.id}
+            onChange={() => handleCheckboxChange(item)}
           />
           {item?.name}
         </div>
@@ -75,8 +44,12 @@ const ConfigurePage = ({ isOpen, onClose }) => {
     { label: 'Scope', renderCell: item => item?.scope, width: '20%' },
   ];
 
-  const handleCheckboxChange = id => {
-    setSelectedItemId(prev => (prev === id ? null : id));
+  const handleCheckboxChange = item => {
+    setSelectedItem(prev => (prev?.id === item.id ? null : item));
+  };
+
+  const handleSubmit = () => {
+    console.log('Selected Item Data:', selectedItem);
   };
 
   return (
@@ -89,6 +62,7 @@ const ConfigurePage = ({ isOpen, onClose }) => {
       footerAlign="start"
       contentStyles={{ maxWidth: '60%', maxHeight: '70%' }}
       secondaryButtonText="Back"
+      onSubmit={handleSubmit} // Trigger submit handler on click
     >
       <NewClassAddes className="d-flex justify-content-end w-100 mb-3 mt-n3">
         <Button
@@ -105,11 +79,7 @@ const ConfigurePage = ({ isOpen, onClose }) => {
       </NewClassAddes>
       <div>
         <NewAddControllerService />
-        <Table
-          data={controllerServicesData}
-          columns={COLUMNS}
-          className="variables-table"
-        />
+        <Table data={listData} columns={COLUMNS} className="variables-table" />
       </div>
     </Modal>
   );

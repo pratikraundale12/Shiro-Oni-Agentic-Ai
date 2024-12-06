@@ -45,17 +45,11 @@ const ControllerServiceTab = () => {
   const registryAllDetails = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
-  console.log(
-    registryAllDetails?.controllerServicesData?.externalControllerServices?.[0]
-      .name,
-    'registryAllDetails'
-  );
-  const localServicesdata =
-    registryAllDetails?.controllerServicesData?.localServices?.map(
-      service => service?.controllerService
-    );
 
-  console.log(localServicesdata, 'localServicesdata');
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const modalOpenState = useSelector(
+    NamespacesSelectors.getIsNewAddControllerServiceMOdalOpen
+  );
 
   const controllerServicesData =
     registryAllDetails?.controllerServicesData?.externalControllerServices;
@@ -84,7 +78,7 @@ const ControllerServiceTab = () => {
     },
     {
       label: 'Type',
-      renderCell: item => item?.type || 'N/A',
+      renderCell: item => item?.typeValue || 'N/A',
       width: '20%',
     },
     {
@@ -133,6 +127,9 @@ const ControllerServiceTab = () => {
   const handleConfigure = item => {
     setSelectedService(item);
     setIsModalOpen(true);
+    if (!modalOpenState && selectedCluster?.value) {
+      dispatch(NamespacesActions.getControllerServiceList());
+    }
   };
 
   const handleCloseModal = () => {
