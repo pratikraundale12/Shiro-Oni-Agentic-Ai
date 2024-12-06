@@ -76,8 +76,8 @@ export const namespacesAPI = api => {
       `clusters/${clusterId}/namespaces/${namespaceId}/variable-requests/${requestId}`
     );
 
-  const deployCluster = ({ clusterId, ...rest }) =>
-    api.post(`/clusters/${clusterId}/deploy`, rest);
+  const deployCluster = ({ clusterId, payload }) =>
+    api.post(`/clusters/${clusterId}/deploy`, payload);
 
   const upgradeCluster = ({ clusterId, ...rest }) =>
     api.post(`/clusters/${clusterId}/upgrade`, rest);

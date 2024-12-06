@@ -9,6 +9,7 @@ export const NAMESPACE_CONSTANTS = {
   SELECTED_NAMESPACE: 'Selected Process Group',
   SEARCH_NAMESPACE_FLOW_BUCKET_NAME: 'Search Process Group, Id, Flow Name',
   CONFIGURATION_DETAILS: 'Configuration Details',
+  FLOW_DETAILS: 'Flow Details',
   VERSION_CONTROL: 'Version Control',
   CANVAS_POSITION: 'Canvas Position',
   CURRENT_POSITION: 'Current Position',

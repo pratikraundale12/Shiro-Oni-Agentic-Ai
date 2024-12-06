@@ -1115,6 +1115,34 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
+
+export function* deployNamespaceByRegistryFlow(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'deployNamespaceByRegistryFlow',
+    loadingSection: 'deployNamespaceByRegistryFlow',
+    apiMethod: api.deployCluster,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        payload: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    yield put(NamespacesActions.setDeployedModal(true));
+  } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
 //
 export function* namespacesSagas(api) {
   yield all([
@@ -1210,6 +1238,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.fetchRegistryFlowDetails,
       fetchRegistryFlowDetails,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.deployNamespaceByRegistryFlow,
+      deployNamespaceByRegistryFlow,
       api
     ),
   ]);
