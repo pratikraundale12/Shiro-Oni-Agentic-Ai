@@ -29,5 +29,5 @@ export const PlusIcon = ({ width = 16, height = 16, color = '#1F80FF' }) => (
 PlusIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
-  color: PropTypes.color,
+  color: PropTypes.string,
 };

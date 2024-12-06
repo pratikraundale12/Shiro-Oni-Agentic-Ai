@@ -218,3 +218,7 @@ Sidebar.propTypes = {
   handleOpenSidebar: PropTypes.func,
   isOpenSidebar: PropTypes.bool,
 };
+Item.propTypes = {
+  active: PropTypes.bool,
+  path: PropTypes.string,
+};

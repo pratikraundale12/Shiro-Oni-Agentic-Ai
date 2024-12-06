@@ -17,7 +17,7 @@ export const SortIcon = ({ width = 16, height = 16, color = '#B5B5BD' }) => (
   </svg>
 );
 SortIcon.propTypes = {
-  width: PropTypes.number,
-  height: PropTypes.number,
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   color: PropTypes.string,
 };

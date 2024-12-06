@@ -224,7 +224,6 @@ export const ListNamespaces = () => {
     {
       label: KDFM.STATUS,
       renderCell: item => {
-        console.log(item);
         return (
           <div className="d-flex align-items-center gap-1">
             <StatusDiv>

@@ -187,7 +187,7 @@ export const Modal = ({
 Modal.propTypes = {
   title: PropTypes.string.isRequired,
   isOpen: PropTypes.bool.isRequired,
-  onRequestClose: PropTypes.func.isRequired,
+  onRequestClose: PropTypes.func,
   children: PropTypes.node,
   size: PropTypes.oneOf(['lg', 'md', 'sm']),
   onSubmit: PropTypes.func,
