@@ -28,6 +28,7 @@ const Content = styled.main`
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
   background-color: ${props => props.theme.colors.white};
+  flex-grow: 1;
   @media (max-width: 992px) {
     width: 100%;
   }

@@ -23,14 +23,40 @@ import { Loader } from './Loader';
 
 export const Container = styled.div`
   height: 100%;
-  min-width: ${props => props.theme.sidebar};
+  // min-width: ${props => props.theme.sidebar};
   padding: 16px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: ${props => props.theme.colors.lighter};
-  position: relative;
-
+  position: relative; 
+  width: ${props => props.theme.sidebar};
+  .logo-small{
+      display: none
+  }
+  &.toggleSidebar{ 
+    .sidebar-navigation{
+      li{
+        padding: 1rem 23px!important;
+      }
+    }
+    .version-content{
+      text-align: center;
+      display: block;
+    }
+    @media (min-width: 992px) { 
+      max-width: 70px; 
+      .logo-large{
+        display: none;
+      }
+      .logo-small{
+        display: block
+      }
+      .nav-text{
+        display: none
+      }
+    }
+  }
   .btn-toggle {
     position: absolute;
     background: #fff !important;
@@ -38,7 +64,8 @@ export const Container = styled.div`
     width: 30px;
     height: 30px;
     padding: 0px;
-    right: -10px;
+    right: -18px;
+    top: 5px;
     z-index: 20;
     &:hover {
       background: #f5f7fa !important;
@@ -50,8 +77,9 @@ export const Container = styled.div`
     width: 30px;
     height: 30px;
     padding: 0px;
+    margin-top: 5px;
     &:hover {
-      background: #f5f7fa !important;
+      background: #fff !important;
     }
   }
   @media (max-width: 992px) {
@@ -82,7 +110,7 @@ export const Item = styled.li`
   position: relative;
   display: flex;
   align-items: center;
-  padding: 20px 32px;
+  padding: 1rem 32px;
   font-size: 16px;
   font-weight: 600;
   color: ${({ theme, active }) =>
@@ -91,6 +119,7 @@ export const Item = styled.li`
     active ? theme.colors.primaryFocus : 'transparent'};
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+  gap: 20px;
 
   ${props =>
     props.path === 'help-&-support' &&
@@ -110,10 +139,6 @@ export const Item = styled.li`
     border-bottom-right-radius: 10px;
     background-color: ${({ theme, active }) =>
       active ? theme.colors.white : 'transparent'};
-  }
-
-  > svg {
-    margin-right: 20px;
   }
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
@@ -210,9 +235,7 @@ export const Sidebar = ({
     <Container
       className={`${isOpenSidebar ? 'menuOpen' : ''} ${collapsed ? 'toggleSidebar' : ''}`}
     >
-      <button onClick={() => handleOpenSidebar()}>
-        <img alt="menu" src="/img/Frame.png" />
-      </button>
+      <button className="btn btn-hamburger d-lg-none" onClick={() => handleOpenSidebar()}><img alt="menu" src="/img/Frame.png" /></button>
       {/* <button>
         <DfmCollapsedIcon />
       </button> */}
@@ -223,7 +246,7 @@ export const Sidebar = ({
         <CollapseSidebarIcon />
       </button>
       {getImage()}
-      <List>
+      <List className='sidebar-navigation'>
         {ROUTES_MENU.filter(getFiltered).map(item => {
           const active = item.path === route;
           return (
@@ -236,7 +259,7 @@ export const Sidebar = ({
               <item.icon
                 color={active ? theme.colors.white : theme.colors.darker}
               />
-              <span>{item.name}</span>
+              <span className='nav-text'>{item.name}</span>
             </Item>
           );
         })}
@@ -244,7 +267,7 @@ export const Sidebar = ({
 
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
-        <span>Version 1.0.0</span>
+        <span className='version-content'>Version 1.0.0</span>
       </KDFMVersion>
     </Container>
   );

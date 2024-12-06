@@ -267,7 +267,7 @@ const ProfileDropdown = () => {
       >
         <ProfileRender url={currentUser?.photo} />
         <ProfileInfo>
-          <Name>{`${currentUser?.first_name || ''} ${currentUser?.middle_name || ''} ${currentUser?.last_name || ''}`}</Name>
+          <Name className='text-truncate'>{`${currentUser?.first_name || ''} ${currentUser?.middle_name || ''} ${currentUser?.last_name || ''}`}</Name>
           <Role>{currentUser?.role}</Role>
         </ProfileInfo>
         <DownArrowIcon />
