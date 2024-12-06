@@ -1,8 +1,9 @@
 import { isEmpty } from 'lodash';
 import { all, call, debounce, put, select } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, DEBOUNCE_DELAY } from '../../constants';
+import { DashboardActions } from '../dashboard';
 import { requestSaga } from '../helpers/request_sagas';
-import { NamespacesSelectors } from '../namespaces';
+import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { SchedularSelectors } from '../schedular/redux';
 import { GridActions } from './redux';
 
@@ -20,6 +21,7 @@ export function* fetchGrid(
   const selectedDestNamespace = yield select(
     NamespacesSelectors.getSelectedDestNamespace
   );
+
   const scheduleFromList = yield select(SchedularSelectors.getScheduleFromList);
   const API = {
     users: api.fetchUsers,
@@ -114,6 +116,16 @@ export function* fetchGrid(
         );
         if (!cluster) {
           localStorage.removeItem('selected_cluster');
+          yield put(
+            NamespacesActions.setSelectedCluster({
+              label: '',
+              value: '',
+            })
+          );
+          yield put(
+            GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
+          );
+          yield put(DashboardActions.fetchDashboardSuccess({ data: {} }));
         }
       }
 

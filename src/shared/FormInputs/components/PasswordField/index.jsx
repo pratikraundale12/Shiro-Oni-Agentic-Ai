@@ -76,6 +76,7 @@ const PasswordInputField = ({
   placeholder = '',
   showStrengthMeter = false,
   icon = <BagIcon />,
+  disableToggle = false,
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -102,7 +103,9 @@ const PasswordInputField = ({
         icon={icon}
         placeholder={placeholder || 'Enter Your Password'}
         rightIcon={
-          <TogglePassword show={show} onToggle={togglePassword} {...props} />
+          !disableToggle ? (
+            <TogglePassword show={show} onToggle={togglePassword} {...props} />
+          ) : null
         }
         registerOptions={{
           onChange,
@@ -132,6 +135,7 @@ PasswordInputField.propTypes = {
   helperText: PropTypes.string,
   showStrengthMeter: PropTypes.boolean,
   icon: PropTypes.func,
+  disableToggle: PropTypes.boolean,
 };
 
 export default PasswordInputField;
