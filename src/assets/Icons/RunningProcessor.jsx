@@ -1,5 +1,5 @@
 import React from 'react';
-export const RunnigProcessorIcon = () => {
+export const RunningProcessorIcon = () => {
   return (
     <svg
       width={35}
