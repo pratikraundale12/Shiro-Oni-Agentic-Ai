@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { ClusterIcon, UserIcon } from '../assets';
 import { CLUSTERS_TOKEN } from '../constants';
@@ -179,15 +179,6 @@ export const ClusterLoginModal = () => {
 
   return (
     <>
-      <ToastContainer
-        theme="colored"
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable
-      />
       <Modal
         title="Enable Cluster"
         isOpen={isObject(clusterLogin) || clusterLogin}
