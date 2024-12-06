@@ -1,7 +1,7 @@
 /* eslint-disable */
 import PropTypes from 'prop-types';
 import React from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { CopyIcon } from '../assets';
@@ -71,15 +71,7 @@ const CopyToClipboard = ({ copyItem, className, tooltipPlacement }) => {
 
   return (
     <>
-      <ToastContainer
-        theme="colored"
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable
-      />
+     
       <StyledButton
         type="button"
         onClick={() => handleCopyToClipboard(copyItem)}
