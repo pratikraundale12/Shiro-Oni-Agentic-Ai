@@ -14,13 +14,12 @@ const NewClassAddes = styled.div`
   }
 `;
 
-const ConfigurePage = ({ isOpen, onClose }) => {
+const ConfigurePage = ({ isOpen, onClose, handleConfigureSubmit }) => {
   const dispatch = useDispatch();
   const [selectedItem, setSelectedItem] = useState(null); // Updated state to hold full selected item
   const listData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
   );
-  console.log(listData, 'listData');
 
   const COLUMNS = [
     {
@@ -46,9 +45,11 @@ const ConfigurePage = ({ isOpen, onClose }) => {
 
   const handleCheckboxChange = item => {
     setSelectedItem(prev => (prev?.id === item.id ? null : item));
+    console.log('sdasdd', selectedItem);
   };
 
   const handleSubmit = () => {
+    handleConfigureSubmit(selectedItem);
     console.log('Selected Item Data:', selectedItem);
   };
 
@@ -88,6 +89,7 @@ const ConfigurePage = ({ isOpen, onClose }) => {
 ConfigurePage.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  handleConfigureSubmit: PropTypes.func,
 };
 
 export default ConfigurePage;
