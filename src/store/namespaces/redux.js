@@ -135,8 +135,13 @@ export const NamespacesActions = {
   setDeployFormData: createAction(`${prefix}setDeployFormData`),
   fetchRegistryFlowDetails: createAction(`${prefix}fetchRegistryFlowDetails`),
   setRegistryAllDetails: createAction(`${prefix}setRegistryAllDetails`),
+  setRegistryFlowXCord: createAction(`${prefix}setRegistryFlowXCord`),
+  setRegistryFlowYCord: createAction(`${prefix}setRegistryFlowYCord`),
+  setdeployRegistryFlow: createAction(`${prefix}setdeployRegistryFlow`),
+  setRegistryDeployVariable: createAction(`${prefix}setRegistryDeployVariable`),
 };
-//fetchFlowNameList
+// registryFlowXCord:null,
+//registryFlowYCord:null
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -204,6 +209,10 @@ export const NAMESPACES_INITIAL_STATE = {
   versionSelect: {},
   deployFormData: {},
   registryAllDetails: {},
+  registryFlowXCord: null,
+  registryFlowYCord: null,
+  deployRegistryFlow: false,
+  registryDeployVariable: [],
   // parameterEditParent: false,
 };
 
@@ -267,8 +276,12 @@ export const NamespacesSelectors = {
   getVersionSelect: state => state.namespaces.versionSelect,
   getDeployFormData: state => state.namespaces.deployFormData,
   getRegistryAllDetails: state => state.namespaces.registryAllDetails,
+  getregistryFlowXCord: state => state.namespaces.registryFlowXCord,
+  getregistryFlowYCord: state => state.namespaces.registryFlowYCord,
+  getdeployRegistryFlow: state => state.namespaces.deployRegistryFlow,
+  getRegistryDeployVariable: state => state.namespaces.registryDeployVariable,
 };
-//
+
 /* ------------- REDUCERS ------------------- */
 const setSelectedCluster = (state, { payload }) => {
   return {
@@ -597,6 +610,34 @@ const setRegistryAllDetails = (state, { payload }) => {
     registryAllDetails: payload,
   };
 };
+
+const setRegistryFlowXCord = (state, { payload }) => {
+  return {
+    ...state,
+    registryFlowXCord: payload,
+  };
+};
+
+const setRegistryFlowYCord = (state, { payload }) => {
+  return {
+    ...state,
+    registryFlowYCord: payload,
+  };
+};
+
+const setdeployRegistryFlow = (state, { payload }) => {
+  return {
+    ...state,
+    deployRegistryFlow: payload,
+  };
+};
+
+const setRegistryDeployVariable = (state, { payload }) => {
+  return {
+    ...state,
+    registryDeployVariable: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -717,7 +758,14 @@ export const namespacesReducer = createReducer(
       .addCase(NamespacesActions.setVersionListData, setVersionListData)
       .addCase(NamespacesActions.setVersionSelect, setVersionSelect)
       .addCase(NamespacesActions.setDeployFormData, setDeployFormData)
-      .addCase(NamespacesActions.setRegistryAllDetails, setRegistryAllDetails);
+      .addCase(NamespacesActions.setRegistryAllDetails, setRegistryAllDetails)
+      .addCase(NamespacesActions.setRegistryFlowXCord, setRegistryFlowXCord)
+      .addCase(NamespacesActions.setRegistryFlowYCord, setRegistryFlowYCord)
+      .addCase(NamespacesActions.setdeployRegistryFlow, setdeployRegistryFlow)
+      .addCase(
+        NamespacesActions.setRegistryDeployVariable,
+        setRegistryDeployVariable
+      );
   }
 );
 //

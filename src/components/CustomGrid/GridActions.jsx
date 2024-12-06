@@ -297,6 +297,7 @@ export const GridActions = ({
   const { clusterSummaryPage = false } = naviagate?.state || {};
   const handleClick = () => {
     history.push('/process-group/DeployPage');
+    dispatch(NamespacesActions.setdeployRegistryFlow(true));
   };
 
   return (
@@ -409,7 +410,7 @@ export const GridActions = ({
           <ButtonsContainer>
             <ScheduleButton
               className="d-flex items-center gap-3"
-              onClick={() => console.log('Clicked on Schedule Deployment')}
+              onClick={() => {}}
             >
               <ScheduleDeploymentIcon height={19} width={19} />
               {KDFM.SCHEDULE_DEPLOYMENT}

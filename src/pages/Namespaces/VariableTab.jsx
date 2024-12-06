@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PencilIcon } from '../../assets';
@@ -7,6 +8,7 @@ import { KDFM } from '../../constants';
 import Collapsible from './Collapsible';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import AddOrEditVariablesModal from './AddOrEditVariablesModal';
+import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -25,99 +27,29 @@ const ScrollSetGrey = styled.div`
   overflow-y: auto;
 `;
 
-const VariableTab = () => {
+const VariableTab = ({ variableData, setVariableData }) => {
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
-  console.log(registryDetailsData, 'registryDetailsData');
   const [isAddVariablesOpen, setIsAddVariablesOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
 
-  const variablesMockData = [
-    {
-      pgId: '12345',
-      parent: true,
-      pgname: 'Parent',
-      variables: [
-        {
-          name: 'var1',
-          value: 'abcd',
-        },
-        {
-          name: 'var2',
-          value: 'abcd',
-        },
-      ],
-    },
-    {
-      pgId: '3214',
-      parent: false,
-      pgname: 'Child1',
-      variables: [
-        {
-          name: 'var3',
-          value: 'abcd',
-        },
-        {
-          name: 'var4',
-          value: 'abcd',
-        },
-      ],
-    },
-    {
-      pgId: '3215',
-      parent: false,
-      pgname: 'Child2',
-      variables: [
-        {
-          name: 'var5',
-          value: 'abcd',
-        },
-        {
-          name: 'var6',
-          value: 'abcd',
-        },
-      ],
-    },
-    {
-      pgId: '3216',
-      parent: false,
-      pgname: 'Child4',
-      variables: [
-        {
-          name: 'var7',
-          value: 'abcd',
-        },
-        {
-          name: 'var8',
-          value: 'abcd',
-        },
-      ],
-    },
-    {
-      pgId: '3217',
-      parent: false,
-      pgname: 'Child5',
-      variables: [
-        {
-          name: 'var9',
-          value: 'abcd',
-        },
-        {
-          name: 'var10',
-          value: 'abcd',
-        },
-      ],
-    },
-  ];
-
   const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
-  const [variableData, setVariableData] = useState(variablesMockData);
-  const [currentPgId, setCurrentPgId] = useState('');
+  const variblesReduxData = useSelector(
+    NamespacesSelectors.getRegistryDeployVariable
+  );
 
+  useEffect(() => {
+    if (isEmpty(variblesReduxData)) {
+      setVariableData(registryDetailsData?.variablesData);
+    } else {
+      setVariableData(variblesReduxData);
+    }
+  }, [registryDetailsData?.variablesData, variblesReduxData]);
+  const [currentPgId, setCurrentPgId] = useState('');
   const handleToggle = (pgId, index) => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
     setCurrentPgId(pgId);
@@ -212,7 +144,7 @@ const VariableTab = () => {
           <Collapsible
             onBtnClick={() => handleAddVariables(item.pgId, index)}
             key={item.pgId}
-            title={item.pgname}
+            title={item?.pgName}
             isTableOpen={openIndex === index}
             toggleCollapsible={() => handleToggle(item?.pgId, index)}
           >
@@ -237,6 +169,10 @@ const VariableTab = () => {
       </ScrollSetGrey>
     </DataWrapper>
   );
+};
+VariableTab.propTypes = {
+  setVariableData: PropTypes.func,
+  variableData: PropTypes.object,
 };
 
 export default VariableTab;

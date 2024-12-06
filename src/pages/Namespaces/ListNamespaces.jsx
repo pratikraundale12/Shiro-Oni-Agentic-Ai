@@ -110,6 +110,8 @@ export const ListNamespaces = () => {
 
   useEffect(() => {
     dispatch(SchedularActions.setScheduleFromList(false));
+    dispatch(NamespacesActions.setdeployRegistryFlow(false));
+    dispatch(NamespacesActions.setRegistryDeployVariable([]));
   }, []);
 
   const COLUMNS = [

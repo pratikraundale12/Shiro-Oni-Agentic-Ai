@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   CanvasXIcon,
   CanvasYIcon,
@@ -16,6 +16,7 @@ import { Button, InputField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
+  NamespacesActions,
   // NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
@@ -161,6 +162,7 @@ const BreadcrumbContainer = styled.div`
 `;
 
 const FlowDetailsPage = () => {
+  const dispatch = useDispatch();
   const registryAllDetails = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
@@ -171,19 +173,24 @@ const FlowDetailsPage = () => {
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
+  const storedXcord = useSelector(NamespacesSelectors.getregistryFlowXCord);
+  const storedYcord = useSelector(NamespacesSelectors.getregistryFlowYCord);
+
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
 
-  console.log(registryDetailsData, 'registryDetailsData');
-  // registryDetailsData?.positions[0].x
   const [xStateCoordinate, setXStateCoordiate] = useState(null);
-  // registryDetailsData?.positions[0].y
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
+  useEffect(() => {
+    if (registryDetailsData?.positions?.[0]?.x !== undefined) {
+      setXStateCoordiate(registryDetailsData.positions[0].x);
+      setYStateCoordiate(registryDetailsData?.positions?.[0].y);
+    }
+  }, [registryDetailsData]);
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
     { label: 'Flow Details' },
   ];
-  console.log(xStateCoordinate, 'xStateCoordinate', yStateCoordinate);
   const handleClick = () => {
     history.push('/process-group/config-details');
   };
@@ -195,16 +202,20 @@ const FlowDetailsPage = () => {
   const handleXCoordinateChangeInput = e => {
     if (e.target.value) {
       setXStateCoordiate(Number(e.target.value));
+      dispatch(NamespacesActions.setRegistryFlowXCord(Number(e.target.value)));
     } else {
       setXStateCoordiate(null);
+      dispatch(NamespacesActions.setRegistryFlowXCord(null));
     }
   };
 
   const handleYCoordinateChangeInput = e => {
     if (e.target.value) {
       setYStateCoordiate(Number(e.target.value));
+      dispatch(NamespacesActions.setRegistryFlowYCord(Number(e.target.value)));
     } else {
       setYStateCoordiate(null);
+      dispatch(NamespacesActions.setRegistryFlowYCord(null));
     }
 
     // dispatch(NamespacesActions.setPosition({ y: e.target.value }));
@@ -271,7 +282,7 @@ const FlowDetailsPage = () => {
                     name="x"
                     type="text"
                     label={KDFM.CANVAS_POSITION}
-                    value={xStateCoordinate}
+                    value={storedXcord || xStateCoordinate}
                     icon={<CanvasXIcon />}
                     onChange={e => handleXCoordinateChangeInput(e)}
                   />
@@ -279,7 +290,7 @@ const FlowDetailsPage = () => {
                     name="y"
                     type="text"
                     label=""
-                    value={yStateCoordinate}
+                    value={storedYcord || yStateCoordinate}
                     icon={<CanvasYIcon />}
                     onChange={e => handleYCoordinateChangeInput(e)}
                   />
