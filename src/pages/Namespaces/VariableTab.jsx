@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
-import Collapsible from './Collapsible';
 import { NamespacesSelectors } from '../../store';
 import AddOrEditVariablesModal from './AddOrEditVariablesModal';
-import { isEmpty } from 'lodash';
+import Collapsible from './Collapsible';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -137,7 +137,7 @@ const VariableTab = ({ variableData, setVariableData }) => {
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {variableData.map((item, index) => (
+        {variableData?.map((item, index) => (
           <Collapsible
             isAddBtnVisible={false}
             onBtnClick={() => handleAddVariables(item.pgId, index)}

@@ -161,8 +161,8 @@ const ActiveButtonDiv = styled.div`
 const NamespaceDeploy = ({
   isOpen,
   closePopup,
-  getParamerterContext,
-  handleTertiaryButton,
+  // getParamerterContext,
+  // handleTertiaryButton,
   handleFlowConfirmPopup = () => {},
   activeButtonPopup,
 }) => {
@@ -182,6 +182,10 @@ const NamespaceDeploy = ({
     window.open(updatedUrl, '_blank');
   };
 
+  const handleProcessorGroupClick = () => {
+    console.log('clicked');
+  };
+
   return (
     <>
       <Modal
@@ -195,22 +199,19 @@ const NamespaceDeploy = ({
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
-        onSecondarySubmit={getParamerterContext}
-        secondaryButtonText="Parameter Context"
+        onSecondarySubmit={handleProcessorGroupClick}
+        secondaryButtonText="Process Groud Details"
         primaryButtonText="Go to Nifi Instance"
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={handleClick}
         footerAlign="start"
-        secondaryButtonProps={{
-          disabled: !deployOrUpgradeDetails?.parameterContextId,
-        }}
-        tertiaryButton={true}
-        thirdVarint={true}
-        tertiaryButtonConfig={{
-          tertiaryButtonTest: 'Variables',
-          tertiaryButtonSubmit: handleTertiaryButton,
-          tertiaryButtonDisable: false,
-        }}
+        // tertiaryButton={true}
+        // thirdVarint={true}
+        // tertiaryButtonConfig={{
+        //   tertiaryButtonTest: 'Variables',
+        //   tertiaryButtonSubmit: handleTertiaryButton,
+        //   tertiaryButtonDisable: false,
+        // }}
       >
         <ModalBody className="modal-body">
           <div className="d-flex justify-content-center align-items-center">
