@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
-  CollapseSidebarIcon,
+  CollapseSidebarIconLeft,
   DfmCollapsedIcon,
   KsolvesDataFlowIcon,
 } from '../assets';
@@ -20,6 +20,7 @@ import {
 import { SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
 import { Loader } from './Loader';
+import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRight';
 
 export const Container = styled.div`
   height: 100%;
@@ -245,14 +246,11 @@ export const Sidebar = ({
       >
         <img alt="menu" src="/img/Frame.png" />
       </button>
-      {/* <button>
-        <DfmCollapsedIcon />
-      </button> */}
       <button
         className="btn btn-toggle d-none d-lg-block"
         onClick={toggleCollapse}
       >
-        <CollapseSidebarIcon />
+        {collapsed ? <CollapseSidebarIconRight /> : <CollapseSidebarIconLeft />}
       </button>
       {getImage()}
       <List className="sidebar-navigation">
@@ -276,7 +274,7 @@ export const Sidebar = ({
 
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
-        <span className="version-content">Version 1.0.0</span>
+        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 1.0.0`}</span>
       </KDFMVersion>
     </Container>
   );

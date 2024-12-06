@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const CollapseSidebarIcon = () => (
+export const CollapseSidebarIconLeft = () => (
   <svg
     width="14"
     height="14"
