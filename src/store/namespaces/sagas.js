@@ -1138,8 +1138,7 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
     ],
   });
   if (response.ok) {
-    console.log(response, 'res');
-    // yield put(NamespacesActions.setRegistryAllDetails(response?.data));
+    yield put(NamespacesActions.setDeployedModal(true));
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
@@ -1246,7 +1245,6 @@ export function* namespacesSagas(api) {
       deployNamespaceByRegistryFlow,
       api
     ),
-    ,
   ]);
 }
 //

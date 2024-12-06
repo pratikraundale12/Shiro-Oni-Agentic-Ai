@@ -397,10 +397,10 @@ const deployClusterSuccess = (state, { payload }) => {
   };
 };
 
-const setDeployedModal = state => {
+const setDeployedModal = (state, { payload }) => {
   return {
     ...state,
-    isDeployedModal: !state.isDeployedModal,
+    isDeployedModal: payload,
   };
 };
 const resetDeployData = state => {

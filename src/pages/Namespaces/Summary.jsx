@@ -549,6 +549,11 @@ const Summary = () => {
   };
 
   const handledeployByRegistry = () => {
+    const updatedData = paramterDeployArray.map(item => ({
+      parameterName: item.name,
+      parameters: item.parameters,
+    }));
+
     const payload = {
       version: registryFlowVerion?.version,
       flowId: registryFlowVerion?.flowId,
@@ -558,8 +563,10 @@ const Summary = () => {
         x: XcordUpdated || registryDetailsData.positions[0].x,
         y: YcordUpdated || registryDetailsData.positions[0].y,
       },
-      variablesData: variblesReduxData,
-      parameterData: paramterDeployArray,
+      variablesData: isEmpty(variblesReduxData)
+        ? registryDetailsData?.variablesData
+        : variblesReduxData,
+      parameterData: updatedData,
     };
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
