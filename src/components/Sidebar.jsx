@@ -29,31 +29,31 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: ${props => props.theme.colors.lighter};
-  position: relative; 
+  position: relative;
   width: ${props => props.theme.sidebar};
-  .logo-small{
-      display: none
+  .logo-small {
+    display: none;
   }
-  &.toggleSidebar{ 
-    .sidebar-navigation{
-      li{
-        padding: 1rem 23px!important;
+  &.toggleSidebar {
+    .sidebar-navigation {
+      li {
+        padding: 1rem 23px !important;
       }
     }
-    .version-content{
+    .version-content {
       text-align: center;
       display: block;
     }
-    @media (min-width: 992px) { 
-      max-width: 70px; 
-      .logo-large{
+    @media (min-width: 992px) {
+      max-width: 70px;
+      .logo-large {
         display: none;
       }
-      .logo-small{
-        display: block
+      .logo-small {
+        display: block;
       }
-      .nav-text{
-        display: none
+      .nav-text {
+        display: none;
       }
     }
   }
@@ -118,7 +118,7 @@ export const Item = styled.li`
   background-color: ${({ theme, active }) =>
     active ? theme.colors.primaryFocus : 'transparent'};
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  // transition: all 0.3s ease-in-out;
   gap: 20px;
 
   ${props =>
@@ -235,7 +235,12 @@ export const Sidebar = ({
     <Container
       className={`${isOpenSidebar ? 'menuOpen' : ''} ${collapsed ? 'toggleSidebar' : ''}`}
     >
-      <button className="btn btn-hamburger d-lg-none" onClick={() => handleOpenSidebar()}><img alt="menu" src="/img/Frame.png" /></button>
+      <button
+        className="btn btn-hamburger d-lg-none"
+        onClick={() => handleOpenSidebar()}
+      >
+        <img alt="menu" src="/img/Frame.png" />
+      </button>
       {/* <button>
         <DfmCollapsedIcon />
       </button> */}
@@ -246,7 +251,7 @@ export const Sidebar = ({
         <CollapseSidebarIcon />
       </button>
       {getImage()}
-      <List className='sidebar-navigation'>
+      <List className="sidebar-navigation">
         {ROUTES_MENU.filter(getFiltered).map(item => {
           const active = item.path === route;
           return (
@@ -259,7 +264,7 @@ export const Sidebar = ({
               <item.icon
                 color={active ? theme.colors.white : theme.colors.darker}
               />
-              <span className='nav-text'>{item.name}</span>
+              <span className="nav-text">{item.name}</span>
             </Item>
           );
         })}
@@ -267,7 +272,7 @@ export const Sidebar = ({
 
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
-        <span className='version-content'>Version 1.0.0</span>
+        <span className="version-content">Version 1.0.0</span>
       </KDFMVersion>
     </Container>
   );
