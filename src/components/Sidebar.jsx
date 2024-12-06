@@ -2,7 +2,11 @@ import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { KsolvesDataFlowIcon } from '../assets';
+import {
+  CollapseSidebarIcon,
+  // DfmCollapsedIcon,
+  KsolvesDataFlowIcon,
+} from '../assets';
 // import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 // import { KDFM } from '../constants';
 import { useLocation } from 'react-router-dom';
@@ -25,18 +29,36 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: ${props => props.theme.colors.lighter};
-  button {
-    background-color: transparent;
-    border: none;
-    padding: 0 10px;
-    display: none;
-    top: 22px;
+  position: relative;
+
+  .btn-toggle {
+    position: absolute;
+    background: #fff !important;
+    border: 1px solid #e9e0e0;
+    width: 30px;
+    height: 30px;
+    padding: 0px;
+    right: -10px;
+    z-index: 20;
+    &:hover {
+      background: #f5f7fa !important;
+    }
   }
-  left: -281px;
+  .btn-hamburger {
+    background: #fff !important;
+    border: 1px solid #e9e0e0;
+    width: 30px;
+    height: 30px;
+    padding: 0px;
+    &:hover {
+      background: #f5f7fa !important;
+    }
+  }
   @media (max-width: 992px) {
     position: fixed;
     transition: 0.3s;
     z-index: 99;
+    left: -281px;
     &.menuOpen {
       left: 0px;
     }
@@ -114,7 +136,12 @@ const StyleButton = styled.div`
 
 const LOGO_HEIGHT = 80;
 
-export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
+export const Sidebar = ({
+  handleOpenSidebar,
+  isOpenSidebar,
+  toggleCollapse,
+  collapsed,
+}) => {
   const dispatch = useDispatch();
   const { pathname } = useLocation();
   const route = useSelector(AuthenticationSelectors.getRoute);
@@ -180,9 +207,20 @@ export const Sidebar = ({ handleOpenSidebar, isOpenSidebar }) => {
   };
 
   return (
-    <Container className={isOpenSidebar && 'menuOpen'}>
+    <Container
+      className={`${isOpenSidebar ? 'menuOpen' : ''} ${collapsed ? 'toggleSidebar' : ''}`}
+    >
       <button onClick={() => handleOpenSidebar()}>
         <img alt="menu" src="/img/Frame.png" />
+      </button>
+      {/* <button>
+        <DfmCollapsedIcon />
+      </button> */}
+      <button
+        className="btn btn-toggle d-none d-lg-block"
+        onClick={toggleCollapse}
+      >
+        <CollapseSidebarIcon />
       </button>
       {getImage()}
       <List>
@@ -217,4 +255,6 @@ Sidebar.propTypes = {
   handleRoute: PropTypes.func,
   handleOpenSidebar: PropTypes.func,
   isOpenSidebar: PropTypes.bool,
+  toggleCollapse: PropTypes.func,
+  collapsed: PropTypes.bool,
 };

@@ -38,6 +38,7 @@ const Container = styled.header`
   justify-content: space-between;
   background-color: ${props => props.theme.colors.white};
   border-bottom: 1px solid ${props => props.theme.colors.border};
+  border-top-left-radius: 30px;
   @media (max-width: 992px) {
     padding-left: 50px;
     .title {

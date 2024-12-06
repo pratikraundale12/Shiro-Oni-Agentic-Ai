@@ -105,3 +105,5 @@ export * from './canvasYIcon';
 export * from './BookIcon';
 export * from './FlashIcon';
 export * from './FlashCutIcon';
+export * from './CollapseSidebarIcon';
+export * from './DfmCollapsedIcon';

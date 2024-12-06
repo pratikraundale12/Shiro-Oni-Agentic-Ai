@@ -51,6 +51,7 @@ const AuthGuard = () => {
   );
 
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const settingsData = useSelector(SettingsSelectors.getSettings);
 
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(
@@ -90,13 +91,19 @@ const AuthGuard = () => {
     setHasAcceptedTerms(e.target.checked);
   };
 
+  const toggleCollapse = () => {
+    setCollapsed(prevState => !prevState);
+  };
+
   return (
     <Container>
       <Sidebar
         handleOpenSidebar={handleOpenSidebar}
         isOpenSidebar={isOpenSidebar}
+        toggleCollapse={toggleCollapse}
+        collapsed={collapsed}
       />
-      <Content>
+      <Content className={collapsed && 'toggleMain'}>
         <Header isOpenSidebar={isOpenSidebar} />
         <Wrapper>
           <Outlet />
