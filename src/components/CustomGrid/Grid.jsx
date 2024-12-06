@@ -176,7 +176,9 @@ export const Grid = ({
 
   const prioritizedData = gridData.filter(item => item.version);
   const remainingData = gridData.filter(item => !item.version);
-  const sortedData = [...prioritizedData, ...remainingData];
+  const sortedData = [...prioritizedData, ...remainingData].filter(
+    item => !item.isProcessor
+  );
 
   const DATA = {
     nodes: isNamespace

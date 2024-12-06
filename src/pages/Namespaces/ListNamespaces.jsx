@@ -3,17 +3,21 @@ import { useDispatch } from 'react-redux';
 // import { Link } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { ActivityHistoryIcon, BookIcon, OpenEyeIcon } from '../../assets';
+import {
+  CalenderIcon2,
+  OpenEyeIcon,
+  SmallNotThunderIcon,
+  SquareBoxIcon,
+  TriangleExclamationMarkIcon,
+  TriangleIcons,
+} from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { DoubleButton } from '../../shared';
-import CopyToClipboard from '../../shared/CopyToClipboard';
 import { NamespacesActions } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
 import { useGlobalContext } from '../../utils';
-import AuditLog from './AuditLog';
-// import { logout } from '../../store/authentication';
+import { theme } from '../../styles';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -28,7 +32,7 @@ const StyledButton = styled.button`
   text-overflow: ellipsis;
   max-width: 220px;
   z-index: 3;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 400;
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
@@ -52,18 +56,23 @@ const FlowNameDiv = styled.div`
   }
 `;
 
-const Flex = styled.div`
+const StatusDiv = styled.div`
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  margin-right: 0.5rem;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 400;
+  background: none;
+  display: inline-block;
+  white-space: nowrap;
+  width: 28px;
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
-  const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
-  const [selectedRowId, setSelectedRowId] = useState(null);
   const { setState } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
@@ -95,17 +104,6 @@ export const ListNamespaces = () => {
   const handleScheduleClick = item => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
-  };
-
-  const handleControllerService = item => {
-    dispatch(NamespacesActions.getControllerServiceList());
-    history.push('process-group/controller');
-    dispatch(
-      NamespacesActions.setSelectedNamespace({
-        label: item.name,
-        value: item.id,
-      })
-    );
   };
 
   useEffect(() => {
@@ -148,34 +146,34 @@ export const ListNamespaces = () => {
           />
         </>
       ),
-      width: '16%',
+      width: '22%',
       sort: { sortKey: 'name' },
     },
-    {
-      label: KDFM.NAMESPACE_ID,
-      renderCell: item => (
-        <Flex>
-          <TextRender text={item.id} />
-          <span data-tooltip-id={`copy-board-namespace-list`}>
-            <CopyToClipboard copyItem={item.id} />
-          </span>
+    // {
+    //   label: KDFM.NAMESPACE_ID,
+    //   renderCell: item => (
+    //     <Flex>
+    //       <TextRender text={item.id} />
+    //       <span data-tooltip-id={`copy-board-namespace-list`}>
+    //         <CopyToClipboard copyItem={item.id} />
+    //       </span>
 
-          <ReactTooltip
-            id={`copy-board-namespace-list`}
-            place="bottom"
-            effect="solid"
-            content={'Copy group Id'}
-            style={{
-              width: '125px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-              zIndex: 10000,
-            }}
-          />
-        </Flex>
-      ),
-      width: '25%',
-    },
+    //       <ReactTooltip
+    //         id={`copy-board-namespace-list`}
+    //         place="bottom"
+    //         effect="solid"
+    //         content={'Copy group Id'}
+    //         style={{
+    //           width: '125px',
+    //           whiteSpace: 'normal',
+    //           wordWrap: 'break-word',
+    //           zIndex: 10000,
+    //         }}
+    //       />
+    //     </Flex>
+    //   ),
+    //   width: '25%',
+    // },
     {
       label: KDFM.FLOW_NAME,
       renderCell: item => (
@@ -224,38 +222,64 @@ export const ListNamespaces = () => {
       width: '10%',
     },
     {
+      label: KDFM.STATUS,
+      renderCell: item => {
+        return (
+          <div className="d-flex align-items-center gap-1">
+            <StatusDiv>
+              <TriangleIcons
+                width={13}
+                height={16}
+                color={
+                  item?.runningCount
+                    ? theme.colors.secondaryActive
+                    : theme.colors.disabled
+                }
+              />
+              <span className="me-1">{item?.runningCount}</span>
+            </StatusDiv>{' '}
+            <StatusDiv>
+              <SquareBoxIcon
+                width={15}
+                height={15}
+                color={
+                  item?.stoppedCount
+                    ? theme.colors.primaryDisabled
+                    : theme.colors.disabled
+                }
+              />
+              <span>{item?.stoppedCount}</span>
+            </StatusDiv>
+            <StatusDiv>
+              <TriangleExclamationMarkIcon
+                color={
+                  item?.stoppedCount
+                    ? theme.colors.caution
+                    : theme.colors.disabled
+                }
+              />
+              <span>{item?.invalidCount}</span>
+            </StatusDiv>
+            <StatusDiv>
+              <SmallNotThunderIcon
+                color={
+                  item?.disabledCount
+                    ? theme.colors.black
+                    : theme.colors.disabled
+                }
+              />
+              <span>{item?.disabledCount}</span>
+            </StatusDiv>
+          </div>
+        );
+      },
+      width: '18%',
+    },
+
+    {
       label: KDFM.ACTIONS,
       renderCell: item => (
-        <div className="d-flex gap-2">
-          <button
-            onClick={() => {
-              setIsAuditLogOpen(true);
-              setSelectedRowId(item?.id);
-              dispatch(NamespacesActions.setSourceNamespaceId(item.id));
-            }}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-            }}
-            aria-label={KDFM.OPEN_AUDIT_LOG}
-            data-tooltip-id={`tooltip-audit-log1`}
-          >
-            <IconButton>
-              <ActivityHistoryIcon width={14} height={14} />
-            </IconButton>
-          </button>
-          <ReactTooltip
-            id={`tooltip-audit-log1`}
-            place="left"
-            content={'Audit Logs'}
-            style={{
-              width: '105px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
+        <div className="d-flex align-self-end gap-2">
           <button
             onClick={() => history.push(`/process-group/${item.id}`)}
             style={{
@@ -281,41 +305,41 @@ export const ListNamespaces = () => {
             }}
           />
           <button
-            onClick={() => handleControllerService(item)}
+            onClick={() => handleScheduleClick(item)}
             style={{
               background: 'none',
               border: 'none',
               padding: 0,
               cursor: 'pointer',
             }}
-            data-tooltip-id={`tooltip-controller-service`}
+            data-tooltip-id={`tooltip-schedule-deployment`}
           >
             <IconButton>
-              <BookIcon color="grey" />
+              <CalenderIcon2 width={14} height={14} color="grey" />
             </IconButton>
           </button>
           <ReactTooltip
-            id={`tooltip-controller-service`}
+            id={`tooltip-schedule-deployment`}
             place="right"
-            content={'Controller Service'}
+            content={'Schedule Deployment'}
             style={{
-              width: '150px',
+              width: '120px',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}
           />
-          <DoubleButton
-            disable={
-              !item.flowId ||
-              !item.version ||
-              item.flowId === KDFM.NA ||
-              item.version === KDFM.NA
-            }
-            item={item}
-            handleLeftClick={handleSelect}
-            handleRightClick={handleScheduleClick}
-            handleControllerService={handleControllerService}
-          />
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => handleSelect(item)}
+            style={{
+              backgroundColor: theme.colors.primary,
+              borderColor: theme.colors.primary,
+              borderRight: '1px solid #fff',
+            }}
+          >
+            {KDFM.UPGRADE}
+          </button>
         </div>
       ),
     },
@@ -330,7 +354,7 @@ export const ListNamespaces = () => {
       })
     );
 
-    history.push('/process-group/deploy', {
+    history.push('/process-group/upgrade', {
       state: {
         id: item.id,
       },
@@ -352,15 +376,6 @@ export const ListNamespaces = () => {
         setCurrentPage={setCurrentPage}
         // handleIconClick={handleIconClick}
       />
-      {/* <Deploy /> */}
-      {isAuditLogOpen && (
-        <AuditLog
-          key={selectedRowId}
-          rowId={selectedRowId}
-          isOpen={isAuditLogOpen}
-          closePopup={() => setIsAuditLogOpen(false)}
-        />
-      )}
     </>
   );
 };

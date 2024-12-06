@@ -288,3 +288,7 @@ Sidebar.propTypes = {
   toggleCollapse: PropTypes.func,
   collapsed: PropTypes.bool,
 };
+Item.propTypes = {
+  active: PropTypes.bool,
+  path: PropTypes.string,
+};
