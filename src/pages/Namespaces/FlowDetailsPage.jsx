@@ -135,23 +135,23 @@ const ColXlTwo = styled.div`
     }
   }
 `;
-const ColXlSix = styled.div`
-  max-width: 100%;
-  padding-right: calc(1.5rem * 0.5);
-  padding-left: calc(1.5rem * 0.5);
-  margin-top: 0;
-  &.col-6 {
-    flex: 0 0 auto;
-    width: 50%;
-  }
+// const ColXlSix = styled.div`
+//   max-width: 100%;
+//   padding-right: calc(1.5rem * 0.5);
+//   padding-left: calc(1.5rem * 0.5);
+//   margin-top: 0;
+//   &.col-6 {
+//     flex: 0 0 auto;
+//     width: 50%;
+//   }
 
-  @media screen and (min-width: 1200px) {
-    &.col-xl-5 {
-      flex: 0 0 auto;
-      width: 41.66666667%;
-    }
-  }
-`;
+//   @media screen and (min-width: 1200px) {
+//     &.col-xl-5 {
+//       flex: 0 0 auto;
+//       width: 41.66666667%;
+//     }
+//   }
+// `;
 const BreadcrumbContainer = styled.div`
   font-size: 12px;
   font-weight: 700;
@@ -296,7 +296,7 @@ const FlowDetailsPage = () => {
                   />
                 </ColXlFive>
                 <>
-                  <ColXlTwo className="col-xl-2 col-6">
+                  <ColXlTwo className="col-xl-6 col-6">
                     <InputField
                       name="currentVersion"
                       type="text"
@@ -307,16 +307,16 @@ const FlowDetailsPage = () => {
                       disabled
                     />
                   </ColXlTwo>
-                  <ColXlSix className="col-xl-5 col-6">
-                    {/* <InputField
+                  {/* <ColXlSix className="col-xl-5 col-6">
+                    <InputField
                       name="currentState"
                       type="text"
                       label={KDFM.CURRENT_STATE}
                       value={'Version is Up to Date'}
                       icon={getIconForState('UP_TO_DATE')}
                       disabled
-                    /> */}
-                  </ColXlSix>
+                    />
+                  </ColXlSix> */}
                 </>
               </RowConfig>
             </div>
