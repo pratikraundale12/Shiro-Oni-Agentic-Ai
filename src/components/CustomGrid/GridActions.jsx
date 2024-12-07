@@ -35,6 +35,7 @@ import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { GridSelectors } from '../../store/grid';
 
 const Flex = styled.div`
   display: flex;
@@ -189,7 +190,7 @@ const ScheduleButton = styled.div`
   border: 1px solid var(--Border, rgba(221, 228, 240, 1));
   opacity: 0px;
   color: rgba(75, 85, 100, 1);
-  cursor: pointer;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   background: rgba(245, 247, 250, 1);
 `;
 
@@ -220,6 +221,13 @@ const GoBackButton = () => {
     );
   }
   return null;
+};
+
+const checkIfPropertyExists = (data, key) => {
+  if (Object.prototype.hasOwnProperty.call(data, key)) {
+    return data[key];
+  }
+  return false;
 };
 
 export const GridActions = ({
@@ -289,6 +297,9 @@ export const GridActions = ({
   };
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
+  );
+  const gridPermissions = useSelector(state =>
+    GridSelectors.getGridDataPermissions(state, module)
   );
   const isChildNamespace =
     selectedNamespace && selectedNamespace?.label !== KDFM.NIFI_FLOW;
@@ -410,11 +421,17 @@ export const GridActions = ({
             <ScheduleButton
               className="d-flex items-center gap-3"
               onClick={() => {}}
+              disabled={!checkIfPropertyExists(gridPermissions, 'canRead')}
             >
               <ScheduleDeploymentIcon height={19} width={19} />
               {KDFM.SCHEDULE_DEPLOYMENT}
             </ScheduleButton>
-            <Button size="sm" style={{ width: '84px' }} onClick={handleClick}>
+            <Button
+              disabled={!checkIfPropertyExists(gridPermissions, 'canWrite')}
+              size="sm"
+              style={{ width: '84px' }}
+              onClick={handleClick}
+            >
               {KDFM.DEPLOY}
             </Button>
             <RefreshIocn
