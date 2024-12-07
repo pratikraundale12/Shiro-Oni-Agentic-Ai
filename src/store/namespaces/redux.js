@@ -145,6 +145,12 @@ export const NamespacesActions = {
   deployNamespaceByRegistryFlow: createAction(
     `${prefix}deployNamespaceByRegistryFlow`
   ),
+  setRegistryDeployResponseData: createAction(
+    `${prefix}setRegistryDeployResponseData`
+  ),
+  setUpdatedRegistryRespones: createAction(
+    `${prefix}setUpdatedRegistryRespones`
+  ),
 };
 // registryFlowXCord:null,
 //registryFlowYCord:null
@@ -220,6 +226,8 @@ export const NAMESPACES_INITIAL_STATE = {
   deployRegistryFlow: false,
   registryDeployVariable: [],
   registryDeployParameterContext: [],
+  registryDeployResponseData: {},
+  updatedRegistryRespones: {},
   // parameterEditParent: false,
 };
 
@@ -289,8 +297,11 @@ export const NamespacesSelectors = {
   getRegistryDeployVariable: state => state.namespaces.registryDeployVariable,
   getRegistryDeployParameterContext: state =>
     state.namespaces.registryDeployParameterContext,
+  getRegistryDeployResponseData: state =>
+    state.namespaces.registryDeployResponseData,
+  getUpdatedRegistryRespones: state => state.namespaces.updatedRegistryRespones,
 };
-
+//
 /* ------------- REDUCERS ------------------- */
 const setSelectedCluster = (state, { payload }) => {
   return {
@@ -654,6 +665,20 @@ const setRegistryDeployParameterContext = (state, { payload }) => {
   };
 };
 
+const setRegistryDeployResponseData = (state, { payload }) => {
+  return {
+    ...state,
+    registryDeployResponseData: payload,
+  };
+};
+
+const setUpdatedRegistryRespones = (state, { payload }) => {
+  return {
+    ...state,
+    updatedRegistryRespones: payload,
+  };
+};
+
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -785,6 +810,14 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setRegistryDeployParameterContext,
         setRegistryDeployParameterContext
+      )
+      .addCase(
+        NamespacesActions.setRegistryDeployResponseData,
+        setRegistryDeployResponseData
+      )
+      .addCase(
+        NamespacesActions.setUpdatedRegistryRespones,
+        setUpdatedRegistryRespones
       );
   }
 );

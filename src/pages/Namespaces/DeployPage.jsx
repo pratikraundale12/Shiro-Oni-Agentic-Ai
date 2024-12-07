@@ -139,7 +139,7 @@ function DeployPage() {
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
 
   const formData = useSelector(NamespacesSelectors.getDeployFormData);
-
+  const [keepParameter, setKeepParameter] = useState(false);
   const bucketListOptions = bucketListData?.bucketList?.map(item => ({
     label: item?.name,
     value: item?.id,
@@ -306,6 +306,7 @@ function DeployPage() {
           bucketId: selectedValuebucketId,
           flow_name: selectedValueFlowId,
           selectedFlowName: flowname[0].label,
+          keepParameters: keepParameter,
         })
       );
       dispatch(NamespacesActions.fetchRegistryFlowDetails(versionSelected));
@@ -392,7 +393,8 @@ function DeployPage() {
                     <CheckboxField
                       name="check"
                       label="Keep existing Parameter Contexts"
-                      checked
+                      checked={keepParameter}
+                      onChange={e => setKeepParameter(e.target.checked)}
                     />
                   </div>
                 </div>

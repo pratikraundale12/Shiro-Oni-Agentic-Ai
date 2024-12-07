@@ -41,12 +41,6 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
   const parameterReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployParameterContext
   );
-  const paramterDeployArray = [
-    ...(parameterReduxData?.inherited || []),
-    ...(parameterReduxData?.parent || []),
-  ];
-  console.log(parameterReduxData, 'parameterReduxData');
-  console.log(paramterDeployArray, 'paramterDeployArray');
 
   useEffect(() => {
     if (isEmpty(parameterReduxData)) {
@@ -181,7 +175,7 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
               handleAddPc(item?.name);
             }}
             key={item?.name}
-            title={`Inherited : ${item?.name}`}
+            title={`${item?.name}`}
             isTableOpen={openIndex === item?.name}
             toggleCollapsible={() => handleToggle(item?.name)}
           >
@@ -195,7 +189,7 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
               handleAddPc(item?.name);
             }}
             key={item?.name}
-            title={`Parent : ${item?.name}`}
+            title={`${item?.name}`}
             isTableOpen={openIndex === item?.name}
             toggleCollapsible={() => handleToggle(item?.name)}
           >

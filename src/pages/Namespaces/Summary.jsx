@@ -553,7 +553,6 @@ const Summary = () => {
       parameterName: item.name,
       parameters: item.parameters,
     }));
-
     const payload = {
       version: registryFlowVerion?.version,
       flowId: registryFlowVerion?.flowId,
@@ -567,6 +566,7 @@ const Summary = () => {
         ? registryDetailsData?.variablesData
         : variblesReduxData,
       parameterData: updatedData,
+      keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
     };
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
