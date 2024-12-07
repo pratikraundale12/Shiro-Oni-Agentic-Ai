@@ -247,7 +247,7 @@ const FlowDetailsPage = () => {
   );
   //
 
-    return (
+  return (
     <div>
       <ToastContainer
         theme="colored"
