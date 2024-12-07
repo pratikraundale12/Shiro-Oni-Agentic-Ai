@@ -14,6 +14,7 @@ import {
 import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { NamespacesSelectors } from '../../store';
+import { history } from '../../helpers/history';
 
 const ModalBody = styled.div`
   position: relative;
@@ -161,13 +162,11 @@ const ActiveButtonDiv = styled.div`
 const NamespaceDeploy = ({
   isOpen,
   closePopup,
-  getParamerterContext,
-  handleTertiaryButton,
   handleFlowConfirmPopup = () => {},
   activeButtonPopup,
 }) => {
   const deployOrUpgradeDetails = useSelector(
-    NamespacesSelectors.getDeployOrUpgradeDetails
+    NamespacesSelectors.getRegistryDeployResponseData
   );
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
@@ -176,12 +175,16 @@ const NamespaceDeploy = ({
   );
 
   const handleClick = () => {
-    const updatedUrl = deployOrUpgradeDetails.nifiUrl.endsWith('/nifi')
+    const updatedUrl = deployOrUpgradeDetails?.nifiUrl?.endsWith('/nifi')
       ? deployOrUpgradeDetails.nifiUrl
       : `${deployOrUpgradeDetails.nifiUrl}/nifi`;
     window.open(updatedUrl, '_blank');
   };
 
+  const handleSecondary = () => {
+    history.push(`/process-group/${deployOrUpgradeDetails?.id}`);
+    console.log(deployOrUpgradeDetails, 'deployOrUpgradeDetails');
+  };
   return (
     <>
       <Modal
@@ -195,22 +198,12 @@ const NamespaceDeploy = ({
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
-        onSecondarySubmit={getParamerterContext}
-        secondaryButtonText="Parameter Context"
+        onSecondarySubmit={handleSecondary}
+        secondaryButtonText="Process Group Details"
         primaryButtonText="Go to Nifi Instance"
         contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
         onSubmit={handleClick}
         footerAlign="start"
-        secondaryButtonProps={{
-          disabled: !deployOrUpgradeDetails?.parameterContextId,
-        }}
-        tertiaryButton={true}
-        thirdVarint={true}
-        tertiaryButtonConfig={{
-          tertiaryButtonTest: 'Variables',
-          tertiaryButtonSubmit: handleTertiaryButton,
-          tertiaryButtonDisable: false,
-        }}
       >
         <ModalBody className="modal-body">
           <div className="d-flex justify-content-center align-items-center">
@@ -401,7 +394,6 @@ NamespaceDeploy.propTypes = {
     name: PropTypes.string,
     id: PropTypes.string,
   }),
-  handleTertiaryButton: PropTypes.func,
   selectedVersion: PropTypes.string,
   selectedClusterName: PropTypes.string,
   selectedClusterId: PropTypes.string,

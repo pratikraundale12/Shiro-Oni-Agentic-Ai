@@ -142,38 +142,24 @@ export function* deployCluster(api) {
   }
 }
 export function* updateNamespaceStatus(api, { payload }) {
-  const selectedDestCluster = yield select(
-    NamespacesSelectors.getSelectedDestCluster
+  const registryDeployNamepsaceId = yield select(
+    NamespacesSelectors.getRegistryDeployResponseData
   );
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const deployOrUpgradeDetails = yield select(
-    NamespacesSelectors.getDeployOrUpgradeDetails
-  );
-  const checkDestCluster = yield select(
-    NamespacesSelectors.getCheckDestCluster
-  );
-  const srcNamespaceId = yield select(
-    NamespacesSelectors.getSelectedSourceNamespace
-  );
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const destClusterToken = clusters?.find(
-    cluster => cluster.id === selectedDestCluster?.value
-  );
   const srcClusterToken = clusters?.find(
     cluster => cluster.id === selectedCluster?.value
   );
-  api.headers['x-cluster-id'] = destClusterToken?.id || selectedCluster?.value;
-  api.headers['x-cluster-token'] =
-    destClusterToken?.token || srcClusterToken?.token;
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  api.headers['x-cluster-token'] = srcClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'updateNamespaceStatus',
     loadingSection: 'updateNamespaceStatus',
     apiMethod: api.updateNamespaceStatus,
     apiParams: [
       {
-        clusterId: selectedDestCluster?.value || selectedCluster?.value,
-        namespaceId:
-          deployOrUpgradeDetails.id || checkDestCluster?.id || srcNamespaceId,
+        clusterId: selectedCluster?.value,
+        namespaceId: registryDeployNamepsaceId?.id,
         state: payload,
       },
     ],
@@ -187,6 +173,16 @@ export function* updateNamespaceStatus(api, { payload }) {
       disabledCount: response.data.status.disabledCount,
       parameterContextId: response.data.status.parameterContextId,
     };
+
+    const responseData = {
+      id: response.data.status?.id,
+      nifiUrl: response.data.status?.id.nifiUrl,
+      runningCount: response.data.status?.runningCount,
+      stoppedCount: response.data.status?.stoppedCount,
+      invalidCount: response.data.status?.invalidCount,
+      disabledCount: response.data.status?.disabledCount,
+    };
+    yield put(NamespacesActions.setRegistryDeployResponseData(responseData));
     yield put(NamespacesActions.deployClusterSuccess(data));
   }
   if (!response.ok) {
@@ -1139,6 +1135,7 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
   });
   if (response.ok) {
     yield put(NamespacesActions.setDeployedModal(true));
+    yield put(NamespacesActions.setRegistryDeployResponseData(response?.data));
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
