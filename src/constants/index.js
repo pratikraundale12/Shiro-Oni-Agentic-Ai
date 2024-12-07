@@ -174,6 +174,7 @@ export const KDFM = {
   ENTER_GROUP_EMAIL: 'Enter your Group Email',
   EMAIL_REMINDER: 'Email Reminder Time',
   REMINDER_EMPHASISED_TEXT: 'before schedule deployment time',
+  CONFIGURE: 'Configure',
 
   // License constants
   TRIAL: 'Trial',
