@@ -13,6 +13,8 @@ export const GRID_INITIAL_STATE = {};
 
 /* ------------- SELECTORS ------------------ */
 export const GridSelectors = {
+  getGridDataPermissions: (state, module) =>
+    state.grid?.[module]?.permissions || {},
   getGridData: (state, module) => state.grid?.[module]?.data || [],
   getGridNodes: (state, module) => state.grid?.[module] || { nodes: [] },
   getGridCount: (state, module) => state.grid?.[module]?.count || 0,
