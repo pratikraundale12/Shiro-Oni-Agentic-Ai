@@ -5,6 +5,7 @@ const prefix = '@@KDFM-NAMESPACES/';
 /* ------------- ACTIONS ------------------ */
 export const NamespacesActions = {
   setSelectedCluster: createAction(`${prefix}setSelectedCluster`),
+  setDeployByRegistryFlow: createAction(`${prefix}setDeployByRegistryFlow`),
   setSelectedNamespace: createAction(`${prefix}setSelectedNamespace`),
   setFlowPath: createAction(`${prefix}setFlowPath`),
   fetchNamespaces: createAction(`${prefix}fetchNamespaces`),
@@ -164,6 +165,7 @@ export const NAMESPACES_INITIAL_STATE = {
     breadcrumb: [],
     data: [],
   },
+  deployByRegistryFlow: true,
   selectedDestCluster: null,
   selectedDestNamespace: null,
   destClusterNamespaces: {
@@ -245,6 +247,7 @@ export const NamespacesSelectors = {
   getDeployOrUpgradeDetails: state => state.namespaces.deployOrUpgradeDetails,
   getParameterDetails: state => state.namespaces.parameterDetails,
   getDeployedModal: state => state.namespaces.isDeployedModal,
+  getDeployRegistryFlow: state => state.namespaces.deployByRegistryFlow,
   getVariableList: state => state.namespaces.variableList,
   getNamespaceAudit: state => state.namespaces.namespaceAudit,
   getVariableContextItem: state => state.namespaces.variableContextItem,
@@ -307,6 +310,12 @@ const setSelectedCluster = (state, { payload }) => {
   return {
     ...state,
     selectedCluster: payload,
+  };
+};
+const setDeployByRegistryFlow = (state, { payload }) => {
+  return {
+    ...state,
+    deployByRegistryFlow: payload,
   };
 };
 const setSelectedNamespace = (state, { payload }) => {
@@ -686,6 +695,10 @@ export const namespacesReducer = createReducer(
   builder => {
     builder
       .addCase(NamespacesActions.setSelectedCluster, setSelectedCluster)
+      .addCase(
+        NamespacesActions.setDeployByRegistryFlow,
+        setDeployByRegistryFlow
+      )
       .addCase(NamespacesActions.setSelectedNamespace, setSelectedNamespace)
       .addCase(NamespacesActions.setFlowPath, setFlowPath)
       .addCase(NamespacesActions.fetchNamespacesSuccess, fetchNamespacesSuccess)

@@ -7,6 +7,7 @@ import {
   CanvasYIcon,
   LinkIcon,
   QRIcons,
+  StateIcon,
   // UpsideSquareIcon,
   TodoIcon,
 } from '../../assets';
@@ -137,23 +138,23 @@ const ColXlTwo = styled.div`
     }
   }
 `;
-// const ColXlSix = styled.div`
-//   max-width: 100%;
-//   padding-right: calc(1.5rem * 0.5);
-//   padding-left: calc(1.5rem * 0.5);
-//   margin-top: 0;
-//   &.col-6 {
-//     flex: 0 0 auto;
-//     width: 50%;
-//   }
+const ColXlSix = styled.div`
+  max-width: 100%;
+  padding-right: calc(1.5rem * 0.5);
+  padding-left: calc(1.5rem * 0.5);
+  margin-top: 0;
+  &.col-6 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
 
-//   @media screen and (min-width: 1200px) {
-//     &.col-xl-5 {
-//       flex: 0 0 auto;
-//       width: 41.66666667%;
-//     }
-//   }
-// `;
+  @media screen and (min-width: 1200px) {
+    &.col-xl-5 {
+      flex: 0 0 auto;
+      width: 41.66666667%;
+    }
+  }
+`;
 const BreadcrumbContainer = styled.div`
   font-size: 12px;
   font-weight: 700;
@@ -167,6 +168,10 @@ const FlowDetailsPage = () => {
   const dispatch = useDispatch();
   const registryAllDetails = useSelector(
     NamespacesSelectors.getRegistryAllDetails
+  );
+  const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
+  const selectedNameSpace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
   );
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
   const registryData = useSelector(state =>
@@ -242,7 +247,7 @@ const FlowDetailsPage = () => {
   );
   //
 
-  return (
+    return (
     <div>
       <ToastContainer
         theme="colored"
@@ -276,7 +281,11 @@ const FlowDetailsPage = () => {
                     name="namespace"
                     type="text"
                     label={'Selected Flow Name'}
-                    value={formDataRegistry?.selectedFlowName}
+                    value={
+                      !isUpgrade
+                        ? selectedNameSpace.label
+                        : formDataRegistry?.selectedFlowName
+                    }
                     icon={<QRIcons />}
                     disabled
                   />
@@ -287,44 +296,62 @@ const FlowDetailsPage = () => {
               <RowConfig className="row">
                 <ColXlFive className="col-xl-5 col-12">
                   <InputField
+                    disabled={!isUpgrade}
                     name="x"
                     type="text"
                     label={KDFM.CANVAS_POSITION}
-                    value={storedXcord || xStateCoordinate}
+                    value={
+                      !isUpgrade
+                        ? selectedNameSpace.position.x
+                        : storedXcord || xStateCoordinate
+                    }
                     icon={<CanvasXIcon />}
                     onChange={e => handleXCoordinateChangeInput(e)}
                   />
                   <InputField
+                    disabled={!isUpgrade}
                     name="y"
                     type="text"
                     label=""
-                    value={storedYcord || yStateCoordinate}
+                    value={
+                      !isUpgrade
+                        ? selectedNameSpace.position.y
+                        : storedYcord || yStateCoordinate
+                    }
                     icon={<CanvasYIcon />}
                     onChange={e => handleYCoordinateChangeInput(e)}
                   />
                 </ColXlFive>
                 <>
-                  <ColXlTwo className="col-xl-6 col-6">
+                  <ColXlTwo
+                    className={`${isUpgrade ? 'col-xl-6 col-6' : 'col-xl-3 col-3'}`}
+                  >
                     <InputField
                       name="currentVersion"
                       type="text"
                       label={KDFM.CURRENT_VERSION}
                       placeholder="N/A"
-                      value={versionSelected?.version}
+                      value={
+                        !isUpgrade
+                          ? selectedNameSpace.version
+                          : versionSelected?.version || 'N/A'
+                      }
                       icon={<QRIcons />}
                       disabled
                     />
                   </ColXlTwo>
-                  {/* <ColXlSix className="col-xl-5 col-6">
-                    <InputField
-                      name="currentState"
-                      type="text"
-                      label={KDFM.CURRENT_STATE}
-                      value={'Version is Up to Date'}
-                      icon={getIconForState('UP_TO_DATE')}
-                      disabled
-                    />
-                  </ColXlSix> */}
+                  {!isUpgrade && (
+                    <ColXlSix className="col-xl-4 col-4">
+                      <InputField
+                        name="currentState"
+                        type="text"
+                        label={KDFM.CURRENT_STATE}
+                        value={selectedNameSpace.state || 'N/A'}
+                        icon={<StateIcon />}
+                        disabled
+                      />
+                    </ColXlSix>
+                  )}
                 </>
               </RowConfig>
             </div>
