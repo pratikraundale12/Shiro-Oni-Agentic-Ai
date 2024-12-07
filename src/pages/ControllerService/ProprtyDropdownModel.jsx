@@ -26,6 +26,7 @@ const PropertyDropdownModal = ({
   setListPropertTableData,
   setUpdatedData,
   updatedData,
+  isFromControllerServiceTab,
 }) => {
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
@@ -103,11 +104,19 @@ const PropertyDropdownModal = ({
   };
   useEffect(() => {
     if (selectedPropertyToEdit?.add && isModalOpen) {
-      dispatch(
-        NamespacesActions.getNewPropertyControllerService(
-          selectedPropertyToEdit
-        )
-      );
+      if (isFromControllerServiceTab) {
+        dispatch(
+          NamespacesActions.getNewPropertyControllerServiceUpdated(
+            selectedPropertyToEdit
+          )
+        );
+      } else {
+        dispatch(
+          NamespacesActions.getNewPropertyControllerService(
+            selectedPropertyToEdit
+          )
+        );
+      }
       setAddNewProperty(false);
     }
   }, [selectedPropertyToEdit?.add, isModalOpen]);

@@ -176,6 +176,10 @@ export const namespacesAPI = api => {
     api.get(
       `/controller-services/${clusterId}/service-type?type=${type}&group=${group}&artifact=${artifact}&version=${version}`
     );
+
+  const getNewPropertyControllerServiceUpdated = ({ clusterId, serviceName }) =>
+    api.get(`${clusterId}/controller-service-types?serviceName=${serviceName}`);
+
   const addControllerServicePropertyByDropdown = ({
     clusterId,
     payloadData,
@@ -257,6 +261,7 @@ export const namespacesAPI = api => {
     addControllerServiceRootLevel,
     addPropertyControllerService,
     getNewPropertyControllerService,
+    getNewPropertyControllerServiceUpdated,
     addControllerServicePropertyByDropdown,
     changeStatusControllerService,
     deleteControllerService,
