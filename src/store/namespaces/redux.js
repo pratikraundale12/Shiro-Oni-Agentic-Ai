@@ -122,6 +122,9 @@ export const NamespacesActions = {
     `${prefix}setChildLevelDeployProcessorData`
   ),
   setVariableListLoading: createAction(`${prefix}setVariableListLoading`),
+  setIsNewAddControllerServiceModal: createAction(
+    `${prefix}setIsNewAddControllerServiceModal`
+  ),
   fetchRegistryData: createAction(`${prefix}fetchRegistryData`),
   setBucketListDropDownData: createAction(`${prefix}setBucketListDropDownData`),
   fetchFlowNameList: createAction(`${prefix}fetchFlowNameList`),
@@ -199,6 +202,7 @@ export const NAMESPACES_INITIAL_STATE = {
   singleNamespaceData: {},
   rootControllerServiceNamespace: [],
   isAddControllerServiceModal: false,
+  isNewAddControllerServiceModal: false,
   addControllerServiceList: [],
   isControllerServicePropertyModel: false,
   isAddPropertyDropdownModalOpen: false,
@@ -256,6 +260,8 @@ export const NamespacesSelectors = {
     state.namespaces.rootControllerServiceNamespace,
   getIsAddControllerServiceMOdalOpen: state =>
     state.namespaces.isAddControllerServiceModal,
+  getIsNewAddControllerServiceMOdalOpen: state =>
+    state.namespaces.isNewAddControllerServiceModal,
   getAddControllerServiceList: state =>
     state.namespaces.addControllerServiceList,
   getControllerServicePropertyModel: state =>
@@ -501,6 +507,12 @@ const setIsAddControllerServiceModal = (state, { payload }) => {
     isAddControllerServiceModal: payload,
   };
 };
+const setIsNewAddControllerServiceModal = (state, { payload }) => {
+  return {
+    ...state,
+    isNewAddControllerServiceModal: payload,
+  };
+};
 const setAddControllerServiceList = (state, { payload }) => {
   return {
     ...state,
@@ -729,6 +741,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setIsAddControllerServiceModal,
         setIsAddControllerServiceModal
+      )
+      .addCase(
+        NamespacesActions.setIsNewAddControllerServiceModal,
+        setIsNewAddControllerServiceModal
       )
       .addCase(
         NamespacesActions.setAddControllerServiceList,
