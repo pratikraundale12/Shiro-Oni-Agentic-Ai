@@ -20,12 +20,12 @@ import {
   SelectField,
   UploadField,
   PasswordField,
+  SwitchButton,
 } from '../../shared';
 import { RolesSelectors } from '../../store';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
 const Wrapper = styled.div`
-  margin-top: 4px;
   height: 95%;
 `;
 const InputFields = styled.div`
@@ -45,7 +45,11 @@ const LabelSelect = styled.div`
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
 `;
-
+const InputFieldFlex = styled.div`
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+`;
 export const settingSchema = yup.object().shape({
   email: yup
     .string()
@@ -74,12 +78,19 @@ export const Setting = () => {
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
   const RoleList = useSelector(RolesSelectors.getRoles);
+  const [ldapAutoSync, setLdapAutoSync] = useState(false);
 
   const approverOptions = RoleList.map(role => ({
     label: role.name,
     value: role.role_id,
   }));
-
+  const Timeoptions = [
+    { label: '1 hour', value: 59 },
+    { label: '15 minutes', value: 15 },
+    { label: '30 minutes', value: 30 },
+    { label: '45 minutes', value: 45 },
+  ];
+  const selectedOptions = Number(watch('ldap_auto_sync_time_interval'));
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
@@ -98,7 +109,15 @@ export const Setting = () => {
       'approver_groups',
       JSON.stringify(data?.approver_groups || null)
     );
-
+    payload.append('ldap_auto_sync', ldapAutoSync);
+    if (ldapAutoSync) {
+      payload.append('ldap_auto_sync_time_interval', selectedOptions);
+    }
+    console.log('ldap_auto_sync:', ldapAutoSync);
+    console.log(
+      'ldap_auto_sync_time_interval:',
+      data?.ldap_auto_sync_time_interval
+    );
     try {
       dispatch(SettingsActions.createSettings(payload));
       dispatch(SettingsActions.fetchSettings());
@@ -130,6 +149,12 @@ export const Setting = () => {
         'refresh',
         settingData.refresh === 0 ? 'Off' : settingData?.refresh
       );
+      setLdapAutoSync(settingData?.ldap_auto_sync || false);
+      setValue(
+        'ldap_auto_sync_time_interval',
+        settingData?.ldap_auto_sync_time_interval
+      );
+
       setValue('email', settingData?.email);
       const logoElement = document.getElementById('logo');
       if (logoElement && settingData?.logo) {
@@ -155,6 +180,9 @@ export const Setting = () => {
         value.refresh !==
           (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
         value.email !== settingData?.email ||
+        value.ldap_auto_sync_time_interval !==
+          settingData?.ldap_auto_sync_time_interval ||
+        value.ldap_auto_sync !== settingData?.ldap_auto_sync ||
         value.approver_groups !== settingData?.approver_groups;
 
       setIsChanged(isModified);
@@ -162,6 +190,10 @@ export const Setting = () => {
 
     return () => subscription.unsubscribe();
   }, [watch, settingData]);
+
+  const handleLdapToggle = () => {
+    setLdapAutoSync(prevState => !prevState);
+  };
 
   function changeFavicon(newFaviconURL) {
     const favicon = document.getElementById('dynamic-favicon');
@@ -175,7 +207,8 @@ export const Setting = () => {
       document.head.appendChild(newFavicon);
     }
   }
-
+  const ldapAutoSyncTimeIntervalValue = watch('ldap_auto_sync_time_interval');
+  console.log('ldap_auto_sync_time_interval:', ldapAutoSyncTimeIntervalValue);
   return (
     <Wrapper>
       <form
@@ -186,8 +219,16 @@ export const Setting = () => {
         }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <InputFields className="row">
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+        <div className="d-flex justify-content-end me-4">
+          <SwitchButton
+            id="openModalInput"
+            name="AUTO SYNC"
+            checked={ldapAutoSync}
+            onChange={handleLdapToggle}
+          />
+        </div>
+        <InputFieldFlex className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
             <SelectField
               label="Refresh"
               name="refresh"
@@ -212,7 +253,7 @@ export const Setting = () => {
               placeholder="Select Cluster"
             />
           </div>
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
             <InputField
               name="email"
               register={register}
@@ -222,7 +263,32 @@ export const Setting = () => {
               errors={errors}
             />
           </div>
-        </InputFields>
+
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+            <SelectField
+              label="LDAP Auto Sync Time"
+              name="ldap_auto_sync_time_interval"
+              control={control}
+              icon={<QRIcons />}
+              errors={errors}
+              options={Timeoptions}
+              placeholder="Select LDAP Auto Sync Time"
+              value={Timeoptions.find(
+                option =>
+                  option.value ===
+                  (watch('ldap_auto_sync_time_interval') ||
+                    settingData?.ldap_auto_sync_time_interval)
+              )} // Watch the value or use settingData fallback
+              isDisabled={!ldapAutoSync}
+              onChange={selectedOption => {
+                const value = selectedOption?.value || null;
+                setValue('ldap_auto_sync_time_interval', value);
+                setIsChanged(true);
+              }}
+            />
+          </div>
+        </InputFieldFlex>
+
         <InputFields className="row">
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
             <UploadField
@@ -277,30 +343,33 @@ export const Setting = () => {
         <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-1 mb-2">
           <LabelSelect className="mb-3">Nifi Service Account Scope</LabelSelect>
         </div>
-        <InputFields className="row">
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
-            <InputField
-              name="username"
-              type="text"
-              label="Username"
-              placeholder="Enter your Username"
-              register={register}
-              errors={errors}
-              icon={<UserIcon />}
-            />
-          </div>
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
-            <PasswordField
-              name="password"
-              register={register}
-              errors={errors}
-              watch={watch}
-              label="Password"
-              disableToggle={true}
-              placeholder="Enter your Password"
-            />
-          </div>
-        </InputFields>
+        <div className="-flex justify-content-end me-4">
+          <InputFields className="row">
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+              <InputField
+                name="username"
+                type="text"
+                label="Username"
+                placeholder="Enter your Username"
+                register={register}
+                errors={errors}
+                icon={<UserIcon />}
+              />
+            </div>
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+              <PasswordField
+                name="password"
+                register={register}
+                errors={errors}
+                watch={watch}
+                label="Password"
+                disableToggle={true}
+                placeholder="Enter your Password"
+              />
+            </div>
+          </InputFields>
+        </div>
+
         <FlexWrapper>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Button type="submit" loading={loading} disabled={!isChanged}>

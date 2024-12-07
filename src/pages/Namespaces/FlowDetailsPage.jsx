@@ -16,10 +16,12 @@ import { Button, InputField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
+  LoadingSelectors,
   NamespacesActions,
   // NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { FullPageLoader } from '../../components';
 // import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
 // import RightIcon from '../../assets/Icons/RightIcon';
 
@@ -235,6 +237,10 @@ const FlowDetailsPage = () => {
   //       return null;
   //   }
   // };
+  const loadingregistry = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
+  );
+  //
 
   return (
     <div>
@@ -247,6 +253,8 @@ const FlowDetailsPage = () => {
         pauseOnHover
         draggable
       />
+      <FullPageLoader loading={loadingregistry} />
+
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>
