@@ -276,6 +276,7 @@ const Upgrade = () => {
   ];
 
   const handleClick = () => {
+    console.log('checkDestCluster');
     if (
       formData?.version === checkDestCluster?.version &&
       checkDestCluster?.mode === 'upgrade'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -51,9 +51,12 @@ const ControllerServiceTab = () => {
     NamespacesSelectors.getIsNewAddControllerServiceMOdalOpen
   );
 
-  const controllerServicesData =
-    registryAllDetails?.controllerServicesData?.externalControllerServices;
+  const [controllerServicesData, setControllerServicesData] = useState(
+    registryAllDetails?.controllerServicesData?.externalControllerServices
+  );
 
+  const [externalControllerServiceArray, setExternalControllerServiceArray] =
+    useState();
   const COLUMNS = [
     { label: 'Name', renderCell: item => item?.name, width: '21%' },
     { label: 'Type', renderCell: item => item?.typeValue, width: '20%' },
@@ -132,6 +135,21 @@ const ControllerServiceTab = () => {
     }
   };
 
+  const handleConfigureSubmit = data => {
+    const updatedData = controllerServicesData.map(service =>
+      service.identifier === selectedService.identifier
+        ? { ...service, controllerService: [data] }
+        : service
+    );
+    setControllerServicesData(updatedData);
+    const newExternalControllerServiceArray = updatedData.map(
+      service => service.controllerService
+    );
+    setExternalControllerServiceArray(newExternalControllerServiceArray);
+    setIsModalOpen(false);
+    setSelectedService(null);
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedService(null);
@@ -141,39 +159,47 @@ const ControllerServiceTab = () => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
 
-  const collapsibles = [
-    {
-      id: 1,
-      title: 'External Controller Service',
-      content: (
-        <Table
-          data={controllerServicesData}
-          columns={COLUMNS}
-          className={'variables-table'}
-        />
-      ),
-    },
-    // Dynamically add multiple child entries with logging
-    ...(registryAllDetails?.controllerServicesData?.localServices?.map(
-      (service, index) => {
-        // Log the current service data
-        console.log('Service Details:', service, index);
+  const [collapsibles, setCollapsibles] = useState([]);
 
-        // Return the collapsible object
-        return {
+  useEffect(() => {
+    const newCollapsibles = [
+      {
+        id: 1,
+        title: 'External Controller Service',
+        content: externalControllerServiceArray?.length ? (
+          <Table
+            data={externalControllerServiceArray[0]}
+            columns={COLUMNS_2}
+            className={'variables-table'}
+          />
+        ) : (
+          <Table
+            data={controllerServicesData}
+            columns={COLUMNS}
+            className={'variables-table'}
+          />
+        ),
+      },
+      ...(registryAllDetails?.controllerServicesData?.localServices?.map(
+        (service, index) => ({
           id: `child-${index + 3}`,
-          title: `${service?.processGroupName}`,
+          title: service?.processGroupName || 'Unnamed Group',
           content: (
             <Table
-              data={service?.controllerService} // Assuming this is the child data
+              data={service?.controllerService || []}
               columns={COLUMNS_2}
               className={'variables-table'}
             />
           ),
-        };
-      }
-    ) || []),
-  ];
+        })
+      ) || []),
+    ];
+    setCollapsibles(newCollapsibles);
+  }, [
+    controllerServicesData,
+    registryAllDetails,
+    externalControllerServiceArray,
+  ]);
 
   return (
     <DataWrapper>
@@ -200,6 +226,7 @@ const ControllerServiceTab = () => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           service={selectedService}
+          handleConfigureSubmit={handleConfigureSubmit}
         />
       )}
       <NewAddControllerService />
