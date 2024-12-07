@@ -12,6 +12,7 @@ import AddProperties from './AddProperties';
 import PropertyDropdownModal from './ProprtyDropdownModel';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import { SettingSmallIcon } from '../../assets';
+import { KDFM } from '../../constants';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -93,7 +94,7 @@ const ControllerServiceTab = () => {
       label: 'Action',
       renderCell: item => (
         <ConfigureButton onClick={() => handleConfigure(item)}>
-          Configure
+          {KDFM.CONFIGURE}
         </ConfigureButton>
       ),
       width: '14%',
