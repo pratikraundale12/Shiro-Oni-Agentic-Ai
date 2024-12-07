@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 // import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   GreaterArrowIcon,
@@ -34,7 +35,6 @@ import {
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { GridSelectors } from '../../store/grid';
 
 const Flex = styled.div`
@@ -268,7 +268,8 @@ export const GridActions = ({
     }
   };
   const handleRefresh = () => {
-    window.location.reload(true); // Hard reload
+    window.location.reload(true);
+    dispatch(NamespacesActions.fetchNamespaces());
   };
 
   useEffect(() => {

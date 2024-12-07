@@ -27,7 +27,7 @@ import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
   ClustersSelectors,
   GridSelectors,
-  // LoadingSelectors,
+  LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
@@ -570,10 +570,16 @@ const Summary = () => {
     };
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
+  const loadingregistry = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'deployNamespaceByRegistryFlow')
+  );
+  const loadingreUpdateFlow = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
+  );
 
   return (
     <MainContainer className="main-space bg-white">
-      <FullPageLoader loading={summaryLoadingStateRedux} />
+      <FullPageLoader loading={loadingregistry || loadingreUpdateFlow} />
       <TopTitleBar className="d-flex mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>
@@ -678,7 +684,7 @@ const Summary = () => {
                           {deploByRegistryFlow
                             ? registryAllDetails?.nifi_url
                             : checkDestCluster.nifiUrl}
-                        </span>{' '}
+                        </span>
                         <div data-tooltip-id={`copy-board-namespace-summary2`}>
                           <CopyToClipboard
                             className="summary-clipboard"

@@ -12,9 +12,9 @@ import {
   TriangleIcons,
 } from '../../assets';
 import { KDFM } from '../../constants';
+import { history } from '../../helpers/history';
 import { Modal } from '../../shared';
 import { NamespacesSelectors } from '../../store';
-import { history } from '../../helpers/history';
 
 const ModalBody = styled.div`
   position: relative;
