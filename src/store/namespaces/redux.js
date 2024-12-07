@@ -87,6 +87,9 @@ export const NamespacesActions = {
   getNewPropertyControllerService: createAction(
     `${prefix}getNewPropertyControllerService`
   ),
+  getNewPropertyControllerServiceUpdated: createAction(
+    `${prefix}getNewPropertyControllerServiceUpdated`
+  ),
   setNewProperToAddControllerService: createAction(
     `${prefix}setNewProperToAddControllerService`
   ),
