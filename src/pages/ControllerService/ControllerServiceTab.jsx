@@ -6,7 +6,6 @@ import { Table } from '../../components';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import Collapsible from '../Namespaces/Collapsible';
 import ConfigurePage from './ConfigurePage';
-// import NewAddControllerService from './NewAddControllerService';
 import AddControllerServiceModal from './AddControllerServiceModal';
 import ConfigControllerService from './ConfigControllerService';
 import AddProperties from './AddProperties';
@@ -81,6 +80,8 @@ const ControllerServiceTab = () => {
     []
   );
   const [controllerServicePayload, setControllerServicePayload] = useState({});
+  const [isExternalServiceConfigured, setIsExternalServiceConfigured] =
+    useState(false);
 
   const COLUMNS = [
     { label: 'Name', renderCell: item => item?.name, width: '21%' },
@@ -137,7 +138,7 @@ const ControllerServiceTab = () => {
             <SettingSmallIcon />
           </button>
           <ReactTooltip
-            id={`Settings-${item?.id}`} // Match tooltip ID
+            id={`Settings-${item?.id}`}
             place="left"
             content="Settings"
             style={{
@@ -161,6 +162,10 @@ const ControllerServiceTab = () => {
     setSelectedItemFromList(item);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
+
+  useEffect(() => {
+    dispatch(NamespacesActions.getControllerServiceList());
+  }, [dispatch, modalOpenState, selectedCluster]);
 
   const handleConfigure = item => {
     setSelectedService(item);
@@ -232,7 +237,6 @@ const ControllerServiceTab = () => {
   useEffect(() => {
     const newCollapsibles = [
       {
-        // id: 1,
         title: 'External Controller Service',
         content: externalControllerServiceArray?.length ? (
           <Table
@@ -250,7 +254,6 @@ const ControllerServiceTab = () => {
       },
       ...(registryAllDetails?.controllerServicesData?.localServices?.map(
         service => ({
-          // id: `child-${index + 3}`,
           title: service?.processGroupName || 'Unnamed Group',
           content: (
             <Table
@@ -274,14 +277,63 @@ const ControllerServiceTab = () => {
       registryAllDetails?.controllerServicesData,
       data
     );
-    setUpdatedLocalServicesData(localServiceState);
-    setUpdatedExternalServiceData(externalServiceState);
-    setControllerServicePayload({
-      externalServicesData: updatedExternalServiceData,
-      localServicesData: updatedLocalServicesData,
-    });
-    console.log('final payload-', controllerServicePayload);
+    if (externalServiceState?.length) {
+      setIsExternalServiceConfigured(true);
+      setUpdatedExternalServiceData(prevState => {
+        const mergedExternalState = [
+          ...prevState.filter(
+            item =>
+              !externalServiceState.some(
+                newItem => newItem.identifier === item.identifier
+              )
+          ),
+          ...externalServiceState,
+        ];
+        return mergedExternalState;
+      });
+    }
+    if (localServiceState?.length) {
+      setUpdatedLocalServicesData(prevState => {
+        const mergedLocalState = [
+          ...prevState.filter(
+            item =>
+              !localServiceState.some(
+                newItem => newItem.identifier === item.identifier
+              )
+          ),
+          ...localServiceState,
+        ];
+        return mergedLocalState;
+      });
+    }
   };
+
+  useEffect(() => {
+    setControllerServicePayload(prevState => {
+      const newPayload = {
+        externalServicesData:
+          updatedExternalServiceData?.length && isExternalServiceConfigured
+            ? updatedExternalServiceData
+            : externalControllerServiceArray?.length
+              ? externalControllerServiceArray
+              : prevState.externalServicesData || [],
+        localServicesData: updatedLocalServicesData?.length
+          ? updatedLocalServicesData
+          : prevState.localServicesData || [],
+      };
+      return newPayload;
+    });
+  }, [
+    externalControllerServiceArray,
+    updatedExternalServiceData,
+    updatedLocalServicesData,
+    isExternalServiceConfigured,
+  ]);
+
+  console.log(
+    'Controller service payload to pass to further deployment',
+    controllerServicePayload
+  );
 
   return (
     <DataWrapper>
@@ -310,6 +362,7 @@ const ControllerServiceTab = () => {
           handleConfigureSubmit={handleConfigureSubmit}
         />
       )}
+
       <AddControllerServiceModal />
       <ConfigControllerService
         isOpen={isListProprtyModel}

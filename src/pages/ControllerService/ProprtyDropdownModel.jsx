@@ -97,9 +97,10 @@ const PropertyDropdownModal = ({
     const selectedObject = newPropertyToAdd.find(
       element => element.name === selectedNewValue
     );
-    dispatch(
-      NamespacesActions.addControllerServicePropertyByDropdown(selectedObject)
-    );
+    optionsToNewPropertyAdd?.length &&
+      dispatch(
+        NamespacesActions.addControllerServicePropertyByDropdown(selectedObject)
+      );
     setAddNewProperty(false);
   };
   useEffect(() => {

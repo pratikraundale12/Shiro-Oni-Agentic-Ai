@@ -876,7 +876,7 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
   });
   if (response.ok)
     yield put(
-      NamespacesActions.setNewProperToAddControllerService(response?.data)
+      NamespacesActions.setNewProperToAddControllerService(response?.data?.data)
     );
   else if (!response.ok)
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
@@ -1238,6 +1238,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.getNewPropertyControllerService,
       getNewPropertyControllerService,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.getNewPropertyControllerServiceUpdated,
+      getNewPropertyControllerServiceUpdated,
       api
     ),
     takeLatest(

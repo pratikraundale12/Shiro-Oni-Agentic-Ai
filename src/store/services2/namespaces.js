@@ -178,7 +178,9 @@ export const namespacesAPI = api => {
     );
 
   const getNewPropertyControllerServiceUpdated = ({ clusterId, serviceName }) =>
-    api.get(`${clusterId}/controller-service-types?serviceName=${serviceName}`);
+    api.get(
+      `/${clusterId}/controller-service-types?serviceName=${serviceName}`
+    );
 
   const addControllerServicePropertyByDropdown = ({
     clusterId,

@@ -45,12 +45,10 @@ const ConfigurePage = ({ isOpen, onClose, handleConfigureSubmit }) => {
 
   const handleCheckboxChange = item => {
     setSelectedItem(prev => (prev?.id === item.id ? null : item));
-    console.log('sdasdd', selectedItem);
   };
 
   const handleSubmit = () => {
     handleConfigureSubmit(selectedItem);
-    console.log('Selected Item Data:', selectedItem);
   };
 
   return (
