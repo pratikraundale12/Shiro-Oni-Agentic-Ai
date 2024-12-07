@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   SmallNotThunderIcon,
@@ -14,7 +14,7 @@ import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
 import { KDFM } from '../../constants';
 import { ModalWithIcon } from '../../shared';
-import { NamespacesActions } from '../../store';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -109,6 +109,10 @@ const ActiveButtonDiv = styled.div`
 
 const FlowControl = () => {
   const dispatch = useDispatch();
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
+  console.log(singleNamespaceData, 'singleNamespaceData');
   const [activeButton, setActiveButton] = useState(null);
   const [confirmDialogue, setConfirmDialogue] = useState({
     state: false,
@@ -155,44 +159,44 @@ const FlowControl = () => {
             <TextDiv className="d-flex">
               <CountDiv
                 className="div-btn-1 mr-2"
-                count="2"
+                count={singleNamespaceData?.runningCount}
                 activeColor="#58e715"
               >
                 <TriangleIcons color="#B5BDC8" />
-                <span>2</span>
+                <span>{singleNamespaceData?.runningCount}</span>
               </CountDiv>
               <div>{KDFM.RUNNING_PROCESSORS}</div>
             </TextDiv>
             <TextDiv className="d-flex">
               <CountDiv
                 className="div-btn-2 mr-2"
-                count="3"
+                count={singleNamespaceData?.stoppedCount}
                 activeColor="#c52b2b"
               >
                 <SquareBoxIcon color="#B5BDC8" />
-                <span>2</span>
+                <span>{singleNamespaceData?.stoppedCount}</span>
               </CountDiv>
               <div>{KDFM.STOPPED_PROCESSORS}</div>
             </TextDiv>
             <TextDiv className="d-flex">
               <CountDiv
                 className="div-btn-3 mr-2"
-                count="3"
+                count={singleNamespaceData?.invalidCount}
                 activeColor="#CF9F5D"
               >
                 <TriangleExclamationMarkIcon color="#B5BDC8" />
-                <span>3</span>
+                <span>{singleNamespaceData?.invalidCount}</span>
               </CountDiv>
               <div>{KDFM.INVALID_PROCESSORS}</div>
             </TextDiv>
             <TextDiv className="d-flex">
               <CountDiv
                 className="div-btn-4 mr-2"
-                count="2"
+                count={singleNamespaceData?.disabledCount}
                 activeColor="#2c7cf3"
               >
                 <SmallNotThunderIcon color="#B5BDC8" />
-                <span>3</span>
+                <span>{singleNamespaceData?.disabledCount}</span>
               </CountDiv>
               <div>{KDFM.DISABLED_PROCESSORS}</div>
             </TextDiv>

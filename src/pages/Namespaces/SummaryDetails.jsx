@@ -1,6 +1,8 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 import styled from 'styled-components';
+import { NamespacesSelectors } from '../../store';
 
 const RowConfig = styled.div`
   display: flex;
@@ -62,6 +64,10 @@ const SummaryDetailsPtag = styled.h4`
 `;
 
 const SummaryDetails = () => {
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
+  console.log(singleNamespaceData, 'singleNamespaceData');
   return (
     <div className="w-100">
       <RowConfig className=" p-3">
@@ -70,15 +76,9 @@ const SummaryDetails = () => {
             <SummaryDetailsHFourTag className="mb-2">
               Process Group
             </SummaryDetailsHFourTag>
-            <SummaryDetailsPtag className="mb-0">Data Flow</SummaryDetailsPtag>
-          </div>
-        </UseColXl>
-        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-          <div>
-            <SummaryDetailsHFourTag className="mb-2">
-              Process Group Id
-            </SummaryDetailsHFourTag>
-            <SummaryDetailsPtag className="mb-0">12345</SummaryDetailsPtag>
+            <SummaryDetailsPtag className="mb-0">
+              {singleNamespaceData?.name}
+            </SummaryDetailsPtag>
           </div>
         </UseColXl>
         <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
@@ -87,16 +87,14 @@ const SummaryDetails = () => {
               Flow Name
             </SummaryDetailsHFourTag>
             <SummaryDetailsPtag className="mb-0">
-              <div>
-                <span>FlowName One</span>
-              </div>
+              {singleNamespaceData?.flowName}
             </SummaryDetailsPtag>
           </div>
         </UseColXl>
         <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
           <div>
             <SummaryDetailsHFourTag className="mb-2">
-              Flow ID
+              Registry URL
             </SummaryDetailsHFourTag>
             <SummaryDetailsPtag className="mb-0">
               <div>
@@ -108,10 +106,10 @@ const SummaryDetails = () => {
         <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
           <div>
             <SummaryDetailsHFourTag className="mb-2">
-              Bucket Name
+              NiFi URL
             </SummaryDetailsHFourTag>
             <SummaryDetailsPtag className="mb-0">
-              Bucket Name
+              {singleNamespaceData?.nifiUrl}
             </SummaryDetailsPtag>
           </div>
         </UseColXl>
@@ -120,23 +118,9 @@ const SummaryDetails = () => {
             <SummaryDetailsHFourTag className="mb-2">
               version
             </SummaryDetailsHFourTag>
-            <SummaryDetailsPtag className="mb-0">2</SummaryDetailsPtag>
-          </div>
-        </UseColXl>
-        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-          <div className="summary-details">
-            <SummaryDetailsHFourTag className="mb-2">
-              State
-            </SummaryDetailsHFourTag>
-            <SummaryDetailsPtag className="mb-0">state</SummaryDetailsPtag>
-          </div>
-        </UseColXl>
-        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-          <div className="summary-details">
-            <SummaryDetailsHFourTag className="mb-2">
-              State Explaination
-            </SummaryDetailsHFourTag>
-            <SummaryDetailsPtag className="mb-0">Data</SummaryDetailsPtag>
+            <SummaryDetailsPtag className="mb-0">
+              {singleNamespaceData?.version}
+            </SummaryDetailsPtag>
           </div>
         </UseColXl>
       </RowConfig>

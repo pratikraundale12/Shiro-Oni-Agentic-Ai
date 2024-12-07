@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets';
 import { KDFM } from '../../constants';
 import Breadcrumb from '../../shared/Breadcrumb';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import AuditLog from './AuditLog';
 import FlowControl from './FlowControl';
@@ -92,6 +95,16 @@ const ConfigDetailsPage = () => {
   ];
   const [variableData, setVariableData] = useState([]);
   const [activeTab, setActiveTab] = useState('Summary');
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(NamespacesActions.setSourceNamespaceId(id));
+    dispatch(NamespacesActions.singleNamespaceData(id));
+  }, [id]);
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
+  console.log(singleNamespaceData, 'singleNamespaceData');
 
   //need to add the components for respective tabs
   const renderContent = () => {
