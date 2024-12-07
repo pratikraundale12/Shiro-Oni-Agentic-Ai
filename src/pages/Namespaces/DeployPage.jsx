@@ -11,11 +11,12 @@ import {
   RadioField,
   SelectField,
 } from '../../shared';
-import { Table } from '../../components';
+import { FullPageLoader, Table } from '../../components';
 import { history } from '../../helpers/history';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   GridSelectors,
+  LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
@@ -315,7 +316,16 @@ function DeployPage() {
       toast.error('Please select any version');
     }
   };
-
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchRegistryData')
+  );
+  const loadingFlow = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchFlowNameList')
+  );
+  const loadingVersion = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchVerionData')
+  );
+  //fetchRegistryFlowDetails
   return (
     <div>
       <ToastContainer
@@ -327,6 +337,8 @@ function DeployPage() {
         pauseOnHover
         draggable
       />
+      <FullPageLoader loading={loading || loadingFlow || loadingVersion} />
+
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>
