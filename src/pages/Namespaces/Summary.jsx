@@ -303,6 +303,20 @@ export const scheduleSchema = yup.object().shape({
   approver_ids: yup.array().required('Approver is required'),
 });
 
+const breadcrumbDataOnDeploy = [
+  { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+  { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
+  { label: 'Flow Details', path: '/process-group/flow-details' },
+  { label: 'Configuration Details', path: '/process-group/config-details' },
+  { label: 'Summary' },
+];
+const breadcrumbDataOnUpgrade = [
+  { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+  { label: 'Flow Details', path: '/process-group/flow-details' },
+  { label: 'Configuration Details', path: '/process-group/config-details' },
+  { label: 'Summary' },
+];
+
 const Summary = () => {
   const dispatch = useDispatch();
   const selectedDestCluster =
@@ -320,14 +334,16 @@ const Summary = () => {
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const formData = useSelector(NamespacesSelectors.getFormData);
-  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const checkDestCluster = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState({
     isOpen: false,
     schedule: false,
   });
-  const deploByRegistryFlow = useSelector(
+  const deployByRegistryFlow = useSelector(
     NamespacesSelectors.getdeployRegistryFlow
   );
   const registryAllDetails = useSelector(
@@ -382,15 +398,6 @@ const Summary = () => {
   const summaryLoadingStateRedux = useSelector(
     NamespacesSelectors.getNamespaceSummaryLoadingState
   );
-
-  const breadcrumbData = [
-    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
-    ...(checkDestCluster?.mode !== 'upgrade'
-      ? [{ label: KDFM.SELECT_NAMESPACE, path: '/process-group/deploy' }]
-      : []),
-    { label: KDFM.CONFIGURATION_DETAILS, path: '/process-group/upgrade' },
-    { label: KDFM.SUMMARY },
-  ];
 
   const getParamerterContext = async () => {
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
@@ -480,11 +487,7 @@ const Summary = () => {
   };
 
   const handleBackClick = () => {
-    if (deploByRegistryFlow) {
-      history.push('/process-group/config-details');
-    } else {
-      history.push('/process-group/upgrade');
-    }
+    history.push('/process-group/config-details');
   };
 
   const [activeButton, setActiveButton] = useState(null);
@@ -576,8 +579,7 @@ const Summary = () => {
   const loadingreUpdateFlow = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
   );
-
-  return (
+   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader loading={loadingregistry || loadingreUpdateFlow} />
       <TopTitleBar className="d-flex mb-3">
@@ -587,8 +589,8 @@ const Summary = () => {
           </ImageContainer>
           <MainTitleHfour className="mb-0">
             {`${
-              checkDestCluster.mode === 'upgrade'
-                ? checkDestCluster?.version <= formData.version
+              !deployByRegistryFlow
+                ? checkDestCluster?.version <= versionSelected
                   ? KDFM.UPGRADE
                   : KDFM.DOWNGRADE
                 : KDFM.DEPLOY
@@ -597,7 +599,14 @@ const Summary = () => {
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex mb-3">
-        <Breadcrumb module="deploy" path={breadcrumbData} />
+        <Breadcrumb
+          module="deploy"
+          path={
+            !deployByRegistryFlow
+              ? breadcrumbDataOnUpgrade
+              : breadcrumbDataOnDeploy
+          }
+        />
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className=" pe-1">
@@ -617,7 +626,7 @@ const Summary = () => {
                       {KDFM.SELECTED_CLUSTER}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {deploByRegistryFlow
+                      {!deployByRegistryFlow
                         ? currentSelectedCluster?.label
                         : selectedDestCluster?.label}
                     </SummaryDetailsPtag>
@@ -629,9 +638,9 @@ const Summary = () => {
                       {KDFM.NAMESPACE}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {deploByRegistryFlow
+                      {deployByRegistryFlow
                         ? formDataRegistry?.selectedFlowName
-                        : checkDestCluster.name}
+                        : checkDestCluster?.name}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -642,19 +651,11 @@ const Summary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>
-                          {deploByRegistryFlow
-                            ? registryData?.url
-                            : checkDestCluster.registryUrl}
-                        </span>
+                        <span>{registryData?.url}</span>
                         <div data-tooltip-id={`copy-board-namespace-summary1`}>
                           <CopyToClipboard
                             className="summary-clipboard"
-                            copyItem={
-                              deploByRegistryFlow
-                                ? registryData?.url
-                                : checkDestCluster.registryUrl
-                            }
+                            copyItem={registryData?.url}
                           />
                         </div>
                         <ReactTooltip
@@ -681,7 +682,7 @@ const Summary = () => {
                     <SummaryDetailsPtag className="mb-0">
                       <div>
                         <span>
-                          {deploByRegistryFlow
+                          {deployByRegistryFlow
                             ? registryAllDetails?.nifi_url
                             : checkDestCluster.nifiUrl}
                         </span>
@@ -689,7 +690,7 @@ const Summary = () => {
                           <CopyToClipboard
                             className="summary-clipboard"
                             copyItem={
-                              deploByRegistryFlow
+                              deployByRegistryFlow
                                 ? registryAllDetails?.nifi_url
                                 : checkDestCluster.nifiUrl
                             }
@@ -714,32 +715,32 @@ const Summary = () => {
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                   <div>
                     <SummaryDetailsHFourTag className="mb-2">
-                      {deploByRegistryFlow
+                      {deployByRegistryFlow
                         ? KDFM.SELECTED_VERSION
                         : KDFM.CURRENT_VERSION}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {deploByRegistryFlow
-                        ? versionSelected?.version
-                        : checkDestCluster.version || 'N/A'}
+                      {deployByRegistryFlow
+                        ? versionSelected
+                        : checkDestCluster?.version || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
-                {!deploByRegistryFlow && (
+                {!deployByRegistryFlow && (
                   <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                     <div className="summary-details">
                       <SummaryDetailsHFourTag className="mb-2">
                         {KDFM.UPDATED_VERSION}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
-                        {formData.version || checkDestCluster.version}
+                        {formData.version || versionSelected}
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
                 )}
               </RowConfig>
             </UseColLg>
-            {checkDestCluster.mode === 'upgrade' && (
+            {!deployByRegistryFlow && (
               <>
                 <div className="col-12 p-3">
                   <ConfigTitle className="config-title">
@@ -756,7 +757,7 @@ const Summary = () => {
                           {KDFM.NAMESPACE}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {checkDestCluster.name}
+                          {checkDestCluster?.name}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -766,7 +767,7 @@ const Summary = () => {
                           {KDFM.CURRENT_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {checkDestCluster.version}
+                          {checkDestCluster?.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -776,7 +777,7 @@ const Summary = () => {
                           {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {formData.version || checkDestCluster.version}
+                          {versionSelected}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -786,7 +787,7 @@ const Summary = () => {
             )}
           </RowConfig>
           <IconsvgDiv>
-            {checkDestCluster.mode === 'upgrade' && (
+            {!deployByRegistryFlow && (
               <CustomNine className="col-4 mb-3">
                 <ActiveButtonContainer className="d-flex ">
                   <TextDiv className="d-flex">
@@ -836,7 +837,7 @@ const Summary = () => {
                 </ActiveButtonContainer>
               </CustomNine>
             )}
-            {checkDestCluster.mode === 'upgrade' && (
+            {!deployByRegistryFlow && (
               <ActiveButtonContainer className="d-flex ">
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-1 mr-2">
@@ -910,14 +911,10 @@ const Summary = () => {
           </Button>
           {!schedularFromList && !isRegistryDeploy && (
             <Button
-              onClick={
-                checkDestCluster.mode !== 'upgrade'
-                  ? handleDeploy
-                  : handleUpgradeClick
-              }
+              onClick={deployByRegistryFlow ? handleDeploy : handleUpgradeClick}
             >
-              {checkDestCluster.mode === 'upgrade'
-                ? checkDestCluster.version <= formData.version
+              {deployByRegistryFlow
+                ? selectedNameSpace.version <= formData.version
                   ? KDFM.UPGRADE
                   : KDFM.DOWNGRADE
                 : KDFM.DEPLOY}

@@ -130,7 +130,7 @@ export const NamespacesActions = {
   setBucketListDropDownData: createAction(`${prefix}setBucketListDropDownData`),
   fetchFlowNameList: createAction(`${prefix}fetchFlowNameList`),
   setFlowListRegistry: createAction(`${prefix}setFlowListRegistry`),
-  fetchVerionData: createAction(`${prefix}fetchVerionData`),
+  fetchVersionData: createAction(`${prefix}fetchVersionData`),
   setVersionListData: createAction(`${prefix}setVersionListData`),
   setVersionSelect: createAction(`${prefix}setVersionSelect`),
   setDeployFormData: createAction(`${prefix}setDeployFormData`),

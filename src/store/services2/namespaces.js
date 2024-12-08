@@ -216,7 +216,7 @@ export const namespacesAPI = api => {
     );
   };
 
-  const fetchVerionData = ({ clusterId, registriesId, bucketId, flowId }) => {
+  const fetchVersionData = ({ clusterId, registriesId, bucketId, flowId }) => {
     return api.get(
       `/versions/${clusterId}/registry/${registriesId}/buckets/${bucketId}/flows/${flowId}`
     );
@@ -263,7 +263,7 @@ export const namespacesAPI = api => {
     fetchNamespacesForDestiationCluster,
     fetchRegistryData,
     fetchFlowNameList,
-    fetchVerionData,
+    fetchVersionData,
     fetchRegistryFlowDetails,
   };
 };

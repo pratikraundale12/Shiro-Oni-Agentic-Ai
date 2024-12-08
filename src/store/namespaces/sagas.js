@@ -1046,7 +1046,7 @@ export function* fetchFlowNameList(api, { payload }) {
   }
 }
 
-export function* fetchVerionData(api, { payload }) {
+export function* fetchVersionData(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const gridData = yield select(
     GridSelectors.getNamespaceGridRegistry,
@@ -1062,9 +1062,9 @@ export function* fetchVerionData(api, { payload }) {
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
-    errorSection: 'fetchVerionData',
-    loadingSection: 'fetchVerionData',
-    apiMethod: api.fetchVerionData,
+    errorSection: 'fetchVersionData',
+    loadingSection: 'fetchVersionData',
+    apiMethod: api.fetchVersionData,
     apiParams: [
       {
         clusterId: selectedCluster?.value,
@@ -1231,7 +1231,7 @@ export function* namespacesSagas(api) {
     ),
     takeLatest(NamespacesActions.fetchRegistryData, fetchRegistryData, api),
     takeLatest(NamespacesActions.fetchFlowNameList, fetchFlowNameList, api),
-    takeLatest(NamespacesActions.fetchVerionData, fetchVerionData, api),
+    takeLatest(NamespacesActions.fetchVersionData, fetchVersionData, api),
     takeLatest(
       NamespacesActions.fetchRegistryFlowDetails,
       fetchRegistryFlowDetails,

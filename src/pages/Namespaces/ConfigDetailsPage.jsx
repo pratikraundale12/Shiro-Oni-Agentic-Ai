@@ -103,7 +103,7 @@ const ConfigDetailsPage = () => {
   ];
   const breadcrumbDataOnUpgrade = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
-    { label: 'Flow Details', path: '/process-group/upgrade' },
+    { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
   const [variableData, setVariableData] = useState([]);
@@ -112,9 +112,7 @@ const ConfigDetailsPage = () => {
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
 
   const handleBackClick = () => {
-    !isUpgrade
-      ? history.push('/process-group/upgrade')
-      : history.push('/process-group/flow-details');
+    history.push('/process-group/flow-details');
   };
 
   const handleContinue = () => {
@@ -159,7 +157,7 @@ const ConfigDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {KDFM.DEPLOY_NAMESPACE}
+            {!isUpgrade ? KDFM.UPGRADE_NAMESPACE : KDFM.DEPLOY_NAMESPACE}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>

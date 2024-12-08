@@ -357,12 +357,12 @@ export const ListNamespaces = () => {
         ...item,
       })
     );
+    dispatch(NamespacesActions.setVersionSelect(item.version));
     dispatch(NamespacesActions.setDeployByRegistryFlow(false));
     dispatch(
-      NamespacesActions.fetchRegistryFlowDetails({
+      NamespacesActions.fetchVersionData({
         bucketId: item.bucketId,
         flowId: item.flowId,
-        version: item.version,
       })
     );
     history.push('/process-group/flow-details', {
