@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { PencilIcon } from '../../assets';
+import { NoDataIcon, PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import Collapsible from './Collapsible';
@@ -26,7 +26,13 @@ const ScrollSetGrey = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
 `;
-
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+`;
 const ParameterContextTab = ({ PcData, setPcData }) => {
   const [isAddPcOpen, setIsAddPcOpen] = useState({
     isOpen: false,
@@ -164,38 +170,53 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
       mode: 'add',
     });
   };
-
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
         {PcData?.inherited?.map(item => (
-          <Collapsible
-            isAddBtnVisible={false}
-            onBtnClick={() => {
-              handleAddPc(item?.name);
-            }}
-            key={item?.name}
-            title={`${item?.name}`}
-            isTableOpen={openIndex === item?.name}
-            toggleCollapsible={() => handleToggle(item?.name)}
-          >
-            <Table data={item?.parameters} columns={PC_COLUMNS} />
-          </Collapsible>
+          <>
+            {!isEmpty(item.parameters) && (
+              <Collapsible
+                isAddBtnVisible={false}
+                onBtnClick={() => {
+                  handleAddPc(item?.name);
+                }}
+                key={item?.name}
+                title={`${item?.name}`}
+                isTableOpen={openIndex === item?.name}
+                toggleCollapsible={() => handleToggle(item?.name)}
+              >
+                <Table data={item?.parameters} columns={PC_COLUMNS} />
+              </Collapsible>
+            )}
+          </>
         ))}
         {PcData?.parent?.map(item => (
-          <Collapsible
-            isAddBtnVisible={false}
-            onBtnClick={() => {
-              handleAddPc(item?.name);
-            }}
-            key={item?.name}
-            title={`${item?.name}`}
-            isTableOpen={openIndex === item?.name}
-            toggleCollapsible={() => handleToggle(item?.name)}
-          >
-            <Table data={item?.parameters} columns={PC_COLUMNS} />
-          </Collapsible>
+          <>
+            {!isEmpty(item.parameters) && (
+              <Collapsible
+                isAddBtnVisible={false}
+                onBtnClick={() => {
+                  handleAddPc(item?.name);
+                }}
+                key={item?.name}
+                title={`${item?.name}`}
+                isTableOpen={openIndex === item?.name}
+                toggleCollapsible={() => handleToggle(item?.name)}
+              >
+                <Table data={item?.parameters} columns={PC_COLUMNS} />
+              </Collapsible>
+            )}
+          </>
         ))}
+        {isEmpty(PcData?.inherited) && isEmpty(PcData?.parent) && (
+          <>
+            <div className="d-flex justify-content-center">
+              <NoDataIcon width={130} />
+            </div>
+            <NoDataText>No Data Found!!</NoDataText>
+          </>
+        )}
         {isAddPcOpen?.isOpen && (
           <AddOrEditParameterContextModal
             setIsAddParameterContextOpen={setIsAddPcOpen}
