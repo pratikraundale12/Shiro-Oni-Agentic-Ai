@@ -684,7 +684,7 @@ const Summary = () => {
                           {deploByRegistryFlow
                             ? registryAllDetails?.nifi_url
                             : checkDestCluster.nifiUrl}
-                        </span>{' '}
+                        </span>
                         <div data-tooltip-id={`copy-board-namespace-summary2`}>
                           <CopyToClipboard
                             className="summary-clipboard"

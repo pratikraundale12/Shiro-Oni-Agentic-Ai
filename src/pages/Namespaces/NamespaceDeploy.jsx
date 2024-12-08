@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -214,7 +215,9 @@ const NamespaceDeploy = ({
             </ModalIcon>
             <ModalHFive>
               Process Group successfully {''}
-              {checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'deployed'} to
+              {checkDestCluster.mode === 'upgrade'
+                ? 'upgraded'
+                : 'deployed'} to
               {''} {selectedDestCluster?.label}
             </ModalHFive>
           </div>

@@ -334,6 +334,7 @@ export const ListNamespaces = () => {
           />
           <button
             type="button"
+            disabled={!item?.permissions?.canWrite}
             className="btn btn-primary"
             onClick={() => handleSelect(item)}
             style={{
