@@ -83,6 +83,8 @@ const ControllerServiceTab = () => {
   const [controllerServicePayload, setControllerServicePayload] = useState({});
   const [isExternalServiceConfigured, setIsExternalServiceConfigured] =
     useState(false);
+  const [isExternalServiceUpdated, setIsExternalServiceUpdated] =
+    useState(false);
 
   const COLUMNS = [
     { label: 'Name', renderCell: item => item?.name, width: '21%' },
@@ -189,6 +191,7 @@ const ControllerServiceTab = () => {
     setExternalControllerServiceArray(newExternalControllerServiceArray);
     setIsModalOpen(false);
     setSelectedService(null);
+    setIsExternalServiceUpdated(true);
   };
 
   const handleConfigCloseModal = () => {
@@ -209,12 +212,14 @@ const ControllerServiceTab = () => {
   const classifyServiceData = (data, serviceObject) => {
     const externalServiceState = [];
     const localServiceState = [];
-    const isExternal = controllerServicesData.some(service =>
-      service.controllerService.some(
-        controller =>
-          controller && controller.identifier === serviceObject.identifier
-      )
-    );
+    const isExternal =
+      isExternalServiceUpdated &&
+      controllerServicesData?.some(service =>
+        service.controllerService.some(
+          controller =>
+            controller && controller.identifier === serviceObject.identifier
+        )
+      );
 
     if (isExternal) {
       externalServiceState.push(serviceObject);
