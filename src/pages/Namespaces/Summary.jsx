@@ -4,6 +4,7 @@ import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
 // import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -41,7 +42,6 @@ import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -980,17 +980,6 @@ const Summary = () => {
         handleScheduleTertiaryButton={handleScheduleTertiaryButton}
         flowControlState={flowControlButtons}
       />
-      <ParameterContext
-        isParameterContextOpen={isParameterContextOpen}
-        key={isParameterContextOpen.isOpen}
-        isOpen={isParameterContextOpen.isOpen}
-        closePopup={closeParameterContext}
-        openAddParameterContext={openAddParameterContext}
-        setIsAddParameterContextOpen={setIsAddParameterContextOpen}
-        setIsParameterContextOpen={setIsParameterContextOpen}
-        getParamerterContext={getParamerterContext}
-        parameterContextId={deployOrUpgradeDetails?.parameterContextId}
-      />
       <AddParameterContext
         key={isParameterContextOpen.mode}
         isParameterContextOpen={isParameterContextOpen}
@@ -999,13 +988,6 @@ const Summary = () => {
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
-      />
-      <Listvariables
-        isOpen={isVariablesModalOpen}
-        closePopup={closeVariablesModal}
-        isVariablesModalOpen={isVariablesModalOpen}
-        setVariablesModalOpen={setVariablesModalOpen}
-        handleTertiaryButton={handleTertiaryButton}
       />
       <ModalWithIcon
         title={'Flow Confirmation'}

@@ -16,8 +16,8 @@ import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { NamespacesActions } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
-import { useGlobalContext } from '../../utils';
 import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -111,6 +111,7 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setdeployRegistryFlow(false));
     dispatch(NamespacesActions.setRegistryDeployVariable([]));
     dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
+    dispatch(NamespacesActions.setregistryDetailsFlow(false));
   }, []);
 
   const COLUMNS = [

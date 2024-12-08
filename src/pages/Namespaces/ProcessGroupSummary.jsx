@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets';
 import { KDFM } from '../../constants';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { NamespacesActions } from '../../store';
 import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import AuditLog from './AuditLog';
 import FlowControl from './FlowControl';
-import ParameterContextTab from './ParameterContextTab';
+import ListVariables from './Listvariables';
+import ParameterContext from './ParameterContext';
 import SummaryDetails from './SummaryDetails';
-import VariableTab from './VariableTab';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -93,7 +93,16 @@ const ConfigDetailsPage = () => {
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: 'Process Group Details', path: '/process-group/deployPage' },
   ];
-  const [variableData, setVariableData] = useState([]);
+  const [variablesModalOpen, setVariablesModalOpen] = useState(false);
+  const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
+    isOpen: false,
+    mode: 'add',
+  });
+  const [isParameterContextOpen, setIsParameterContextOpen] = useState({
+    isOpen: false,
+    schedule: false,
+  });
+  // const [PcData, setPcData] = useState({});
   const [activeTab, setActiveTab] = useState('Summary');
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -101,10 +110,6 @@ const ConfigDetailsPage = () => {
     dispatch(NamespacesActions.setSourceNamespaceId(id));
     dispatch(NamespacesActions.singleNamespaceData(id));
   }, [id]);
-  const singleNamespaceData = useSelector(
-    NamespacesSelectors.getSingleNamespaceData
-  );
-  console.log(singleNamespaceData, 'singleNamespaceData');
 
   //need to add the components for respective tabs
   const renderContent = () => {
@@ -114,12 +119,20 @@ const ConfigDetailsPage = () => {
       case 'Flow Control':
         return <FlowControl />;
       case KDFM.PARAMETER_CONTEXT:
-        return <ParameterContextTab />;
+        return (
+          <ParameterContext
+            setIsAddParameterContextOpen={setIsAddParameterContextOpen}
+            isAddParameterContextOpen={isAddParameterContextOpen}
+            isParameterContextOpen={isParameterContextOpen}
+            setIsParameterContextOpen={setIsParameterContextOpen}
+          />
+        );
       case KDFM.VARIABLES:
         return (
-          <VariableTab
-            variableData={variableData}
-            setVariableData={setVariableData}
+          <ListVariables
+            isOpen={{ isOpen: true }}
+            isVariablesModalOpen={variablesModalOpen}
+            setVariablesModalOpen={setVariablesModalOpen}
           />
         );
       case KDFM.CONTROLLER_SERVICE:

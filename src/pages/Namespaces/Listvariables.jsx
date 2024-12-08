@@ -6,21 +6,29 @@ import styled from 'styled-components';
 import { PencilIcon, PlusCircleIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
-import { Modal } from '../../shared';
+import { Button, Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 // import { SchedularActions } from '../../store/schedular/redux';
 import { isEmpty, uniqBy } from 'lodash';
 import { SchedularSelectors } from '../../store/schedular/redux';
 import AddVariables from './AddVariables';
+import Collapsible from './Collapsible';
 
-const ModalBody = styled.div`
-  position: relative;
-  flex: 1 1 auto;
-  & .variables-table {
-    th {
-      background-color: #dde4f0 !important;
-    }
-  }
+const DataWrapper = styled.div`
+  width: 100%;
+  height: 596px;
+  top: 273px;
+  left: 290px;
+  gap: 0px;
+  opacity: 0px;
+  border: Mixed solid rgba(221, 228, 240, 1);
+`;
+
+const ScrollSetGrey = styled.div`
+  min-height: calc(100vh - 341px);
+  max-height: calc(100vh - 341px);
+  overflow-x: hidden;
+  overflow-y: auto;
 `;
 
 const Listvariables = ({
@@ -49,6 +57,7 @@ const Listvariables = ({
   const combinedVaribalesListSchedule = useSelector(
     NamespacesSelectors.getScheduleNamespaceVariables
   );
+  const [isTableOpen, setIsTableOpen] = useState(false);
   const variableLoadingStateAPI = useSelector(
     NamespacesSelectors.getVariableListLoading
   );
@@ -192,6 +201,9 @@ const Listvariables = ({
       setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: false });
     }
   };
+  useEffect(() => {
+    dispatch(NamespacesActions.fetchVariableList());
+  }, [dispatch]);
 
   const closeAddVariablesModal = () => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
@@ -214,56 +226,50 @@ const Listvariables = ({
     setLoading(false);
 
     dispatch(NamespacesActions.setNewlyAddVariables([]));
+    dispatch(NamespacesActions.fetchVariableList());
   };
   const scheduleSubmit = async () => {
     setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: true });
   };
-
+  const toggleCollapsible = () => setIsTableOpen(!isTableOpen);
   return (
-    <>
-      <Modal
-        title={KDFM.VARIABLES}
-        isOpen={isOpen.isOpen}
-        onRequestClose={() => {
-          dispatch(NamespacesActions.setNewlyAddVariables([]));
-          closePopup();
-        }}
-        isLoading={loading}
-        size="md"
-        onSecondarySubmit={openVariable}
-        secondaryButtonText={
-          isVariablesModalOpen.schedule ? KDFM.ADD_VARIABLES : null
-        }
-        primaryButtonText={isVariablesModalOpen.schedule ? 'Back' : KDFM.SAVE}
-        onSubmit={isVariablesModalOpen.schedule ? scheduleSubmit : handleSubmit}
-        primaryButtonDisabled={loading || !newlyAddVariables?.length}
-        footerAlign="start"
-        secondaryButtonProps={{
-          icon: <PlusCircleIcon />,
-          iconPosition: 'left',
-        }}
-      >
-        <ModalBody className="modal-body">
+    <DataWrapper>
+      <ScrollSetGrey className="scroll-set-grey pe-1">
+        <Collapsible
+          title="Variables"
+          isTableOpen={isTableOpen}
+          toggleCollapsible={toggleCollapsible}
+          isAddBtnVisible={false}
+        >
           <Table
             data={variablesData}
             columns={COLUMNS}
             className={'variables-table'}
             loading={variableLoadingStateAPI}
           />
-        </ModalBody>
-      </Modal>
-      {isAddVariablesOpen && (
-        <AddVariables
-          isVariablesModalOpen={isVariablesModalOpen}
-          variableContextItem={variableContextItem}
-          isOpen={isAddVariablesOpen}
-          closePopup={closeAddVariablesModal}
-          isAddVariablesOpen={isAddVariablesOpen}
-          setIsAddVariablesOpen={setIsAddVariablesOpen}
-          setVariablesModalOpen={setVariablesModalOpen}
-        />
-      )}
-    </>
+          <Button
+            type="button"
+            className="w-auto mt-2"
+            size="sm"
+            onClick={handleSubmit}
+          >
+            Save
+          </Button>
+        </Collapsible>
+
+        {isAddVariablesOpen && (
+          <AddVariables
+            isVariablesModalOpen={isVariablesModalOpen}
+            variableContextItem={variableContextItem}
+            isOpen={isAddVariablesOpen}
+            closePopup={closeAddVariablesModal}
+            isAddVariablesOpen={isAddVariablesOpen}
+            setIsAddVariablesOpen={setIsAddVariablesOpen}
+            setVariablesModalOpen={setVariablesModalOpen}
+          />
+        )}
+      </ScrollSetGrey>
+    </DataWrapper>
   );
 };
 

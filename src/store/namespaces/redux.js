@@ -151,6 +151,7 @@ export const NamespacesActions = {
   setUpdatedRegistryRespones: createAction(
     `${prefix}setUpdatedRegistryRespones`
   ),
+  setregistryDetailsFlow: createAction(`${prefix}setregistryDetailsFlow`),
 };
 // registryFlowXCord:null,
 //registryFlowYCord:null
@@ -228,6 +229,7 @@ export const NAMESPACES_INITIAL_STATE = {
   registryDeployParameterContext: [],
   registryDeployResponseData: {},
   updatedRegistryRespones: {},
+  registryDetailsFlow: false,
   // parameterEditParent: false,
 };
 
@@ -300,6 +302,7 @@ export const NamespacesSelectors = {
   getRegistryDeployResponseData: state =>
     state.namespaces.registryDeployResponseData,
   getUpdatedRegistryRespones: state => state.namespaces.updatedRegistryRespones,
+  getRegistryDetailsFlow: state => state.namespaces.registryDetailsFlow,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -678,6 +681,12 @@ const setUpdatedRegistryRespones = (state, { payload }) => {
     updatedRegistryRespones: payload,
   };
 };
+const setregistryDetailsFlow = (state, { payload }) => {
+  return {
+    ...state,
+    registryDetailsFlow: payload,
+  };
+};
 
 //
 /* ------------- Hookup Reducers To Types ------------- */
@@ -818,6 +827,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setUpdatedRegistryRespones,
         setUpdatedRegistryRespones
+      )
+      .addCase(
+        NamespacesActions.setregistryDetailsFlow,
+        setregistryDetailsFlow
       );
   }
 );

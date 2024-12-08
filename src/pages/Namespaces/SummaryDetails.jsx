@@ -62,6 +62,22 @@ const SummaryDetailsPtag = styled.h4`
     text-overflow: ellipsis;
   }
 `;
+const DataWrapper = styled.div`
+  width: 100%;
+  height: 596px;
+  top: 273px;
+  left: 290px;
+  gap: 0px;
+  opacity: 0px;
+  border: Mixed solid rgba(221, 228, 240, 1);
+`;
+
+const ScrollSetGrey = styled.div`
+  min-height: calc(100vh - 341px);
+  max-height: calc(100vh - 341px);
+  overflow-x: hidden;
+  overflow-y: auto;
+`;
 
 const SummaryDetails = () => {
   const singleNamespaceData = useSelector(
@@ -69,62 +85,64 @@ const SummaryDetails = () => {
   );
   console.log(singleNamespaceData, 'singleNamespaceData');
   return (
-    <div className="w-100">
-      <RowConfig className=" p-3">
-        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-          <div>
-            <SummaryDetailsHFourTag className="mb-2">
-              Process Group
-            </SummaryDetailsHFourTag>
-            <SummaryDetailsPtag className="mb-0">
-              {singleNamespaceData?.name}
-            </SummaryDetailsPtag>
-          </div>
-        </UseColXl>
-        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-          <div>
-            <SummaryDetailsHFourTag className="mb-2">
-              Flow Name
-            </SummaryDetailsHFourTag>
-            <SummaryDetailsPtag className="mb-0">
-              {singleNamespaceData?.flowName}
-            </SummaryDetailsPtag>
-          </div>
-        </UseColXl>
-        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-          <div>
-            <SummaryDetailsHFourTag className="mb-2">
-              Registry URL
-            </SummaryDetailsHFourTag>
-            <SummaryDetailsPtag className="mb-0">
-              <div>
-                <span>123</span>
-              </div>
-            </SummaryDetailsPtag>
-          </div>
-        </UseColXl>
-        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-          <div>
-            <SummaryDetailsHFourTag className="mb-2">
-              NiFi URL
-            </SummaryDetailsHFourTag>
-            <SummaryDetailsPtag className="mb-0">
-              {singleNamespaceData?.nifiUrl}
-            </SummaryDetailsPtag>
-          </div>
-        </UseColXl>
-        <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-          <div className="summary-details">
-            <SummaryDetailsHFourTag className="mb-2">
-              version
-            </SummaryDetailsHFourTag>
-            <SummaryDetailsPtag className="mb-0">
-              {singleNamespaceData?.version}
-            </SummaryDetailsPtag>
-          </div>
-        </UseColXl>
-      </RowConfig>
-    </div>
+    <DataWrapper className="w-100">
+      <ScrollSetGrey className="scroll-set-grey pe-1">
+        <RowConfig className=" p-3">
+          <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+            <div>
+              <SummaryDetailsHFourTag className="mb-2">
+                Process Group
+              </SummaryDetailsHFourTag>
+              <SummaryDetailsPtag className="mb-0">
+                {singleNamespaceData?.name}
+              </SummaryDetailsPtag>
+            </div>
+          </UseColXl>
+          <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+            <div>
+              <SummaryDetailsHFourTag className="mb-2">
+                Flow Name
+              </SummaryDetailsHFourTag>
+              <SummaryDetailsPtag className="mb-0">
+                {singleNamespaceData?.flowName}
+              </SummaryDetailsPtag>
+            </div>
+          </UseColXl>
+          <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+            <div>
+              <SummaryDetailsHFourTag className="mb-2">
+                Registry URL
+              </SummaryDetailsHFourTag>
+              <SummaryDetailsPtag className="mb-0">
+                <div>
+                  <span>123</span>
+                </div>
+              </SummaryDetailsPtag>
+            </div>
+          </UseColXl>
+          <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+            <div>
+              <SummaryDetailsHFourTag className="mb-2">
+                NiFi URL
+              </SummaryDetailsHFourTag>
+              <SummaryDetailsPtag className="mb-0">
+                {singleNamespaceData?.nifiUrl}
+              </SummaryDetailsPtag>
+            </div>
+          </UseColXl>
+          <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+            <div className="summary-details">
+              <SummaryDetailsHFourTag className="mb-2">
+                version
+              </SummaryDetailsHFourTag>
+              <SummaryDetailsPtag className="mb-0">
+                {singleNamespaceData?.version}
+              </SummaryDetailsPtag>
+            </div>
+          </UseColXl>
+        </RowConfig>
+      </ScrollSetGrey>
+    </DataWrapper>
   );
 };
 
