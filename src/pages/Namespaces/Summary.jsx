@@ -590,7 +590,7 @@ const Summary = () => {
           <MainTitleHfour className="mb-0">
             {`${
               !deployByRegistryFlow
-                ? checkDestCluster?.version <= versionSelected
+                ? checkDestCluster?.version <= versionSelected.version
                   ? KDFM.UPGRADE
                   : KDFM.DOWNGRADE
                 : KDFM.DEPLOY
@@ -721,7 +721,7 @@ const Summary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       {deployByRegistryFlow
-                        ? versionSelected
+                        ? versionSelected.version
                         : checkDestCluster?.version || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
@@ -733,7 +733,7 @@ const Summary = () => {
                         {KDFM.UPDATED_VERSION}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
-                        {formData.version || versionSelected}
+                        {formData.version || versionSelected.version}
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
@@ -777,7 +777,7 @@ const Summary = () => {
                           {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {versionSelected}
+                          {versionSelected.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>

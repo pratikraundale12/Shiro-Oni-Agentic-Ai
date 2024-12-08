@@ -358,7 +358,7 @@ export const ListNamespaces = () => {
         ...item,
       })
     );
-    dispatch(NamespacesActions.setVersionSelect(item.version));
+    dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
     dispatch(NamespacesActions.setDeployByRegistryFlow(false));
     dispatch(
       NamespacesActions.fetchVersionData({
