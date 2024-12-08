@@ -162,6 +162,7 @@ export const KDFM = {
   SEARCH_NODES: 'Search NodeId , Address',
   TAG: 'Tag',
   SELECTED_VERSION: 'Selected Version',
+  CONFIGURE: 'Configure',
 
   // License constants
   TRIAL: 'Trial',

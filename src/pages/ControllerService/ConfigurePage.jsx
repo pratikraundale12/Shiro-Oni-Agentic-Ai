@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PlusCircleIcon } from '../../assets';
 import { Table } from '../../components';
-import { Button, CheckboxField, Modal } from '../../shared'; // Import Button correctly
+import { Button, CheckboxField, Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-import NewAddControllerService from './NewAddControllerService';
+import { KDFM } from '../../constants';
 
 const NewClassAddes = styled.div`
   &.mt-n3 {
@@ -16,7 +16,7 @@ const NewClassAddes = styled.div`
 
 const ConfigurePage = ({ isOpen, onClose, handleConfigureSubmit }) => {
   const dispatch = useDispatch();
-  const [selectedItem, setSelectedItem] = useState(null); // Updated state to hold full selected item
+  const [selectedItem, setSelectedItem] = useState(null);
   const listData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
   );
@@ -45,12 +45,10 @@ const ConfigurePage = ({ isOpen, onClose, handleConfigureSubmit }) => {
 
   const handleCheckboxChange = item => {
     setSelectedItem(prev => (prev?.id === item.id ? null : item));
-    console.log('sdasdd', selectedItem);
   };
 
   const handleSubmit = () => {
     handleConfigureSubmit(selectedItem);
-    console.log('Selected Item Data:', selectedItem);
   };
 
   return (
@@ -63,7 +61,7 @@ const ConfigurePage = ({ isOpen, onClose, handleConfigureSubmit }) => {
       footerAlign="start"
       contentStyles={{ maxWidth: '60%', maxHeight: '70%' }}
       secondaryButtonText="Back"
-      onSubmit={handleSubmit} // Trigger submit handler on click
+      onSubmit={handleSubmit}
     >
       <NewClassAddes className="d-flex justify-content-end w-100 mb-3 mt-n3">
         <Button
@@ -72,14 +70,13 @@ const ConfigurePage = ({ isOpen, onClose, handleConfigureSubmit }) => {
           className="w-auto px-3"
           size="sm"
           onClick={() =>
-            dispatch(NamespacesActions.setIsNewAddControllerServiceModal(true))
+            dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
           }
         >
-          Add
+          {KDFM.ADD}
         </Button>
       </NewClassAddes>
       <div>
-        <NewAddControllerService />
         <Table data={listData} columns={COLUMNS} className="variables-table" />
       </div>
     </Modal>

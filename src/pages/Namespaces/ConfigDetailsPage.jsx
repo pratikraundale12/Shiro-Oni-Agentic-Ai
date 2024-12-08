@@ -108,6 +108,7 @@ const ConfigDetailsPage = () => {
   ];
   const [variableData, setVariableData] = useState([]);
   const [PcData, setPcData] = useState({});
+  const [controllerServicePayload, setControllerServicePayload] = useState({});
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
 
@@ -118,6 +119,11 @@ const ConfigDetailsPage = () => {
   const handleContinue = () => {
     dispatch(NamespacesActions.setRegistryDeployVariable(variableData));
     dispatch(NamespacesActions.setRegistryDeployParameterContext(PcData));
+    dispatch(
+      NamespacesActions.setRegistryDeployControllerService(
+        controllerServicePayload
+      )
+    );
     history.push('/process-group/summary');
   };
 
@@ -134,7 +140,12 @@ const ConfigDetailsPage = () => {
           />
         );
       case KDFM.CONTROLLER_SERVICE:
-        return <ControllerServiceTab />;
+        return (
+          <ControllerServiceTab
+            controllerServicePayload={controllerServicePayload}
+            setControllerServicePayload={setControllerServicePayload}
+          />
+        );
       default:
         return null;
     }

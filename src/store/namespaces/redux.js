@@ -88,6 +88,9 @@ export const NamespacesActions = {
   getNewPropertyControllerService: createAction(
     `${prefix}getNewPropertyControllerService`
   ),
+  getNewPropertyControllerServiceUpdated: createAction(
+    `${prefix}getNewPropertyControllerServiceUpdated`
+  ),
   setNewProperToAddControllerService: createAction(
     `${prefix}setNewProperToAddControllerService`
   ),
@@ -155,6 +158,9 @@ export const NamespacesActions = {
   setregistryDetailsFlow: createAction(`${prefix}setregistryDetailsFlow`),
   updateNamespaceStatusRegistry: createAction(
     `${prefix}updateNamespaceStatusRegistry`
+  ),
+  setRegistryDeployControllerService: createAction(
+    `${prefix}setRegistryDeployControllerService`
   ),
 };
 
@@ -234,6 +240,7 @@ export const NAMESPACES_INITIAL_STATE = {
   registryDeployResponseData: {},
   updatedRegistryRespones: {},
   registryDetailsFlow: false,
+  registryDeployControllerService: {},
   // parameterEditParent: false,
 };
 
@@ -308,6 +315,8 @@ export const NamespacesSelectors = {
     state.namespaces.registryDeployResponseData,
   getUpdatedRegistryRespones: state => state.namespaces.updatedRegistryRespones,
   getRegistryDetailsFlow: state => state.namespaces.registryDetailsFlow,
+  getRegistryDeployControllerService: state =>
+    state.namespaces.registryDeployControllerService,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -699,6 +708,12 @@ const setregistryDetailsFlow = (state, { payload }) => {
   };
 };
 
+const setRegistryDeployControllerService = (state, { payload }) => {
+  return {
+    ...state,
+    registryDeployControllerService: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -843,9 +858,10 @@ export const namespacesReducer = createReducer(
         NamespacesActions.setUpdatedRegistryRespones,
         setUpdatedRegistryRespones
       )
+      .addCase(NamespacesActions.setregistryDetailsFlow, setregistryDetailsFlow)
       .addCase(
-        NamespacesActions.setregistryDetailsFlow,
-        setregistryDetailsFlow
+        NamespacesActions.setRegistryDeployControllerService,
+        setRegistryDeployControllerService
       );
   }
 );
