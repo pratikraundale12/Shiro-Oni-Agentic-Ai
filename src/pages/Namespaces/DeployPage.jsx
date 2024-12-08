@@ -145,7 +145,6 @@ function DeployPage() {
     label: item?.name,
     value: item?.id,
   }));
-
   const flowListOptions = flowListData?.flowsList?.map(item => ({
     label: item?.flowName,
     value: item?.flowId,
@@ -281,7 +280,9 @@ function DeployPage() {
   }, [selectedValueFlowId]);
 
   useEffect(() => {
-    dispatch(NamespacesActions.fetchRegistryData());
+    if (isEmpty(bucketListOptions)) {
+      dispatch(NamespacesActions.fetchRegistryData());
+    }
   }, [dispatch]);
 
   const hasRunOnce = useRef(false);
@@ -306,7 +307,7 @@ function DeployPage() {
         NamespacesActions.setDeployFormData({
           bucketId: selectedValuebucketId,
           flow_name: selectedValueFlowId,
-          selectedFlowName: flowname[0].label,
+          selectedFlowName: flowname?.[0]?.label,
           keepParameters: keepParameter,
         })
       );
