@@ -13,6 +13,7 @@ import PropertyDropdownModal from './ProprtyDropdownModel';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import { SettingSmallIcon } from '../../assets';
 import { KDFM } from '../../constants';
+import PropTypes from 'prop-types';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -42,7 +43,9 @@ const ConfigureButton = styled.button`
   }
 `;
 
-const ControllerServiceTab = () => {
+const ControllerServiceTab = ({
+  setControllerServicePayload,
+}) => {
   const dispatch = useDispatch();
   const [openIndex, setOpenIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,7 +83,7 @@ const ControllerServiceTab = () => {
   const [updatedExternalServiceData, setUpdatedExternalServiceData] = useState(
     []
   );
-  const [controllerServicePayload, setControllerServicePayload] = useState({});
+  // const [controllerServicePayload, setControllerServicePayload] = useState({});
   const [isExternalServiceConfigured, setIsExternalServiceConfigured] =
     useState(false);
   const [isExternalServiceUpdated, setIsExternalServiceUpdated] =
@@ -336,11 +339,6 @@ const ControllerServiceTab = () => {
     isExternalServiceConfigured,
   ]);
 
-  console.log(
-    'Controller service payload to pass to further deployment',
-    controllerServicePayload
-  );
-
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -411,5 +409,8 @@ const ControllerServiceTab = () => {
     </DataWrapper>
   );
 };
-
+ControllerServiceTab.propTypes = {
+  setControllerServicePayload: PropTypes.func,
+  controllerServicePayload: PropTypes.object,
+};
 export default ControllerServiceTab;
