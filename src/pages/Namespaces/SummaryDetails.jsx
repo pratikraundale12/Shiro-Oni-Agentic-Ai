@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import styled from 'styled-components';
-import { NamespacesSelectors } from '../../store';
+import { GridSelectors, NamespacesSelectors } from '../../store';
 
 const RowConfig = styled.div`
   display: flex;
@@ -83,7 +83,10 @@ const SummaryDetails = () => {
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
-  console.log(singleNamespaceData, 'singleNamespaceData');
+  const registryData = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
+  console.log(registryData, 'singleNamespaceData');
   return (
     <DataWrapper className="w-100">
       <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -115,7 +118,7 @@ const SummaryDetails = () => {
               </SummaryDetailsHFourTag>
               <SummaryDetailsPtag className="mb-0">
                 <div>
-                  <span>123</span>
+                  <span>{registryData?.url}</span>
                 </div>
               </SummaryDetailsPtag>
             </div>
