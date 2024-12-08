@@ -349,6 +349,9 @@ const Summary = () => {
   const variblesReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployVariable
   );
+  const controllerServiceReduxData = useSelector(
+    NamespacesSelectors.getRegistryDeployControllerService
+  );
   const parameterReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployParameterContext
   );
@@ -567,9 +570,11 @@ const Summary = () => {
         : variblesReduxData,
       parameterData: updatedData,
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
+      controllerServiceData: controllerServiceReduxData,
     };
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
+
   const loadingregistry = useSelector(state =>
     LoadingSelectors.getLoading(state, 'deployNamespaceByRegistryFlow')
   );
