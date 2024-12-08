@@ -79,8 +79,8 @@ export const namespacesAPI = api => {
   const deployCluster = ({ clusterId, payload }) =>
     api.post(`/clusters/${clusterId}/deploy`, payload);
 
-  const upgradeCluster = ({ clusterId, ...rest }) =>
-    api.post(`/clusters/${clusterId}/upgrade`, rest);
+  const upgradeCluster = ({ clusterId, payload }) =>
+    api.post(`/clusters/${clusterId}/upgrade`, payload);
 
   const clusterProgress = ({ clusterId, progressId, auditId }, queryParams) =>
     api.get(
@@ -232,6 +232,8 @@ export const namespacesAPI = api => {
       `/exports/${clusterId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`
     );
   };
+
+  //http://localhost:8000/api/clusters/8b5e2583-85ed-48c6-a975-b1cbea8fca1e/upgrade
 
   return {
     fetchNamespaces,

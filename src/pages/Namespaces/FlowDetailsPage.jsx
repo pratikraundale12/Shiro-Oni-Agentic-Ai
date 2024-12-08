@@ -202,8 +202,9 @@ const FlowDetailsPage = () => {
   const storedYcord = useSelector(NamespacesSelectors.getregistryFlowYCord);
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
-
-  const [selectedVersion, setSelectedVersion] = useState(versionSelected);
+  const [selectedVersion, setSelectedVersion] = useState(
+    versionSelected?.version
+  );
   const [xStateCoordinate, setXStateCoordiate] = useState(null);
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
   useEffect(() => {
@@ -252,7 +253,7 @@ const FlowDetailsPage = () => {
           NamespacesActions.fetchRegistryFlowDetails({
             bucketId: selectedNameSpace.bucketId,
             flowId: selectedNameSpace.flowId,
-            version: selectedNameSpace.version,
+            version: selectedVersion,
           })
         );
         history.push('/process-group/config-details');
@@ -262,7 +263,7 @@ const FlowDetailsPage = () => {
 
   const handleRowClick = item => {
     setSelectedVersion(item.version);
-    dispatch(NamespacesActions.setVersionSelect(item));
+    dispatch(NamespacesActions.setVersionSelect(item.version));
   };
 
   const handleBackClick = () => {

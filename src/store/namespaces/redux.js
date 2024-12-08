@@ -152,9 +152,11 @@ export const NamespacesActions = {
   setUpdatedRegistryRespones: createAction(
     `${prefix}setUpdatedRegistryRespones`
   ),
+  updateNamespaceStatusRegistry: createAction(
+    `${prefix}updateNamespaceStatusRegistry`
+  ),
 };
-// registryFlowXCord:null,
-//registryFlowYCord:null
+
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,

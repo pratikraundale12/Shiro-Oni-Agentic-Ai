@@ -191,35 +191,34 @@ export function* updateNamespaceStatus(api, { payload }) {
 }
 
 export function* upgradeCluster(api) {
-  const selectedDestCluster = yield select(
-    NamespacesSelectors.getSelectedDestCluster
-  );
-  const checkDestCluster = yield select(
-    NamespacesSelectors.getCheckDestCluster
-  );
-  const formData = yield select(NamespacesSelectors.getFormData);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const destClusterToken = clusters?.find(
-    cluster => cluster.id === selectedDestCluster?.value
-  );
-  const selectedNamespace = yield select(
-    NamespacesSelectors.getSelectedNamespace
-  );
+  // const selectedDestCluster = yield select(
+  //   NamespacesSelectors.getSelectedDestCluster
+  // );
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  api.headers['x-cluster-id'] = destClusterToken?.id;
-  api.headers['x-cluster-token'] = destClusterToken?.token;
+  // const checkDestCluster = yield select(
+  //   NamespacesSelectors.getCheckDestCluster
+  // );
+  // const formData = yield select(NamespacesSelectors.getFormData);
+  // const destClusterToken = clusters?.find(
+  //   cluster => cluster.id === selectedDestCluster?.value
+  // );
+  // const selectedNamespace = yield select(
+  //   NamespacesSelectors.getSelectedNamespace
+  // );
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const srcClusterToken = clusters?.find(
+    cluster => cluster.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  api.headers['x-cluster-token'] = srcClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'upgradeCluster',
     loadingSection: 'upgradeCluster',
     apiMethod: api.upgradeCluster,
     apiParams: [
       {
-        clusterId: selectedDestCluster?.value,
-        namespaceId: checkDestCluster?.id,
-        sourceNamespaceName: selectedNamespace?.label,
-        sourceNamespaceId: selectedNamespace?.value,
-        sourceClusterId: selectedCluster?.value,
-        version: formData.version || checkDestCluster?.version,
+        clusterId: selectedCluster?.value,
+        name: 'name',
       },
     ],
     successAction: NamespacesActions.deployClusterSuccess,
@@ -1140,6 +1139,45 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
+export function* updateNamespaceStatusRegistry(api, { payload }) {
+  const checkDestCluster = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const srcClusterToken = clusters?.find(
+    cluster => cluster.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  api.headers['x-cluster-token'] = srcClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'updateNamespaceStatus',
+    loadingSection: 'updateNamespaceStatus',
+    apiMethod: api.updateNamespaceStatus,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: checkDestCluster?.id,
+        state: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    const data = {
+      id: response.data.status.id,
+      runningCount: response.data.status.runningCount,
+      stoppedCount: response.data.status.stoppedCount,
+      invalidCount: response.data.status.invalidCount,
+      disabledCount: response.data.status.disabledCount,
+      parameterContextId: response.data.status.parameterContextId,
+    };
+
+    yield put(NamespacesActions.deployClusterSuccess(data));
+  }
+  if (!response.ok) {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
 //
 export function* namespacesSagas(api) {
   yield all([
@@ -1240,6 +1278,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.deployNamespaceByRegistryFlow,
       deployNamespaceByRegistryFlow,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.updateNamespaceStatusRegistry,
+      updateNamespaceStatusRegistry,
       api
     ),
   ]);

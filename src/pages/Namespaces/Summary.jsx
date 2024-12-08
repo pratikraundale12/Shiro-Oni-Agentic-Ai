@@ -328,10 +328,12 @@ const Summary = () => {
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
+  console.log(deployOrUpgradeDetails, 'deployOrUpgradeDetails');
   const currentSelectedCluster = useSelector(
     NamespacesSelectors.getSelectedCluster
   );
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
+  console.log(versionSelected, 'versionSelected');
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(
@@ -513,6 +515,29 @@ const Summary = () => {
   };
 
   const handleConfirmUpdateStatus = () => {
+    if (!deployByRegistryFlow) {
+      console.log(confirmDialogue.forPopup, 'confirmDialogue.forPopup');
+      if (confirmDialogue.forPopup) {
+        ('hello');
+      } else {
+        dispatch(
+          NamespacesActions.updateNamespaceStatusRegistry(
+            confirmDialogue?.action
+          )
+        );
+        setActiveButton(confirmDialogue.action);
+        setFlowControlButtons(confirmDialogue.action);
+      }
+
+      setConfirmDialogue({
+        state: false,
+        action: '',
+        text: '',
+        forPopup: false,
+      });
+
+      return;
+    }
     if (confirmDialogue.forPopup) {
       dispatch(
         NamespacesActions.updateNamespaceStatus(confirmDialogue?.action)
@@ -550,7 +575,7 @@ const Summary = () => {
     });
     // dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
-
+  //
   const handledeployByRegistry = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -573,13 +598,17 @@ const Summary = () => {
     };
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
+
+  const handleUpgradeByRegistry = () => {
+    dispatch(NamespacesActions.upgradeCluster('hello'));
+  };
   const loadingregistry = useSelector(state =>
     LoadingSelectors.getLoading(state, 'deployNamespaceByRegistryFlow')
   );
   const loadingreUpdateFlow = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
   );
-   return (
+  return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader loading={loadingregistry || loadingreUpdateFlow} />
       <TopTitleBar className="d-flex mb-3">
@@ -681,19 +710,11 @@ const Summary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>
-                          {deployByRegistryFlow
-                            ? registryAllDetails?.nifi_url
-                            : checkDestCluster.nifiUrl}
-                        </span>
+                        <span>{registryAllDetails?.nifi_url}</span>
                         <div data-tooltip-id={`copy-board-namespace-summary2`}>
                           <CopyToClipboard
                             className="summary-clipboard"
-                            copyItem={
-                              deployByRegistryFlow
-                                ? registryAllDetails?.nifi_url
-                                : checkDestCluster.nifiUrl
-                            }
+                            copyItem={registryAllDetails?.nifi_url}
                           />
                         </div>
                         <ReactTooltip
@@ -722,7 +743,7 @@ const Summary = () => {
                     <SummaryDetailsPtag className="mb-0">
                       {deployByRegistryFlow
                         ? versionSelected.version
-                        : checkDestCluster?.version || 'N/A'}
+                        : versionSelected || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -733,7 +754,7 @@ const Summary = () => {
                         {KDFM.UPDATED_VERSION}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
-                        {formData.version || versionSelected.version}
+                        {versionSelected || ''}
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
@@ -909,7 +930,7 @@ const Summary = () => {
           <Button variant="secondary" onClick={handleBackClick}>
             {KDFM.BACK}
           </Button>
-          {!schedularFromList && !isRegistryDeploy && (
+          {/* {!schedularFromList && !isRegistryDeploy && (
             <Button
               onClick={deployByRegistryFlow ? handleDeploy : handleUpgradeClick}
             >
@@ -919,9 +940,14 @@ const Summary = () => {
                   : KDFM.DOWNGRADE
                 : KDFM.DEPLOY}
             </Button>
-          )}
+          )} */}
           {isRegistryDeploy && (
-            <Button onClick={handledeployByRegistry}>{KDFM.DEPLOY}</Button>
+            <Button onClick={handledeployByRegistry}>
+              {isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE}
+            </Button>
+          )}
+          {!isRegistryDeploy && (
+            <Button onClick={handleUpgradeByRegistry}>{KDFM.UPGRADE}</Button>
           )}
           {schedularFromList && (
             <Button
