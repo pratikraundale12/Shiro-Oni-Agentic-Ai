@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { NamespacesActions } from '../../store';
 import { useDispatch } from 'react-redux';
 
-const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
+const RectangleGraph = ({ data, setXStateCoordinate, setYStateCoordinate }) => {
   const svgRef = useRef();
   const dispatch = useDispatch();
   const isFirstRender = useRef(true);
@@ -78,8 +78,8 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
           `translate(${xScale(d.x)}, ${yScale(d.y)})`
         );
 
-        setXStateCoordiate(dataX);
-        setYStateCoordiate(dataY);
+        setXStateCoordinate(dataX);
+        setYStateCoordinate(dataY);
         dispatch(NamespacesActions.setPosition({ x: dataX }));
         dispatch(NamespacesActions.setPosition({ y: dataY }));
 
@@ -104,8 +104,8 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
           `translate(${xScale(d.x)}, ${yScale(d.y)})`
         );
 
-        setXStateCoordiate(dataX);
-        setYStateCoordiate(dataY);
+        setXStateCoordinate(dataX);
+        setYStateCoordinate(dataY);
         dispatch(NamespacesActions.setPosition({ x: dataX + d.offsetX }));
         dispatch(NamespacesActions.setPosition({ y: dataY + d.offsetY }));
       });
@@ -196,8 +196,8 @@ RectangleGraph.propTypes = {
       color: PropTypes.string.isRequired,
     })
   ).isRequired,
-  setXStateCoordiate: PropTypes.func.isRequired,
-  setYStateCoordiate: PropTypes.func.isRequired,
+  setXStateCoordinate: PropTypes.func.isRequired,
+  setYStateCoordinate: PropTypes.func.isRequired,
 };
 
 export default RectangleGraph;

@@ -4,13 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import styled from 'styled-components';
 import { QRIcons, TodoIcon } from '../../assets';
 import Breadcrumb from '../../shared/Breadcrumb';
-import {
-  Button,
-  CheckboxField,
-  InputField,
-  RadioField,
-  SelectField,
-} from '../../shared';
+import { Button, CheckboxField, InputField, SelectField } from '../../shared';
 import { FullPageLoader, Table } from '../../components';
 import { history } from '../../helpers/history';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,6 +18,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { isEmpty } from 'lodash';
+import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -103,11 +98,6 @@ const VersionDiv = styled.div`
   color: #444445;
 `;
 
-const StyledTableCell = styled.div`
-  cursor: pointer;
-  padding: 6px 12px !important;
-`;
-
 const CustomTable = styled(Table)`
   max-height: 400px;
   overflow: auto;
@@ -163,93 +153,10 @@ function DeployPage() {
     resolver: yupResolver(registrySchema),
   });
 
-  const convertDate = dateString => {
-    const date = new Date(dateString);
-
-    const pad = num => String(num).padStart(2, '0');
-
-    const month = pad(date.getMonth() + 1);
-    const day = pad(date.getDate());
-    const year = date.getFullYear();
-
-    const hours = pad(date.getHours());
-    const minutes = pad(date.getMinutes());
-    const seconds = pad(date.getSeconds());
-
-    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
-  };
   const sortedData = versionListData?.versionList
     ?.slice()
     .sort((a, b) => a.version - b.version);
 
-  const COLUMNS = [
-    {
-      label: '',
-      renderCell: item => (
-        <StyledTableCell
-          role="button"
-          tabIndex="0"
-          onClick={() => handleRowClick(item)}
-          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <RadioField
-            name="upgrade"
-            checked={item.version === selectedVersion}
-            onChange={() => {
-              handleRadioChange(item);
-            }}
-          />
-        </StyledTableCell>
-      ),
-      width: '10%',
-    },
-    {
-      label: KDFM.VERSION,
-      renderCell: item => (
-        <StyledTableCell
-          role="button"
-          tabIndex="0"
-          onClick={() => handleRowClick(item)}
-          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
-        >
-          {item.version}
-        </StyledTableCell>
-      ),
-      width: '12%',
-    },
-    {
-      label: KDFM.CREATED,
-      renderCell: item => (
-        <StyledTableCell
-          role="button"
-          tabIndex="0"
-          onClick={() => handleRowClick(item)}
-          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
-        >
-          {convertDate(item.createdAt)}
-        </StyledTableCell>
-      ),
-      width: '28%',
-    },
-    {
-      label: KDFM.COMMENT,
-      renderCell: item => (
-        <StyledTableCell
-          role="button"
-          tabIndex="0"
-          onClick={() => handleRowClick(item)}
-          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
-        >
-          {item.comments}
-        </StyledTableCell>
-      ),
-      width: '50%',
-    },
-  ];
   const handleRowClick = item => {
     setSelectedVersion(item.version);
     dispatch(NamespacesActions.setVersionSelect(item));
@@ -271,7 +178,7 @@ function DeployPage() {
   useEffect(() => {
     if (selectedValueFlowId) {
       dispatch(
-        NamespacesActions.fetchVerionData({
+        NamespacesActions.fetchVersionData({
           bucketId: selectedValuebucketId,
           flowId: selectedValueFlowId,
         })
@@ -324,7 +231,7 @@ function DeployPage() {
     LoadingSelectors.getLoading(state, 'fetchFlowNameList')
   );
   const loadingVersion = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchVerionData')
+    LoadingSelectors.getLoading(state, 'fetchVersionData')
   );
   //fetchRegistryFlowDetails
   return (
@@ -415,7 +322,14 @@ function DeployPage() {
             </RowConfig>
 
             <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
-            <CustomTable data={sortedData || []} columns={COLUMNS} />
+            <CustomTable
+              data={sortedData || []}
+              columns={VERSION_COLUMNS({
+                selectedVersion,
+                handleRadioChange,
+                handleRowClick,
+              })}
+            />
           </ScrollSetGrey>
         </GreyBoxNamespace>
         <BottomButton className="bottom-button-divs d-flex">

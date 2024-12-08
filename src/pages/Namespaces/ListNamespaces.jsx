@@ -356,10 +356,18 @@ export const ListNamespaces = () => {
       NamespacesActions.setSelectedNamespace({
         label: item.name,
         value: item.id,
+        ...item,
       })
     );
-
-    history.push('/process-group/upgrade', {
+    dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
+    dispatch(NamespacesActions.setDeployByRegistryFlow(false));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: item.bucketId,
+        flowId: item.flowId,
+      })
+    );
+    history.push('/process-group/flow-details', {
       state: {
         id: item.id,
       },
