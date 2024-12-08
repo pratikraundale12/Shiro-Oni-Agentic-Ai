@@ -86,7 +86,6 @@ const SummaryDetails = () => {
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
-  console.log(registryData, 'singleNamespaceData');
   return (
     <DataWrapper className="w-100">
       <ScrollSetGrey className="scroll-set-grey pe-1">
