@@ -1128,7 +1128,6 @@ export function* upgradeCluster(api, { payload }) {
   });
 
   if (response.ok && response.data?.requestId) {
-    yield call(clusterProgress, api);
     yield put(NamespacesActions.setNamespaceSummaryLoadingState(false));
   }
 

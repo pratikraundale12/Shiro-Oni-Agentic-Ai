@@ -604,22 +604,16 @@ const Summary = () => {
       parameterName: item.name,
       parameters: item.parameters,
     }));
-    console.log(registryDetailsData);
     const payload = {
       version: versionSelected,
-      flowId: checkDestCluster?.flowId,
-      bucketId: checkDestCluster?.bucketId,
-      registryId: checkDestCluster?.registryId,
-      position: {
-        x: XcordUpdated || checkDestCluster.position.x,
-        y: YcordUpdated || checkDestCluster.position.y,
+      namespaceId: checkDestCluster?.id,
+      payload: {
+        variablesData: isEmpty(variblesReduxData)
+          ? registryDetailsData?.variablesData
+          : variblesReduxData,
+        parameterData: updatedData,
+        controllerServiceData: registryDetailsData?.controllerServicesData,
       },
-      variablesData: isEmpty(variblesReduxData)
-        ? registryDetailsData?.variablesData
-        : variblesReduxData,
-      parameterData: updatedData,
-      controllerServiceData: registryDetailsData?.controllerServicesData,
-      keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
     };
     dispatch(NamespacesActions.upgradeCluster(payload));
   };
