@@ -42,18 +42,11 @@ const ScrollSetGrey = styled.div`
 
 const ParameterContext = ({
   isOpen,
-  // closePopup,
-  // openAddParameterContext,
   isAddParameterContextOpen,
-
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   isParameterContextOpen,
-  // parameterContextId = '',
-  // getParamerterContext,
 }) => {
-  console.log(isAddParameterContextOpen, 'isAddParameterContextOpen');
-  // const [loading, setLoading] = useState(false);
   const [selectedParentContextId, setSelectedParentContextId] = useState('');
   const dispatch = useDispatch();
   const [isTableOpen, setIsTableOpen] = useState(false);
@@ -64,16 +57,9 @@ const ParameterContext = ({
     NamespacesSelectors.getParameterContextItem
   );
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
-  // const deployOrUpgradeDetails = useSelector(
-  //   NamespacesSelectors.getDeployOrUpgradeDetails
-  // );
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getRegistryDeployResponseData
   );
-  console.log(deployOrUpgradeDetails, 'deployOrUpgradeDetails');
-  // const parentParameterSelectData = useSelector(
-  //   NamespacesSelectors.getParameterEditParent
-  // );
   const parameterContextObjectAtDeloy = useSelector(
     NamespacesSelectors.getParameterContextListAtDeploy
   );
@@ -84,7 +70,6 @@ const ParameterContext = ({
 
   const tableData = [...copyParameterDetailsData, ...newlyAddParameters];
   const targetId = deployOrUpgradeDetails?.parameterContextId;
-  console.log(targetId, 'targetId');
 
   const sortedArray = tableData.sort((a, b) => {
     if (a.parentParameterId === targetId) return -1;
@@ -110,7 +95,6 @@ const ParameterContext = ({
           schduleParameterData
         )
       );
-      //setScheduleNamespaceParameterContext
     }
   }, [schedularFromList, schduleParameterData]);
 
@@ -125,7 +109,6 @@ const ParameterContext = ({
   ]);
 
   const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
-  console.log(isParentEdit);
 
   const truncateString = (str, maxLength) => {
     if (str.length > maxLength) {
@@ -183,7 +166,6 @@ const ParameterContext = ({
                   setIsParameterContextOpen({ isOpen: false, schedule: false });
                 }
                 dispatch(NamespacesActions.setParameterContextItem(item));
-                console.log(isParentEdit);
                 if (!isParentEdit?.parent) {
                   dispatch(
                     NamespacesActions.setParameterEditParent({

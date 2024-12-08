@@ -357,6 +357,9 @@ export function* fetchParameterContext(
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
 
   const parentParameterSelectData = yield select(
     NamespacesSelectors.getParameterEditParent
@@ -370,7 +373,9 @@ export function* fetchParameterContext(
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        parameterId: deployOrUpgradeDetails?.parameterContextId,
+        parameterId:
+          deployOrUpgradeDetails?.parameterContextId ||
+          selectedNamespace?.parameterContextId,
         includeInherited: !parentParameterSelectData?.parent,
       },
     ],
@@ -404,6 +409,9 @@ export function* updateParameterContext(api, { payload }) {
   const parentParameterSelectData = yield select(
     NamespacesSelectors.getParameterEditParent
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const parentList = yield select(NamespacesSelectors.getParentListItems);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -417,7 +425,8 @@ export function* updateParameterContext(api, { payload }) {
         parameterContextId: parentParameterSelectData?.parent
           ? parentParameterSelectData?.id
           : parentList[0]?.parentParameterId ||
-            deployOrUpgradeDetails?.parameterContextId,
+            deployOrUpgradeDetails?.parameterContextId ||
+            selectedNamespace?.parameterContextId,
         payloadData: {
           revision: { version: parameterDetails?.version },
           parameters:
@@ -470,6 +479,9 @@ export function* getStatusAndDeleteParameterContext(
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -483,7 +495,9 @@ export function* getStatusAndDeleteParameterContext(
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        parameterContextId: deployOrUpgradeDetails?.parameterContextId,
+        parameterContextId:
+          deployOrUpgradeDetails?.parameterContextId ||
+          selectedNamespace?.parameterContextId,
         requestId: additionalData?.requestId,
       },
     ],
@@ -518,6 +532,9 @@ export function* fetchVariableList(
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getRegistryDeployResponseData
   );
+  const singleNamespaceData = yield select(
+    NamespacesSelectors.getSingleNamespaceData
+  );
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -534,7 +551,7 @@ export function* fetchVariableList(
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: deployOrUpgradeDetails?.id,
+        namespaceId: deployOrUpgradeDetails?.id || singleNamespaceData?.id,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
@@ -574,7 +591,7 @@ export function* addVariableServices(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: deployOrUpgradeDetails?.id,
+        namespaceId: deployOrUpgradeDetails?.id || singleNamespaceData?.id,
         version: variableList.version,
         variables: variables,
         sourceNamespaceName: selectedNamespace?.label,
@@ -616,7 +633,7 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: deployOrUpgradeDetails?.id,
+        namespaceId: deployOrUpgradeDetails?.id || singleNamespaceData?.id,
         requestId: additionalData?.requestId,
         sourceNamespaceName: selectedNamespace?.label,
       },
