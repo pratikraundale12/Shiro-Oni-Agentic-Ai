@@ -268,7 +268,7 @@ function DeployPage() {
   useEffect(() => {
     if (selectedValueFlowId) {
       dispatch(
-        NamespacesActions.fetchVerionData({
+        NamespacesActions.fetchVersionData({
           bucketId: selectedValuebucketId,
           flowId: selectedValueFlowId,
         })
@@ -321,7 +321,7 @@ function DeployPage() {
     LoadingSelectors.getLoading(state, 'fetchFlowNameList')
   );
   const loadingVersion = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchVerionData')
+    LoadingSelectors.getLoading(state, 'fetchVersionData')
   );
   //fetchRegistryFlowDetails
   return (
