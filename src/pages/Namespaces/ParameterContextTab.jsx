@@ -38,6 +38,7 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
     isOpen: false,
     mode: 'add',
   });
+
   const [openIndex, setOpenIndex] = useState(
     PcData?.inherited && PcData?.inherited[0]?.name
       ? PcData?.inherited[0]?.name
@@ -61,16 +62,6 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
       setPcData(parameterReduxData);
     }
   }, [registryDetailsData?.parameterContextData]);
-
-  useEffect(() => {
-    setOpenIndex(
-      PcData?.inherited && PcData?.inherited[0]?.name
-        ? PcData?.inherited[0]?.name
-        : PcData?.parent && PcData?.parent[0]?.name
-          ? PcData?.parent[0]?.name
-          : null
-    );
-  }, [PcData]);
 
   const handleToggle = index => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
@@ -175,7 +166,6 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
           return group;
         });
       });
-
       return updatedState;
     });
   };
@@ -186,6 +176,7 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
       mode: 'add',
     });
   };
+
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">

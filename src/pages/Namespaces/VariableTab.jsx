@@ -43,7 +43,7 @@ const VariableTab = ({ variableData, setVariableData }) => {
     mode: 'add',
   });
 
-  const [openIndex, setOpenIndex] = useState(0);
+  const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
   const variblesReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployVariable
