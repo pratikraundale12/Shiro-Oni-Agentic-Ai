@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { PencilIcon } from '../../assets';
+import { NoDataIcon, PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { NamespacesSelectors } from '../../store';
@@ -27,6 +27,13 @@ const ScrollSetGrey = styled.div`
   overflow-y: auto;
 `;
 
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+`;
 const VariableTab = ({ variableData, setVariableData }) => {
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
@@ -133,26 +140,38 @@ const VariableTab = ({ variableData, setVariableData }) => {
   const closeAddVariablesModal = () => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
   };
-
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
         {variableData?.map((item, index) => (
-          <Collapsible
-            isAddBtnVisible={false}
-            onBtnClick={() => handleAddVariables(item.pgId, index)}
-            key={item.pgId}
-            title={item?.pgName}
-            isTableOpen={openIndex === index}
-            toggleCollapsible={() => handleToggle(item?.pgId, index)}
-          >
-            <Table
-              data={item.variables}
-              columns={VARIABLE_COLUMNS}
-              className={'variables-table'}
-            />
-          </Collapsible>
+          <>
+            {!isEmpty(item.variables) && (
+              <Collapsible
+                isAddBtnVisible={false}
+                onBtnClick={() => handleAddVariables(item.pgId, index)}
+                key={item.pgId}
+                title={item?.pgName}
+                isTableOpen={openIndex === index}
+                toggleCollapsible={() => handleToggle(item?.pgId, index)}
+              >
+                <Table
+                  data={item.variables}
+                  columns={VARIABLE_COLUMNS}
+                  className={'variables-table'}
+                />
+              </Collapsible>
+            )}
+          </>
         ))}
+        {(isEmpty(variableData) ||
+          variableData.every(item => isEmpty(item.variables))) && (
+          <>
+            <div className="d-flex justify-content-center">
+              <NoDataIcon width={130} />
+            </div>
+            <NoDataText>No Data Found!!</NoDataText>
+          </>
+        )}
         {isAddVariablesOpen.isOpen && (
           <AddOrEditVariablesModal
             isOpen={isAddVariablesOpen}
