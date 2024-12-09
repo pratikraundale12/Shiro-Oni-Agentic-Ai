@@ -51,11 +51,6 @@ const LabelSelect = styled.div`
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
 `;
-const InputFieldFlex = styled.div`
-  margin-top: 20px;
-  width: 100%;
-  display: flex;
-`;
 
 const EmphasisText = styled.em`
   font-style: italic;
@@ -135,7 +130,9 @@ export const Setting = () => {
 
     try {
       dispatch(SettingsActions.createSettings(payload));
-      dispatch(SettingsActions.fetchSettings());
+      setTimeout(() => {
+        dispatch(SettingsActions.fetchSettings());
+      }, 1000);
       setLoading(false);
       if (data?.favicon) {
         changeFavicon(data.favicon);
@@ -205,6 +202,7 @@ export const Setting = () => {
 
   const handleLdapToggle = () => {
     setLdapAutoSync(prevState => !prevState);
+    setIsChanged(true);
   };
 
   function changeFavicon(newFaviconURL) {
@@ -231,16 +229,9 @@ export const Setting = () => {
         }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="d-flex justify-content-end me-4">
-          <SwitchButton
-            id="openModalInput"
-            name="AUTO SYNC"
-            checked={ldapAutoSync}
-            onChange={handleLdapToggle}
-          />
-        </div>
-        <InputFieldFlex className="row">
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+        <div className="d-flex justify-content-end me-4"></div>
+        <InputFields className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
             <SelectField
               label="Refresh"
               name="refresh"
@@ -265,7 +256,7 @@ export const Setting = () => {
               placeholder="Select Cluster"
             />
           </div>
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
             <InputField
               name="email"
               register={register}
@@ -275,31 +266,7 @@ export const Setting = () => {
               errors={errors}
             />
           </div>
-
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-            <SelectField
-              label="LDAP Auto Sync Time"
-              name="ldap_auto_sync_time_interval"
-              control={control}
-              icon={<QRIcons />}
-              errors={errors}
-              options={Timeoptions}
-              placeholder="Select LDAP Auto Sync Time"
-              value={Timeoptions.find(
-                option =>
-                  option.value ===
-                  (watch('ldap_auto_sync_time_interval') ||
-                    settingData?.ldap_auto_sync_time_interval)
-              )} // Watch the value or use settingData fallback
-              isDisabled={!ldapAutoSync}
-              onChange={selectedOption => {
-                const value = selectedOption?.value || null;
-                setValue('ldap_auto_sync_time_interval', value);
-                setIsChanged(true);
-              }}
-            />
-          </div>
-        </InputFieldFlex>
+        </InputFields>
 
         <InputFields className="row">
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -340,6 +307,41 @@ export const Setting = () => {
             errors={errors}
           />
         </div>
+
+        <InputFields className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mb-4">
+            <SelectField
+              label="LDAP Auto Sync Time"
+              name="ldap_auto_sync_time_interval"
+              control={control}
+              icon={<QRIcons />}
+              errors={errors}
+              options={Timeoptions}
+              placeholder="Select LDAP Auto Sync Time"
+              value={Timeoptions.find(
+                option =>
+                  option.value ===
+                  (watch('ldap_auto_sync_time_interval') ||
+                    settingData?.ldap_auto_sync_time_interval)
+              )} // Watch the value or use settingData fallback
+              isDisabled={!ldapAutoSync}
+              onChange={selectedOption => {
+                const value = selectedOption?.value || null;
+                setValue('ldap_auto_sync_time_interval', value);
+                setIsChanged(true);
+              }}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-5">
+            <SwitchButton
+              id="openModalInput"
+              name="AUTO SYNC"
+              checked={ldapAutoSync}
+              onChange={handleLdapToggle}
+            />
+          </div>
+        </InputFields>
+
         <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-8 mb-4">
           <SelectField
             // isMulti
