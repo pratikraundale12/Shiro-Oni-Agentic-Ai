@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets';
 import { KDFM } from '../../constants';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
-import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
+import { NamespacesActions } from '../../store';
 import AuditLog from './AuditLog';
 import FlowControl from './FlowControl';
 import ParameterContextTab from './ParameterContextTab';
 import SummaryDetails from './SummaryDetails';
 import VariableTab from './VariableTab';
+import ListControllerService from './ListControllerServiceNamespace';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -101,10 +101,6 @@ const ConfigDetailsPage = () => {
     dispatch(NamespacesActions.setSourceNamespaceId(id));
     dispatch(NamespacesActions.singleNamespaceData(id));
   }, [id]);
-  const singleNamespaceData = useSelector(
-    NamespacesSelectors.getSingleNamespaceData
-  );
-  console.log(singleNamespaceData, 'singleNamespaceData');
 
   //need to add the components for respective tabs
   const renderContent = () => {
@@ -123,7 +119,7 @@ const ConfigDetailsPage = () => {
           />
         );
       case KDFM.CONTROLLER_SERVICE:
-        return <ControllerServiceTab />;
+        return <ListControllerService />;
 
       case 'Audit Log':
         return <AuditLog />;
