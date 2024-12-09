@@ -175,6 +175,10 @@ export const KDFM = {
   EMAIL_REMINDER: 'Email Reminder Time',
   REMINDER_EMPHASISED_TEXT: 'before schedule deployment time',
   CONFIGURE: 'Configure',
+  APP: 'App',
+  LDAP: 'Ldap',
+  SCHEDULE_DIPLOYMENT: 'Schedule Diployment',
+  SERVICE_ACCOUNT: 'Service Account',
 
   CHANGE_CONFIGURATION: 'Change Configuration',
 

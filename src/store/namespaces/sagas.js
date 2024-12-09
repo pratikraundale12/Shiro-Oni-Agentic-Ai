@@ -1,10 +1,10 @@
 import { toast } from 'react-toastify';
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
+import { GridSelectors } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
-import { GridSelectors } from '../grid';
 
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -190,51 +190,6 @@ export function* updateNamespaceStatus(api, { payload }) {
   }
 }
 
-export function* upgradeCluster(api) {
-  const selectedDestCluster = yield select(
-    NamespacesSelectors.getSelectedDestCluster
-  );
-  const checkDestCluster = yield select(
-    NamespacesSelectors.getCheckDestCluster
-  );
-  const formData = yield select(NamespacesSelectors.getFormData);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const destClusterToken = clusters?.find(
-    cluster => cluster.id === selectedDestCluster?.value
-  );
-  const selectedNamespace = yield select(
-    NamespacesSelectors.getSelectedNamespace
-  );
-  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  api.headers['x-cluster-id'] = destClusterToken?.id;
-  api.headers['x-cluster-token'] = destClusterToken?.token;
-  const response = yield call(requestSaga, {
-    errorSection: 'upgradeCluster',
-    loadingSection: 'upgradeCluster',
-    apiMethod: api.upgradeCluster,
-    apiParams: [
-      {
-        clusterId: selectedDestCluster?.value,
-        namespaceId: checkDestCluster?.id,
-        sourceNamespaceName: selectedNamespace?.label,
-        sourceNamespaceId: selectedNamespace?.value,
-        sourceClusterId: selectedCluster?.value,
-        version: formData.version || checkDestCluster?.version,
-      },
-    ],
-    successAction: NamespacesActions.deployClusterSuccess,
-  });
-
-  if (response.ok && response.data?.requestId) {
-    yield call(clusterProgress, api);
-    yield put(NamespacesActions.setNamespaceSummaryLoadingState(false));
-  }
-
-  if (!response.ok) {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
-  }
-}
-
 export function* clusterProgress(api) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
@@ -345,33 +300,32 @@ export function* getCountDetails(api) {
 
 export function* fetchParameterContext(
   api,
-  { initialCall = true, showError = false }
+  { initialCall = true, showError = false, payload }
 ) {
+  const deployOrUpgradeDetails = yield select(
+    NamespacesSelectors.getRegistryDeployResponseData
+  );
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
   const parentParameterSelectData = yield select(
     NamespacesSelectors.getParameterEditParent
   );
-  const selectedDestCluster = yield select(
-    NamespacesSelectors.getSelectedDestCluster
-  );
-  const deployOrUpgradeDetails = yield select(
-    NamespacesSelectors.getDeployOrUpgradeDetails
-  );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const destClusterToken = clusters?.find(
-    cluster => cluster.id === selectedDestCluster?.value
-  );
-  api.headers['x-cluster-id'] = destClusterToken?.id;
-  api.headers['x-cluster-token'] = destClusterToken?.token;
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'fetchParameterContext',
     loadingSection: 'fetchParameterContext',
     apiMethod: api.fetchParameterContext,
     apiParams: [
       {
-        clusterId: selectedDestCluster?.value,
-        parameterId: parentParameterSelectData?.parent
-          ? parentParameterSelectData?.id
-          : deployOrUpgradeDetails?.parameterContextId,
+        clusterId: selectedCluster?.value,
+        parameterId: deployOrUpgradeDetails?.parameterContextId || payload,
         includeInherited: !parentParameterSelectData?.parent,
       },
     ],
@@ -389,11 +343,15 @@ export function* fetchParameterContext(
 
 export function* updateParameterContext(api, { payload }) {
   const { modifiedPayloadData } = payload;
-  const selectedDestCluster = yield select(
-    NamespacesSelectors.getSelectedDestCluster
-  );
   const deployOrUpgradeDetails = yield select(
-    NamespacesSelectors.getDeployOrUpgradeDetails
+    NamespacesSelectors.getRegistryDeployResponseData
+  );
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
   );
   const parameterDetails = yield select(
     NamespacesSelectors.getParameterDetails
@@ -401,24 +359,24 @@ export function* updateParameterContext(api, { payload }) {
   const parentParameterSelectData = yield select(
     NamespacesSelectors.getParameterEditParent
   );
-  const parentList = yield select(NamespacesSelectors.getParentListItems);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const destClusterToken = clusters?.find(
-    cluster => cluster.id === selectedDestCluster?.value
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
   );
-  api.headers['x-cluster-id'] = destClusterToken?.id;
-  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const parentList = yield select(NamespacesSelectors.getParentListItems);
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'updateParameterContext',
     loadingSection: 'updateParameterContext',
     apiMethod: api.updateParameterContext,
     apiParams: [
       {
-        clusterId: selectedDestCluster?.value,
+        clusterId: selectedCluster?.value,
         parameterContextId: parentParameterSelectData?.parent
           ? parentParameterSelectData?.id
           : parentList[0]?.parentParameterId ||
-            deployOrUpgradeDetails?.parameterContextId,
+            deployOrUpgradeDetails?.parameterContextId ||
+            selectedNamespace?.parameterContextId,
         payloadData: {
           revision: { version: parameterDetails?.version },
           parameters:
@@ -461,18 +419,22 @@ export function* getStatusAndDeleteParameterContext(
   api,
   { method, additionalData }
 ) {
-  const selectedDestCluster = yield select(
-    NamespacesSelectors.getSelectedDestCluster
-  );
   const deployOrUpgradeDetails = yield select(
-    NamespacesSelectors.getDeployOrUpgradeDetails
+    NamespacesSelectors.getRegistryDeployResponseData
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const destClusterToken = clusters?.find(
-    cluster => cluster.id === selectedDestCluster?.value
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
-  api.headers['x-cluster-id'] = destClusterToken?.id;
-  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'getParameterContextStatus',
     loadingSection: 'getParameterContextStatus',
@@ -482,8 +444,10 @@ export function* getStatusAndDeleteParameterContext(
         : api.deleteParameterContext,
     apiParams: [
       {
-        clusterId: selectedDestCluster?.value,
-        parameterContextId: deployOrUpgradeDetails?.parameterContextId,
+        clusterId: selectedCluster?.value,
+        parameterContextId:
+          deployOrUpgradeDetails?.parameterContextId ||
+          selectedNamespace?.parameterContextId,
         requestId: additionalData?.requestId,
       },
     ],
@@ -515,26 +479,29 @@ export function* fetchVariableList(
   { initialCall = true, showError = false }
 ) {
   yield put(NamespacesActions.setVariableListLoading(true));
-  const selectedDestCluster = yield select(
-    NamespacesSelectors.getSelectedDestCluster
+  const deployOrUpgradeDetails = yield select(
+    NamespacesSelectors.getRegistryDeployResponseData
   );
-  const deployDetails = yield select(
-    NamespacesSelectors.getDeployOrUpgradeDetails
+  const singleNamespaceData = yield select(
+    NamespacesSelectors.getSingleNamespaceData
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const destClusterToken = clusters?.find(
-    cluster => cluster.id === selectedDestCluster?.value
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
-  api.headers['x-cluster-id'] = destClusterToken?.id;
-  api.headers['x-cluster-token'] = destClusterToken?.token;
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'fetchVariableList',
     loadingSection: 'fetchVariableList',
     apiMethod: api.getVariableList,
     apiParams: [
       {
-        clusterId: selectedDestCluster?.value,
-        namespaceId: deployDetails?.id,
+        clusterId: selectedCluster?.value,
+        namespaceId: deployOrUpgradeDetails?.id || singleNamespaceData?.id,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
@@ -550,31 +517,31 @@ export function* fetchVariableList(
 
 export function* addVariableServices(api, { payload }) {
   yield put(NamespacesActions.setVariableListLoading(true));
+  const deployOrUpgradeDetails = yield select(
+    NamespacesSelectors.getRegistryDeployResponseData
+  );
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
   const { variables } = payload;
-  const selectedDestCluster = yield select(
-    NamespacesSelectors.getSelectedDestCluster
-  );
-  const deployDetails = yield select(
-    NamespacesSelectors.getDeployOrUpgradeDetails
-  );
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
   const variableList = yield select(NamespacesSelectors.getVariableList);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const destClusterToken = clusters?.find(
-    cluster => cluster.id === selectedDestCluster?.value
-  );
-  api.headers['x-cluster-id'] = destClusterToken?.id;
-  api.headers['x-cluster-token'] = destClusterToken?.token;
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'addVariableServices',
     loadingSection: 'addVariableServices',
     apiMethod: api.addVariableServices,
     apiParams: [
       {
-        clusterId: selectedDestCluster?.value,
-        namespaceId: deployDetails.id,
+        clusterId: selectedCluster?.value,
+        namespaceId: deployOrUpgradeDetails?.id || singleNamespaceData?.id,
         version: variableList.version,
         variables: variables,
         sourceNamespaceName: selectedNamespace?.label,
@@ -592,21 +559,22 @@ export function* addVariableServices(api, { payload }) {
   }
 }
 export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
-  const selectedDestCluster = yield select(
-    NamespacesSelectors.getSelectedDestCluster
+  const deployOrUpgradeDetails = yield select(
+    NamespacesSelectors.getRegistryDeployResponseData
   );
-  const deployDetails = yield select(
-    NamespacesSelectors.getDeployOrUpgradeDetails
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
   );
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const destClusterToken = clusters?.find(
-    cluster => cluster.id === selectedDestCluster?.value
-  );
-  api.headers['x-cluster-id'] = destClusterToken?.id;
-  api.headers['x-cluster-token'] = destClusterToken?.token;
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'getVariableServices',
     loadingSection: 'getVariableServices',
@@ -614,8 +582,8 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
       method === 'get' ? api.getVariableServices : api.deleteVariableServices,
     apiParams: [
       {
-        clusterId: selectedDestCluster?.value,
-        namespaceId: deployDetails?.id,
+        clusterId: selectedCluster?.value,
+        namespaceId: deployOrUpgradeDetails?.id || singleNamespaceData?.id,
         requestId: additionalData?.requestId,
         sourceNamespaceName: selectedNamespace?.label,
       },
@@ -1077,7 +1045,7 @@ export function* fetchFlowNameList(api, { payload }) {
   }
 }
 
-export function* fetchVerionData(api, { payload }) {
+export function* fetchVersionData(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const gridData = yield select(
     GridSelectors.getNamespaceGridRegistry,
@@ -1093,9 +1061,9 @@ export function* fetchVerionData(api, { payload }) {
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
-    errorSection: 'fetchVerionData',
-    loadingSection: 'fetchVerionData',
-    apiMethod: api.fetchVerionData,
+    errorSection: 'fetchVersionData',
+    loadingSection: 'fetchVersionData',
+    apiMethod: api.fetchVersionData,
     apiParams: [
       {
         clusterId: selectedCluster?.value,
@@ -1168,6 +1136,77 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
     yield put(NamespacesActions.setDeployedModal(true));
     yield put(NamespacesActions.setRegistryDeployResponseData(response?.data));
   } else {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+export function* upgradeCluster(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const srcClusterToken = clusters?.find(
+    cluster => cluster.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  api.headers['x-cluster-token'] = srcClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'upgradeCluster',
+    loadingSection: 'upgradeCluster',
+    apiMethod: api.upgradeCluster,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        payload,
+      },
+    ],
+    successAction: NamespacesActions.deployClusterSuccess,
+  });
+
+  if (response.ok) {
+    yield put(NamespacesActions.setUpdatedNamespaceResponse(response));
+    yield put(NamespacesActions.setDeployedModal(true));
+    toast.success(response?.data?.message);
+  }
+
+  if (!response.ok) {
+    toast.error(response.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+
+export function* updateNamespaceStatusRegistry(api, { payload }) {
+  const checkDestCluster = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const srcClusterToken = clusters?.find(
+    cluster => cluster.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  api.headers['x-cluster-token'] = srcClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'updateNamespaceStatus',
+    loadingSection: 'updateNamespaceStatus',
+    apiMethod: api.updateNamespaceStatus,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: checkDestCluster?.id,
+        state: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    const data = {
+      id: response.data.status.id,
+      runningCount: response.data.status.runningCount,
+      stoppedCount: response.data.status.stoppedCount,
+      invalidCount: response.data.status.invalidCount,
+      disabledCount: response.data.status.disabledCount,
+      parameterContextId: response.data.status.parameterContextId,
+    };
+
+    yield put(NamespacesActions.deployClusterSuccess(data));
+  }
+  if (!response.ok) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
@@ -1267,7 +1306,7 @@ export function* namespacesSagas(api) {
     ),
     takeLatest(NamespacesActions.fetchRegistryData, fetchRegistryData, api),
     takeLatest(NamespacesActions.fetchFlowNameList, fetchFlowNameList, api),
-    takeLatest(NamespacesActions.fetchVerionData, fetchVerionData, api),
+    takeLatest(NamespacesActions.fetchVersionData, fetchVersionData, api),
     takeLatest(
       NamespacesActions.fetchRegistryFlowDetails,
       fetchRegistryFlowDetails,
@@ -1276,6 +1315,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.deployNamespaceByRegistryFlow,
       deployNamespaceByRegistryFlow,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.updateNamespaceStatusRegistry,
+      updateNamespaceStatusRegistry,
       api
     ),
   ]);

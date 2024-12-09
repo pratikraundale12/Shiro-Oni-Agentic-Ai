@@ -22,7 +22,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { SchedularSelectors } from '../../store/schedular/redux';
+
 import { theme } from '../../styles';
 import RectangleGraph from './birdEyeViewGraph';
 
@@ -182,23 +182,23 @@ const VersionDiv = styled.div`
 const Upgrade = () => {
   const dispatch = useDispatch();
   const selectedDestCluster = useSelector(
-    NamespacesSelectors.getSelectedDestCluster
+    NamespacesSelectors.getSelectedCluster
   );
-  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
-  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const childLevelDeployProcessorData = useSelector(
     NamespacesSelectors.getChildLevelDeployProcessorData
   );
-
+  const selectedNameSpace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
   const formData = useSelector(NamespacesSelectors.getFormData);
   const gridDataDest = useSelector(state =>
     GridSelectors.getGridData(state, 'destNamespaces')
   );
-
-  const [xStateCoordinate, setXStateCoordiate] = useState(
+  const [xStateCoordinate, setXStateCoordinate] = useState(
     formData?.position?.x
   );
-  const [yStateCoordinate, setYStateCoordiate] = useState(
+  const [yStateCoordinate, setYStateCoordinate] = useState(
     formData?.position?.y
   );
 
@@ -268,29 +268,31 @@ const Upgrade = () => {
   ];
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
-    ...(checkDestCluster.mode !== 'upgrade'
-      ? [{ label: KDFM.SELECT_NAMESPACE, path: '/process-group/deploy' }]
-      : []),
-    { label: KDFM.CONFIGURATION_DETAILS },
+
+    { label: KDFM.FLOW_DETAILS },
   ];
 
   const handleClick = () => {
     if (
-      formData?.version === checkDestCluster?.version &&
-      checkDestCluster?.mode === 'upgrade'
+      formData?.version === selectedNameSpace?.version &&
+      selectedNameSpace?.mode === 'upgrade'
     ) {
       toast.info('The selected version is already deployed.');
     } else {
-      history.push('/process-group/summary');
+      dispatch(
+        NamespacesActions.fetchRegistryFlowDetails({
+          bucketId: selectedNameSpace.bucketId,
+          flowId: selectedNameSpace.flowId,
+          version: 1,
+        })
+      );
+      // dispatch(NamespacesActions.fetchParameterContext());
+      history.push('/process-group/config-details');
     }
   };
 
   const handleBackClick = () => {
-    if (checkDestCluster.mode === 'upgrade') {
-      history.push('/process-group');
-    } else {
-      history.push('/process-group/deploy');
-    }
+    history.push('/process-group/');
   };
 
   const handleVersionSelect = version => {
@@ -313,8 +315,8 @@ const Upgrade = () => {
   };
 
   const isStateStale =
-    checkDestCluster.state === 'LOCALLY_MODIFIED_AND_STALE' ||
-    checkDestCluster.state === 'LOCALLY_MODIFIED';
+    selectedNameSpace.state === 'LOCALLY_MODIFIED_AND_STALE' ||
+    selectedNameSpace.state === 'LOCALLY_MODIFIED';
 
   const baseData = Array.isArray(
     formData?.namespaceId ? childLevelSortedData : sortedArray
@@ -338,12 +340,12 @@ const Upgrade = () => {
   ];
 
   const handleXCoordinateChangeInput = e => {
-    setXStateCoordiate(Number(e.target.value));
+    setXStateCoordinate(Number(e.target.value));
     dispatch(NamespacesActions.setPosition({ x: e.target.value }));
   };
 
   const handleYCoordinateChangeInput = e => {
-    setYStateCoordiate(Number(e.target.value));
+    setYStateCoordinate(Number(e.target.value));
     dispatch(NamespacesActions.setPosition({ y: e.target.value }));
   };
 
@@ -356,8 +358,8 @@ const Upgrade = () => {
           </ImageContainer>
           <MainTitleHfour className="mb-0">
             {`${
-              checkDestCluster.mode === 'upgrade'
-                ? checkDestCluster.version <= formData.version
+              !isUpgrade
+                ? selectedNameSpace.version <= formData.version
                   ? KDFM.UPGRADE
                   : KDFM.DOWNGRADE
                 : KDFM.DEPLOY
@@ -388,7 +390,7 @@ const Upgrade = () => {
                     name="namespace"
                     type="text"
                     label={KDFM.SELECTED_NAMESPACE}
-                    value={checkDestCluster.name}
+                    value={selectedNameSpace.name}
                     icon={<QRIcons />}
                     disabled
                   />
@@ -404,7 +406,7 @@ const Upgrade = () => {
                     label={KDFM.CANVAS_POSITION}
                     value={xStateCoordinate || formData.position.x}
                     icon={<CanvasXIcon />}
-                    disabled={checkDestCluster.mode === 'upgrade'}
+                    disabled={selectedNameSpace.mode === 'upgrade'}
                     onChange={
                       e => handleXCoordinateChangeInput(e)
                       // dispatch(
@@ -418,7 +420,7 @@ const Upgrade = () => {
                     label=""
                     value={yStateCoordinate || formData.position.y}
                     icon={<CanvasYIcon />}
-                    disabled={checkDestCluster.mode === 'upgrade'}
+                    disabled={selectedNameSpace.mode === 'upgrade'}
                     onChange={
                       e => handleYCoordinateChangeInput(e)
                       // dispatch(
@@ -428,7 +430,7 @@ const Upgrade = () => {
                   />
                 </ColXlFive>
 
-                {checkDestCluster.mode === 'upgrade' && (
+                {selectedNameSpace.mode === 'upgrade' && (
                   <>
                     <ColXlTwo className="col-xl-2 col-6">
                       <InputField
@@ -436,7 +438,7 @@ const Upgrade = () => {
                         type="text"
                         label={KDFM.CURRENT_VERSION}
                         placeholder="N/A"
-                        value={checkDestCluster.version}
+                        value={selectedNameSpace.version}
                         icon={<QRIcons />}
                         disabled
                       />
@@ -446,8 +448,8 @@ const Upgrade = () => {
                         name="currentState"
                         type="text"
                         label={KDFM.CURRENT_STATE}
-                        value={checkDestCluster.stateExplanation}
-                        icon={getIconForState(checkDestCluster.state)}
+                        value={selectedNameSpace.stateExplanation}
+                        icon={getIconForState(selectedNameSpace.state)}
                         disabled
                       />
                     </ColXlSix>
@@ -455,12 +457,12 @@ const Upgrade = () => {
                 )}
               </RowConfig>
             </div>
-            {checkDestCluster.mode !== 'upgrade' && (
+            {selectedNameSpace.mode !== 'upgrade' && (
               <div className="ms-4">
                 <RectangleGraph
                   data={updatedDataForGraph}
-                  setXStateCoordiate={setXStateCoordiate}
-                  setYStateCoordiate={setYStateCoordiate}
+                  setXStateCoordinate={setXStateCoordinate}
+                  setYStateCoordinate={setYStateCoordinate}
                 />
               </div>
             )}
@@ -472,7 +474,7 @@ const Upgrade = () => {
                     type="text"
                     label={KDFM.NIFI_URL}
                     placeholder={KDFM.ENTER_NIFI_URL}
-                    value={checkDestCluster.nifiUrl}
+                    value={selectedNameSpace.nifiUrl}
                     icon={<LinkIcon />}
                     disabled
                   />
@@ -483,7 +485,7 @@ const Upgrade = () => {
                     type="text"
                     label={KDFM.REGISTRY_URL}
                     placeholder={KDFM.ENTER_REGISTRY_URL}
-                    value={checkDestCluster.registryUrl}
+                    value={selectedNameSpace.registryUrl}
                     icon={<LinkIcon />}
                     disabled
                   />
@@ -493,7 +495,7 @@ const Upgrade = () => {
           </RowConfig>
           <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
           <Table
-            data={[...(checkDestCluster?.versionList || [])].sort(
+            data={[...(selectedNameSpace?.versionList || [])].sort(
               (a, b) => a.version - b.version
             )}
             columns={COLUMNS}
@@ -507,18 +509,9 @@ const Upgrade = () => {
           </Button>
           <Button
             onClick={handleClick}
-            disabled={
-              checkDestCluster.mode === 'upgrade' &&
-              (!formData.version || isStateStale)
-            }
+            disabled={!isUpgrade && (!formData.version || isStateStale)}
           >
-            {schedularFromList
-              ? KDFM.CONTINUE
-              : checkDestCluster.mode === 'upgrade'
-                ? checkDestCluster.version <= formData.version
-                  ? KDFM.UPGRADE
-                  : KDFM.DOWNGRADE
-                : KDFM.DEPLOY}
+            {KDFM.CONTINUE}
           </Button>
         </BottomButtonDiv>
       </BottomButton>

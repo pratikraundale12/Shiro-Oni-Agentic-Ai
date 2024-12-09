@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -15,7 +15,7 @@ import {
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Modal } from '../../shared';
-import { NamespacesSelectors } from '../../store';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const ModalBody = styled.div`
   position: relative;
@@ -166,6 +166,7 @@ const NamespaceDeploy = ({
   handleFlowConfirmPopup = () => {},
   activeButtonPopup,
 }) => {
+  const dispatch = useDispatch();
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getRegistryDeployResponseData
   );
@@ -184,7 +185,8 @@ const NamespaceDeploy = ({
 
   const handleSecondary = () => {
     history.push(`/process-group/${deployOrUpgradeDetails?.id}`);
-    console.log(deployOrUpgradeDetails, 'deployOrUpgradeDetails');
+    dispatch(NamespacesActions.setRegistryAllDetails({}));
+    dispatch(NamespacesActions.setregistryDetailsFlow(true));
   };
   return (
     <>
@@ -213,9 +215,7 @@ const NamespaceDeploy = ({
             </ModalIcon>
             <ModalHFive>
               Process Group successfully {''}
-              {checkDestCluster.mode === 'upgrade'
-                ? 'upgraded'
-                : 'deployed'} to
+              {checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'deployed'} to
               {''} {selectedDestCluster?.label}
             </ModalHFive>
           </div>

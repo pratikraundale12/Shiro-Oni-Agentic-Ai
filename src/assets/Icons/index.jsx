@@ -84,6 +84,7 @@ export * from './SortIcon';
 export * from './SortUpIcon';
 export * from './SquareBoxIcon';
 export * from './StoppedProcessorIcon';
+export * from './StateIcon';
 export * from './TagIcon';
 export * from './ThreedotsIcon';
 export * from './ThunderIocn';

@@ -1,10 +1,27 @@
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 import { StatusRender, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
-import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+
+const DataWrapper = styled.div`
+  width: 100%;
+  height: 596px;
+  top: 273px;
+  left: 290px;
+  gap: 0px;
+  opacity: 0px;
+  border: Mixed solid rgba(221, 228, 240, 1);
+`;
+
+const ScrollSetGrey = styled.div`
+  min-height: calc(100vh - 341px);
+  max-height: calc(100vh - 341px);
+  overflow-x: hidden;
+  overflow-y: auto;
+`;
 
 const COLUMNS = [
   {
@@ -54,7 +71,7 @@ const COLUMNS = [
   },
 ];
 
-const AuditLog = ({ isOpen, rowId, closePopup }) => {
+const AuditLog = ({ rowId }) => {
   const dispatch = useDispatch();
   const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
 
@@ -70,17 +87,11 @@ const AuditLog = ({ isOpen, rowId, closePopup }) => {
     [];
 
   return (
-    <Modal
-      title={KDFM.AUDIT_LOG}
-      isOpen={isOpen}
-      onRequestClose={closePopup}
-      size="lg"
-      primaryButtonText={KDFM.OK}
-      onSubmit={closePopup}
-      contentStyles={{ maxWidth: '65%', maxHeight: '65%' }}
-    >
-      <Table data={auditTableData.slice(0, 10)} columns={COLUMNS} />
-    </Modal>
+    <DataWrapper>
+      <ScrollSetGrey className="scroll-set-grey pe-1">
+        <Table data={auditTableData.slice(0, 10)} columns={COLUMNS} />
+      </ScrollSetGrey>
+    </DataWrapper>
   );
 };
 

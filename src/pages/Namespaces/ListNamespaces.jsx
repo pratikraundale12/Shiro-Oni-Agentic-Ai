@@ -16,8 +16,8 @@ import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { NamespacesActions } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
-import { useGlobalContext } from '../../utils';
 import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -65,7 +65,7 @@ const StatusDiv = styled.div`
   background: none;
   display: inline-block;
   white-space: nowrap;
-  width: 28px;
+  // width: 28px;
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
   }
@@ -111,6 +111,7 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setdeployRegistryFlow(false));
     dispatch(NamespacesActions.setRegistryDeployVariable([]));
     dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
+    dispatch(NamespacesActions.setregistryDetailsFlow(false));
   }, []);
 
   const COLUMNS = [
@@ -228,7 +229,7 @@ export const ListNamespaces = () => {
       label: KDFM.STATUS,
       renderCell: item => {
         return (
-          <div className="d-flex align-items-center gap-1">
+          <div className="d-flex align-items-center flex-wrap gap-1">
             <StatusDiv data-tooltip-id={`tooltip-running-${item.id}`}>
               <TriangleIcons
                 width={13}
@@ -395,10 +396,18 @@ export const ListNamespaces = () => {
       NamespacesActions.setSelectedNamespace({
         label: item.name,
         value: item.id,
+        ...item,
       })
     );
-
-    history.push('/process-group/upgrade', {
+    dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
+    dispatch(NamespacesActions.setDeployByRegistryFlow(false));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: item.bucketId,
+        flowId: item.flowId,
+      })
+    );
+    history.push('/process-group/flow-details', {
       state: {
         id: item.id,
       },
