@@ -82,10 +82,19 @@ const ParameterContext = ({
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const schduleParameterData =
     checkDestCluster?.additionalData?.filteredParameterData;
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
 
   useEffect(() => {
-    dispatch(NamespacesActions.fetchParameterContext());
-  }, []);
+    if (singleNamespaceData?.parameterContextId) {
+      dispatch(
+        NamespacesActions.fetchParameterContext(
+          singleNamespaceData?.parameterContextId
+        )
+      );
+    }
+  }, [singleNamespaceData?.parameterContextId]);
 
   useEffect(() => {
     if (schedularFromList) {

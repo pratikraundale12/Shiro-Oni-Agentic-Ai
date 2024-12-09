@@ -300,7 +300,7 @@ export function* getCountDetails(api) {
 
 export function* fetchParameterContext(
   api,
-  { initialCall = true, showError = false }
+  { initialCall = true, showError = false, payload }
 ) {
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getRegistryDeployResponseData
@@ -311,9 +311,6 @@ export function* fetchParameterContext(
   );
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
-  );
-  const selectedNamespace = yield select(
-    NamespacesSelectors.getSelectedNamespace
   );
 
   const parentParameterSelectData = yield select(
@@ -328,9 +325,7 @@ export function* fetchParameterContext(
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        parameterId:
-          deployOrUpgradeDetails?.parameterContextId ||
-          selectedNamespace?.parameterContextId,
+        parameterId: deployOrUpgradeDetails?.parameterContextId || payload,
         includeInherited: !parentParameterSelectData?.parent,
       },
     ],
