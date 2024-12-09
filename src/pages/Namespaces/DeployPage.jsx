@@ -177,7 +177,7 @@ function DeployPage() {
   };
   const sortedData = versionListData?.versionList
     ?.slice()
-    .sort((a, b) => a.version - b.version);
+    .sort((a, b) => b.version - a.version);
 
   const COLUMNS = [
     {

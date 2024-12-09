@@ -341,7 +341,7 @@ export const ListNamespaces = () => {
           <ReactTooltip
             id={`tooltip-group-details`}
             place="left"
-            content={'Group Details'}
+            content={'Process Group Details'}
             style={{
               width: '120px',
               whiteSpace: 'normal',
