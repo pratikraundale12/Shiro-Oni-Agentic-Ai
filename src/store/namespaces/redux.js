@@ -87,6 +87,9 @@ export const NamespacesActions = {
   getNewPropertyControllerService: createAction(
     `${prefix}getNewPropertyControllerService`
   ),
+  getNewPropertyControllerServiceUpdated: createAction(
+    `${prefix}getNewPropertyControllerServiceUpdated`
+  ),
   setNewProperToAddControllerService: createAction(
     `${prefix}setNewProperToAddControllerService`
   ),
@@ -150,6 +153,9 @@ export const NamespacesActions = {
   ),
   setUpdatedRegistryRespones: createAction(
     `${prefix}setUpdatedRegistryRespones`
+  ),
+  setRegistryDeployControllerService: createAction(
+    `${prefix}setRegistryDeployControllerService`
   ),
 };
 // registryFlowXCord:null,
@@ -228,6 +234,7 @@ export const NAMESPACES_INITIAL_STATE = {
   registryDeployParameterContext: [],
   registryDeployResponseData: {},
   updatedRegistryRespones: {},
+  registryDeployControllerService: {},
   // parameterEditParent: false,
 };
 
@@ -300,6 +307,8 @@ export const NamespacesSelectors = {
   getRegistryDeployResponseData: state =>
     state.namespaces.registryDeployResponseData,
   getUpdatedRegistryRespones: state => state.namespaces.updatedRegistryRespones,
+  getRegistryDeployControllerService: state =>
+    state.namespaces.registryDeployControllerService,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -678,7 +687,12 @@ const setUpdatedRegistryRespones = (state, { payload }) => {
     updatedRegistryRespones: payload,
   };
 };
-
+const setRegistryDeployControllerService = (state, { payload }) => {
+  return {
+    ...state,
+    registryDeployControllerService: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -818,6 +832,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setUpdatedRegistryRespones,
         setUpdatedRegistryRespones
+      )
+      .addCase(
+        NamespacesActions.setRegistryDeployControllerService,
+        setRegistryDeployControllerService
       );
   }
 );
