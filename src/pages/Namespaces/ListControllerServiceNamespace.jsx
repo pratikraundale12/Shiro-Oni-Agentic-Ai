@@ -28,6 +28,7 @@ import ConfigurePropertyModal from '../ControllerService/ConfigurePropertyModal'
 import PropertyDropdownModal from '../ControllerService/ProprtyDropdownModel';
 import Collapsible from './Collapsible';
 import { KDFM } from '../../constants';
+import { NoDataIcon } from '../../assets';
 
 const StatusTexts = styled.div`
   font-family: Inter;
@@ -63,6 +64,14 @@ const ScrollSetGrey = styled.div`
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
   overflow-y: auto;
+`;
+
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
 `;
 
 const StatusText = ({ text = '', item }) => {
@@ -304,21 +313,30 @@ export const ListControllerService = () => {
 
   return (
     <ScrollSetGrey className="scroll-set-grey pe-1">
-      <Collapsible
-        title={KDFM.CONTROLLER_SERVICE}
-        isTableOpen={isOpen}
-        toggleCollapsible={() => handleToggle()}
-        onBtnClick={() =>
-          dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
-        }
-      >
-        <Table
-          data={listData}
-          columns={COLUMNS}
-          controllerModule={true}
-          loading={loading}
-        />
-      </Collapsible>
+      {isEmpty(listData) ? (
+        <>
+          <div className="d-flex justify-content-center">
+            <NoDataIcon width={130} />
+          </div>
+          <NoDataText>No Data Found!!</NoDataText>
+        </>
+      ) : (
+        <Collapsible
+          title={KDFM.CONTROLLER_SERVICE}
+          isTableOpen={isOpen}
+          toggleCollapsible={() => handleToggle()}
+          onBtnClick={() =>
+            dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
+          }
+        >
+          <Table
+            data={listData}
+            columns={COLUMNS}
+            controllerModule={true}
+            loading={loading}
+          />
+        </Collapsible>
+      )}
 
       <AddControllerServiceModal />
 

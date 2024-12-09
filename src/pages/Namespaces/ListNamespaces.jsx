@@ -65,7 +65,7 @@ const StatusDiv = styled.div`
   background: none;
   display: inline-block;
   white-space: nowrap;
-  width: 28px;
+  // width: 28px;
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
   }
@@ -229,7 +229,7 @@ export const ListNamespaces = () => {
       label: KDFM.STATUS,
       renderCell: item => {
         return (
-          <div className="d-flex align-items-center gap-1">
+          <div className="d-flex align-items-center flex-wrap gap-1">
             <StatusDiv data-tooltip-id={`tooltip-running-${item.id}`}>
               <TriangleIcons
                 width={13}
@@ -341,7 +341,7 @@ export const ListNamespaces = () => {
           <ReactTooltip
             id={`tooltip-group-details`}
             place="left"
-            content={'Group Details'}
+            content={'Process Group Details'}
             style={{
               width: '120px',
               whiteSpace: 'normal',

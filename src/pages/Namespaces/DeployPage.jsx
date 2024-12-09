@@ -137,7 +137,7 @@ function DeployPage() {
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
 
   const formData = useSelector(NamespacesSelectors.getDeployFormData);
-  const [keepParameter, setKeepParameter] = useState(false);
+  const [keepParameter, setKeepParameter] = useState(true);
   const bucketListOptions = bucketListData?.bucketList?.map(item => ({
     label: item?.name,
     value: item?.id,
@@ -177,7 +177,7 @@ function DeployPage() {
   };
   const sortedData = versionListData?.versionList
     ?.slice()
-    .sort((a, b) => a.version - b.version);
+    .sort((a, b) => b.version - a.version);
 
   const COLUMNS = [
     {
