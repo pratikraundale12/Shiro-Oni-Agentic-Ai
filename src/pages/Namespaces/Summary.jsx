@@ -1,7 +1,7 @@
 // import { yupResolver } from '@hookform/resolvers/yup';
 /*eslint-disable*/
 import { isEmpty } from 'lodash';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -326,6 +326,10 @@ const Summary = () => {
     ClustersSelectors.getAllClustersList
   ).filter(cluster => cluster.id === selectedDestCluster.value)[0];
 
+  const checkDestCluster = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
@@ -335,9 +339,7 @@ const Summary = () => {
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const formData = useSelector(NamespacesSelectors.getFormData);
-  const checkDestCluster = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
+
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState({
@@ -515,7 +517,6 @@ const Summary = () => {
 
   const handleConfirmUpdateStatus = () => {
     if (!deployByRegistryFlow) {
-      console.log(confirmDialogue.forPopup, 'confirmDialogue.forPopup');
       if (confirmDialogue.forPopup) {
         ('hello');
       } else {
@@ -572,7 +573,6 @@ const Summary = () => {
       text,
       forPopup: true,
     });
-    // dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
   //
   const handledeployByRegistry = () => {
@@ -626,6 +626,32 @@ const Summary = () => {
   const loadingreUpgradeFlow = useSelector(state =>
     LoadingSelectors.getLoading(state, 'upgradeCluster')
   );
+  const [processStatus, setProcessStatus] = useState({
+    disabledCount: checkDestCluster?.disabledCount,
+    invalidCount: checkDestCluster?.invalidCount,
+    runningCount: checkDestCluster?.runningCount,
+    stoppedCount: checkDestCluster?.stoppedCount,
+  });
+
+  useEffect(() => {
+    if (!isEmpty(checkDestCluster) && isEmpty(deployOrUpgradeDetails)) {
+      setProcessStatus({
+        disabledCount: checkDestCluster?.disabledCount,
+        invalidCount: checkDestCluster?.invalidCount,
+        runningCount: checkDestCluster?.runningCount,
+        stoppedCount: checkDestCluster?.stoppedCount,
+      });
+    } else if (!isEmpty(deployOrUpgradeDetails)) {
+      setProcessStatus({
+        disabledCount: deployOrUpgradeDetails?.disabledCount,
+        invalidCount: deployOrUpgradeDetails?.invalidCount,
+        runningCount: deployOrUpgradeDetails?.runningCount,
+        stoppedCount: deployOrUpgradeDetails?.stoppedCount,
+      });
+    }
+  }, [checkDestCluster, deployOrUpgradeDetails]);
+
+  console.log(processStatus,deployOrUpgradeDetails);
   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader
@@ -832,44 +858,44 @@ const Summary = () => {
                   <TextDiv className="d-flex">
                     <CountDiv
                       className="div-btn-1 mr-2"
-                      count={checkDestCluster?.runningCount}
+                      count={processStatus.runningCount}
                       activeColor="#58e715"
                     >
                       <TriangleIcons color="#B5BDC8" />
-                      <span>{checkDestCluster?.runningCount}</span>
+                      <span>{processStatus.runningCount}</span>
                     </CountDiv>
                     <div>{KDFM.RUNNING_PROCESSORS}</div>
                   </TextDiv>
                   <TextDiv className="d-flex">
                     <CountDiv
                       className="div-btn-2 mr-2"
-                      count={checkDestCluster?.stoppedCount}
+                      count={processStatus.stoppedCount}
                       activeColor="#c52b2b"
                     >
                       <SquareBoxIcon color="#B5BDC8" />
-                      <span>{checkDestCluster?.stoppedCount}</span>
+                      <span>{processStatus.stoppedCount}</span>
                     </CountDiv>
                     <div>{KDFM.STOPPED_PROCESSORS}</div>
                   </TextDiv>
                   <TextDiv className="d-flex">
                     <CountDiv
                       className="div-btn-3 mr-2"
-                      count={checkDestCluster?.invalidCount}
+                      count={processStatus.invalidCount}
                       activeColor="#CF9F5D"
                     >
                       <TriangleExclamationMarkIcon color="#B5BDC8" />
-                      <span>{checkDestCluster?.invalidCount}</span>
+                      <span>{processStatus.invalidCount}</span>
                     </CountDiv>
                     <div>{KDFM.INVALID_PROCESSORS}</div>
                   </TextDiv>
                   <TextDiv className="d-flex">
                     <CountDiv
                       className="div-btn-4 mr-2"
-                      count={checkDestCluster?.disabledCount}
+                      count={processStatus.disabledCount}
                       activeColor="#2c7cf3"
                     >
                       <SmallNotThunderIcon color="#B5BDC8" />
-                      <span>{checkDestCluster?.disabledCount}</span>
+                      <span>{processStatus.disabledCount}</span>
                     </CountDiv>
                     <div>{KDFM.DISABLED_PROCESSORS}</div>
                   </TextDiv>
@@ -1013,6 +1039,7 @@ const Summary = () => {
         getParamerterContext={getParamerterContext}
         handleTertiaryButton={handleTertiaryButton}
         activeButtonPopup={activeButtonPopup}
+        processStatus={processStatus}
         setActiveButtonPopup={setActiveButtonPopup}
         handleFlowConfirmPopup={handleFlowConfirmPopup}
       />
