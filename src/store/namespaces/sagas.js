@@ -1118,6 +1118,8 @@ export function* upgradeCluster(api, { payload }) {
 
   if (response.ok) {
     yield put(NamespacesActions.setUpdatedNamespaceResponse(response));
+    yield put(NamespacesActions.setDeployedModal(true));
+    toast.success(response?.data?.message);
   }
 
   if (!response.ok) {
