@@ -320,7 +320,23 @@ export const Setting = () => {
         </div>
 
         <InputFields className="row">
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mb-4">
+          <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-5">
+            <SwitchButton
+              id="openModalInput"
+              name="LDAP"
+              checked={isLdapEnabled}
+              onChange={handleLdapToggle}
+            />
+          </div>
+          <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-5">
+            <SwitchButton
+              id="openModalInput"
+              name="AUTO SYNC"
+              checked={ldapAutoSync}
+              onChange={handleLdapAutoSyncToggle}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-6 mb-4">
             <SelectField
               label="LDAP Auto Sync Time"
               name="ldap_auto_sync_time_interval"
@@ -341,22 +357,6 @@ export const Setting = () => {
                 setValue('ldap_auto_sync_time_interval', value);
                 setIsChanged(true);
               }}
-            />
-          </div>
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-5">
-            <SwitchButton
-              id="openModalInput"
-              name="AUTO SYNC"
-              checked={ldapAutoSync}
-              onChange={handleLdapAutoSyncToggle}
-            />
-          </div>
-          <div className="d-flex justify-content-end me-4">
-            <SwitchButton
-              id="openModalInput"
-              name="LDAP"
-              checked={isLdapEnabled}
-              onChange={handleLdapToggle}
             />
           </div>
         </InputFields>
