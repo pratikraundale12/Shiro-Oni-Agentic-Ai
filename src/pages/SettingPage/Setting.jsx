@@ -113,6 +113,7 @@ export const Setting = () => {
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
+    settingData?.id && payload.append('id', settingData.id);
     payload.append('logo', data?.logo || null);
     payload.append('favicon', data?.favicon || null);
     payload.append('title', data?.title);
