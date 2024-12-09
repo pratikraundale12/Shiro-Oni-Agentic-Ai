@@ -42,7 +42,7 @@ export const UserSelect = ({
   const handleChange = value => {
     setSearchText(value);
   };
-
+  console.log(selected);
   useEffect(() => {
     if (!isEmpty(AdminRole))
       dispatch(

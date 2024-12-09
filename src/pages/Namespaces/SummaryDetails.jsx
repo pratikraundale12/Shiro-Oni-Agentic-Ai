@@ -67,7 +67,7 @@ const SummaryDetails = () => {
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
-   return (
+  return (
     <div className="w-100">
       <RowConfig className=" p-3">
         <UseColXl className="col-xl-4 col-6 mb-4 pb-1">

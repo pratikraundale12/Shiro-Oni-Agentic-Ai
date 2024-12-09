@@ -623,9 +623,14 @@ const Summary = () => {
   const loadingreUpdateFlow = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
   );
+  const loadingreUpgradeFlow = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'upgradeCluster')
+  );
   return (
     <MainContainer className="main-space bg-white">
-      <FullPageLoader loading={loadingregistry || loadingreUpdateFlow} />
+      <FullPageLoader
+        loading={loadingregistry || loadingreUpdateFlow || loadingreUpgradeFlow}
+      />
       <TopTitleBar className="d-flex mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>
