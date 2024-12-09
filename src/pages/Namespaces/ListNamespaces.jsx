@@ -229,7 +229,7 @@ export const ListNamespaces = () => {
       renderCell: item => {
         return (
           <div className="d-flex align-items-center gap-1">
-            <StatusDiv>
+            <StatusDiv data-tooltip-id={`tooltip-running-${item.id}`}>
               <TriangleIcons
                 width={13}
                 height={16}
@@ -240,8 +240,18 @@ export const ListNamespaces = () => {
                 }
               />
               <span className="me-1">{item?.runningCount}</span>
-            </StatusDiv>{' '}
-            <StatusDiv>
+            </StatusDiv>
+            <ReactTooltip
+              id={`tooltip-running-${item.id}`}
+              place="right"
+              content="Running Components"
+              style={{
+                width: '180px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+            <StatusDiv data-tooltip-id={`tooltip-stopped-${item.id}`}>
               <SquareBoxIcon
                 width={15}
                 height={15}
@@ -253,17 +263,37 @@ export const ListNamespaces = () => {
               />
               <span>{item?.stoppedCount}</span>
             </StatusDiv>
-            <StatusDiv>
+            <ReactTooltip
+              id={`tooltip-stopped-${item.id}`}
+              place="right"
+              content="Stopped Components"
+              style={{
+                width: '180px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+            <StatusDiv data-tooltip-id={`tooltip-invalid-${item.id}`}>
               <TriangleExclamationMarkIcon
                 color={
-                  item?.stoppedCount
+                  item?.invalidCount
                     ? theme.colors.caution
                     : theme.colors.disabled
                 }
               />
               <span>{item?.invalidCount}</span>
             </StatusDiv>
-            <StatusDiv>
+            <ReactTooltip
+              id={`tooltip-invalid-${item.id}`}
+              place="right"
+              content="Invalid Components"
+              style={{
+                width: '160px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+            <StatusDiv data-tooltip-id={`tooltip-disabled-${item.id}`}>
               <SmallNotThunderIcon
                 color={
                   item?.disabledCount
@@ -273,6 +303,16 @@ export const ListNamespaces = () => {
               />
               <span>{item?.disabledCount}</span>
             </StatusDiv>
+            <ReactTooltip
+              id={`tooltip-disabled-${item.id}`}
+              place="right"
+              content="Disabled Components"
+              style={{
+                width: '180px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
           </div>
         );
       },
