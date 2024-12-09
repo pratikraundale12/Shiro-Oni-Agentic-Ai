@@ -137,7 +137,7 @@ function DeployPage() {
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
 
   const formData = useSelector(NamespacesSelectors.getDeployFormData);
-  const [keepParameter, setKeepParameter] = useState(false);
+  const [keepParameter, setKeepParameter] = useState(true);
   const bucketListOptions = bucketListData?.bucketList?.map(item => ({
     label: item?.name,
     value: item?.id,
@@ -405,6 +405,7 @@ function DeployPage() {
                       label="Keep existing Parameter Contexts"
                       checked={keepParameter}
                       onChange={e => setKeepParameter(e.target.checked)}
+                      // defaultChecked={true}
                     />
                   </div>
                 </div>
