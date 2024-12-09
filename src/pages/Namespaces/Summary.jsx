@@ -701,9 +701,7 @@ const Summary = () => {
                       {KDFM.SELECTED_CLUSTER}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {!deployByRegistryFlow
-                        ? currentSelectedCluster?.label
-                        : selectedDestCluster?.label}
+                      {currentSelectedCluster?.label}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
