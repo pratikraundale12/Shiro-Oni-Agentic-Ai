@@ -700,7 +700,7 @@ export function* getControllerServiceList(api) {
     item => item.id === selectedCluster?.value
   );
   const selectedNamespaceId = yield select(
-    NamespacesSelectors.getSelectedNamespace
+    NamespacesSelectors.getSingleNamespaceData
   );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -711,7 +711,7 @@ export function* getControllerServiceList(api) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: selectedNamespaceId?.value,
+        namespaceId: selectedNamespaceId?.id,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,

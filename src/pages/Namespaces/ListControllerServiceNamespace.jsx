@@ -9,20 +9,16 @@ import {
   DeleteSmallIcon,
   FlashCutIcon,
   FlashIcon,
-  GreaterArrowIcon,
   SettingSmallIcon,
-  SmallSearchIcon,
-  TodoIcon,
 } from '../../assets';
 import { Table } from '../../components';
-import { Button, ModalWithIcon } from '../../shared';
+import { ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { theme } from '../../styles';
 
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import AddControllerServiceModal from '../ControllerService/AddControllerServiceModal';
@@ -30,43 +26,9 @@ import AddProperties from '../ControllerService/AddProperties';
 import ConfigControllerService from '../ControllerService/ConfigControllerService';
 import ConfigurePropertyModal from '../ControllerService/ConfigurePropertyModal';
 import PropertyDropdownModal from '../ControllerService/ProprtyDropdownModel';
+import Collapsible from './Collapsible';
+import { KDFM } from '../../constants';
 
-const SearchContainer = styled.div`
-  position: relative;
-
-  svg {
-    position: absolute;
-    top: 50%;
-    left: 16px;
-    transform: translateY(-50%);
-  }
-`;
-const Search = styled.input`
-  width: 100%;
-  border-radius: 2px;
-  padding: 12px 12px 12px 40px;
-  font-size: 16px;
-  margin: 14px 0;
-  font-family: ${props => props.theme.fontRedHat};
-  border: 1px solid ${props => props.theme.colors.border};
-  background-color: ${props => props.theme.colors.lightGrey};
-
-  &:focus-visible {
-    outline: none;
-  }
-  @media screen and (max-width: 1400px) {
-    font-size: 14px !important;
-  }
-`;
-const HeadingStyle = styled.h3`
-  font-family: 'Nato Sans', sans-serif;
-  font-weight: 500;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-`;
 const StatusTexts = styled.div`
   font-family: Inter;
   font-size: 16px;
@@ -95,6 +57,14 @@ const statusColors = {
   DEFAULT: '#F2891F',
   ENABLED: '#0cbf59',
 };
+
+const ScrollSetGrey = styled.div`
+  min-height: calc(100vh - 341px);
+  max-height: calc(100vh - 341px);
+  overflow-x: hidden;
+  overflow-y: auto;
+`;
+
 const StatusText = ({ text = '', item }) => {
   const color = statusColors[text] || statusColors.DEFAULT;
   function capitalizeFirstLetter(text) {
@@ -129,7 +99,6 @@ const StatusText = ({ text = '', item }) => {
   );
 };
 export const ListControllerService = () => {
-  const [search, setSearch] = useState('');
   const [updatedData, setUpdatedData] = useState([]);
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -148,21 +117,21 @@ export const ListControllerService = () => {
   const [listPropertyTableData, setListPropertTableData] = useState(
     selectedItemFromList?.properties
   );
-  const filteredModulesData = listData.filter(
-    module =>
-      module?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      module?.type?.toLowerCase().includes(search.toLowerCase())
-  );
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
   );
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  const selectedNamespaceId = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
+
+  const [isOpen, setIsOpen] = useState(true);
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
   const handleEnableClick = item => {
     setSelectedItemFromList(item);
     setIsEnableModalOpen(true);
@@ -333,65 +302,25 @@ export const ListControllerService = () => {
     setSelectedPropertyToEdit(item);
   };
 
-  const handleBackButtonClick = () => {
-    window.history.back();
-  };
   return (
-    <>
-      {controllerPermissions.includes('add_controller_services') && (
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="d-flex  align-items-center gap-3">
-            <button
-              className="d-flex bg-white border-0 "
-              onClick={handleBackButtonClick}
-            >
-              <GreaterArrowIcon />
-            </button>
-            <div className="d-flex  align-items-center gap-2">
-              <TodoIcon width={22} height={24} />
-              <HeadingStyle>{selectedNamespaceId?.label}</HeadingStyle>
-            </div>
-          </div>
-          <div className="row mb-2 d-flex justify-content-end">
-            <div>
-              <Button
-                type="button"
-                size={'md'}
-                onClick={() =>
-                  dispatch(
-                    NamespacesActions.setIsAddControllerServiceModal(true)
-                  )
-                }
-              >
-                Add
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <SearchContainer>
-        <SmallSearchIcon
-          width={18}
-          height={18}
-          color={theme.colors.darkGrey1}
+    <ScrollSetGrey className="scroll-set-grey pe-1">
+      <Collapsible
+        title={KDFM.CONTROLLER_SERVICE}
+        isTableOpen={isOpen}
+        toggleCollapsible={() => handleToggle()}
+        onBtnClick={() =>
+          dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
+        }
+      >
+        <Table
+          data={listData}
+          columns={COLUMNS}
+          controllerModule={true}
+          loading={loading}
         />
-        <Search
-          type="search"
-          value={search}
-          placeholder="Search Controller Service by Name and Type"
-          onChange={e => setSearch(e.target.value)}
-        />
-      </SearchContainer>
+      </Collapsible>
 
       <AddControllerServiceModal />
-
-      <Table
-        data={filteredModulesData || []}
-        columns={COLUMNS}
-        controllerModule={true}
-        loading={loading}
-      />
 
       <ConfigControllerService
         isOpen={isListProprtyModel}
@@ -450,7 +379,7 @@ export const ListControllerService = () => {
         primaryText={`Are you sure you want to delete ${selectedItemFromList?.name}?`}
         onSubmit={handleDeleteControllerServiceClick}
       />
-    </>
+    </ScrollSetGrey>
   );
 };
 
