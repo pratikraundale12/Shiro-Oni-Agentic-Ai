@@ -95,6 +95,14 @@ export const ACTIVITY_EVENTS = [
   { label: 'Deploy', value: 'Deploy' },
 ];
 
+export const EMAIL_REMINDER_OPTIONS = [
+  { label: '5 mins', value: '300000' },
+  { label: '10 mins', value: '600000' },
+  { label: '15 mins', value: '900000' },
+  { label: '30 mins', value: '1800000' },
+  { label: '1 hour', value: '3600000' },
+];
+
 export const LICENSE_TYPE = {
   TRIAL: 'trial',
   PURCHASED: 'purchased',
@@ -163,6 +171,10 @@ export const KDFM = {
   TAG: 'Tag',
   SELECTED_VERSION: 'Selected Version',
   CONFIGURE: 'Configure',
+  GROUP_EMAIL: 'Group Email Id',
+  ENTER_GROUP_EMAIL: 'Enter your Group Email',
+  EMAIL_REMINDER: 'Email Reminder Time',
+  REMINDER_EMPHASISED_TEXT: 'before schedule deployment time',
 
   // License constants
   TRIAL: 'Trial',
