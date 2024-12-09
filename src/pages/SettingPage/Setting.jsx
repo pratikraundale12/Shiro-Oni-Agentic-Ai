@@ -334,6 +334,7 @@ export const Setting = () => {
               name="AUTO SYNC"
               checked={ldapAutoSync}
               onChange={handleLdapAutoSyncToggle}
+              isDisabled={!isLdapEnabled}
             />
           </div>
           <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-6 mb-4">

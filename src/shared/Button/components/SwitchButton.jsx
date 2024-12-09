@@ -9,7 +9,10 @@ const Switch = styled.label`
   height: 28px;
 `;
 
-const CheckboxInput = styled.input.attrs({ type: 'checkbox' })`
+const CheckboxInput = styled.input.attrs(props => ({
+  type: 'checkbox',
+  disabled: props.disabled,
+}))`
   opacity: 0;
   width: 0;
   height: 0;
@@ -59,11 +62,16 @@ const Label = styled.span`
   font-size: 14px;
 `;
 
-const ToggleSwitch = ({ id, name, checked, onChange }) => (
+const ToggleSwitch = ({ id, name, checked, onChange, isDisabled }) => (
   <div className="d-flex align-items-center gap-2">
     <div className="d-flex align-items-center gap-2">
       <Switch>
-        <CheckboxInput id={id} checked={checked} onChange={onChange} />
+        <CheckboxInput
+          id={id}
+          checked={checked}
+          onChange={onChange}
+          disabled={isDisabled}
+        />
         <Slider />
       </Switch>
     </div>
@@ -76,6 +84,7 @@ ToggleSwitch.propTypes = {
   name: PropTypes.string,
   checked: PropTypes.bool,
   onChange: PropTypes.func,
+  isDisabled: PropTypes.bool,
 };
 
 export default ToggleSwitch;
