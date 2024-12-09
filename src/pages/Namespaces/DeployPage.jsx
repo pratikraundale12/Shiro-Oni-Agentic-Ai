@@ -1,9 +1,15 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
-import { KDFM } from '../../constants';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import styled from 'styled-components';
+import * as yup from 'yup';
 import { QRIcons, TodoIcon } from '../../assets';
-import Breadcrumb from '../../shared/Breadcrumb';
+import { FullPageLoader, Table } from '../../components';
+import { KDFM } from '../../constants';
+import { history } from '../../helpers/history';
 import {
   Button,
   CheckboxField,
@@ -11,19 +17,13 @@ import {
   RadioField,
   SelectField,
 } from '../../shared';
-import { FullPageLoader, Table } from '../../components';
-import { history } from '../../helpers/history';
-import { useDispatch, useSelector } from 'react-redux';
+import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -268,7 +268,7 @@ function DeployPage() {
   useEffect(() => {
     if (selectedValueFlowId) {
       dispatch(
-        NamespacesActions.fetchVerionData({
+        NamespacesActions.fetchVersionData({
           bucketId: selectedValuebucketId,
           flowId: selectedValueFlowId,
         })
@@ -321,7 +321,7 @@ function DeployPage() {
     LoadingSelectors.getLoading(state, 'fetchFlowNameList')
   );
   const loadingVersion = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchVerionData')
+    LoadingSelectors.getLoading(state, 'fetchVersionData')
   );
   //fetchRegistryFlowDetails
   return (

@@ -1,9 +1,10 @@
-// import { yupResolver } from '@hookform/resolvers/yup';
 /*eslint-disable*/
 import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
 // import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -41,7 +42,6 @@ import AddParameterContext from './AddParameterContext';
 import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -303,6 +303,20 @@ export const scheduleSchema = yup.object().shape({
   approver_ids: yup.array().required('Approver is required'),
 });
 
+const breadcrumbDataOnDeploy = [
+  { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+  { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
+  { label: 'Flow Details', path: '/process-group/flow-details' },
+  { label: 'Configuration Details', path: '/process-group/config-details' },
+  { label: 'Summary' },
+];
+const breadcrumbDataOnUpgrade = [
+  { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+  { label: 'Flow Details', path: '/process-group/flow-details' },
+  { label: 'Configuration Details', path: '/process-group/config-details' },
+  { label: 'Summary' },
+];
+
 const Summary = () => {
   const dispatch = useDispatch();
   const selectedDestCluster =
@@ -320,14 +334,16 @@ const Summary = () => {
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const formData = useSelector(NamespacesSelectors.getFormData);
-  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
+  const checkDestCluster = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState({
     isOpen: false,
     schedule: false,
   });
-  const deploByRegistryFlow = useSelector(
+  const deployByRegistryFlow = useSelector(
     NamespacesSelectors.getdeployRegistryFlow
   );
   const registryAllDetails = useSelector(
@@ -385,15 +401,6 @@ const Summary = () => {
   const summaryLoadingStateRedux = useSelector(
     NamespacesSelectors.getNamespaceSummaryLoadingState
   );
-
-  const breadcrumbData = [
-    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
-    ...(checkDestCluster?.mode !== 'upgrade'
-      ? [{ label: KDFM.SELECT_NAMESPACE, path: '/process-group/deploy' }]
-      : []),
-    { label: KDFM.CONFIGURATION_DETAILS, path: '/process-group/upgrade' },
-    { label: KDFM.SUMMARY },
-  ];
 
   const getParamerterContext = async () => {
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
@@ -483,11 +490,7 @@ const Summary = () => {
   };
 
   const handleBackClick = () => {
-    if (deploByRegistryFlow) {
-      history.push('/process-group/config-details');
-    } else {
-      history.push('/process-group/upgrade');
-    }
+    history.push('/process-group/config-details');
   };
 
   const [activeButton, setActiveButton] = useState(null);
@@ -513,6 +516,29 @@ const Summary = () => {
   };
 
   const handleConfirmUpdateStatus = () => {
+    if (!deployByRegistryFlow) {
+      console.log(confirmDialogue.forPopup, 'confirmDialogue.forPopup');
+      if (confirmDialogue.forPopup) {
+        ('hello');
+      } else {
+        dispatch(
+          NamespacesActions.updateNamespaceStatusRegistry(
+            confirmDialogue?.action
+          )
+        );
+        setActiveButton(confirmDialogue.action);
+        setFlowControlButtons(confirmDialogue.action);
+      }
+
+      setConfirmDialogue({
+        state: false,
+        action: '',
+        text: '',
+        forPopup: false,
+      });
+
+      return;
+    }
     if (confirmDialogue.forPopup) {
       dispatch(
         NamespacesActions.updateNamespaceStatus(confirmDialogue?.action)
@@ -550,7 +576,7 @@ const Summary = () => {
     });
     // dispatch(NamespacesActions.updateNamespaceStatus(status));
   };
-
+  //
   const handledeployByRegistry = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -575,16 +601,39 @@ const Summary = () => {
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
 
+  const handleUpgradeByRegistry = () => {
+    const updatedData = paramterDeployArray.map(item => ({
+      parameterName: item.name,
+      parameters: item.parameters,
+    }));
+    const payload = {
+      version: versionSelected.version,
+      namespaceId: checkDestCluster?.id,
+      payload: {
+        variablesData: isEmpty(variblesReduxData)
+          ? registryDetailsData?.variablesData
+          : variblesReduxData,
+        parameterData: updatedData,
+        controllerServiceData: registryDetailsData?.controllerServicesData,
+      },
+    };
+    dispatch(NamespacesActions.upgradeCluster(payload));
+    toast.info(NamespacesSelectors.getUpdatedNamespaceResponse.message);
+  };
   const loadingregistry = useSelector(state =>
     LoadingSelectors.getLoading(state, 'deployNamespaceByRegistryFlow')
   );
   const loadingreUpdateFlow = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
   );
-
+  const loadingreUpgradeFlow = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'upgradeCluster')
+  );
   return (
     <MainContainer className="main-space bg-white">
-      <FullPageLoader loading={loadingregistry || loadingreUpdateFlow} />
+      <FullPageLoader
+        loading={loadingregistry || loadingreUpdateFlow || loadingreUpgradeFlow}
+      />
       <TopTitleBar className="d-flex mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>
@@ -592,8 +641,8 @@ const Summary = () => {
           </ImageContainer>
           <MainTitleHfour className="mb-0">
             {`${
-              checkDestCluster.mode === 'upgrade'
-                ? checkDestCluster?.version <= formData.version
+              !deployByRegistryFlow
+                ? checkDestCluster?.version <= versionSelected.version
                   ? KDFM.UPGRADE
                   : KDFM.DOWNGRADE
                 : KDFM.DEPLOY
@@ -602,7 +651,14 @@ const Summary = () => {
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex mb-3">
-        <Breadcrumb module="deploy" path={breadcrumbData} />
+        <Breadcrumb
+          module="deploy"
+          path={
+            !deployByRegistryFlow
+              ? breadcrumbDataOnUpgrade
+              : breadcrumbDataOnDeploy
+          }
+        />
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className=" pe-1">
@@ -622,9 +678,7 @@ const Summary = () => {
                       {KDFM.SELECTED_CLUSTER}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {deploByRegistryFlow
-                        ? currentSelectedCluster?.label
-                        : selectedDestCluster?.label}
+                      {currentSelectedCluster?.label}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -634,9 +688,9 @@ const Summary = () => {
                       {KDFM.NAMESPACE}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {deploByRegistryFlow
+                      {deployByRegistryFlow
                         ? formDataRegistry?.selectedFlowName
-                        : checkDestCluster.name}
+                        : checkDestCluster?.name}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -647,19 +701,11 @@ const Summary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>
-                          {deploByRegistryFlow
-                            ? registryData?.url
-                            : checkDestCluster.registryUrl}
-                        </span>
+                        <span>{registryData?.url}</span>
                         <div data-tooltip-id={`copy-board-namespace-summary1`}>
                           <CopyToClipboard
                             className="summary-clipboard"
-                            copyItem={
-                              deploByRegistryFlow
-                                ? registryData?.url
-                                : checkDestCluster.registryUrl
-                            }
+                            copyItem={registryData?.url}
                           />
                         </div>
                         <ReactTooltip
@@ -685,19 +731,11 @@ const Summary = () => {
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       <div>
-                        <span>
-                          {deploByRegistryFlow
-                            ? registryAllDetails?.nifi_url
-                            : checkDestCluster.nifiUrl}
-                        </span>
+                        <span>{registryAllDetails?.nifi_url}</span>
                         <div data-tooltip-id={`copy-board-namespace-summary2`}>
                           <CopyToClipboard
                             className="summary-clipboard"
-                            copyItem={
-                              deploByRegistryFlow
-                                ? registryAllDetails?.nifi_url
-                                : checkDestCluster.nifiUrl
-                            }
+                            copyItem={registryAllDetails?.nifi_url}
                           />
                         </div>
                         <ReactTooltip
@@ -719,32 +757,30 @@ const Summary = () => {
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                   <div>
                     <SummaryDetailsHFourTag className="mb-2">
-                      {deploByRegistryFlow
+                      {deployByRegistryFlow
                         ? KDFM.SELECTED_VERSION
                         : KDFM.CURRENT_VERSION}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {deploByRegistryFlow
-                        ? versionSelected?.version
-                        : checkDestCluster.version || 'N/A'}
+                      {checkDestCluster?.version || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
-                {!deploByRegistryFlow && (
+                {!deployByRegistryFlow && (
                   <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                     <div className="summary-details">
                       <SummaryDetailsHFourTag className="mb-2">
                         {KDFM.UPDATED_VERSION}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
-                        {formData.version || checkDestCluster.version}
+                        {versionSelected.version || ''}
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
                 )}
               </RowConfig>
             </UseColLg>
-            {checkDestCluster.mode === 'upgrade' && (
+            {!deployByRegistryFlow && (
               <>
                 <div className="col-12 p-3">
                   <ConfigTitle className="config-title">
@@ -761,7 +797,7 @@ const Summary = () => {
                           {KDFM.NAMESPACE}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {checkDestCluster.name}
+                          {checkDestCluster?.name}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -771,7 +807,7 @@ const Summary = () => {
                           {KDFM.CURRENT_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {checkDestCluster.version}
+                          {checkDestCluster?.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -781,7 +817,7 @@ const Summary = () => {
                           {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {formData.version || checkDestCluster.version}
+                          {versionSelected?.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
@@ -791,7 +827,7 @@ const Summary = () => {
             )}
           </RowConfig>
           <IconsvgDiv>
-            {checkDestCluster.mode === 'upgrade' && (
+            {!deployByRegistryFlow && (
               <CustomNine className="col-4 mb-3">
                 <ActiveButtonContainer className="d-flex ">
                   <TextDiv className="d-flex">
@@ -841,7 +877,7 @@ const Summary = () => {
                 </ActiveButtonContainer>
               </CustomNine>
             )}
-            {checkDestCluster.mode === 'upgrade' && (
+            {!deployByRegistryFlow && (
               <ActiveButtonContainer className="d-flex ">
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-1 mr-2">
@@ -913,23 +949,24 @@ const Summary = () => {
           <Button variant="secondary" onClick={handleBackClick}>
             {KDFM.BACK}
           </Button>
-          {!schedularFromList && !isRegistryDeploy && (
+          {/* {!schedularFromList && !isRegistryDeploy && (
             <Button
-              onClick={
-                checkDestCluster.mode !== 'upgrade'
-                  ? handleDeploy
-                  : handleUpgradeClick
-              }
+              onClick={deployByRegistryFlow ? handleDeploy : handleUpgradeClick}
             >
-              {checkDestCluster.mode === 'upgrade'
-                ? checkDestCluster.version <= formData.version
+              {deployByRegistryFlow
+                ? selectedNameSpace.version <= formData.version
                   ? KDFM.UPGRADE
                   : KDFM.DOWNGRADE
                 : KDFM.DEPLOY}
             </Button>
-          )}
+          )} */}
           {isRegistryDeploy && (
-            <Button onClick={handledeployByRegistry}>{KDFM.DEPLOY}</Button>
+            <Button onClick={handledeployByRegistry}>
+              {isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE}
+            </Button>
+          )}
+          {!isRegistryDeploy && (
+            <Button onClick={handleUpgradeByRegistry}>{KDFM.UPGRADE}</Button>
           )}
           {schedularFromList && (
             <Button
@@ -985,17 +1022,6 @@ const Summary = () => {
         handleScheduleTertiaryButton={handleScheduleTertiaryButton}
         flowControlState={flowControlButtons}
       />
-      <ParameterContext
-        isParameterContextOpen={isParameterContextOpen}
-        key={isParameterContextOpen.isOpen}
-        isOpen={isParameterContextOpen.isOpen}
-        closePopup={closeParameterContext}
-        openAddParameterContext={openAddParameterContext}
-        setIsAddParameterContextOpen={setIsAddParameterContextOpen}
-        setIsParameterContextOpen={setIsParameterContextOpen}
-        getParamerterContext={getParamerterContext}
-        parameterContextId={deployOrUpgradeDetails?.parameterContextId}
-      />
       <AddParameterContext
         key={isParameterContextOpen.mode}
         isParameterContextOpen={isParameterContextOpen}
@@ -1004,13 +1030,6 @@ const Summary = () => {
         closePopup={closeAddParameterContext}
         setIsAddParameterContextOpen={setIsAddParameterContextOpen}
         setIsParameterContextOpen={setIsParameterContextOpen}
-      />
-      <Listvariables
-        isOpen={isVariablesModalOpen}
-        closePopup={closeVariablesModal}
-        isVariablesModalOpen={isVariablesModalOpen}
-        setVariablesModalOpen={setVariablesModalOpen}
-        handleTertiaryButton={handleTertiaryButton}
       />
       <ModalWithIcon
         title={'Flow Confirmation'}
