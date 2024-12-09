@@ -150,6 +150,23 @@ const ConfigDetailsPage = () => {
         return null;
     }
   };
+  const handleSetTab = tab => {
+    if (tab !== 'Parameter Context') {
+      dispatch(NamespacesActions.setRegistryDeployParameterContext(PcData));
+    }
+    if (tab !== 'Variables') {
+      dispatch(NamespacesActions.setRegistryDeployVariable(variableData));
+    }
+    if (tab !== 'Controller Service') {
+      dispatch(
+        NamespacesActions.setRegistryDeployControllerService(
+          controllerServicePayload
+        )
+      );
+    }
+
+    setActiveTab(tab);
+  };
 
   return (
     <div>
@@ -182,21 +199,21 @@ const ConfigDetailsPage = () => {
         <TabWrapper className="nav">
           <Tab
             active={activeTab === KDFM.PARAMETER_CONTEXT}
-            onClick={() => setActiveTab(KDFM.PARAMETER_CONTEXT)}
+            onClick={() => handleSetTab(KDFM.PARAMETER_CONTEXT)}
             className="nav-item"
           >
             {KDFM.PARAMETER_CONTEXT}
           </Tab>
           <Tab
             active={activeTab === KDFM.VARIABLES}
-            onClick={() => setActiveTab(KDFM.VARIABLES)}
+            onClick={() => handleSetTab(KDFM.VARIABLES)}
             className="nav-item"
           >
             {KDFM.VARIABLES}{' '}
           </Tab>
           <Tab
             active={activeTab === KDFM.CONTROLLER_SERVICE}
-            onClick={() => setActiveTab(KDFM.CONTROLLER_SERVICE)}
+            onClick={() => handleSetTab(KDFM.CONTROLLER_SERVICE)}
             className="nav-item"
           >
             {KDFM.CONTROLLER_SERVICE}{' '}
