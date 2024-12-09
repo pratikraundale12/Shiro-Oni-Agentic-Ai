@@ -1096,18 +1096,7 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
   }
 }
 export function* upgradeCluster(api, { payload }) {
-  console.log('upgradeCluster', payload);
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  // const checkDestCluster = yield select(
-  //   NamespacesSelectors.getCheckDestCluster
-  // );
-  // const formData = yield select(NamespacesSelectors.getFormData);
-  // const destClusterToken = clusters?.find(
-  //   cluster => cluster.id === selectedDestCluster?.value
-  // );
-  // const selectedNamespace = yield select(
-  //   NamespacesSelectors.getSelectedNamespace
-  // );
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const srcClusterToken = clusters?.find(
     cluster => cluster.id === selectedCluster?.value
@@ -1127,12 +1116,12 @@ export function* upgradeCluster(api, { payload }) {
     successAction: NamespacesActions.deployClusterSuccess,
   });
 
-  if (response.ok && response.data?.requestId) {
-    yield put(NamespacesActions.setNamespaceSummaryLoadingState(false));
+  if (response.ok) {
+    yield put(NamespacesActions.setUpdatedNamespaceResponse(response));
   }
 
   if (!response.ok) {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
 

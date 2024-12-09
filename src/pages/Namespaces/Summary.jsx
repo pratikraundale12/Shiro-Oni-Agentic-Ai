@@ -42,6 +42,7 @@ import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
 import ParameterContext from './ParameterContext';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { toast } from 'react-toastify';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -328,12 +329,10 @@ const Summary = () => {
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  console.log(deployOrUpgradeDetails, 'deployOrUpgradeDetails');
   const currentSelectedCluster = useSelector(
     NamespacesSelectors.getSelectedCluster
   );
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
-  console.log(versionSelected, 'versionSelected');
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(
@@ -605,7 +604,7 @@ const Summary = () => {
       parameters: item.parameters,
     }));
     const payload = {
-      version: versionSelected,
+      version: versionSelected.version,
       namespaceId: checkDestCluster?.id,
       payload: {
         variablesData: isEmpty(variblesReduxData)
@@ -616,6 +615,7 @@ const Summary = () => {
       },
     };
     dispatch(NamespacesActions.upgradeCluster(payload));
+    toast.info(NamespacesSelectors.getUpdatedNamespaceResponse.message);
   };
   const loadingregistry = useSelector(state =>
     LoadingSelectors.getLoading(state, 'deployNamespaceByRegistryFlow')
@@ -756,9 +756,7 @@ const Summary = () => {
                         : KDFM.CURRENT_VERSION}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {deployByRegistryFlow
-                        ? versionSelected.version
-                        : versionSelected || 'N/A'}
+                      {checkDestCluster?.version || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -769,7 +767,7 @@ const Summary = () => {
                         {KDFM.UPDATED_VERSION}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
-                        {versionSelected || ''}
+                        {versionSelected.version || ''}
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
@@ -813,7 +811,7 @@ const Summary = () => {
                           {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {versionSelected.version}
+                          {versionSelected?.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>

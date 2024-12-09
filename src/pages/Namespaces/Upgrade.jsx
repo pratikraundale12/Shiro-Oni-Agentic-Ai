@@ -279,7 +279,6 @@ const Upgrade = () => {
     ) {
       toast.info('The selected version is already deployed.');
     } else {
-      console.log(selectedNameSpace);
       dispatch(
         NamespacesActions.fetchRegistryFlowDetails({
           bucketId: selectedNameSpace.bucketId,

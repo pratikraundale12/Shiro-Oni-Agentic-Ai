@@ -23,7 +23,6 @@ export const UserSelect = ({
 }) => {
   const dispatch = useDispatch();
   const [selected, setSelected] = useState([]);
-  console.log(selected, 'selected');
   const settingData = useSelector(SettingsSelectors.getSettings);
   const approverGroups = settingData?.approver_groups || [];
   const approverOptions = approverGroups.map(({ id, name }) => ({

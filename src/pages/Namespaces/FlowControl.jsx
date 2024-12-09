@@ -112,8 +112,7 @@ const FlowControl = () => {
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
-  console.log(singleNamespaceData, 'singleNamespaceData');
-  const [activeButton, setActiveButton] = useState(null);
+   const [activeButton, setActiveButton] = useState(null);
   const [confirmDialogue, setConfirmDialogue] = useState({
     state: false,
     action: '',
