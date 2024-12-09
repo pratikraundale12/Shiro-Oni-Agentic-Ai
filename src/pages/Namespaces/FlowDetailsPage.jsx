@@ -227,7 +227,7 @@ const FlowDetailsPage = () => {
     y: Number(item.position.y),
     width: 384,
     height: 176,
-    color: 'teal',
+    color: item?.isProcessor ? '#BFDFDF' : 'teal',
   }));
 
   const updatedDataForGraph = [

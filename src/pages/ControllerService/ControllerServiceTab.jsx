@@ -46,7 +46,7 @@ const ConfigureButton = styled.button`
 
 const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const dispatch = useDispatch();
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
@@ -82,11 +82,15 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const [updatedExternalServiceData, setUpdatedExternalServiceData] = useState(
     []
   );
-  // const [controllerServicePayload, setControllerServicePayload] = useState({});
+
+  const [externalServicePayload, setExternalServicePayload] = useState([]);
+
   const [isExternalServiceConfigured, setIsExternalServiceConfigured] =
     useState(false);
   const [isExternalServiceUpdated, setIsExternalServiceUpdated] =
     useState(false);
+
+  const [isFromExternalService, setisFromExternalService] = useState(false);
 
   const COLUMNS = [
     { label: 'Name', renderCell: item => item?.name, width: '21%' },
@@ -164,13 +168,13 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   };
 
   const handleSettingClick = item => {
+    const match = controllerServicesData?.some(data =>
+      data.controllerService?.some(service => service.id === item.id)
+    );
+    setisFromExternalService(match);
     setSelectedItemFromList(item);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
-
-  useEffect(() => {
-    dispatch(NamespacesActions.getControllerServiceList());
-  }, [dispatch, modalOpenState, selectedCluster]);
 
   const handleConfigure = item => {
     setSelectedService(item);
@@ -186,6 +190,12 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         ? { ...service, controllerService: [data] }
         : service
     );
+    const payloadData = controllerServicesData.map(service =>
+      service.identifier === selectedService.identifier
+        ? { ...service, updatedValue: data?.id }
+        : service
+    );
+    setExternalServicePayload(payloadData);
     setControllerServicesData(updatedData);
     const newExternalControllerServiceArray = updatedData.map(
       service => service.controllerService
@@ -204,7 +214,6 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const handleCloseModal = () => {
     dispatch(NamespacesActions.setNewlyAddVariables([]));
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
-    dispatch(NamespacesActions.getControllerServiceList());
   };
 
   const handleToggle = index => {
@@ -319,12 +328,9 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   useEffect(() => {
     setControllerServicePayload(prevState => {
       const newPayload = {
-        externalServicesData:
-          updatedExternalServiceData?.length && isExternalServiceConfigured
-            ? updatedExternalServiceData
-            : externalControllerServiceArray?.length
-              ? externalControllerServiceArray
-              : prevState.externalServicesData || [],
+        externalServicesData: isExternalServiceUpdated
+          ? externalServicePayload
+          : [],
         localServicesData: updatedLocalServicesData?.length
           ? updatedLocalServicesData
           : prevState.localServicesData || [],
@@ -332,10 +338,9 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
       return newPayload;
     });
   }, [
-    externalControllerServiceArray,
-    updatedExternalServiceData,
+    externalServicePayload,
     updatedLocalServicesData,
-    isExternalServiceConfigured,
+    isExternalServiceUpdated,
   ]);
 
   return (
@@ -378,6 +383,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         updatedData={updatedData}
         setUpdatedData={setUpdatedData}
         isFromControllerServiceTab={true}
+        isFromExternalService={isFromExternalService}
         handlePropertyUpdate={handleServiceConfigure}
       />
       <AddProperties

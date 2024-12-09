@@ -33,6 +33,7 @@ import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
 const Wrapper = styled.div`
   height: 95%;
+  padding-bottom: 120px; /* Adds space below all content */
 `;
 const InputFields = styled.div`
   display: flex;
@@ -42,7 +43,8 @@ const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  // position: fixed;
+  padding-bottom: 20px;
+  margin-top: auto;
   bottom: 20px;
 `;
 const LabelSelect = styled.div`

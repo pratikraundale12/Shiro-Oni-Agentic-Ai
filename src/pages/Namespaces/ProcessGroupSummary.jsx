@@ -7,9 +7,9 @@ import { TodoIcon } from '../../assets';
 import { KDFM } from '../../constants';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { NamespacesActions } from '../../store';
-import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import AuditLog from './AuditLog';
 import FlowControl from './FlowControl';
+import ListControllerService from './ListControllerServiceNamespace';
 import ListVariables from './Listvariables';
 import ParameterContext from './ParameterContext';
 import SummaryDetails from './SummaryDetails';
@@ -136,7 +136,7 @@ const ConfigDetailsPage = () => {
           />
         );
       case KDFM.CONTROLLER_SERVICE:
-        return <ControllerServiceTab />;
+        return <ListControllerService />;
 
       case 'Audit Log':
         return <AuditLog />;
