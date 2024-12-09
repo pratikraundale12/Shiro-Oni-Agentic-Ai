@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
+import styled from 'styled-components';
 import {
   CanvasXIcon,
   CanvasYIcon,
@@ -11,21 +11,20 @@ import {
   // UpsideSquareIcon,
   TodoIcon,
 } from '../../assets';
+import { FullPageLoader, Table } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import {
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
-  // NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { FullPageLoader, Table } from '../../components';
-// import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
-// import RightIcon from '../../assets/Icons/RightIcon';
+import { theme } from '../../styles';
+import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
+import RectangleGraph from './birdEyeViewGraph';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -219,6 +218,36 @@ const FlowDetailsPage = () => {
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
     { label: 'Flow Details' },
   ];
+  const gridDataDest = useSelector(state =>
+    GridSelectors.getGridData(state, 'namespaces')
+  );
+
+  const sortedArray = gridDataDest.map(item => ({
+    x: Number(item.position.x),
+    y: Number(item.position.y),
+    width: 384,
+    height: 176,
+    color: 'teal',
+  }));
+
+  const updatedDataForGraph = [
+    ...sortedArray,
+    ...[
+      {
+        x: xStateCoordinate || registryDetailsData?.position?.[0].x,
+        y: yStateCoordinate || registryDetailsData?.position?.[0].y,
+        width: 384,
+        height: 176,
+        color: theme.colors.primary,
+      },
+    ],
+  ];
+
+  const enhancedData = updatedDataForGraph.map((d, index) => ({
+    ...d,
+    id: index,
+  }));
+
   const breadcrumbOnUpgrade = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: KDFM.FLOW_DETAILS },
@@ -415,6 +444,13 @@ const FlowDetailsPage = () => {
                   )}
                 </>
               </RowConfig>
+            </div>
+            <div className="ms-4">
+              <RectangleGraph
+                data={enhancedData}
+                setXStateCoordiate={setXStateCoordiate}
+                setYStateCoordiate={setYStateCoordiate}
+              />
             </div>
             <div className="col-12 p-3">
               <RowConfig className="row">

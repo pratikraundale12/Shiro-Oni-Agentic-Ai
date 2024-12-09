@@ -245,7 +245,6 @@ export const NAMESPACES_INITIAL_STATE = {
   registryDetailsFlow: false,
   registryDeployControllerService: {},
   updatedNamespaceResponse: {},
-  // parameterEditParent: false,
 };
 
 /* ------------- SELECTORS ------------------ */

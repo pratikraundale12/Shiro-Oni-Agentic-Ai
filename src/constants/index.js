@@ -170,11 +170,11 @@ export const KDFM = {
   SEARCH_NODES: 'Search NodeId , Address',
   TAG: 'Tag',
   SELECTED_VERSION: 'Selected Version',
-  CONFIGURE: 'Configure',
   GROUP_EMAIL: 'Group Email Id',
   ENTER_GROUP_EMAIL: 'Enter your Group Email',
   EMAIL_REMINDER: 'Email Reminder Time',
   REMINDER_EMPHASISED_TEXT: 'before schedule deployment time',
+  CONFIGURE: 'Configure',
 
   // License constants
   TRIAL: 'Trial',

@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
+/*eslint-disable*/
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
+import { SettingSmallIcon } from '../../assets';
 import { Table } from '../../components';
+import { KDFM } from '../../constants';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import Collapsible from '../Namespaces/Collapsible';
-import ConfigurePage from './ConfigurePage';
 import AddControllerServiceModal from './AddControllerServiceModal';
-import ConfigControllerService from './ConfigControllerService';
 import AddProperties from './AddProperties';
-import PropertyDropdownModal from './ProprtyDropdownModel';
+import ConfigControllerService from './ConfigControllerService';
+import ConfigurePage from './ConfigurePage';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
-import { SettingSmallIcon } from '../../assets';
-import { KDFM } from '../../constants';
-import PropTypes from 'prop-types';
+import PropertyDropdownModal from './ProprtyDropdownModel';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -43,9 +44,7 @@ const ConfigureButton = styled.button`
   }
 `;
 
-const ControllerServiceTab = ({
-  setControllerServicePayload,
-}) => {
+const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const dispatch = useDispatch();
   const [openIndex, setOpenIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
