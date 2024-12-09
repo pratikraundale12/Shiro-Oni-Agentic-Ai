@@ -263,7 +263,7 @@ const FlowDetailsPage = () => {
 
   const handleRowClick = item => {
     setSelectedVersion(item.version);
-    dispatch(NamespacesActions.setVersionSelect(item.version));
+    dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
   };
 
   const handleBackClick = () => {
@@ -282,7 +282,7 @@ const FlowDetailsPage = () => {
     }
   };
   const handleRadioChange = item => {
-    dispatch(NamespacesActions.setVersionSelect(item.version));
+    dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
   };
   const sortedData = versionListData?.versionList
     ?.slice()

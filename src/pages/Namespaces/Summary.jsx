@@ -1,9 +1,9 @@
-// import { yupResolver } from '@hookform/resolvers/yup';
 /*eslint-disable*/
 import { isEmpty } from 'lodash';
 import React, { useState } from 'react';
 // import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as yup from 'yup';
@@ -328,12 +328,10 @@ const Summary = () => {
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
-  console.log(deployOrUpgradeDetails, 'deployOrUpgradeDetails');
   const currentSelectedCluster = useSelector(
     NamespacesSelectors.getSelectedCluster
   );
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
-  console.log(versionSelected, 'versionSelected');
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(
@@ -604,7 +602,23 @@ const Summary = () => {
   };
 
   const handleUpgradeByRegistry = () => {
-    dispatch(NamespacesActions.upgradeCluster('hello'));
+    const updatedData = paramterDeployArray.map(item => ({
+      parameterName: item.name,
+      parameters: item.parameters,
+    }));
+    const payload = {
+      version: versionSelected.version,
+      namespaceId: checkDestCluster?.id,
+      payload: {
+        variablesData: isEmpty(variblesReduxData)
+          ? registryDetailsData?.variablesData
+          : variblesReduxData,
+        parameterData: updatedData,
+        controllerServiceData: registryDetailsData?.controllerServicesData,
+      },
+    };
+    dispatch(NamespacesActions.upgradeCluster(payload));
+    toast.info(NamespacesSelectors.getUpdatedNamespaceResponse.message);
   };
   const loadingregistry = useSelector(state =>
     LoadingSelectors.getLoading(state, 'deployNamespaceByRegistryFlow')
@@ -612,9 +626,14 @@ const Summary = () => {
   const loadingreUpdateFlow = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
   );
+  const loadingreUpgradeFlow = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'upgradeCluster')
+  );
   return (
     <MainContainer className="main-space bg-white">
-      <FullPageLoader loading={loadingregistry || loadingreUpdateFlow} />
+      <FullPageLoader
+        loading={loadingregistry || loadingreUpdateFlow || loadingreUpgradeFlow}
+      />
       <TopTitleBar className="d-flex mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>
@@ -745,9 +764,7 @@ const Summary = () => {
                         : KDFM.CURRENT_VERSION}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {deployByRegistryFlow
-                        ? versionSelected.version
-                        : versionSelected || 'N/A'}
+                      {checkDestCluster?.version || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -758,7 +775,7 @@ const Summary = () => {
                         {KDFM.UPDATED_VERSION}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
-                        {versionSelected || ''}
+                        {versionSelected.version || ''}
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
@@ -802,7 +819,7 @@ const Summary = () => {
                           {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {versionSelected.version}
+                          {versionSelected?.version}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>

@@ -190,50 +190,6 @@ export function* updateNamespaceStatus(api, { payload }) {
   }
 }
 
-export function* upgradeCluster(api) {
-  // const selectedDestCluster = yield select(
-  //   NamespacesSelectors.getSelectedDestCluster
-  // );
-  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  // const checkDestCluster = yield select(
-  //   NamespacesSelectors.getCheckDestCluster
-  // );
-  // const formData = yield select(NamespacesSelectors.getFormData);
-  // const destClusterToken = clusters?.find(
-  //   cluster => cluster.id === selectedDestCluster?.value
-  // );
-  // const selectedNamespace = yield select(
-  //   NamespacesSelectors.getSelectedNamespace
-  // );
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  const srcClusterToken = clusters?.find(
-    cluster => cluster.id === selectedCluster?.value
-  );
-  api.headers['x-cluster-id'] = selectedCluster?.value;
-  api.headers['x-cluster-token'] = srcClusterToken?.token;
-  const response = yield call(requestSaga, {
-    errorSection: 'upgradeCluster',
-    loadingSection: 'upgradeCluster',
-    apiMethod: api.upgradeCluster,
-    apiParams: [
-      {
-        clusterId: selectedCluster?.value,
-        name: 'name',
-      },
-    ],
-    successAction: NamespacesActions.deployClusterSuccess,
-  });
-
-  if (response.ok && response.data?.requestId) {
-    yield call(clusterProgress, api);
-    yield put(NamespacesActions.setNamespaceSummaryLoadingState(false));
-  }
-
-  if (!response.ok) {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
-  }
-}
-
 export function* clusterProgress(api) {
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
@@ -1188,6 +1144,38 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
+export function* upgradeCluster(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const srcClusterToken = clusters?.find(
+    cluster => cluster.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedCluster?.value;
+  api.headers['x-cluster-token'] = srcClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'upgradeCluster',
+    loadingSection: 'upgradeCluster',
+    apiMethod: api.upgradeCluster,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        payload,
+      },
+    ],
+    successAction: NamespacesActions.deployClusterSuccess,
+  });
+
+  if (response.ok) {
+    yield put(NamespacesActions.setUpdatedNamespaceResponse(response));
+    yield put(NamespacesActions.setDeployedModal(true));
+    toast.success(response?.data?.message);
+  }
+
+  if (!response.ok) {
+    toast.error(response.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
+
 export function* updateNamespaceStatusRegistry(api, { payload }) {
   const checkDestCluster = yield select(
     NamespacesSelectors.getSelectedNamespace
