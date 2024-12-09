@@ -14,6 +14,7 @@ import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
 import ConfigurePage from './ConfigurePage';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
+import { NoDataIcon } from '../../assets';
 import PropertyDropdownModal from './ProprtyDropdownModel';
 
 const DataWrapper = styled.div`
@@ -24,6 +25,14 @@ const DataWrapper = styled.div`
   gap: 0px;
   opacity: 0px;
   border: Mixed solid rgba(221, 228, 240, 1);
+`;
+
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
 `;
 
 const ScrollSetGrey = styled.div`
@@ -253,22 +262,34 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
 
   useEffect(() => {
     const newCollapsibles = [
-      {
-        title: 'External Controller Service',
-        content: externalControllerServiceArray?.length ? (
-          <Table
-            data={externalControllerServiceArray[0]}
-            columns={COLUMNS_2}
-            className={'variables-table'}
-          />
-        ) : (
-          <Table
-            data={controllerServicesData}
-            columns={COLUMNS}
-            className={'variables-table'}
-          />
-        ),
-      },
+      ...(externalControllerServiceArray?.length
+        ? [
+            {
+              title: 'External Controller Service',
+              content: (
+                <Table
+                  data={externalControllerServiceArray[0]}
+                  columns={COLUMNS_2}
+                  className={'variables-table'}
+                />
+              ),
+            },
+          ]
+        : []),
+      ...(controllerServicesData?.length
+        ? [
+            {
+              title: 'Controller Services Data',
+              content: (
+                <Table
+                  data={controllerServicesData}
+                  columns={COLUMNS}
+                  className={'variables-table'}
+                />
+              ),
+            },
+          ]
+        : []),
       ...(registryAllDetails?.controllerServicesData?.localServices?.map(
         service => ({
           title: service?.processGroupName || 'Unnamed Group',
@@ -288,6 +309,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     registryAllDetails,
     externalControllerServiceArray,
   ]);
+  
 
   const handleServiceConfigure = data => {
     const { externalServiceState, localServiceState } = classifyServiceData(
@@ -346,20 +368,33 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {collapsibles &&
+        {registryAllDetails?.controllerServicesData?.localServices?.length ||
+        controllerServicesData?.length ? (
+          collapsibles &&
           collapsibles.map((item, index) => (
             <Collapsible
               key={index}
               title={item.title}
               isTableOpen={openIndex === index}
               toggleCollapsible={() => handleToggle(index)}
-              onBtnClick={() =>
-                dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
-              }
+              onBtnClick={() => {
+                setOpenIndex(index);
+                dispatch(
+                  NamespacesActions.setIsAddControllerServiceModal(true)
+                );
+              }}
             >
               {item.content}
             </Collapsible>
-          ))}
+          ))
+        ) : (
+          <>
+            <div className="d-flex justify-content-center">
+              <NoDataIcon width={130} />
+            </div>
+            <NoDataText>No Data Found!!</NoDataText>
+          </>
+        )}
       </ScrollSetGrey>
 
       {isModalOpen && (
