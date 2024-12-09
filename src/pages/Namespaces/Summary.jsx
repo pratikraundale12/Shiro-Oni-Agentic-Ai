@@ -583,6 +583,7 @@ const Summary = () => {
       parameters: item.parameters,
     }));
     const payload = {
+      namespaceId: checkDestCluster?.value,
       version: registryFlowVerion?.version,
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
@@ -610,6 +611,7 @@ const Summary = () => {
       version: versionSelected.version,
       namespaceId: checkDestCluster?.id,
       payload: {
+        namespaceId: checkDestCluster?.value,
         variablesData: isEmpty(variblesReduxData)
           ? registryDetailsData?.variablesData
           : variblesReduxData,
