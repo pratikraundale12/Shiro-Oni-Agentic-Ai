@@ -46,7 +46,7 @@ const ConfigureButton = styled.button`
 
 const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const dispatch = useDispatch();
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
