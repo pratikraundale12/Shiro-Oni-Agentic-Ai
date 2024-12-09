@@ -67,10 +67,10 @@ const GreyBoxNamespace = styled.div`
   border-radius: 20px;
 `;
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
-  max-height: calc(100vh - 341px);
+  min-height: calc(100vh - 324px);
+  max-height: calc(100vh - 324px);
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
 `;
 const RowConfig = styled.div`
   display: flex;
@@ -112,7 +112,7 @@ const StyledTableCell = styled.div`
 const CustomTable = styled(Table)`
   overflow-y: auto;
   overflow-x: auto;
-  max-height: 15rem;
+  max-height: 25rem;
   width: 100%;
 `;
 
