@@ -405,7 +405,6 @@ function DeployPage() {
                       label="Keep existing Parameter Contexts"
                       checked={keepParameter}
                       onChange={e => setKeepParameter(e.target.checked)}
-                      // defaultChecked={true}
                     />
                   </div>
                 </div>
