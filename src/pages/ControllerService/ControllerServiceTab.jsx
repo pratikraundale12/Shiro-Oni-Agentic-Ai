@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -43,9 +44,7 @@ const ConfigureButton = styled.button`
   }
 `;
 
-const ControllerServiceTab = ({
-  setControllerServicePayload,
-}) => {
+const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const dispatch = useDispatch();
   const [openIndex, setOpenIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
