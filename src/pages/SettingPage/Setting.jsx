@@ -337,7 +337,7 @@ export const Setting = () => {
         </div>
         <HeadingContentHr className="mt-3 mb-4" />
         <InputFields className="row">
-          <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-5">
+          <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-4">
             <SwitchButton
               id="openModalInput"
               name="LDAP"
@@ -345,7 +345,7 @@ export const Setting = () => {
               onChange={handleLdapToggle}
             />
           </div>
-          <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-5">
+          <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-4">
             <SwitchButton
               id="openModalInput"
               name="AUTO SYNC"
