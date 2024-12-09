@@ -194,12 +194,14 @@ const FlowDetailsPage = () => {
     GridSelectors.getGridData(state, 'namespaces')
   );
 
+  console.log('Grid Data: ', gridDataDest);
+
   const sortedArray = gridDataDest.map(item => ({
     x: Number(item.position.x),
     y: Number(item.position.y),
     width: 384,
     height: 176,
-    color: 'teal',
+    color: item?.isProcessor ? '#BFDFDF' : 'teal',
   }));
 
   const updatedDataForGraph = [
