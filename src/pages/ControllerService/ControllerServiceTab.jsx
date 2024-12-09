@@ -262,22 +262,34 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
 
   useEffect(() => {
     const newCollapsibles = [
-      {
-        title: 'External Controller Service',
-        content: externalControllerServiceArray?.length ? (
-          <Table
-            data={externalControllerServiceArray[0]}
-            columns={COLUMNS_2}
-            className={'variables-table'}
-          />
-        ) : (
-          <Table
-            data={controllerServicesData}
-            columns={COLUMNS}
-            className={'variables-table'}
-          />
-        ),
-      },
+      ...(externalControllerServiceArray?.length
+        ? [
+            {
+              title: 'External Controller Service',
+              content: (
+                <Table
+                  data={externalControllerServiceArray[0]}
+                  columns={COLUMNS_2}
+                  className={'variables-table'}
+                />
+              ),
+            },
+          ]
+        : []),
+      ...(controllerServicesData?.length
+        ? [
+            {
+              title: 'Controller Services Data',
+              content: (
+                <Table
+                  data={controllerServicesData}
+                  columns={COLUMNS}
+                  className={'variables-table'}
+                />
+              ),
+            },
+          ]
+        : []),
       ...(registryAllDetails?.controllerServicesData?.localServices?.map(
         service => ({
           title: service?.processGroupName || 'Unnamed Group',
@@ -297,6 +309,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     registryAllDetails,
     externalControllerServiceArray,
   ]);
+  
 
   const handleServiceConfigure = data => {
     const { externalServiceState, localServiceState } = classifyServiceData(
