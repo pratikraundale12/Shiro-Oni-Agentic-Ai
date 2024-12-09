@@ -43,8 +43,8 @@ const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 20px; /* Ensure the button has space below */
-  margin-top: auto; /* Push the button down naturally */
+  padding-bottom: 20px;
+  margin-top: auto;
   bottom: 20px;
 `;
 const LabelSelect = styled.div`
