@@ -176,6 +176,8 @@ export const KDFM = {
   REMINDER_EMPHASISED_TEXT: 'before schedule deployment time',
   CONFIGURE: 'Configure',
 
+  CHANGE_CONFIGURATION: 'Change Configuration',
+
   // License constants
   TRIAL: 'Trial',
   PURCHASED: 'Purchased',

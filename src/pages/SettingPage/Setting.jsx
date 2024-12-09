@@ -13,6 +13,7 @@ import {
   UploadIcon,
   UserIcon,
 } from '../../assets';
+import { history } from '../../helpers/history';
 import favicon from '../../assets/images/favicon.ico';
 import {
   EMAIL_REGEX,
@@ -27,6 +28,7 @@ import {
   UploadField,
   PasswordField,
   SwitchButton,
+  TextButton,
 } from '../../shared';
 import { RolesSelectors } from '../../store';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
@@ -58,6 +60,18 @@ const EmphasisText = styled.em`
   font-style: italic;
   font-size: 13px !important;
   font-weight: 500;
+`;
+
+const LinkButton = styled(TextButton)`
+  color: ${props => props.theme.colors.primary};
+  font-family: ${props => props.theme.fontRedHat};
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: capitalize;
+
+  &:hover {
+    color: ${props => props.theme.colors.primary};
+  }
 `;
 
 export const settingSchema = yup.object().shape({
@@ -328,6 +342,9 @@ export const Setting = () => {
               onChange={handleLdapToggle}
             />
           </div>
+          <LinkButton onClick={() => history.push('/ldap-configuration')}>
+            {KDFM.CHANGE_CONFIGURATION}
+          </LinkButton>
           <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-5">
             <SwitchButton
               id="openModalInput"
