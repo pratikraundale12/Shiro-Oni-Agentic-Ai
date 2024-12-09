@@ -1,10 +1,10 @@
 /*eslint-disable*/
 
-import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import PropTypes from 'prop-types';
-import { NamespacesActions } from '../../store';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
+import { NamespacesActions } from '../../store';
 
 const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
   const svgRef = useRef();

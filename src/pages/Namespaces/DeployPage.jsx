@@ -1,24 +1,29 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
-import { KDFM } from '../../constants';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import styled from 'styled-components';
+import * as yup from 'yup';
 import { QRIcons, TodoIcon } from '../../assets';
-import Breadcrumb from '../../shared/Breadcrumb';
-import { Button, CheckboxField, InputField, SelectField } from '../../shared';
 import { FullPageLoader, Table } from '../../components';
+import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { useDispatch, useSelector } from 'react-redux';
+import {
+  Button,
+  CheckboxField,
+  InputField,
+  RadioField,
+  SelectField,
+} from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { isEmpty } from 'lodash';
-import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -62,10 +67,10 @@ const GreyBoxNamespace = styled.div`
   border-radius: 20px;
 `;
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
-  max-height: calc(100vh - 341px);
+  min-height: calc(100vh - 324px);
+  max-height: calc(100vh - 324px);
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
 `;
 const RowConfig = styled.div`
   display: flex;
@@ -98,16 +103,16 @@ const VersionDiv = styled.div`
   color: #444445;
 `;
 
-// const StyledTableCell = styled.div`
-//   cursor: pointer;
-//   padding: 6px 12px !important;
-//   min-width: 4rem !important;
-// `;
+const StyledTableCell = styled.div`
+  cursor: pointer;
+  padding: 6px 12px !important;
+  min-width: 4rem !important;
+`;
 
 const CustomTable = styled(Table)`
   overflow-y: auto;
   overflow-x: auto;
-  max-height: 15rem;
+  max-height: 25rem;
   width: 100%;
 `;
 
@@ -132,7 +137,7 @@ function DeployPage() {
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
 
   const formData = useSelector(NamespacesSelectors.getDeployFormData);
-  const [keepParameter, setKeepParameter] = useState(false);
+  const [keepParameter, setKeepParameter] = useState(true);
   const bucketListOptions = bucketListData?.bucketList?.map(item => ({
     label: item?.name,
     value: item?.id,
@@ -155,10 +160,93 @@ function DeployPage() {
     resolver: yupResolver(registrySchema),
   });
 
+  const convertDate = dateString => {
+    const date = new Date(dateString);
+
+    const pad = num => String(num).padStart(2, '0');
+
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const year = date.getFullYear();
+
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+
+    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
+  };
   const sortedData = versionListData?.versionList
     ?.slice()
     .sort((a, b) => a.version - b.version);
 
+  const COLUMNS = [
+    {
+      label: '',
+      renderCell: item => (
+        <StyledTableCell
+          role="button"
+          tabIndex="0"
+          onClick={() => handleRowClick(item)}
+          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <RadioField
+            name="upgrade"
+            checked={item.version === selectedVersion}
+            onChange={() => {
+              handleRadioChange(item);
+            }}
+          />
+        </StyledTableCell>
+      ),
+      width: '10%',
+    },
+    {
+      label: KDFM.VERSION,
+      renderCell: item => (
+        <StyledTableCell
+          role="button"
+          tabIndex="0"
+          onClick={() => handleRowClick(item)}
+          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
+        >
+          {item.version}
+        </StyledTableCell>
+      ),
+      width: '12%',
+    },
+    {
+      label: KDFM.CREATED,
+      renderCell: item => (
+        <StyledTableCell
+          role="button"
+          tabIndex="0"
+          onClick={() => handleRowClick(item)}
+          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
+        >
+          {convertDate(item.createdAt)}
+        </StyledTableCell>
+      ),
+      width: '28%',
+    },
+    {
+      label: KDFM.COMMENT,
+      renderCell: item => (
+        <StyledTableCell
+          role="button"
+          tabIndex="0"
+          onClick={() => handleRowClick(item)}
+          onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
+        >
+          {item.comments}
+        </StyledTableCell>
+      ),
+      width: '50%',
+    },
+  ];
   const handleRowClick = item => {
     setSelectedVersion(item.version);
     dispatch(NamespacesActions.setVersionSelect(item));
@@ -324,14 +412,7 @@ function DeployPage() {
             </RowConfig>
 
             <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
-            <CustomTable
-              data={sortedData || []}
-              columns={VERSION_COLUMNS({
-                selectedVersion,
-                handleRadioChange,
-                handleRowClick,
-              })}
-            />
+            <CustomTable data={sortedData || []} columns={COLUMNS} />
           </ScrollSetGrey>
         </GreyBoxNamespace>
         <BottomButton className="bottom-button-divs d-flex">

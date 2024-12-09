@@ -9,10 +9,10 @@ import Breadcrumb from '../../shared/Breadcrumb';
 import { NamespacesActions } from '../../store';
 import AuditLog from './AuditLog';
 import FlowControl from './FlowControl';
-import ParameterContextTab from './ParameterContextTab';
-import SummaryDetails from './SummaryDetails';
-import VariableTab from './VariableTab';
 import ListControllerService from './ListControllerServiceNamespace';
+import ListVariables from './Listvariables';
+import ParameterContext from './ParameterContext';
+import SummaryDetails from './SummaryDetails';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -93,7 +93,16 @@ const ConfigDetailsPage = () => {
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: 'Process Group Details', path: '/process-group/deployPage' },
   ];
-  const [variableData, setVariableData] = useState([]);
+  const [variablesModalOpen, setVariablesModalOpen] = useState(false);
+  const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
+    isOpen: false,
+    mode: 'add',
+  });
+  const [isParameterContextOpen, setIsParameterContextOpen] = useState({
+    isOpen: false,
+    schedule: false,
+  });
+  // const [PcData, setPcData] = useState({});
   const [activeTab, setActiveTab] = useState('Summary');
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -110,12 +119,20 @@ const ConfigDetailsPage = () => {
       case 'Flow Control':
         return <FlowControl />;
       case KDFM.PARAMETER_CONTEXT:
-        return <ParameterContextTab />;
+        return (
+          <ParameterContext
+            setIsAddParameterContextOpen={setIsAddParameterContextOpen}
+            isAddParameterContextOpen={isAddParameterContextOpen}
+            isParameterContextOpen={isParameterContextOpen}
+            setIsParameterContextOpen={setIsParameterContextOpen}
+          />
+        );
       case KDFM.VARIABLES:
         return (
-          <VariableTab
-            variableData={variableData}
-            setVariableData={setVariableData}
+          <ListVariables
+            isOpen={{ isOpen: true }}
+            isVariablesModalOpen={variablesModalOpen}
+            setVariablesModalOpen={setVariablesModalOpen}
           />
         );
       case KDFM.CONTROLLER_SERVICE:

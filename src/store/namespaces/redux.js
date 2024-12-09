@@ -155,14 +155,15 @@ export const NamespacesActions = {
   setUpdatedRegistryRespones: createAction(
     `${prefix}setUpdatedRegistryRespones`
   ),
+  setregistryDetailsFlow: createAction(`${prefix}setregistryDetailsFlow`),
   updateNamespaceStatusRegistry: createAction(
     `${prefix}updateNamespaceStatusRegistry`
   ),
-  setUpdatedNamespaceResponse: createAction(
-    `${prefix}setUpdatedNamespaceResponse`
-  ),
   setRegistryDeployControllerService: createAction(
     `${prefix}setRegistryDeployControllerService`
+  ),
+  setUpdatedNamespaceResponse: createAction(
+    `${prefix}setUpdatedNamespaceResponse`
   ),
 };
 
@@ -241,9 +242,9 @@ export const NAMESPACES_INITIAL_STATE = {
   registryDeployParameterContext: [],
   registryDeployResponseData: {},
   updatedRegistryRespones: {},
-  updatedNamespaceResponse: {},
+  registryDetailsFlow: false,
   registryDeployControllerService: {},
-  // parameterEditParent: false,
+  updatedNamespaceResponse: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -316,10 +317,11 @@ export const NamespacesSelectors = {
   getRegistryDeployResponseData: state =>
     state.namespaces.registryDeployResponseData,
   getUpdatedRegistryRespones: state => state.namespaces.updatedRegistryRespones,
-  getUpdatedNamespaceResponse: state =>
-    state.namespaces.updatedNamespaceResponse,
+  getRegistryDetailsFlow: state => state.namespaces.registryDetailsFlow,
   getRegistryDeployControllerService: state =>
     state.namespaces.registryDeployControllerService,
+  getUpdatedNamespaceResponse: state =>
+    state.namespaces.updatedNamespaceResponse,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -704,6 +706,12 @@ const setUpdatedRegistryRespones = (state, { payload }) => {
     updatedRegistryRespones: payload,
   };
 };
+const setregistryDetailsFlow = (state, { payload }) => {
+  return {
+    ...state,
+    registryDetailsFlow: payload,
+  };
+};
 const setUpdatedNamespaceResponse = (state, { payload }) => {
   return {
     ...state,
@@ -861,13 +869,14 @@ export const namespacesReducer = createReducer(
         NamespacesActions.setUpdatedRegistryRespones,
         setUpdatedRegistryRespones
       )
-      .addCase(
-        NamespacesActions.setUpdatedNamespaceResponse,
-        setUpdatedNamespaceResponse
-      )
+      .addCase(NamespacesActions.setregistryDetailsFlow, setregistryDetailsFlow)
       .addCase(
         NamespacesActions.setRegistryDeployControllerService,
         setRegistryDeployControllerService
+      )
+      .addCase(
+        NamespacesActions.setUpdatedNamespaceResponse,
+        setUpdatedNamespaceResponse
       );
   }
 );

@@ -38,7 +38,13 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
     isOpen: false,
     mode: 'add',
   });
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(
+    PcData?.inherited && PcData?.inherited[0]?.name
+      ? PcData?.inherited[0]?.name
+      : PcData?.parent && PcData?.parent[0]?.name
+        ? PcData?.parent[0]?.name
+        : null
+  );
   const [currentEditData, setCurrentEditData] = useState({});
   const [currentPgId, setCurrentPgId] = useState('');
   const registryDetailsData = useSelector(
@@ -55,6 +61,16 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
       setPcData(parameterReduxData);
     }
   }, [registryDetailsData?.parameterContextData]);
+
+  useEffect(() => {
+    setOpenIndex(
+      PcData?.inherited && PcData?.inherited[0]?.name
+        ? PcData?.inherited[0]?.name
+        : PcData?.parent && PcData?.parent[0]?.name
+          ? PcData?.parent[0]?.name
+          : null
+    );
+  }, [PcData]);
 
   const handleToggle = index => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));

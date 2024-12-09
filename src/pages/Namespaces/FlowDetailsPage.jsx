@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
+import styled from 'styled-components';
 import {
   CanvasXIcon,
   CanvasYIcon,
@@ -11,23 +11,20 @@ import {
   // UpsideSquareIcon,
   TodoIcon,
 } from '../../assets';
+import { FullPageLoader, Table } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import {
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { FullPageLoader, Table } from '../../components';
-// import { theme } from '../../styles';
-import RectangleGraph from './birdEyeViewGraph';
 import { theme } from '../../styles';
-// import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
-// import RightIcon from '../../assets/Icons/RightIcon';
+import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
+import RectangleGraph from './birdEyeViewGraph';
 
 const TopTitleBar = styled.div`
   height: 37px;
