@@ -106,17 +106,14 @@ const VersionDiv = styled.div`
 const StyledTableCell = styled.div`
   cursor: pointer;
   padding: 6px 12px !important;
+  min-width: 4rem !important;
 `;
 
 const CustomTable = styled(Table)`
-  max-height: 400px;
-  overflow: auto;
-  tr {
-    padding: 0;
-    height: 0;
-  }
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
+  max-height: 15rem;
+  width: 100%;
 `;
 
 const breadcrumbData = [
