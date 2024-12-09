@@ -14,10 +14,8 @@ import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
 import ConfigurePage from './ConfigurePage';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
-import { SettingSmallIcon } from '../../assets';
-import { KDFM } from '../../constants';
-import PropTypes from 'prop-types';
 import { NoDataIcon } from '../../assets';
+import PropertyDropdownModal from './ProprtyDropdownModel';
 
 const DataWrapper = styled.div`
   width: 100%;
