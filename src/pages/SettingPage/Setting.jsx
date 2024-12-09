@@ -97,6 +97,7 @@ export const Setting = () => {
   const [isChanged, setIsChanged] = useState(false);
   const RoleList = useSelector(RolesSelectors.getRoles);
   const [ldapAutoSync, setLdapAutoSync] = useState(false);
+  const [isLdapEnabled, setLdapInitialConfig] = useState(false);
 
   const approverOptions = RoleList.map(role => ({
     label: role.name,
@@ -129,6 +130,7 @@ export const Setting = () => {
     payload.append('approver_groups', data?.approver_groups);
     payload.append('group_email_id', data?.group_email_id);
     payload.append('email_reminder_time', data?.email_reminder_time);
+    payload.append('ldapEnabled', isLdapEnabled);
 
     try {
       dispatch(SettingsActions.createSettings(payload));
@@ -171,6 +173,7 @@ export const Setting = () => {
       setValue('email_reminder_time', settingData?.email_reminder_time);
       setValue('group_email_id', settingData?.group_email_id);
       setValue('email', settingData?.email);
+      setLdapInitialConfig(settingData?.ldapEnabled || false);
       const logoElement = document.getElementById('logo');
       if (logoElement && settingData?.logo) {
         logoElement.src = settingData.logo;
@@ -194,7 +197,8 @@ export const Setting = () => {
         value.ldap_auto_sync !== settingData?.ldap_auto_sync ||
         value.approver_groups !== settingData?.approver_groups ||
         value.group_email_id !== settingData?.group_email_id ||
-        value.email_reminder_time !== settingData?.email_reminder_time;
+        value.email_reminder_time !== settingData?.email_reminder_time ||
+        value.ldapEnabled !== settingData?.ldapEnabled;
 
       setIsChanged(isModified);
     });
@@ -202,8 +206,13 @@ export const Setting = () => {
     return () => subscription.unsubscribe();
   }, [watch, settingData]);
 
-  const handleLdapToggle = () => {
+  const handleLdapAutoSyncToggle = () => {
     setLdapAutoSync(prevState => !prevState);
+    setIsChanged(true);
+  };
+
+  const handleLdapToggle = () => {
+    setLdapInitialConfig(prevState => !prevState);
     setIsChanged(true);
   };
 
@@ -339,6 +348,14 @@ export const Setting = () => {
               id="openModalInput"
               name="AUTO SYNC"
               checked={ldapAutoSync}
+              onChange={handleLdapAutoSyncToggle}
+            />
+          </div>
+          <div className="d-flex justify-content-end me-4">
+            <SwitchButton
+              id="openModalInput"
+              name="LDAP"
+              checked={isLdapEnabled}
               onChange={handleLdapToggle}
             />
           </div>
