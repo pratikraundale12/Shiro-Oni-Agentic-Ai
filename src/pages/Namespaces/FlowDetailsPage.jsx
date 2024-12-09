@@ -194,8 +194,6 @@ const FlowDetailsPage = () => {
     GridSelectors.getGridData(state, 'namespaces')
   );
 
-  console.log('Grid Data: ', gridDataDest);
-
   const sortedArray = gridDataDest.map(item => ({
     x: Number(item.position.x),
     y: Number(item.position.y),
