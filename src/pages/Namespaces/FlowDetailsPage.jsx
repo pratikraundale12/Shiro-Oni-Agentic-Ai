@@ -18,10 +18,11 @@ import {
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
-  // NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
 import { FullPageLoader } from '../../components';
+import { theme } from '../../styles';
+import RectangleGraph from './birdEyeViewGraph';
 // import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
 // import RightIcon from '../../assets/Icons/RightIcon';
 
@@ -188,6 +189,37 @@ const FlowDetailsPage = () => {
       setYStateCoordiate(registryDetailsData?.positions?.[0].y);
     }
   }, [registryDetailsData]);
+
+  const gridDataDest = useSelector(state =>
+    GridSelectors.getGridData(state, 'namespaces')
+  );
+
+  const sortedArray = gridDataDest.map(item => ({
+    x: Number(item.position.x),
+    y: Number(item.position.y),
+    width: 384,
+    height: 176,
+    color: 'teal',
+  }));
+
+  const updatedDataForGraph = [
+    ...sortedArray,
+    ...[
+      {
+        x: xStateCoordinate || registryDetailsData?.position?.[0].x,
+        y: yStateCoordinate || registryDetailsData?.position?.[0].y,
+        width: 384,
+        height: 176,
+        color: theme.colors.primary,
+      },
+    ],
+  ];
+
+  const enhancedData = updatedDataForGraph.map((d, index) => ({
+    ...d,
+    id: index,
+  }));
+
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
@@ -327,6 +359,13 @@ const FlowDetailsPage = () => {
                   </ColXlSix> */}
                 </>
               </RowConfig>
+            </div>
+            <div className="ms-4">
+              <RectangleGraph
+                data={enhancedData}
+                setXStateCoordiate={setXStateCoordiate}
+                setYStateCoordiate={setYStateCoordiate}
+              />
             </div>
             <div className="col-12 p-3">
               <RowConfig className="row">
