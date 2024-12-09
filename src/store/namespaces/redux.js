@@ -88,6 +88,9 @@ export const NamespacesActions = {
   getNewPropertyControllerService: createAction(
     `${prefix}getNewPropertyControllerService`
   ),
+  getNewPropertyControllerServiceUpdated: createAction(
+    `${prefix}getNewPropertyControllerServiceUpdated`
+  ),
   setNewProperToAddControllerService: createAction(
     `${prefix}setNewProperToAddControllerService`
   ),
@@ -157,6 +160,9 @@ export const NamespacesActions = {
   ),
   setUpdatedNamespaceResponse: createAction(
     `${prefix}setUpdatedNamespaceResponse`
+  ),
+  setRegistryDeployControllerService: createAction(
+    `${prefix}setRegistryDeployControllerService`
   ),
 };
 
@@ -236,6 +242,7 @@ export const NAMESPACES_INITIAL_STATE = {
   registryDeployResponseData: {},
   updatedRegistryRespones: {},
   updatedNamespaceResponse: {},
+  registryDeployControllerService: {},
   // parameterEditParent: false,
 };
 
@@ -311,6 +318,8 @@ export const NamespacesSelectors = {
   getUpdatedRegistryRespones: state => state.namespaces.updatedRegistryRespones,
   getUpdatedNamespaceResponse: state =>
     state.namespaces.updatedNamespaceResponse,
+  getRegistryDeployControllerService: state =>
+    state.namespaces.registryDeployControllerService,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -702,6 +711,12 @@ const setUpdatedNamespaceResponse = (state, { payload }) => {
   };
 };
 
+const setRegistryDeployControllerService = (state, { payload }) => {
+  return {
+    ...state,
+    registryDeployControllerService: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -849,6 +864,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setUpdatedNamespaceResponse,
         setUpdatedNamespaceResponse
+      )
+      .addCase(
+        NamespacesActions.setRegistryDeployControllerService,
+        setRegistryDeployControllerService
       );
   }
 );

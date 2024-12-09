@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
+  CalendarIcon,
   LogoFieldIcon,
   MailIcon,
   QRIcons,
@@ -13,7 +14,12 @@ import {
   UserIcon,
 } from '../../assets';
 import favicon from '../../assets/images/favicon.ico';
-import { EMAIL_REGEX, KDFM, REFRESH_OPTIONS } from '../../constants';
+import {
+  EMAIL_REGEX,
+  EMAIL_REMINDER_OPTIONS,
+  KDFM,
+  REFRESH_OPTIONS,
+} from '../../constants';
 import {
   Button,
   InputField,
@@ -36,7 +42,7 @@ const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: fixed;
+  // position: fixed;
   bottom: 20px;
 `;
 const LabelSelect = styled.div`
@@ -45,11 +51,13 @@ const LabelSelect = styled.div`
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
 `;
-const InputFieldFlex = styled.div`
-  margin-top: 20px;
-  width: 100%;
-  display: flex;
+
+const EmphasisText = styled.em`
+  font-style: italic;
+  font-size: 13px !important;
+  font-weight: 500;
 `;
+
 export const settingSchema = yup.object().shape({
   email: yup
     .string()
@@ -61,6 +69,15 @@ export const settingSchema = yup.object().shape({
     .max(25, 'Title must be 25 characters or less')
     .matches(/^[a-zA-Z0-9\s]+$/, 'Title must not contain special characters')
     .required('Title is required'),
+
+  group_email_id: yup
+    .string()
+    .matches(EMAIL_REGEX, 'Invalid email address')
+    .max(50, 'Email can not be greater than 25 characters'),
+
+  approver_groups: yup
+    .string()
+    .required('Please select at least one approver group'),
 });
 
 export const Setting = () => {
@@ -70,7 +87,6 @@ export const Setting = () => {
     register,
     watch,
     setValue,
-    reset,
     formState: { errors },
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
@@ -99,28 +115,24 @@ export const Setting = () => {
     payload.append('title', data?.title);
     payload.append('username', data?.username);
     payload.append('password', data?.password);
-
     payload.append(
       'refresh',
       data.refresh === false || data.refresh === 'Off' ? 0 : data.refresh
     );
     data.email && payload.append('email', data.email);
-    payload.append(
-      'approver_groups',
-      JSON.stringify(data?.approver_groups || null)
-    );
     payload.append('ldap_auto_sync', ldapAutoSync);
     if (ldapAutoSync) {
       payload.append('ldap_auto_sync_time_interval', selectedOptions);
     }
-    console.log('ldap_auto_sync:', ldapAutoSync);
-    console.log(
-      'ldap_auto_sync_time_interval:',
-      data?.ldap_auto_sync_time_interval
-    );
+    payload.append('approver_groups', data?.approver_groups);
+    payload.append('group_email_id', data?.group_email_id);
+    payload.append('email_reminder_time', data?.email_reminder_time);
+
     try {
       dispatch(SettingsActions.createSettings(payload));
-      dispatch(SettingsActions.fetchSettings());
+      setTimeout(() => {
+        dispatch(SettingsActions.fetchSettings());
+      }, 1000);
       setLoading(false);
       if (data?.favicon) {
         changeFavicon(data.favicon);
@@ -154,7 +166,8 @@ export const Setting = () => {
         'ldap_auto_sync_time_interval',
         settingData?.ldap_auto_sync_time_interval
       );
-
+      setValue('email_reminder_time', settingData?.email_reminder_time);
+      setValue('group_email_id', settingData?.group_email_id);
       setValue('email', settingData?.email);
       const logoElement = document.getElementById('logo');
       if (logoElement && settingData?.logo) {
@@ -162,12 +175,6 @@ export const Setting = () => {
       }
     }
   }, [settingData, setValue, dispatch]);
-
-  useEffect(() => {
-    reset({
-      approver_groups: settingData?.approver_groups.map(item => item.id),
-    });
-  }, [settingData, reset]);
 
   useEffect(() => {
     const subscription = watch(value => {
@@ -183,7 +190,9 @@ export const Setting = () => {
         value.ldap_auto_sync_time_interval !==
           settingData?.ldap_auto_sync_time_interval ||
         value.ldap_auto_sync !== settingData?.ldap_auto_sync ||
-        value.approver_groups !== settingData?.approver_groups;
+        value.approver_groups !== settingData?.approver_groups ||
+        value.group_email_id !== settingData?.group_email_id ||
+        value.email_reminder_time !== settingData?.email_reminder_time;
 
       setIsChanged(isModified);
     });
@@ -193,6 +202,7 @@ export const Setting = () => {
 
   const handleLdapToggle = () => {
     setLdapAutoSync(prevState => !prevState);
+    setIsChanged(true);
   };
 
   function changeFavicon(newFaviconURL) {
@@ -219,16 +229,9 @@ export const Setting = () => {
         }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="d-flex justify-content-end me-4">
-          <SwitchButton
-            id="openModalInput"
-            name="AUTO SYNC"
-            checked={ldapAutoSync}
-            onChange={handleLdapToggle}
-          />
-        </div>
-        <InputFieldFlex className="row">
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+        <div className="d-flex justify-content-end me-4"></div>
+        <InputFields className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
             <SelectField
               label="Refresh"
               name="refresh"
@@ -253,7 +256,7 @@ export const Setting = () => {
               placeholder="Select Cluster"
             />
           </div>
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
             <InputField
               name="email"
               register={register}
@@ -263,31 +266,7 @@ export const Setting = () => {
               errors={errors}
             />
           </div>
-
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-            <SelectField
-              label="LDAP Auto Sync Time"
-              name="ldap_auto_sync_time_interval"
-              control={control}
-              icon={<QRIcons />}
-              errors={errors}
-              options={Timeoptions}
-              placeholder="Select LDAP Auto Sync Time"
-              value={Timeoptions.find(
-                option =>
-                  option.value ===
-                  (watch('ldap_auto_sync_time_interval') ||
-                    settingData?.ldap_auto_sync_time_interval)
-              )} // Watch the value or use settingData fallback
-              isDisabled={!ldapAutoSync}
-              onChange={selectedOption => {
-                const value = selectedOption?.value || null;
-                setValue('ldap_auto_sync_time_interval', value);
-                setIsChanged(true);
-              }}
-            />
-          </div>
-        </InputFieldFlex>
+        </InputFields>
 
         <InputFields className="row">
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -328,9 +307,44 @@ export const Setting = () => {
             errors={errors}
           />
         </div>
-        <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-8 mb-2">
+
+        <InputFields className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mb-4">
+            <SelectField
+              label="LDAP Auto Sync Time"
+              name="ldap_auto_sync_time_interval"
+              control={control}
+              icon={<QRIcons />}
+              errors={errors}
+              options={Timeoptions}
+              placeholder="Select LDAP Auto Sync Time"
+              value={Timeoptions.find(
+                option =>
+                  option.value ===
+                  (watch('ldap_auto_sync_time_interval') ||
+                    settingData?.ldap_auto_sync_time_interval)
+              )} // Watch the value or use settingData fallback
+              isDisabled={!ldapAutoSync}
+              onChange={selectedOption => {
+                const value = selectedOption?.value || null;
+                setValue('ldap_auto_sync_time_interval', value);
+                setIsChanged(true);
+              }}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-5">
+            <SwitchButton
+              id="openModalInput"
+              name="AUTO SYNC"
+              checked={ldapAutoSync}
+              onChange={handleLdapToggle}
+            />
+          </div>
+        </InputFields>
+
+        <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-8 mb-4">
           <SelectField
-            isMulti
+            // isMulti
             name="approver_groups"
             control={control}
             icon={<QRIcons />}
@@ -340,6 +354,33 @@ export const Setting = () => {
             placeholder="Select Approver Groups"
           />
         </div>
+        <InputFields className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <InputField
+              name="group_email_id"
+              register={register}
+              icon={<MailIcon />}
+              label={KDFM.GROUP_EMAIL}
+              placeholder={KDFM.ENTER_GROUP_EMAIL}
+              errors={errors}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+            <LabelSelect className="mb-3">
+              {KDFM.EMAIL_REMINDER}
+              <EmphasisText> ({KDFM.REMINDER_EMPHASISED_TEXT})</EmphasisText>
+            </LabelSelect>
+            <SelectField
+              name="email_reminder_time"
+              control={control}
+              icon={<CalendarIcon />}
+              errors={errors}
+              options={EMAIL_REMINDER_OPTIONS}
+              placeholder="Select Reminter Time"
+              defaultValue={EMAIL_REMINDER_OPTIONS[0]}
+            />
+          </div>
+        </InputFields>
         <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-1 mb-2">
           <LabelSelect className="mb-3">Nifi Service Account Scope</LabelSelect>
         </div>

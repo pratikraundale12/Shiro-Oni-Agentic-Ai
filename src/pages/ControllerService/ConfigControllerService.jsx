@@ -32,6 +32,8 @@ export const ConfigControllerService = ({
   setSelectedPropertyToEdit,
   updatedData,
   setUpdatedData,
+  isFromControllerServiceTab,
+  handlePropertyUpdate,
 }) => {
   const dispatch = useDispatch();
   const handleDeleteClick = item => {
@@ -90,6 +92,29 @@ export const ConfigControllerService = ({
   ];
 
   const { register, handleSubmit, reset } = useForm({});
+
+  const updateProperties = (targetObject, newProperties) => {
+    const existingProperties = targetObject.properties || [];
+    const updatedProperties = [...existingProperties];
+    newProperties.forEach(newProp => {
+      const existingPropIndex = updatedProperties.findIndex(
+        prop => prop.name === newProp.name
+      );
+
+      if (existingPropIndex !== -1) {
+        updatedProperties[existingPropIndex] = {
+          ...updatedProperties[existingPropIndex],
+          ...newProp,
+        };
+      } else {
+        updatedProperties.push(newProp);
+      }
+    });
+    return {
+      ...targetObject,
+      properties: updatedProperties,
+    };
+  };
   const handleFormSubmit = data => {
     const resultObject = updatedData.reduce((acc, curr) => {
       acc[curr.name] = curr.value;
@@ -108,11 +133,17 @@ export const ConfigControllerService = ({
       currentState: selectedItemFromList?.state,
       name: data?.name,
     };
-    dispatch(NamespacesActions.addPropertyControllerService(payload));
-    onClose();
-    setTimeout(() => {
-      dispatch(NamespacesActions.getControllerServiceList());
-    }, 500);
+    const configPayload = updateProperties(selectedItemFromList, updatedData);
+    if (isFromControllerServiceTab) {
+      handlePropertyUpdate(configPayload);
+      onClose();
+    } else {      
+      dispatch(NamespacesActions.addPropertyControllerService(payload));
+      onClose();
+      setTimeout(() => {
+        dispatch(NamespacesActions.getControllerServiceList());
+      }, 500);
+    }
     setUpdatedData([]);
   };
   useEffect(() => {

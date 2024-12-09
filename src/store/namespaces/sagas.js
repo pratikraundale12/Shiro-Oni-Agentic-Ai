@@ -806,6 +806,37 @@ export function* getNewPropertyControllerService(api, { payload }) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
 
+export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'getNewPropertyControllerServiceUpdated',
+    loadingSection: 'getNewPropertyControllerServiceUpdated',
+    apiMethod: api.getNewPropertyControllerServiceUpdated,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        serviceName: payload?.name,
+      },
+    ],
+    successAction: NamespacesActions.fetchVariableListSuccess,
+  });
+  if (response.ok)
+    yield put(
+      NamespacesActions.setNewProperToAddControllerService(response?.data?.data)
+    );
+  else if (!response.ok)
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+}
+
 export function* addControllerServicePropertyByDropdown(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
 
@@ -1233,6 +1264,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.getNewPropertyControllerService,
       getNewPropertyControllerService,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.getNewPropertyControllerServiceUpdated,
+      getNewPropertyControllerServiceUpdated,
       api
     ),
     takeLatest(
