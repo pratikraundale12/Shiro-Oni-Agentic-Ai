@@ -34,6 +34,7 @@ export const ConfigControllerService = ({
   setUpdatedData,
   isFromControllerServiceTab,
   handlePropertyUpdate,
+  isFromExternalService,
 }) => {
   const dispatch = useDispatch();
   const handleDeleteClick = item => {
@@ -134,13 +135,13 @@ export const ConfigControllerService = ({
       name: data?.name,
     };
     const configPayload = updateProperties(selectedItemFromList, updatedData);
-    if (isFromControllerServiceTab) {
+    if (isFromControllerServiceTab && !isFromExternalService) {
       handlePropertyUpdate(configPayload);
       onClose();
     } else {      
       dispatch(NamespacesActions.addPropertyControllerService(payload));
       onClose();
-      setTimeout(() => {
+      !isFromExternalService && setTimeout(() => {
         dispatch(NamespacesActions.getControllerServiceList());
       }, 500);
     }
