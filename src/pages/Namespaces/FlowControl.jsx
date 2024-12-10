@@ -15,7 +15,7 @@ import StopIconImage from '../../assets/images/stop.png';
 import { KDFM } from '../../constants';
 import { ModalWithIcon } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-import { singleNamespaceData } from '../../store/namespaces';
+// import { singleNamespaceData } from '../../store/namespaces';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -82,7 +82,7 @@ const ActiveButtonDiv = styled.div`
   border: 1px solid #dde4f0;
   border-radius: 8px;
   background-color: #f5f7fa;
-  cursor: pointer;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   position: relative;
   display: flex;
   align-items: center;
@@ -137,7 +137,14 @@ const FlowControl = () => {
     forPopup: false,
   });
 
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
+
+  const permissions = singleNamespaceData?.permissions;
+  const { canWrite } = permissions || {};
   const handleUpdateStatus = status => {
+    if (!canWrite) return;
     setActiveButton(status);
     const text =
       status === 'STOPPED'
@@ -223,6 +230,7 @@ const FlowControl = () => {
             <TextsvgDiv className="d-flex">
               <ActiveButtonDiv className="div-btn-1 mr-2">
                 <ActiveButtonDiv
+                  disabled={!canWrite}
                   className="div-btn-1 "
                   isActive={activeButton === 'RUNNING'}
                   activeColor="#58e715"
@@ -238,6 +246,7 @@ const FlowControl = () => {
             <TextsvgDiv className="d-flex">
               <ActiveButtonDiv className="div-btn-2 mr-2">
                 <ActiveButtonDiv
+                  disabled={!canWrite}
                   className="div-btn-1"
                   isActive={activeButton === 'STOPPED'}
                   activeColor="#c52b2b"
@@ -253,6 +262,7 @@ const FlowControl = () => {
             <TextsvgDiv className="d-flex">
               <ActiveButtonDiv className="div-btn-3 mr-2">
                 <ActiveButtonDiv
+                  disabled={!canWrite}
                   className="div-btn-1"
                   isActive={activeButton === 'ENABLED'}
                   activeColor="#cf9f5d"
@@ -269,6 +279,7 @@ const FlowControl = () => {
               <ActiveButtonDiv className="div-btn-4 mr-2">
                 <ActiveButtonDiv
                   className="div-btn-1"
+                  disabled={!canWrite}
                   isActive={activeButton === 'DISABLED'}
                   activeColor="#2c7cf3"
                   hoverColor="#2c7cf3"

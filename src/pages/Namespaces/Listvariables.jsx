@@ -13,6 +13,7 @@ import { isEmpty, uniqBy } from 'lodash';
 import { SchedularSelectors } from '../../store/schedular/redux';
 import AddVariables from './AddVariables';
 import Collapsible from './Collapsible';
+import { singleNamespaceData } from '../../store/namespaces';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -79,6 +80,9 @@ const Listvariables = ({
       check: item?.check || false,
     },
   }));
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
 
   useEffect(() => {
     if (schedularFromList) {
@@ -109,7 +113,9 @@ const Listvariables = ({
       );
     }
   }, [newlyAddVariables, isVariablesModalOpen]);
-
+  const permissions = singleNamespaceData?.permissions;
+  const { canWrite } = permissions || {};
+  console.log('oer', permissions);
   const COLUMNS = [
     {
       label: KDFM.NAME,
@@ -143,23 +149,24 @@ const Listvariables = ({
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <IconButton
-            disabled={loading}
             onClick={() => {
-              setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
-              if (isVariablesModalOpen?.schedule) {
-                setVariablesModalOpen({
-                  isOpen: true,
-                  mode: 'add',
-                  schedule: true,
-                });
-              } else {
-                setVariablesModalOpen({
-                  isOpen: true,
-                  mode: 'add',
-                  schedule: false,
-                });
+              if (!canWrite) {
+                setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
+                if (isVariablesModalOpen?.schedule) {
+                  setVariablesModalOpen({
+                    isOpen: true,
+                    mode: 'add',
+                    schedule: true,
+                  });
+                } else {
+                  setVariablesModalOpen({
+                    isOpen: true,
+                    mode: 'add',
+                    schedule: false,
+                  });
+                }
+                dispatch(NamespacesActions.setVariableContextItem(item));
               }
-              dispatch(NamespacesActions.setVariableContextItem(item));
             }}
           >
             <PencilIcon style={{ color: 'black' }} />
@@ -249,6 +256,7 @@ const Listvariables = ({
           />
           <Button
             type="button"
+            disabled={!canWrite}
             className="w-auto mt-2"
             size="sm"
             onClick={handleSubmit}

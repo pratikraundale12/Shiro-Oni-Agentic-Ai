@@ -17,6 +17,7 @@ import {
 import { Button } from '../../shared';
 import AddParameterContext from './AddParameterContext';
 import Collapsible from './Collapsible';
+import { singleNamespaceData } from '../../store/namespaces';
 
 const ArrowButton = styled.button`
   background-color: white;
@@ -82,9 +83,6 @@ const ParameterContext = ({
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const schduleParameterData =
     checkDestCluster?.additionalData?.filteredParameterData;
-  const singleNamespaceData = useSelector(
-    NamespacesSelectors.getSingleNamespaceData
-  );
 
   useEffect(() => {
     if (singleNamespaceData?.parameterContextId) {
@@ -125,6 +123,10 @@ const ParameterContext = ({
     }
     return str;
   };
+
+  const permissions = singleNamespaceData?.permissions;
+  const { canWrite } = permissions || {};
+  console.log('oer', permissions);
 
   const COLUMNS = [
     {
@@ -191,15 +193,17 @@ const ParameterContext = ({
             <ArrowButton
               type="button"
               onClick={() => {
-                setSelectedParentContextId(item?.parentParameterId);
-                dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
-                dispatch(
-                  NamespacesActions.setParameterEditParent({
-                    parent: true,
-                    id: item.parentParameterId,
-                  })
-                );
-                dispatch(NamespacesActions.setDeployedModal());
+                if (canWrite) {
+                  setSelectedParentContextId(item?.parentParameterId);
+                  dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
+                  dispatch(
+                    NamespacesActions.setParameterEditParent({
+                      parent: true,
+                      id: item.parentParameterId,
+                    })
+                  );
+                  dispatch(NamespacesActions.setDeployedModal());
+                }
               }}
             >
               <ArrowIcon />
@@ -319,6 +323,7 @@ const ParameterContext = ({
             className="w-auto mt-2"
             size="sm"
             onClick={handleSaveParameterContext}
+            disabled={!canWrite}
           >
             Save
           </Button>

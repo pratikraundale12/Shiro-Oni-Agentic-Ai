@@ -29,6 +29,7 @@ import PropertyDropdownModal from '../ControllerService/ProprtyDropdownModel';
 import Collapsible from './Collapsible';
 import { KDFM } from '../../constants';
 import { NoDataIcon } from '../../assets';
+// import { singleNamespaceData } from '../../store/namespaces';
 
 const StatusTexts = styled.div`
   font-family: Inter;
@@ -181,6 +182,11 @@ export const ListControllerService = () => {
   const controllerPermissions = useSelector(
     AuthenticationSelectors.getPermissions
   );
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
+  const permissions = singleNamespaceData?.permissions;
+  const { canWrite } = permissions || {};
 
   const COLUMNS = [
     {
@@ -218,6 +224,7 @@ export const ListControllerService = () => {
                 className="border-0 bg-white"
                 onClick={() => handleSettingClick(item)}
                 data-tooltip-id={'Settings'}
+                disabled={!canWrite}
               >
                 <SettingSmallIcon />
               </button>
@@ -242,6 +249,7 @@ export const ListControllerService = () => {
                   className="border-0 bg-white ms-1"
                   onClick={() => handleEnableClick(item)}
                   data-tooltip-id={item?.id}
+                  disabled={!canWrite}
                 >
                   {item?.state !== 'DISABLED' ? (
                     <FlashCutIcon />
@@ -270,6 +278,7 @@ export const ListControllerService = () => {
                   className="border-0 bg-white ms-1"
                   onClick={() => handleDeleteClick(item)}
                   data-tooltip-id={'Delete'}
+                  disabled={!canWrite}
                 >
                   <DeleteSmallIcon color="black" height="28" />
                 </button>
