@@ -132,25 +132,21 @@ const ParameterContextTab = ({
     ['inherited', 'parent'].forEach(key => {
       updatedState[key] = updatedState[key].map(group => {
         let isGroupUpdated = false;
-
-        const updatedParameters = group.parameters.map(parameter => {
-          if (parameter.name === data.name) {
-            isGroupUpdated = true;
-            return {
-              ...parameter,
-              value: data.value,
-              check: data.check,
-              description: data.description,
-            };
-          }
-          return parameter;
-        });
-
+        const updatedParameters = group.parameters
+          .map(parameter => {
+            if (parameter.name === data.name) {
+              isGroupUpdated = true;
+              return {
+                ...parameter,
+                value: data.value,
+                check: data.check,
+                description: data.description,
+              };
+            }
+            return null;
+          })
+          .filter(Boolean);
         if (isGroupUpdated) {
-          const updatedGroupParameters = updatedParameters.filter(
-            (param, index) =>
-              JSON.stringify(param) !== JSON.stringify(group.parameters[index])
-          );
           const existingGroupIndex = updatedPayload[key].findIndex(
             g => g.name === group.name
           );
@@ -158,26 +154,22 @@ const ParameterContextTab = ({
           if (existingGroupIndex > -1) {
             updatedPayload[key][existingGroupIndex] = {
               ...updatedPayload[key][existingGroupIndex],
-              parameters: updatedPayload[key][
-                existingGroupIndex
-              ].parameters.map(param => {
-                const updatedParam = updatedGroupParameters.find(
-                  p => p.name === param.name
-                );
-                return updatedParam || param;
-              }),
+              parameters: [
+                ...updatedPayload[key][existingGroupIndex].parameters,
+                ...updatedParameters,
+              ],
             };
           } else {
             updatedPayload[key].push({
               name: group.name,
-              parameters: updatedGroupParameters,
+              parameters: updatedParameters,
             });
           }
         }
 
         return {
           ...group,
-          parameters: updatedParameters,
+          parameters: isGroupUpdated ? updatedParameters : group.parameters,
         };
       });
     });
@@ -192,20 +184,17 @@ const ParameterContextTab = ({
           if (group.name === currentPgId) {
             return {
               ...group,
-              parameters: group.parameters.some(
-                parameter => parameter.name === data.name
-              )
-                ? group.parameters.map(parameter =>
-                    parameter.name === data.name
-                      ? {
-                          ...parameter,
-                          value: data.value,
-                          check: data.check,
-                          description: data.description,
-                        }
-                      : parameter
-                  )
-                : [...group.parameters, data],
+              parameters: group.parameters.map(parameter => {
+                if (parameter.name === data.name) {
+                  return {
+                    ...parameter,
+                    value: data.value,
+                    check: data.check,
+                    description: data.description,
+                  };
+                }
+                return parameter;
+              }),
             };
           }
           return group;
@@ -215,6 +204,8 @@ const ParameterContextTab = ({
       return updatedState;
     });
   };
+
+  console.log('pcpayload', pcPayload);
 
   const closeAddVPcModal = () => {
     setIsAddPcOpen({
