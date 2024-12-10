@@ -4,7 +4,11 @@ import { Modal } from '../../shared';
 import { IconButton, Table, TextRender } from '../../components';
 import { DeleteSmallIcon, PencilIcon } from '../../assets';
 import { useDispatch, useSelector } from 'react-redux';
-import { RolesActions, RolesSelectors } from '../../store';
+import {
+  RolesActions,
+  RolesSelectors,
+  AuthenticationSelectors,
+} from '../../store';
 
 const ModalBody = styled.div`
   position: relative;
@@ -28,6 +32,7 @@ const ListRoleModal = () => {
     dispatch(RolesActions.roleModal(true));
     closePopup();
   };
+  const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
 
   const COLUMNS = [
     {
@@ -42,7 +47,7 @@ const ListRoleModal = () => {
       width: '20%',
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {
+          {userPermissions.includes('edit_permission') && (
             <IconButton
               onClick={() => {
                 dispatch(RolesActions.setRoleListSelectedItem(item));
@@ -51,10 +56,10 @@ const ListRoleModal = () => {
               }}
               type="button"
             >
-              {<PencilIcon color="black" />}
+              <PencilIcon color="black" />
             </IconButton>
-          }
-          {
+          )}
+          {userPermissions.includes('delete_permission') && (
             <IconButton
               type="button"
               onClick={() => {
@@ -65,7 +70,7 @@ const ListRoleModal = () => {
             >
               <DeleteSmallIcon color="black" />
             </IconButton>
-          }
+          )}
         </div>
       ),
     },
@@ -78,8 +83,12 @@ const ListRoleModal = () => {
         onRequestClose={closePopup}
         size="md"
         secondaryButtonText={'Cancel'}
-        primaryButtonText={'Add Role'}
-        onSubmit={handleOpenAddModal}
+        {...(userPermissions.includes('add_permission')
+          ? {
+              primaryButtonText: 'Add Role',
+              onSubmit: handleOpenAddModal,
+            }
+          : { hideFooter: true })}
       >
         <ModalBody className="modal-body">
           <Table
