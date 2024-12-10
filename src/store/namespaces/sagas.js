@@ -309,11 +309,9 @@ export function* fetchParameterContext(
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getRegistryDeployResponseData
   );
-  console.log(deployOrUpgradeDetails, 'line no.312');
   const singleNamespaceData = yield select(
     NamespacesSelectors.getSingleNamespaceData
   );
-  console.log(singleNamespaceData, 'line no.316');
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -376,7 +374,6 @@ export function* updateParameterContext(api, { payload }) {
   const singleNamespaceData = yield select(
     NamespacesSelectors.getSingleNamespaceData
   );
-  console.log(singleNamespaceData, 'line no.379');
   const parentList = yield select(NamespacesSelectors.getParentListItems);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -451,7 +448,6 @@ export function* getStatusAndDeleteParameterContext(
   const singleNamespaceData = yield select(
     NamespacesSelectors.getSingleNamespaceData
   );
-  console.log(singleNamespaceData, 'line no.454');
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -467,7 +463,8 @@ export function* getStatusAndDeleteParameterContext(
         clusterId: selectedCluster?.value,
         parameterContextId:
           deployOrUpgradeDetails?.parameterContextId ||
-          selectedNamespace?.parameterContextId,
+          selectedNamespace?.parameterContextId ||
+          singleNamespaceData?.parameterContextId,
         requestId: additionalData?.requestId,
       },
     ],
@@ -551,11 +548,9 @@ export function* addVariableServices(api, { payload }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
-  console.log(selectedNamespace, 'line no.554');
   const singleNamespaceData = yield select(
     NamespacesSelectors.getSingleNamespaceData
   );
-  console.log(singleNamespaceData, 'line no.558');
   const variableList = yield select(NamespacesSelectors.getVariableList);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -597,11 +592,9 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
-  console.log(selectedNamespace, 'line no.600');
   const singleNamespaceData = yield select(
     NamespacesSelectors.getSingleNamespaceData
   );
-  console.log(singleNamespaceData, 'line no.604');
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
