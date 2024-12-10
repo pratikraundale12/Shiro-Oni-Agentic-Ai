@@ -334,9 +334,11 @@ export const ListControllerService = () => {
           title={KDFM.CONTROLLER_SERVICE}
           isTableOpen={isOpen}
           toggleCollapsible={() => handleToggle()}
-          onBtnClick={() =>
-            dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
-          }
+          onBtnClick={() => {
+            if (canWrite) {
+              dispatch(NamespacesActions.setIsAddControllerServiceModal(true));
+            }
+          }}
         >
           <Table
             data={listData}
