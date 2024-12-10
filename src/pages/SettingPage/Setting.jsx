@@ -465,7 +465,7 @@ export const Setting = () => {
                 errors={errors}
                 watch={watch}
                 label="Password"
-                disableToggle={true}
+                disableToggle={false}
                 placeholder="Enter your Password"
               />
             </div>
