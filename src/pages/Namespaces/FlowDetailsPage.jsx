@@ -284,7 +284,12 @@ const FlowDetailsPage = () => {
     }
   };
   useEffect(() => {
-    if (selectedNameSpace && selectedVersion && isEmpty(registryDetailsData)) {
+    if (
+      selectedNameSpace &&
+      selectedVersion &&
+      isEmpty(registryDetailsData) &&
+      !isUpgrade
+    ) {
       dispatch(
         NamespacesActions.fetchRegistryFlowDetails({
           bucketId: selectedNameSpace.bucketId,
