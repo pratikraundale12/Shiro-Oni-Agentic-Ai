@@ -131,6 +131,9 @@ const ParameterContext = ({
     return str;
   };
 
+  const permissions = singleNamespaceData?.permissions;
+  const { canWrite } = permissions || {};
+
   const COLUMNS = [
     {
       label: KDFM.NAME,
@@ -199,15 +202,17 @@ const ParameterContext = ({
             <ArrowButton
               type="button"
               onClick={() => {
-                setSelectedParentContextId(item?.parentParameterId);
-                dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
-                dispatch(
-                  NamespacesActions.setParameterEditParent({
-                    parent: true,
-                    id: item.parentParameterId,
-                  })
-                );
-                dispatch(NamespacesActions.setDeployedModal());
+                if (canWrite) {
+                  setSelectedParentContextId(item?.parentParameterId);
+                  dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
+                  dispatch(
+                    NamespacesActions.setParameterEditParent({
+                      parent: true,
+                      id: item.parentParameterId,
+                    })
+                  );
+                  dispatch(NamespacesActions.setDeployedModal());
+                }
               }}
             >
               <ArrowIcon />
@@ -327,6 +332,7 @@ const ParameterContext = ({
             className="w-auto mt-2"
             size="sm"
             onClick={handleSaveParameterContext}
+            disabled={!canWrite}
           >
             Save
           </Button>

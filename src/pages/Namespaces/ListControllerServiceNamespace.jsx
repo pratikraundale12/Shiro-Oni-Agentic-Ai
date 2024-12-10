@@ -181,6 +181,11 @@ export const ListControllerService = () => {
   const controllerPermissions = useSelector(
     AuthenticationSelectors.getPermissions
   );
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
+  const permissions = singleNamespaceData?.permissions;
+  const { canWrite } = permissions || {};
 
   const COLUMNS = [
     {
@@ -218,6 +223,7 @@ export const ListControllerService = () => {
                 className="border-0 bg-white"
                 onClick={() => handleSettingClick(item)}
                 data-tooltip-id={'Settings'}
+                disabled={!canWrite}
               >
                 <SettingSmallIcon />
               </button>
@@ -242,6 +248,7 @@ export const ListControllerService = () => {
                   className="border-0 bg-white ms-1"
                   onClick={() => handleEnableClick(item)}
                   data-tooltip-id={item?.id}
+                  disabled={!canWrite}
                 >
                   {item?.state !== 'DISABLED' ? (
                     <FlashCutIcon />
@@ -270,6 +277,7 @@ export const ListControllerService = () => {
                   className="border-0 bg-white ms-1"
                   onClick={() => handleDeleteClick(item)}
                   data-tooltip-id={'Delete'}
+                  disabled={!canWrite}
                 >
                   <DeleteSmallIcon color="black" height="28" />
                 </button>
@@ -318,16 +326,18 @@ export const ListControllerService = () => {
           <div className="d-flex justify-content-center">
             <NoDataIcon width={130} />
           </div>
-          <NoDataText>No Data Found!!</NoDataText>
+          <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
         </>
       ) : (
         <Collapsible
           title={KDFM.CONTROLLER_SERVICE}
           isTableOpen={isOpen}
           toggleCollapsible={() => handleToggle()}
-          onBtnClick={() =>
-            dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
-          }
+          onBtnClick={() => {
+            if (canWrite) {
+              dispatch(NamespacesActions.setIsAddControllerServiceModal(true));
+            }
+          }}
         >
           <Table
             data={listData}
