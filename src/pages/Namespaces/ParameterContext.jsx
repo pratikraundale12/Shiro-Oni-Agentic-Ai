@@ -1,67 +1,81 @@
+/* eslint-disable react/prop-types */
 import { has, isEmpty, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { ArrowIcon, PencilIcon, PlusCircleIcon } from '../../assets';
+import { ArrowIcon, PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
-import { Modal } from '../../shared';
+// import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import {
-  SchedularActions,
+  // SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
+// import AddParameterContext from './AddParameterContext';
+import { Button } from '../../shared';
+import AddParameterContext from './AddParameterContext';
+import Collapsible from './Collapsible';
 
-const ModalBody = styled.div`
-  position: relative;
-  flex: 1 1 auto;
-
-  & .parameter-context-table {
-    th {
-      background-color: #dde4f0 !important;
-    }
-  }
-`;
 const ArrowButton = styled.button`
   background-color: white;
   border-radius: 50%;
   border: 1px solid grey;
 `;
+const DataWrapper = styled.div`
+  width: 100%;
+  height: 596px;
+  top: 273px;
+  left: 290px;
+  gap: 0px;
+  opacity: 0px;
+  border: Mixed solid rgba(221, 228, 240, 1);
+`;
+
+const ScrollSetGrey = styled.div`
+  min-height: calc(100vh - 341px);
+  max-height: calc(100vh - 341px);
+  overflow-x: hidden;
+  overflow-y: auto;
+`;
 
 const ParameterContext = ({
   isOpen,
-  closePopup,
-  openAddParameterContext,
+  isAddParameterContextOpen,
   setIsAddParameterContextOpen,
   setIsParameterContextOpen,
   isParameterContextOpen,
-  parameterContextId = '',
-  getParamerterContext,
 }) => {
-  const [loading, setLoading] = useState(false);
   const [selectedParentContextId, setSelectedParentContextId] = useState('');
   const dispatch = useDispatch();
+  const [isTableOpen, setIsTableOpen] = useState(false);
   const newlyAddParameters = useSelector(
     NamespacesSelectors.getNewlyAddedParameterContext
   );
+  const parameterContextItem = useSelector(
+    NamespacesSelectors.getParameterContextItem
+  );
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
   const deployOrUpgradeDetails = useSelector(
-    NamespacesSelectors.getDeployOrUpgradeDetails
+    NamespacesSelectors.getRegistryDeployResponseData
   );
-  // const parentParameterSelectData = useSelector(
-  //   NamespacesSelectors.getParameterEditParent
-  // );
   const parameterContextObjectAtDeloy = useSelector(
     NamespacesSelectors.getParameterContextListAtDeploy
   );
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
   const copyParameterDetailsData =
     parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] ||
+    parameterDetails?.[singleNamespaceData?.parameterContextId] ||
     parameterContextObjectAtDeloy?.parameterContexts ||
     [];
 
   const tableData = [...copyParameterDetailsData, ...newlyAddParameters];
-  const targetId = deployOrUpgradeDetails?.parameterContextId;
+  const targetId =
+    deployOrUpgradeDetails?.parameterContextId ||
+    singleNamespaceData?.parameterContextId;
 
   const sortedArray = tableData.sort((a, b) => {
     if (a.parentParameterId === targetId) return -1;
@@ -76,6 +90,18 @@ const ParameterContext = ({
     checkDestCluster?.additionalData?.filteredParameterData;
 
   useEffect(() => {
+    if (
+      singleNamespaceData?.parameterContextId ||
+      deployOrUpgradeDetails?.parameterContextId
+    ) {
+      dispatch(NamespacesActions.fetchParameterContext());
+    }
+  }, [
+    singleNamespaceData?.parameterContextId,
+    deployOrUpgradeDetails?.parameterContextId,
+  ]);
+
+  useEffect(() => {
     if (schedularFromList) {
       setTableStateData(schduleParameterData);
       dispatch(
@@ -83,7 +109,6 @@ const ParameterContext = ({
           schduleParameterData
         )
       );
-      //setScheduleNamespaceParameterContext
     }
   }, [schedularFromList, schduleParameterData]);
 
@@ -142,12 +167,12 @@ const ParameterContext = ({
     {
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          {item.parentParameterId == parameterContextId ||
-          isParentEdit?.parent ||
-          schedularFromList ||
+          {item.parentParameterId ===
+            deployOrUpgradeDetails?.parameterContextId ||
+          singleNamespaceData?.parameterContextId ||
           !has(item, 'parentParameterId') ? (
             <IconButton
-              disabled={loading}
+              // disabled={loading}
               onClick={() => {
                 setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
                 if (isParameterContextOpen?.schedule) {
@@ -156,12 +181,13 @@ const ParameterContext = ({
                   setIsParameterContextOpen({ isOpen: false, schedule: false });
                 }
                 dispatch(NamespacesActions.setParameterContextItem(item));
-
                 if (!isParentEdit?.parent) {
                   dispatch(
                     NamespacesActions.setParameterEditParent({
                       parent: false,
-                      id: parameterContextId,
+                      id:
+                        deployOrUpgradeDetails?.parameterContextId ||
+                        singleNamespaceData?.parameterContextId,
                     })
                   );
                 }
@@ -193,28 +219,29 @@ const ParameterContext = ({
   ];
   const handleSaveParameterContext = async () => {
     if (!newlyAddParameters) return;
-    setLoading(true);
+    // setLoading(true);
     const uniqueDataSorted = uniqBy(newlyAddParameters, 'name');
     dispatch(
       NamespacesActions.updateParameterContext({
         modifiedPayloadData: [...uniqueDataSorted],
       })
     );
-    setLoading(false);
+    // setLoading(false);
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
     setIsParameterContextOpen({ isOpen: false, schedule: false });
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
     setTimeout(() => {
       // setIsParameterContextOpen({ isOpen: true, schedule: false });
       dispatch(NamespacesActions.setNamespaceSummaryLoadingState(false));
-      getParamerterContext();
+      dispatch(NamespacesActions.fetchParameterContext());
+      // getParamerterContext();
     }, 1000);
   };
 
-  const backSchedule = () => {
-    setIsParameterContextOpen({ isOpen: false, schedule: true });
-    dispatch(SchedularActions.setScheduleDeployModal());
-  };
+  // const backSchedule = () => {
+  //   setIsParameterContextOpen({ isOpen: false, schedule: true });
+  //   dispatch(SchedularActions.setScheduleDeployModal());
+  // };
 
   selectedParentContextId;
   useEffect(() => {
@@ -271,36 +298,51 @@ const ParameterContext = ({
       );
     }
   }, [parameterDetails, isOpen, newlyAddParameters]);
+  const closeAddParameterContext = () => {
+    setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
+    dispatch(NamespacesActions.setParameterContextItem({}));
+    if (isParameterContextOpen.schedule) {
+      setIsParameterContextOpen({ isOpen: true, schedule: true });
+    } else {
+      setIsParameterContextOpen({ isOpen: true, schedule: false });
+    }
+  };
+  const toggleCollapsible = () => setIsTableOpen(!isTableOpen);
   return (
-    <Modal
-      title={KDFM.PARAMETER_CONTEXT}
-      isOpen={isOpen}
-      onRequestClose={closePopup}
-      size="md"
-      isLoading={loading}
-      onSecondarySubmit={openAddParameterContext}
-      secondaryButtonText={KDFM.ADD_PARAMETER_CONTEXT}
-      primaryButtonDisabled={
-        !newlyAddParameters?.length || !newlyAddParameters?.length || loading
-      }
-      primaryButtonText={isParameterContextOpen?.schedule ? 'Back' : KDFM.SAVE}
-      onSubmit={
-        isParameterContextOpen?.schedule
-          ? backSchedule
-          : handleSaveParameterContext
-      }
-      footerAlign="start"
-      secondaryButtonProps={{ icon: <PlusCircleIcon />, disabled: loading }}
-      contentStyles={{ maxWidth: '45%', maxHeight: '60%' }}
-    >
-      <ModalBody className="modal-body">
-        <Table
-          data={tableStateData}
-          columns={COLUMNS}
-          className={'parameter-context-table'}
-        />
-      </ModalBody>
-    </Modal>
+    <DataWrapper>
+      <ScrollSetGrey className="scroll-set-grey pe-1">
+        <Collapsible
+          title={KDFM.PARAMETER_CONTEXT}
+          isTableOpen={isTableOpen}
+          toggleCollapsible={toggleCollapsible}
+          isAddBtnVisible={false}
+        >
+          <Table
+            data={tableStateData}
+            columns={COLUMNS}
+            className={'parameter-context-table'}
+          />
+          <Button
+            type="button"
+            className="w-auto mt-2"
+            size="sm"
+            onClick={handleSaveParameterContext}
+          >
+            Save
+          </Button>
+
+          <AddParameterContext
+            key={isParameterContextOpen.mode}
+            isParameterContextOpen={isParameterContextOpen}
+            parameterContextItem={parameterContextItem}
+            isAddParameterContextOpen={isAddParameterContextOpen}
+            closePopup={closeAddParameterContext}
+            setIsAddParameterContextOpen={setIsAddParameterContextOpen}
+            setIsParameterContextOpen={setIsParameterContextOpen}
+          />
+        </Collapsible>
+      </ScrollSetGrey>
+    </DataWrapper>
   );
 };
 

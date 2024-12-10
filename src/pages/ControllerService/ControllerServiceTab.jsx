@@ -1,20 +1,21 @@
 /*eslint-disable*/
-import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
+import { SettingSmallIcon } from '../../assets';
 import { Table } from '../../components';
+import { KDFM } from '../../constants';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import Collapsible from '../Namespaces/Collapsible';
-import ConfigurePage from './ConfigurePage';
 import AddControllerServiceModal from './AddControllerServiceModal';
-import ConfigControllerService from './ConfigControllerService';
 import AddProperties from './AddProperties';
-import PropertyDropdownModal from './ProprtyDropdownModel';
+import ConfigControllerService from './ConfigControllerService';
+import ConfigurePage from './ConfigurePage';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
-import { SettingSmallIcon } from '../../assets';
-import { KDFM } from '../../constants';
-import PropTypes from 'prop-types';
+import { NoDataIcon } from '../../assets';
+import PropertyDropdownModal from './ProprtyDropdownModel';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -24,6 +25,14 @@ const DataWrapper = styled.div`
   gap: 0px;
   opacity: 0px;
   border: Mixed solid rgba(221, 228, 240, 1);
+`;
+
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
 `;
 
 const ScrollSetGrey = styled.div`
@@ -46,7 +55,7 @@ const ConfigureButton = styled.button`
 
 const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const dispatch = useDispatch();
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
@@ -82,11 +91,15 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const [updatedExternalServiceData, setUpdatedExternalServiceData] = useState(
     []
   );
-  // const [controllerServicePayload, setControllerServicePayload] = useState({});
+
+  const [externalServicePayload, setExternalServicePayload] = useState([]);
+
   const [isExternalServiceConfigured, setIsExternalServiceConfigured] =
     useState(false);
   const [isExternalServiceUpdated, setIsExternalServiceUpdated] =
     useState(false);
+
+  const [isFromExternalService, setisFromExternalService] = useState(false);
 
   const COLUMNS = [
     { label: 'Name', renderCell: item => item?.name, width: '21%' },
@@ -164,13 +177,13 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   };
 
   const handleSettingClick = item => {
+    const match = controllerServicesData?.some(data =>
+      data.controllerService?.some(service => service.id === item.id)
+    );
+    setisFromExternalService(match);
     setSelectedItemFromList(item);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
-
-  useEffect(() => {
-    dispatch(NamespacesActions.getControllerServiceList());
-  }, [dispatch, modalOpenState, selectedCluster]);
 
   const handleConfigure = item => {
     setSelectedService(item);
@@ -186,6 +199,12 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         ? { ...service, controllerService: [data] }
         : service
     );
+    const payloadData = controllerServicesData.map(service =>
+      service.identifier === selectedService.identifier
+        ? { ...service, updatedValue: data?.id }
+        : service
+    );
+    setExternalServicePayload(payloadData);
     setControllerServicesData(updatedData);
     const newExternalControllerServiceArray = updatedData.map(
       service => service.controllerService
@@ -204,7 +223,6 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const handleCloseModal = () => {
     dispatch(NamespacesActions.setNewlyAddVariables([]));
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
-    dispatch(NamespacesActions.getControllerServiceList());
   };
 
   const handleToggle = index => {
@@ -244,22 +262,34 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
 
   useEffect(() => {
     const newCollapsibles = [
-      {
-        title: 'External Controller Service',
-        content: externalControllerServiceArray?.length ? (
-          <Table
-            data={externalControllerServiceArray[0]}
-            columns={COLUMNS_2}
-            className={'variables-table'}
-          />
-        ) : (
-          <Table
-            data={controllerServicesData}
-            columns={COLUMNS}
-            className={'variables-table'}
-          />
-        ),
-      },
+      ...(externalControllerServiceArray?.length
+        ? [
+            {
+              title: 'External Controller Service',
+              content: (
+                <Table
+                  data={externalControllerServiceArray[0]}
+                  columns={COLUMNS_2}
+                  className={'variables-table'}
+                />
+              ),
+            },
+          ]
+        : []),
+      ...(controllerServicesData?.length
+        ? [
+            {
+              title: 'Controller Services Data',
+              content: (
+                <Table
+                  data={controllerServicesData}
+                  columns={COLUMNS}
+                  className={'variables-table'}
+                />
+              ),
+            },
+          ]
+        : []),
       ...(registryAllDetails?.controllerServicesData?.localServices?.map(
         service => ({
           title: service?.processGroupName || 'Unnamed Group',
@@ -279,6 +309,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     registryAllDetails,
     externalControllerServiceArray,
   ]);
+  
 
   const handleServiceConfigure = data => {
     const { externalServiceState, localServiceState } = classifyServiceData(
@@ -319,12 +350,9 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   useEffect(() => {
     setControllerServicePayload(prevState => {
       const newPayload = {
-        externalServicesData:
-          updatedExternalServiceData?.length && isExternalServiceConfigured
-            ? updatedExternalServiceData
-            : externalControllerServiceArray?.length
-              ? externalControllerServiceArray
-              : prevState.externalServicesData || [],
+        externalServicesData: isExternalServiceUpdated
+          ? externalServicePayload
+          : [],
         localServicesData: updatedLocalServicesData?.length
           ? updatedLocalServicesData
           : prevState.localServicesData || [],
@@ -332,29 +360,41 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
       return newPayload;
     });
   }, [
-    externalControllerServiceArray,
-    updatedExternalServiceData,
+    externalServicePayload,
     updatedLocalServicesData,
-    isExternalServiceConfigured,
+    isExternalServiceUpdated,
   ]);
 
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {collapsibles &&
+        {registryAllDetails?.controllerServicesData?.localServices?.length ||
+        controllerServicesData?.length ? (
+          collapsibles &&
           collapsibles.map((item, index) => (
             <Collapsible
               key={index}
               title={item.title}
               isTableOpen={openIndex === index}
               toggleCollapsible={() => handleToggle(index)}
-              onBtnClick={() =>
-                dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
-              }
+              onBtnClick={() => {
+                setOpenIndex(index);
+                dispatch(
+                  NamespacesActions.setIsAddControllerServiceModal(true)
+                );
+              }}
             >
               {item.content}
             </Collapsible>
-          ))}
+          ))
+        ) : (
+          <>
+            <div className="d-flex justify-content-center">
+              <NoDataIcon width={130} />
+            </div>
+            <NoDataText>No Data Found!!</NoDataText>
+          </>
+        )}
       </ScrollSetGrey>
 
       {isModalOpen && (
@@ -378,6 +418,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         updatedData={updatedData}
         setUpdatedData={setUpdatedData}
         isFromControllerServiceTab={true}
+        isFromExternalService={isFromExternalService}
         handlePropertyUpdate={handleServiceConfigure}
       />
       <AddProperties

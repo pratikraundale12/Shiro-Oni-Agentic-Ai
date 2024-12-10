@@ -317,8 +317,8 @@ export const Layout = ({ children }) => {
             {(isUserLogin || isAdminLogin) && (
               <StyledLoginBox onClick={handleRedirection}>
                 <RedirectionSection>
-                  Login via
                   <RedirectionText>
+                    Login via &nbsp;
                     {isUserLogin ? 'Admin' : 'User'}
                   </RedirectionText>
                 </RedirectionSection>

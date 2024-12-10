@@ -5,6 +5,7 @@ const prefix = '@@KDFM-NAMESPACES/';
 /* ------------- ACTIONS ------------------ */
 export const NamespacesActions = {
   setSelectedCluster: createAction(`${prefix}setSelectedCluster`),
+  setDeployByRegistryFlow: createAction(`${prefix}setDeployByRegistryFlow`),
   setSelectedNamespace: createAction(`${prefix}setSelectedNamespace`),
   setFlowPath: createAction(`${prefix}setFlowPath`),
   fetchNamespaces: createAction(`${prefix}fetchNamespaces`),
@@ -132,7 +133,7 @@ export const NamespacesActions = {
   setBucketListDropDownData: createAction(`${prefix}setBucketListDropDownData`),
   fetchFlowNameList: createAction(`${prefix}fetchFlowNameList`),
   setFlowListRegistry: createAction(`${prefix}setFlowListRegistry`),
-  fetchVerionData: createAction(`${prefix}fetchVerionData`),
+  fetchVersionData: createAction(`${prefix}fetchVersionData`),
   setVersionListData: createAction(`${prefix}setVersionListData`),
   setVersionSelect: createAction(`${prefix}setVersionSelect`),
   setDeployFormData: createAction(`${prefix}setDeployFormData`),
@@ -154,12 +155,22 @@ export const NamespacesActions = {
   setUpdatedRegistryRespones: createAction(
     `${prefix}setUpdatedRegistryRespones`
   ),
+  setregistryDetailsFlow: createAction(`${prefix}setregistryDetailsFlow`),
+  updateNamespaceStatusRegistry: createAction(
+    `${prefix}updateNamespaceStatusRegistry`
+  ),
   setRegistryDeployControllerService: createAction(
     `${prefix}setRegistryDeployControllerService`
   ),
+  setUpdatedNamespaceResponse: createAction(
+    `${prefix}setUpdatedNamespaceResponse`
+  ),
+  setFlowControlAfterUpgrade: createAction(
+    `${prefix}setFlowControlAfterUpgrade`
+  ),
+  setFlowControlData: createAction(`${prefix}setFlowControlData`),
 };
-// registryFlowXCord:null,
-//registryFlowYCord:null
+
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -170,6 +181,7 @@ export const NAMESPACES_INITIAL_STATE = {
     breadcrumb: [],
     data: [],
   },
+  deployByRegistryFlow: true,
   selectedDestCluster: null,
   selectedDestNamespace: null,
   destClusterNamespaces: {
@@ -234,8 +246,11 @@ export const NAMESPACES_INITIAL_STATE = {
   registryDeployParameterContext: [],
   registryDeployResponseData: {},
   updatedRegistryRespones: {},
+  registryDetailsFlow: false,
   registryDeployControllerService: {},
-  // parameterEditParent: false,
+  updatedNamespaceResponse: {},
+  flowControlAfterUpgrade: false,
+  FlowControlData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -252,6 +267,7 @@ export const NamespacesSelectors = {
   getDeployOrUpgradeDetails: state => state.namespaces.deployOrUpgradeDetails,
   getParameterDetails: state => state.namespaces.parameterDetails,
   getDeployedModal: state => state.namespaces.isDeployedModal,
+  getDeployRegistryFlow: state => state.namespaces.deployByRegistryFlow,
   getVariableList: state => state.namespaces.variableList,
   getNamespaceAudit: state => state.namespaces.namespaceAudit,
   getVariableContextItem: state => state.namespaces.variableContextItem,
@@ -307,8 +323,13 @@ export const NamespacesSelectors = {
   getRegistryDeployResponseData: state =>
     state.namespaces.registryDeployResponseData,
   getUpdatedRegistryRespones: state => state.namespaces.updatedRegistryRespones,
+  getRegistryDetailsFlow: state => state.namespaces.registryDetailsFlow,
   getRegistryDeployControllerService: state =>
     state.namespaces.registryDeployControllerService,
+  getUpdatedNamespaceResponse: state =>
+    state.namespaces.updatedNamespaceResponse,
+  getFlowControlAfterUpgrade: state => state.namespaces.flowControlAfterUpgrade,
+  getFlowControlData: state => state.namespaces.flowControlData,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -316,6 +337,12 @@ const setSelectedCluster = (state, { payload }) => {
   return {
     ...state,
     selectedCluster: payload,
+  };
+};
+const setDeployByRegistryFlow = (state, { payload }) => {
+  return {
+    ...state,
+    deployByRegistryFlow: payload,
   };
 };
 const setSelectedNamespace = (state, { payload }) => {
@@ -681,16 +708,42 @@ const setRegistryDeployResponseData = (state, { payload }) => {
   };
 };
 
+const setFlowControlData = (state, { payload }) => {
+  return {
+    ...state,
+    flowControlData: payload,
+  };
+};
+
 const setUpdatedRegistryRespones = (state, { payload }) => {
   return {
     ...state,
     updatedRegistryRespones: payload,
   };
 };
+const setregistryDetailsFlow = (state, { payload }) => {
+  return {
+    ...state,
+    registryDetailsFlow: payload,
+  };
+};
+const setUpdatedNamespaceResponse = (state, { payload }) => {
+  return {
+    ...state,
+    updatedNamespaceResponse: payload,
+  };
+};
+
 const setRegistryDeployControllerService = (state, { payload }) => {
   return {
     ...state,
     registryDeployControllerService: payload,
+  };
+};
+const setFlowControlAfterUpgrade = (state, { payload }) => {
+  return {
+    ...state,
+    flowControlAfterUpgrade: payload,
   };
 };
 //
@@ -700,6 +753,10 @@ export const namespacesReducer = createReducer(
   builder => {
     builder
       .addCase(NamespacesActions.setSelectedCluster, setSelectedCluster)
+      .addCase(
+        NamespacesActions.setDeployByRegistryFlow,
+        setDeployByRegistryFlow
+      )
       .addCase(NamespacesActions.setSelectedNamespace, setSelectedNamespace)
       .addCase(NamespacesActions.setFlowPath, setFlowPath)
       .addCase(NamespacesActions.fetchNamespacesSuccess, fetchNamespacesSuccess)
@@ -833,10 +890,20 @@ export const namespacesReducer = createReducer(
         NamespacesActions.setUpdatedRegistryRespones,
         setUpdatedRegistryRespones
       )
+      .addCase(NamespacesActions.setregistryDetailsFlow, setregistryDetailsFlow)
       .addCase(
         NamespacesActions.setRegistryDeployControllerService,
         setRegistryDeployControllerService
-      );
+      )
+      .addCase(
+        NamespacesActions.setUpdatedNamespaceResponse,
+        setUpdatedNamespaceResponse
+      )
+      .addCase(
+        NamespacesActions.setFlowControlAfterUpgrade,
+        setFlowControlAfterUpgrade
+      )
+      .addCase(NamespacesActions.setFlowControlData, setFlowControlData);
   }
 );
 //

@@ -81,7 +81,6 @@ const NewAddControllerService = () => {
   const modalOpenState = useSelector(
     NamespacesSelectors.getIsNewAddControllerServiceMOdalOpen
   );
-  console.log(modalOpenState, 'new add controller service');
   const [selectedItem, setSelectedItem] = useState({});
   const [search, setSearch] = useState('');
   const closeModal = () => {

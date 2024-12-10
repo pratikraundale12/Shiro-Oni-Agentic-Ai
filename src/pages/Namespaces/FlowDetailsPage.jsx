@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { ToastContainer } from 'react-toastify';
-import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
+import styled from 'styled-components';
 import {
   CanvasXIcon,
   CanvasYIcon,
   LinkIcon,
   QRIcons,
+  StateIcon,
   // UpsideSquareIcon,
   TodoIcon,
 } from '../../assets';
+import { FullPageLoader, Table } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField } from '../../shared';
@@ -20,11 +22,10 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { FullPageLoader } from '../../components';
 import { theme } from '../../styles';
+import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import RectangleGraph from './birdEyeViewGraph';
-// import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
-// import RightIcon from '../../assets/Icons/RightIcon';
+import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -76,6 +77,23 @@ const RowConfig = styled.div`
 const BottomButtonDiv = styled.div`
   gap: 16px;
   align-items: center;
+`;
+const CustomTable = styled(Table)`
+  max-height: 400px;
+  overflow: auto;
+  tr {
+    padding: 0;
+    height: 0;
+  }
+  overflow-y: auto;
+  overflow-x: hidden;
+`;
+const VersionDiv = styled.div`
+  margin-bottom: 1rem;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: #444445;
 `;
 const BottomButton = styled.div`
   align-items: center;
@@ -138,23 +156,23 @@ const ColXlTwo = styled.div`
     }
   }
 `;
-// const ColXlSix = styled.div`
-//   max-width: 100%;
-//   padding-right: calc(1.5rem * 0.5);
-//   padding-left: calc(1.5rem * 0.5);
-//   margin-top: 0;
-//   &.col-6 {
-//     flex: 0 0 auto;
-//     width: 50%;
-//   }
+const ColXlSix = styled.div`
+  max-width: 100%;
+  padding-right: calc(1.5rem * 0.5);
+  padding-left: calc(1.5rem * 0.5);
+  margin-top: 0;
+  &.col-6 {
+    flex: 0 0 auto;
+    width: 50%;
+  }
 
-//   @media screen and (min-width: 1200px) {
-//     &.col-xl-5 {
-//       flex: 0 0 auto;
-//       width: 41.66666667%;
-//     }
-//   }
-// `;
+  @media screen and (min-width: 1200px) {
+    &.col-xl-5 {
+      flex: 0 0 auto;
+      width: 41.66666667%;
+    }
+  }
+`;
 const BreadcrumbContainer = styled.div`
   font-size: 12px;
   font-weight: 700;
@@ -169,6 +187,10 @@ const FlowDetailsPage = () => {
   const registryAllDetails = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
+  const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
+  const selectedNameSpace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
@@ -178,9 +200,11 @@ const FlowDetailsPage = () => {
   );
   const storedXcord = useSelector(NamespacesSelectors.getregistryFlowXCord);
   const storedYcord = useSelector(NamespacesSelectors.getregistryFlowYCord);
-
+  const versionListData = useSelector(NamespacesSelectors.getVersionListData);
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
-
+  const [selectedVersion, setSelectedVersion] = useState(
+    versionSelected?.version
+  );
   const [xStateCoordinate, setXStateCoordiate] = useState(null);
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
   useEffect(() => {
@@ -220,17 +244,66 @@ const FlowDetailsPage = () => {
     id: index,
   }));
 
-  const breadcrumbData = [
+  const breadcrumbOnDeploy = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
     { label: 'Flow Details' },
   ];
+  const breadcrumbOnUpgrade = [
+    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+    { label: KDFM.FLOW_DETAILS },
+  ];
+
+  // const convertDate = dateString => {
+  //   const date = new Date(dateString);
+
+  //   const pad = num => String(num).padStart(2, '0');
+
+  //   const month = pad(date.getMonth() + 1);
+  //   const day = pad(date.getDate());
+  //   const year = date.getFullYear();
+
+  //   const hours = pad(date.getHours());
+  //   const minutes = pad(date.getMinutes());
+  //   const seconds = pad(date.getSeconds());
+
+  //   return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
+  // };
+
   const handleClick = () => {
-    history.push('/process-group/config-details');
+    if (isUpgrade) {
+      history.push('/process-group/config-details');
+    } else {
+      if (selectedVersion === selectedNameSpace.version) {
+        {
+          toast.info('The selected version is already deployed.');
+        }
+      } else {
+        history.push('/process-group/config-details');
+      }
+    }
+  };
+  useEffect(() => {
+    if (selectedNameSpace && selectedVersion && isEmpty(registryDetailsData)) {
+      dispatch(
+        NamespacesActions.fetchRegistryFlowDetails({
+          bucketId: selectedNameSpace.bucketId,
+          flowId: selectedNameSpace.flowId,
+          version: selectedVersion,
+        })
+      );
+    }
+  }, [dispatch, selectedNameSpace]);
+
+  const handleRowClick = item => {
+    setSelectedVersion(item.version);
+    dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
   };
 
   const handleBackClick = () => {
-    history.push('/process-group/deployPage');
+    !isUpgrade
+      ? history.push('/process-group')
+      : history.push('/process-group/deployPage');
   };
 
   const handleXCoordinateChangeInput = e => {
@@ -242,6 +315,12 @@ const FlowDetailsPage = () => {
       dispatch(NamespacesActions.setRegistryFlowXCord(null));
     }
   };
+  const handleRadioChange = item => {
+    dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
+  };
+  const sortedData = versionListData?.versionList
+    ?.slice()
+    .sort((a, b) => a.version - b.version);
 
   const handleYCoordinateChangeInput = e => {
     if (e.target.value) {
@@ -251,24 +330,8 @@ const FlowDetailsPage = () => {
       setYStateCoordiate(null);
       dispatch(NamespacesActions.setRegistryFlowYCord(null));
     }
-
-    // dispatch(NamespacesActions.setPosition({ y: e.target.value }));
   };
 
-  // const getIconForState = state => {
-  //   switch (state) {
-  //     case 'LOCALLY_MODIFIED_AND_STALE':
-  //       return <LocalChangesIcon />;
-  //     case 'STALE':
-  //       return <UpsideSquareIcon color="#BB564A" />;
-  //     case 'LOCALLY_MODIFIED':
-  //       return <LocalChangesIcon />;
-  //     case 'UP_TO_DATE':
-  //       return <RightIcon />;
-  //     default:
-  //       return null;
-  //   }
-  // };
   const loadingregistry = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
   );
@@ -292,11 +355,16 @@ const FlowDetailsPage = () => {
           <ImageContainer>
             <TodoIcon />
           </ImageContainer>
-          <MainTitleHfour className="mb-0">Deploy Process Group</MainTitleHfour>
+          <MainTitleHfour className="mb-0">
+            {!isUpgrade ? 'Upgrade Process Group' : 'Deploy Process Group'}
+          </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex  mb-3">
-        <Breadcrumb module="upgrade" path={breadcrumbData} />
+        <Breadcrumb
+          module="upgrade"
+          path={!isUpgrade ? breadcrumbOnUpgrade : breadcrumbOnDeploy}
+        />
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -308,7 +376,11 @@ const FlowDetailsPage = () => {
                     name="namespace"
                     type="text"
                     label={'Selected Flow Name'}
-                    value={formDataRegistry?.selectedFlowName}
+                    value={
+                      !isUpgrade
+                        ? selectedNameSpace.label
+                        : formDataRegistry?.selectedFlowName
+                    }
                     icon={<QRIcons />}
                     disabled
                   />
@@ -319,54 +391,76 @@ const FlowDetailsPage = () => {
               <RowConfig className="row">
                 <ColXlFive className="col-xl-5 col-12">
                   <InputField
+                    disabled={!isUpgrade}
                     name="x"
                     type="text"
                     label={KDFM.CANVAS_POSITION}
-                    value={storedXcord || xStateCoordinate}
+                    value={
+                      !isUpgrade
+                        ? selectedNameSpace.position.x
+                        : storedXcord || xStateCoordinate
+                    }
                     icon={<CanvasXIcon />}
                     onChange={e => handleXCoordinateChangeInput(e)}
                   />
                   <InputField
+                    disabled={!isUpgrade}
                     name="y"
                     type="text"
                     label=""
-                    value={storedYcord || yStateCoordinate}
+                    value={
+                      !isUpgrade
+                        ? selectedNameSpace.position.y
+                        : storedYcord || yStateCoordinate
+                    }
                     icon={<CanvasYIcon />}
                     onChange={e => handleYCoordinateChangeInput(e)}
                   />
                 </ColXlFive>
                 <>
-                  <ColXlTwo className="col-xl-6 col-6">
+                  <ColXlTwo
+                    className={`${isUpgrade ? 'col-xl-6 col-6' : 'col-xl-3 col-3'}`}
+                  >
                     <InputField
                       name="currentVersion"
                       type="text"
                       label={KDFM.CURRENT_VERSION}
                       placeholder="N/A"
-                      value={versionSelected?.version}
+                      value={
+                        !isUpgrade
+                          ? selectedNameSpace.version
+                          : versionSelected?.version || 'N/A'
+                      }
                       icon={<QRIcons />}
                       disabled
                     />
                   </ColXlTwo>
-                  {/* <ColXlSix className="col-xl-5 col-6">
-                    <InputField
-                      name="currentState"
-                      type="text"
-                      label={KDFM.CURRENT_STATE}
-                      value={'Version is Up to Date'}
-                      icon={getIconForState('UP_TO_DATE')}
-                      disabled
-                    />
-                  </ColXlSix> */}
+                  {!isUpgrade && (
+                    <ColXlSix className="col-xl-4 col-4">
+                      <InputField
+                        name="currentState"
+                        type="text"
+                        label={KDFM.CURRENT_STATE}
+                        value={selectedNameSpace.state || 'N/A'}
+                        icon={<StateIcon />}
+                        disabled
+                      />
+                    </ColXlSix>
+                  )}
                 </>
               </RowConfig>
             </div>
-            <div className="ms-4">
-              <RectangleGraph
-                data={enhancedData}
-                setXStateCoordiate={setXStateCoordiate}
-                setYStateCoordiate={setYStateCoordiate}
-              />
-            </div>
+            {isUpgrade && (
+              <div className="ms-4">
+                {
+                  <RectangleGraph
+                    data={enhancedData}
+                    setXStateCoordiate={setXStateCoordiate}
+                    setYStateCoordiate={setYStateCoordiate}
+                  />
+                }
+              </div>
+            )}
             <div className="col-12 p-3">
               <RowConfig className="row">
                 <ColLgSix className="col-lg-6 col-12">
@@ -394,6 +488,19 @@ const FlowDetailsPage = () => {
               </RowConfig>
             </div>
           </RowConfig>
+          {!isUpgrade && (
+            <>
+              <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
+              <CustomTable
+                data={sortedData || []}
+                columns={VERSION_COLUMNS({
+                  selectedVersion,
+                  handleRadioChange,
+                  handleRowClick,
+                })}
+              />
+            </>
+          )}
         </ScrollSetGrey>
       </GreyBoxNamespace>
       <BottomButton className="bottom-button-divs d-flex">

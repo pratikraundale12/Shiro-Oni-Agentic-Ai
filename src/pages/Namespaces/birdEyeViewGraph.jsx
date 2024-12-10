@@ -1,10 +1,10 @@
 /*eslint-disable*/
 
-import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import PropTypes from 'prop-types';
-import { NamespacesActions } from '../../store';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
+import { NamespacesActions } from '../../store';
 
 const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
   const svgRef = useRef();
@@ -141,6 +141,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
         .attr('height', d => yScale(d.y + d.height) - yScale(d.y))
         .attr('fill', d => d.color)
         .style('stroke', d => d.color)
+        .style('cursor', d => (d.color === '#FF7A00' ? 'pointer' : 'default'))
         .call(d => {
           d.each(function (d) {
             if (d.color === '#FF7A00') {
@@ -216,5 +217,4 @@ RectangleGraph.propTypes = {
   setXStateCoordiate: PropTypes.func.isRequired,
   setYStateCoordiate: PropTypes.func.isRequired,
 };
-
 export default RectangleGraph;

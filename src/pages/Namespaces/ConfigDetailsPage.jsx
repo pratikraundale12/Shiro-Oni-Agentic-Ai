@@ -8,8 +8,8 @@ import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import VariableTab from './VariableTab';
-import { useDispatch } from 'react-redux';
-import { NamespacesActions } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import ParameterContextTab from './ParameterContextTab';
 
 const TopTitleBar = styled.div`
@@ -95,18 +95,22 @@ const TabContent = styled.div`
 
 const ConfigDetailsPage = () => {
   const dispatch = useDispatch();
-  const breadcrumbData = [
+  const breadcrumbDataOnDeploy = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
-
+  const breadcrumbDataOnUpgrade = [
+    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+    { label: 'Flow Details', path: '/process-group/flow-details' },
+    { label: 'Configuration Details' },
+  ];
   const [variableData, setVariableData] = useState([]);
   const [PcData, setPcData] = useState({});
   const [controllerServicePayload, setControllerServicePayload] = useState({});
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
-
+  const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
   const handleBackClick = () => {
     history.push('/process-group/flow-details');
   };
@@ -126,7 +130,13 @@ const ConfigDetailsPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
-        return <ParameterContextTab PcData={PcData} setPcData={setPcData} />;
+        return (
+          <ParameterContextTab
+            PcData={PcData}
+            setPcData={setPcData}
+            activeTab={activeTab}
+          />
+        );
       case KDFM.VARIABLES:
         return (
           <VariableTab
@@ -144,6 +154,23 @@ const ConfigDetailsPage = () => {
       default:
         return null;
     }
+  };
+  const handleSetTab = tab => {
+    if (tab !== 'Parameter Context') {
+      dispatch(NamespacesActions.setRegistryDeployParameterContext(PcData));
+    }
+    if (tab !== 'Variables') {
+      dispatch(NamespacesActions.setRegistryDeployVariable(variableData));
+    }
+    if (tab !== 'Controller Service') {
+      dispatch(
+        NamespacesActions.setRegistryDeployControllerService(
+          controllerServicePayload
+        )
+      );
+    }
+
+    setActiveTab(tab);
   };
 
   return (
@@ -163,32 +190,35 @@ const ConfigDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {KDFM.DEPLOY_NAMESPACE}
+            {!isUpgrade ? KDFM.UPGRADE_NAMESPACE : KDFM.DEPLOY_NAMESPACE}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex  mb-3">
-        <Breadcrumb module="upgrade" path={breadcrumbData} />
+        <Breadcrumb
+          module="upgrade"
+          path={!isUpgrade ? breadcrumbDataOnUpgrade : breadcrumbDataOnDeploy}
+        />
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <TabWrapper className="nav">
           <Tab
             active={activeTab === KDFM.PARAMETER_CONTEXT}
-            onClick={() => setActiveTab(KDFM.PARAMETER_CONTEXT)}
+            onClick={() => handleSetTab(KDFM.PARAMETER_CONTEXT)}
             className="nav-item"
           >
             {KDFM.PARAMETER_CONTEXT}
           </Tab>
           <Tab
             active={activeTab === KDFM.VARIABLES}
-            onClick={() => setActiveTab(KDFM.VARIABLES)}
+            onClick={() => handleSetTab(KDFM.VARIABLES)}
             className="nav-item"
           >
             {KDFM.VARIABLES}{' '}
           </Tab>
           <Tab
             active={activeTab === KDFM.CONTROLLER_SERVICE}
-            onClick={() => setActiveTab(KDFM.CONTROLLER_SERVICE)}
+            onClick={() => handleSetTab(KDFM.CONTROLLER_SERVICE)}
             className="nav-item"
           >
             {KDFM.CONTROLLER_SERVICE}{' '}

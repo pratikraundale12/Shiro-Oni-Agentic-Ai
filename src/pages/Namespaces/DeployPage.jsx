@@ -1,9 +1,15 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
-import { KDFM } from '../../constants';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import styled from 'styled-components';
+import * as yup from 'yup';
 import { QRIcons, TodoIcon } from '../../assets';
-import Breadcrumb from '../../shared/Breadcrumb';
+import { FullPageLoader, Table } from '../../components';
+import { KDFM } from '../../constants';
+import { history } from '../../helpers/history';
 import {
   Button,
   CheckboxField,
@@ -11,19 +17,13 @@ import {
   RadioField,
   SelectField,
 } from '../../shared';
-import { FullPageLoader, Table } from '../../components';
-import { history } from '../../helpers/history';
-import { useDispatch, useSelector } from 'react-redux';
+import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -67,10 +67,10 @@ const GreyBoxNamespace = styled.div`
   border-radius: 20px;
 `;
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
-  max-height: calc(100vh - 341px);
+  min-height: calc(100vh - 324px);
+  max-height: calc(100vh - 324px);
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
 `;
 const RowConfig = styled.div`
   display: flex;
@@ -112,7 +112,7 @@ const StyledTableCell = styled.div`
 const CustomTable = styled(Table)`
   overflow-y: auto;
   overflow-x: auto;
-  max-height: 15rem;
+  max-height: 25rem;
   width: 100%;
 `;
 
@@ -137,7 +137,7 @@ function DeployPage() {
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
 
   const formData = useSelector(NamespacesSelectors.getDeployFormData);
-  const [keepParameter, setKeepParameter] = useState(false);
+  const [keepParameter, setKeepParameter] = useState(true);
   const bucketListOptions = bucketListData?.bucketList?.map(item => ({
     label: item?.name,
     value: item?.id,
@@ -177,7 +177,7 @@ function DeployPage() {
   };
   const sortedData = versionListData?.versionList
     ?.slice()
-    .sort((a, b) => a.version - b.version);
+    .sort((a, b) => b.version - a.version);
 
   const COLUMNS = [
     {
@@ -268,7 +268,7 @@ function DeployPage() {
   useEffect(() => {
     if (selectedValueFlowId) {
       dispatch(
-        NamespacesActions.fetchVerionData({
+        NamespacesActions.fetchVersionData({
           bucketId: selectedValuebucketId,
           flowId: selectedValueFlowId,
         })
@@ -321,7 +321,7 @@ function DeployPage() {
     LoadingSelectors.getLoading(state, 'fetchFlowNameList')
   );
   const loadingVersion = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchVerionData')
+    LoadingSelectors.getLoading(state, 'fetchVersionData')
   );
   //fetchRegistryFlowDetails
   return (

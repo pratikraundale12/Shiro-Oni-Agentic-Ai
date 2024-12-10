@@ -22,12 +22,12 @@ import {
   InputField,
   PasswordField,
   SelectField,
-  SwitchButton,
   SyncUsersSuccess,
 } from '../../shared';
 import AddNewRoleModal from '../../shared/AddNewRoleModal';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { LoadingSelectors, RolesActions, RolesSelectors } from '../../store';
+import { SettingsSelectors } from '../../store/settings';
 import {
   checkLdapConfig,
   groupMappingApi,
@@ -248,7 +248,6 @@ const breadcrumbData = [
   { label: 'LDAP Group List' },
 ];
 export const LdapConfig = () => {
-  const [ldapInitialConfig, setLdapInitialConfig] = useState(false);
   const [secondFormState, setSecondFormState] = useState(false);
   const [createMappingShow, setCreatMappingShow] = useState(false);
   const [successTest, setSuccessTest] = useState(false);
@@ -262,6 +261,8 @@ export const LdapConfig = () => {
   const roles = useSelector(RolesSelectors.getRoles);
   const ldapGroup = useSelector(RolesSelectors.getLdapGroup);
   const displayList = useSelector(RolesSelectors.getDiplayData);
+  const settingData = useSelector(SettingsSelectors.getSettings);
+  const { ldapEnabled } = settingData || {};
   const [tags, setTags] = useState([]);
   const {
     register: registerForm1,
@@ -344,7 +345,6 @@ export const LdapConfig = () => {
   const handleCheckLdapConfig = async () => {
     const response = await checkLdapConfig();
     if (response.status === 200) {
-      setLdapInitialConfig(response?.data?.ldapEnabled);
       if (response?.data?.ldapEnabled) {
         reset1({
           url: response?.data?.url,
@@ -368,16 +368,12 @@ export const LdapConfig = () => {
     }
   };
 
-  const handleCheckMark = () => {
-    setLdapInitialConfig(!ldapInitialConfig);
-  };
   useEffect(() => {
     handleCheckLdapConfig();
   }, []);
 
   const getLDAPGroup = async data => {
     const payload = {
-      ldapEnabled: true,
       url: testFormData.url,
       password: testFormData.password,
       loginDn: testFormData.loginDn,
@@ -501,14 +497,6 @@ export const LdapConfig = () => {
       </Heading>
       {displayList ? (
         <>
-          <div className="d-flex justify-content-end me-4">
-            <SwitchButton
-              id="openModalInput"
-              name="LDAP"
-              checked={ldapInitialConfig}
-              onChange={handleCheckMark}
-            />
-          </div>
           <InputFieldFlex className="row">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <InputField
@@ -519,7 +507,7 @@ export const LdapConfig = () => {
                 errors={errorsForm1}
                 placeholder="Enter your LDAP URL"
                 icon={<LinkIcon />}
-                disabled={!ldapInitialConfig}
+                disabled={!ldapEnabled}
                 required
               />
             </div>
@@ -532,7 +520,7 @@ export const LdapConfig = () => {
                 errors={errorsForm1}
                 placeholder="Enter your Login DN"
                 icon={<QRIcons />}
-                disabled={!ldapInitialConfig}
+                disabled={!ldapEnabled}
                 required
               />
             </div>
@@ -545,7 +533,7 @@ export const LdapConfig = () => {
                 watch={watch}
                 required
                 label="Password"
-                disabled={!ldapInitialConfig}
+                disabled={!ldapEnabled}
               />
             </div>
           </InputFieldFlex>
@@ -554,7 +542,7 @@ export const LdapConfig = () => {
               <StyledButton
                 size="sm"
                 onClick={handleSubmitForm1(onSubmitForm1)}
-                disabled={!ldapInitialConfig}
+                disabled={!ldapEnabled}
                 loading={loading}
               >
                 Test Configuration
@@ -571,7 +559,7 @@ export const LdapConfig = () => {
                 label="Base DN"
                 placeholder="Enter your Base DN"
                 icon={<QRIcons />}
-                disabled={!secondFormState || !ldapInitialConfig}
+                disabled={!secondFormState || !ldapEnabled}
                 errors={errorsForm2}
                 required
               />
@@ -584,7 +572,7 @@ export const LdapConfig = () => {
                 label="Groups DN"
                 placeholder="Enter your Groups DN"
                 icon={<QRIcons />}
-                disabled={!secondFormState || !ldapInitialConfig}
+                disabled={!secondFormState || !ldapEnabled}
                 errors={errorsForm2}
                 required
               />
@@ -597,7 +585,7 @@ export const LdapConfig = () => {
                 label="Users DN"
                 placeholder="Enter your Users DN"
                 icon={<QRIcons />}
-                disabled={!secondFormState || !ldapInitialConfig}
+                disabled={!secondFormState || !ldapEnabled}
                 errors={errorsForm2}
                 required
               />
@@ -611,7 +599,7 @@ export const LdapConfig = () => {
                 placeholder="Enter User Identifier"
                 icon={<QRIcons />}
                 errors={errorsForm2}
-                disabled={!secondFormState || !ldapInitialConfig}
+                disabled={!secondFormState || !ldapEnabled}
                 required
               />
             </div>
@@ -625,7 +613,7 @@ export const LdapConfig = () => {
                 placeholder="Enter Group Identifier"
                 icon={<QRIcons />}
                 errors={errorsForm2}
-                disabled={!secondFormState || !ldapInitialConfig}
+                disabled={!secondFormState || !ldapEnabled}
                 required
               />
             </div>
@@ -653,7 +641,7 @@ export const LdapConfig = () => {
                   name="groupObjectClass"
                   onKeyDown={handleKeyDown}
                   placeholder={tags.length === 0 ? 'Group Object Class' : ''}
-                  disabled={!secondFormState || !ldapInitialConfig}
+                  disabled={!secondFormState || !ldapEnabled}
                   register={registerForm2}
                   onBlur={handleKeyDown}
                   aria-label="Group Object Class"
@@ -669,7 +657,7 @@ export const LdapConfig = () => {
                 placeholder="Enter Username identifier"
                 icon={<QRIcons />}
                 errors={errorsForm2}
-                disabled={!secondFormState || !ldapInitialConfig}
+                disabled={!secondFormState || !ldapEnabled}
                 required
               />
             </div>
@@ -682,7 +670,7 @@ export const LdapConfig = () => {
                 placeholder="Enter Filter"
                 icon={<QRIcons />}
                 errors={errorsForm2}
-                disabled={!secondFormState || !ldapInitialConfig}
+                disabled={!secondFormState || !ldapEnabled}
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-1 mb-2">
@@ -694,7 +682,7 @@ export const LdapConfig = () => {
                 control={control}
                 placeholder="Select Scope"
                 title="Select Scope"
-                disabled={!secondFormState || !ldapInitialConfig}
+                disabled={!secondFormState || !ldapEnabled}
                 defaultValue={{
                   label: 'One',
                   value: 'one',
@@ -706,7 +694,7 @@ export const LdapConfig = () => {
             <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
               <StyledSecondButton
                 onClick={handleSubmitForm2(getLDAPGroup)}
-                disabled={!saveButtonStatus || !ldapInitialConfig}
+                disabled={!saveButtonStatus || !ldapEnabled}
                 loading={loadings && 'Fetching..'}
               >
                 Continue

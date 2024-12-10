@@ -16,8 +16,8 @@ import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { NamespacesActions } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
-import { useGlobalContext } from '../../utils';
 import { theme } from '../../styles';
+import { useGlobalContext } from '../../utils';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -65,7 +65,7 @@ const StatusDiv = styled.div`
   background: none;
   display: inline-block;
   white-space: nowrap;
-  width: 28px;
+  // width: 28px;
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
   }
@@ -111,6 +111,8 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setdeployRegistryFlow(false));
     dispatch(NamespacesActions.setRegistryDeployVariable([]));
     dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
+    dispatch(NamespacesActions.setregistryDetailsFlow(false));
+    dispatch(NamespacesActions.setFlowControlAfterUpgrade(false));
   }, []);
 
   const COLUMNS = [
@@ -228,8 +230,8 @@ export const ListNamespaces = () => {
       label: KDFM.STATUS,
       renderCell: item => {
         return (
-          <div className="d-flex align-items-center gap-1">
-            <StatusDiv>
+          <div className="d-flex align-items-center flex-wrap gap-1">
+            <StatusDiv data-tooltip-id={`tooltip-running-${item.id}`}>
               <TriangleIcons
                 width={13}
                 height={16}
@@ -240,8 +242,18 @@ export const ListNamespaces = () => {
                 }
               />
               <span className="me-1">{item?.runningCount}</span>
-            </StatusDiv>{' '}
-            <StatusDiv>
+            </StatusDiv>
+            <ReactTooltip
+              id={`tooltip-running-${item.id}`}
+              place="right"
+              content="Running Components"
+              style={{
+                width: '180px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+            <StatusDiv data-tooltip-id={`tooltip-stopped-${item.id}`}>
               <SquareBoxIcon
                 width={15}
                 height={15}
@@ -253,17 +265,37 @@ export const ListNamespaces = () => {
               />
               <span>{item?.stoppedCount}</span>
             </StatusDiv>
-            <StatusDiv>
+            <ReactTooltip
+              id={`tooltip-stopped-${item.id}`}
+              place="right"
+              content="Stopped Components"
+              style={{
+                width: '180px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+            <StatusDiv data-tooltip-id={`tooltip-invalid-${item.id}`}>
               <TriangleExclamationMarkIcon
                 color={
-                  item?.stoppedCount
+                  item?.invalidCount
                     ? theme.colors.caution
                     : theme.colors.disabled
                 }
               />
               <span>{item?.invalidCount}</span>
             </StatusDiv>
-            <StatusDiv>
+            <ReactTooltip
+              id={`tooltip-invalid-${item.id}`}
+              place="right"
+              content="Invalid Components"
+              style={{
+                width: '160px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+            <StatusDiv data-tooltip-id={`tooltip-disabled-${item.id}`}>
               <SmallNotThunderIcon
                 color={
                   item?.disabledCount
@@ -273,6 +305,16 @@ export const ListNamespaces = () => {
               />
               <span>{item?.disabledCount}</span>
             </StatusDiv>
+            <ReactTooltip
+              id={`tooltip-disabled-${item.id}`}
+              place="right"
+              content="Disabled Components"
+              style={{
+                width: '180px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
           </div>
         );
       },
@@ -300,7 +342,7 @@ export const ListNamespaces = () => {
           <ReactTooltip
             id={`tooltip-group-details`}
             place="left"
-            content={'Group Details'}
+            content={'Process Group Details'}
             style={{
               width: '120px',
               whiteSpace: 'normal',
@@ -333,7 +375,7 @@ export const ListNamespaces = () => {
           />
           <button
             type="button"
-            disabled={!item?.permissions?.canWrite}
+            disabled={!item?.permissions?.canWrite || !item?.version}
             className="btn btn-primary"
             onClick={() => handleSelect(item)}
             style={{
@@ -355,10 +397,18 @@ export const ListNamespaces = () => {
       NamespacesActions.setSelectedNamespace({
         label: item.name,
         value: item.id,
+        ...item,
       })
     );
-
-    history.push('/process-group/upgrade', {
+    dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
+    dispatch(NamespacesActions.setDeployByRegistryFlow(false));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: item.bucketId,
+        flowId: item.flowId,
+      })
+    );
+    history.push('/process-group/flow-details', {
       state: {
         id: item.id,
       },

@@ -100,7 +100,10 @@ const UnAuthGuard = () => {
   return (
     <MainContainer>
       <Container className={isOpenSidebar && 'menuOpen'}>
-        <button onClick={() => handleOpenSidebar()}>
+        <button
+          className="btn btn-hamburger d-lg-none"
+          onClick={() => handleOpenSidebar()}
+        >
           <img alt="menu" src="/img/Frame.png" />
         </button>
         {getImage()}
