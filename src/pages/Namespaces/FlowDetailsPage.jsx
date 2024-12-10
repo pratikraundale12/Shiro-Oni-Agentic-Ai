@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
@@ -7,10 +8,11 @@ import {
   CanvasYIcon,
   LinkIcon,
   QRIcons,
-  StateIcon,
-  // UpsideSquareIcon,
   TodoIcon,
+  UpsideSquareIcon,
 } from '../../assets';
+import LocalChangesIcon from '../../assets/Icons/LocalChangesIcon';
+import RightIcon from '../../assets/Icons/RightIcon';
 import { FullPageLoader, Table } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -25,7 +27,6 @@ import {
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import RectangleGraph from './birdEyeViewGraph';
-import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -340,7 +341,25 @@ const FlowDetailsPage = () => {
   const loadingregistry = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
   );
-  //
+
+  const getIconForState = state => {
+    switch (state) {
+      case 'LOCALLY_MODIFIED_AND_STALE':
+        return <LocalChangesIcon />;
+      case 'STALE':
+        return <UpsideSquareIcon color="#BB564A" />;
+      case 'LOCALLY_MODIFIED':
+        return <LocalChangesIcon />;
+      case 'UP_TO_DATE':
+        return <RightIcon />;
+      default:
+        return null;
+    }
+  };
+
+  const isStateStale =
+    selectedNameSpace?.state === 'STALE' ||
+    selectedNameSpace?.state === 'UP_TO_DATE';
 
   return (
     <div>
@@ -446,8 +465,8 @@ const FlowDetailsPage = () => {
                         name="currentState"
                         type="text"
                         label={KDFM.CURRENT_STATE}
-                        value={selectedNameSpace.state || 'N/A'}
-                        icon={<StateIcon />}
+                        value={selectedNameSpace?.stateExplanation || 'N/A'}
+                        icon={getIconForState(selectedNameSpace?.state)}
                         disabled
                       />
                     </ColXlSix>
@@ -513,7 +532,12 @@ const FlowDetailsPage = () => {
           <Button variant="secondary" onClick={handleBackClick}>
             {KDFM.BACK}
           </Button>
-          <Button onClick={handleClick}>Continue</Button>
+          <Button
+            disabled={isUpgrade ? false : !isStateStale}
+            onClick={handleClick}
+          >
+            Continue
+          </Button>
         </BottomButtonDiv>
       </BottomButton>
     </div>
