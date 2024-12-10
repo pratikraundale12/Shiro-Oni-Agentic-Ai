@@ -221,8 +221,8 @@ const NamespaceDeploy = ({
               <GreenRightCircleIcon />
             </ModalIcon>
             <ModalHFive>
-              Process Group successfully {''}
-              {checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'deployed'} to
+              Process Group Successfully {''}
+              {checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'Deployed'}
               {''} {selectedDestCluster?.label}
             </ModalHFive>
           </div>
