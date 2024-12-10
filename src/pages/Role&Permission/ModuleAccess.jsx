@@ -439,11 +439,11 @@ export const ModuleAccess = () => {
             backgroundColor={theme.colors.lightGrey}
             onChange={onChange}
           />
-          {userPermissions.includes('add_permission') && (
+          {(userPermissions.includes('add_permission') ||
+            userPermissions.includes('edit_permission')) && (
             <Button
               icon={<PlusCircleIcon width={16} height={16} />}
               onClick={() => {
-                // setIsRoleListModalOpen
                 dispatch(RolesActions.setIsRoleListModalOpen(true));
               }}
               variant="secondary"
@@ -452,6 +452,7 @@ export const ModuleAccess = () => {
               Roles
             </Button>
           )}
+
           {userPermissions.includes('edit_permission') && (
             <Button disabled={isUpdated()} onClick={handleSubmit} size="sm">
               Save Changes
