@@ -32,34 +32,22 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-const ParameterContextTab = ({ PcData, setPcData }) => {
+const ParameterContextTab = ({ pcPayload, setPcPayload }) => {
   const [isAddPcOpen, setIsAddPcOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
 
-  const [openIndex, setOpenIndex] = useState(
-    PcData?.inherited && PcData?.inherited[0]?.name
-      ? PcData?.inherited[0]?.name
-      : PcData?.parent && PcData?.parent[0]?.name
-        ? PcData?.parent[0]?.name
-        : null
-  );
+  const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
   const [currentPgId, setCurrentPgId] = useState('');
+  const [PcData, setPcData] = useState([]);
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
-  const parameterReduxData = useSelector(
-    NamespacesSelectors.getRegistryDeployParameterContext
-  );
 
   useEffect(() => {
-    if (isEmpty(parameterReduxData)) {
-      setPcData(registryDetailsData?.parameterContextData);
-    } else {
-      setPcData(parameterReduxData);
-    }
+    setPcData(registryDetailsData?.parameterContextData);
   }, [registryDetailsData?.parameterContextData]);
 
   const handleToggle = index => {
@@ -138,6 +126,63 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
   ];
 
   const handleAddOrEditVariableSave = data => {
+    const updatedState = { ...PcData };
+    const updatedPayload = {
+      inherited: Array.isArray(pcPayload.inherited)
+        ? [...pcPayload.inherited]
+        : [],
+      parent: Array.isArray(pcPayload.parent) ? [...pcPayload.parent] : [],
+    };
+
+    ['inherited', 'parent'].forEach(key => {
+      updatedState[key] = updatedState[key].map(group => {
+        let isGroupUpdated = false;
+
+        const updatedParameters = group.parameters.map(parameter => {
+          if (parameter.name === data.name) {
+            isGroupUpdated = true;
+            return {
+              ...parameter,
+              value: data.value,
+              check: data.check,
+              description: data.description,
+            };
+          }
+          return parameter;
+        });
+
+        if (isGroupUpdated) {
+          const updatedGroupParameters = updatedParameters.filter(
+            (param, index) =>
+              JSON.stringify(param) !== JSON.stringify(group.parameters[index])
+          );
+          const existingGroupIndex = updatedPayload[key].findIndex(
+            g => g.name === group.name
+          );
+
+          if (existingGroupIndex > -1) {
+            updatedPayload[key][existingGroupIndex].parameters = updatedPayload[
+              key
+            ][existingGroupIndex].parameters.map(param => {
+              const updatedParam = updatedGroupParameters.find(
+                p => p.name === param.name
+              );
+              return updatedParam || param;
+            });
+          } else {
+            updatedPayload[key].push({
+              name: group.name,
+              parameters: updatedGroupParameters,
+            });
+          }
+        }
+        return {
+          ...group,
+          parameters: updatedParameters,
+        };
+      });
+    });
+    setPcPayload(updatedPayload);
     setPcData(prevState => {
       const updatedState = { ...prevState };
 
@@ -220,7 +265,7 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
             <div className="d-flex justify-content-center">
               <NoDataIcon width={130} />
             </div>
-            <NoDataText>No Data Found!!</NoDataText>
+            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
           </>
         )}
         {isAddPcOpen?.isOpen && (
@@ -237,7 +282,7 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
   );
 };
 ParameterContextTab.propTypes = {
-  PcData: PropTypes.func,
-  setPcData: PropTypes.object,
+  pcPayload: PropTypes.object,
+  setPcPayload: PropTypes.func,
 };
 export default ParameterContextTab;

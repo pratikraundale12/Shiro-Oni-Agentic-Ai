@@ -326,7 +326,7 @@ export const ListControllerService = () => {
           <div className="d-flex justify-content-center">
             <NoDataIcon width={130} />
           </div>
-          <NoDataText>No Data Found!!</NoDataText>
+          <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
         </>
       ) : (
         <Collapsible

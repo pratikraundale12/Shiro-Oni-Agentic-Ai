@@ -34,7 +34,7 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-const VariableTab = ({ variableData, setVariableData }) => {
+const VariableTab = ({ setVariablePayload }) => {
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
@@ -45,17 +45,12 @@ const VariableTab = ({ variableData, setVariableData }) => {
 
   const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
-  const variblesReduxData = useSelector(
-    NamespacesSelectors.getRegistryDeployVariable
-  );
+  const [variableData, setVariableData] = useState([]);
 
   useEffect(() => {
-    if (isEmpty(variblesReduxData)) {
-      setVariableData(registryDetailsData?.variablesData);
-    } else {
-      setVariableData(variblesReduxData);
-    }
-  }, [registryDetailsData?.variablesData, variblesReduxData]);
+    setVariableData(registryDetailsData?.variablesData);
+  }, [registryDetailsData?.variablesData]);
+
   const [currentPgId, setCurrentPgId] = useState('');
   const handleToggle = (pgId, index) => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
@@ -135,6 +130,45 @@ const VariableTab = ({ variableData, setVariableData }) => {
           : item
       )
     );
+
+    setVariablePayload(prevPayload => {
+      const existingPg = prevPayload.find(pg => pg.pgId === currentPgId);
+
+      if (existingPg) {
+        const updatedVariables = existingPg.variables.some(
+          variable => variable.name === data.name
+        )
+          ? existingPg.variables.map(variable =>
+              variable.name === data.name
+                ? { ...variable, value: data.value }
+                : variable
+            )
+          : [...existingPg.variables, data];
+
+        return prevPayload.map(pg =>
+          pg.pgId === currentPgId
+            ? {
+                ...pg,
+                variables: updatedVariables,
+              }
+            : pg
+        );
+      } else {
+        const currentPgData = variableData.find(
+          item => item.pgId === currentPgId
+        );
+        return [
+          ...prevPayload,
+          {
+            pgId: currentPgId,
+            parent: currentPgData.parent,
+            pgName: currentPgData.pgName,
+            variables: [data],
+            path: currentPgData.path,
+          },
+        ];
+      }
+    });
   };
 
   const closeAddVariablesModal = () => {
@@ -169,7 +203,7 @@ const VariableTab = ({ variableData, setVariableData }) => {
             <div className="d-flex justify-content-center">
               <NoDataIcon width={130} />
             </div>
-            <NoDataText>No Data Found!!</NoDataText>
+            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
           </>
         )}
         {isAddVariablesOpen.isOpen && (
@@ -188,8 +222,8 @@ const VariableTab = ({ variableData, setVariableData }) => {
   );
 };
 VariableTab.propTypes = {
-  setVariableData: PropTypes.func,
-  variableData: PropTypes.object,
+  setVariablePayload: PropTypes.func,
+  variablePayload: PropTypes.array,
 };
 
 export default VariableTab;
