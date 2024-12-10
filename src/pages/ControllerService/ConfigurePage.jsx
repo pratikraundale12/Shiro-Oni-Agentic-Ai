@@ -14,7 +14,13 @@ const NewClassAddes = styled.div`
   }
 `;
 
-const ConfigurePage = ({ isOpen, onClose, handleConfigureSubmit }) => {
+const ConfigurePage = ({
+  isOpen,
+  onClose,
+  handleConfigureSubmit,
+  loading,
+  setIsModalOpen,
+}) => {
   const dispatch = useDispatch();
   const [selectedItem, setSelectedItem] = useState(null);
   const listData = useSelector(
@@ -69,15 +75,22 @@ const ConfigurePage = ({ isOpen, onClose, handleConfigureSubmit }) => {
           type="button"
           className="w-auto px-3"
           size="sm"
-          onClick={() =>
-            dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
-          }
+          onClick={() => {
+            dispatch(NamespacesActions.setIsAddControllerServiceModal(true));
+            setIsModalOpen();
+            // need to close modal
+          }}
         >
           {KDFM.ADD}
         </Button>
       </NewClassAddes>
       <div>
-        <Table data={listData} columns={COLUMNS} className="variables-table" />
+        <Table
+          data={listData}
+          columns={COLUMNS}
+          className="variables-table"
+          loading={loading}
+        />
       </div>
     </Modal>
   );
@@ -87,6 +100,8 @@ ConfigurePage.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   handleConfigureSubmit: PropTypes.func,
+  loading: PropTypes.bool.isRequired,
+  setIsModalOpen: PropTypes.func,
 };
 
 export default ConfigurePage;

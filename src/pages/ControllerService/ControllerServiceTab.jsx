@@ -7,7 +7,11 @@ import styled from 'styled-components';
 import { SettingSmallIcon } from '../../assets';
 import { Table } from '../../components';
 import { KDFM } from '../../constants';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import Collapsible from '../Namespaces/Collapsible';
 import AddControllerServiceModal from './AddControllerServiceModal';
 import AddProperties from './AddProperties';
@@ -265,7 +269,9 @@ const ControllerServiceTab = ({
   };
 
   const [collapsibles, setCollapsibles] = useState([]);
-
+  const loadingForConfigureTable = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
+  );
   useEffect(() => {
     const newCollapsibles = [
       ...(externalControllerServiceArray?.length
@@ -357,7 +363,7 @@ const ControllerServiceTab = ({
       propertyMap.set(updatedProp.name, updatedProp);
     });
     return Array.from(propertyMap.values());
-  }
+  };
   useEffect(() => {
     setLocalServices(prevLocalServices => {
       const updatedServices = prevLocalServices.map(processGroup => {
@@ -411,9 +417,9 @@ const ControllerServiceTab = ({
   useEffect(() => {
     setControllerServicesData({
       externalControllerServices: externalControllerServices,
-      localServices: localServices
-    })
-  },[localServices, externalControllerServices])
+      localServices: localServices,
+    });
+  }, [localServices, externalControllerServices]);
 
   return (
     <DataWrapper>
@@ -453,6 +459,8 @@ const ControllerServiceTab = ({
           onClose={handleConfigCloseModal}
           service={selectedService}
           handleConfigureSubmit={handleConfigureSubmit}
+          loading={loadingForConfigureTable}
+          setIsModalOpen={setIsModalOpen}
         />
       )}
 
