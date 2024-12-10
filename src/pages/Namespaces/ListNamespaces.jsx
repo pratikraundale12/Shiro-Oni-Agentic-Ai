@@ -368,7 +368,7 @@ export const ListNamespaces = () => {
             place="right"
             content={'Schedule Deployment'}
             style={{
-              width: '120px',
+              width: '180px',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}
