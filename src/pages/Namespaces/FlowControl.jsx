@@ -15,6 +15,7 @@ import StopIconImage from '../../assets/images/stop.png';
 import { KDFM } from '../../constants';
 import { ModalWithIcon } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { singleNamespaceData } from '../../store/namespaces';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -125,8 +126,8 @@ const ScrollSetGrey = styled.div`
 
 const FlowControl = () => {
   const dispatch = useDispatch();
-  const deployOrUpgradeDetails = useSelector(
-    NamespacesSelectors.getRegistryDeployResponseData
+  const sigleNamespaceData = useSelector(
+    NamespacesSelectors.getFlowControlData
   );
   const [activeButton, setActiveButton] = useState(null);
   const [confirmDialogue, setConfirmDialogue] = useState({
@@ -175,44 +176,44 @@ const FlowControl = () => {
               <TextDiv className="d-flex">
                 <CountDiv
                   className="div-btn-1 mr-2"
-                  count={deployOrUpgradeDetails?.runningCount}
+                  count={sigleNamespaceData?.runningCount}
                   activeColor="#58e715"
                 >
                   <TriangleIcons color="#B5BDC8" />
-                  <span>{deployOrUpgradeDetails?.runningCount}</span>
+                  <span>{sigleNamespaceData?.runningCount}</span>
                 </CountDiv>
                 <div>{KDFM.RUNNING_PROCESSORS}</div>
               </TextDiv>
               <TextDiv className="d-flex">
                 <CountDiv
                   className="div-btn-2 mr-2"
-                  count={deployOrUpgradeDetails?.stoppedCount}
+                  count={sigleNamespaceData?.stoppedCount}
                   activeColor="#c52b2b"
                 >
                   <SquareBoxIcon color="#B5BDC8" />
-                  <span>{deployOrUpgradeDetails?.stoppedCount}</span>
+                  <span>{sigleNamespaceData?.stoppedCount}</span>
                 </CountDiv>
                 <div>{KDFM.STOPPED_PROCESSORS}</div>
               </TextDiv>
               <TextDiv className="d-flex">
                 <CountDiv
                   className="div-btn-3 mr-2"
-                  count={deployOrUpgradeDetails?.invalidCount}
+                  count={sigleNamespaceData?.invalidCount}
                   activeColor="#CF9F5D"
                 >
                   <TriangleExclamationMarkIcon color="#B5BDC8" />
-                  <span>{deployOrUpgradeDetails?.invalidCount}</span>
+                  <span>{sigleNamespaceData?.invalidCount}</span>
                 </CountDiv>
                 <div>{KDFM.INVALID_PROCESSORS}</div>
               </TextDiv>
               <TextDiv className="d-flex">
                 <CountDiv
                   className="div-btn-4 mr-2"
-                  count={deployOrUpgradeDetails?.disabledCount}
+                  count={singleNamespaceData?.disabledCount}
                   activeColor="#2c7cf3"
                 >
                   <SmallNotThunderIcon color="#B5BDC8" />
-                  <span>{deployOrUpgradeDetails?.disabledCount}</span>
+                  <span>{singleNamespaceData?.disabledCount}</span>
                 </CountDiv>
                 <div>{KDFM.DISABLED_PROCESSORS}</div>
               </TextDiv>

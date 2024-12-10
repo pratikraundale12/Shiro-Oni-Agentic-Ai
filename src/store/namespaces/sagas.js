@@ -150,6 +150,9 @@ export function* updateNamespaceStatus(api, { payload }) {
   const srcClusterToken = clusters?.find(
     cluster => cluster.id === selectedCluster?.value
   );
+  const sigleNamespaceData = yield select(
+    NamespacesSelectors.getSingleNamespaceData
+  );
   api.headers['x-cluster-id'] = selectedCluster?.value;
   api.headers['x-cluster-token'] = srcClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -159,7 +162,7 @@ export function* updateNamespaceStatus(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: registryDeployNamepsaceId?.id,
+        namespaceId: registryDeployNamepsaceId?.id || sigleNamespaceData?.id,
         state: payload,
       },
     ],
@@ -182,6 +185,7 @@ export function* updateNamespaceStatus(api, { payload }) {
       invalidCount: response.data.status?.invalidCount,
       disabledCount: response.data.status?.disabledCount,
     };
+    yield put(NamespacesActions.setFlowControlData(responseData));
     yield put(NamespacesActions.setRegistryDeployResponseData(responseData));
     yield put(NamespacesActions.deployClusterSuccess(data));
   }
@@ -650,13 +654,24 @@ export function* singleNamespaceData(api) {
   );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'singleNamespaceData',
     loadingSection: 'singleNamespaceData',
     apiMethod: api.singleNamespaceData,
     apiParams: [{ queryParams }],
     successAction: NamespacesActions.singleNamespaceDataSuccess,
   });
+  if (response.ok) {
+    const responseData = {
+      // id: response.data?.id,
+      // nifiUrl: response.data?.id.nifiUrl,
+      runningCount: response.data?.runningCount,
+      stoppedCount: response.data?.stoppedCount,
+      invalidCount: response.data?.invalidCount,
+      disabledCount: response.data?.disabledCount,
+    };
+    yield put(NamespacesActions.setFlowControlData(responseData));
+  }
 }
 
 export function* getControllerServiceList(api) {

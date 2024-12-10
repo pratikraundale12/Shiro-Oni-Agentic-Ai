@@ -165,6 +165,7 @@ export const NamespacesActions = {
   setUpdatedNamespaceResponse: createAction(
     `${prefix}setUpdatedNamespaceResponse`
   ),
+  setFlowControlData: createAction(`${prefix}setFlowControlData`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -245,6 +246,7 @@ export const NAMESPACES_INITIAL_STATE = {
   registryDetailsFlow: false,
   registryDeployControllerService: {},
   updatedNamespaceResponse: {},
+  FlowControlData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -322,6 +324,7 @@ export const NamespacesSelectors = {
     state.namespaces.registryDeployControllerService,
   getUpdatedNamespaceResponse: state =>
     state.namespaces.updatedNamespaceResponse,
+  getFlowControlData: state => state.namespaces.flowControlData,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -700,6 +703,13 @@ const setRegistryDeployResponseData = (state, { payload }) => {
   };
 };
 
+const setFlowControlData = (state, { payload }) => {
+  return {
+    ...state,
+    flowControlData: payload,
+  };
+};
+
 const setUpdatedRegistryRespones = (state, { payload }) => {
   return {
     ...state,
@@ -877,7 +887,8 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setUpdatedNamespaceResponse,
         setUpdatedNamespaceResponse
-      );
+      )
+      .addCase(NamespacesActions.setFlowControlData, setFlowControlData);
   }
 );
 //
