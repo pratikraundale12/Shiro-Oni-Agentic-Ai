@@ -63,13 +63,19 @@ const ParameterContext = ({
   const parameterContextObjectAtDeloy = useSelector(
     NamespacesSelectors.getParameterContextListAtDeploy
   );
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
   const copyParameterDetailsData =
     parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] ||
+    parameterDetails?.[singleNamespaceData?.parameterContextId] ||
     parameterContextObjectAtDeloy?.parameterContexts ||
     [];
 
   const tableData = [...copyParameterDetailsData, ...newlyAddParameters];
-  const targetId = deployOrUpgradeDetails?.parameterContextId;
+  const targetId =
+    deployOrUpgradeDetails?.parameterContextId ||
+    singleNamespaceData?.parameterContextId;
 
   const sortedArray = tableData.sort((a, b) => {
     if (a.parentParameterId === targetId) return -1;
@@ -82,19 +88,18 @@ const ParameterContext = ({
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const schduleParameterData =
     checkDestCluster?.additionalData?.filteredParameterData;
-  const singleNamespaceData = useSelector(
-    NamespacesSelectors.getSingleNamespaceData
-  );
 
   useEffect(() => {
-    if (singleNamespaceData?.parameterContextId) {
-      dispatch(
-        NamespacesActions.fetchParameterContext(
-          singleNamespaceData?.parameterContextId
-        )
-      );
+    if (
+      singleNamespaceData?.parameterContextId ||
+      deployOrUpgradeDetails?.parameterContextId
+    ) {
+      dispatch(NamespacesActions.fetchParameterContext());
     }
-  }, [singleNamespaceData?.parameterContextId]);
+  }, [
+    singleNamespaceData?.parameterContextId,
+    deployOrUpgradeDetails?.parameterContextId,
+  ]);
 
   useEffect(() => {
     if (schedularFromList) {
@@ -164,6 +169,7 @@ const ParameterContext = ({
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {item.parentParameterId ===
             deployOrUpgradeDetails?.parameterContextId ||
+          singleNamespaceData?.parameterContextId ||
           !has(item, 'parentParameterId') ? (
             <IconButton
               // disabled={loading}
@@ -179,7 +185,9 @@ const ParameterContext = ({
                   dispatch(
                     NamespacesActions.setParameterEditParent({
                       parent: false,
-                      id: deployOrUpgradeDetails?.parameterContextId,
+                      id:
+                        deployOrUpgradeDetails?.parameterContextId ||
+                        singleNamespaceData?.parameterContextId,
                     })
                   );
                 }
