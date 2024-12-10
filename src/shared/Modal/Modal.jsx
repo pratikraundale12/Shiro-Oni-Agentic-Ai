@@ -142,43 +142,47 @@ export const Modal = ({
           )}
         </Header>
         <Body>{children}</Body>
-        <Footer
-          footerAlign={footerAlign}
-          hasSingleButton={!secondaryButtonText}
-        >
-          {secondaryButtonText && (
-            <Button
-              type="button"
-              variant={thirdVarint ? 'tertiary' : 'secondary'}
-              onClick={onSecondarySubmit || onRequestClose}
-              disabled={secondaryButtonProps.disabled}
-              {...secondaryButtonProps}
-            >
-              {secondaryButtonText}
-            </Button>
-          )}
-          {tertiaryButton && tertiaryButtonConfig && (
-            <Button
-              type="button"
-              variant={thirdVarint ? 'tertiary' : 'secondary'}
-              onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
-              disabled={tertiaryButtonConfig.disabled}
-              loading={tertiaryButtonConfig.tertiaryButtonLoading}
-              {...tertiaryButtonConfig}
-            >
-              {tertiaryButtonConfig.tertiaryButtonTest}
-            </Button>
-          )}
-          <Button
-            type="submit"
-            loading={loading}
-            data-dismiss="modal"
-            disabled={primaryButtonDisabled}
-            size={!secondaryButtonText ? 'lg' : 'md'}
+        {(primaryButtonText || secondaryButtonText || tertiaryButton) && (
+          <Footer
+            footerAlign={footerAlign}
+            hasSingleButton={!secondaryButtonText}
           >
-            {primaryButtonText}
-          </Button>
-        </Footer>
+            {secondaryButtonText && (
+              <Button
+                type="button"
+                variant={thirdVarint ? 'tertiary' : 'secondary'}
+                onClick={onSecondarySubmit || onRequestClose}
+                disabled={secondaryButtonProps.disabled}
+                {...secondaryButtonProps}
+              >
+                {secondaryButtonText}
+              </Button>
+            )}
+            {tertiaryButton && tertiaryButtonConfig && (
+              <Button
+                type="button"
+                variant={thirdVarint ? 'tertiary' : 'secondary'}
+                onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
+                disabled={tertiaryButtonConfig.disabled}
+                loading={tertiaryButtonConfig.tertiaryButtonLoading}
+                {...tertiaryButtonConfig}
+              >
+                {tertiaryButtonConfig.tertiaryButtonTest}
+              </Button>
+            )}
+            {primaryButtonText && (
+              <Button
+                type="submit"
+                loading={loading}
+                data-dismiss="modal"
+                disabled={primaryButtonDisabled}
+                size={!secondaryButtonText ? 'lg' : 'md'}
+              >
+                {primaryButtonText}
+              </Button>
+            )}
+          </Footer>
+        )}
       </form>
     </ReactModal>
   );

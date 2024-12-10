@@ -30,6 +30,14 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
+
+const SrollableTable = styled.div`
+  table {
+    overflow: auto;
+    max-height: 380px;
+  }
+`;
+
 const ParameterContextTab = ({
   pcPayload,
   setPcPayload,
@@ -146,6 +154,7 @@ const ParameterContextTab = ({
             return null;
           })
           .filter(Boolean);
+
         if (isGroupUpdated) {
           const existingGroupIndex = updatedPayload[key].findIndex(
             g => g.name === group.name
@@ -154,11 +163,26 @@ const ParameterContextTab = ({
           if (existingGroupIndex > -1) {
             updatedPayload[key][existingGroupIndex] = {
               ...updatedPayload[key][existingGroupIndex],
-              parameters: [
-                ...updatedPayload[key][existingGroupIndex].parameters,
-                ...updatedParameters,
-              ],
+              parameters: updatedPayload[key][
+                existingGroupIndex
+              ].parameters.map(param => {
+                const updatedParam = updatedParameters.find(
+                  p => p.name === param.name
+                );
+                return updatedParam || param;
+              }),
             };
+            updatedParameters.forEach(updatedParam => {
+              if (
+                !updatedPayload[key][existingGroupIndex].parameters.some(
+                  p => p.name === updatedParam.name
+                )
+              ) {
+                updatedPayload[key][existingGroupIndex].parameters.push(
+                  updatedParam
+                );
+              }
+            });
           } else {
             updatedPayload[key].push({
               name: group.name,
@@ -169,7 +193,16 @@ const ParameterContextTab = ({
 
         return {
           ...group,
-          parameters: isGroupUpdated ? updatedParameters : group.parameters,
+          parameters: group.parameters.map(param => {
+            return param.name === data.name
+              ? {
+                  ...param,
+                  value: data.value,
+                  check: data.check,
+                  description: data.description,
+                }
+              : param;
+          }),
         };
       });
     });
@@ -185,15 +218,14 @@ const ParameterContextTab = ({
             return {
               ...group,
               parameters: group.parameters.map(parameter => {
-                if (parameter.name === data.name) {
-                  return {
-                    ...parameter,
-                    value: data.value,
-                    check: data.check,
-                    description: data.description,
-                  };
-                }
-                return parameter;
+                return parameter.name === data.name
+                  ? {
+                      ...parameter,
+                      value: data.value,
+                      check: data.check,
+                      description: data.description,
+                    }
+                  : parameter;
               }),
             };
           }
@@ -228,7 +260,9 @@ const ParameterContextTab = ({
                 isTableOpen={openIndex === item?.name}
                 toggleCollapsible={() => handleToggle(item?.name)}
               >
-                <Table data={item?.parameters} columns={PC_COLUMNS} />
+                <SrollableTable className="scroll-table-y">
+                  <Table data={item?.parameters} columns={PC_COLUMNS} />
+                </SrollableTable>
               </Collapsible>
             )}
           </>
@@ -246,7 +280,9 @@ const ParameterContextTab = ({
                 isTableOpen={openIndex === item?.name}
                 toggleCollapsible={() => handleToggle(item?.name)}
               >
-                <Table data={item?.parameters} columns={PC_COLUMNS} />
+                <SrollableTable className="scroll-table-y">
+                  <Table data={item?.parameters} columns={PC_COLUMNS} />
+                </SrollableTable>
               </Collapsible>
             )}
           </>

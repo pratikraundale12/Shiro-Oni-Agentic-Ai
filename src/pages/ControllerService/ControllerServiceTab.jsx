@@ -21,6 +21,7 @@ import ConfigurePropertyModal from './ConfigurePropertyModal';
 import { NoDataIcon } from '../../assets';
 import PropertyDropdownModal from './ProprtyDropdownModel';
 import { isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -363,7 +364,7 @@ const ControllerServiceTab = ({
       propertyMap.set(updatedProp.name, updatedProp);
     });
     return Array.from(propertyMap.values());
-  };
+  }
   useEffect(() => {
     setLocalServices(prevLocalServices => {
       const updatedServices = prevLocalServices.map(processGroup => {
@@ -417,9 +418,9 @@ const ControllerServiceTab = ({
   useEffect(() => {
     setControllerServicesData({
       externalControllerServices: externalControllerServices,
-      localServices: localServices,
-    });
-  }, [localServices, externalControllerServices]);
+      localServices: localServices
+    })
+  },[localServices, externalControllerServices])
 
   return (
     <DataWrapper>

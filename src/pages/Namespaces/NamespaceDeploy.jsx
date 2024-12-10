@@ -325,45 +325,52 @@ const NamespaceDeploy = ({
 
             <CustomNine className="col-8 mb-3">
               <ActiveButtonContainer className="d-flex">
-                <ActiveButtonDiv className="div-btn-1">
-                  <Tooltip id="running-tooltip" place="top">
-                    Start
-                  </Tooltip>
-                  <ActiveButtonDiv
-                    className="div-btn-1"
-                    isActive={activeButtonPopup === 'RUNNING'}
-                    activeColor="#58e715"
-                    hoverColor="#58e715"
-                    activeTextColor="#fff"
-                    onClick={() => {
-                      handleFlowConfirmPopup('RUNNING');
-                    }}
-                    data-tooltip-id="running-tooltip"
-                  >
-                    <TriangleIcons color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
+                {!(
+                  deployOrUpgradeDetails?.stoppedCount === 0 &&
+                  deployOrUpgradeDetails?.runningCount === 0
+                ) && (
+                  <>
+                    <ActiveButtonDiv className="div-btn-1">
+                      <Tooltip id="running-tooltip" place="top">
+                        Start
+                      </Tooltip>
+                      <ActiveButtonDiv
+                        className="div-btn-1"
+                        isActive={activeButtonPopup === 'RUNNING'}
+                        activeColor="#58e715"
+                        hoverColor="#58e715"
+                        activeTextColor="#fff"
+                        onClick={() => {
+                          handleFlowConfirmPopup('RUNNING');
+                        }}
+                        data-tooltip-id="running-tooltip"
+                      >
+                        <TriangleIcons color="#B5BDC8" />
+                      </ActiveButtonDiv>
+                    </ActiveButtonDiv>
 
-                <ActiveButtonDiv className="div-btn-2">
-                  <Tooltip id="stopped-tooltip" place="top">
-                    Stop
-                  </Tooltip>
-                  <ActiveButtonDiv
-                    className="div-btn-1"
-                    isActive={activeButtonPopup === 'STOPPED'}
-                    activeColor="#c52b2b"
-                    hoverColor="#c52b2b"
-                    activeTextColor="#fff"
-                    onClick={() => {
-                      handleFlowConfirmPopup('STOPPED');
-                    }}
-                    data-tooltip-id="stopped-tooltip"
-                  >
-                    <SquareBoxIcon color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
+                    <ActiveButtonDiv className="div-btn-2">
+                      <Tooltip id="stopped-tooltip" place="top">
+                        Stop
+                      </Tooltip>
+                      <ActiveButtonDiv
+                        className="div-btn-1"
+                        isActive={activeButtonPopup === 'STOPPED'}
+                        activeColor="#c52b2b"
+                        hoverColor="#c52b2b"
+                        activeTextColor="#fff"
+                        onClick={() => {
+                          handleFlowConfirmPopup('STOPPED');
+                        }}
+                        data-tooltip-id="stopped-tooltip"
+                      >
+                        <SquareBoxIcon color="#B5BDC8" />
+                      </ActiveButtonDiv>
+                    </ActiveButtonDiv>
+                  </>
+                )}
 
-                <ActiveButtonDiv className="div-btn-3">
+                {/* <ActiveButtonDiv className="div-btn-3">
                   <Tooltip id="enabled-tooltip" place="top">
                     Enable
                   </Tooltip>
@@ -399,7 +406,7 @@ const NamespaceDeploy = ({
                   >
                     <SmallNotThunderIcon color="#B5BDC8" />
                   </ActiveButtonDiv>
-                </ActiveButtonDiv>
+                </ActiveButtonDiv> */}
               </ActiveButtonContainer>
             </CustomNine>
           </RowModal>
