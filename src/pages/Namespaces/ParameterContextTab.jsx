@@ -121,7 +121,7 @@ const ParameterContextTab = ({
   ];
 
   const handleAddOrEditVariableSave = data => {
-    const updatedState = { ...pcData };
+    const updatedState = JSON.parse(JSON.stringify(pcData));
     const updatedPayload = {
       inherited: Array.isArray(pcPayload.inherited)
         ? [...pcPayload.inherited]
@@ -156,14 +156,17 @@ const ParameterContextTab = ({
           );
 
           if (existingGroupIndex > -1) {
-            updatedPayload[key][existingGroupIndex].parameters = updatedPayload[
-              key
-            ][existingGroupIndex].parameters.map(param => {
-              const updatedParam = updatedGroupParameters.find(
-                p => p.name === param.name
-              );
-              return updatedParam || param;
-            });
+            updatedPayload[key][existingGroupIndex] = {
+              ...updatedPayload[key][existingGroupIndex],
+              parameters: updatedPayload[key][
+                existingGroupIndex
+              ].parameters.map(param => {
+                const updatedParam = updatedGroupParameters.find(
+                  p => p.name === param.name
+                );
+                return updatedParam || param;
+              }),
+            };
           } else {
             updatedPayload[key].push({
               name: group.name,
@@ -171,15 +174,18 @@ const ParameterContextTab = ({
             });
           }
         }
+
         return {
           ...group,
           parameters: updatedParameters,
         };
       });
     });
+
     setPcPayload(updatedPayload);
+
     setPcData(prevState => {
-      const updatedState = { ...prevState };
+      const updatedState = JSON.parse(JSON.stringify(prevState));
 
       ['inherited', 'parent'].forEach(key => {
         updatedState[key] = updatedState[key].map(group => {
@@ -205,6 +211,7 @@ const ParameterContextTab = ({
           return group;
         });
       });
+
       return updatedState;
     });
   };
