@@ -180,6 +180,8 @@ export const KDFM = {
   SCHEDULE_DIPLOYMENT: 'Schedule Diployment',
   SERVICE_ACCOUNT: 'Service Account',
 
+  CHANGE_CONFIGURATION: 'Change Configuration',
+
   // License constants
   TRIAL: 'Trial',
   PURCHASED: 'Purchased',

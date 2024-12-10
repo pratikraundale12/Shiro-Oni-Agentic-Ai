@@ -343,7 +343,7 @@ export const ListNamespaces = () => {
           <ReactTooltip
             id={`tooltip-group-details`}
             place="left"
-            content={'Group Details'}
+            content={'Process Group Details'}
             style={{
               width: '120px',
               whiteSpace: 'normal',
@@ -376,7 +376,7 @@ export const ListNamespaces = () => {
           />
           <button
             type="button"
-            disabled={!item?.permissions?.canWrite}
+            disabled={!item?.permissions?.canWrite || !item?.version}
             className="btn btn-primary"
             onClick={() => handleSelect(item)}
             style={{

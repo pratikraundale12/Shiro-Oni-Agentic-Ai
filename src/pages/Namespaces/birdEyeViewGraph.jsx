@@ -141,6 +141,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
         .attr('height', d => yScale(d.y + d.height) - yScale(d.y))
         .attr('fill', d => d.color)
         .style('stroke', d => d.color)
+        .style('cursor', d => (d.color === '#FF7A00' ? 'pointer' : 'default'))
         .call(d => {
           d.each(function (d) {
             if (d.color === '#FF7A00') {
