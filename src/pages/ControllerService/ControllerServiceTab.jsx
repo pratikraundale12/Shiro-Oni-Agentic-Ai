@@ -21,7 +21,6 @@ import ConfigurePropertyModal from './ConfigurePropertyModal';
 import { NoDataIcon } from '../../assets';
 import PropertyDropdownModal from './ProprtyDropdownModel';
 import { isEmpty } from 'lodash';
-import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -70,6 +69,9 @@ const ControllerServiceTab = ({
   const [selectedService, setSelectedService] = useState(null);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
   const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
+  const [newExternalServicePayload, setNewExternalServicePayload] = useState(
+    []
+  );
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const modalOpenState = useSelector(
@@ -81,7 +83,40 @@ const ControllerServiceTab = ({
   const [externalControllerServices, setExternalControllerServices] = useState(
     controllerServicesData?.externalControllerServices
   );
+  // const [newExternalControllerSelected, setNewExternalControllerSelected] =
+  //   useState({});
+  const newlyAddedExternalServiceResponse = useSelector(
+    NamespacesSelectors.getNewlyAddedExternalServiceCS
+  );
 
+  useEffect(() => {
+    if (!isEmpty(newlyAddedExternalServiceResponse)) {
+      console.log(
+        newlyAddedExternalServiceResponse,
+        'newlyAddedExternalServiceResponse'
+      );
+      const newalyAddedObject = {
+        identifier: newlyAddedExternalServiceResponse?.value,
+        name: newlyAddedExternalServiceResponse?.label,
+      };
+      const updatedArray = externalControllerServices.map(obj =>
+        obj.identifier === selectedExternalService.identifier
+          ? newalyAddedObject
+          : obj
+      );
+      setExternalControllerServices(updatedArray);
+    }
+  }, [newlyAddedExternalServiceResponse]);
+  const [selectedExternalService, setSelectedExternalService] = useState({});
+  console.log(externalControllerServices, 'externalControllerServices');
+  console.log(
+    newlyAddedExternalServiceResponse,
+    'newlyAddedExternalServiceResponse>>>>>>>>>>>>>>>>'
+  );
+  console.log(
+    externalControllerServices,
+    'externalControllerServices???????????????????'
+  );
   const [externalControllerServiceArray, setExternalControllerServiceArray] =
     useState();
 
@@ -122,7 +157,9 @@ const ControllerServiceTab = ({
       label: 'Action',
       renderCell: item => (
         <ConfigureButton onClick={() => handleConfigure(item)}>
-          {KDFM.CONFIGURE}
+          {isEmpty(newlyAddedExternalServiceResponse)
+            ? KDFM.CONFIGURE
+            : 'Re Configure'}
         </ConfigureButton>
       ),
       width: '14%',
@@ -197,6 +234,7 @@ const ControllerServiceTab = ({
   };
 
   const handleConfigure = item => {
+    setSelectedExternalService(item);
     setSelectedService(item);
     setIsModalOpen(true);
     if (!modalOpenState && selectedCluster?.value) {
@@ -364,7 +402,8 @@ const ControllerServiceTab = ({
       propertyMap.set(updatedProp.name, updatedProp);
     });
     return Array.from(propertyMap.values());
-  }
+  };
+
   useEffect(() => {
     setLocalServices(prevLocalServices => {
       const updatedServices = prevLocalServices.map(processGroup => {
@@ -418,9 +457,9 @@ const ControllerServiceTab = ({
   useEffect(() => {
     setControllerServicesData({
       externalControllerServices: externalControllerServices,
-      localServices: localServices
-    })
-  },[localServices, externalControllerServices])
+      localServices: localServices,
+    });
+  }, [localServices, externalControllerServices]);
 
   return (
     <DataWrapper>
@@ -465,7 +504,8 @@ const ControllerServiceTab = ({
         />
       )}
 
-      <AddControllerServiceModal />
+      <AddControllerServiceModal isFromControllerServiceTab={true} />
+      {/* need change here */}
       <ConfigControllerService
         isOpen={isListProprtyModel}
         onClose={handleCloseModal}

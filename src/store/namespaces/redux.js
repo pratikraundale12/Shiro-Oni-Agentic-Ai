@@ -169,8 +169,11 @@ export const NamespacesActions = {
     `${prefix}setFlowControlAfterUpgrade`
   ),
   setFlowControlData: createAction(`${prefix}setFlowControlData`),
+  setNewlyAddedExternalServiceCS: createAction(
+    `${prefix}setNewlyAddedExternalServiceCS`
+  ),
 };
-
+//
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -251,6 +254,7 @@ export const NAMESPACES_INITIAL_STATE = {
   updatedNamespaceResponse: {},
   flowControlAfterUpgrade: false,
   FlowControlData: {},
+  newlyAddedExternalServiceCS: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -330,6 +334,8 @@ export const NamespacesSelectors = {
     state.namespaces.updatedNamespaceResponse,
   getFlowControlAfterUpgrade: state => state.namespaces.flowControlAfterUpgrade,
   getFlowControlData: state => state.namespaces.flowControlData,
+  getNewlyAddedExternalServiceCS: state =>
+    state.namespaces.newlyAddedExternalServiceCS,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -746,6 +752,12 @@ const setFlowControlAfterUpgrade = (state, { payload }) => {
     flowControlAfterUpgrade: payload,
   };
 };
+const setNewlyAddedExternalServiceCS = (state, { payload }) => {
+  return {
+    ...state,
+    newlyAddedExternalServiceCS: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -903,7 +915,11 @@ export const namespacesReducer = createReducer(
         NamespacesActions.setFlowControlAfterUpgrade,
         setFlowControlAfterUpgrade
       )
-      .addCase(NamespacesActions.setFlowControlData, setFlowControlData);
+      .addCase(NamespacesActions.setFlowControlData, setFlowControlData)
+      .addCase(
+        NamespacesActions.setNewlyAddedExternalServiceCS,
+        setNewlyAddedExternalServiceCS
+      );
   }
 );
 //

@@ -1,5 +1,6 @@
 /*eslint-disable*/
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CrossIcon, SmallSearchIcon } from '../../assets';
@@ -79,7 +80,10 @@ const Search = styled.input`
   }
 `;
 
-const AddControllerServiceModal = () => {
+const AddControllerServiceModal = ({
+  setNewExternalControllerSelected = () => {},
+  isFromControllerServiceTab = false,
+}) => {
   const [selectedItem, setSelectedItem] = useState({});
   const [search, setSearch] = useState('');
   const dispatch = useDispatch();
@@ -107,12 +111,16 @@ const AddControllerServiceModal = () => {
     }
     return text;
   };
+  const handleSelect = item => {
+    setSelectedItem(item);
+    setNewExternalControllerSelected(item);
+  };
 
   const COLUMNS = [
     {
       label: 'Type',
       renderCell: item => (
-        <TextDisplay onClick={() => setSelectedItem(item)}>
+        <TextDisplay onClick={() => handleSelect(item)}>
           {item?.name}
         </TextDisplay>
       ),
@@ -121,7 +129,7 @@ const AddControllerServiceModal = () => {
     {
       label: 'Version',
       renderCell: item => (
-        <TextDisplay onClick={() => setSelectedItem(item)}>
+        <TextDisplay onClick={() => handleSelect(item)}>
           {item?.bundle?.version}
         </TextDisplay>
       ),
@@ -130,7 +138,7 @@ const AddControllerServiceModal = () => {
     {
       label: 'Tags',
       renderCell: item => (
-        <TextDisplay onClick={() => setSelectedItem(item)}>
+        <TextDisplay onClick={() => handleSelect(item)}>
           {truncateWithEllipsis(item?.tags.join(', '), 70)}
         </TextDisplay>
       ),
@@ -143,9 +151,11 @@ const AddControllerServiceModal = () => {
 
   const handleSubmit = () => {
     const { name, type, bundle } = selectedItem;
+
     dispatch(
       NamespacesActions.addControllerServiceRootLevel({ name, type, bundle })
     );
+
     closeModal();
   };
   return (
@@ -209,5 +219,9 @@ const AddControllerServiceModal = () => {
       </Modal>
     </>
   );
+};
+//
+AddControllerServiceModal.propTypes = {
+  setNewExternalControllerSelected: PropTypes.func,
 };
 export default AddControllerServiceModal;
