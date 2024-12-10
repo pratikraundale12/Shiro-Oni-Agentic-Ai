@@ -205,8 +205,6 @@ const ParameterContextTab = ({
     });
   };
 
-  console.log('pcpayload', pcPayload);
-
   const closeAddVPcModal = () => {
     setIsAddPcOpen({
       isOpen: false,
