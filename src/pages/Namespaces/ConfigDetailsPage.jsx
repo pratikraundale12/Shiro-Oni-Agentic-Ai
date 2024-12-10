@@ -106,11 +106,25 @@ const ConfigDetailsPage = () => {
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
-  const [variablePayload, setVariablePayload] = useState([]);
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+
+  const [pcData, setPcData] = useState(
+    registryDetailsData?.parameterContextData
+  );
   const [pcPayload, setPcPayload] = useState({});
+  const [variablePayload, setVariablePayload] = useState([]);
   const [controllerServicePayload, setControllerServicePayload] = useState({});
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
+  const [variableData, setVariableData] = useState(
+    registryDetailsData?.variablesData
+  );
+  const [controllerServiceData, setControllerServiceData] = useState(
+    registryDetailsData?.controllerServicesData
+  );
+
   const handleBackClick = () => {
     history.push('/process-group/flow-details');
   };
@@ -131,6 +145,8 @@ const ConfigDetailsPage = () => {
       case KDFM.PARAMETER_CONTEXT:
         return (
           <ParameterContextTab
+            pcData={pcData}
+            setPcData={setPcData}
             pcPayload={pcPayload}
             setPcPayload={setPcPayload}
           />
@@ -138,6 +154,8 @@ const ConfigDetailsPage = () => {
       case KDFM.VARIABLES:
         return (
           <VariableTab
+            variableData={variableData}
+            setVariableData={setVariableData}
             variablePayload={variablePayload}
             setVariablePayload={setVariablePayload}
           />
@@ -145,6 +163,8 @@ const ConfigDetailsPage = () => {
       case KDFM.CONTROLLER_SERVICE:
         return (
           <ControllerServiceTab
+            controllerServicesData={controllerServiceData}
+            setControllerServicesData={setControllerServiceData}
             controllerServicePayload={controllerServicePayload}
             setControllerServicePayload={setControllerServicePayload}
           />
@@ -155,10 +175,10 @@ const ConfigDetailsPage = () => {
   };
   const handleSetTab = tab => {
     if (tab !== 'Parameter Context') {
-      dispatch(NamespacesActions.setRegistryDeployParameterContext(PcData));
+      dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
     }
     if (tab !== 'Variables') {
-      dispatch(NamespacesActions.setRegistryDeployVariable(variableData));
+      dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
     }
     if (tab !== 'Controller Service') {
       dispatch(
