@@ -29,7 +29,6 @@ import PropertyDropdownModal from '../ControllerService/ProprtyDropdownModel';
 import Collapsible from './Collapsible';
 import { KDFM } from '../../constants';
 import { NoDataIcon } from '../../assets';
-// import { singleNamespaceData } from '../../store/namespaces';
 
 const StatusTexts = styled.div`
   font-family: Inter;

@@ -126,7 +126,6 @@ const ParameterContext = ({
 
   const permissions = singleNamespaceData?.permissions;
   const { canWrite } = permissions || {};
-  console.log('oer', permissions);
 
   const COLUMNS = [
     {

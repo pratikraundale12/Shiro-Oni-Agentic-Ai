@@ -115,7 +115,6 @@ const Listvariables = ({
   }, [newlyAddVariables, isVariablesModalOpen]);
   const permissions = singleNamespaceData?.permissions;
   const { canWrite } = permissions || {};
-  console.log('oer', permissions);
   const COLUMNS = [
     {
       label: KDFM.NAME,
