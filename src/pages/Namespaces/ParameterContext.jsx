@@ -4,8 +4,13 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { ArrowIcon, PencilIcon } from '../../assets';
-import { IconButton, Table, TextRender } from '../../components';
+import { ArrowIcon, NoDataIcon, PencilIcon } from '../../assets';
+import {
+  IconButton,
+  LoaderContainer,
+  Table,
+  TextRender,
+} from '../../components';
 import { KDFM } from '../../constants';
 // import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
@@ -38,6 +43,13 @@ const ScrollSetGrey = styled.div`
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
   overflow-y: auto;
+`;
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
 `;
 
 const ParameterContext = ({
@@ -316,37 +328,44 @@ const ParameterContext = ({
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        <Collapsible
-          title={KDFM.PARAMETER_CONTEXT}
-          isTableOpen={isTableOpen}
-          toggleCollapsible={toggleCollapsible}
-          isAddBtnVisible={false}
-        >
-          <Table
-            data={tableStateData}
-            columns={COLUMNS}
-            className={'parameter-context-table'}
-          />
-          <Button
-            type="button"
-            className="w-auto mt-2"
-            size="sm"
-            onClick={handleSaveParameterContext}
-            disabled={!canWrite}
+        {tableStateData && tableStateData.length > 0 ? (
+          <Collapsible
+            title={KDFM.PARAMETER_CONTEXT}
+            isTableOpen={isTableOpen}
+            toggleCollapsible={toggleCollapsible}
+            isAddBtnVisible={false}
           >
-            Save
-          </Button>
+            <Table
+              data={tableStateData}
+              columns={COLUMNS}
+              className={'parameter-context-table'}
+            />
+            <Button
+              type="button"
+              className="w-auto mt-2"
+              size="sm"
+              onClick={handleSaveParameterContext}
+              disabled={!canWrite}
+            >
+              Save
+            </Button>
 
-          <AddParameterContext
-            key={isParameterContextOpen.mode}
-            isParameterContextOpen={isParameterContextOpen}
-            parameterContextItem={parameterContextItem}
-            isAddParameterContextOpen={isAddParameterContextOpen}
-            closePopup={closeAddParameterContext}
-            setIsAddParameterContextOpen={setIsAddParameterContextOpen}
-            setIsParameterContextOpen={setIsParameterContextOpen}
-          />
-        </Collapsible>
+            <AddParameterContext
+              key={isParameterContextOpen.mode}
+              isParameterContextOpen={isParameterContextOpen}
+              parameterContextItem={parameterContextItem}
+              isAddParameterContextOpen={isAddParameterContextOpen}
+              closePopup={closeAddParameterContext}
+              setIsAddParameterContextOpen={setIsAddParameterContextOpen}
+              setIsParameterContextOpen={setIsParameterContextOpen}
+            />
+          </Collapsible>
+        ) : (
+          <LoaderContainer>
+            <NoDataIcon width={140} />
+            <NoDataText>No Parameter Context Found!!</NoDataText>
+          </LoaderContainer>
+        )}
       </ScrollSetGrey>
     </DataWrapper>
   );
