@@ -58,7 +58,6 @@ const Slider = styled.span`
 const Label = styled.span`
   margin-top: 2px;
   margin-left: 8px;
-  width: 110px;
   font-size: 14px;
 `;
 

@@ -360,9 +360,6 @@ export const Setting = () => {
               onChange={handleLdapToggle}
             />
           </div>
-          <LinkButton onClick={() => history.push('/ldap-configuration')}>
-            {KDFM.CHANGE_CONFIGURATION}
-          </LinkButton>
           <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-4">
             <SwitchButton
               id="openModalInput"
@@ -394,6 +391,11 @@ export const Setting = () => {
                 setIsChanged(true);
               }}
             />
+          </div>
+          <div className="col-md mt-5">
+            <LinkButton onClick={() => history.push('/ldap-configuration')}>
+              {KDFM.CHANGE_CONFIGURATION}
+            </LinkButton>
           </div>
         </InputFields>
         <div className="d-flex justify-content-start me-4">
@@ -463,7 +465,7 @@ export const Setting = () => {
                 errors={errors}
                 watch={watch}
                 label="Password"
-                disableToggle={true}
+                disableToggle={false}
                 placeholder="Enter your Password"
               />
             </div>

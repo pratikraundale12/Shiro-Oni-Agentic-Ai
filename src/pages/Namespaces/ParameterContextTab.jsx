@@ -12,7 +12,6 @@ import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
   width: 100%;
-  height: 596px;
   top: 273px;
   left: 290px;
   gap: 0px;

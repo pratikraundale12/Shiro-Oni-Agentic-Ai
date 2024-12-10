@@ -5,13 +5,15 @@ import styled from 'styled-components';
 import { Container, Header, Item, KDFMVersion, List } from '../components';
 import { useSelector } from 'react-redux';
 import { PrivacyPolicy } from '../pages/PolicyAndTermsOfUse/PrivacyPolicy';
-import { KsolvesDataFlowIcon, LoginIcon } from '../assets';
+import { KsolvesDataFlowIcon, DfmCollapsedIcon, LoginIcon } from '../assets';
 import { TermsOfUse } from '../pages/PolicyAndTermsOfUse/TermsOfUse';
 import { SettingsSelectors } from '../store/settings';
 import { useLocation } from 'react-router-dom';
 import { theme } from '../styles';
 import { history } from '../helpers/history';
 import { PolicyIcon } from '../assets/Icons/PolicyIcon';
+import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRight';
+import { CollapseSidebarIconLeft } from '../assets/Icons/CollapseSidebarIconLeft';
 
 const MainContainer = styled.div`
   width: 100%;
@@ -61,27 +63,26 @@ export const UNAUTHROUTES_MENU = [
   },
 ];
 
-const LoginButton = styled.div`
-  padding: 15px 20px;
+const LoginButton = styled.li`
+  padding: 1rem 32px;
   display: flex;
   align-items: center;
   cursor: pointer;
   font-weight: 600;
-  margin-left: 11px;
-  margin-top: 2px !important ;
-
-  span {
-    margin-left: 18px;
-  }
+  gap: 20px;
 `;
 
 const UnAuthGuard = () => {
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
+  const [isToggleSidebar, setToggleSidebar] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
 
   const handleOpenSidebar = () => {
     setIsOpenSidebar(!isOpenSidebar);
+  };
+  const handleToggleSidebar = () => {
+    setToggleSidebar(!isToggleSidebar);
   };
 
   const settingsData = useSelector(SettingsSelectors.getSettings);
@@ -90,7 +91,15 @@ const UnAuthGuard = () => {
       return (
         <img src={settingsData?.logo} alt="Logo" width={200} height={80} />
       );
-    return <KsolvesDataFlowIcon width={200} height={80} />;
+    return (
+      <>
+        {isToggleSidebar ? (
+          <DfmCollapsedIcon />
+        ) : (
+          <KsolvesDataFlowIcon width={200} height={80} />
+        )}
+      </>
+    );
   };
 
   const handleRoute = path => {
@@ -99,15 +108,27 @@ const UnAuthGuard = () => {
 
   return (
     <MainContainer>
-      <Container className={isOpenSidebar && 'menuOpen'}>
+      <Container
+        className={`${isOpenSidebar ? 'menuOpen' : ''} ${isToggleSidebar ? 'toggleSidebar' : ''}`}
+      >
         <button
           className="btn btn-hamburger d-lg-none"
           onClick={() => handleOpenSidebar()}
         >
           <img alt="menu" src="/img/Frame.png" />
         </button>
+        <button
+          className="btn btn-toggle d-none d-lg-block"
+          onClick={() => handleToggleSidebar()}
+        >
+          {isToggleSidebar ? (
+            <CollapseSidebarIconRight />
+          ) : (
+            <CollapseSidebarIconLeft />
+          )}
+        </button>
         {getImage()}
-        <List>
+        <List className="sidebar-navigation">
           {UNAUTHROUTES_MENU.map(item => {
             const active = item.path === currentPath;
             return (
@@ -119,18 +140,21 @@ const UnAuthGuard = () => {
                 <item.icon
                   color={active ? theme.colors.white : theme.colors.darker}
                 />
-                <span>{item.name}</span>
+                <span className="nav-text">{item.name}</span>
               </Item>
             );
           })}
-          <LoginButton onClick={() => history.push('/login')}>
+          <LoginButton
+            className="loginAccountText"
+            onClick={() => history.push('/login')}
+          >
             <LoginIcon color={'#444445'} />
-            <span>Login Account</span>
+            <span className="nav-text">Login Account</span>
           </LoginButton>
         </List>
         <KDFMVersion>
           {/* FIX_ME: Later will come from API */}
-          <span>Version 1.0.0</span>
+          <span className="version-content">Version 1.0.0</span>
         </KDFMVersion>
       </Container>
       <Content>

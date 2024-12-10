@@ -24,7 +24,6 @@ import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRig
 
 export const Container = styled.div`
   height: 100%;
-  // min-width: ${props => props.theme.sidebar};
   padding: 16px 0;
   display: flex;
   flex-direction: column;
@@ -67,7 +66,7 @@ export const Container = styled.div`
     padding: 0px;
     right: -18px;
     top: 5px;
-    z-index: 20;
+    z-index: 7;
     &:hover {
       background: #f5f7fa !important;
     }
