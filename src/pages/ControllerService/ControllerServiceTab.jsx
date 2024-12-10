@@ -309,7 +309,6 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     registryAllDetails,
     externalControllerServiceArray,
   ]);
-  
 
   const handleServiceConfigure = data => {
     const { externalServiceState, localServiceState } = classifyServiceData(
@@ -377,6 +376,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
               title={item.title}
               isTableOpen={openIndex === index}
               toggleCollapsible={() => handleToggle(index)}
+              isAddBtnVisible={false}
               onBtnClick={() => {
                 setOpenIndex(index);
                 dispatch(
