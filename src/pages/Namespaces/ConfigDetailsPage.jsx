@@ -106,18 +106,32 @@ const ConfigDetailsPage = () => {
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
-  const [variableData, setVariableData] = useState([]);
-  const [PcData, setPcData] = useState({});
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+
+  const [pcData, setPcData] = useState(
+    registryDetailsData?.parameterContextData
+  );
+  const [pcPayload, setPcPayload] = useState({});
+  const [variablePayload, setVariablePayload] = useState([]);
   const [controllerServicePayload, setControllerServicePayload] = useState({});
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
+  const [variableData, setVariableData] = useState(
+    registryDetailsData?.variablesData
+  );
+  const [controllerServiceData, setControllerServiceData] = useState(
+    registryDetailsData?.controllerServicesData
+  );
+
   const handleBackClick = () => {
     history.push('/process-group/flow-details');
   };
 
   const handleContinue = () => {
-    dispatch(NamespacesActions.setRegistryDeployVariable(variableData));
-    dispatch(NamespacesActions.setRegistryDeployParameterContext(PcData));
+    dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
+    dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
     dispatch(
       NamespacesActions.setRegistryDeployControllerService(
         controllerServicePayload
@@ -126,15 +140,15 @@ const ConfigDetailsPage = () => {
     history.push('/process-group/summary');
   };
 
-  //need to add the components for respective tabs
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
         return (
           <ParameterContextTab
-            PcData={PcData}
+            pcData={pcData}
             setPcData={setPcData}
-            activeTab={activeTab}
+            pcPayload={pcPayload}
+            setPcPayload={setPcPayload}
           />
         );
       case KDFM.VARIABLES:
@@ -142,11 +156,15 @@ const ConfigDetailsPage = () => {
           <VariableTab
             variableData={variableData}
             setVariableData={setVariableData}
+            variablePayload={variablePayload}
+            setVariablePayload={setVariablePayload}
           />
         );
       case KDFM.CONTROLLER_SERVICE:
         return (
           <ControllerServiceTab
+            controllerServicesData={controllerServiceData}
+            setControllerServicesData={setControllerServiceData}
             controllerServicePayload={controllerServicePayload}
             setControllerServicePayload={setControllerServicePayload}
           />
@@ -157,10 +175,10 @@ const ConfigDetailsPage = () => {
   };
   const handleSetTab = tab => {
     if (tab !== 'Parameter Context') {
-      dispatch(NamespacesActions.setRegistryDeployParameterContext(PcData));
+      dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
     }
     if (tab !== 'Variables') {
-      dispatch(NamespacesActions.setRegistryDeployVariable(variableData));
+      dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
     }
     if (tab !== 'Controller Service') {
       dispatch(

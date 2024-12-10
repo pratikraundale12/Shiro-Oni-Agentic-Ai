@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { NoDataIcon, PencilIcon } from '../../assets';
@@ -6,8 +6,6 @@ import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import Collapsible from './Collapsible';
 import AddOrEditParameterContextModal from './AddOrEditParameterContextModal';
-import { useSelector } from 'react-redux';
-import { NamespacesSelectors } from '../../store';
 import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
@@ -32,35 +30,20 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-const ParameterContextTab = ({ PcData, setPcData }) => {
+const ParameterContextTab = ({
+  pcPayload,
+  setPcPayload,
+  pcData,
+  setPcData,
+}) => {
   const [isAddPcOpen, setIsAddPcOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
 
-  const [openIndex, setOpenIndex] = useState(
-    PcData?.inherited && PcData?.inherited[0]?.name
-      ? PcData?.inherited[0]?.name
-      : PcData?.parent && PcData?.parent[0]?.name
-        ? PcData?.parent[0]?.name
-        : null
-  );
+  const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
   const [currentPgId, setCurrentPgId] = useState('');
-  const registryDetailsData = useSelector(
-    NamespacesSelectors.getRegistryAllDetails
-  );
-  const parameterReduxData = useSelector(
-    NamespacesSelectors.getRegistryDeployParameterContext
-  );
-
-  useEffect(() => {
-    if (isEmpty(parameterReduxData)) {
-      setPcData(registryDetailsData?.parameterContextData);
-    } else {
-      setPcData(parameterReduxData);
-    }
-  }, [registryDetailsData?.parameterContextData]);
 
   const handleToggle = index => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
@@ -138,33 +121,110 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
   ];
 
   const handleAddOrEditVariableSave = data => {
+    const updatedState = JSON.parse(JSON.stringify(pcData));
+    const updatedPayload = {
+      inherited: Array.isArray(pcPayload.inherited)
+        ? [...pcPayload.inherited]
+        : [],
+      parent: Array.isArray(pcPayload.parent) ? [...pcPayload.parent] : [],
+    };
+
+    ['inherited', 'parent'].forEach(key => {
+      updatedState[key] = updatedState[key].map(group => {
+        let isGroupUpdated = false;
+        const updatedParameters = group.parameters
+          .map(parameter => {
+            if (parameter.name === data.name) {
+              isGroupUpdated = true;
+              return {
+                ...parameter,
+                value: data.value,
+                check: data.check,
+                description: data.description,
+              };
+            }
+            return null;
+          })
+          .filter(Boolean);
+
+        if (isGroupUpdated) {
+          const existingGroupIndex = updatedPayload[key].findIndex(
+            g => g.name === group.name
+          );
+
+          if (existingGroupIndex > -1) {
+            updatedPayload[key][existingGroupIndex] = {
+              ...updatedPayload[key][existingGroupIndex],
+              parameters: updatedPayload[key][
+                existingGroupIndex
+              ].parameters.map(param => {
+                const updatedParam = updatedParameters.find(
+                  p => p.name === param.name
+                );
+                return updatedParam || param;
+              }),
+            };
+            updatedParameters.forEach(updatedParam => {
+              if (
+                !updatedPayload[key][existingGroupIndex].parameters.some(
+                  p => p.name === updatedParam.name
+                )
+              ) {
+                updatedPayload[key][existingGroupIndex].parameters.push(
+                  updatedParam
+                );
+              }
+            });
+          } else {
+            updatedPayload[key].push({
+              name: group.name,
+              parameters: updatedParameters,
+            });
+          }
+        }
+
+        return {
+          ...group,
+          parameters: group.parameters.map(param => {
+            return param.name === data.name
+              ? {
+                  ...param,
+                  value: data.value,
+                  check: data.check,
+                  description: data.description,
+                }
+              : param;
+          }),
+        };
+      });
+    });
+
+    setPcPayload(updatedPayload);
+
     setPcData(prevState => {
-      const updatedState = { ...prevState };
+      const updatedState = JSON.parse(JSON.stringify(prevState));
 
       ['inherited', 'parent'].forEach(key => {
         updatedState[key] = updatedState[key].map(group => {
           if (group.name === currentPgId) {
             return {
               ...group,
-              parameters: group.parameters.some(
-                parameter => parameter.name === data.name
-              )
-                ? group.parameters.map(parameter =>
-                    parameter.name === data.name
-                      ? {
-                          ...parameter,
-                          value: data.value,
-                          check: data.check,
-                          description: data.description,
-                        }
-                      : parameter
-                  )
-                : [...group.parameters, data],
+              parameters: group.parameters.map(parameter => {
+                return parameter.name === data.name
+                  ? {
+                      ...parameter,
+                      value: data.value,
+                      check: data.check,
+                      description: data.description,
+                    }
+                  : parameter;
+              }),
             };
           }
           return group;
         });
       });
+
       return updatedState;
     });
   };
@@ -179,7 +239,7 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {PcData?.inherited?.map(item => (
+        {pcData?.inherited?.map(item => (
           <>
             {!isEmpty(item.parameters) && (
               <Collapsible
@@ -197,7 +257,7 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
             )}
           </>
         ))}
-        {PcData?.parent?.map(item => (
+        {pcData?.parent?.map(item => (
           <>
             {!isEmpty(item.parameters) && (
               <Collapsible
@@ -215,12 +275,12 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
             )}
           </>
         ))}
-        {isEmpty(PcData?.inherited) && isEmpty(PcData?.parent) && (
+        {isEmpty(pcData?.inherited) && isEmpty(pcData?.parent) && (
           <>
             <div className="d-flex justify-content-center">
               <NoDataIcon width={130} />
             </div>
-            <NoDataText>No Data Found!!</NoDataText>
+            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
           </>
         )}
         {isAddPcOpen?.isOpen && (
@@ -237,7 +297,9 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
   );
 };
 ParameterContextTab.propTypes = {
-  PcData: PropTypes.func,
-  setPcData: PropTypes.object,
+  pcPayload: PropTypes.object,
+  setPcPayload: PropTypes.func,
+  pcData: PropTypes.object,
+  setPcData: PropTypes.func,
 };
 export default ParameterContextTab;

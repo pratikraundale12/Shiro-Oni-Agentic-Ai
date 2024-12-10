@@ -590,13 +590,18 @@ const Summary = () => {
         x: XcordUpdated || registryDetailsData.positions[0].x,
         y: YcordUpdated || registryDetailsData.positions[0].y,
       },
-      variablesData: isEmpty(variblesReduxData)
-        ? registryDetailsData?.variablesData
-        : variblesReduxData,
-      parameterData: updatedData,
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
-      controllerServiceData: controllerServiceReduxData,
     };
+    if (!isEmpty(variblesReduxData)) {
+      payload.variablesData = variblesReduxData;
+    }
+    if (!isEmpty(updatedData)) {
+      payload.parameterData = updatedData;
+    }
+    if (!isEmpty(controllerServiceReduxData)) {
+      payload.controllerServiceData = controllerServiceReduxData;
+    }
+    
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
 

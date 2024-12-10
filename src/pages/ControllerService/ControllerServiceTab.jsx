@@ -16,6 +16,7 @@ import ConfigurePage from './ConfigurePage';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import { NoDataIcon } from '../../assets';
 import PropertyDropdownModal from './ProprtyDropdownModel';
+import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -53,15 +54,16 @@ const ConfigureButton = styled.button`
   }
 `;
 
-const ControllerServiceTab = ({ setControllerServicePayload }) => {
+const ControllerServiceTab = ({
+  setControllerServicePayload,
+  controllerServicesData,
+  setControllerServicesData,
+}) => {
   const dispatch = useDispatch();
   const [openIndex, setOpenIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
-  const registryAllDetails = useSelector(
-    NamespacesSelectors.getRegistryAllDetails
-  );
   const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
@@ -71,12 +73,16 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
   );
-  const [controllerServicesData, setControllerServicesData] = useState(
-    registryAllDetails?.controllerServicesData?.externalControllerServices
+  const [externalControllerServices, setExternalControllerServices] = useState(
+    controllerServicesData?.externalControllerServices
   );
 
   const [externalControllerServiceArray, setExternalControllerServiceArray] =
     useState();
+
+  const [localServices, setLocalServices] = useState(
+    controllerServicesData?.localServices
+  );
 
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
     useState(false);
@@ -177,7 +183,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   };
 
   const handleSettingClick = item => {
-    const match = controllerServicesData?.some(data =>
+    const match = externalControllerServices?.some(data =>
       data.controllerService?.some(service => service.id === item.id)
     );
     setisFromExternalService(match);
@@ -194,18 +200,18 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   };
 
   const handleConfigureSubmit = data => {
-    const updatedData = controllerServicesData.map(service =>
+    const updatedData = externalControllerServices.map(service =>
       service.identifier === selectedService.identifier
         ? { ...service, controllerService: [data] }
         : service
     );
-    const payloadData = controllerServicesData.map(service =>
+    const payloadData = externalControllerServices.map(service =>
       service.identifier === selectedService.identifier
         ? { ...service, updatedValue: data?.id }
         : service
     );
     setExternalServicePayload(payloadData);
-    setControllerServicesData(updatedData);
+    setExternalControllerServices(updatedData);
     const newExternalControllerServiceArray = updatedData.map(
       service => service.controllerService
     );
@@ -234,7 +240,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     const localServiceState = [];
     const isExternal =
       isExternalServiceUpdated &&
-      controllerServicesData?.some(service =>
+      externalControllerServices?.some(service =>
         service.controllerService.some(
           controller =>
             controller && controller.identifier === serviceObject.identifier
@@ -265,7 +271,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
       ...(externalControllerServiceArray?.length
         ? [
             {
-              title: 'External Controller Service',
+              title: KDFM.CONTROLLER_SERVICE_DATA,
               content: (
                 <Table
                   data={externalControllerServiceArray[0]}
@@ -275,44 +281,41 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
               ),
             },
           ]
-        : []),
-      ...(controllerServicesData?.length
-        ? [
-            {
-              title: 'Controller Services Data',
-              content: (
-                <Table
-                  data={controllerServicesData}
-                  columns={COLUMNS}
-                  className={'variables-table'}
-                />
-              ),
-            },
-          ]
-        : []),
-      ...(registryAllDetails?.controllerServicesData?.localServices?.map(
-        service => ({
-          title: service?.processGroupName || 'Unnamed Group',
-          content: (
-            <Table
-              data={service?.controllerData || []}
-              columns={COLUMNS_2}
-              className={'variables-table'}
-            />
-          ),
-        })
-      ) || []),
+        : externalControllerServices?.length
+          ? [
+              {
+                title: KDFM.CONTROLLER_SERVICE_DATA,
+                content: (
+                  <Table
+                    data={externalControllerServices}
+                    columns={COLUMNS}
+                    className={'variables-table'}
+                  />
+                ),
+              },
+            ]
+          : []),
+      ...(localServices?.map(service => ({
+        title: service?.processGroupName || 'Unnamed Group',
+        content: (
+          <Table
+            data={service?.controllerData || []}
+            columns={COLUMNS_2}
+            className={'variables-table'}
+          />
+        ),
+      })) || []),
     ];
     setCollapsibles(newCollapsibles);
   }, [
-    controllerServicesData,
-    registryAllDetails,
+    externalControllerServices,
+    localServices,
     externalControllerServiceArray,
   ]);
 
   const handleServiceConfigure = data => {
     const { externalServiceState, localServiceState } = classifyServiceData(
-      registryAllDetails?.controllerServicesData,
+      controllerServicesData,
       data
     );
     if (externalServiceState?.length) {
@@ -346,16 +349,57 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     }
   };
 
+  const mergeProperties = (existingProperties, updatedProperties) => {
+    const propertyMap = new Map(
+      existingProperties.map(prop => [prop.name, prop])
+    );
+    updatedProperties.forEach(updatedProp => {
+      propertyMap.set(updatedProp.name, updatedProp);
+    });
+    return Array.from(propertyMap.values());
+  }
+  useEffect(() => {
+    setLocalServices(prevLocalServices => {
+      const updatedServices = prevLocalServices.map(processGroup => {
+        return {
+          ...processGroup,
+          controllerData: processGroup.controllerData.map(controller => {
+            const updatedController = updatedLocalServicesData.find(
+              updated => updated.identifier === controller.identifier
+            );
+            if (updatedController) {
+              // Merge the updated controller data
+              return {
+                ...controller,
+                ...updatedController,
+                properties: mergeProperties(
+                  controller.properties,
+                  updatedController.properties
+                ),
+              };
+            }
+            return controller;
+          }),
+        };
+      });
+      return updatedServices;
+    });
+  }, [updatedLocalServicesData]);
+
   useEffect(() => {
     setControllerServicePayload(prevState => {
-      const newPayload = {
-        externalServicesData: isExternalServiceUpdated
-          ? externalServicePayload
-          : [],
-        localServicesData: updatedLocalServicesData?.length
+      const newPayload = {};
+      if (!isEmpty(externalServicePayload)) {
+        newPayload.externalServicesData = externalServicePayload;
+      }
+      if (
+        !isEmpty(updatedLocalServicesData) ||
+        !isEmpty(prevState.localServicesData)
+      ) {
+        newPayload.localServicesData = updatedLocalServicesData?.length
           ? updatedLocalServicesData
-          : prevState.localServicesData || [],
-      };
+          : prevState.localServicesData;
+      }
       return newPayload;
     });
   }, [
@@ -364,11 +408,17 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     isExternalServiceUpdated,
   ]);
 
+  useEffect(() => {
+    setControllerServicesData({
+      externalControllerServices: externalControllerServices,
+      localServices: localServices
+    })
+  },[localServices, externalControllerServices])
+
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {registryAllDetails?.controllerServicesData?.localServices?.length ||
-        controllerServicesData?.length ? (
+        {localServices?.length || externalControllerServices?.length ? (
           collapsibles &&
           collapsibles.map((item, index) => (
             <Collapsible
@@ -392,7 +442,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
             <div className="d-flex justify-content-center">
               <NoDataIcon width={130} />
             </div>
-            <NoDataText>No Data Found!!</NoDataText>
+            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
           </>
         )}
       </ScrollSetGrey>
@@ -452,5 +502,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
 ControllerServiceTab.propTypes = {
   setControllerServicePayload: PropTypes.func,
   controllerServicePayload: PropTypes.object,
+  controllerServicesData: PropTypes.object,
+  setControllerServicesData: PropTypes.func,
 };
 export default ControllerServiceTab;
