@@ -374,7 +374,6 @@ export const LdapConfig = () => {
 
   const getLDAPGroup = async data => {
     const payload = {
-      ldapEnabled: true,
       url: testFormData.url,
       password: testFormData.password,
       loginDn: testFormData.loginDn,
