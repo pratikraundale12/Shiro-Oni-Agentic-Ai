@@ -59,7 +59,7 @@ const ListRoleModal = () => {
               <PencilIcon color="black" />
             </IconButton>
           )}
-          {userPermissions.includes('delete_permission') && (
+          {userPermissions.includes('edit_permission') && (
             <IconButton
               type="button"
               onClick={() => {
