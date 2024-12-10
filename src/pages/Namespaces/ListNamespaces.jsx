@@ -112,6 +112,8 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setRegistryDeployVariable([]));
     dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
     dispatch(NamespacesActions.setregistryDetailsFlow(false));
+    dispatch(NamespacesActions.setFlowControlAfterUpgrade(false));
+    dispatch(NamespacesActions.fetchRegistryFlowDetails({}));
   }, []);
 
   const COLUMNS = [

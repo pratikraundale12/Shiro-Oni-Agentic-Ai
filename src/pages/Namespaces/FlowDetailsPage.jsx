@@ -25,6 +25,7 @@ import {
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import RectangleGraph from './birdEyeViewGraph';
+import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -278,17 +279,21 @@ const FlowDetailsPage = () => {
           toast.info('The selected version is already deployed.');
         }
       } else {
-        dispatch(
-          NamespacesActions.fetchRegistryFlowDetails({
-            bucketId: selectedNameSpace.bucketId,
-            flowId: selectedNameSpace.flowId,
-            version: selectedVersion,
-          })
-        );
         history.push('/process-group/config-details');
       }
     }
   };
+  useEffect(() => {
+    if (selectedNameSpace && selectedVersion && isEmpty(registryDetailsData)) {
+      dispatch(
+        NamespacesActions.fetchRegistryFlowDetails({
+          bucketId: selectedNameSpace.bucketId,
+          flowId: selectedNameSpace.flowId,
+          version: selectedVersion,
+        })
+      );
+    }
+  }, [dispatch, selectedNameSpace]);
 
   const handleRowClick = item => {
     setSelectedVersion(item.version);

@@ -111,7 +111,6 @@ const ConfigDetailsPage = () => {
   const [controllerServicePayload, setControllerServicePayload] = useState({});
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
-
   const handleBackClick = () => {
     history.push('/process-group/flow-details');
   };
@@ -131,7 +130,13 @@ const ConfigDetailsPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
-        return <ParameterContextTab PcData={PcData} setPcData={setPcData} />;
+        return (
+          <ParameterContextTab
+            PcData={PcData}
+            setPcData={setPcData}
+            activeTab={activeTab}
+          />
+        );
       case KDFM.VARIABLES:
         return (
           <VariableTab

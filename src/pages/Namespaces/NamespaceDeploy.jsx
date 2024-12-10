@@ -171,6 +171,12 @@ const NamespaceDeploy = ({
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getRegistryDeployResponseData
   );
+  const dataAfterUpgradeProcessor = useSelector(
+    NamespacesSelectors.getDeployOrUpgradeDetails
+  );
+  const checkFlowControlAfterUpgrade = useSelector(
+    NamespacesSelectors.getFlowControlAfterUpgrade
+  );
   const formData = useSelector(NamespacesSelectors.getFormData);
   const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
   const selectedDestCluster = useSelector(
@@ -244,15 +250,17 @@ const NamespaceDeploy = ({
                     <CountDiv
                       className="div-btn-1"
                       count={
-                        processStatus?.runningCount ||
-                        deployOrUpgradeDetails?.runningCount
+                        checkFlowControlAfterUpgrade
+                          ? dataAfterUpgradeProcessor?.runningCount
+                          : deployOrUpgradeDetails?.runningCount
                       }
                       activeColor="#58e715"
                     >
                       <TriangleIcons color="#B5BDC8" />
                       <span>
-                        {processStatus?.runningCount ||
-                          deployOrUpgradeDetails?.runningCount}
+                        {checkFlowControlAfterUpgrade
+                          ? dataAfterUpgradeProcessor?.runningCount
+                          : deployOrUpgradeDetails?.runningCount}
                       </span>
                     </CountDiv>
                     <div>Running Processors</div>
@@ -261,15 +269,17 @@ const NamespaceDeploy = ({
                     <CountDiv
                       className="div-btn-2"
                       count={
-                        processStatus?.stoppedCount ||
-                        deployOrUpgradeDetails?.stoppedCount
+                        checkFlowControlAfterUpgrade
+                          ? dataAfterUpgradeProcessor?.stoppedCount
+                          : deployOrUpgradeDetails?.stoppedCount
                       }
                       activeColor="#c52b2b"
                     >
                       <SquareBoxIcon color="#B5BDC8" />
                       <span>
-                        {processStatus?.stoppedCount ||
-                          deployOrUpgradeDetails?.stoppedCount}
+                        {checkFlowControlAfterUpgrade
+                          ? dataAfterUpgradeProcessor?.stoppedCount
+                          : deployOrUpgradeDetails?.stoppedCount}
                       </span>
                     </CountDiv>
                     <div>Stopped Processors</div>
@@ -280,15 +290,17 @@ const NamespaceDeploy = ({
                     <CountDiv
                       className="div-btn-3"
                       count={
-                        processStatus?.invalidCount ||
-                        deployOrUpgradeDetails?.invalidCount
+                        checkFlowControlAfterUpgrade
+                          ? dataAfterUpgradeProcessor?.invalidCount
+                          : deployOrUpgradeDetails?.invalidCount
                       }
                       activeColor="#CF9F5D"
                     >
                       <TriangleExclamationMarkIcon color="#B5BDC8" />
                       <span>
-                        {processStatus?.invalidCount ||
-                          deployOrUpgradeDetails?.invalidCount}
+                        {checkFlowControlAfterUpgrade
+                          ? dataAfterUpgradeProcessor?.invalidCount
+                          : deployOrUpgradeDetails?.invalidCount}
                       </span>
                     </CountDiv>
                     <div>Invalid Processors</div>
@@ -297,15 +309,17 @@ const NamespaceDeploy = ({
                     <CountDiv
                       className="div-btn-4"
                       count={
-                        processStatus?.disabledCount ||
-                        deployOrUpgradeDetails?.disabledCount
+                        checkFlowControlAfterUpgrade
+                          ? dataAfterUpgradeProcessor?.disabledCount
+                          : deployOrUpgradeDetails?.disabledCount
                       }
                       activeColor="#2c7cf3"
                     >
                       <SmallNotThunderIcon color="#B5BDC8" />
                       <span>
-                        {processStatus?.disabledCount ||
-                          deployOrUpgradeDetails?.disabledCount}
+                        {checkFlowControlAfterUpgrade
+                          ? dataAfterUpgradeProcessor?.disabledCount
+                          : deployOrUpgradeDetails?.disabledCount}
                       </span>
                     </CountDiv>
                     <div>Disabled Processors</div>

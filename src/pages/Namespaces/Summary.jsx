@@ -519,14 +519,11 @@ const Summary = () => {
 
   const handleConfirmUpdateStatus = () => {
     if (!deployByRegistryFlow) {
+      dispatch(
+        NamespacesActions.updateNamespaceStatusRegistry(confirmDialogue?.action)
+      );
       if (confirmDialogue.forPopup) {
-        ('hello');
       } else {
-        dispatch(
-          NamespacesActions.updateNamespaceStatusRegistry(
-            confirmDialogue?.action
-          )
-        );
         setActiveButton(confirmDialogue.action);
         setFlowControlButtons(confirmDialogue.action);
       }
@@ -576,6 +573,7 @@ const Summary = () => {
       forPopup: true,
     });
   };
+
   //
   const handledeployByRegistry = () => {
     const updatedData = paramterDeployArray.map(item => ({
@@ -618,7 +616,7 @@ const Summary = () => {
       },
     };
     dispatch(NamespacesActions.upgradeCluster(payload));
-    toast.info(NamespacesSelectors.getUpdatedNamespaceResponse.message);
+    // toast.info(NamespacesSelectors.getUpdatedNamespaceResponse.message);
   };
   const loadingregistry = useSelector(state =>
     LoadingSelectors.getLoading(state, 'deployNamespaceByRegistryFlow')
@@ -654,7 +652,6 @@ const Summary = () => {
     }
   }, [checkDestCluster, deployOrUpgradeDetails]);
 
-  console.log(processStatus, deployOrUpgradeDetails);
   return (
     <MainContainer className="main-space bg-white">
       <FullPageLoader
