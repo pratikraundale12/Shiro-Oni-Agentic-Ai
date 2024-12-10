@@ -54,7 +54,7 @@ const ConfigurePage = ({
   };
 
   const handleSubmit = () => {
-    handleConfigureSubmit(selectedItem);
+    handleConfigureSubmit(false, selectedItem);
   };
 
   return (

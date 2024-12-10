@@ -69,10 +69,6 @@ const ControllerServiceTab = ({
   const [selectedService, setSelectedService] = useState(null);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
   const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
-  const [newExternalServicePayload, setNewExternalServicePayload] = useState(
-    []
-  );
-
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const modalOpenState = useSelector(
     NamespacesSelectors.getIsNewAddControllerServiceMOdalOpen
@@ -83,40 +79,32 @@ const ControllerServiceTab = ({
   const [externalControllerServices, setExternalControllerServices] = useState(
     controllerServicesData?.externalControllerServices
   );
-  // const [newExternalControllerSelected, setNewExternalControllerSelected] =
-  //   useState({});
+
+  const [
+    externalControllerServicesTableData,
+    setExternalControllerServicesTableData,
+  ] = useState(controllerServicesData?.externalControllerServices);
   const newlyAddedExternalServiceResponse = useSelector(
     NamespacesSelectors.getNewlyAddedExternalServiceCS
   );
 
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
-      console.log(
-        newlyAddedExternalServiceResponse,
-        'newlyAddedExternalServiceResponse'
-      );
       const newalyAddedObject = {
         identifier: newlyAddedExternalServiceResponse?.value,
         name: newlyAddedExternalServiceResponse?.label,
+        parentId: selectedExternalService.identifier,
       };
       const updatedArray = externalControllerServices.map(obj =>
         obj.identifier === selectedExternalService.identifier
           ? newalyAddedObject
           : obj
       );
-      setExternalControllerServices(updatedArray);
+      setExternalControllerServicesTableData(updatedArray);
     }
   }, [newlyAddedExternalServiceResponse]);
+
   const [selectedExternalService, setSelectedExternalService] = useState({});
-  console.log(externalControllerServices, 'externalControllerServices');
-  console.log(
-    newlyAddedExternalServiceResponse,
-    'newlyAddedExternalServiceResponse>>>>>>>>>>>>>>>>'
-  );
-  console.log(
-    externalControllerServices,
-    'externalControllerServices???????????????????'
-  );
   const [externalControllerServiceArray, setExternalControllerServiceArray] =
     useState();
 
@@ -146,6 +134,8 @@ const ControllerServiceTab = ({
     useState(false);
 
   const [isFromExternalService, setisFromExternalService] = useState(false);
+
+  const [isAddedViaAdd, setIsAddedViaAdd] = useState(false);
 
   const COLUMNS = [
     { label: 'Name', renderCell: item => item?.name, width: '21%' },
@@ -242,26 +232,46 @@ const ControllerServiceTab = ({
     }
   };
 
-  const handleConfigureSubmit = data => {
+  const handleConfigureSubmit = (
+    isAdd,
+    data = newlyAddedExternalServiceResponse
+  ) => {
+    !isAdd && setExternalControllerServicesTableData([]);
     const updatedData = externalControllerServices.map(service =>
-      service.identifier === selectedService.identifier
+      service?.identifier ===
+      (selectedService?.parentId
+        ? selectedService?.parentId
+        : selectedService?.identifier)
         ? { ...service, controllerService: [data] }
         : service
     );
-    const payloadData = externalControllerServices.map(service =>
-      service.identifier === selectedService.identifier
-        ? { ...service, updatedValue: data?.id }
-        : service
-    );
+
+    const compareState = !isAdd
+      ? externalControllerServices
+      : externalControllerServicesTableData;
+    const payloadData = compareState.map(service => {
+      return service.identifier ===
+        (selectedService?.parentId
+          ? selectedService?.parentId
+          : selectedService?.identifier)
+        ? {
+            ...service,
+            updatedValue: isAdd
+              ? newlyAddedExternalServiceResponse?.value
+              : data?.id,
+          }
+        : service;
+    });
     setExternalServicePayload(payloadData);
-    setExternalControllerServices(updatedData);
+    !isAdd && setExternalControllerServices(updatedData);
     const newExternalControllerServiceArray = updatedData.map(
       service => service.controllerService
     );
-    setExternalControllerServiceArray(newExternalControllerServiceArray);
+    !isAdd &&
+      setExternalControllerServiceArray(newExternalControllerServiceArray);
     setIsModalOpen(false);
     setSelectedService(null);
-    setIsExternalServiceUpdated(true);
+    !isAdd && setIsExternalServiceUpdated(true);
   };
 
   const handleConfigCloseModal = () => {
@@ -311,9 +321,11 @@ const ControllerServiceTab = ({
   const loadingForConfigureTable = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
+
   useEffect(() => {
     const newCollapsibles = [
-      ...(externalControllerServiceArray?.length
+      ...(externalControllerServiceArray?.length &&
+      isEmpty(externalControllerServicesTableData)
         ? [
             {
               title: KDFM.CONTROLLER_SERVICE_DATA,
@@ -326,13 +338,13 @@ const ControllerServiceTab = ({
               ),
             },
           ]
-        : externalControllerServices?.length
+        : externalControllerServicesTableData?.length
           ? [
               {
                 title: KDFM.CONTROLLER_SERVICE_DATA,
                 content: (
                   <Table
-                    data={externalControllerServices}
+                    data={externalControllerServicesTableData}
                     columns={COLUMNS}
                     className={'variables-table'}
                   />
@@ -356,6 +368,8 @@ const ControllerServiceTab = ({
     externalControllerServices,
     localServices,
     externalControllerServiceArray,
+    newlyAddedExternalServiceResponse,
+    externalControllerServicesTableData,
   ]);
 
   const handleServiceConfigure = data => {
@@ -504,7 +518,11 @@ const ControllerServiceTab = ({
         />
       )}
 
-      <AddControllerServiceModal isFromControllerServiceTab={true} />
+      <AddControllerServiceModal
+        setIsAddedViaAdd={setIsAddedViaAdd}
+        handleSubmitData={handleConfigureSubmit}
+        isFromControllerServiceTab={true}
+      />
       {/* need change here */}
       <ConfigControllerService
         isOpen={isListProprtyModel}
