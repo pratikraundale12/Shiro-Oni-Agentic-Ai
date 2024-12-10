@@ -17,7 +17,6 @@ import {
 import { Button } from '../../shared';
 import AddParameterContext from './AddParameterContext';
 import Collapsible from './Collapsible';
-import { singleNamespaceData } from '../../store/namespaces';
 
 const ArrowButton = styled.button`
   background-color: white;
