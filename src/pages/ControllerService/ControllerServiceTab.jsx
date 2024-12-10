@@ -16,6 +16,7 @@ import ConfigurePage from './ConfigurePage';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import { NoDataIcon } from '../../assets';
 import PropertyDropdownModal from './ProprtyDropdownModel';
+import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -265,7 +266,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
       ...(externalControllerServiceArray?.length
         ? [
             {
-              title: 'External Controller Service',
+              title: KDFM.CONTROLLER_SERVICE_DATA,
               content: (
                 <Table
                   data={externalControllerServiceArray[0]}
@@ -275,21 +276,20 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
               ),
             },
           ]
-        : []),
-      ...(controllerServicesData?.length
-        ? [
-            {
-              title: 'Controller Services Data',
-              content: (
-                <Table
-                  data={controllerServicesData}
-                  columns={COLUMNS}
-                  className={'variables-table'}
-                />
-              ),
-            },
-          ]
-        : []),
+        : controllerServicesData?.length
+          ? [
+              {
+                title: KDFM.CONTROLLER_SERVICE_DATA,
+                content: (
+                  <Table
+                    data={controllerServicesData}
+                    columns={COLUMNS}
+                    className={'variables-table'}
+                  />
+                ),
+              },
+            ]
+          : []),
       ...(registryAllDetails?.controllerServicesData?.localServices?.map(
         service => ({
           title: service?.processGroupName || 'Unnamed Group',
@@ -348,14 +348,18 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
 
   useEffect(() => {
     setControllerServicePayload(prevState => {
-      const newPayload = {
-        externalServicesData: isExternalServiceUpdated
-          ? externalServicePayload
-          : [],
-        localServicesData: updatedLocalServicesData?.length
+      const newPayload = {};
+      if (!isEmpty(externalServicePayload)) {
+        newPayload.externalServicesData = externalServicePayload;
+      }
+      if (
+        !isEmpty(updatedLocalServicesData) ||
+        !isEmpty(prevState.localServicesData)
+      ) {
+        newPayload.localServicesData = updatedLocalServicesData?.length
           ? updatedLocalServicesData
-          : prevState.localServicesData || [],
-      };
+          : prevState.localServicesData;
+      }
       return newPayload;
     });
   }, [
@@ -392,7 +396,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
             <div className="d-flex justify-content-center">
               <NoDataIcon width={130} />
             </div>
-            <NoDataText>No Data Found!!</NoDataText>
+            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
           </>
         )}
       </ScrollSetGrey>
