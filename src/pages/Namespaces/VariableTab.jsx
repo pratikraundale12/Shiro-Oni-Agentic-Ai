@@ -1,12 +1,10 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { NoDataIcon, PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
-import { NamespacesSelectors } from '../../store';
 import AddOrEditVariablesModal from './AddOrEditVariablesModal';
 import Collapsible from './Collapsible';
 
@@ -34,10 +32,7 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-const VariableTab = ({ setVariablePayload }) => {
-  const registryDetailsData = useSelector(
-    NamespacesSelectors.getRegistryAllDetails
-  );
+const VariableTab = ({ setVariablePayload, variableData, setVariableData }) => {
   const [isAddVariablesOpen, setIsAddVariablesOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -45,11 +40,6 @@ const VariableTab = ({ setVariablePayload }) => {
 
   const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
-  const [variableData, setVariableData] = useState([]);
-
-  useEffect(() => {
-    setVariableData(registryDetailsData?.variablesData);
-  }, [registryDetailsData?.variablesData]);
 
   const [currentPgId, setCurrentPgId] = useState('');
   const handleToggle = (pgId, index) => {
@@ -222,6 +212,8 @@ const VariableTab = ({ setVariablePayload }) => {
   );
 };
 VariableTab.propTypes = {
+  variableData: PropTypes.array,
+  setVariableData: PropTypes.func,
   setVariablePayload: PropTypes.func,
   variablePayload: PropTypes.array,
 };

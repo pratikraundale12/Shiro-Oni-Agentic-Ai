@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { NoDataIcon, PencilIcon } from '../../assets';
@@ -6,8 +6,6 @@ import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import Collapsible from './Collapsible';
 import AddOrEditParameterContextModal from './AddOrEditParameterContextModal';
-import { useSelector } from 'react-redux';
-import { NamespacesSelectors } from '../../store';
 import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
@@ -32,7 +30,12 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-const ParameterContextTab = ({ pcPayload, setPcPayload }) => {
+const ParameterContextTab = ({
+  pcPayload,
+  setPcPayload,
+  pcData,
+  setPcData,
+}) => {
   const [isAddPcOpen, setIsAddPcOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -41,14 +44,6 @@ const ParameterContextTab = ({ pcPayload, setPcPayload }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
   const [currentPgId, setCurrentPgId] = useState('');
-  const [PcData, setPcData] = useState([]);
-  const registryDetailsData = useSelector(
-    NamespacesSelectors.getRegistryAllDetails
-  );
-
-  useEffect(() => {
-    setPcData(registryDetailsData?.parameterContextData);
-  }, [registryDetailsData?.parameterContextData]);
 
   const handleToggle = index => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
@@ -126,7 +121,7 @@ const ParameterContextTab = ({ pcPayload, setPcPayload }) => {
   ];
 
   const handleAddOrEditVariableSave = data => {
-    const updatedState = { ...PcData };
+    const updatedState = { ...pcData };
     const updatedPayload = {
       inherited: Array.isArray(pcPayload.inherited)
         ? [...pcPayload.inherited]
@@ -224,7 +219,7 @@ const ParameterContextTab = ({ pcPayload, setPcPayload }) => {
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {PcData?.inherited?.map(item => (
+        {pcData?.inherited?.map(item => (
           <>
             {!isEmpty(item.parameters) && (
               <Collapsible
@@ -242,7 +237,7 @@ const ParameterContextTab = ({ pcPayload, setPcPayload }) => {
             )}
           </>
         ))}
-        {PcData?.parent?.map(item => (
+        {pcData?.parent?.map(item => (
           <>
             {!isEmpty(item.parameters) && (
               <Collapsible
@@ -260,7 +255,7 @@ const ParameterContextTab = ({ pcPayload, setPcPayload }) => {
             )}
           </>
         ))}
-        {isEmpty(PcData?.inherited) && isEmpty(PcData?.parent) && (
+        {isEmpty(pcData?.inherited) && isEmpty(pcData?.parent) && (
           <>
             <div className="d-flex justify-content-center">
               <NoDataIcon width={130} />
@@ -284,5 +279,7 @@ const ParameterContextTab = ({ pcPayload, setPcPayload }) => {
 ParameterContextTab.propTypes = {
   pcPayload: PropTypes.object,
   setPcPayload: PropTypes.func,
+  pcData: PropTypes.object,
+  setPcData: PropTypes.func,
 };
 export default ParameterContextTab;
