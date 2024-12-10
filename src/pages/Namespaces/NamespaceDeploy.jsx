@@ -198,13 +198,9 @@ const NamespaceDeploy = ({
   return (
     <>
       <Modal
-        title={`Process Group ${
-          checkDestCluster.mode === 'upgrade'
-            ? checkDestCluster.version <= formData.version
-              ? KDFM.UPGRADE
-              : KDFM.DOWNGRADE
-            : KDFM.DEPLOY
-        }`}
+        title={`Process Group 
+        ${checkFlowControlAfterUpgrade ? KDFM.UPGRADE : KDFM.DEPLOY}
+        `}
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
@@ -221,9 +217,8 @@ const NamespaceDeploy = ({
               <GreenRightCircleIcon />
             </ModalIcon>
             <ModalHFive>
-              Process Group Successfully {''}
-              {checkDestCluster.mode === 'upgrade' ? 'upgraded' : 'Deployed'}
-              {''} {selectedDestCluster?.label}
+              Process Group successfully &nbsp;
+              {checkFlowControlAfterUpgrade ? 'upgraded' : 'deployed'}
             </ModalHFive>
           </div>
           <RowModal>

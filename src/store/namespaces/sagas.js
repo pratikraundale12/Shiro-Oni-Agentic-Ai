@@ -304,10 +304,13 @@ export function* getCountDetails(api) {
 
 export function* fetchParameterContext(
   api,
-  { initialCall = true, showError = false, payload }
+  { initialCall = true, showError = false }
 ) {
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getRegistryDeployResponseData
+  );
+  const singleNamespaceData = yield select(
+    NamespacesSelectors.getSingleNamespaceData
   );
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
@@ -329,7 +332,9 @@ export function* fetchParameterContext(
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        parameterId: deployOrUpgradeDetails?.parameterContextId || payload,
+        parameterId:
+          deployOrUpgradeDetails?.parameterContextId ||
+          singleNamespaceData?.parameterContextId,
         includeInherited: !parentParameterSelectData?.parent,
       },
     ],
@@ -366,6 +371,9 @@ export function* updateParameterContext(api, { payload }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+  const singleNamespaceData = yield select(
+    NamespacesSelectors.getSingleNamespaceData
+  );
   const parentList = yield select(NamespacesSelectors.getParentListItems);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -380,6 +388,7 @@ export function* updateParameterContext(api, { payload }) {
           ? parentParameterSelectData?.id
           : parentList[0]?.parentParameterId ||
             deployOrUpgradeDetails?.parameterContextId ||
+            singleNamespaceData?.parameterContextId ||
             selectedNamespace?.parameterContextId,
         payloadData: {
           revision: { version: parameterDetails?.version },
@@ -436,6 +445,9 @@ export function* getStatusAndDeleteParameterContext(
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+  const singleNamespaceData = yield select(
+    NamespacesSelectors.getSingleNamespaceData
+  );
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -451,7 +463,8 @@ export function* getStatusAndDeleteParameterContext(
         clusterId: selectedCluster?.value,
         parameterContextId:
           deployOrUpgradeDetails?.parameterContextId ||
-          selectedNamespace?.parameterContextId,
+          selectedNamespace?.parameterContextId ||
+          singleNamespaceData?.parameterContextId,
         requestId: additionalData?.requestId,
       },
     ],
@@ -535,6 +548,9 @@ export function* addVariableServices(api, { payload }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+  const singleNamespaceData = yield select(
+    NamespacesSelectors.getSingleNamespaceData
+  );
   const variableList = yield select(NamespacesSelectors.getVariableList);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -575,6 +591,9 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
   );
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
+  );
+  const singleNamespaceData = yield select(
+    NamespacesSelectors.getSingleNamespaceData
   );
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
