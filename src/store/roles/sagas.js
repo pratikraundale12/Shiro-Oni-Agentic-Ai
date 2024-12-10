@@ -109,7 +109,7 @@ export function* deleteRole(api) {
 
   if (response.ok) {
     yield put(RolesActions.fetchRoles());
-    toast.success('Role deleted succesfully');
+    toast.success('Role deleted successfully');
   } else if (!response.ok)
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
 }
