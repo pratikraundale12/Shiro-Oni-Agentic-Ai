@@ -175,10 +175,10 @@ const ConfigDetailsPage = () => {
   };
   const handleSetTab = tab => {
     if (tab !== 'Parameter Context') {
-      dispatch(NamespacesActions.setRegistryDeployParameterContext(PcData));
+      dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
     }
     if (tab !== 'Variables') {
-      dispatch(NamespacesActions.setRegistryDeployVariable(variableData));
+      dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
     }
     if (tab !== 'Controller Service') {
       dispatch(
