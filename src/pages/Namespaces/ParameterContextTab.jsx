@@ -30,6 +30,14 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
+
+const SrollableTable = styled.div`
+  table {
+    overflow: auto;
+    max-height: 380px;
+  }
+`;
+
 const ParameterContextTab = ({
   pcPayload,
   setPcPayload,
@@ -252,7 +260,9 @@ const ParameterContextTab = ({
                 isTableOpen={openIndex === item?.name}
                 toggleCollapsible={() => handleToggle(item?.name)}
               >
-                <Table data={item?.parameters} columns={PC_COLUMNS} />
+                <SrollableTable className="scroll-table-y">
+                  <Table data={item?.parameters} columns={PC_COLUMNS} />
+                </SrollableTable>
               </Collapsible>
             )}
           </>
@@ -270,7 +280,9 @@ const ParameterContextTab = ({
                 isTableOpen={openIndex === item?.name}
                 toggleCollapsible={() => handleToggle(item?.name)}
               >
-                <Table data={item?.parameters} columns={PC_COLUMNS} />
+                <SrollableTable className="scroll-table-y">
+                  <Table data={item?.parameters} columns={PC_COLUMNS} />
+                </SrollableTable>
               </Collapsible>
             )}
           </>
