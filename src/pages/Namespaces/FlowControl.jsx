@@ -15,7 +15,6 @@ import StopIconImage from '../../assets/images/stop.png';
 import { KDFM } from '../../constants';
 import { ModalWithIcon } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-// import { singleNamespaceData } from '../../store/namespaces';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
