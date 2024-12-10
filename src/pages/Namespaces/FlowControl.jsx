@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   SmallNotThunderIcon,
-  SmallThunderIcon,
+  // SmallThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
@@ -226,55 +226,67 @@ const FlowControl = () => {
             </ActiveButtonContainer>
           </CustomNine>
           <ActiveButtonContainer className="d-flex ">
-            <TextsvgDiv className="d-flex">
-              <ActiveButtonDiv className="div-btn-1 mr-2">
-                <ActiveButtonDiv
-                  disabled={!canWrite}
-                  className="div-btn-1 "
-                  isActive={activeButton === 'RUNNING'}
-                  activeColor="#58e715"
-                  hoverColor="#58e715"
-                  activeTextColor="#fff"
-                  onClick={() => handleUpdateStatus('RUNNING')}
-                >
-                  <TriangleIcons color="#B5BDC8" />
-                </ActiveButtonDiv>
-              </ActiveButtonDiv>
-              <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-            </TextsvgDiv>
-            <TextsvgDiv className="d-flex">
-              <ActiveButtonDiv className="div-btn-2 mr-2">
-                <ActiveButtonDiv
-                  disabled={!canWrite}
-                  className="div-btn-1"
-                  isActive={activeButton === 'STOPPED'}
-                  activeColor="#c52b2b"
-                  hoverColor="#c52b2b"
-                  activeTextColor="#fff"
-                  onClick={() => handleUpdateStatus('STOPPED')}
-                >
-                  <SquareBoxIcon color="#B5BDC8" />
-                </ActiveButtonDiv>
-              </ActiveButtonDiv>
-              <div>{KDFM.STOPPED_FLOW}</div>
-            </TextsvgDiv>
-            <TextsvgDiv className="d-flex">
-              <ActiveButtonDiv className="div-btn-3 mr-2">
-                <ActiveButtonDiv
-                  disabled={!canWrite}
-                  className="div-btn-1"
-                  isActive={activeButton === 'ENABLED'}
-                  activeColor="#cf9f5d"
-                  hoverColor="#cf9f5d"
-                  activeTextColor="#fff"
-                  onClick={() => handleUpdateStatus('ENABLED')}
-                >
-                  <SmallThunderIcon color="#B5BDC8" />
-                </ActiveButtonDiv>
-              </ActiveButtonDiv>
-              <div>{KDFM.ENABLED_FLOW}</div>
-            </TextsvgDiv>
-            <TextsvgDiv className="d-flex">
+            {!(
+              sigleNamespaceData?.runningCount === 0 &&
+              sigleNamespaceData?.stoppedCount === 0
+            ) && (
+              <>
+                <TextsvgDiv className="d-flex">
+                  <ActiveButtonDiv className="div-btn-1 mr-2">
+                    <ActiveButtonDiv
+                      disabled={
+                        !canWrite ||
+                        (sigleNamespaceData?.runningCount === 0 &&
+                          sigleNamespaceData?.stopCount === 0)
+                      }
+                      className="div-btn-1 "
+                      isActive={activeButton === 'RUNNING'}
+                      activeColor="#58e715"
+                      hoverColor="#58e715"
+                      activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('RUNNING')}
+                    >
+                      <TriangleIcons color="#B5BDC8" />
+                    </ActiveButtonDiv>
+                  </ActiveButtonDiv>
+                  <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                </TextsvgDiv>
+
+                <TextsvgDiv className="d-flex">
+                  <ActiveButtonDiv className="div-btn-2 mr-2">
+                    <ActiveButtonDiv
+                      disabled={!canWrite}
+                      className="div-btn-1"
+                      isActive={activeButton === 'STOPPED'}
+                      activeColor="#c52b2b"
+                      hoverColor="#c52b2b"
+                      activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('STOPPED')}
+                    >
+                      <SquareBoxIcon color="#B5BDC8" />
+                    </ActiveButtonDiv>
+                  </ActiveButtonDiv>
+                  <div>{KDFM.STOPPED_FLOW}</div>
+                </TextsvgDiv>
+              </>
+            )}
+            {/* <TextsvgDiv className="d-flex">
+                  <ActiveButtonDiv className="div-btn-3 mr-2">
+                    <ActiveButtonDiv
+                      disabled={!canWrite}
+                      className="div-btn-1"
+                      isActive={activeButton === 'ENABLED'}
+                      activeColor="#cf9f5d"
+                      hoverColor="#cf9f5d"
+                      activeTextColor="#fff"
+                      onClick={() => handleUpdateStatus('ENABLED')}
+                    >
+                      <SmallThunderIcon color="#B5BDC8" />
+                    </ActiveButtonDiv>
+                  </ActiveButtonDiv>
+                  <div>{KDFM.ENABLED_FLOW}</div>
+                </TextsvgDiv> */}
+            {/* <TextsvgDiv className="d-flex">
               <ActiveButtonDiv className="div-btn-4 mr-2">
                 <ActiveButtonDiv
                   className="div-btn-1"
@@ -289,7 +301,7 @@ const FlowControl = () => {
                 </ActiveButtonDiv>
               </ActiveButtonDiv>
               <div>{KDFM.DISABLED_FLOW}</div>
-            </TextsvgDiv>
+            </TextsvgDiv> */}
           </ActiveButtonContainer>
         </IconsvgDiv>
         <ModalWithIcon

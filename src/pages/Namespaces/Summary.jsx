@@ -904,37 +904,44 @@ const Summary = () => {
             )}
             {!deployByRegistryFlow && (
               <ActiveButtonContainer className="d-flex ">
-                <TextsvgDiv className="d-flex">
-                  <ActiveButtonDiv className="div-btn-1 mr-2">
-                    <ActiveButtonDiv
-                      className="div-btn-1 "
-                      isActive={activeButton === 'RUNNING'}
-                      activeColor="#58e715"
-                      hoverColor="#58e715"
-                      activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('RUNNING')}
-                    >
-                      <TriangleIcons color="#B5BDC8" />
-                    </ActiveButtonDiv>
-                  </ActiveButtonDiv>
-                  <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                </TextsvgDiv>
-                <TextsvgDiv className="d-flex">
-                  <ActiveButtonDiv className="div-btn-2 mr-2">
-                    <ActiveButtonDiv
-                      className="div-btn-1"
-                      isActive={activeButton === 'STOPPED'}
-                      activeColor="#c52b2b"
-                      hoverColor="#c52b2b"
-                      activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('STOPPED')}
-                    >
-                      <SquareBoxIcon color="#B5BDC8" />
-                    </ActiveButtonDiv>
-                  </ActiveButtonDiv>
-                  <div>{KDFM.STOPPED_FLOW}</div>
-                </TextsvgDiv>
-                <TextsvgDiv className="d-flex">
+                {!(
+                  processStatus.runningCount === 0 &&
+                  processStatus?.stoppedCount === 0
+                ) && (
+                  <>
+                    <TextsvgDiv className="d-flex">
+                      <ActiveButtonDiv className="div-btn-1 mr-2">
+                        <ActiveButtonDiv
+                          className="div-btn-1 "
+                          isActive={activeButton === 'RUNNING'}
+                          activeColor="#58e715"
+                          hoverColor="#58e715"
+                          activeTextColor="#fff"
+                          onClick={() => handleUpdateStatus('RUNNING')}
+                        >
+                          <TriangleIcons color="#B5BDC8" />
+                        </ActiveButtonDiv>
+                      </ActiveButtonDiv>
+                      <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                    </TextsvgDiv>
+                    <TextsvgDiv className="d-flex">
+                      <ActiveButtonDiv className="div-btn-2 mr-2">
+                        <ActiveButtonDiv
+                          className="div-btn-1"
+                          isActive={activeButton === 'STOPPED'}
+                          activeColor="#c52b2b"
+                          hoverColor="#c52b2b"
+                          activeTextColor="#fff"
+                          onClick={() => handleUpdateStatus('STOPPED')}
+                        >
+                          <SquareBoxIcon color="#B5BDC8" />
+                        </ActiveButtonDiv>
+                      </ActiveButtonDiv>
+                      <div>{KDFM.STOPPED_FLOW}</div>
+                    </TextsvgDiv>
+                  </>
+                )}
+                {/* <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-3 mr-2">
                     <ActiveButtonDiv
                       className="div-btn-1"
@@ -963,7 +970,7 @@ const Summary = () => {
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
                   <div>{KDFM.DISABLED_FLOW}</div>
-                </TextsvgDiv>
+                </TextsvgDiv> */}
               </ActiveButtonContainer>
             )}
           </IconsvgDiv>
