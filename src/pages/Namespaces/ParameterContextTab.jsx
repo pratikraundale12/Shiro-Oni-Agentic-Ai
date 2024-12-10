@@ -32,6 +32,14 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
+
+const SrollableTable = styled.div`
+  table {
+    overflow: auto;
+    max-height: 380px;
+  }
+`;
+
 const ParameterContextTab = ({ PcData, setPcData }) => {
   const [isAddPcOpen, setIsAddPcOpen] = useState({
     isOpen: false,
@@ -192,7 +200,9 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
                 isTableOpen={openIndex === item?.name}
                 toggleCollapsible={() => handleToggle(item?.name)}
               >
-                <Table data={item?.parameters} columns={PC_COLUMNS} />
+                <SrollableTable className="scroll-table-y">
+                  <Table data={item?.parameters} columns={PC_COLUMNS} />
+                </SrollableTable>
               </Collapsible>
             )}
           </>
@@ -210,7 +220,9 @@ const ParameterContextTab = ({ PcData, setPcData }) => {
                 isTableOpen={openIndex === item?.name}
                 toggleCollapsible={() => handleToggle(item?.name)}
               >
-                <Table data={item?.parameters} columns={PC_COLUMNS} />
+                <SrollableTable className="scroll-table-y">
+                  <Table data={item?.parameters} columns={PC_COLUMNS} />
+                </SrollableTable>
               </Collapsible>
             )}
           </>

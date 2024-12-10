@@ -323,7 +323,7 @@ export const Dashboard = () => {
           <InsightIconContiner>
             <LensIcon />
           </InsightIconContiner>
-          <QuickInsightHeadingText>Quick Insight</QuickInsightHeadingText>
+          <QuickInsightHeadingText>Quick Insights</QuickInsightHeadingText>
         </QuickInsightHeading>
         <DropdownWrapper>
           <DropdownContainer disabled={!ClusterActivated}>
@@ -371,38 +371,38 @@ export const Dashboard = () => {
           backgroundCss="#F1F5FF"
           icon={TotalProcessorIcon}
           count={dashboardData?.total_processors || '0'}
-          text="Total Processor"
+          text="Total Processors"
         />
         <InsightContainer
           backgroundCss="#FEFBEC"
           icon={RunningProcessorIcon}
           count={dashboardData?.running_processors || '0'}
-          text="Running Processor"
+          text="Running Processors"
         />
 
         <InsightContainer
           backgroundCss="#EEF9FB"
           icon={StoppedProcessorIcon}
           count={dashboardData?.stopped_processors || '0'}
-          text="Stopped Processor"
+          text="Stopped Processors"
         />
         <InsightContainer
           backgroundCss="#FDF3FC"
           icon={DisabledProcessorIcon}
           count={dashboardData?.disabled_processors || '0'}
-          text="Disabled Processor"
+          text="Disabled Processors"
         />
         <InsightContainer
           backgroundCss="#FFF7ED"
           icon={InvalidProcessorIcon}
           count={dashboardData?.invalid_count || '0'}
-          text="Invalid Processor"
+          text="Invalid Processors"
         />
         <InsightContainer
           backgroundCss="#F0F0F2"
           icon={ActiveThreadIcon}
           count={dashboardData?.active_thread_count || '0'}
-          text="Active Thread"
+          text="Active Threads"
         />
         <InsightContainer
           backgroundCss="#EEF8FF"
