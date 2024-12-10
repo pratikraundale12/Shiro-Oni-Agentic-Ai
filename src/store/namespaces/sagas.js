@@ -1196,7 +1196,9 @@ export function* upgradeCluster(api, { payload }) {
 
   if (response.ok) {
     yield put(NamespacesActions.setUpdatedNamespaceResponse(response));
+    yield put(NamespacesActions.setRegistryDeployResponseData(response?.data));
     yield put(NamespacesActions.setDeployedModal(true));
+    yield put(NamespacesActions.setFlowControlAfterUpgrade(true));
     toast.success(response?.data?.message);
   }
 

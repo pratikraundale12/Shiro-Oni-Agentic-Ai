@@ -217,5 +217,4 @@ RectangleGraph.propTypes = {
   setXStateCoordiate: PropTypes.func.isRequired,
   setYStateCoordiate: PropTypes.func.isRequired,
 };
-
 export default RectangleGraph;

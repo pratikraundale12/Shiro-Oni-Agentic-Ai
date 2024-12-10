@@ -165,6 +165,9 @@ export const NamespacesActions = {
   setUpdatedNamespaceResponse: createAction(
     `${prefix}setUpdatedNamespaceResponse`
   ),
+  setFlowControlAfterUpgrade: createAction(
+    `${prefix}setFlowControlAfterUpgrade`
+  ),
   setFlowControlData: createAction(`${prefix}setFlowControlData`),
 };
 
@@ -246,6 +249,7 @@ export const NAMESPACES_INITIAL_STATE = {
   registryDetailsFlow: false,
   registryDeployControllerService: {},
   updatedNamespaceResponse: {},
+  flowControlAfterUpgrade: false,
   FlowControlData: {},
 };
 
@@ -324,6 +328,7 @@ export const NamespacesSelectors = {
     state.namespaces.registryDeployControllerService,
   getUpdatedNamespaceResponse: state =>
     state.namespaces.updatedNamespaceResponse,
+  getFlowControlAfterUpgrade: state => state.namespaces.flowControlAfterUpgrade,
   getFlowControlData: state => state.namespaces.flowControlData,
 };
 //
@@ -735,6 +740,12 @@ const setRegistryDeployControllerService = (state, { payload }) => {
     registryDeployControllerService: payload,
   };
 };
+const setFlowControlAfterUpgrade = (state, { payload }) => {
+  return {
+    ...state,
+    flowControlAfterUpgrade: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -887,6 +898,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setUpdatedNamespaceResponse,
         setUpdatedNamespaceResponse
+      )
+      .addCase(
+        NamespacesActions.setFlowControlAfterUpgrade,
+        setFlowControlAfterUpgrade
       )
       .addCase(NamespacesActions.setFlowControlData, setFlowControlData);
   }

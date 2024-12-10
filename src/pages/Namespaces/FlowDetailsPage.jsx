@@ -25,6 +25,7 @@ import {
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import RectangleGraph from './birdEyeViewGraph';
+import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -213,11 +214,6 @@ const FlowDetailsPage = () => {
     }
   }, [registryDetailsData]);
 
-  const breadcrumbOnDeploy = [
-    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
-    { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
-    { label: 'Flow Details' },
-  ];
   const gridDataDest = useSelector(state =>
     GridSelectors.getGridData(state, 'namespaces')
   );
@@ -248,6 +244,11 @@ const FlowDetailsPage = () => {
     id: index,
   }));
 
+  const breadcrumbOnDeploy = [
+    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+    { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
+    { label: 'Flow Details' },
+  ];
   const breadcrumbOnUpgrade = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: KDFM.FLOW_DETAILS },
@@ -278,17 +279,21 @@ const FlowDetailsPage = () => {
           toast.info('The selected version is already deployed.');
         }
       } else {
-        dispatch(
-          NamespacesActions.fetchRegistryFlowDetails({
-            bucketId: selectedNameSpace.bucketId,
-            flowId: selectedNameSpace.flowId,
-            version: selectedVersion,
-          })
-        );
         history.push('/process-group/config-details');
       }
     }
   };
+  useEffect(() => {
+    if (selectedNameSpace && selectedVersion && isEmpty(registryDetailsData)) {
+      dispatch(
+        NamespacesActions.fetchRegistryFlowDetails({
+          bucketId: selectedNameSpace.bucketId,
+          flowId: selectedNameSpace.flowId,
+          version: selectedVersion,
+        })
+      );
+    }
+  }, [dispatch, selectedNameSpace]);
 
   const handleRowClick = item => {
     setSelectedVersion(item.version);
@@ -445,13 +450,17 @@ const FlowDetailsPage = () => {
                 </>
               </RowConfig>
             </div>
-            <div className="ms-4">
-              <RectangleGraph
-                data={enhancedData}
-                setXStateCoordiate={setXStateCoordiate}
-                setYStateCoordiate={setYStateCoordiate}
-              />
-            </div>
+            {isUpgrade && (
+              <div className="ms-4">
+                {
+                  <RectangleGraph
+                    data={enhancedData}
+                    setXStateCoordiate={setXStateCoordiate}
+                    setYStateCoordiate={setYStateCoordiate}
+                  />
+                }
+              </div>
+            )}
             <div className="col-12 p-3">
               <RowConfig className="row">
                 <ColLgSix className="col-lg-6 col-12">
