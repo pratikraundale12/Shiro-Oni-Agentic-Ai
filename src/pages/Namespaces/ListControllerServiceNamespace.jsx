@@ -224,6 +224,10 @@ export const ListControllerService = () => {
                 onClick={() => handleSettingClick(item)}
                 data-tooltip-id={'Settings'}
                 disabled={!canWrite}
+                style={{
+                  opacity: canWrite ? 1 : 0.3,
+                  cursor: canWrite ? 'pointer' : 'not-allowed',
+                }}
               >
                 <SettingSmallIcon />
               </button>
@@ -249,6 +253,10 @@ export const ListControllerService = () => {
                   onClick={() => handleEnableClick(item)}
                   data-tooltip-id={item?.id}
                   disabled={!canWrite}
+                  style={{
+                    opacity: canWrite ? 1 : 0.3,
+                    cursor: canWrite ? 'pointer' : 'not-allowed',
+                  }}
                 >
                   {item?.state !== 'DISABLED' ? (
                     <FlashCutIcon />
@@ -278,6 +286,10 @@ export const ListControllerService = () => {
                   onClick={() => handleDeleteClick(item)}
                   data-tooltip-id={'Delete'}
                   disabled={!canWrite}
+                  style={{
+                    opacity: canWrite ? 1 : 0.3,
+                    cursor: canWrite ? 'pointer' : 'not-allowed',
+                  }}
                 >
                   <DeleteSmallIcon color="black" height="28" />
                 </button>

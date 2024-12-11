@@ -210,11 +210,8 @@ const Listvariables = ({
     variablesData = uniqueVariables;
   }
 
-  console.log(variablesData, '122233333333333333333333');
-
   const openVariable = () => {
     setIsAddVariablesOpen({ isOpen: true, mode: 'add' });
-    console.log(isVariablesModalOpen, '11111111111111111111111111');
     dispatch(NamespacesActions.setVariableContextItem({}));
     if (isVariablesModalOpen?.schedule) {
       setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
