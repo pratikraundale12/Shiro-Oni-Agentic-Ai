@@ -10,12 +10,6 @@ import Collapsible from './Collapsible';
 
 const DataWrapper = styled.div`
   width: 100%;
-  height: 596px;
-  top: 273px;
-  left: 290px;
-  gap: 0px;
-  opacity: 0px;
-  border: Mixed solid rgba(221, 228, 240, 1);
 `;
 
 const ScrollSetGrey = styled.div`

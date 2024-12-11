@@ -20,6 +20,7 @@ const CheckboxInput = styled.input.attrs({ type: 'checkbox' })`
   min-height: 16px;
   cursor: pointer;
   accent-color: ${props => props.theme.colors.primary};
+  accent-color: #e36e03;
 
   &:disabled {
     cursor: not-allowed;
