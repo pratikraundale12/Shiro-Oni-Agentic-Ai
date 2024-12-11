@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { SettingSmallIcon } from '../../assets';
+import { PencilIcon, SettingSmallIcon } from '../../assets';
 import { Table } from '../../components';
 import { KDFM } from '../../constants';
 import {
@@ -50,7 +50,7 @@ const ConfigureButton = styled.button`
   &:hover {
     background-color: #ff7a00;
   }
-`;  
+`;
 
 const ControllerServiceTab = ({
   setControllerServicePayload,
@@ -66,6 +66,9 @@ const ControllerServiceTab = ({
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const modalOpenState = useSelector(
     NamespacesSelectors.getIsNewAddControllerServiceMOdalOpen
+  );
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
   );
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
@@ -181,7 +184,7 @@ const ControllerServiceTab = ({
       label: 'Action',
       renderCell: item =>
         item?.controllerService?.length ? (
-          <>
+          <div className="d-flex">
             <button
               className="border-0 bg-white"
               onClick={() => handleSettingClick(item?.controllerService[0])}
@@ -190,6 +193,11 @@ const ControllerServiceTab = ({
             >
               <SettingSmallIcon />
             </button>
+            {/* {item.updatedValue && (
+              <div onClick={() => handleConfigure(item)} className="ms-2">
+                <PencilIcon />
+              </div>
+            )} */}
             <ReactTooltip
               id={`Settings-${item?.id}`}
               place="left"
@@ -200,11 +208,19 @@ const ControllerServiceTab = ({
                 wordWrap: 'break-word',
               }}
             />
-          </>
+          </div>
         ) : (
-          <ConfigureButton onClick={() => handleConfigure(item)}>
-            {KDFM.CONFIGURE}{' '}
-          </ConfigureButton>
+          <>
+            {item.updatedValue ? (
+              <div onClick={() => handleConfigure(item)}>
+                <PencilIcon />
+              </div>
+            ) : (
+              <ConfigureButton onClick={() => handleConfigure(item)}>
+                {KDFM.CONFIGURE}
+              </ConfigureButton>
+            )}
+          </>
         ),
       width: '14%',
     },
