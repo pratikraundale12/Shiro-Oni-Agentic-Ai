@@ -93,9 +93,12 @@ const ControllerServiceTab = ({
       const newalyAddedObject = {
         identifier: newlyAddedExternalServiceResponse?.value,
         name: newlyAddedExternalServiceResponse?.label,
-        parentId: selectedExternalService.identifier,
+        parentId: selectedExternalServiceIdentifier,
       };
-      const updatedArray = externalControllerServices.map(obj =>
+      const compareState = isEmpty(externalControllerServicesTableData)
+        ? externalControllerServices
+        : externalControllerServicesTableData;
+      const updatedArray = compareState.map(obj =>
         obj.identifier === selectedExternalService.identifier
           ? newalyAddedObject
           : obj
@@ -135,7 +138,12 @@ const ControllerServiceTab = ({
 
   const [isFromExternalService, setisFromExternalService] = useState(false);
 
-  const [isAddedViaAdd, setIsAddedViaAdd] = useState(false);
+  const [isAddedViaAdd, setIsAddedViaAdd] = useState(null);
+
+  const [
+    selectedExternalServiceIdentifier,
+    setSelectedExternalServiceIdentifier,
+  ] = useState('');
 
   const COLUMNS = [
     { label: 'Name', renderCell: item => item?.name, width: '21%' },
@@ -224,6 +232,9 @@ const ControllerServiceTab = ({
   };
 
   const handleConfigure = item => {
+    setSelectedExternalServiceIdentifier(
+      item?.parentId ? item?.parentId : item?.identifier
+    );
     setSelectedExternalService(item);
     setSelectedService(item);
     setIsModalOpen(true);
@@ -232,36 +243,53 @@ const ControllerServiceTab = ({
     }
   };
 
+  useEffect(() => {
+    isAddedViaAdd === false && setExternalControllerServicesTableData([]);
+  }, [isAddedViaAdd]);
+
   const handleConfigureSubmit = (
     isAdd,
     data = newlyAddedExternalServiceResponse
   ) => {
+    setIsAddedViaAdd(isAdd);
     !isAdd && setExternalControllerServicesTableData([]);
-    const updatedData = externalControllerServices.map(service =>
-      service?.identifier ===
-      (selectedService?.parentId
-        ? selectedService?.parentId
-        : selectedService?.identifier)
+    const updatedData = externalControllerServices.map(service => {
+      return (service.parentId ? service.parentId : service.identifier) ===
+        (selectedService?.parentId
+          ? selectedService?.parentId
+          : selectedService?.identifier)
         ? { ...service, controllerService: [data] }
-        : service
-    );
+        : service;
+    });
 
     const compareState = !isAdd
       ? externalControllerServices
       : externalControllerServicesTableData;
+
+    const payloadName = externalControllerServices.map(service => 
+      service.identifier === selectedExternalServiceIdentifier && service?.name
+    )
+    const payloadProcessors = externalControllerServices.map(service => 
+      service.identifier === selectedExternalServiceIdentifier && service?.processors
+    )
     const payloadData = compareState.map(service => {
-      return service.identifier ===
+      return (service.parentId ? service.parentId : service.identifier) ===
         (selectedService?.parentId
           ? selectedService?.parentId
           : selectedService?.identifier)
         ? {
-            ...service,
+            name: payloadName[0],
+            processors: payloadProcessors[0],
+            identifier: service?.parentId
+              ? service?.parentId
+              : service?.identifier,
             updatedValue: isAdd
               ? newlyAddedExternalServiceResponse?.value
               : data?.id,
           }
         : service;
     });
+
     setExternalServicePayload(payloadData);
     !isAdd && setExternalControllerServices(updatedData);
     const newExternalControllerServiceArray = updatedData.map(
