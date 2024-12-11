@@ -46,7 +46,7 @@ const ConfigureButton = styled.button`
   &:hover {
     background-color: #ff7a00;
   }
-`;
+`;  
 
 const ControllerServiceTab = ({
   setControllerServicePayload,

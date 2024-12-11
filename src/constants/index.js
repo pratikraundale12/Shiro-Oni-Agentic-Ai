@@ -179,7 +179,7 @@ export const KDFM = {
   LDAP: 'Ldap',
   SCHEDULE_DIPLOYMENT: 'Schedule Diployment',
   SERVICE_ACCOUNT: 'Service Account',
-  CONTROLLER_SERVICE_DATA: 'Controller Services Data',
+  CONTROLLER_SERVICE_DATA: 'External Controller Services',
 
   CHANGE_CONFIGURATION: 'Change Configuration',
 
