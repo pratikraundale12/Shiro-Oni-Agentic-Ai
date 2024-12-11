@@ -20,12 +20,6 @@ import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
   width: 100%;
-  height: 596px;
-  top: 273px;
-  left: 290px;
-  gap: 0px;
-  opacity: 0px;
-  border: Mixed solid rgba(221, 228, 240, 1);
 `;
 
 const NoDataText = styled.div`
@@ -357,7 +351,7 @@ const ControllerServiceTab = ({
       propertyMap.set(updatedProp.name, updatedProp);
     });
     return Array.from(propertyMap.values());
-  }
+  };
   useEffect(() => {
     setLocalServices(prevLocalServices => {
       const updatedServices = prevLocalServices.map(processGroup => {
@@ -411,9 +405,9 @@ const ControllerServiceTab = ({
   useEffect(() => {
     setControllerServicesData({
       externalControllerServices: externalControllerServices,
-      localServices: localServices
-    })
-  },[localServices, externalControllerServices])
+      localServices: localServices,
+    });
+  }, [localServices, externalControllerServices]);
 
   return (
     <DataWrapper>
