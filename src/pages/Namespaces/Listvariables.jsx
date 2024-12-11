@@ -161,7 +161,7 @@ const Listvariables = ({
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <IconButton
             onClick={() => {
-              if (!canWrite) {
+              if (canWrite) {
                 setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
                 if (isVariablesModalOpen?.schedule) {
                   setVariablesModalOpen({
