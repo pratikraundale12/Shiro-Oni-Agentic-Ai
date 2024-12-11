@@ -622,13 +622,17 @@ const Summary = () => {
       namespaceId: checkDestCluster?.id,
       payload: {
         namespaceId: checkDestCluster?.value,
-        variablesData: isEmpty(variblesReduxData)
-          ? registryDetailsData?.variablesData
-          : variblesReduxData,
-        parameterData: updatedData,
-        controllerServiceData: registryDetailsData?.controllerServicesData,
       },
     };
+    if (!isEmpty(variblesReduxData)) {
+      payload.payload.variablesData = variblesReduxData;
+    }
+    if (!isEmpty(updatedData)) {
+      payload.payload.parameterData = updatedData;
+    }
+    if (!isEmpty(controllerServiceReduxData)) {
+      payload.payload.controllerServiceData = controllerServiceReduxData;
+    }
     dispatch(NamespacesActions.upgradeCluster(payload));
     // toast.info(NamespacesSelectors.getUpdatedNamespaceResponse.message);
   };
