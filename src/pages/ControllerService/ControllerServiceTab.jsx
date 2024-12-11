@@ -95,10 +95,7 @@ const ControllerServiceTab = ({
         name: newlyAddedExternalServiceResponse?.label,
         parentId: selectedExternalServiceIdentifier,
       };
-      const compareState = isEmpty(externalControllerServicesTableData)
-        ? externalControllerServices
-        : externalControllerServicesTableData;
-      const updatedArray = compareState.map(obj =>
+      const updatedArray = externalControllerServices.map(obj =>
         obj.identifier === selectedExternalService.identifier
           ? newalyAddedObject
           : obj
@@ -146,20 +143,75 @@ const ControllerServiceTab = ({
   ] = useState('');
 
   const COLUMNS = [
-    { label: 'Name', renderCell: item => item?.name, width: '21%' },
-    { label: 'Type', renderCell: item => item?.typeValue, width: '20%' },
-    { label: 'Bundle', renderCell: item => item?.bundleValue, width: '18%' },
-    { label: 'State', renderCell: item => item?.state, width: '16%' },
-    { label: 'Scope', renderCell: item => item?.scope, width: '11%' },
+    {
+      label: 'Name',
+      renderCell: item =>
+        item?.controllerService?.length
+          ? item?.controllerService[0]?.name
+          : item?.name,
+      width: '21%',
+    },
+    {
+      label: 'Type',
+      renderCell: item =>
+        item?.controllerService?.length
+          ? item?.controllerService[0]?.typeValue
+          : item?.typeValue,
+      width: '20%',
+    },
+    {
+      label: 'Bundle',
+      renderCell: item =>
+        item?.controllerService?.length
+          ? item?.controllerService[0]?.bundleValue
+          : item?.bundleValue,
+      width: '18%',
+    },
+    {
+      label: 'State',
+      renderCell: item =>
+        item?.controllerService?.length
+          ? item?.controllerService[0]?.state
+          : item?.state,
+      width: '16%',
+    },
+    {
+      label: 'Scope',
+      renderCell: item =>
+        item?.controllerService?.length
+          ? item?.controllerService[0]?.scope
+          : item?.scope,
+      width: '11%',
+    },
     {
       label: 'Action',
-      renderCell: item => (
-        <ConfigureButton onClick={() => handleConfigure(item)}>
-          {isEmpty(newlyAddedExternalServiceResponse)
-            ? KDFM.CONFIGURE
-            : 'Re Configure'}
-        </ConfigureButton>
-      ),
+      renderCell: item =>
+        item?.controllerService?.length ? (
+          <>
+            <button
+              className="border-0 bg-white"
+              onClick={() => handleSettingClick(item?.controllerService[0])}
+              data-tooltip-id={`Settings-${item?.id}`}
+              aria-label="Settings"
+            >
+              <SettingSmallIcon />
+            </button>
+            <ReactTooltip
+              id={`Settings-${item?.id}`}
+              place="left"
+              content="Settings"
+              style={{
+                width: '130px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+          </>
+        ) : (
+          <ConfigureButton onClick={() => handleConfigure(item)}>
+            {KDFM.CONFIGURE}{' '}
+          </ConfigureButton>
+        ),
       width: '14%',
     },
   ];
@@ -243,22 +295,23 @@ const ControllerServiceTab = ({
     }
   };
 
-  useEffect(() => {
-    isAddedViaAdd === false && setExternalControllerServicesTableData([]);
-  }, [isAddedViaAdd]);
-
   const handleConfigureSubmit = (
     isAdd,
     data = newlyAddedExternalServiceResponse
   ) => {
     setIsAddedViaAdd(isAdd);
-    !isAdd && setExternalControllerServicesTableData([]);
+    !isAdd &&
+      setExternalControllerServicesTableData(prevState =>
+        prevState.filter(
+          service => service.identifier !== selectedExternalService.identifier
+        )
+      );
     const updatedData = externalControllerServices.map(service => {
       return (service.parentId ? service.parentId : service.identifier) ===
         (selectedService?.parentId
           ? selectedService?.parentId
           : selectedService?.identifier)
-        ? { ...service, controllerService: [data] }
+        ? { ...service, controllerService: [data], updatedValue: data?.id }
         : service;
     });
 
@@ -266,12 +319,16 @@ const ControllerServiceTab = ({
       ? externalControllerServices
       : externalControllerServicesTableData;
 
-    const payloadName = externalControllerServices.map(service => 
-      service.identifier === selectedExternalServiceIdentifier && service?.name
-    )
-    const payloadProcessors = externalControllerServices.map(service => 
-      service.identifier === selectedExternalServiceIdentifier && service?.processors
-    )
+    const payloadName = externalControllerServices.map(
+      service =>
+        service.identifier === selectedExternalServiceIdentifier &&
+        service?.name
+    );
+    const payloadProcessors = externalControllerServices.map(
+      service =>
+        service.identifier === selectedExternalServiceIdentifier &&
+        service?.processors
+    );
     const payloadData = compareState.map(service => {
       return (service.parentId ? service.parentId : service.identifier) ===
         (selectedService?.parentId
@@ -290,17 +347,38 @@ const ControllerServiceTab = ({
         : service;
     });
 
-    setExternalServicePayload(payloadData);
     !isAdd && setExternalControllerServices(updatedData);
-    const newExternalControllerServiceArray = updatedData.map(
-      service => service.controllerService
-    );
-    !isAdd &&
-      setExternalControllerServiceArray(newExternalControllerServiceArray);
+    !isAdd && setExternalControllerServiceArray(updatedData);
     setIsModalOpen(false);
     setSelectedService(null);
     !isAdd && setIsExternalServiceUpdated(true);
   };
+
+  useEffect(() => {
+    const finalPayload = initialExternalService
+      .map(service => {
+        const matchingTableData = externalControllerServices.find(tableItem =>
+          tableItem.parentId
+            ? tableItem.parentId
+            : tableItem?.identifier === service.identifier
+        );
+        if (matchingTableData) {
+          const isNameUpdated = matchingTableData.name !== service.name;
+          const newData = matchingTableData?.controllerService?.length;
+          if (isNameUpdated || newData) {
+            return {
+              ...service,
+              updatedValue: newData
+                ? matchingTableData?.controllerService?.[0]?.id
+                : matchingTableData?.updatedValue,
+            };
+          }
+        }
+        return null;
+      })
+      .filter(service => service !== null);
+    setExternalServicePayload(finalPayload);
+  }, [externalControllerServices]);
 
   const handleConfigCloseModal = () => {
     setIsModalOpen(false);
@@ -350,36 +428,46 @@ const ControllerServiceTab = ({
     LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
 
+  const [initialExternalService, setInitialExternalService] = useState(
+    controllerServicesData?.externalControllerServices
+  );
+
+  useEffect(() => {
+    const updatedControllerServices = externalControllerServices.map(
+      service => {
+        const matchingTableData = externalControllerServicesTableData.find(
+          tableItem => tableItem.parentId === service.identifier
+        );
+
+        if (matchingTableData) {
+          return {
+            ...service,
+            name: matchingTableData.name,
+            updatedValue: matchingTableData.identifier,
+          };
+        }
+        return service;
+      }
+    );
+    setExternalControllerServices(updatedControllerServices);
+  }, [externalControllerServicesTableData]);
+
   useEffect(() => {
     const newCollapsibles = [
-      ...(externalControllerServiceArray?.length &&
-      isEmpty(externalControllerServicesTableData)
+      ...(externalControllerServices
         ? [
             {
               title: KDFM.CONTROLLER_SERVICE_DATA,
               content: (
                 <Table
-                  data={externalControllerServiceArray[0]}
-                  columns={COLUMNS_2}
+                  data={externalControllerServices}
+                  columns={COLUMNS}
                   className={'variables-table'}
                 />
               ),
             },
           ]
-        : externalControllerServicesTableData?.length
-          ? [
-              {
-                title: KDFM.CONTROLLER_SERVICE_DATA,
-                content: (
-                  <Table
-                    data={externalControllerServicesTableData}
-                    columns={COLUMNS}
-                    className={'variables-table'}
-                  />
-                ),
-              },
-            ]
-          : []),
+        : []),
       ...(localServices?.map(service => ({
         title: service?.processGroupName || 'Unnamed Group',
         content: (
@@ -393,8 +481,8 @@ const ControllerServiceTab = ({
     ];
     setCollapsibles(newCollapsibles);
   }, [
-    externalControllerServices,
     localServices,
+    externalControllerServices,
     externalControllerServiceArray,
     newlyAddedExternalServiceResponse,
     externalControllerServicesTableData,
@@ -456,7 +544,6 @@ const ControllerServiceTab = ({
               updated => updated.identifier === controller.identifier
             );
             if (updatedController) {
-              // Merge the updated controller data
               return {
                 ...controller,
                 ...updatedController,
