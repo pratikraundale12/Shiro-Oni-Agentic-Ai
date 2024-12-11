@@ -43,7 +43,7 @@ const ImageContainer = styled.div`
 
 const GreyBoxNamespace = styled.div`
   background-color: #f5f7fa;
-  padding: 22px 19px;
+  padding: 5px 10px 0px 10px;
   border-radius: 20px;
 `;
 const BottomButtonDiv = styled.div`
@@ -64,7 +64,7 @@ const BreadcrumbContainer = styled.div`
 `;
 const TabWrapper = styled.div`
   display: flex;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   align-items: flex-start;
   border-bottom: 1px solid rgba(221, 228, 240, 1);
 `;
@@ -88,9 +88,8 @@ const Tab = styled.div`
 
 const TabContent = styled.div`
   width: 100%;
-  padding: 1rem;
+  padding: 0px 0.5rem;
   border-radius: 0.25rem;
-  background-color: #f8f9fa;
 `;
 
 const ConfigDetailsPage = () => {
@@ -124,7 +123,10 @@ const ConfigDetailsPage = () => {
   const [controllerServiceData, setControllerServiceData] = useState(
     registryDetailsData?.controllerServicesData
   );
-
+  const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
+  const selectedNameSpace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const handleBackClick = () => {
     history.push('/process-group/flow-details');
   };
@@ -209,6 +211,12 @@ const ConfigDetailsPage = () => {
           </ImageContainer>
           <MainTitleHfour className="mb-0">
             {!isUpgrade ? KDFM.UPGRADE_NAMESPACE : KDFM.DEPLOY_NAMESPACE}
+          </MainTitleHfour>{' '}
+          :
+          <MainTitleHfour className="mb-0">
+            {!isUpgrade
+              ? selectedNameSpace.label
+              : formDataRegistry?.selectedFlowName}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
@@ -218,6 +226,7 @@ const ConfigDetailsPage = () => {
           path={!isUpgrade ? breadcrumbDataOnUpgrade : breadcrumbDataOnDeploy}
         />
       </BreadcrumbContainer>
+
       <GreyBoxNamespace className="w-100  mb-3">
         <TabWrapper className="nav">
           <Tab

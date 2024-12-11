@@ -37,13 +37,17 @@ const IconContainer = styled.div`
   cursor: pointer;
 `;
 const Container = styled.div`
-  width: calc(100% - 373px);
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 10px;
   position: fixed;
   z-index: 10;
+  left: 0px;
+  right: 0px;
+  @media (min-width: 992px) {
+    padding-left: 280px;
+  }
 `;
 
 const SessionExpiredLabel = ({ closeTab }) => {

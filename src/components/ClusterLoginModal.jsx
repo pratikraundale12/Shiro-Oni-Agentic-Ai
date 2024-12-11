@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { ClusterIcon, UserIcon } from '../assets';
 import { CLUSTERS_TOKEN } from '../constants';
+import { history } from '../helpers/history';
 import { InputField, Modal, PasswordField, SelectField } from '../shared';
 import {
   AuthenticationActions,
@@ -129,6 +130,7 @@ export const ClusterLoginModal = () => {
         toast.success('Cluster Enabled Successfully');
         reset(DEFAULT_VALUES);
         dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+        history.push('/dashboard');
       } else {
         toast.error(response.message || 'Error while getting data');
         setLoading(false);
@@ -152,6 +154,7 @@ export const ClusterLoginModal = () => {
     dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
   }, [dispatch]);
   const onSwitchCluster = () => {
+    history.push('/dashboard');
     const clusterData = JSON.parse(
       localStorage.getItem(CLUSTERS_TOKEN) || '[]'
     );

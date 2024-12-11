@@ -168,26 +168,18 @@ export function* updateNamespaceStatus(api, { payload }) {
     ],
   });
   if (response.ok) {
-    const data = {
-      id: response.data.status.id,
-      runningCount: response.data.status.runningCount,
-      stoppedCount: response.data.status.stoppedCount,
-      invalidCount: response.data.status.invalidCount,
-      disabledCount: response.data.status.disabledCount,
-      parameterContextId: response.data.status.parameterContextId,
-    };
-
     const responseData = {
       id: response.data.status?.id,
-      nifiUrl: response.data.status?.id.nifiUrl,
+      nifiUrl: response.data.status?.nifiUrl,
       runningCount: response.data.status?.runningCount,
       stoppedCount: response.data.status?.stoppedCount,
       invalidCount: response.data.status?.invalidCount,
       disabledCount: response.data.status?.disabledCount,
+      parameterContextId: response.data.status.parameterContextId,
     };
     yield put(NamespacesActions.setFlowControlData(responseData));
     yield put(NamespacesActions.setRegistryDeployResponseData(responseData));
-    yield put(NamespacesActions.deployClusterSuccess(data));
+    yield put(NamespacesActions.deployClusterSuccess(responseData));
   }
   if (!response.ok) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
@@ -635,6 +627,9 @@ export function* fetchNamespaceAudit(api) {
   const selectedNamespaceId = yield select(
     NamespacesSelectors.getSelectedSourceNamespace
   );
+  const singleNamespaceData = yield select(
+    NamespacesSelectors.getSingleNamespaceData
+  );
   const response = yield call(requestSaga, {
     errorSection: 'fetchNamespaceAudit',
     loadingSection: 'fetchNamespaceAudit',
@@ -643,6 +638,7 @@ export function* fetchNamespaceAudit(api) {
       {
         params: {
           recordId: selectedNamespaceId,
+          nameSpaceName: singleNamespaceData?.name,
         },
         payload: {},
       },

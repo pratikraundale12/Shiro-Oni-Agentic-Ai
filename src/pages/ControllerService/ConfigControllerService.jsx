@@ -65,7 +65,7 @@ export const ConfigControllerService = ({
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => item?.displayName,
+      renderCell: item => item?.displayName || item?.name,
       width: '40%',
     },
     {
@@ -138,12 +138,13 @@ export const ConfigControllerService = ({
     if (isFromControllerServiceTab && !isFromExternalService) {
       handlePropertyUpdate(configPayload);
       onClose();
-    } else {      
+    } else {
       dispatch(NamespacesActions.addPropertyControllerService(payload));
       onClose();
-      !isFromExternalService && setTimeout(() => {
-        dispatch(NamespacesActions.getControllerServiceList());
-      }, 500);
+      !isFromExternalService &&
+        setTimeout(() => {
+          dispatch(NamespacesActions.getControllerServiceList());
+        }, 500);
     }
     setUpdatedData([]);
   };

@@ -107,13 +107,38 @@ const StyledTableCell = styled.div`
   cursor: pointer;
   padding: 6px 12px !important;
   min-width: 4rem !important;
+  &.p-0 {
+    padding: 0px !important;
+  }
 `;
 
 const CustomTable = styled(Table)`
   overflow-y: auto;
   overflow-x: auto;
-  max-height: 25rem;
+  max-height: 34vh;
   width: 100%;
+  td {
+    height: auto !important;
+    .td-text-wrap {
+      word-wrap: normal;
+      white-space: normal;
+    }
+  }
+`;
+const BucketDiv = styled.div`
+  label {
+    margin-bottom: 0px;
+  }
+`;
+const LabelSelect = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+`;
+
+const FlowDescription = styled.div`
+  color: ${props => props.theme.colors.darker};
 `;
 
 const breadcrumbData = [
@@ -190,7 +215,7 @@ function DeployPage() {
           onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
           style={{
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: 'center',
           }}
         >
           <RadioField
@@ -202,7 +227,7 @@ function DeployPage() {
           />
         </StyledTableCell>
       ),
-      width: '10%',
+      width: '7%',
     },
     {
       label: KDFM.VERSION,
@@ -224,6 +249,7 @@ function DeployPage() {
         <StyledTableCell
           role="button"
           tabIndex="0"
+          className="p-0"
           onClick={() => handleRowClick(item)}
           onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
         >
@@ -238,13 +264,14 @@ function DeployPage() {
         <StyledTableCell
           role="button"
           tabIndex="0"
+          className="td-text-wrap p-0"
           onClick={() => handleRowClick(item)}
           onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
         >
           {item.comments}
         </StyledTableCell>
       ),
-      width: '50%',
+      width: '53%',
     },
   ];
   const handleRowClick = item => {
@@ -368,7 +395,7 @@ function DeployPage() {
               </div>
               <div className="col-6 p-3">
                 <div>
-                  <div className="justify-content-between align-items-center">
+                  <BucketDiv className="justify-content-between align-items-center">
                     <SelectField
                       label="Bucket"
                       name="bucketId"
@@ -379,13 +406,13 @@ function DeployPage() {
                       placeholder="Select Bucket"
                       control={control}
                     />
-                  </div>
+                  </BucketDiv>
                 </div>
               </div>
             </RowConfig>
 
             <RowConfig>
-              <div className="col-6 p-3 mb-">
+              <div className="col-6 p-3 mb-0">
                 <SelectField
                   label="Flow Name"
                   name="flow_name"
@@ -398,8 +425,8 @@ function DeployPage() {
               </div>
 
               <div className="mt-3 col-6 p-3">
-                <div className="mt-4">
-                  <div className="mt-5 d-flex justify-content-between align-items-center">
+                <div className="mt-4 pt-2">
+                  <div className="pt-1 d-flex justify-content-between align-items-center">
                     <CheckboxField
                       name="check"
                       label="Keep existing Parameter Contexts"
@@ -408,6 +435,15 @@ function DeployPage() {
                     />
                   </div>
                 </div>
+              </div>
+            </RowConfig>
+
+            <RowConfig>
+              <div className="col-6 p-3 mb-3">
+                <LabelSelect>Flow Description</LabelSelect>
+                <FlowDescription className="mt-2 fw-semibold">
+                  No Description Provided
+                </FlowDescription>
               </div>
             </RowConfig>
 

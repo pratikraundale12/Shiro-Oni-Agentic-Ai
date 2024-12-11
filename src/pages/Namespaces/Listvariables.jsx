@@ -3,17 +3,22 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { PencilIcon, PlusCircleIcon } from '../../assets';
-import { IconButton, Table, TextRender } from '../../components';
+import { NoDataIcon, PencilIcon, PlusCircleIcon } from '../../assets';
+import {
+  IconButton,
+  LoaderContainer,
+  Table,
+  TextRender,
+} from '../../components';
 import { KDFM } from '../../constants';
 import { Button, Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 // import { SchedularActions } from '../../store/schedular/redux';
 import { isEmpty, uniqBy } from 'lodash';
+import { singleNamespaceData } from '../../store/namespaces';
 import { SchedularSelectors } from '../../store/schedular/redux';
 import AddVariables from './AddVariables';
 import Collapsible from './Collapsible';
-import { singleNamespaceData } from '../../store/namespaces';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -30,6 +35,13 @@ const ScrollSetGrey = styled.div`
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
   overflow-y: auto;
+`;
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
 `;
 
 const Listvariables = ({
@@ -149,7 +161,7 @@ const Listvariables = ({
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <IconButton
             onClick={() => {
-              if (!canWrite) {
+              if (canWrite) {
                 setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
                 if (isVariablesModalOpen?.schedule) {
                   setVariablesModalOpen({
@@ -241,28 +253,35 @@ const Listvariables = ({
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        <Collapsible
-          title="Variables"
-          isTableOpen={isTableOpen}
-          toggleCollapsible={toggleCollapsible}
-          isAddBtnVisible={false}
-        >
-          <Table
-            data={variablesData}
-            columns={COLUMNS}
-            className={'variables-table'}
-            loading={variableLoadingStateAPI}
-          />
-          <Button
-            type="button"
-            disabled={!canWrite}
-            className="w-auto mt-2"
-            size="sm"
-            onClick={handleSubmit}
+        {variablesData && variablesData?.length > 0 ? (
+          <Collapsible
+            title="Variables"
+            isTableOpen={isTableOpen}
+            toggleCollapsible={toggleCollapsible}
+            isAddBtnVisible={false}
           >
-            Save
-          </Button>
-        </Collapsible>
+            <Table
+              data={variablesData}
+              columns={COLUMNS}
+              className={'variables-table'}
+              loading={variableLoadingStateAPI}
+            />
+            <Button
+              type="button"
+              disabled={!canWrite}
+              className="w-auto mt-2"
+              size="sm"
+              onClick={handleSubmit}
+            >
+              Save
+            </Button>
+          </Collapsible>
+        ) : (
+          <LoaderContainer>
+            <NoDataIcon width={140} />
+            <NoDataText>No Variables Found!!</NoDataText>
+          </LoaderContainer>
+        )}
 
         {isAddVariablesOpen && (
           <AddVariables

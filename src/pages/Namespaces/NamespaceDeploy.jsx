@@ -88,19 +88,15 @@ const CustomNine = styled.div`
 
 const CountDiv = styled.div`
   height: 48px;
-  width: 48px;
-  max-width: 48px;
+  margin-left: 6px;
   max-height: 48px;
   min-height: 48px;
-  min-width: 48px;
-  /* border: 1px solid #dde4f0;
-  border-radius: 8px;
-  background-color: #f5f7fa; */
+  min-width: 60px;
   cursor: pointer;
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 
   & span {
     top: 0px;
@@ -121,6 +117,11 @@ const ActiveButtonContainer = styled.div`
   align-items: center;
   justify-content: flex-start !important;
   gap: 7px;
+  .text_info {
+    border-left: 5px solid #ff7a00;
+    padding: 1rem;
+    background: #fff7ed;
+  }
 `;
 
 const ActiveButtonDiv = styled.div`
@@ -328,7 +329,7 @@ const NamespaceDeploy = ({
                 {!(
                   deployOrUpgradeDetails?.stoppedCount === 0 &&
                   deployOrUpgradeDetails?.runningCount === 0
-                ) && (
+                ) ? (
                   <>
                     <ActiveButtonDiv className="div-btn-1">
                       <Tooltip id="running-tooltip" place="top">
@@ -368,8 +369,13 @@ const NamespaceDeploy = ({
                       </ActiveButtonDiv>
                     </ActiveButtonDiv>
                   </>
+                ) : (
+                  <div className="text_info">
+                    If there are no running or stopped processors, or if
+                    processors are disabled or invalid, the start and stop
+                    buttons are hidden.
+                  </div>
                 )}
-
                 {/* <ActiveButtonDiv className="div-btn-3">
                   <Tooltip id="enabled-tooltip" place="top">
                     Enable
