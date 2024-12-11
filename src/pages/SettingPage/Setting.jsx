@@ -99,12 +99,18 @@ export const settingSchema = yup.object().shape({
 
   group_email_id: yup
     .string()
+    .nullable()
+
     .matches(EMAIL_REGEX, 'Invalid email address')
     .max(50, 'Email can not be greater than 25 characters'),
 
   approver_groups: yup
-    .string()
-    .required('Please select at least one approver group'),
+    .mixed()
+    .test(
+      'is-valid',
+      'Please select at least one approver group',
+      value => value !== undefined && value !== null && value !== ''
+    ),
 });
 
 export const Setting = () => {
@@ -134,6 +140,7 @@ export const Setting = () => {
     { label: '30 minutes', value: 30 },
     { label: '45 minutes', value: 45 },
   ];
+
   const selectedOptions = Number(watch('ldap_auto_sync_time_interval'));
   const onSubmit = async data => {
     setLoading(true);
@@ -143,7 +150,9 @@ export const Setting = () => {
     payload.append('favicon', data?.favicon || null);
     payload.append('title', data?.title);
     payload.append('username', data?.username);
-    payload.append('password', data?.password);
+    if (data.password && data.password !== '*********') {
+      payload.append('password', data.password);
+    }
     payload.append(
       'refresh',
       data.refresh === false || data.refresh === 'Off' ? 0 : data.refresh
@@ -185,7 +194,9 @@ export const Setting = () => {
       setValue('favicon', settingData?.favicon);
       setValue('title', settingData?.title);
       setValue('username', settingData?.username);
-      setValue('password', settingData?.password);
+      if (settingData?.username && !watch('password')) {
+        setValue('password', '*******');
+      }
 
       setValue(
         'refresh',
@@ -199,6 +210,7 @@ export const Setting = () => {
       setValue('email_reminder_time', settingData?.email_reminder_time);
       setValue('group_email_id', settingData?.group_email_id);
       setValue('email', settingData?.email);
+      setValue('approver_groups', settingData.approver_groups || '');
       setLdapInitialConfig(settingData?.ldapEnabled || false);
       const logoElement = document.getElementById('logo');
       if (logoElement && settingData?.logo) {
@@ -404,14 +416,18 @@ export const Setting = () => {
         <HeadingContentHr className="mt-3 mb-4" />
         <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-8 mb-4">
           <SelectField
-            // isMulti
+            label="Approver Groups"
             name="approver_groups"
             control={control}
             icon={<QRIcons />}
-            label="Approver Groups"
             errors={errors}
             options={approverOptions}
             placeholder="Select Approver Groups"
+            value={approverOptions.find(
+              option =>
+                option.value ===
+                (watch('approver_groups') || settingData?.approver_groups)
+            )}
           />
         </div>
         <InputFields className="row">
@@ -467,6 +483,11 @@ export const Setting = () => {
                 label="Password"
                 disableToggle={false}
                 placeholder="Enter your Password"
+                defaultValue={
+                  watch('username') && watch('username').trim() !== ''
+                    ? settingData?.password || '*******'
+                    : ''
+                }
               />
             </div>
           </InputFields>
