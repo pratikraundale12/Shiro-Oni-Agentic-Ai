@@ -88,6 +88,14 @@ const CustomTable = styled(Table)`
   }
   overflow-y: auto;
   overflow-x: hidden;
+  td {
+    height: auto !important;
+    .td-text-wrap {
+      word-wrap: normal;
+      white-space: normal;
+      word-break: break-all;
+    }
+  }
 `;
 const VersionDiv = styled.div`
   margin-bottom: 1rem;
@@ -326,7 +334,7 @@ const FlowDetailsPage = () => {
   };
   const sortedData = versionListData?.versionList
     ?.slice()
-    .sort((a, b) => a.version - b.version);
+    .sort((a, b) => b.version - a.version);
 
   const handleYCoordinateChangeInput = e => {
     if (e.target.value) {
@@ -516,6 +524,7 @@ const FlowDetailsPage = () => {
             <>
               <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
               <CustomTable
+                className="td-text-wrap"
                 data={sortedData || []}
                 columns={VERSION_COLUMNS({
                   selectedVersion,
