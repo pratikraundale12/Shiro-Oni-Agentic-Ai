@@ -179,6 +179,10 @@ const Listvariables = ({
                 dispatch(NamespacesActions.setVariableContextItem(item));
               }
             }}
+            style={{
+              opacity: canWrite ? 1 : 0.3,
+              cursor: canWrite ? 'pointer' : 'not-allowed',
+            }}
           >
             <PencilIcon style={{ color: 'black' }} />
           </IconButton>
@@ -188,12 +192,7 @@ const Listvariables = ({
   ];
 
   let variablesData = [];
-  if (schedularFromList && !isEmpty(combinedVaribalesListSchedule?.variables)) {
-    variablesData = [...combinedVaribalesListSchedule?.variables] || [];
-  } else if (
-    (variableList && variableList.variables) ||
-    isVariablesModalOpen.schedule
-  ) {
+  if (variableList && variableList?.variables) {
     const variables = newlyAddVariables.map(item => {
       return {
         variable: {
@@ -203,15 +202,19 @@ const Listvariables = ({
         },
       };
     });
-    if (isVariablesModalOpen.schedule) {
-      variablesData = [...variables];
-    } else {
-      variablesData = [...variableList.variables, ...variables];
-    }
+    const allVariables = [...variableList?.variables, ...variables];
+    const uniqueVariables = Array.from(
+      new Map(allVariables.map(item => [item.variable.name, item])).values()
+    );
+
+    variablesData = uniqueVariables;
   }
+
+  console.log(variablesData, '122233333333333333333333');
 
   const openVariable = () => {
     setIsAddVariablesOpen({ isOpen: true, mode: 'add' });
+    console.log(isVariablesModalOpen, '11111111111111111111111111');
     dispatch(NamespacesActions.setVariableContextItem({}));
     if (isVariablesModalOpen?.schedule) {
       setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
@@ -250,6 +253,7 @@ const Listvariables = ({
     setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: true });
   };
   const toggleCollapsible = () => setIsTableOpen(!isTableOpen);
+
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -261,7 +265,7 @@ const Listvariables = ({
             isAddBtnVisible={false}
           >
             <Table
-              data={variablesData}
+              data={variablesData || []}
               columns={COLUMNS}
               className={'variables-table'}
               loading={variableLoadingStateAPI}

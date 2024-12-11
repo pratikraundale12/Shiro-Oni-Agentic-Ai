@@ -187,6 +187,10 @@ const ParameterContext = ({
           singleNamespaceData?.parameterContextId ||
           !has(item, 'parentParameterId') ? (
             <IconButton
+              style={{
+                opacity: canWrite ? 1 : 0.3,
+                cursor: canWrite ? 'pointer' : 'not-allowed',
+              }}
               onClick={() => {
                 if (canWrite) {
                   setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
