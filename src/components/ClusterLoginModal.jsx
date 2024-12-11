@@ -130,7 +130,9 @@ export const ClusterLoginModal = () => {
         toast.success('Cluster Enabled Successfully');
         reset(DEFAULT_VALUES);
         dispatch(GridActions.fetchGrid({ module: 'clusters' }));
-        history.push('/dashboard');
+        if (window.location.pathname.includes('/process-group')) {
+          history.push('/process-group');
+        }
       } else {
         toast.error(response.message || 'Error while getting data');
         setLoading(false);
@@ -154,21 +156,27 @@ export const ClusterLoginModal = () => {
     dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
   }, [dispatch]);
   const onSwitchCluster = () => {
-    history.push('/dashboard');
+    if (window.location.pathname.includes('/process-group')) {
+      history.push('/process-group');
+    }
+
     const clusterData = JSON.parse(
       localStorage.getItem(CLUSTERS_TOKEN) || '[]'
     );
     const clusterName = clusterData.find(
       cluster => cluster?.id == getValues()?.cluster_id
     )?.name;
+
     dispatch(AuthenticationActions.setClusterLogin());
     toast.success('Cluster Enabled Successfully');
+
     dispatch(
       NamespacesActions.setSelectedCluster({
         label: clusterName,
         value: getValues()?.cluster_id,
       })
     );
+
     if (!clusterLogin.is_deploy) {
       localStorage.setItem(
         'selected_cluster',
