@@ -311,7 +311,15 @@ export const Dashboard = () => {
     }
   }, [dashboardData]);
   const handleRefresh = () => {
-    window.location.reload(true); // Hard reload
+    if (selectedCluster && selectedNamespace) {
+      dispatch(
+        DashboardActions.fetchDashboard({
+          payload: { selectedNamespace: selectedNamespace },
+        })
+      );
+    } else {
+      window.location.reload(true); // Hard reload
+    }
   };
   let ClusterActivated = localStorage.getItem('clusters');
 
@@ -332,10 +340,12 @@ export const Dashboard = () => {
                 Array.isArray(namespaces)
                   ? [
                       ClusterActivated ? { value: '', label: 'All' } : [],
-                      ...namespaces.map(({ id, name }) => ({
-                        value: id,
-                        label: name,
-                      })),
+                      ...namespaces
+                        .filter(space => !space.isProcessor)
+                        .map(({ id, name }) => ({
+                          value: id,
+                          label: name,
+                        })),
                     ]
                   : []
               }
