@@ -115,7 +115,7 @@ const StyledTableCell = styled.div`
 const CustomTable = styled(Table)`
   overflow-y: auto;
   overflow-x: auto;
-  max-height: 25rem;
+  max-height: 34vh;
   width: 100%;
   td {
     height: auto !important;

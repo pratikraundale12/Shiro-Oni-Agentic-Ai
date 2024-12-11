@@ -627,6 +627,9 @@ export function* fetchNamespaceAudit(api) {
   const selectedNamespaceId = yield select(
     NamespacesSelectors.getSelectedSourceNamespace
   );
+  const singleNamespaceData = yield select(
+    NamespacesSelectors.getSingleNamespaceData
+  );
   const response = yield call(requestSaga, {
     errorSection: 'fetchNamespaceAudit',
     loadingSection: 'fetchNamespaceAudit',
@@ -635,6 +638,7 @@ export function* fetchNamespaceAudit(api) {
       {
         params: {
           recordId: selectedNamespaceId,
+          nameSpaceName: singleNamespaceData?.name,
         },
         payload: {},
       },
