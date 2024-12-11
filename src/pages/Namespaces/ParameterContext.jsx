@@ -187,24 +187,31 @@ const ParameterContext = ({
           singleNamespaceData?.parameterContextId ||
           !has(item, 'parentParameterId') ? (
             <IconButton
-              // disabled={loading}
               onClick={() => {
-                setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
-                if (isParameterContextOpen?.schedule) {
-                  setIsParameterContextOpen({ isOpen: false, schedule: true });
-                } else {
-                  setIsParameterContextOpen({ isOpen: false, schedule: false });
-                }
-                dispatch(NamespacesActions.setParameterContextItem(item));
-                if (!isParentEdit?.parent) {
-                  dispatch(
-                    NamespacesActions.setParameterEditParent({
-                      parent: false,
-                      id:
-                        deployOrUpgradeDetails?.parameterContextId ||
-                        singleNamespaceData?.parameterContextId,
-                    })
-                  );
+                if (canWrite) {
+                  setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
+                  if (isParameterContextOpen?.schedule) {
+                    setIsParameterContextOpen({
+                      isOpen: false,
+                      schedule: true,
+                    });
+                  } else {
+                    setIsParameterContextOpen({
+                      isOpen: false,
+                      schedule: false,
+                    });
+                  }
+                  dispatch(NamespacesActions.setParameterContextItem(item));
+                  if (!isParentEdit?.parent) {
+                    dispatch(
+                      NamespacesActions.setParameterEditParent({
+                        parent: false,
+                        id:
+                          deployOrUpgradeDetails?.parameterContextId ||
+                          singleNamespaceData?.parameterContextId,
+                      })
+                    );
+                  }
                 }
               }}
             >
