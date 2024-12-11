@@ -131,7 +131,7 @@ export function* editRole(api, { payload }) {
 
   if (response.ok) {
     yield put(RolesActions.fetchRoles());
-    toast.success('Role edited succesfully');
+    toast.success('Role edited successfully');
     yield put(RolesActions.roleModal(false));
   } else if (!response.ok) {
     {
