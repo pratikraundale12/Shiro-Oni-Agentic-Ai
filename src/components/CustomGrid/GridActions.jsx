@@ -27,15 +27,18 @@ import {
   AuthenticationSelectors,
   GridActions as GridSagsActions,
   NamespacesActions,
+  DashboardActions,
   NamespacesSelectors,
   RolesActions,
   RolesSelectors,
   UsersSelectors,
+  LoadingSelectors,
 } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { GridSelectors } from '../../store/grid';
+import { FullPageLoader } from '../FullPageLoader';
 
 const Flex = styled.div`
   display: flex;
@@ -249,6 +252,9 @@ export const GridActions = ({
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const accessType = useSelector(RolesSelectors.getAccessType);
   const userModalOpen = useSelector(UsersSelectors.getUserModalOpen);
+  const breadcrumbs = useSelector(state =>
+    GridSelectors.getGridBreadcrumb(state, module)
+  );
   // const selectedEntity = useSelector(
   //   ActivityHistorySelectors.getSelectedEntity
   // );
@@ -267,9 +273,21 @@ export const GridActions = ({
       return 'is_active';
     }
   };
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+
   const handleRefresh = () => {
-    window.location.reload(true);
-    dispatch(NamespacesActions.fetchNamespaces());
+    if (!isEmpty(selectedCluster) && breadcrumbs?.length > 1) {
+      const payload = {
+        selectedNamespace: selectedNamespace,
+      };
+      dispatch(
+        DashboardActions.fetchDashboard({
+          payload,
+        })
+      );
+    } else {
+      window.location.reload();
+    }
   };
 
   useEffect(() => {
@@ -310,10 +328,14 @@ export const GridActions = ({
     history.push('/process-group/DeployPage');
     dispatch(NamespacesActions.setdeployRegistryFlow(true));
   };
+  const loadingNamespaces = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchDashboard')
+  );
 
   return (
     <>
       <Flex className="flex-wrap gap-2">
+        <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
         <Flex>
           <GoBackButton />
           {!isChildNamespace && !clusterSummaryPage && (
