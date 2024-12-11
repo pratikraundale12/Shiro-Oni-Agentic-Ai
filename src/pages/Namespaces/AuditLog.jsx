@@ -65,7 +65,7 @@ const COLUMNS = [
   },
 ];
 
-const AuditLog = ({ rowId }) => {
+const AuditLog = () => {
   const dispatch = useDispatch();
   const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
 
@@ -73,17 +73,10 @@ const AuditLog = ({ rowId }) => {
     dispatch(NamespacesActions.fetchNamespaceAudit());
   }, [dispatch]);
 
-  const auditTableData =
-    (rowId &&
-      namespaceAuditLog?.data?.filter(
-        auditInfo => auditInfo?.record_id === rowId
-      )) ||
-    [];
-
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        <Table data={auditTableData.slice(0, 10)} columns={COLUMNS} />
+        <Table data={namespaceAuditLog?.data || []} columns={COLUMNS} />
       </ScrollSetGrey>
     </DataWrapper>
   );

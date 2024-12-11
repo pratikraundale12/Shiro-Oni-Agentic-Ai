@@ -180,15 +180,19 @@ const ActiveButtonContainer = styled.div`
   gap: 7px;
   justify-content: center;
   flex-direction: column;
+  .text_info {
+    border-left: 5px solid #ff7a00;
+    padding: 1rem;
+    background: #fff7ed;
+  }
 `;
 
 const ActiveButtonDiv = styled.div`
   height: 48px;
-  width: 48px;
-  max-width: 48px;
+  margin-left: 6px;
   max-height: 48px;
   min-height: 48px;
-  min-width: 48px;
+  min-width: 60px;
   border: 1px solid #dde4f0;
   border-radius: 8px;
   background-color: #f5f7fa;
@@ -196,7 +200,7 @@ const ActiveButtonDiv = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   &:hover {
     border: 1px solid
       ${props => (props.isActive ? props.activeColor : '#FF7A00')};
@@ -601,7 +605,7 @@ const Summary = () => {
     if (!isEmpty(controllerServiceReduxData)) {
       payload.controllerServiceData = controllerServiceReduxData;
     }
-    
+
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
 
@@ -912,7 +916,7 @@ const Summary = () => {
                 {!(
                   processStatus.runningCount === 0 &&
                   processStatus?.stoppedCount === 0
-                ) && (
+                ) ? (
                   <>
                     <TextsvgDiv className="d-flex">
                       <ActiveButtonDiv className="div-btn-1 mr-2">
@@ -945,6 +949,12 @@ const Summary = () => {
                       <div>{KDFM.STOPPED_FLOW}</div>
                     </TextsvgDiv>
                   </>
+                ) : (
+                  <div>
+                    If there are no running or stopped processors, or if
+                    processors are disabled or invalid, the start and stop
+                    buttons are hidden.
+                  </div>
                 )}
                 {/* <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-3 mr-2">
