@@ -368,7 +368,6 @@ const FlowDetailsPage = () => {
   const isStateStale =
     selectedNameSpace?.state === 'STALE' ||
     selectedNameSpace?.state === 'UP_TO_DATE';
-
   return (
     <div>
       <ToastContainer
@@ -389,6 +388,12 @@ const FlowDetailsPage = () => {
           </ImageContainer>
           <MainTitleHfour className="mb-0">
             {!isUpgrade ? 'Upgrade Process Group' : 'Deploy Process Group'}
+          </MainTitleHfour>
+          :
+          <MainTitleHfour className="mb-0">
+            {!isUpgrade
+              ? selectedNameSpace.label
+              : formDataRegistry?.selectedFlowName}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>

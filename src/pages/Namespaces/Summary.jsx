@@ -328,7 +328,9 @@ const Summary = () => {
   const checkDestCluster = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-
+  const selectedNameSpace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
@@ -388,6 +390,7 @@ const Summary = () => {
   const parameterContextItem = useSelector(
     NamespacesSelectors.getParameterContextItem
   );
+  const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
 
   const [isVariablesModalOpen, setVariablesModalOpen] = useState({
     isOpen: false,
@@ -601,7 +604,7 @@ const Summary = () => {
     if (!isEmpty(controllerServiceReduxData)) {
       payload.controllerServiceData = controllerServiceReduxData;
     }
-    
+
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
 
@@ -678,6 +681,12 @@ const Summary = () => {
                 : KDFM.DEPLOY
             } ${KDFM.NAMESPACE}`}
           </MainTitleHfour>
+          :
+          <MainTitleHfour className="mb-0">
+            {!isUpgrade
+              ? selectedNameSpace.label
+              : formDataRegistry?.selectedFlowName}
+          </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
       <BreadcrumbContainer className="d-flex mb-3">
@@ -715,7 +724,7 @@ const Summary = () => {
                 <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                   <div>
                     <SummaryDetailsHFourTag className="mb-2">
-                      {KDFM.NAMESPACE}
+                      {!isUpgrade ? KDFM.NAMESPACE : 'Selected Flow'}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
                       {deployByRegistryFlow

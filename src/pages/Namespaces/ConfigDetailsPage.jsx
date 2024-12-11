@@ -123,7 +123,10 @@ const ConfigDetailsPage = () => {
   const [controllerServiceData, setControllerServiceData] = useState(
     registryDetailsData?.controllerServicesData
   );
-
+  const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
+  const selectedNameSpace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const handleBackClick = () => {
     history.push('/process-group/flow-details');
   };
@@ -208,6 +211,12 @@ const ConfigDetailsPage = () => {
           </ImageContainer>
           <MainTitleHfour className="mb-0">
             {!isUpgrade ? KDFM.UPGRADE_NAMESPACE : KDFM.DEPLOY_NAMESPACE}
+          </MainTitleHfour>{' '}
+          :
+          <MainTitleHfour className="mb-0">
+            {!isUpgrade
+              ? selectedNameSpace.label
+              : formDataRegistry?.selectedFlowName}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
@@ -217,6 +226,7 @@ const ConfigDetailsPage = () => {
           path={!isUpgrade ? breadcrumbDataOnUpgrade : breadcrumbDataOnDeploy}
         />
       </BreadcrumbContainer>
+
       <GreyBoxNamespace className="w-100  mb-3">
         <TabWrapper className="nav">
           <Tab
