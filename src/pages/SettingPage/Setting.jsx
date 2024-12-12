@@ -120,7 +120,7 @@ export const Setting = () => {
     register,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
   const settingData = useSelector(SettingsSelectors.getSettings);
@@ -145,38 +145,107 @@ export const Setting = () => {
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
-    settingData?.id && payload.append('id', settingData.id);
-    payload.append('logo', data?.logo || null);
-    payload.append('favicon', data?.favicon || null);
-    payload.append('title', data?.title);
-    payload.append('username', data?.username);
-    if (data.password && data.password !== '*********') {
+    const updatedFields = [];
+
+    if (settingData?.id) payload.append('id', settingData.id);
+
+    if (dirtyFields.logo && data?.logo !== settingData?.logo) {
+      payload.append('logo', data?.logo || null);
+      updatedFields.push('logo');
+    }
+
+    if (dirtyFields.favicon && data?.favicon !== settingData?.favicon) {
+      payload.append('favicon', data?.favicon || null);
+      updatedFields.push('favicon');
+    }
+
+    if (dirtyFields.title && data?.title !== settingData?.title) {
+      payload.append('title', data?.title);
+      updatedFields.push('title');
+    }
+
+    if (dirtyFields.username && data?.username !== settingData?.username) {
+      payload.append('username', data?.username);
+      updatedFields.push('username');
+    }
+
+    if (dirtyFields.password && data.password !== settingData?.password) {
       payload.append('password', data.password);
+      updatedFields.push('password');
     }
-    payload.append(
-      'refresh',
-      data.refresh === false || data.refresh === 'Off' ? 0 : data.refresh
-    );
-    data.email && payload.append('email', data.email);
-    payload.append('ldap_auto_sync', ldapAutoSync);
-    if (ldapAutoSync) {
-      payload.append('ldap_auto_sync_time_interval', selectedOptions);
+
+    if (dirtyFields.email && data?.email !== settingData?.email) {
+      payload.append('email', data?.email);
+      updatedFields.push('email');
     }
-    payload.append('approver_groups', data?.approver_groups);
-    payload.append('group_email_id', data?.group_email_id);
-    payload.append('email_reminder_time', data?.email_reminder_time);
-    payload.append('ldapEnabled', isLdapEnabled);
+
+    if (dirtyFields.refresh || data.refresh !== settingData?.refresh) {
+      const refreshValue =
+        data.refresh === false || data.refresh === 'Off' ? 0 : data.refresh;
+      payload.append('refresh', refreshValue);
+      updatedFields.push('refresh');
+    }
+
+    if (
+      dirtyFields.approver_groups &&
+      data?.approver_groups !== settingData?.approver_groups
+    ) {
+      payload.append('approver_groups', data?.approver_groups);
+      updatedFields.push('approver_groups');
+    }
+
+    if (
+      dirtyFields.group_email_id &&
+      data?.group_email_id !== settingData?.group_email_id
+    ) {
+      payload.append('group_email_id', data?.group_email_id);
+      updatedFields.push('group_email_id');
+    }
+
+    if (
+      dirtyFields.email_reminder_time &&
+      data?.email_reminder_time !== settingData?.email_reminder_time
+    ) {
+      payload.append('email_reminder_time', data?.email_reminder_time);
+      updatedFields.push('email_reminder_time');
+    }
+
+    if (
+      (dirtyFields.ldapEnabled &&
+        data?.ldapEnabled !== settingData?.ldapEnabled) ||
+      (dirtyFields.ldap_auto_sync &&
+        data?.ldap_auto_sync !== settingData?.ldap_auto_sync) ||
+      (dirtyFields.ldap_auto_sync_time_interval &&
+        data?.ldap_auto_sync_time_interval !==
+          settingData?.ldap_auto_sync_time_interval)
+    ) {
+      payload.append('ldapEnabled', isLdapEnabled);
+
+      payload.append('ldap_auto_sync', ldapAutoSync);
+      updatedFields.push('ldap_auto_sync');
+
+      if (ldapAutoSync) {
+        payload.append('ldap_auto_sync_time_interval', selectedOptions);
+        updatedFields.push('ldap_auto_sync_time_interval');
+      }
+
+      updatedFields.push('ldapEnabled');
+    }
 
     try {
-      dispatch(SettingsActions.createSettings(payload));
-      setTimeout(() => {
-        dispatch(SettingsActions.fetchSettings());
-      }, 1000);
-      setLoading(false);
-      if (data?.favicon) {
-        changeFavicon(data.favicon);
+      if (updatedFields.length > 0) {
+        dispatch(SettingsActions.createSettings(payload));
+        setTimeout(() => {
+          dispatch(SettingsActions.fetchSettings());
+        }, 1000);
+        setLoading(false);
+        if (data?.favicon) {
+          changeFavicon(data.favicon);
+        } else {
+          changeFavicon(favicon);
+        }
       } else {
-        changeFavicon(favicon);
+        setLoading(false);
       }
     } catch (error) {
       setLoading(false);
@@ -194,15 +263,14 @@ export const Setting = () => {
       setValue('favicon', settingData?.favicon);
       setValue('title', settingData?.title);
       setValue('username', settingData?.username);
-      if (settingData?.username && !watch('password')) {
-        setValue('password', '*******');
-      }
+      setValue('password', settingData?.password);
 
       setValue(
         'refresh',
-        settingData.refresh === 0 ? 'Off' : settingData?.refresh
+        settingData.refresh === 0 ? 'Off' : settingData.refresh
       );
-      setLdapAutoSync(settingData?.ldap_auto_sync || false);
+
+      setLdapAutoSync(settingData?.ldap_auto_sync);
       setValue(
         'ldap_auto_sync_time_interval',
         settingData?.ldap_auto_sync_time_interval
@@ -211,7 +279,7 @@ export const Setting = () => {
       setValue('group_email_id', settingData?.group_email_id);
       setValue('email', settingData?.email);
       setValue('approver_groups', settingData.approver_groups || '');
-      setLdapInitialConfig(settingData?.ldapEnabled || false);
+      setLdapInitialConfig(settingData?.ldapEnabled);
       const logoElement = document.getElementById('logo');
       if (logoElement && settingData?.logo) {
         logoElement.src = settingData.logo;
@@ -228,7 +296,7 @@ export const Setting = () => {
         value.username !== settingData?.username ||
         value.password !== settingData?.password ||
         value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
         value.email !== settingData?.email ||
         value.ldap_auto_sync_time_interval !==
           settingData?.ldap_auto_sync_time_interval ||
@@ -244,14 +312,32 @@ export const Setting = () => {
     return () => subscription.unsubscribe();
   }, [watch, settingData]);
 
-  const handleLdapAutoSyncToggle = () => {
-    setLdapAutoSync(prevState => !prevState);
-    setIsChanged(true);
+  const handleLdapToggle = () => {
+    setLdapInitialConfig(prevState => {
+      const newState = !prevState;
+
+      if (!newState) {
+        setLdapAutoSync(false);
+        setValue('ldap_auto_sync', false, { shouldDirty: true });
+      }
+
+      setIsChanged(true);
+      setValue('ldapEnabled', newState, { shouldDirty: true });
+      return newState;
+    });
   };
 
-  const handleLdapToggle = () => {
-    setLdapInitialConfig(prevState => !prevState);
-    setIsChanged(true);
+  const handleLdapAutoSyncToggle = () => {
+    if (!isLdapEnabled) {
+      return;
+    }
+
+    setLdapAutoSync(prevState => {
+      const newState = !prevState;
+      setValue('ldap_auto_sync', newState, { shouldDirty: true });
+      setIsChanged(true);
+      return newState;
+    });
   };
 
   function changeFavicon(newFaviconURL) {
@@ -266,8 +352,6 @@ export const Setting = () => {
       document.head.appendChild(newFavicon);
     }
   }
-  const ldapAutoSyncTimeIntervalValue = watch('ldap_auto_sync_time_interval');
-  console.log('ldap_auto_sync_time_interval:', ldapAutoSyncTimeIntervalValue);
   return (
     <Wrapper>
       <form
@@ -370,6 +454,7 @@ export const Setting = () => {
               name="LDAP"
               checked={isLdapEnabled}
               onChange={handleLdapToggle}
+              isDisabled={false}
             />
           </div>
           <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-4">
@@ -487,11 +572,6 @@ export const Setting = () => {
                 label="Password"
                 disableToggle={false}
                 placeholder="Enter your Password"
-                defaultValue={
-                  watch('username') && watch('username').trim() !== ''
-                    ? settingData?.password || '*******'
-                    : ''
-                }
               />
             </div>
           </InputFields>
