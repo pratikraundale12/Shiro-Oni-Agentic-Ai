@@ -623,6 +623,10 @@ const Summary = () => {
       payload: {
         namespaceId: checkDestCluster?.value,
       },
+      position: {
+        x: XcordUpdated || registryDetailsData.positions[0].x,
+        y: YcordUpdated || registryDetailsData.positions[0].y,
+      },
     };
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
