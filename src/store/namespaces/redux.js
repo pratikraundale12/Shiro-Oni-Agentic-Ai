@@ -172,6 +172,7 @@ export const NamespacesActions = {
   setNewlyAddedExternalServiceCS: createAction(
     `${prefix}setNewlyAddedExternalServiceCS`
   ),
+  setChangeStatusCSRespone: createAction(`${prefix}setChangeStatusCSRespone`),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -255,6 +256,7 @@ export const NAMESPACES_INITIAL_STATE = {
   flowControlAfterUpgrade: false,
   FlowControlData: {},
   newlyAddedExternalServiceCS: {},
+  changeStatusCSRespone: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -336,6 +338,7 @@ export const NamespacesSelectors = {
   getFlowControlData: state => state.namespaces.flowControlData,
   getNewlyAddedExternalServiceCS: state =>
     state.namespaces.newlyAddedExternalServiceCS,
+  getChangeStatusCSRespone: state => state.namespaces.changeStatusCSRespone,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -758,6 +761,12 @@ const setNewlyAddedExternalServiceCS = (state, { payload }) => {
     newlyAddedExternalServiceCS: payload,
   };
 };
+const setChangeStatusCSRespone = (state, { payload }) => {
+  return {
+    ...state,
+    changeStatusCSRespone: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -919,6 +928,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setNewlyAddedExternalServiceCS,
         setNewlyAddedExternalServiceCS
+      )
+      .addCase(
+        NamespacesActions.setChangeStatusCSRespone,
+        setChangeStatusCSRespone
       );
   }
 );

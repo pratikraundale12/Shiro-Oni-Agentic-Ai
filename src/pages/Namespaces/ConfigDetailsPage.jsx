@@ -120,9 +120,7 @@ const ConfigDetailsPage = () => {
   const [variableData, setVariableData] = useState(
     registryDetailsData?.variablesData
   );
-  const [controllerServiceData, setControllerServiceData] = useState(
-    registryDetailsData?.controllerServicesData
-  );
+
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
@@ -165,8 +163,6 @@ const ConfigDetailsPage = () => {
       case KDFM.CONTROLLER_SERVICE:
         return (
           <ControllerServiceTab
-            controllerServicesData={controllerServiceData}
-            setControllerServicesData={setControllerServiceData}
             controllerServicePayload={controllerServicePayload}
             setControllerServicePayload={setControllerServicePayload}
           />
