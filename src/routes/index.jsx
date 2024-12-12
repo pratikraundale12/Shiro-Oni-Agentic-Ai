@@ -258,7 +258,7 @@ export const ROUTES_MENU = [
     isSideBarHidden: false,
   },
   {
-    name: 'Help & support',
+    name: 'Help & Support',
     path: 'help-&-support',
     icon: QuestionMarkIcon,
     pages: [
