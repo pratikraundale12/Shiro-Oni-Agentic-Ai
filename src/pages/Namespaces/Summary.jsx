@@ -617,9 +617,6 @@ const Summary = () => {
       parameterName: item.name,
       parameters: item.parameters,
     }));
-    // dispatch(
-    //   NamespacesActions.updateNamespaceStatusRegistry(confirmDialogue?.action)
-    // );
     const payload = {
       version: versionSelected.version,
       namespaceId: checkDestCluster?.id,
