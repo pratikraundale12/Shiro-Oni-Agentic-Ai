@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-// import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -11,10 +10,10 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
-import { Grid, IconButton, TextRender } from '../../components';
+import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { NamespacesActions } from '../../store';
+import { LoadingSelectors, NamespacesActions } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
@@ -93,10 +92,10 @@ export const ListNamespaces = () => {
       item => item.version === undefined
     );
     const sortedWithVersion = objectsWithVersion.sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a?.name?.localeCompare(b?.name)
     );
     const sortedWithoutVersion = objectsWithoutVersion.sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a?.name?.localeCompare(b?.name)
     );
     return [...sortedWithVersion, ...sortedWithoutVersion];
   }
@@ -155,31 +154,6 @@ export const ListNamespaces = () => {
       width: '22%',
       sort: { sortKey: 'name' },
     },
-    // {
-    //   label: KDFM.NAMESPACE_ID,
-    //   renderCell: item => (
-    //     <Flex>
-    //       <TextRender text={item.id} />
-    //       <span data-tooltip-id={`copy-board-namespace-list`}>
-    //         <CopyToClipboard copyItem={item.id} />
-    //       </span>
-
-    //       <ReactTooltip
-    //         id={`copy-board-namespace-list`}
-    //         place="bottom"
-    //         effect="solid"
-    //         content={'Copy group Id'}
-    //         style={{
-    //           width: '125px',
-    //           whiteSpace: 'normal',
-    //           wordWrap: 'break-word',
-    //           zIndex: 10000,
-    //         }}
-    //       />
-    //     </Flex>
-    //   ),
-    //   width: '25%',
-    // },
     {
       label: KDFM.FLOW_NAME,
       renderCell: item => (
@@ -415,9 +389,13 @@ export const ListNamespaces = () => {
       },
     });
   };
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchGrid')
+  );
 
   return (
     <>
+      <FullPageLoader loading={loading} />
       <Grid
         isNamespace={true}
         module="namespaces"
@@ -429,7 +407,6 @@ export const ListNamespaces = () => {
         state={state}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
-        // handleIconClick={handleIconClick}
       />
     </>
   );

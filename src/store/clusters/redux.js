@@ -13,6 +13,7 @@ export const ClustersActions = {
   fetchClustersSuccess: createAction(`${prefix}fetchClustersSuccess`),
   addEditClusterData: createAction(`${prefix}addEditClusterData`),
   setClusterFormData: createAction(`${prefix}setClusterFormData`),
+  getClusterToken: createAction(`${prefix}getClusterToken`),
 };
 
 /* ------------- INITIAL STATE ------------- */
