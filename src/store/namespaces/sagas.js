@@ -916,6 +916,7 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
 }
 
 export function* changeStatusControllerService(api, { payload }) {
+  yield put(NamespacesActions.setChangeStatusCSRespone({}));
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const { id, ...rest } = payload;
   const clustersToken = JSON.parse(
@@ -942,8 +943,10 @@ export function* changeStatusControllerService(api, { payload }) {
     toast.success('Status updated Successfully');
     yield delay(400);
     yield put(NamespacesActions.getControllerServiceList());
+    yield put(NamespacesActions.setChangeStatusCSRespone(response));
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    yield put(NamespacesActions.setChangeStatusCSRespone({}));
   }
 }
 
