@@ -239,8 +239,6 @@ export const namespacesAPI = api => {
     );
   };
 
-  //http://localhost:8000/api/clusters/8b5e2583-85ed-48c6-a975-b1cbea8fca1e/upgrade
-
   return {
     fetchNamespaces,
     checkDestCluster,

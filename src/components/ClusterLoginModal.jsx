@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { ClusterIcon, UserIcon } from '../assets';
 import { CLUSTERS_TOKEN } from '../constants';
@@ -20,6 +19,8 @@ import {
   NamespacesSelectors,
 } from '../store';
 import { getClusterToken } from '../store/apis';
+import { FullPageLoader } from './FullPageLoader';
+import { toast } from 'react-toastify';
 
 const clusterSchema = yup.object().shape({
   cluster_id: yup.string().required('Cluster is required'),
@@ -85,10 +86,9 @@ export const ClusterLoginModal = () => {
       username: data?.username,
       password: data?.password,
     };
-
+    // dispatch(ClustersActions.getClusterToken(payload));
     try {
       const response = await getClusterToken(payload);
-
       if (response.cluster_id) {
         const newCluster = {
           id: response.cluster_id,
@@ -128,6 +128,7 @@ export const ClusterLoginModal = () => {
         }
         dispatch(AuthenticationActions.setClusterLogin());
         toast.success('Cluster Enabled Successfully');
+
         reset(DEFAULT_VALUES);
         dispatch(GridActions.fetchGrid({ module: 'clusters' }));
         if (window.location.pathname.includes('/process-group')) {
@@ -135,6 +136,7 @@ export const ClusterLoginModal = () => {
         }
       } else {
         toast.error(response.message || 'Error while getting data');
+
         setLoading(false);
       }
     } catch (error) {
@@ -169,7 +171,6 @@ export const ClusterLoginModal = () => {
 
     dispatch(AuthenticationActions.setClusterLogin());
     toast.success('Cluster Enabled Successfully');
-
     dispatch(
       NamespacesActions.setSelectedCluster({
         label: clusterName,
@@ -190,6 +191,7 @@ export const ClusterLoginModal = () => {
 
   return (
     <>
+      <FullPageLoader loading={loading} />
       <Modal
         title="Enable Cluster"
         isOpen={isObject(clusterLogin) || clusterLogin}
