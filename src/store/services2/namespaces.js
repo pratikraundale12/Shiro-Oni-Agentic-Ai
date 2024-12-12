@@ -230,13 +230,16 @@ export const namespacesAPI = api => {
 
   const fetchRegistryFlowDetails = ({
     clusterId,
+    namespaceId,
     bucketId,
     flowId,
     version,
+    isUpgrade = false,
   }) => {
-    return api.get(
-      `/exports/${clusterId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`
-    );
+    const URL = isUpgrade
+      ? `/upgrade/${clusterId}/namespaceId/${namespaceId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`
+      : `/exports/${clusterId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`;
+    return api.get(URL);
   };
 
   //http://localhost:8000/api/clusters/8b5e2583-85ed-48c6-a975-b1cbea8fca1e/upgrade
