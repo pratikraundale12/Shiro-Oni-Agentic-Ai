@@ -189,10 +189,11 @@ const ActiveButtonContainer = styled.div`
 
 const ActiveButtonDiv = styled.div`
   height: 48px;
-  margin-left: 6px;
+  width: 48px;
+  max-width: 48px;
   max-height: 48px;
   min-height: 48px;
-  min-width: 60px;
+  min-width: 48px;
   border: 1px solid #dde4f0;
   border-radius: 8px;
   background-color: #f5f7fa;
@@ -200,7 +201,8 @@ const ActiveButtonDiv = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: center;
+  padding-left: 3px;
   &:hover {
     border: 1px solid
       ${props => (props.isActive ? props.activeColor : '#FF7A00')};
@@ -254,15 +256,14 @@ const ProgressBar = styled.div`
 `;
 const CountDiv = styled.div`
   height: 48px;
-  width: 48px;
-  max-width: 48px;
+  margin-left: 6px;
   max-height: 48px;
   min-height: 48px;
-  min-width: 48px;
+  min-width: 60px;
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 
   & span {
     top: 0px;
