@@ -1113,12 +1113,16 @@ export function* fetchVersionData(api, { payload }) {
 
 export function* fetchRegistryFlowDetails(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  const isUpgrade = yield select(NamespacesSelectors.getDeployRegistryFlow);
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -1129,9 +1133,11 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
+        namespaceId: !isUpgrade ? selectedNamespace?.id : null,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,
         version: payload?.version,
+        isUpgrade: !isUpgrade,
       },
     ],
   });

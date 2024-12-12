@@ -21,6 +21,7 @@ import { SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
 import { Loader } from './Loader';
 import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRight';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 export const Container = styled.div`
   height: 100%;
@@ -256,17 +257,33 @@ export const Sidebar = ({
         {ROUTES_MENU.filter(getFiltered).map(item => {
           const active = item.path === route;
           return (
-            <Item
-              key={item.path}
-              active={active}
-              onClick={() => handleRoute(item.path)}
-              path={item.path}
-            >
-              <item.icon
-                color={active ? theme.colors.white : theme.colors.darker}
-              />
-              <span className="nav-text">{item.name}</span>
-            </Item>
+            <div key={item.path}>
+              <Item
+                key={item.path}
+                active={active}
+                onClick={() => handleRoute(item.path)}
+                path={item.path}
+                data-tooltip-id={`tooltip-${item.path}`}
+              >
+                <item.icon
+                  color={active ? theme.colors.white : theme.colors.darker}
+                />
+                <span className="nav-text">{item.name}</span>
+              </Item>
+              {collapsed && (
+                <ReactTooltip
+                  id={`tooltip-${item.path}`}
+                  place="right"
+                  content={item.name}
+                  style={{
+                    width: '120px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                    zIndex: 9999,
+                  }}
+                />
+              )}
+            </div>
           );
         })}
       </List>

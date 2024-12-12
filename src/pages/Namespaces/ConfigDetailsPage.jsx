@@ -9,8 +9,13 @@ import Breadcrumb from '../../shared/Breadcrumb';
 import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
 import VariableTab from './VariableTab';
 import { useDispatch, useSelector } from 'react-redux';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import ParameterContextTab from './ParameterContextTab';
+import { FullPageLoader } from '../../components';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -192,9 +197,12 @@ const ConfigDetailsPage = () => {
 
     setActiveTab(tab);
   };
-
+  const loading1 = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
+  );
   return (
     <div>
+      <FullPageLoader loading={loading1} />
       <ToastContainer
         theme="colored"
         position="top-center"

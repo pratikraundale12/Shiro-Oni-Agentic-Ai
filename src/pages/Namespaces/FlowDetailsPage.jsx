@@ -280,19 +280,6 @@ const FlowDetailsPage = () => {
   // };
 
   const handleClick = () => {
-    if (isUpgrade) {
-      history.push('/process-group/config-details');
-    } else {
-      if (selectedVersion === selectedNameSpace.version) {
-        {
-          toast.info('The selected version is already deployed.');
-        }
-      } else {
-        history.push('/process-group/config-details');
-      }
-    }
-  };
-  useEffect(() => {
     if (
       selectedNameSpace &&
       selectedVersion &&
@@ -307,7 +294,18 @@ const FlowDetailsPage = () => {
         })
       );
     }
-  }, [dispatch, selectedNameSpace]);
+    if (isUpgrade) {
+      history.push('/process-group/config-details');
+    } else {
+      if (selectedVersion === selectedNameSpace.version) {
+        {
+          toast.info('The selected version is already deployed.');
+        }
+      } else {
+        history.push('/process-group/config-details');
+      }
+    }
+  };
 
   const handleRowClick = item => {
     setSelectedVersion(item.version);

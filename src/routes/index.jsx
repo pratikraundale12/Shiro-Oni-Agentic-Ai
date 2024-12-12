@@ -258,7 +258,7 @@ export const ROUTES_MENU = [
     isSideBarHidden: false,
   },
   {
-    name: 'Help & support',
+    name: 'Help & Support',
     path: 'help-&-support',
     icon: QuestionMarkIcon,
     pages: [
@@ -346,7 +346,7 @@ const Routes = () => {
 
       {/* Private Routes */}
       <Route path="/" element={<AuthGaurd />}>
-        {ROUTES_MENU.filter(item => !item.hidden).map(item => (
+        {ROUTES_MENU?.filter(item => !item.hidden)?.map(item => (
           <Route key={item.path} path={item.path} element={<Outlet />}>
             {item.pages.map(page =>
               Array.isArray(page.path) ? (
