@@ -362,6 +362,23 @@ export const LdapConfig = () => {
           groupObjectClass: response?.data?.groupObjectClass,
           usernameIdentifier: response?.data?.usernameIdentifier,
         });
+      } else {
+        reset1({
+          url: response?.data?.url || '',
+          password: response?.data?.password || '',
+          loginDn: response?.data?.loginDn || '',
+        });
+        reset2({
+          baseDn: response?.data?.baseDn || '',
+          groupDn: response?.data?.groupDn || '',
+          userDn: response?.data?.userDn || '',
+          userUniqueIdentifier: response?.data?.userUniqueIdentifier || '',
+          groupUniqueIdentifier: response?.data?.groupUniqueIdentifier || '',
+          filter: response?.data?.filter || '',
+          scope: response?.data?.scope || '',
+          groupObjectClass: response?.data?.groupObjectClass || [],
+          usernameIdentifier: response?.data?.usernameIdentifier || '',
+        });
       }
     } else {
       toast.error(response?.message || 'Something went wrong');
