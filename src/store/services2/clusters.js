@@ -8,9 +8,12 @@ export const clustersAPI = api => {
   const fetchClusterNodes = ({ queryParams: { clusterId }, params = {} }) =>
     api.get(`/clusters/${clusterId}/nodes`, params);
 
+  const getClusterToken = ({ payload }) => api.post(`/clusters/token`, payload);
+
   return {
     fetchClusters,
     fetchClusterList,
     fetchClusterNodes,
+    getClusterToken,
   };
 };

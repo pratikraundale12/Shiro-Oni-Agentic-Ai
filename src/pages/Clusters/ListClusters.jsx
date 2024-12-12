@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   ActiveIcon,
@@ -11,22 +11,22 @@ import {
 } from '../../assets';
 import {
   ActionRender,
+  FullPageLoader,
   Grid,
   ProgressBarRender,
   StatusRender,
   TextRender,
   UrlRender,
 } from '../../components';
-import {
-  // CLUSTERS_TOKEN,
-  // CLUSTERS_TOKEN,
-  CLUSTER_STATUS,
-  Cluster_STATUS_OPTIONS,
-  KDFM,
-} from '../../constants';
+import { CLUSTER_STATUS, Cluster_STATUS_OPTIONS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
-import { DashboardActions, GridActions, NamespacesActions } from '../../store';
+import {
+  DashboardActions,
+  GridActions,
+  LoadingSelectors,
+  NamespacesActions,
+} from '../../store';
 import { updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
@@ -75,25 +75,6 @@ const Item = styled.div`
   }
 `;
 
-// const StyledTag = styled.div`
-//   background-color: rgb(218, 216, 216);
-//   display: flex;
-//   padding: 1px 6px;
-//   border-radius: 20px;
-//   white-space: nowrap;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   min-width: 70px;
-// `;
-// const StyledTagContainer = styled.div`
-//   display: flex;
-//   flex-wrap: wrap;
-//   gap: 6px;
-//   flex-wrap: nowrap;
-//   overflow: auto;
-//   width: 100%;
-// `;
-
 export const ListClusters = () => {
   const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
@@ -128,20 +109,6 @@ export const ListClusters = () => {
       },
       width: '35%',
     },
-    // {
-    //   label: KDFM.TAG,
-    //   renderCell: item =>
-    //     item?.tag ? (
-    //       <StyledTagContainer>
-    //         {item.tag.split(',').map((tag, index) => (
-    //           <StyledTag key={index}>
-    //             <TextRender text={tag.trim()} capitalizeText={false} />
-    //           </StyledTag>
-    //         ))}
-    //       </StyledTagContainer>
-    //     ) : null,
-    //   width: '20%',
-    // },
     {
       label: KDFM.CLUSTER_STATUS,
       renderCell: item => (
@@ -207,7 +174,7 @@ export const ListClusters = () => {
   ];
 
   const sortFns = {
-    name: data => data.sort((a, b) => a.name.localeCompare(b.name)),
+    name: data => data.sort((a, b) => a?.name?.localeCompare(b?.name)),
   };
 
   const updateClusterStatus = async id => {
@@ -312,8 +279,23 @@ export const ListClusters = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchGrid')
+  );
+
   return (
     <>
+      <FullPageLoader loading={loading} />
+      <ToastContainer
+        theme="colored"
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable
+        pauseOnFocusLoss={false}
+      />
       <ModalWithIcon
         title={KDFM.DEACTIVATE_CLUSTER}
         primaryButtonText={KDFM.DEACTIVATE}
