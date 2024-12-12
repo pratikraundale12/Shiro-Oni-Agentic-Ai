@@ -371,7 +371,7 @@ const NamespaceDeploy = ({
                   </>
                 ) : (
                   <div className="text_info">
-                    If there are no running or stopped processors, or if
+                    If there are no running or stopped processors, or if all
                     processors are disabled or invalid, the start and stop
                     buttons are hidden.
                   </div>

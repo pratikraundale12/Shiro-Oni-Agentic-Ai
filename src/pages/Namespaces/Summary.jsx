@@ -622,6 +622,7 @@ const Summary = () => {
       namespaceId: checkDestCluster?.id,
       payload: {
         namespaceId: checkDestCluster?.value,
+        status: flowControlState,
       },
     };
     if (!isEmpty(variblesReduxData)) {
@@ -632,11 +633,6 @@ const Summary = () => {
     }
     if (!isEmpty(controllerServiceReduxData)) {
       payload.payload.controllerServiceData = controllerServiceReduxData;
-    }
-    if (flowControlState) {
-      dispatch(
-        NamespacesActions.updateNamespaceStatusRegistry(flowControlState)
-      );
     }
     dispatch(NamespacesActions.upgradeCluster(payload));
     // toast.info(NamespacesSelectors.getUpdatedNamespaceResponse.message);
@@ -649,6 +645,9 @@ const Summary = () => {
   );
   const loadingreUpgradeFlow = useSelector(state =>
     LoadingSelectors.getLoading(state, 'upgradeCluster')
+  );
+  const checkFlowControlAfterUpgrade = useSelector(
+    NamespacesSelectors.getFlowControlAfterUpgrade
   );
   const [processStatus, setProcessStatus] = useState({
     disabledCount: checkDestCluster?.disabledCount,
@@ -969,7 +968,7 @@ const Summary = () => {
                   </>
                 ) : (
                   <div>
-                    If there are no running or stopped processors, or if
+                    If there are no running or stopped processors, or if all
                     processors are disabled or invalid, the start and stop
                     buttons are hidden.
                   </div>
@@ -1127,7 +1126,11 @@ const Summary = () => {
           });
           setActiveButtonPopup(null);
         }}
-        primaryText={`Do you really want to ${confirmDialogue?.text}?`}
+        primaryText={
+          !checkFlowControlAfterUpgrade
+            ? `Flow will be ${confirmDialogue?.text} after the upgrade?`
+            : `Do you really want to ${confirmDialogue?.text}?`
+        }
         onSubmit={handleConfirmUpdateStatus}
       />
     </MainContainer>
