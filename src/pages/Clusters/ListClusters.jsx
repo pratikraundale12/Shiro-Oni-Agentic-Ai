@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   ActiveIcon,
@@ -286,16 +286,6 @@ export const ListClusters = () => {
   return (
     <>
       <FullPageLoader loading={loading} />
-      <ToastContainer
-        theme="colored"
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable
-        pauseOnFocusLoss={false}
-      />
       <ModalWithIcon
         title={KDFM.DEACTIVATE_CLUSTER}
         primaryButtonText={KDFM.DEACTIVATE}

@@ -8,6 +8,7 @@ import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
 import { history } from '../helpers/history';
 import { TextButton } from '../shared';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
+import { ToastContainer } from 'react-toastify';
 
 const Container = styled.div`
   max-height: 100vh;
@@ -305,6 +306,13 @@ export const Layout = ({ children }) => {
 
   return (
     <Container>
+      <ToastContainer
+        theme="colored"
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+      />
       <Wrapper>
         <div className="row">
           <LeftSection>
