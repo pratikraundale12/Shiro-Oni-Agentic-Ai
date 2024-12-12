@@ -428,27 +428,25 @@ const FlowDetailsPage = () => {
               <RowConfig className="row">
                 <ColXlFive className="col-xl-5 col-12">
                   <InputField
-                    disabled={!isUpgrade}
                     name="x"
                     type="text"
                     label={KDFM.CANVAS_POSITION}
                     value={
-                      !isUpgrade
-                        ? selectedNameSpace.position.x
-                        : storedXcord || xStateCoordinate
+                      xStateCoordinate ||
+                      selectedNameSpace?.position.x ||
+                      storedXcord
                     }
                     icon={<CanvasXIcon />}
                     onChange={e => handleXCoordinateChangeInput(e)}
                   />
                   <InputField
-                    disabled={!isUpgrade}
                     name="y"
                     type="text"
                     label=""
                     value={
-                      !isUpgrade
-                        ? selectedNameSpace.position.y
-                        : storedYcord || yStateCoordinate
+                      yStateCoordinate ||
+                      selectedNameSpace?.position.y ||
+                      storedYcord
                     }
                     icon={<CanvasYIcon />}
                     onChange={e => handleYCoordinateChangeInput(e)}
@@ -487,17 +485,15 @@ const FlowDetailsPage = () => {
                 </>
               </RowConfig>
             </div>
-            {isUpgrade && (
-              <div className="ms-4">
-                {
-                  <RectangleGraph
-                    data={enhancedData}
-                    setXStateCoordiate={setXStateCoordiate}
-                    setYStateCoordiate={setYStateCoordiate}
-                  />
-                }
-              </div>
-            )}
+            <div className="ms-4">
+              {
+                <RectangleGraph
+                  data={enhancedData}
+                  setXStateCoordiate={setXStateCoordiate}
+                  setYStateCoordiate={setYStateCoordiate}
+                />
+              }
+            </div>
             <div className="col-12 p-3">
               <RowConfig className="row">
                 <ColLgSix className="col-lg-6 col-12">
