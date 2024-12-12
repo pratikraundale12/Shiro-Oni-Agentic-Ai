@@ -1,6 +1,6 @@
 /*eslint-disable*/
 import PropTypes from 'prop-types';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -539,13 +539,13 @@ const ControllerServiceTab = ({
   useEffect(() => {
     const finalPayload = initialExternalService
       ?.map(service => {
-        const matchingTableData = externalControllerServices.find(tableItem =>
+        const matchingTableData = externalControllerServices?.find(tableItem =>
           tableItem.parentId
             ? tableItem.parentId
             : tableItem?.identifier === service.identifier
         );
         if (matchingTableData) {
-          const isNameUpdated = matchingTableData.name !== service.name;
+          const isNameUpdated = matchingTableData?.name !== service.name;
           const newData = matchingTableData?.controllerService?.length;
           if (isNameUpdated || newData) {
             return {
@@ -591,18 +591,18 @@ const ControllerServiceTab = ({
   };
 
   useEffect(() => {
-    const updatedControllerServices = externalControllerServices.map(
+    const updatedControllerServices = externalControllerServices?.map(
       service => {
-        const matchingTableData = externalControllerServicesTableData.find(
-          tableItem => tableItem.parentId === service.identifier
+        const matchingTableData = externalControllerServicesTableData?.find(
+          tableItem => tableItem?.parentId === service?.identifier
         );
 
         if (matchingTableData) {
           return {
             ...service,
-            controllerService: isAddedViaAdd ? [] : service.controllerService,
-            name: matchingTableData.name,
-            updatedValue: matchingTableData.identifier,
+            controllerService: isAddedViaAdd ? [] : service?.controllerService,
+            name: matchingTableData?.name,
+            updatedValue: matchingTableData?.identifier,
           };
         }
         return service;
@@ -658,8 +658,8 @@ const ControllerServiceTab = ({
         const mergedLocalState = [
           ...prevState.filter(
             item =>
-              !localServiceState.some(
-                newItem => newItem.identifier === item.identifier
+              !localServiceState?.some(
+                newItem => newItem?.identifier === item?.identifier
               )
           ),
           ...localServiceState,
@@ -671,9 +671,9 @@ const ControllerServiceTab = ({
 
   const mergeProperties = (existingProperties, updatedProperties) => {
     const propertyMap = new Map(
-      existingProperties.map(prop => [prop.name, prop])
+      existingProperties?.map(prop => [prop.name, prop])
     );
-    updatedProperties.forEach(updatedProp => {
+    updatedProperties?.forEach(updatedProp => {
       propertyMap.set(updatedProp.name, updatedProp);
     });
     return Array.from(propertyMap.values());
@@ -681,11 +681,11 @@ const ControllerServiceTab = ({
 
   useEffect(() => {
     setLocalServices(prevLocalServices => {
-      const updatedServices = prevLocalServices.map(processGroup => {
+      const updatedServices = prevLocalServices?.map(processGroup => {
         return {
           ...processGroup,
-          controllerData: processGroup.controllerData.map(controller => {
-            const updatedController = updatedLocalServicesData.find(
+          controllerData: processGroup?.controllerData?.map(controller => {
+            const updatedController = updatedLocalServicesData?.find(
               updated => updated.identifier === controller.identifier
             );
             if (updatedController) {
@@ -740,7 +740,7 @@ const ControllerServiceTab = ({
       <ScrollSetGrey className="scroll-set-grey pe-1">
         {localServices?.length || externalControllerServices?.length ? (
           collapsibles &&
-          collapsibles.map((item, index) => (
+          collapsibles?.map((item, index) => (
             <Collapsible
               key={index}
               title={item.title}
