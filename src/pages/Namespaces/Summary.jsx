@@ -814,7 +814,9 @@ const Summary = () => {
                         : KDFM.CURRENT_VERSION}
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {checkDestCluster?.version || 'N/A'}
+                      {isUpgrade
+                        ? versionSelected?.version
+                        : checkDestCluster?.version || 'N/A'}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
