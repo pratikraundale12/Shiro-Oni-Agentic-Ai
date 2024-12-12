@@ -7,6 +7,7 @@ import { Table } from '../../components';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { theme } from '../../styles';
+import { isEmpty } from 'lodash';
 
 const TextDisplay = styled.div`
   cursor: pointer;
@@ -79,7 +80,14 @@ const Search = styled.input`
   }
 `;
 
-const AddControllerServiceModal = () => {
+const AddControllerServiceModal = ({
+  setIsAddedViaAdd,
+  handleSubmitData,
+  isFromControllerServiceTab,
+}) => {
+  const newlyAddedExternalServiceResponse = useSelector(
+    NamespacesSelectors.getNewlyAddedExternalServiceCS
+  );
   const [selectedItem, setSelectedItem] = useState({});
   const [search, setSearch] = useState('');
   const dispatch = useDispatch();
@@ -140,6 +148,13 @@ const AddControllerServiceModal = () => {
   const filteredModulesData = controllerAddList.filter(module =>
     module.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  useEffect(() => {
+    if(isFromControllerServiceTab && !isEmpty(newlyAddedExternalServiceResponse)){
+      setIsAddedViaAdd(true);
+      handleSubmitData(true, null);
+    }
+  },[newlyAddedExternalServiceResponse])
 
   const handleSubmit = () => {
     const { name, type, bundle } = selectedItem;
