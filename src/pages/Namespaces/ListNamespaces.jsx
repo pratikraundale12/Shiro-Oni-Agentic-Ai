@@ -223,7 +223,7 @@ export const ListNamespaces = () => {
               place="right"
               content="Running Flows"
               style={{
-                width: '180px',
+                width: '125px',
                 whiteSpace: 'normal',
                 wordWrap: 'break-word',
               }}
@@ -245,7 +245,7 @@ export const ListNamespaces = () => {
               place="right"
               content="Stopped Flows"
               style={{
-                width: '180px',
+                width: '135px',
                 whiteSpace: 'normal',
                 wordWrap: 'break-word',
               }}
@@ -265,7 +265,7 @@ export const ListNamespaces = () => {
               place="right"
               content="Invalid Flows"
               style={{
-                width: '160px',
+                width: '125px',
                 whiteSpace: 'normal',
                 wordWrap: 'break-word',
               }}
@@ -285,7 +285,7 @@ export const ListNamespaces = () => {
               place="right"
               content="Disabled Flows"
               style={{
-                width: '180px',
+                width: '130px',
                 whiteSpace: 'normal',
                 wordWrap: 'break-word',
               }}
