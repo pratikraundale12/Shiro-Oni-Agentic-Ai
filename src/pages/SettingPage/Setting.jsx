@@ -57,7 +57,7 @@ const LabelSelect = styled.div`
 `;
 const HeadingContent = styled.div`
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
 `;
@@ -360,7 +360,7 @@ export const Setting = () => {
           </div>
         </InputFields>
         <div className="d-flex justify-content-start me-4">
-          <HeadingContent>{KDFM.LDAP}</HeadingContent>
+          <HeadingContent className="mt-4">{KDFM.LDAP}</HeadingContent>
         </div>
         <HeadingContentHr className="mt-3 mb-4" />
         <InputFields className="row">
@@ -411,7 +411,9 @@ export const Setting = () => {
           </div>
         </InputFields>
         <div className="d-flex justify-content-start me-4">
-          <HeadingContent>{KDFM.SCHEDULE_DIPLOYMENT}</HeadingContent>
+          <HeadingContent className="mt-2">
+            {KDFM.SCHEDULE_DIPLOYMENT}
+          </HeadingContent>
         </div>
         <HeadingContentHr className="mt-3 mb-4" />
         <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-8 mb-4">
@@ -458,7 +460,9 @@ export const Setting = () => {
           </div>
         </InputFields>
         <div className="d-flex justify-content-start me-4">
-          <HeadingContent>{KDFM.SERVICE_ACCOUNT}</HeadingContent>
+          <HeadingContent className="mt-4">
+            {KDFM.SERVICE_ACCOUNT}
+          </HeadingContent>
         </div>
         <HeadingContentHr className="mt-3 mb-4" />
         <div className="-flex justify-content-end me-4">
