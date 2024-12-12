@@ -36,10 +36,10 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
     }
 
     if (!xScaleRef.current || !yScaleRef.current) {
-      const minX = Math.min(...data.map(d => d.x));
-      const maxX = Math.max(...data.map(d => d.x + d.width));
-      const minY = Math.min(...data.map(d => d.y));
-      const maxY = Math.max(...data.map(d => d.y + d.height));
+      const minX = -2000;
+      const maxX = -150;
+      const minY = -1500;
+      const maxY = -500;
 
       if (isNaN(minX) || isNaN(maxX) || isNaN(minY) || isNaN(maxY)) {
         return;
