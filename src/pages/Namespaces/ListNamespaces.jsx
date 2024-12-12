@@ -92,10 +92,10 @@ export const ListNamespaces = () => {
       item => item.version === undefined
     );
     const sortedWithVersion = objectsWithVersion.sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a?.name?.localeCompare(b?.name)
     );
     const sortedWithoutVersion = objectsWithoutVersion.sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a?.name?.localeCompare(b?.name)
     );
     return [...sortedWithVersion, ...sortedWithoutVersion];
   }

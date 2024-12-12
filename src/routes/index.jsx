@@ -233,18 +233,6 @@ export const ROUTES_MENU = [
     permission: 'view_ldap',
   },
   {
-    name: 'Setting',
-    path: 'setting',
-    icon: SettingSmallIcon,
-    pages: [
-      {
-        path: '',
-        component: <Setting />,
-      },
-    ],
-    isSideBarHidden: true,
-  },
-  {
     name: 'Controller Service',
     path: 'controller-service',
     icon: BookIcon,
@@ -256,7 +244,19 @@ export const ROUTES_MENU = [
     ],
     permission: 'view_controller_services',
   },
-
+  {
+    name: 'Setting',
+    path: 'setting',
+    icon: SettingSmallIcon,
+    pages: [
+      {
+        path: '',
+        component: <Setting />,
+      },
+    ],
+    permission: 'view_ldap',
+    isSideBarHidden: false,
+  },
   {
     name: 'Help & support',
     path: 'help-&-support',

@@ -174,7 +174,7 @@ export const ListClusters = () => {
   ];
 
   const sortFns = {
-    name: data => data.sort((a, b) => a.name.localeCompare(b.name)),
+    name: data => data.sort((a, b) => a?.name?.localeCompare(b?.name)),
   };
 
   const updateClusterStatus = async id => {

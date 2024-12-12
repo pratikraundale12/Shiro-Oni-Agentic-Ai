@@ -408,6 +408,7 @@ const Summary = () => {
     text: '',
     forPopup: false,
   });
+  const [flowControlState, setFlowControlState] = useState(null);
   const summaryLoadingStateRedux = useSelector(
     NamespacesSelectors.getNamespaceSummaryLoadingState
   );
@@ -527,9 +528,7 @@ const Summary = () => {
 
   const handleConfirmUpdateStatus = () => {
     if (!deployByRegistryFlow) {
-      dispatch(
-        NamespacesActions.updateNamespaceStatusRegistry(confirmDialogue?.action)
-      );
+      setFlowControlState(confirmDialogue.action);
       if (confirmDialogue.forPopup) {
       } else {
         setActiveButton(confirmDialogue.action);
@@ -633,6 +632,11 @@ const Summary = () => {
     }
     if (!isEmpty(controllerServiceReduxData)) {
       payload.payload.controllerServiceData = controllerServiceReduxData;
+    }
+    if (flowControlState) {
+      dispatch(
+        NamespacesActions.updateNamespaceStatusRegistry(flowControlState)
+      );
     }
     dispatch(NamespacesActions.upgradeCluster(payload));
     // toast.info(NamespacesSelectors.getUpdatedNamespaceResponse.message);
