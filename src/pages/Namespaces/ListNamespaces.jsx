@@ -221,7 +221,7 @@ export const ListNamespaces = () => {
             <ReactTooltip
               id={`tooltip-running-${item.id}`}
               place="right"
-              content="Running Components"
+              content="Running Flows"
               style={{
                 width: '180px',
                 whiteSpace: 'normal',
@@ -243,7 +243,7 @@ export const ListNamespaces = () => {
             <ReactTooltip
               id={`tooltip-stopped-${item.id}`}
               place="right"
-              content="Stopped Components"
+              content="Stopped Flows"
               style={{
                 width: '180px',
                 whiteSpace: 'normal',
@@ -263,7 +263,7 @@ export const ListNamespaces = () => {
             <ReactTooltip
               id={`tooltip-invalid-${item.id}`}
               place="right"
-              content="Invalid Components"
+              content="Invalid Flows"
               style={{
                 width: '160px',
                 whiteSpace: 'normal',
@@ -283,7 +283,7 @@ export const ListNamespaces = () => {
             <ReactTooltip
               id={`tooltip-disabled-${item.id}`}
               place="right"
-              content="Disabled Components"
+              content="Disabled Flows"
               style={{
                 width: '180px',
                 whiteSpace: 'normal',
