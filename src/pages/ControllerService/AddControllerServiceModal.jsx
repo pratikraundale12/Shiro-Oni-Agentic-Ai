@@ -83,7 +83,7 @@ const Search = styled.input`
 const AddControllerServiceModal = ({
   setIsAddedViaAdd,
   handleSubmitData,
-  isFromControllerServiceTab,
+  isFromControllerServiceTab =false,
 }) => {
   const newlyAddedExternalServiceResponse = useSelector(
     NamespacesSelectors.getNewlyAddedExternalServiceCS
@@ -159,7 +159,7 @@ const AddControllerServiceModal = ({
   const handleSubmit = () => {
     const { name, type, bundle } = selectedItem;
     dispatch(
-      NamespacesActions.addControllerServiceRootLevel({ name, type, bundle })
+      NamespacesActions.addControllerServiceRootLevel({isFromControllerServiceTab, name, type, bundle })
     );
     closeModal();
   };

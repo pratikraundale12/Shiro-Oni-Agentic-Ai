@@ -332,14 +332,14 @@ export const ListNamespaces = () => {
               padding: 0,
               cursor: 'pointer',
             }}
-            data-tooltip-id={`tooltip-schedule-deployment`}
+            data-tooltip-id={`tooltip-schedule-deployment-list`}
           >
             <IconButton>
               <CalenderIcon2 width={14} height={14} color="grey" />
             </IconButton>
           </button>
           <ReactTooltip
-            id={`tooltip-schedule-deployment`}
+            id={`tooltip-schedule-deployment-list`}
             place="right"
             content={'Schedule Deployment'}
             style={{

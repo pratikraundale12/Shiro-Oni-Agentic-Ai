@@ -1,16 +1,13 @@
 /*eslint-disable*/
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-// import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
   DuplicateIcon,
   SmallNotThunderIcon,
-  SmallThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
@@ -40,9 +37,7 @@ import {
 import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymentModal';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
-import Listvariables from './Listvariables';
 import NamespaceDeploy from './NamespaceDeploy';
-import ParameterContext from './ParameterContext';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -345,8 +340,6 @@ const Summary = () => {
   );
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
-  const formData = useSelector(NamespacesSelectors.getFormData);
-
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState({
@@ -392,8 +385,6 @@ const Summary = () => {
     ...(parameterReduxData?.inherited || []),
     ...(parameterReduxData?.parent || []),
   ];
-  /*  : state => state.namespaces.registryFlowXCord,
-  : state => state.namespaces.registryFlowYCord, */
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
@@ -417,10 +408,6 @@ const Summary = () => {
     forPopup: false,
   });
   const [flowControlState, setFlowControlState] = useState(null);
-  const summaryLoadingStateRedux = useSelector(
-    NamespacesSelectors.getNamespaceSummaryLoadingState
-  );
-
   const getParamerterContext = async () => {
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
     openParameterContext();
@@ -430,19 +417,6 @@ const Summary = () => {
     setIsParameterContextOpen({ isOpen: true, schedule: true });
     dispatch(SchedularActions.setScheduleDeployModal());
   };
-  const handleUpgradeClick = async () => {
-    dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
-    dispatch(NamespacesActions.upgradeCluster());
-    if (!isEmpty(flowControlButtons)) {
-      dispatch(NamespacesActions.updateNamespaceStatus(flowControlButtons));
-    }
-    setIsUpgrading(true);
-  };
-  const handleDeploy = () => {
-    dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
-    dispatch(NamespacesActions.deployCluster());
-    setIsUpgrading(false);
-  };
 
   const handleCloseModal = () => {
     history.push('/process-group');
@@ -451,33 +425,6 @@ const Summary = () => {
   const openParameterContext = () => {
     setIsParameterContextOpen({ isOpen: true, schedule: false });
     dispatch(NamespacesActions.fetchParameterContext());
-  };
-
-  const closeParameterContext = () => {
-    setIsParameterContextOpen(prev => ({ ...prev, isOpen: false }));
-    if (isParameterContextOpen.schedule) {
-      dispatch(SchedularActions.setScheduleDeployModal());
-    } else {
-      dispatch(NamespacesActions.setDeployedModal());
-    }
-    // if (isParentEdit?.parent) {
-    //   dispatch(NamespacesActions.setDeployedModal());
-    // }
-    // isParentEdit;
-    dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
-    dispatch(NamespacesActions.setParameterEditParent(false));
-    dispatch(NamespacesActions.setParentParameterList([]));
-    // dispatch(NamespacesActions.setDeployedModal()); // adding to open namespace deploy
-  };
-
-  const openAddParameterContext = () => {
-    setIsAddParameterContextOpen({ isOpen: true, mode: 'add' });
-    dispatch(NamespacesActions.setParameterContextItem({}));
-    if (isParameterContextOpen.schedule) {
-      setIsParameterContextOpen({ isOpen: false, schedule: true });
-    } else {
-      setIsParameterContextOpen({ isOpen: false, schedule: false });
-    }
   };
 
   const closeAddParameterContext = () => {
@@ -498,14 +445,6 @@ const Summary = () => {
   const handleScheduleTertiaryButton = async () => {
     setVariablesModalOpen({ isOpen: true, mode: 'add', schedule: true });
     // dispatch(SchedularActions.setScheduleModal());
-  };
-  const closeVariablesModal = () => {
-    setVariablesModalOpen(prev => ({ ...prev, isOpen: false }));
-    if (isVariablesModalOpen.schedule) {
-      // dispatch(SchedularActions.setScheduleModal());
-    } else {
-      dispatch(NamespacesActions.setDeployedModal());
-    }
   };
 
   const handleBackClick = () => {
@@ -537,8 +476,7 @@ const Summary = () => {
   const handleConfirmUpdateStatus = () => {
     if (!deployByRegistryFlow) {
       setFlowControlState(confirmDialogue.action);
-      if (confirmDialogue.forPopup) {
-      } else {
+      if (!confirmDialogue.forPopup) {
         setActiveButton(confirmDialogue.action);
         setFlowControlButtons(confirmDialogue.action);
       }
@@ -549,6 +487,12 @@ const Summary = () => {
         text: '',
         forPopup: false,
       });
+      if (checkFlowControlAfterUpgrade) {
+        dispatch(
+          NamespacesActions.updateNamespaceStatus(confirmDialogue.action)
+        );
+        return;
+      }
 
       return;
     }
@@ -758,7 +702,7 @@ const Summary = () => {
                   <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                     <div>
                       <SummaryDetailsHFourTag className="mb-2">
-                        {!isUpgrade ? KDFM.NAMESPACE : 'Selected Flow'}
+                        {!isUpgrade ? KDFM.NAMESPACE : 'Flow Name'}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
                         {deployByRegistryFlow
@@ -1001,36 +945,6 @@ const Summary = () => {
                       buttons are hidden.
                     </div>
                   )}
-                  {/* <TextsvgDiv className="d-flex">
-                  <ActiveButtonDiv className="div-btn-3 mr-2">
-                    <ActiveButtonDiv
-                      className="div-btn-1"
-                      isActive={activeButton === 'ENABLED'}
-                      activeColor="#cf9f5d"
-                      hoverColor="#cf9f5d"
-                      activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('ENABLED')}
-                    >
-                      <SmallThunderIcon color="#B5BDC8" />
-                    </ActiveButtonDiv>
-                  </ActiveButtonDiv>
-                  <div>{KDFM.ENABLED_FLOW}</div>
-                </TextsvgDiv>
-                <TextsvgDiv className="d-flex">
-                  <ActiveButtonDiv className="div-btn-4 mr-2">
-                    <ActiveButtonDiv
-                      className="div-btn-1"
-                      isActive={activeButton === 'DISABLED'}
-                      activeColor="#2c7cf3"
-                      hoverColor="#2c7cf3"
-                      activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('DISABLED')}
-                    >
-                      <SmallNotThunderIcon color="#B5BDC8" />
-                    </ActiveButtonDiv>
-                  </ActiveButtonDiv>
-                  <div>{KDFM.DISABLED_FLOW}</div>
-                </TextsvgDiv> */}
                 </ActiveButtonContainer>
               )}
             </IconsvgDiv>
@@ -1041,17 +955,6 @@ const Summary = () => {
             <Button variant="secondary" onClick={handleBackClick}>
               {KDFM.BACK}
             </Button>
-            {/* {!schedularFromList && !isRegistryDeploy && (
-            <Button
-              onClick={deployByRegistryFlow ? handleDeploy : handleUpgradeClick}
-            >
-              {deployByRegistryFlow
-                ? selectedNameSpace.version <= formData.version
-                  ? KDFM.UPGRADE
-                  : KDFM.DOWNGRADE
-                : KDFM.DEPLOY}
-            </Button>
-          )} */}
             {isRegistryDeploy && (
               <Button onClick={handledeployByRegistry}>
                 {isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE}

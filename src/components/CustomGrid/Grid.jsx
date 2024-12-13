@@ -413,7 +413,10 @@ export const Grid = ({
           </Modal>
         </>
       )}
-      <Breadcrumb module={module} />
+      <div className="mb-2 ps-1">
+        <Breadcrumb module={module} />
+      </div>
+
       <TableContainer module={module}>
         <CompactTable
           data={TABLE_DATA}

@@ -149,11 +149,16 @@ export const namespacesAPI = api => {
     payloadData,
     namespaceId,
   }) => {
-    const url = namespaceId
-      ? `controller-services/${clusterId}/namespace/${namespaceId}`
-      : `controller-services/${clusterId}/namespace`;
-
-    return api.post(url, payloadData);
+    const url =
+      namespaceId && !payloadData?.isFromControllerServiceTab
+        ? `controller-services/${clusterId}/namespace/${namespaceId}`
+        : `controller-services/${clusterId}/namespace`;
+    const updatedPayload = {
+      name: payloadData.name,
+      type: payloadData?.type,
+      bundle: payloadData?.bundle,
+    };
+    return api.post(url, updatedPayload);
   };
 
   const addPropertyControllerService = ({

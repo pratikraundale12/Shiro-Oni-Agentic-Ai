@@ -10,7 +10,7 @@ import { GridSelectors, NamespacesActions } from '../store';
 const BreadcrumbContainer = styled.div`
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 16px;
 `;
 
 const BreadcrumbItem = styled.span`

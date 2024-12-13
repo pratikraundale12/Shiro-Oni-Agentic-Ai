@@ -183,6 +183,11 @@ const NamespaceDeploy = ({
   const selectedDestCluster = useSelector(
     NamespacesSelectors.getSelectedDestCluster
   );
+  const deployByRegistryFlow = useSelector(
+    NamespacesSelectors.getdeployRegistryFlow
+  );
+  const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
+  const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
 
   const handleClick = () => {
     const updatedUrl = deployOrUpgradeDetails?.nifiUrl?.endsWith('/nifi')
@@ -218,8 +223,10 @@ const NamespaceDeploy = ({
               <GreenRightCircleIcon />
             </ModalIcon>
             <ModalHFive>
-              Process Group successfully &nbsp;
-              {checkFlowControlAfterUpgrade ? 'upgraded' : 'deployed'}
+              Process Group Successfully&nbsp;
+              {checkFlowControlAfterUpgrade
+                ? 'Upgraded To Production'
+                : 'Deployed To Production'}
             </ModalHFive>
           </div>
           <RowModal>
@@ -227,7 +234,9 @@ const NamespaceDeploy = ({
               <RowModalDiv className="d-flex  h-100  ">
                 <ActionTitleSet className="mb-0 ">Process Group</ActionTitleSet>
                 <SubTitleSet className="mb-0 ">
-                  {checkDestCluster?.name}
+                  {deployByRegistryFlow
+                    ? formDataRegistry?.selectedFlowName
+                    : checkDestCluster?.name}
                 </SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
@@ -236,7 +245,9 @@ const NamespaceDeploy = ({
                 <ActionTitleSet className="mb-0 ">
                   Current Version
                 </ActionTitleSet>
-                <SubTitleSet className="mb-0 ">{formData?.version}</SubTitleSet>
+                <SubTitleSet className="mb-0 ">
+                  {registryFlowVerion?.version}
+                </SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
             <CustomNine className="col-10 mb-3">
