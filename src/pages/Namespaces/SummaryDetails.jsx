@@ -96,7 +96,7 @@ const SummaryDetails = () => {
                 Process Group
               </SummaryDetailsHFourTag>
               <SummaryDetailsPtag className="mb-0">
-                {singleNamespaceData?.name}
+                {singleNamespaceData?.name || 'N/A'}
               </SummaryDetailsPtag>
             </div>
           </UseColXl>
@@ -106,7 +106,7 @@ const SummaryDetails = () => {
                 Flow Name
               </SummaryDetailsHFourTag>
               <SummaryDetailsPtag className="mb-0">
-                {singleNamespaceData?.flowName}
+                {singleNamespaceData?.flowName || 'N/A'}
               </SummaryDetailsPtag>
             </div>
           </UseColXl>
@@ -117,7 +117,7 @@ const SummaryDetails = () => {
               </SummaryDetailsHFourTag>
               <SummaryDetailsPtag className="mb-0">
                 <div>
-                  <span>{registryData?.url}</span>
+                  <span>{registryData?.url || 'N/A'}</span>
                 </div>
               </SummaryDetailsPtag>
             </div>
@@ -128,7 +128,7 @@ const SummaryDetails = () => {
                 NiFi URL
               </SummaryDetailsHFourTag>
               <SummaryDetailsPtag className="mb-0">
-                {singleNamespaceData?.nifiUrl}
+                {singleNamespaceData?.nifiUrl || 'N/A'}
               </SummaryDetailsPtag>
             </div>
           </UseColXl>
@@ -138,7 +138,7 @@ const SummaryDetails = () => {
                 version
               </SummaryDetailsHFourTag>
               <SummaryDetailsPtag className="mb-0">
-                {singleNamespaceData?.version}
+                {singleNamespaceData?.version || 'N/A'}
               </SummaryDetailsPtag>
             </div>
           </UseColXl>

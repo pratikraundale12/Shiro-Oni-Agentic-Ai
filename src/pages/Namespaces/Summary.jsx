@@ -8,6 +8,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
+  DuplicateIcon,
   SmallNotThunderIcon,
   SmallThunderIcon,
   SquareBoxIcon,
@@ -22,7 +23,7 @@ import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, ModalWithIcon } from '../../shared';
+import { Button, Modal, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
@@ -303,6 +304,24 @@ const TextDiv = styled.div`
   display: flex;
   align-items: center;
 `;
+const Icon = styled.div`
+  align-items: center !important;
+  justify-content: center !important;
+  display: flex !important;
+`;
+const Para = styled.p`
+  text-align: center;
+  margin-bottom: 0 !important;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-end: 0px;
+  font-size: 20px;
+  font-weight: 600;
+`;
 
 export const scheduleSchema = yup.object().shape({
   approver_ids: yup.array().required('Approver is required'),
@@ -352,6 +371,9 @@ const Summary = () => {
     isOpen: false,
     schedule: false,
   });
+  const [successTest, setSuccessTest] = useState(false);
+  const [proceedWithDispatch, setProceedWithDispatch] = useState(false);
+
   const deployByRegistryFlow = useSelector(
     NamespacesSelectors.getdeployRegistryFlow
   );
@@ -380,6 +402,10 @@ const Summary = () => {
   const parameterReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployParameterContext
   );
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'namespaces')
+  );
+  const result = gridData?.map(item => item?.flowId);
   const paramterDeployArray = [
     ...(parameterReduxData?.inherited || []),
     ...(parameterReduxData?.parent || []),
@@ -581,7 +607,6 @@ const Summary = () => {
     });
   };
 
-  //
   const handledeployByRegistry = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -599,6 +624,7 @@ const Summary = () => {
       },
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
     };
+
     if (!isEmpty(variblesReduxData)) {
       payload.variablesData = variblesReduxData;
     }
@@ -607,6 +633,12 @@ const Summary = () => {
     }
     if (!isEmpty(controllerServiceReduxData)) {
       payload.controllerServiceData = controllerServiceReduxData;
+    }
+
+    const duplicateDeploy = result.includes(registryFlowVerion?.flowId);
+    if (duplicateDeploy && !proceedWithDispatch) {
+      setSuccessTest(true);
+      return;
     }
 
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
@@ -679,307 +711,314 @@ const Summary = () => {
   }, [checkDestCluster, deployOrUpgradeDetails]);
 
   return (
-    <MainContainer className="main-space bg-white">
-      <FullPageLoader
-        loading={loadingregistry || loadingreUpdateFlow || loadingreUpgradeFlow}
-      />
-      <TopTitleBar className="d-flex mb-3">
-        <MainTitleDiv className="d-flex">
-          <ImageContainer>
-            <TodoIcon />
-          </ImageContainer>
-          <MainTitleHfour className="mb-0">
-            {`${
-              !deployByRegistryFlow
-                ? checkDestCluster?.version <= versionSelected.version
-                  ? KDFM.UPGRADE
-                  : KDFM.DOWNGRADE
-                : KDFM.DEPLOY
-            } ${KDFM.NAMESPACE}`}
-          </MainTitleHfour>
-          :
-          <MainTitleHfour className="mb-0">
-            {!isUpgrade
-              ? selectedNameSpace.label
-              : formDataRegistry?.selectedFlowName}
-          </MainTitleHfour>
-        </MainTitleDiv>
-      </TopTitleBar>
-      <BreadcrumbContainer className="d-flex mb-3">
-        <Breadcrumb
-          module="deploy"
-          path={
-            !deployByRegistryFlow
-              ? breadcrumbDataOnUpgrade
-              : breadcrumbDataOnDeploy
+    <>
+      <MainContainer className="main-space bg-white">
+        <FullPageLoader
+          loading={
+            loadingregistry || loadingreUpdateFlow || loadingreUpgradeFlow
           }
         />
-      </BreadcrumbContainer>
-      <GreyBoxNamespace className="w-100  mb-3">
-        <ScrollSetGrey className=" pe-1">
-          <RowConfig>
-            <div className="col-12 p-3">
-              <ConfigTitle className="config-title">
-                <ConfigTitleHTwo className="p-3 mb-0">
-                  <span>{KDFM.SUMMARY}</span>
-                </ConfigTitleHTwo>
-              </ConfigTitle>
-            </div>
-            <UseColLg className="col-lg-10 col-12 ">
-              <RowConfig className=" p-3">
-                <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                  <div>
-                    <SummaryDetailsHFourTag className="mb-2">
-                      {KDFM.SELECTED_CLUSTER}
-                    </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">
-                      {currentSelectedCluster?.label}
-                    </SummaryDetailsPtag>
-                  </div>
-                </UseColXl>
-                <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                  <div>
-                    <SummaryDetailsHFourTag className="mb-2">
-                      {!isUpgrade ? KDFM.NAMESPACE : 'Selected Flow'}
-                    </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">
-                      {deployByRegistryFlow
-                        ? formDataRegistry?.selectedFlowName
-                        : checkDestCluster?.name}
-                    </SummaryDetailsPtag>
-                  </div>
-                </UseColXl>
-                <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                  <div>
-                    <SummaryDetailsHFourTag className="mb-2">
-                      {KDFM.REGISTRY_URL}
-                    </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">
-                      <div>
-                        <span>{registryData?.url}</span>
-                        <div data-tooltip-id={`copy-board-namespace-summary1`}>
-                          <CopyToClipboard
-                            className="summary-clipboard"
-                            copyItem={registryData?.url}
-                          />
-                        </div>
-                        <ReactTooltip
-                          id={`copy-board-namespace-summary1`}
-                          place="bottom"
-                          effect="solid"
-                          content={'Copy registry URL'}
-                          style={{
-                            width: '150px',
-                            whiteSpace: 'normal',
-                            wordWrap: 'break-word',
-                            zIndex: 10000,
-                          }}
-                        />
-                      </div>
-                    </SummaryDetailsPtag>
-                  </div>
-                </UseColXl>
-                <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                  <div>
-                    <SummaryDetailsHFourTag className="mb-2">
-                      {KDFM.NIFI_URL}
-                    </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">
-                      <div>
-                        <span>{registryAllDetails?.nifi_url}</span>
-                        <div data-tooltip-id={`copy-board-namespace-summary2`}>
-                          <CopyToClipboard
-                            className="summary-clipboard"
-                            copyItem={registryAllDetails?.nifi_url}
-                          />
-                        </div>
-                        <ReactTooltip
-                          id={`copy-board-namespace-summary2`}
-                          place="bottom"
-                          effect="solid"
-                          content={'Copy cluster URL'}
-                          style={{
-                            width: '150px',
-                            whiteSpace: 'normal',
-                            wordWrap: 'break-word',
-                            zIndex: 10000,
-                          }}
-                        />
-                      </div>
-                    </SummaryDetailsPtag>
-                  </div>
-                </UseColXl>
-                <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                  <div>
-                    <SummaryDetailsHFourTag className="mb-2">
-                      {deployByRegistryFlow
-                        ? KDFM.SELECTED_VERSION
-                        : KDFM.CURRENT_VERSION}
-                    </SummaryDetailsHFourTag>
-                    <SummaryDetailsPtag className="mb-0">
-                      {isUpgrade
-                        ? versionSelected?.version
-                        : checkDestCluster?.version || 'N/A'}
-                    </SummaryDetailsPtag>
-                  </div>
-                </UseColXl>
-                {!deployByRegistryFlow && (
+        <TopTitleBar className="d-flex mb-3">
+          <MainTitleDiv className="d-flex">
+            <ImageContainer>
+              <TodoIcon />
+            </ImageContainer>
+            <MainTitleHfour className="mb-0">
+              {`${
+                !deployByRegistryFlow
+                  ? checkDestCluster?.version <= versionSelected.version
+                    ? KDFM.UPGRADE
+                    : KDFM.DOWNGRADE
+                  : KDFM.DEPLOY
+              } ${KDFM.NAMESPACE}`}
+            </MainTitleHfour>
+            :
+            <MainTitleHfour className="mb-0">
+              {!isUpgrade
+                ? selectedNameSpace.label
+                : formDataRegistry?.selectedFlowName}
+            </MainTitleHfour>
+          </MainTitleDiv>
+        </TopTitleBar>
+        <BreadcrumbContainer className="d-flex mb-3">
+          <Breadcrumb
+            module="deploy"
+            path={
+              !deployByRegistryFlow
+                ? breadcrumbDataOnUpgrade
+                : breadcrumbDataOnDeploy
+            }
+          />
+        </BreadcrumbContainer>
+        <GreyBoxNamespace className="w-100  mb-3">
+          <ScrollSetGrey className=" pe-1">
+            <RowConfig>
+              <div className="col-12 p-3">
+                <ConfigTitle className="config-title">
+                  <ConfigTitleHTwo className="p-3 mb-0">
+                    <span>{KDFM.SUMMARY}</span>
+                  </ConfigTitleHTwo>
+                </ConfigTitle>
+              </div>
+              <UseColLg className="col-lg-10 col-12 ">
+                <RowConfig className=" p-3">
                   <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                    <div className="summary-details">
+                    <div>
                       <SummaryDetailsHFourTag className="mb-2">
-                        {KDFM.UPDATED_VERSION}
+                        {KDFM.SELECTED_CLUSTER}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
-                        {versionSelected.version || ''}
+                        {currentSelectedCluster?.label}
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
-                )}
-              </RowConfig>
-            </UseColLg>
-            {!deployByRegistryFlow && (
-              <>
-                <div className="col-12 p-3">
-                  <ConfigTitle className="config-title">
-                    <ConfigTitleHTwo className="p-3 mb-0">
-                      <span>{KDFM.FLOW_CONTROL}</span>
-                    </ConfigTitleHTwo>
-                  </ConfigTitle>
-                </div>
-                <UseColLg className="col-lg-10 col-12 ">
-                  <RowConfig className="row p-3">
-                    <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                      <div className="summary-details">
-                        <SummaryDetailsHFourTag className="mb-2">
-                          {KDFM.NAMESPACE}
-                        </SummaryDetailsHFourTag>
-                        <SummaryDetailsPtag className="mb-0">
-                          {checkDestCluster?.name}
-                        </SummaryDetailsPtag>
-                      </div>
-                    </UseColXl>
-                    <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
-                      <div className="summary-details">
-                        <SummaryDetailsHFourTag className="mb-2">
-                          {KDFM.CURRENT_VERSION}
-                        </SummaryDetailsHFourTag>
-                        <SummaryDetailsPtag className="mb-0">
-                          {checkDestCluster?.version}
-                        </SummaryDetailsPtag>
-                      </div>
-                    </UseColXl>
+                  <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                    <div>
+                      <SummaryDetailsHFourTag className="mb-2">
+                        {!isUpgrade ? KDFM.NAMESPACE : 'Selected Flow'}
+                      </SummaryDetailsHFourTag>
+                      <SummaryDetailsPtag className="mb-0">
+                        {deployByRegistryFlow
+                          ? formDataRegistry?.selectedFlowName
+                          : checkDestCluster?.name}
+                      </SummaryDetailsPtag>
+                    </div>
+                  </UseColXl>
+                  <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                    <div>
+                      <SummaryDetailsHFourTag className="mb-2">
+                        {KDFM.REGISTRY_URL}
+                      </SummaryDetailsHFourTag>
+                      <SummaryDetailsPtag className="mb-0">
+                        <div>
+                          <span>{registryData?.url}</span>
+                          <div
+                            data-tooltip-id={`copy-board-namespace-summary1`}
+                          >
+                            <CopyToClipboard
+                              className="summary-clipboard"
+                              copyItem={registryData?.url}
+                            />
+                          </div>
+                          <ReactTooltip
+                            id={`copy-board-namespace-summary1`}
+                            place="bottom"
+                            effect="solid"
+                            content={'Copy registry URL'}
+                            style={{
+                              width: '150px',
+                              whiteSpace: 'normal',
+                              wordWrap: 'break-word',
+                              zIndex: 10000,
+                            }}
+                          />
+                        </div>
+                      </SummaryDetailsPtag>
+                    </div>
+                  </UseColXl>
+                  <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                    <div>
+                      <SummaryDetailsHFourTag className="mb-2">
+                        {KDFM.NIFI_URL}
+                      </SummaryDetailsHFourTag>
+                      <SummaryDetailsPtag className="mb-0">
+                        <div>
+                          <span>{registryAllDetails?.nifi_url}</span>
+                          <div
+                            data-tooltip-id={`copy-board-namespace-summary2`}
+                          >
+                            <CopyToClipboard
+                              className="summary-clipboard"
+                              copyItem={registryAllDetails?.nifi_url}
+                            />
+                          </div>
+                          <ReactTooltip
+                            id={`copy-board-namespace-summary2`}
+                            place="bottom"
+                            effect="solid"
+                            content={'Copy cluster URL'}
+                            style={{
+                              width: '150px',
+                              whiteSpace: 'normal',
+                              wordWrap: 'break-word',
+                              zIndex: 10000,
+                            }}
+                          />
+                        </div>
+                      </SummaryDetailsPtag>
+                    </div>
+                  </UseColXl>
+                  <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                    <div>
+                      <SummaryDetailsHFourTag className="mb-2">
+                        {deployByRegistryFlow
+                          ? KDFM.SELECTED_VERSION
+                          : KDFM.CURRENT_VERSION}
+                      </SummaryDetailsHFourTag>
+                      <SummaryDetailsPtag className="mb-0">
+                        {isUpgrade
+                          ? versionSelected?.version
+                          : checkDestCluster?.version || 'N/A'}
+                      </SummaryDetailsPtag>
+                    </div>
+                  </UseColXl>
+                  {!deployByRegistryFlow && (
                     <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                       <div className="summary-details">
                         <SummaryDetailsHFourTag className="mb-2">
                           {KDFM.UPDATED_VERSION}
                         </SummaryDetailsHFourTag>
                         <SummaryDetailsPtag className="mb-0">
-                          {versionSelected?.version}
+                          {versionSelected.version || ''}
                         </SummaryDetailsPtag>
                       </div>
                     </UseColXl>
-                  </RowConfig>
-                </UseColLg>
-              </>
-            )}
-          </RowConfig>
-          <IconsvgDiv>
-            {!deployByRegistryFlow && (
-              <CustomNine className="col-4 mb-3">
-                <ActiveButtonContainer className="d-flex ">
-                  <TextDiv className="d-flex">
-                    <CountDiv
-                      className="div-btn-1 mr-2"
-                      count={processStatus.runningCount}
-                      activeColor="#58e715"
-                    >
-                      <TriangleIcons color="#B5BDC8" />
-                      <span>{processStatus.runningCount}</span>
-                    </CountDiv>
-                    <div>{KDFM.RUNNING_PROCESSORS}</div>
-                  </TextDiv>
-                  <TextDiv className="d-flex">
-                    <CountDiv
-                      className="div-btn-2 mr-2"
-                      count={processStatus.stoppedCount}
-                      activeColor="#c52b2b"
-                    >
-                      <SquareBoxIcon color="#B5BDC8" />
-                      <span>{processStatus.stoppedCount}</span>
-                    </CountDiv>
-                    <div>{KDFM.STOPPED_PROCESSORS}</div>
-                  </TextDiv>
-                  <TextDiv className="d-flex">
-                    <CountDiv
-                      className="div-btn-3 mr-2"
-                      count={processStatus.invalidCount}
-                      activeColor="#CF9F5D"
-                    >
-                      <TriangleExclamationMarkIcon color="#B5BDC8" />
-                      <span>{processStatus.invalidCount}</span>
-                    </CountDiv>
-                    <div>{KDFM.INVALID_PROCESSORS}</div>
-                  </TextDiv>
-                  <TextDiv className="d-flex">
-                    <CountDiv
-                      className="div-btn-4 mr-2"
-                      count={processStatus.disabledCount}
-                      activeColor="#2c7cf3"
-                    >
-                      <SmallNotThunderIcon color="#B5BDC8" />
-                      <span>{processStatus.disabledCount}</span>
-                    </CountDiv>
-                    <div>{KDFM.DISABLED_PROCESSORS}</div>
-                  </TextDiv>
-                </ActiveButtonContainer>
-              </CustomNine>
-            )}
-            {!deployByRegistryFlow && (
-              <ActiveButtonContainer className="d-flex ">
-                {!(
-                  processStatus.runningCount === 0 &&
-                  processStatus?.stoppedCount === 0
-                ) ? (
-                  <>
-                    <TextsvgDiv className="d-flex">
-                      <ActiveButtonDiv className="div-btn-1 mr-2">
-                        <ActiveButtonDiv
-                          className="div-btn-1 "
-                          isActive={activeButton === 'RUNNING'}
-                          activeColor="#58e715"
-                          hoverColor="#58e715"
-                          activeTextColor="#fff"
-                          onClick={() => handleUpdateStatus('RUNNING')}
-                        >
-                          <TriangleIcons color="#B5BDC8" />
-                        </ActiveButtonDiv>
-                      </ActiveButtonDiv>
-                      <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                    </TextsvgDiv>
-                    <TextsvgDiv className="d-flex">
-                      <ActiveButtonDiv className="div-btn-2 mr-2">
-                        <ActiveButtonDiv
-                          className="div-btn-1"
-                          isActive={activeButton === 'STOPPED'}
-                          activeColor="#c52b2b"
-                          hoverColor="#c52b2b"
-                          activeTextColor="#fff"
-                          onClick={() => handleUpdateStatus('STOPPED')}
-                        >
-                          <SquareBoxIcon color="#B5BDC8" />
-                        </ActiveButtonDiv>
-                      </ActiveButtonDiv>
-                      <div>{KDFM.STOPPED_FLOW}</div>
-                    </TextsvgDiv>
-                  </>
-                ) : (
-                  <div>
-                    If there are no running or stopped processors, or if all
-                    processors are disabled or invalid, the start and stop
-                    buttons are hidden.
+                  )}
+                </RowConfig>
+              </UseColLg>
+              {!deployByRegistryFlow && (
+                <>
+                  <div className="col-12 p-3">
+                    <ConfigTitle className="config-title">
+                      <ConfigTitleHTwo className="p-3 mb-0">
+                        <span>{KDFM.FLOW_CONTROL}</span>
+                      </ConfigTitleHTwo>
+                    </ConfigTitle>
                   </div>
-                )}
-                {/* <TextsvgDiv className="d-flex">
+                  <UseColLg className="col-lg-10 col-12 ">
+                    <RowConfig className="row p-3">
+                      <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                        <div className="summary-details">
+                          <SummaryDetailsHFourTag className="mb-2">
+                            {KDFM.NAMESPACE}
+                          </SummaryDetailsHFourTag>
+                          <SummaryDetailsPtag className="mb-0">
+                            {checkDestCluster?.name}
+                          </SummaryDetailsPtag>
+                        </div>
+                      </UseColXl>
+                      <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                        <div className="summary-details">
+                          <SummaryDetailsHFourTag className="mb-2">
+                            {KDFM.CURRENT_VERSION}
+                          </SummaryDetailsHFourTag>
+                          <SummaryDetailsPtag className="mb-0">
+                            {checkDestCluster?.version}
+                          </SummaryDetailsPtag>
+                        </div>
+                      </UseColXl>
+                      <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                        <div className="summary-details">
+                          <SummaryDetailsHFourTag className="mb-2">
+                            {KDFM.UPDATED_VERSION}
+                          </SummaryDetailsHFourTag>
+                          <SummaryDetailsPtag className="mb-0">
+                            {versionSelected?.version}
+                          </SummaryDetailsPtag>
+                        </div>
+                      </UseColXl>
+                    </RowConfig>
+                  </UseColLg>
+                </>
+              )}
+            </RowConfig>
+            <IconsvgDiv>
+              {!deployByRegistryFlow && (
+                <CustomNine className="col-4 mb-3">
+                  <ActiveButtonContainer className="d-flex ">
+                    <TextDiv className="d-flex">
+                      <CountDiv
+                        className="div-btn-1 mr-2"
+                        count={processStatus.runningCount}
+                        activeColor="#58e715"
+                      >
+                        <TriangleIcons color="#B5BDC8" />
+                        <span>{processStatus.runningCount}</span>
+                      </CountDiv>
+                      <div>{KDFM.RUNNING_PROCESSORS}</div>
+                    </TextDiv>
+                    <TextDiv className="d-flex">
+                      <CountDiv
+                        className="div-btn-2 mr-2"
+                        count={processStatus.stoppedCount}
+                        activeColor="#c52b2b"
+                      >
+                        <SquareBoxIcon color="#B5BDC8" />
+                        <span>{processStatus.stoppedCount}</span>
+                      </CountDiv>
+                      <div>{KDFM.STOPPED_PROCESSORS}</div>
+                    </TextDiv>
+                    <TextDiv className="d-flex">
+                      <CountDiv
+                        className="div-btn-3 mr-2"
+                        count={processStatus.invalidCount}
+                        activeColor="#CF9F5D"
+                      >
+                        <TriangleExclamationMarkIcon color="#B5BDC8" />
+                        <span>{processStatus.invalidCount}</span>
+                      </CountDiv>
+                      <div>{KDFM.INVALID_PROCESSORS}</div>
+                    </TextDiv>
+                    <TextDiv className="d-flex">
+                      <CountDiv
+                        className="div-btn-4 mr-2"
+                        count={processStatus.disabledCount}
+                        activeColor="#2c7cf3"
+                      >
+                        <SmallNotThunderIcon color="#B5BDC8" />
+                        <span>{processStatus.disabledCount}</span>
+                      </CountDiv>
+                      <div>{KDFM.DISABLED_PROCESSORS}</div>
+                    </TextDiv>
+                  </ActiveButtonContainer>
+                </CustomNine>
+              )}
+              {!deployByRegistryFlow && (
+                <ActiveButtonContainer className="d-flex ">
+                  {!(
+                    processStatus.runningCount === 0 &&
+                    processStatus?.stoppedCount === 0
+                  ) ? (
+                    <>
+                      <TextsvgDiv className="d-flex">
+                        <ActiveButtonDiv className="div-btn-1 mr-2">
+                          <ActiveButtonDiv
+                            className="div-btn-1 "
+                            isActive={activeButton === 'RUNNING'}
+                            activeColor="#58e715"
+                            hoverColor="#58e715"
+                            activeTextColor="#fff"
+                            onClick={() => handleUpdateStatus('RUNNING')}
+                          >
+                            <TriangleIcons color="#B5BDC8" />
+                          </ActiveButtonDiv>
+                        </ActiveButtonDiv>
+                        <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                      </TextsvgDiv>
+                      <TextsvgDiv className="d-flex">
+                        <ActiveButtonDiv className="div-btn-2 mr-2">
+                          <ActiveButtonDiv
+                            className="div-btn-1"
+                            isActive={activeButton === 'STOPPED'}
+                            activeColor="#c52b2b"
+                            hoverColor="#c52b2b"
+                            activeTextColor="#fff"
+                            onClick={() => handleUpdateStatus('STOPPED')}
+                          >
+                            <SquareBoxIcon color="#B5BDC8" />
+                          </ActiveButtonDiv>
+                        </ActiveButtonDiv>
+                        <div>{KDFM.STOPPED_FLOW}</div>
+                      </TextsvgDiv>
+                    </>
+                  ) : (
+                    <div>
+                      If there are no running or stopped processors, or if all
+                      processors are disabled or invalid, the start and stop
+                      buttons are hidden.
+                    </div>
+                  )}
+                  {/* <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-3 mr-2">
                     <ActiveButtonDiv
                       className="div-btn-1"
@@ -1009,17 +1048,17 @@ const Summary = () => {
                   </ActiveButtonDiv>
                   <div>{KDFM.DISABLED_FLOW}</div>
                 </TextsvgDiv> */}
-              </ActiveButtonContainer>
-            )}
-          </IconsvgDiv>
-        </ScrollSetGrey>
-      </GreyBoxNamespace>
-      <BottomButton className="bottom-button-divs d-flex">
-        <BottomButtonDiv className="btn-div d-flex">
-          <Button variant="secondary" onClick={handleBackClick}>
-            {KDFM.BACK}
-          </Button>
-          {/* {!schedularFromList && !isRegistryDeploy && (
+                </ActiveButtonContainer>
+              )}
+            </IconsvgDiv>
+          </ScrollSetGrey>
+        </GreyBoxNamespace>
+        <BottomButton className="bottom-button-divs d-flex">
+          <BottomButtonDiv className="btn-div d-flex">
+            <Button variant="secondary" onClick={handleBackClick}>
+              {KDFM.BACK}
+            </Button>
+            {/* {!schedularFromList && !isRegistryDeploy && (
             <Button
               onClick={deployByRegistryFlow ? handleDeploy : handleUpgradeClick}
             >
@@ -1030,116 +1069,147 @@ const Summary = () => {
                 : KDFM.DEPLOY}
             </Button>
           )} */}
-          {isRegistryDeploy && (
-            <Button onClick={handledeployByRegistry}>
-              {isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE}
-            </Button>
+            {isRegistryDeploy && (
+              <Button onClick={handledeployByRegistry}>
+                {isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE}
+              </Button>
+            )}
+            {!isRegistryDeploy && (
+              <Button onClick={handleUpgradeByRegistry}>{KDFM.UPGRADE}</Button>
+            )}
+            {schedularFromList && (
+              <Button
+                size="md"
+                variant="tertiary"
+                onClick={() => dispatch(SchedularActions.setScheduleModal())}
+              >
+                Schedule
+              </Button>
+            )}
+          </BottomButtonDiv>
+          {isUpgrading && (
+            <div className="w-100 mt-3">
+              <Progressox className="w-100">
+                <ProgressLabel className="progress-label">
+                  {deployOrUpgradeDetails?.percentCompleted < 100
+                    ? 'Upgrading'
+                    : 'Upgraded'}
+                </ProgressLabel>
+                <CustomRedProgress className="progress w-100 custom-red-progress">
+                  <ProgressBar
+                    className="progress-bar"
+                    role="progressbar"
+                    style={{
+                      width: `${deployOrUpgradeDetails?.percentCompleted || 0}%`,
+                    }}
+                    aria-valuenow={
+                      deployOrUpgradeDetails?.percentCompleted || 0
+                    }
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                  >
+                    {deployOrUpgradeDetails?.percentCompleted || 0}%
+                  </ProgressBar>
+                </CustomRedProgress>
+              </Progressox>
+            </div>
           )}
-          {!isRegistryDeploy && (
-            <Button onClick={handleUpgradeByRegistry}>{KDFM.UPGRADE}</Button>
-          )}
-          {schedularFromList && (
-            <Button
-              size="md"
-              variant="tertiary"
-              onClick={() => dispatch(SchedularActions.setScheduleModal())}
-            >
-              Schedule
-            </Button>
-          )}
-        </BottomButtonDiv>
-        {isUpgrading && (
-          <div className="w-100 mt-3">
-            <Progressox className="w-100">
-              <ProgressLabel className="progress-label">
-                {deployOrUpgradeDetails?.percentCompleted < 100
-                  ? 'Upgrading'
-                  : 'Upgraded'}
-              </ProgressLabel>
-              <CustomRedProgress className="progress w-100 custom-red-progress">
-                <ProgressBar
-                  className="progress-bar"
-                  role="progressbar"
-                  style={{
-                    width: `${deployOrUpgradeDetails?.percentCompleted || 0}%`,
-                  }}
-                  aria-valuenow={deployOrUpgradeDetails?.percentCompleted || 0}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                >
-                  {deployOrUpgradeDetails?.percentCompleted || 0}%
-                </ProgressBar>
-              </CustomRedProgress>
-            </Progressox>
-          </div>
-        )}
-      </BottomButton>
-      <ScheduleDeploymentModal
-        showApprover={selectedCluster?.approver_enable}
-      />
-      <NamespaceDeploy
-        isOpen={isDeployedModal}
-        closePopup={handleCloseModal}
-        openParameterContext={openParameterContext}
-        getParamerterContext={getParamerterContext}
-        handleTertiaryButton={handleTertiaryButton}
-        activeButtonPopup={activeButtonPopup}
-        processStatus={processStatus}
-        setActiveButtonPopup={setActiveButtonPopup}
-        handleFlowConfirmPopup={handleFlowConfirmPopup}
-      />
-      <ScheduleNamespaceDeploy
-        getScheduleParamerterContext={getScheduleParamerterContext}
-        handleScheduleTertiaryButton={handleScheduleTertiaryButton}
-        flowControlState={flowControlButtons}
-      />
-      <AddParameterContext
-        key={isParameterContextOpen.mode}
-        isParameterContextOpen={isParameterContextOpen}
-        parameterContextItem={parameterContextItem}
-        isAddParameterContextOpen={isAddParameterContextOpen}
-        closePopup={closeAddParameterContext}
-        setIsAddParameterContextOpen={setIsAddParameterContextOpen}
-        setIsParameterContextOpen={setIsParameterContextOpen}
-      />
-      <ModalWithIcon
-        title={'Flow Confirmation'}
-        primaryButtonText={'Confirm'}
-        secondaryButtonText="Cancel"
-        icon={
-          <img
-            src={
-              confirmDialogue?.action === 'STOPPED'
-                ? StopIconImage
-                : confirmDialogue?.action === 'RUNNING'
-                  ? StartIconImage
-                  : confirmDialogue?.action === 'ENABLED'
-                    ? EnableIconImage
-                    : DisbaleIconImage
-            }
-            height="80px"
-            width="80px"
-            alt="img"
-          />
-        }
-        isOpen={confirmDialogue?.state}
-        onRequestClose={() => {
-          setConfirmDialogue({
-            state: false,
-            action: '',
-            text: '',
-            forPopup: false,
-          });
-          setActiveButtonPopup(null);
-        }}
-        primaryText={
-          !checkFlowControlAfterUpgrade
-            ? `Flow will be ${confirmDialogue?.text} after the upgrade?`
-            : `Do you really want to ${confirmDialogue?.text}?`
-        }
-        onSubmit={handleConfirmUpdateStatus}
-      />
-    </MainContainer>
+        </BottomButton>
+        <ScheduleDeploymentModal
+          showApprover={selectedCluster?.approver_enable}
+        />
+        <NamespaceDeploy
+          isOpen={isDeployedModal}
+          closePopup={handleCloseModal}
+          openParameterContext={openParameterContext}
+          getParamerterContext={getParamerterContext}
+          handleTertiaryButton={handleTertiaryButton}
+          activeButtonPopup={activeButtonPopup}
+          processStatus={processStatus}
+          setActiveButtonPopup={setActiveButtonPopup}
+          handleFlowConfirmPopup={handleFlowConfirmPopup}
+        />
+        <ScheduleNamespaceDeploy
+          getScheduleParamerterContext={getScheduleParamerterContext}
+          handleScheduleTertiaryButton={handleScheduleTertiaryButton}
+          flowControlState={flowControlButtons}
+        />
+        <AddParameterContext
+          key={isParameterContextOpen.mode}
+          isParameterContextOpen={isParameterContextOpen}
+          parameterContextItem={parameterContextItem}
+          isAddParameterContextOpen={isAddParameterContextOpen}
+          closePopup={closeAddParameterContext}
+          setIsAddParameterContextOpen={setIsAddParameterContextOpen}
+          setIsParameterContextOpen={setIsParameterContextOpen}
+        />
+        <ModalWithIcon
+          title={'Flow Confirmation'}
+          primaryButtonText={'Confirm'}
+          secondaryButtonText="Cancel"
+          icon={
+            <img
+              src={
+                confirmDialogue?.action === 'STOPPED'
+                  ? StopIconImage
+                  : confirmDialogue?.action === 'RUNNING'
+                    ? StartIconImage
+                    : confirmDialogue?.action === 'ENABLED'
+                      ? EnableIconImage
+                      : DisbaleIconImage
+              }
+              height="80px"
+              width="80px"
+              alt="img"
+            />
+          }
+          isOpen={confirmDialogue?.state}
+          onRequestClose={() => {
+            setConfirmDialogue({
+              state: false,
+              action: '',
+              text: '',
+              forPopup: false,
+            });
+            setActiveButtonPopup(null);
+          }}
+          primaryText={
+            !checkFlowControlAfterUpgrade
+              ? `Flow will be ${confirmDialogue?.text} after the upgrade?`
+              : `Do you really want to ${confirmDialogue?.text}?`
+          }
+          onSubmit={handleConfirmUpdateStatus}
+        />
+      </MainContainer>
+      {successTest && (
+        <Modal
+          title="Duplicate Processor Groups"
+          isOpen={successTest}
+          onRequestClose={() => {
+            setSuccessTest(false);
+            history.push('/process-group');
+          }}
+          size="sm"
+          secondaryButtonText="Cancel"
+          primaryButtonText="Continue"
+          onSubmit={() => {
+            setSuccessTest(false);
+            setProceedWithDispatch(true);
+            handledeployByRegistry();
+          }}
+        >
+          <>
+            <Icon>
+              <DuplicateIcon />
+            </Icon>
+            <Para>
+              Are you sure you want to deploy? This action will duplicate the
+              processor groups. Please confirm to proceed.
+            </Para>
+          </>
+        </Modal>
+      )}
+    </>
   );
 };
 

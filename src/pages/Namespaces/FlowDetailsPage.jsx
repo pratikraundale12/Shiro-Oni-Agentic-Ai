@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
@@ -280,16 +279,11 @@ const FlowDetailsPage = () => {
   // };
 
   const handleClick = () => {
-    if (
-      selectedNameSpace &&
-      selectedVersion &&
-      isEmpty(registryDetailsData) &&
-      !isUpgrade
-    ) {
+    if (!isUpgrade) {
       dispatch(
         NamespacesActions.fetchRegistryFlowDetails({
-          bucketId: selectedNameSpace.bucketId,
-          flowId: selectedNameSpace.flowId,
+          bucketId: selectedNameSpace?.bucketId,
+          flowId: selectedNameSpace?.flowId,
           version: selectedVersion,
         })
       );
