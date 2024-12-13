@@ -144,7 +144,7 @@ export const ListNamespaces = () => {
             // effect="solid"
             content={item?.name}
             style={{
-              width: '320px',
+              width: 'auto',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}
@@ -158,15 +158,15 @@ export const ListNamespaces = () => {
       label: KDFM.FLOW_NAME,
       renderCell: item => (
         <>
-          <FlowNameDiv data-tooltip-id={`tooltip-${item.flowName}`}>
+          <FlowNameDiv data-tooltip-id={`tooltip-${item.flowName}1`}>
             {item.flowName || KDFM.NA}
           </FlowNameDiv>
           <ReactTooltip
-            id={`tooltip-${item?.flowName}`}
+            id={`tooltip-${item?.flowName}1`}
             place="right"
             content={item?.flowName}
             style={{
-              width: '320px',
+              width: 'auto',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}
@@ -319,7 +319,7 @@ export const ListNamespaces = () => {
             place="left"
             content={'Process Group Details'}
             style={{
-              width: '120px',
+              width: '175px',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}
