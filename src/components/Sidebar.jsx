@@ -270,7 +270,7 @@ export const Sidebar = ({
                 />
                 <span className="nav-text">{item.name}</span>
               </Item>
-              {collapsed && (
+              {collapsed && !isOpenSidebar && (
                 <ReactTooltip
                   id={`tooltip-${item.path}`}
                   place="right"
