@@ -939,11 +939,7 @@ const Summary = () => {
                       </TextsvgDiv>
                     </>
                   ) : (
-                    <div>
-                      If there are no running or stopped processors, or if all
-                      processors are disabled or invalid, the start and stop
-                      buttons are hidden.
-                    </div>
+                    <div>{KDFM.FLOW_CONTROL_WARNING}</div>
                   )}
                 </ActiveButtonContainer>
               )}

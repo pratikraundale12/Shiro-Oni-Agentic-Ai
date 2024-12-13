@@ -274,45 +274,8 @@ const FlowControl = () => {
                 </TextsvgDiv>
               </>
             ) : (
-              <div className="text_info">
-                If there are no running or stopped processors, or if all
-                processors are disabled or invalid, the start and stop buttons
-                are hidden.
-              </div>
+              <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
             )}
-
-            {/* <TextsvgDiv className="d-flex">
-                  <ActiveButtonDiv className="div-btn-3 mr-2">
-                    <ActiveButtonDiv
-                      disabled={!canWrite}
-                      className="div-btn-1"
-                      isActive={activeButton === 'ENABLED'}
-                      activeColor="#cf9f5d"
-                      hoverColor="#cf9f5d"
-                      activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('ENABLED')}
-                    >
-                      <SmallThunderIcon color="#B5BDC8" />
-                    </ActiveButtonDiv>
-                  </ActiveButtonDiv>
-                  <div>{KDFM.ENABLED_FLOW}</div>
-                </TextsvgDiv> */}
-            {/* <TextsvgDiv className="d-flex">
-              <ActiveButtonDiv className="div-btn-4 mr-2">
-                <ActiveButtonDiv
-                  className="div-btn-1"
-                  disabled={!canWrite}
-                  isActive={activeButton === 'DISABLED'}
-                  activeColor="#2c7cf3"
-                  hoverColor="#2c7cf3"
-                  activeTextColor="#fff"
-                  onClick={() => handleUpdateStatus('DISABLED')}
-                >
-                  <SmallNotThunderIcon color="#B5BDC8" />
-                </ActiveButtonDiv>
-              </ActiveButtonDiv>
-              <div>{KDFM.DISABLED_FLOW}</div>
-            </TextsvgDiv> */}
           </ActiveButtonContainer>
         </IconsvgDiv>
         <ModalWithIcon

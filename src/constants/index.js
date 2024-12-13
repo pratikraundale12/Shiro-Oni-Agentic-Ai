@@ -180,6 +180,8 @@ export const KDFM = {
   SCHEDULE_DIPLOYMENT: 'Schedule Diployment',
   SERVICE_ACCOUNT: 'Service Account',
   CONTROLLER_SERVICE_DATA: 'External Controller Services',
+  FLOW_CONTROL_WARNING:
+    'The "Start" and "Stop" buttons will be hidden if all the processors are either invalid or disabled.',
 
   CHANGE_CONFIGURATION: 'Change Configuration',
 
