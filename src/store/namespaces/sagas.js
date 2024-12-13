@@ -761,7 +761,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   const selectedNamespaceId = yield select(
-    NamespacesSelectors.getSelectedNamespace
+    NamespacesSelectors.getSingleNamespaceData
   );
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -772,7 +772,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: selectedNamespaceId?.value,
+        namespaceId: selectedNamespaceId?.id,
         payloadData: payload,
       },
     ],
