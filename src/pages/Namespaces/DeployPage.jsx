@@ -346,12 +346,16 @@ function DeployPage() {
   );
   const flowIdList = gridData?.map(item => item?.flowId);
   const handleContinue = () => {
-    const duplicateDeploy = flowIdList.includes(selectedValueFlowId);
-    if (duplicateDeploy && !proceedWithDispatch) {
-      setSuccessTest(true);
-      return;
+    if (isEmpty(versionSelected)) {
+      toast.error('Please select any version');
     } else {
-      handleContinueWithSame();
+      const duplicateDeploy = flowIdList.includes(selectedValueFlowId);
+      if (duplicateDeploy && !proceedWithDispatch) {
+        setSuccessTest(true);
+        return;
+      } else {
+        handleContinueWithSame();
+      }
     }
   };
   const handleContinueWithSame = () => {
