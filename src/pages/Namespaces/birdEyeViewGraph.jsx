@@ -16,7 +16,6 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
 
   useEffect(() => {
     if (!data || data.length === 0) {
-      console.warn('No data provided for RectangleGraph');
       return;
     }
 

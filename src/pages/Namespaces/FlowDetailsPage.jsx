@@ -253,6 +253,28 @@ const FlowDetailsPage = () => {
     id: index,
   }));
 
+  const updateddDataForUpgrade = sortedArray.map(d => {
+    if (
+      d.x === selectedNameSpace?.position.x &&
+      d.y === selectedNameSpace?.position.y
+    ) {
+      const newBox = {
+        x: storedXcord || xStateCoordinate || selectedNameSpace?.position.x,
+        y: storedYcord || yStateCoordinate || selectedNameSpace?.position.y,
+        width: 384,
+        height: 176,
+        color: theme.colors.primary,
+      };
+
+      return newBox;
+    } else return d;
+  });
+
+  const enhancedDataForUpgrade = updateddDataForUpgrade.map((d, index) => ({
+    ...d,
+    id: index,
+  }));
+
   const breadcrumbOnDeploy = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
@@ -461,7 +483,7 @@ const FlowDetailsPage = () => {
             <div className="ms-4">
               {
                 <RectangleGraph
-                  data={enhancedData}
+                  data={!isUpgrade ? enhancedDataForUpgrade : enhancedData}
                   setXStateCoordiate={setXStateCoordiate}
                   setYStateCoordiate={setYStateCoordiate}
                 />
