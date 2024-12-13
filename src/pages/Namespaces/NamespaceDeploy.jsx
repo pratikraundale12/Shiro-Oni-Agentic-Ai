@@ -381,11 +381,7 @@ const NamespaceDeploy = ({
                     </ActiveButtonDiv>
                   </>
                 ) : (
-                  <div className="text_info">
-                    If there are no running or stopped processors, or if all
-                    processors are disabled or invalid, the start and stop
-                    buttons are hidden.
-                  </div>
+                  <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
                 )}
                 {/* <ActiveButtonDiv className="div-btn-3">
                   <Tooltip id="enabled-tooltip" place="top">
