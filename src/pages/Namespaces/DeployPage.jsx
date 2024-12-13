@@ -350,6 +350,8 @@ function DeployPage() {
     if (duplicateDeploy && !proceedWithDispatch) {
       setSuccessTest(true);
       return;
+    } else {
+      handleContinueWithSame();
     }
   };
   const handleContinueWithSame = () => {
