@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   CanvasXIcon,
@@ -263,22 +263,6 @@ const FlowDetailsPage = () => {
     { label: KDFM.FLOW_DETAILS },
   ];
 
-  // const convertDate = dateString => {
-  //   const date = new Date(dateString);
-
-  //   const pad = num => String(num).padStart(2, '0');
-
-  //   const month = pad(date.getMonth() + 1);
-  //   const day = pad(date.getDate());
-  //   const year = date.getFullYear();
-
-  //   const hours = pad(date.getHours());
-  //   const minutes = pad(date.getMinutes());
-  //   const seconds = pad(date.getSeconds());
-
-  //   return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
-  // };
-
   const handleClick = () => {
     if (
       selectedNameSpace &&
@@ -368,15 +352,6 @@ const FlowDetailsPage = () => {
     selectedNameSpace?.state === 'UP_TO_DATE';
   return (
     <div>
-      <ToastContainer
-        theme="colored"
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable
-      />
       <FullPageLoader loading={loadingregistry} />
 
       <TopTitleBar className=" d-flex  mb-3">

@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import { QRIcons, TodoIcon } from '../../assets';
@@ -350,18 +350,8 @@ function DeployPage() {
   const loadingVersion = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchVersionData')
   );
-  //fetchRegistryFlowDetails
   return (
     <div>
-      <ToastContainer
-        theme="colored"
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable
-      />
       <FullPageLoader loading={loading || loadingFlow || loadingVersion} />
 
       <TopTitleBar className=" d-flex  mb-3">

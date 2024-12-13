@@ -8,7 +8,6 @@ import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
 import { history } from '../helpers/history';
 import { TextButton } from '../shared';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
-import { ToastContainer } from 'react-toastify';
 
 const Container = styled.div`
   max-height: 100vh;
@@ -143,15 +142,6 @@ const RedirectionText = styled.button`
   cursor: pointer;
   margin-left: 5px;
 `;
-
-// const RightSectionTextContainer = styled.div`
-//   /* position: absolute;
-//   bottom: 20px;
-//   left: 50%;
-//   transform: translate(-50%, 0);
-//   width: 100%;
-//   text-align: center; */
-// `;
 
 const HeadingRightText = styled.h1`
   font-family: 'Red Hat Display', sans-serif;
@@ -289,30 +279,12 @@ export const Layout = ({ children }) => {
     }
   };
 
-  // let headingText = '';
-  // if (isUserLogin) {
-  //   headingText = 'Check out the Best Data \n Flow Management Tool!';
-  // } else if (isForgotPassword) {
-  //   headingText =
-  //     'Trouble Logging In? \n If you’ve forgotten your password, we can help you recover access to your account.';
-  // } else if (isReset) {
-  //   headingText =
-  //     'Trouble Logging In? \n If you’ve forgotten your password, we can help you recover access to your account.';
-  // }
-
   useEffect(() => {
     dispatch(SettingsActions.fetchSettings());
   }, [dispatch]);
 
   return (
     <Container>
-      <ToastContainer
-        theme="colored"
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-      />
       <Wrapper>
         <div className="row">
           <LeftSection>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets';
 import { KDFM } from '../../constants';
@@ -147,15 +146,6 @@ const ConfigDetailsPage = () => {
 
   return (
     <div>
-      <ToastContainer
-        theme="colored"
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable
-      />
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>

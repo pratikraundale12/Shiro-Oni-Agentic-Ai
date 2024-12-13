@@ -13,7 +13,6 @@ import {
   LoadingSelectors,
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
-import { ToastContainer } from 'react-toastify';
 
 const Container = styled.div`
   width: 100%;
@@ -99,16 +98,6 @@ const AuthGuard = () => {
 
   return (
     <Container>
-      <ToastContainer
-        theme="colored"
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable
-        pauseOnFocusLoss={false}
-      />
       <Sidebar
         handleOpenSidebar={handleOpenSidebar}
         isOpenSidebar={isOpenSidebar}
