@@ -304,24 +304,6 @@ const TextDiv = styled.div`
   display: flex;
   align-items: center;
 `;
-const Icon = styled.div`
-  align-items: center !important;
-  justify-content: center !important;
-  display: flex !important;
-`;
-const Para = styled.p`
-  text-align: center;
-  margin-bottom: 0 !important;
-  margin-top: 0;
-  margin-bottom: 1rem;
-  box-sizing: border-box;
-  display: block;
-  margin-block-start: 1em;
-  margin-block-end: 1em;
-  margin-inline-end: 0px;
-  font-size: 20px;
-  font-weight: 600;
-`;
 
 export const scheduleSchema = yup.object().shape({
   approver_ids: yup.array().required('Approver is required'),
@@ -634,12 +616,13 @@ const Summary = () => {
     if (!isEmpty(controllerServiceReduxData)) {
       payload.controllerServiceData = controllerServiceReduxData;
     }
+    // need check
 
-    const duplicateDeploy = result.includes(registryFlowVerion?.flowId);
-    if (duplicateDeploy && !proceedWithDispatch) {
-      setSuccessTest(true);
-      return;
-    }
+    // const duplicateDeploy = result.includes(registryFlowVerion?.flowId);
+    // if (duplicateDeploy && !proceedWithDispatch) {
+    //   setSuccessTest(true);
+    //   return;
+    // }
 
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
@@ -1181,34 +1164,6 @@ const Summary = () => {
           onSubmit={handleConfirmUpdateStatus}
         />
       </MainContainer>
-      {successTest && (
-        <Modal
-          title="Duplicate Processor Groups"
-          isOpen={successTest}
-          onRequestClose={() => {
-            setSuccessTest(false);
-            history.push('/process-group');
-          }}
-          size="sm"
-          secondaryButtonText="Cancel"
-          primaryButtonText="Continue"
-          onSubmit={() => {
-            setSuccessTest(false);
-            setProceedWithDispatch(true);
-            handledeployByRegistry();
-          }}
-        >
-          <>
-            <Icon>
-              <DuplicateIcon />
-            </Icon>
-            <Para>
-              Are you sure you want to deploy? This action will duplicate the
-              processor groups. Please confirm to proceed.
-            </Para>
-          </>
-        </Modal>
-      )}
     </>
   );
 };

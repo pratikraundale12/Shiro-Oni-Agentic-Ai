@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { QRIcons, TodoIcon } from '../../assets';
+import { DuplicateIcon, QRIcons, TodoIcon } from '../../assets';
 import { FullPageLoader, Table } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -14,6 +14,7 @@ import {
   Button,
   CheckboxField,
   InputField,
+  Modal,
   RadioField,
   SelectField,
 } from '../../shared';
@@ -140,6 +141,24 @@ const LabelSelect = styled.div`
 const FlowDescription = styled.div`
   color: ${props => props.theme.colors.darker};
 `;
+const Icon = styled.div`
+  align-items: center !important;
+  justify-content: center !important;
+  display: flex !important;
+`;
+const Para = styled.p`
+  text-align: center;
+  margin-bottom: 0 !important;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-end: 0px;
+  font-size: 20px;
+  font-weight: 600;
+`;
 
 const breadcrumbData = [
   { label: 'Process Group List', path: '/process-group' },
@@ -160,7 +179,8 @@ function DeployPage() {
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
-
+  const [successTest, setSuccessTest] = useState(false);
+  const [proceedWithDispatch, setProceedWithDispatch] = useState(false);
   const formData = useSelector(NamespacesSelectors.getDeployFormData);
   const [keepParameter, setKeepParameter] = useState(true);
   const bucketListOptions = bucketListData?.bucketList?.map(item => ({
@@ -321,8 +341,18 @@ function DeployPage() {
   const handleBackAction = () => {
     history.push('/process-group');
   };
-
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'namespaces')
+  );
+  const flowIdList = gridData?.map(item => item?.flowId);
   const handleContinue = () => {
+    const duplicateDeploy = flowIdList.includes(selectedValueFlowId);
+    if (duplicateDeploy && !proceedWithDispatch) {
+      setSuccessTest(true);
+      return;
+    }
+  };
+  const handleContinueWithSame = () => {
     if (!isEmpty(versionSelected)) {
       const flowname = flowListOptions?.filter(
         item => item.value === selectedValueFlowId
@@ -341,6 +371,7 @@ function DeployPage() {
       toast.error('Please select any version');
     }
   };
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryData')
   );
@@ -454,6 +485,34 @@ function DeployPage() {
           </BottomButtonDiv>
         </BottomButton>
       </form>
+      {successTest && (
+        <Modal
+          title="Duplicate Processor Groups"
+          isOpen={successTest}
+          onRequestClose={() => {
+            setSuccessTest(false);
+            history.push('/process-group');
+          }}
+          size="sm"
+          secondaryButtonText="Cancel"
+          primaryButtonText="Continue"
+          onSubmit={() => {
+            setSuccessTest(false);
+            setProceedWithDispatch(true);
+            handleContinueWithSame();
+          }}
+        >
+          <>
+            <Icon>
+              <DuplicateIcon />
+            </Icon>
+            <Para>
+              Are you sure you want to deploy? This action will duplicate the
+              processor groups. Please confirm to proceed?
+            </Para>
+          </>
+        </Modal>
+      )}
     </div>
   );
 }
