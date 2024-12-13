@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets';
@@ -125,6 +125,11 @@ const ConfigDetailsPage = () => {
   const [variableData, setVariableData] = useState(
     registryDetailsData?.variablesData
   );
+
+  useEffect(() => {
+    setPcData(registryDetailsData?.parameterContextData);
+    setVariableData(registryDetailsData?.variablesData);
+  }, [registryDetailsData]);
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
   const selectedNameSpace = useSelector(
