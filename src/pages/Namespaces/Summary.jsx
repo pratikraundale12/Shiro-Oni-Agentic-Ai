@@ -719,7 +719,7 @@ const Summary = () => {
                   <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                     <div>
                       <SummaryDetailsHFourTag className="mb-2">
-                        {!isUpgrade ? KDFM.NAMESPACE : 'Selected Flow'}
+                        {!isUpgrade ? KDFM.NAMESPACE : 'Flow Name'}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
                         {deployByRegistryFlow
