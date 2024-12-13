@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 // import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -226,12 +226,12 @@ const GoBackButton = () => {
   return null;
 };
 
-const checkIfPropertyExists = (data, key) => {
-  if (Object.prototype.hasOwnProperty.call(data, key)) {
-    return data[key];
-  }
-  return false;
-};
+// const checkIfPropertyExists = (data, key) => {
+//   if (Object.prototype.hasOwnProperty.call(data, key)) {
+//     return data[key];
+//   }
+//   return false;
+// };
 
 export const GridActions = ({
   title,
@@ -317,9 +317,17 @@ export const GridActions = ({
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+  const [canWrite, setCanWrite] = useState(false); // State to store canWrite value
   const gridPermissions = useSelector(state =>
     GridSelectors.getGridDataPermissions(state, module)
   );
+
+  // Only set the canWrite value once when gridPermissions are first available
+  useEffect(() => {
+    if (gridPermissions?.canWrite !== undefined) {
+      setCanWrite(gridPermissions?.canWrite);
+    }
+  }, [gridPermissions]);
   const isChildNamespace =
     selectedNamespace && selectedNamespace?.label !== KDFM.NIFI_FLOW;
   const naviagate = useLocation();
@@ -444,13 +452,13 @@ export const GridActions = ({
             <ScheduleButton
               className="d-flex items-center gap-3"
               onClick={() => {}}
-              disabled={!checkIfPropertyExists(gridPermissions, 'canRead')}
+              disabled={!canWrite}
             >
               <ScheduleDeploymentIcon height={19} width={19} />
               {KDFM.SCHEDULE_DEPLOYMENT}
             </ScheduleButton>
             <Button
-              disabled={!checkIfPropertyExists(gridPermissions, 'canWrite')}
+              disabled={!canWrite}
               size="sm"
               style={{ width: '84px' }}
               onClick={handleClick}
