@@ -330,11 +330,11 @@ const Summary = () => {
   const checkDestCluster = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  console.log(checkDestCluster, 'checkDestCluster');
+
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  console.log(selectedNameSpace, 'selectedNameSpace');
+
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
@@ -358,10 +358,9 @@ const Summary = () => {
   const registryAllDetails = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
-  console.log(registryAllDetails, 'registryAllDetails');
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
-  console.log(formDataRegistry, 'formDataRegistry');
+
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
@@ -391,7 +390,7 @@ const Summary = () => {
     ...(parameterReduxData?.parent || []),
   ];
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
-  console.log(registryFlowVerion, '1111111111222222222222222');
+
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
