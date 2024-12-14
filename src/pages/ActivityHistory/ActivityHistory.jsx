@@ -25,6 +25,12 @@ export const ActvityHistory = () => {
       sort: { sortKey: 'namespace' },
     },
     {
+      label: KDFM.FLOW_NAME,
+      renderCell: item => (
+        <TextRender text={item.namespace || KDFM.NA} toolTip={false} />
+      ),
+    },
+    {
       label: KDFM.CLUSTER,
       renderCell: item => (
         <TextRender text={item.cluster || KDFM.NA} toolTip={false} />
@@ -40,7 +46,13 @@ export const ActvityHistory = () => {
           toolTip={false}
         />
       ),
-      width: '25%',
+      width: '20%',
+    },
+    {
+      label: KDFM.VERSION,
+      renderCell: item => (
+        <StatusRender status={item.status || KDFM.NA} toolTip={false} />
+      ),
     },
     {
       label: KDFM.STATUS,
