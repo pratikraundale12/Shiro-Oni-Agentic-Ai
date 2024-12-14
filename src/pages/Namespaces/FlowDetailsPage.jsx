@@ -395,7 +395,7 @@ const FlowDetailsPage = () => {
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
           <RowConfig>
-            <div className="col-12 p-3">
+            <div className="col-12 px-3">
               <div>
                 <div className="d-flex justify-content-between align-items-center">
                   <InputField
@@ -413,7 +413,7 @@ const FlowDetailsPage = () => {
                 </div>
               </div>
             </div>
-            <div className="col-12 p-3">
+            <div className="col-12 px-3">
               <RowConfig className="row">
                 <ColXlFive className="col-xl-5 col-12">
                   <InputField

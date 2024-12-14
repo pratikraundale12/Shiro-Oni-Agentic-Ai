@@ -83,8 +83,8 @@ const GreyBoxNamespace = styled.div`
   border-radius: 20px;
 `;
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
-  max-height: calc(100vh - 341px);
+  height: calc(100vh - 324px);
+  max-height: calc(100vh - 324px);
   overflow-x: hidden;
   overflow-y: auto;
 `;
