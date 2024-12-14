@@ -144,6 +144,9 @@ const ColXlFive = styled.div`
     &.col-xl-5 {
       flex: 0 0 auto;
       width: 50%;
+      &.upgrade-canvas-position {
+        width: 41.5%;
+      }
     }
   }
 `;
@@ -415,7 +418,9 @@ const FlowDetailsPage = () => {
             </div>
             <div className="col-12 px-3">
               <RowConfig className="row">
-                <ColXlFive className="col-xl-5 col-12">
+                <ColXlFive
+                  className={`${isUpgrade ? 'col-xl-5 col-12 ' : 'col-xl-5 col-12 upgrade-canvas-position'}`}
+                >
                   <InputField
                     name="x"
                     type="text"
