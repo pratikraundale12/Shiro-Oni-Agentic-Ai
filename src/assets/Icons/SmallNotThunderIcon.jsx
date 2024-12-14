@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export const SmallNotThunderIcon = ({
-  width = 24,
-  height = 24,
+  width = 16,
+  height = 20,
   color = '#444445',
 }) => (
   <svg

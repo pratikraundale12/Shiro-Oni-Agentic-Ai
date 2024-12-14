@@ -54,13 +54,6 @@ const SummaryDetailsPtag = styled.h4`
       margin-top: -0.5rem;
     }
   }
-
-  & span {
-    max-width: 18rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 `;
 const DataWrapper = styled.div`
   width: 100%;
@@ -73,8 +66,8 @@ const DataWrapper = styled.div`
 `;
 
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
-  max-height: calc(100vh - 341px);
+  height: calc(100vh - 324px);
+  max-height: calc(100vh - 324px);
   overflow-x: hidden;
   overflow-y: auto;
 `;

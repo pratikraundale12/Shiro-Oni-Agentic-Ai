@@ -42,7 +42,7 @@ const NoDataText = styled.div`
 `;
 
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
+  height: calc(100vh - 341px);
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
   overflow-y: auto;
@@ -95,11 +95,9 @@ const statusColors = {
   ENABLED: '#0cbf59',
 };
 
-const ControllerServiceTab = ({
-  setControllerServicePayload,
-}) => {
+const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const dispatch = useDispatch();
-  const [openIndex, setOpenIndex] = useState(0);
+  const [openIndex, setOpenIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
@@ -124,7 +122,9 @@ const ControllerServiceTab = ({
   const newlyAddedExternalServiceResponse = useSelector(
     NamespacesSelectors.getNewlyAddedExternalServiceCS
   );
-  const stateChangeResponse = useSelector(NamespacesSelectors.getChangeStatusCSRespone);
+  const stateChangeResponse = useSelector(
+    NamespacesSelectors.getChangeStatusCSRespone
+  );
 
   const [externalControllerServices, setExternalControllerServices] = useState(
     controllerServicesData?.externalControllerServices
@@ -332,7 +332,7 @@ const ControllerServiceTab = ({
             {item.updatedValue && (
               <React.Fragment>
                 <ReConfigureButton
-                  className='ms-2'
+                  className="ms-2"
                   data-tooltip-id={`configure-${item?.controllerService[0]?.id}`}
                   onClick={() => handleConfigure(item)}
                 >
@@ -401,7 +401,8 @@ const ControllerServiceTab = ({
     },
     {
       label: 'State',
-      renderCell: item => item?.state ? <StatusText text={item?.state} item={item} /> : 'N/A',
+      renderCell: item =>
+        item?.state ? <StatusText text={item?.state} item={item} /> : 'N/A',
       width: '16%',
     },
     {
@@ -443,7 +444,7 @@ const ControllerServiceTab = ({
   };
 
   useEffect(() => {
-    if(!isEmpty(stateChangeResponse)){
+    if (!isEmpty(stateChangeResponse)) {
       setExternalControllerServices(prevServices =>
         prevServices.map(service => {
           if (service.updatedValue === selectedItemFromList?.id) {
@@ -467,7 +468,7 @@ const ControllerServiceTab = ({
         })
       );
     }
-  },[stateChangeResponse])
+  }, [stateChangeResponse]);
 
   const handleStatusClick = () => {
     dispatch(
@@ -733,7 +734,7 @@ const ControllerServiceTab = ({
       externalControllerServices: externalControllerServices,
       localServices: localServices,
     });
-  }, [localServices, externalControllerServices]);  
+  }, [localServices, externalControllerServices]);
 
   return (
     <DataWrapper>
@@ -759,10 +760,12 @@ const ControllerServiceTab = ({
           ))
         ) : (
           <>
-            <div className="d-flex justify-content-center">
-              <NoDataIcon width={130} />
+            <div className="d-flex justify-content-center h-100 align-items-center">
+              <div className='text-center'>
+                <NoDataIcon width={130} />
+                <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+              </div>
             </div>
-            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
           </>
         )}
       </ScrollSetGrey>
