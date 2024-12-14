@@ -69,6 +69,10 @@ const StatusDiv = styled.div`
     font-size: 14px !important;
   }
 `;
+const StyledSpan = styled.span`
+  position: relative;
+  top: 1px;
+`;
 
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
@@ -187,7 +191,7 @@ export const ListNamespaces = () => {
             place="right"
             content={item?.bucketName}
             style={{
-              width: '320px',
+              width: 'auto',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}
@@ -272,13 +276,15 @@ export const ListNamespaces = () => {
             />
             <StatusDiv data-tooltip-id={`tooltip-disabled-${item.id}`}>
               <SmallNotThunderIcon
+                width={18}
+                height={16}
                 color={
                   item?.disabledCount
                     ? theme.colors.black
                     : theme.colors.disabled
                 }
               />
-              <span>{item?.disabledCount}</span>
+              <StyledSpan>{item?.disabledCount}</StyledSpan>
             </StatusDiv>
             <ReactTooltip
               id={`tooltip-disabled-${item.id}`}
