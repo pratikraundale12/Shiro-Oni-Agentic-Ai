@@ -62,8 +62,8 @@ const GreyBoxNamespace = styled.div`
   border-radius: 20px;
 `;
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
-  max-height: calc(100vh - 341px);
+  height: calc(100vh - 324px);
+  max-height: calc(100vh - 324px);
   overflow-x: hidden;
   overflow-y: auto;
 `;
@@ -143,7 +143,10 @@ const ColXlFive = styled.div`
   @media screen and (min-width: 1200px) {
     &.col-xl-5 {
       flex: 0 0 auto;
-      width: 41.66666667%;
+      width: 50%;
+      &.upgrade-canvas-position {
+        width: 41.5%;
+      }
     }
   }
 `;
@@ -395,7 +398,7 @@ const FlowDetailsPage = () => {
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
           <RowConfig>
-            <div className="col-12 p-3">
+            <div className="col-12 px-3">
               <div>
                 <div className="d-flex justify-content-between align-items-center">
                   <InputField
@@ -413,9 +416,11 @@ const FlowDetailsPage = () => {
                 </div>
               </div>
             </div>
-            <div className="col-12 p-3">
+            <div className="col-12 px-3">
               <RowConfig className="row">
-                <ColXlFive className="col-xl-5 col-12">
+                <ColXlFive
+                  className={`${isUpgrade ? 'col-xl-5 col-12 ' : 'col-xl-5 col-12 upgrade-canvas-position'}`}
+                >
                   <InputField
                     name="x"
                     type="text"
@@ -474,7 +479,7 @@ const FlowDetailsPage = () => {
                 </>
               </RowConfig>
             </div>
-            <div className="ms-4">
+            <div className="ms-3">
               {
                 <RectangleGraph
                   data={!isUpgrade ? enhancedDataForUpgrade : enhancedData}

@@ -13,7 +13,7 @@ const DataWrapper = styled.div`
 `;
 
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
+  height: calc(100vh - 341px);
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
   overflow-y: auto;
@@ -184,10 +184,12 @@ const VariableTab = ({ setVariablePayload, variableData, setVariableData }) => {
         {(isEmpty(variableData) ||
           variableData.every(item => isEmpty(item.variables))) && (
           <>
-            <div className="d-flex justify-content-center">
-              <NoDataIcon width={130} />
+            <div className="d-flex justify-content-center h-100 align-items-center">
+              <div className="text-center">
+                <NoDataIcon width={130} />
+                <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+              </div>
             </div>
-            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
           </>
         )}
         {isAddVariablesOpen.isOpen && (
