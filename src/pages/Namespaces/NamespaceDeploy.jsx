@@ -186,9 +186,11 @@ const NamespaceDeploy = ({
   const deployByRegistryFlow = useSelector(
     NamespacesSelectors.getdeployRegistryFlow
   );
+  const selectedNamespace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
-
   const handleClick = () => {
     const updatedUrl = deployOrUpgradeDetails?.nifiUrl?.endsWith('/nifi')
       ? deployOrUpgradeDetails.nifiUrl
@@ -236,7 +238,7 @@ const NamespaceDeploy = ({
                 <SubTitleSet className="mb-0 ">
                   {deployByRegistryFlow
                     ? formDataRegistry?.selectedFlowName
-                    : checkDestCluster?.name}
+                    : selectedNamespace?.name}
                 </SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
