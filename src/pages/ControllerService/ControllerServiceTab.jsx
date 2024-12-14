@@ -1,18 +1,21 @@
 /*eslint-disable*/
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
-  PencilIcon,
-  SettingSmallIcon,
+  ConfirmScheduleDeploymentIcon,
   FlashCutIcon,
   FlashIcon,
-  ConfirmScheduleDeploymentIcon,
+  NoDataIcon,
+  PencilIcon,
+  SettingSmallIcon,
 } from '../../assets';
 import { Table } from '../../components';
 import { KDFM } from '../../constants';
+import { ModalWithIcon } from '../../shared';
 import {
   LoadingSelectors,
   NamespacesActions,
@@ -24,10 +27,7 @@ import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
 import ConfigurePage from './ConfigurePage';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
-import { NoDataIcon } from '../../assets';
 import PropertyDropdownModal from './ProprtyDropdownModel';
-import { isEmpty } from 'lodash';
-import { ModalWithIcon } from '../../shared';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -174,6 +174,10 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const [collapsibles, setCollapsibles] = useState([]);
 
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
+  const listData = useSelector(
+    NamespacesSelectors?.getRootControllerServiceNamespace
+  );
+  const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
 
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
@@ -572,8 +576,15 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     dispatch(NamespacesActions.setNewlyAddVariables([]));
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
   };
-
+  const selectedNamespace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   const handleToggle = index => {
+    if (!isUpgrade) {
+      dispatch(
+        NamespacesActions.getControllerServiceList(selectedNamespace?.id)
+      );
+    }
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
 
@@ -614,39 +625,55 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   }, [externalControllerServicesTableData]);
 
   useEffect(() => {
-    const newCollapsibles = [
-      ...(externalControllerServices?.length
-        ? [
-            {
-              title: KDFM.CONTROLLER_SERVICE_DATA,
-              content: (
-                <Table
-                  data={externalControllerServices}
-                  columns={COLUMNS}
-                  className={'variables-table'}
-                />
-              ),
-            },
-          ]
-        : []),
-      ...(localServices?.map(service => ({
-        title: service?.processGroupName || 'Unnamed Group',
+    const collapsibles = [];
+    if (externalControllerServices?.length) {
+      collapsibles.push({
+        title: KDFM.CONTROLLER_SERVICE_DATA,
         content: (
           <Table
-            data={service?.controllerData || []}
+            data={externalControllerServices}
+            columns={COLUMNS}
+            className={'variables-table'}
+          />
+        ),
+      });
+    }
+    if (isUpgrade) {
+      if (localServices?.length) {
+        collapsibles.push(
+          ...localServices.map(service => ({
+            title: service?.processGroupName || 'Unnamed Group',
+            content: (
+              <Table
+                data={service?.controllerData || []}
+                columns={COLUMNS_2}
+                className={'variables-table'}
+              />
+            ),
+          }))
+        );
+      }
+    } else {
+      collapsibles.push({
+        title: selectedNamespace?.name || 'Unnamed Group',
+        content: (
+          <Table
+            data={listData}
             columns={COLUMNS_2}
             className={'variables-table'}
           />
         ),
-      })) || []),
-    ];
-    setCollapsibles(newCollapsibles);
+      });
+    }
+
+    setCollapsibles(collapsibles);
   }, [
     localServices,
     externalControllerServices,
     externalControllerServiceArray,
     newlyAddedExternalServiceResponse,
     externalControllerServicesTableData,
+    listData,
   ]);
 
   const handleServiceConfigure = data => {
@@ -761,7 +788,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         ) : (
           <>
             <div className="d-flex justify-content-center h-100 align-items-center">
-              <div className='text-center'>
+              <div className="text-center">
                 <NoDataIcon width={130} />
                 <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
               </div>
