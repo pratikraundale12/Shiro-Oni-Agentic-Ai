@@ -1,5 +1,6 @@
 /*eslint-disable*/
-import { isEmpty } from 'lodash';
+import { namespace } from 'd3';
+import { flow, isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -329,9 +330,11 @@ const Summary = () => {
   const checkDestCluster = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+  console.log(checkDestCluster, 'checkDestCluster');
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+  console.log(selectedNameSpace, 'selectedNameSpace');
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
@@ -355,8 +358,10 @@ const Summary = () => {
   const registryAllDetails = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
+  console.log(registryAllDetails, 'registryAllDetails');
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
+  console.log(formDataRegistry, 'formDataRegistry');
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
@@ -386,6 +391,7 @@ const Summary = () => {
     ...(parameterReduxData?.parent || []),
   ];
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
+  console.log(registryFlowVerion, '1111111111222222222222222');
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -544,6 +550,7 @@ const Summary = () => {
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
       registryId: registryData?.id,
+      flowName: formDataRegistry?.selectedFlowName,
       position: {
         x: XcordUpdated || registryDetailsData.positions[0].x,
         y: YcordUpdated || registryDetailsData.positions[0].y,
@@ -579,10 +586,12 @@ const Summary = () => {
     const payload = {
       version: versionSelected.version,
       namespaceId: checkDestCluster?.id,
+      namespaceStatus: flowControlState,
       payload: {
         namespaceId: checkDestCluster?.value,
-        status: flowControlState,
       },
+      flowName: selectedNameSpace?.flowName,
+      namespaceName: selectedNameSpace?.name,
       position: {
         x: XcordUpdated || registryDetailsData.positions[0].x,
         y: YcordUpdated || registryDetailsData.positions[0].y,
