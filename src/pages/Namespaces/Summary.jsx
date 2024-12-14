@@ -1,5 +1,6 @@
 /*eslint-disable*/
-import { isEmpty } from 'lodash';
+import { namespace } from 'd3';
+import { flow, isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -329,9 +330,11 @@ const Summary = () => {
   const checkDestCluster = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getDeployOrUpgradeDetails
   );
@@ -357,6 +360,7 @@ const Summary = () => {
   );
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
+
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
@@ -386,6 +390,7 @@ const Summary = () => {
     ...(parameterReduxData?.parent || []),
   ];
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
+
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -544,6 +549,7 @@ const Summary = () => {
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
       registryId: registryData?.id,
+      flowName: formDataRegistry?.selectedFlowName,
       position: {
         x: XcordUpdated || registryDetailsData.positions[0].x,
         y: YcordUpdated || registryDetailsData.positions[0].y,
@@ -579,10 +585,12 @@ const Summary = () => {
     const payload = {
       version: versionSelected.version,
       namespaceId: checkDestCluster?.id,
+      namespaceStatus: flowControlState,
       payload: {
         namespaceId: checkDestCluster?.value,
-        status: flowControlState,
       },
+      flowName: selectedNameSpace?.flowName,
+      namespaceName: selectedNameSpace?.name,
       position: {
         x: XcordUpdated || registryDetailsData.positions[0].x,
         y: YcordUpdated || registryDetailsData.positions[0].y,

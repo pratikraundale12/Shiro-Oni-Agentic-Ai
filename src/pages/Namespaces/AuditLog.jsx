@@ -31,6 +31,12 @@ const COLUMNS = [
     ),
   },
   {
+    label: KDFM.FLOW_NAME,
+    renderCell: item => (
+      <TextRender text={item.namespace || KDFM.NA} toolTip={false} />
+    ),
+  },
+  {
     label: KDFM.CLUSTER,
     renderCell: item => (
       <TextRender text={item.cluster || KDFM.NA} toolTip={false} />
@@ -46,6 +52,12 @@ const COLUMNS = [
       />
     ),
     width: '25%',
+  },
+  {
+    label: KDFM.VERSION,
+    renderCell: item => (
+      <TextRender text={item.namespace || KDFM.NA} toolTip={false} />
+    ),
   },
   {
     label: KDFM.STATUS,
