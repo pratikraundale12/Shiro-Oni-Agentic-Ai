@@ -62,8 +62,8 @@ const GreyBoxNamespace = styled.div`
   border-radius: 20px;
 `;
 const ScrollSetGrey = styled.div`
-  min-height: calc(100vh - 341px);
-  max-height: calc(100vh - 341px);
+  height: calc(100vh - 324px);
+  max-height: calc(100vh - 324px);
   overflow-x: hidden;
   overflow-y: auto;
 `;
@@ -143,7 +143,7 @@ const ColXlFive = styled.div`
   @media screen and (min-width: 1200px) {
     &.col-xl-5 {
       flex: 0 0 auto;
-      width: 41.66666667%;
+      width: 50%;
     }
   }
 `;
@@ -474,7 +474,7 @@ const FlowDetailsPage = () => {
                 </>
               </RowConfig>
             </div>
-            <div className="ms-4">
+            <div className="ms-3">
               {
                 <RectangleGraph
                   data={!isUpgrade ? enhancedDataForUpgrade : enhancedData}
