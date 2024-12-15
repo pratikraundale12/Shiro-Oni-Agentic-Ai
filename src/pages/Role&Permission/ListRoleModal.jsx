@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Modal } from '../../shared';
 import { IconButton, Table, TextRender } from '../../components';
-import { DeleteSmallIcon, PencilIcon } from '../../assets';
+import { DeleteSmallIcon, DisabledUserIcon, PencilIcon } from '../../assets';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   RolesActions,
@@ -59,16 +59,27 @@ const ListRoleModal = () => {
               <PencilIcon color="black" />
             </IconButton>
           )}
-          {userPermissions.includes('edit_permission') && (
-            <IconButton
-              type="button"
-              onClick={() => {
-                dispatch(RolesActions.setRoleListSelectedItem(item));
-                dispatch(RolesActions.setIsDeleteConfirmationModelOpen(true));
-                dispatch(RolesActions.setIsRoleListModalOpen(false));
-              }}
-            >
-              <DeleteSmallIcon color="black" />
+
+          {item?.is_active ? (
+            <>
+              {userPermissions.includes('edit_permission') && (
+                <IconButton
+                  type="button"
+                  onClick={() => {
+                    dispatch(RolesActions.setRoleListSelectedItem(item));
+                    dispatch(
+                      RolesActions.setIsDeleteConfirmationModelOpen(true)
+                    );
+                    dispatch(RolesActions.setIsRoleListModalOpen(false));
+                  }}
+                >
+                  <DeleteSmallIcon color="black" />
+                </IconButton>
+              )}
+            </>
+          ) : (
+            <IconButton>
+              <DisabledUserIcon color="black" />
             </IconButton>
           )}
         </div>
