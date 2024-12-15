@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PlusCircleIcon, SmallSearchIcon } from '../../assets';
 import { Table } from '../../components';
+import { KDFM } from '../../constants';
 import { Button, CheckboxField, Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-import { KDFM } from '../../constants';
 import { theme } from '../../styles';
 
 const NewClassAddes = styled.div`
@@ -146,7 +146,7 @@ const ConfigurePage = ({
 
       <div>
         <Table
-          data={filteredModulesData?.length ? filteredModulesData : listData}
+          data={filteredModulesData || []}
           columns={COLUMNS}
           className="variables-table"
           loading={loading}
