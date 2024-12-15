@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -10,10 +10,10 @@ import {
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
-import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
+import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { LoadingSelectors, NamespacesActions } from '../../store';
+import { NamespacesActions } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
@@ -395,13 +395,9 @@ export const ListNamespaces = () => {
       },
     });
   };
-  const loading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchGrid')
-  );
 
   return (
     <>
-      <FullPageLoader loading={loading} />
       <Grid
         isNamespace={true}
         module="namespaces"
