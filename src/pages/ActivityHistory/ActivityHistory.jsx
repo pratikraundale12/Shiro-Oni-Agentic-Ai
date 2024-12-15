@@ -13,65 +13,45 @@ export const ActvityHistory = () => {
     },
     {
       label: KDFM.ENTITY,
-      renderCell: item => (
-        <TextRender text={item.entity || KDFM.NA} toolTip={false} />
-      ),
+      renderCell: item => <TextRender text={item.entity || KDFM.NA} />,
     },
     {
       label: KDFM.NAMESPACE,
-      renderCell: item => (
-        <TextRender text={item.namespace || KDFM.NA} toolTip={false} />
-      ),
+      renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
       sort: { sortKey: 'namespace' },
     },
     {
       label: KDFM.FLOW_NAME,
-      renderCell: item => (
-        <TextRender text={item.flow_name || KDFM.NA} toolTip={false} />
-      ),
+      renderCell: item => <TextRender text={item.flow_name || KDFM.NA} />,
     },
     {
       label: KDFM.CLUSTER,
-      renderCell: item => (
-        <TextRender text={item.cluster || KDFM.NA} toolTip={false} />
-      ),
+      renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
       sort: { sortKey: 'cluster' },
     },
     {
       label: KDFM.MESSAGE,
       renderCell: item => (
-        <TextRender
-          text={item.message || KDFM.NA}
-          capitalizeText={false}
-          toolTip={false}
-        />
+        <TextRender text={item.message || KDFM.NA} capitalizeText={false} />
       ),
       width: '20%',
     },
     {
       label: KDFM.VERSION,
-      renderCell: item => (
-        <TextRender text={item.version || KDFM.NA} toolTip={false} />
-      ),
+      renderCell: item => <TextRender text={item.version || KDFM.NA} />,
     },
     {
       label: KDFM.STATUS,
-      renderCell: item => (
-        <StatusRender status={item.status || KDFM.NA} toolTip={false} />
-      ),
+      renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
     },
     {
       label: KDFM.TIMESTAMP,
-      renderCell: item => (
-        <TextRender text={item.timestamp || KDFM.NA} toolTip={false} />
-      ),
+      renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
       sort: { sortKey: 'timestamp' },
     },
     {
       label: KDFM.CREATED_BY,
-      renderCell: item => (
-        <TextRender text={item.created_by_name || KDFM.NA} toolTip={false} />
-      ),
+      renderCell: item => <TextRender text={item.created_by_name || KDFM.NA} />,
     },
   ];
 
