@@ -199,7 +199,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-left: 3px;
   &:hover {
     border: 1px solid
       ${props => (props.isActive ? props.activeColor : '#FF7A00')};
@@ -947,7 +946,7 @@ const Summary = () => {
                       </TextsvgDiv>
                     </>
                   ) : (
-                    <div>{KDFM.FLOW_CONTROL_WARNING}</div>
+                    <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
                   )}
                 </ActiveButtonContainer>
               )}
