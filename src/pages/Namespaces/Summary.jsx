@@ -590,7 +590,7 @@ const Summary = () => {
         namespaceId: checkDestCluster?.value,
       },
       flowName: selectedNameSpace?.flowName,
-      namespaceName: selectedNameSpace?.name,
+      nameSpaceName: selectedNameSpace?.name,
       position: {
         x: XcordUpdated || registryDetailsData.positions[0].x,
         y: YcordUpdated || registryDetailsData.positions[0].y,
