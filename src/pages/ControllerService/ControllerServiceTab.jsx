@@ -580,7 +580,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     NamespacesSelectors.getSelectedNamespace
   );
   const handleToggle = index => {
-    if (!isUpgrade) {
+    if (!isUpgrade && openIndex !== index) {
       dispatch(
         NamespacesActions.getControllerServiceList(selectedNamespace?.id)
       );
