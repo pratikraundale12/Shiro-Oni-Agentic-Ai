@@ -199,7 +199,6 @@ const ActiveButtonDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-left: 3px;
   &:hover {
     border: 1px solid
       ${props => (props.isActive ? props.activeColor : '#FF7A00')};
@@ -645,6 +644,10 @@ const Summary = () => {
     }
   }, [checkDestCluster, deployOrUpgradeDetails]);
 
+  const StyledSpan = styled.span`
+    margin-left: 4px !important;
+  `;
+
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -900,8 +903,12 @@ const Summary = () => {
                         count={processStatus.disabledCount}
                         activeColor="#2c7cf3"
                       >
-                        <SmallNotThunderIcon color="#B5BDC8" />
-                        <span>{processStatus.disabledCount}</span>
+                        <SmallNotThunderIcon
+                          width={20}
+                          height={20}
+                          color="#B5BDC8"
+                        />
+                        <StyledSpan>{processStatus.disabledCount}</StyledSpan>
                       </CountDiv>
                       <div>{KDFM.DISABLED_PROCESSORS}</div>
                     </TextDiv>
@@ -947,7 +954,7 @@ const Summary = () => {
                       </TextsvgDiv>
                     </>
                   ) : (
-                    <div>{KDFM.FLOW_CONTROL_WARNING}</div>
+                    <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
                   )}
                 </ActiveButtonContainer>
               )}

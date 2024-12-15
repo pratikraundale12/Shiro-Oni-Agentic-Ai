@@ -276,9 +276,7 @@ export const Sidebar = ({
                   place="right"
                   content={item.name}
                   style={{
-                    width: '120px',
                     whiteSpace: 'normal',
-                    wordWrap: 'break-word',
                     zIndex: 9999,
                   }}
                 />
