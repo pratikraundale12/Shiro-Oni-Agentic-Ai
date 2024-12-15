@@ -21,6 +21,7 @@ import SessionExpiredLabel from '../shared/SessionExpiredLabel';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
+  GridActions,
   NamespacesActions,
   NamespacesSelectors,
   UsersActions,
@@ -299,7 +300,32 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   const closeTab = () => {
     setDisplaySessionTab(false);
   };
-
+  useEffect(() => {
+    if (window.location.pathname !== '/process-group') {
+      dispatch(
+        GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
+      );
+    }
+    if (window.location.pathname !== '/clusters') {
+      dispatch(GridActions.fetchGridSuccess({ module: 'clusters', data: {} }));
+    }
+    if (window.location.pathname !== '/schedule-deployment') {
+      dispatch(
+        GridActions.fetchGridSuccess({
+          module: 'schedule-deployment',
+          data: {},
+        })
+      );
+    }
+    if (window.location.pathname !== '/user-management') {
+      dispatch(
+        GridActions.fetchGridSuccess({
+          module: 'users',
+          data: {},
+        })
+      );
+    }
+  }, [dispatch, GridActions, window?.location?.pathname]);
   useEffect(() => {
     const cluster = localStorage.getItem('selected_cluster');
     const enableCluster = JSON.parse(cluster) ?? {};

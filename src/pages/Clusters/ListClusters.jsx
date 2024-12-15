@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
@@ -11,7 +11,6 @@ import {
 } from '../../assets';
 import {
   ActionRender,
-  FullPageLoader,
   Grid,
   ProgressBarRender,
   StatusRender,
@@ -21,12 +20,7 @@ import {
 import { CLUSTER_STATUS, Cluster_STATUS_OPTIONS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
-import {
-  DashboardActions,
-  GridActions,
-  LoadingSelectors,
-  NamespacesActions,
-} from '../../store';
+import { DashboardActions, GridActions, NamespacesActions } from '../../store';
 import { updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
@@ -279,13 +273,8 @@ export const ListClusters = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchGrid')
-  );
-
   return (
     <>
-      <FullPageLoader loading={loading} />
       <ModalWithIcon
         title={KDFM.DEACTIVATE_CLUSTER}
         primaryButtonText={KDFM.DEACTIVATE}
