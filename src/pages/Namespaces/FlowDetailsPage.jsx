@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -229,53 +229,73 @@ const FlowDetailsPage = () => {
     GridSelectors.getGridData(state, 'namespaces')
   );
 
-  const sortedArray = gridDataDest.map(item => ({
-    x: Number(item.position.x),
-    y: Number(item.position.y),
-    width: 384,
-    height: 176,
-    color: item?.isProcessor ? '#BFDFDF' : 'teal',
-  }));
+  const sortedArray = useMemo(() => {
+    return gridDataDest.map(item => ({
+      x: Number(item.position.x),
+      y: Number(item.position.y),
+      width: 384,
+      height: 176,
+      color: item?.isProcessor ? '#BFDFDF' : 'teal',
+    }));
+  }, [gridDataDest]);
 
-  const updatedDataForGraph = [
-    ...sortedArray,
-    ...[
-      {
-        x: xStateCoordinate || registryDetailsData?.position?.[0].x,
-        y: yStateCoordinate || registryDetailsData?.position?.[0].y,
-        width: 384,
-        height: 176,
-        color: theme.colors.primary,
-      },
-    ],
-  ];
+  const updatedDataForGraph = useMemo(() => {
+    const newBox = {
+      x:
+        storedXcord || xStateCoordinate || registryDetailsData?.position?.[0].x,
+      y:
+        storedYcord || yStateCoordinate || registryDetailsData?.position?.[0].y,
+      width: 384,
+      height: 176,
+      color: theme.colors.primary,
+    };
+    return [...sortedArray, newBox];
+  }, [
+    sortedArray,
+    xStateCoordinate,
+    yStateCoordinate,
+    registryDetailsData,
+    theme,
+  ]);
 
-  const enhancedData = updatedDataForGraph.map((d, index) => ({
-    ...d,
-    id: index,
-  }));
+  const enhancedData = useMemo(() => {
+    return updatedDataForGraph.map((d, index) => ({
+      ...d,
+      id: index,
+    }));
+  }, [updatedDataForGraph]);
 
-  const updateddDataForUpgrade = sortedArray.map(d => {
-    if (
-      d.x === selectedNameSpace?.position.x &&
-      d.y === selectedNameSpace?.position.y
-    ) {
-      const newBox = {
-        x: storedXcord || xStateCoordinate || selectedNameSpace?.position.x,
-        y: storedYcord || yStateCoordinate || selectedNameSpace?.position.y,
-        width: 384,
-        height: 176,
-        color: theme.colors.primary,
-      };
+  const updatedDataForUpgrade = useMemo(() => {
+    return sortedArray.map(d => {
+      if (
+        d.x === selectedNameSpace?.position.x &&
+        d.y === selectedNameSpace?.position.y
+      ) {
+        return {
+          x: storedXcord || xStateCoordinate || selectedNameSpace?.position.x,
+          y: storedYcord || yStateCoordinate || selectedNameSpace?.position.y,
+          width: 384,
+          height: 176,
+          color: theme.colors.primary,
+        };
+      } else return d;
+    });
+  }, [
+    sortedArray,
+    selectedNameSpace,
+    storedXcord,
+    xStateCoordinate,
+    storedYcord,
+    yStateCoordinate,
+    theme,
+  ]);
 
-      return newBox;
-    } else return d;
-  });
-
-  const enhancedDataForUpgrade = updateddDataForUpgrade.map((d, index) => ({
-    ...d,
-    id: index,
-  }));
+  const enhancedDataForUpgrade = useMemo(() => {
+    return updatedDataForUpgrade.map((d, index) => ({
+      ...d,
+      id: index,
+    }));
+  }, [updatedDataForUpgrade]);
 
   const breadcrumbOnDeploy = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
@@ -426,9 +446,9 @@ const FlowDetailsPage = () => {
                     type="text"
                     label={KDFM.CANVAS_POSITION}
                     value={
+                      storedXcord ||
                       xStateCoordinate ||
-                      selectedNameSpace?.position.x ||
-                      storedXcord
+                      selectedNameSpace?.position.x
                     }
                     icon={<CanvasXIcon />}
                     onChange={e => handleXCoordinateChangeInput(e)}
@@ -438,9 +458,9 @@ const FlowDetailsPage = () => {
                     type="text"
                     label=""
                     value={
+                      storedYcord ||
                       yStateCoordinate ||
-                      selectedNameSpace?.position.y ||
-                      storedYcord
+                      selectedNameSpace?.position.y
                     }
                     icon={<CanvasYIcon />}
                     onChange={e => handleYCoordinateChangeInput(e)}

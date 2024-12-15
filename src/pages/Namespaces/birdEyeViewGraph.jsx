@@ -60,7 +60,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
     const yScale = yScaleRef.current;
 
     const orangeRect = data.find(rect => rect.color === '#FF7A00');
-    const initialZoomLevel = 1;
+    const initialZoomLevel = 0.5;
 
     // Drag Behavior
     const drag = d3
