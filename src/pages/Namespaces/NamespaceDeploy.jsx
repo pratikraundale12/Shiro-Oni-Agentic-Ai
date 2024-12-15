@@ -226,9 +226,12 @@ const NamespaceDeploy = ({
             </ModalIcon>
             <ModalHFive>
               Process Group Successfully&nbsp;
-              {checkFlowControlAfterUpgrade
+              {/* {checkFlowControlAfterUpgrade
                 ? 'Upgraded To Production'
-                : 'Deployed To Production'}
+                : 'Deployed To Production'} */}
+              {deployByRegistryFlow
+                ? `Deployed To ${formDataRegistry?.selectedFlowName}`
+                : `Upgraded To ${selectedNamespace?.name}`}
             </ModalHFive>
           </div>
           <RowModal>
@@ -324,7 +327,7 @@ const NamespaceDeploy = ({
                       }
                       activeColor="#2c7cf3"
                     >
-                      <SmallNotThunderIcon color="#B5BDC8" />
+                      <SmallNotThunderIcon width={16} color="#B5BDC8" />
                       <span>
                         {checkFlowControlAfterUpgrade
                           ? dataAfterUpgradeProcessor?.disabledCount

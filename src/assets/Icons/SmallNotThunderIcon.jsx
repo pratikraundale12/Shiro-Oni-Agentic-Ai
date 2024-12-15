@@ -2,22 +2,28 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export const SmallNotThunderIcon = ({
-  width = 16,
-  height = 20,
+  width = 24,
+  height = 24,
   color = '#444445',
 }) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
     width={width}
     height={height}
+    viewBox="0 0 9 15"
     fill="none"
+    xmlns="http://www.w3.org/2000/svg"
   >
-    <path fill={color} d="M13 5v6h3l-5 8v-6H8l5-8Z" />
     <path
-      stroke="#444445"
-      strokeWidth={0.5}
-      d="M0-.25h21.617"
-      transform="matrix(.6652 .74666 -.63981 .76853 4 3.2)"
+      d="M5.37183 0.800781V6.8008H8.37183L3.37183 14.8008V8.8008H0.371826L5.37183 0.800781Z"
+      fill={color}
+    />
+    <line
+      x1="1.22012"
+      y1="0.881475"
+      x2="8.22012"
+      y2="13.8815"
+      stroke={color}
+      strokeWidth="0.5"
     />
   </svg>
 );

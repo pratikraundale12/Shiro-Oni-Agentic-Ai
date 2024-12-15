@@ -645,6 +645,10 @@ const Summary = () => {
     }
   }, [checkDestCluster, deployOrUpgradeDetails]);
 
+  const StyledSpan = styled.span`
+    margin-left: 4px !important;
+  `;
+
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -900,8 +904,12 @@ const Summary = () => {
                         count={processStatus.disabledCount}
                         activeColor="#2c7cf3"
                       >
-                        <SmallNotThunderIcon color="#B5BDC8" />
-                        <span>{processStatus.disabledCount}</span>
+                        <SmallNotThunderIcon
+                          width={20}
+                          height={20}
+                          color="#B5BDC8"
+                        />
+                        <StyledSpan>{processStatus.disabledCount}</StyledSpan>
                       </CountDiv>
                       <div>{KDFM.DISABLED_PROCESSORS}</div>
                     </TextDiv>
