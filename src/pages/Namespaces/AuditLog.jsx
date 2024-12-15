@@ -33,7 +33,7 @@ const COLUMNS = [
   {
     label: KDFM.FLOW_NAME,
     renderCell: item => (
-      <TextRender text={item.namespace || KDFM.NA} toolTip={false} />
+      <TextRender text={item.flow_name || KDFM.NA} toolTip={false} />
     ),
   },
   {
@@ -56,7 +56,7 @@ const COLUMNS = [
   {
     label: KDFM.VERSION,
     renderCell: item => (
-      <TextRender text={item.namespace || KDFM.NA} toolTip={false} />
+      <TextRender text={item.version || KDFM.NA} toolTip={false} />
     ),
   },
   {

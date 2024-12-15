@@ -27,7 +27,7 @@ export const ActvityHistory = () => {
     {
       label: KDFM.FLOW_NAME,
       renderCell: item => (
-        <TextRender text={item.namespace || KDFM.NA} toolTip={false} />
+        <TextRender text={item.flow_name || KDFM.NA} toolTip={false} />
       ),
     },
     {
@@ -51,7 +51,7 @@ export const ActvityHistory = () => {
     {
       label: KDFM.VERSION,
       renderCell: item => (
-        <StatusRender status={item.status || KDFM.NA} toolTip={false} />
+        <TextRender text={item.version || KDFM.NA} toolTip={false} />
       ),
     },
     {
