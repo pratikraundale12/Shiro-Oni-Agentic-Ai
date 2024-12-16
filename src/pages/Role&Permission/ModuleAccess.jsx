@@ -470,7 +470,12 @@ export const ModuleAccess = () => {
           type="search"
           value={search}
           placeholder="Search DFM access"
-          onChange={e => setSearch(e.target.value)}
+          onChange={e => {
+            const value = e.target.value;
+            if (value.length <= 100) {
+              setSearch(value);
+            }
+          }}
         />
       </SearchContainer>
       {openRoleModal && <AddNewRoleModal />}

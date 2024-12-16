@@ -177,7 +177,7 @@ export const KDFM = {
   CONFIGURE: 'Configure',
   APP: 'App',
   LDAP: 'Ldap',
-  SCHEDULE_DIPLOYMENT: 'Schedule Diployment',
+  SCHEDULE_DIPLOYMENT: 'Schedule Deployment',
   SERVICE_ACCOUNT: 'Service Account',
   CONTROLLER_SERVICE_DATA: 'External Controller Services',
   FLOW_CONTROL_WARNING:

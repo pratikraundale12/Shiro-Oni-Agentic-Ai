@@ -25,19 +25,19 @@ import { getButtonPermissions } from '../../helpers/permissions';
 import { Button, SelectField } from '../../shared';
 import {
   AuthenticationSelectors,
-  GridActions as GridSagsActions,
-  NamespacesActions,
   DashboardActions,
+  GridActions as GridSagsActions,
+  LoadingSelectors,
+  NamespacesActions,
   NamespacesSelectors,
   RolesActions,
   RolesSelectors,
   UsersSelectors,
-  LoadingSelectors,
 } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
+import { GridSelectors } from '../../store/grid';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
-import { GridSelectors } from '../../store/grid';
 import { FullPageLoader } from '../FullPageLoader';
 
 const Flex = styled.div`
@@ -494,9 +494,12 @@ export const GridActions = ({
           type="search"
           value={search}
           placeholder={placeholder}
-          onChange={e =>
-            setState(prev => ({ ...prev, search: e.target.value }))
-          }
+          onChange={e => {
+            const value = e.target.value;
+            if (value.length <= 100) {
+              setState(prev => ({ ...prev, search: value }));
+            }
+          }}
         />
       </SearchContainer>
     </>

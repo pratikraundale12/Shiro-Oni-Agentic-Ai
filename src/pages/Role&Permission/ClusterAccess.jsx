@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { GreaterArrowIcon, SmallSearchIcon, TodoIcon } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { Button, CheckboxField, SelectField } from '../../shared';
@@ -19,7 +20,6 @@ import {
   RolesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const Flex = styled.div`
   display: flex;
@@ -320,7 +320,12 @@ export const ClusterAccess = () => {
           type="search"
           value={search}
           placeholder="Search cluster name"
-          onChange={e => setSearch(e.target.value)}
+          onChange={e => {
+            const value = e.target.value;
+            if (value.length <= 100) {
+              setSearch(value);
+            }
+          }}
         />
       </SearchContainer>
       <Breadcrumb module="path" path={path} />

@@ -389,7 +389,12 @@ export const ListControllerService = () => {
           type="search"
           value={search}
           placeholder="Search Controller Service by Name and Type"
-          onChange={e => setSearch(e.target.value)}
+          onChange={e => {
+            const value = e.target.value;
+            if (value.length <= 100) {
+              setSearch(value);
+            }
+          }}
         />
       </SearchContainer>
 

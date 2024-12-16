@@ -177,7 +177,12 @@ const NewAddControllerService = () => {
             type="search"
             value={search}
             placeholder="Search Dummy Service"
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => {
+              const value = e.target.value;
+              if (value.length <= 100) {
+                setSearch(value);
+              }
+            }}
           />
         </SearchContainer>
 

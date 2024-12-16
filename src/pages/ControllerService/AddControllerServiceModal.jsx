@@ -1,4 +1,5 @@
 /*eslint-disable*/
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -7,7 +8,6 @@ import { Table } from '../../components';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { theme } from '../../styles';
-import { isEmpty } from 'lodash';
 
 const TextDisplay = styled.div`
   cursor: pointer;
@@ -83,7 +83,7 @@ const Search = styled.input`
 const AddControllerServiceModal = ({
   setIsAddedViaAdd,
   handleSubmitData,
-  isFromControllerServiceTab =false,
+  isFromControllerServiceTab = false,
 }) => {
   const newlyAddedExternalServiceResponse = useSelector(
     NamespacesSelectors.getNewlyAddedExternalServiceCS
@@ -150,16 +150,24 @@ const AddControllerServiceModal = ({
   );
 
   useEffect(() => {
-    if(isFromControllerServiceTab && !isEmpty(newlyAddedExternalServiceResponse)){
+    if (
+      isFromControllerServiceTab &&
+      !isEmpty(newlyAddedExternalServiceResponse)
+    ) {
       setIsAddedViaAdd(true);
       handleSubmitData(true, null);
     }
-  },[newlyAddedExternalServiceResponse])
+  }, [newlyAddedExternalServiceResponse]);
 
   const handleSubmit = () => {
     const { name, type, bundle } = selectedItem;
     dispatch(
-      NamespacesActions.addControllerServiceRootLevel({isFromControllerServiceTab, name, type, bundle })
+      NamespacesActions.addControllerServiceRootLevel({
+        isFromControllerServiceTab,
+        name,
+        type,
+        bundle,
+      })
     );
     closeModal();
   };
@@ -187,7 +195,12 @@ const AddControllerServiceModal = ({
             type="search"
             value={search}
             placeholder="Search Controller Service"
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => {
+              const value = e.target.value;
+              if (value.length <= 100) {
+                setSearch(value);
+              }
+            }}
           />
         </SearchContainer>
 
