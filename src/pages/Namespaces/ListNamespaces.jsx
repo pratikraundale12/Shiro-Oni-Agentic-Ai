@@ -69,10 +69,6 @@ const StatusDiv = styled.div`
     font-size: 14px !important;
   }
 `;
-const StyledSpan = styled.span`
-  position: relative;
-  top: 1px;
-`;
 
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
@@ -276,7 +272,7 @@ export const ListNamespaces = () => {
             />
             <StatusDiv data-tooltip-id={`tooltip-disabled-${item.id}`}>
               <SmallNotThunderIcon
-                width={18}
+                width={14}
                 height={16}
                 color={
                   item?.disabledCount
@@ -284,7 +280,7 @@ export const ListNamespaces = () => {
                     : theme.colors.disabled
                 }
               />
-              <StyledSpan>{item?.disabledCount}</StyledSpan>
+              <span>{item?.disabledCount}</span>
             </StatusDiv>
             <ReactTooltip
               id={`tooltip-disabled-${item.id}`}
