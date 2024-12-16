@@ -110,9 +110,7 @@ export const ListControllerService = () => {
     useState(false);
   const [selectedItemFromList, setSelectedItemFromList] = useState({});
   const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
-  const modalOpenState = useSelector(
-    NamespacesSelectors.getIsAddControllerServiceMOdalOpen
-  );
+
   const [listPropertyTableData, setListPropertTableData] = useState(
     selectedItemFromList?.properties
   );
@@ -227,10 +225,24 @@ export const ListControllerService = () => {
                 className="border-0 bg-white"
                 onClick={() => handleSettingClick(item)}
                 data-tooltip-id={'Settings'}
-                disabled={!canWrite}
+                disabled={
+                  !canWrite ||
+                  item?.state === 'ENABLING' ||
+                  item?.state === 'ENABLED'
+                }
                 style={{
-                  opacity: canWrite ? 1 : 0.3,
-                  cursor: canWrite ? 'pointer' : 'not-allowed',
+                  opacity:
+                    !canWrite ||
+                    item?.state === 'ENABLING' ||
+                    item?.state === 'ENABLED'
+                      ? 0.3
+                      : 1,
+                  cursor:
+                    !canWrite ||
+                    item?.state === 'ENABLING' ||
+                    item?.state === 'ENABLED'
+                      ? 'not-allowed'
+                      : 'pointer',
                 }}
               >
                 <SettingSmallIcon />
@@ -317,7 +329,7 @@ export const ListControllerService = () => {
 
   useEffect(() => {
     dispatch(NamespacesActions.getControllerServiceList());
-  }, [dispatch, modalOpenState, selectedCluster]);
+  }, [dispatch, selectedCluster]);
 
   const handleSettingClick = item => {
     setSelectedItemFromList(item);
