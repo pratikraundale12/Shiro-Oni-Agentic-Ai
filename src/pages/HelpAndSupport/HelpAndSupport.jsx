@@ -280,7 +280,10 @@ export const HelpAndSupport = () => {
   };
 
   const handleSearch = event => {
-    setSearchQuery(event.target.value.toLowerCase());
+    const value = event.target.value.toLowerCase();
+    if (value.length <= 100) {
+      setSearchQuery(value);
+    }
   };
 
   const filteredFaqs = faqs.filter(faq =>

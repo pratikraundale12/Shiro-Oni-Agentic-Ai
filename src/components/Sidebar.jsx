@@ -10,6 +10,8 @@ import {
 // import { QuestionMarkIcon } from '../assets/Icons/QuestionMarkIcon';
 // import { KDFM } from '../constants';
 import { useLocation } from 'react-router-dom';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRight';
 import { history } from '../helpers/history';
 import { ROUTES_MENU } from '../routes';
 import {
@@ -20,8 +22,6 @@ import {
 import { SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
 import { Loader } from './Loader';
-import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRight';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 export const Container = styled.div`
   height: 100%;
@@ -176,7 +176,7 @@ export const Sidebar = ({
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'createSettings')
   );
-
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const getFiltered = item => {
     if (item.path === 'dashboard') return true;
     if (item.path === 'help-&-support') return true;
@@ -257,31 +257,61 @@ export const Sidebar = ({
         {ROUTES_MENU.filter(getFiltered).map(item => {
           const active = item.path === route;
           return (
-            <div key={item.path}>
-              <Item
-                key={item.path}
-                active={active}
-                onClick={() => handleRoute(item.path)}
-                path={item.path}
-                data-tooltip-id={`tooltip-${item.path}`}
-              >
-                <item.icon
-                  color={active ? theme.colors.white : theme.colors.darker}
-                />
-                <span className="nav-text">{item.name}</span>
-              </Item>
-              {collapsed && !isOpenSidebar && (
-                <ReactTooltip
-                  id={`tooltip-${item.path}`}
-                  place="right"
-                  content={item.name}
-                  style={{
-                    whiteSpace: 'normal',
-                    zIndex: 9999,
-                  }}
-                />
-              )}
-            </div>
+            <>
+              {currentUser.role === 'superadmin' ? (
+                <div key={item.path}>
+                  <Item
+                    key={item.path}
+                    active={active}
+                    onClick={() => handleRoute(item.path)}
+                    path={item.path}
+                    data-tooltip-id={`tooltip-${item.path}`}
+                  >
+                    <item.icon
+                      color={active ? theme.colors.white : theme.colors.darker}
+                    />
+                    <span className="nav-text">{item.name}</span>
+                  </Item>
+                  {collapsed && !isOpenSidebar && (
+                    <ReactTooltip
+                      id={`tooltip-${item.path}`}
+                      place="right"
+                      content={item.name}
+                      style={{
+                        whiteSpace: 'normal',
+                        zIndex: 9999,
+                      }}
+                    />
+                  )}
+                </div>
+              ) : item?.name !== 'Setting' ? (
+                <div key={item.path}>
+                  <Item
+                    key={item.path}
+                    active={active}
+                    onClick={() => handleRoute(item.path)}
+                    path={item.path}
+                    data-tooltip-id={`tooltip-${item.path}`}
+                  >
+                    <item.icon
+                      color={active ? theme.colors.white : theme.colors.darker}
+                    />
+                    <span className="nav-text">{item.name}</span>
+                  </Item>
+                  {collapsed && !isOpenSidebar && (
+                    <ReactTooltip
+                      id={`tooltip-${item.path}`}
+                      place="right"
+                      content={item.name}
+                      style={{
+                        whiteSpace: 'normal',
+                        zIndex: 9999,
+                      }}
+                    />
+                  )}
+                </div>
+              ) : null}
+            </>
           );
         })}
       </List>

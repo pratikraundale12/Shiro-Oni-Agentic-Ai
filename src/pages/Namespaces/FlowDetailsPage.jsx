@@ -220,8 +220,8 @@ const FlowDetailsPage = () => {
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
   useEffect(() => {
     if (registryDetailsData?.positions?.[0]?.x !== undefined) {
-      setXStateCoordiate(registryDetailsData.positions[0].x);
-      setYStateCoordiate(registryDetailsData?.positions?.[0].y);
+      setXStateCoordiate(registryDetailsData?.positions[0]?.x);
+      setYStateCoordiate(registryDetailsData?.positions?.[0]?.y);
     }
   }, [registryDetailsData]);
 
@@ -231,8 +231,8 @@ const FlowDetailsPage = () => {
 
   const sortedArray = useMemo(() => {
     return gridDataDest.map(item => ({
-      x: Number(item.position.x),
-      y: Number(item.position.y),
+      x: Number(item?.position?.x),
+      y: Number(item?.position?.y),
       width: 384,
       height: 176,
       color: item?.isProcessor ? '#BFDFDF' : 'teal',
@@ -242,9 +242,13 @@ const FlowDetailsPage = () => {
   const updatedDataForGraph = useMemo(() => {
     const newBox = {
       x:
-        storedXcord || xStateCoordinate || registryDetailsData?.position?.[0].x,
+        storedXcord ||
+        xStateCoordinate ||
+        registryDetailsData?.position?.[0]?.x,
       y:
-        storedYcord || yStateCoordinate || registryDetailsData?.position?.[0].y,
+        storedYcord ||
+        yStateCoordinate ||
+        registryDetailsData?.position?.[0]?.y,
       width: 384,
       height: 176,
       color: theme.colors.primary,
@@ -268,12 +272,12 @@ const FlowDetailsPage = () => {
   const updatedDataForUpgrade = useMemo(() => {
     return sortedArray.map(d => {
       if (
-        d.x === selectedNameSpace?.position.x &&
-        d.y === selectedNameSpace?.position.y
+        d?.x === selectedNameSpace?.position?.x &&
+        d?.y === selectedNameSpace?.position?.y
       ) {
         return {
-          x: storedXcord || xStateCoordinate || selectedNameSpace?.position.x,
-          y: storedYcord || yStateCoordinate || selectedNameSpace?.position.y,
+          x: storedXcord || xStateCoordinate || selectedNameSpace?.position?.x,
+          y: storedYcord || yStateCoordinate || selectedNameSpace?.position?.y,
           width: 384,
           height: 176,
           color: theme.colors.primary,
@@ -320,7 +324,7 @@ const FlowDetailsPage = () => {
     if (isUpgrade) {
       history.push('/process-group/config-details');
     } else {
-      if (selectedVersion === selectedNameSpace.version) {
+      if (selectedVersion === selectedNameSpace?.version) {
         {
           toast.info('The selected version is already deployed.');
         }
@@ -331,8 +335,8 @@ const FlowDetailsPage = () => {
   };
 
   const handleRowClick = item => {
-    setSelectedVersion(item.version);
-    dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
+    setSelectedVersion(item?.version);
+    dispatch(NamespacesActions.setVersionSelect({ version: item?.version }));
   };
 
   const handleBackClick = () => {
@@ -351,11 +355,11 @@ const FlowDetailsPage = () => {
     }
   };
   const handleRadioChange = item => {
-    dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
+    dispatch(NamespacesActions.setVersionSelect({ version: item?.version }));
   };
   const sortedData = versionListData?.versionList
     ?.slice()
-    .sort((a, b) => b.version - a.version);
+    .sort((a, b) => b?.version - a?.version);
 
   const handleYCoordinateChangeInput = e => {
     if (e.target.value) {
@@ -427,7 +431,7 @@ const FlowDetailsPage = () => {
                     label={'Selected Flow Name'}
                     value={
                       !isUpgrade
-                        ? selectedNameSpace.label
+                        ? selectedNameSpace?.label
                         : formDataRegistry?.selectedFlowName
                     }
                     icon={<QRIcons />}
@@ -448,7 +452,7 @@ const FlowDetailsPage = () => {
                     value={
                       storedXcord ||
                       xStateCoordinate ||
-                      selectedNameSpace?.position.x
+                      selectedNameSpace?.position?.x
                     }
                     icon={<CanvasXIcon />}
                     onChange={e => handleXCoordinateChangeInput(e)}
@@ -460,7 +464,7 @@ const FlowDetailsPage = () => {
                     value={
                       storedYcord ||
                       yStateCoordinate ||
-                      selectedNameSpace?.position.y
+                      selectedNameSpace?.position?.y
                     }
                     icon={<CanvasYIcon />}
                     onChange={e => handleYCoordinateChangeInput(e)}
@@ -477,7 +481,7 @@ const FlowDetailsPage = () => {
                       placeholder="N/A"
                       value={
                         !isUpgrade
-                          ? selectedNameSpace.version
+                          ? selectedNameSpace?.version
                           : versionSelected?.version || 'N/A'
                       }
                       icon={<QRIcons />}
