@@ -520,7 +520,9 @@ const FlowDetailsPage = () => {
                     type="text"
                     label={KDFM.NIFI_URL}
                     placeholder={KDFM.ENTER_NIFI_URL}
-                    value={registryAllDetails?.nifi_url}
+                    value={
+                      registryAllDetails?.nifi_url || registryData?.nifiUrl
+                    }
                     icon={<LinkIcon />}
                     disabled
                   />
