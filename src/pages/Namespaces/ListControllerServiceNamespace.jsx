@@ -11,7 +11,7 @@ import {
   FlashIcon,
   SettingSmallIcon,
 } from '../../assets';
-import { Table } from '../../components';
+import { Table, TextRender } from '../../components';
 import { ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -180,17 +180,31 @@ export const ListControllerService = () => {
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => item?.name,
+      renderCell: item => (
+        <TextRender key={item?.name} text={item?.name} capitalizeText={false} />
+      ),
       width: '21%',
     },
     {
       label: 'Type',
-      renderCell: item => item?.typeValue,
+      renderCell: item => (
+        <TextRender
+          key={item?.typeValue}
+          text={item?.typeValue}
+          capitalizeText={false}
+        />
+      ),
       width: '20%',
     },
     {
       label: 'Bundle',
-      renderCell: item => item?.bundleValue,
+      renderCell: item => (
+        <TextRender
+          key={item?.bundleValue}
+          text={item?.bundleValue}
+          capitalizeText={false}
+        />
+      ),
       width: '18%',
     },
     {

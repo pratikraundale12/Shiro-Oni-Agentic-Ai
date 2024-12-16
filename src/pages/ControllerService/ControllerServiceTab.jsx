@@ -13,7 +13,7 @@ import {
   PencilIcon,
   SettingSmallIcon,
 } from '../../assets';
-import { Table } from '../../components';
+import { Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { ModalWithIcon } from '../../shared';
 import {
@@ -232,26 +232,47 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item =>
-        item?.controllerService?.length
-          ? item?.controllerService[0]?.name
-          : item?.name,
+      renderCell: item => (
+        <TextRender
+          key={item?.name}
+          text={
+            item?.controllerService?.length
+              ? item?.controllerService[0]?.name
+              : item?.name
+          }
+          capitalizeText={false}
+        />
+      ),
       width: '21%',
     },
     {
       label: 'Type',
-      renderCell: item =>
-        item?.controllerService?.length
-          ? item?.controllerService[0]?.typeValue
-          : item?.typeValue,
+      renderCell: item => (
+        <TextRender
+          key={item?.typeValue}
+          text={
+            item?.controllerService?.length
+              ? item?.controllerService[0]?.typeValue
+              : item?.typeValue
+          }
+          capitalizeText={false}
+        />
+      ),
       width: '20%',
     },
     {
       label: 'Bundle',
-      renderCell: item =>
-        item?.controllerService?.length
-          ? item?.controllerService[0]?.bundleValue
-          : item?.bundleValue,
+      renderCell: item => (
+        <TextRender
+          key={item?.bundleValue}
+          text={
+            item?.controllerService?.length
+              ? item?.controllerService[0]?.bundleValue
+              : item?.bundleValue
+          }
+          capitalizeText={false}
+        />
+      ),
       width: '18%',
     },
     {
@@ -390,17 +411,35 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const COLUMNS_2 = [
     {
       label: 'Name',
-      renderCell: item => item?.name || 'N/A',
+      renderCell: item => (
+        <TextRender
+          key={item?.name}
+          text={item?.name || 'N/A'}
+          capitalizeText={false}
+        />
+      ),
       width: '21%',
     },
     {
       label: 'Type',
-      renderCell: item => item?.typeValue || 'N/A',
+      renderCell: item => (
+        <TextRender
+          key={item?.typeValue}
+          text={item?.typeValue || 'N/A'}
+          capitalizeText={false}
+        />
+      ),
       width: '20%',
     },
     {
       label: 'Bundle',
-      renderCell: item => item?.bundleValue || 'N/A',
+      renderCell: item => (
+        <TextRender
+          key={item?.bundleValue}
+          text={item?.bundleValue || 'N/A'}
+          capitalizeText={false}
+        />
+      ),
       width: '18%',
     },
     {

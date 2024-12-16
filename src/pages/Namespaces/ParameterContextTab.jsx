@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { NoDataIcon, PencilIcon } from '../../assets';
-import { IconButton, Table, TextRender } from '../../components';
+import {
+  EnhancedTextRender,
+  IconButton,
+  Table,
+  TextRender,
+} from '../../components';
 import { KDFM } from '../../constants';
 import Collapsible from './Collapsible';
 import AddOrEditParameterContextModal from './AddOrEditParameterContextModal';
@@ -94,7 +99,7 @@ const ParameterContextTab = ({
       label: KDFM.VALUE,
       renderCell: item => {
         return (
-          <TextRender
+          <EnhancedTextRender
             key={item?.value}
             text={
               (item.sensitive === true || item.sensitive === 'true') &&
@@ -105,6 +110,19 @@ const ParameterContextTab = ({
                   ? KDFM.SENSITIVE_VALUE_SET
                   : item.value
                     ? truncateString(item.value, 40)
+                    : item.check
+                      ? KDFM.EMPTY_STRING_SET
+                      : KDFM.NO_VALUE_SET
+            }
+            tooltipText={
+              (item.sensitive === true || item.sensitive === 'true') &&
+              !item?.value &&
+              !item.check
+                ? KDFM.NO_VALUE_SET
+                : item.sensitive === true || item.sensitive === 'true'
+                  ? KDFM.SENSITIVE_VALUE_SET
+                  : item.value
+                    ? item.value
                     : item.check
                       ? KDFM.EMPTY_STRING_SET
                       : KDFM.NO_VALUE_SET
