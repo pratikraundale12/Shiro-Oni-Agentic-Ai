@@ -89,7 +89,7 @@ export function* login(api, { payload: { type, token, ...payload } }) {
     successAction: AuthenticationActions.loginSuccess,
   });
   if (response.ok) {
-    toast.success('Login successful');
+    toast.success('Welcome! You’ve successfully logged in. ');
     localStorage.setItem(ACCESS_TOKEN, response.data.token);
     if (!type) {
       const cluster = {
@@ -121,7 +121,8 @@ export function* login(api, { payload: { type, token, ...payload } }) {
       yield call(history.push, `schedule-deployment?token=${token}`);
     }
   } else {
-    toast.error(response.data.message, { toastId: 'login-toast-error1' });
+    const errorMessage = 'Invalid credentials. Please try again.';
+    toast.error(errorMessage, { toastId: 'login-toast-error1' });
   }
 }
 

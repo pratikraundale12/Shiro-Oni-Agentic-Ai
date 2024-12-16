@@ -60,7 +60,7 @@ export const CLUSTER_CONSTANTS = {
   CLUSTER_SUCCESS_DESCRIPTION:
     'You can check your cluster in the cluster list.',
   CLUSTER_TESTED_SUCCES_PROMPT:
-    'Your cluster test was successful. You can now proceed to the next steps.',
+    'Your cluster test was successful. Continue with the next steps..',
   REGISTRY_TESTED_SUCCESS_PROMPT:
-    'Your registry test was successful. You can now proceed to the next steps.',
+    'Your registry test was successful. Continue with the next steps..',
 };

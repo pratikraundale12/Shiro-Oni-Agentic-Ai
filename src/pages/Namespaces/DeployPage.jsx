@@ -347,7 +347,7 @@ function DeployPage() {
   const flowIdList = gridData?.map(item => item?.flowId);
   const handleContinue = () => {
     if (isEmpty(versionSelected)) {
-      toast.error('Please select any version');
+      toast.error('Please select the version');
     } else {
       const duplicateDeploy = flowIdList.includes(selectedValueFlowId);
       if (duplicateDeploy && !proceedWithDispatch) {
@@ -374,7 +374,7 @@ function DeployPage() {
       dispatch(NamespacesActions.fetchRegistryFlowDetails(versionSelected));
       history.push('/process-group/flow-details');
     } else {
-      toast.error('Please select any version');
+      toast.error('Please select the version');
     }
   };
 

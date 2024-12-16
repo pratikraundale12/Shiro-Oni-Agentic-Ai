@@ -50,8 +50,8 @@ export const SuccessTestModal = ({ successTest, setSuccessTest, name }) => {
         </Icon>
         <Title className="text-capitalize">{name} test Successful</Title>
         <Para>
-          Your {name} test was successful. You <br /> can now proceed to the
-          next steps.
+          Your {name} test was successful.
+          <br /> Continue with the next steps.
         </Para>
       </>
     </Modal>

@@ -107,7 +107,7 @@ export function* getClusterToken(api, { payload }) {
       }
       yield put(AuthenticationActions.setClusterLogin());
       yield put(GridActions.fetchGrid({ module: 'clusters' }));
-      toast.success('Cluster Enabled Successfully');
+      toast.success('The cluster is now enabled successfully.');
       if (window.location.pathname.includes('/process-group')) {
         history.push('/process-group');
       }

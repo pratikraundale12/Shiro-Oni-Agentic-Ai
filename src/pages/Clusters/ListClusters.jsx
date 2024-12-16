@@ -179,7 +179,7 @@ export const ListClusters = () => {
     if (response) {
       const updatedClusters = clusters.filter(cluster => cluster.id !== id);
       localStorage.setItem('clusters', JSON.stringify(updatedClusters));
-      toast.success('Cluster Activated Successfully');
+      toast.success('The cluster is now activated successfully.');
       dispatch(GridActions.fetchGrid({ module: 'clusters' }));
     } else {
       toast.error('error occured');
@@ -213,7 +213,7 @@ export const ListClusters = () => {
       });
 
       if (response) {
-        toast.success('Cluster Deactivated Successfully');
+        toast.success('The cluster is now deactivated successfully.');
         dispatch(GridActions.fetchGrid({ module: 'clusters' }));
         setState({ ...state, clusterDeleteModal: false });
         const clusterItem = localStorage.getItem('selected_cluster');
