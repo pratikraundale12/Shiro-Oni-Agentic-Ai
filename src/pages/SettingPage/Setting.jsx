@@ -88,7 +88,7 @@ const LinkButton = styled(TextButton)`
 export const settingSchema = yup.object().shape({
   email: yup
     .string()
-    .matches(EMAIL_REGEX, 'Invalid email address')
+    .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
 
   title: yup
@@ -101,7 +101,7 @@ export const settingSchema = yup.object().shape({
     .string()
     .nullable()
 
-    .matches(EMAIL_REGEX, 'Invalid email address')
+    .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
 
   approver_groups: yup

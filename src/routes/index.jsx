@@ -77,7 +77,7 @@ export const ROUTES_MENU = [
     ],
   },
   {
-    name: 'Cluster',
+    name: 'Clusters',
     path: 'clusters',
     icon: ClusterIcon,
     pages: [
@@ -97,7 +97,7 @@ export const ROUTES_MENU = [
     permission: 'view_cluster',
   },
   {
-    name: 'Process Group',
+    name: 'Process Groups',
     path: 'process-group',
     icon: NameSpaceIcon,
     pages: [
@@ -193,7 +193,7 @@ export const ROUTES_MENU = [
     permission: 'view_user',
   },
   {
-    name: 'Role & Permission',
+    name: 'Roles & Permissions',
     path: 'role-&-permission',
     icon: LockIcon,
     pages: [
@@ -245,7 +245,7 @@ export const ROUTES_MENU = [
     permission: 'view_controller_services',
   },
   {
-    name: 'Setting',
+    name: 'Settings',
     path: 'setting',
     icon: SettingSmallIcon,
     pages: [

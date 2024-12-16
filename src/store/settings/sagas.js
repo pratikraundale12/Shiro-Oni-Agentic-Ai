@@ -19,7 +19,7 @@ export function* createSettings(api, { payload }) {
   if (response.ok) {
     if (payload.favicon) changeFavicon(URL.createObjectURL(payload.favicon));
     if (payload.title) document.title = payload.title;
-    toast.success('Settings updated.');
+    toast.success('Settings updated successfully.');
     // yield put(RolesActions.permissionModal());
     // yield call(api, { payload: { module: 'fetchSettingsSuccess' } });
   } else {

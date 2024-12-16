@@ -127,7 +127,7 @@ export const ClusterLoginModal = () => {
           dispatch(NamespacesActions.checkDestCluster());
         }
         dispatch(AuthenticationActions.setClusterLogin());
-        toast.success('Cluster Enabled Successfully');
+        toast.success('The cluster is now enabled successfully');
 
         reset(DEFAULT_VALUES);
         dispatch(GridActions.fetchGrid({ module: 'clusters' }));
@@ -141,7 +141,11 @@ export const ClusterLoginModal = () => {
       }
     } catch (error) {
       setLoading(false);
-      const errorMessage = error?.response?.data?.message || error.message;
+      const errorMessage =
+        error?.response?.data?.message ===
+        'The supplied username and password are not valid.'
+          ? 'The entered username and password are incorrect.'
+          : error?.response?.data?.message || error.message;
       toast.error(errorMessage);
     }
   };

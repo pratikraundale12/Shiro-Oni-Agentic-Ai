@@ -60,8 +60,8 @@ export const SyncUsersSuccess = ({ successTest, setSuccessTest }) => {
           LDAP users synced successfully
         </Title>
         <Para>
-          your LDAP users are synced successfully.
-          <br /> click on continue to check
+          Your LDAP Users Synced Successfully.
+          <br /> Click on Continue to check.
         </Para>
       </>
     </Modal>

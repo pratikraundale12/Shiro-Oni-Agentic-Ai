@@ -75,7 +75,7 @@ export const EnableClusterRender = ({ item }) => {
         JSON.stringify(updatedClustersToken)
       );
 
-      toast.success('Cluster Disconnected Successfully');
+      toast.success('The cluster is now disconnected successfully');
     }
   };
 
