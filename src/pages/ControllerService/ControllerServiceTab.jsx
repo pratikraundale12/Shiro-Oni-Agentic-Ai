@@ -104,9 +104,9 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  const modalOpenState = useSelector(
-    NamespacesSelectors.getIsNewAddControllerServiceMOdalOpen
-  );
+  // const modalOpenState = useSelector(
+  //   NamespacesSelectors.getIsNewAddControllerServiceMOdalOpen
+  // );
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
@@ -124,6 +124,9 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   );
   const stateChangeResponse = useSelector(
     NamespacesSelectors.getChangeStatusCSRespone
+  );
+  const propertyUpdateResponse = useSelector(
+    NamespacesSelectors.getPropertyUpdateResponse
   );
 
   const [externalControllerServices, setExternalControllerServices] = useState(
@@ -179,12 +182,19 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   );
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
 
+  const [version, setVersion] = useState('');
+
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
       const newalyAddedObject = {
         identifier: newlyAddedExternalServiceResponse?.value,
         name: newlyAddedExternalServiceResponse?.label,
         parentId: selectedExternalServiceIdentifier,
+        typeValue: newlyAddedExternalServiceResponse?.typeValue,
+        bundleValue: newlyAddedExternalServiceResponse?.bundleValue,
+        state: newlyAddedExternalServiceResponse?.state,
+        scope: newlyAddedExternalServiceResponse?.scope ? newlyAddedExternalServiceResponse?.scope : 'N/A',
+        version: newlyAddedExternalServiceResponse?.version,
       };
       const updatedArray = externalControllerServices.map(obj =>
         obj.identifier === selectedExternalService.identifier
@@ -229,6 +239,27 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     );
   };
 
+  useEffect(() => {
+    if(!isEmpty(propertyUpdateResponse) && isEmpty(stateChangeResponse) && isEmpty(newlyAddedExternalServiceResponse)){
+      setVersion(propertyUpdateResponse?.version);
+    }
+    else if(!isEmpty(stateChangeResponse) && isEmpty(propertyUpdateResponse) && isEmpty(newlyAddedExternalServiceResponse)){
+      console.log('stateChangeResponse--', stateChangeResponse);
+      setVersion(stateChangeResponse?.data?.revision?.version)
+    }
+    else if(!isEmpty(newlyAddedExternalServiceResponse) && isEmpty(propertyUpdateResponse) && isEmpty(stateChangeResponse)){
+      console.log('newlyAddedExternalServiceResponse--', newlyAddedExternalServiceResponse);
+      setVersion(newlyAddedExternalServiceResponse?.version)
+    }
+    else if(isEmpty(propertyUpdateResponse) && isEmpty(stateChangeResponse) && isEmpty(newlyAddedExternalServiceResponse)){      
+      setVersion(selectedItemFromList?.version)
+    }
+  },[propertyUpdateResponse, selectedItemFromList, stateChangeResponse, newlyAddedExternalServiceResponse]);
+
+  console.log('propertyUpdateResponse-', propertyUpdateResponse);
+  console.log('stateChangeResponse---', stateChangeResponse);
+  console.log('version--', version);
+
   const COLUMNS = [
     {
       label: 'Name',
@@ -247,17 +278,19 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     },
     {
       label: 'Type',
-      renderCell: item => (
-        <TextRender
-          key={item?.typeValue}
-          text={
-            item?.controllerService?.length
-              ? item?.controllerService[0]?.typeValue
-              : item?.typeValue
-          }
-          capitalizeText={false}
-        />
-      ),
+      renderCell: item => {
+        return (
+          <TextRender
+            key={item?.typeValue}
+            text={
+              item?.controllerService?.length
+                ? item?.controllerService[0]?.typeValue
+                : item?.typeValue
+            }
+            capitalizeText={false}
+          />
+        );
+      },
       width: '20%',
     },
     {
@@ -299,51 +332,58 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     {
       label: 'Action',
       renderCell: item => {
-        const tooltipContent =
-          item?.controllerService?.length &&
-          item?.controllerService[0]?.state === 'DISABLED'
-            ? 'Enable'
-            : 'Disable';
-        return item?.controllerService?.length ? (
-          <div className="d-flex">
-            <button
-              className="border-0 bg-white"
-              onClick={() => handleSettingClick(item?.controllerService[0])}
-              data-tooltip-id={`Settings-${item?.id}`}
-              aria-label="Settings"
-            >
-              <SettingSmallIcon />
-            </button>
-            <ReactTooltip
-              id={`Settings-${item?.id}`}
-              place="left"
-              content="Settings"
-              style={{
-                width: '130px',
-                whiteSpace: 'normal',
-                wordWrap: 'break-word',
-              }}
-            />
-            {item.updatedValue &&
-              item?.controllerService[0]?.state != 'INVALID' &&
-              item?.controllerService[0]?.state != 'VALIDATING' &&
-              item?.controllerService[0]?.state != 'DISABLING' && (
+        const isControllerService = item?.controllerService?.length > 0;
+        const stateItem = isControllerService
+          ? item?.controllerService[0]
+          : item;
+        const state = stateItem?.state;
+
+        const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
+
+        const isButtonVisible =
+          item.updatedValue &&
+          state !== 'INVALID' &&
+          state !== 'VALIDATING' &&
+          state !== 'DISABLING';
+
+          return (
+            <div>
+              {/* Settings Button */}
+              {isControllerService && (
+                <>
+                  <button
+                    className="border-0 bg-white"
+                    onClick={() => handleSettingClick(stateItem)}
+                    data-tooltip-id={`Settings-${item?.id}`}
+                    aria-label="Settings"
+                  >
+                    <SettingSmallIcon />
+                  </button>
+                  <ReactTooltip
+                    id={`Settings-${item?.id}`}
+                    place="left"
+                    content="Settings"
+                    style={{
+                      width: '130px',
+                      whiteSpace: 'normal',
+                      wordWrap: 'break-word',
+                    }}
+                  />
+                </>
+              )}
+          
+              {/* Enable/Disable Button */}
+              {isButtonVisible && (
                 <>
                   <button
                     className="border-0 bg-white ms-2"
-                    onClick={() =>
-                      handleEnableClick(item?.controllerService[0])
-                    }
-                    data-tooltip-id={item?.controllerService[0]?.id}
+                    onClick={() => handleEnableClick(stateItem)}
+                    data-tooltip-id={stateItem?.id}
                   >
-                    {item?.controllerService[0]?.state !== 'DISABLED' ? (
-                      <FlashCutIcon />
-                    ) : (
-                      <FlashIcon />
-                    )}
+                    {state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
                   </button>
                   <ReactTooltip
-                    id={item?.controllerService[0]?.id}
+                    id={stateItem?.id}
                     place="left"
                     content={tooltipContent}
                     style={{
@@ -354,56 +394,38 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
                   />
                 </>
               )}
-            {item.updatedValue && (
-              <React.Fragment>
-                <ReConfigureButton
-                  className="ms-2"
-                  data-tooltip-id={`configure-${item?.controllerService[0]?.id}`}
-                  onClick={() => handleConfigure(item)}
-                >
-                  <PencilIcon />
-                </ReConfigureButton>
-                <ReactTooltip
-                  id={`configure-${item?.controllerService[0]?.id}`}
-                  place="left"
-                  content="Re-Configure"
-                  style={{
-                    width: '130px',
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
-                  }}
-                />
-              </React.Fragment>
-            )}
-          </div>
-        ) : (
-          <>
-            {item.updatedValue ? (
-              <React.Fragment>
-                <ReConfigureButton
-                  data-tooltip-id={`configure-${item?.id}`}
-                  onClick={() => handleConfigure(item)}
-                >
-                  <PencilIcon />
-                </ReConfigureButton>
-                <ReactTooltip
-                  id={`configure-${item?.id}`}
-                  place="left"
-                  content="Re-Configure"
-                  style={{
-                    width: '130px',
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
-                  }}
-                />
-              </React.Fragment>
-            ) : (
-              <ConfigureButton onClick={() => handleConfigure(item)}>
-                {KDFM.CONFIGURE}
-              </ConfigureButton>
-            )}
-          </>
-        );
+          
+              {/* Re-Configure Button */}
+              {item.updatedValue &&(
+                <React.Fragment>
+                  <ReConfigureButton
+                    className="ms-2"
+                    data-tooltip-id={`configure-${stateItem?.id}`}
+                    onClick={() => handleConfigure(item)}
+                  >
+                    <PencilIcon />
+                  </ReConfigureButton>
+                  <ReactTooltip
+                    id={`configure-${stateItem?.id}`}
+                    place="left"
+                    content="Re-Configure"
+                    style={{
+                      width: '130px',
+                      whiteSpace: 'normal',
+                      wordWrap: 'break-word',
+                    }}
+                  />
+                </React.Fragment>
+              )}
+          
+              {/* Configure Button */}
+              { !isControllerService && !isButtonVisible && !item?.upatedValu &&  (
+                <ConfigureButton onClick={() => handleConfigure(item)}>
+                  {KDFM.CONFIGURE}
+                </ConfigureButton>
+              )}
+            </div>
+          );
       },
       width: '14%',
     },
@@ -493,7 +515,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
           if (service.updatedValue === selectedItemFromList?.id) {
             return {
               ...service,
-              controllerService: service.controllerService.map((cs, index) =>
+              controllerService: service?.controllerService?.map((cs, index) =>
                 index === 0
                   ? {
                       ...cs,
@@ -521,8 +543,8 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
           selectedItemFromList?.state === 'DISABLING'
             ? 'ENABLED'
             : 'DISABLED',
-        version: selectedItemFromList?.version,
-        id: selectedItemFromList?.id,
+        version: version,
+        id: selectedItemFromList?.id || selectedItemFromList?.updatedValue,
       })
     );
     setIsEnableModalOpen(false);
@@ -539,6 +561,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     );
     setisFromExternalService(match);
     setSelectedItemFromList(item);
+    // setVersion(item?.version);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
@@ -548,8 +571,9 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     );
     setSelectedExternalService(item);
     setSelectedService(item);
+    setSelectedItemFromList(item);
     setIsModalOpen(true);
-    if (!modalOpenState && selectedCluster?.value) {
+    if (selectedCluster?.value) {
       dispatch(NamespacesActions.getControllerServiceList());
     }
   };
@@ -654,6 +678,11 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
             controllerService: isAddedViaAdd ? [] : service?.controllerService,
             name: matchingTableData?.name,
             updatedValue: matchingTableData?.identifier,
+            typeValue: matchingTableData?.typeValue ? matchingTableData?.typeValue : '',
+            bundleValue: matchingTableData?.bundleValue ? matchingTableData?.bundleValue : '',
+            state: matchingTableData?.state ? matchingTableData?.state : '',
+            scope: matchingTableData?.scope ? matchingTableData?.scope : '',
+            version: matchingTableData?.version ? matchingTableData?.version : '',
           };
         }
         return service;
@@ -866,6 +895,8 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         isFromControllerServiceTab={true}
         isFromExternalService={isFromExternalService}
         handlePropertyUpdate={handleServiceConfigure}
+        version={version}
+        setVersion={setVersion}
       />
 
       <AddProperties
