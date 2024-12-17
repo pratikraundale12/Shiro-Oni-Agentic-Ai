@@ -81,9 +81,19 @@ export const EnableClusterRender = ({ item }) => {
 
   return (
     <>
-      <EnableClusterText onClick={handleClusterAction}>
-        <IconButton data-tooltip-id={`${item?.id}1`}>
-          {item?.status === CLUSTER_STATUS.DISCONNECTED ? (
+      <EnableClusterText
+        onClick={
+          item?.status === CLUSTER_STATUS.DEACTIVATED
+            ? undefined
+            : handleClusterAction
+        }
+      >
+        <IconButton
+          data-tooltip-id={`${item?.id}1`}
+          disabled={item?.status === CLUSTER_STATUS.DEACTIVATED}
+        >
+          {item?.status === CLUSTER_STATUS.DISCONNECTED ||
+          item?.status === CLUSTER_STATUS.DEACTIVATED ? (
             <LoginIcon />
           ) : (
             <LogoutIcon color="#a51e1e" />
