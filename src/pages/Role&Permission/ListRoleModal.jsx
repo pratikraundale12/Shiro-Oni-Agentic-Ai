@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import {
-  DisabledUserIcon,
-  NewLockIcon,
-  PencilIcon,
-  SmallSearchIcon,
-} from '../../assets';
+import { DeleteSmallIcon, PencilIcon, SmallSearchIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
 import {
@@ -79,17 +75,7 @@ const ListRoleModal = () => {
       renderCell: item => (
         <TextRender key={item?.name} text={item?.name} capitalizeText={true} />
       ),
-      width: '40%',
-    },
-    {
-      label: 'Status',
-      renderCell: item => (
-        <TextRender
-          text={item?.is_active ? 'Active' : 'Inactive'}
-          capitalizeText={true}
-        />
-      ),
-      width: '40%',
+      width: '80%',
     },
     {
       label: 'Actions',
@@ -97,40 +83,56 @@ const ListRoleModal = () => {
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'start', gap: 4 }}>
           {userPermissions.includes('edit_permission') && (
-            <IconButton
-              onClick={() => {
-                dispatch(RolesActions.setRoleListSelectedItem(item));
-                dispatch(RolesActions.roleModal(true));
-                dispatch(RolesActions.setIsRoleListModalOpen(false));
-              }}
-              type="button"
-            >
-              <PencilIcon color="black" />
-            </IconButton>
+            <>
+              <IconButton
+                onClick={() => {
+                  dispatch(RolesActions.setRoleListSelectedItem(item));
+                  dispatch(RolesActions.roleModal(true));
+                  dispatch(RolesActions.setIsRoleListModalOpen(false));
+                }}
+                type="button"
+                data-tooltip-id={`Edit-${item?.role_id}`}
+              >
+                <PencilIcon color="black" />
+              </IconButton>
+              <ReactTooltip
+                id={`Edit-${item?.role_id}`}
+                place="left"
+                content="Edit"
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
           )}
 
-          {item?.is_active ? (
-            <>
-              {userPermissions.includes('edit_permission') && (
-                <IconButton
-                  type="button"
-                  onClick={() => {
-                    dispatch(RolesActions.setRoleListSelectedItem(item));
-                    dispatch(
-                      RolesActions.setIsDeleteConfirmationModelOpen(true)
-                    );
-                    dispatch(RolesActions.setIsRoleListModalOpen(false));
-                  }}
-                >
-                  <NewLockIcon />
-                </IconButton>
-              )}
-            </>
-          ) : (
-            <IconButton>
-              <DisabledUserIcon color="black" />
-            </IconButton>
-          )}
+          <>
+            {userPermissions.includes('edit_permission') && (
+              <IconButton
+                type="button"
+                onClick={() => {
+                  dispatch(RolesActions.setRoleListSelectedItem(item));
+                  dispatch(RolesActions.setIsDeleteConfirmationModelOpen(true));
+                  dispatch(RolesActions.setIsRoleListModalOpen(false));
+                }}
+                data-tooltip-id={`Delete-${item?.role_id}`}
+              >
+                <DeleteSmallIcon />
+              </IconButton>
+            )}
+            <ReactTooltip
+              id={`Delete-${item?.role_id}`}
+              place="left"
+              content="Delete"
+              style={{
+                width: 'auto',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+              }}
+            />
+          </>
         </div>
       ),
     },
