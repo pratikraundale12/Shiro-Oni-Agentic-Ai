@@ -9,12 +9,13 @@ import { FitIcon, ZoomInIcon, ZoomOutIcon } from '../../assets';
 import styled from 'styled-components';
 
 const ZoomControls = styled.div`
-  position: 'absolute';
-  right: 10;
-  top: 10;
-  display: 'flex';
-  flex-direction: 'column';
-  gap: '10px';
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 0 8px 8px 0px;
+  border: 1px solid rgb(229, 230, 232);
+  gap: 0.8rem;
 `;
 
 const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
@@ -286,16 +287,19 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
   };
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
+    <div
+      className="d-flex"
+      style={{ position: 'relative', display: 'inline-block' }}
+    >
       {/* SVG Container */}
       <svg ref={svgRef}></svg>
 
       {/* Zoom Controls */}
 
       <ZoomControls>
-        <ZoomInIcon onClick={handleZoomIn} />
-        <ZoomOutIcon onClick={handleZoomOut} />
-        <FitIcon onClick={handleExpand} />
+        <ZoomInIcon dataTitle="Zoom In" onClick={handleZoomIn} />
+        <ZoomOutIcon dataTitle="Zoom Out" onClick={handleZoomOut} />
+        <FitIcon dataTitle="Expand" onClick={handleExpand} />
       </ZoomControls>
     </div>
   );
