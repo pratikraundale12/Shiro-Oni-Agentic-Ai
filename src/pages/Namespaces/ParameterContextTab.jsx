@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { NoDataIcon, PencilIcon } from '../../assets';
+import { NoDataIcon, OpenEyeIcon, PencilIcon } from '../../assets';
 import {
   EnhancedTextRender,
   IconButton,
@@ -9,9 +11,10 @@ import {
   TextRender,
 } from '../../components';
 import { KDFM } from '../../constants';
-import Collapsible from './Collapsible';
+import { NamespacesActions } from '../../store';
 import AddOrEditParameterContextModal from './AddOrEditParameterContextModal';
-import { isEmpty } from 'lodash';
+import Collapsible from './Collapsible';
+import RefreshModal from './RefreshModal';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -57,6 +60,7 @@ const ParameterContextTab = ({
   const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
   const [currentPgId, setCurrentPgId] = useState('');
+  const dispatch = useDispatch();
 
   const handleToggle = index => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
@@ -140,6 +144,13 @@ const ParameterContextTab = ({
             }}
           >
             {<PencilIcon color="black" />}
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              dispatch(NamespacesActions.setRefreshmodalOpen(true));
+            }}
+          >
+            {<OpenEyeIcon color="black" />}
           </IconButton>
         </div>
       ),
@@ -325,6 +336,7 @@ const ParameterContextTab = ({
           />
         )}
       </ScrollSetGrey>
+      <RefreshModal />
     </DataWrapper>
   );
 };
