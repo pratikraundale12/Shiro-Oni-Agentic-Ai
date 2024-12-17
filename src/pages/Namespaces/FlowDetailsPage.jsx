@@ -504,6 +504,7 @@ const FlowDetailsPage = () => {
               </RowConfig>
             </div>
             <div className="ms-3">
+              <VersionDiv>{KDFM.NAVIGATE}</VersionDiv>
               {
                 <RectangleGraph
                   data={!isUpgrade ? enhancedDataForUpgrade : enhancedData}

@@ -5,14 +5,29 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { NamespacesActions } from '../../store';
+import { FitIcon, ZoomInIcon, ZoomOutIcon } from '../../assets';
+import styled from 'styled-components';
+import { KDFM } from '../../constants';
+
+const ZoomControls = styled.div`
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px;
+  border-radius: 0 8px 8px 0px;
+  border: 1px solid rgb(229, 230, 232);
+  gap: 0.8rem;
+`;
 
 const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
   const svgRef = useRef();
+  const zoomRef = useRef();
   const dispatch = useDispatch();
   const isFirstRender = useRef(true);
 
   const xScaleRef = useRef(false);
   const yScaleRef = useRef(false);
+  const initialZoomLevel = 0.6;
 
   useEffect(() => {
     if (!data || data.length === 0) {
@@ -26,8 +41,14 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       .select(svgRef.current)
       .attr('width', svgWidth)
       .attr('height', svgHeight)
-      .style('background', '#f9f9f9')
-      .style('border', '1px solid #E0D3D3');
+      .style('background', 'rgb(249, 249, 249)')
+      .style('border', '1px solid rgb(229 230 232)')
+      .style('background-color', '#f9fafb')
+      .style('background-size', '14px 14px')
+      .style(
+        'background-image',
+        'linear-gradient(to right, rgba(229, 235, 237, 1) 1px, transparent 1px), linear-gradient(to bottom, rgba(229, 235, 237, 1) 1px, transparent 1px)'
+      );
 
     let g = svg.select('g');
     if (g.empty()) {
@@ -60,20 +81,21 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
     const yScale = yScaleRef.current;
 
     const orangeRect = data.find(rect => rect.color === '#FF7A00');
-    const initialZoomLevel = 0.5;
 
     // Drag Behavior
     const drag = d3
       .drag()
       .on('start', function (event, d) {
+        d3.select(this).raise();
         const transform = d3.zoomTransform(svg.node());
         const [cursorX, cursorY] = d3.pointer(event, svg.node());
         const dataX = xScale.invert((cursorX - transform.x) / transform.k);
         const dataY = yScale.invert((cursorY - transform.y) / transform.k);
-        d.offsetX = dataX - d.x;
-        d.offsetY = dataY - d.y;
+        d.offsetX = d.x - dataX;
+        d.offsetY = d.y - dataY;
       })
       .on('drag', function (event, d) {
+        d3.select(this).raise();
         const transform = d3.zoomTransform(svg.node());
         const [cursorX, cursorY] = d3.pointer(event, svg.node());
         const dataX =
@@ -126,28 +148,47 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       });
 
     const renderRectangles = (currentData = data) => {
-      g.selectAll('rect').remove();
-      const rects = g
-        .selectAll('rect')
+      g.selectAll('g').remove();
+      const rectGroups = g
+        .selectAll('g')
         .data(currentData, d => d.id)
-        .join('rect')
-        .attr('x', d => xScale(d.x) - (xScale(d.x + d.width) - xScale(d.x)) / 2)
-        .attr(
-          'y',
-          d => yScale(d.y) - (yScale(d.y + d.height) - yScale(d.y)) / 2
-        )
-        .attr('width', d => xScale(d.x + d.width) - xScale(d.x))
-        .attr('height', d => yScale(d.y + d.height) - yScale(d.y))
-        .attr('fill', d => d.color)
-        .style('stroke', d => d.color)
-        .style('cursor', d => (d.color === '#FF7A00' ? 'pointer' : 'default'))
-        .call(d => {
-          d.each(function (d) {
-            if (d.color === '#FF7A00') {
-              d3.select(this).call(drag);
-            }
-          });
+        .join('g')
+        .attr('transform', d => {
+          return `translate(${xScale(d.x)}, ${yScale(d.y)})`;
         });
+
+      rectGroups.each(function (d) {
+        const group = d3.select(this);
+
+        const adjustedWidth = d.width * 1;
+        const adjustedHeight = d.height * 1;
+
+        group
+          .append('rect')
+          .attr('x', -adjustedWidth / 2)
+          .attr('y', -adjustedHeight / 2)
+          .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+          .attr('height', yScale(d.y + adjustedHeight) - yScale(d.y))
+          .attr('rx', 1)
+          .attr('fill', 'white')
+          .attr('stroke', d.color)
+          .attr('stroke-width', 0.5);
+
+        const headerHeight = 10;
+        group
+          .append('rect')
+          .attr('x', -adjustedWidth / 2)
+          .attr('y', -adjustedHeight / 2)
+          .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+          .attr('height', headerHeight)
+          .attr('fill', d.color)
+          .attr('rx', 1)
+          .attr('fill', d.color);
+
+        if (d.color === '#FF7A00') {
+          group.call(drag);
+        }
+      });
     };
 
     renderRectangles(data);
@@ -170,6 +211,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       )
       .scale(adjustedScale);
 
+    // Zoom Behavior
     const zoom = d3
       .zoom()
       .scaleExtent([0.1, 10])
@@ -178,6 +220,8 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       });
 
     svg.call(zoom);
+
+    zoomRef.current = zoom;
 
     if (isFirstRender.current && orangeRect) {
       const orangeCenterX = xScale(orangeRect.x);
@@ -200,7 +244,35 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
     }
   }, [data]);
 
-  return <svg ref={svgRef}></svg>;
+  const handleZoomIn = () => {
+    d3.select(svgRef.current).call(zoomRef.current.scaleBy, 1.2);
+  };
+
+  const handleZoomOut = () => {
+    d3.select(svgRef.current).call(zoomRef.current.scaleBy, 0.8);
+  };
+
+  const handleExpand = () => {
+    d3.select(svgRef.current).call(
+      zoomRef.current.transform,
+      d3.zoomIdentity.scale(initialZoomLevel).translate(0, 0)
+    );
+  };
+
+  return (
+    <div
+      className="d-flex"
+      style={{ position: 'relative', display: 'inline-block' }}
+    >
+      <svg ref={svgRef}></svg>
+
+      <ZoomControls>
+        <ZoomInIcon dataTitle={KDFM.ZOOM_IN} onClick={handleZoomIn} />
+        <ZoomOutIcon dataTitle={KDFM.ZOOM_OUT} onClick={handleZoomOut} />
+        <FitIcon dataTitle={KDFM.FIT} onClick={handleExpand} />
+      </ZoomControls>
+    </div>
+  );
 };
 
 RectangleGraph.propTypes = {
