@@ -160,8 +160,8 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       rectGroups.each(function (d) {
         const group = d3.select(this);
 
-        const adjustedWidth = d.width * 0.8;
-        const adjustedHeight = d.height * 1.2;
+        const adjustedWidth = d.width * 1;
+        const adjustedHeight = d.height * 1;
 
         group
           .append('rect')
