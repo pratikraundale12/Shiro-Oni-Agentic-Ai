@@ -785,7 +785,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
     yield put(NamespacesActions.getControllerServiceList());
     yield put(NamespacesActions.setNewlyAddedExternalServiceCS(response?.data));
     yield put(NamespacesActions.setPropertyUpdateResponse({}));
-    yield put(NamespacesActions.setChangeStatusCSRespone({}));
+    // yield put(NamespacesActions.setChangeStatusCSRespone({}));
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }

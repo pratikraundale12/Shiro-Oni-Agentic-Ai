@@ -240,6 +240,12 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   };
 
   useEffect(() => {
+    dispatch(NamespacesActions.setPropertyUpdateResponse({}));
+    // dispatch(NamespacesActions.setChangeStatusCSRespone({}));
+    dispatch(NamespacesActions.setNewlyAddedExternalServiceCS({}));
+  },[]);
+
+  useEffect(() => {
     if(!isEmpty(propertyUpdateResponse) && isEmpty(stateChangeResponse) && isEmpty(newlyAddedExternalServiceResponse)){
       setVersion(propertyUpdateResponse?.version);
     }
@@ -533,6 +539,8 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         })
       );
     }
+    console.log('stateChangeResponse in useedttcr', stateChangeResponse);
+    
   }, [stateChangeResponse]);
 
   const handleStatusClick = () => {
