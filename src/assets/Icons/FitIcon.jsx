@@ -10,7 +10,8 @@ const InhanceSVG = styled.div`
   .data-title {
     font-size: 12px;
     text-align: center;
-    color: #425466;
+    color: #444445;
+    font-weight: 500;
   }
   svg {
     rect {

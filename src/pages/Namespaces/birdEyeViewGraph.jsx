@@ -7,12 +7,13 @@ import { useDispatch } from 'react-redux';
 import { NamespacesActions } from '../../store';
 import { FitIcon, ZoomInIcon, ZoomOutIcon } from '../../assets';
 import styled from 'styled-components';
+import { KDFM } from '../../constants';
 
 const ZoomControls = styled.div`
   background: #fff;
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 6px 8px;
   border-radius: 0 8px 8px 0px;
   border: 1px solid rgb(229, 230, 232);
   gap: 0.8rem;
@@ -85,6 +86,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
     const drag = d3
       .drag()
       .on('start', function (event, d) {
+        d3.select(this).raise();
         const transform = d3.zoomTransform(svg.node());
         const [cursorX, cursorY] = d3.pointer(event, svg.node());
         const dataX = xScale.invert((cursorX - transform.x) / transform.k);
@@ -93,6 +95,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
         d.offsetY = d.y - dataY;
       })
       .on('drag', function (event, d) {
+        d3.select(this).raise();
         const transform = d3.zoomTransform(svg.node());
         const [cursorX, cursorY] = d3.pointer(event, svg.node());
         const dataX =
@@ -145,12 +148,11 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       });
 
     const renderRectangles = (currentData = data) => {
-      g.selectAll('g').remove(); // Clear previous groups
-
+      g.selectAll('g').remove();
       const rectGroups = g
         .selectAll('g')
         .data(currentData, d => d.id)
-        .join('g') // Group each rectangle and its sub-elements
+        .join('g')
         .attr('transform', d => {
           return `translate(${xScale(d.x)}, ${yScale(d.y)})`;
         });
@@ -158,57 +160,35 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       rectGroups.each(function (d) {
         const group = d3.select(this);
 
-        // Outer rectangle (base)
+        const adjustedWidth = d.width * 0.8;
+        const adjustedHeight = d.height * 1.2;
+
         group
           .append('rect')
-          .attr('x', -d.width / 2) // Center rectangle
-          .attr('y', -d.height / 2)
-          .attr('width', xScale(d.x + d.width) - xScale(d.x))
-          .attr('height', yScale(d.y + d.height) - yScale(d.y))
-          .attr('rx', 2) // Rounded corners
+          .attr('x', -adjustedWidth / 2)
+          .attr('y', -adjustedHeight / 2)
+          .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+          .attr('height', yScale(d.y + adjustedHeight) - yScale(d.y))
+          .attr('rx', 1)
           .attr('fill', 'white')
           .attr('stroke', d.color)
           .attr('stroke-width', 0.5);
 
-        // Top section (orange header path)
-        const headerHeight = 10; // Height of the header section (orange part)
+        const headerHeight = 10;
         group
           .append('rect')
-          .attr('x', -d.width / 2) // Match the outer rectangle's position
-          .attr('y', -d.height / 2) // Start at the top
-          .attr('width', xScale(d.x + d.width) - xScale(d.x)) // Same width as the outer rectangle
-          .attr('height', headerHeight) // Height of the header
+          .attr('x', -adjustedWidth / 2)
+          .attr('y', -adjustedHeight / 2)
+          .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+          .attr('height', headerHeight)
           .attr('fill', d.color)
-          .attr('rx', 2)
+          .attr('rx', 1)
           .attr('fill', d.color);
 
         if (d.color === '#FF7A00') {
-          group.call(drag); // Apply drag behavior to the entire group
+          group.call(drag);
         }
       });
-
-      // g.selectAll('rect').remove();
-      // const rects = g
-      //   .selectAll('rect')
-      //   .data(currentData, d => d.id)
-      //   .join('rect')
-      //   .attr('x', d => xScale(d.x) - (xScale(d.x + d.width) - xScale(d.x)) / 2)
-      //   .attr(
-      //     'y',
-      //     d => yScale(d.y) - (yScale(d.y + d.height) - yScale(d.y)) / 2
-      //   )
-      //   .attr('width', d => xScale(d.x + d.width) - xScale(d.x))
-      //   .attr('height', d => yScale(d.y + d.height) - yScale(d.y))
-      //   .attr('fill', d => d.color)
-      //   .style('stroke', d => d.color)
-      //   .style('cursor', d => (d.color === '#FF7A00' ? 'pointer' : 'default'))
-      //   .call(d => {
-      //     d.each(function (d) {
-      //       if (d.color === '#FF7A00') {
-      //         d3.select(this).call(drag);
-      //       }
-      //     });
-      //   });
     };
 
     renderRectangles(data);
@@ -264,25 +244,18 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
     }
   }, [data]);
 
-  // Handlers for Zoom In, Zoom Out, and Expand
   const handleZoomIn = () => {
-    d3.select(svgRef.current).call(
-      zoomRef.current.scaleBy,
-      1.2 // Zoom In factor
-    );
+    d3.select(svgRef.current).call(zoomRef.current.scaleBy, 1.2);
   };
 
   const handleZoomOut = () => {
-    d3.select(svgRef.current).call(
-      zoomRef.current.scaleBy,
-      0.8 // Zoom Out factor
-    );
+    d3.select(svgRef.current).call(zoomRef.current.scaleBy, 0.8);
   };
 
   const handleExpand = () => {
     d3.select(svgRef.current).call(
       zoomRef.current.transform,
-      d3.zoomIdentity.scale(initialZoomLevel).translate(0, 0) // Reset zoom to default
+      d3.zoomIdentity.scale(initialZoomLevel).translate(0, 0)
     );
   };
 
@@ -291,15 +264,12 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       className="d-flex"
       style={{ position: 'relative', display: 'inline-block' }}
     >
-      {/* SVG Container */}
       <svg ref={svgRef}></svg>
 
-      {/* Zoom Controls */}
-
       <ZoomControls>
-        <ZoomInIcon dataTitle="Zoom In" onClick={handleZoomIn} />
-        <ZoomOutIcon dataTitle="Zoom Out" onClick={handleZoomOut} />
-        <FitIcon dataTitle="Expand" onClick={handleExpand} />
+        <ZoomInIcon dataTitle={KDFM.ZOOM_IN} onClick={handleZoomIn} />
+        <ZoomOutIcon dataTitle={KDFM.ZOOM_OUT} onClick={handleZoomOut} />
+        <FitIcon dataTitle={KDFM.FIT} onClick={handleExpand} />
       </ZoomControls>
     </div>
   );
