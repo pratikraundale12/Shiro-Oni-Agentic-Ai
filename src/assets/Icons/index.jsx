@@ -111,3 +111,6 @@ export * from './UserUploadIcon';
 export * from './WhiteBoradIcon';
 export * from './canvasYIcon';
 export * from './DisabledUserIcon';
+export * from './ZoomInIcon';
+export * from './ZoomOutIcon';
+export * from './FitIcon';
