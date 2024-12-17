@@ -784,8 +784,6 @@ export function* addControllerServiceRootLevel(api, { payload }) {
     toast.success(' Added Controller Service Successfully');
     yield put(NamespacesActions.getControllerServiceList());
     yield put(NamespacesActions.setNewlyAddedExternalServiceCS(response?.data));
-    yield put(NamespacesActions.setPropertyUpdateResponse({}));
-    // yield put(NamespacesActions.setChangeStatusCSRespone({}));
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
@@ -816,9 +814,9 @@ export function* addPropertyControllerService(api, { payload }) {
   });
   if (response.ok) {
     toast.success(response?.data?.message);
-    yield put(NamespacesActions.setPropertyUpdateResponse(response?.data));
-    yield put(NamespacesActions.setChangeStatusCSRespone({}));
-    yield put(NamespacesActions.setNewlyAddedExternalServiceCS({}));
+    yield put(
+      NamespacesActions.setPropertyUpdateResponse(response?.data?.data)
+    );
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
@@ -924,7 +922,6 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
 }
 
 export function* changeStatusControllerService(api, { payload }) {
-  yield put(NamespacesActions.setChangeStatusCSRespone({}));
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const { id, ...rest } = payload;
   const clustersToken = JSON.parse(
@@ -952,8 +949,6 @@ export function* changeStatusControllerService(api, { payload }) {
     yield delay(400);
     yield put(NamespacesActions.getControllerServiceList());
     yield put(NamespacesActions.setChangeStatusCSRespone(response));
-    yield put(NamespacesActions.setPropertyUpdateResponse({}));
-    yield put(NamespacesActions.setNewlyAddedExternalServiceCS({}));
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
     yield put(NamespacesActions.setChangeStatusCSRespone({}));

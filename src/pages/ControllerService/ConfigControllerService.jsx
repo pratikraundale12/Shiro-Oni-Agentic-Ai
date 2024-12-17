@@ -36,8 +36,7 @@ export const ConfigControllerService = ({
   isFromControllerServiceTab,
   handlePropertyUpdate,
   isFromExternalService,
-  version,
-  setVersion,
+  versionList,
 }) => {
   const dispatch = useDispatch();
 
@@ -139,9 +138,14 @@ export const ConfigControllerService = ({
       .filter(item => item.sensitive === true)
       .map(item => item.name);
 
+    const currentVersion = versionList?.find(
+      version =>
+        version?.uniqueId ===
+        (selectedItemFromList?.id || selectedItemFromList?.updatedValue)
+    );
     const payload = {
-      id: selectedItemFromList.id,
-      version: version,
+      id: selectedItemFromList.id || selectedItemFromList?.updatedValue,
+      version: currentVersion?.version,
       properties: resultObject,
       sensitiveDynamicPropertyNames: sensitiveNames,
       currentState: selectedItemFromList?.state,

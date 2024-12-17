@@ -182,19 +182,33 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   );
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
 
-  const [version, setVersion] = useState('');
+  const [isPropertyResponse, setIsPropertyResponse] = useState(false);
+  const [isStateChangeResponse, setIsStateChangeResponse] = useState(false);
+  const [
+    isNewlyAddedExternalServiceResponse,
+    setIsNewlyAddedExternalServiceResponse,
+  ] = useState(false);
+
+  const [versionList, setVersionList] = useState([]);
 
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
       const newalyAddedObject = {
-        identifier: newlyAddedExternalServiceResponse?.value,
-        name: newlyAddedExternalServiceResponse?.label,
+        identifier: newlyAddedExternalServiceResponse?.id,
+        name: newlyAddedExternalServiceResponse?.name,
         parentId: selectedExternalServiceIdentifier,
         typeValue: newlyAddedExternalServiceResponse?.typeValue,
         bundleValue: newlyAddedExternalServiceResponse?.bundleValue,
         state: newlyAddedExternalServiceResponse?.state,
-        scope: newlyAddedExternalServiceResponse?.scope ? newlyAddedExternalServiceResponse?.scope : 'N/A',
+        scope: newlyAddedExternalServiceResponse?.scope
+          ? newlyAddedExternalServiceResponse?.scope
+          : 'N/A',
         version: newlyAddedExternalServiceResponse?.version,
+        properties: newlyAddedExternalServiceResponse?.properties,
+        tooltip: newlyAddedExternalServiceResponse?.tooltip,
+        validationStatus: newlyAddedExternalServiceResponse?.validationStatus
+          ? newlyAddedExternalServiceResponse?.validationStatus
+          : '',
       };
       const updatedArray = externalControllerServices.map(obj =>
         obj.identifier === selectedExternalService.identifier
@@ -241,30 +255,104 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
 
   useEffect(() => {
     dispatch(NamespacesActions.setPropertyUpdateResponse({}));
-    // dispatch(NamespacesActions.setChangeStatusCSRespone({}));
+    dispatch(NamespacesActions.setChangeStatusCSRespone({}));
     dispatch(NamespacesActions.setNewlyAddedExternalServiceCS({}));
-  },[]);
+  }, []);
 
   useEffect(() => {
-    if(!isEmpty(propertyUpdateResponse) && isEmpty(stateChangeResponse) && isEmpty(newlyAddedExternalServiceResponse)){
-      setVersion(propertyUpdateResponse?.version);
-    }
-    else if(!isEmpty(stateChangeResponse) && isEmpty(propertyUpdateResponse) && isEmpty(newlyAddedExternalServiceResponse)){
-      console.log('stateChangeResponse--', stateChangeResponse);
-      setVersion(stateChangeResponse?.data?.revision?.version)
-    }
-    else if(!isEmpty(newlyAddedExternalServiceResponse) && isEmpty(propertyUpdateResponse) && isEmpty(stateChangeResponse)){
-      console.log('newlyAddedExternalServiceResponse--', newlyAddedExternalServiceResponse);
-      setVersion(newlyAddedExternalServiceResponse?.version)
-    }
-    else if(isEmpty(propertyUpdateResponse) && isEmpty(stateChangeResponse) && isEmpty(newlyAddedExternalServiceResponse)){      
-      setVersion(selectedItemFromList?.version)
-    }
-  },[propertyUpdateResponse, selectedItemFromList, stateChangeResponse, newlyAddedExternalServiceResponse]);
+    const uniqueId =
+      selectedItemFromList?.id ||
+      selectedItemFromList?.updatedValue ||
+      selectedItemFromList?.identifier;
 
-  console.log('propertyUpdateResponse-', propertyUpdateResponse);
-  console.log('stateChangeResponse---', stateChangeResponse);
-  console.log('version--', version);
+    const addOrUpdateVersion = (prev, version) => {
+      const existingIndex = prev.findIndex(item => item.uniqueId === uniqueId);
+
+      if (existingIndex > -1) {
+        if (prev[existingIndex].version !== version) {
+          const updatedList = [...prev];
+          updatedList[existingIndex] = {
+            ...updatedList[existingIndex],
+            isUpdatedAlready: true,
+            version,
+          };
+          return updatedList;
+        }
+        return prev;
+      }
+      return [...prev, { uniqueId, version }];
+    };
+    if (
+      isPropertyResponse &&
+      !isNewlyAddedExternalServiceResponse &&
+      !isStateChangeResponse
+    ) {
+      const version =
+        propertyUpdateResponse?.id === uniqueId
+          ? propertyUpdateResponse?.version
+          : selectedItemFromList?.version;
+      setVersionList(prev =>
+        addOrUpdateVersion(
+          prev,
+          prev?.find(item => item.uniqueId === uniqueId)?.isUpdatedAlready &&
+            propertyUpdateResponse?.id !== uniqueId
+            ? prev.find(item => item.uniqueId === uniqueId)?.version
+            : version
+        )
+      );
+    } else if (
+      isStateChangeResponse &&
+      !isPropertyResponse &&
+      !isNewlyAddedExternalServiceResponse
+    ) {
+      const version =
+        stateChangeResponse?.data?.id === uniqueId
+          ? stateChangeResponse?.data?.revision?.version
+          : selectedItemFromList?.version;
+      setVersionList(prev =>
+        addOrUpdateVersion(
+          prev,
+          prev?.find(item => item.uniqueId === uniqueId)?.isUpdatedAlready &&
+            stateChangeResponse?.data?.id !== uniqueId
+            ? prev.find(item => item.uniqueId === uniqueId)?.version
+            : version
+        )
+      );
+    } else if (
+      isNewlyAddedExternalServiceResponse &&
+      !isPropertyResponse &&
+      !isStateChangeResponse
+    ) {
+      const version =
+        newlyAddedExternalServiceResponse?.id === uniqueId
+          ? newlyAddedExternalServiceResponse?.version
+          : selectedItemFromList?.version;
+      setVersionList(prev =>
+        addOrUpdateVersion(
+          prev,
+          prev?.find(item => item.uniqueId === uniqueId)?.isUpdatedAlready &&
+            newlyAddedExternalServiceResponse?.id !== uniqueId
+            ? prev.find(item => item.uniqueId === uniqueId)?.version
+            : version
+        )
+      );
+    } else if (
+      !isNewlyAddedExternalServiceResponse &&
+      !isPropertyResponse &&
+      !stateChangeResponse
+    ) {
+      const version = selectedItemFromList?.version;
+      setVersionList(prev => addOrUpdateVersion(prev, version));
+    }
+  }, [
+    propertyUpdateResponse,
+    selectedItemFromList,
+    stateChangeResponse,
+    newlyAddedExternalServiceResponse,
+    isPropertyResponse,
+    isStateChangeResponse,
+    isNewlyAddedExternalServiceResponse,
+  ]);
 
   const COLUMNS = [
     {
@@ -350,88 +438,107 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
           item.updatedValue &&
           state !== 'INVALID' &&
           state !== 'VALIDATING' &&
-          state !== 'DISABLING';
+          state !== 'DISABLING' &&
+          stateItem?.validationStatus !== 'INVALID';
 
-          return (
-            <div>
-              {/* Settings Button */}
-              {isControllerService && (
-                <>
-                  <button
-                    className="border-0 bg-white"
-                    onClick={() => handleSettingClick(stateItem)}
-                    data-tooltip-id={`Settings-${item?.id}`}
-                    aria-label="Settings"
-                  >
-                    <SettingSmallIcon />
-                  </button>
-                  <ReactTooltip
-                    id={`Settings-${item?.id}`}
-                    place="left"
-                    content="Settings"
-                    style={{
-                      width: '130px',
-                      whiteSpace: 'normal',
-                      wordWrap: 'break-word',
-                    }}
-                  />
-                </>
-              )}
-          
-              {/* Enable/Disable Button */}
-              {isButtonVisible && (
-                <>
-                  <button
-                    className="border-0 bg-white ms-2"
-                    onClick={() => handleEnableClick(stateItem)}
-                    data-tooltip-id={stateItem?.id}
-                  >
-                    {state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
-                  </button>
-                  <ReactTooltip
-                    id={stateItem?.id}
-                    place="left"
-                    content={tooltipContent}
-                    style={{
-                      width: '130px',
-                      whiteSpace: 'normal',
-                      wordWrap: 'break-word',
-                    }}
-                  />
-                </>
-              )}
-          
-              {/* Re-Configure Button */}
-              {item.updatedValue &&(
-                <React.Fragment>
-                  <ReConfigureButton
-                    className="ms-2"
-                    data-tooltip-id={`configure-${stateItem?.id}`}
-                    onClick={() => handleConfigure(item)}
-                  >
-                    <PencilIcon />
-                  </ReConfigureButton>
-                  <ReactTooltip
-                    id={`configure-${stateItem?.id}`}
-                    place="left"
-                    content="Re-Configure"
-                    style={{
-                      width: '130px',
-                      whiteSpace: 'normal',
-                      wordWrap: 'break-word',
-                    }}
-                  />
-                </React.Fragment>
-              )}
-          
-              {/* Configure Button */}
-              { !isControllerService && !isButtonVisible && !item?.upatedValu &&  (
+        return (
+          <div>
+            {/* Settings Button */}
+            {(isControllerService || item?.properties?.length) && (
+              <>
+                <button
+                  className="border-0 bg-white"
+                  onClick={() => handleSettingClick(stateItem)}
+                  data-tooltip-id={`Settings-${item?.id}`}
+                  aria-label="Settings"
+                  disabled={
+                    stateItem?.state === 'ENABLING' ||
+                    stateItem?.state === 'ENABLED'
+                  }
+                  style={{
+                    opacity:
+                      stateItem?.state === 'ENABLING' ||
+                      stateItem?.state === 'ENABLED'
+                        ? 0.3
+                        : 1,
+                    cursor:
+                      stateItem?.state === 'ENABLING' ||
+                      stateItem?.state === 'ENABLED'
+                        ? 'not-allowed'
+                        : 'pointer',
+                  }}
+                >
+                  <SettingSmallIcon />
+                </button>
+                <ReactTooltip
+                  id={`Settings-${item?.id}`}
+                  place="left"
+                  content="Settings"
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
+
+            {/* Enable/Disable Button */}
+            {isButtonVisible && (
+              <>
+                <button
+                  className="border-0 bg-white ms-2"
+                  onClick={() => handleEnableClick(stateItem)}
+                  data-tooltip-id={stateItem?.id}
+                >
+                  {state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
+                </button>
+                <ReactTooltip
+                  id={stateItem?.id}
+                  place="left"
+                  content={tooltipContent}
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
+
+            {/* Re-Configure Button */}
+            {item.updatedValue && (
+              <React.Fragment>
+                <ReConfigureButton
+                  className="ms-2"
+                  data-tooltip-id={`configure-${stateItem?.id}`}
+                  onClick={() => handleConfigure(item)}
+                >
+                  <PencilIcon />
+                </ReConfigureButton>
+                <ReactTooltip
+                  id={`configure-${stateItem?.id}`}
+                  place="left"
+                  content="Re-Configure"
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </React.Fragment>
+            )}
+
+            {/* Configure Button */}
+            {!isControllerService &&
+              !isButtonVisible &&
+              !item?.updatedValue && (
                 <ConfigureButton onClick={() => handleConfigure(item)}>
                   {KDFM.CONFIGURE}
                 </ConfigureButton>
               )}
-            </div>
-          );
+          </div>
+        );
       },
       width: '14%',
     },
@@ -490,6 +597,17 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
             onClick={() => handleSettingClick(item)}
             data-tooltip-id={`Settings-${item?.id}`}
             aria-label="Settings"
+            disabled={item?.state === 'ENABLING' || item?.state === 'ENABLED'}
+            style={{
+              opacity:
+                item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                  ? 0.3
+                  : 1,
+              cursor:
+                item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                  ? 'not-allowed'
+                  : 'pointer',
+            }}
           >
             <SettingSmallIcon />
           </button>
@@ -518,6 +636,28 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     if (!isEmpty(stateChangeResponse)) {
       setExternalControllerServices(prevServices =>
         prevServices.map(service => {
+          if (
+            service.updatedValue === stateChangeResponse?.data?.id &&
+            service.updatedValue === selectedItemFromList?.updatedValue
+          ) {
+            return {
+              ...service,
+              state: stateChangeResponse?.data?.status?.runStatus,
+              validationStatus:
+                stateChangeResponse?.data?.status?.validationStatus,
+              isStatusUpdated: true,
+            };
+          }
+          return service;
+        })
+      );
+    }
+  }, [stateChangeResponse, externalControllerServicesTableData]);
+
+  useEffect(() => {
+    if (!isEmpty(stateChangeResponse)) {
+      setExternalControllerServices(prevServices =>
+        prevServices.map(service => {
           if (service.updatedValue === selectedItemFromList?.id) {
             return {
               ...service,
@@ -530,6 +670,8 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
                         selectedItemFromList?.state === 'DISABLING'
                           ? 'ENABLED'
                           : 'DISABLED',
+                      validationStatus:
+                        stateChangeResponse?.data?.status?.validationStatus,
                     }
                   : cs
               ),
@@ -539,11 +681,55 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         })
       );
     }
-    console.log('stateChangeResponse in useedttcr', stateChangeResponse);
-    
   }, [stateChangeResponse]);
 
+  useEffect(() => {
+    if (!isEmpty(propertyUpdateResponse)) {
+      setExternalControllerServices(prevServices =>
+        prevServices.map(service => {
+          if (
+            service.updatedValue === selectedItemFromList?.id &&
+            service?.controllerService?.length
+          ) {
+            return {
+              ...service,
+              controllerService: service?.controllerService?.map((cs, index) =>
+                index === 0
+                  ? {
+                      ...cs,
+                      state: propertyUpdateResponse?.state,
+                      validationStatus:
+                        propertyUpdateResponse?.validationStatus,
+                    }
+                  : cs
+              ),
+            };
+          } else if (
+            service.updatedValue === propertyUpdateResponse?.id &&
+            service.updatedValue === selectedItemFromList?.updatedValue
+          ) {
+            return {
+              ...service,
+              state: propertyUpdateResponse?.state,
+              validationStatus: propertyUpdateResponse?.validationStatus,
+              isPropertyUpdated: true,
+            };
+          }
+          return service;
+        })
+      );
+    }
+  }, [propertyUpdateResponse]);
+
   const handleStatusClick = () => {
+    setIsStateChangeResponse(true);
+    setIsNewlyAddedExternalServiceResponse(false);
+    setIsPropertyResponse(false);
+    const currentVersion = versionList?.find(
+      version =>
+        version?.uniqueId ===
+        (selectedItemFromList?.id || selectedItemFromList?.updatedValue)
+    );
     dispatch(
       NamespacesActions.changeStatusControllerService({
         state:
@@ -551,7 +737,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
           selectedItemFromList?.state === 'DISABLING'
             ? 'ENABLED'
             : 'DISABLED',
-        version: version,
+        version: currentVersion?.version,
         id: selectedItemFromList?.id || selectedItemFromList?.updatedValue,
       })
     );
@@ -564,16 +750,24 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   };
 
   const handleSettingClick = item => {
-    const match = externalControllerServices?.some(data =>
-      data.controllerService?.some(service => service.id === item.id)
-    );
+    setIsPropertyResponse(true);
+    setIsNewlyAddedExternalServiceResponse(false);
+    setIsStateChangeResponse(false);
+    const match = externalControllerServices?.some(data => {
+      return data.controllerService?.length
+        ? data.controllerService?.some(service => service?.id === item?.id)
+        : data?.updatedValue === item.updatedValue;
+    });
     setisFromExternalService(match);
     setSelectedItemFromList(item);
-    // setVersion(item?.version);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
   const handleConfigure = item => {
+    setIsNewlyAddedExternalServiceResponse(true);
+    setIsPropertyResponse(false);
+    setIsStateChangeResponse(false);
+    dispatch(NamespacesActions.setPropertyUpdateResponse({}));
     setSelectedExternalServiceIdentifier(
       item?.parentId ? item?.parentId : item?.identifier
     );
@@ -677,7 +871,10 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     const updatedControllerServices = externalControllerServices?.map(
       service => {
         const matchingTableData = externalControllerServicesTableData?.find(
-          tableItem => tableItem?.parentId === service?.identifier
+          tableItem =>
+            tableItem?.parentId === service?.identifier &&
+            !service?.isStatusUpdated &&
+            !service?.isPropertyUpdated
         );
 
         if (matchingTableData) {
@@ -686,17 +883,28 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
             controllerService: isAddedViaAdd ? [] : service?.controllerService,
             name: matchingTableData?.name,
             updatedValue: matchingTableData?.identifier,
-            typeValue: matchingTableData?.typeValue ? matchingTableData?.typeValue : '',
-            bundleValue: matchingTableData?.bundleValue ? matchingTableData?.bundleValue : '',
+            typeValue: matchingTableData?.typeValue
+              ? matchingTableData?.typeValue
+              : '',
+            bundleValue: matchingTableData?.bundleValue
+              ? matchingTableData?.bundleValue
+              : '',
             state: matchingTableData?.state ? matchingTableData?.state : '',
             scope: matchingTableData?.scope ? matchingTableData?.scope : '',
-            version: matchingTableData?.version ? matchingTableData?.version : '',
+            version: matchingTableData?.version
+              ? matchingTableData?.version
+              : '',
+            properties: matchingTableData?.properties
+              ? matchingTableData?.properties
+              : [],
+            validationStatus: matchingTableData?.validationStatus
+              ? matchingTableData?.validationStatus
+              : '',
           };
         }
         return service;
       }
     );
-
     setExternalControllerServices(updatedControllerServices);
   }, [externalControllerServicesTableData]);
 
@@ -903,8 +1111,8 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         isFromControllerServiceTab={true}
         isFromExternalService={isFromExternalService}
         handlePropertyUpdate={handleServiceConfigure}
-        version={version}
-        setVersion={setVersion}
+        versionList={versionList}
+        setSelectedItemFromList={setSelectedItemFromList}
       />
 
       <AddProperties
