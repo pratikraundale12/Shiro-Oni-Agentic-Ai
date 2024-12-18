@@ -414,7 +414,14 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
             item={item?.controllerService[0]}
           />
         ) : (
-          <StatusText text={item?.state} item={item} />
+          <StatusText
+            text={
+              item?.state === 'DISABLED' && item?.validationStatus === 'INVALID'
+                ? 'INVALID'
+                : item?.state
+            }
+            item={item}
+          />
         ),
       width: '16%',
     },
@@ -434,16 +441,15 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
           ? item?.controllerService[0]
           : item;
         const state = stateItem?.state;
-
         const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
 
         const isButtonVisible =
-          item.updatedValue &&
-          state !== 'INVALID' &&
-          state !== 'VALIDATING' &&
-          state !== 'DISABLING' &&
-          state !== 'DISABLED' &&
-          stateItem?.validationStatus !== 'INVALID';
+          (item.updatedValue &&
+            state !== 'INVALID' &&
+            state !== 'VALIDATING' &&
+            state !== 'DISABLING') ||
+          (state === 'DISABLED' && stateItem?.validationStatus !== 'INVALID') ||
+          (state === 'ENABLED' && stateItem?.validationStatus === 'VALID');
 
         return (
           <div>
