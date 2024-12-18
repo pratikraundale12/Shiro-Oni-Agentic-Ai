@@ -246,6 +246,9 @@ const ConfigDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
+            {scheduleDeploymentFlow || scheduleUpgradeFromList
+              ? 'Schedule '
+              : ''}
             {!isUpgrade ? KDFM.UPGRADE_NAMESPACE : KDFM.DEPLOY_NAMESPACE}
           </MainTitleHfour>{' '}
           :

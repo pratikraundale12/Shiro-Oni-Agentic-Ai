@@ -744,6 +744,10 @@ const Summary = () => {
             </ImageContainer>
             <MainTitleHfour className="mb-0">
               {`${
+                scheduleDeploymentFlow || scheduleUpgradeFromList
+                  ? 'Schedule '
+                  : ''
+              } ${
                 !deployByRegistryFlow
                   ? checkDestCluster?.version <= versionSelected.version
                     ? KDFM.UPGRADE
