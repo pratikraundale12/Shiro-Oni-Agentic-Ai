@@ -157,6 +157,8 @@ export const KDFM = {
   SOMETHING_WENT_WRONG: 'Something went wrong',
   SAVE_SETTINGS: 'Save Settings',
   EMAIL: 'Email',
+  SUPPORT_EMAIL: 'Support Email',
+  FROM_EMAIL: 'From Email',
   META_TITLE: 'Meta Title',
   ACTIVATE: 'Activate',
   DEACTIVATE: 'Deactivate',

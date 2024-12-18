@@ -9,7 +9,7 @@ import {
   LogoFieldIcon,
   MailIcon,
   QRIcons,
-  RefreshIcon,
+  // RefreshIcon,
   UploadIcon,
   UserIcon,
 } from '../../assets';
@@ -19,7 +19,7 @@ import {
   EMAIL_REGEX,
   EMAIL_REMINDER_OPTIONS,
   KDFM,
-  REFRESH_OPTIONS,
+  // REFRESH_OPTIONS,
 } from '../../constants';
 import {
   Button,
@@ -90,7 +90,10 @@ export const settingSchema = yup.object().shape({
     .string()
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
-
+  fromEmail: yup
+    .string()
+    .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
+    .max(50, 'Email can not be greater than 25 characters'),
   title: yup
     .string()
     .max(25, 'Title must be 25 characters or less')
@@ -177,6 +180,11 @@ export const Setting = () => {
     if (dirtyFields.email && data?.email !== settingData?.email) {
       payload.append('email', data?.email);
       updatedFields.push('email');
+    }
+
+    if (dirtyFields.fromEmail && data?.fromEmail !== settingData?.fromEmail) {
+      payload.append('fromEmail', data?.fromEmail);
+      updatedFields.push('fromEmail');
     }
 
     if (dirtyFields.refresh || data.refresh !== settingData?.refresh) {
@@ -278,6 +286,7 @@ export const Setting = () => {
       setValue('email_reminder_time', settingData?.email_reminder_time);
       setValue('group_email_id', settingData?.group_email_id);
       setValue('email', settingData?.email);
+      setValue('fromEmail', settingData?.fromEmail);
       setValue('approver_groups', settingData.approver_groups || '');
       setLdapInitialConfig(settingData?.ldapEnabled);
       const logoElement = document.getElementById('logo');
@@ -298,6 +307,7 @@ export const Setting = () => {
         value.refresh !==
           (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
         value.email !== settingData?.email ||
+        value.fromEmail !== settingData?.fromEmail ||
         value.ldap_auto_sync_time_interval !==
           settingData?.ldap_auto_sync_time_interval ||
         value.ldap_auto_sync !== settingData?.ldap_auto_sync ||
@@ -367,7 +377,7 @@ export const Setting = () => {
         </div>
         <HeadingContentHr className="mt-3 mb-4" />
         <InputFields className="row">
-          <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6">
+          {/* <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6">
             <SelectField
               label="Refresh"
               name="refresh"
@@ -391,18 +401,28 @@ export const Setting = () => {
               options={REFRESH_OPTIONS}
               placeholder="Select Cluster"
             />
-          </div>
+          </div> */}
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
             <InputField
               name="email"
               register={register}
               icon={<MailIcon />}
-              label={KDFM.EMAIL}
+              label={KDFM.SUPPORT_EMAIL}
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
             />
           </div>
-          <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-8">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <InputField
+              name="fromEmail"
+              register={register}
+              icon={<MailIcon />}
+              label={KDFM.FROM_EMAIL}
+              placeholder={KDFM.ENTER_EMAIL}
+              errors={errors}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-6">
             <InputField
               name="title"
               register={register}
