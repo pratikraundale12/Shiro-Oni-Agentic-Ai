@@ -489,28 +489,24 @@ const Summary = () => {
   };
 
   const handleConfirmUpdateStatus = () => {
-    if (!deployByRegistryFlow) {
-      setFlowControlState(confirmDialogue.action);
-      if (!confirmDialogue.forPopup) {
-        setActiveButton(confirmDialogue.action);
-        setFlowControlButtons(confirmDialogue.action);
-      }
+    setFlowControlState(confirmDialogue.action);
+    if (!confirmDialogue.forPopup) {
+      setActiveButton(confirmDialogue.action);
+      setFlowControlButtons(confirmDialogue.action);
+    }
 
-      setConfirmDialogue({
-        state: false,
-        action: '',
-        text: '',
-        forPopup: false,
-      });
-      if (checkFlowControlAfterUpgrade) {
-        dispatch(
-          NamespacesActions.updateNamespaceStatus(confirmDialogue.action)
-        );
-        return;
-      }
-
+    setConfirmDialogue({
+      state: false,
+      action: '',
+      text: '',
+      forPopup: false,
+    });
+    if (checkFlowControlAfterUpgrade) {
+      dispatch(NamespacesActions.updateNamespaceStatus(confirmDialogue.action));
       return;
     }
+
+    return;
     if (confirmDialogue.forPopup) {
       dispatch(
         NamespacesActions.updateNamespaceStatus(confirmDialogue?.action)
@@ -572,6 +568,7 @@ const Summary = () => {
       bucketId: registryFlowVerion?.bucketId,
       registryId: registryData?.id,
       flowName: formDataRegistry?.selectedFlowName,
+      namespaceStatus: flowControlState,
       position: {
         x: XcordUpdated || registryDetailsData?.positions[0]?.x,
         y: YcordUpdated || registryDetailsData?.positions[0]?.y,
@@ -886,7 +883,7 @@ const Summary = () => {
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
-                  {(!deployByRegistryFlow && !scheduleDeploymentFlow) && (
+                  {!deployByRegistryFlow && !scheduleDeploymentFlow && (
                     <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                       <div className="summary-details">
                         <SummaryDetailsHFourTag className="mb-2">
@@ -935,17 +932,16 @@ const Summary = () => {
                   </UseColLg>
                 </>
               )}
-              {!deployByRegistryFlow &&
-                !scheduleDeploymentFlow &&
-                !scheduleUpgradeFromList && (
-                  <>
-                    <div className="col-12 p-3">
-                      <ConfigTitle className="config-title">
-                        <ConfigTitleHTwo className="p-3 mb-0">
-                          <span>{KDFM.FLOW_CONTROL}</span>
-                        </ConfigTitleHTwo>
-                      </ConfigTitle>
-                    </div>
+              {!scheduleDeploymentFlow && !scheduleUpgradeFromList && (
+                <>
+                  <div className="col-12 p-3">
+                    <ConfigTitle className="config-title">
+                      <ConfigTitleHTwo className="p-3 mb-0">
+                        <span>{KDFM.FLOW_CONTROL}</span>
+                      </ConfigTitleHTwo>
+                    </ConfigTitle>
+                  </div>
+                  {!deployByRegistryFlow && (
                     <UseColLg className="col-lg-10 col-12 ">
                       <RowConfig className="row p-3">
                         <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
@@ -980,113 +976,108 @@ const Summary = () => {
                         </UseColXl>
                       </RowConfig>
                     </UseColLg>
-                  </>
-                )}
+                  )}
+                </>
+              )}
             </RowConfig>
             <IconsvgDiv>
-              {!deployByRegistryFlow &&
-                !scheduleDeploymentFlow &&
-                !scheduleUpgradeFromList && (
-                  <CustomNine className="col-4 mb-3">
-                    <ActiveButtonContainer className="d-flex ">
-                      <TextDiv className="d-flex">
-                        <CountDiv
-                          className="div-btn-1 mr-2"
-                          count={processStatus.runningCount}
-                          activeColor="#58e715"
-                        >
-                          <TriangleIcons color="#B5BDC8" />
-                          <span>{processStatus.runningCount}</span>
-                        </CountDiv>
-                        <div>{KDFM.RUNNING_PROCESSORS}</div>
-                      </TextDiv>
-                      <TextDiv className="d-flex">
-                        <CountDiv
-                          className="div-btn-2 mr-2"
-                          count={processStatus.stoppedCount}
-                          activeColor="#c52b2b"
-                        >
-                          <SquareBoxIcon color="#B5BDC8" />
-                          <span>{processStatus.stoppedCount}</span>
-                        </CountDiv>
-                        <div>{KDFM.STOPPED_PROCESSORS}</div>
-                      </TextDiv>
-                      <TextDiv className="d-flex">
-                        <CountDiv
-                          className="div-btn-3 mr-2"
-                          count={processStatus.invalidCount}
-                          activeColor="#CF9F5D"
-                        >
-                          <TriangleExclamationMarkIcon color="#B5BDC8" />
-                          <span>{processStatus.invalidCount}</span>
-                        </CountDiv>
-                        <div>{KDFM.INVALID_PROCESSORS}</div>
-                      </TextDiv>
-                      <TextDiv className="d-flex">
-                        <CountDiv
-                          className="div-btn-4 mr-2"
-                          count={processStatus.disabledCount}
-                          activeColor="#2c7cf3"
-                        >
-                          <SmallNotThunderIcon
-                            width={20}
-                            height={20}
-                            color="#B5BDC8"
-                          />
-                          <StyledSpan>{processStatus.disabledCount}</StyledSpan>
-                        </CountDiv>
-                        <div>{KDFM.DISABLED_PROCESSORS}</div>
-                      </TextDiv>
-                    </ActiveButtonContainer>
-                  </CustomNine>
-                )}
-              {!deployByRegistryFlow &&
-                !scheduleDeploymentFlow &&
-                !scheduleUpgradeFromList && (
+              {!scheduleDeploymentFlow && !scheduleUpgradeFromList && (
+                <CustomNine className="col-4 mb-3">
                   <ActiveButtonContainer className="d-flex ">
-                    {!(
-                      processStatus?.runningCount === 0 &&
-                      processStatus?.stoppedCount === 0
-                    ) ? (
-                      <>
-                        <TextsvgDiv className="d-flex">
-                          <ActiveButtonDiv className="div-btn-1 mr-2">
-                            <ActiveButtonDiv
-                              className="div-btn-1 "
-                              isActive={activeButton === 'RUNNING'}
-                              activeColor="#58e715"
-                              hoverColor="#58e715"
-                              activeTextColor="#fff"
-                              onClick={() => handleUpdateStatus('RUNNING')}
-                            >
-                              <TriangleIcons color="#B5BDC8" />
-                            </ActiveButtonDiv>
-                          </ActiveButtonDiv>
-                          <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                        </TextsvgDiv>
-                        <TextsvgDiv className="d-flex">
-                          <ActiveButtonDiv className="div-btn-2 mr-2">
-                            <ActiveButtonDiv
-                              className="div-btn-1"
-                              isActive={activeButton === 'STOPPED'}
-                              activeColor="#c52b2b"
-                              hoverColor="#c52b2b"
-                              activeTextColor="#fff"
-                              onClick={() => handleUpdateStatus('STOPPED')}
-                            >
-                              <SquareBoxIcon color="#B5BDC8" />
-                            </ActiveButtonDiv>
-                          </ActiveButtonDiv>
-                          <div>{KDFM.STOPPED_FLOW}</div>
-                        </TextsvgDiv>
-                      </>
-                    ) : (
-                      <div className="text_info">
-                        {KDFM.FLOW_CONTROL_WARNING}
-                      </div>
-                    )}
+                    <TextDiv className="d-flex">
+                      <CountDiv
+                        className="div-btn-1 mr-2"
+                        count={processStatus.runningCount}
+                        activeColor="#58e715"
+                      >
+                        <TriangleIcons color="#B5BDC8" />
+                        <span>{processStatus.runningCount}</span>
+                      </CountDiv>
+                      <div>{KDFM.RUNNING_PROCESSORS}</div>
+                    </TextDiv>
+                    <TextDiv className="d-flex">
+                      <CountDiv
+                        className="div-btn-2 mr-2"
+                        count={processStatus.stoppedCount}
+                        activeColor="#c52b2b"
+                      >
+                        <SquareBoxIcon color="#B5BDC8" />
+                        <span>{processStatus.stoppedCount}</span>
+                      </CountDiv>
+                      <div>{KDFM.STOPPED_PROCESSORS}</div>
+                    </TextDiv>
+                    <TextDiv className="d-flex">
+                      <CountDiv
+                        className="div-btn-3 mr-2"
+                        count={processStatus.invalidCount}
+                        activeColor="#CF9F5D"
+                      >
+                        <TriangleExclamationMarkIcon color="#B5BDC8" />
+                        <span>{processStatus.invalidCount}</span>
+                      </CountDiv>
+                      <div>{KDFM.INVALID_PROCESSORS}</div>
+                    </TextDiv>
+                    <TextDiv className="d-flex">
+                      <CountDiv
+                        className="div-btn-4 mr-2"
+                        count={processStatus.disabledCount}
+                        activeColor="#2c7cf3"
+                      >
+                        <SmallNotThunderIcon
+                          width={20}
+                          height={20}
+                          color="#B5BDC8"
+                        />
+                        <StyledSpan>{processStatus.disabledCount}</StyledSpan>
+                      </CountDiv>
+                      <div>{KDFM.DISABLED_PROCESSORS}</div>
+                    </TextDiv>
                   </ActiveButtonContainer>
-                )}
+                </CustomNine>
+              )}
+              {!scheduleDeploymentFlow && !scheduleUpgradeFromList && (
+                <ActiveButtonContainer className="d-flex ">
+                  {!(
+                    processStatus?.runningCount === 0 &&
+                    processStatus?.stoppedCount === 0
+                  ) ? (
+                    <>
+                      <TextsvgDiv className="d-flex">
+                        <ActiveButtonDiv className="div-btn-1 mr-2">
+                          <ActiveButtonDiv
+                            className="div-btn-1 "
+                            isActive={activeButton === 'RUNNING'}
+                            activeColor="#58e715"
+                            hoverColor="#58e715"
+                            activeTextColor="#fff"
+                            onClick={() => handleUpdateStatus('RUNNING')}
+                          >
+                            <TriangleIcons color="#B5BDC8" />
+                          </ActiveButtonDiv>
+                        </ActiveButtonDiv>
+                        <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                      </TextsvgDiv>
+                      <TextsvgDiv className="d-flex">
+                        <ActiveButtonDiv className="div-btn-2 mr-2">
+                          <ActiveButtonDiv
+                            className="div-btn-1"
+                            isActive={activeButton === 'STOPPED'}
+                            activeColor="#c52b2b"
+                            hoverColor="#c52b2b"
+                            activeTextColor="#fff"
+                            onClick={() => handleUpdateStatus('STOPPED')}
+                          >
+                            <SquareBoxIcon color="#B5BDC8" />
+                          </ActiveButtonDiv>
+                        </ActiveButtonDiv>
+                        <div>{KDFM.STOPPED_FLOW}</div>
+                      </TextsvgDiv>
+                    </>
+                  ) : (
+                    <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
+                  )}
+                </ActiveButtonContainer>
+              )}
             </IconsvgDiv>
           </ScrollSetGrey>
         </GreyBoxNamespace>
