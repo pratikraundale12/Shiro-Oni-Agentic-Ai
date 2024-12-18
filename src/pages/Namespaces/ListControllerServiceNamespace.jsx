@@ -224,7 +224,9 @@ export const ListControllerService = () => {
               <button
                 className="border-0 bg-white"
                 onClick={() => handleSettingClick(item)}
-                data-tooltip-id={'Settings'}
+                data-tooltip-id={'global-tooltip'}
+                data-tooltip-content={'Settings'}
+                data-tooltip-place="left"
                 disabled={
                   !canWrite ||
                   item?.state === 'ENABLING' ||
@@ -247,16 +249,6 @@ export const ListControllerService = () => {
               >
                 <SettingSmallIcon />
               </button>
-              <ReactTooltip
-                id={'Settings'}
-                place="left"
-                content={'Settings'}
-                style={{
-                  width: '100px',
-                  whiteSpace: 'normal',
-                  wordWrap: 'break-word',
-                }}
-              />
             </>
           )}
           {item?.state != 'INVALID' &&
@@ -267,7 +259,11 @@ export const ListControllerService = () => {
                 <button
                   className="border-0 bg-white ms-1"
                   onClick={() => handleEnableClick(item)}
-                  data-tooltip-id={item?.id}
+                  data-tooltip-id={'global-tooltip'}
+                  data-tooltip-content={
+                    item?.state !== 'DISABLED' ? 'Disable' : 'Enable'
+                  }
+                  data-tooltip-place="left"
                   disabled={!canWrite}
                   style={{
                     opacity: canWrite ? 1 : 0.3,
@@ -280,16 +276,6 @@ export const ListControllerService = () => {
                     <FlashIcon />
                   )}
                 </button>
-                <ReactTooltip
-                  id={item?.id}
-                  place="left"
-                  content={item?.state !== 'DISABLED' ? 'Disable' : 'Enable'}
-                  style={{
-                    width: '100px',
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
-                  }}
-                />
               </>
             )}
           {item?.state != 'ENABLED' &&
@@ -300,7 +286,9 @@ export const ListControllerService = () => {
                 <button
                   className="border-0 bg-white ms-1"
                   onClick={() => handleDeleteClick(item)}
-                  data-tooltip-id={'Delete'}
+                  data-tooltip-id={'global-tooltip'}
+                  data-tooltip-content={'Delete'}
+                  data-tooltip-place="left"
                   disabled={!canWrite}
                   style={{
                     opacity: canWrite ? 1 : 0.3,
@@ -309,16 +297,6 @@ export const ListControllerService = () => {
                 >
                   <DeleteSmallIcon color="black" height="28" />
                 </button>
-                <ReactTooltip
-                  id={'Delete'}
-                  place="left"
-                  content={'Delete'}
-                  style={{
-                    width: '80px',
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
-                  }}
-                />
               </>
             )}
         </>
@@ -337,9 +315,7 @@ export const ListControllerService = () => {
   };
 
   const handleCloseModal = () => {
-    dispatch(NamespacesActions.setNewlyAddVariables([]));
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
-    dispatch(NamespacesActions.getControllerServiceList());
   };
 
   const handleAddValueModal = item => {
@@ -364,8 +340,18 @@ export const ListControllerService = () => {
           columns={COLUMNS}
           controllerModule={true}
           loading={loading}
+          // rowsPerPage={20}
         />
       </Collapsible>
+
+      <ReactTooltip
+        id="global-tooltip"
+        style={{
+          width: '100px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+        }}
+      />
 
       <AddControllerServiceModal />
 
