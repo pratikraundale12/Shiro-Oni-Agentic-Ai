@@ -11,6 +11,7 @@ import {
   FlashIcon,
   NoDataIcon,
   PencilIcon,
+  RefrenceIcon,
   SettingSmallIcon,
 } from '../../assets';
 import { Table, TextRender } from '../../components';
@@ -22,6 +23,7 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import Collapsible from '../Namespaces/Collapsible';
+import ControllerServerRefreshModal from '../Namespaces/ControllerServerRefreshModal';
 import AddControllerServiceModal from './AddControllerServiceModal';
 import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
@@ -164,6 +166,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   const [isFromExternalService, setisFromExternalService] = useState(false);
 
   const [isAddedViaAdd, setIsAddedViaAdd] = useState(null);
+  const [refreshItem, setRefreshItem] = useState(null);
 
   const [initialExternalService] = useState(
     controllerServicesData?.externalControllerServices
@@ -411,7 +414,14 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
             item={item?.controllerService[0]}
           />
         ) : (
-          <StatusText text={item?.state === 'DISABLED' && item?.validationStatus === 'INVALID' ? 'INVALID' : item?.state} item={item} />
+          <StatusText
+            text={
+              item?.state === 'DISABLED' && item?.validationStatus === 'INVALID'
+                ? 'INVALID'
+                : item?.state
+            }
+            item={item}
+          />
         ),
       width: '16%',
     },
@@ -430,16 +440,16 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         const stateItem = isControllerService
           ? item?.controllerService[0]
           : item;
-        const state = stateItem?.state;        
+        const state = stateItem?.state;
         const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
 
         const isButtonVisible =
-          item.updatedValue &&
-          state !== 'INVALID' &&
-          state !== 'VALIDATING' &&
-          state !== 'DISABLING' ||
-          (state === 'DISABLED' && stateItem?.validationStatus !== 'INVALID')
-          || (state === 'ENABLED' && stateItem?.validationStatus === 'VALID')
+          (item.updatedValue &&
+            state !== 'INVALID' &&
+            state !== 'VALIDATING' &&
+            state !== 'DISABLING') ||
+          (state === 'DISABLED' && stateItem?.validationStatus !== 'INVALID') ||
+          (state === 'ENABLED' && stateItem?.validationStatus === 'VALID');
 
         return (
           <div>
@@ -588,10 +598,11 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
       renderCell: item => item?.scope || 'N/A',
       width: '11%',
     },
+
     {
       label: 'Action',
       renderCell: item => (
-        <>
+        <div className="d-flex gap-10">
           <button
             className="border-0 bg-white"
             onClick={() => handleSettingClick(item)}
@@ -621,9 +632,117 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
               wordWrap: 'break-word',
             }}
           />
-        </>
+        </div>
       ),
       width: '14%',
+    },
+  ];
+
+  const COLUMNS_3 = [
+    {
+      label: 'Name',
+      renderCell: item => (
+        <TextRender
+          key={item?.name}
+          text={item?.name || 'N/A'}
+          capitalizeText={false}
+        />
+      ),
+      width: '20%',
+    },
+    {
+      label: 'Type',
+      renderCell: item => (
+        <TextRender
+          key={item?.typeValue}
+          text={item?.typeValue || 'N/A'}
+          capitalizeText={false}
+        />
+      ),
+      width: '20%',
+    },
+    {
+      label: 'Bundle',
+      renderCell: item => (
+        <TextRender
+          key={item?.bundleValue}
+          text={item?.bundleValue || 'N/A'}
+          capitalizeText={false}
+        />
+      ),
+      width: '15%',
+    },
+    {
+      label: 'State',
+      renderCell: item =>
+        item?.state ? <StatusText text={item?.state} item={item} /> : 'N/A',
+      width: '10%',
+    },
+    {
+      label: 'Scope',
+      renderCell: item => item?.scope || 'N/A',
+      width: '10%',
+    },
+    {
+      label: 'Referencing Component',
+      renderCell: item => (
+        <div className="d-flex justify-content-center">
+          {(!isEmpty(item?.referencingComponents?.controllerService) ||
+            !isEmpty(item?.referencingComponents?.processors)) && (
+            <>
+              <button
+                className="border-0 bg-white"
+                onClick={() => {
+                  setRefreshItem(item);
+                  dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                }}
+                data-tooltip-id={`Referencing-${item?.id}`}
+                aria-label="Referencing"
+              >
+                <RefrenceIcon />
+              </button>
+              <ReactTooltip
+                id={`Referencing-${item?.id}`}
+                place="left"
+                content="Reference"
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
+        </div>
+      ),
+      width: '14%',
+    },
+
+    {
+      label: 'Action',
+      renderCell: item => (
+        <div className="d-flex gap-10">
+          <button
+            className="border-0 bg-white"
+            onClick={() => handleSettingClick(item)}
+            data-tooltip-id={`Settings-${item?.id}`}
+            aria-label="Settings"
+          >
+            <SettingSmallIcon />
+          </button>
+          <ReactTooltip
+            id={`Settings-${item?.id}`}
+            place="left"
+            content="Settings"
+            style={{
+              width: '130px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        </div>
+      ),
+      width: '10%',
     },
   ];
 
@@ -943,7 +1062,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         content: (
           <Table
             data={listData}
-            columns={COLUMNS_2}
+            columns={COLUMNS_3}
             className={'variables-table'}
           />
         ),
@@ -1155,6 +1274,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
         primaryText={`Are you sure you want to ${selectedItemFromList?.state !== 'DISABLED' ? 'disable' : 'enable'} ${selectedItemFromList?.name}?`}
         onSubmit={handleStatusClick}
       />
+      <ControllerServerRefreshModal refreshItem={refreshItem} />
     </DataWrapper>
   );
 };

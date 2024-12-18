@@ -173,6 +173,7 @@ export const NamespacesActions = {
     `${prefix}setNewlyAddedExternalServiceCS`
   ),
   setChangeStatusCSRespone: createAction(`${prefix}setChangeStatusCSRespone`),
+  setRefreshmodalOpen: createAction(`${prefix}setRefreshmodalOpen`),
   setScheduleByRegistry: createAction(`${prefix}setScheduleByRegistry`),
   setScheduleTimeByRegistry: createAction(`${prefix}setScheduleTimeByRegistry`),
   setFlowControlStateAtScheduleDeploy: createAction(
@@ -266,6 +267,7 @@ export const NAMESPACES_INITIAL_STATE = {
   FlowControlData: {},
   newlyAddedExternalServiceCS: {},
   changeStatusCSRespone: {},
+  isRefreshModalOpen: false,
   scheduleByRegistry: false,
   scheduleTimeByRegistry: null,
   flowControlStateAtScheduleDeploy: null,
@@ -353,6 +355,7 @@ export const NamespacesSelectors = {
   getNewlyAddedExternalServiceCS: state =>
     state.namespaces.newlyAddedExternalServiceCS,
   getChangeStatusCSRespone: state => state.namespaces.changeStatusCSRespone,
+  getRefreshmodalOpen: state => state.namespaces.isRefreshModalOpen,
   getScheduleByRegistry: state => state.namespaces.scheduleByRegistry,
   getScheduleTimeByRegistry: state => state.namespaces.scheduleTimeByRegistry,
   getflowControlStateAtScheduleDeploy: state =>
@@ -788,6 +791,12 @@ const setChangeStatusCSRespone = (state, { payload }) => {
     changeStatusCSRespone: payload,
   };
 };
+const setRefreshmodalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isRefreshModalOpen: payload,
+  };
+};
 const setScheduleByRegistry = (state, { payload }) => {
   return {
     ...state,
@@ -987,6 +996,7 @@ export const namespacesReducer = createReducer(
         NamespacesActions.setChangeStatusCSRespone,
         setChangeStatusCSRespone
       )
+      .addCase(NamespacesActions.setRefreshmodalOpen, setRefreshmodalOpen)
       .addCase(NamespacesActions.setScheduleByRegistry, setScheduleByRegistry)
       .addCase(
         NamespacesActions.setScheduleTimeByRegistry,

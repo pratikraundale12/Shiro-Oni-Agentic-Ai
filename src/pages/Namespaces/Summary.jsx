@@ -744,6 +744,10 @@ const Summary = () => {
             </ImageContainer>
             <MainTitleHfour className="mb-0">
               {`${
+                scheduleDeploymentFlow || scheduleUpgradeFromList
+                  ? 'Schedule '
+                  : ''
+              } ${
                 !deployByRegistryFlow
                   ? checkDestCluster?.version <= versionSelected.version
                     ? KDFM.UPGRADE
@@ -799,7 +803,8 @@ const Summary = () => {
                       <SummaryDetailsPtag className="mb-0">
                         {deployByRegistryFlow
                           ? formDataRegistry?.selectedFlowName
-                          : checkDestCluster?.name}
+                          : checkDestCluster?.name ||
+                            formDataRegistry?.selectedFlowName}
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
@@ -870,7 +875,7 @@ const Summary = () => {
                   <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                     <div>
                       <SummaryDetailsHFourTag className="mb-2">
-                        {deployByRegistryFlow
+                        {deployByRegistryFlow || scheduleDeploymentFlow
                           ? KDFM.SELECTED_VERSION
                           : KDFM.CURRENT_VERSION}
                       </SummaryDetailsHFourTag>
@@ -881,7 +886,7 @@ const Summary = () => {
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
-                  {!deployByRegistryFlow && (
+                  {(!deployByRegistryFlow && !scheduleDeploymentFlow) && (
                     <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
                       <div className="summary-details">
                         <SummaryDetailsHFourTag className="mb-2">

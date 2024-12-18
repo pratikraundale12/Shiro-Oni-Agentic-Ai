@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { NoDataIcon, PencilIcon } from '../../assets';
+import { NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
 import {
   EnhancedTextRender,
   IconButton,
@@ -9,9 +12,10 @@ import {
   TextRender,
 } from '../../components';
 import { KDFM } from '../../constants';
-import Collapsible from './Collapsible';
+import { NamespacesActions } from '../../store';
 import AddOrEditParameterContextModal from './AddOrEditParameterContextModal';
-import { isEmpty } from 'lodash';
+import Collapsible from './Collapsible';
+import RefreshModal from './RefreshModal';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -57,6 +61,8 @@ const ParameterContextTab = ({
   const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
   const [currentPgId, setCurrentPgId] = useState('');
+  const [refreshItem, setRefreshItem] = useState(null);
+  const dispatch = useDispatch();
 
   const handleToggle = index => {
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
@@ -132,8 +138,44 @@ const ParameterContextTab = ({
       },
     },
     {
+      label: 'Referencing Component',
       renderCell: item => (
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div className="d-flex justify-content-center">
+          {!isEmpty(item?.referencingComponents) && (
+            <>
+              <button
+                className="border-0 bg-white"
+                onClick={() => {
+                  setRefreshItem(item);
+                  dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                }}
+                data-tooltip-id={`Reference-${item?.id}`}
+                aria-label="Reference"
+              >
+                <RefrenceIcon />
+              </button>
+              <ReactTooltip
+                id={`Reference-${item?.id}`}
+                place="left"
+                content="Reference"
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
+        </div>
+      ),
+      width: '14%',
+    },
+
+    {
+      renderCell: item => (
+        <div
+          style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}
+        >
           <IconButton
             onClick={() => {
               handleEditClick(item);
@@ -325,6 +367,7 @@ const ParameterContextTab = ({
           />
         )}
       </ScrollSetGrey>
+      <RefreshModal refreshItem={refreshItem} />
     </DataWrapper>
   );
 };
