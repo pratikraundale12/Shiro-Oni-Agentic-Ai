@@ -230,9 +230,6 @@ const NamespaceDeploy = ({
             </ModalIcon>
             <ModalHFive>
               Process Group Successfully&nbsp;
-              {/* {checkFlowControlAfterUpgrade
-                ? 'Upgraded To Production'
-                : 'Deployed To Production'} */}
               {deployByRegistryFlow
                 ? `Deployed To ${currentSelectedCluster.label}`
                 : `Upgraded To ${currentSelectedCluster.label}`}
