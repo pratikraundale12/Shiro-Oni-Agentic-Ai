@@ -684,7 +684,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
       width: '10%',
     },
     {
-      label: 'Refrenceing Component',
+      label: 'Referencing Component',
       renderCell: item => (
         <div className="d-flex justify-content-center">
           {(!isEmpty(item?.referencingComponents?.controllerService) ||
@@ -696,15 +696,15 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
                 }}
-                data-tooltip-id={`Refrence-${item?.id}`}
-                aria-label="Refrence"
+                data-tooltip-id={`Referencing-${item?.id}`}
+                aria-label="Referencing"
               >
                 <RefrenceIcon />
               </button>
               <ReactTooltip
-                id={`Refrence-${item?.id}`}
+                id={`Referencing-${item?.id}`}
                 place="left"
-                content="Refrence"
+                content="Reference"
                 style={{
                   width: 'auto',
                   whiteSpace: 'normal',
