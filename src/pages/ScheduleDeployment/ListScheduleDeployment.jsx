@@ -316,7 +316,7 @@ export const ListScheduleDeployment = () => {
         title="Deployment List"
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
-        placeholder="Search Process Group, Cluster or Approver"
+        placeholder="Search Approver or flow name"
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
       />
