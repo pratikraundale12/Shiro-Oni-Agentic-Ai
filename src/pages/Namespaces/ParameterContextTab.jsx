@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { NoDataIcon, OpenEyeIcon, PencilIcon } from '../../assets';
+import { NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
 import {
   EnhancedTextRender,
   IconButton,
@@ -60,6 +60,7 @@ const ParameterContextTab = ({
   const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
   const [currentPgId, setCurrentPgId] = useState('');
+  const [refreshItem, setRefreshItem] = useState(null);
   const dispatch = useDispatch();
 
   const handleToggle = index => {
@@ -137,7 +138,9 @@ const ParameterContextTab = ({
     },
     {
       renderCell: item => (
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div
+          style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}
+        >
           <IconButton
             onClick={() => {
               handleEditClick(item);
@@ -147,10 +150,11 @@ const ParameterContextTab = ({
           </IconButton>
           <IconButton
             onClick={() => {
+              setRefreshItem(item);
               dispatch(NamespacesActions.setRefreshmodalOpen(true));
             }}
           >
-            {<OpenEyeIcon color="black" />}
+            {<RefrenceIcon />}
           </IconButton>
         </div>
       ),
@@ -336,7 +340,7 @@ const ParameterContextTab = ({
           />
         )}
       </ScrollSetGrey>
-      <RefreshModal />
+      <RefreshModal refreshItem={refreshItem} />
     </DataWrapper>
   );
 };
