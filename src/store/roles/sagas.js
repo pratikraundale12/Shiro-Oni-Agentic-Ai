@@ -89,7 +89,11 @@ export function* createNewRole(api, { payload }) {
       yield put(RolesActions.setInActiveUserIdModelOpen(true));
     }
   } else if (!response.ok) {
-    toast.error(response.data.message || 'Something went wrong');
+    toast.error(
+      response.data.type === 'FieldError'
+        ? response.data.fieldErrors[0]?.name
+        : response.data.message || KDFM.SOMETHING_WENT_WRONG
+    );
   }
 }
 
@@ -134,10 +138,12 @@ export function* editRole(api, { payload }) {
     toast.success('Role edited successfully');
     yield put(RolesActions.roleModal(false));
   } else if (!response.ok) {
-    {
-      toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
-      yield put(RolesActions.roleModal(false));
-    }
+    toast.error(
+      response.data.type === 'FieldError'
+        ? response.data.fieldErrors[0]?.name
+        : response.data.message || KDFM.SOMETHING_WENT_WRONG
+    );
+    yield put(RolesActions.roleModal(false));
   }
   yield put(RolesActions.setInactiveUserId(''));
   yield put(RolesActions.setInActiveUserIdModelOpen(false));

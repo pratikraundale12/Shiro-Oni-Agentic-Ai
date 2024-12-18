@@ -16,8 +16,9 @@ export const SchedularActions = {
   editScheduleDeployment: createAction(`${prefix}editScheduleDeployment`),
   checkApproverToken: createAction(`${prefix}checkApproverToken`),
   setScheduleFromList: createAction(`${prefix}setScheduleFromList`),
+  editScheduleByRegistry: createAction(`${prefix}editScheduleByRegistry`),
+  rejectScheduleDeployment: createAction(`${prefix}rejectScheduleDeployment`),
 };
-
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
   formData: {},
@@ -69,22 +70,22 @@ const setScheduleModal = state => {
     scheduleModal: !state.scheduleModal,
   };
 };
-const setCancelScheduleModal = state => {
+const setCancelScheduleModal = (state, { payload }) => {
   return {
     ...state,
-    cancelScheduleModal: !state.cancelScheduleModal,
+    cancelScheduleModal: payload,
   };
 };
-const setRejectScheduleModal = state => {
+const setRejectScheduleModal = (state, { payload }) => {
   return {
     ...state,
-    rejectScheduleModal: !state.rejectScheduleModal,
+    rejectScheduleModal: payload,
   };
 };
-const setApproveScheduleModal = state => {
+const setApproveScheduleModal = (state, { payload }) => {
   return {
     ...state,
-    approveScheduleModal: !state.approveScheduleModal,
+    approveScheduleModal: payload,
   };
 };
 const setTokenScheduleModal = (state, { payload }) => {

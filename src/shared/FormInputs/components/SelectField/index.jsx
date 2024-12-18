@@ -346,6 +346,12 @@ const SelectField = ({
                   if (isMulti) props.onChange(uniqueValues);
                   else props.onChange(selected);
               }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+              }}
             />
             <FieldErrorMessage errors={errors} name={name} />
           </>

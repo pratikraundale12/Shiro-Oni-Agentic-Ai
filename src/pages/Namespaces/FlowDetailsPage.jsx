@@ -26,6 +26,7 @@ import {
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import RectangleGraph from './birdEyeViewGraph';
+import { SchedularSelectors } from '../../store/schedular';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -208,6 +209,12 @@ const FlowDetailsPage = () => {
   );
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
+  );
+  const scheduleUpgradeFromList = useSelector(
+    SchedularSelectors.getScheduleFromList
+  );
+  const scheduleDeploymentFlow = useSelector(
+    NamespacesSelectors.getScheduleByRegistry
   );
   const storedXcord = useSelector(NamespacesSelectors.getregistryFlowXCord);
   const storedYcord = useSelector(NamespacesSelectors.getregistryFlowYCord);
@@ -403,6 +410,7 @@ const FlowDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
+            {scheduleDeploymentFlow ? 'Schedule ' : ''} 
             {!isUpgrade ? 'Upgrade Process Group' : 'Deploy Process Group'}
           </MainTitleHfour>
           :

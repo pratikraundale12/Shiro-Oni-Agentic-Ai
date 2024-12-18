@@ -50,7 +50,10 @@ const Flex = styled.div`
 const ButtonsContainer = styled(Flex)`
   gap: 0.5rem;
 `;
-
+const ButtonsContainerScheduleList = styled(Flex)`
+  gap: 0.5rem;
+  margin-left: auto;
+`;
 const Title = styled.h3`
   font-family: ${props => props.theme.fontNato};
   font-weight: 500;
@@ -178,23 +181,6 @@ const RefreshIocn = styled.div`
   justify-content: center;
   margin-left: 10px;
   border-radius: 4px;
-`;
-
-const ScheduleButton = styled.div`
-  width: Fixed (201px) px;
-  height: Fixed (37px) px;
-  top: 107px;
-  left: 1054px;
-  padding: 10px 12px 10px 12px;
-  gap: 0px;
-  border-radius: 4px 0px 0px 0px;
-  justify: space-between;
-  opacity: 0px;
-  border: 1px solid var(--Border, rgba(221, 228, 240, 1));
-  opacity: 0px;
-  color: rgba(75, 85, 100, 1);
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-  background: rgba(245, 247, 250, 1);
 `;
 
 const GoBackButton = () => {
@@ -339,7 +325,11 @@ export const GridActions = ({
   const loadingNamespaces = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchDashboard')
   );
-
+  const handleScheduleClick = () => {
+    history.push('/process-group/DeployPage');
+    dispatch(NamespacesActions.setdeployRegistryFlow(false));
+    dispatch(NamespacesActions.setScheduleByRegistry(true));
+  };
   return (
     <>
       <Flex className="flex-wrap gap-2">
@@ -377,7 +367,19 @@ export const GridActions = ({
             )}
           </Title>
         </Flex>
-
+        {module === 'scheduler' && (
+          <ButtonsContainerScheduleList>
+            <Button size="md" onClick={() => history.push('/process-group')}>
+              <div
+                className="d-flex "
+                style={{ fontSize: '14px', fontWeight: '750' }}
+              >
+                <ScheduleDeploymentIcon height={19} width={19} color={'#fff'} />
+                {KDFM.SCHEDULE_DEPLOYMENT}
+              </div>
+            </Button>
+          </ButtonsContainerScheduleList>
+        )}
         <ButtonsContainer>
           {!isEmpty(statusOptions) && (
             <DropdownContainer>
@@ -447,19 +449,26 @@ export const GridActions = ({
           {userPermissions.includes(getButtonPermissions(module)) &&
             !userModalOpen && <Modal />}
         </ButtonsContainer>
+
         {module === 'namespaces' ? (
           <ButtonsContainer>
-            <ScheduleButton
-              className="d-flex items-center gap-3"
-              onClick={() => {}}
-              disabled={!canWrite}
-            >
-              <ScheduleDeploymentIcon height={19} width={19} />
-              {KDFM.SCHEDULE_DEPLOYMENT}
-            </ScheduleButton>
             <Button
               disabled={!canWrite}
-              size="sm"
+              size="md"
+              style={{ width: '250px' }}
+              onClick={() => handleScheduleClick()}
+            >
+              <div
+                className="d-flex "
+                style={{ fontSize: '14px', fontWeight: '750' }}
+              >
+                <ScheduleDeploymentIcon height={19} width={19} color={'#fff'} />
+                {KDFM.SCHEDULE_DEPLOYMENT}
+              </div>
+            </Button>
+            <Button
+              disabled={!canWrite}
+              size="md"
               style={{ width: '84px' }}
               onClick={handleClick}
             >

@@ -79,6 +79,7 @@ export * from './QuestionMarkIcon';
 export * from './ReadyFlowIcon';
 export * from './RefrenceIcon';
 export * from './RefreshIcon';
+export * from './RejectIcon';
 export * from './RightArrowIcon';
 export * from './RightCircleIcon';
 export * from './RightIcon';

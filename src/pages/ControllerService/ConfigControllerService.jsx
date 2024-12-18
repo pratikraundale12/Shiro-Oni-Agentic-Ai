@@ -1,15 +1,16 @@
 /* eslint-disable  */
 import React, { useEffect } from 'react';
-// import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Table } from '../../components';
 import { Button, InputField, Modal } from '../../shared';
 // import { NamespacesSelectors } from '../../store';
 import ValueRender from './ValueRender';
-import { NamespacesActions } from '../../store';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { DeleteSmallIcon, QRIcons } from '../../assets';
+import { isEmpty } from 'lodash';
 // import AddProperties from './AddProperties';
 
 const ModalBody = styled.div`
@@ -35,8 +36,13 @@ export const ConfigControllerService = ({
   isFromControllerServiceTab,
   handlePropertyUpdate,
   isFromExternalService,
+  versionList,
 }) => {
   const dispatch = useDispatch();
+
+  const propertyUpdateResponse = useSelector(
+    NamespacesSelectors.getPropertyUpdateResponse
+  );
   const handleDeleteClick = item => {
     const filterData = updatedData.filter(ele => {
       return ele.name != item.name;
@@ -62,6 +68,12 @@ export const ConfigControllerService = ({
       setUpdatedData(sortedUpdatedList);
     }
   };
+  // useEffect(() => {
+  //   if(!isEmpty(propertyUpdateResponse)){
+  //     setVersion(propertyUpdateResponse?.version);
+  //   }
+  // },[propertyUpdateResponse]);
+
   const COLUMNS = [
     {
       label: 'Name',
@@ -126,9 +138,14 @@ export const ConfigControllerService = ({
       .filter(item => item.sensitive === true)
       .map(item => item.name);
 
+    const currentVersion = versionList?.find(
+      version =>
+        version?.uniqueId ===
+        (selectedItemFromList?.id || selectedItemFromList?.updatedValue)
+    );
     const payload = {
-      id: selectedItemFromList.id,
-      version: selectedItemFromList?.version,
+      id: selectedItemFromList.id || selectedItemFromList?.updatedValue,
+      version: currentVersion?.version,
       properties: resultObject,
       sensitiveDynamicPropertyNames: sensitiveNames,
       currentState: selectedItemFromList?.state,
@@ -177,6 +194,12 @@ export const ConfigControllerService = ({
               label="Name"
               icon={<QRIcons />}
               register={register}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+              }}
             />
           </div>
 

@@ -46,6 +46,7 @@ export const RejectScheduleModal = () => {
   const rejectScheduleModal = useSelector(
     SchedularSelectors.getRejectScheduleModal
   );
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'editScheduleDeployment')
   );
@@ -60,14 +61,16 @@ export const RejectScheduleModal = () => {
   });
 
   const onRequestClose = () => {
-    dispatch(SchedularActions.setRejectScheduleModal());
+    dispatch(SchedularActions.setRejectScheduleModal(false));
     reset();
   };
 
   const onSubmit = data => {
-    data.is_approved = false;
-    data.schedularId = selectedSchedule.scheduler_id;
-    dispatch(SchedularActions.editScheduleDeployment(data));
+    const payload = {
+      reason_for_cancellation: data?.note,
+      schedularId: selectedSchedule?.id,
+    };
+    dispatch(SchedularActions.rejectScheduleDeployment(payload));
     reset();
   };
 

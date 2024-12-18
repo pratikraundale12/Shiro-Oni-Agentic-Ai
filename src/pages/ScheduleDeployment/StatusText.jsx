@@ -6,11 +6,13 @@ import { isEmpty } from 'lodash';
 
 const statusColors = {
   PENDING: '#b5b5bd',
-  SCHEDULED: '#0cbf59',
-  'NOT APPROVED': 'red',
+  APPROVED: '#0cbf59',
+  NOT_APPROVED: 'red',
   'IN PROGRESS': '#444445',
-  DEFAULT: '#F2891F',
-  SUCCESS: '#0cbf59',
+  SCHEDULED: '#F2891F',
+  DEPLOYED: '#0cbf59',
+  'NOT APPROVED': 'red',
+  'N/A': '#b5b5bd',
 };
 
 const StatusTexts = styled.div`

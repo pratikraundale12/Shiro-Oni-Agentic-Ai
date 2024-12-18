@@ -5,6 +5,8 @@ import { GridSelectors } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
+import { AuthenticationActions } from '../authentication';
+import { history } from '../../helpers/history';
 
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -814,6 +816,9 @@ export function* addPropertyControllerService(api, { payload }) {
   });
   if (response.ok) {
     toast.success(response?.data?.message);
+    yield put(
+      NamespacesActions.setPropertyUpdateResponse(response?.data?.data)
+    );
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
@@ -919,7 +924,6 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
 }
 
 export function* changeStatusControllerService(api, { payload }) {
-  yield put(NamespacesActions.setChangeStatusCSRespone({}));
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const { id, ...rest } = payload;
   const clustersToken = JSON.parse(
@@ -1159,6 +1163,9 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
+  const scheduleDeploy = yield select(
+    NamespacesSelectors.getScheduleByRegistry
+  );
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
@@ -1176,8 +1183,15 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
     ],
   });
   if (response.ok) {
-    yield put(NamespacesActions.setDeployedModal(true));
-    yield put(NamespacesActions.setRegistryDeployResponseData(response?.data));
+    if (scheduleDeploy) {
+      yield call(history.push, '/schedule-deployment');
+      yield put(AuthenticationActions.setRoute('schedule-deployment'));
+    } else {
+      yield put(NamespacesActions.setDeployedModal(true));
+      yield put(
+        NamespacesActions.setRegistryDeployResponseData(response?.data)
+      );
+    }
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
@@ -1188,6 +1202,7 @@ export function* upgradeCluster(api, { payload }) {
   const srcClusterToken = clusters?.find(
     cluster => cluster.id === selectedCluster?.value
   );
+  const scheduleUpgrade = yield select(SchedularSelectors.getScheduleFromList);
   api.headers['x-cluster-id'] = selectedCluster?.value;
   api.headers['x-cluster-token'] = srcClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -1202,12 +1217,18 @@ export function* upgradeCluster(api, { payload }) {
     ],
     successAction: NamespacesActions.deployClusterSuccess,
   });
-
   if (response.ok) {
-    yield put(NamespacesActions.setUpdatedNamespaceResponse(response));
-    yield put(NamespacesActions.setRegistryDeployResponseData(response?.data));
-    yield put(NamespacesActions.setDeployedModal(true));
-    yield put(NamespacesActions.setFlowControlAfterUpgrade(true));
+    if (scheduleUpgrade) {
+      yield call(history.push, '/schedule-deployment');
+      yield put(AuthenticationActions.setRoute('schedule-deployment'));
+    } else {
+      yield put(NamespacesActions.setUpdatedNamespaceResponse(response));
+      yield put(
+        NamespacesActions.setRegistryDeployResponseData(response?.data)
+      );
+      yield put(NamespacesActions.setDeployedModal(true));
+      yield put(NamespacesActions.setFlowControlAfterUpgrade(true));
+    }
     toast.success(response?.data?.message);
   }
 

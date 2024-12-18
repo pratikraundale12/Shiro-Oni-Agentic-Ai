@@ -222,7 +222,7 @@ const FlowControl = () => {
                   count={singleNamespaceData?.disabledCount}
                   activeColor="#2c7cf3"
                 >
-                  <SmallNotThunderIcon color="#B5BDC8" />
+                  <SmallNotThunderIcon width={16} color="#B5BDC8" />
                   <span>{singleNamespaceData?.disabledCount}</span>
                 </CountDiv>
                 <div>{KDFM.DISABLED_PROCESSORS}</div>

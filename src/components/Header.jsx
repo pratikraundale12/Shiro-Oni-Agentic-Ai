@@ -312,7 +312,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     if (window.location.pathname !== '/schedule-deployment') {
       dispatch(
         GridActions.fetchGridSuccess({
-          module: 'schedule-deployment',
+          module: 'scheduler',
           data: {},
         })
       );

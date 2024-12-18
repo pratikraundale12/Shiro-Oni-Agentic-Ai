@@ -174,6 +174,15 @@ export const NamespacesActions = {
   ),
   setChangeStatusCSRespone: createAction(`${prefix}setChangeStatusCSRespone`),
   setRefreshmodalOpen: createAction(`${prefix}setRefreshmodalOpen`),
+  setScheduleByRegistry: createAction(`${prefix}setScheduleByRegistry`),
+  setScheduleTimeByRegistry: createAction(`${prefix}setScheduleTimeByRegistry`),
+  setFlowControlStateAtScheduleDeploy: createAction(
+    `${prefix}setFlowControlStateAtScheduleDeploy`
+  ),
+  setScheduleUpgradeByRegistry: createAction(
+    `${prefix}setScheduleUpgradeByRegistry`
+  ),
+  setPropertyUpdateResponse: createAction(`${prefix}setPropertyUpdateResponse`),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -259,6 +268,11 @@ export const NAMESPACES_INITIAL_STATE = {
   newlyAddedExternalServiceCS: {},
   changeStatusCSRespone: {},
   isRefreshModalOpen: false,
+  scheduleByRegistry: false,
+  scheduleTimeByRegistry: null,
+  flowControlStateAtScheduleDeploy: null,
+  scheduleUpgradeByRegistry: false,
+  propertyUpdateResponse: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -342,6 +356,13 @@ export const NamespacesSelectors = {
     state.namespaces.newlyAddedExternalServiceCS,
   getChangeStatusCSRespone: state => state.namespaces.changeStatusCSRespone,
   getRefreshmodalOpen: state => state.namespaces.isRefreshModalOpen,
+  getScheduleByRegistry: state => state.namespaces.scheduleByRegistry,
+  getScheduleTimeByRegistry: state => state.namespaces.scheduleTimeByRegistry,
+  getflowControlStateAtScheduleDeploy: state =>
+    state.namespaces.flowControlStateAtScheduleDeploy,
+  getScheduleUpgradeByRegistry: state =>
+    state.namespaces.scheduleUpgradeByRegistry,
+  getPropertyUpdateResponse: state => state.namespaces.propertyUpdateResponse,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -776,6 +797,39 @@ const setRefreshmodalOpen = (state, { payload }) => {
     isRefreshModalOpen: payload,
   };
 };
+const setScheduleByRegistry = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleByRegistry: payload,
+  };
+};
+const setScheduleTimeByRegistry = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleTimeByRegistry: payload,
+  };
+};
+const setFlowControlStateAtScheduleDeploy = (state, { payload }) => {
+  return {
+    ...state,
+    flowControlStateAtScheduleDeploy: payload,
+  };
+};
+
+const setScheduleUpgradeByRegistry = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleUpgradeByRegistry: payload,
+  };
+};
+
+const setPropertyUpdateResponse = (state, { payload }) => {
+  return {
+    ...state,
+    propertyUpdateResponse: payload,
+  };
+};
+
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -942,7 +996,24 @@ export const namespacesReducer = createReducer(
         NamespacesActions.setChangeStatusCSRespone,
         setChangeStatusCSRespone
       )
-      .addCase(NamespacesActions.setRefreshmodalOpen, setRefreshmodalOpen);
+      .addCase(NamespacesActions.setRefreshmodalOpen, setRefreshmodalOpen)
+      .addCase(NamespacesActions.setScheduleByRegistry, setScheduleByRegistry)
+      .addCase(
+        NamespacesActions.setScheduleTimeByRegistry,
+        setScheduleTimeByRegistry
+      )
+      .addCase(
+        NamespacesActions.setFlowControlStateAtScheduleDeploy,
+        setFlowControlStateAtScheduleDeploy
+      )
+      .addCase(
+        NamespacesActions.setScheduleUpgradeByRegistry,
+        setScheduleUpgradeByRegistry
+      )
+      .addCase(
+        NamespacesActions.setPropertyUpdateResponse,
+        setPropertyUpdateResponse
+      );
   }
 );
 //
