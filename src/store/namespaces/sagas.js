@@ -1,12 +1,12 @@
 import { toast } from 'react-toastify';
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
+import { history } from '../../helpers/history';
+import { AuthenticationActions } from '../authentication';
 import { GridSelectors } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
-import { AuthenticationActions } from '../authentication';
-import { history } from '../../helpers/history';
 
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -398,6 +398,8 @@ export function* updateParameterContext(api, { payload }) {
                 provided: item.provided,
               },
             })),
+          inheritedParameterContexts:
+            parameterDetails.inheritedParameterContexts,
         },
       },
     ],
