@@ -2,13 +2,14 @@ import { getTheme } from '@table-library/react-table-library/baseline';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-
 import { isEmpty } from 'lodash';
 import { NoDataIcon } from '../../assets';
 import { theme } from '../../styles';
 import { Loader, LoaderContainer } from '../Loader';
+import Pagination from './Pagination';
+import { KDFM } from '../../constants';
 
 const TableContainer = styled.div`
   /* height: 90%; */
@@ -37,14 +38,37 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
+const PaginationContainer = styled.div`
+  background: ${props => props.theme.colors.lightBackground};
+  padding: 3px 10px 13px 10px;
+  margin-top: 10px;
+  border-radius: 7px;
+`;
+
+const LoaderOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10; /* Ensure the loader is on top of the table */
+`;
+
 export const Table = ({
   data,
   columns,
   loading,
   className,
   deployTable = false,
+  rowsPerPage = 10,
 }) => {
   const DATA = { nodes: data || [] };
+  const [currentPage, setCurrentPage] = useState(1);
+
   const tableTheme = useTheme([
     getTheme(),
     {
@@ -74,30 +98,64 @@ export const Table = ({
     },
   ]);
 
+  const indexOfLastItem = currentPage * rowsPerPage;
+  const indexOfFirstItem = indexOfLastItem - rowsPerPage;
+  const currentItems = DATA.nodes.slice(indexOfFirstItem, indexOfLastItem);
+
   const getLoader = () => {
-    if (loading) return <Loader size="lg" />;
-    if (isEmpty(DATA.nodes))
+    if (loading) {
+      return (
+        <LoaderOverlay>
+          <Loader size="lg" />
+        </LoaderOverlay>
+      );
+    }
+    if (isEmpty(DATA.nodes)) {
       return (
         <LoaderContainer>
           <NoDataIcon width={140} />
-          <NoDataText>No Data Found!!</NoDataText>
+          <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
         </LoaderContainer>
       );
+    }
     return null;
   };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [data]);
+
   return (
-    <TableContainer className={className} deployTable={deployTable}>
-      <CompactTable data={DATA} columns={columns} theme={tableTheme} />
-      {getLoader()}
-    </TableContainer>
+    <>
+      <TableContainer className={className} deployTable={deployTable}>
+        <CompactTable
+          data={{ nodes: currentItems }}
+          columns={columns}
+          theme={tableTheme}
+        />
+        {getLoader()}
+      </TableContainer>
+      {/* Pagination */}
+      {DATA.nodes.length && DATA.nodes.length >= 10 ? (
+        <PaginationContainer>
+          <Pagination
+            page={currentPage}
+            count={DATA.nodes.length}
+            setCurrentPage={setCurrentPage}
+          />
+        </PaginationContainer>
+      ) : (
+        ''
+      )}
+    </>
   );
 };
 
 Table.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired,
   columns: PropTypes.arrayOf(PropTypes.shape({})),
   loading: PropTypes.bool,
   className: PropTypes.string,
   deployTable: PropTypes.bool,
-  controllerModule: PropTypes.bool,
+  rowsPerPage: PropTypes.number,
 };

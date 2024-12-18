@@ -155,6 +155,7 @@ export const ListControllerService = () => {
       module?.name?.toLowerCase().includes(search.toLowerCase()) ||
       module?.type?.toLowerCase().includes(search.toLowerCase())
   );
+
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
   );
@@ -401,7 +402,7 @@ export const ListControllerService = () => {
       <AddControllerServiceModal />
 
       <Table
-        data={filteredModulesData || []}
+        data={filteredModulesData}
         columns={COLUMNS}
         controllerModule={true}
         loading={loading}

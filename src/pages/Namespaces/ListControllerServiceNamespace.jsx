@@ -10,6 +10,7 @@ import {
   FlashCutIcon,
   FlashIcon,
   SettingSmallIcon,
+  SmallSearchIcon,
 } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { ModalWithIcon } from '../../shared';
@@ -27,6 +28,7 @@ import ConfigControllerService from '../ControllerService/ConfigControllerServic
 import ConfigurePropertyModal from '../ControllerService/ConfigurePropertyModal';
 import PropertyDropdownModal from '../ControllerService/ProprtyDropdownModel';
 import Collapsible from './Collapsible';
+import { theme } from '../../styles';
 
 const StatusTexts = styled.div`
   font-family: Inter;
@@ -62,6 +64,34 @@ const ScrollSetGrey = styled.div`
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
   overflow-y: auto;
+`;
+
+const SearchContainer = styled.div`
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
+`;
+const Search = styled.input`
+  width: 100%;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
+
+  &:focus-visible {
+    outline: none;
+  }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 
 const StatusText = ({ text = '', item }) => {
@@ -124,6 +154,12 @@ export const ListControllerService = () => {
   );
 
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const filteredModulesData = listData.filter(
+    module =>
+      module?.name?.toLowerCase().includes(search.toLowerCase()) ||
+      module?.type?.toLowerCase().includes(search.toLowerCase())
+  );
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -224,7 +260,9 @@ export const ListControllerService = () => {
               <button
                 className="border-0 bg-white"
                 onClick={() => handleSettingClick(item)}
-                data-tooltip-id={'Settings'}
+                data-tooltip-id={'global-tooltip'}
+                data-tooltip-content={'Settings'}
+                data-tooltip-place="left"
                 disabled={
                   !canWrite ||
                   item?.state === 'ENABLING' ||
@@ -247,16 +285,6 @@ export const ListControllerService = () => {
               >
                 <SettingSmallIcon />
               </button>
-              <ReactTooltip
-                id={'Settings'}
-                place="left"
-                content={'Settings'}
-                style={{
-                  width: '100px',
-                  whiteSpace: 'normal',
-                  wordWrap: 'break-word',
-                }}
-              />
             </>
           )}
           {item?.state != 'INVALID' &&
@@ -267,7 +295,11 @@ export const ListControllerService = () => {
                 <button
                   className="border-0 bg-white ms-1"
                   onClick={() => handleEnableClick(item)}
-                  data-tooltip-id={item?.id}
+                  data-tooltip-id={'global-tooltip'}
+                  data-tooltip-content={
+                    item?.state !== 'DISABLED' ? 'Disable' : 'Enable'
+                  }
+                  data-tooltip-place="left"
                   disabled={!canWrite}
                   style={{
                     opacity: canWrite ? 1 : 0.3,
@@ -280,16 +312,6 @@ export const ListControllerService = () => {
                     <FlashIcon />
                   )}
                 </button>
-                <ReactTooltip
-                  id={item?.id}
-                  place="left"
-                  content={item?.state !== 'DISABLED' ? 'Disable' : 'Enable'}
-                  style={{
-                    width: '100px',
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
-                  }}
-                />
               </>
             )}
           {item?.state != 'ENABLED' &&
@@ -300,7 +322,9 @@ export const ListControllerService = () => {
                 <button
                   className="border-0 bg-white ms-1"
                   onClick={() => handleDeleteClick(item)}
-                  data-tooltip-id={'Delete'}
+                  data-tooltip-id={'global-tooltip'}
+                  data-tooltip-content={'Delete'}
+                  data-tooltip-place="left"
                   disabled={!canWrite}
                   style={{
                     opacity: canWrite ? 1 : 0.3,
@@ -309,16 +333,6 @@ export const ListControllerService = () => {
                 >
                   <DeleteSmallIcon color="black" height="28" />
                 </button>
-                <ReactTooltip
-                  id={'Delete'}
-                  place="left"
-                  content={'Delete'}
-                  style={{
-                    width: '80px',
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
-                  }}
-                />
               </>
             )}
         </>
@@ -337,9 +351,7 @@ export const ListControllerService = () => {
   };
 
   const handleCloseModal = () => {
-    dispatch(NamespacesActions.setNewlyAddVariables([]));
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
-    dispatch(NamespacesActions.getControllerServiceList());
   };
 
   const handleAddValueModal = item => {
@@ -359,13 +371,41 @@ export const ListControllerService = () => {
           }
         }}
       >
+        <SearchContainer>
+          <SmallSearchIcon
+            width={18}
+            height={18}
+            color={theme.colors.darkGrey1}
+          />
+          <Search
+            type="search"
+            value={search}
+            placeholder="Search Controller Service by Name and Type"
+            onChange={e => {
+              const value = e.target.value;
+              if (value.length <= 100) {
+                setSearch(value);
+              }
+            }}
+          />
+        </SearchContainer>
         <Table
-          data={listData}
+          data={filteredModulesData}
           columns={COLUMNS}
           controllerModule={true}
           loading={loading}
+          // rowsPerPage={20}
         />
       </Collapsible>
+
+      <ReactTooltip
+        id="global-tooltip"
+        style={{
+          width: '100px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+        }}
+      />
 
       <AddControllerServiceModal />
 
