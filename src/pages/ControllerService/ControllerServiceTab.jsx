@@ -461,14 +461,6 @@ const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, cs
             }
             item={item}
           />
-          <StatusText
-            text={
-              item?.state === 'DISABLED' && item?.validationStatus === 'INVALID'
-                ? 'INVALID'
-                : item?.state
-            }
-            item={item}
-          />
         ),
       width: '16%',
     },
