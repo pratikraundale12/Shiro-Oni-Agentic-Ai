@@ -43,6 +43,8 @@ const Schema = yup.object().shape({
 export const RejectScheduleModal = () => {
   const dispatch = useDispatch();
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
+  const rejectApproval = useSelector(SchedularSelectors.getCancelScheduleModal);
+
   const rejectScheduleModal = useSelector(
     SchedularSelectors.getRejectScheduleModal
   );
@@ -69,6 +71,7 @@ export const RejectScheduleModal = () => {
     const payload = {
       reason_for_cancellation: data?.note,
       schedularId: selectedSchedule?.id,
+      state: rejectApproval ? 'REJECTED' : 'STOPPED',
     };
     dispatch(SchedularActions.rejectScheduleDeployment(payload));
     reset();
@@ -90,11 +93,19 @@ export const RejectScheduleModal = () => {
       <IconWrapper>
         <ConfirmScheduleDeploymentIcon />
       </IconWrapper>
-      <PrimaryText>Are you sure you want to Reject this Deployment</PrimaryText>
+      <PrimaryText>
+        {rejectApproval
+          ? 'Are you sure you want to reject this Deployment'
+          : 'Are you sure you want to stop this Deployment'}
+      </PrimaryText>
       <StyledInputField
         name="note"
         label="Reason"
-        placeholder="Enter the Reason for Rejection"
+        placeholder={
+          rejectApproval
+            ? 'Enter the Reason for Rejection'
+            : 'Enter the Reason for Stopping'
+        }
         register={register}
         errors={errors}
         icon={<QRIcons />}

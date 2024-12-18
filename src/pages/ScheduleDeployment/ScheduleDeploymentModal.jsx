@@ -39,7 +39,7 @@ const SchemaWithoutApprover = yup.object().shape({
   scheduled_time: yup.string().required('Deploy time is required'),
 });
 
-export const ScheduleDeploymentModal = ({ showApprover }) => {
+export const ScheduleDeploymentModal = () => {
   const dispatch = useDispatch();
   const scheduleModal = useSelector(SchedularSelectors.getScheduleModal);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
@@ -54,9 +54,7 @@ export const ScheduleDeploymentModal = ({ showApprover }) => {
     watch,
     handleSubmit,
   } = useForm({
-    resolver: showApprover
-      ? yupResolver(SchemaWithApprover)
-      : yupResolver(SchemaWithoutApprover),
+    resolver: yupResolver(SchemaWithoutApprover),
     defaultValues: DEFAULT_VALUES,
   });
   const onRequestClose = () => {
@@ -121,7 +119,7 @@ export const ScheduleDeploymentModal = ({ showApprover }) => {
       onRequestClose={onRequestClose}
       secondaryButtonText="Cancel"
       primaryButtonText={!isEmpty(selectedSchedule) ? 'Update' : 'Continue'}
-      primaryButtonDisabled={showApprover && isEmpty(approver_ids)}
+      // primaryButtonDisabled={showApprover && isEmpty(approver_ids)}
       onSubmit={handleSubmit(onSubmit)}
       footerAlign="start"
       contentStyles={{ minWidth: '45%', minHeight: '40%' }}
@@ -140,21 +138,6 @@ export const ScheduleDeploymentModal = ({ showApprover }) => {
             />
           </div>
         </div>
-        {showApprover && (
-          <UserSelect
-            control={control}
-            errors={errors}
-            name="approver_ids"
-            placeholder="Select atleast one approver"
-            label="Approver"
-            disabled={
-              currentUser?.role === 'superadmin' || !needToDisable
-                ? false
-                : true
-            }
-            required
-          />
-        )}
       </Container>
     </Modal>
   );
@@ -169,5 +152,4 @@ ScheduleDeploymentModal.propTypes = {
   setStartDate: PropTypes.func.isRequired,
   showButton: PropTypes.bool,
   loadingButton: PropTypes.bool,
-  showApprover: PropTypes.bool,
 };
