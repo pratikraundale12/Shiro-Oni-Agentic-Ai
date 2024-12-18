@@ -453,7 +453,6 @@ export const GridActions = ({
         {module === 'namespaces' ? (
           <ButtonsContainer>
             <Button
-              disabled={!canWrite}
               size="md"
               style={{ width: '250px' }}
               onClick={() => handleScheduleClick()}

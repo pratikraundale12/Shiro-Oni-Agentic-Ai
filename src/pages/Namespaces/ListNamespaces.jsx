@@ -104,7 +104,7 @@ export const ListNamespaces = () => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
   };
-  
+
   useEffect(() => {
     dispatch(SchedularActions.setScheduleFromList(false));
     dispatch(NamespacesActions.setdeployRegistryFlow(false));
