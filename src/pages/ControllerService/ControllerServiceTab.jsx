@@ -22,8 +22,8 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import ControllerServerRefreshModal from '../Namespaces/COntrollerServerRefreshModal';
 import Collapsible from '../Namespaces/Collapsible';
+import ControllerServerRefreshModal from '../Namespaces/ControllerServerRefreshModal';
 import AddControllerServiceModal from './AddControllerServiceModal';
 import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
@@ -442,7 +442,8 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
           state !== 'INVALID' &&
           state !== 'VALIDATING' &&
           state !== 'DISABLING' &&
-          (state !== 'DISABLED' && stateItem?.validationStatus !== 'INVALID');
+          state !== 'DISABLED' &&
+          stateItem?.validationStatus !== 'INVALID';
 
         return (
           <div>
