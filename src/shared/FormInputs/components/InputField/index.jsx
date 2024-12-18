@@ -97,9 +97,21 @@ const InputField = ({
   value,
   onChange,
   placeholder,
+  onKeyDown,
   ...props
 }) => {
   const error = hasError(errors, name);
+
+  // Default onKeyDown behavior
+  const handleKeyDown = e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
 
   return (
     <Container
@@ -123,6 +135,7 @@ const InputField = ({
           aria-invalid={error}
           placeholder={placeholder}
           onChange={onChange}
+          onKeyDown={handleKeyDown}
           {...props}
           {...(isFunction(register) && register(name, { ...registerOptions }))}
         />
@@ -146,6 +159,7 @@ InputField.propTypes = {
   className: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
+  onKeyDown: PropTypes.func,
   placeholder: PropTypes.string,
 };
 

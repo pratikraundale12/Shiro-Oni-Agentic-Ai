@@ -201,6 +201,12 @@ const AddControllerServiceModal = ({
                 setSearch(value);
               }
             }}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }}
           />
         </SearchContainer>
 

@@ -194,6 +194,12 @@ export const ConfigControllerService = ({
               label="Name"
               icon={<QRIcons />}
               register={register}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+              }}
             />
           </div>
 

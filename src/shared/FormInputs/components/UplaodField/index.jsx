@@ -121,6 +121,7 @@ const UploadField = ({
   control,
   image,
   setValue,
+  onKeyDown,
   ...props
 }) => {
   const [imageSrc, setImageSrc] = useState(null);
@@ -156,6 +157,17 @@ const UploadField = ({
 
   const getFileNameFromUrl = url => {
     return url.substring(url.lastIndexOf('/') + 1);
+  };
+
+  // Default onKeyDown behavior
+  const handleKeyDown = e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (onKeyDown) {
+      onKeyDown(e);
+    }
   };
 
   return (
@@ -212,6 +224,7 @@ const UploadField = ({
                 aria-invalid={error}
                 value={fileName}
                 readOnly
+                onKeyDown={handleKeyDown}
                 {...props}
               />
               {rightIcon && (
@@ -263,6 +276,7 @@ UploadField.propTypes = {
   registerOptions: PropTypes.shape({}),
   control: PropTypes.object.isRequired,
   setValue: PropTypes.func,
+  onKeyDown: PropTypes.func,
 };
 
 export default UploadField;

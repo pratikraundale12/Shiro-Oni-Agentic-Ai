@@ -191,6 +191,10 @@ const NamespaceDeploy = ({
   );
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
+
+  const currentSelectedCluster = useSelector(
+    NamespacesSelectors.getSelectedCluster
+  );
   const handleClick = () => {
     const updatedUrl = deployOrUpgradeDetails?.nifiUrl?.endsWith('/nifi')
       ? deployOrUpgradeDetails.nifiUrl
@@ -230,14 +234,14 @@ const NamespaceDeploy = ({
                 ? 'Upgraded To Production'
                 : 'Deployed To Production'} */}
               {deployByRegistryFlow
-                ? `Deployed To ${formDataRegistry?.selectedFlowName}`
-                : `Upgraded To ${selectedNamespace?.name}`}
+                ? `Deployed To ${currentSelectedCluster.label}`
+                : `Upgraded To ${currentSelectedCluster.label}`}
             </ModalHFive>
           </div>
           <RowModal>
             <ColumnThree className="col-5 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
-                <ActionTitleSet className="mb-0 ">Process Group</ActionTitleSet>
+                <ActionTitleSet className="mb-0 ">Flow Name</ActionTitleSet>
                 <SubTitleSet className="mb-0 ">
                   {deployByRegistryFlow
                     ? formDataRegistry?.selectedFlowName
