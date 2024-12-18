@@ -97,7 +97,7 @@ const statusColors = {
   ENABLED: '#0cbf59',
 };
 
-const ControllerServiceTab = ({ setControllerServicePayload }) => {
+const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, csFromParent }) => {
   const dispatch = useDispatch();
   const [openIndex, setOpenIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -113,7 +113,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
     NamespacesSelectors.getRegistryAllDetails
   );
   const [controllerServicesData, setControllerServicesData] = useState(
-    registryDetailsData?.controllerServicesData
+    csFromParent
   );
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
@@ -869,16 +869,19 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   };
 
   const handleSettingClick = item => {
+    setSelectedItemFromList(item);
     setIsPropertyResponse(true);
     setIsNewlyAddedExternalServiceResponse(false);
     setIsStateChangeResponse(false);
     const match = externalControllerServices?.some(data => {
-      return data.controllerService?.length
-        ? data.controllerService?.some(service => service?.id === item?.id)
-        : data?.updatedValue === item.updatedValue;
-    });
-    setisFromExternalService(match);
-    setSelectedItemFromList(item);
+      if (data.controllerService?.length) {
+        return data.controllerService.some(service => 
+          service?.id === item?.id || service?.id === item?.identifier
+        );
+      }
+      return item?.updatedValue !== undefined && data?.updatedValue === item.updatedValue;
+    });    
+    setisFromExternalService(match ? true : false);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
@@ -1160,7 +1163,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   ]);
 
   useEffect(() => {
-    setControllerServicesData({
+    setCsFromParent({
       externalControllerServices: externalControllerServices,
       localServices: localServices,
     });
@@ -1279,6 +1282,8 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
   );
 };
 ControllerServiceTab.propTypes = {
+  setCsFromParent: PropTypes.func,
+  csFromParent: PropTypes.array,
   setControllerServicePayload: PropTypes.func,
   controllerServicePayload: PropTypes.object,
 };

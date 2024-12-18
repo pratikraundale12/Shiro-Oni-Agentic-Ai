@@ -138,6 +138,9 @@ const ConfigDetailsPage = () => {
   const [variableData, setVariableData] = useState(
     registryDetailsData?.variablesData
   );
+  const [csData, setcsData] = useState(
+    registryDetailsData?.controllerServicesData
+  );
 
   useEffect(() => {
     if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
@@ -201,6 +204,8 @@ const ConfigDetailsPage = () => {
           <ControllerServiceTab
             controllerServicePayload={controllerServicePayload}
             setControllerServicePayload={setControllerServicePayload}
+            setCsFromParent={setcsData}
+            csFromParent={csData}
           />
         );
       case KDFM.SCHEDULE_DETAILS:
