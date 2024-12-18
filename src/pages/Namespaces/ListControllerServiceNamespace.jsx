@@ -10,6 +10,7 @@ import {
   FlashCutIcon,
   FlashIcon,
   SettingSmallIcon,
+  SmallSearchIcon,
 } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { ModalWithIcon } from '../../shared';
@@ -27,6 +28,7 @@ import ConfigControllerService from '../ControllerService/ConfigControllerServic
 import ConfigurePropertyModal from '../ControllerService/ConfigurePropertyModal';
 import PropertyDropdownModal from '../ControllerService/ProprtyDropdownModel';
 import Collapsible from './Collapsible';
+import { theme } from '../../styles';
 
 const StatusTexts = styled.div`
   font-family: Inter;
@@ -62,6 +64,34 @@ const ScrollSetGrey = styled.div`
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
   overflow-y: auto;
+`;
+
+const SearchContainer = styled.div`
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
+`;
+const Search = styled.input`
+  width: 100%;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
+
+  &:focus-visible {
+    outline: none;
+  }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 
 const StatusText = ({ text = '', item }) => {
@@ -124,6 +154,12 @@ export const ListControllerService = () => {
   );
 
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const filteredModulesData = listData.filter(
+    module =>
+      module?.name?.toLowerCase().includes(search.toLowerCase()) ||
+      module?.type?.toLowerCase().includes(search.toLowerCase())
+  );
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -335,8 +371,26 @@ export const ListControllerService = () => {
           }
         }}
       >
+        <SearchContainer>
+          <SmallSearchIcon
+            width={18}
+            height={18}
+            color={theme.colors.darkGrey1}
+          />
+          <Search
+            type="search"
+            value={search}
+            placeholder="Search Controller Service by Name and Type"
+            onChange={e => {
+              const value = e.target.value;
+              if (value.length <= 100) {
+                setSearch(value);
+              }
+            }}
+          />
+        </SearchContainer>
         <Table
-          data={listData}
+          data={filteredModulesData}
           columns={COLUMNS}
           controllerModule={true}
           loading={loading}

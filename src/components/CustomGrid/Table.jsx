@@ -2,7 +2,7 @@ import { getTheme } from '@table-library/react-table-library/baseline';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
 import { NoDataIcon } from '../../assets';
@@ -31,7 +31,7 @@ const TableContainer = styled.div`
 `;
 
 const NoDataText = styled.div`
-  color: ${props => props.theme.colors.lightBackground};
+  color: ${props => props.theme.colors.lightGrey3};
   font-family: ${props => props.theme.fontNato};
   font-size: 28px;
   font-weight: 600;
@@ -39,7 +39,7 @@ const NoDataText = styled.div`
 `;
 
 const PaginationContainer = styled.div`
-  background: ${props => props.theme.colors.lightGrey};
+  background: ${props => props.theme.colors.lightBackground};
   padding: 3px 10px 13px 10px;
   margin-top: 10px;
   border-radius: 7px;
@@ -121,15 +121,19 @@ export const Table = ({
     return null;
   };
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [data]);
+
   return (
     <>
       <TableContainer className={className} deployTable={deployTable}>
-        {getLoader()}
         <CompactTable
           data={{ nodes: currentItems }}
           columns={columns}
           theme={tableTheme}
         />
+        {getLoader()}
       </TableContainer>
       {/* Pagination */}
       {DATA.nodes.length && DATA.nodes.length >= 10 ? (

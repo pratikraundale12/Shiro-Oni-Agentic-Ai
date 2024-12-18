@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -13,6 +13,7 @@ import {
   PencilIcon,
   RefrenceIcon,
   SettingSmallIcon,
+  SmallSearchIcon,
 } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
@@ -30,6 +31,7 @@ import ConfigControllerService from './ConfigControllerService';
 import ConfigurePage from './ConfigurePage';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
+import { theme } from '../../styles';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -96,6 +98,34 @@ const statusColors = {
   DEFAULT: '#F2891F',
   ENABLED: '#0cbf59',
 };
+
+const SearchContainer = styled.div`
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
+`;
+const Search = styled.input`
+  width: 100%;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
+
+  &:focus-visible {
+    outline: none;
+  }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
+`;
 
 const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, csFromParent }) => {
   const dispatch = useDispatch();
@@ -193,6 +223,15 @@ const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, cs
   ] = useState(false);
 
   const [versionList, setVersionList] = useState([]);
+
+  const [search, setSearch] = useState('');
+  const filteredModulesData = useMemo(() => {
+    return listData.filter(
+      module =>
+        module?.name?.toLowerCase().includes(search.toLowerCase()) ||
+        module?.type?.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [listData, search]);
 
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
@@ -414,6 +453,14 @@ const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, cs
             item={item?.controllerService[0]}
           />
         ) : (
+          <StatusText
+            text={
+              item?.state === 'DISABLED' && item?.validationStatus === 'INVALID'
+                ? 'INVALID'
+                : item?.state
+            }
+            item={item}
+          />
           <StatusText
             text={
               item?.state === 'DISABLED' && item?.validationStatus === 'INVALID'
@@ -1080,6 +1127,7 @@ const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, cs
     newlyAddedExternalServiceResponse,
     externalControllerServicesTableData,
     listData,
+    filteredModulesData,
   ]);
 
   const handleServiceConfigure = data => {
@@ -1188,6 +1236,27 @@ const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, cs
                 );
               }}
             >
+              {!isUpgrade && (
+                <SearchContainer>
+                  <SmallSearchIcon
+                    width={18}
+                    height={18}
+                    color={theme.colors.darkGrey1}
+                  />
+                  <Search
+                    type="search"
+                    value={search}
+                    placeholder="Search Controller Service by Name and Type"
+                    onChange={e => {
+                      const value = e.target.value;
+                      console.log('in onChange--', value);
+                      if (value.length <= 100) {
+                        setSearch(value);
+                      }
+                    }}
+                  />
+                </SearchContainer>
+              )}
               {item.content}
             </Collapsible>
           ))
