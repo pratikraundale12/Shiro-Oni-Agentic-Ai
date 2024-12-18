@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
 import {
@@ -137,6 +138,40 @@ const ParameterContextTab = ({
       },
     },
     {
+      label: 'Referencing Component',
+      renderCell: item => (
+        <div className="d-flex justify-content-center">
+          {!isEmpty(item?.referencingComponents) && (
+            <>
+              <button
+                className="border-0 bg-white"
+                onClick={() => {
+                  setRefreshItem(item);
+                  dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                }}
+                data-tooltip-id={`Reference-${item?.id}`}
+                aria-label="Reference"
+              >
+                <RefrenceIcon />
+              </button>
+              <ReactTooltip
+                id={`Reference-${item?.id}`}
+                place="left"
+                content="Reference"
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
+        </div>
+      ),
+      width: '14%',
+    },
+
+    {
       renderCell: item => (
         <div
           style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}
@@ -147,14 +182,6 @@ const ParameterContextTab = ({
             }}
           >
             {<PencilIcon color="black" />}
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              setRefreshItem(item);
-              dispatch(NamespacesActions.setRefreshmodalOpen(true));
-            }}
-          >
-            {<RefrenceIcon />}
           </IconButton>
         </div>
       ),
