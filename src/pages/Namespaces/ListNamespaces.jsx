@@ -334,9 +334,10 @@ export const ListNamespaces = () => {
               background: 'none',
               border: 'none',
               padding: 0,
-              cursor: 'pointer',
+              cursor: !item?.version ? 'not-allowed' : 'pointer',
             }}
             data-tooltip-id={`tooltip-schedule-deployment-list`}
+            disabled={!item?.version}
           >
             <IconButton>
               <CalenderIcon2 width={14} height={14} color="grey" />
