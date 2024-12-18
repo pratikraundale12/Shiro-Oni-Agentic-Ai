@@ -145,7 +145,7 @@ export const ConfigControllerService = ({
     );
     const payload = {
       id: selectedItemFromList.id || selectedItemFromList?.updatedValue,
-      version: currentVersion?.version,
+      version: currentVersion?.version ? currentVersion?.version : selectedItemFromList?.version,
       properties: resultObject,
       sensitiveDynamicPropertyNames: sensitiveNames,
       currentState: selectedItemFromList?.state,
