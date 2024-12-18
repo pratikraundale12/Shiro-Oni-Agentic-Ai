@@ -90,7 +90,7 @@ export const settingSchema = yup.object().shape({
     .string()
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
-  fromEmail: yup
+  from_email: yup
     .string()
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
@@ -182,9 +182,12 @@ export const Setting = () => {
       updatedFields.push('email');
     }
 
-    if (dirtyFields.fromEmail && data?.fromEmail !== settingData?.fromEmail) {
-      payload.append('fromEmail', data?.fromEmail);
-      updatedFields.push('fromEmail');
+    if (
+      dirtyFields.from_email &&
+      data?.from_email !== settingData?.from_email
+    ) {
+      payload.append('from_email', data?.from_email);
+      updatedFields.push('from_email');
     }
 
     if (dirtyFields.refresh || data.refresh !== settingData?.refresh) {
@@ -286,7 +289,7 @@ export const Setting = () => {
       setValue('email_reminder_time', settingData?.email_reminder_time);
       setValue('group_email_id', settingData?.group_email_id);
       setValue('email', settingData?.email);
-      setValue('fromEmail', settingData?.fromEmail);
+      setValue('from_email', settingData?.from_email);
       setValue('approver_groups', settingData.approver_groups || '');
       setLdapInitialConfig(settingData?.ldapEnabled);
       const logoElement = document.getElementById('logo');
@@ -307,7 +310,7 @@ export const Setting = () => {
         value.refresh !==
           (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
         value.email !== settingData?.email ||
-        value.fromEmail !== settingData?.fromEmail ||
+        value.from_email !== settingData?.from_email ||
         value.ldap_auto_sync_time_interval !==
           settingData?.ldap_auto_sync_time_interval ||
         value.ldap_auto_sync !== settingData?.ldap_auto_sync ||
@@ -414,7 +417,7 @@ export const Setting = () => {
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
             <InputField
-              name="fromEmail"
+              name="from_email"
               register={register}
               icon={<MailIcon />}
               label={KDFM.FROM_EMAIL}
