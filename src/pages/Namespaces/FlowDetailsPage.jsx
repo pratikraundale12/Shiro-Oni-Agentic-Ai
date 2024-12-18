@@ -26,7 +26,7 @@ import {
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import RectangleGraph from './birdEyeViewGraph';
-// import { SchedularSelectors } from '../../store/schedular';
+import { SchedularSelectors } from '../../store/schedular';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -210,9 +210,9 @@ const FlowDetailsPage = () => {
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
-  // const scheduleUpgradeFromList = useSelector(
-  //   SchedularSelectors.getScheduleFromList
-  // );
+  const scheduleUpgradeFromList = useSelector(
+    SchedularSelectors.getScheduleFromList
+  );
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
