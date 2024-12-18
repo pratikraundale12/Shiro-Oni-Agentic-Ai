@@ -52,6 +52,7 @@ export function* editScheduleDeployment(api, { payload }) {
   const scheduleModal = yield select(SchedularSelectors.getScheduleModal);
   if (response.ok) {
     toast.success(response?.data?.message);
+    yield put(SchedularActions.setScheduleModal(false));
     if (rejectScheduleModal)
       yield put(SchedularActions.setRejectScheduleModal());
     if (cancelScheduleModal)
@@ -109,6 +110,7 @@ export function* rejectScheduleDeployment(api, { payload }) {
   if (response.ok) {
     toast.success(response?.data?.message);
     yield put(SchedularActions.setRejectScheduleModal(false));
+    yield put(SchedularActions.setCancelScheduleModal(false));
     yield put(GridActions.fetchGrid({ module: 'scheduler' }));
   } else {
     toast.error(response?.data?.error);

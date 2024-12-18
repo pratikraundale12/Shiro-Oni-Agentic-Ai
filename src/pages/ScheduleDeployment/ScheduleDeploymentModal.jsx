@@ -39,7 +39,7 @@ const SchemaWithoutApprover = yup.object().shape({
   scheduled_time: yup.string().required('Deploy time is required'),
 });
 
-export const ScheduleDeploymentModal = ({ showApprover }) => {
+export const ScheduleDeploymentModal = () => {
   const dispatch = useDispatch();
   const scheduleModal = useSelector(SchedularSelectors.getScheduleModal);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
@@ -54,40 +54,23 @@ export const ScheduleDeploymentModal = ({ showApprover }) => {
     watch,
     handleSubmit,
   } = useForm({
-    resolver: showApprover
-      ? yupResolver(SchemaWithApprover)
-      : yupResolver(SchemaWithoutApprover),
+    resolver: yupResolver(SchemaWithoutApprover),
     defaultValues: DEFAULT_VALUES,
   });
   const onRequestClose = () => {
-    dispatch(SchedularActions.setScheduleModal());
+    dispatch(SchedularActions.setScheduleModal(false));
     reset();
     dispatch(SchedularActions.setSelectedSchedule({}));
   };
 
   const onSubmit = data => {
-    const formattedDate = new Date(data.scheduled_time).toUTCString();
-    const { approver_ids } = data;
-
-    if (!isEmpty(selectedSchedule)) {
-      const payload = {
-        schedularId: selectedSchedule.scheduler_id,
-        scheduled_time: formattedDate,
-        approver_ids: approver_ids,
-      };
-      dispatch(SchedularActions.editScheduleDeployment(payload));
-      reset();
-      dispatch(SchedularActions.setSelectedSchedule({}));
-    } else {
-      dispatch(
-        SchedularActions.setFormData({
-          approver_ids: approver_ids || [],
-          scheduled_time: formattedDate,
-        })
-      );
-      dispatch(SchedularActions.setScheduleModal());
-      dispatch(SchedularActions.setScheduleDeployModal());
-    }
+    const payload = {
+      schedularId: selectedSchedule?.id,
+      scheduled_time: new Date(data?.scheduled_time).toISOString(),
+    };
+    dispatch(SchedularActions.editScheduleDeployment(payload));
+    dispatch(SchedularActions.setScheduleModal(false));
+    reset();
   };
 
   useEffect(() => {
@@ -121,7 +104,7 @@ export const ScheduleDeploymentModal = ({ showApprover }) => {
       onRequestClose={onRequestClose}
       secondaryButtonText="Cancel"
       primaryButtonText={!isEmpty(selectedSchedule) ? 'Update' : 'Continue'}
-      primaryButtonDisabled={showApprover && isEmpty(approver_ids)}
+      // primaryButtonDisabled={showApprover && isEmpty(approver_ids)}
       onSubmit={handleSubmit(onSubmit)}
       footerAlign="start"
       contentStyles={{ minWidth: '45%', minHeight: '40%' }}
@@ -140,21 +123,6 @@ export const ScheduleDeploymentModal = ({ showApprover }) => {
             />
           </div>
         </div>
-        {showApprover && (
-          <UserSelect
-            control={control}
-            errors={errors}
-            name="approver_ids"
-            placeholder="Select atleast one approver"
-            label="Approver"
-            disabled={
-              currentUser?.role === 'superadmin' || !needToDisable
-                ? false
-                : true
-            }
-            required
-          />
-        )}
       </Container>
     </Modal>
   );
@@ -169,5 +137,4 @@ ScheduleDeploymentModal.propTypes = {
   setStartDate: PropTypes.func.isRequired,
   showButton: PropTypes.bool,
   loadingButton: PropTypes.bool,
-  showApprover: PropTypes.bool,
 };

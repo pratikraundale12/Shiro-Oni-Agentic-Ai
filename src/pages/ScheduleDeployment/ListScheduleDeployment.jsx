@@ -65,12 +65,13 @@ export const ListScheduleDeployment = () => {
 
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
-    dispatch(SchedularActions.setScheduleModal());
+    dispatch(SchedularActions.setScheduleModal(true));
   };
 
   const handleCancelModel = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setCancelScheduleModal(true));
+    dispatch(SchedularActions.setRejectScheduleModal(true));
   };
   const handleApproveCheck = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
@@ -83,65 +84,21 @@ export const ListScheduleDeployment = () => {
       <ActionTd>
         {currentUserData?.role === 'superadmin' ? (
           <>
+            {/* SUPER ADMIN */}
             <IconButton
-              onClick={() => handleCancelModel(item)}
-              disabled={!item?.can_cancel}
-              data-tooltip-id={`${item?.can_cancel && `tooltip-group-cancel-schedule`}`}
+              onClick={() => handleEditClick(item)}
+              // disabled={!item?.can_cancel}
+              data-tooltip-id={`${item?.can_cancel && `tooltip-group-edit-schedule`}`}
             >
               <PencilIcon />
             </IconButton>
-            <IconButton
-              onClick={() => handleCancelModel(item)}
-              // disabled={!item?.can_cancel}
-              data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
-            >
-              <CrossWithCircleIcon color="red" />
-            </IconButton>
-            <IconButton
-              onClick={() => handleApproveCheck(item)}
-              // disabled={!item?.can_cancel}
-              data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
-            >
-              <TickIconWithCircle />
-            </IconButton>
             {
               <ReactTooltip
-                id={`tooltip-group-tick-schedule`}
+                id={`tooltip-group-edit-schedule`}
                 place="left"
-                content={'Approve'}
+                content={'Edit'}
                 style={{
                   width: '100px',
-                  whiteSpace: 'normal',
-                  wordWrap: 'break-word',
-                }}
-              />
-            }
-            {
-              <ReactTooltip
-                id={`tooltip-group-cross-schedule`}
-                place="left"
-                content={'Disapprove'}
-                style={{
-                  width: '110px',
-                  whiteSpace: 'normal',
-                  wordWrap: 'break-word',
-                }}
-              />
-            }
-            <IconButton
-              onClick={() => handleRejectCrossClick(item)}
-              // disabled={!item?.can_cancel}
-              data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
-            >
-              <RejectIcon />
-            </IconButton>
-            {
-              <ReactTooltip
-                id={`tooltip-group-reject-schedule`}
-                place="left"
-                content={'Reject'}
-                style={{
-                  width: '80px',
                   whiteSpace: 'normal',
                   wordWrap: 'break-word',
                 }}
@@ -151,16 +108,22 @@ export const ListScheduleDeployment = () => {
         ) : (
           <>
             {currentUser?.id === item?.deployer_id ? (
-              <IconButton
-                onClick={() => handleCancelModel(item)}
-                disabled={!item?.can_cancel}
-                data-tooltip-id={`${item?.can_cancel && `tooltip-group-cancel-schedule`}`}
-              >
-                <PencilIcon />
-              </IconButton>
+              <>
+                {/* SCHEDULAR */}
+                {item?.state !== 'APPROVED' && (
+                  <IconButton
+                    onClick={() => handleEditClick(item)}
+                    // disabled={!item?.can_cancel}
+                    data-tooltip-id={`${item?.can_cancel && `tooltip-group-cancel-schedule`}`}
+                  >
+                    <PencilIcon />
+                  </IconButton>
+                )}
+              </>
             ) : (
               <>
-                {item?.state === 'PENDING' ? (
+                {/* APPROVER */}
+                {item?.state === 'PENDING' && (
                   <>
                     <IconButton
                       onClick={() => handleCancelModel(item)}
@@ -201,21 +164,19 @@ export const ListScheduleDeployment = () => {
                       />
                     }
                   </>
-                ) : (
+                )}
+                {item?.state === 'APPROVED' && (
                   <>
-                    {item?.state !== 'CANCELLED' && (
-                      <IconButton
-                        onClick={() => handleRejectCrossClick(item)}
-                        // disabled={!item?.can_cancel}
-                        data-tooltip-id={`${item?.can_cancel && `tooltip-group-cancel-schedule`}`}
-                      >
-                        {/* <HoldIcon /> */}
-                        <RejectIcon />
-                      </IconButton>
-                    )}
+                    <IconButton
+                      onClick={() => handleRejectCrossClick(item)}
+                      // disabled={!item?.can_cancel}
+                      data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
+                    >
+                      <RejectIcon />
+                    </IconButton>
                     {
                       <ReactTooltip
-                        id={`tooltip-group-cancel-schedule`}
+                        id={`tooltip-group-reject-schedule`}
                         place="left"
                         content={'Reject'}
                         style={{
@@ -227,6 +188,7 @@ export const ListScheduleDeployment = () => {
                     }
                   </>
                 )}
+                {/* {item?.state === 'NOT_APPROVED' && <>Rejected</>} */}
               </>
             )}
           </>
@@ -253,7 +215,9 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Post Deploy State',
-      renderCell: item => <TextRender text={'N/A'} />,
+      renderCell: item => (
+        <TextRender text={item?.deployment_status || 'N/A'} />
+      ),
       width: '14%',
     },
     {
@@ -262,7 +226,7 @@ export const ListScheduleDeployment = () => {
       width: '14%',
     },
     {
-      label: 'Approver Group',
+      label: 'Approver group/Approver',
       renderCell: item =>
         isEmpty(item?.approver_group) ? (
           <TextWithPhotoRender
@@ -310,7 +274,6 @@ export const ListScheduleDeployment = () => {
     { value: 'all', label: 'All' },
     { value: 'PENDING', label: 'Pending' },
     { value: 'DEPLOYED', label: 'Deployed' },
-    { value: 'SCHEDULED', label: 'Scheduled' },
     { value: 'IN PROGRESS', label: 'In Progress' },
     { value: 'NOT APPROVED', label: 'Not Approved' },
     { value: 'CANCELLED', label: 'Cancelled' },
@@ -323,7 +286,7 @@ export const ListScheduleDeployment = () => {
         primaryButtonText={'Stop'}
         secondaryButtonText="Cancel"
         icon={<DeleteDustbinIcon />}
-        isOpen={cancelScheduleModal}
+        isOpen={false}
         onRequestClose={() =>
           dispatch(SchedularActions.setCancelScheduleModal(false))
         }
