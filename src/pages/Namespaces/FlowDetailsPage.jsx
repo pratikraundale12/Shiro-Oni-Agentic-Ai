@@ -410,7 +410,9 @@ const FlowDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {scheduleDeploymentFlow ? 'Schedule ' : ''} 
+            {scheduleDeploymentFlow || scheduleUpgradeFromList
+              ? 'Schedule '
+              : ''}
             {!isUpgrade ? 'Upgrade Process Group' : 'Deploy Process Group'}
           </MainTitleHfour>
           :

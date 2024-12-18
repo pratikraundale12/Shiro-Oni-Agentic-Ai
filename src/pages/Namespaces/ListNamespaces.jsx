@@ -104,7 +104,7 @@ export const ListNamespaces = () => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
   };
-
+  
   useEffect(() => {
     dispatch(SchedularActions.setScheduleFromList(false));
     dispatch(NamespacesActions.setdeployRegistryFlow(false));
@@ -345,7 +345,7 @@ export const ListNamespaces = () => {
           <ReactTooltip
             id={`tooltip-schedule-deployment-list`}
             place="right"
-            content={'Schedule Deployment'}
+            content={'Schedule Upgrade'}
             style={{
               width: '180px',
               whiteSpace: 'normal',
