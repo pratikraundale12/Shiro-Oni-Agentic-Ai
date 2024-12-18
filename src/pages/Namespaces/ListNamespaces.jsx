@@ -115,6 +115,8 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setNewlyAddedExternalServiceCS({}));
     dispatch(NamespacesActions.setScheduleByRegistry(false));
     dispatch(NamespacesActions.setFlowControlStateAtScheduleDeploy(null));
+    dispatch(NamespacesActions.setRegistryFlowXCord(null));
+    dispatch(NamespacesActions.setRegistryFlowYCord(null));
   }, []);
 
   const COLUMNS = [

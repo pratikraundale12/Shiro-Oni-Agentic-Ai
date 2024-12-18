@@ -604,10 +604,11 @@ const Summary = () => {
       flowName: selectedNameSpace?.flowName,
       nameSpaceName: selectedNameSpace?.name,
       position: {
-        x: XcordUpdated || registryDetailsData?.positions[0]?.x,
-        y: YcordUpdated || registryDetailsData?.positions[0]?.y,
+        x: XcordUpdated || selectedNameSpace?.position?.x,
+        y: YcordUpdated || selectedNameSpace?.position?.y,
       },
     };
+
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
     }
