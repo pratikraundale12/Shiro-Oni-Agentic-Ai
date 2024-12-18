@@ -439,7 +439,7 @@ const ControllerServiceTab = ({ setControllerServicePayload }) => {
           state !== 'INVALID' &&
           state !== 'VALIDATING' &&
           state !== 'DISABLING' &&
-          stateItem?.validationStatus !== 'INVALID';
+          (state !== 'DISABLED' && stateItem?.validationStatus !== 'INVALID');
 
         return (
           <div>
