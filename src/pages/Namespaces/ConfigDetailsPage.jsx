@@ -15,6 +15,9 @@ import {
 } from '../../store';
 import ParameterContextTab from './ParameterContextTab';
 import { FullPageLoader } from '../../components';
+import ScheduleDeploymentTab from './ScheduleDetailsPage.jsx';
+import { toast } from 'react-toastify';
+import { SchedularSelectors } from '../../store/schedular/redux.js';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -112,18 +115,35 @@ const ConfigDetailsPage = () => {
   const registryDetailsData = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
+  const scheduleDeploymentFlow = useSelector(
+    NamespacesSelectors.getScheduleByRegistry
+  );
+  const scheduleUpgradeFromList = useSelector(
+    SchedularSelectors.getScheduleFromList
+  );
 
   const [pcData, setPcData] = useState(
     registryDetailsData?.parameterContextData
+  );
+  const controlSelectedStored = useSelector(
+    NamespacesSelectors.getflowControlStateAtScheduleDeploy
   );
   const [pcPayload, setPcPayload] = useState({});
   const [variablePayload, setVariablePayload] = useState([]);
   const [controllerServicePayload, setControllerServicePayload] = useState({});
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
+  const [scheduleDeployTime, setScheduleDeployTime] = useState(null);
+  const [activeButton, setActiveButton] = useState(controlSelectedStored);
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
   const [variableData, setVariableData] = useState(
     registryDetailsData?.variablesData
   );
+
+  useEffect(() => {
+    if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
+      setActiveTab(KDFM.SCHEDULE_DETAILS);
+    }
+  }, [scheduleDeploymentFlow, scheduleUpgradeFromList]);
 
   useEffect(() => {
     setPcData(registryDetailsData?.parameterContextData);
@@ -139,14 +159,21 @@ const ConfigDetailsPage = () => {
   };
 
   const handleContinue = () => {
-    dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
-    dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
-    dispatch(
-      NamespacesActions.setRegistryDeployControllerService(
-        controllerServicePayload
-      )
-    );
-    history.push('/process-group/summary');
+    if (scheduleDeploymentFlow && !scheduleDeployTime) {
+      toast.error('Please select schedule time');
+    } else if (scheduleUpgradeFromList && !scheduleDeployTime) {
+      toast.error('Please select schedule time');
+    } else {
+      dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
+      dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
+      dispatch(
+        NamespacesActions.setRegistryDeployControllerService(
+          controllerServicePayload
+        )
+      );
+      dispatch(NamespacesActions.setScheduleTimeByRegistry(scheduleDeployTime));
+      history.push('/process-group/summary');
+    }
   };
 
   const renderContent = () => {
@@ -176,10 +203,20 @@ const ConfigDetailsPage = () => {
             setControllerServicePayload={setControllerServicePayload}
           />
         );
+      case KDFM.SCHEDULE_DETAILS:
+        return (
+          <ScheduleDeploymentTab
+            scheduleDeployTime={scheduleDeployTime}
+            setScheduleDeployTime={setScheduleDeployTime}
+            activeButton={activeButton}
+            setActiveButton={setActiveButton}
+          />
+        );
       default:
         return null;
     }
   };
+  // ScheduleDeploymentTab
   const handleSetTab = tab => {
     if (tab !== 'Parameter Context') {
       dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
@@ -228,6 +265,16 @@ const ConfigDetailsPage = () => {
 
       <GreyBoxNamespace className="w-100  mb-3">
         <TabWrapper className="nav">
+          {' '}
+          {(scheduleDeploymentFlow || scheduleUpgradeFromList) && (
+            <Tab
+              active={activeTab === KDFM.SCHEDULE_DETAILS}
+              onClick={() => handleSetTab(KDFM.SCHEDULE_DETAILS)}
+              className="nav-item"
+            >
+              {KDFM.SCHEDULE_DETAILS}{' '}
+            </Tab>
+          )}
           <Tab
             active={activeTab === KDFM.PARAMETER_CONTEXT}
             onClick={() => handleSetTab(KDFM.PARAMETER_CONTEXT)}

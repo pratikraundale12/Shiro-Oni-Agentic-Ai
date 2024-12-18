@@ -183,6 +183,9 @@ function DeployPage() {
   const [proceedWithDispatch, setProceedWithDispatch] = useState(false);
   const formData = useSelector(NamespacesSelectors.getDeployFormData);
   const [keepParameter, setKeepParameter] = useState(true);
+  const scheduleDeploymentFlow = useSelector(
+    NamespacesSelectors.getScheduleByRegistry
+  );
   const bucketListOptions = bucketListData?.bucketList?.map(item => ({
     label: item?.name,
     value: item?.id,
@@ -397,7 +400,7 @@ function DeployPage() {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {`${KDFM.DEPLOY} ${KDFM.NAMESPACE}`}
+            {`${scheduleDeploymentFlow ? 'Schedule' : ''} ${KDFM.DEPLOY} ${KDFM.NAMESPACE}`}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>

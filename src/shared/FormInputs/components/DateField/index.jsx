@@ -87,6 +87,7 @@ const DateField = ({
   errors,
   placeholder = '',
   required = false,
+  onChange: customOnChange,
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -106,9 +107,13 @@ const DateField = ({
       <Controller
         name={name}
         control={control}
+        defaultValue={new Date()}
         render={({ field }) => {
           const onChange = value => {
             field.onChange(value);
+            if (customOnChange) {
+              customOnChange(value);
+            }
           };
           const isToday =
             field.value &&
@@ -151,6 +156,7 @@ DateField.propTypes = {
   date: PropTypes.instanceOf(Date),
   placeholder: PropTypes.string,
   required: PropTypes.string,
+  onChange: PropTypes.func,
 };
 
 export default DateField;

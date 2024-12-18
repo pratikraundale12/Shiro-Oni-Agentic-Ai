@@ -186,6 +186,8 @@ export const KDFM = {
     'The "Start" and "Stop" buttons will be hidden if all the processors are either invalid or disabled.',
 
   CHANGE_CONFIGURATION: 'Change Configuration',
+  SECHEDULED_TIME: 'Scheduled Time',
+  FLOW_STATE_AFTER_DEPLOY: 'Flow state after deploy',
 
   // License constants
   TRIAL: 'Trial',

@@ -46,6 +46,7 @@ export const NAMESPACE_CONSTANTS = {
   SCHEDULE_DEPLOYMENT: 'Schedule Deployment',
   DEPLOY: 'Deploy',
   CONTROLLER_SERVICE: 'Controller Service',
+  SCHEDULE_DETAILS: 'Schedule Details',
   NAVIGATE: 'Navigate',
   ZOOM_IN: 'Zoom In',
   ZOOM_OUT: 'Zoom Out',

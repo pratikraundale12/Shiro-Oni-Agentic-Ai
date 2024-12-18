@@ -173,6 +173,14 @@ export const NamespacesActions = {
     `${prefix}setNewlyAddedExternalServiceCS`
   ),
   setChangeStatusCSRespone: createAction(`${prefix}setChangeStatusCSRespone`),
+  setScheduleByRegistry: createAction(`${prefix}setScheduleByRegistry`),
+  setScheduleTimeByRegistry: createAction(`${prefix}setScheduleTimeByRegistry`),
+  setFlowControlStateAtScheduleDeploy: createAction(
+    `${prefix}setFlowControlStateAtScheduleDeploy`
+  ),
+  setScheduleUpgradeByRegistry: createAction(
+    `${prefix}setScheduleUpgradeByRegistry`
+  ),
   setPropertyUpdateResponse: createAction(`${prefix}setPropertyUpdateResponse`),
 };
 //
@@ -258,6 +266,10 @@ export const NAMESPACES_INITIAL_STATE = {
   FlowControlData: {},
   newlyAddedExternalServiceCS: {},
   changeStatusCSRespone: {},
+  scheduleByRegistry: false,
+  scheduleTimeByRegistry: null,
+  flowControlStateAtScheduleDeploy: null,
+  scheduleUpgradeByRegistry: false,
   propertyUpdateResponse: {},
 };
 
@@ -341,6 +353,12 @@ export const NamespacesSelectors = {
   getNewlyAddedExternalServiceCS: state =>
     state.namespaces.newlyAddedExternalServiceCS,
   getChangeStatusCSRespone: state => state.namespaces.changeStatusCSRespone,
+  getScheduleByRegistry: state => state.namespaces.scheduleByRegistry,
+  getScheduleTimeByRegistry: state => state.namespaces.scheduleTimeByRegistry,
+  getflowControlStateAtScheduleDeploy: state =>
+    state.namespaces.flowControlStateAtScheduleDeploy,
+  getScheduleUpgradeByRegistry: state =>
+    state.namespaces.scheduleUpgradeByRegistry,
   getPropertyUpdateResponse: state => state.namespaces.propertyUpdateResponse,
 };
 //
@@ -770,12 +788,39 @@ const setChangeStatusCSRespone = (state, { payload }) => {
     changeStatusCSRespone: payload,
   };
 };
+const setScheduleByRegistry = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleByRegistry: payload,
+  };
+};
+const setScheduleTimeByRegistry = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleTimeByRegistry: payload,
+  };
+};
+const setFlowControlStateAtScheduleDeploy = (state, { payload }) => {
+  return {
+    ...state,
+    flowControlStateAtScheduleDeploy: payload,
+  };
+};
+
+const setScheduleUpgradeByRegistry = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleUpgradeByRegistry: payload,
+  };
+};
+
 const setPropertyUpdateResponse = (state, { payload }) => {
   return {
     ...state,
     propertyUpdateResponse: payload,
   };
 };
+
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -941,6 +986,19 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setChangeStatusCSRespone,
         setChangeStatusCSRespone
+      )
+      .addCase(NamespacesActions.setScheduleByRegistry, setScheduleByRegistry)
+      .addCase(
+        NamespacesActions.setScheduleTimeByRegistry,
+        setScheduleTimeByRegistry
+      )
+      .addCase(
+        NamespacesActions.setFlowControlStateAtScheduleDeploy,
+        setFlowControlStateAtScheduleDeploy
+      )
+      .addCase(
+        NamespacesActions.setScheduleUpgradeByRegistry,
+        setScheduleUpgradeByRegistry
       )
       .addCase(
         NamespacesActions.setPropertyUpdateResponse,

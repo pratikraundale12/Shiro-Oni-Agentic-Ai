@@ -5,7 +5,7 @@ import { history } from '../../helpers/history';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularActions, SchedularSelectors } from './redux';
 import { AuthenticationActions } from '../authentication';
-import { fetchGrid } from '../grid';
+import { GridActions, fetchGrid } from '../grid';
 
 export function* createScheduleDeployment(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -81,6 +81,41 @@ export function* checkApproverToken(api, { payload: { params } }) {
   }
 }
 
+export function* editScheduleByRegistry(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'editScheduleByRegistry',
+    loadingSection: 'editScheduleByRegistry',
+    apiMethod: api.editScheduleByRegistry,
+    apiParams: [{ schedularId: payload?.schedularId, state: payload?.state }],
+  });
+  if (response.ok) {
+    yield put(SchedularActions.setCancelScheduleModal(false));
+    yield put(SchedularActions.setApproveScheduleModal(false));
+    yield put(GridActions.fetchGrid({ module: 'scheduler' }));
+    toast.success(response?.data?.message);
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
+export function* rejectScheduleDeployment(api, { payload }) {
+  const { schedularId, ...rest } = payload;
+  const response = yield call(requestSaga, {
+    errorSection: 'rejectScheduleDeployment',
+    loadingSection: 'rejectScheduleDeployment',
+    apiMethod: api.rejectScheduleDeployment,
+    apiParams: [{ schedularId: schedularId, payload: rest }],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield put(SchedularActions.setRejectScheduleModal(false));
+    yield put(GridActions.fetchGrid({ module: 'scheduler' }));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+//
+
 export function* schedularSagas(api) {
   yield all([
     takeLatest(
@@ -94,5 +129,16 @@ export function* schedularSagas(api) {
       api
     ),
     takeLatest(SchedularActions.checkApproverToken, checkApproverToken, api),
+    takeLatest(
+      SchedularActions.editScheduleByRegistry,
+      editScheduleByRegistry,
+      api
+    ),
+    takeLatest(
+      SchedularActions.rejectScheduleDeployment,
+      rejectScheduleDeployment,
+      api
+    ),
   ]);
 }
+//
