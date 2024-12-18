@@ -1185,6 +1185,7 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
     ],
   });
   if (response.ok) {
+    toast.success(response?.data?.message);
     if (scheduleDeploy) {
       yield call(history.push, '/schedule-deployment');
       yield put(AuthenticationActions.setRoute('schedule-deployment'));
