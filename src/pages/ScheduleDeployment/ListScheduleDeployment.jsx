@@ -226,7 +226,7 @@ export const ListScheduleDeployment = () => {
       width: '14%',
     },
     {
-      label: 'Approver Group',
+      label: 'Approver group/Approver',
       renderCell: item =>
         isEmpty(item?.approver_group) ? (
           <TextWithPhotoRender
@@ -274,7 +274,6 @@ export const ListScheduleDeployment = () => {
     { value: 'all', label: 'All' },
     { value: 'PENDING', label: 'Pending' },
     { value: 'DEPLOYED', label: 'Deployed' },
-    { value: 'SCHEDULED', label: 'Scheduled' },
     { value: 'IN PROGRESS', label: 'In Progress' },
     { value: 'NOT APPROVED', label: 'Not Approved' },
     { value: 'CANCELLED', label: 'Cancelled' },
