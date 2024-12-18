@@ -71,29 +71,6 @@ export const ScheduleDeploymentModal = () => {
     dispatch(SchedularActions.editScheduleDeployment(payload));
     dispatch(SchedularActions.setScheduleModal(false));
     reset();
-    // return;
-    // const formattedDate = new Date(data.scheduled_time).toUTCString();
-    // const { approver_ids } = data;
-
-    // if (!isEmpty(selectedSchedule)) {
-    //   const payload = {
-    //     schedularId: selectedSchedule.scheduler_id,
-    //     scheduled_time: formattedDate,
-    //     approver_ids: approver_ids,
-    //   };
-
-    //   reset();
-    //   dispatch(SchedularActions.setSelectedSchedule({}));
-    // } else {
-    //   dispatch(
-    //     SchedularActions.setFormData({
-    //       approver_ids: approver_ids || [],
-    //       scheduled_time: formattedDate,
-    //     })
-    //   );
-
-    //   dispatch(SchedularActions.setScheduleDeployModal());
-    // }
   };
 
   useEffect(() => {
