@@ -65,7 +65,7 @@ export const ListScheduleDeployment = () => {
 
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
-    dispatch(SchedularActions.setScheduleModal());
+    dispatch(SchedularActions.setScheduleModal(true));
   };
 
   const handleCancelModel = item => {
@@ -112,8 +112,8 @@ export const ListScheduleDeployment = () => {
                 {/* SCHEDULAR */}
                 {item?.state !== 'APPROVED' && (
                   <IconButton
-                    onClick={() => handleCancelModel(item)}
-                    disabled={!item?.can_cancel}
+                    onClick={() => handleEditClick(item)}
+                    // disabled={!item?.can_cancel}
                     data-tooltip-id={`${item?.can_cancel && `tooltip-group-cancel-schedule`}`}
                   >
                     <PencilIcon />
@@ -193,77 +193,6 @@ export const ListScheduleDeployment = () => {
             )}
           </>
         )}
-
-        {/* TESTING FRAGMENT BELOW */}
-        <>
-          {/* APPROVER */}
-          {item?.state === 'PENDING' && (
-            <>
-              <IconButton
-                onClick={() => handleCancelModel(item)}
-                // disabled={!item?.can_cancel}
-                data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
-              >
-                <CrossWithCircleIcon color="red" />
-              </IconButton>
-              <IconButton
-                onClick={() => handleApproveCheck(item)}
-                // disabled={!item?.can_cancel}
-                data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
-              >
-                <TickIconWithCircle />
-              </IconButton>
-              {
-                <ReactTooltip
-                  id={`tooltip-group-tick-schedule`}
-                  place="left"
-                  content={'Approve'}
-                  style={{
-                    width: '100px',
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
-                  }}
-                />
-              }
-              {
-                <ReactTooltip
-                  id={`tooltip-group-cross-schedule`}
-                  place="left"
-                  content={'Disapprove'}
-                  style={{
-                    width: '110px',
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
-                  }}
-                />
-              }
-            </>
-          )}
-          {item?.state === 'APPROVED' && (
-            <>
-              <IconButton
-                onClick={() => handleRejectCrossClick(item)}
-                // disabled={!item?.can_cancel}
-                data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
-              >
-                <RejectIcon />
-              </IconButton>
-              {
-                <ReactTooltip
-                  id={`tooltip-group-reject-schedule`}
-                  place="left"
-                  content={'Reject'}
-                  style={{
-                    width: '80px',
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
-                  }}
-                />
-              }
-            </>
-          )}
-          {/* {item?.state === 'NOT_APPROVED' && <>Rejected</>} */}
-        </>
       </ActionTd>
     );
   };

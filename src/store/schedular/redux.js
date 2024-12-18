@@ -64,10 +64,10 @@ const setScheduleDeployModal = state => {
     scheduleDeployModal: !state.scheduleDeployModal,
   };
 };
-const setScheduleModal = state => {
+const setScheduleModal = (state, { payload }) => {
   return {
     ...state,
-    scheduleModal: !state.scheduleModal,
+    scheduleModal: payload,
   };
 };
 const setCancelScheduleModal = (state, { payload }) => {

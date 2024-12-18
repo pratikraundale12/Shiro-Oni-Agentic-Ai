@@ -58,34 +58,42 @@ export const ScheduleDeploymentModal = () => {
     defaultValues: DEFAULT_VALUES,
   });
   const onRequestClose = () => {
-    dispatch(SchedularActions.setScheduleModal());
+    dispatch(SchedularActions.setScheduleModal(false));
     reset();
     dispatch(SchedularActions.setSelectedSchedule({}));
   };
 
   const onSubmit = data => {
-    const formattedDate = new Date(data.scheduled_time).toUTCString();
-    const { approver_ids } = data;
+    const payload = {
+      schedularId: selectedSchedule?.id,
+      scheduled_time: new Date(data?.scheduled_time).toISOString(),
+    };
+    dispatch(SchedularActions.editScheduleDeployment(payload));
+    dispatch(SchedularActions.setScheduleModal(false));
+    reset();
+    // return;
+    // const formattedDate = new Date(data.scheduled_time).toUTCString();
+    // const { approver_ids } = data;
 
-    if (!isEmpty(selectedSchedule)) {
-      const payload = {
-        schedularId: selectedSchedule.scheduler_id,
-        scheduled_time: formattedDate,
-        approver_ids: approver_ids,
-      };
-      dispatch(SchedularActions.editScheduleDeployment(payload));
-      reset();
-      dispatch(SchedularActions.setSelectedSchedule({}));
-    } else {
-      dispatch(
-        SchedularActions.setFormData({
-          approver_ids: approver_ids || [],
-          scheduled_time: formattedDate,
-        })
-      );
-      dispatch(SchedularActions.setScheduleModal());
-      dispatch(SchedularActions.setScheduleDeployModal());
-    }
+    // if (!isEmpty(selectedSchedule)) {
+    //   const payload = {
+    //     schedularId: selectedSchedule.scheduler_id,
+    //     scheduled_time: formattedDate,
+    //     approver_ids: approver_ids,
+    //   };
+
+    //   reset();
+    //   dispatch(SchedularActions.setSelectedSchedule({}));
+    // } else {
+    //   dispatch(
+    //     SchedularActions.setFormData({
+    //       approver_ids: approver_ids || [],
+    //       scheduled_time: formattedDate,
+    //     })
+    //   );
+
+    //   dispatch(SchedularActions.setScheduleDeployModal());
+    // }
   };
 
   useEffect(() => {

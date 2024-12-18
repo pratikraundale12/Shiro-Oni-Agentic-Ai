@@ -4,7 +4,7 @@ export const schedularAPI = api => {
   const createScheduleDeployment = ({ payload = {} }) =>
     api.post('/schedule-deployment', payload);
   const editScheduleDeployment = ({ schedularId, payloadData }) =>
-    api.patch(`/schedule-deployment/${schedularId}`, payloadData);
+    api.post(`/rechedule-job/${schedularId}`, payloadData);
   const checkApproverToken = ({ params }) => {
     return api.get('/schedule-deployment/token', params);
   };

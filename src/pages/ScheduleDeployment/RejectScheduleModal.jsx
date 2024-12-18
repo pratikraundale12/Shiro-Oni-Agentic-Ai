@@ -64,6 +64,7 @@ export const RejectScheduleModal = () => {
 
   const onRequestClose = () => {
     dispatch(SchedularActions.setRejectScheduleModal(false));
+    dispatch(SchedularActions.setCancelScheduleModal(false));
     reset();
   };
 

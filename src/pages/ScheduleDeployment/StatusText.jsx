@@ -13,6 +13,7 @@ const statusColors = {
   DEPLOYED: '#0cbf59',
   'NOT APPROVED': 'red',
   'N/A': '#b5b5bd',
+  CANCELLED: 'red',
 };
 
 const StatusTexts = styled.div`
