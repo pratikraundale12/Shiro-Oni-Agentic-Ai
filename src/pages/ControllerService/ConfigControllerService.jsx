@@ -4,14 +4,11 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Table } from '../../components';
 import { Button, InputField, Modal } from '../../shared';
-// import { NamespacesSelectors } from '../../store';
 import ValueRender from './ValueRender';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { NamespacesActions } from '../../store';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { DeleteSmallIcon, QRIcons } from '../../assets';
-import { isEmpty } from 'lodash';
-// import AddProperties from './AddProperties';
 
 const ModalBody = styled.div`
   position: relative;
@@ -40,9 +37,6 @@ export const ConfigControllerService = ({
 }) => {
   const dispatch = useDispatch();
 
-  const propertyUpdateResponse = useSelector(
-    NamespacesSelectors.getPropertyUpdateResponse
-  );
   const handleDeleteClick = item => {
     const filterData = updatedData.filter(ele => {
       return ele.name != item.name;
@@ -68,11 +62,6 @@ export const ConfigControllerService = ({
       setUpdatedData(sortedUpdatedList);
     }
   };
-  // useEffect(() => {
-  //   if(!isEmpty(propertyUpdateResponse)){
-  //     setVersion(propertyUpdateResponse?.version);
-  //   }
-  // },[propertyUpdateResponse]);
 
   const COLUMNS = [
     {
