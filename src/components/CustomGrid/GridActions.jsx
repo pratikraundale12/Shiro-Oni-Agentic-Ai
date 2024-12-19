@@ -450,47 +450,57 @@ export const GridActions = ({
             !userModalOpen && <Modal />}
         </ButtonsContainer>
 
-        {module === 'namespaces' ? (
-          <ButtonsContainer>
-            <Button
-              size="md"
-              style={{ width: '250px' }}
-              onClick={() => handleScheduleClick()}
-            >
-              <div
-                className="d-flex "
-                style={{ fontSize: '14px', fontWeight: '750' }}
+        <ButtonsContainer>
+          {module === 'namespaces' && (
+            <>
+              <Button
+                size="md"
+                style={{ width: '250px' }}
+                onClick={() => handleScheduleClick()}
               >
-                <ScheduleDeploymentIcon height={19} width={19} color={'#fff'} />
-                {KDFM.SCHEDULE_DEPLOYMENT}
-              </div>
-            </Button>
-            <Button
-              disabled={!canWrite}
-              size="md"
-              style={{ width: '84px' }}
-              onClick={handleClick}
-            >
-              {KDFM.DEPLOY}
-            </Button>
-            <RefreshIocn
-              onClick={handleRefresh}
-              data-tooltip-id={`tooltip-group-namespace-refresh`}
-            >
-              <RefreshIcon style={{ cursor: 'pointer' }} />
-            </RefreshIocn>
-            <ReactTooltip
-              id={`tooltip-group-namespace-refresh`}
-              place="left"
-              content={'Refresh'}
-              style={{
-                width: '100px',
-                whiteSpace: 'normal',
-                wordWrap: 'break-word',
-              }}
-            />
-          </ButtonsContainer>
-        ) : null}
+                <div
+                  className="d-flex "
+                  style={{ fontSize: '14px', fontWeight: '750' }}
+                >
+                  <ScheduleDeploymentIcon
+                    height={19}
+                    width={19}
+                    color={'#fff'}
+                  />
+                  {KDFM.SCHEDULE_DEPLOYMENT}
+                </div>
+              </Button>
+              <Button
+                disabled={!canWrite}
+                size="md"
+                style={{ width: '84px' }}
+                onClick={handleClick}
+              >
+                {KDFM.DEPLOY}
+              </Button>{' '}
+            </>
+          )}
+          {['scheduler', 'namespaces'].includes(module) && (
+            <>
+              <RefreshIocn
+                onClick={handleRefresh}
+                data-tooltip-id={`tooltip-group-namespace-refresh`}
+              >
+                <RefreshIcon style={{ cursor: 'pointer' }} />
+              </RefreshIocn>
+              <ReactTooltip
+                id={`tooltip-group-namespace-refresh`}
+                place="left"
+                content={'Refresh'}
+                style={{
+                  width: '100px',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
+        </ButtonsContainer>
       </Flex>
       <SearchContainer>
         <SmallSearchIcon
