@@ -431,7 +431,7 @@ export const ListControllerService = () => {
           columns={COLUMNS}
           controllerModule={true}
           loading={loading}
-          // rowsPerPage={20}
+          showPagination={true}
         />
       </Collapsible>
 

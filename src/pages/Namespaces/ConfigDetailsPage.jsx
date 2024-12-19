@@ -151,6 +151,7 @@ const ConfigDetailsPage = () => {
   useEffect(() => {
     setPcData(registryDetailsData?.parameterContextData);
     setVariableData(registryDetailsData?.variablesData);
+    setcsData(registryDetailsData?.controllerServicesData);
   }, [registryDetailsData]);
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
