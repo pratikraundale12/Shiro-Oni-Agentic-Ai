@@ -51,6 +51,7 @@ const AddNewRoleModal = ({ selectedOption, ldapGroupName }) => {
     };
 
     dispatch(RolesActions.createNewRole(payload));
+    dispatch(RolesActions.roleModal(false));
   };
 
   useEffect(() => {
