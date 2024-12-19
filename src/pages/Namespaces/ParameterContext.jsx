@@ -55,6 +55,12 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
+const ParameterTable = styled.div`
+  table thead tr th:nth-child(3) {
+    text-align: center;
+  }
+`;
+
 const ParameterContext = ({
   isOpen,
   isAddParameterContextOpen,
@@ -199,7 +205,7 @@ const ParameterContext = ({
     {
       label: 'Referencing Component',
       renderCell: item => (
-        <div className="d-flex justify-content-center">
+        <div className="text-center">
           {!isEmpty(item?.referencingComponents) && (
             <>
               <button
@@ -227,7 +233,6 @@ const ParameterContext = ({
           )}
         </div>
       ),
-      width: '14%',
     },
     {
       renderCell: item => (
@@ -396,11 +401,13 @@ const ParameterContext = ({
             toggleCollapsible={toggleCollapsible}
             isAddBtnVisible={false}
           >
-            <Table
-              data={tableStateData}
-              columns={COLUMNS}
-              className={'parameter-context-table'}
-            />
+            <ParameterTable>
+              <Table
+                data={tableStateData}
+                columns={COLUMNS}
+                className={'parameter-context-table'}
+              />
+            </ParameterTable>
             <Button
               type="button"
               className="w-auto mt-2"

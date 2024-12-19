@@ -45,6 +45,10 @@ const SrollableTable = styled.div`
     overflow: auto;
     max-height: 380px;
   }
+
+  table thead tr th:nth-child(3) {
+    text-align: center;
+  }
 `;
 
 const ParameterContextTab = ({
@@ -140,7 +144,7 @@ const ParameterContextTab = ({
     {
       label: 'Referencing Component',
       renderCell: item => (
-        <div className="d-flex justify-content-center">
+        <div className="text-center">
           {!isEmpty(item?.referencingComponents) && (
             <>
               <button
@@ -168,7 +172,6 @@ const ParameterContextTab = ({
           )}
         </div>
       ),
-      width: '14%',
     },
 
     {
