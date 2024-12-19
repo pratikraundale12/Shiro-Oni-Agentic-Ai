@@ -484,6 +484,14 @@ export const LdapConfig = () => {
   const removeTag = tagToRemove => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
+  const closePopup = () => {
+    dispatch(RolesActions.setIsRoleListModalOpen(false));
+    dispatch(RolesActions.setRoleListSelectedItem({}));
+  };
+  const handleOpenAddModal = () => {
+    dispatch(RolesActions.roleModal(true));
+    closePopup();
+  };
   return (
     <Wrapper>
       {loading && <FullPageLoader loading={loading} />}
@@ -735,7 +743,7 @@ export const LdapConfig = () => {
             />
             <SyncButton
               icon={<PlusCircleIcon width={16} height={16} color="black" />}
-              onClick={() => dispatch(RolesActions.roleModal())}
+              onClick={handleOpenAddModal}
               variant="secondary"
               size="sm"
             >
@@ -761,14 +769,12 @@ export const LdapConfig = () => {
         setIsOpen={setCreatMappingShow}
         getLDAPGroupForMapping={getLDAPGroup}
       />
-
       <SuccessTestModal
         successTest={successTest}
         setSuccessTest={setSuccessTest}
         name="Configuration"
       />
       <SyncUsersSuccess successTest={syncUsers} setSuccessTest={setSyncUsers} />
-
       <AddNewRoleModal />
     </Wrapper>
   );

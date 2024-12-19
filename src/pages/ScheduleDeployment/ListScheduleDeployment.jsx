@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-vars */
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   ConfirmScheduleDeploymentIcon,
@@ -11,7 +13,6 @@ import {
   PencilIcon,
   RejectIcon,
   TickIconWithCircle,
-  // PencilIcon,
 } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
 import { ModalWithIcon } from '../../shared';
@@ -20,14 +21,12 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
+import { ApproverGroupDisplay } from './ApproverGroupDisplay';
 import { RejectScheduleModal } from './RejectScheduleModal';
 import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { isEmpty } from 'lodash';
-import { ApproverGroupDisplay } from './ApproverGroupDisplay';
 
 const ActionTd = styled.div`
   display: flex;
@@ -84,26 +83,73 @@ export const ListScheduleDeployment = () => {
       <ActionTd>
         {currentUserData?.role === 'superadmin' ? (
           <>
-            {/* SUPER ADMIN */}
-            <IconButton
-              onClick={() => handleEditClick(item)}
-              // disabled={!item?.can_cancel}
-              data-tooltip-id={`${item?.can_cancel && `tooltip-group-edit-schedule`}`}
-            >
-              <PencilIcon />
-            </IconButton>
-            {
-              <ReactTooltip
-                id={`tooltip-group-edit-schedule`}
-                place="left"
-                content={'Edit'}
-                style={{
-                  width: '100px',
-                  whiteSpace: 'normal',
-                  wordWrap: 'break-word',
-                }}
-              />
-            }
+            {/* APPROVER */}
+            {item?.state === 'PENDING' && (
+              <>
+                <IconButton
+                  onClick={() => handleCancelModel(item)}
+                  // disabled={!item?.can_cancel}
+                  data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
+                >
+                  <CrossWithCircleIcon color="red" />
+                </IconButton>
+                <IconButton
+                  onClick={() => handleApproveCheck(item)}
+                  // disabled={!item?.can_cancel}
+                  data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
+                >
+                  <TickIconWithCircle />
+                </IconButton>
+                {
+                  <ReactTooltip
+                    id={`tooltip-group-tick-schedule`}
+                    place="left"
+                    content={'Approve'}
+                    style={{
+                      width: '100px',
+                      whiteSpace: 'normal',
+                      wordWrap: 'break-word',
+                    }}
+                  />
+                }
+                {
+                  <ReactTooltip
+                    id={`tooltip-group-cross-schedule`}
+                    place="left"
+                    content={'Reject'}
+                    style={{
+                      width: '110px',
+                      whiteSpace: 'normal',
+                      wordWrap: 'break-word',
+                    }}
+                  />
+                }
+              </>
+            )}
+            {item?.state === 'APPROVED' && (
+              <>
+                <IconButton
+                  onClick={() => handleRejectCrossClick(item)}
+                  // disabled={!item?.can_cancel}
+                  data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
+                >
+                  <RejectIcon />
+                </IconButton>
+                {
+                  <ReactTooltip
+                    id={`tooltip-group-reject-schedule`}
+                    place="left"
+                    content={'Stop'}
+                    style={{
+                      width: '80px',
+                      whiteSpace: 'normal',
+                      wordWrap: 'break-word',
+                    }}
+                  />
+                }
+              </>
+            )}
+            {/* {item?.state === 'NOT_APPROVED' && <>Rejected</>} */}
           </>
         ) : (
           <>
@@ -155,7 +201,7 @@ export const ListScheduleDeployment = () => {
                       <ReactTooltip
                         id={`tooltip-group-cross-schedule`}
                         place="left"
-                        content={'Disapprove'}
+                        content={'Reject'}
                         style={{
                           width: '110px',
                           whiteSpace: 'normal',
@@ -178,7 +224,7 @@ export const ListScheduleDeployment = () => {
                       <ReactTooltip
                         id={`tooltip-group-reject-schedule`}
                         place="left"
-                        content={'Reject'}
+                        content={'Stop'}
                         style={{
                           width: '80px',
                           whiteSpace: 'normal',
@@ -224,6 +270,7 @@ export const ListScheduleDeployment = () => {
       label: 'Deploy Time',
       renderCell: item => <TextRender text={item.scheduled_time || 'N/A'} />,
       width: '14%',
+      sort: { sortKey: 'deploy_time' },
     },
     {
       label: 'Approver group/Approver',
@@ -237,7 +284,7 @@ export const ListScheduleDeployment = () => {
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
-      width: '13%',
+      width: '15%',
     },
     {
       label: 'Status',
@@ -246,7 +293,7 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Actions',
-      width: '15%',
+      width: '13%',
       renderCell: item => getActionsMenu(item),
     },
   ];
@@ -278,6 +325,11 @@ export const ListScheduleDeployment = () => {
     { value: 'NOT APPROVED', label: 'Not Approved' },
     { value: 'CANCELLED', label: 'Cancelled' },
   ];
+
+  const sortFns = {
+    deploy_time: data =>
+      data.sort((a, b) => a?.deploy_time?.localeCompare(b?.deploy_time)),
+  };
 
   return (
     <>
@@ -315,6 +367,7 @@ export const ListScheduleDeployment = () => {
         module="scheduler"
         title="Deployment List"
         columns={COLUMNS}
+        sortFns={sortFns}
         statusOptions={STATUS_OPTIONS}
         placeholder="Search Approver or flow name"
         setCurrentPage={setCurrentPage}

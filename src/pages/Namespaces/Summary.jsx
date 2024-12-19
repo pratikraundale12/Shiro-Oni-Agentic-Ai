@@ -992,7 +992,7 @@ const Summary = () => {
                         activeColor="#58e715"
                       >
                         <TriangleIcons color="#B5BDC8" />
-                        <span>{processStatus.runningCount}</span>
+                        <span>{processStatus.runningCount || 0}</span>
                       </CountDiv>
                       <div>{KDFM.RUNNING_PROCESSORS}</div>
                     </TextDiv>
@@ -1003,7 +1003,7 @@ const Summary = () => {
                         activeColor="#c52b2b"
                       >
                         <SquareBoxIcon color="#B5BDC8" />
-                        <span>{processStatus.stoppedCount}</span>
+                        <span>{processStatus.stoppedCount || 0}</span>
                       </CountDiv>
                       <div>{KDFM.STOPPED_PROCESSORS}</div>
                     </TextDiv>
@@ -1014,7 +1014,7 @@ const Summary = () => {
                         activeColor="#CF9F5D"
                       >
                         <TriangleExclamationMarkIcon color="#B5BDC8" />
-                        <span>{processStatus.invalidCount}</span>
+                        <span>{processStatus.invalidCount || 0}</span>
                       </CountDiv>
                       <div>{KDFM.INVALID_PROCESSORS}</div>
                     </TextDiv>
@@ -1029,7 +1029,9 @@ const Summary = () => {
                           height={20}
                           color="#B5BDC8"
                         />
-                        <StyledSpan>{processStatus.disabledCount}</StyledSpan>
+                        <StyledSpan>
+                          {processStatus.disabledCount || 0}
+                        </StyledSpan>
                       </CountDiv>
                       <div>{KDFM.DISABLED_PROCESSORS}</div>
                     </TextDiv>

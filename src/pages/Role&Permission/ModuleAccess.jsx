@@ -200,6 +200,10 @@ export const ModuleAccess = () => {
   const [updatedRolePolicies, setUpdatedRolePolicies] = useState([]);
   const [search, setSearch] = useState('');
 
+  useEffect(() => {
+    dispatch(RolesActions.setIsRoleListModalOpen(false));
+  }, []);
+
   const DFM_ACCESS_COLUMNS = [
     {
       label: 'DFM Access',
