@@ -92,6 +92,7 @@ export const settingSchema = yup.object().shape({
     .max(50, 'Email can not be greater than 25 characters'),
   from_email: yup
     .string()
+    .nullable()
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
   title: yup
@@ -119,10 +120,10 @@ export const settingSchema = yup.object().shape({
     .nullable()
     .test(
       'smtp-service-required',
-      'SMTP Service is required if Email is provided',
+      'SMTP Service is required',
       function (value) {
-        const { from_email } = this.parent;
-        if (from_email) {
+        const { smtp_host, smtp_port, smtp_user, smtp_pass } = this.parent;
+        if (smtp_host || smtp_port || smtp_user || smtp_pass) {
           return value ? true : false;
         }
         return true;
@@ -132,62 +133,46 @@ export const settingSchema = yup.object().shape({
   smtp_host: yup
     .string()
     .nullable()
-    .test(
-      'smtp-host-required',
-      'SMTP Host is required if Email is provided',
-      function (value) {
-        const { from_email } = this.parent;
-        if (from_email) {
-          return value ? true : false;
-        }
-        return true;
+    .test('smtp-host-required', 'SMTP Host is required', function (value) {
+      const { smtp_service, smtp_port, smtp_user, smtp_pass } = this.parent;
+      if (smtp_service || smtp_port || smtp_user || smtp_pass) {
+        return value ? true : false;
       }
-    ),
+      return true;
+    }),
 
   smtp_port: yup
     .string()
     .nullable()
-    .test(
-      'smtp-port-required',
-      'SMTP Port is required if Email is provided',
-      function (value) {
-        const { from_email } = this.parent;
-        if (from_email) {
-          return value ? true : false;
-        }
-        return true;
+    .test('smtp-port-required', 'SMTP Port is required', function (value) {
+      const { smtp_service, smtp_host, smtp_user, smtp_pass } = this.parent;
+      if (smtp_service || smtp_host || smtp_user || smtp_pass) {
+        return value ? true : false;
       }
-    ),
+      return true;
+    }),
 
   smtp_user: yup
     .string()
     .nullable()
-    .test(
-      'smtp-user-required',
-      'SMTP User is required if Email is provided',
-      function (value) {
-        const { from_email } = this.parent;
-        if (from_email) {
-          return value ? true : false;
-        }
-        return true;
+    .test('smtp-user-required', 'SMTP User is required', function (value) {
+      const { smtp_service, smtp_host, smtp_port, smtp_pass } = this.parent;
+      if (smtp_service || smtp_host || smtp_port || smtp_pass) {
+        return value ? true : false;
       }
-    ),
+      return true;
+    }),
 
   smtp_pass: yup
     .string()
     .nullable()
-    .test(
-      'smtp-pass-required',
-      'SMTP Password is required if Email is provided',
-      function (value) {
-        const { from_email } = this.parent;
-        if (from_email) {
-          return value ? true : false;
-        }
-        return true;
+    .test('smtp-pass-required', 'SMTP Password is required', function (value) {
+      const { smtp_service, smtp_host, smtp_port, smtp_user } = this.parent;
+      if (smtp_service || smtp_host || smtp_port || smtp_user) {
+        return value ? true : false;
       }
-    ),
+      return true;
+    }),
 });
 export const Setting = () => {
   const {

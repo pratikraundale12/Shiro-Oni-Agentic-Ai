@@ -187,7 +187,7 @@ export const KDFM = {
   SCHEDULE_DIPLOYMENT: 'Schedule Deployment',
   SERVICE_ACCOUNT: 'Service Account',
   CONTROLLER_SERVICE_DATA: 'External Controller Services',
-  SMTP: 'SMTP configuration',
+  SMTP: 'SMTP Configuration',
   FLOW_CONTROL_WARNING:
     'The "Start" and "Stop" buttons will be hidden if all the processors are either invalid or disabled.',
 
