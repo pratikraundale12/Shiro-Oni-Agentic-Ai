@@ -92,6 +92,7 @@ export const settingSchema = yup.object().shape({
     .max(50, 'Email can not be greater than 25 characters'),
   from_email: yup
     .string()
+    .nullable()
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
   title: yup
@@ -114,8 +115,65 @@ export const settingSchema = yup.object().shape({
       'Please select at least one approver group',
       value => value !== undefined && value !== null && value !== ''
     ),
-});
+  smtp_service: yup
+    .string()
+    .nullable()
+    .test(
+      'smtp-service-required',
+      'SMTP Service is required',
+      function (value) {
+        const { smtp_host, smtp_port, smtp_user, smtp_pass } = this.parent;
+        if (smtp_host || smtp_port || smtp_user || smtp_pass) {
+          return value ? true : false;
+        }
+        return true;
+      }
+    ),
 
+  smtp_host: yup
+    .string()
+    .nullable()
+    .test('smtp-host-required', 'SMTP Host is required', function (value) {
+      const { smtp_service, smtp_port, smtp_user, smtp_pass } = this.parent;
+      if (smtp_service || smtp_port || smtp_user || smtp_pass) {
+        return value ? true : false;
+      }
+      return true;
+    }),
+
+  smtp_port: yup
+    .string()
+    .nullable()
+    .test('smtp-port-required', 'SMTP Port is required', function (value) {
+      const { smtp_service, smtp_host, smtp_user, smtp_pass } = this.parent;
+      if (smtp_service || smtp_host || smtp_user || smtp_pass) {
+        return value ? true : false;
+      }
+      return true;
+    }),
+
+  smtp_user: yup
+    .string()
+    .nullable()
+    .test('smtp-user-required', 'SMTP User is required', function (value) {
+      const { smtp_service, smtp_host, smtp_port, smtp_pass } = this.parent;
+      if (smtp_service || smtp_host || smtp_port || smtp_pass) {
+        return value ? true : false;
+      }
+      return true;
+    }),
+
+  smtp_pass: yup
+    .string()
+    .nullable()
+    .test('smtp-pass-required', 'SMTP Password is required', function (value) {
+      const { smtp_service, smtp_host, smtp_port, smtp_user } = this.parent;
+      if (smtp_service || smtp_host || smtp_port || smtp_user) {
+        return value ? true : false;
+      }
+      return true;
+    }),
+});
 export const Setting = () => {
   const {
     control,
@@ -222,6 +280,30 @@ export const Setting = () => {
     }
 
     if (
+      dirtyFields.smtp_service &&
+      data?.smtp_service !== settingData?.smtp_service
+    ) {
+      payload.append('smtp_service', data?.smtp_service);
+      updatedFields.push('smtp_service');
+    }
+    if (dirtyFields.smtp_host && data?.smtp_host !== settingData?.smtp_host) {
+      payload.append('smtp_host', data?.smtp_host);
+      updatedFields.push('smtp_host');
+    }
+    if (dirtyFields.smtp_port && data?.smtp_port !== settingData?.smtp_port) {
+      payload.append('smtp_port', data?.smtp_port);
+      updatedFields.push('smtp_port');
+    }
+    if (dirtyFields.smtp_user && data?.smtp_user !== settingData?.smtp_user) {
+      payload.append('smtp_user', data?.smtp_user);
+      updatedFields.push('smtp_user');
+    }
+    if (dirtyFields.smtp_pass && data?.smtp_pass !== settingData?.smtp_pass) {
+      payload.append('smtp_pass', data?.smtp_pass);
+      updatedFields.push('smtp_pass');
+    }
+
+    if (
       (dirtyFields.ldapEnabled &&
         data?.ldapEnabled !== settingData?.ldapEnabled) ||
       (dirtyFields.ldap_auto_sync &&
@@ -290,6 +372,16 @@ export const Setting = () => {
       setValue('group_email_id', settingData?.group_email_id);
       setValue('email', settingData?.email);
       setValue('from_email', settingData?.from_email);
+      setValue('smtp_service', settingData?.smtp_service);
+
+      setValue('smtp_host', settingData?.smtp_host);
+
+      setValue('smtp_port', settingData?.smtp_port);
+
+      setValue('smtp_user', settingData?.smtp_user);
+
+      setValue('smtp_pass', settingData?.smtp_pass);
+
       setValue('approver_groups', settingData.approver_groups || '');
       setLdapInitialConfig(settingData?.ldapEnabled);
       const logoElement = document.getElementById('logo');
@@ -311,6 +403,11 @@ export const Setting = () => {
           (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
         value.email !== settingData?.email ||
         value.from_email !== settingData?.from_email ||
+        value.smtp_service !== settingData?.smtp_service ||
+        value.smtp_host !== settingData?.smtp_host ||
+        value.smtp_port !== settingData?.smtp_port ||
+        value.smtp_user !== settingData?.smtp_user ||
+        value.smtp_pass !== settingData?.smtp_pass ||
         value.ldap_auto_sync_time_interval !==
           settingData?.ldap_auto_sync_time_interval ||
         value.ldap_auto_sync !== settingData?.ldap_auto_sync ||
@@ -463,6 +560,64 @@ export const Setting = () => {
               register={register}
               image={settingData?.favicon}
               setValue={setValue}
+            />
+          </div>
+        </InputFields>
+        <div className="d-flex justify-content-start me-4">
+          <HeadingContent className="mt-4">{KDFM.SMTP}</HeadingContent>
+        </div>
+        <HeadingContentHr className="mt-3 mb-4" />
+        <InputFields className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <InputField
+              name="smtp_service"
+              register={register}
+              icon={<QRIcons />}
+              label={KDFM.SMTP_SERVICE}
+              placeholder={KDFM.ENTER_SMTP_SERVICE}
+              errors={errors}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <InputField
+              name="smtp_host"
+              register={register}
+              icon={<QRIcons />}
+              label={KDFM.SMTP_HOST}
+              placeholder={KDFM.ENTER_SMTP_HOST}
+              errors={errors}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-6">
+            <InputField
+              name="smtp_port"
+              register={register}
+              icon={<QRIcons />}
+              label={KDFM.SMTP_PORT}
+              placeholder={KDFM.ENTER_SMTP_PORT}
+              errors={errors}
+            />
+          </div>
+        </InputFields>
+        <InputFields className="row">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <InputField
+              name="smtp_user"
+              register={register}
+              icon={<QRIcons />}
+              label={KDFM.SMTP_USER}
+              placeholder={KDFM.ENTER_SMTP_USER}
+              errors={errors}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <InputField
+              name="smtp_pass"
+              register={register}
+              icon={<QRIcons />}
+              label={KDFM.SMTP_PASS}
+              placeholder={KDFM.ENTER_SMTP_PASS}
+              errors={errors}
             />
           </div>
         </InputFields>
