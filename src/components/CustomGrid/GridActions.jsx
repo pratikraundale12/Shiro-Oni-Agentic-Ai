@@ -454,56 +454,69 @@ export const GridActions = ({
           {userPermissions.includes(getButtonPermissions(module)) &&
             !userModalOpen && <Modal />}
         </ButtonsContainer>
-
-        {module === 'namespaces' ? (
+        {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
-            <Button
-              size="md"
-              disabled={isButtonDisabled}
-              style={{ width: '250px' }}
-              onClick={() => handleScheduleClick()}
-            >
-              <div
-                className="d-flex "
-                style={{ fontSize: '14px', fontWeight: '750' }}
-              >
-                <ScheduleDeploymentIcon height={19} width={19} color={'#fff'} />
-                {KDFM.SCHEDULE_DEPLOYMENT}
-              </div>
-            </Button>
-            <Button
-              disabled={!canWrite}
-              size="md"
-              style={{ width: '84px' }}
-              onClick={handleClick}
-            >
-              {KDFM.DEPLOY}
-            </Button>
-            <RefreshIocn
-              // onClick={handleRefresh}
-              onClick={isButtonDisabled ? null : handleRefresh}
-              style={{
-                cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
-                opacity: isButtonDisabled ? 0.5 : 1,
-              }}
-              data-tooltip-id={`tooltip-group-namespace-refresh`}
-            >
-              <RefreshIcon style={{ cursor: 'pointer' }} />
-            </RefreshIocn>
-            <ReactTooltip
-              id={`tooltip-group-namespace-refresh`}
-              place="left"
-              content={
-                isButtonDisabled ? 'Log in to a cluster to Refresh.' : 'Refresh'
-              }
-              style={{
-                width: 'auto',
-                whiteSpace: 'normal',
-                wordWrap: 'break-word',
-              }}
-            />
+            {module === 'namespaces' && (
+              <>
+                <Button
+                  size="md"
+                  disabled={isButtonDisabled}
+                  style={{ width: '250px' }}
+                  onClick={() => handleScheduleClick()}
+                >
+                  <div
+                    className="d-flex "
+                    style={{ fontSize: '14px', fontWeight: '750' }}
+                  >
+                    <ScheduleDeploymentIcon
+                      height={19}
+                      width={19}
+                      color={'#fff'}
+                    />
+                    {KDFM.SCHEDULE_DEPLOYMENT}
+                  </div>
+                </Button>
+                <Button
+                  disabled={!canWrite}
+                  size="md"
+                  style={{ width: '84px' }}
+                  onClick={handleClick}
+                >
+                  {KDFM.DEPLOY}
+                </Button>
+              </>
+            )}
+            {['scheduler', 'namespaces'].includes(module) && (
+              <>
+                <RefreshIocn
+                  // onClick={handleRefresh}
+                  onClick={isButtonDisabled ? null : handleRefresh}
+                  style={{
+                    cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
+                    opacity: isButtonDisabled ? 0.5 : 1,
+                  }}
+                  data-tooltip-id={`tooltip-group-namespace-refresh`}
+                >
+                  <RefreshIcon style={{ cursor: 'pointer' }} />
+                </RefreshIocn>
+                <ReactTooltip
+                  id={`tooltip-group-namespace-refresh`}
+                  place="left"
+                  content={
+                    isButtonDisabled
+                      ? 'Log in to a cluster to Refresh.'
+                      : 'Refresh'
+                  }
+                  style={{
+                    width: 'auto',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
           </ButtonsContainer>
-        ) : null}
+        )}
       </Flex>
       <SearchContainer>
         <SmallSearchIcon
