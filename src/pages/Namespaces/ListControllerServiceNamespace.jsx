@@ -9,6 +9,7 @@ import {
   DeleteSmallIcon,
   FlashCutIcon,
   FlashIcon,
+  RefrenceIcon,
   SettingSmallIcon,
   SmallSearchIcon,
 } from '../../assets';
@@ -22,13 +23,14 @@ import {
 } from '../../store';
 
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { theme } from '../../styles';
 import AddControllerServiceModal from '../ControllerService/AddControllerServiceModal';
 import AddProperties from '../ControllerService/AddProperties';
 import ConfigControllerService from '../ControllerService/ConfigControllerService';
 import ConfigurePropertyModal from '../ControllerService/ConfigurePropertyModal';
 import PropertyDropdownModal from '../ControllerService/ProprtyDropdownModel';
 import Collapsible from './Collapsible';
-import { theme } from '../../styles';
+import ControllerServerRefreshModal from './ControllerServerRefreshModal';
 
 const StatusTexts = styled.div`
   font-family: Inter;
@@ -135,6 +137,7 @@ export const ListControllerService = () => {
   const listData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
   );
+  const [refreshItem, setRefreshItem] = useState(null);
 
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
     useState(false);
@@ -217,7 +220,7 @@ export const ListControllerService = () => {
       renderCell: item => (
         <TextRender key={item?.name} text={item?.name} capitalizeText={false} />
       ),
-      width: '21%',
+      width: '20%',
     },
     {
       label: 'Type',
@@ -244,12 +247,46 @@ export const ListControllerService = () => {
     {
       label: 'State',
       renderCell: item => <StatusText text={item?.state} item={item} />,
-      width: '16%',
+      width: '8%',
     },
     {
       label: 'Scope',
       renderCell: item => item?.scope,
-      width: '11%',
+      width: '8%',
+    },
+    {
+      label: 'Referencing Component',
+      renderCell: item => (
+        <div className="d-flex justify-content-center">
+          {(!isEmpty(item?.referencingComponents?.controllerService) ||
+            !isEmpty(item?.referencingComponents?.processors)) && (
+            <>
+              <button
+                className="border-0 bg-white"
+                onClick={() => {
+                  setRefreshItem(item);
+                  dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                }}
+                data-tooltip-id={`Referencing-${item?.id}`}
+                aria-label="Referencing"
+              >
+                <RefrenceIcon />
+              </button>
+              <ReactTooltip
+                id={`Referencing-${item?.id}`}
+                place="left"
+                content="Reference"
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
+        </div>
+      ),
+      width: '16%',
     },
     {
       label: 'Actions',
@@ -337,7 +374,7 @@ export const ListControllerService = () => {
             )}
         </>
       ),
-      width: '14%',
+      width: '10%',
     },
   ];
 
@@ -466,6 +503,7 @@ export const ListControllerService = () => {
         primaryText={`Are you sure you want to delete ${selectedItemFromList?.name}?`}
         onSubmit={handleDeleteControllerServiceClick}
       />
+      <ControllerServerRefreshModal refreshItem={refreshItem} />
     </ScrollSetGrey>
   );
 };

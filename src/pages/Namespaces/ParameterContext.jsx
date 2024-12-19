@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { ArrowIcon, NoDataIcon, PencilIcon } from '../../assets';
+import { ArrowIcon, NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
 import {
   EnhancedTextRender,
   IconButton,
@@ -20,9 +20,11 @@ import {
   SchedularSelectors,
 } from '../../store/schedular/redux';
 // import AddParameterContext from './AddParameterContext';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button } from '../../shared';
 import AddParameterContext from './AddParameterContext';
 import Collapsible from './Collapsible';
+import RefreshModal from './RefreshModal';
 
 const ArrowButton = styled.button`
   background-color: white;
@@ -101,6 +103,7 @@ const ParameterContext = ({
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const schduleParameterData =
     checkDestCluster?.additionalData?.filteredParameterData;
+  const [refreshItem, setRefreshItem] = useState(null);
 
   useEffect(() => {
     if (
@@ -192,6 +195,39 @@ const ParameterContext = ({
           />
         );
       },
+    },
+    {
+      label: 'Referencing Component',
+      renderCell: item => (
+        <div className="d-flex justify-content-center">
+          {!isEmpty(item?.referencingComponents) && (
+            <>
+              <button
+                className="border-0 bg-white"
+                onClick={() => {
+                  setRefreshItem(item);
+                  dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                }}
+                data-tooltip-id={`Reference-${item?.id}`}
+                aria-label="Reference"
+              >
+                <RefrenceIcon />
+              </button>
+              <ReactTooltip
+                id={`Reference-${item?.id}`}
+                place="left"
+                content="Reference"
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
+        </div>
+      ),
+      width: '14%',
     },
     {
       renderCell: item => (
@@ -391,6 +427,7 @@ const ParameterContext = ({
             <NoDataText>No Parameter Context Found!!</NoDataText>
           </LoaderContainer>
         )}
+        <RefreshModal refreshItem={refreshItem} />
       </ScrollSetGrey>
     </DataWrapper>
   );
