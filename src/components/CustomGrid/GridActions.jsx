@@ -261,6 +261,11 @@ export const GridActions = ({
   };
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
 
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  useEffect(() => {
+    setIsButtonDisabled(isEmpty(selectedCluster?.value));
+  }, [selectedCluster]);
+
   const handleRefresh = () => {
     if (!isEmpty(selectedCluster) && breadcrumbs?.length > 1) {
       const payload = {
@@ -454,6 +459,7 @@ export const GridActions = ({
           <ButtonsContainer>
             <Button
               size="md"
+              disabled={isButtonDisabled}
               style={{ width: '250px' }}
               onClick={() => handleScheduleClick()}
             >
@@ -474,7 +480,12 @@ export const GridActions = ({
               {KDFM.DEPLOY}
             </Button>
             <RefreshIocn
-              onClick={handleRefresh}
+              // onClick={handleRefresh}
+              onClick={isButtonDisabled ? null : handleRefresh}
+              style={{
+                cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
+                opacity: isButtonDisabled ? 0.5 : 1,
+              }}
               data-tooltip-id={`tooltip-group-namespace-refresh`}
             >
               <RefreshIcon style={{ cursor: 'pointer' }} />
@@ -482,9 +493,11 @@ export const GridActions = ({
             <ReactTooltip
               id={`tooltip-group-namespace-refresh`}
               place="left"
-              content={'Refresh'}
+              content={
+                isButtonDisabled ? 'Log in to a cluster to Refresh.' : 'Refresh'
+              }
               style={{
-                width: '100px',
+                width: 'auto',
                 whiteSpace: 'normal',
                 wordWrap: 'break-word',
               }}
