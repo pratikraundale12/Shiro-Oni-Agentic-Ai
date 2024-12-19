@@ -127,7 +127,11 @@ const Search = styled.input`
   }
 `;
 
-const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, csFromParent }) => {
+const ControllerServiceTab = ({
+  setControllerServicePayload,
+  setCsFromParent,
+  csFromParent,
+}) => {
   const dispatch = useDispatch();
   const [openIndex, setOpenIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -136,15 +140,8 @@ const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, cs
   const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  // const modalOpenState = useSelector(
-  //   NamespacesSelectors.getIsNewAddControllerServiceMOdalOpen
-  // );
-  const registryDetailsData = useSelector(
-    NamespacesSelectors.getRegistryAllDetails
-  );
-  const [controllerServicesData, setControllerServicesData] = useState(
-    csFromParent
-  );
+
+  const controllerServicesData = csFromParent;
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
   );
@@ -914,12 +911,16 @@ const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, cs
     setIsStateChangeResponse(false);
     const match = externalControllerServices?.some(data => {
       if (data.controllerService?.length) {
-        return data.controllerService.some(service => 
-          service?.id === item?.id || service?.id === item?.identifier
+        return data.controllerService.some(
+          service =>
+            service?.id === item?.id || service?.id === item?.identifier
         );
       }
-      return item?.updatedValue !== undefined && data?.updatedValue === item.updatedValue;
-    });    
+      return (
+        item?.updatedValue !== undefined &&
+        data?.updatedValue === item.updatedValue
+      );
+    });
     setisFromExternalService(match ? true : false);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
@@ -1106,6 +1107,7 @@ const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, cs
             data={listData}
             columns={COLUMNS_3}
             className={'variables-table'}
+            showPagination={true}
           />
         ),
       });
@@ -1241,7 +1243,6 @@ const ControllerServiceTab = ({ setControllerServicePayload, setCsFromParent, cs
                     placeholder="Search Controller Service by Name and Type"
                     onChange={e => {
                       const value = e.target.value;
-                      console.log('in onChange--', value);
                       if (value.length <= 100) {
                         setSearch(value);
                       }

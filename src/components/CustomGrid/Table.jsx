@@ -65,6 +65,7 @@ export const Table = ({
   className,
   deployTable = false,
   rowsPerPage = 10,
+  showPagination = false,
 }) => {
   const DATA = { nodes: data || [] };
   const [currentPage, setCurrentPage] = useState(1);
@@ -129,14 +130,14 @@ export const Table = ({
     <>
       <TableContainer className={className} deployTable={deployTable}>
         <CompactTable
-          data={{ nodes: currentItems }}
+          data={{ nodes: showPagination ? currentItems : DATA.nodes }}
           columns={columns}
           theme={tableTheme}
         />
         {getLoader()}
       </TableContainer>
       {/* Pagination */}
-      {DATA.nodes.length && DATA.nodes.length >= 10 ? (
+      {DATA.nodes.length && DATA.nodes.length >= 10 && showPagination ? (
         <PaginationContainer>
           <Pagination
             page={currentPage}
@@ -158,4 +159,5 @@ Table.propTypes = {
   className: PropTypes.string,
   deployTable: PropTypes.bool,
   rowsPerPage: PropTypes.number,
+  showPagination: PropTypes.bool,
 };
