@@ -158,6 +158,11 @@ export const KDFM = {
   SAVE_SETTINGS: 'Save Settings',
   EMAIL: 'Email',
   SUPPORT_EMAIL: 'Support Email',
+  SMTP_SERVICE: 'SMTP  Service',
+  SMTP_HOST: 'SMTP  Host',
+  SMTP_PORT: 'SMTP  Port',
+  SMTP_USER: 'SMTP  User',
+  SMTP_PASS: 'SMTP  Password',
   FROM_EMAIL: 'From Email',
   META_TITLE: 'Meta Title',
   ACTIVATE: 'Activate',
@@ -182,6 +187,7 @@ export const KDFM = {
   SCHEDULE_DIPLOYMENT: 'Schedule Deployment',
   SERVICE_ACCOUNT: 'Service Account',
   CONTROLLER_SERVICE_DATA: 'External Controller Services',
+  SMTP: 'SMTP configuration',
   FLOW_CONTROL_WARNING:
     'The "Start" and "Stop" buttons will be hidden if all the processors are either invalid or disabled.',
 
