@@ -178,7 +178,7 @@ export const ListScheduleDeployment = () => {
                       <ReactTooltip
                         id={`tooltip-group-reject-schedule`}
                         place="left"
-                        content={'Reject'}
+                        content={'Stop'}
                         style={{
                           width: '80px',
                           whiteSpace: 'normal',
@@ -224,6 +224,7 @@ export const ListScheduleDeployment = () => {
       label: 'Deploy Time',
       renderCell: item => <TextRender text={item.scheduled_time || 'N/A'} />,
       width: '14%',
+      sort: { sortKey: 'deploy_time' },
     },
     {
       label: 'Approver group/Approver',
@@ -237,7 +238,7 @@ export const ListScheduleDeployment = () => {
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
-      width: '13%',
+      width: '15%',
     },
     {
       label: 'Status',
@@ -246,7 +247,7 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Actions',
-      width: '15%',
+      width: '13%',
       renderCell: item => getActionsMenu(item),
     },
   ];
@@ -278,6 +279,11 @@ export const ListScheduleDeployment = () => {
     { value: 'NOT APPROVED', label: 'Not Approved' },
     { value: 'CANCELLED', label: 'Cancelled' },
   ];
+
+  const sortFns = {
+    deploy_time: data =>
+      data.sort((a, b) => a?.deploy_time?.localeCompare(b?.deploy_time)),
+  };
 
   return (
     <>
@@ -315,6 +321,7 @@ export const ListScheduleDeployment = () => {
         module="scheduler"
         title="Deployment List"
         columns={COLUMNS}
+        sortFns={sortFns}
         statusOptions={STATUS_OPTIONS}
         placeholder="Search Approver or flow name"
         setCurrentPage={setCurrentPage}
