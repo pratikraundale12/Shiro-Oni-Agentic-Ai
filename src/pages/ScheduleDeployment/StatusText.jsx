@@ -26,7 +26,7 @@ const StatusTexts = styled.div`
   color: ${props => props.color || '#b5b5bd'};
   display: flex;
   align-items: center;
-  cursor: pointer;
+  // cursor: pointer;
   div {
     align-items: center;
     height: 8px;
