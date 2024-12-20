@@ -159,7 +159,12 @@ export const ListScheduleDeployment = () => {
                 {item?.state !== 'APPROVED' && (
                   <IconButton
                     onClick={() => handleEditClick(item)}
-                    // disabled={!item?.can_cancel}
+                    disabled={
+                      !(
+                        item?.state === 'PENDING' ||
+                        item?.state === 'TIME_LAPSED'
+                      )
+                    }
                     data-tooltip-id={`${item?.can_cancel && `tooltip-group-cancel-schedule`}`}
                   >
                     <PencilIcon />
@@ -288,7 +293,12 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Status',
-      renderCell: item => <StatusText text={item?.state} item={item} />,
+      renderCell: item => (
+        <StatusText
+          text={item?.state === 'TIME_LAPSED' ? 'TIME LAPSED' : item?.state}
+          item={item}
+        />
+      ),
       width: '10%',
     },
     {
