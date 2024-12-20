@@ -510,7 +510,11 @@ export const GridActions = ({
                 <ReactTooltip
                   id={`tooltip-group-namespace-refresh`}
                   place="left"
-                  content={'Refresh'}
+                  content={
+                    isButtonDisabled
+                      ? 'Log in to a cluster to Refresh.'
+                      : 'Refresh'
+                  }
                   style={{
                     width: 'auto',
                     whiteSpace: 'normal',
