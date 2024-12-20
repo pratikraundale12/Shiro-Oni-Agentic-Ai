@@ -51,4 +51,5 @@ export const NAMESPACE_CONSTANTS = {
   ZOOM_IN: 'Zoom In',
   ZOOM_OUT: 'Zoom Out',
   FIT: 'Fit',
+  LEGENDS: 'Legends',
 };
