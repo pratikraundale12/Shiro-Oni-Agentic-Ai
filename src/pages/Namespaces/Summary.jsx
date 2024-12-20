@@ -630,6 +630,7 @@ const Summary = () => {
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
       registryId: registryData?.id,
+      namespaceId: checkDestCluster?.value,
       mode: 'deploy',
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       isScheduled: true,
