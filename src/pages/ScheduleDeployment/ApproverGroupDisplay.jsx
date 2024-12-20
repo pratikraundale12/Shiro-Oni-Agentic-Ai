@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
+import { theme } from '../../styles';
 
 const TextColor = styled.div`
   color: ${props => props.theme.colors.darker};
@@ -52,7 +53,13 @@ export const ApproverGroupDisplay = ({
   );
   return (
     <TextColor {...rest} capitalizeText={capitalizeText}>
-      <span data-tooltip-id={item.id}>{textToRender}</span>
+      {item?.action_by ? (
+        <span>{item?.action_by}</span>
+      ) : (
+        <span data-tooltip-id={item.id} style={{ color: theme.colors.primary }}>
+          {textToRender}
+        </span>
+      )}
 
       {toolTip && (
         <ReactTooltip
