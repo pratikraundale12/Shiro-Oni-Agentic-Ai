@@ -5,7 +5,14 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { NamespacesActions } from '../../store';
-import { FitIcon, ZoomInIcon, ZoomOutIcon } from '../../assets';
+import {
+  FitIcon,
+  ProcessorGroupIcon,
+  ProcessorIcon,
+  SelectedProcessGrpIcon,
+  ZoomInIcon,
+  ZoomOutIcon,
+} from '../../assets';
 import styled from 'styled-components';
 import { KDFM } from '../../constants';
 
@@ -17,6 +24,14 @@ const ZoomControls = styled.div`
   border-radius: 0 8px 8px 0px;
   border: 1px solid rgb(229, 230, 232);
   gap: 0.8rem;
+`;
+
+const LegendsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 8px;
+  gap: 1rem;
 `;
 
 const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
@@ -271,6 +286,11 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
         <ZoomOutIcon dataTitle={KDFM.ZOOM_OUT} onClick={handleZoomOut} />
         <FitIcon dataTitle={KDFM.FIT} onClick={handleExpand} />
       </ZoomControls>
+      <LegendsContainer>
+        <ProcessorGroupIcon />
+        <ProcessorIcon />
+        <SelectedProcessGrpIcon />
+      </LegendsContainer>
     </div>
   );
 };
