@@ -79,167 +79,161 @@ export const ListScheduleDeployment = () => {
   };
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
 
+  const RejectIconRender = item => {
+    return (
+      <>
+        <IconButton
+          onClick={() => handleCancelModel(item)}
+          // disabled={!item?.can_cancel}
+          data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
+        >
+          <CrossWithCircleIcon color="red" />
+        </IconButton>
+        {
+          <ReactTooltip
+            id={`tooltip-group-cross-schedule`}
+            place="left"
+            content={'Reject'}
+            style={{
+              width: '110px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        }
+      </>
+    );
+  };
+
+  const ApprovIconRender = item => {
+    return (
+      <>
+        <IconButton
+          onClick={() => handleApproveCheck(item)}
+          // disabled={!item?.can_cancel}
+          data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
+        >
+          <TickIconWithCircle />
+        </IconButton>
+        {
+          <ReactTooltip
+            id={`tooltip-group-tick-schedule`}
+            place="left"
+            content={'Approve'}
+            style={{
+              width: '100px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        }
+      </>
+    );
+  };
+  const editIconRender = item => {
+    return (
+      <>
+        <IconButton
+          onClick={() => handleEditClick(item)}
+          // disabled={!item?.can_cancel}
+          data-tooltip-id={`${`tooltip-group-edit-schedule`}`}
+        >
+          <PencilIcon />
+        </IconButton>
+        {
+          <ReactTooltip
+            id={`tooltip-group-edit-schedule`}
+            place="left"
+            content={'Edit'}
+            style={{
+              width: '100px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        }
+      </>
+    );
+  };
+  const stopIconRender = item => {
+    return (
+      <>
+        <IconButton
+          onClick={() => handleRejectCrossClick(item)}
+          // disabled={!item?.can_cancel}
+          data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
+        >
+          <RejectIcon />
+        </IconButton>
+        {
+          <ReactTooltip
+            id={`tooltip-group-reject-schedule`}
+            place="left"
+            content={'Stop'}
+            style={{
+              width: '80px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        }
+      </>
+    );
+  };
+
   const getActionsMenu = item => {
     return (
       <ActionTd>
-        {currentUserData?.role === 'superadmin' ? (
+        {currentUserData?.role === 'superadmin' && (
           <>
-            {/* APPROVER */}
             {item?.state === 'PENDING' && (
               <>
-                <IconButton
-                  onClick={() => handleCancelModel(item)}
-                  // disabled={!item?.can_cancel}
-                  data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
-                >
-                  <CrossWithCircleIcon color="red" />
-                </IconButton>
-                <IconButton
-                  onClick={() => handleApproveCheck(item)}
-                  // disabled={!item?.can_cancel}
-                  data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
-                >
-                  <TickIconWithCircle />
-                </IconButton>
-                {
-                  <ReactTooltip
-                    id={`tooltip-group-tick-schedule`}
-                    place="left"
-                    content={'Approve'}
-                    style={{
-                      width: '100px',
-                      whiteSpace: 'normal',
-                      wordWrap: 'break-word',
-                    }}
-                  />
-                }
-                {
-                  <ReactTooltip
-                    id={`tooltip-group-cross-schedule`}
-                    place="left"
-                    content={'Reject'}
-                    style={{
-                      width: '110px',
-                      whiteSpace: 'normal',
-                      wordWrap: 'break-word',
-                    }}
-                  />
-                }
+                {RejectIconRender(item)}
+                {ApprovIconRender(item)}
               </>
             )}
-            {item?.state === 'APPROVED' && (
-              <>
-                <IconButton
-                  onClick={() => handleRejectCrossClick(item)}
-                  // disabled={!item?.can_cancel}
-                  data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
-                >
-                  <RejectIcon />
-                </IconButton>
-                {
-                  <ReactTooltip
-                    id={`tooltip-group-reject-schedule`}
-                    place="left"
-                    content={'Stop'}
-                    style={{
-                      width: '80px',
-                      whiteSpace: 'normal',
-                      wordWrap: 'break-word',
-                    }}
-                  />
-                }
-              </>
-            )}
-            {/* {item?.state === 'NOT_APPROVED' && <>Rejected</>} */}
-          </>
-        ) : (
-          <>
-            {currentUser?.id === item?.deployer_id ? (
-              <>
-                {/* SCHEDULAR */}
-                {item?.state !== 'APPROVED' && (
-                  <IconButton
-                    onClick={() => handleEditClick(item)}
-                    // disabled={!item?.can_cancel}
-                    data-tooltip-id={`${item?.can_cancel && `tooltip-group-cancel-schedule`}`}
-                  >
-                    <PencilIcon />
-                  </IconButton>
-                )}
-              </>
-            ) : (
-              <>
-                {/* APPROVER */}
-                {item?.state === 'PENDING' && (
-                  <>
-                    <IconButton
-                      onClick={() => handleCancelModel(item)}
-                      // disabled={!item?.can_cancel}
-                      data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
-                    >
-                      <CrossWithCircleIcon color="red" />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => handleApproveCheck(item)}
-                      // disabled={!item?.can_cancel}
-                      data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
-                    >
-                      <TickIconWithCircle />
-                    </IconButton>
-                    {
-                      <ReactTooltip
-                        id={`tooltip-group-tick-schedule`}
-                        place="left"
-                        content={'Approve'}
-                        style={{
-                          width: '100px',
-                          whiteSpace: 'normal',
-                          wordWrap: 'break-word',
-                        }}
-                      />
-                    }
-                    {
-                      <ReactTooltip
-                        id={`tooltip-group-cross-schedule`}
-                        place="left"
-                        content={'Reject'}
-                        style={{
-                          width: '110px',
-                          whiteSpace: 'normal',
-                          wordWrap: 'break-word',
-                        }}
-                      />
-                    }
-                  </>
-                )}
-                {item?.state === 'APPROVED' && (
-                  <>
-                    <IconButton
-                      onClick={() => handleRejectCrossClick(item)}
-                      // disabled={!item?.can_cancel}
-                      data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
-                    >
-                      <RejectIcon />
-                    </IconButton>
-                    {
-                      <ReactTooltip
-                        id={`tooltip-group-reject-schedule`}
-                        place="left"
-                        content={'Stop'}
-                        style={{
-                          width: '80px',
-                          whiteSpace: 'normal',
-                          wordWrap: 'break-word',
-                        }}
-                      />
-                    }
-                  </>
-                )}
-                {/* {item?.state === 'NOT_APPROVED' && <>Rejected</>} */}
-              </>
-            )}
+            {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
           </>
         )}
+        {currentUserData?.role !== 'superadmin' &&
+          currentUser?.id === item?.deployer_id &&
+          !item?.groupUsersData.some(
+            ele => ele?.id === currentUserData?.id
+          ) && (
+            <>
+              {(item?.state === 'PENDING' || item?.state === 'TIME_LAPSED') && (
+                <>{editIconRender(item)}</>
+              )}
+            </>
+          )}
+        {currentUserData?.role !== 'superadmin' &&
+          currentUser?.id === item?.deployer_id &&
+          item?.groupUsersData.some(ele => ele?.id === currentUserData?.id) && (
+            <>
+              {item?.state === 'PENDING' && (
+                <>
+                  {editIconRender(item)}
+                  {RejectIconRender(item)}
+                  {ApprovIconRender(item)}
+                </>
+              )}
+              {item?.state === 'TIME_LAPSED' && <>{editIconRender(item)}</>}
+              {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
+            </>
+          )}
+        {currentUserData?.role !== 'superadmin' &&
+          currentUser?.id !== item?.deployer_id &&
+          item?.groupUsersData.some(ele => ele?.id === currentUserData?.id) && (
+            <>
+              {item?.state === 'PENDING' && (
+                <>
+                  {RejectIconRender(item)}
+                  {ApprovIconRender(item)}
+                </>
+              )}
+              {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
+            </>
+          )}
       </ActionTd>
     );
   };
@@ -248,12 +242,12 @@ export const ListScheduleDeployment = () => {
     {
       label: 'Process Group',
       renderCell: item => <TextRender text={item?.namespace_name || 'N/A'} />,
-      width: '14%',
+      width: '12%',
     },
     {
       label: 'Flow Name',
       renderCell: item => <TextRender text={item?.flow_name || 'N/A'} />,
-      width: '14%',
+      width: '11%',
     },
     {
       label: 'Version',
@@ -265,7 +259,12 @@ export const ListScheduleDeployment = () => {
       renderCell: item => (
         <TextRender text={item?.deployment_status || 'N/A'} />
       ),
-      width: '14%',
+      width: '11%',
+    },
+    {
+      label: 'Schedular',
+      renderCell: item => <TextRender text={item?.scheduled_by || 'N/A'} />,
+      width: '11%',
     },
     {
       label: 'Deploy Time',
@@ -289,12 +288,17 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Status',
-      renderCell: item => <StatusText text={item?.state} item={item} />,
+      renderCell: item => (
+        <StatusText
+          text={item?.state === 'TIME_LAPSED' ? 'TIME LAPSED' : item?.state}
+          item={item}
+        />
+      ),
       width: '10%',
     },
     {
       label: 'Actions',
-      width: '13%',
+      width: '10%',
       renderCell: item => getActionsMenu(item),
     },
   ];

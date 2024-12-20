@@ -26,7 +26,7 @@ const StatusTexts = styled.div`
   color: ${props => props.color || '#b5b5bd'};
   display: flex;
   align-items: center;
-  cursor: pointer;
+  // cursor: pointer;
   div {
     align-items: center;
     height: 8px;
@@ -66,7 +66,9 @@ export const StatusText = ({ text = '', item }) => {
   return (
     <>
       <StatusTexts color={color} data-tooltip-id={item.scheduler_id}>
-        {capitalizeFirstLetter(text)}
+        {capitalizeFirstLetter(
+          item?.state === 'TIME_LAPSED' ? 'Time Lapsed' : text
+        )}
       </StatusTexts>{' '}
       <ReactTooltip
         id={item.scheduler_id}

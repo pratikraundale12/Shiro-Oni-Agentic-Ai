@@ -226,11 +226,19 @@ const FlowDetailsPage = () => {
   const [xStateCoordinate, setXStateCoordiate] = useState(null);
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
   useEffect(() => {
-    if (registryDetailsData?.positions?.[0]?.x !== undefined) {
-      setXStateCoordiate(registryDetailsData?.positions[0]?.x);
-      setYStateCoordiate(registryDetailsData?.positions?.[0]?.y);
+    if (isUpgrade) {
+      if (registryDetailsData?.positions?.[0]?.x !== undefined) {
+        setXStateCoordiate(registryDetailsData?.positions[0]?.x);
+        setYStateCoordiate(registryDetailsData?.positions?.[0]?.y);
+      }
     }
-  }, [registryDetailsData]);
+    if (!isUpgrade) {
+      if (selectedNameSpace?.position?.x !== undefined) {
+        setXStateCoordiate(selectedNameSpace?.position?.x);
+        setYStateCoordiate(selectedNameSpace?.position?.y);
+      }
+    }
+  }, [registryDetailsData, selectedNameSpace, isUpgrade]);
 
   const gridDataDest = useSelector(state =>
     GridSelectors.getGridData(state, 'namespaces')

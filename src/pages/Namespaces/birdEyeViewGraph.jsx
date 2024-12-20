@@ -42,7 +42,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
 
   const xScaleRef = useRef(false);
   const yScaleRef = useRef(false);
-  const initialZoomLevel = 0.6;
+  const initialZoomLevel = 0.2;
 
   useEffect(() => {
     if (!data || data.length === 0) {
