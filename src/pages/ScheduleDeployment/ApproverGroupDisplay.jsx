@@ -1,7 +1,6 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles';
 
@@ -20,10 +19,32 @@ const TextColor = styled.div`
   }
 `;
 
+const TooltipContent = styled.div`
+  max-height: 150px;
+  overflow-y: auto;
+  position: fixed;
+  transform: translateX(-50%);
+  padding: 8px;
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 9999;
+  &::before {
+    content: ' ';
+    position: absolute;
+    top: 50%;
+    left: -8px;
+    margin-top: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent #333 transparent transparent;
+  }
+`;
+
 export const ApproverGroupDisplay = ({
   item,
   capitalizeText = true,
-  tooltipPlacement = 'right',
   toolTip = true,
   ...rest
 }) => {
@@ -51,26 +72,57 @@ export const ApproverGroupDisplay = ({
   ) : (
     <div>{'N/A'}</div>
   );
+
+  const CustomTooltip = ({ children, content, placement = 'top' }) => {
+    const [visible, setVisible] = useState(false);
+    const [position, setPosition] = useState({ top: 0, right: 0 });
+
+    const handleMouseEnter = e => {
+      const rect = e.target.getBoundingClientRect();
+
+      const tooltipPosition = {
+        top: placement === 'top' ? rect.top - 30 : rect.bottom + 10,
+        left: rect.right + 75,
+      };
+
+      setPosition(tooltipPosition);
+      setVisible(true);
+    };
+
+    const handleMouseLeave = () => {
+      setVisible(false);
+    };
+
+    return (
+      <div
+        style={{ display: 'inline-block', position: 'relative' }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {children}
+
+        {visible && toolTip && (
+          <TooltipContent style={{ top: position.top, left: position.left }}>
+            {content}
+          </TooltipContent>
+        )}
+      </div>
+    );
+  };
+
   return (
     <TextColor {...rest} capitalizeText={capitalizeText}>
       {item?.action_by ? (
         <span>{item?.action_by}</span>
       ) : (
-        <span data-tooltip-id={item.id} style={{ color: theme.colors.primary }}>
-          {textToRender}
-        </span>
-      )}
-
-      {toolTip && (
-        <ReactTooltip
-          id={item.id}
-          content={tooltipData}
-          place={tooltipPlacement}
-          positionStrategy="fixed"
-          style={{
-            zIndex: 9999,
-          }}
-        />
+        <CustomTooltip content={tooltipData}>
+          <span
+            data-tooltip-id={item.id}
+            style={{ color: theme.colors.primary }}
+          >
+            {textToRender}
+          </span>
+        </CustomTooltip>
       )}
     </TextColor>
   );
@@ -81,4 +133,7 @@ ApproverGroupDisplay.propTypes = {
   capitalizeText: PropTypes.bool,
   tooltipPlacement: PropTypes.string,
   toolTip: PropTypes.bool,
+  children: PropTypes.any,
+  content: PropTypes.any,
+  placement: PropTypes.string,
 };
