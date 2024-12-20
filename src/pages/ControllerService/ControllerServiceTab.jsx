@@ -1104,7 +1104,7 @@ const ControllerServiceTab = ({
         title: selectedNamespace?.name || 'Unnamed Group',
         content: (
           <Table
-            data={listData}
+            data={filteredModulesData}
             columns={COLUMNS_3}
             className={'variables-table'}
             showPagination={true}

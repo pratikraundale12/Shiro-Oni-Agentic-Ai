@@ -121,8 +121,7 @@ export function* login(api, { payload: { type, token, ...payload } }) {
       yield call(history.push, `schedule-deployment?token=${token}`);
     }
   } else {
-    const errorMessage = 'Invalid credentials. Please try again.';
-    toast.error(errorMessage, { toastId: 'login-toast-error1' });
+    toast.error(response.data.message, { toastId: 'login-toast-error1' });
   }
 }
 

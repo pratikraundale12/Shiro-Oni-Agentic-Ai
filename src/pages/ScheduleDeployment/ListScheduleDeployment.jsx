@@ -287,7 +287,12 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Status',
-      renderCell: item => <StatusText text={item?.state} item={item} />,
+      renderCell: item => (
+        <StatusText
+          text={item?.state === 'TIME_LAPSED' ? 'TIME LAPSED' : item?.state}
+          item={item}
+        />
+      ),
       width: '10%',
     },
     {

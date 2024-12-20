@@ -502,7 +502,7 @@ export const Setting = () => {
               placeholder="Select Cluster"
             />
           </div> */}
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
             <InputField
               name="email"
               register={register}
@@ -512,17 +512,8 @@ export const Setting = () => {
               errors={errors}
             />
           </div>
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
-            <InputField
-              name="from_email"
-              register={register}
-              icon={<MailIcon />}
-              label={KDFM.FROM_EMAIL}
-              placeholder={KDFM.ENTER_EMAIL}
-              errors={errors}
-            />
-          </div>
-          <div className="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-6">
+
+          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
             <InputField
               name="title"
               register={register}
@@ -617,6 +608,16 @@ export const Setting = () => {
               icon={<QRIcons />}
               label={KDFM.SMTP_PASS}
               placeholder={KDFM.ENTER_SMTP_PASS}
+              errors={errors}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+            <InputField
+              name="from_email"
+              register={register}
+              icon={<MailIcon />}
+              label={KDFM.FROM_EMAIL}
+              placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
             />
           </div>
