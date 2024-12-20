@@ -102,7 +102,13 @@ export const UserLogin = () => {
   // setState
   const { state } = useGlobalContext();
   const params = new URLSearchParams(location.search);
+
   const token = params.get('token');
+  const param = params.get('id');
+  if (param) {
+    window.localStorage.setItem('scheduleTokenid', param);
+  }
+
   const {
     watch,
     register,

@@ -268,7 +268,7 @@ export const Grid = ({
       );
     return null;
   };
-
+  const scheduleToken = window.localStorage.getItem('scheduleTokenid');
   useEffect(() => {
     if (isNamespace && currentPage > 1) {
       return;
@@ -279,6 +279,7 @@ export const Grid = ({
           clusterId,
           params: {
             page: currentPage,
+            ...(scheduleToken && { id: scheduleToken }),
             ...(search && { search }),
             ...(watchStatus &&
               watchStatus !== 'all' && {

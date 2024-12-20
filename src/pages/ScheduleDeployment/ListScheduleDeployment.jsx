@@ -15,6 +15,7 @@ import {
   TickIconWithCircle,
 } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
+import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import { AuthenticationSelectors } from '../../store';
 import {
@@ -54,13 +55,13 @@ export const ListScheduleDeployment = () => {
   const location = useLocation();
 
   const params = new URLSearchParams(location.search);
-  const token = params.get('token');
-
+  const tokenId = params.get('id');
+  if (tokenId) {
+    window.localStorage.setItem('scheduleTokenid', tokenId);
+  }
   useEffect(() => {
-    if (token) {
-      dispatch(SchedularActions.checkApproverToken({ params: { token } }));
-    }
-  }, [dispatch, token]);
+    history.push('/schedule-deployment');
+  }, []);
 
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
