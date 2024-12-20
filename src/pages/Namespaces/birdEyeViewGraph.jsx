@@ -60,6 +60,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       .style('border', '1px solid rgb(229 230 232)')
       .style('background-color', '#f9fafb')
       .style('background-size', '14px 14px')
+      .style('border-radius', '10px 0px 0px 10px')
       .style(
         'background-image',
         'linear-gradient(to right, rgba(229, 235, 237, 1) 1px, transparent 1px), linear-gradient(to bottom, rgba(229, 235, 237, 1) 1px, transparent 1px)'
@@ -276,8 +277,8 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
 
   return (
     <div
-      className="d-flex"
-      style={{ position: 'relative', display: 'inline-block' }}
+      className="d-inline-flex bg-white p-3"
+      style={{ position: 'relative', borderRadius: '10px' }}
     >
       <svg ref={svgRef}></svg>
 

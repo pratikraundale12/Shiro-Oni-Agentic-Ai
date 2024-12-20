@@ -197,6 +197,10 @@ const BreadcrumbContainer = styled.div`
   align-items: center;
 `;
 
+const ProcessorIconDiv = styled.div`
+  padding-right: 1.5rem;
+`;
+
 const FlowDetailsPage = () => {
   const dispatch = useDispatch();
   const registryAllDetails = useSelector(
@@ -442,30 +446,37 @@ const FlowDetailsPage = () => {
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
-          <RowConfig>
-            <div
-              className={`${isUpgrade ? 'col-xl-8 col-8' : 'col-xl-5 col-5'}`}
-            >
-              <div>
-                <div className="d-flex justify-content-between align-items-center">
-                  <InputField
-                    name="namespace"
-                    type="text"
-                    label={'Selected Flow Name'}
-                    value={
-                      !isUpgrade
-                        ? selectedNameSpace?.label
-                        : formDataRegistry?.selectedFlowName
-                    }
-                    icon={<QRIcons />}
-                    disabled
-                  />
-                </div>
+          <RowConfig className="row">
+            <div className={`${isUpgrade ? 'col-lg' : 'col-lg'}`}>
+              <div className="d-flex justify-content-between align-items-center">
+                <InputField
+                  name="namespace"
+                  type="text"
+                  label={'Selected Flow Name'}
+                  value={
+                    !isUpgrade
+                      ? selectedNameSpace?.label
+                      : formDataRegistry?.selectedFlowName
+                  }
+                  icon={<QRIcons />}
+                  disabled
+                />
               </div>
             </div>
-            <ColXlTwo
-              className={`${isUpgrade ? 'col-xl-2 col-2' : 'col-xl-3 col-3'}`}
-            >
+
+            {!isUpgrade && (
+              <ColXlSix className="col-lg">
+                <InputField
+                  name="currentState"
+                  type="text"
+                  label={KDFM.CURRENT_STATE}
+                  value={selectedNameSpace?.stateExplanation || 'N/A'}
+                  icon={getIconForState(selectedNameSpace?.state)}
+                  disabled
+                />
+              </ColXlSix>
+            )}
+            <ColXlTwo className={`${isUpgrade ? 'col-lg-3' : 'col-lg-3'}`}>
               <InputField
                 name="currentVersion"
                 type="text"
@@ -480,18 +491,6 @@ const FlowDetailsPage = () => {
                 disabled
               />
             </ColXlTwo>
-            {!isUpgrade && (
-              <ColXlSix className="col-xl-4 col-4">
-                <InputField
-                  name="currentState"
-                  type="text"
-                  label={KDFM.CURRENT_STATE}
-                  value={selectedNameSpace?.stateExplanation || 'N/A'}
-                  icon={getIconForState(selectedNameSpace?.state)}
-                  disabled
-                />
-              </ColXlSix>
-            )}
             <div className="col-12 px-3">
               <RowConfig className="row">
                 {/* <ColXlFive
@@ -568,34 +567,45 @@ const FlowDetailsPage = () => {
                   }
                 </ColLgSix>
                 <ColLgSix className="col-lg-6 col-12">
-                  <InputField
-                    name="x"
-                    type="text"
-                    label={KDFM.CANVAS_POSITION}
-                    value={
-                      storedXcord ||
-                      xStateCoordinate ||
-                      selectedNameSpace?.position?.x
-                    }
-                    icon={<CanvasXIcon />}
-                    onChange={e => handleXCoordinateChangeInput(e)}
-                  />
-                  <InputField
-                    name="y"
-                    type="text"
-                    label=""
-                    value={
-                      storedYcord ||
-                      yStateCoordinate ||
-                      selectedNameSpace?.position?.y
-                    }
-                    icon={<CanvasYIcon />}
-                    onChange={e => handleYCoordinateChangeInput(e)}
-                  />
+                  <RowConfig className="row align-items-end">
+                    <ColLgSix className="col-lg-6 col-12">
+                      <InputField
+                        name="x"
+                        type="text"
+                        label={KDFM.CANVAS_POSITION}
+                        value={
+                          storedXcord ||
+                          xStateCoordinate ||
+                          selectedNameSpace?.position?.x
+                        }
+                        icon={<CanvasXIcon />}
+                        onChange={e => handleXCoordinateChangeInput(e)}
+                      />
+                    </ColLgSix>
+                    <ColLgSix className="col-lg-6 col-12">
+                      <InputField
+                        name="y"
+                        type="text"
+                        label=""
+                        value={
+                          storedYcord ||
+                          yStateCoordinate ||
+                          selectedNameSpace?.position?.y
+                        }
+                        icon={<CanvasYIcon />}
+                        onChange={e => handleYCoordinateChangeInput(e)}
+                      />
+                    </ColLgSix>
+                  </RowConfig>
+
                   <VersionDiv>{KDFM.LEGENDS}</VersionDiv>
-                  <ProcessorGroupIcon />
-                  <ProcessorIcon />
-                  <SelectedProcessGrpIcon />
+                  <ColLgSix className="d-flex flex-wrap gap-3 ps-0">
+                    <ProcessorGroupIcon />
+                    <ProcessorIconDiv>
+                      <ProcessorIcon />
+                    </ProcessorIconDiv>
+                    <SelectedProcessGrpIcon />
+                  </ColLgSix>
                 </ColLgSix>
               </RowConfig>
             </div>
