@@ -6,7 +6,10 @@ import {
   CanvasXIcon,
   CanvasYIcon,
   LinkIcon,
+  ProcessorGroupIcon,
+  ProcessorIcon,
   QRIcons,
+  SelectedProcessGrpIcon,
   TodoIcon,
   UpsideSquareIcon,
 } from '../../assets';
@@ -125,32 +128,32 @@ const ColLgSix = styled.div`
     }
   }
 `;
-const ColXlFive = styled.div`
-  flex: 0 0 auto;
-  width: 41.66666667%;
-  max-width: 100%;
-  padding-right: calc(1.5rem * 0.5);
-  padding-left: calc(1.5rem * 0.5);
-  margin-top: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: self-end;
-  column-gap: 18px;
-  &.col-12 {
-    flex: 0 0 auto;
-    width: 100%;
-  }
+// const ColXlFive = styled.div`
+//   flex: 0 0 auto;
+//   width: 41.66666667%;
+//   max-width: 100%;
+//   padding-right: calc(1.5rem * 0.5);
+//   padding-left: calc(1.5rem * 0.5);
+//   margin-top: 0;
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: self-end;
+//   column-gap: 18px;
+//   &.col-12 {
+//     flex: 0 0 auto;
+//     width: 100%;
+//   }
 
-  @media screen and (min-width: 1200px) {
-    &.col-xl-5 {
-      flex: 0 0 auto;
-      width: 50%;
-      &.upgrade-canvas-position {
-        width: 41.5%;
-      }
-    }
-  }
-`;
+//   @media screen and (min-width: 1200px) {
+//     &.col-xl-5 {
+//       flex: 0 0 auto;
+//       width: 50%;
+//       &.upgrade-canvas-position {
+//         width: 41.5%;
+//       }
+//     }
+//   }
+// `;
 const ColXlTwo = styled.div`
   max-width: 100%;
   padding-right: calc(1.5rem * 0.5);
@@ -440,7 +443,9 @@ const FlowDetailsPage = () => {
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
           <RowConfig>
-            <div className="col-12 px-3">
+            <div
+              className={`${isUpgrade ? 'col-xl-8 col-8' : 'col-xl-5 col-5'}`}
+            >
               <div>
                 <div className="d-flex justify-content-between align-items-center">
                   <InputField
@@ -458,9 +463,38 @@ const FlowDetailsPage = () => {
                 </div>
               </div>
             </div>
+            <ColXlTwo
+              className={`${isUpgrade ? 'col-xl-2 col-2' : 'col-xl-3 col-3'}`}
+            >
+              <InputField
+                name="currentVersion"
+                type="text"
+                label={KDFM.CURRENT_VERSION}
+                placeholder="N/A"
+                value={
+                  !isUpgrade
+                    ? selectedNameSpace?.version
+                    : versionSelected?.version || 'N/A'
+                }
+                icon={<QRIcons />}
+                disabled
+              />
+            </ColXlTwo>
+            {!isUpgrade && (
+              <ColXlSix className="col-xl-4 col-4">
+                <InputField
+                  name="currentState"
+                  type="text"
+                  label={KDFM.CURRENT_STATE}
+                  value={selectedNameSpace?.stateExplanation || 'N/A'}
+                  icon={getIconForState(selectedNameSpace?.state)}
+                  disabled
+                />
+              </ColXlSix>
+            )}
             <div className="col-12 px-3">
               <RowConfig className="row">
-                <ColXlFive
+                {/* <ColXlFive
                   className={`${isUpgrade ? 'col-xl-5 col-12 ' : 'col-xl-5 col-12 upgrade-canvas-position'}`}
                 >
                   <InputField
@@ -487,8 +521,8 @@ const FlowDetailsPage = () => {
                     icon={<CanvasYIcon />}
                     onChange={e => handleYCoordinateChangeInput(e)}
                   />
-                </ColXlFive>
-                <>
+                </ColXlFive> */}
+                {/* <>
                   <ColXlTwo
                     className={`${isUpgrade ? 'col-xl-6 col-6' : 'col-xl-3 col-3'}`}
                   >
@@ -518,18 +552,52 @@ const FlowDetailsPage = () => {
                       />
                     </ColXlSix>
                   )}
-                </>
+                </> */}
               </RowConfig>
             </div>
-            <div className="ms-3">
-              <VersionDiv>{KDFM.NAVIGATE}</VersionDiv>
-              {
-                <RectangleGraph
-                  data={!isUpgrade ? enhancedDataForUpgrade : enhancedData}
-                  setXStateCoordiate={setXStateCoordiate}
-                  setYStateCoordiate={setYStateCoordiate}
-                />
-              }
+            <div className="col-12 px-3">
+              <RowConfig className="row">
+                <ColLgSix className="col-lg-6 col-12">
+                  <VersionDiv>{KDFM.NAVIGATE}</VersionDiv>
+                  {
+                    <RectangleGraph
+                      data={!isUpgrade ? enhancedDataForUpgrade : enhancedData}
+                      setXStateCoordiate={setXStateCoordiate}
+                      setYStateCoordiate={setYStateCoordiate}
+                    />
+                  }
+                </ColLgSix>
+                <ColLgSix className="col-lg-6 col-12">
+                  <InputField
+                    name="x"
+                    type="text"
+                    label={KDFM.CANVAS_POSITION}
+                    value={
+                      storedXcord ||
+                      xStateCoordinate ||
+                      selectedNameSpace?.position?.x
+                    }
+                    icon={<CanvasXIcon />}
+                    onChange={e => handleXCoordinateChangeInput(e)}
+                  />
+                  <InputField
+                    name="y"
+                    type="text"
+                    label=""
+                    value={
+                      storedYcord ||
+                      yStateCoordinate ||
+                      selectedNameSpace?.position?.y
+                    }
+                    icon={<CanvasYIcon />}
+                    onChange={e => handleYCoordinateChangeInput(e)}
+                  />
+                  <VersionDiv>{KDFM.LEGENDS}</VersionDiv>
+                  <ProcessorGroupIcon />
+                  <ProcessorIcon />
+                  <SelectedProcessGrpIcon />
+                </ColLgSix>
+              </RowConfig>
             </div>
             <div className="col-12 p-3">
               <RowConfig className="row">

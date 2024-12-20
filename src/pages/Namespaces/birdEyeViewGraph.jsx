@@ -286,11 +286,11 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
         <ZoomOutIcon dataTitle={KDFM.ZOOM_OUT} onClick={handleZoomOut} />
         <FitIcon dataTitle={KDFM.FIT} onClick={handleExpand} />
       </ZoomControls>
-      <LegendsContainer>
+      {/* <LegendsContainer>
         <ProcessorGroupIcon />
         <ProcessorIcon />
         <SelectedProcessGrpIcon />
-      </LegendsContainer>
+      </LegendsContainer> */}
     </div>
   );
 };
