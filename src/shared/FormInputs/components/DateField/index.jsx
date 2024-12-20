@@ -115,9 +115,9 @@ const DateField = ({
               customOnChange(value);
             }
           };
-          const isToday =
-            field.value &&
-            new Date(field.value).toDateString() === new Date().toDateString();
+          const isToday = field.value
+            ? new Date(field.value).toDateString() === new Date().toDateString()
+            : true;
           return (
             <DatePicker
               showIcon
