@@ -20,18 +20,10 @@ const ZoomControls = styled.div`
   background: #fff;
   display: flex;
   flex-direction: column;
-  padding: 6px 8px;
+  padding: 4px 8px 0px;
   border-radius: 0 8px 8px 0px;
   border: 1px solid rgb(229, 230, 232);
-  gap: 0.8rem;
-`;
-
-const LegendsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 6px 8px;
-  gap: 1rem;
+  gap: 0.5rem;
 `;
 
 const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
@@ -278,7 +270,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
   return (
     <div
       className="d-inline-flex bg-white p-3"
-      style={{ position: 'relative', borderRadius: '10px' }}
+      style={{ position: 'relative', borderRadius: '10px', width: '100%' }}
     >
       <svg ref={svgRef}></svg>
 
