@@ -662,6 +662,7 @@ const Summary = () => {
     }));
     const payload = {
       version: versionSelected?.version,
+      flowId: selectedNameSpace?.flowId,
       namespaceId: checkDestCluster?.id,
       namespaceStatus: flowControlSelectedScheduleStored,
       payload: {
