@@ -355,19 +355,21 @@ export const ListNamespaces = () => {
               wordWrap: 'break-word',
             }}
           />
-          <button
-            type="button"
-            disabled={!item?.permissions?.canWrite || !item?.version}
-            className="btn btn-primary"
-            onClick={() => handleSelect(item)}
-            style={{
-              backgroundColor: theme.colors.primary,
-              borderColor: theme.colors.primary,
-              borderRight: '1px solid #fff',
-            }}
-          >
-            {KDFM.UPGRADE}
-          </button>
+          {!(!item?.permissions?.canWrite || !item?.version) && (
+            <button
+              type="button"
+              disabled={!item?.permissions?.canWrite || !item?.version}
+              className="btn btn-primary"
+              onClick={() => handleSelect(item)}
+              style={{
+                backgroundColor: theme.colors.primary,
+                borderColor: theme.colors.primary,
+                borderRight: '1px solid #fff',
+              }}
+            >
+              {KDFM.UPGRADE}
+            </button>
+          )}
         </div>
       ),
     },
