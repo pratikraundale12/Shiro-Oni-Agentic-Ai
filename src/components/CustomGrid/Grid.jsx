@@ -200,7 +200,7 @@ export const Grid = ({
 
         th, td {
           border-bottom: none !important;
-          padding: 25px 0 25px 25px !important;
+          padding: 5px 0 5px 10px !important;
         }
 
         th {
