@@ -479,8 +479,8 @@ const FlowDetailsPage = () => {
                     />
                   }
                 </ColLgSix>
-                <ColLgSix className="col-lg-6 col-12">
-                  <RowConfig className="row align-items-end">
+                <ColLgSix className="col-lg-6 col-12 d-flex flex-column">
+                  <RowConfig className="row align-items-end order-2 order-lg-1">
                     <ColLgSix className="col-lg-6 col-12">
                       <InputField
                         name="x"
@@ -510,14 +510,15 @@ const FlowDetailsPage = () => {
                       />
                     </ColLgSix>
                   </RowConfig>
-
-                  <VersionDiv>{KDFM.LEGENDS}</VersionDiv>
-                  <ColLgSix className="d-flex flex-wrap gap-3 ps-0">
-                    <ProcessorGroupIcon />
-                    <ProcessorIconDiv>
-                      <ProcessorIcon />
-                    </ProcessorIconDiv>
-                    <SelectedProcessGrpIcon />
+                  <ColLgSix className="order-1 order-lg-2 ps-0 mt-3 mt-lg-0 mb-3 mb-lg-0">
+                    <VersionDiv>{KDFM.LEGENDS}</VersionDiv>
+                    <ColLgSix className="d-flex flex-wrap gap-3 ps-0">
+                      <ProcessorGroupIcon />
+                      <ProcessorIconDiv>
+                        <ProcessorIcon />
+                      </ProcessorIconDiv>
+                      <SelectedProcessGrpIcon />
+                    </ColLgSix>
                   </ColLgSix>
                 </ColLgSix>
               </RowConfig>
