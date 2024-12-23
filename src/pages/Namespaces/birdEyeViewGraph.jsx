@@ -20,6 +20,7 @@ const ZoomControls = styled.div`
   background: #fff;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding: 4px 8px 0px;
   border-radius: 0 8px 8px 0px;
   border: 1px solid rgb(229, 230, 232);
@@ -270,7 +271,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
   return (
     <div
       className="d-inline-flex bg-white p-3"
-      style={{ position: 'relative', borderRadius: '10px', width: '100%' }}
+      style={{ position: 'relative', borderRadius: '10px', maxWidth: '100%' }}
     >
       <svg ref={svgRef}></svg>
 
