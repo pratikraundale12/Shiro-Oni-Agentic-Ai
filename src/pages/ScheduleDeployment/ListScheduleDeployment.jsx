@@ -139,8 +139,9 @@ export const ListScheduleDeployment = () => {
           onClick={() => handleEditClick(item)}
           // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-edit-schedule`}`}
+          className="pencil-icon-schedule-list"
         >
-          <PencilIcon />
+          <PencilIcon width={16} height={16} />
         </IconButton>
         {
           <ReactTooltip
@@ -267,7 +268,7 @@ export const ListScheduleDeployment = () => {
     {
       label: 'Schedular',
       renderCell: item => <TextRender text={item?.scheduled_by || 'N/A'} />,
-      width: '11%',
+      width: '8%',
     },
     {
       label: 'Deploy Time',
@@ -287,7 +288,7 @@ export const ListScheduleDeployment = () => {
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
-      width: '15%',
+      width: '12%',
     },
     {
       label: 'Status',
@@ -301,7 +302,7 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Actions',
-      width: '10%',
+      width: '16%',
       renderCell: item => getActionsMenu(item),
     },
   ];
