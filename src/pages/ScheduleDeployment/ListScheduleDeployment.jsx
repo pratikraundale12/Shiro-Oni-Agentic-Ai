@@ -86,6 +86,7 @@ export const ListScheduleDeployment = () => {
           onClick={() => handleCancelModel(item)}
           // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
+          style={{ border: 'transparent' }}
         >
           <CrossWithCircleIcon color="red" />
         </IconButton>
@@ -112,6 +113,7 @@ export const ListScheduleDeployment = () => {
           onClick={() => handleApproveCheck(item)}
           // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
+          style={{ border: 'transparent' }}
         >
           <TickIconWithCircle />
         </IconButton>
@@ -162,6 +164,7 @@ export const ListScheduleDeployment = () => {
           onClick={() => handleRejectCrossClick(item)}
           // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
+          style={{ border: 'transparent' }}
         >
           <RejectIcon />
         </IconButton>
