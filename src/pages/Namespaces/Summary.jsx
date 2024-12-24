@@ -673,8 +673,8 @@ const Summary = () => {
       nameSpaceName: selectedNameSpace?.name,
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       position: {
-        x: XcordUpdated || registryDetailsData?.positions[0]?.x,
-        y: YcordUpdated || registryDetailsData?.positions[0]?.y,
+        x: XcordUpdated || selectedNameSpace?.position?.x,
+        y: YcordUpdated || selectedNameSpace?.position?.y,
       },
     };
     if (!isEmpty(variblesReduxData)) {
