@@ -112,7 +112,12 @@ export function* login(api, { payload: { type, token, ...payload } }) {
         })
       );
     }
+    const scheduledId = window.localStorage.getItem('scheduleTokenid');
     yield call(fetchCurrentUser, api);
+    if (scheduledId) {
+      yield call(history.push, `/schedule-deployment`);
+    }
+
     if (!token) {
       yield put(AuthenticationActions.setRoute(DEFAULT_ROUTE));
       window.location.pathname = DEFAULT_ROUTE;

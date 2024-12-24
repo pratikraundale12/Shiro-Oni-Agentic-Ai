@@ -183,6 +183,15 @@ export const NamespacesActions = {
     `${prefix}setScheduleUpgradeByRegistry`
   ),
   setPropertyUpdateResponse: createAction(`${prefix}setPropertyUpdateResponse`),
+  fetchDuplicateScheduleData: createAction(
+    `${prefix}fetchDuplicateScheduleData`
+  ),
+  setDuplicateScheduleModalOpen: createAction(
+    `${prefix}setDuplicateScheduleModalOpen`
+  ),
+  setDuplicateScheduleModalData: createAction(
+    `${prefix}setDuplicateScheduleModalData`
+  ),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -273,6 +282,8 @@ export const NAMESPACES_INITIAL_STATE = {
   flowControlStateAtScheduleDeploy: null,
   scheduleUpgradeByRegistry: false,
   propertyUpdateResponse: {},
+  duplicateScheduleModalOpen: false,
+  duplicateScheduleModalData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -363,6 +374,10 @@ export const NamespacesSelectors = {
   getScheduleUpgradeByRegistry: state =>
     state.namespaces.scheduleUpgradeByRegistry,
   getPropertyUpdateResponse: state => state.namespaces.propertyUpdateResponse,
+  getDuplicateScheduleModalOpen: state =>
+    state.namespaces.duplicateScheduleModalOpen,
+  getDuplicateScheduleModalData: state =>
+    state.namespaces.duplicateScheduleModalData,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -829,7 +844,19 @@ const setPropertyUpdateResponse = (state, { payload }) => {
     propertyUpdateResponse: payload,
   };
 };
+const setDuplicateScheduleModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    duplicateScheduleModalOpen: payload,
+  };
+};
 
+const setDuplicateScheduleModalData = (state, { payload }) => {
+  return {
+    ...state,
+    duplicateScheduleModalData: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1013,6 +1040,14 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setPropertyUpdateResponse,
         setPropertyUpdateResponse
+      )
+      .addCase(
+        NamespacesActions.setDuplicateScheduleModalOpen,
+        setDuplicateScheduleModalOpen
+      )
+      .addCase(
+        NamespacesActions.setDuplicateScheduleModalData,
+        setDuplicateScheduleModalData
       );
   }
 );

@@ -396,30 +396,34 @@ const ControllerServiceTab = ({
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => (
-        <TextRender
-          key={item?.name}
-          text={
-            item?.controllerService?.length
-              ? item?.controllerService[0]?.name
-              : item?.name
-          }
-          capitalizeText={false}
-        />
-      ),
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
+        return (
+          <TextRender
+            key={currentItem?.name}
+            text={currentItem?.name}
+            capitalizeText={false}
+          />
+        );
+      },
       width: '21%',
     },
     {
       label: 'Type',
       renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
         return (
           <TextRender
-            key={item?.typeValue}
-            text={
-              item?.controllerService?.length
-                ? item?.controllerService[0]?.typeValue
-                : item?.typeValue
-            }
+            key={currentItem?.typeValue}
+            text={currentItem?.typeValue}
             capitalizeText={false}
           />
         );
@@ -428,54 +432,62 @@ const ControllerServiceTab = ({
     },
     {
       label: 'Bundle',
-      renderCell: item => (
-        <TextRender
-          key={item?.bundleValue}
-          text={
-            item?.controllerService?.length
-              ? item?.controllerService[0]?.bundleValue
-              : item?.bundleValue
-          }
-          capitalizeText={false}
-        />
-      ),
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
+        return (
+          <TextRender
+            key={currentItem?.bundleValue}
+            text={currentItem?.bundleValue}
+            capitalizeText={false}
+          />
+        );
+      },
       width: '18%',
     },
     {
       label: 'State',
-      renderCell: item =>
-        item?.controllerService?.length ? (
-          <StatusText
-            text={item?.controllerService[0]?.state}
-            item={item?.controllerService[0]}
-          />
-        ) : (
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData || item;
+
+        return (
           <StatusText
             text={
-              item?.state === 'DISABLED' && item?.validationStatus === 'INVALID'
+              currentItem?.state === 'DISABLED' &&
+              currentItem?.validationStatus === 'INVALID'
                 ? 'INVALID'
-                : item?.state
+                : currentItem?.state
             }
-            item={item}
+            item={currentItem}
           />
-        ),
+        );
+      },
       width: '16%',
     },
     {
       label: 'Scope',
-      renderCell: item =>
-        item?.controllerService?.length
-          ? item?.controllerService[0]?.scope
-          : item?.scope,
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData || item;
+        return currentItem?.scope || 'N/A';
+      },
       width: '11%',
     },
     {
       label: 'Action',
       renderCell: item => {
         const isControllerService = item?.controllerService?.length > 0;
-        const stateItem = isControllerService
+        const stateItem = item?.controllerService?.length
           ? item?.controllerService[0]
-          : item;
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
         const state = stateItem?.state;
         const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
 
@@ -490,7 +502,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {(isControllerService || item?.properties?.length) && (
+            {(isControllerService || stateItem?.properties?.length) && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -530,7 +542,7 @@ const ControllerServiceTab = ({
             )}
 
             {/* Enable/Disable Button */}
-            {isButtonVisible && (
+            {isButtonVisible && !item?.configured && (
               <>
                 <button
                   className="border-0 bg-white ms-2"
@@ -553,7 +565,7 @@ const ControllerServiceTab = ({
             )}
 
             {/* Re-Configure Button */}
-            {item.updatedValue && (
+            {item.updatedValue && !item?.configured && (
               <React.Fragment>
                 <ReConfigureButton
                   className="ms-2"
@@ -578,7 +590,8 @@ const ControllerServiceTab = ({
             {/* Configure Button */}
             {!isControllerService &&
               !isButtonVisible &&
-              !item?.updatedValue && (
+              !item?.updatedValue &&
+              !item?.configured && (
                 <ConfigureButton onClick={() => handleConfigure(item)}>
                   {KDFM.CONFIGURE}
                 </ConfigureButton>
@@ -812,8 +825,8 @@ const ControllerServiceTab = ({
   useEffect(() => {
     if (!isEmpty(stateChangeResponse)) {
       setExternalControllerServices(prevServices =>
-        prevServices.map(service => {
-          if (service.updatedValue === selectedItemFromList?.id) {
+        prevServices?.map(service => {
+          if (service?.updatedValue === selectedItemFromList?.id) {
             return {
               ...service,
               controllerService: service?.controllerService?.map((cs, index) =>
@@ -869,6 +882,18 @@ const ControllerServiceTab = ({
               validationStatus: propertyUpdateResponse?.validationStatus,
               isPropertyUpdated: true,
             };
+          } else if (
+            service?.configured &&
+            service?.configuredData?.id === selectedItemFromList?.id
+          ) {
+            return {
+              ...service,
+              configuredData: {
+                ...service?.configuredData,
+                state: propertyUpdateResponse?.state,
+                validationStatus: propertyUpdateResponse?.validationStatus,
+              },
+            };
           }
           return service;
         })
@@ -915,6 +940,9 @@ const ControllerServiceTab = ({
           service =>
             service?.id === item?.id || service?.id === item?.identifier
         );
+      }
+      if (data?.configured) {
+        return true;
       }
       return (
         item?.updatedValue !== undefined &&
@@ -972,7 +1000,7 @@ const ControllerServiceTab = ({
     const finalPayload = initialExternalService
       ?.map(service => {
         const matchingTableData = externalControllerServices?.find(tableItem =>
-          tableItem.parentId
+          tableItem?.parentId
             ? tableItem.parentId
             : tableItem?.identifier === service.identifier
         );
@@ -1006,10 +1034,10 @@ const ControllerServiceTab = ({
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  const handleToggle = index => {
-    if (!isUpgrade && openIndex !== index) {
+  const handleToggle = (index, item) => {
+    if (!isUpgrade && openIndex !== index && item?.isUpgradeLocal) {
       dispatch(
-        NamespacesActions.getControllerServiceList(selectedNamespace?.id)
+        NamespacesActions.getControllerServiceList({localOnly: true})
       );
     }
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
@@ -1101,6 +1129,7 @@ const ControllerServiceTab = ({
       }
     } else {
       collapsibles.push({
+        isUpgradeLocal: true,
         title: selectedNamespace?.name || 'Unnamed Group',
         content: (
           <Table
@@ -1221,7 +1250,7 @@ const ControllerServiceTab = ({
               key={index}
               title={item.title}
               isTableOpen={openIndex === index}
-              toggleCollapsible={() => handleToggle(index)}
+              toggleCollapsible={() => handleToggle(index, item)}
               isAddBtnVisible={false}
               onBtnClick={() => {
                 setOpenIndex(index);
@@ -1230,7 +1259,7 @@ const ControllerServiceTab = ({
                 );
               }}
             >
-              {!isUpgrade && (
+              {!isUpgrade && item?.isUpgradeLocal && (
                 <SearchContainer>
                   <SmallSearchIcon
                     width={18}

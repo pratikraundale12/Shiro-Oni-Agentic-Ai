@@ -267,6 +267,8 @@ export const GridActions = ({
   }, [selectedCluster]);
 
   const handleRefresh = () => {
+    window.localStorage.removeItem('scheduleTokenid');
+    dispatch(GridSagsActions.fetchGrid({ module, clusterId, params: {} }));
     if (!isEmpty(selectedCluster) && breadcrumbs?.length > 1) {
       const payload = {
         selectedNamespace: selectedNamespace,
@@ -280,7 +282,12 @@ export const GridActions = ({
       window.location.reload();
     }
   };
-
+  useEffect(() => {
+    if (location.pathname !== '/schedule-deployment') {
+      window.localStorage.removeItem('scheduleTokenid');
+    }
+  }, []);
+  const scheduleToken = window.localStorage.getItem('scheduleTokenid');
   useEffect(() => {
     if (watchStatus || entity || event) {
       dispatch(
@@ -289,7 +296,8 @@ export const GridActions = ({
           clusterId,
           params: {
             page: 1,
-            ...(search && { search }),
+            id: scheduleToken,
+            ...(search && { search: search }),
             ...(watchStatus &&
               watchStatus !== 'all' && {
                 [getModuleBasedStatusKey(module)]: watchStatus,

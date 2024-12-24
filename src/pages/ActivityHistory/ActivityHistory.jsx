@@ -7,25 +7,30 @@ export const ActvityHistory = () => {
   const COLUMNS = [
     {
       label: KDFM.EVENT,
+      width: '10%',
       renderCell: item => (
         <TextRender text={item.event || KDFM.NA} toolTip={false} />
       ),
     },
     {
       label: KDFM.ENTITY,
+      width: '10%',
       renderCell: item => <TextRender text={item.entity || KDFM.NA} />,
     },
     {
       label: KDFM.NAMESPACE,
+      width: '10%',
       renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
       sort: { sortKey: 'namespace' },
     },
     {
       label: KDFM.FLOW_NAME,
+      width: '10%',
       renderCell: item => <TextRender text={item.flow_name || KDFM.NA} />,
     },
     {
       label: KDFM.CLUSTER,
+      width: '10%',
       renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
       sort: { sortKey: 'cluster' },
     },
@@ -34,23 +39,27 @@ export const ActvityHistory = () => {
       renderCell: item => (
         <TextRender text={item.message || KDFM.NA} capitalizeText={false} />
       ),
-      width: '20%',
+      width: '12%',
     },
     {
       label: KDFM.VERSION,
+      width: '8%',
       renderCell: item => <TextRender text={item.version || KDFM.NA} />,
     },
     {
       label: KDFM.STATUS,
+      width: '8%',
       renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
     },
     {
       label: KDFM.TIMESTAMP,
+      width: '12%',
       renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
       sort: { sortKey: 'timestamp' },
     },
     {
       label: KDFM.CREATED_BY,
+      width: '10%',
       renderCell: item => <TextRender text={item.created_by_name || KDFM.NA} />,
     },
   ];

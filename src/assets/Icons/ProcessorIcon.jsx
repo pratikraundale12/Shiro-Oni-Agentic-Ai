@@ -34,12 +34,12 @@ export const ProcessorIcon = () => (
         height="29.5"
         rx="1.75"
         fill="white"
-        stroke="#DDE4F0"
+        stroke="#BFDFDF"
         strokeWidth="0.5"
       />
       <path
         d="M0 2C0 0.89543 0.895431 0 2 0H64C65.1046 0 66 0.895431 66 2V7H0V2Z"
-        fill="#DDE4F0"
+        fill="#BFDFDF"
       />
     </svg>
     <div className="data-title">
@@ -50,7 +50,7 @@ export const ProcessorIcon = () => (
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <circle cx="2.5" cy="2.5" r="2.5" fill="#DDE4F0" />
+        <circle cx="2.5" cy="2.5" r="2.5" fill="#BFDFDF" />
       </svg>
       &nbsp;
       <span>Processor</span>

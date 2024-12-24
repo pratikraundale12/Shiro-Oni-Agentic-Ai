@@ -6,7 +6,10 @@ import {
   CanvasXIcon,
   CanvasYIcon,
   LinkIcon,
+  ProcessorGroupIcon,
+  ProcessorIcon,
   QRIcons,
+  SelectedProcessGrpIcon,
   TodoIcon,
   UpsideSquareIcon,
 } from '../../assets';
@@ -125,32 +128,7 @@ const ColLgSix = styled.div`
     }
   }
 `;
-const ColXlFive = styled.div`
-  flex: 0 0 auto;
-  width: 41.66666667%;
-  max-width: 100%;
-  padding-right: calc(1.5rem * 0.5);
-  padding-left: calc(1.5rem * 0.5);
-  margin-top: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: self-end;
-  column-gap: 18px;
-  &.col-12 {
-    flex: 0 0 auto;
-    width: 100%;
-  }
 
-  @media screen and (min-width: 1200px) {
-    &.col-xl-5 {
-      flex: 0 0 auto;
-      width: 50%;
-      &.upgrade-canvas-position {
-        width: 41.5%;
-      }
-    }
-  }
-`;
 const ColXlTwo = styled.div`
   max-width: 100%;
   padding-right: calc(1.5rem * 0.5);
@@ -194,6 +172,10 @@ const BreadcrumbContainer = styled.div`
   align-items: center;
 `;
 
+const ProcessorIconDiv = styled.div`
+  padding-right: 1.5rem;
+`;
+
 const FlowDetailsPage = () => {
   const dispatch = useDispatch();
   const registryAllDetails = useSelector(
@@ -226,11 +208,19 @@ const FlowDetailsPage = () => {
   const [xStateCoordinate, setXStateCoordiate] = useState(null);
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
   useEffect(() => {
-    if (registryDetailsData?.positions?.[0]?.x !== undefined) {
-      setXStateCoordiate(registryDetailsData?.positions[0]?.x);
-      setYStateCoordiate(registryDetailsData?.positions?.[0]?.y);
+    if (isUpgrade) {
+      if (registryDetailsData?.positions?.[0]?.x !== undefined) {
+        setXStateCoordiate(registryDetailsData?.positions[0]?.x);
+        setYStateCoordiate(registryDetailsData?.positions?.[0]?.y);
+      }
     }
-  }, [registryDetailsData]);
+    if (!isUpgrade) {
+      if (selectedNameSpace?.position?.x !== undefined) {
+        setXStateCoordiate(selectedNameSpace?.position?.x);
+        setYStateCoordiate(selectedNameSpace?.position?.y);
+      }
+    }
+  }, [registryDetailsData, selectedNameSpace, isUpgrade]);
 
   const gridDataDest = useSelector(state =>
     GridSelectors.getGridData(state, 'namespaces')
@@ -431,97 +421,107 @@ const FlowDetailsPage = () => {
       </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <ScrollSetGrey className="scroll-set-grey pe-1">
-          <RowConfig>
-            <div className="col-12 px-3">
-              <div>
-                <div className="d-flex justify-content-between align-items-center">
-                  <InputField
-                    name="namespace"
-                    type="text"
-                    label={'Selected Flow Name'}
-                    value={
-                      !isUpgrade
-                        ? selectedNameSpace?.label
-                        : formDataRegistry?.selectedFlowName
-                    }
-                    icon={<QRIcons />}
-                    disabled
-                  />
-                </div>
+          <RowConfig className="row">
+            <div className={`${isUpgrade ? 'col-lg' : 'col-lg'}`}>
+              <div className="d-flex justify-content-between align-items-center">
+                <InputField
+                  name="namespace"
+                  type="text"
+                  label={'Selected Flow Name'}
+                  value={
+                    !isUpgrade
+                      ? selectedNameSpace?.label
+                      : formDataRegistry?.selectedFlowName
+                  }
+                  icon={<QRIcons />}
+                  disabled
+                />
               </div>
             </div>
+
+            {!isUpgrade && (
+              <ColXlSix className="col-lg">
+                <InputField
+                  name="currentState"
+                  type="text"
+                  label={KDFM.CURRENT_STATE}
+                  value={selectedNameSpace?.stateExplanation || 'N/A'}
+                  icon={getIconForState(selectedNameSpace?.state)}
+                  disabled
+                />
+              </ColXlSix>
+            )}
+            <ColXlTwo className={`${isUpgrade ? 'col-lg-3' : 'col-lg-3'}`}>
+              <InputField
+                name="currentVersion"
+                type="text"
+                label={KDFM.CURRENT_VERSION}
+                placeholder="N/A"
+                value={
+                  !isUpgrade
+                    ? selectedNameSpace?.version
+                    : versionSelected?.version || 'N/A'
+                }
+                icon={<QRIcons />}
+                disabled
+              />
+            </ColXlTwo>
+            <div className="col-12 px-3"></div>
             <div className="col-12 px-3">
               <RowConfig className="row">
-                <ColXlFive
-                  className={`${isUpgrade ? 'col-xl-5 col-12 ' : 'col-xl-5 col-12 upgrade-canvas-position'}`}
-                >
-                  <InputField
-                    name="x"
-                    type="text"
-                    label={KDFM.CANVAS_POSITION}
-                    value={
-                      storedXcord ||
-                      xStateCoordinate ||
-                      selectedNameSpace?.position?.x
-                    }
-                    icon={<CanvasXIcon />}
-                    onChange={e => handleXCoordinateChangeInput(e)}
-                  />
-                  <InputField
-                    name="y"
-                    type="text"
-                    label=""
-                    value={
-                      storedYcord ||
-                      yStateCoordinate ||
-                      selectedNameSpace?.position?.y
-                    }
-                    icon={<CanvasYIcon />}
-                    onChange={e => handleYCoordinateChangeInput(e)}
-                  />
-                </ColXlFive>
-                <>
-                  <ColXlTwo
-                    className={`${isUpgrade ? 'col-xl-6 col-6' : 'col-xl-3 col-3'}`}
-                  >
-                    <InputField
-                      name="currentVersion"
-                      type="text"
-                      label={KDFM.CURRENT_VERSION}
-                      placeholder="N/A"
-                      value={
-                        !isUpgrade
-                          ? selectedNameSpace?.version
-                          : versionSelected?.version || 'N/A'
-                      }
-                      icon={<QRIcons />}
-                      disabled
+                <ColLgSix className="col-lg-6 col-12">
+                  <VersionDiv>{KDFM.NAVIGATE}</VersionDiv>
+                  {
+                    <RectangleGraph
+                      data={!isUpgrade ? enhancedDataForUpgrade : enhancedData}
+                      setXStateCoordiate={setXStateCoordiate}
+                      setYStateCoordiate={setYStateCoordiate}
                     />
-                  </ColXlTwo>
-                  {!isUpgrade && (
-                    <ColXlSix className="col-xl-4 col-4">
+                  }
+                </ColLgSix>
+                <ColLgSix className="col-lg-6 col-12 d-flex flex-column">
+                  <RowConfig className="row align-items-end order-2 order-lg-1">
+                    <ColLgSix className="col-lg-6 col-12">
                       <InputField
-                        name="currentState"
+                        name="x"
                         type="text"
-                        label={KDFM.CURRENT_STATE}
-                        value={selectedNameSpace?.stateExplanation || 'N/A'}
-                        icon={getIconForState(selectedNameSpace?.state)}
-                        disabled
+                        label={KDFM.CANVAS_POSITION}
+                        value={
+                          storedXcord ||
+                          xStateCoordinate ||
+                          selectedNameSpace?.position?.x
+                        }
+                        icon={<CanvasXIcon />}
+                        onChange={e => handleXCoordinateChangeInput(e)}
                       />
-                    </ColXlSix>
-                  )}
-                </>
+                    </ColLgSix>
+                    <ColLgSix className="col-lg-6 col-12">
+                      <InputField
+                        name="y"
+                        type="text"
+                        label=""
+                        value={
+                          storedYcord ||
+                          yStateCoordinate ||
+                          selectedNameSpace?.position?.y
+                        }
+                        icon={<CanvasYIcon />}
+                        onChange={e => handleYCoordinateChangeInput(e)}
+                      />
+                    </ColLgSix>
+                  </RowConfig>
+                  <ColLgSix className="order-1 order-lg-2 ps-0 mt-3 mt-lg-0 mb-3 mb-lg-0">
+                    <VersionDiv>{KDFM.LEGENDS}</VersionDiv>
+                    <ColLgSix className="d-flex flex-wrap gap-3 ps-0">
+                      <ProcessorGroupIcon />
+                      <ProcessorIconDiv>
+                        <ProcessorIcon />
+                      </ProcessorIconDiv>
+                      <SelectedProcessGrpIcon />
+                    </ColLgSix>
+                  </ColLgSix>
+                </ColLgSix>
               </RowConfig>
-            </div>
-            <div className="ms-3">
-              <VersionDiv>{KDFM.NAVIGATE}</VersionDiv>
-              {
-                <RectangleGraph
-                  data={!isUpgrade ? enhancedDataForUpgrade : enhancedData}
-                  setXStateCoordiate={setXStateCoordiate}
-                  setYStateCoordiate={setYStateCoordiate}
-                />
-              }
             </div>
             <div className="col-12 p-3">
               <RowConfig className="row">

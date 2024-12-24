@@ -31,6 +31,27 @@ export const IconButton = styled.button`
     opacity: 0.4;
     cursor: not-allowed;
   }
+
+  @media (max-width: 1025px) {
+    min-width: 24px;
+    min-height: 24px;
+    border-width: 0.5px;
+    & svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+  &.pencil-icon-schedule-list {
+    @media (max-width: 1025px) {
+      min-width: 24px;
+      min-height: 24px;
+      border-width: 0.5px;
+      & svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
 `;
 
 const ClusterDeatils = styled.div`

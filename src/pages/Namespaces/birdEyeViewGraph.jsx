@@ -20,18 +20,11 @@ const ZoomControls = styled.div`
   background: #fff;
   display: flex;
   flex-direction: column;
-  padding: 6px 8px;
+  justify-content: center;
+  padding: 4px 8px 0px;
   border-radius: 0 8px 8px 0px;
   border: 1px solid rgb(229, 230, 232);
-  gap: 0.8rem;
-`;
-
-const LegendsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 6px 8px;
-  gap: 1rem;
+  gap: 0.5rem;
 `;
 
 const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
@@ -42,7 +35,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
 
   const xScaleRef = useRef(false);
   const yScaleRef = useRef(false);
-  const initialZoomLevel = 0.6;
+  const initialZoomLevel = 0.2;
 
   useEffect(() => {
     if (!data || data.length === 0) {
@@ -60,6 +53,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       .style('border', '1px solid rgb(229 230 232)')
       .style('background-color', '#f9fafb')
       .style('background-size', '14px 14px')
+      .style('border-radius', '10px 0px 0px 10px')
       .style(
         'background-image',
         'linear-gradient(to right, rgba(229, 235, 237, 1) 1px, transparent 1px), linear-gradient(to bottom, rgba(229, 235, 237, 1) 1px, transparent 1px)'
@@ -276,8 +270,8 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
 
   return (
     <div
-      className="d-flex"
-      style={{ position: 'relative', display: 'inline-block' }}
+      className="d-inline-flex bg-white p-3"
+      style={{ position: 'relative', borderRadius: '10px', maxWidth: '100%' }}
     >
       <svg ref={svgRef}></svg>
 
@@ -286,11 +280,6 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
         <ZoomOutIcon dataTitle={KDFM.ZOOM_OUT} onClick={handleZoomOut} />
         <FitIcon dataTitle={KDFM.FIT} onClick={handleExpand} />
       </ZoomControls>
-      <LegendsContainer>
-        <ProcessorGroupIcon />
-        <ProcessorIcon />
-        <SelectedProcessGrpIcon />
-      </LegendsContainer>
     </div>
   );
 };

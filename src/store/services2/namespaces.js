@@ -33,11 +33,21 @@ export const namespacesAPI = api => {
 
   const getVariableList = ({ clusterId, namespaceId }) =>
     api.get(`clusters/${clusterId}/namespaces/${namespaceId}/variables`);
-  const getAllRootControllerServiceNamespace = ({ clusterId, namespaceId }) => {
+  const getAllRootControllerServiceNamespace = ({
+    clusterId,
+    namespaceId,
+    localOnly,
+  }) => {
     const url =
-      namespaceId && window?.location?.pathname != '/controller-service'
+      namespaceId &&
+      window?.location?.pathname != '/controller-service' &&
+      !localOnly
         ? `controller-services/${clusterId}/namespace/${namespaceId}`
-        : `controller-services/${clusterId}/namespace`;
+        : namespaceId &&
+            window?.location?.pathname != '/controller-service' &&
+            localOnly
+          ? `controller-services/${clusterId}/namespace/${namespaceId}?localOnly=true`
+          : `controller-services/${clusterId}/namespace`;
 
     return api.get(url);
   };
@@ -246,7 +256,9 @@ export const namespacesAPI = api => {
       : `/exports/${clusterId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`;
     return api.get(URL);
   };
-
+  const fetchDuplicateScheduleData = ({ flowId }) => {
+    return api.get(`/check-exisiting-flow/${flowId}`);
+  };
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -280,5 +292,6 @@ export const namespacesAPI = api => {
     fetchFlowNameList,
     fetchVersionData,
     fetchRegistryFlowDetails,
+    fetchDuplicateScheduleData,
   };
 };

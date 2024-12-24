@@ -165,8 +165,12 @@ const ScheduleDeploymentTab = ({
   useEffect(() => {
     if (timeDeployScheduleDeployment) {
       setScheduleDeployTime(timeDeployScheduleDeployment);
+    } else {
+      reset({
+        scheduled_time: null,
+      });
     }
-  }, [timeDeployScheduleDeployment]);
+  }, [timeDeployScheduleDeployment, reset]);
 
   useEffect(() => {
     if (scheduleDeployTime) {
@@ -174,7 +178,7 @@ const ScheduleDeploymentTab = ({
         scheduled_time: scheduleDeployTime,
       });
     }
-  }, [scheduleDeployTime]);
+  }, [scheduleDeployTime, reset]);
 
   const handleUpdateStatus = status => {
     setActiveButton(status);
