@@ -602,12 +602,13 @@ export const Setting = () => {
             />
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
-            <InputField
+            <PasswordField
               name="smtp_pass"
               register={register}
-              icon={<QRIcons />}
+              watch={watch}
               label={KDFM.SMTP_PASS}
               placeholder={KDFM.ENTER_SMTP_PASS}
+              disableToggle={false}
               errors={errors}
             />
           </div>
