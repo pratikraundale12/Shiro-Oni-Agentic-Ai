@@ -254,8 +254,7 @@ export const ROUTES_MENU = [
         component: <Setting />,
       },
     ],
-    permission: 'view_ldap',
-    isSideBarHidden: false,
+    permission: 'add_user',
   },
   {
     name: 'Help & Support',

@@ -330,9 +330,9 @@ export const ListScheduleDeployment = () => {
     { value: 'all', label: 'All' },
     { value: 'PENDING', label: 'Pending' },
     { value: 'DEPLOYED', label: 'Deployed' },
-    { value: 'IN PROGRESS', label: 'In Progress' },
-    { value: 'NOT APPROVED', label: 'Not Approved' },
-    { value: 'CANCELLED', label: 'Cancelled' },
+    { value: 'TIME_LAPSED', label: 'Time Lapsed' },
+    { value: 'REJECTED', label: 'Rejected' },
+    { value: 'STOPPED', label: 'Stopped' },
   ];
 
   const sortFns = {
@@ -363,9 +363,9 @@ export const ListScheduleDeployment = () => {
         onRequestClose={() =>
           dispatch(SchedularActions.setApproveScheduleModal(false))
         }
-        primaryText={'Are you sure you want Approve this Deployment?'}
+        primaryText={'Are you sure you want to approve this Deployment?'}
         secondaryText={
-          'Once Approved it will automatically Schedule according to process'
+          'Once approved it will automatically schedule according to process'
         }
         onSubmit={handleApproveClick}
       />
