@@ -122,8 +122,13 @@ const DateField = ({
             <DatePicker
               showIcon
               showTimeSelect
-              timeIntervals={5}
-              onChange={onChange}
+              timeIntervals={2}
+              onChange={val => {
+                onChange(val);
+              }}
+              onKeyDown={e => {
+                e.preventDefault();
+              }}
               selected={field.value}
               placeholderText={placeholder}
               minDate={new Date()}
