@@ -1037,7 +1037,7 @@ const ControllerServiceTab = ({
   const handleToggle = (index, item) => {
     if (!isUpgrade && openIndex !== index && item?.isUpgradeLocal) {
       dispatch(
-        NamespacesActions.getControllerServiceList(selectedNamespace?.id)
+        NamespacesActions.getControllerServiceList({localOnly: true})
       );
     }
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));

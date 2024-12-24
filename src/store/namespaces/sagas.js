@@ -693,7 +693,8 @@ export function* singleNamespaceData(api) {
   }
 }
 
-export function* getControllerServiceList(api) {
+export function* getControllerServiceList(api, action) {
+  const { localOnly } = action.payload;
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -717,6 +718,7 @@ export function* getControllerServiceList(api) {
       {
         clusterId: selectedCluster?.value,
         namespaceId: selectedNamespaceId?.id || selectedNamespace?.id,
+        localOnly: localOnly,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
