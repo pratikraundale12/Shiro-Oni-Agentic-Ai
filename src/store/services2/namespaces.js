@@ -256,7 +256,9 @@ export const namespacesAPI = api => {
       : `/exports/${clusterId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`;
     return api.get(URL);
   };
-
+  const fetchDuplicateScheduleData = ({ flowId }) => {
+    return api.get(`/check-exisiting-flow/${flowId}`);
+  };
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -290,5 +292,6 @@ export const namespacesAPI = api => {
     fetchFlowNameList,
     fetchVersionData,
     fetchRegistryFlowDetails,
+    fetchDuplicateScheduleData,
   };
 };
