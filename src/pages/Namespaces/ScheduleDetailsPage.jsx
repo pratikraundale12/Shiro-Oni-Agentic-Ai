@@ -158,9 +158,19 @@ const ScheduleDeploymentTab = ({
   );
   const {
     control,
+    watch,
     formState: { errors },
     reset,
   } = useForm({});
+
+  const watchStatus = watch('scheduled_time');
+  const selectedStamp = new Date(watchStatus);
+  const currentDate = new Date();
+  if (selectedStamp < currentDate) {
+    reset({
+      scheduled_time: currentDate,
+    });
+  }
 
   useEffect(() => {
     if (timeDeployScheduleDeployment) {
