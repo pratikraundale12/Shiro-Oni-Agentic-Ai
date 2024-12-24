@@ -24,10 +24,7 @@ export const DuplicateScheduleModal = ({ handleScheduleDeployDuplicate }) => {
   const duplicateResponseData = useSelector(
     NamespacesSelectors.getDuplicateScheduleModalData
   );
-  console.log(duplicateResponseData, 'duplicateResponseData');
-  //   const loading = useSelector(state =>
-  //     LoadingSelectors.getLoading(state, 'editScheduleDeployment')
-  //   );
+
   const { handleSubmit } = useForm();
 
   const onRequestClose = () => {
