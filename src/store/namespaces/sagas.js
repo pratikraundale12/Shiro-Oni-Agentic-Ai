@@ -1279,6 +1279,43 @@ export function* updateNamespaceStatusRegistry(api, { payload }) {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
 }
+
+export function* fetchDuplicateScheduleData(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchDuplicateScheduleData',
+    loadingSection: 'fetchDuplicateScheduleData',
+    apiMethod: api.fetchDuplicateScheduleData,
+    apiParams: [
+      {
+        flowId: payload?.flowId,
+      },
+    ],
+  });
+
+  if (response?.status === 200) {
+    yield put(NamespacesActions.setDuplicateScheduleModalOpen(true));
+    yield put(NamespacesActions.setDuplicateScheduleModalData(response?.data));
+  } else if (response?.status === 204) {
+    if (payload?.mode == 'deploy') {
+      yield put(NamespacesActions.deployNamespaceByRegistryFlow(payload));
+    } else if (payload?.mode == 'upgrade') {
+      yield put(NamespacesActions.upgradeCluster(payload));
+    }
+  }
+  if (!response.ok) {
+    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  }
+}
 //
 export function* namespacesSagas(api) {
   yield all([
@@ -1389,6 +1426,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.updateNamespaceStatusRegistry,
       updateNamespaceStatusRegistry,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchDuplicateScheduleData,
+      fetchDuplicateScheduleData,
       api
     ),
   ]);

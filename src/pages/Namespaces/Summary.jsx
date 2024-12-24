@@ -39,6 +39,7 @@ import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymen
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
 import NamespaceDeploy from './NamespaceDeploy';
+import { DuplicateScheduleModal } from './DuplicateScheduleModal';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -652,7 +653,79 @@ const Summary = () => {
     if (!isEmpty(controllerServiceReduxData)) {
       payload.controllerServiceData = controllerServiceReduxData;
     }
-    dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
+    dispatch(NamespacesActions.fetchDuplicateScheduleData(payload));
+
+    // dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
+  };
+  const handleScheduleDeployDuplicate = () => {
+    if (scheduleDeploymentFlow) {
+      const updatedData = paramterDeployArray.map(item => ({
+        parameterName: item.name,
+        parameters: item.parameters,
+      }));
+      const payload = {
+        version: registryFlowVerion?.version,
+        flowId: registryFlowVerion?.flowId,
+        bucketId: registryFlowVerion?.bucketId,
+        registryId: registryData?.id,
+        namespaceId: checkDestCluster?.value,
+        mode: 'deploy',
+        scheduledTime: timeDeployScheduleDeployment?.toISOString(),
+        isScheduled: true,
+        flowName: formDataRegistry?.selectedFlowName,
+        position: {
+          x: XcordUpdated || registryDetailsData?.positions[0]?.x,
+          y: YcordUpdated || registryDetailsData?.positions[0]?.y,
+        },
+        keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
+        namespaceStatus: flowControlSelectedScheduleStored,
+      };
+      //
+      if (!isEmpty(variblesReduxData)) {
+        payload.variablesData = variblesReduxData;
+      }
+      if (!isEmpty(updatedData)) {
+        payload.parameterData = updatedData;
+      }
+      if (!isEmpty(controllerServiceReduxData)) {
+        payload.controllerServiceData = controllerServiceReduxData;
+      }
+
+      dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
+    } else {
+      const updatedData = paramterDeployArray.map(item => ({
+        parameterName: item.name,
+        parameters: item.parameters,
+      }));
+      const payload = {
+        version: versionSelected?.version,
+        flowId: selectedNameSpace?.flowId,
+        namespaceId: checkDestCluster?.id,
+        namespaceStatus: flowControlSelectedScheduleStored,
+        payload: {
+          namespaceId: checkDestCluster?.value,
+        },
+        flowName: selectedNameSpace?.flowName,
+        isScheduled: true,
+        mode: 'upgrade',
+        nameSpaceName: selectedNameSpace?.name,
+        scheduledTime: timeDeployScheduleDeployment?.toISOString(),
+        position: {
+          x: XcordUpdated || registryDetailsData?.positions[0]?.x,
+          y: YcordUpdated || registryDetailsData?.positions[0]?.y,
+        },
+      };
+      if (!isEmpty(variblesReduxData)) {
+        payload.payload.variablesData = variblesReduxData;
+      }
+      if (!isEmpty(updatedData)) {
+        payload.payload.parameterData = updatedData;
+      }
+      if (!isEmpty(controllerServiceReduxData)) {
+        payload.payload.controllerServiceData = controllerServiceReduxData;
+      }
+      dispatch(NamespacesActions.upgradeCluster(payload));
+    }
   };
 
   const handleScheduleUpgrade = () => {
@@ -670,6 +743,7 @@ const Summary = () => {
       },
       flowName: selectedNameSpace?.flowName,
       isScheduled: true,
+      mode: 'upgrade',
       nameSpaceName: selectedNameSpace?.name,
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       position: {
@@ -686,7 +760,8 @@ const Summary = () => {
     if (!isEmpty(controllerServiceReduxData)) {
       payload.payload.controllerServiceData = controllerServiceReduxData;
     }
-    dispatch(NamespacesActions.upgradeCluster(payload));
+    dispatch(NamespacesActions.fetchDuplicateScheduleData(payload));
+    // dispatch(NamespacesActions.upgradeCluster(payload));
   };
   const loadingregistry = useSelector(state =>
     LoadingSelectors.getLoading(state, 'deployNamespaceByRegistryFlow')
@@ -1206,6 +1281,9 @@ const Summary = () => {
               : `Do you really want to ${confirmDialogue?.text}?`
           }
           onSubmit={handleConfirmUpdateStatus}
+        />
+        <DuplicateScheduleModal
+          handleScheduleDeployDuplicate={handleScheduleDeployDuplicate}
         />
       </MainContainer>
     </>
