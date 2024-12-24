@@ -10,9 +10,7 @@ import { history } from '../../helpers/history';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { DuplicateIcon } from '../../assets';
 
-const Container = styled.div`
-  height: 250px;
-`;
+const Container = styled.div``;
 const Icon = styled.div`
   align-items: center !important;
   justify-content: center !important;
@@ -67,7 +65,7 @@ export const DuplicateScheduleModal = ({ handleScheduleDeployDuplicate }) => {
       // primaryButtonDisabled={showApprover && isEmpty(approver_ids)}
       onSubmit={handleSubmit(onSubmit)}
       // footerAlign="start"
-      contentStyles={{ minWidth: '35%', minHeight: '30%' }}
+      contentStyles={{ minWidth: '25%', minHeight: '30%' }}
       //   loading={loading}
     >
       <Container>
@@ -76,9 +74,14 @@ export const DuplicateScheduleModal = ({ handleScheduleDeployDuplicate }) => {
             <Icon>
               <DuplicateIcon />
             </Icon>
-            <div className="d-flex justify-content-center mt-3">
-              {duplicateResponseData?.message} <br />
-              {formatDate(duplicateResponseData?.scheduled_time)}
+            <div className="d-flex justify-content-center mt-4 flex-column px-3">
+              <div className="text-center h5">
+                <strong>Message</strong> : {duplicateResponseData?.message}
+              </div>
+              <div className="text-center h5">
+                <strong>Schedule Time</strong> :{' '}
+                {formatDate(duplicateResponseData?.scheduled_time)}
+              </div>
             </div>
           </div>
         </div>
