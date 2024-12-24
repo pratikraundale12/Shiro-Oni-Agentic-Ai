@@ -184,7 +184,6 @@ export const ListScheduleDeployment = () => {
       </>
     );
   };
-
   const getActionsMenu = item => {
     return (
       <ActionTd>
@@ -196,6 +195,10 @@ export const ListScheduleDeployment = () => {
                 {ApprovIconRender(item)}
               </>
             )}
+            {(item?.state === 'PENDING' || item?.state === 'TIME_LAPSED') &&
+              currentUser?.id === item?.deployer_id && (
+                <>{editIconRender(item)}</>
+              )}
             {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
           </>
         )}
