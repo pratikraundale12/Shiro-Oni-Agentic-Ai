@@ -573,7 +573,10 @@ const FlowDetailsPage = () => {
           <Button variant="secondary" onClick={handleBackClick}>
             {KDFM.BACK}
           </Button>
-          <Button disabled={!isStateStale} onClick={handleClick}>
+          <Button
+            disabled={isUpgrade ? false : !isStateStale}
+            onClick={handleClick}
+          >
             Continue
           </Button>
         </BottomButtonDiv>
