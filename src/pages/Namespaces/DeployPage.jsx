@@ -381,6 +381,25 @@ function DeployPage() {
     }
   };
 
+  const onBucketChange = value => {
+    dispatch(
+      NamespacesActions.setDeployFormData({
+        bucketId: value.value,
+        flow_name: '',
+        selectedFlowName: '',
+        keepParameters: keepParameter,
+      })
+    );
+    dispatch(NamespacesActions.setVersionSelect(''));
+    setSelectedVersion('');
+    dispatch(NamespacesActions.setVersionListData({}));
+  };
+
+  const onFlowNameChange = () => {
+    dispatch(NamespacesActions.setVersionSelect(''));
+    setSelectedVersion('');
+  };
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryData')
   );
@@ -435,6 +454,7 @@ function DeployPage() {
                       options={bucketListOptions || []}
                       placeholder="Select Bucket"
                       control={control}
+                      onChange={onBucketChange}
                     />
                   </BucketDiv>
                 </div>
@@ -451,6 +471,7 @@ function DeployPage() {
                   errors={errors}
                   control={control}
                   placeholder="Select Flow"
+                  onChange={onFlowNameChange}
                 />
               </div>
 
