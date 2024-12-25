@@ -333,9 +333,10 @@ export const ListScheduleDeployment = () => {
     { value: 'all', label: 'All' },
     { value: 'PENDING', label: 'Pending' },
     { value: 'DEPLOYED', label: 'Deployed' },
-    { value: 'TIME_LAPSED', label: 'Time Lapsed' },
+    { value: 'APPROVED', label: 'Approved' },
     { value: 'REJECTED', label: 'Rejected' },
     { value: 'STOPPED', label: 'Stopped' },
+    { value: 'TIME LAPSED', label: 'Time Lapsed' },
   ];
 
   const sortFns = {

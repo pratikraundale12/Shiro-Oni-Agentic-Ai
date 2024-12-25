@@ -842,9 +842,10 @@ const Summary = () => {
           <Breadcrumb
             module="deploy"
             path={
-              !deployByRegistryFlow
-                ? breadcrumbDataOnUpgrade
-                : breadcrumbDataOnDeploy
+              deployByRegistryFlow ||
+              (scheduleDeploymentFlow && !scheduleUpgradeFromList)
+                ? breadcrumbDataOnDeploy
+                : breadcrumbDataOnUpgrade
             }
           />
         </BreadcrumbContainer>
