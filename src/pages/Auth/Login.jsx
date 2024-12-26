@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -24,7 +24,7 @@ import {
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, PasswordField, TextButton } from '../../shared';
-import { AuthenticationActions } from '../../store';
+import { AuthenticationActions, NamespacesActions } from '../../store';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 
@@ -121,6 +121,14 @@ export const Login = () => {
   } = useForm({
     resolver: yupResolver(loginSchema),
   });
+  useEffect(() => {
+    dispatch(
+      NamespacesActions.setSelectedCluster({
+        label: '',
+        value: '',
+      })
+    );
+  }, [dispatch]);
 
   const onSubmit = data => {
     dispatch(AuthenticationActions.login({ type: 'admin', ...data }));

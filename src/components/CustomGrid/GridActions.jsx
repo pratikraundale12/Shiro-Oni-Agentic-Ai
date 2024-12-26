@@ -381,17 +381,30 @@ export const GridActions = ({
           </Title>
         </Flex>
         {module === 'scheduler' && (
-          <ButtonsContainerScheduleList>
-            <Button size="md" onClick={() => history.push('/process-group')}>
-              <div
-                className="d-flex "
-                style={{ fontSize: '14px', fontWeight: '750' }}
-              >
-                <ScheduleDeploymentIcon height={19} width={19} color={'#fff'} />
-                {KDFM.SCHEDULE_DEPLOYMENT}
-              </div>
-            </Button>
-          </ButtonsContainerScheduleList>
+          <>
+            {
+              <ButtonsContainerScheduleList>
+                {selectedCluster?.value && (
+                  <Button
+                    size="md"
+                    onClick={() => history.push('/process-group')}
+                  >
+                    <div
+                      className="d-flex "
+                      style={{ fontSize: '14px', fontWeight: '750' }}
+                    >
+                      <ScheduleDeploymentIcon
+                        height={19}
+                        width={19}
+                        color={'#fff'}
+                      />
+                      {KDFM.SCHEDULE_DEPLOYMENT}
+                    </div>
+                  </Button>
+                )}
+              </ButtonsContainerScheduleList>
+            }
+          </>
         )}
         <ButtonsContainer>
           {!isEmpty(statusOptions) && (
@@ -466,32 +479,36 @@ export const GridActions = ({
           <ButtonsContainer>
             {module === 'namespaces' && (
               <>
-                <Button
-                  size="md"
-                  disabled={isButtonDisabled}
-                  style={{ width: '250px' }}
-                  onClick={() => handleScheduleClick()}
-                >
-                  <div
-                    className="d-flex "
-                    style={{ fontSize: '14px', fontWeight: '750' }}
+                {selectedCluster?.value && (
+                  <Button
+                    size="md"
+                    disabled={isButtonDisabled}
+                    style={{ width: '250px' }}
+                    onClick={() => handleScheduleClick()}
                   >
-                    <ScheduleDeploymentIcon
-                      height={19}
-                      width={19}
-                      color={'#fff'}
-                    />
-                    {KDFM.SCHEDULE_DEPLOYMENT}
-                  </div>
-                </Button>
-                <Button
-                  disabled={!canWrite}
-                  size="md"
-                  style={{ width: '84px' }}
-                  onClick={handleClick}
-                >
-                  {KDFM.DEPLOY}
-                </Button>
+                    <div
+                      className="d-flex "
+                      style={{ fontSize: '14px', fontWeight: '750' }}
+                    >
+                      <ScheduleDeploymentIcon
+                        height={19}
+                        width={19}
+                        color={'#fff'}
+                      />
+                      {KDFM.SCHEDULE_DEPLOYMENT}
+                    </div>
+                  </Button>
+                )}
+                {canWrite && (
+                  <Button
+                    disabled={!canWrite}
+                    size="md"
+                    style={{ width: '84px' }}
+                    onClick={handleClick}
+                  >
+                    {KDFM.DEPLOY}
+                  </Button>
+                )}
               </>
             )}
             {['scheduler', 'namespaces'].includes(module) && (
