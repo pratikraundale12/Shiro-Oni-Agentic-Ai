@@ -89,7 +89,13 @@ const UnAuthGuard = () => {
   const getImage = () => {
     if (settingsData?.logo)
       return (
-        <img src={settingsData?.logo} alt="Logo" width={200} height={80} />
+        <img
+          src={settingsData?.logo}
+          alt="Logo"
+          width={200}
+          height={80}
+          style={{ maxWidth: '100%', padding: '6px', textAlign: 'left' }}
+        />
       );
     return (
       <>
@@ -154,7 +160,7 @@ const UnAuthGuard = () => {
         </List>
         <KDFMVersion>
           {/* FIX_ME: Later will come from API */}
-          <span className="version-content">Version 2.0.0</span>
+          <span className="version-content">Version 2.1.0</span>
         </KDFMVersion>
       </Container>
       <Content>
