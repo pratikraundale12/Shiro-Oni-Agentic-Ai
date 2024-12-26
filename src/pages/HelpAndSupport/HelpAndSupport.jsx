@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { NoDataIcon, PlusIcon, SmallSearchIcon } from '../../assets';
 import { MinusIcon } from '../../assets/Icons/MinusIcon';
-import dashboardDemoVideo from '../../assets/videos/DFMDashboardDemo.mp4';
+// import dashboardDemoVideo from '../../assets/videos/DFMDashboardDemo.mp4';
 
 import { Button } from '../../shared';
 import { SettingsSelectors } from '../../store/settings';
@@ -555,12 +555,12 @@ export const HelpAndSupport = () => {
     },
   ];
 
-  const videos = [
-    {
-      title: 'DFM Dashboard Demo?',
-      video: dashboardDemoVideo,
-    },
-  ];
+  // const videos = [
+  //   {
+  //     title: 'DFM Dashboard Demo?',
+  //     video: dashboardDemoVideo,
+  //   },
+  // ];
 
   const toggleFaq = index => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
@@ -577,9 +577,9 @@ export const HelpAndSupport = () => {
     faq.question.toLowerCase().includes(searchQuery)
   );
 
-  const filteredVideos = videos.filter(video =>
-    video.title.toLowerCase().includes(searchQuery)
-  );
+  // const filteredVideos = videos.filter(video =>
+  //   video.title.toLowerCase().includes(searchQuery)
+  // );
 
   return (
     <>
@@ -592,12 +592,12 @@ export const HelpAndSupport = () => {
             >
               FAQ&#39;s
             </NavButton>
-            <NavButton
+            {/* <NavButton
               active={activeTab === 'Videos'}
               onClick={() => setActiveTab('Videos')}
             >
               Videos
-            </NavButton>
+            </NavButton> */}
           </NavTabs>
 
           {activeTab === 'FAQs' && (
@@ -716,7 +716,7 @@ export const HelpAndSupport = () => {
             </>
           )}
 
-          {activeTab === 'Videos' && (
+          {/* {activeTab === 'Videos' && (
             <FormContainer>
               <div className="d-flex gap-5">
                 <FAQHeading>DFM videos</FAQHeading>
@@ -767,7 +767,7 @@ export const HelpAndSupport = () => {
                 )}
               </div>
             </FormContainer>
-          )}
+          )} */}
         </Container>
         <FlexWrapper>
           <div>
