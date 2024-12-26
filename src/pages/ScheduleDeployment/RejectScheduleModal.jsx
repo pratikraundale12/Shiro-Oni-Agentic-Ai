@@ -87,7 +87,11 @@ export const RejectScheduleModal = () => {
       onRequestClose={onRequestClose}
       onSecondarySubmit={onRequestClose}
       onSubmit={handleSubmit(onSubmit)}
-      title="Schedule Deployment Confirmation"
+      title={
+        rejectApproval
+          ? 'Schedule Deployment Reject'
+          : 'Schedule Deployment Stop'
+      }
       primaryButtonText="Confirm"
       secondaryButtonText="Cancel"
       loading={loading}
