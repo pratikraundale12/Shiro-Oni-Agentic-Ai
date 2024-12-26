@@ -235,7 +235,9 @@ export const HelpAndSupport = () => {
           <br />● Choose the option to add a new cluster. Under the “Clusters”
           tab, click the “Add new Cluster” button on the top-right corner.
           <br />
+          <br />
           <img src={clusterListImage} className="img-fluid" />
+          <br />
           <br />● Enter the cluster details, such as the Cluster Name, NiFi URL,
           and Cluster Tags. Mark the provided checkboxes if you agree to the
           statements. Choose an option to test your cluster.
@@ -270,6 +272,7 @@ export const HelpAndSupport = () => {
           need to enable it by logging in with the correct credentials. From the
           vertical ellipsis menu, choose the edit option and make modifications
           to your cluster details.
+          <br />
           <br />
           <img
             src={editClusterImage}
@@ -343,15 +346,19 @@ export const HelpAndSupport = () => {
           <br />
           ● Click a button named “Schedule Deployment” on the top right corner.
           <br />
+          <br />
           <img src={scheduleListImage} alt="Schedule" className="img-fluid" />
           <br />
-          ● Next, choose Bucket, Flow Name, and Version Control. Click Continue.
+          <br />● Next, choose Bucket, Flow Name, and Version Control. Click
+          Continue.
+          <br />
           <br />
           <img
             src={scheduleDeploymentImage}
             className="img-fluid"
             alt="Schedule Deployment"
           />
+          <br />
           <br />
           ● Set the canvas position for the process group and continue.
           <br />
