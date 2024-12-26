@@ -1200,6 +1200,7 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
       yield put(
         NamespacesActions.setRegistryDeployResponseData(response?.data)
       );
+      yield put(NamespacesActions.setFlowControlAfterDeploy(true));
     }
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);

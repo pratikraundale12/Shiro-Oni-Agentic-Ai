@@ -412,6 +412,12 @@ const Summary = () => {
   const timeDeployScheduleDeployment = useSelector(
     NamespacesSelectors.getScheduleTimeByRegistry
   );
+  const checkFlowControlAfterUpgrade = useSelector(
+    NamespacesSelectors.getFlowControlAfterUpgrade
+  );
+  const checkFlowControlAfterDeploy = useSelector(
+    NamespacesSelectors.getflowControlAfterDeploy
+  );
   const [isVariablesModalOpen, setVariablesModalOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -502,7 +508,7 @@ const Summary = () => {
       text: '',
       forPopup: false,
     });
-    if (checkFlowControlAfterUpgrade) {
+    if (checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy) {
       dispatch(NamespacesActions.updateNamespaceStatus(confirmDialogue.action));
       return;
     }
@@ -772,9 +778,7 @@ const Summary = () => {
   const loadingreUpgradeFlow = useSelector(state =>
     LoadingSelectors.getLoading(state, 'upgradeCluster')
   );
-  const checkFlowControlAfterUpgrade = useSelector(
-    NamespacesSelectors.getFlowControlAfterUpgrade
-  );
+
   const [processStatus, setProcessStatus] = useState({
     disabledCount: checkDestCluster?.disabledCount,
     invalidCount: checkDestCluster?.invalidCount,
