@@ -354,7 +354,7 @@ export const Dashboard = () => {
               title="Select Process Group"
               backgroundColor={theme.colors.lightGrey}
               size="sm"
-              disabled={!ClusterActivated}
+              disabled={!selectedCluster?.value}
             />
           </DropdownContainer>
           <RefreshIocn

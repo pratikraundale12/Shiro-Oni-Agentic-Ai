@@ -380,7 +380,7 @@ export const NamespacesSelectors = {
     state.namespaces.duplicateScheduleModalOpen,
   getDuplicateScheduleModalData: state =>
     state.namespaces.duplicateScheduleModalData,
-  getflowControlAfterDeploy:state => state.namespaces.flowControlAfterDeploy,
+  getflowControlAfterDeploy: state => state.namespaces.flowControlAfterDeploy,
 };
 //
 /* ------------- REDUCERS ------------------- */
