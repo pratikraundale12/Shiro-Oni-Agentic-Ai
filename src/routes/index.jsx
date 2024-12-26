@@ -254,7 +254,7 @@ export const ROUTES_MENU = [
         component: <Setting />,
       },
     ],
-    permission: 'add_user',
+    permission: 'view_setting',
   },
   {
     name: 'Help & Support',
