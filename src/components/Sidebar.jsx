@@ -222,6 +222,7 @@ export const Sidebar = ({
             alt="Logo"
             width={200}
             height={LOGO_HEIGHT}
+            style={{ maxWidth: '100%', padding: '6px', textAlign: 'left' }}
           />
         </StyleButton>
       );
