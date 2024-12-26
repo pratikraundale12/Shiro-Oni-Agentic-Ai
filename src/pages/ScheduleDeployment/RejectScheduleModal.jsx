@@ -37,7 +37,10 @@ const DEFAULT_VALUES = {
 };
 
 const Schema = yup.object().shape({
-  note: yup.string().required('Reason is required'),
+  note: yup
+    .string()
+    .required('Reason is required')
+    .max(50, 'Reason cannot exceed 50 characters'),
 });
 
 export const RejectScheduleModal = () => {
