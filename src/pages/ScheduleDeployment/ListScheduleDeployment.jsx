@@ -382,7 +382,7 @@ export const ListScheduleDeployment = () => {
         columns={COLUMNS}
         sortFns={sortFns}
         statusOptions={STATUS_OPTIONS}
-        placeholder="Search Approver or flow name"
+        placeholder="Search Process Group or Flow Name"
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
       />

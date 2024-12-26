@@ -6,7 +6,7 @@ export const USER_CONSTANTS = {
   USER_DELETE_MODAL: 'User Delete Modal',
   DELETE_USER: 'Delete User',
   USER_LIST: 'User List',
-  SEARCH_USER_PLACEHOLDER: 'Search Name, Username, Email, Status',
+  SEARCH_USER_PLACEHOLDER: 'Search Name, Username, Email',
   DELETE_USER_WARNING: 'Are you sure you want to delete this user?',
   DELETE_USER_DESCRIPTION: 'It will temporary remove the user',
 };
