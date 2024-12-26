@@ -1281,9 +1281,9 @@ const Summary = () => {
             setActiveButtonPopup(null);
           }}
           primaryText={
-            !checkFlowControlAfterUpgrade
-              ? `Flow will be ${confirmDialogue?.text} after the upgrade?`
-              : `Do you really want to ${confirmDialogue?.text}?`
+            checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy
+              ? `Do you really want to ${confirmDialogue?.text}?`
+              : `Flow will be ${confirmDialogue?.text} after the upgrade?`
           }
           onSubmit={handleConfirmUpdateStatus}
         />
