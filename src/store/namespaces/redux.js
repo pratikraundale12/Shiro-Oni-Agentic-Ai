@@ -192,6 +192,7 @@ export const NamespacesActions = {
   setDuplicateScheduleModalData: createAction(
     `${prefix}setDuplicateScheduleModalData`
   ),
+  setFlowControlAfterDeploy: createAction(`${prefix}setFlowControlAfterDeploy`),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -284,6 +285,7 @@ export const NAMESPACES_INITIAL_STATE = {
   propertyUpdateResponse: {},
   duplicateScheduleModalOpen: false,
   duplicateScheduleModalData: {},
+  flowControlAfterDeploy: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -378,6 +380,7 @@ export const NamespacesSelectors = {
     state.namespaces.duplicateScheduleModalOpen,
   getDuplicateScheduleModalData: state =>
     state.namespaces.duplicateScheduleModalData,
+  getflowControlAfterDeploy:state => state.namespaces.flowControlAfterDeploy,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -857,6 +860,12 @@ const setDuplicateScheduleModalData = (state, { payload }) => {
     duplicateScheduleModalData: payload,
   };
 };
+const setFlowControlAfterDeploy = (state, { payload }) => {
+  return {
+    ...state,
+    flowControlAfterDeploy: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1048,6 +1057,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setDuplicateScheduleModalData,
         setDuplicateScheduleModalData
+      )
+      .addCase(
+        NamespacesActions.setFlowControlAfterDeploy,
+        setFlowControlAfterDeploy
       );
   }
 );
