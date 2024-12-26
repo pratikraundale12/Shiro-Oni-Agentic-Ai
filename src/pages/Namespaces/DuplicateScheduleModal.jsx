@@ -4,17 +4,20 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
-
 import { Modal } from '../../shared';
 import { history } from '../../helpers/history';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { DuplicateIcon } from '../../assets';
+import { theme } from '../../styles';
 
 const Container = styled.div``;
 const Icon = styled.div`
   align-items: center !important;
   justify-content: center !important;
   display: flex !important;
+`;
+const LinkClick = styled.span`
+  color: ${theme.colors.primary};
 `;
 export const DuplicateScheduleModal = ({ handleScheduleDeployDuplicate }) => {
   const dispatch = useDispatch();
@@ -23,6 +26,9 @@ export const DuplicateScheduleModal = ({ handleScheduleDeployDuplicate }) => {
   );
   const duplicateResponseData = useSelector(
     NamespacesSelectors.getDuplicateScheduleModalData
+  );
+  const scheduleDeploymentFlow = useSelector(
+    NamespacesSelectors.getScheduleByRegistry
   );
 
   const { handleSubmit } = useForm();
@@ -50,7 +56,14 @@ export const DuplicateScheduleModal = ({ handleScheduleDeployDuplicate }) => {
     dispatch(NamespacesActions.setDuplicateScheduleModalOpen(false));
     handleScheduleDeployDuplicate();
   };
-
+  const handleRediectSchedule = () => {
+    window.localStorage.setItem(
+      'scheduleTokenid',
+      duplicateResponseData?.scheduleId
+    );
+    history.push('/schedule-deployment');
+  };
+  //
   return (
     <Modal
       size="md"
@@ -73,11 +86,24 @@ export const DuplicateScheduleModal = ({ handleScheduleDeployDuplicate }) => {
             </Icon>
             <div className="d-flex justify-content-center mt-4 flex-column px-3">
               <div className="text-center h5">
-                <strong>Message</strong> : {duplicateResponseData?.message}
+                {duplicateResponseData?.message} to be{' '}
+                {duplicateResponseData?.exisitingMode} on{' '}
+                {formatDate(duplicateResponseData?.scheduled_time)} for version
+                &nbsp;
+                {duplicateResponseData?.version}
               </div>
+              <span className=" d-flex gap-2 justify-content-center mb-2">
+                <LinkClick
+                  onClick={handleRediectSchedule}
+                  style={{ cursor: 'pointer' }}
+                >
+                  Click here
+                </LinkClick>
+                to see the existing schedule
+              </span>
               <div className="text-center h5">
-                <strong>Schedule Time</strong> :{' '}
-                {formatDate(duplicateResponseData?.scheduled_time)}
+                Do you still want to continue with duplicate{' '}
+                {scheduleDeploymentFlow ? 'deployment' : 'upgrade'}?
               </div>
             </div>
           </div>
