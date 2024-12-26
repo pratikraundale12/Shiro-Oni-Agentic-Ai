@@ -402,6 +402,7 @@ export const ListControllerService = () => {
       <AddControllerServiceModal />
 
       <Table
+        showPagination={true}
         data={filteredModulesData}
         columns={COLUMNS}
         controllerModule={true}
