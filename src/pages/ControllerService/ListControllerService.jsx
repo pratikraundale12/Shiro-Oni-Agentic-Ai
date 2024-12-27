@@ -10,7 +10,6 @@ import {
   DeleteSmallIcon,
   FlashCutIcon,
   FlashIcon,
-  GreaterArrowIcon,
   SettingSmallIcon,
   SmallSearchIcon,
   TodoIcon,
@@ -332,31 +331,11 @@ export const ListControllerService = () => {
     setSelectedPropertyToEdit(item);
   };
 
-  const handleBackButtonClick = () => {
-    window.history.back();
-  };
   return (
     <>
       {controllerPermissions.includes('add_controller_services') && (
         <div className="d-flex justify-content-between align-items-center">
           <div className="d-flex  align-items-center gap-3">
-            <button
-              className="d-flex bg-white border-0 "
-              onClick={handleBackButtonClick}
-              data-tooltip-id={`tooltip-group-controller-service-back`}
-            >
-              <GreaterArrowIcon />
-            </button>
-            <ReactTooltip
-              id={`tooltip-group-controller-service-back`}
-              place="right"
-              content={'Back'}
-              style={{
-                width: '65px',
-                whiteSpace: 'normal',
-                wordWrap: 'break-word',
-              }}
-            />
             <div className="d-flex  align-items-center gap-2">
               <TodoIcon width={22} height={24} />
               <HeadingStyle>Controller Services List</HeadingStyle>
