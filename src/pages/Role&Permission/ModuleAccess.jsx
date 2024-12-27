@@ -4,10 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { difference, isEmpty, unionBy, uniqBy } from 'lodash';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 import {
   DeleteDustbinIcon,
-  GreaterArrowIcon,
   GreenRightCircleIcon,
   PlusCircleIcon,
   SmallSearchIcon,
@@ -392,10 +390,6 @@ export const ModuleAccess = () => {
     module.label.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleBackButtonClick = () => {
-    window.history.back();
-  };
-
   const capitalizeFirstLetter = text => {
     if (!text) return '';
 
@@ -411,24 +405,6 @@ export const ModuleAccess = () => {
     <>
       <Flex>
         <Flex>
-          <button
-            className="d-flex border-0 bg-white"
-            onClick={handleBackButtonClick}
-            style={{ marginBottom: '0.5rem' }}
-            data-tooltip-id={`tooltip-group-role-module`}
-          >
-            <GreaterArrowIcon />
-          </button>
-          <ReactTooltip
-            id={`tooltip-group-role-module`}
-            place="right"
-            content={'Back'}
-            style={{
-              width: '65px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>

@@ -7,7 +7,6 @@ import { useLocation } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
-  GreaterArrowIcon,
   PlusCircleIcon,
   RefreshIcon,
   ScheduleDeploymentIcon,
@@ -155,21 +154,6 @@ const ImageContainer = styled.div`
   }
 `;
 
-const StyledGoBackButton = styled.button`
-  width: 2rem;
-  height: 2rem;
-  background-color: ${theme.colors.white};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${theme.colors.lightGrey};
-  }
-`;
 const RefreshIocn = styled.div`
   cursor: pointer;
   background-color: #f5f7fa;
@@ -182,35 +166,6 @@ const RefreshIocn = styled.div`
   margin-left: 10px;
   border-radius: 4px;
 `;
-
-const GoBackButton = () => {
-  const naviagate = useLocation();
-  const dispatch = useDispatch();
-  const selectedNamespace = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
-  const isChildNamespace =
-    selectedNamespace && selectedNamespace?.label !== KDFM.NIFI_FLOW;
-  const { clusterSummaryPage = false } = naviagate?.state || {};
-  const handleGoBack = () => {
-    if (clusterSummaryPage) {
-      history.push('/clusters');
-    }
-    if (isChildNamespace) {
-      dispatch(NamespacesActions.setSelectedNamespace(null));
-      history.push('/process-group');
-    }
-  };
-
-  if (clusterSummaryPage || isChildNamespace) {
-    return (
-      <StyledGoBackButton onClick={handleGoBack}>
-        <GreaterArrowIcon />
-      </StyledGoBackButton>
-    );
-  }
-  return null;
-};
 
 // const checkIfPropertyExists = (data, key) => {
 //   if (Object.prototype.hasOwnProperty.call(data, key)) {
@@ -310,9 +265,7 @@ export const GridActions = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchStatus, entity, event, search]);
-  const handleBackButtonClick = () => {
-    window.history.back();
-  };
+
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
@@ -327,10 +280,7 @@ export const GridActions = ({
       setCanWrite(gridPermissions?.canWrite);
     }
   }, [gridPermissions]);
-  const isChildNamespace =
-    selectedNamespace && selectedNamespace?.label !== KDFM.NIFI_FLOW;
-  const naviagate = useLocation();
-  const { clusterSummaryPage = false } = naviagate?.state || {};
+
   const handleClick = () => {
     history.push('/process-group/DeployPage');
     dispatch(NamespacesActions.setdeployRegistryFlow(true));
@@ -348,28 +298,6 @@ export const GridActions = ({
       <Flex className="flex-wrap gap-2">
         <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
         <Flex>
-          <GoBackButton />
-          {!isChildNamespace && !clusterSummaryPage && (
-            <>
-              <button
-                className="d-flex bg-white border-0"
-                onClick={handleBackButtonClick}
-                data-tooltip-id={`tooltip-group-navigate-back`}
-              >
-                <GreaterArrowIcon />
-              </button>
-              <ReactTooltip
-                id={`tooltip-group-navigate-back`}
-                place="right"
-                content={'Back'}
-                style={{
-                  width: '65px',
-                  whiteSpace: 'normal',
-                  wordWrap: 'break-word',
-                }}
-              />
-            </>
-          )}
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>
