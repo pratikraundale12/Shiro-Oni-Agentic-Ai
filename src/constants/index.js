@@ -194,6 +194,8 @@ export const KDFM = {
   CHANGE_CONFIGURATION: 'Change Configuration',
   SECHEDULED_TIME: 'Scheduled Time',
   FLOW_STATE_AFTER_DEPLOY: 'Flow state after deploy',
+  SCHEDULE_UPGRADE: 'Schedule Upgrade',
+  SCHEDULE_DOWNGRADE: 'Schedule Downgrade',
 
   // License constants
   TRIAL: 'Trial',

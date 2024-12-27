@@ -19,7 +19,10 @@ const Icon = styled.div`
 const LinkClick = styled.span`
   color: ${theme.colors.primary};
 `;
-export const DuplicateScheduleModal = ({ handleScheduleDeployDuplicate }) => {
+export const DuplicateScheduleModal = ({
+  handleScheduleDeployDuplicate,
+  type,
+}) => {
   const dispatch = useDispatch();
   const duplicateModalOpen = useSelector(
     NamespacesSelectors.getDuplicateScheduleModalOpen
@@ -103,7 +106,12 @@ export const DuplicateScheduleModal = ({ handleScheduleDeployDuplicate }) => {
               </span>
               <div className="text-center h5">
                 Do you still want to continue with duplicate{' '}
-                {scheduleDeploymentFlow ? 'deployment' : 'upgrade'}?
+                {scheduleDeploymentFlow
+                  ? 'deployment'
+                  : type === 'upgrade'
+                    ? 'upgrade'
+                    : 'downgrade'}
+                ?
               </div>
             </div>
           </div>
@@ -114,4 +122,5 @@ export const DuplicateScheduleModal = ({ handleScheduleDeployDuplicate }) => {
 };
 DuplicateScheduleModal.propTypes = {
   handleScheduleDeployDuplicate: PropTypes.func,
+  type: PropTypes.string,
 };

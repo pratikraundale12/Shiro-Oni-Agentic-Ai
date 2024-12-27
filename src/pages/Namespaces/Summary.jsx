@@ -342,6 +342,12 @@ const Summary = () => {
     NamespacesSelectors.getSelectedCluster
   );
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
+  let type = '';
+  if (versionSelected?.version > selectedNameSpace?.version) {
+    type = 'upgrade';
+  } else {
+    type = 'downgrade';
+  }
   const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [flowControlButtons, setFlowControlButtons] = useState('');
@@ -601,12 +607,12 @@ const Summary = () => {
       parameterName: item.name,
       parameters: item.parameters,
     }));
-    let type = '';
-    if (versionSelected?.version > selectedNameSpace?.version) {
-      type = 'upgrade';
-    } else {
-      type = 'downgrade';
-    }
+    // let type = '';
+    // if (versionSelected?.version > selectedNameSpace?.version) {
+    //   type = 'upgrade';
+    // } else {
+    //   type = 'downgrade';
+    // }
     const payload = {
       version: versionSelected?.version,
       namespaceId: checkDestCluster?.id,
@@ -746,12 +752,12 @@ const Summary = () => {
       parameterName: item.name,
       parameters: item.parameters,
     }));
-    let type = '';
-    if (versionSelected?.version > selectedNameSpace?.version) {
-      type = 'upgrade';
-    } else {
-      type = 'downgrade';
-    }
+    // let type = '';
+    // if (versionSelected?.version > selectedNameSpace?.version) {
+    //   type = 'upgrade';
+    // } else {
+    //   type = 'downgrade';
+    // }
     const payload = {
       version: versionSelected?.version,
       flowId: selectedNameSpace?.flowId,
@@ -1194,7 +1200,7 @@ const Summary = () => {
               !scheduleDeploymentFlow &&
               !scheduleUpgradeFromList && (
                 <Button onClick={handleUpgradeByRegistry}>
-                  {KDFM.UPGRADE}
+                  {`${type === 'upgrade' ? KDFM.UPGRADE : KDFM.DOWNGRADE}`}
                 </Button>
               )}
             {scheduleDeploymentFlow && (
@@ -1204,7 +1210,7 @@ const Summary = () => {
             )}
             {scheduleUpgradeFromList && (
               <Button size="md" onClick={() => handleScheduleUpgrade()}>
-                Schedule Upgrade
+                {`${type === 'upgrade' ? KDFM.SCHEDULE_UPGRADE : KDFM.SCHEDULE_DOWNGRADE}`}
               </Button>
             )}
           </BottomButtonDiv>
@@ -1303,6 +1309,7 @@ const Summary = () => {
         />
         <DuplicateScheduleModal
           handleScheduleDeployDuplicate={handleScheduleDeployDuplicate}
+          type={type}
         />
       </MainContainer>
     </>
