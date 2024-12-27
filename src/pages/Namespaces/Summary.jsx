@@ -601,6 +601,12 @@ const Summary = () => {
       parameterName: item.name,
       parameters: item.parameters,
     }));
+    let type = '';
+    if (versionSelected?.version > selectedNameSpace?.version) {
+      type = 'upgrade';
+    } else {
+      type = 'downgrade';
+    }
     const payload = {
       version: versionSelected?.version,
       namespaceId: checkDestCluster?.id,
@@ -614,6 +620,7 @@ const Summary = () => {
         x: XcordUpdated || selectedNameSpace?.position?.x,
         y: YcordUpdated || selectedNameSpace?.position?.y,
       },
+      type: type,
     };
 
     if (!isEmpty(variblesReduxData)) {
@@ -739,6 +746,12 @@ const Summary = () => {
       parameterName: item.name,
       parameters: item.parameters,
     }));
+    let type = '';
+    if (versionSelected?.version > selectedNameSpace?.version) {
+      type = 'upgrade';
+    } else {
+      type = 'downgrade';
+    }
     const payload = {
       version: versionSelected?.version,
       flowId: selectedNameSpace?.flowId,
@@ -756,6 +769,7 @@ const Summary = () => {
         x: XcordUpdated || selectedNameSpace?.position?.x,
         y: YcordUpdated || selectedNameSpace?.position?.y,
       },
+      type: type,
     };
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
