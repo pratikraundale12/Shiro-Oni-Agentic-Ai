@@ -221,6 +221,9 @@ const ControllerServiceTab = ({
 
   const [versionList, setVersionList] = useState([]);
 
+  const [lsForUpgrade, setLsForUpgrade] = useState(localServices);
+  const [updatedLsForUpgrade, setUpdatedLsForUpgrade] = useState([]);
+
   const [search, setSearch] = useState('');
   const filteredModulesData = useMemo(() => {
     return listData.filter(
@@ -229,6 +232,30 @@ const ControllerServiceTab = ({
         module?.type?.toLowerCase().includes(search.toLowerCase())
     );
   }, [listData, search]);
+
+  useEffect(() => {
+    const updateControllerData = () => {
+      const updatedServices = lsForUpgrade?.map(service => {
+        const updatedControllerData = service?.controllerData?.map(
+          controller => {
+            const matchingObject = listData?.find(
+              item => item.id === controller?.instanceIdentifier
+            );
+            return matchingObject ? matchingObject : controller;
+          }
+        );
+
+        return {
+          ...service,
+          controllerData: updatedControllerData,
+        };
+      });
+
+      setLsForUpgrade(updatedServices);
+    };
+
+    updateControllerData();
+  }, [listData]);
 
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
@@ -1036,9 +1063,7 @@ const ControllerServiceTab = ({
   );
   const handleToggle = (index, item) => {
     if (!isUpgrade && openIndex !== index && item?.isUpgradeLocal) {
-      dispatch(
-        NamespacesActions.getControllerServiceList({localOnly: true})
-      );
+      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
     }
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
@@ -1128,18 +1153,34 @@ const ControllerServiceTab = ({
         );
       }
     } else {
-      collapsibles.push({
-        isUpgradeLocal: true,
-        title: selectedNamespace?.name || 'Unnamed Group',
-        content: (
-          <Table
-            data={filteredModulesData}
-            columns={COLUMNS_3}
-            className={'variables-table'}
-            showPagination={true}
-          />
-        ),
-      });
+      if (lsForUpgrade?.length) {
+        collapsibles.push(
+          ...lsForUpgrade.map(service => ({
+            isUpgradeLocal: true,
+            title: service?.processGroupName || 'Unnamed Group',
+            content: (
+              <Table
+                data={service?.controllerData || []}
+                columns={COLUMNS_3}
+                className={'variables-table'}
+              />
+            ),
+          }))
+        );
+      } else {
+        collapsibles.push({
+          isUpgradeLocal: true,
+          title: selectedNamespace?.name || 'Unnamed Group',
+          content: (
+            <Table
+              data={filteredModulesData}
+              columns={COLUMNS_3}
+              className={'variables-table'}
+              showPagination={true}
+            />
+          ),
+        });
+      }
     }
 
     setCollapsibles(collapsibles);
@@ -1171,6 +1212,24 @@ const ControllerServiceTab = ({
         ];
         return mergedLocalState;
       });
+    }
+
+    if (!isUpgrade) {
+      let newLsData = [];
+      newLsData.push(data);
+
+      if (newLsData?.length) {
+        setUpdatedLsForUpgrade(prevState => {
+          const prevStateMap = new Map(
+            prevState.map(item => [item?.id || item?.instanceIdentifier, item])
+          );
+          newLsData.forEach(newItem => {
+            const key = newItem?.id || newItem?.instanceIdentifier;
+            prevStateMap.set(key, newItem); // Update if exists, or add if new
+          });
+          return Array.from(prevStateMap.values());
+        });
+      }
     }
   };
 
@@ -1212,25 +1271,73 @@ const ControllerServiceTab = ({
   }, [updatedLocalServicesData]);
 
   useEffect(() => {
-    setControllerServicePayload(prevState => {
-      const newPayload = {};
-      if (!isEmpty(externalServicePayload)) {
-        newPayload.externalServicesData = externalServicePayload;
-      }
-      if (
-        !isEmpty(updatedLocalServicesData) ||
-        !isEmpty(prevState.localServicesData)
-      ) {
-        newPayload.localServicesData = updatedLocalServicesData?.length
-          ? updatedLocalServicesData
-          : prevState.localServicesData;
-      }
-      return newPayload;
+    setLsForUpgrade(prevLocalServices => {
+      const updatedServices = prevLocalServices?.map(processGroup => {
+        return {
+          ...processGroup,
+          controllerData: processGroup?.controllerData?.map(controller => {
+            const updatedController = updatedLsForUpgrade?.find(
+              updated =>
+                (updated?.id || updated?.instanceIdentifier) ===
+                (controller?.id || controller?.instanceIdentifier)
+            );
+            if (updatedController) {
+              return {
+                ...controller,
+                ...updatedController,
+                properties: mergeProperties(
+                  controller.properties,
+                  updatedController.properties
+                ),
+              };
+            }
+            return controller;
+          }),
+        };
+      });
+      return updatedServices;
     });
+  }, [updatedLsForUpgrade]);
+
+  useEffect(() => {
+    if (isUpgrade) {
+      setControllerServicePayload(prevState => {
+        const newPayload = {};
+        if (!isEmpty(externalServicePayload)) {
+          newPayload.externalServicesData = externalServicePayload;
+        }
+        if (
+          !isEmpty(updatedLocalServicesData) ||
+          !isEmpty(prevState.localServicesData)
+        ) {
+          newPayload.localServicesData = updatedLocalServicesData?.length
+            ? updatedLocalServicesData
+            : prevState.localServicesData;
+        }
+        return newPayload;
+      });
+    } else {
+      setControllerServicePayload(prevState => {
+        const newPayload = {};
+        if (!isEmpty(externalServicePayload)) {
+          newPayload.externalServicesData = externalServicePayload;
+        }
+        if (
+          !isEmpty(updatedLsForUpgrade) ||
+          !isEmpty(prevState.localServicesData)
+        ) {
+          newPayload.localServicesData = updatedLsForUpgrade?.length
+            ? updatedLsForUpgrade
+            : prevState.localServicesData;
+        }
+        return newPayload;
+      });
+    }
   }, [
     externalServicePayload,
-    updatedLocalServicesData,
+    updatedLsForUpgrade,
     isExternalServiceUpdated,
+    updatedLocalServicesData,
   ]);
 
   useEffect(() => {
