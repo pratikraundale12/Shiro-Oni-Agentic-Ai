@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { GreaterArrowIcon, SmallSearchIcon, TodoIcon } from '../../assets';
+import { SmallSearchIcon, TodoIcon } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { Button, CheckboxField, SelectField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
@@ -263,32 +262,10 @@ export const ClusterAccess = () => {
     setUpdatedRoleClusters(roleClusters);
   }, [roleClusters]);
 
-  const handleBackButtonClick = () => {
-    window.history.back();
-  };
-
   return (
     <>
       <Flex>
         <Flex>
-          <button
-            className="d-flex border-0 bg-white"
-            onClick={handleBackButtonClick}
-            style={{ marginBottom: '0.5rem' }}
-            data-tooltip-id={`tooltip-group-role-cluster`}
-          >
-            <GreaterArrowIcon />
-          </button>
-          <ReactTooltip
-            id={`tooltip-group-role-cluster`}
-            place="right"
-            content={'Back'}
-            style={{
-              width: '65px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>
