@@ -309,15 +309,6 @@ const FlowDetailsPage = () => {
   ];
 
   const handleClick = () => {
-    // if (!isUpgrade) {
-    //   dispatch(
-    //     NamespacesActions.fetchRegistryFlowDetails({
-    //       bucketId: selectedNameSpace?.bucketId,
-    //       flowId: selectedNameSpace?.flowId,
-    //       version: selectedVersion,
-    //     })
-    //   );
-    // }
     if (isUpgrade) {
       history.push('/process-group/config-details');
     } else {

@@ -224,14 +224,49 @@ const ControllerServiceTab = ({
   const [lsForUpgrade, setLsForUpgrade] = useState(localServices);
   const [updatedLsForUpgrade, setUpdatedLsForUpgrade] = useState([]);
 
-  const [search, setSearch] = useState('');
-  const filteredModulesData = useMemo(() => {
-    return listData.filter(
-      module =>
-        module?.name?.toLowerCase().includes(search.toLowerCase()) ||
-        module?.type?.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [listData, search]);
+  const onSearch = (e, currentService) => {
+    const value = e.target.value;
+    if (value.length === 0) {
+      setLsForUpgrade(prevData =>
+        prevData.map(service => {
+          if (
+            service.processGroupIdentifier ===
+            currentService?.processGroupIdentifier
+          ) {
+            return {
+              ...service,
+              filteredServicesData: [],
+            };
+          }
+          return service;
+        })
+      );
+      return;
+    }
+    if (value.length <= 100 && value.length >= 3) {
+      const filteredServices = currentService?.controllerData?.filter(
+        module =>
+          module?.name?.toLowerCase().includes(value.toLowerCase()) ||
+          module?.type?.toLowerCase().includes(value.toLowerCase())
+      );
+      if (value.length >= 3) {
+        setLsForUpgrade(prevData =>
+          prevData.map(service => {
+            if (
+              service.processGroupIdentifier ===
+              currentService?.processGroupIdentifier
+            ) {
+              return {
+                ...service,
+                filteredServicesData: filteredServices,
+              };
+            }
+            return service;
+          })
+        );
+      }
+    }
+  };
 
   useEffect(() => {
     const updateControllerData = () => {
@@ -1159,27 +1194,32 @@ const ControllerServiceTab = ({
             isUpgradeLocal: true,
             title: service?.processGroupName || 'Unnamed Group',
             content: (
-              <Table
-                data={service?.controllerData || []}
-                columns={COLUMNS_3}
-                className={'variables-table'}
-              />
+              <>
+                <SearchContainer>
+                  <SmallSearchIcon
+                    width={18}
+                    height={18}
+                    color={theme.colors.darkGrey1}
+                  />
+                  <Search
+                    type="search"
+                    placeholder="Search Controller Service by Name and Type"
+                    onChange={e => onSearch(e, service)}
+                  />
+                </SearchContainer>
+                <Table
+                  data={
+                    service?.filteredServicesData?.length
+                      ? service?.filteredServicesData
+                      : service?.controllerData || []
+                  }
+                  columns={COLUMNS_3}
+                  className={'variables-table'}
+                />
+              </>
             ),
           }))
         );
-      } else {
-        collapsibles.push({
-          isUpgradeLocal: true,
-          title: selectedNamespace?.name || 'Unnamed Group',
-          content: (
-            <Table
-              data={filteredModulesData}
-              columns={COLUMNS_3}
-              className={'variables-table'}
-              showPagination={true}
-            />
-          ),
-        });
       }
     }
 
@@ -1191,7 +1231,7 @@ const ControllerServiceTab = ({
     newlyAddedExternalServiceResponse,
     externalControllerServicesTableData,
     listData,
-    filteredModulesData,
+    lsForUpgrade,
   ]);
 
   const handleServiceConfigure = data => {
@@ -1277,9 +1317,7 @@ const ControllerServiceTab = ({
           ...processGroup,
           controllerData: processGroup?.controllerData?.map(controller => {
             const updatedController = updatedLsForUpgrade?.find(
-              updated =>
-                (updated?.identifier) ===
-                (controller?.identifier)
+              updated => updated?.identifier === controller?.identifier
             );
             if (updatedController) {
               return {
@@ -1366,26 +1404,6 @@ const ControllerServiceTab = ({
                 );
               }}
             >
-              {/* {!isUpgrade && item?.isUpgradeLocal && (
-                <SearchContainer>
-                  <SmallSearchIcon
-                    width={18}
-                    height={18}
-                    color={theme.colors.darkGrey1}
-                  />
-                  <Search
-                    type="search"
-                    value={search}
-                    placeholder="Search Controller Service by Name and Type"
-                    onChange={e => {
-                      const value = e.target.value;
-                      if (value.length <= 100) {
-                        setSearch(value);
-                      }
-                    }}
-                  />
-                </SearchContainer>
-              )} */}
               {item.content}
             </Collapsible>
           ))
