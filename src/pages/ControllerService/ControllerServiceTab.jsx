@@ -239,7 +239,7 @@ const ControllerServiceTab = ({
         const updatedControllerData = service?.controllerData?.map(
           controller => {
             const matchingObject = listData?.find(
-              item => item.id === controller?.instanceIdentifier
+              item => item.identifier === controller?.identifier
             );
             return matchingObject ? matchingObject : controller;
           }
@@ -1221,11 +1221,11 @@ const ControllerServiceTab = ({
       if (newLsData?.length) {
         setUpdatedLsForUpgrade(prevState => {
           const prevStateMap = new Map(
-            prevState.map(item => [item?.id || item?.instanceIdentifier, item])
+            prevState.map(item => [item?.identifier, item])
           );
           newLsData.forEach(newItem => {
-            const key = newItem?.id || newItem?.instanceIdentifier;
-            prevStateMap.set(key, newItem); // Update if exists, or add if new
+            const key = newItem?.identifier;
+            prevStateMap.set(key, newItem);
           });
           return Array.from(prevStateMap.values());
         });
@@ -1278,8 +1278,8 @@ const ControllerServiceTab = ({
           controllerData: processGroup?.controllerData?.map(controller => {
             const updatedController = updatedLsForUpgrade?.find(
               updated =>
-                (updated?.id || updated?.instanceIdentifier) ===
-                (controller?.id || controller?.instanceIdentifier)
+                (updated?.identifier) ===
+                (controller?.identifier)
             );
             if (updatedController) {
               return {
@@ -1366,7 +1366,7 @@ const ControllerServiceTab = ({
                 );
               }}
             >
-              {!isUpgrade && item?.isUpgradeLocal && (
+              {/* {!isUpgrade && item?.isUpgradeLocal && (
                 <SearchContainer>
                   <SmallSearchIcon
                     width={18}
@@ -1385,7 +1385,7 @@ const ControllerServiceTab = ({
                     }}
                   />
                 </SearchContainer>
-              )}
+              )} */}
               {item.content}
             </Collapsible>
           ))

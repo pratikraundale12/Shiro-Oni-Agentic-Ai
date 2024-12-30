@@ -309,15 +309,15 @@ const FlowDetailsPage = () => {
   ];
 
   const handleClick = () => {
-    if (!isUpgrade) {
-      dispatch(
-        NamespacesActions.fetchRegistryFlowDetails({
-          bucketId: selectedNameSpace?.bucketId,
-          flowId: selectedNameSpace?.flowId,
-          version: selectedVersion,
-        })
-      );
-    }
+    // if (!isUpgrade) {
+    //   dispatch(
+    //     NamespacesActions.fetchRegistryFlowDetails({
+    //       bucketId: selectedNameSpace?.bucketId,
+    //       flowId: selectedNameSpace?.flowId,
+    //       version: selectedVersion,
+    //     })
+    //   );
+    // }
     if (isUpgrade) {
       history.push('/process-group/config-details');
     } else {
@@ -326,6 +326,13 @@ const FlowDetailsPage = () => {
           toast.info('The selected version is already deployed.');
         }
       } else {
+        dispatch(
+          NamespacesActions.fetchRegistryFlowDetails({
+            bucketId: selectedNameSpace?.bucketId,
+            flowId: selectedNameSpace?.flowId,
+            version: selectedVersion,
+          })
+        );
         history.push('/process-group/config-details');
       }
     }
