@@ -221,14 +221,76 @@ const ControllerServiceTab = ({
 
   const [versionList, setVersionList] = useState([]);
 
-  const [search, setSearch] = useState('');
-  const filteredModulesData = useMemo(() => {
-    return listData.filter(
-      module =>
-        module?.name?.toLowerCase().includes(search.toLowerCase()) ||
-        module?.type?.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [listData, search]);
+  const [lsForUpgrade, setLsForUpgrade] = useState(localServices);
+  const [updatedLsForUpgrade, setUpdatedLsForUpgrade] = useState([]);
+
+  const onSearch = (e, currentService) => {
+    const value = e.target.value;
+    if (value.length === 0) {
+      setLsForUpgrade(prevData =>
+        prevData.map(service => {
+          if (
+            service.processGroupIdentifier ===
+            currentService?.processGroupIdentifier
+          ) {
+            return {
+              ...service,
+              filteredServicesData: [],
+            };
+          }
+          return service;
+        })
+      );
+      return;
+    }
+    if (value.length <= 100 && value.length >= 3) {
+      const filteredServices = currentService?.controllerData?.filter(
+        module =>
+          module?.name?.toLowerCase().includes(value.toLowerCase()) ||
+          module?.type?.toLowerCase().includes(value.toLowerCase())
+      );
+      if (value.length >= 3) {
+        setLsForUpgrade(prevData =>
+          prevData.map(service => {
+            if (
+              service.processGroupIdentifier ===
+              currentService?.processGroupIdentifier
+            ) {
+              return {
+                ...service,
+                filteredServicesData: filteredServices,
+              };
+            }
+            return service;
+          })
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    const updateControllerData = () => {
+      const updatedServices = lsForUpgrade?.map(service => {
+        const updatedControllerData = service?.controllerData?.map(
+          controller => {
+            const matchingObject = listData?.find(
+              item => item.identifier === controller?.identifier
+            );
+            return matchingObject ? matchingObject : controller;
+          }
+        );
+
+        return {
+          ...service,
+          controllerData: updatedControllerData,
+        };
+      });
+
+      setLsForUpgrade(updatedServices);
+    };
+
+    updateControllerData();
+  }, [listData]);
 
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
@@ -1036,9 +1098,7 @@ const ControllerServiceTab = ({
   );
   const handleToggle = (index, item) => {
     if (!isUpgrade && openIndex !== index && item?.isUpgradeLocal) {
-      dispatch(
-        NamespacesActions.getControllerServiceList({localOnly: true})
-      );
+      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
     }
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
@@ -1128,18 +1188,39 @@ const ControllerServiceTab = ({
         );
       }
     } else {
-      collapsibles.push({
-        isUpgradeLocal: true,
-        title: selectedNamespace?.name || 'Unnamed Group',
-        content: (
-          <Table
-            data={filteredModulesData}
-            columns={COLUMNS_3}
-            className={'variables-table'}
-            showPagination={true}
-          />
-        ),
-      });
+      if (lsForUpgrade?.length) {
+        collapsibles.push(
+          ...lsForUpgrade.map(service => ({
+            isUpgradeLocal: true,
+            title: service?.processGroupName || 'Unnamed Group',
+            content: (
+              <>
+                <SearchContainer>
+                  <SmallSearchIcon
+                    width={18}
+                    height={18}
+                    color={theme.colors.darkGrey1}
+                  />
+                  <Search
+                    type="search"
+                    placeholder="Search Controller Service by Name and Type"
+                    onChange={e => onSearch(e, service)}
+                  />
+                </SearchContainer>
+                <Table
+                  data={
+                    service?.filteredServicesData?.length
+                      ? service?.filteredServicesData
+                      : service?.controllerData || []
+                  }
+                  columns={COLUMNS_3}
+                  className={'variables-table'}
+                />
+              </>
+            ),
+          }))
+        );
+      }
     }
 
     setCollapsibles(collapsibles);
@@ -1150,7 +1231,7 @@ const ControllerServiceTab = ({
     newlyAddedExternalServiceResponse,
     externalControllerServicesTableData,
     listData,
-    filteredModulesData,
+    lsForUpgrade,
   ]);
 
   const handleServiceConfigure = data => {
@@ -1171,6 +1252,24 @@ const ControllerServiceTab = ({
         ];
         return mergedLocalState;
       });
+    }
+
+    if (!isUpgrade) {
+      let newLsData = [];
+      newLsData.push(data);
+
+      if (newLsData?.length) {
+        setUpdatedLsForUpgrade(prevState => {
+          const prevStateMap = new Map(
+            prevState.map(item => [item?.identifier, item])
+          );
+          newLsData.forEach(newItem => {
+            const key = newItem?.identifier;
+            prevStateMap.set(key, newItem);
+          });
+          return Array.from(prevStateMap.values());
+        });
+      }
     }
   };
 
@@ -1212,25 +1311,71 @@ const ControllerServiceTab = ({
   }, [updatedLocalServicesData]);
 
   useEffect(() => {
-    setControllerServicePayload(prevState => {
-      const newPayload = {};
-      if (!isEmpty(externalServicePayload)) {
-        newPayload.externalServicesData = externalServicePayload;
-      }
-      if (
-        !isEmpty(updatedLocalServicesData) ||
-        !isEmpty(prevState.localServicesData)
-      ) {
-        newPayload.localServicesData = updatedLocalServicesData?.length
-          ? updatedLocalServicesData
-          : prevState.localServicesData;
-      }
-      return newPayload;
+    setLsForUpgrade(prevLocalServices => {
+      const updatedServices = prevLocalServices?.map(processGroup => {
+        return {
+          ...processGroup,
+          controllerData: processGroup?.controllerData?.map(controller => {
+            const updatedController = updatedLsForUpgrade?.find(
+              updated => updated?.identifier === controller?.identifier
+            );
+            if (updatedController) {
+              return {
+                ...controller,
+                ...updatedController,
+                properties: mergeProperties(
+                  controller.properties,
+                  updatedController.properties
+                ),
+              };
+            }
+            return controller;
+          }),
+        };
+      });
+      return updatedServices;
     });
+  }, [updatedLsForUpgrade]);
+
+  useEffect(() => {
+    if (isUpgrade) {
+      setControllerServicePayload(prevState => {
+        const newPayload = {};
+        if (!isEmpty(externalServicePayload)) {
+          newPayload.externalServicesData = externalServicePayload;
+        }
+        if (
+          !isEmpty(updatedLocalServicesData) ||
+          !isEmpty(prevState.localServicesData)
+        ) {
+          newPayload.localServicesData = updatedLocalServicesData?.length
+            ? updatedLocalServicesData
+            : prevState.localServicesData;
+        }
+        return newPayload;
+      });
+    } else {
+      setControllerServicePayload(prevState => {
+        const newPayload = {};
+        if (!isEmpty(externalServicePayload)) {
+          newPayload.externalServicesData = externalServicePayload;
+        }
+        if (
+          !isEmpty(updatedLsForUpgrade) ||
+          !isEmpty(prevState.localServicesData)
+        ) {
+          newPayload.localServicesData = updatedLsForUpgrade?.length
+            ? updatedLsForUpgrade
+            : prevState.localServicesData;
+        }
+        return newPayload;
+      });
+    }
   }, [
     externalServicePayload,
-    updatedLocalServicesData,
+    updatedLsForUpgrade,
     isExternalServiceUpdated,
+    updatedLocalServicesData,
   ]);
 
   useEffect(() => {
@@ -1259,26 +1404,6 @@ const ControllerServiceTab = ({
                 );
               }}
             >
-              {!isUpgrade && item?.isUpgradeLocal && (
-                <SearchContainer>
-                  <SmallSearchIcon
-                    width={18}
-                    height={18}
-                    color={theme.colors.darkGrey1}
-                  />
-                  <Search
-                    type="search"
-                    value={search}
-                    placeholder="Search Controller Service by Name and Type"
-                    onChange={e => {
-                      const value = e.target.value;
-                      if (value.length <= 100) {
-                        setSearch(value);
-                      }
-                    }}
-                  />
-                </SearchContainer>
-              )}
               {item.content}
             </Collapsible>
           ))
