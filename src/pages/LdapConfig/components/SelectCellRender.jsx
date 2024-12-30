@@ -46,7 +46,6 @@ const SelectCellRender = ({ onChange, roles, data }) => {
     // Set the ref value on every render so it persists
     selectedOptionRef.current = selectedOption;
   }, [selectedOption]);
-
   return (
     <>
       <StyledSelectField

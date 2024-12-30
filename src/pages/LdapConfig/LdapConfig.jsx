@@ -29,6 +29,7 @@ import { LoadingSelectors, RolesActions, RolesSelectors } from '../../store';
 import { SettingsSelectors } from '../../store/settings';
 import {
   checkLdapConfig,
+  getExistingMapping,
   groupMappingApi,
   testConfigApi,
 } from '../../store/apis/ldap';
@@ -255,6 +256,7 @@ export const LdapConfig = () => {
   const [formPayload, setFormPayload] = useState([]);
   const [syncUsers, setSyncUsers] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [existingMappingArray, setExistingMappingArray] = useState([]);
   const dispatch = useDispatch();
   const roles = useSelector(RolesSelectors.getRoles);
   const ldapGroup = useSelector(RolesSelectors.getLdapGroup);
@@ -271,8 +273,6 @@ export const LdapConfig = () => {
   } = useForm({
     resolver: yupResolver(schemaForm1),
   });
-
-  // Second form
   const {
     control,
     register: registerForm2,
@@ -301,7 +301,12 @@ export const LdapConfig = () => {
       label: 'DFM Groups',
       key: 'name',
       renderCell: data => (
-        <SelectCellRender data={data} onChange={onChange} roles={roles} />
+        <SelectCellRender
+          data={data}
+          onChange={onChange}
+          roles={roles}
+          existingMappingArray={existingMappingArray}
+        />
       ),
     },
   ];
@@ -332,6 +337,20 @@ export const LdapConfig = () => {
       setLoading(false);
     }
   };
+  const getExistingMap = async () => {
+    const responseMap = await getExistingMapping();
+    if (responseMap?.status === 200) {
+      setExistingMappingArray(responseMap?.data);
+      dispatch(RolesActions.updateLdapGroup(responseMap?.data));
+    } else {
+      toast.error(responseMap?.message || 'Something went wrong');
+    }
+  };
+  useEffect(() => {
+    if (!displayList) {
+      getExistingMap();
+    }
+  }, [displayList]);
 
   useEffect(() => {
     const filteredPayload = ldapGroup.filter(

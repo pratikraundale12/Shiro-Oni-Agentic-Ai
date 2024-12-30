@@ -55,3 +55,11 @@ export const SyncUsers = async () => {
     return error?.response?.data;
   }
 };
+
+export const getExistingMapping = async () => {
+  try {
+    return await API.get(`/current-ldap-mapping`);
+  } catch (error) {
+    return error?.response?.data;
+  }
+};
