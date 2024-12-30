@@ -1303,7 +1303,7 @@ const Summary = () => {
           primaryText={
             checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy
               ? `Do you really want to ${confirmDialogue?.text}?`
-              : `Flow will be ${confirmDialogue?.text} after the upgrade?`
+              : `Flow will be ${confirmDialogue?.text} after the ${isRegistryDeploy ? 'deploy' : 'upgrade'}?`
           }
           onSubmit={handleConfirmUpdateStatus}
         />
