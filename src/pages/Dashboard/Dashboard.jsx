@@ -280,7 +280,6 @@ export const Dashboard = () => {
 
   const onNamespaceSelect = selectedItem => {
     setSelectedNamespace(selectedItem);
-    // dispatch(NamespacesActions.setSelectedNamespace(selectedItem));
   };
   useEffect(() => {
     if (!isEmpty(selectedCluster)) {

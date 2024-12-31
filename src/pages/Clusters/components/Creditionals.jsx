@@ -25,7 +25,6 @@ export const Creditionals = ({
   isCredOpen,
   setIsCredOpen,
   setTestSuccess,
-  // testSuccess,
   activeTab,
   clusterData,
   registryData,
