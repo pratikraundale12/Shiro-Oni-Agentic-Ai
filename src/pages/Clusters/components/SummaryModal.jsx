@@ -79,7 +79,6 @@ const ClusterName = styled.div`
 `;
 
 const ModalBody = styled.div`
-  // padding: 18px 0 0;
   position: relative;
   padding-bottom: 2px;
 `;
