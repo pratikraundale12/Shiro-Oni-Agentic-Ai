@@ -696,7 +696,6 @@ export const HelpAndSupport = () => {
   // const filteredVideos = videos.filter(video =>
   //   video.title.toLowerCase().includes(searchQuery)
   // );
-  console.log(categorySelect, 'categorySelected');
   return (
     <>
       <div className="d-flex flex-column h-100">
