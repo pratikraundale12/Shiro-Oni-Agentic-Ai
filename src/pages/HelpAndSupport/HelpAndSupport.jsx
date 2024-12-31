@@ -183,6 +183,7 @@ export const HelpAndSupport = () => {
   const [activeTab, setActiveTab] = useState('FAQs');
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [categorySelect, setCategorySelect] = useState('');
   const mail = useSelector(SettingsSelectors.getSettings);
   const faqCategories = [
     {
@@ -676,7 +677,10 @@ export const HelpAndSupport = () => {
     if (!query) return text;
 
     const regex = new RegExp(`(${query})`, 'gi'); // Case-insensitive regex to match query
-    const parts = text.split(regex);
+    const parts =
+      typeof text === 'string'
+        ? text.split(regex)
+        : React.Children.toArray(text.props.children).map(child => child);
 
     return parts.map((part, index) =>
       regex.test(part) ? (
@@ -692,7 +696,7 @@ export const HelpAndSupport = () => {
   // const filteredVideos = videos.filter(video =>
   //   video.title.toLowerCase().includes(searchQuery)
   // );
-
+  console.log(categorySelect, 'categorySelected');
   return (
     <>
       <div className="d-flex flex-column h-100">
@@ -748,7 +752,12 @@ export const HelpAndSupport = () => {
                             style={{ overflow: 'hidden' }}
                           >
                             <AccordionItem>
-                              <AccordionButton onClick={() => toggleFaq(index)}>
+                              <AccordionButton
+                                onClick={
+                                  (() => toggleFaq(index),
+                                  setCategorySelect(category.category))
+                                }
+                              >
                                 <span
                                   style={
                                     openFaqIndex === index
@@ -766,10 +775,7 @@ export const HelpAndSupport = () => {
                               </AccordionButton>
                               {openFaqIndex === index && (
                                 <AccordionContent>
-                                  {highlightText(
-                                    extractText(faq.answer),
-                                    searchQuery
-                                  )}
+                                  {highlightText(faq.answer, searchQuery)}
                                 </AccordionContent>
                               )}
                             </AccordionItem>
