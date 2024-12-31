@@ -259,17 +259,17 @@ export const ListScheduleDeployment = () => {
     {
       label: 'Version',
       renderCell: item => <TextRender text={item?.version || 'N/A'} />,
-      width: '6%',
+      width: '5%',
     },
     {
       label: 'Post Deploy State',
       renderCell: item => (
         <TextRender text={item?.deployment_status || 'N/A'} />
       ),
-      width: '11%',
+      width: '10%',
     },
     {
-      label: 'Schedular',
+      label: 'Scheduler',
       renderCell: item => <TextRender text={item?.scheduled_by || 'N/A'} />,
       width: '8%',
     },
@@ -291,7 +291,7 @@ export const ListScheduleDeployment = () => {
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
-      width: '12%',
+      width: '14%',
     },
     {
       label: 'Status',
