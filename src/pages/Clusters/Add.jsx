@@ -19,12 +19,17 @@ import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, CheckboxField, InputField, SelectField } from '../../shared';
 import CopyToClipboard from '../../shared/CopyToClipboard';
-import { ClustersActions, ClustersSelectors } from '../../store';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  NamespacesActions,
+} from '../../store';
 import {
   getOneRegistry,
   getRegistryList,
   testCluster,
   testRegistry,
+  updateCluster,
 } from '../../store/apis';
 import { Certificate } from './components/Certificate';
 import { Creditionals } from './components/Creditionals';
@@ -367,6 +372,7 @@ export const Add = () => {
     clusterName: data?.name || '',
     nifiUrl: data?.nifi_url || '',
   });
+
   useEffect(() => {
     if (clusterData) {
       dispatch(ClustersActions.addEditClusterData(clusterData));
@@ -420,24 +426,66 @@ export const Add = () => {
       setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
     }
   };
+  const editClusterData = async () => {
+    const payload = {
+      name: clusterData.clusterName,
+      nifi_url: clusterData.nifiUrl,
+      tag: tags,
+      notification_enable: notificationEnable,
+      approver_enable: approverEnable,
+    };
+    const id = clusterId;
+    const response = await updateCluster(id, payload);
+    if (response?.id) {
+      const cluster = localStorage.getItem('selected_cluster');
+      // Check if the cluster exists in localStorage
+      if (cluster) {
+        const parsedCluster = JSON.parse(cluster); // Parse the string into an object
+        // Now you can safely check if the value matches clusterId
+        if (parsedCluster.value === clusterId) {
+          localStorage.setItem(
+            'selected_cluster',
+            JSON.stringify({
+              label: response.name,
+              value: response.id,
+            })
+          );
+          dispatch(
+            NamespacesActions.setSelectedCluster({
+              label: response.name,
+              value: response.id,
+            })
+          );
+        }
+      }
+    } else {
+      setLoading(false);
+      toast.error(response.message);
+    }
+  };
   const onSubmit = data => {
-    setRegistryData({
-      registryName: data.registryName,
-      registryUrl: data.registryUrl,
-    });
-    setIsCertificateOpen(false);
-    setIsCredOpen(false);
-    setTestSuccess(false);
-    setDataFill(false);
+    if (clusterId) {
+      editClusterData();
+      history.push('/clusters');
+    } else {
+      setRegistryData({
+        registryName: data.registryName,
+        registryUrl: data.registryUrl,
+      });
+      setIsCertificateOpen(false);
+      setIsCredOpen(false);
+      setTestSuccess(false);
+      setDataFill(false);
 
-    setTest(true);
-    if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
-      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
-    } else if (activeTab === CLUSTER_MODULE_TABS.REGISTRY) {
-      if (registryURLs?.data?.includes(new URL(data?.registryUrl)?.origin)) {
-        setOpenSummary(true);
-      } else {
-        toast.error('This registry do not  exist!');
+      setTest(true);
+      if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
+        setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
+      } else if (activeTab === CLUSTER_MODULE_TABS.REGISTRY) {
+        if (registryURLs?.data?.includes(new URL(data?.registryUrl)?.origin)) {
+          setOpenSummary(true);
+        } else {
+          toast.error('This registry do not  exist!');
+        }
       }
     }
   };
@@ -631,7 +679,6 @@ export const Add = () => {
       }
     }
   };
-
   return (
     <Wrapper>
       <Title
@@ -763,7 +810,11 @@ export const Add = () => {
                     <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
                     <Button
                       onClick={() => setIsCertificateOpen(true)}
-                      disabled={testSuccess || !dataFill}
+                      disabled={
+                        testSuccess ||
+                        !dataFill ||
+                        watchedFields[1] == location?.state?.state?.nifi_url
+                      }
                     >
                       {KDFM.ADD_CERTIFICATE}
                     </Button>
@@ -773,7 +824,11 @@ export const Add = () => {
                     <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
                     <Button
                       onClick={() => setIsCredOpen(true)}
-                      disabled={testSuccess || !dataFill}
+                      disabled={
+                        testSuccess ||
+                        !dataFill ||
+                        watchedFields[1] == location?.state?.state?.nifi_url
+                      }
                     >
                       {KDFM.ENTER_CREDENTIALS}
                     </Button>
@@ -782,7 +837,11 @@ export const Add = () => {
               ) : (
                 <div>
                   <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
-                  <Button onClick={testData} loading={loading}>
+                  <Button
+                    onClick={testData}
+                    disabled={!isEditDetails}
+                    loading={loading}
+                  >
                     {KDFM.TEST_CLUSTER}
                   </Button>
                 </div>
@@ -837,102 +896,6 @@ export const Add = () => {
             {selectedRegistryId ? (
               <></>
             ) : (
-              // <RegistryDetailsDiv>
-              //   <TitleRegistry>{KDFM.REGISTRY_DETAILS} </TitleRegistry>
-              //   {/* <Flex>
-              //     <BoxContentArea>
-              //       <p>{KDFM.REGISTRY_NAME}</p>
-              //       <span>{registryData.name}</span>
-              //     </BoxContentArea>
-              //     <BoxContentArea>
-              //       <p>{KDFM.REGISTRY_URL}</p>
-              //       <span>
-              //         {registryData.registry_url}
-              //         <CopyToClipboard
-              //           className="copy-button"
-              //           copyItem={
-              //             registryData.registry_url
-              //               ? `${registryData.registry_url}/nifi-registry`
-              //               : registryData.registry_url
-              //           }
-              //         />
-              //       </span>
-              //     </BoxContentArea>
-              //   </Flex>
-              //   <RegistryDetailsDivTwo>
-              //     <FlexTwo>
-              //       {!testSuccess ? (
-              //         <Flex>
-              //           <div>
-              //             <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
-              //             <Button
-              //               onClick={() => {
-              //                 setIsCertificateOpen(true);
-              //               }}
-              //               disabled={testSuccess}
-              //             >
-              //               {KDFM.ADD_CERTIFICATE}
-              //             </Button>
-              //           </div>
-              //           <ORText>{KDFM.SEPARATOR}</ORText>
-              //           <div>
-              //             <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
-              //             <Button
-              //               onClick={() => {
-              //                 setIsCredOpen(true);
-              //               }}
-              //               disabled={testSuccess}
-              //             >
-              //               {KDFM.ENTER_CREDENTIALS}
-              //             </Button>
-              //           </div>
-              //           {testSuccess && !suceessModal && (
-              //             <UploadCertificateContainer>
-              //               <CertificateMessage>
-              //                 <RightCircleIcon width={60} height={60} />
-              //                 <TextTest>
-              //                   {activeTab === CLUSTER_MODULE_TABS.REGISTRY
-              //                     ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
-              //                     : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
-              //                 </TextTest>
-              //               </CertificateMessage>
-              //             </UploadCertificateContainer>
-              //           )}
-              //         </Flex>
-              //       ) : (
-              //         <CertificateMessage>
-              //           <RightCircleIcon width={60} height={60} />
-              //           <TextTest>
-              //             {activeTab === CLUSTER_MODULE_TABS.REGISTRY
-              //               ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
-              //               : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
-              //           </TextTest>
-              //         </CertificateMessage>
-              //       )}
-              //       <ButtonDiv>
-              //         <Button
-              //           variant="secondary"
-              //           onClick={() => {
-              //             setNewRegistry(true);
-              //             setIsEditDetails(true);
-              //             setValue('registryName', registryData?.name);
-              //             setValue('registryUrl', registryData?.registry_url);
-              //           }}
-              //         >
-              //           {KDFM.EDIT}
-              //         </Button>
-              //         <Button
-              //           onClick={() => {
-              //             reset({ registry: '' });
-              //             setRegistryData('');
-              //           }}
-              //         >
-              //           {KDFM.DELETE}
-              //         </Button>
-              //       </ButtonDiv>
-              //     </FlexTwo>
-              //   </RegistryDetailsDivTwo> */}
-              // </RegistryDetailsDiv>
               <NoDataContainer>
                 <NoDataIcon />
                 <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
@@ -1015,8 +978,15 @@ export const Add = () => {
             {KDFM.BACK}
           </Button>
           {(activeTab === 'cluster' || newRegistry) && (
-            <Button onClick={handleSubmit(onSubmit)} disabled={!testSuccess}>
-              {KDFM.CONTINUE}
+            <Button
+              onClick={handleSubmit(onSubmit)}
+              disabled={
+                clusterId
+                  ? watchedFields[1] != location?.state?.state?.nifi_url
+                  : !testSuccess
+              }
+            >
+              {clusterId ? KDFM.SAVE : KDFM.CONTINUE}
             </Button>
           )}
           {!newRegistry && activeTab === 'registry' && (
