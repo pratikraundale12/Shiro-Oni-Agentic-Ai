@@ -58,10 +58,7 @@ export const InsightContainer = ({
   text = '',
 }) => (
   <Container className="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6">
-    <InnerContainer
-      backgroundCss={backgroundCss}
-      // className={`main-box  w-100 h-100 position-relative ${backgroundCss}`}
-    >
+    <InnerContainer backgroundCss={backgroundCss}>
       <IconContainer>
         <Icon />
       </IconContainer>

@@ -7,7 +7,6 @@ import styled from 'styled-components';
 import {
   GreenRightCircleIcon,
   SmallNotThunderIcon,
-  SmallThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
@@ -389,43 +388,6 @@ const NamespaceDeploy = ({
                 ) : (
                   <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
                 )}
-                {/* <ActiveButtonDiv className="div-btn-3">
-                  <Tooltip id="enabled-tooltip" place="top">
-                    Enable
-                  </Tooltip>
-                  <ActiveButtonDiv
-                    className="div-btn-1"
-                    isActive={activeButtonPopup === 'ENABLED'}
-                    activeColor="#cf9f5d"
-                    hoverColor="#cf9f5d"
-                    activeTextColor="#fff"
-                    onClick={() => {
-                      handleFlowConfirmPopup('ENABLED');
-                    }}
-                    data-tooltip-id="enabled-tooltip"
-                  >
-                    <SmallThunderIcon color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
-
-                <ActiveButtonDiv className="div-btn-4">
-                  <Tooltip id="disabled-tooltip" place="top">
-                    Disable
-                  </Tooltip>
-                  <ActiveButtonDiv
-                    className="div-btn-1"
-                    isActive={activeButtonPopup === 'DISABLED'}
-                    activeColor="#2c7cf3"
-                    hoverColor="#2c7cf3"
-                    activeTextColor="#fff"
-                    onClick={() => {
-                      handleFlowConfirmPopup('DISABLED');
-                    }}
-                    data-tooltip-id="disabled-tooltip"
-                  >
-                    <SmallNotThunderIcon color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv> */}
               </ActiveButtonContainer>
             </CustomNine>
           </RowModal>

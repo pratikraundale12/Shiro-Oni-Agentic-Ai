@@ -101,7 +101,6 @@ const ConfigDetailsPage = () => {
     isOpen: false,
     schedule: false,
   });
-  // const [PcData, setPcData] = useState({});
   const [activeTab, setActiveTab] = useState('Summary');
   const { id } = useParams();
   const dispatch = useDispatch();

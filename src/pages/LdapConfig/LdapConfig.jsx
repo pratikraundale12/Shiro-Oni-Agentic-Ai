@@ -250,7 +250,6 @@ export const LdapConfig = () => {
   const [createMappingShow, setCreatMappingShow] = useState(false);
   const [successTest, setSuccessTest] = useState(false);
   const [testFormData, setTestFormData] = useState({});
-  const [listData, setListData] = useState();
   const [saveButtonStatus, setSaveButtonStatus] = useState(false);
   const [formPayload, setFormPayload] = useState([]);
   const [syncUsers, setSyncUsers] = useState(false);
@@ -281,7 +280,6 @@ export const LdapConfig = () => {
     reset: reset2,
   } = useForm({
     resolver: yupResolver(schemaForm2),
-    // defaultValues: formData,
   });
   const onChange = (data, option) => {
     const updatedData = ldapGroup.map(item =>

@@ -75,11 +75,8 @@ export const DuplicateScheduleModal = ({
       onRequestClose={onRequestClose}
       secondaryButtonText="Cancel"
       primaryButtonText={'Confirm'}
-      // primaryButtonDisabled={showApprover && isEmpty(approver_ids)}
       onSubmit={handleSubmit(onSubmit)}
-      // footerAlign="start"
       contentStyles={{ minWidth: '25%', minHeight: '30%' }}
-      //   loading={loading}
     >
       <Container>
         <div className="d-flex justify-content-center">

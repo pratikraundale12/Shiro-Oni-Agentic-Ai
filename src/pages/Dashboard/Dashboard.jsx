@@ -211,9 +211,6 @@ export const Dashboard = () => {
   const dispatch = useDispatch();
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedNamespace, setSelectedNamespace] = useState(null);
-  // const selectedNamespace = useSelector(
-  //   NamespacesSelectors.getSelectedNamespace
-  // );
   const namespaces = useSelector(NamespacesSelectors.getNamespaces);
   const dashboardData = useSelector(DashboardSelectors.getDashboardData);
   const loading = useSelector(state =>

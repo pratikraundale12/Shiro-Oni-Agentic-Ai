@@ -13,13 +13,8 @@ import {
   TextRender,
 } from '../../components';
 import { KDFM } from '../../constants';
-// import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-import {
-  // SchedularActions,
-  SchedularSelectors,
-} from '../../store/schedular/redux';
-// import AddParameterContext from './AddParameterContext';
+import { SchedularSelectors } from '../../store/schedular/redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button } from '../../shared';
 import AddParameterContext from './AddParameterContext';
@@ -302,29 +297,20 @@ const ParameterContext = ({
   ];
   const handleSaveParameterContext = async () => {
     if (!newlyAddParameters) return;
-    // setLoading(true);
     const uniqueDataSorted = uniqBy(newlyAddParameters, 'name');
     dispatch(
       NamespacesActions.updateParameterContext({
         modifiedPayloadData: [...uniqueDataSorted],
       })
     );
-    // setLoading(false);
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
     setIsParameterContextOpen({ isOpen: false, schedule: false });
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
     setTimeout(() => {
-      // setIsParameterContextOpen({ isOpen: true, schedule: false });
       dispatch(NamespacesActions.setNamespaceSummaryLoadingState(false));
       dispatch(NamespacesActions.fetchParameterContext());
-      // getParamerterContext();
     }, 1000);
   };
-
-  // const backSchedule = () => {
-  //   setIsParameterContextOpen({ isOpen: false, schedule: true });
-  //   dispatch(SchedularActions.setScheduleDeployModal());
-  // };
 
   selectedParentContextId;
   useEffect(() => {

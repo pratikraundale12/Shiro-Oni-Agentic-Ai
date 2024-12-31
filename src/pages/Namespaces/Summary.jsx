@@ -607,12 +607,6 @@ const Summary = () => {
       parameterName: item.name,
       parameters: item.parameters,
     }));
-    // let type = '';
-    // if (versionSelected?.version > selectedNameSpace?.version) {
-    //   type = 'upgrade';
-    // } else {
-    //   type = 'downgrade';
-    // }
     const payload = {
       version: versionSelected?.version,
       namespaceId: checkDestCluster?.id,
@@ -673,8 +667,6 @@ const Summary = () => {
       payload.controllerServiceData = controllerServiceReduxData;
     }
     dispatch(NamespacesActions.fetchDuplicateScheduleData(payload));
-
-    // dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
   const handleScheduleDeployDuplicate = () => {
     if (scheduleDeploymentFlow) {
@@ -752,12 +744,6 @@ const Summary = () => {
       parameterName: item.name,
       parameters: item.parameters,
     }));
-    // let type = '';
-    // if (versionSelected?.version > selectedNameSpace?.version) {
-    //   type = 'upgrade';
-    // } else {
-    //   type = 'downgrade';
-    // }
     const payload = {
       version: versionSelected?.version,
       flowId: selectedNameSpace?.flowId,

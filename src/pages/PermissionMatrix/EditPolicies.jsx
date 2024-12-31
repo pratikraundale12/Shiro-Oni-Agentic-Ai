@@ -94,7 +94,6 @@ export const EditPolicies = () => {
   const handlePermissionModal = () =>
     dispatch(PoliciesActions.permissionModal());
 
-  // const openRoleModal = () => setState(prev => ({ ...prev, roleModal: true }));
   const closeRoleModal = () =>
     setState(prev => ({
       ...prev,
@@ -161,14 +160,6 @@ export const EditPolicies = () => {
   return (
     <div>
       <ButtonContainer>
-        {/* <Button
-          onClick={openRoleModal}
-          variant="secondary"
-          size="sm"
-          icon={<PlusCircleIcon />}
-        >
-          Add New Role
-        </Button> */}
         <Button onClick={handlePermissionModal} size="sm">
           Edit Permissions
         </Button>
