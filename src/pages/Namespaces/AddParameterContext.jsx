@@ -137,8 +137,7 @@ const AddParameterContext = ({
           name: parameterContextItem?.name,
           value:
             parameterContextItem?.sensitive === 'true'
-              ? //  || parameterContextItem?.sensitive
-                ''
+              ? ''
               : parameterContextItem?.value,
           sensitive: isString(parameterContextItem?.sensitive)
             ? parameterContextItem?.sensitive
@@ -239,7 +238,6 @@ const AddParameterContext = ({
               ...(isArray(updatedDataUnique)
                 ? updatedDataUnique
                 : [updatedDataUnique]),
-              // processData,
             ])
           );
         } else {

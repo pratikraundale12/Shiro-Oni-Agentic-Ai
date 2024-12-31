@@ -78,54 +78,10 @@ const ClusterName = styled.div`
   text-overflow: ellipsis;
 `;
 
-// const Password = styled.div`
-//   text-decoration: none;
-//   margin-bottom: 0;
-// `;
-
-// const FileBox = styled.div`
-//   margin-left: 5px;
-// `;
-
-// const FileDetails = styled.div`
-//   align-items: center !important;
-//   justify-content: space-between !important;
-//   display: flex;
-//   font-size: 14px;
-//   font-weight: 700;
-//   line-height: 14px;
-//   letter-spacing: -0.01em;
-//   color: #4b5564;
-// `;
-
-// const FileSize = styled.div`
-//   text-align: end;
-// `;
-
-// const Files = styled.div`
-//   display: flex;
-// `;
-
-// const FileIconStyle = styled.div`
-//   margin-left: -9px;
-//   margin-top: -14px;
-// `;
-
 const ModalBody = styled.div`
-  // padding: 18px 0 0;
   position: relative;
   padding-bottom: 2px;
 `;
-
-// const FileName = styled.div`
-//   white-space: nowrap;
-//   font-size: 12px;
-//   font-weight: 400;
-//   line-height: 14.52px;
-//   letter-spacing: -0.005em;
-//   color: #7a7a7a;
-//   margin-top: 0.5rem;
-// `;
 
 const DetailsTitle = styled.div`
   font-family: ${props => props.theme.fontNato};
@@ -150,7 +106,6 @@ const TextEllipses = styled.div`
 `;
 
 export const SummaryModal = ({
-  // clusterData,
   registryData,
   openSummary,
   setOpenSummary,
@@ -335,7 +290,6 @@ export const SummaryModal = ({
                         id={`copy-board-summary-modal${data?.entityUrlValue}`}
                         place="bottom"
                         effect="solid"
-                        // content={'Copy URL'}
                         content={`${data?.title == 'Registry Details' ? 'Copy registry URL' : 'Copy cluster URL'}`}
                         style={{
                           width: '120px',

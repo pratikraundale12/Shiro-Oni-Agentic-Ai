@@ -6,19 +6,12 @@ import styled from 'styled-components';
 import * as yup from 'yup';
 
 import { getRightIcon } from '.';
-import {
-  // GoogleIcon,
-  LessArrowIcon,
-  MailIcon,
-} from '../../assets';
+import { LessArrowIcon, MailIcon } from '../../assets';
 import { Layout } from '../../components';
 import {
   EMAIL_REGEX,
   FORGOT_PASSWORD,
-  // GOOGLE,
   LOGIN_TO_YOUR_ACCOUNT,
-  // MICROSOFT,
-  // OR_DO_IT_VIA_OTHER_ACCOUNTS,
   SIGN_IN_TO_YOUR_ACCOUNT,
   WELCOME_BACK,
 } from '../../constants';
@@ -55,35 +48,6 @@ const Form = styled.form`
 const SubmitButton = styled(Button)`
   margin-top: 1.8rem;
 `;
-
-// const SmallText = styled.small`
-//   display: block;
-//   margin-top: 1.4rem;
-//   color: ${props => props.theme.colors.darker};
-//   text-align: center;
-// `;
-
-// const SSOButtonsContainer = styled.div`
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   gap: 1rem;
-//   margin-top: 1.4rem;
-// `;
-
-// const SSOButton = styled.div`
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   gap: 1rem;
-//   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-//   opacity: 0.35;
-//   padding: 1rem 1.4rem;
-//   border-radius: 8px;
-//   border: 1px solid ${props => props.theme.colors.border};
-//   background-color: ${props => props.theme.colors.white};
-//   box-shadow: 0px 1px 3px ${props => props.theme.colors.shadow};
-// `;
 
 const ForgetLinkContainer = styled.div`
   display: flex;

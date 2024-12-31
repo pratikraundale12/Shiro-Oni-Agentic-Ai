@@ -795,59 +795,6 @@ export const HelpAndSupport = () => {
               </FormContainer>
             </>
           )}
-
-          {/* {activeTab === 'Videos' && (
-            <FormContainer>
-              <div className="d-flex gap-5">
-                <FAQHeading>DFM videos</FAQHeading>
-                <SearchContainer>
-                  <SmallSearchIcon
-                    width={18}
-                    height={18}
-                    color={theme.colors.darkGrey1}
-                  />
-                  <Search
-                    type="search"
-                    placeholder="Search Video Tutorials ...."
-                    value={searchQuery}
-                    onChange={handleSearch}
-                  />{' '}
-                </SearchContainer>
-              </div>
-              <div className="row mt-3">
-                {filteredVideos.length > 0 ? (
-                  filteredVideos.map((video, index) => (
-                    <div key={index} className="col-sm-6 col-lg-4 gap-2">
-                      <video
-                        width="100%"
-                        controls
-                        style={{
-                          borderRadius: '10px',
-                          marginBottom: '10px',
-                          paddingRight: '50px',
-                        }}
-                      >
-                        <source src={video.video} type="video/mp4" />
-                        <track
-                          kind="captions"
-                          srcLang="en"
-                          label="English captions"
-                          src="/path/to/captions.vtt"
-                          default
-                        />
-                      </video>
-                      <Title>{video.title}</Title>
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    <NoDataIcon width={130} />
-                    <NoDataText>No Data Found!!</NoDataText>
-                  </>
-                )}
-              </div>
-            </FormContainer>
-          )} */}
         </Container>
         <FlexWrapper>
           <div>

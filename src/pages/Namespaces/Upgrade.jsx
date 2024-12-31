@@ -407,12 +407,7 @@ const Upgrade = () => {
                     value={xStateCoordinate || formData.position.x}
                     icon={<CanvasXIcon />}
                     disabled={selectedNameSpace.mode === 'upgrade'}
-                    onChange={
-                      e => handleXCoordinateChangeInput(e)
-                      // dispatch(
-                      //   NamespacesActions.setPosition({ x: e.target.value })
-                      // )
-                    }
+                    onChange={e => handleXCoordinateChangeInput(e)}
                   />
                   <InputField
                     name="y"
@@ -421,12 +416,7 @@ const Upgrade = () => {
                     value={yStateCoordinate || formData.position.y}
                     icon={<CanvasYIcon />}
                     disabled={selectedNameSpace.mode === 'upgrade'}
-                    onChange={
-                      e => handleYCoordinateChangeInput(e)
-                      // dispatch(
-                      //   NamespacesActions.setPosition({ y: e.target.value })
-                      // )
-                    }
+                    onChange={e => handleYCoordinateChangeInput(e)}
                   />
                 </ColXlFive>
 
