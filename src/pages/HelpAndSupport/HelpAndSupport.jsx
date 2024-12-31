@@ -753,31 +753,34 @@ export const HelpAndSupport = () => {
                           >
                             <AccordionItem>
                               <AccordionButton
-                                onClick={
-                                  (() => toggleFaq(index),
-                                  setCategorySelect(category.category))
-                                }
+                                onClick={() => (
+                                  toggleFaq(index),
+                                  setCategorySelect(category.category)
+                                )}
                               >
                                 <span
                                   style={
-                                    openFaqIndex === index
+                                    openFaqIndex === index &&
+                                    category?.category === categorySelect
                                       ? { color: 'orange' }
                                       : null
                                   }
                                 >
                                   {highlightText(faq.question, searchQuery)}
                                 </span>
-                                {openFaqIndex === index ? (
+                                {openFaqIndex === index &&
+                                category?.category === categorySelect ? (
                                   <MinusIcon />
                                 ) : (
                                   <PlusIcon color="#000000" />
                                 )}
                               </AccordionButton>
-                              {openFaqIndex === index && (
-                                <AccordionContent>
-                                  {highlightText(faq.answer, searchQuery)}
-                                </AccordionContent>
-                              )}
+                              {openFaqIndex === index &&
+                                category?.category === categorySelect && (
+                                  <AccordionContent>
+                                    {highlightText(faq.answer, searchQuery)}
+                                  </AccordionContent>
+                                )}
                             </AccordionItem>
                           </div>
                         ))}
