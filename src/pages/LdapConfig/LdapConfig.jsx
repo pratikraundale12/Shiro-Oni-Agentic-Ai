@@ -26,12 +26,12 @@ import {
 import AddNewRoleModal from '../../shared/AddNewRoleModal';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { LoadingSelectors, RolesActions, RolesSelectors } from '../../store';
-import { SettingsSelectors } from '../../store/settings';
 import {
   checkLdapConfig,
   groupMappingApi,
   testConfigApi,
 } from '../../store/apis/ldap';
+import { SettingsSelectors } from '../../store/settings';
 import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
 import { CreateMapping } from './components/CreateMapping';
 import SelectCellRender from './components/SelectCellRender';
@@ -107,6 +107,10 @@ const Heading = styled.div`
 const CustomTable = styled(Table)`
   tr td:last-child div {
     overflow: visible;
+  }
+
+  .react-select__menu {
+    overflow: scroll !important;
   }
 `;
 
