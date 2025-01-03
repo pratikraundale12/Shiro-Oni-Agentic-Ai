@@ -135,7 +135,6 @@ export const Certificate = ({
         secondaryButtonText={KDFM.BACK}
         primaryButtonText={KDFM.TEST_CERTIFICATE}
         onSubmit={handleSubmit(onSubmit)}
-        loading={loading}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}
       >

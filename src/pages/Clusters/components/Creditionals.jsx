@@ -106,7 +106,6 @@ export const Creditionals = ({
         isOpen={isCredOpen}
         onRequestClose={() => setIsCredOpen(false)}
         size="sm"
-        loading={loading}
         secondaryButtonText={KDFM.BACK}
         primaryButtonText={KDFM.TEST_CREDENTIALS}
         onSubmit={handleSubmit(onSubmit)}

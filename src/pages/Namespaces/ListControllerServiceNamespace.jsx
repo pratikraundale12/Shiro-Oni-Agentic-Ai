@@ -187,7 +187,7 @@ export const ListControllerService = () => {
       })
     );
     setTimeout(() => {
-      dispatch(NamespacesActions.getControllerServiceList({localOnly: true}));
+      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
     }, 500);
     setIsEnableModalOpen(false);
   };
@@ -200,7 +200,7 @@ export const ListControllerService = () => {
     );
 
     setTimeout(() => {
-      dispatch(NamespacesActions.getControllerServiceList({localOnly: true}));
+      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
     }, 500);
     setIsDeleteModalOpen(false);
   };
@@ -379,7 +379,7 @@ export const ListControllerService = () => {
   ];
 
   useEffect(() => {
-    dispatch(NamespacesActions.getControllerServiceList({localOnly: true}));
+    dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
   }, [dispatch, selectedCluster]);
 
   const handleSettingClick = item => {
