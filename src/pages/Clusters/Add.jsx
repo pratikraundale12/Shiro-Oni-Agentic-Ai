@@ -22,6 +22,7 @@ import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
   ClustersActions,
   ClustersSelectors,
+  GridSelectors,
   NamespacesActions,
 } from '../../store';
 import {
@@ -327,30 +328,6 @@ const CharacterCount = styled.span`
   overflow: hidden;
 `;
 
-const ClusterSchema = yup.object().shape({
-  clusterName: yup
-    .string()
-    .min(3, 'Cluster Name must be at least 3 characters long')
-    .max(30, 'Cluster Name must be at most 30 characters long')
-    .required('Cluster Name is required'),
-  nifiUrl: yup
-    .string()
-    .url('Enter a valid NiFi URL')
-    .required('NiFi URL is required'),
-});
-
-const RegistrySchema = yup.object().shape({
-  registryName: yup
-    .string()
-    .min(3, 'Registry Name must be at least 3 characters long')
-    .max(30, 'Registry Name must be at most 30 characters long')
-    .required('Registry Name is required'),
-  registryUrl: yup
-    .string()
-    .url('Enter a valid Registry URL')
-    .required('NiFi URL is required'),
-});
-
 export const Add = () => {
   const [activeTab, setActiveTab] = useState(CLUSTER_MODULE_TABS.CLUSTER);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
@@ -364,6 +341,7 @@ export const Add = () => {
   const [dataFill, setDataFill] = useState(false);
   const [openSummary, setOpenSummary] = useState(false);
   const [failedTestMessage, setFailedTestMessage] = useState('');
+  const [registries, setRegistries] = useState([]);
   const location = useLocation();
   const dispatch = useDispatch();
   const { state: data } = location.state || {};
@@ -372,17 +350,61 @@ export const Add = () => {
     clusterName: data?.name || '',
     nifiUrl: data?.nifi_url || '',
   });
+  const [clusterId, setClusterId] = useState(data?.id);
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'clusters')
+  );
+  const filteredGridData = gridData.filter(item => {
+    return item?.nifi_url !== data?.nifi_url;
+  });
+
+  const ClusterSchema = yup.object().shape({
+    clusterName: yup
+      .string()
+      .min(3, 'Cluster Name must be at least 3 characters long')
+      .max(30, 'Cluster Name must be at most 30 characters long')
+      .required('Cluster Name is required'),
+    nifiUrl: yup
+      .string()
+      .url('Enter a valid NiFi URL')
+      .required('NiFi URL is required')
+      .test('unique-registry-url', 'NiFi URL already exists', function (value) {
+        if (!value) return true;
+        return !filteredGridData?.some(reg => reg.nifi_url === value);
+      }),
+  });
+
+  const RegistrySchema = yup.object().shape({
+    registryName: yup
+      .string()
+      .min(3, 'Registry Name must be at least 3 characters long')
+      .max(30, 'Registry Name must be at most 30 characters long')
+      .required('Registry Name is required'),
+    registryUrl: yup
+      .string()
+      .url('Enter a valid Registry URL')
+      .required('NiFi URL is required')
+      .test(
+        'unique-registry-urls',
+        'Registry already exists',
+        function (value) {
+          if (!value) return true;
+          return !registries?.some(reg => reg.registry_url === value);
+        }
+      ),
+  });
 
   useEffect(() => {
     if (clusterData) {
       dispatch(ClustersActions.addEditClusterData(clusterData));
     }
   }, [clusterData]);
+
   const [registryData, setRegistryData] = useState({
     registryName: '',
     registryUrl: '',
   });
-  const [clusterId, setClusterId] = useState(data?.id);
+
   const [isEditDetails, setIsEditDetails] = useState(false);
   const [notificationEnable, setNotificationEnable] = useState(
     data?.notification_enable || false
@@ -390,7 +412,9 @@ export const Add = () => {
   const [approverEnable, setApproverEnable] = useState(
     data?.approver_enable || false
   );
+
   const registryURLs = useSelector(ClustersSelectors.getClusterFormData);
+
   const {
     control,
     watch,
@@ -407,7 +431,6 @@ export const Add = () => {
     reValidateMode: 'onChange',
   });
 
-  const [registries, setRegistries] = useState([]);
   const selectedRegistryId = watch('registry');
   const handleBack = () => {
     setIsCertificateOpen(false);
@@ -495,8 +518,14 @@ export const Add = () => {
     'nifiUrl',
     'registryName',
     'registryUrl',
+    'tags',
   ]);
-
+  const checkDuplicate = filteredGridData?.some(
+    reg => reg.nifi_url === watchedFields?.[1]
+  );
+  const checkDuplicateRegistry = registries?.some(
+    reg => reg.registry_url === watchedFields?.[3]
+  );
   useEffect(() => {
     const [clusterName, nifiUrl, registryName, registryUrl] = watchedFields;
 
@@ -568,6 +597,7 @@ export const Add = () => {
       const names = response.data.map(item => ({
         label: item.name,
         value: item.id,
+        registry_url: item?.registry_url,
       }));
       setRegistries(names);
     } catch (error) {
@@ -679,6 +709,18 @@ export const Add = () => {
       }
     }
   };
+  const checkEditSave = () => {
+    if (
+      data?.tag === tags &&
+      data?.approver_enable === approverEnable &&
+      data?.notification_enable === notificationEnable
+    ) {
+      return true;
+    } else {
+      false;
+    }
+  };
+
   return (
     <Wrapper>
       <Title
@@ -692,7 +734,10 @@ export const Add = () => {
         <NavTabs id="nav-tab" role="tablist">
           <NavButton
             active={activeTab === CLUSTER_MODULE_TABS.CLUSTER}
-            onClick={() => setActiveTab(CLUSTER_MODULE_TABS.CLUSTER)}
+            onClick={() => {
+              setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
+              setNewRegistry(false);
+            }}
           >
             {KDFM.CLUSTER_DETAILS}
           </NavButton>
@@ -723,7 +768,7 @@ export const Add = () => {
               register={register}
               icon={<LinkIcon />}
               label={KDFM.NIFI_URL}
-              disabled={testSuccess}
+              disabled={testSuccess || data?.id}
               placeholder={KDFM.ENTER_NIFI_URL}
               errors={errors}
             />
@@ -811,9 +856,9 @@ export const Add = () => {
                     <Button
                       onClick={() => setIsCertificateOpen(true)}
                       disabled={
-                        testSuccess ||
-                        !dataFill ||
-                        watchedFields[1] == location?.state?.state?.nifi_url
+                        clusterId
+                          ? true
+                          : testSuccess || !dataFill || checkDuplicate
                       }
                     >
                       {KDFM.ADD_CERTIFICATE}
@@ -825,9 +870,9 @@ export const Add = () => {
                     <Button
                       onClick={() => setIsCredOpen(true)}
                       disabled={
-                        testSuccess ||
-                        !dataFill ||
-                        watchedFields[1] == location?.state?.state?.nifi_url
+                        clusterId
+                          ? true
+                          : testSuccess || !dataFill || checkDuplicate
                       }
                     >
                       {KDFM.ENTER_CREDENTIALS}
@@ -929,7 +974,9 @@ export const Add = () => {
                     <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
                     <Button
                       onClick={() => setIsCertificateOpen(true)}
-                      disabled={testSuccess || !dataFill}
+                      disabled={
+                        testSuccess || !dataFill || checkDuplicateRegistry
+                      }
                     >
                       {KDFM.ADD_CERTIFICATE}
                     </Button>
@@ -939,7 +986,9 @@ export const Add = () => {
                     <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
                     <Button
                       onClick={() => setIsCredOpen(true)}
-                      disabled={testSuccess || !dataFill}
+                      disabled={
+                        testSuccess || !dataFill || checkDuplicateRegistry
+                      }
                     >
                       {KDFM.ENTER_CREDENTIALS}
                     </Button>
@@ -981,12 +1030,18 @@ export const Add = () => {
             <Button
               onClick={handleSubmit(onSubmit)}
               disabled={
-                clusterId
-                  ? watchedFields[1] != location?.state?.state?.nifi_url
-                  : !testSuccess
+                newRegistry
+                  ? !testSuccess
+                  : clusterId
+                    ? watchedFields?.[0] === data?.name && checkEditSave()
+                    : !testSuccess
               }
             >
-              {clusterId ? KDFM.SAVE : KDFM.CONTINUE}
+              {newRegistry
+                ? KDFM.CONTINUE
+                : clusterId
+                  ? KDFM.SAVE
+                  : KDFM.CONTINUE}
             </Button>
           )}
           {!newRegistry && activeTab === 'registry' && (
