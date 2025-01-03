@@ -160,7 +160,7 @@ const ConfigurePage = ({
         </Button>
       </NewClassAddes>
       <DisplayMessage className="pb-3">
-        Identify available controller services from the instance
+        Select a controller service from the available options in this instance
       </DisplayMessage>
       <div>
         <Table
