@@ -19,6 +19,7 @@ import {
   updateCluster,
   updateRegistry,
 } from '../../../store/index1';
+import { FullPageLoader } from '../../../components';
 
 const ClusterDetailsContainer = styled.div`
   background-color: #f5f7fa;
@@ -251,6 +252,7 @@ export const SummaryModal = ({
 
   return (
     <>
+      <FullPageLoader loading={loading} />
       <Modal
         title={KDFM.CLUSTER_SUMMARY}
         isOpen={openSummary}
@@ -258,7 +260,6 @@ export const SummaryModal = ({
         size="sm"
         secondaryButtonText={KDFM.BACK}
         primaryButtonText={KDFM.SAVE}
-        loading={loading}
         footerAlign="start"
         onSubmit={handleSubmit}
       >
