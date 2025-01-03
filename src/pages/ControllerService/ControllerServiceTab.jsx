@@ -1421,7 +1421,7 @@ const ControllerServiceTab = ({
                 <ReactTooltip
                   id="External Controller Services"
                   place="right"
-                  content="Available External Controller Services
+                  content="Available external controller services to configure
                   "
                   style={{
                     width: 'auto',
@@ -1455,7 +1455,7 @@ const ControllerServiceTab = ({
                 <ReactTooltip
                   id="External Controller Services"
                   place="right"
-                  content="Available External Controller Services
+                  content="Available external controller services to configure
                   "
                   style={{
                     width: 'auto',
