@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
+import { InfoIcon, NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
 import {
   EnhancedTextRender,
   IconButton,
@@ -319,7 +319,28 @@ const ParameterContextTab = ({
                   handleAddPc(item?.name);
                 }}
                 key={item?.name}
-                title={`${item?.name}`}
+                title={
+                  <>
+                    {item?.name}
+                    <span
+                      data-tooltip-id="Parameter Context"
+                      style={{ marginLeft: '8px' }}
+                    >
+                      <InfoIcon />
+                      <ReactTooltip
+                        id="Parameter Context"
+                        place="right"
+                        content="
+                        Inherited Parameter Context "
+                        style={{
+                          width: 'auto',
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
+                        }}
+                      />
+                    </span>
+                  </>
+                }
                 isTableOpen={openIndex === item?.name}
                 toggleCollapsible={() => handleToggle(item?.name)}
               >

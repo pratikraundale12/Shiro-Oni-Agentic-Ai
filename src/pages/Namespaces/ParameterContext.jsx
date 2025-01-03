@@ -3,6 +3,7 @@ import { has, isEmpty, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { ArrowIcon, NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
 import {
@@ -13,10 +14,9 @@ import {
   TextRender,
 } from '../../components';
 import { KDFM } from '../../constants';
+import { Button } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { SchedularSelectors } from '../../store/schedular/redux';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { Button } from '../../shared';
 import AddParameterContext from './AddParameterContext';
 import Collapsible from './Collapsible';
 import RefreshModal from './RefreshModal';
@@ -233,8 +233,8 @@ const ParameterContext = ({
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {item.parentParameterId ===
-            deployOrUpgradeDetails?.parameterContextId ||
-          singleNamespaceData?.parameterContextId ||
+            (deployOrUpgradeDetails?.parameterContextId ||
+              singleNamespaceData?.parameterContextId) ||
           !has(item, 'parentParameterId') ? (
             <IconButton
               style={{
