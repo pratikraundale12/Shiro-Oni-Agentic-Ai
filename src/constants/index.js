@@ -116,6 +116,7 @@ export const KDFM = {
   // Generic constants
   NIFI: 'NiFi',
   ADD: 'Add',
+  ADD_NEW: 'Add New',
   BACK: 'Back',
   CONTINUE: 'Continue',
   EDIT: 'Edit',

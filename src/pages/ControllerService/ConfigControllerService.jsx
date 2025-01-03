@@ -1,13 +1,13 @@
 /* eslint-disable  */
 import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { DeleteSmallIcon, QRIcons } from '../../assets';
 import { Table } from '../../components';
 import { Button, InputField, Modal } from '../../shared';
-import ValueRender from './ValueRender';
 import { NamespacesActions } from '../../store';
-import { useDispatch } from 'react-redux';
-import { useForm } from 'react-hook-form';
-import { DeleteSmallIcon, QRIcons } from '../../assets';
+import ValueRender from './ValueRender';
 
 const ModalBody = styled.div`
   position: relative;
@@ -133,7 +133,9 @@ export const ConfigControllerService = ({
     );
     const payload = {
       id: selectedItemFromList.id || selectedItemFromList?.updatedValue,
-      version: currentVersion?.version ? currentVersion?.version : selectedItemFromList?.version,
+      version: currentVersion?.version
+        ? currentVersion?.version
+        : selectedItemFromList?.version,
       properties: resultObject,
       sensitiveDynamicPropertyNames: sensitiveNames,
       currentState: selectedItemFromList?.state,
@@ -175,7 +177,7 @@ export const ConfigControllerService = ({
     >
       <ModalBody className="modal-body">
         <div className=" row d-flex justify-content-between">
-          <div className="col-11 ">
+          <div className="col ">
             <InputField
               name="name"
               type="text"
@@ -191,7 +193,7 @@ export const ConfigControllerService = ({
             />
           </div>
 
-          <div className=" col-1 mt-4 pt-3">
+          <div className=" col-auto mt-4 pt-2">
             <Button
               type="button"
               onClick={() =>
@@ -202,7 +204,7 @@ export const ConfigControllerService = ({
                 )
               }
             >
-              +
+              <div className="h2 mb-0">+</div>
             </Button>
           </div>
         </div>
