@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -9,6 +9,7 @@ import {
   ConfirmScheduleDeploymentIcon,
   FlashCutIcon,
   FlashIcon,
+  InfoIcon,
   NoDataIcon,
   PencilIcon,
   RefrenceIcon,
@@ -23,6 +24,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { theme } from '../../styles';
 import Collapsible from '../Namespaces/Collapsible';
 import ControllerServerRefreshModal from '../Namespaces/ControllerServerRefreshModal';
 import AddControllerServiceModal from './AddControllerServiceModal';
@@ -31,7 +33,6 @@ import ConfigControllerService from './ConfigControllerService';
 import ConfigurePage from './ConfigurePage';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
-import { theme } from '../../styles';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -664,6 +665,253 @@ const ControllerServiceTab = ({
       width: '14%',
     },
   ];
+  const COLUMNS_Upgrade_External = [
+    {
+      label: 'Name',
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
+        return (
+          <TextRender
+            key={currentItem?.name}
+            text={currentItem?.name}
+            capitalizeText={false}
+          />
+        );
+      },
+      width: '20%',
+    },
+    {
+      label: 'Type',
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
+        return (
+          <TextRender
+            key={currentItem?.typeValue}
+            text={currentItem?.typeValue}
+            capitalizeText={false}
+          />
+        );
+      },
+      width: '16%',
+    },
+    {
+      label: 'Bundle',
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
+        return (
+          <TextRender
+            key={currentItem?.bundleValue}
+            text={currentItem?.bundleValue}
+            capitalizeText={false}
+          />
+        );
+      },
+      width: '15%',
+    },
+    {
+      label: 'State',
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData || item;
+
+        return (
+          <StatusText
+            text={
+              currentItem?.state === 'DISABLED' &&
+              currentItem?.validationStatus === 'INVALID'
+                ? 'INVALID'
+                : currentItem?.state
+            }
+            item={currentItem}
+          />
+        );
+      },
+      width: '14%',
+    },
+    {
+      label: 'Scope',
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData || item;
+        return currentItem?.scope || 'N/A';
+      },
+      width: '10%',
+    },
+    {
+      label: 'Referencing Component',
+      renderCell: item => (
+        <div className="d-flex justify-content-center">
+          {(!isEmpty(
+            item?.configuredData?.referencingComponents?.controllerService
+          ) ||
+            !isEmpty(
+              item?.configuredData?.referencingComponents?.processors
+            )) && (
+            <>
+              <button
+                className="border-0 bg-white"
+                onClick={() => {
+                  setRefreshItem(item);
+                  dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                }}
+                data-tooltip-id={`Referencing-${item?.id}`}
+                aria-label="Referencing"
+              >
+                <RefrenceIcon />
+              </button>
+              <ReactTooltip
+                id={`Referencing-${item?.id}`}
+                place="left"
+                content="Reference"
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
+        </div>
+      ),
+      width: '15%',
+    },
+    {
+      label: 'Action',
+      renderCell: item => {
+        const isControllerService = item?.controllerService?.length > 0;
+        const stateItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
+        const state = stateItem?.state;
+        const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
+
+        const isButtonVisible =
+          (item.updatedValue &&
+            state !== 'INVALID' &&
+            state !== 'VALIDATING' &&
+            state !== 'DISABLING') ||
+          (state === 'DISABLED' && stateItem?.validationStatus !== 'INVALID') ||
+          (state === 'ENABLED' && stateItem?.validationStatus === 'VALID');
+
+        return (
+          <div>
+            {/* Settings Button */}
+            {(isControllerService || stateItem?.properties?.length) && (
+              <>
+                <button
+                  className="border-0 bg-white"
+                  onClick={() => handleSettingClick(stateItem)}
+                  data-tooltip-id={`Settings-${item?.id}`}
+                  aria-label="Settings"
+                  disabled={
+                    stateItem?.state === 'ENABLING' ||
+                    stateItem?.state === 'ENABLED'
+                  }
+                  style={{
+                    opacity:
+                      stateItem?.state === 'ENABLING' ||
+                      stateItem?.state === 'ENABLED'
+                        ? 0.3
+                        : 1,
+                    cursor:
+                      stateItem?.state === 'ENABLING' ||
+                      stateItem?.state === 'ENABLED'
+                        ? 'not-allowed'
+                        : 'pointer',
+                  }}
+                >
+                  <SettingSmallIcon />
+                </button>
+                <ReactTooltip
+                  id={`Settings-${item?.id}`}
+                  place="left"
+                  content="Settings"
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
+
+            {/* Enable/Disable Button */}
+            {isButtonVisible && !item?.configured && (
+              <>
+                <button
+                  className="border-0 bg-white ms-2"
+                  onClick={() => handleEnableClick(stateItem)}
+                  data-tooltip-id={stateItem?.id}
+                >
+                  {state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
+                </button>
+                <ReactTooltip
+                  id={stateItem?.id}
+                  place="left"
+                  content={tooltipContent}
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
+
+            {/* Re-Configure Button */}
+            {item.updatedValue && !item?.configured && (
+              <React.Fragment>
+                <ReConfigureButton
+                  className="ms-2"
+                  data-tooltip-id={`configure-${stateItem?.id}`}
+                  onClick={() => handleConfigure(item)}
+                >
+                  <PencilIcon />
+                </ReConfigureButton>
+                <ReactTooltip
+                  id={`configure-${stateItem?.id}`}
+                  place="left"
+                  content="Re-Configure"
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </React.Fragment>
+            )}
+
+            {/* Configure Button */}
+            {!isControllerService &&
+              !isButtonVisible &&
+              !item?.updatedValue &&
+              !item?.configured && (
+                <ConfigureButton onClick={() => handleConfigure(item)}>
+                  {KDFM.CONFIGURE}
+                </ConfigureButton>
+              )}
+          </div>
+        );
+      },
+      width: '10%',
+    },
+  ];
   const COLUMNS_2 = [
     {
       label: 'Name',
@@ -748,7 +996,6 @@ const ControllerServiceTab = ({
       width: '14%',
     },
   ];
-
   const COLUMNS_3 = [
     {
       label: 'Name',
@@ -1160,17 +1407,74 @@ const ControllerServiceTab = ({
 
   useEffect(() => {
     const collapsibles = [];
-    if (externalControllerServices?.length) {
-      collapsibles.push({
-        title: KDFM.CONTROLLER_SERVICE_DATA,
-        content: (
-          <Table
-            data={externalControllerServices}
-            columns={COLUMNS}
-            className={'variables-table'}
-          />
-        ),
-      });
+    if (isUpgrade) {
+      if (externalControllerServices?.length) {
+        collapsibles.push({
+          title: (
+            <div className="d-flex">
+              {KDFM.CONTROLLER_SERVICE_DATA}
+              <div
+                data-tooltip-id="External Controller Services"
+                className="ml-2"
+              >
+                <InfoIcon />
+                <ReactTooltip
+                  id="External Controller Services"
+                  place="right"
+                  content="Available external controller services to configure
+                  "
+                  style={{
+                    width: 'auto',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </div>
+            </div>
+          ),
+          content: (
+            <Table
+              data={externalControllerServices}
+              columns={COLUMNS}
+              className={'variables-table'}
+            />
+          ),
+        });
+      }
+    } else {
+      if (externalControllerServices?.length) {
+        collapsibles.push({
+          title: (
+            <div className="d-flex">
+              {KDFM.CONTROLLER_SERVICE_DATA}
+              <div
+                data-tooltip-id="External Controller Services"
+                className="ml-2"
+              >
+                <InfoIcon />
+                <ReactTooltip
+                  id="External Controller Services"
+                  place="right"
+                  content="Available external controller services to configure
+                  "
+                  style={{
+                    width: 'auto',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </div>
+            </div>
+          ),
+          content: (
+            <Table
+              data={externalControllerServices}
+              columns={COLUMNS_Upgrade_External}
+              className={'variables-table'}
+            />
+          ),
+        });
+      }
     }
     if (isUpgrade) {
       if (localServices?.length) {
