@@ -412,8 +412,9 @@ export const Add = () => {
   const [approverEnable, setApproverEnable] = useState(
     data?.approver_enable || false
   );
-
-  const registryURLs = useSelector(ClustersSelectors.getClusterFormData);
+  const sortRegisrtyURL = registries?.map(ele => ele?.registry_url);
+  const registryURLs =
+    useSelector(ClustersSelectors.getClusterFormData) || sortRegisrtyURL;
 
   const {
     control,
@@ -625,7 +626,10 @@ export const Add = () => {
   };
 
   const handleRegistry = () => {
-    if (registryURLs?.data?.includes(registryData?.registry_url)) {
+    if (
+      registryURLs?.data?.includes(registryData?.registry_url) ||
+      sortRegisrtyURL.includes(registryData?.registry_url)
+    ) {
       setIsCertificateOpen(false);
       setIsCredOpen(false);
       setTestSuccess(false);
