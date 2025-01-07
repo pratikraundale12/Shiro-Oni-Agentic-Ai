@@ -32,6 +32,7 @@ import {
 } from '../../shared';
 import { RolesSelectors } from '../../store';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import defaultLogo from '../../assets/images/defaultLogo.png';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -210,7 +211,7 @@ export const Setting = () => {
 
     if (settingData?.id) payload.append('id', settingData.id);
 
-    if (dirtyFields.logo && data?.logo !== settingData?.logo) {
+    if (data?.logo !== settingData?.logo) {
       payload.append('logo', data?.logo || null);
       updatedFields.push('logo');
     }
@@ -536,7 +537,7 @@ export const Setting = () => {
               rightIcon={<UploadIcon />}
               errors={errors}
               register={register}
-              image={settingData?.logo}
+              image={settingData?.logo || defaultLogo}
               setValue={setValue}
             />
           </div>
