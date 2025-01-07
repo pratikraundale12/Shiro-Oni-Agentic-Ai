@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { hasError } from '../../../../helpers';
+import { CrossIcon } from '../../../../assets';
 
 const Container = styled.div`
   margin-bottom: 1.4rem;
@@ -83,7 +84,7 @@ const Container = styled.div`
 
   .image-preview {
     margin-top: 10px;
-    max-width: 200px;
+    max-width: 250px;
     max-height: 200px;
     border-radius: 8px;
     position: relative;
@@ -93,11 +94,8 @@ const Container = styled.div`
     position: absolute;
     top: -5px;
     right: -5px;
-    background-color: ${props => props.theme.colors.error};
     color: ${props => props.theme.colors.white};
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -156,7 +154,8 @@ const UploadField = ({
   }, [image]);
 
   const getFileNameFromUrl = url => {
-    return url.substring(url.lastIndexOf('/') + 1);
+    const convertedFileName = url.replace(/\.[a-f0-9]{8,}\./, '.');
+    return convertedFileName.substring(url.lastIndexOf('/') + 1);
   };
 
   // Default onKeyDown behavior
@@ -243,15 +242,21 @@ const UploadField = ({
               )}
             </div>
             {imageSrc && (
-              <div className="image-preview">
+              <div
+                className="image-preview"
+                style={{ width: name === 'logo' ? '250px' : '60px' }}
+              >
                 <img
                   src={imageSrc}
                   alt="Uploaded Preview"
-                  width={200}
-                  height={200}
+                  width={name === 'logo' ? 200 : 30}
+                  height={name === 'logo' ? 200 : 30}
                 />
                 <button className="remove-icon" onClick={handleRemoveImage}>
-                  &times;
+                  <CrossIcon
+                    height={name === 'logo' ? 24 : 14}
+                    width={name === 'logo' ? 24 : 14}
+                  />
                 </button>
               </div>
             )}
