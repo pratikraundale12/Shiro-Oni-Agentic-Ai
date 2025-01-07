@@ -52,4 +52,6 @@ export const NAMESPACE_CONSTANTS = {
   ZOOM_OUT: 'Zoom Out',
   FIT: 'Fit',
   LEGENDS: 'Legends',
+  SELECT_SCHEDULE_TIME: 'Please select schedule time',
+  INCORRECT_SCHEDULE_TIME: 'Selected Schedule time is not correct',
 };
