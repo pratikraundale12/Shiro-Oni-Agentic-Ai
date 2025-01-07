@@ -259,7 +259,7 @@ const UploadField = ({
                 className="image-preview"
                 style={{
                   width: name === 'logo' ? '250px' : '60px',
-                  marginTop: name === 'favicon' ? '20px' : '',
+                  marginTop: '20px',
                 }}
               >
                 <img
