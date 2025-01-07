@@ -32,8 +32,6 @@ import {
 } from '../../shared';
 import { RolesSelectors } from '../../store';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
-import defaultLogo from '../../assets/images/default-logo.png';
-import defaultFavicon from '../../assets/images/default-favicon.ico';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -538,7 +536,7 @@ export const Setting = () => {
               rightIcon={<UploadIcon />}
               errors={errors}
               register={register}
-              image={settingData?.logo || defaultLogo}
+              image={settingData?.logo}
               setValue={setValue}
             />
           </div>
@@ -551,7 +549,7 @@ export const Setting = () => {
               rightIcon={<UploadIcon />}
               errors={errors}
               register={register}
-              image={settingData?.favicon || defaultFavicon}
+              image={settingData?.favicon}
               setValue={setValue}
             />
           </div>

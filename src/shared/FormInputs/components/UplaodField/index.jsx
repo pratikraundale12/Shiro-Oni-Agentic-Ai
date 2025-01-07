@@ -6,6 +6,8 @@ import { Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { hasError } from '../../../../helpers';
 import { CrossIcon } from '../../../../assets';
+import defaultLogo from '../../../../assets/images/default-logo.png';
+import defaultFavicon from '../../../../assets/images/default-favicon.ico';
 
 const Container = styled.div`
   margin-bottom: 1.4rem;
@@ -125,6 +127,7 @@ const UploadField = ({
   const [imageSrc, setImageSrc] = useState(null);
   const [fileName, setFileName] = useState('');
   const [fileError, setFileError] = useState('');
+  const [isShowRemoveImageIcon, setIsShowRemoveImageIcon] = useState(true);
   const error = hasError(errors, name);
 
   const handleRemoveImage = () => {
@@ -150,6 +153,15 @@ const UploadField = ({
         setImageSrc(image);
         setFileName(getFileNameFromUrl(image));
       }
+      setIsShowRemoveImageIcon(true);
+    } else if (!image && name === 'logo') {
+      setImageSrc(defaultLogo);
+      setFileName(getFileNameFromUrl(defaultLogo));
+      setIsShowRemoveImageIcon(false);
+    } else if (!image && name === 'favicon') {
+      setImageSrc(defaultFavicon);
+      setFileName(getFileNameFromUrl(defaultFavicon));
+      setIsShowRemoveImageIcon(false);
     }
   }, [image]);
 
@@ -200,6 +212,7 @@ const UploadField = ({
             const objectURL = URL.createObjectURL(file);
             setImageSrc(objectURL);
             setFileName(file.name);
+            setIsShowRemoveImageIcon(true);
             onChange(file);
             setFileError('');
           } else {
@@ -244,7 +257,10 @@ const UploadField = ({
             {imageSrc && (
               <div
                 className="image-preview"
-                style={{ width: name === 'logo' ? '250px' : '60px' }}
+                style={{
+                  width: name === 'logo' ? '250px' : '60px',
+                  marginTop: name === 'favicon' ? '20px' : '',
+                }}
               >
                 <img
                   src={imageSrc}
@@ -252,12 +268,14 @@ const UploadField = ({
                   width={name === 'logo' ? 200 : 30}
                   height={name === 'logo' ? 200 : 30}
                 />
-                <button className="remove-icon" onClick={handleRemoveImage}>
-                  <CrossIcon
-                    height={name === 'logo' ? 24 : 14}
-                    width={name === 'logo' ? 24 : 14}
-                  />
-                </button>
+                {isShowRemoveImageIcon && (
+                  <button className="remove-icon" onClick={handleRemoveImage}>
+                    <CrossIcon
+                      height={name === 'logo' ? 24 : 14}
+                      width={name === 'logo' ? 24 : 14}
+                    />
+                  </button>
+                )}
               </div>
             )}
             {fileError && <div className="error-text">{fileError}</div>}
