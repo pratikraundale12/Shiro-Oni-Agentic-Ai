@@ -264,7 +264,7 @@ export const ListScheduleDeployment = () => {
     {
       label: 'Post Deploy State',
       renderCell: item => (
-        <TextRender text={item?.deployment_status || 'N/A'} />
+        <TextRender text={item?.deployment_status || 'STOPPED'} />
       ),
       width: '10%',
     },
