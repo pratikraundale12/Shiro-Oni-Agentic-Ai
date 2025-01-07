@@ -1345,7 +1345,7 @@ const ControllerServiceTab = ({
   );
   const handleToggle = (index, item) => {
     if (!isUpgrade && openIndex !== index && item?.isUpgradeLocal) {
-      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
+      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true, namespaceId: item?.instanceIdentifier }));
     }
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
@@ -1496,6 +1496,7 @@ const ControllerServiceTab = ({
         collapsibles.push(
           ...lsForUpgrade.map(service => ({
             isUpgradeLocal: true,
+            instanceIdentifier: service?.instanceIdentifier,
             title: service?.processGroupName || 'Unnamed Group',
             content: (
               <>
