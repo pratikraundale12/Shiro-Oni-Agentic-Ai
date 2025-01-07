@@ -210,7 +210,7 @@ export const Setting = () => {
 
     if (settingData?.id) payload.append('id', settingData.id);
 
-    if (dirtyFields.logo && data?.logo !== settingData?.logo) {
+    if (data?.logo !== settingData?.logo) {
       payload.append('logo', data?.logo || null);
       updatedFields.push('logo');
     }
