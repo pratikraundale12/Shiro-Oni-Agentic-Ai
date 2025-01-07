@@ -53,5 +53,5 @@ export const NAMESPACE_CONSTANTS = {
   FIT: 'Fit',
   LEGENDS: 'Legends',
   SELECT_SCHEDULE_TIME: 'Please select schedule time',
-  INCORRECT_SCHEDULE_TIME: 'Selected Schedule time is not correct',
+  INCORRECT_SCHEDULE_TIME: 'Selected date and time is invalid',
 };
