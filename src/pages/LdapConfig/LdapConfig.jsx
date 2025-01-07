@@ -112,6 +112,7 @@ const CustomTable = styled(Table)`
 
   .react-select__menu {
     overflow: scroll !important;
+    max-height: 220px;
   }
 `;
 
@@ -300,7 +301,7 @@ export const LdapConfig = () => {
       renderCell: data => data.ldap_group_name,
     },
     {
-      label: 'DFM Groups',
+      label: 'DFM Roles',
       key: 'name',
       renderCell: data => (
         <SelectCellRender

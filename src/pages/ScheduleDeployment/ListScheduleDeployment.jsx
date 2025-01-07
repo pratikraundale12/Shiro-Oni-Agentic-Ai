@@ -336,6 +336,7 @@ export const ListScheduleDeployment = () => {
     { value: 'APPROVED', label: 'Approved' },
     { value: 'REJECTED', label: 'Rejected' },
     { value: 'STOPPED', label: 'Stopped' },
+    { value: 'Failed', label: 'Failed' },
     { value: 'TIME LAPSED', label: 'Time Lapsed' },
   ];
 
