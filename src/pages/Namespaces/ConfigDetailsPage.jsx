@@ -16,7 +16,6 @@ import {
 import ParameterContextTab from './ParameterContextTab';
 import { FullPageLoader } from '../../components';
 import ScheduleDeploymentTab from './ScheduleDetailsPage.jsx';
-import { toast } from 'react-toastify';
 import { SchedularSelectors } from '../../store/schedular/redux.js';
 
 const TopTitleBar = styled.div`
@@ -141,6 +140,7 @@ const ConfigDetailsPage = () => {
   const [csData, setcsData] = useState(
     registryDetailsData?.controllerServicesData
   );
+  const [scheduleErrors, setScheduleErrors] = useState({});
 
   useEffect(() => {
     if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
@@ -162,11 +162,32 @@ const ConfigDetailsPage = () => {
     history.push('/process-group/flow-details');
   };
 
+  const currentTime = new Date();
+  const isScheduleTimeValid =
+    scheduleDeployTime && scheduleDeployTime >= currentTime;
+
   const handleContinue = () => {
-    if (scheduleDeploymentFlow && !scheduleDeployTime) {
-      toast.error('Please select schedule time');
+    if (isScheduleTimeValid === false) {
+      setScheduleErrors({
+        scheduled_time: {
+          message: KDFM.INCORRECT_SCHEDULE_TIME,
+        },
+      });
+      setActiveTab(KDFM.SCHEDULE_DETAILS);
+    } else if (scheduleDeploymentFlow && !scheduleDeployTime) {
+      setScheduleErrors({
+        scheduled_time: {
+          message: KDFM.SELECT_SCHEDULE_TIME,
+        },
+      });
+      setActiveTab(KDFM.SCHEDULE_DETAILS);
     } else if (scheduleUpgradeFromList && !scheduleDeployTime) {
-      toast.error('Please select schedule time');
+      setScheduleErrors({
+        scheduled_time: {
+          message: KDFM.SELECT_SCHEDULE_TIME,
+        },
+      });
+      setActiveTab(KDFM.SCHEDULE_DETAILS);
     } else {
       dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
       dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
@@ -212,6 +233,8 @@ const ConfigDetailsPage = () => {
       case KDFM.SCHEDULE_DETAILS:
         return (
           <ScheduleDeploymentTab
+            scheduleErrors={scheduleErrors}
+            setScheduleErrors={setScheduleErrors}
             scheduleDeployTime={scheduleDeployTime}
             setScheduleDeployTime={setScheduleDeployTime}
             activeButton={activeButton}
