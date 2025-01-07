@@ -156,15 +156,225 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
         dispatch(NamespacesActions.setRegistryFlowYCord(Number(dataY)));
       });
 
+    // const renderRectangles = (currentData = data) => {
+    //   g.selectAll('g').remove();
+    //   const rectGroups = g
+    //     .selectAll('g')
+    //     .data(currentData, d => d.id)
+    //     .join('g')
+    //     .attr('transform', d => {
+    //       return `translate(${xScale(d.x)}, ${yScale(d.y)})`;
+    //     });
+
+    //   rectGroups.each(function (d) {
+    //     const group = d3.select(this);
+
+    //     const adjustedWidth = d.width * 1;
+    //     const adjustedHeight = d.height * 1;
+    //     const lineExtension = 50; // Length of the extended guide lines
+
+    //     // Add horizontal guide line
+    //     group
+    //       .append('line')
+    //       .attr('x1', -adjustedWidth / 2 - lineExtension)
+    //       .attr('y1', 0)
+    //       .attr('x2', adjustedWidth / 2 + lineExtension)
+    //       .attr('y2', 0)
+    //       .attr('stroke', '#999')
+    //       .attr('stroke-dasharray', '4, 4') // Dotted line
+    //       .attr('stroke-width', 0.5);
+
+    //     // Add vertical guide line
+    //     group
+    //       .append('line')
+    //       .attr('x1', 0)
+    //       .attr('y1', -adjustedHeight / 2 - lineExtension)
+    //       .attr('x2', 0)
+    //       .attr('y2', adjustedHeight / 2 + lineExtension)
+    //       .attr('stroke', '#999')
+    //       .attr('stroke-dasharray', '4, 4') // Dotted line
+    //       .attr('stroke-width', 0.5);
+
+    //     // Add the main rectangle
+    //     group
+    //       .append('rect')
+    //       .attr('x', -adjustedWidth / 2)
+    //       .attr('y', -adjustedHeight / 2)
+    //       .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+    //       .attr('height', yScale(d.y + adjustedHeight) - yScale(d.y))
+    //       .attr('rx', 1)
+    //       .attr('fill', 'white')
+    //       .attr('stroke', d.color)
+    //       .attr('stroke-width', 0.5);
+
+    //     // Add rectangle header
+    //     const headerHeight = 10;
+    //     group
+    //       .append('rect')
+    //       .attr('x', -adjustedWidth / 2)
+    //       .attr('y', -adjustedHeight / 2)
+    //       .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+    //       .attr('height', headerHeight)
+    //       .attr('fill', d.color)
+    //       .attr('rx', 1);
+
+    //     // Make only the orange rectangle draggable
+    //     if (d.color === '#FF7A00') {
+    //       group.call(drag);
+    //     }
+    //   });
+    // };
+
+    // SINGLE GUIDE LINES BELOW
+    // const renderRectangles = (currentData = data) => {
+    //   g.selectAll('g').remove();
+
+    //   const rectGroups = g
+    //     .selectAll('g')
+    //     .data(currentData, d => d.id)
+    //     .join('g')
+    //     .attr('transform', d => `translate(${xScale(d.x)}, ${yScale(d.y)})`);
+
+    //   rectGroups.each(function (d) {
+    //     const group = d3.select(this);
+
+    //     const adjustedWidth = d.width * 1;
+    //     const adjustedHeight = d.height * 1;
+
+    //     // Draw the rectangle
+    //     group
+    //       .append('rect')
+    //       .attr('x', -adjustedWidth / 2)
+    //       .attr('y', -adjustedHeight / 2)
+    //       .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+    //       .attr('height', yScale(d.y + adjustedHeight) - yScale(d.y))
+    //       .attr('rx', 1)
+    //       .attr('fill', 'white')
+    //       .attr('stroke', d.color)
+    //       .attr('stroke-width', 0.5);
+
+    //     // Draw the rectangle header
+    //     const headerHeight = 10;
+    //     group
+    //       .append('rect')
+    //       .attr('x', -adjustedWidth / 2)
+    //       .attr('y', -adjustedHeight / 2)
+    //       .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+    //       .attr('height', headerHeight)
+    //       .attr('fill', d.color)
+    //       .attr('rx', 1)
+    //       .attr('fill', d.color);
+
+    //     // Apply drag behavior only to the orange rectangle
+    //     if (d.color === '#FF7A00') {
+    //       group.call(drag);
+
+    //       // Draw guide lines
+    //       group
+    //         .append('line')
+    //         .attr('x1', -svgWidth) // Extend to the left edge
+    //         .attr('y1', 0)
+    //         .attr('x2', svgWidth) // Extend to the right edge
+    //         .attr('y2', 0)
+    //         .attr('stroke', 'red')
+    //         .attr('stroke-dasharray', '4 4')
+    //         .attr('stroke-width', 1);
+
+    //       group
+    //         .append('line')
+    //         .attr('x1', 0)
+    //         .attr('y1', -svgHeight) // Extend to the top edge
+    //         .attr('x2', 0)
+    //         .attr('y2', svgHeight) // Extend to the bottom edge
+    //         .attr('stroke', 'red')
+    //         .attr('stroke-dasharray', '4 4')
+    //         .attr('stroke-width', 1);
+    //     }
+    //   });
+    // };
+
+    // SINGLE ATTACHED TO LEFT TOP BUT L SHAPE
+    // const renderRectangles = (currentData = data) => {
+    //   g.selectAll('g').remove();
+
+    //   const rectGroups = g
+    //     .selectAll('g')
+    //     .data(currentData, d => d.id)
+    //     .join('g')
+    //     .attr('transform', d => `translate(${xScale(d.x)}, ${yScale(d.y)})`);
+
+    //   rectGroups.each(function (d) {
+    //     const group = d3.select(this);
+
+    //     const adjustedWidth = d.width * 1;
+    //     const adjustedHeight = d.height * 1;
+
+    //     // Draw the rectangle
+    //     group
+    //       .append('rect')
+    //       .attr('x', -adjustedWidth / 2)
+    //       .attr('y', -adjustedHeight / 2)
+    //       .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+    //       .attr('height', yScale(d.y + adjustedHeight) - yScale(d.y))
+    //       .attr('rx', 1)
+    //       .attr('fill', 'white')
+    //       .attr('stroke', d.color)
+    //       .attr('stroke-width', 0.5);
+
+    //     // Draw the rectangle header
+    //     const headerHeight = 10;
+    //     group
+    //       .append('rect')
+    //       .attr('x', -adjustedWidth / 2)
+    //       .attr('y', -adjustedHeight / 2)
+    //       .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+    //       .attr('height', headerHeight)
+    //       .attr('fill', d.color)
+    //       .attr('rx', 1)
+    //       .attr('fill', d.color);
+
+    //     // Apply drag behavior only to the orange rectangle
+    //     if (d.color === '#FF7A00') {
+    //       group.call(drag);
+
+    //       // Get top-left corner relative to the group
+    //       const topLeftX = -adjustedWidth / 2;
+    //       const topLeftY = -adjustedHeight / 2;
+
+    //       // Draw horizontal guide line from top-left corner
+    //       group
+    //         .append('line')
+    //         .attr('x1', topLeftX) // Start at the top-left x position
+    //         .attr('y1', topLeftY) // Start at the top-left y position
+    //         .attr('x2', svgWidth) // Extend to the right edge
+    //         .attr('y2', topLeftY) // Keep the y position constant
+    //         .attr('stroke', 'red')
+    //         .attr('stroke-dasharray', '4 4')
+    //         .attr('stroke-width', 1);
+
+    //       // Draw vertical guide line from top-left corner
+    //       group
+    //         .append('line')
+    //         .attr('x1', topLeftX) // Start at the top-left x position
+    //         .attr('y1', topLeftY) // Start at the top-left y position
+    //         .attr('x2', topLeftX) // Keep the x position constant
+    //         .attr('y2', svgHeight) // Extend to the bottom edge
+    //         .attr('stroke', 'red')
+    //         .attr('stroke-dasharray', '4 4')
+    //         .attr('stroke-width', 1);
+    //     }
+    //   });
+    // };
+
+    // LEFT TOP ATTACHED PLUS GOOD, LENGTH DIFFERNCE
     const renderRectangles = (currentData = data) => {
       g.selectAll('g').remove();
+
       const rectGroups = g
         .selectAll('g')
         .data(currentData, d => d.id)
         .join('g')
-        .attr('transform', d => {
-          return `translate(${xScale(d.x)}, ${yScale(d.y)})`;
-        });
+        .attr('transform', d => `translate(${xScale(d.x)}, ${yScale(d.y)})`);
 
       rectGroups.each(function (d) {
         const group = d3.select(this);
@@ -172,6 +382,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
         const adjustedWidth = d.width * 1;
         const adjustedHeight = d.height * 1;
 
+        // Draw the rectangle
         group
           .append('rect')
           .attr('x', -adjustedWidth / 2)
@@ -183,6 +394,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
           .attr('stroke', d.color)
           .attr('stroke-width', 0.5);
 
+        // Draw the rectangle header
         const headerHeight = 10;
         group
           .append('rect')
@@ -194,11 +406,135 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
           .attr('rx', 1)
           .attr('fill', d.color);
 
+        // Apply drag behavior only to the orange rectangle
         if (d.color === '#FF7A00') {
           group.call(drag);
+
+          // Get top-left corner relative to the group
+          const topLeftX = -adjustedWidth / 2;
+          const topLeftY = -adjustedHeight / 2;
+
+          // Draw horizontal guide line from top-left corner (extend both left and right)
+          group
+            .append('line')
+            .attr('x1', 0) // Start at the left edge of the SVG
+            .attr('y1', topLeftY) // Start at the top-left y position
+            .attr('x2', svgWidth) // Extend to the right edge
+            .attr('y2', topLeftY) // Keep the y position constant
+            .attr('stroke', 'red')
+            .attr('stroke-dasharray', '4 4')
+            .attr('stroke-width', 1);
+
+          // Draw vertical guide line from top-left corner (extend both top and bottom)
+          group
+            .append('line')
+            .attr('x1', topLeftX) // Start at the top-left x position
+            .attr('y1', 0) // Extend to the top edge
+            .attr('x2', topLeftX) // Keep the x position constant
+            .attr('y2', svgHeight) // Extend to the bottom edge
+            .attr('stroke', 'red')
+            .attr('stroke-dasharray', '4 4')
+            .attr('stroke-width', 1);
+
+          // Draw extended horizontal line to the left edge
+          group
+            .append('line')
+            .attr('x1', -svgWidth) // Extend to the left edge
+            .attr('y1', topLeftY) // Keep the y position constant
+            .attr('x2', 0) // Start at the right edge of the SVG
+            .attr('y2', topLeftY) // Keep the y position constant
+            .attr('stroke', 'red')
+            .attr('stroke-dasharray', '4 4')
+            .attr('stroke-width', 1);
+
+          // Draw extended vertical line to the top edge
+          group
+            .append('line')
+            .attr('x1', topLeftX) // Keep the x position constant
+            .attr('y1', -svgHeight) // Extend to the top edge
+            .attr('x2', topLeftX) // Keep the x position constant
+            .attr('y2', 0) // Start at the bottom edge of the SVG
+            .attr('stroke', 'red')
+            .attr('stroke-dasharray', '4 4')
+            .attr('stroke-width', 1);
         }
       });
     };
+
+    // GOOD LINES BUT AWAY FROM RECT SOMETIMES
+    // const renderRectangles = (currentData = data) => {
+    //   // Remove all old lines
+    //   g.selectAll('line').remove();
+
+    //   // Remove old rectangle groups
+    //   g.selectAll('g').remove();
+
+    //   const rectGroups = g
+    //     .selectAll('g')
+    //     .data(currentData, d => d.id)
+    //     .join('g')
+    //     .attr('transform', d => `translate(${xScale(d.x)}, ${yScale(d.y)})`);
+
+    //   rectGroups.each(function (d) {
+    //     const group = d3.select(this);
+
+    //     const adjustedWidth = d.width * 1;
+    //     const adjustedHeight = d.height * 1;
+
+    //     // Draw the rectangle
+    //     group
+    //       .append('rect')
+    //       .attr('x', -adjustedWidth / 2)
+    //       .attr('y', -adjustedHeight / 2)
+    //       .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+    //       .attr('height', yScale(d.y + adjustedHeight) - yScale(d.y))
+    //       .attr('rx', 1)
+    //       .attr('fill', 'white')
+    //       .attr('stroke', d.color)
+    //       .attr('stroke-width', 0.5);
+
+    //     // Draw the rectangle header
+    //     const headerHeight = 10;
+    //     group
+    //       .append('rect')
+    //       .attr('x', -adjustedWidth / 2)
+    //       .attr('y', -adjustedHeight / 2)
+    //       .attr('width', xScale(d.x + adjustedWidth) - xScale(d.x))
+    //       .attr('height', headerHeight)
+    //       .attr('fill', d.color)
+    //       .attr('rx', 1)
+    //       .attr('fill', d.color);
+
+    //     // Apply drag behavior only to the orange rectangle
+    //     if (d.color === '#FF7A00') {
+    //       group.call(drag);
+
+    //       // Get top-left corner coordinates
+    //       const topLeftX = xScale(d.x) - adjustedWidth / 2;
+    //       const topLeftY = yScale(d.y) - adjustedHeight / 2;
+
+    //       // Draw horizontal guide line through top-left corner
+    //       g.append('line')
+    //         .attr('x1', 0) // Extend to the left edge of the SVG
+    //         .attr('y1', topLeftY)
+    //         .attr('x2', svgWidth) // Extend to the right edge of the SVG
+    //         .attr('y2', topLeftY)
+    //         .attr('stroke', 'red')
+    //         .attr('stroke-dasharray', '4 4')
+    //         .attr('stroke-width', 0.9);
+
+    //       // Draw vertical guide line through top-left corner
+    //       g.append('line')
+    //         .attr('x1', topLeftX)
+    //         .attr('y1', 0) // Extend to the top edge of the SVG
+    //         .attr('x2', topLeftX)
+    //         .attr('y2', svgHeight) // Extend to the bottom edge of the SVG
+    //         .attr('stroke', 'red')
+    //         .attr('stroke-dasharray', '4 4')
+    //         .attr('stroke-width', 0.9);
+    //     }
+    //   });
+    // };
 
     renderRectangles(data);
 
