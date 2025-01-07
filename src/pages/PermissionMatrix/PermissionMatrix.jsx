@@ -64,9 +64,7 @@ export const PermissionMatrix = () => {
               </option>
             ))}
           </Select>
-          <IconButton
-          // onClick={() => setState(prev => ({ ...prev, roleModal: true }))}
-          >
+          <IconButton>
             <PencilIcon width={16} height={16} />
           </IconButton>
         </GroupColumn>
@@ -99,9 +97,7 @@ export const PermissionMatrix = () => {
               </option>
             ))}
           </Select>
-          <IconButton
-          // onClick={() => setState(prev => ({ ...prev, roleModal: true }))}
-          >
+          <IconButton>
             <PencilIcon width={16} height={16} />
           </IconButton>
         </GroupColumn>

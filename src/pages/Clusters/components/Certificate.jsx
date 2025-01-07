@@ -12,6 +12,7 @@ import { UploadFile } from '../UploadFile';
 import { FailedTestModal } from './FailedTestModal';
 import { useDispatch } from 'react-redux';
 import { ClustersActions } from '../../../store';
+import { FullPageLoader } from '../../../components';
 
 const schema = yup.object().shape({
   pfxFile: yup.mixed().required('PFX file is required'),
@@ -121,6 +122,7 @@ export const Certificate = ({
 
   return (
     <>
+      <FullPageLoader loading={loading} />
       <Modal
         title={
           activeTab === CLUSTER_MODULE_TABS.CLUSTER
@@ -133,7 +135,6 @@ export const Certificate = ({
         secondaryButtonText={KDFM.BACK}
         primaryButtonText={KDFM.TEST_CERTIFICATE}
         onSubmit={handleSubmit(onSubmit)}
-        loading={loading}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}
       >

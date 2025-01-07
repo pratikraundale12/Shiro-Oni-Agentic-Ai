@@ -3,6 +3,7 @@ import { has, isEmpty, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { ArrowIcon, NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
 import {
@@ -13,15 +14,9 @@ import {
   TextRender,
 } from '../../components';
 import { KDFM } from '../../constants';
-// import { Modal } from '../../shared';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
-import {
-  // SchedularActions,
-  SchedularSelectors,
-} from '../../store/schedular/redux';
-// import AddParameterContext from './AddParameterContext';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button } from '../../shared';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { SchedularSelectors } from '../../store/schedular/redux';
 import AddParameterContext from './AddParameterContext';
 import Collapsible from './Collapsible';
 import RefreshModal from './RefreshModal';
@@ -238,8 +233,8 @@ const ParameterContext = ({
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {item.parentParameterId ===
-            deployOrUpgradeDetails?.parameterContextId ||
-          singleNamespaceData?.parameterContextId ||
+            (deployOrUpgradeDetails?.parameterContextId ||
+              singleNamespaceData?.parameterContextId) ||
           !has(item, 'parentParameterId') ? (
             <IconButton
               style={{
@@ -302,29 +297,20 @@ const ParameterContext = ({
   ];
   const handleSaveParameterContext = async () => {
     if (!newlyAddParameters) return;
-    // setLoading(true);
     const uniqueDataSorted = uniqBy(newlyAddParameters, 'name');
     dispatch(
       NamespacesActions.updateParameterContext({
         modifiedPayloadData: [...uniqueDataSorted],
       })
     );
-    // setLoading(false);
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
     setIsParameterContextOpen({ isOpen: false, schedule: false });
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
     setTimeout(() => {
-      // setIsParameterContextOpen({ isOpen: true, schedule: false });
       dispatch(NamespacesActions.setNamespaceSummaryLoadingState(false));
       dispatch(NamespacesActions.fetchParameterContext());
-      // getParamerterContext();
     }, 1000);
   };
-
-  // const backSchedule = () => {
-  //   setIsParameterContextOpen({ isOpen: false, schedule: true });
-  //   dispatch(SchedularActions.setScheduleDeployModal());
-  // };
 
   selectedParentContextId;
   useEffect(() => {

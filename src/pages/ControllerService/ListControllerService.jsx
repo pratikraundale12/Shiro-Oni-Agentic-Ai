@@ -323,7 +323,6 @@ export const ListControllerService = () => {
   const handleCloseModal = () => {
     dispatch(NamespacesActions.setNewlyAddVariables([]));
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(false));
-    dispatch(NamespacesActions.getControllerServiceList());
   };
 
   const handleAddValueModal = item => {

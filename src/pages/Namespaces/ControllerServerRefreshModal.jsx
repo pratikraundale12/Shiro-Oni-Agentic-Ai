@@ -26,7 +26,10 @@ const ReferencingBodyLi = styled.li`
 const ControllerServerRefreshModal = ({ refreshItem }) => {
   const dispatch = useDispatch();
   const isModalOpen = useSelector(NamespacesSelectors.getRefreshmodalOpen);
-  const collapsibleData = refreshItem?.referencingComponents || [];
+  const collapsibleData =
+    refreshItem?.referencingComponents ||
+    refreshItem?.configuredData?.referencingComponents ||
+    [];
   const handleClose = () => {
     dispatch(NamespacesActions.setRefreshmodalOpen(false));
   };

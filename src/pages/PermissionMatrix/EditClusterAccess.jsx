@@ -161,14 +161,6 @@ export const EditClusterAccess = () => {
   return (
     <div>
       <ButtonContainer>
-        {/* <Button
-          onClick={openRoleModal}
-          variant="secondary"
-          size="sm"
-          icon={<PlusCircleIcon />}
-        >
-          Add New Role
-        </Button> */}
         <Button onClick={handlePermissionModal} size="sm">
           Edit Permissions
         </Button>

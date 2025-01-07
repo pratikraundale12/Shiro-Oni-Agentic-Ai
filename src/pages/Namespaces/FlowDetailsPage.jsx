@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import {
   CanvasXIcon,
   CanvasYIcon,
@@ -309,15 +310,6 @@ const FlowDetailsPage = () => {
   ];
 
   const handleClick = () => {
-    if (!isUpgrade) {
-      dispatch(
-        NamespacesActions.fetchRegistryFlowDetails({
-          bucketId: selectedNameSpace?.bucketId,
-          flowId: selectedNameSpace?.flowId,
-          version: selectedVersion,
-        })
-      );
-    }
     if (isUpgrade) {
       history.push('/process-group/config-details');
     } else {
@@ -326,6 +318,13 @@ const FlowDetailsPage = () => {
           toast.info('The selected version is already deployed.');
         }
       } else {
+        dispatch(
+          NamespacesActions.fetchRegistryFlowDetails({
+            bucketId: selectedNameSpace?.bucketId,
+            flowId: selectedNameSpace?.flowId,
+            version: selectedVersion,
+          })
+        );
         history.push('/process-group/config-details');
       }
     }
@@ -440,7 +439,7 @@ const FlowDetailsPage = () => {
             </div>
 
             {!isUpgrade && (
-              <ColXlSix className="col-lg">
+              <ColXlSix className="col-lg" data-tooltip-id="state-tooltip">
                 <InputField
                   name="currentState"
                   type="text"
@@ -448,6 +447,15 @@ const FlowDetailsPage = () => {
                   value={selectedNameSpace?.stateExplanation || 'N/A'}
                   icon={getIconForState(selectedNameSpace?.state)}
                   disabled
+                />
+                <ReactTooltip
+                  id="state-tooltip"
+                  place="left"
+                  effect="solid"
+                  content={
+                    selectedNameSpace?.stateExplanation ||
+                    'No explanation provided'
+                  }
                 />
               </ColXlSix>
             )}

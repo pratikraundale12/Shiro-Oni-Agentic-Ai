@@ -26,13 +26,13 @@ import {
 import AddNewRoleModal from '../../shared/AddNewRoleModal';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { LoadingSelectors, RolesActions, RolesSelectors } from '../../store';
-import { SettingsSelectors } from '../../store/settings';
 import {
   checkLdapConfig,
   getExistingMapping,
   groupMappingApi,
   testConfigApi,
 } from '../../store/apis/ldap';
+import { SettingsSelectors } from '../../store/settings';
 import { SuccessTestModal } from '../Clusters/components/SuccessTestModal';
 import { CreateMapping } from './components/CreateMapping';
 import SelectCellRender from './components/SelectCellRender';
@@ -108,6 +108,10 @@ const Heading = styled.div`
 const CustomTable = styled(Table)`
   tr td:last-child div {
     overflow: visible;
+  }
+
+  .react-select__menu {
+    overflow: scroll !important;
   }
 `;
 
@@ -251,7 +255,6 @@ export const LdapConfig = () => {
   const [createMappingShow, setCreatMappingShow] = useState(false);
   const [successTest, setSuccessTest] = useState(false);
   const [testFormData, setTestFormData] = useState({});
-  const [listData, setListData] = useState();
   const [saveButtonStatus, setSaveButtonStatus] = useState(false);
   const [formPayload, setFormPayload] = useState([]);
   const [syncUsers, setSyncUsers] = useState(false);
@@ -281,7 +284,6 @@ export const LdapConfig = () => {
     reset: reset2,
   } = useForm({
     resolver: yupResolver(schemaForm2),
-    // defaultValues: formData,
   });
   const onChange = (data, option) => {
     const updatedData = ldapGroup.map(item =>

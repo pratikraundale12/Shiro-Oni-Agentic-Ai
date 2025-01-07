@@ -180,7 +180,6 @@ const AddControllerServiceModal = ({
         size="md"
         primaryButtonText={'Add'}
         secondaryButtonText="Back"
-        // onSecondarySubmit={closeModal}
         onSubmit={() => handleSubmit()}
         contentStyles={{ maxWidth: '70%', maxHeight: '80%' }}
         primaryButtonDisabled={!selectedItem?.name}

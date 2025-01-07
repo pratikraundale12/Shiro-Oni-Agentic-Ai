@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -9,6 +9,7 @@ import {
   ConfirmScheduleDeploymentIcon,
   FlashCutIcon,
   FlashIcon,
+  InfoIcon,
   NoDataIcon,
   PencilIcon,
   RefrenceIcon,
@@ -23,6 +24,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { theme } from '../../styles';
 import Collapsible from '../Namespaces/Collapsible';
 import ControllerServerRefreshModal from '../Namespaces/ControllerServerRefreshModal';
 import AddControllerServiceModal from './AddControllerServiceModal';
@@ -31,7 +33,6 @@ import ConfigControllerService from './ConfigControllerService';
 import ConfigurePage from './ConfigurePage';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
-import { theme } from '../../styles';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -221,14 +222,76 @@ const ControllerServiceTab = ({
 
   const [versionList, setVersionList] = useState([]);
 
-  const [search, setSearch] = useState('');
-  const filteredModulesData = useMemo(() => {
-    return listData.filter(
-      module =>
-        module?.name?.toLowerCase().includes(search.toLowerCase()) ||
-        module?.type?.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [listData, search]);
+  const [lsForUpgrade, setLsForUpgrade] = useState(localServices);
+  const [updatedLsForUpgrade, setUpdatedLsForUpgrade] = useState([]);
+
+  const onSearch = (e, currentService) => {
+    const value = e.target.value;
+    if (value.length === 0) {
+      setLsForUpgrade(prevData =>
+        prevData.map(service => {
+          if (
+            service.processGroupIdentifier ===
+            currentService?.processGroupIdentifier
+          ) {
+            return {
+              ...service,
+              filteredServicesData: [],
+            };
+          }
+          return service;
+        })
+      );
+      return;
+    }
+    if (value.length <= 100 && value.length >= 3) {
+      const filteredServices = currentService?.controllerData?.filter(
+        module =>
+          module?.name?.toLowerCase().includes(value.toLowerCase()) ||
+          module?.type?.toLowerCase().includes(value.toLowerCase())
+      );
+      if (value.length >= 3) {
+        setLsForUpgrade(prevData =>
+          prevData.map(service => {
+            if (
+              service.processGroupIdentifier ===
+              currentService?.processGroupIdentifier
+            ) {
+              return {
+                ...service,
+                filteredServicesData: filteredServices,
+              };
+            }
+            return service;
+          })
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    const updateControllerData = () => {
+      const updatedServices = lsForUpgrade?.map(service => {
+        const updatedControllerData = service?.controllerData?.map(
+          controller => {
+            const matchingObject = listData?.find(
+              item => item.identifier === controller?.identifier
+            );
+            return matchingObject ? matchingObject : controller;
+          }
+        );
+
+        return {
+          ...service,
+          controllerData: updatedControllerData,
+        };
+      });
+
+      setLsForUpgrade(updatedServices);
+    };
+
+    updateControllerData();
+  }, [listData]);
 
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
@@ -602,6 +665,253 @@ const ControllerServiceTab = ({
       width: '14%',
     },
   ];
+  const COLUMNS_Upgrade_External = [
+    {
+      label: 'Name',
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
+        return (
+          <TextRender
+            key={currentItem?.name}
+            text={currentItem?.name}
+            capitalizeText={false}
+          />
+        );
+      },
+      width: '20%',
+    },
+    {
+      label: 'Type',
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
+        return (
+          <TextRender
+            key={currentItem?.typeValue}
+            text={currentItem?.typeValue}
+            capitalizeText={false}
+          />
+        );
+      },
+      width: '16%',
+    },
+    {
+      label: 'Bundle',
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
+        return (
+          <TextRender
+            key={currentItem?.bundleValue}
+            text={currentItem?.bundleValue}
+            capitalizeText={false}
+          />
+        );
+      },
+      width: '15%',
+    },
+    {
+      label: 'State',
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData || item;
+
+        return (
+          <StatusText
+            text={
+              currentItem?.state === 'DISABLED' &&
+              currentItem?.validationStatus === 'INVALID'
+                ? 'INVALID'
+                : currentItem?.state
+            }
+            item={currentItem}
+          />
+        );
+      },
+      width: '14%',
+    },
+    {
+      label: 'Scope',
+      renderCell: item => {
+        const currentItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData || item;
+        return currentItem?.scope || 'N/A';
+      },
+      width: '10%',
+    },
+    {
+      label: 'Referencing Component',
+      renderCell: item => (
+        <div className="d-flex justify-content-center">
+          {(!isEmpty(
+            item?.configuredData?.referencingComponents?.controllerService
+          ) ||
+            !isEmpty(
+              item?.configuredData?.referencingComponents?.processors
+            )) && (
+            <>
+              <button
+                className="border-0 bg-white"
+                onClick={() => {
+                  setRefreshItem(item);
+                  dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                }}
+                data-tooltip-id={`Referencing-${item?.id}`}
+                aria-label="Referencing"
+              >
+                <RefrenceIcon />
+              </button>
+              <ReactTooltip
+                id={`Referencing-${item?.id}`}
+                place="left"
+                content="Reference"
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
+        </div>
+      ),
+      width: '15%',
+    },
+    {
+      label: 'Action',
+      renderCell: item => {
+        const isControllerService = item?.controllerService?.length > 0;
+        const stateItem = item?.controllerService?.length
+          ? item?.controllerService[0]
+          : item?.configuredData
+            ? item?.configuredData
+            : item;
+        const state = stateItem?.state;
+        const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
+
+        const isButtonVisible =
+          (item.updatedValue &&
+            state !== 'INVALID' &&
+            state !== 'VALIDATING' &&
+            state !== 'DISABLING') ||
+          (state === 'DISABLED' && stateItem?.validationStatus !== 'INVALID') ||
+          (state === 'ENABLED' && stateItem?.validationStatus === 'VALID');
+
+        return (
+          <div>
+            {/* Settings Button */}
+            {(isControllerService || stateItem?.properties?.length) && (
+              <>
+                <button
+                  className="border-0 bg-white"
+                  onClick={() => handleSettingClick(stateItem)}
+                  data-tooltip-id={`Settings-${item?.id}`}
+                  aria-label="Settings"
+                  disabled={
+                    stateItem?.state === 'ENABLING' ||
+                    stateItem?.state === 'ENABLED'
+                  }
+                  style={{
+                    opacity:
+                      stateItem?.state === 'ENABLING' ||
+                      stateItem?.state === 'ENABLED'
+                        ? 0.3
+                        : 1,
+                    cursor:
+                      stateItem?.state === 'ENABLING' ||
+                      stateItem?.state === 'ENABLED'
+                        ? 'not-allowed'
+                        : 'pointer',
+                  }}
+                >
+                  <SettingSmallIcon />
+                </button>
+                <ReactTooltip
+                  id={`Settings-${item?.id}`}
+                  place="left"
+                  content="Settings"
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
+
+            {/* Enable/Disable Button */}
+            {isButtonVisible && !item?.configured && (
+              <>
+                <button
+                  className="border-0 bg-white ms-2"
+                  onClick={() => handleEnableClick(stateItem)}
+                  data-tooltip-id={stateItem?.id}
+                >
+                  {state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
+                </button>
+                <ReactTooltip
+                  id={stateItem?.id}
+                  place="left"
+                  content={tooltipContent}
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
+
+            {/* Re-Configure Button */}
+            {item.updatedValue && !item?.configured && (
+              <React.Fragment>
+                <ReConfigureButton
+                  className="ms-2"
+                  data-tooltip-id={`configure-${stateItem?.id}`}
+                  onClick={() => handleConfigure(item)}
+                >
+                  <PencilIcon />
+                </ReConfigureButton>
+                <ReactTooltip
+                  id={`configure-${stateItem?.id}`}
+                  place="left"
+                  content="Re-Configure"
+                  style={{
+                    width: '130px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </React.Fragment>
+            )}
+
+            {/* Configure Button */}
+            {!isControllerService &&
+              !isButtonVisible &&
+              !item?.updatedValue &&
+              !item?.configured && (
+                <ConfigureButton onClick={() => handleConfigure(item)}>
+                  {KDFM.CONFIGURE}
+                </ConfigureButton>
+              )}
+          </div>
+        );
+      },
+      width: '10%',
+    },
+  ];
   const COLUMNS_2 = [
     {
       label: 'Name',
@@ -686,7 +996,6 @@ const ControllerServiceTab = ({
       width: '14%',
     },
   ];
-
   const COLUMNS_3 = [
     {
       label: 'Name',
@@ -1036,9 +1345,7 @@ const ControllerServiceTab = ({
   );
   const handleToggle = (index, item) => {
     if (!isUpgrade && openIndex !== index && item?.isUpgradeLocal) {
-      dispatch(
-        NamespacesActions.getControllerServiceList({localOnly: true})
-      );
+      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
     }
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
@@ -1100,17 +1407,74 @@ const ControllerServiceTab = ({
 
   useEffect(() => {
     const collapsibles = [];
-    if (externalControllerServices?.length) {
-      collapsibles.push({
-        title: KDFM.CONTROLLER_SERVICE_DATA,
-        content: (
-          <Table
-            data={externalControllerServices}
-            columns={COLUMNS}
-            className={'variables-table'}
-          />
-        ),
-      });
+    if (isUpgrade) {
+      if (externalControllerServices?.length) {
+        collapsibles.push({
+          title: (
+            <div className="d-flex">
+              {KDFM.CONTROLLER_SERVICE_DATA}
+              <div
+                data-tooltip-id="External Controller Services"
+                className="ml-2"
+              >
+                <InfoIcon />
+                <ReactTooltip
+                  id="External Controller Services"
+                  place="right"
+                  content="Available external controller services to configure
+                  "
+                  style={{
+                    width: 'auto',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </div>
+            </div>
+          ),
+          content: (
+            <Table
+              data={externalControllerServices}
+              columns={COLUMNS}
+              className={'variables-table'}
+            />
+          ),
+        });
+      }
+    } else {
+      if (externalControllerServices?.length) {
+        collapsibles.push({
+          title: (
+            <div className="d-flex">
+              {KDFM.CONTROLLER_SERVICE_DATA}
+              <div
+                data-tooltip-id="External Controller Services"
+                className="ml-2"
+              >
+                <InfoIcon />
+                <ReactTooltip
+                  id="External Controller Services"
+                  place="right"
+                  content="Available external controller services to configure
+                  "
+                  style={{
+                    width: 'auto',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </div>
+            </div>
+          ),
+          content: (
+            <Table
+              data={externalControllerServices}
+              columns={COLUMNS_Upgrade_External}
+              className={'variables-table'}
+            />
+          ),
+        });
+      }
     }
     if (isUpgrade) {
       if (localServices?.length) {
@@ -1128,18 +1492,39 @@ const ControllerServiceTab = ({
         );
       }
     } else {
-      collapsibles.push({
-        isUpgradeLocal: true,
-        title: selectedNamespace?.name || 'Unnamed Group',
-        content: (
-          <Table
-            data={filteredModulesData}
-            columns={COLUMNS_3}
-            className={'variables-table'}
-            showPagination={true}
-          />
-        ),
-      });
+      if (lsForUpgrade?.length) {
+        collapsibles.push(
+          ...lsForUpgrade.map(service => ({
+            isUpgradeLocal: true,
+            title: service?.processGroupName || 'Unnamed Group',
+            content: (
+              <>
+                <SearchContainer>
+                  <SmallSearchIcon
+                    width={18}
+                    height={18}
+                    color={theme.colors.darkGrey1}
+                  />
+                  <Search
+                    type="search"
+                    placeholder="Search Controller Service by Name and Type"
+                    onChange={e => onSearch(e, service)}
+                  />
+                </SearchContainer>
+                <Table
+                  data={
+                    service?.filteredServicesData?.length
+                      ? service?.filteredServicesData
+                      : service?.controllerData || []
+                  }
+                  columns={COLUMNS_3}
+                  className={'variables-table'}
+                />
+              </>
+            ),
+          }))
+        );
+      }
     }
 
     setCollapsibles(collapsibles);
@@ -1150,7 +1535,7 @@ const ControllerServiceTab = ({
     newlyAddedExternalServiceResponse,
     externalControllerServicesTableData,
     listData,
-    filteredModulesData,
+    lsForUpgrade,
   ]);
 
   const handleServiceConfigure = data => {
@@ -1171,6 +1556,24 @@ const ControllerServiceTab = ({
         ];
         return mergedLocalState;
       });
+    }
+
+    if (!isUpgrade) {
+      let newLsData = [];
+      newLsData.push(data);
+
+      if (newLsData?.length) {
+        setUpdatedLsForUpgrade(prevState => {
+          const prevStateMap = new Map(
+            prevState.map(item => [item?.identifier, item])
+          );
+          newLsData.forEach(newItem => {
+            const key = newItem?.identifier;
+            prevStateMap.set(key, newItem);
+          });
+          return Array.from(prevStateMap.values());
+        });
+      }
     }
   };
 
@@ -1212,25 +1615,71 @@ const ControllerServiceTab = ({
   }, [updatedLocalServicesData]);
 
   useEffect(() => {
-    setControllerServicePayload(prevState => {
-      const newPayload = {};
-      if (!isEmpty(externalServicePayload)) {
-        newPayload.externalServicesData = externalServicePayload;
-      }
-      if (
-        !isEmpty(updatedLocalServicesData) ||
-        !isEmpty(prevState.localServicesData)
-      ) {
-        newPayload.localServicesData = updatedLocalServicesData?.length
-          ? updatedLocalServicesData
-          : prevState.localServicesData;
-      }
-      return newPayload;
+    setLsForUpgrade(prevLocalServices => {
+      const updatedServices = prevLocalServices?.map(processGroup => {
+        return {
+          ...processGroup,
+          controllerData: processGroup?.controllerData?.map(controller => {
+            const updatedController = updatedLsForUpgrade?.find(
+              updated => updated?.identifier === controller?.identifier
+            );
+            if (updatedController) {
+              return {
+                ...controller,
+                ...updatedController,
+                properties: mergeProperties(
+                  controller.properties,
+                  updatedController.properties
+                ),
+              };
+            }
+            return controller;
+          }),
+        };
+      });
+      return updatedServices;
     });
+  }, [updatedLsForUpgrade]);
+
+  useEffect(() => {
+    if (isUpgrade) {
+      setControllerServicePayload(prevState => {
+        const newPayload = {};
+        if (!isEmpty(externalServicePayload)) {
+          newPayload.externalServicesData = externalServicePayload;
+        }
+        if (
+          !isEmpty(updatedLocalServicesData) ||
+          !isEmpty(prevState.localServicesData)
+        ) {
+          newPayload.localServicesData = updatedLocalServicesData?.length
+            ? updatedLocalServicesData
+            : prevState.localServicesData;
+        }
+        return newPayload;
+      });
+    } else {
+      setControllerServicePayload(prevState => {
+        const newPayload = {};
+        if (!isEmpty(externalServicePayload)) {
+          newPayload.externalServicesData = externalServicePayload;
+        }
+        if (
+          !isEmpty(updatedLsForUpgrade) ||
+          !isEmpty(prevState.localServicesData)
+        ) {
+          newPayload.localServicesData = updatedLsForUpgrade?.length
+            ? updatedLsForUpgrade
+            : prevState.localServicesData;
+        }
+        return newPayload;
+      });
+    }
   }, [
     externalServicePayload,
-    updatedLocalServicesData,
+    updatedLsForUpgrade,
     isExternalServiceUpdated,
+    updatedLocalServicesData,
   ]);
 
   useEffect(() => {
@@ -1259,26 +1708,6 @@ const ControllerServiceTab = ({
                 );
               }}
             >
-              {!isUpgrade && item?.isUpgradeLocal && (
-                <SearchContainer>
-                  <SmallSearchIcon
-                    width={18}
-                    height={18}
-                    color={theme.colors.darkGrey1}
-                  />
-                  <Search
-                    type="search"
-                    value={search}
-                    placeholder="Search Controller Service by Name and Type"
-                    onChange={e => {
-                      const value = e.target.value;
-                      if (value.length <= 100) {
-                        setSearch(value);
-                      }
-                    }}
-                  />
-                </SearchContainer>
-              )}
               {item.content}
             </Collapsible>
           ))

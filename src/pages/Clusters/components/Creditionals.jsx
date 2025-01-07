@@ -10,6 +10,7 @@ import { testCluster, testRegistry } from '../../../store/index1';
 import { FailedTestModal } from './FailedTestModal';
 import { useDispatch } from 'react-redux';
 import { ClustersActions } from '../../../store';
+import { FullPageLoader } from '../../../components';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -25,7 +26,6 @@ export const Creditionals = ({
   isCredOpen,
   setIsCredOpen,
   setTestSuccess,
-  // testSuccess,
   activeTab,
   clusterData,
   registryData,
@@ -100,12 +100,12 @@ export const Creditionals = ({
 
   return (
     <>
+      <FullPageLoader loading={loading} />
       <Modal
         title={KDFM.ADD_CREDENTIALS}
         isOpen={isCredOpen}
         onRequestClose={() => setIsCredOpen(false)}
         size="sm"
-        loading={loading}
         secondaryButtonText={KDFM.BACK}
         primaryButtonText={KDFM.TEST_CREDENTIALS}
         onSubmit={handleSubmit(onSubmit)}

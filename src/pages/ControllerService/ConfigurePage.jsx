@@ -55,6 +55,11 @@ const Search = styled.input`
     font-size: 14px !important;
   }
 `;
+const DisplayMessage = styled.div`
+  color: #ff7a00;
+  font-size: 16px;
+  font-weight: 500;
+`;
 
 const ConfigurePage = ({
   isOpen,
@@ -116,7 +121,7 @@ const ConfigurePage = ({
       secondaryButtonText="Back"
       onSubmit={handleSubmit}
     >
-      <NewClassAddes className="d-flex align-center justify-content-between w-100 mb-3 mt-n3">
+      <NewClassAddes className="d-flex align-center justify-content-between w-100 mb-2 mt-n3">
         <SearchContainer>
           <SmallSearchIcon
             width={18}
@@ -144,17 +149,19 @@ const ConfigurePage = ({
         <Button
           icon={<PlusCircleIcon width={16} height={16} color="white" />}
           type="button"
-          className="w-auto px-3"
+          className="w-auto px-2"
           size="sm"
           onClick={() => {
             dispatch(NamespacesActions.setIsAddControllerServiceModal(true));
             setIsModalOpen();
           }}
         >
-          {KDFM.ADD}
+          {KDFM.ADD_NEW}
         </Button>
       </NewClassAddes>
-
+      <DisplayMessage className="pb-3">
+        Select a controller service from the available options in this instance
+      </DisplayMessage>
       <div>
         <Table
           data={filteredModulesData || []}

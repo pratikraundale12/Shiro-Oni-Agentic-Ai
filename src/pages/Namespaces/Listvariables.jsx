@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { NoDataIcon, PencilIcon, PlusCircleIcon } from '../../assets';
+import { NoDataIcon, PencilIcon } from '../../assets';
 import {
   IconButton,
   LoaderContainer,
@@ -13,9 +13,7 @@ import {
 import { KDFM } from '../../constants';
 import { Button, Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-// import { SchedularActions } from '../../store/schedular/redux';
 import { isEmpty, uniqBy } from 'lodash';
-import { singleNamespaceData } from '../../store/namespaces';
 import { SchedularSelectors } from '../../store/schedular/redux';
 import AddVariables from './AddVariables';
 import Collapsible from './Collapsible';
@@ -246,9 +244,7 @@ const Listvariables = ({
     dispatch(NamespacesActions.setNewlyAddVariables([]));
     dispatch(NamespacesActions.fetchVariableList());
   };
-  const scheduleSubmit = async () => {
-    setVariablesModalOpen({ isOpen: false, mode: 'add', schedule: true });
-  };
+
   const toggleCollapsible = () => setIsTableOpen(!isTableOpen);
 
   return (

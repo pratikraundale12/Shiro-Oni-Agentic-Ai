@@ -92,7 +92,6 @@ const validationSchema = yup.object().shape({
 
 export const Reset = () => {
   const dispatch = useDispatch();
-  // const { state } = useLocation();
   const {
     formState: { errors },
     watch,
@@ -105,21 +104,9 @@ export const Reset = () => {
   const onSubmit = data => {
     data.resetToken = token;
     dispatch(AuthenticationActions.resetPassword(data));
-    // const response = await resetPassword({
-    //   password: data.password,
-    //   resetToken: state.refreshToken,
-    // });
-    // if (response.status === 204) {
-    //   history.push('/success');
-    // } else {
-    //   toast.error(
-    //     response?.message || 'Something went wrong. Please try again'
-    //   );
-    // }
   };
 
   const location = useLocation();
-  // const navigate = useNavigate();
 
   // Extract token from query parameters
   const queryParams = new URLSearchParams(location.search);
