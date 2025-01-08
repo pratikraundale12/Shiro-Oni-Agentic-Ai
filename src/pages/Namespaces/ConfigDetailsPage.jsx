@@ -164,7 +164,7 @@ const ConfigDetailsPage = () => {
 
   const currentTime = new Date();
   const isScheduleTimeValid =
-    scheduleDeployTime && scheduleDeployTime >= currentTime;
+    scheduleDeployTime && scheduleDeployTime > currentTime;
 
   const handleContinue = () => {
     if (isScheduleTimeValid === false) {

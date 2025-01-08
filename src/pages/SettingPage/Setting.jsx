@@ -215,7 +215,7 @@ export const Setting = () => {
       updatedFields.push('logo');
     }
 
-    if (dirtyFields.favicon && data?.favicon !== settingData?.favicon) {
+    if (data?.favicon !== settingData?.favicon) {
       payload.append('favicon', data?.favicon || null);
       updatedFields.push('favicon');
     }
