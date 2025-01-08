@@ -142,6 +142,8 @@ const ScheduleDeploymentTab = ({
   setScheduleDeployTime,
   activeButton,
   setActiveButton,
+  scheduleErrors,
+  setScheduleErrors,
 }) => {
   const dispatch = useDispatch();
   const timeDeployScheduleDeployment = useSelector(
@@ -156,11 +158,7 @@ const ScheduleDeploymentTab = ({
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  const {
-    control,
-    formState: { errors },
-    reset,
-  } = useForm({});
+  const { control, reset } = useForm({});
 
   useEffect(() => {
     if (timeDeployScheduleDeployment) {
@@ -193,9 +191,10 @@ const ScheduleDeploymentTab = ({
           name="scheduled_time"
           placeholder="Select deploy time"
           control={control}
-          errors={errors}
+          errors={scheduleErrors}
           required
           onChange={value => {
+            setScheduleErrors({});
             setScheduleDeployTime(value);
           }}
         />
@@ -317,6 +316,8 @@ ScheduleDeploymentTab.propTypes = {
   scheduleDeployTime: PropTypes.object,
   setScheduleDeployTime: PropTypes.func,
   activeButton: PropTypes.object,
+  scheduleErrors: PropTypes.object,
+  setScheduleErrors: PropTypes.func,
   setActiveButton: PropTypes.func,
 };
 export default ScheduleDeploymentTab;

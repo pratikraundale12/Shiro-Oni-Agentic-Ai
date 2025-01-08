@@ -5,6 +5,9 @@ import styled from 'styled-components';
 import { Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { hasError } from '../../../../helpers';
+import { CrossIcon } from '../../../../assets';
+import defaultLogo from '../../../../assets/images/default-logo.png';
+import defaultFavicon from '../../../../assets/images/default-favicon.ico';
 
 const Container = styled.div`
   margin-bottom: 1.4rem;
@@ -83,7 +86,7 @@ const Container = styled.div`
 
   .image-preview {
     margin-top: 10px;
-    max-width: 200px;
+    max-width: 250px;
     max-height: 200px;
     border-radius: 8px;
     position: relative;
@@ -93,11 +96,8 @@ const Container = styled.div`
     position: absolute;
     top: -5px;
     right: -5px;
-    background-color: ${props => props.theme.colors.error};
     color: ${props => props.theme.colors.white};
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -127,6 +127,7 @@ const UploadField = ({
   const [imageSrc, setImageSrc] = useState(null);
   const [fileName, setFileName] = useState('');
   const [fileError, setFileError] = useState('');
+  const [isShowRemoveImageIcon, setIsShowRemoveImageIcon] = useState(true);
   const error = hasError(errors, name);
 
   const handleRemoveImage = () => {
@@ -152,11 +153,21 @@ const UploadField = ({
         setImageSrc(image);
         setFileName(getFileNameFromUrl(image));
       }
+      setIsShowRemoveImageIcon(true);
+    } else if (!image && name === 'logo') {
+      setImageSrc(defaultLogo);
+      setFileName(getFileNameFromUrl(defaultLogo));
+      setIsShowRemoveImageIcon(false);
+    } else if (!image && name === 'favicon') {
+      setImageSrc(defaultFavicon);
+      setFileName(getFileNameFromUrl(defaultFavicon));
+      setIsShowRemoveImageIcon(false);
     }
   }, [image]);
 
   const getFileNameFromUrl = url => {
-    return url.substring(url.lastIndexOf('/') + 1);
+    const convertedFileName = url.replace(/\.[a-f0-9]{8,}\./, '.');
+    return convertedFileName.substring(url.lastIndexOf('/') + 1);
   };
 
   // Default onKeyDown behavior
@@ -201,6 +212,7 @@ const UploadField = ({
             const objectURL = URL.createObjectURL(file);
             setImageSrc(objectURL);
             setFileName(file.name);
+            setIsShowRemoveImageIcon(true);
             onChange(file);
             setFileError('');
           } else {
@@ -243,16 +255,27 @@ const UploadField = ({
               )}
             </div>
             {imageSrc && (
-              <div className="image-preview">
+              <div
+                className="image-preview"
+                style={{
+                  width: name === 'logo' ? '250px' : '60px',
+                  marginTop: '20px',
+                }}
+              >
                 <img
                   src={imageSrc}
                   alt="Uploaded Preview"
-                  width={200}
-                  height={200}
+                  width={name === 'logo' ? 200 : 30}
+                  height={name === 'logo' ? 200 : 30}
                 />
-                <button className="remove-icon" onClick={handleRemoveImage}>
-                  &times;
-                </button>
+                {isShowRemoveImageIcon && (
+                  <button className="remove-icon" onClick={handleRemoveImage}>
+                    <CrossIcon
+                      height={name === 'logo' ? 24 : 14}
+                      width={name === 'logo' ? 24 : 14}
+                    />
+                  </button>
+                )}
               </div>
             )}
             {fileError && <div className="error-text">{fileError}</div>}
