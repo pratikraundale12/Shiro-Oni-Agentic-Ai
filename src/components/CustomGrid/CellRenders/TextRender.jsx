@@ -27,8 +27,12 @@ export const TextRender = ({
 }) => {
   const textToRender = typeof text === 'number' ? String(text) : text;
   return (
-    <TextColor {...rest} capitalizeText={capitalizeText}>
-      <span data-tooltip-id={textToRender}>{textToRender}</span>
+    <TextColor
+      {...rest}
+      capitalizeText={capitalizeText}
+      data-tooltip-id={textToRender}
+    >
+      <span>{textToRender}</span>
 
       {toolTip && (
         <ReactTooltip
@@ -37,6 +41,10 @@ export const TextRender = ({
           place={tooltipPlacement}
           positionStrategy="fixed"
           style={{
+            width: 'max-content',
+            maxWidth: '320px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
             zIndex: 9999,
           }}
         />

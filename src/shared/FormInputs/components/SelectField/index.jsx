@@ -39,16 +39,10 @@ const Container = styled.div`
     border-radius: 6px !important;
     padding-block: 4px !important;
   }
-  // Wrapper for the select component
 
   .react-select__menu-list {
-    max-height: 120px !important;
-    height: 100% !important;
-    // Media query for smaller screens
-    @media (max-width: 1400px) {
-      max-height: 120px !important;
-      height: 100% !important;
-    }
+    white-space: wrap;
+    word-break: break-all;
   }
 `;
 
@@ -140,6 +134,12 @@ const SelectField = ({
   const animatedComponents = makeAnimated();
   const error = hasError(errors, name);
 
+  const sortOptionsAlphabetically = options => {
+    return [...options].sort((a, b) => a.label.localeCompare(b.label));
+  };
+
+  const sortedOptions = sortOptionsAlphabetically(options);
+
   const getBorderColor = ({ isFocused }) => {
     if (isFocused && !error) return theme.colors.darker;
     if (error) return theme.colors.error;
@@ -149,8 +149,6 @@ const SelectField = ({
   const dot = color => ({
     alignItems: 'center',
     display: 'flex',
-    // justifyContent: 'space-between',
-
     ':before': {
       backgroundColor: color,
       borderRadius: 10,
@@ -265,7 +263,7 @@ const SelectField = ({
         theme={theme.reactSelecttheme}
         isDisabled={disabled}
         styles={customStyles}
-        options={options}
+        options={sortedOptions}
         components={{
           ...animatedComponents,
           IndicatorSeparator: () => null,
@@ -276,6 +274,7 @@ const SelectField = ({
       />
     );
   }
+
   if (isEmpty(control)) {
     return (
       <Container className={className} title={title}>
@@ -285,7 +284,7 @@ const SelectField = ({
           theme={theme.reactSelecttheme}
           isDisabled={disabled}
           styles={customStyles}
-          options={options}
+          options={sortedOptions}
           placeholder={placeholder}
           components={{
             ...animatedComponents,
@@ -319,15 +318,17 @@ const SelectField = ({
               classNamePrefix="react-select"
               value={
                 isMulti
-                  ? options.filter(option => value?.includes(option.value))
-                  : options.find(option => option.value === value) ||
+                  ? sortedOptions.filter(option =>
+                      value?.includes(option.value)
+                    )
+                  : sortedOptions.find(option => option.value === value) ||
                     defaultValue
               }
               placeholder={placeholder}
               theme={theme.reactSelecttheme}
               isDisabled={disabled}
               styles={customStyles}
-              options={options}
+              options={sortedOptions}
               components={{
                 ...animatedComponents,
                 IndicatorSeparator: () => null,
