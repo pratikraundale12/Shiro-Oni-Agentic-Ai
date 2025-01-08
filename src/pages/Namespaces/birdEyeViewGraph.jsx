@@ -27,16 +27,20 @@ const ZoomControls = styled.div`
   gap: 0.5rem;
 `;
 
-const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
+const RectangleGraph = ({
+  data,
+  setXStateCoordiate,
+  setYStateCoordiate,
+  xCurrent,
+  yCurrent,
+}) => {
   const svgRef = useRef();
   const zoomRef = useRef();
   const dispatch = useDispatch();
   const isFirstRender = useRef(true);
-
   const xScaleRef = useRef(false);
   const yScaleRef = useRef(false);
-  const initialZoomLevel = 0.2;
-
+  const initialZoomLevel = 0.4;
   useEffect(() => {
     if (!data || data.length === 0) {
       return;
@@ -158,13 +162,12 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
 
     const renderRectangles = (currentData = data) => {
       g.selectAll('g').remove();
+
       const rectGroups = g
         .selectAll('g')
         .data(currentData, d => d.id)
         .join('g')
-        .attr('transform', d => {
-          return `translate(${xScale(d.x)}, ${yScale(d.y)})`;
-        });
+        .attr('transform', d => `translate(${xScale(d.x)}, ${yScale(d.y)})`);
 
       rectGroups.each(function (d) {
         const group = d3.select(this);
@@ -172,6 +175,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
         const adjustedWidth = d.width * 1;
         const adjustedHeight = d.height * 1;
 
+        // Draw the rectangle
         group
           .append('rect')
           .attr('x', -adjustedWidth / 2)
@@ -183,6 +187,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
           .attr('stroke', d.color)
           .attr('stroke-width', 0.5);
 
+        // Draw the rectangle header
         const headerHeight = 10;
         group
           .append('rect')
@@ -194,8 +199,53 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
           .attr('rx', 1)
           .attr('fill', d.color);
 
+        // Apply drag behavior only to the orange rectangle
         if (d.color === '#FF7A00') {
           group.call(drag);
+
+          // Get top-left corner relative to the group
+          const topLeftX = -adjustedWidth / 2;
+          const topLeftY = -adjustedHeight / 2;
+
+          group
+            .append('line')
+            .attr('x1', 0)
+            .attr('y1', topLeftY * 1)
+            .attr('x2', svgWidth * 1)
+            .attr('y2', topLeftY)
+            .attr('stroke', 'red')
+            .attr('stroke-dasharray', '4 4')
+            .attr('stroke-width', 0.3);
+
+          group
+            .append('line')
+            .attr('x1', topLeftX * 1)
+            .attr('y1', 0)
+            .attr('x2', topLeftX * 1)
+            .attr('y2', svgHeight * 1.5)
+            .attr('stroke', 'red')
+            .attr('stroke-dasharray', '4 4')
+            .attr('stroke-width', 0.3);
+
+          group
+            .append('line')
+            .attr('x1', -svgWidth * 1.5)
+            .attr('y1', topLeftY)
+            .attr('x2', 0)
+            .attr('y2', topLeftY)
+            .attr('stroke', 'red')
+            .attr('stroke-dasharray', '4 4')
+            .attr('stroke-width', 0.3);
+
+          group
+            .append('line')
+            .attr('x1', topLeftX)
+            .attr('y1', -svgHeight * 2)
+            .attr('x2', topLeftX)
+            .attr('y2', 0)
+            .attr('stroke', 'red')
+            .attr('stroke-dasharray', '4 4')
+            .attr('stroke-width', 0.3);
         }
       });
     };
@@ -207,7 +257,7 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       svgHeight / (yScale.domain()[1] - yScale.domain()[0])
     );
 
-    const zoomOutFactor = data?.length === 1 ? 0.2 : 1.7;
+    const zoomOutFactor = data?.length === 1 ? 0.2 : 0.2;
     const adjustedScale = initialScale * zoomOutFactor;
 
     const initialTransform = d3.zoomIdentity
@@ -262,10 +312,66 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
   };
 
   const handleExpand = () => {
-    d3.select(svgRef.current).call(
-      zoomRef.current.transform,
-      d3.zoomIdentity.scale(initialZoomLevel).translate(0, 0)
+    const center = findMaxRectangleCluster(data);
+
+    if (!center) return;
+
+    const svgWidth = 600;
+
+    const svgHeight = 250;
+
+    const xScale = xScaleRef.current;
+
+    const yScale = yScaleRef.current;
+    const xavg = (center.x + xCurrent) / 2;
+    const yavg = (center.y + yCurrent) / 2;
+
+    //FOCUS ON ORANGE
+    const centerX = xScale(xCurrent);
+
+    const centerY = yScale(yCurrent);
+
+    const offsetX = 30;
+    const initialTransform = d3.zoomIdentity
+      .translate(
+        svgWidth / 2 - centerX * initialZoomLevel + offsetX,
+        svgHeight / 2 - centerY * initialZoomLevel
+      )
+      .scale(initialZoomLevel);
+
+    d3.select(svgRef.current).call(zoomRef.current.transform, initialTransform);
+
+    d3.select(svgRef.current).call(zoomRef.current.scaleBy, 10000);
+    setTimeout(() => {
+      d3.select(svgRef.current).call(zoomRef.current.scaleBy, 0.02);
+    }, 50);
+  };
+
+  const findMaxRectangleCluster = rectangles => {
+    if (!rectangles || rectangles.length === 0) return null;
+    const clusters = {};
+    const gridSize = 100;
+    rectangles.forEach(rect => {
+      const gridX = Math.floor(rect.x / gridSize);
+      const gridY = Math.floor(rect.y / gridSize);
+      const key = `${gridX},${gridY}`;
+
+      if (!clusters[key]) {
+        clusters[key] = { count: 0, x: 0, y: 0 };
+      }
+      clusters[key].count++;
+      clusters[key].x += rect.x;
+      clusters[key].y += rect.y;
+    });
+
+    const maxCluster = Object.values(clusters).reduce((max, cluster) =>
+      cluster.count > max.count ? cluster : max
     );
+
+    return {
+      x: maxCluster.x / maxCluster.count,
+      y: maxCluster.y / maxCluster.count,
+    };
   };
 
   return (
@@ -296,5 +402,7 @@ RectangleGraph.propTypes = {
   ).isRequired,
   setXStateCoordiate: PropTypes.func.isRequired,
   setYStateCoordiate: PropTypes.func.isRequired,
+  xCurrent: PropTypes.number.isRequired,
+  yCurrent: PropTypes.number.isRequired,
 };
 export default RectangleGraph;
