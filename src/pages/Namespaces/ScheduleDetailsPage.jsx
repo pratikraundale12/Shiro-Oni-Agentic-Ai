@@ -193,6 +193,7 @@ const ScheduleDeploymentTab = ({
           control={control}
           errors={scheduleErrors}
           required
+          scheduleDeployTime={scheduleDeployTime}
           onChange={value => {
             setScheduleErrors({});
             setScheduleDeployTime(value);

@@ -88,6 +88,7 @@ const DateField = ({
   placeholder = '',
   required = false,
   onChange: customOnChange,
+  scheduleDeployTime,
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -107,7 +108,7 @@ const DateField = ({
       <Controller
         name={name}
         control={control}
-        defaultValue={new Date()}
+        defaultValue={null}
         render={({ field }) => {
           const onChange = value => {
             field.onChange(value);
@@ -124,10 +125,7 @@ const DateField = ({
               showTimeSelect
               timeIntervals={15}
               onChange={onChange}
-              // onKeyDown={e => {
-              //   e.preventDefault();
-              // }}
-              selected={field.value}
+              selected={scheduleDeployTime ? scheduleDeployTime : field.value}
               placeholderText={placeholder}
               minDate={new Date()}
               minTime={
@@ -160,6 +158,7 @@ DateField.propTypes = {
   placeholder: PropTypes.string,
   required: PropTypes.bool,
   onChange: PropTypes.func,
+  scheduleDeployTime: PropTypes.object,
 };
 
 export default DateField;

@@ -160,6 +160,8 @@ const ConfigDetailsPage = () => {
   );
   const handleBackClick = () => {
     history.push('/process-group/flow-details');
+    setScheduleDeployTime(null);
+    dispatch(NamespacesActions.setScheduleTimeByRegistry(null));
   };
 
   const currentTime = new Date();
