@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { SelectField } from '../../../shared';
-import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { SelectField } from '../../../shared';
 import AddNewRoleModal from '../../../shared/AddNewRoleModal';
-import { useDispatch } from 'react-redux';
-import { RolesActions } from '../../../store';
+import { RolesActions, RolesSelectors } from '../../../store';
 
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
@@ -27,6 +27,10 @@ const SelectCellRender = ({ onChange, roles, data }) => {
   const [openRoleModal, setOpenRoleModal] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const selectedOptionRef = useRef(selectedOption);
+  const ldapGroup = useSelector(RolesSelectors.getLdapGroup);
+  const existingRole = ldapGroup.find(
+    item => item.ldap_group_name === data.name
+  );
 
   const dispatch = useDispatch();
 
@@ -34,7 +38,6 @@ const SelectCellRender = ({ onChange, roles, data }) => {
     label: item.name,
     value: item.role_id,
   }));
-
   const handleCreateOption = inputValue => {
     setSelectedOption(inputValue);
     selectedOptionRef.current = inputValue;
@@ -50,7 +53,9 @@ const SelectCellRender = ({ onChange, roles, data }) => {
     <>
       <StyledSelectField
         options={sortedArray}
-        value={sortedArray?.find(option => option.value === data.role_id)}
+        value={sortedArray?.find(
+          option => option.value === existingRole?.role_id
+        )}
         onChange={option => onChange(data, option)}
         ldap={true}
         handleCreateOption={handleCreateOption}

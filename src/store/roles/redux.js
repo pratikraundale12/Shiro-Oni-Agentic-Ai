@@ -30,6 +30,7 @@ export const RolesActions = {
   setInActiveUserIdModelOpen: createAction(
     `${prefix}setInActiveUserIdModelOpen`
   ),
+  setSelectedLdapGroup: createAction(`${prefix}setSelectedLdapGroup`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -47,6 +48,7 @@ export const ROLES_INITIAL_STATE = {
   isDeleteConfirmationModelOpen: false,
   inactiveUserId: '',
   inActiveUserIdModelOpen: false,
+  selectedLdapGroup: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -66,6 +68,7 @@ export const RolesSelectors = {
     state.roles.isDeleteConfirmationModelOpen,
   getInActiveUserId: state => state.roles.inactiveUserId,
   getInActiveUserIdModelOpen: state => state.roles.inActiveUserIdModelOpen,
+  getSelectedLdapGroup: state => state.roles.selectedLdapGroup,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -172,6 +175,12 @@ const setInActiveUserIdModelOpen = (state, { payload }) => {
     inActiveUserIdModelOpen: payload,
   };
 };
+const setSelectedLdapGroup = (state, { payload }) => {
+  return {
+    ...state,
+    selectedLdapGroup: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
@@ -195,5 +204,6 @@ export const rolesReducer = createReducer(ROLES_INITIAL_STATE, builder => {
     .addCase(
       RolesActions.setInActiveUserIdModelOpen,
       setInActiveUserIdModelOpen
-    );
+    )
+    .addCase(RolesActions.setSelectedLdapGroup, setSelectedLdapGroup);
 });

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
+import { isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { KsolvesDataFlowIcon } from '../assets';
 import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
@@ -227,7 +228,7 @@ const ForgotResetHeadingText1 = styled.h1`
   font-weight: 700;
   line-height: 39.69px;
   text-align: center;
-  color: ##333333;
+  color: #333333;
   margin-bottom: 20px;
   margin-top: 20px;
   white-space: pre-line;
@@ -280,7 +281,9 @@ export const Layout = ({ children }) => {
   };
 
   useEffect(() => {
-    dispatch(SettingsActions.fetchSettings());
+    if (dispatch && !isEmpty(settingsData)) {
+      dispatch(SettingsActions.fetchSettings());
+    }
   }, [dispatch]);
 
   return (

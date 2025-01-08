@@ -135,7 +135,11 @@ const SelectField = ({
   const error = hasError(errors, name);
 
   const sortOptionsAlphabetically = options => {
-    return [...options].sort((a, b) => a.label.localeCompare(b.label));
+    return [...options].sort((a, b) => {
+      if (a.label === 'All') return -1;
+      if (b.label === 'All') return 1;
+      return a.label.localeCompare(b.label);
+    });
   };
 
   const sortedOptions = sortOptionsAlphabetically(options);

@@ -118,14 +118,6 @@ const Name = styled.span`
   }
 `;
 
-const Role = styled.span`
-  font-family: ${props => props.theme.fontNato};
-  color: ${props => props.theme.colors.darker};
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: capitalize;
-`;
-
 const ProfileContainer = styled.div`
   position: relative;
   display: inline-block;
@@ -269,7 +261,6 @@ const ProfileDropdown = () => {
         <ProfileRender url={currentUser?.photo} />
         <ProfileInfo>
           <Name className="text-truncate">{`${currentUser?.first_name || ''} ${currentUser?.middle_name || ''} ${currentUser?.last_name || ''}`}</Name>
-          <Role>{currentUser?.role}</Role>
         </ProfileInfo>
         <DownArrowIcon />
       </ProfileButton>

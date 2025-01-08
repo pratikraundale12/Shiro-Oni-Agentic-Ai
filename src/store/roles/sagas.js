@@ -1,8 +1,8 @@
-import { call, all, takeLatest, put, select } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
+import { all, call, put, select, takeLatest } from 'redux-saga/effects';
+import { KDFM } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { RolesActions, RolesSelectors } from './redux';
-import { toast } from 'react-toastify';
-import { KDFM } from '../../constants';
 
 export function* fetchRoles(api) {
   yield call(requestSaga, {
@@ -24,6 +24,7 @@ export function* fetchLdap(api, payload) {
   });
 
   if (response.ok) {
+    yield put(RolesActions.setSelectedLdapGroup(response.data));
     yield put(RolesActions.displayGroup(false));
   } else {
     toast.error(response.data.message || 'Something went wrong');

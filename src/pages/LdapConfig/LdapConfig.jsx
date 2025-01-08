@@ -268,6 +268,7 @@ export const LdapConfig = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const { ldapEnabled } = settingData || {};
   const [tags, setTags] = useState([]);
+  const currentGroup = useSelector(RolesSelectors.getSelectedLdapGroup);
   const {
     register: registerForm1,
     handleSubmit: handleSubmitForm1,
@@ -287,18 +288,33 @@ export const LdapConfig = () => {
     resolver: yupResolver(schemaForm2),
   });
   const onChange = (data, option) => {
-    const updatedData = ldapGroup.map(item =>
-      item.ldap_group_name === data.ldap_group_name
-        ? { ...item, role_id: option.value }
-        : item
+    const updatedData = ldapGroup.map(item => {
+      if (item.ldap_group_name === data.name) {
+        const updatedItem = { ...item, role_id: option.value };
+        return updatedItem;
+      } else {
+        return item;
+      }
+    });
+
+    const isAlreadyInArray = updatedData.some(
+      item => item.ldap_group_name === data.name
     );
+
+    if (!isAlreadyInArray) {
+      const newItem = {
+        ldap_group_name: data.name,
+        role_id: option.value,
+      };
+      updatedData.push(newItem);
+    }
     dispatch(RolesActions.updateLdapGroup(updatedData));
   };
   const EVENTCOLUMNS = [
     {
       label: 'LDAP Groups',
       key: 'url',
-      renderCell: data => data.ldap_group_name,
+      renderCell: data => data.name,
     },
     {
       label: 'DFM Roles',
@@ -691,7 +707,11 @@ export const LdapConfig = () => {
                 name="filter"
                 type="text"
                 register={registerForm2}
-                label="Filter"
+                label={
+                  <>
+                    Filter <em>(ex: (cn=admin)(cn=Test))</em>
+                  </>
+                }
                 placeholder="Enter Filter"
                 icon={<QRIcons />}
                 errors={errorsForm2}
@@ -751,7 +771,7 @@ export const LdapConfig = () => {
             </SyncButton>
           </div>
 
-          <CustomTable data={ldapGroup} columns={EVENTCOLUMNS} />
+          <CustomTable data={currentGroup?.groups} columns={EVENTCOLUMNS} />
           <div className=" form-ele mt-4">
             <Button
               className="w-auto"

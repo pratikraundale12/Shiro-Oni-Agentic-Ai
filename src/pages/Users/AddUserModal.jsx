@@ -12,24 +12,16 @@ import {
   userSchema,
 } from '../../components/UserManagement/userValidation';
 import { API_URL } from '../../constants';
-import {
-  Button,
-  InputField,
-  Modal,
-  PasswordField,
-  SelectField,
-} from '../../shared';
+import { Button, InputField, Modal, PasswordField } from '../../shared';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
   GridActions,
   RolesActions,
-  RolesSelectors,
   UsersActions,
   UsersSelectors,
 } from '../../store';
 import { createUserApi, editUserDataApi } from '../../store/index1';
-import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { ProfileUpload } from './ProfileUpload';
 
@@ -52,18 +44,12 @@ const Continer = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin-top: 10px;
 `;
 
 const ImageContainer = styled.div`
   display: flex;
   justify-content: center;
-`;
-
-const SelectFieldWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
 `;
 
 const FormWrapper = styled.div`
@@ -96,22 +82,13 @@ const StyledInputField = styled(InputField)`
   margin-bottom: 0.4rem;
 `;
 
-const StyledSelectField = styled(SelectField)`
-  margin-bottom: 0.9rem;
-`;
-
 const StyledPasswordField = styled(PasswordField)`
   margin-bottom: 0.4rem;
 `;
 
-const DropDownWrapper = styled.div`
-  min-width: 15%;
-  margin-right: 10px;
-`;
-
 export const AddUserModal = props => {
   const dispatch = useDispatch();
-  const roles = useSelector(RolesSelectors.getRoles);
+  // const roles = useSelector(RolesSelectors.getRoles);
   const { state, setState } = useGlobalContext();
   const currentUser = state.currentUser;
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -145,14 +122,6 @@ export const AddUserModal = props => {
   };
 
   const password = watch('password');
-  const statusOption = [
-    { value: true, label: 'Active' },
-    { value: false, label: 'Inactive' },
-  ];
-  const rolesOption = roles?.map(role => ({
-    value: role.role_id,
-    label: role.name,
-  }));
 
   const onSubmit = async data => {
     const formData = new FormData();
@@ -263,52 +232,6 @@ export const AddUserModal = props => {
           />
         </ImageContainer>
         <Continer>
-          <SelectFieldWrapper>
-            <DropDownWrapper>
-              {currentUserData?.role !== 'superadmin' && (
-                <StyledSelectField
-                  name="is_active"
-                  size="sm"
-                  options={statusOption}
-                  errors={errors}
-                  control={control}
-                  placeholder="Status"
-                  backgroundColor={theme.colors.lightGrey}
-                  title="Select Status"
-                  disabled={
-                    currentUserData?.role === 'superadmin' &&
-                    currentUserData?.id === state?.selectedItem?.id
-                      ? false
-                      : state.selectedItem
-                  }
-                />
-              )}
-            </DropDownWrapper>
-            <DropDownWrapper>
-              {currentUserData?.role !== 'superadmin' && (
-                <StyledSelectField
-                  name="role_id"
-                  size="sm"
-                  options={rolesOption}
-                  errors={errors}
-                  control={control}
-                  placeholder={
-                    currentUserData?.id === state?.selectedItem?.id
-                      ? 'Superadmin'
-                      : 'Role'
-                  }
-                  backgroundColor={theme.colors.lightGrey}
-                  title="Select Role"
-                  disabled={
-                    currentUserData?.role === 'superadmin' &&
-                    currentUserData?.id === state?.selectedItem?.id
-                      ? false
-                      : state.selectedItem
-                  }
-                />
-              )}
-            </DropDownWrapper>
-          </SelectFieldWrapper>
           <FormWrapper>
             <FormTitle className="mb-0">User Information</FormTitle>
             <FormSection className="container">
