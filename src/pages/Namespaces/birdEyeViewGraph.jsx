@@ -27,16 +27,20 @@ const ZoomControls = styled.div`
   gap: 0.5rem;
 `;
 
-const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
+const RectangleGraph = ({
+  data,
+  setXStateCoordiate,
+  setYStateCoordiate,
+  xCurrent,
+  yCurrent,
+}) => {
   const svgRef = useRef();
   const zoomRef = useRef();
   const dispatch = useDispatch();
   const isFirstRender = useRef(true);
-  const [zoomLevel, setZoomLevel] = useState(null);
   const xScaleRef = useRef(false);
   const yScaleRef = useRef(false);
   const initialZoomLevel = 0.4;
-  console.log(zoomLevel, 'zoomLevel');
   useEffect(() => {
     if (!data || data.length === 0) {
       return;
@@ -156,7 +160,6 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
         dispatch(NamespacesActions.setRegistryFlowYCord(Number(dataY)));
       });
 
-    // LEFT TOP ATTACHED PLUS GOOD, LENGTH DIFFERNCE
     const renderRectangles = (currentData = data) => {
       g.selectAll('g').remove();
 
@@ -273,7 +276,6 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
       .scaleExtent([0.1, 10])
       .on('zoom', event => {
         g.attr('transform', event.transform);
-        setZoomLevel(event.transform.k);
       });
 
     svg.call(zoom);
@@ -310,46 +312,66 @@ const RectangleGraph = ({ data, setXStateCoordiate, setYStateCoordiate }) => {
   };
 
   const handleExpand = () => {
+    const center = findMaxRectangleCluster(data);
+
+    if (!center) return;
+
+    const svgWidth = 600;
+
+    const svgHeight = 250;
+
+    const xScale = xScaleRef.current;
+
+    const yScale = yScaleRef.current;
+    const xavg = (center.x + xCurrent) / 2;
+    const yavg = (center.y + yCurrent) / 2;
+
+    //FOCUS ON ORANGE
+    const centerX = xScale(xCurrent);
+
+    const centerY = yScale(yCurrent);
+
+    const offsetX = 30;
+    const initialTransform = d3.zoomIdentity
+      .translate(
+        svgWidth / 2 - centerX * initialZoomLevel + offsetX,
+        svgHeight / 2 - centerY * initialZoomLevel
+      )
+      .scale(initialZoomLevel);
+
+    d3.select(svgRef.current).call(zoomRef.current.transform, initialTransform);
+
     d3.select(svgRef.current).call(zoomRef.current.scaleBy, 10000);
     setTimeout(() => {
-      d3.select(svgRef.current).call(zoomRef.current.scaleBy, 0.025);
+      d3.select(svgRef.current).call(zoomRef.current.scaleBy, 0.02);
     }, 50);
+  };
 
-    // const svg = d3.select(svgRef.current);
+  const findMaxRectangleCluster = rectangles => {
+    if (!rectangles || rectangles.length === 0) return null;
+    const clusters = {};
+    const gridSize = 100;
+    rectangles.forEach(rect => {
+      const gridX = Math.floor(rect.x / gridSize);
+      const gridY = Math.floor(rect.y / gridSize);
+      const key = `${gridX},${gridY}`;
 
-    // // Reset the zoom to the initial zoom level
-    // const resetTransform = d3.zoomIdentity
-    //   .scale(initialZoomLevel)
-    //   .translate(0, 0);
+      if (!clusters[key]) {
+        clusters[key] = { count: 0, x: 0, y: 0 };
+      }
+      clusters[key].count++;
+      clusters[key].x += rect.x;
+      clusters[key].y += rect.y;
+    });
 
-    // svg
-    //   .transition() // Add smooth animation for better user experience
-    //   .duration(500) // Duration of the reset transition
-    //   .call(zoomRef.current.transform, resetTransform);
+    const maxCluster = Object.values(clusters).reduce((max, cluster) =>
+      cluster.count > max.count ? cluster : max
+    );
 
-    // d3.select(svgRef.current).call(
-    //   d3.zoomIdentity.scale(initialZoomLevel).translate(0, 0)
-    // );
-
-    //zoom out to 0.2 level at whatever the zoom level
-    // const svg = d3.select(svgRef.current);
-    // const zoomTransform = d3.zoomIdentity.scale(0.2);
-
-    // svg.call(zoomRef.current.transform, zoomTransform);
-
-    //working to zoom out based on current zoom
-    // d3.select(svgRef.current).call(zoomRef.current.scaleBy, 0.3);
-
-    //previous code to move the graph
-    // d3.select(svgRef.current).call(
-    //   d3.zoomIdentity.scale(initialZoomLevel).translate(0, 0)
-    // );
-
-    // might be this can work
-    //   const svgElement = d3.select(svgRef.current); // Reference to your SVG element
-    // svgElement.transition() // Add smooth animation
-    //   .duration(500) // Duration of the reset
-    //   .call(zoom.transform, d3.zoomIdentity);
+    return {
+      x: maxCluster.x / maxCluster.count,
+      y: maxCluster.y / maxCluster.count,
+    };
   };
 
   return (
@@ -380,5 +402,7 @@ RectangleGraph.propTypes = {
   ).isRequired,
   setXStateCoordiate: PropTypes.func.isRequired,
   setYStateCoordiate: PropTypes.func.isRequired,
+  xCurrent: PropTypes.number.isRequired,
+  yCurrent: PropTypes.number.isRequired,
 };
 export default RectangleGraph;
