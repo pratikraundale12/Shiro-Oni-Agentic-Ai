@@ -136,8 +136,10 @@ const UploadField = ({
     if (input) {
       input.value = null;
     }
-    setImageSrc(null);
-    setFileName('');
+    const defaultImage = name === 'logo' ? defaultLogo : defaultFavicon;
+    setImageSrc(defaultImage);
+    setFileName(getFileNameFromUrl(defaultImage));
+    setIsShowRemoveImageIcon(false);
     if (control && control.setValue) {
       control.setValue(name, null);
     }
@@ -154,16 +156,13 @@ const UploadField = ({
         setFileName(getFileNameFromUrl(image));
       }
       setIsShowRemoveImageIcon(true);
-    } else if (!image && name === 'logo') {
-      setImageSrc(defaultLogo);
-      setFileName(getFileNameFromUrl(defaultLogo));
-      setIsShowRemoveImageIcon(false);
-    } else if (!image && name === 'favicon') {
-      setImageSrc(defaultFavicon);
-      setFileName(getFileNameFromUrl(defaultFavicon));
+    } else {
+      const defaultImage = name === 'logo' ? defaultLogo : defaultFavicon;
+      setImageSrc(defaultImage);
+      setFileName(getFileNameFromUrl(defaultImage));
       setIsShowRemoveImageIcon(false);
     }
-  }, [image]);
+  }, [image, name]);
 
   const getFileNameFromUrl = url => {
     const convertedFileName = url.replace(/\.[a-f0-9]{8,}\./, '.');
@@ -180,6 +179,7 @@ const UploadField = ({
       onKeyDown(e);
     }
   };
+  const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
   return (
     <Controller
@@ -190,22 +190,27 @@ const UploadField = ({
       render={({ field: { onChange } }) => {
         const handlePhotoUpload = event => {
           const file = event.target.files[0];
-
           if (file) {
+            if (file.size > MAX_FILE_SIZE) {
+              toast.error('File size must be less than 2MB');
+              return;
+            }
             if (
               name === 'favicon' &&
               file.type !== 'image/x-icon' &&
               file.type !== 'image/vnd.microsoft.icon'
             ) {
               toast.error('Please upload a valid favicon file (.ico)');
-              setFileError('Invalid file type for favicon');
+              // setFileError('Invalid file type for favicon');
               return;
             } else if (
               name === 'logo' &&
-              !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
+              !['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(
+                file.type
+              )
             ) {
               toast.error('Please upload a valid image file (jpeg, png, webp)');
-              setFileError('Invalid file type for logo');
+              // setFileError('Invalid file type for logo');
               return;
             }
 
@@ -217,7 +222,7 @@ const UploadField = ({
             setFileError('');
           } else {
             toast.error('Please upload a valid image');
-            setFileError('Invalid file type');
+            // setFileError('Invalid file type');
           }
         };
 

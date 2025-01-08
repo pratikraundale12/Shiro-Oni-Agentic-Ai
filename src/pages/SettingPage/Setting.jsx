@@ -344,6 +344,7 @@ export const Setting = () => {
       setLoading(false);
       console.error('Failed to submit settings:', error);
     }
+    window.location.reload();
   };
 
   useEffect(() => {
