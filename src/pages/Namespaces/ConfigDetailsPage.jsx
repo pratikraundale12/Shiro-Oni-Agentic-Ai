@@ -160,11 +160,13 @@ const ConfigDetailsPage = () => {
   );
   const handleBackClick = () => {
     history.push('/process-group/flow-details');
+    setScheduleDeployTime(null);
+    dispatch(NamespacesActions.setScheduleTimeByRegistry(null));
   };
 
   const currentTime = new Date();
   const isScheduleTimeValid =
-    scheduleDeployTime && scheduleDeployTime >= currentTime;
+    scheduleDeployTime && scheduleDeployTime > currentTime;
 
   const handleContinue = () => {
     if (isScheduleTimeValid === false) {

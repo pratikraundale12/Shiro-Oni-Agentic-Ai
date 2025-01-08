@@ -655,6 +655,7 @@ const Summary = () => {
       },
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
       namespaceStatus: flowControlSelectedScheduleStored || 'STOPPED',
+      nameSpaceName: registryAllDetails?.processGroupName,
     };
     //
     if (!isEmpty(variblesReduxData)) {
@@ -690,6 +691,7 @@ const Summary = () => {
         },
         keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
         namespaceStatus: flowControlSelectedScheduleStored || 'STOPPED',
+        nameSpaceName: registryAllDetails?.processGroupName,
       };
       //
       if (!isEmpty(variblesReduxData)) {

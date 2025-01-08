@@ -484,6 +484,16 @@ const FlowDetailsPage = () => {
                       data={!isUpgrade ? enhancedDataForUpgrade : enhancedData}
                       setXStateCoordiate={setXStateCoordiate}
                       setYStateCoordiate={setYStateCoordiate}
+                      xCurrent={
+                        storedXcord ||
+                        xStateCoordinate ||
+                        selectedNameSpace?.position?.x
+                      }
+                      yCurrent={
+                        storedYcord ||
+                        yStateCoordinate ||
+                        selectedNameSpace?.position?.y
+                      }
                     />
                   }
                 </ColLgSix>

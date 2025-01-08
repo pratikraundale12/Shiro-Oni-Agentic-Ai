@@ -8,9 +8,7 @@ export const ActvityHistory = () => {
     {
       label: KDFM.EVENT,
       width: '10%',
-      renderCell: item => (
-        <TextRender text={item.event || KDFM.NA} toolTip={false} />
-      ),
+      renderCell: item => <TextRender text={item.event || KDFM.NA} />,
     },
     {
       label: KDFM.ENTITY,

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +21,7 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
+import { KDFM } from '../../constants';
 
 const Container = styled.div`
   height: 350px;
@@ -46,6 +47,7 @@ export const ScheduleDeploymentModal = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'editScheduleDeployment')
   );
+  const [scheduleErrors, setScheduleErrors] = useState({});
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const {
     control,
@@ -61,16 +63,27 @@ export const ScheduleDeploymentModal = () => {
     dispatch(SchedularActions.setScheduleModal(false));
     reset();
     dispatch(SchedularActions.setSelectedSchedule({}));
+    setScheduleErrors({});
   };
-
   const onSubmit = data => {
     const payload = {
       schedularId: selectedSchedule?.id,
       scheduled_time: new Date(data?.scheduled_time).toISOString(),
     };
-    dispatch(SchedularActions.editScheduleDeployment(payload));
-    dispatch(SchedularActions.setScheduleModal(false));
-    reset();
+    const currentTime = new Date();
+    const scheduledTime = new Date(data?.scheduled_time);
+    if (scheduledTime.getTime() > currentTime.getTime()) {
+      setScheduleErrors({});
+      dispatch(SchedularActions.editScheduleDeployment(payload));
+      dispatch(SchedularActions.setScheduleModal(false));
+      reset();
+    } else {
+      setScheduleErrors({
+        scheduled_time: {
+          message: KDFM.INCORRECT_SCHEDULE_TIME,
+        },
+      });
+    }
   };
 
   useEffect(() => {
@@ -117,8 +130,11 @@ export const ScheduleDeploymentModal = () => {
               label="Deploy Time"
               name="scheduled_time"
               placeholder="Select deploy time"
+              onChange={() => setScheduleErrors({})}
               control={control}
-              errors={errors}
+              errors={
+                Object.keys(scheduleErrors).length ? scheduleErrors : errors
+              }
               required
             />
           </div>
