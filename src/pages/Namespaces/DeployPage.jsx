@@ -187,8 +187,6 @@ function DeployPage() {
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
-  const [flowDescription, setFlowDescription] = useState('');
-  flowDescription;
   const bucketListOptions = bucketListData?.bucketList?.map(item => ({
     label: item?.name,
     value: item?.id,
@@ -318,7 +316,6 @@ function DeployPage() {
   useEffect(() => {
     if (selectedValuebucketId) {
       dispatch(NamespacesActions.fetchFlowNameList(selectedValuebucketId));
-      setFlowDescription(selectedBucketObj);
     }
   }, [selectedValuebucketId]);
 
