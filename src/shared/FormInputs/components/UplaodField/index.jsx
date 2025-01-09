@@ -19,6 +19,14 @@ const Container = styled.div`
     color: ${props => props.theme.colors.darker};
   }
 
+  labelWarning {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    color: ${props => props.theme.colors.darker};
+    font-style: italic;
+  }
+
   .required {
     color: ${props => props.theme.colors.error};
     font-size: 1rem;
@@ -122,6 +130,7 @@ const UploadField = ({
   image,
   setValue,
   onKeyDown,
+  labelWarning,
   ...props
 }) => {
   const [imageSrc, setImageSrc] = useState(null);
@@ -231,7 +240,9 @@ const UploadField = ({
                 {label}
                 {required && <span className="required">&nbsp;*</span>}
               </label>
-            )}
+            )}{' '}
+            &nbsp;
+            {labelWarning && <labelWarning>{labelWarning}</labelWarning>}
             <div className="wrapper">
               <span className="icon-placeholder">{icon}</span>
               <input
@@ -257,7 +268,7 @@ const UploadField = ({
                 </>
               )}
             </div>
-            {imageSrc && (
+            {imageSrc && isShowRemoveImageIcon && (
               <div
                 className="image-preview"
                 style={{
@@ -303,6 +314,7 @@ UploadField.propTypes = {
   control: PropTypes.object.isRequired,
   setValue: PropTypes.func,
   onKeyDown: PropTypes.func,
+  labelWarning: PropTypes.string,
 };
 
 export default UploadField;

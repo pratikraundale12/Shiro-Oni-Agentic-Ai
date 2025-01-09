@@ -13,7 +13,15 @@ export const ActvityHistory = () => {
     {
       label: KDFM.ENTITY,
       width: '10%',
-      renderCell: item => <TextRender text={item.entity || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender
+          text={
+            item?.entity === 'Ldap'
+              ? item?.entity?.toUpperCase()
+              : item?.entity || KDFM.NA
+          }
+        />
+      ),
     },
     {
       label: KDFM.NAMESPACE,
