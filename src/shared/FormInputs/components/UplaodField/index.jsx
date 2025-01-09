@@ -205,9 +205,7 @@ const UploadField = ({
               return;
             } else if (
               name === 'logo' &&
-              !['image/jpeg', 'image/png', 'image/jpg'].includes(
-                file.type
-              )
+              !['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
             ) {
               toast.error('Please upload a valid image file (jpg, png, jpeg)');
               // setFileError('Invalid file type for logo');

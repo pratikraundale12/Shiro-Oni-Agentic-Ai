@@ -330,6 +330,8 @@ export const Setting = () => {
         dispatch(SettingsActions.createSettings(payload));
         setTimeout(() => {
           dispatch(SettingsActions.fetchSettings());
+          history.push('/setting');
+          window.location.reload();
         }, 1000);
         setLoading(false);
         if (data?.favicon) {
@@ -344,7 +346,7 @@ export const Setting = () => {
       setLoading(false);
       console.error('Failed to submit settings:', error);
     }
-    window.location.reload();
+    // window.location.reload();
   };
 
   useEffect(() => {
