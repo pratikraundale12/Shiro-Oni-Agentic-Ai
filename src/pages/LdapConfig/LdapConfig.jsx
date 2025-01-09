@@ -709,7 +709,7 @@ export const LdapConfig = () => {
                 register={registerForm2}
                 label={
                   <>
-                    Filter <em>(ex: (cn=admin)(cn=Test))</em>
+                    Filter <em>ex: (|(cn=admin)(cn=developer))</em>
                   </>
                 }
                 placeholder="Enter Filter"
