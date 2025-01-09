@@ -6,9 +6,10 @@ import { isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { KsolvesDataFlowIcon } from '../assets';
 import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
+import { changeFavicon, changeTitle } from '../helpers';
 import { history } from '../helpers/history';
 import { TextButton } from '../shared';
-import { AuthenticationActions } from '../store';
+import { AuthenticationActions, AuthenticationSelectors } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 
 const Container = styled.div`
@@ -254,7 +255,8 @@ export const Layout = ({ children }) => {
   const isForgotPassword = pathname === '/forgot';
   const isReset = pathname === '/reset';
   const settingsData = useSelector(SettingsSelectors.getSettings);
-  let image = settingsData?.logo;
+  const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
+  let image = settingsData?.logo || settingLogo?.logo;
 
   let imageUrl;
   let customHeight;
@@ -280,10 +282,20 @@ export const Layout = ({ children }) => {
       history.push('/login');
     }
   };
-
+  useEffect(() => {
+    if (settingLogo?.favicon) {
+      changeFavicon(settingLogo?.favicon);
+    }
+    if (settingLogo?.title) {
+      changeTitle(settingLogo.title);
+    }
+  }, [settingLogo]);
   useEffect(() => {
     if (dispatch && !isEmpty(settingsData)) {
-      if (location.pathname === '/login') {
+      if (
+        location.pathname === '/login' ||
+        location.pathname === '/admin/login'
+      ) {
         dispatch(AuthenticationActions.fetchSettingLogo());
       } else {
         dispatch(SettingsActions.fetchSettings());
