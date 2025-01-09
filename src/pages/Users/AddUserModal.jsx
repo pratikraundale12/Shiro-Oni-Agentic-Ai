@@ -134,7 +134,6 @@ export const AddUserModal = props => {
     }
     formData.append('phone', data.phone || null);
     formData.append('is_active', data.is_active !== false);
-    formData.append('role_id', data?.role_id);
     formData.append('username', data.username);
     if (data.photo && data.photo.size > 0) {
       formData.append('photo', data.photo);
