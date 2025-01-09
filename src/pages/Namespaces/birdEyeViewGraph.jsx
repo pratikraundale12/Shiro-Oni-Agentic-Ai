@@ -327,9 +327,14 @@ const RectangleGraph = ({
     const yavg = (center.y + yCurrent) / 2;
 
     //FOCUS ON ORANGE
-    const centerX = xScale(xCurrent);
-
-    const centerY = yScale(yCurrent);
+    // const centerX = xScale(xCurrent);
+    // const centerY = yScale(yCurrent);
+    //FOCUS ON GROUP
+    // const centerX = xScale(center.x);
+    // const centerY = yScale(center.y);
+    //FOCUS ON AVG
+    const centerX = xScale(xavg);
+    const centerY = yScale(yavg);
 
     const offsetX = 30;
     const initialTransform = d3.zoomIdentity
