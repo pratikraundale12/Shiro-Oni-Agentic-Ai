@@ -137,7 +137,6 @@ export function* logout(api, { payload: { url } }) {
   history.replace(url);
 }
 export function* fetchSettingLogo(api) {
-  console.log('fetchSettingLogoApi');
   yield call(requestSaga, {
     errorSection: 'fetchSettingLogo',
     loadingSection: 'fetchSettingLogo',
