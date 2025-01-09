@@ -46,17 +46,19 @@ export const ListUsers = () => {
       label: KDFM.EMAIL,
       width: '20%',
       renderCell: item => (
-        <TextRender text={item.email} capitalizeText={false} toolTip={false} />
+        <TextRender text={item?.email} capitalizeText={false} toolTip={false} />
       ),
     },
     {
       label: KDFM.ROLE,
-      renderCell: item => <TextRender text={item.role} toolTip={false} />,
+      width: '20%',
+      renderCell: item => <TextRender text={item?.role?.join(', ')} />,
     },
     {
       label: KDFM.STATUS,
+      width: '10%',
       renderCell: item => (
-        <StatusRender status={item.is_active ? 'Active' : 'Inactive'} />
+        <StatusRender status={item?.is_active ? 'Active' : 'Inactive'} />
       ),
     },
   ];
