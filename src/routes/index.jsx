@@ -141,7 +141,7 @@ export const ROUTES_MENU = [
     permission: 'view_namespace',
   },
   {
-    name: 'Schedule Deployment',
+    name: 'Deployment Schedule',
     path: 'schedule-deployment',
     icon: ScheduleDeploymentIcon,
     pages: [

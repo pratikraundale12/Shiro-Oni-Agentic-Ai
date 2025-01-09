@@ -532,7 +532,8 @@ export const Setting = () => {
           <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
             <UploadField
               name="logo"
-              label="Logo"
+              label="Logo "
+              labelWarning="(allowed: jpeg, jpg, png)"
               control={control}
               watch={watch}
               icon={<LogoFieldIcon />}
@@ -547,6 +548,7 @@ export const Setting = () => {
             <UploadField
               name="favicon"
               label="Favicon"
+              labelWarning="(allowed: ico)"
               control={control}
               icon={<LogoFieldIcon />}
               rightIcon={<UploadIcon />}

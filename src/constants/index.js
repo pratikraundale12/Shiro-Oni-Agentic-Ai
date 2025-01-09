@@ -78,6 +78,10 @@ export const MODULE_LIST_MAP = [
   { label: 'Process Group', value: 'Process Group' },
   { label: 'Controller Services', value: 'Controller Services' },
   { label: 'User', value: 'User' },
+  { label: 'LDAP', value: 'Ldap' },
+  { label: 'Group Mapping', value: 'Group-mapping' },
+  { label: 'Reschedule Job', value: 'Reschedule Job' },
+  { label: 'Roles', value: 'Roles' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -93,6 +97,9 @@ export const ACTIVITY_EVENTS = [
   { label: 'Delete', value: 'Delete' },
   { label: 'Upgrade', value: 'Upgrade' },
   { label: 'Deploy', value: 'Deploy' },
+  { label: 'Downgrade', value: 'downgrade' },
+  { label: 'Schedule Deploy', value: 'Schedule Deploy' },
+  { label: 'Schedule Upgrade', value: 'Schedule upgrade' },
 ];
 
 export const EMAIL_REMINDER_OPTIONS = [
