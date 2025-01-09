@@ -174,6 +174,7 @@ function DeployPage() {
   const bucketListData = useSelector(
     NamespacesSelectors.getBucketListDropDownData
   );
+
   const flowListData = useSelector(NamespacesSelectors.getFlowListRegistry);
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
@@ -186,6 +187,8 @@ function DeployPage() {
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
+  const [flowDescription, setFlowDescription] = useState('');
+  flowDescription;
   const bucketListOptions = bucketListData?.bucketList?.map(item => ({
     label: item?.name,
     value: item?.id,
@@ -308,10 +311,14 @@ function DeployPage() {
 
   const selectedValuebucketId = watch('bucketId');
   const selectedValueFlowId = watch('flow_name');
+  const selectedBucketObj = flowListData?.flowsList?.filter(
+    ele => ele?.flowId === selectedValueFlowId
+  );
 
   useEffect(() => {
     if (selectedValuebucketId) {
       dispatch(NamespacesActions.fetchFlowNameList(selectedValuebucketId));
+      setFlowDescription(selectedBucketObj);
     }
   }, [selectedValuebucketId]);
 
@@ -493,7 +500,7 @@ function DeployPage() {
               <div className="col-6 p-3 mb-3">
                 <LabelSelect>Flow Description</LabelSelect>
                 <FlowDescription className="mt-2 fw-semibold">
-                  No Description Provided
+                  {selectedBucketObj?.[0]?.description || 'N/A'}
                 </FlowDescription>
               </div>
             </RowConfig>
