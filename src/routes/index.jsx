@@ -282,7 +282,7 @@ const Routes = () => {
   useEffect(() => {
     dispatch(AuthenticationActions.fetchLicenseInfo());
     if (location.pathname === '/login') {
-      dispatch(SettingsActions.fetchSettings(true));
+      dispatch(AuthenticationActions.fetchSettingLogo());
     } else {
       dispatch(SettingsActions.fetchSettings());
     }

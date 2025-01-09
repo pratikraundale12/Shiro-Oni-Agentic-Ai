@@ -8,6 +8,7 @@ import { KsolvesDataFlowIcon } from '../assets';
 import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
 import { history } from '../helpers/history';
 import { TextButton } from '../shared';
+import { AuthenticationActions } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 
 const Container = styled.div`
@@ -283,7 +284,7 @@ export const Layout = ({ children }) => {
   useEffect(() => {
     if (dispatch && !isEmpty(settingsData)) {
       if (location.pathname === '/login') {
-        dispatch(SettingsActions.fetchSettings(true));
+        dispatch(AuthenticationActions.fetchSettingLogo());
       } else {
         dispatch(SettingsActions.fetchSettings());
       }

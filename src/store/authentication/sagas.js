@@ -136,6 +136,16 @@ export function* logout(api, { payload: { url } }) {
   localStorage.clear();
   history.replace(url);
 }
+export function* fetchSettingLogo(api) {
+  console.log('fetchSettingLogoApi');
+  yield call(requestSaga, {
+    errorSection: 'fetchSettingLogo',
+    loadingSection: 'fetchSettingLogo',
+    apiMethod: api.fetchSettingLogo,
+    apiParams: [{ params: {} }],
+    successAction: AuthenticationActions.fetchSettingLogoSuccess,
+  });
+}
 
 export function* authenticationSagas(api) {
   yield all([
@@ -154,5 +164,6 @@ export function* authenticationSagas(api) {
       updateTermsAndPolicies,
       api
     ),
+    takeLatest(AuthenticationActions.fetchSettingLogo, fetchSettingLogo, api),
   ]);
 }

@@ -27,13 +27,12 @@ export function* createSettings(api, { payload }) {
   }
 }
 
-export function* fetchSettings(api, { payload = false }) {
-  const for_login = payload ? { for_login: payload } : {};
+export function* fetchSettings(api) {
   yield call(requestSaga, {
     errorSection: 'fetchSettings',
     loadingSection: 'fetchSettings',
     apiMethod: api.fetchSettings,
-    apiParams: [{ params: for_login }],
+    apiParams: [{ params: {} }],
     successAction: SettingsActions.fetchSettingsSuccess,
   });
 }
