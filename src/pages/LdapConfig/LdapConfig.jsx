@@ -525,6 +525,10 @@ export const LdapConfig = () => {
     dispatch(RolesActions.roleModal(true));
     closePopup();
   };
+  useEffect(() => {
+    dispatch(RolesActions.fetchRoles());
+  }, [dispatch]);
+
   return (
     <Wrapper>
       {loading && <FullPageLoader loading={loading} />}

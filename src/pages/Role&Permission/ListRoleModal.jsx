@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -68,6 +68,10 @@ const ListRoleModal = () => {
   const filteredRoles = roles?.filter(role =>
     role.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  useEffect(() => {
+    dispatch(RolesActions.fetchRoles());
+  }, [dispatch]);
 
   const COLUMNS = [
     {
