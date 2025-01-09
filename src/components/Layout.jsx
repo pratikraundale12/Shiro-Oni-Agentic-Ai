@@ -282,7 +282,11 @@ export const Layout = ({ children }) => {
 
   useEffect(() => {
     if (dispatch && !isEmpty(settingsData)) {
-      dispatch(SettingsActions.fetchSettings());
+      if (location.pathname === '/login') {
+        dispatch(SettingsActions.fetchSettings(true));
+      } else {
+        dispatch(SettingsActions.fetchSettings());
+      }
     }
   }, [dispatch]);
 

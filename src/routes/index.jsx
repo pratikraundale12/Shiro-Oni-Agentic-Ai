@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Outlet, Route } from 'react-router-dom';
+import { Outlet, Route, useLocation } from 'react-router-dom';
 
 import AuthGaurd from './AuthGuard';
 import { HistoryRouter } from './HistoryRouter';
@@ -46,10 +46,12 @@ import {
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
 // import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
+import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import Deploy from '../pages/Namespaces/Deploy';
+import DeployPage from '../pages/Namespaces/DeployPage.jsx';
+import FlowDetailsPage from '../pages/Namespaces/FlowDetailsPage.jsx';
 import ListControllerServiceNamespace from '../pages/Namespaces/ListControllerServiceNamespace';
 import ProcessGroupSummary from '../pages/Namespaces/ProcessGroupSummary';
-import DeployPage from '../pages/Namespaces/DeployPage.jsx';
 import Summary from '../pages/Namespaces/Summary';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
@@ -61,8 +63,6 @@ import {
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
-import FlowDetailsPage from '../pages/Namespaces/FlowDetailsPage.jsx';
-import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -277,10 +277,15 @@ const Routes = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchLicenseInfo')
   );
+  const location = useLocation();
 
   useEffect(() => {
     dispatch(AuthenticationActions.fetchLicenseInfo());
-    dispatch(SettingsActions.fetchSettings());
+    if (location.pathname === '/login') {
+      dispatch(SettingsActions.fetchSettings(true));
+    } else {
+      dispatch(SettingsActions.fetchSettings());
+    }
   }, [dispatch]);
 
   useEffect(() => {
