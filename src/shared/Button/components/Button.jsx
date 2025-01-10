@@ -121,6 +121,7 @@ const StyledLoader = styled(Loader)`
 `;
 
 const Button = ({
+  idBtnDisable,
   icon = null,
   iconPosition = 'left',
   variant = 'primary',
@@ -146,6 +147,7 @@ const Button = ({
   }
   return (
     <StyledButton
+      disabled={idBtnDisable}
       size={size}
       variant={variant}
       iconPosition={iconPosition}
@@ -169,6 +171,7 @@ Button.propTypes = {
   loading: PropTypes.bool,
   disabled: PropTypes.bool,
   style: PropTypes.object,
+  idBtnDisable: PropTypes.bool,
 };
 
 export default Button;

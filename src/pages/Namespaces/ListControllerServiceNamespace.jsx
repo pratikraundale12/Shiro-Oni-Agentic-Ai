@@ -399,6 +399,7 @@ export const ListControllerService = () => {
   return (
     <ScrollSetGrey className="scroll-set-grey pe-1">
       <Collapsible
+        isAddBtnDisable={!canWrite}
         title={singleNamespaceData?.name}
         isTableOpen={isOpen}
         toggleCollapsible={() => handleToggle()}

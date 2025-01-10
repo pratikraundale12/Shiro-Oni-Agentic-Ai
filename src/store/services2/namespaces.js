@@ -159,10 +159,13 @@ export const namespacesAPI = api => {
     payloadData,
     namespaceId,
   }) => {
+    const { isFromControllerServiceTab } = payloadData;
     const url =
-      namespaceId && !payloadData?.isFromControllerServiceTab
+      namespaceId && !isFromControllerServiceTab
         ? `controller-services/${clusterId}/namespace/${namespaceId}`
-        : `controller-services/${clusterId}/namespace`;
+        : !namespaceId && !isFromControllerServiceTab
+          ? `controller-services/${clusterId}/namespace`
+          : `controller-services/${clusterId}/namespace?use_service_account=true`;
     const updatedPayload = {
       name: payloadData.name,
       type: payloadData?.type,
