@@ -283,7 +283,7 @@ const AddVariables = ({
       onRequestClose={closePopup}
       size="md"
       secondaryButtonText={KDFM.BACK}
-      primaryButtonText={KDFM.SAVE}
+      primaryButtonText={KDFM.ADD}
       footerAlign="start"
       onSubmit={handleSubmit(
         schedularFromList

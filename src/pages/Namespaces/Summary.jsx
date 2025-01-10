@@ -706,6 +706,7 @@ const Summary = () => {
         flowName: selectedNameSpace?.flowName,
         isScheduled: true,
         mode: 'upgrade',
+        type:type,
         nameSpaceName: selectedNameSpace?.name,
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
         position: {
