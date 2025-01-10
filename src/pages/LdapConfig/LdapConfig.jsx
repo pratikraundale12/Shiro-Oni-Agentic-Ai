@@ -109,9 +109,11 @@ const CustomTable = styled(Table)`
   tr td:last-child div {
     overflow: visible;
   }
-
-  .react-select__menu {
-    overflow: scroll !important;
+  .react-select__control {
+    overflow: unset;
+  }
+  .react-select__menu .react-select__menu-list {
+    overflow: auto !important;
     max-height: 220px;
   }
 `;
