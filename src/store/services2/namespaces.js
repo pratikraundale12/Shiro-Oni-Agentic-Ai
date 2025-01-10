@@ -43,7 +43,7 @@ export const namespacesAPI = api => {
       namespaceId &&
       window?.location?.pathname != '/controller-service' &&
       !localOnly
-        ? `controller-services/${clusterId}/namespace/${namespaceId}`
+        ? `controller-services/${clusterId}/namespace/${namespaceId}?use_service_account=${use_service_account}`
         : namespaceId &&
             window?.location?.pathname != '/controller-service' &&
             localOnly
