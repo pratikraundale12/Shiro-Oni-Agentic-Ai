@@ -331,7 +331,6 @@ export const Setting = () => {
         setTimeout(() => {
           dispatch(SettingsActions.fetchSettings());
           history.push('/setting');
-          window.location.reload();
         }, 1000);
         setLoading(false);
         if (data?.favicon) {

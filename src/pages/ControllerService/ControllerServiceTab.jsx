@@ -1508,7 +1508,7 @@ const ControllerServiceTab = ({
                   />
                   <Search
                     type="search"
-                    placeholder="Search Controller Service by Name and Type"
+                    placeholder="Search Controller Service by Name"
                     onChange={e => onSearch(e, service)}
                   />
                 </SearchContainer>

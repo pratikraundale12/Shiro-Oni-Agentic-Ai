@@ -299,7 +299,7 @@ const AddParameterContext = ({
       size="md"
       footerAlign="start"
       secondaryButtonText={KDFM.BACK}
-      primaryButtonText={KDFM.SAVE}
+      primaryButtonText={KDFM.ADD}
       onSubmit={handleSubmit(handleAddEditParameterContext)}
     >
       <ModalBody className="modal-body">

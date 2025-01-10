@@ -139,7 +139,10 @@ const StyledSecondButton = styled(Button)`
 `;
 
 const StyledSelectField = styled(SelectField)`
-  margin-bottom: 0.9rem;
+  min-height: 54.79px;
+  .react-select__control {
+    min-height: 54.79px;
+  }
 `;
 
 const LabelSelect = styled.div`
@@ -147,6 +150,7 @@ const LabelSelect = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
+  margin-bottom: 14px;
 `;
 const TagsInput = styled.input`
   flex-grow: 1;
@@ -723,7 +727,7 @@ export const LdapConfig = () => {
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mt-1 mb-2">
-              <LabelSelect className="mb-3">Select Scope</LabelSelect>
+              <LabelSelect>Select Scope</LabelSelect>
               <StyledSelectField
                 name="scope"
                 size="sm"
