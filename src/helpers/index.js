@@ -18,6 +18,16 @@ export const changeFavicon = newFaviconURL => {
   }
 };
 
+export const changeTitle = newTitle => {
+  if (document.title) {
+    document.title = newTitle;
+  } else {
+    const newTitleElement = document.createElement('title');
+    newTitleElement.textContent = newTitle;
+    document.head.appendChild(newTitleElement);
+  }
+};
+
 export const getFileSize = size => {
   if (size < 1024) {
     return `${size}B`;

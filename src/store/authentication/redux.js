@@ -25,6 +25,8 @@ export const AuthenticationActions = {
     `${prefix}updateTermsAndPoliciesSuccess`
   ),
   setCurrentUser: createAction(`${prefix}setCurrentUser`),
+  fetchSettingLogo: createAction(`${prefix}fetchSettingLogo`),
+  fetchSettingLogoSuccess: createAction(`${prefix}fetchSettingLogoSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -40,6 +42,7 @@ export const AUTHENTICATION_INITIAL_STATE = {
   permissions: [],
   isButtonDisabled: false,
   hasTermsAndPoliciesAccepted: false,
+  data: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -56,6 +59,7 @@ export const AuthenticationSelectors = {
   getIsButtonDisabled: state => state.auth.isButtonDisabled,
   getHasTermsAndPoliciesAccepted: state =>
     state.auth.hasTermsAndPoliciesAccepted,
+  getSettingLogo: state => state.auth.data,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -137,6 +141,13 @@ const updateTermsAndPoliciesSuccess = (state, { payload }) => {
         : JSON.parse(payload.has_accepted_terms || ''),
   };
 };
+const fetchSettingLogoSuccess = (state, { payload }) => {
+  console.log('12345');
+  return {
+    ...state,
+    data: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const authenticationReducer = createReducer(
@@ -161,6 +172,10 @@ export const authenticationReducer = createReducer(
         AuthenticationActions.updateTermsAndPoliciesSuccess,
         updateTermsAndPoliciesSuccess
       )
-      .addCase(AuthenticationActions.setCurrentUser, setCurrentUser);
+      .addCase(AuthenticationActions.setCurrentUser, setCurrentUser)
+      .addCase(
+        AuthenticationActions.fetchSettingLogoSuccess,
+        fetchSettingLogoSuccess
+      );
   }
 );

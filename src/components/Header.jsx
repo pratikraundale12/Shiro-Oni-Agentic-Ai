@@ -233,6 +233,7 @@ const ProfileDropdown = () => {
         const loginUrl =
           currentUser?.role === 'superadmin' ? '/admin/login' : '/login';
         dispatch(AuthenticationActions.logout({ url: loginUrl }));
+        dispatch(AuthenticationActions.fetchSettingLogo());
       },
     },
   ];
