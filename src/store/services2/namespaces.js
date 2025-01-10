@@ -37,6 +37,7 @@ export const namespacesAPI = api => {
     clusterId,
     namespaceId,
     localOnly,
+    use_service_account,
   }) => {
     const url =
       namespaceId &&
@@ -47,7 +48,9 @@ export const namespacesAPI = api => {
             window?.location?.pathname != '/controller-service' &&
             localOnly
           ? `controller-services/${clusterId}/namespace/${namespaceId}?localOnly=true`
-          : `controller-services/${clusterId}/namespace`;
+          : use_service_account
+            ? `controller-services/${clusterId}/namespace?use_service_account=true`
+            : `controller-services/${clusterId}/namespace`;
 
     return api.get(url);
   };
