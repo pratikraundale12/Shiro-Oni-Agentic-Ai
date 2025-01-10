@@ -14,7 +14,7 @@ import {
   UserIcon,
 } from '../../assets';
 import { history } from '../../helpers/history';
-import favicon from '../../assets/images/favicon.ico';
+import favicon from '../../assets/images/default-favicon.ico';
 import {
   EMAIL_REGEX,
   EMAIL_REMINDER_OPTIONS,
@@ -347,7 +347,6 @@ export const Setting = () => {
     }
     // window.location.reload();
   };
-
   useEffect(() => {
     if (settingData) {
       if (settingData?.favicon) {
@@ -547,7 +546,7 @@ export const Setting = () => {
             <UploadField
               name="favicon"
               label="Favicon"
-              labelWarning="(allowed: ico)"
+              labelWarning="(allowed: ico, png)"
               control={control}
               icon={<LogoFieldIcon />}
               rightIcon={<UploadIcon />}

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
@@ -12,7 +12,6 @@ import {
   AuthenticationSelectors,
   LoadingSelectors,
 } from '../store';
-import { SettingsActions, SettingsSelectors } from '../store/settings';
 
 const Container = styled.div`
   width: 100%;
@@ -43,7 +42,6 @@ const Wrapper = styled.div`
 
 const AuthGuard = () => {
   const dispatch = useDispatch();
-  const intervalRef = useRef(null);
 
   const isLoggedIn = useSelector(AuthenticationSelectors.getIsLoggedIn);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -53,7 +51,6 @@ const AuthGuard = () => {
 
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const settingsData = useSelector(SettingsSelectors.getSettings);
 
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(
     currentUser.has_accepted_terms || false
@@ -62,23 +59,9 @@ const AuthGuard = () => {
     AuthenticationSelectors.getHasTermsAndPoliciesAccepted
   );
 
-  const refreshState = settingsData?.refresh;
-
   const handleOpenSidebar = () => {
     setIsOpenSidebar(!isOpenSidebar);
   };
-
-  useEffect(() => {
-    if (refreshState !== 0) {
-      intervalRef.current = setInterval(() => {
-        dispatch(SettingsActions.refreshSetting());
-      }, refreshState);
-    } else {
-      clearInterval(intervalRef.current);
-    }
-
-    return () => clearInterval(intervalRef.current);
-  }, [dispatch, refreshState]);
 
   useEffect(() => {
     dispatch(AuthenticationActions.fetchCurrentUser());
