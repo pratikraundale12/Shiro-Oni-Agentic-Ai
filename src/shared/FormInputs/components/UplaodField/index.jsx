@@ -207,17 +207,16 @@ const UploadField = ({
             if (
               name === 'favicon' &&
               file.type !== 'image/x-icon' &&
-              file.type !== 'image/vnd.microsoft.icon'
+              file.type !== 'image/vnd.microsoft.icon' &&
+              file.type !== 'image/png'
             ) {
-              toast.error('Please upload a valid favicon file (.ico)');
-              // setFileError('Invalid file type for favicon');
+              toast.error('Please upload a valid favicon file (.ico or .png)');
               return;
             } else if (
               name === 'logo' &&
               !['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
             ) {
               toast.error('Please upload a valid image file (jpg, png, jpeg)');
-              // setFileError('Invalid file type for logo');
               return;
             }
 
