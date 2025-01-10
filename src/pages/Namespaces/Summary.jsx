@@ -38,8 +38,8 @@ import {
 import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymentModal';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
-import NamespaceDeploy from './NamespaceDeploy';
 import { DuplicateScheduleModal } from './DuplicateScheduleModal';
+import NamespaceDeploy from './NamespaceDeploy';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -520,21 +520,6 @@ const Summary = () => {
     }
 
     return;
-    if (confirmDialogue.forPopup) {
-      dispatch(
-        NamespacesActions.updateNamespaceStatus(confirmDialogue?.action)
-      );
-    } else {
-      setActiveButton(confirmDialogue.action);
-      setFlowControlButtons(confirmDialogue.action);
-    }
-
-    setConfirmDialogue({
-      state: false,
-      action: '',
-      text: '',
-      forPopup: false,
-    });
   };
 
   const handleFlowConfirmPopup = status => {
@@ -1244,6 +1229,7 @@ const Summary = () => {
           processStatus={processStatus}
           setActiveButtonPopup={setActiveButtonPopup}
           handleFlowConfirmPopup={handleFlowConfirmPopup}
+          type={type}
         />
         <ScheduleNamespaceDeploy
           getScheduleParamerterContext={getScheduleParamerterContext}
