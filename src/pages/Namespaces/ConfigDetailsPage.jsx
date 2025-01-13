@@ -268,9 +268,12 @@ const ConfigDetailsPage = () => {
   const loading1 = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
+  const loadingregistry = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
+  );
   return (
     <div>
-      <FullPageLoader loading={loading1} />
+      <FullPageLoader loading={loading1 || loadingregistry} />
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>

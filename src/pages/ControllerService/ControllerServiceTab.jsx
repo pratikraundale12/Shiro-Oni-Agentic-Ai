@@ -1275,7 +1275,9 @@ const ControllerServiceTab = ({
     setSelectedItemFromList(item);
     setIsModalOpen(true);
     if (selectedCluster?.value) {
-      dispatch(NamespacesActions.getControllerServiceList());
+      dispatch(
+        NamespacesActions.getControllerServiceList({ use_service_ac: true })
+      );
     }
   };
 
@@ -1345,7 +1347,12 @@ const ControllerServiceTab = ({
   );
   const handleToggle = (index, item) => {
     if (!isUpgrade && openIndex !== index && item?.isUpgradeLocal) {
-      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true, namespaceId: item?.instanceIdentifier }));
+      dispatch(
+        NamespacesActions.getControllerServiceList({
+          localOnly: true,
+          namespaceId: item?.instanceIdentifier,
+        })
+      );
     }
     setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
