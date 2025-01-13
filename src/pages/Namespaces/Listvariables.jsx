@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { NoDataIcon, PencilIcon } from '../../assets';
 import {
+  FullPageLoader,
   IconButton,
   LoaderContainer,
   Table,
@@ -12,7 +13,11 @@ import {
 } from '../../components';
 import { KDFM } from '../../constants';
 import { Button, Modal } from '../../shared';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { isEmpty, uniqBy } from 'lodash';
 import { SchedularSelectors } from '../../store/schedular/redux';
 import AddVariables from './AddVariables';
@@ -221,6 +226,9 @@ const Listvariables = ({
     dispatch(NamespacesActions.fetchVariableList());
   }, [dispatch]);
 
+  const variablesLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchVariableList')
+  );
   const closeAddVariablesModal = () => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
     dispatch(NamespacesActions.setVariableContextItem({}));
@@ -248,51 +256,54 @@ const Listvariables = ({
   const toggleCollapsible = () => setIsTableOpen(!isTableOpen);
 
   return (
-    <DataWrapper>
-      <ScrollSetGrey className="scroll-set-grey pe-1">
-        {variablesData && variablesData?.length > 0 ? (
-          <Collapsible
-            title="Variables"
-            isTableOpen={isTableOpen}
-            toggleCollapsible={toggleCollapsible}
-            isAddBtnVisible={false}
-          >
-            <Table
-              data={variablesData || []}
-              columns={COLUMNS}
-              className={'variables-table'}
-              loading={variableLoadingStateAPI}
-            />
-            <Button
-              type="button"
-              disabled={!canWrite}
-              className="w-auto mt-2"
-              size="sm"
-              onClick={handleSubmit}
+    <>
+      <FullPageLoader loading={variablesLoading} />
+      <DataWrapper>
+        <ScrollSetGrey className="scroll-set-grey pe-1">
+          {variablesData && variablesData?.length > 0 ? (
+            <Collapsible
+              title="Variables"
+              isTableOpen={isTableOpen}
+              toggleCollapsible={toggleCollapsible}
+              isAddBtnVisible={false}
             >
-              Save
-            </Button>
-          </Collapsible>
-        ) : (
-          <LoaderContainer>
-            <NoDataIcon width={140} />
-            <NoDataText>No Variables Found!!</NoDataText>
-          </LoaderContainer>
-        )}
+              <Table
+                data={variablesData || []}
+                columns={COLUMNS}
+                className={'variables-table'}
+                loading={variableLoadingStateAPI}
+              />
+              <Button
+                type="button"
+                disabled={!canWrite}
+                className="w-auto mt-2"
+                size="sm"
+                onClick={handleSubmit}
+              >
+                Save
+              </Button>
+            </Collapsible>
+          ) : (
+            <LoaderContainer>
+              <NoDataIcon width={140} />
+              <NoDataText>No Variables Found!!</NoDataText>
+            </LoaderContainer>
+          )}
 
-        {isAddVariablesOpen && (
-          <AddVariables
-            isVariablesModalOpen={isVariablesModalOpen}
-            variableContextItem={variableContextItem}
-            isOpen={isAddVariablesOpen}
-            closePopup={closeAddVariablesModal}
-            isAddVariablesOpen={isAddVariablesOpen}
-            setIsAddVariablesOpen={setIsAddVariablesOpen}
-            setVariablesModalOpen={setVariablesModalOpen}
-          />
-        )}
-      </ScrollSetGrey>
-    </DataWrapper>
+          {isAddVariablesOpen && (
+            <AddVariables
+              isVariablesModalOpen={isVariablesModalOpen}
+              variableContextItem={variableContextItem}
+              isOpen={isAddVariablesOpen}
+              closePopup={closeAddVariablesModal}
+              isAddVariablesOpen={isAddVariablesOpen}
+              setIsAddVariablesOpen={setIsAddVariablesOpen}
+              setVariablesModalOpen={setVariablesModalOpen}
+            />
+          )}
+        </ScrollSetGrey>
+      </DataWrapper>
+    </>
   );
 };
 

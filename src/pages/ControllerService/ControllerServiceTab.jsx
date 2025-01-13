@@ -812,7 +812,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {(isControllerService || stateItem?.properties?.length) && (
+            {(isControllerService || stateItem?.properties?.length > 0) && (
               <>
                 <button
                   className="border-0 bg-white"

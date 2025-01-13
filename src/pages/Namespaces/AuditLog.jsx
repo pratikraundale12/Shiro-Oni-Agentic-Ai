@@ -2,9 +2,18 @@ import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { StatusRender, Table, TextRender } from '../../components';
+import {
+  FullPageLoader,
+  StatusRender,
+  Table,
+  TextRender,
+} from '../../components';
 import { KDFM } from '../../constants';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -67,12 +76,19 @@ const AuditLog = () => {
     dispatch(NamespacesActions.fetchNamespaceAudit());
   }, [dispatch]);
 
+  const auditLogLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchNamespaceAudit')
+  );
+
   return (
-    <DataWrapper>
-      <ScrollSetGrey className="scroll-set-grey pe-1">
-        <Table data={namespaceAuditLog?.data || []} columns={COLUMNS} />
-      </ScrollSetGrey>
-    </DataWrapper>
+    <>
+      <FullPageLoader loading={auditLogLoading} />
+      <DataWrapper>
+        <ScrollSetGrey className="scroll-set-grey pe-1">
+          <Table data={namespaceAuditLog?.data || []} columns={COLUMNS} />
+        </ScrollSetGrey>
+      </DataWrapper>
+    </>
   );
 };
 
