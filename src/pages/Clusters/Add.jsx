@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -354,6 +355,7 @@ export const Add = () => {
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'clusters')
   );
+  const [saveButtonEnable, setSaveButtonEnable] = useState(true);
   const filteredGridData = gridData.filter(item => {
     return item?.nifi_url !== data?.nifi_url;
   });
@@ -676,7 +678,6 @@ export const Add = () => {
     const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
     setTags(updatedTags.join(','));
   }
-
   const testData = async () => {
     setLoading(true);
     const payload = new FormData();
@@ -714,16 +715,33 @@ export const Add = () => {
     }
   };
   const checkEditSave = () => {
-    if (
+    return (
       data?.tag === tags &&
       data?.approver_enable === approverEnable &&
       data?.notification_enable === notificationEnable
-    ) {
-      return true;
-    } else {
-      false;
-    }
+    );
   };
+
+  useEffect(() => {
+    if (checkEditSave()) {
+      setSaveButtonEnable(true);
+    } else {
+      setSaveButtonEnable(false);
+    }
+  }, [data, tags, approverEnable, notificationEnable]);
+  // const checkEditSave = () => {
+  //   if (
+  //     data?.tag === tags &&
+  //     data?.approver_enable === approverEnable &&
+  //     data?.notification_enable === notificationEnable
+  //   ) {
+  //     setSaveButtonEnable(true);
+  //     return true;
+  //   } else {
+  //     setSaveButtonEnable(false);
+  //     false;
+  //   }
+  // };
 
   return (
     <Wrapper>
@@ -745,16 +763,35 @@ export const Add = () => {
           >
             {KDFM.CLUSTER_DETAILS}
           </NavButton>
-          <NavButton
-            active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
-            onClick={() =>
-              Object.keys(data || {})?.length
-                ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
-                : {}
-            }
-          >
-            {KDFM.REGISTRY_DETAILS}
-          </NavButton>
+          <>
+            <NavButton
+              active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
+              onClick={() =>
+                Object.keys(data || {})?.length
+                  ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
+                  : {}
+              }
+              disabled={watchedFields?.[1] !== data?.nifi_url}
+              data-tooltip-id="navButtonTooltip"
+            >
+              {KDFM.REGISTRY_DETAILS}
+            </NavButton>
+
+            {watchedFields?.[1] !== data?.nifi_url && (
+              <ReactTooltip
+                id="navButtonTooltip"
+                place="right"
+                effect="solid"
+                content="You have unsaved changes on Cluster Details"
+                style={{
+                  whiteSpace: 'normal',
+                  zIndex: 9999,
+                }}
+                event="focus"
+                eventOff="blur"
+              />
+            )}
+          </>
         </NavTabs>
 
         {activeTab === CLUSTER_MODULE_TABS.CLUSTER && (
@@ -772,7 +809,7 @@ export const Add = () => {
               register={register}
               icon={<LinkIcon />}
               label={KDFM.NIFI_URL}
-              disabled={testSuccess || data?.id}
+              disabled={testSuccess}
               placeholder={KDFM.ENTER_NIFI_URL}
               errors={errors}
             />
@@ -860,9 +897,10 @@ export const Add = () => {
                     <Button
                       onClick={() => setIsCertificateOpen(true)}
                       disabled={
-                        clusterId
-                          ? true
-                          : testSuccess || !dataFill || checkDuplicate
+                        testSuccess ||
+                        !dataFill ||
+                        checkDuplicate ||
+                        watchedFields?.[1] === data?.nifi_url
                       }
                     >
                       {KDFM.ADD_CERTIFICATE}
@@ -874,9 +912,10 @@ export const Add = () => {
                     <Button
                       onClick={() => setIsCredOpen(true)}
                       disabled={
-                        clusterId
-                          ? true
-                          : testSuccess || !dataFill || checkDuplicate
+                        testSuccess ||
+                        !dataFill ||
+                        checkDuplicate ||
+                        watchedFields?.[1] === data?.nifi_url
                       }
                     >
                       {KDFM.ENTER_CREDENTIALS}
@@ -1037,7 +1076,9 @@ export const Add = () => {
                 newRegistry
                   ? !testSuccess
                   : clusterId
-                    ? watchedFields?.[0] === data?.name && checkEditSave()
+                    ? watchedFields?.[0] === data?.name &&
+                      checkEditSave() &&
+                      saveButtonEnable
                     : !testSuccess
               }
             >
@@ -1078,6 +1119,7 @@ export const Add = () => {
         clusterData={clusterData}
         registryData={registryData}
         setSuccessModal={setSuccessModal}
+        setSaveButtonEnable={setSaveButtonEnable}
       />
       <SummaryModal
         clusterData={clusterData}
