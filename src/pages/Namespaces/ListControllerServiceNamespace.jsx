@@ -184,6 +184,7 @@ export const ListControllerService = () => {
           selectedItemFromList?.state == 'DISABLED' ? 'ENABLED' : 'DISABLED',
         version: selectedItemFromList?.version,
         id: selectedItemFromList?.id,
+        isFromPgDetails: true,
       })
     );
     setTimeout(() => {
@@ -196,6 +197,7 @@ export const ListControllerService = () => {
       NamespacesActions.deleteControllerService({
         version: selectedItemFromList?.version,
         id: selectedItemFromList?.id,
+        isFromPgDetails: true,
       })
     );
 
@@ -445,9 +447,10 @@ export const ListControllerService = () => {
         }}
       />
 
-      <AddControllerServiceModal />
+      <AddControllerServiceModal isFromPgDetails={true} />
 
       <ConfigControllerService
+        isFromPgDetails={true}
         isOpen={isListProprtyModel}
         onClose={handleCloseModal}
         selectedItemFromList={selectedItemFromList}

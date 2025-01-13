@@ -31,8 +31,9 @@ export const ConfigControllerService = ({
   setUpdatedData,
   isFromControllerServiceTab,
   handlePropertyUpdate,
-  isFromExternalService,
+  isFromExternalService = false,
   versionList,
+  isFromPgDetails = false,
 }) => {
   const dispatch = useDispatch();
 
@@ -148,10 +149,17 @@ export const ConfigControllerService = ({
     } else {
       dispatch(NamespacesActions.addPropertyControllerService(payload));
       onClose();
-      !isFromExternalService &&
+      if (!isFromExternalService && !isFromPgDetails) {
         setTimeout(() => {
           dispatch(NamespacesActions.getControllerServiceList());
         }, 500);
+      } else if (isFromPgDetails) {
+        setTimeout(() => {
+          dispatch(
+            NamespacesActions.getControllerServiceList({ localOnly: true })
+          );
+        }, 500);
+      }
     }
     setUpdatedData([]);
   };

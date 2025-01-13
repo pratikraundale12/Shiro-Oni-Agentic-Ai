@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { ArrowIcon, NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
 import {
   EnhancedTextRender,
+  FullPageLoader,
   IconButton,
   LoaderContainer,
   Table,
@@ -15,7 +16,11 @@ import {
 } from '../../components';
 import { KDFM } from '../../constants';
 import { Button } from '../../shared';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { SchedularSelectors } from '../../store/schedular/redux';
 import AddParameterContext from './AddParameterContext';
 import Collapsible from './Collapsible';
@@ -377,52 +382,58 @@ const ParameterContext = ({
     }
   };
   const toggleCollapsible = () => setIsTableOpen(!isTableOpen);
+  const pcLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchParameterContext')
+  );
   return (
-    <DataWrapper>
-      <ScrollSetGrey className="scroll-set-grey pe-1">
-        {tableStateData && tableStateData.length > 0 ? (
-          <Collapsible
-            title={KDFM.PARAMETER_CONTEXT}
-            isTableOpen={isTableOpen}
-            toggleCollapsible={toggleCollapsible}
-            isAddBtnVisible={false}
-          >
-            <ParameterTable>
-              <Table
-                data={tableStateData}
-                columns={COLUMNS}
-                className={'parameter-context-table'}
-              />
-            </ParameterTable>
-            <Button
-              type="button"
-              className="w-auto mt-2"
-              size="sm"
-              onClick={handleSaveParameterContext}
-              disabled={!canWrite}
+    <>
+      <FullPageLoader loading={pcLoading} />
+      <DataWrapper>
+        <ScrollSetGrey className="scroll-set-grey pe-1">
+          {tableStateData && tableStateData.length > 0 ? (
+            <Collapsible
+              title={KDFM.PARAMETER_CONTEXT}
+              isTableOpen={isTableOpen}
+              toggleCollapsible={toggleCollapsible}
+              isAddBtnVisible={false}
             >
-              Save
-            </Button>
+              <ParameterTable>
+                <Table
+                  data={tableStateData}
+                  columns={COLUMNS}
+                  className={'parameter-context-table'}
+                />
+              </ParameterTable>
+              <Button
+                type="button"
+                className="w-auto mt-2"
+                size="sm"
+                onClick={handleSaveParameterContext}
+                disabled={!canWrite}
+              >
+                Save
+              </Button>
 
-            <AddParameterContext
-              key={isParameterContextOpen.mode}
-              isParameterContextOpen={isParameterContextOpen}
-              parameterContextItem={parameterContextItem}
-              isAddParameterContextOpen={isAddParameterContextOpen}
-              closePopup={closeAddParameterContext}
-              setIsAddParameterContextOpen={setIsAddParameterContextOpen}
-              setIsParameterContextOpen={setIsParameterContextOpen}
-            />
-          </Collapsible>
-        ) : (
-          <LoaderContainer>
-            <NoDataIcon width={140} />
-            <NoDataText>No Parameter Context Found!!</NoDataText>
-          </LoaderContainer>
-        )}
-        <RefreshModal refreshItem={refreshItem} />
-      </ScrollSetGrey>
-    </DataWrapper>
+              <AddParameterContext
+                key={isParameterContextOpen.mode}
+                isParameterContextOpen={isParameterContextOpen}
+                parameterContextItem={parameterContextItem}
+                isAddParameterContextOpen={isAddParameterContextOpen}
+                closePopup={closeAddParameterContext}
+                setIsAddParameterContextOpen={setIsAddParameterContextOpen}
+                setIsParameterContextOpen={setIsParameterContextOpen}
+              />
+            </Collapsible>
+          ) : (
+            <LoaderContainer>
+              <NoDataIcon width={140} />
+              <NoDataText>No Parameter Context Found!!</NoDataText>
+            </LoaderContainer>
+          )}
+          <RefreshModal refreshItem={refreshItem} />
+        </ScrollSetGrey>
+      </DataWrapper>
+    </>
   );
 };
 
