@@ -232,7 +232,8 @@ const NamespaceDeploy = ({
               Process Group Successfully&nbsp;
               {deployByRegistryFlow
                 ? `Deployed To ${currentSelectedCluster.label}`
-                : `${type.charAt(0).toUpperCase() + type.slice(1)} To ${currentSelectedCluster.label}`}
+                : `${type.charAt(0).toUpperCase() + type.slice(1)}d
+                To ${currentSelectedCluster.label}`}
             </ModalHFive>
           </div>
           <RowModal>
