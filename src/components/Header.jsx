@@ -297,6 +297,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
       dispatch(
         GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
+      dispatch(NamespacesActions.setSelectedNamespace({}));
     }
     if (window.location.pathname !== '/clusters') {
       dispatch(GridActions.fetchGridSuccess({ module: 'clusters', data: {} }));

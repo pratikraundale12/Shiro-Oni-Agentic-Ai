@@ -74,9 +74,6 @@ export const ListNamespaces = () => {
   const dispatch = useDispatch();
   const { setState } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
-  useEffect(() => {
-    dispatch(NamespacesActions.resetDeployData());
-  }, []);
 
   const sortFns = {
     name: array => sortByNameWithVersionFilter(array),
@@ -117,7 +114,6 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setFlowControlStateAtScheduleDeploy(null));
     dispatch(NamespacesActions.setRegistryFlowXCord(null));
     dispatch(NamespacesActions.setRegistryFlowYCord(null));
-    dispatch(NamespacesActions.setSelectedNamespace({}));
     dispatch(NamespacesActions.setFlowControlAfterDeploy(false));
   }, []);
 
@@ -309,7 +305,10 @@ export const ListNamespaces = () => {
       renderCell: item => (
         <div className="d-flex align-self-end gap-2">
           <button
-            onClick={() => history.push(`/process-group/${item.id}`)}
+            onClick={() => {
+              history.push(`/process-group/${item.id}`);
+              dispatch(NamespacesActions.setSelectedNameSpaceForDetail(item));
+            }}
             style={{
               background: 'none',
               border: 'none',
