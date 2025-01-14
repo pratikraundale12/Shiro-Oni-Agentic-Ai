@@ -78,7 +78,6 @@ const ParameterContext = ({
     NamespacesSelectors.getParameterContextItem
   );
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
-  console.log(parameterDetails?.permissions?.canWrite, 'parameterDetails');
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getRegistryDeployResponseData
   );
@@ -88,6 +87,7 @@ const ParameterContext = ({
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
+
   const copyParameterDetailsData =
     parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] ||
     parameterDetails?.[singleNamespaceData?.parameterContextId] ||
@@ -155,7 +155,6 @@ const ParameterContext = ({
   };
 
   const permissions = singleNamespaceData?.permissions;
-  console.log(parameterDetails?.permissions, 'permissions');
   const { canWrite } = permissions || {};
 
   const COLUMNS = [
@@ -323,6 +322,15 @@ const ParameterContext = ({
       dispatch(NamespacesActions.setNamespaceSummaryLoadingState(false));
       dispatch(NamespacesActions.fetchParameterContext());
     }, 1000);
+    setSelectedParentContextId('');
+    if (isParentEdit?.parent) {
+      dispatch(
+        NamespacesActions.setParameterEditParent({
+          parent: false,
+          id: '',
+        })
+      );
+    }
   };
 
   selectedParentContextId;
