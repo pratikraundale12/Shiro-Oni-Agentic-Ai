@@ -730,7 +730,7 @@ export function* getControllerServiceList(api, action) {
           ? namespaceIdentifier
           : selectedNamespaceId?.id || selectedNamespace?.id,
         localOnly: isLocalOnly,
-        use_service_account,
+        use_service_account: use_service_account,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
@@ -774,7 +774,11 @@ export function* getAllControllerServiceListToAdd(api) {
 
 export function* addControllerServiceRootLevel(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-
+  let fromPgDetailsPage = false;
+  if (payload) {
+    const { isFromPgDetails } = payload;
+    fromPgDetailsPage = isFromPgDetails;
+  }
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -800,7 +804,13 @@ export function* addControllerServiceRootLevel(api, { payload }) {
   });
   if (response.ok) {
     toast.success(' Added Controller Service Successfully');
-    yield put(NamespacesActions.getControllerServiceList());
+    if (fromPgDetailsPage) {
+      yield put(
+        NamespacesActions.getControllerServiceList({ localOnly: true })
+      );
+    } else {
+      yield put(NamespacesActions.getControllerServiceList());
+    }
     yield put(NamespacesActions.setNewlyAddedExternalServiceCS(response?.data));
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
@@ -941,7 +951,11 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
 
 export function* changeStatusControllerService(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const { id, ...rest } = payload;
+  let fromPgDetailsPage = false;
+  const { id, isFromPgDetails, ...rest } = payload;
+  if (payload) {
+    fromPgDetailsPage = isFromPgDetails;
+  }
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -965,7 +979,9 @@ export function* changeStatusControllerService(api, { payload }) {
   if (response.ok) {
     toast.success('Status updated Successfully');
     yield delay(400);
-    yield put(NamespacesActions.getControllerServiceList());
+    if (!fromPgDetailsPage) {
+      yield put(NamespacesActions.getControllerServiceList());
+    }
     yield put(NamespacesActions.setChangeStatusCSRespone(response));
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
@@ -975,7 +991,11 @@ export function* changeStatusControllerService(api, { payload }) {
 
 export function* deleteControllerService(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const { id, ...rest } = payload;
+  let fromPgDetailsPage = false;
+  const { id, isFromPgDetails, ...rest } = payload;
+  if (payload) {
+    fromPgDetailsPage = isFromPgDetails;
+  }
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -999,7 +1019,9 @@ export function* deleteControllerService(api, { payload }) {
   if (response.ok) {
     toast.success('Controller service deleted Successfully');
     yield delay(100);
-    yield put(NamespacesActions.getControllerServiceList());
+    if (!fromPgDetailsPage) {
+      yield put(NamespacesActions.getControllerServiceList());
+    }
   } else {
     toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
   }
@@ -1251,7 +1273,9 @@ export function* upgradeCluster(api, { payload }) {
   }
 
   if (!response.ok) {
-    toast.error(response.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.data?.message || KDFM.SOMETHING_WENT_WRONG, {
+      autoClose: 5000,
+    });
   }
 }
 

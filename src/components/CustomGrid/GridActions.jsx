@@ -219,12 +219,15 @@ export const GridActions = ({
     setIsButtonDisabled(isEmpty(selectedCluster?.value));
   }, [selectedCluster]);
 
+  const selecedNamespaceDetails = useSelector(
+    NamespacesSelectors.getSelectedNameSpaceForDetail
+  );
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
     dispatch(GridSagsActions.fetchGrid({ module, clusterId, params: {} }));
     if (!isEmpty(selectedCluster) && breadcrumbs?.length > 1) {
       const payload = {
-        selectedNamespace: selectedNamespace,
+        selectedNamespace: selecedNamespaceDetails,
       };
       dispatch(
         DashboardActions.fetchDashboard({
@@ -272,10 +275,6 @@ export const GridActions = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchStatus, entity, event, search, selectedRange]);
-
-  const selectedNamespace = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
   const [canWrite, setCanWrite] = useState(false); // State to store canWrite value
   const gridPermissions = useSelector(state =>
     GridSelectors.getGridDataPermissions(state, module)

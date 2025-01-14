@@ -4,9 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CrossIcon, SmallSearchIcon } from '../../assets';
-import { Table } from '../../components';
+import { FullPageLoader, Table } from '../../components';
 import { Modal } from '../../shared';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { theme } from '../../styles';
 
 const TextDisplay = styled.div`
@@ -84,6 +88,7 @@ const AddControllerServiceModal = ({
   setIsAddedViaAdd,
   handleSubmitData,
   isFromControllerServiceTab = false,
+  isFromPgDetails = false,
 }) => {
   const newlyAddedExternalServiceResponse = useSelector(
     NamespacesSelectors.getNewlyAddedExternalServiceCS
@@ -101,7 +106,9 @@ const AddControllerServiceModal = ({
   const closeModal = () => {
     dispatch(NamespacesActions.setIsAddControllerServiceModal(false));
   };
-
+  const csLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'getAllControllerServiceToAdd')
+  );
   useEffect(() => {
     if (modalOpenState) {
       dispatch(NamespacesActions.getAllControllerServiceListToAdd());
@@ -163,6 +170,7 @@ const AddControllerServiceModal = ({
     const { name, type, bundle } = selectedItem;
     dispatch(
       NamespacesActions.addControllerServiceRootLevel({
+        isFromPgDetails,
         isFromControllerServiceTab,
         name,
         type,
@@ -173,6 +181,7 @@ const AddControllerServiceModal = ({
   };
   return (
     <>
+      <FullPageLoader loading={csLoading} />
       <Modal
         title="Add Controller Service"
         isOpen={modalOpenState}
