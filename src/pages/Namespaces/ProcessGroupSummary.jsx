@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets';
 import { KDFM } from '../../constants';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { NamespacesActions } from '../../store';
+import {
+  GridSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import AuditLog from './AuditLog';
 import FlowControl from './FlowControl';
 import ListControllerService from './ListControllerServiceNamespace';
@@ -88,9 +92,21 @@ const TabContent = styled.div`
 `;
 
 const ConfigDetailsPage = () => {
+  const location = useLocation();
+  const [idFromUrl, setIdFromUrl] = useState(null);
+  useEffect(() => {
+    const match = location?.pathname.match(/process-group\/([a-f0-9-]+)/);
+    if (match) {
+      const id = match[1];
+      setIdFromUrl(id);
+    } else {
+      setIdFromUrl(null);
+    }
+  }, [location?.pathname]);
+
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
-    { label: 'Process Group Details', path: '/process-group/deployPage' },
+    { label: 'Process Group Details', path: `/process-group/${idFromUrl}` },
   ];
   const [variablesModalOpen, setVariablesModalOpen] = useState(false);
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
@@ -108,7 +124,12 @@ const ConfigDetailsPage = () => {
     dispatch(NamespacesActions.setSourceNamespaceId(id));
     dispatch(NamespacesActions.singleNamespaceData(id));
   }, [id]);
-
+  const breadcrumbs = useSelector(state =>
+    GridSelectors.getGridBreadcrumb(state, 'namespaces')
+  );
+  const selectedNamespaceForDetail = useSelector(
+    NamespacesSelectors.getSelectedNameSpaceForDetail
+  );
   //need to add the components for respective tabs
   const renderContent = () => {
     switch (activeTab) {
@@ -142,22 +163,26 @@ const ConfigDetailsPage = () => {
         return null;
     }
   };
-
   return (
     <div>
+      {breadcrumbs.length === 1 && (
+        <BreadcrumbContainer className="d-flex  mb-3">
+          <Breadcrumb module="upgrade" path={breadcrumbData} />
+        </BreadcrumbContainer>
+      )}
+      <div className="mb-2 ps-1">
+        <Breadcrumb module={'namespaces'} fromDetailPage={true} />
+      </div>
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {KDFM.DEPLOY_NAMESPACE}
+            {KDFM.PROCESS_GROUP_DETAILS}: {selectedNamespaceForDetail?.name}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
-      <BreadcrumbContainer className="d-flex  mb-3">
-        <Breadcrumb module="upgrade" path={breadcrumbData} />
-      </BreadcrumbContainer>
       <GreyBoxNamespace className="w-100  mb-3">
         <TabWrapper className="nav">
           <Tab
