@@ -12,9 +12,10 @@ export function* fetchGrid(
   { payload: { module = '', clusterId, params, refresh = false } }
 ) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const selectedNamespace = yield select(
-    NamespacesSelectors.getSelectedNamespace
+  const selecedNamespaceDetails = yield select(
+    NamespacesSelectors.getSelectedNameSpaceForDetail
   );
+
   const selectedDestCluster = yield select(
     NamespacesSelectors.getSelectedDestCluster
   );
@@ -40,7 +41,7 @@ export function* fetchGrid(
   if (module === 'namespaces') {
     queryParams = {
       clusterId: selectedCluster?.value || '',
-      namespaceId: selectedNamespace?.value || '',
+      namespaceId: selecedNamespaceDetails?.value || '',
     };
     const clustersToken = JSON.parse(
       localStorage.getItem(CLUSTERS_TOKEN) || '[]'
