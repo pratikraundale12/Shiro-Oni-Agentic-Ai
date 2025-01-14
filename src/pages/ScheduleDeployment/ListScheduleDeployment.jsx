@@ -189,47 +189,70 @@ export const ListScheduleDeployment = () => {
       <ActionTd>
         {currentUserData?.role === 'superadmin' && (
           <>
-            {item?.state === 'PENDING' && (
+            {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
               <>
-                {RejectIconRender(item)}
-                {ApprovIconRender(item)}
+                {item?.state === 'PENDING' && (
+                  <>
+                    {RejectIconRender(item)}
+                    {ApprovIconRender(item)}
+                  </>
+                )}
+                {(item?.state === 'PENDING' || item?.state === 'TIME_LAPSED') &&
+                  currentUser?.id === item?.deployer_id && (
+                    <>{editIconRender(item)}</>
+                  )}
+                {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
               </>
             )}
-            {(item?.state === 'PENDING' || item?.state === 'TIME_LAPSED') &&
-              currentUser?.id === item?.deployer_id && (
-                <>{editIconRender(item)}</>
-              )}
-            {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
+            {item?.action_by === 'NO_APPROVER_REQUIRED' &&
+              item?.state === 'PENDING' && <>{stopIconRender(item)}</>}
           </>
         )}
+        {/* NON SUPERADMIN + SCHEDULAR + NOT IN APPROVER GROUP */}
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id === item?.deployer_id &&
           !item?.groupUsersData.some(
             ele => ele?.id === currentUserData?.id
           ) && (
             <>
-              {(item?.state === 'PENDING' || item?.state === 'TIME_LAPSED') && (
-                <>{editIconRender(item)}</>
+              {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
+                <>
+                  {(item?.state === 'PENDING' ||
+                    item?.state === 'TIME_LAPSED') && (
+                    <>{editIconRender(item)}</>
+                  )}
+                </>
               )}
+              {item?.action_by === 'NO_APPROVER_REQUIRED' &&
+                item?.state === 'PENDING' && <>{editIconRender(item)}</>}
             </>
           )}
+        {/* NON SUPERADMIN + SCHEDULAR + IN APPROVER GROUP */}
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id === item?.deployer_id &&
           item?.groupUsersData.some(ele => ele?.id === currentUserData?.id) && (
             <>
-              {item?.state === 'PENDING' && (
+              {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
                 <>
-                  {editIconRender(item)}
-                  {RejectIconRender(item)}
-                  {ApprovIconRender(item)}
+                  {item?.state === 'PENDING' && (
+                    <>
+                      {editIconRender(item)}
+                      {RejectIconRender(item)}
+                      {ApprovIconRender(item)}
+                    </>
+                  )}
+                  {item?.state === 'TIME_LAPSED' && <>{editIconRender(item)}</>}
+                  {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
                 </>
               )}
-              {item?.state === 'TIME_LAPSED' && <>{editIconRender(item)}</>}
-              {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
+              {item?.action_by === 'NO_APPROVER_REQUIRED' &&
+                item?.state === 'PENDING' && <>{editIconRender(item)}</>}
             </>
           )}
+        {/* NON SUPERADMIN + NON SCHEDULAR + IN APPROVER GROUP */}
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id !== item?.deployer_id &&
+          item?.action_by !== 'NO_APPROVER_REQUIRED' &&
           item?.groupUsersData.some(ele => ele?.id === currentUserData?.id) && (
             <>
               {item?.state === 'PENDING' && (
@@ -282,12 +305,8 @@ export const ListScheduleDeployment = () => {
     {
       label: 'Approver group/Approver',
       renderCell: item =>
-        isEmpty(item?.approver_group) ? (
-          <TextWithPhotoRender
-            item={item}
-            content={item?.approvers}
-            currentUser={currentUser}
-          />
+        item?.action_by === 'NO_APPROVER_REQUIRED' ? (
+          <StatusText text={'No Approver Required'} item={item} />
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
