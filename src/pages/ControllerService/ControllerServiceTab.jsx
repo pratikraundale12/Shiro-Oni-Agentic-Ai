@@ -1355,6 +1355,7 @@ const ControllerServiceTab = ({
       dispatch(
         NamespacesActions.getControllerServiceList({
           use_service_ac: true,
+          is_from_toggle: true,
           localOnly: true,
           namespaceId: item?.instanceIdentifier,
         })

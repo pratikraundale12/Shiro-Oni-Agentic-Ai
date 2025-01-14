@@ -38,20 +38,27 @@ export const namespacesAPI = api => {
     namespaceId,
     localOnly,
     use_service_account,
+    is_from_toggle,
   }) => {
     const url =
       namespaceId &&
+      use_service_account &&
+      is_from_toggle &&
       window?.location?.pathname != '/controller-service' &&
       !localOnly
-        ? `controller-services/${clusterId}/namespace/${namespaceId}`
+        ? `controller-services/${clusterId}/namespace/${namespaceId}?use_service_account=true`
         : namespaceId &&
             window?.location?.pathname != '/controller-service' &&
-            localOnly
+            localOnly &&
+            !use_service_account
           ? `controller-services/${clusterId}/namespace/${namespaceId}?localOnly=true`
-          : use_service_account &&
-              window?.location?.pathname != '/controller-service'
-            ? `controller-services/${clusterId}/namespace?use_service_account=true`
-            : `controller-services/${clusterId}/namespace`;
+          : is_from_toggle && localOnly && use_service_account
+            ? `controller-services/${clusterId}/namespace/${namespaceId}?localOnly=true&use_service_account=true`
+            : use_service_account &&
+                !is_from_toggle &&
+                window?.location?.pathname != '/controller-service'
+              ? `controller-services/${clusterId}/namespace?use_service_account=true`
+              : `controller-services/${clusterId}/namespace`;
     return api.get(url);
   };
 

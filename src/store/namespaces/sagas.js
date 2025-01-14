@@ -697,12 +697,14 @@ export function* getControllerServiceList(api, action) {
   let isLocalOnly = false;
   let namespaceIdentifier = '';
   let use_service_account = false;
-
+  let isFromToggle = false;
   if (action.payload) {
-    const { localOnly, namespaceId, use_service_ac } = action.payload;
+    const { localOnly, namespaceId, use_service_ac, is_from_toggle } =
+      action.payload;
     isLocalOnly = localOnly;
     namespaceIdentifier = namespaceId;
     use_service_account = use_service_ac;
+    isFromToggle = is_from_toggle;
   }
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
@@ -718,15 +720,17 @@ export function* getControllerServiceList(api, action) {
     NamespacesSelectors.getSelectedNamespace
   );
   let namespaceId = '';
-  if (use_service_account === true) {
+  if (use_service_account === true && !isFromToggle) {
     namespaceId = '';
-  } else if (namespaceIdentifier?.length && !use_service_account) {
+  } else if (namespaceIdentifier?.length && (isFromToggle || isLocalOnly)) {
     namespaceId = namespaceIdentifier;
   } else if (
     (selectedNamespaceId?.id || selectedNamespace?.id) &&
-    !use_service_account
+    (isFromToggle || isLocalOnly)
   ) {
-    namespaceId = selectedNamespaceId?.id || selectedNamespace?.id;
+    namespaceId = selectedNamespaceId?.id
+      ? selectedNamespaceId?.id
+      : selectedNamespace?.id;
   }
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -740,6 +744,7 @@ export function* getControllerServiceList(api, action) {
         namespaceId: namespaceId,
         localOnly: isLocalOnly,
         use_service_account: use_service_account,
+        is_from_toggle: isFromToggle,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
