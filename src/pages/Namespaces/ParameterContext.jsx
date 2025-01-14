@@ -238,7 +238,8 @@ const ParameterContext = ({
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {item.parentParameterId ===
-            (deployOrUpgradeDetails?.parameterContextId ||
+            (selectedParentContextId ||
+              deployOrUpgradeDetails?.parameterContextId ||
               singleNamespaceData?.parameterContextId) ||
           !has(item, 'parentParameterId') ? (
             <IconButton
@@ -266,6 +267,7 @@ const ParameterContext = ({
                       NamespacesActions.setParameterEditParent({
                         parent: false,
                         id:
+                          selectedParentContextId ||
                           deployOrUpgradeDetails?.parameterContextId ||
                           singleNamespaceData?.parameterContextId,
                       })
