@@ -25,9 +25,11 @@ const DateRangePickerInput = ({ value, handleChange, customRanges }) => {
           value={value}
           onChange={handleChange}
           placeholder="Select Deployment Schedule Range"
-          style={{ width: 300 }}
+          style={{ width: 280 }}
           ranges={customRanges}
           disabledDate={disabledDate}
+          showOneCalendar
+          size="md"
         />
       </ContainerRangePicker>
     </>

@@ -333,6 +333,7 @@ export const GridActions = ({
         new Date(new Date().setDate(new Date().getDate() - 1)),
         new Date(),
       ],
+      placement: 'left',
     },
     {
       label: 'Last 7 Days',
@@ -340,6 +341,7 @@ export const GridActions = ({
         new Date(new Date().setDate(new Date().getDate() - 7)),
         new Date(),
       ],
+      placement: 'left',
     },
     {
       label: 'Last Month',
@@ -347,6 +349,7 @@ export const GridActions = ({
         new Date(new Date().setMonth(new Date().getMonth() - 1)),
         new Date(),
       ],
+      placement: 'left',
     },
     {
       label: 'Last 6 Months',
@@ -354,6 +357,7 @@ export const GridActions = ({
         new Date(new Date().setMonth(new Date().getMonth() - 6)),
         new Date(),
       ],
+      placement: 'left',
     },
   ];
 
