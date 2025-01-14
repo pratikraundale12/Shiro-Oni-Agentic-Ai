@@ -365,7 +365,15 @@ export const Add = () => {
       .string()
       .min(3, 'Cluster Name must be at least 3 characters long')
       .max(30, 'Cluster Name must be at most 30 characters long')
-      .required('Cluster Name is required'),
+      .required('Cluster Name is required')
+      .test(
+        'unique-cluster-name',
+        'Cluster name already exists',
+        function (value) {
+          if (!value) return true;
+          return !filteredGridData?.some(reg => reg.name === value);
+        }
+      ),
     nifiUrl: yup
       .string()
       .url('Enter a valid NiFi URL')
@@ -375,7 +383,6 @@ export const Add = () => {
         return !filteredGridData?.some(reg => reg.nifi_url === value);
       }),
   });
-
   const RegistrySchema = yup.object().shape({
     registryName: yup
       .string()
@@ -525,6 +532,9 @@ export const Add = () => {
   ]);
   const checkDuplicate = filteredGridData?.some(
     reg => reg.nifi_url === watchedFields?.[1]
+  );
+  const checkDuplicateName = filteredGridData?.some(
+    reg => reg.name === watchedFields?.[0]
   );
   const checkDuplicateRegistry = registries?.some(
     reg => reg.registry_url === watchedFields?.[3]
@@ -888,6 +898,7 @@ export const Add = () => {
                         testSuccess ||
                         !dataFill ||
                         checkDuplicate ||
+                        checkDuplicateName ||
                         watchedFields?.[1] === data?.nifi_url
                       }
                     >
@@ -903,6 +914,7 @@ export const Add = () => {
                         testSuccess ||
                         !dataFill ||
                         checkDuplicate ||
+                        checkDuplicateName ||
                         watchedFields?.[1] === data?.nifi_url
                       }
                     >
