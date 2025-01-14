@@ -326,9 +326,10 @@ export function* fetchParameterContext(
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        parameterId:
-          deployOrUpgradeDetails?.parameterContextId ||
-          singleNamespaceData?.parameterContextId,
+        parameterId: parentParameterSelectData?.parent
+          ? parentParameterSelectData?.id
+          : deployOrUpgradeDetails?.parameterContextId ||
+            singleNamespaceData?.parameterContextId,
         includeInherited: !parentParameterSelectData?.parent,
       },
     ],
@@ -407,7 +408,7 @@ export function* updateParameterContext(api, { payload }) {
   if (response.ok && !response.data?.complete && response.data?.requestId) {
     yield call(getStatusAndDeleteParameterContext, api, {
       method: 'get',
-      additionalData: { requestId: response.data?.requestId },
+      additionalData: { requestId: response?.data?.requestId },
     });
 
     yield put(

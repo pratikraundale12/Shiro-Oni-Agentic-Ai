@@ -87,6 +87,7 @@ const ParameterContext = ({
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
+
   const copyParameterDetailsData =
     parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] ||
     parameterDetails?.[singleNamespaceData?.parameterContextId] ||
@@ -238,16 +239,21 @@ const ParameterContext = ({
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {item.parentParameterId ===
-            (deployOrUpgradeDetails?.parameterContextId ||
+            (selectedParentContextId ||
+              deployOrUpgradeDetails?.parameterContextId ||
               singleNamespaceData?.parameterContextId) ||
           !has(item, 'parentParameterId') ? (
             <IconButton
               style={{
-                opacity: canWrite ? 1 : 0.3,
-                cursor: canWrite ? 'pointer' : 'not-allowed',
+                opacity:
+                  canWrite && parameterDetails?.permissions?.canWrite ? 1 : 0.3,
+                cursor:
+                  canWrite && parameterDetails?.permissions?.canWrite
+                    ? 'pointer'
+                    : 'not-allowed',
               }}
               onClick={() => {
-                if (canWrite) {
+                if (canWrite && parameterDetails?.permissions?.canWrite) {
                   setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
                   if (isParameterContextOpen?.schedule) {
                     setIsParameterContextOpen({
@@ -266,6 +272,7 @@ const ParameterContext = ({
                       NamespacesActions.setParameterEditParent({
                         parent: false,
                         id:
+                          selectedParentContextId ||
                           deployOrUpgradeDetails?.parameterContextId ||
                           singleNamespaceData?.parameterContextId,
                       })
@@ -315,6 +322,15 @@ const ParameterContext = ({
       dispatch(NamespacesActions.setNamespaceSummaryLoadingState(false));
       dispatch(NamespacesActions.fetchParameterContext());
     }, 1000);
+    setSelectedParentContextId('');
+    if (isParentEdit?.parent) {
+      dispatch(
+        NamespacesActions.setParameterEditParent({
+          parent: false,
+          id: '',
+        })
+      );
+    }
   };
 
   selectedParentContextId;

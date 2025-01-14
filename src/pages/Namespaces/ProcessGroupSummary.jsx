@@ -163,6 +163,7 @@ const ConfigDetailsPage = () => {
         return null;
     }
   };
+  const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
   return (
     <div>
       {breadcrumbs.length === 1 && (
@@ -201,7 +202,17 @@ const ConfigDetailsPage = () => {
           </Tab>
           <Tab
             active={activeTab === KDFM.PARAMETER_CONTEXT}
-            onClick={() => setActiveTab(KDFM.PARAMETER_CONTEXT)}
+            onClick={() => {
+              setActiveTab(KDFM.PARAMETER_CONTEXT);
+              if (isParentEdit?.parent) {
+                dispatch(
+                  NamespacesActions.setParameterEditParent({
+                    parent: false,
+                    id: '',
+                  })
+                );
+              }
+            }}
             className="nav-item"
           >
             {KDFM.PARAMETER_CONTEXT}
