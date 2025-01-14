@@ -78,6 +78,7 @@ const ParameterContext = ({
     NamespacesSelectors.getParameterContextItem
   );
   const parameterDetails = useSelector(NamespacesSelectors.getParameterDetails);
+  console.log(parameterDetails?.permissions?.canWrite, 'parameterDetails');
   const deployOrUpgradeDetails = useSelector(
     NamespacesSelectors.getRegistryDeployResponseData
   );
@@ -154,6 +155,7 @@ const ParameterContext = ({
   };
 
   const permissions = singleNamespaceData?.permissions;
+  console.log(parameterDetails?.permissions, 'permissions');
   const { canWrite } = permissions || {};
 
   const COLUMNS = [
@@ -244,11 +246,15 @@ const ParameterContext = ({
           !has(item, 'parentParameterId') ? (
             <IconButton
               style={{
-                opacity: canWrite ? 1 : 0.3,
-                cursor: canWrite ? 'pointer' : 'not-allowed',
+                opacity:
+                  canWrite && parameterDetails?.permissions?.canWrite ? 1 : 0.3,
+                cursor:
+                  canWrite && parameterDetails?.permissions?.canWrite
+                    ? 'pointer'
+                    : 'not-allowed',
               }}
               onClick={() => {
-                if (canWrite) {
+                if (canWrite && parameterDetails?.permissions?.canWrite) {
                   setIsAddParameterContextOpen({ isOpen: true, mode: 'edit' });
                   if (isParameterContextOpen?.schedule) {
                     setIsParameterContextOpen({
