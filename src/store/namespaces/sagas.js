@@ -1273,7 +1273,9 @@ export function* upgradeCluster(api, { payload }) {
   }
 
   if (!response.ok) {
-    toast.error(response.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.data?.message || KDFM.SOMETHING_WENT_WRONG, {
+      autoClose: 5000,
+    });
   }
 }
 

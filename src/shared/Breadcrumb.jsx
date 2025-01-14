@@ -43,17 +43,19 @@ const MODULES = [
   'ldap',
   'path',
 ];
-const Breadcrumb = ({ module, path, onClick }) => {
+const Breadcrumb = ({ module, path, onClick, fromDetailPage = false }) => {
   const dispatch = useDispatch();
   const breadcrumbs = useSelector(state =>
     GridSelectors.getGridBreadcrumb(state, module)
   );
   const data = isEmpty(path) ? breadcrumbs : path;
-
   const handleClick = value => {
-    if (module === 'namespaces')
+    if (module === 'namespaces') {
       dispatch(NamespacesActions.setSelectedNamespace(value));
-    else if (module === 'destNamespaces')
+      if (fromDetailPage) {
+        history.push(`/process-group`);
+      }
+    } else if (module === 'destNamespaces')
       dispatch(NamespacesActions.setSelectedDestNamespace(value));
     else if (onClick && module === 'ldap') onClick(value.label);
     else history.push(value.path);
@@ -81,6 +83,7 @@ Breadcrumb.propTypes = {
   module: PropTypes.string.isRequired,
   path: PropTypes.arrayOf(PropTypes.shape({})),
   onClick: PropTypes.func,
+  fromDetailPage: PropTypes.bool,
 };
 
 export default Breadcrumb;

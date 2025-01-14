@@ -54,4 +54,5 @@ export const NAMESPACE_CONSTANTS = {
   LEGENDS: 'Legends',
   SELECT_SCHEDULE_TIME: 'Please select schedule time',
   INCORRECT_SCHEDULE_TIME: 'Selected date and time is invalid',
+  PROCESS_GROUP_DETAILS: 'Process Group Details',
 };

@@ -193,6 +193,9 @@ export const NamespacesActions = {
     `${prefix}setDuplicateScheduleModalData`
   ),
   setFlowControlAfterDeploy: createAction(`${prefix}setFlowControlAfterDeploy`),
+  setSelectedNameSpaceForDetail: createAction(
+    `${prefix}setSelectedNameSpaceForDetail`
+  ),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -286,6 +289,7 @@ export const NAMESPACES_INITIAL_STATE = {
   duplicateScheduleModalOpen: false,
   duplicateScheduleModalData: {},
   flowControlAfterDeploy: false,
+  selectedNameSpaceForDetail: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -381,6 +385,8 @@ export const NamespacesSelectors = {
   getDuplicateScheduleModalData: state =>
     state.namespaces.duplicateScheduleModalData,
   getflowControlAfterDeploy: state => state.namespaces.flowControlAfterDeploy,
+  getSelectedNameSpaceForDetail: state =>
+    state.namespaces.selectedNameSpaceForDetail,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -866,6 +872,13 @@ const setFlowControlAfterDeploy = (state, { payload }) => {
     flowControlAfterDeploy: payload,
   };
 };
+
+const setSelectedNameSpaceForDetail = (state, { payload }) => {
+  return {
+    ...state,
+    selectedNameSpaceForDetail: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1061,6 +1074,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setFlowControlAfterDeploy,
         setFlowControlAfterDeploy
+      )
+      .addCase(
+        NamespacesActions.setSelectedNameSpaceForDetail,
+        setSelectedNameSpaceForDetail
       );
   }
 );
