@@ -565,7 +565,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {(isControllerService || stateItem?.properties?.length > 0) && (
+            {(stateItem.hasOwnProperty('properties')) && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -574,17 +574,20 @@ const ControllerServiceTab = ({
                   aria-label="Settings"
                   disabled={
                     stateItem?.state === 'ENABLING' ||
-                    stateItem?.state === 'ENABLED'
+                    stateItem?.state === 'ENABLED'  ||
+                    stateItem?.state === 'DISABLING'
                   }
                   style={{
                     opacity:
                       stateItem?.state === 'ENABLING' ||
-                      stateItem?.state === 'ENABLED'
+                      stateItem?.state === 'ENABLED'  ||
+                      stateItem?.state === 'DISABLING'
                         ? 0.3
                         : 1,
                     cursor:
                       stateItem?.state === 'ENABLING' ||
-                      stateItem?.state === 'ENABLED'
+                      stateItem?.state === 'ENABLED'  ||
+                      stateItem?.state === 'DISABLING'
                         ? 'not-allowed'
                         : 'pointer',
                   }}
@@ -812,7 +815,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {(isControllerService || stateItem?.properties?.length > 0) && (
+            {(stateItem.hasOwnProperty('properties')) && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -821,7 +824,8 @@ const ControllerServiceTab = ({
                   aria-label="Settings"
                   disabled={
                     stateItem?.state === 'ENABLING' ||
-                    stateItem?.state === 'ENABLED'
+                    stateItem?.state === 'ENABLED'  ||
+                    stateItem?.state === 'DISABLING'
                   }
                   style={{
                     opacity:
@@ -1221,6 +1225,7 @@ const ControllerServiceTab = ({
     );
     dispatch(
       NamespacesActions.changeStatusControllerService({
+        use_service_ac: true,
         state:
           selectedItemFromList?.state === 'DISABLED' ||
           selectedItemFromList?.state === 'DISABLING'
@@ -1349,6 +1354,8 @@ const ControllerServiceTab = ({
     if (!isUpgrade && openIndex !== index && item?.isUpgradeLocal) {
       dispatch(
         NamespacesActions.getControllerServiceList({
+          use_service_ac: true,
+          is_from_toggle: true,
           localOnly: true,
           namespaceId: item?.instanceIdentifier,
         })
