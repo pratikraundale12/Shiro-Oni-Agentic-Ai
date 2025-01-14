@@ -717,7 +717,17 @@ export function* getControllerServiceList(api, action) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
-
+  let namespaceId = '';
+  if (use_service_account === true) {
+    namespaceId = '';
+  } else if (namespaceIdentifier?.length && !use_service_account) {
+    namespaceId = namespaceIdentifier;
+  } else if (
+    (selectedNamespaceId?.id || selectedNamespace?.id) &&
+    !use_service_account
+  ) {
+    namespaceId = selectedNamespaceId?.id || selectedNamespace?.id;
+  }
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -727,9 +737,7 @@ export function* getControllerServiceList(api, action) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: namespaceIdentifier?.length
-          ? namespaceIdentifier
-          : selectedNamespaceId?.id || selectedNamespace?.id,
+        namespaceId: namespaceId,
         localOnly: isLocalOnly,
         use_service_account: use_service_account,
       },

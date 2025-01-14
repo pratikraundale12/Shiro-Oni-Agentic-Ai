@@ -565,7 +565,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {(isControllerService || stateItem?.configuredData?.length) && (
+            {(stateItem.hasOwnProperty('properties')) && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -574,17 +574,20 @@ const ControllerServiceTab = ({
                   aria-label="Settings"
                   disabled={
                     stateItem?.state === 'ENABLING' ||
-                    stateItem?.state === 'ENABLED'
+                    stateItem?.state === 'ENABLED'  ||
+                    stateItem?.state === 'DISABLING'
                   }
                   style={{
                     opacity:
                       stateItem?.state === 'ENABLING' ||
-                      stateItem?.state === 'ENABLED'
+                      stateItem?.state === 'ENABLED'  ||
+                      stateItem?.state === 'DISABLING'
                         ? 0.3
                         : 1,
                     cursor:
                       stateItem?.state === 'ENABLING' ||
-                      stateItem?.state === 'ENABLED'
+                      stateItem?.state === 'ENABLED'  ||
+                      stateItem?.state === 'DISABLING'
                         ? 'not-allowed'
                         : 'pointer',
                   }}
@@ -812,7 +815,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {(isControllerService || stateItem?.configuredData?.length) && (
+            {(stateItem.hasOwnProperty('properties')) && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -821,7 +824,8 @@ const ControllerServiceTab = ({
                   aria-label="Settings"
                   disabled={
                     stateItem?.state === 'ENABLING' ||
-                    stateItem?.state === 'ENABLED'
+                    stateItem?.state === 'ENABLED'  ||
+                    stateItem?.state === 'DISABLING'
                   }
                   style={{
                     opacity:
