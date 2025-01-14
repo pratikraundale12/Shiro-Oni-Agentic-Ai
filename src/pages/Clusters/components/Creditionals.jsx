@@ -2,15 +2,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
 import { SmallPerfileIcon } from '../../../assets';
+import { FullPageLoader } from '../../../components';
 import { KDFM } from '../../../constants';
 import { InputField, Modal, PasswordField } from '../../../shared';
+import { ClustersActions } from '../../../store';
 import { testCluster, testRegistry } from '../../../store/index1';
 import { FailedTestModal } from './FailedTestModal';
-import { useDispatch } from 'react-redux';
-import { ClustersActions } from '../../../store';
-import { FullPageLoader } from '../../../components';
 
 const DEFAULT_VALUES = {
   username: '',
@@ -30,6 +30,7 @@ export const Creditionals = ({
   clusterData,
   registryData,
   setSuccessModal,
+  setSaveButtonEnable,
 }) => {
   const dispatch = useDispatch();
   const [failedModal, setFailedModal] = useState(false);
@@ -62,11 +63,13 @@ export const Creditionals = ({
         setSuccessModal(true);
         setLoading(false);
         dispatch(ClustersActions.setClusterFormData(response?.data));
+        setSaveButtonEnable(false);
       } else {
         setTestMessage(response.message);
         setIsCredOpen(false);
         setFailedModal(true);
         setLoading(false);
+        setSaveButtonEnable(true);
       }
     } else {
       payload.append('name', registryData?.registryName || registryData.name);
@@ -156,4 +159,5 @@ Creditionals.propTypes = {
   registryData: PropTypes.object,
   activeTab: PropTypes.string,
   setSuccessModal: PropTypes.func,
+  setSaveButtonEnable: PropTypes.bool,
 };
