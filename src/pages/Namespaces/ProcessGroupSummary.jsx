@@ -170,9 +170,9 @@ const ConfigDetailsPage = () => {
           <Breadcrumb module="upgrade" path={breadcrumbData} />
         </BreadcrumbContainer>
       )}
-      <div className="mb-2 ps-1">
+      <BreadcrumbContainer className="mb-3 ps-1">
         <Breadcrumb module={'namespaces'} fromDetailPage={true} />
-      </div>
+      </BreadcrumbContainer>
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
           <ImageContainer>
