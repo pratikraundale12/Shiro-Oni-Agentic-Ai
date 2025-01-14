@@ -43,13 +43,15 @@ export const namespacesAPI = api => {
       namespaceId &&
       window?.location?.pathname != '/controller-service' &&
       !localOnly
-        ? `controller-services/${clusterId}/namespace/${namespaceId}?use_service_account=${use_service_account}`
+        ? `controller-services/${clusterId}/namespace/${namespaceId}`
         : namespaceId &&
             window?.location?.pathname != '/controller-service' &&
             localOnly
           ? `controller-services/${clusterId}/namespace/${namespaceId}?localOnly=true`
-          : `controller-services/${clusterId}/namespace`;
-
+          : use_service_account &&
+              window?.location?.pathname != '/controller-service'
+            ? `controller-services/${clusterId}/namespace?use_service_account=true`
+            : `controller-services/${clusterId}/namespace`;
     return api.get(url);
   };
 
@@ -152,8 +154,13 @@ export const namespacesAPI = api => {
     return api.get(`/clusters/${clusterId}/namespace/${namespaceId}`, params);
   };
 
-  const getAllControllerServiceToAdd = ({ clusterId }) =>
-    api.get(`/list-controller-services/${clusterId}`);
+  const getAllControllerServiceToAdd = ({ clusterId, use_service_account }) => {
+    return use_service_account
+      ? api.get(
+          `/list-controller-services/${clusterId}?use_service_account=true`
+        )
+      : api.get(`/list-controller-services/${clusterId}`);
+  };
 
   const addControllerServiceRootLevel = ({
     clusterId,
@@ -179,11 +186,18 @@ export const namespacesAPI = api => {
     clusterId,
     controllerId,
     payloadData,
-  }) =>
-    api.put(
-      `controller-services/${clusterId}/service/${controllerId}`,
-      payloadData
-    );
+    use_service_account,
+  }) => {
+    return use_service_account
+      ? api.put(
+          `controller-services/${clusterId}/service/${controllerId}?use_service_account=true`,
+          payloadData
+        )
+      : api.put(
+          `controller-services/${clusterId}/service/${controllerId}`,
+          payloadData
+        );
+  };
 
   const getNewPropertyControllerService = ({
     clusterId,
@@ -217,11 +231,18 @@ export const namespacesAPI = api => {
     clusterId,
     payloadData,
     controllerId,
-  }) =>
-    api.put(
-      `controller-services/status/${clusterId}/service/${controllerId}`,
-      payloadData
-    );
+    use_service_account,
+  }) => {
+    return use_service_account
+      ? api.put(
+          `controller-services/status/${clusterId}/service/${controllerId}?use_service_account=${use_service_account}`,
+          payloadData
+        )
+      : api.put(
+          `controller-services/status/${clusterId}/service/${controllerId}`,
+          payloadData
+        );
+  };
   const deleteControllerService = ({ clusterId, payloadData, controllerId }) =>
     api.delete(
       `controller-services/${clusterId}/service/${controllerId}`,

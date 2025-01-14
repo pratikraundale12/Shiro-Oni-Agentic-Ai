@@ -717,6 +717,7 @@ export function* getControllerServiceList(api, action) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -744,9 +745,13 @@ export function* getControllerServiceList(api, action) {
   }
 }
 
-export function* getAllControllerServiceListToAdd(api) {
+export function* getAllControllerServiceListToAdd(api, action) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-
+  let use_service_ac = false;
+  if (action.payload) {
+    const { isFromControllerServiceTab } = action.payload;
+    use_service_ac = isFromControllerServiceTab;
+  }
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -762,6 +767,7 @@ export function* getAllControllerServiceListToAdd(api) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
+        use_service_account: use_service_ac,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
@@ -819,7 +825,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
 
 export function* addPropertyControllerService(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const { id, ...rest } = payload;
+  const { id, use_service_account, ...rest } = payload;
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -837,6 +843,7 @@ export function* addPropertyControllerService(api, { payload }) {
         clusterId: selectedCluster?.value,
         controllerId: id,
         payloadData: rest,
+        use_service_account: use_service_account,
       },
     ],
   });
@@ -952,9 +959,13 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
 export function* changeStatusControllerService(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   let fromPgDetailsPage = false;
-  const { id, isFromPgDetails, ...rest } = payload;
-  if (payload) {
+  let use_service_account = false;
+  const { id, isFromPgDetails, use_service_ac, ...rest } = payload;
+  if (isFromPgDetails) {
     fromPgDetailsPage = isFromPgDetails;
+  }
+  if (use_service_ac) {
+    use_service_account = use_service_ac;
   }
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -973,6 +984,7 @@ export function* changeStatusControllerService(api, { payload }) {
         clusterId: selectedCluster?.value,
         payloadData: rest,
         controllerId: id,
+        use_service_account: use_service_account,
       },
     ],
   });

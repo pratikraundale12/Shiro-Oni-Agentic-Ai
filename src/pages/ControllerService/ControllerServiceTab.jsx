@@ -565,7 +565,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {(isControllerService || stateItem?.properties?.length > 0) && (
+            {(isControllerService || stateItem?.configuredData?.length) && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -812,7 +812,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {(isControllerService || stateItem?.properties?.length > 0) && (
+            {(isControllerService || stateItem?.configuredData?.length) && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -1221,6 +1221,7 @@ const ControllerServiceTab = ({
     );
     dispatch(
       NamespacesActions.changeStatusControllerService({
+        use_service_ac: true,
         state:
           selectedItemFromList?.state === 'DISABLED' ||
           selectedItemFromList?.state === 'DISABLING'
@@ -1349,6 +1350,7 @@ const ControllerServiceTab = ({
     if (!isUpgrade && openIndex !== index && item?.isUpgradeLocal) {
       dispatch(
         NamespacesActions.getControllerServiceList({
+          use_service_ac: true,
           localOnly: true,
           namespaceId: item?.instanceIdentifier,
         })

@@ -111,7 +111,11 @@ const AddControllerServiceModal = ({
   );
   useEffect(() => {
     if (modalOpenState) {
-      dispatch(NamespacesActions.getAllControllerServiceListToAdd());
+      dispatch(
+        NamespacesActions.getAllControllerServiceListToAdd({
+          isFromControllerServiceTab: isFromControllerServiceTab,
+        })
+      );
       setSelectedItem({});
     }
   }, [modalOpenState]);
