@@ -714,6 +714,7 @@ export const Add = () => {
       }
     }
   };
+
   const checkEditSave = () => {
     return (
       data?.tag === tags &&
@@ -729,19 +730,6 @@ export const Add = () => {
       setSaveButtonEnable(false);
     }
   }, [data, tags, approverEnable, notificationEnable]);
-  // const checkEditSave = () => {
-  //   if (
-  //     data?.tag === tags &&
-  //     data?.approver_enable === approverEnable &&
-  //     data?.notification_enable === notificationEnable
-  //   ) {
-  //     setSaveButtonEnable(true);
-  //     return true;
-  //   } else {
-  //     setSaveButtonEnable(false);
-  //     false;
-  //   }
-  // };
 
   return (
     <Wrapper>
@@ -941,7 +929,9 @@ export const Add = () => {
                   <RightCircleIcon width={60} height={60} />
                   <TextTest>
                     {activeTab === CLUSTER_MODULE_TABS.CLUSTER
-                      ? KDFM.CLUSTER_TESTED_SUCCES_PROMPT
+                      ? clusterId
+                        ? KDFM.CLUSTER_TESTED_SUCCES
+                        : KDFM.CLUSTER_TESTED_SUCCES_PROMPT
                       : KDFM.REGISTRY_TESTED_SUCCESS_PROMPT}
                   </TextTest>
                 </CertificateMessage>
