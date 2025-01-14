@@ -135,6 +135,12 @@ export const ListNamespaces = () => {
                   value: item.id,
                 })
               );
+              dispatch(
+                NamespacesActions.setSelectedNameSpaceForDetail({
+                  label: item.name,
+                  value: item.id,
+                })
+              );
               setCurrentPage(1);
             }}
           >
