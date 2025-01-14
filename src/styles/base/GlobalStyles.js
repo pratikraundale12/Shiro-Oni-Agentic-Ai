@@ -485,6 +485,13 @@ const GlobalStyle = createGlobalStyle`
     width: 100%;
     float: left;
 }
+     .rs-picker-menu {
+    color:red !important;
+  }
+    .rs-picker-toggle {
+    color: red !important; 
+    font-weight: bold;
+  }
 `;
 
 export default GlobalStyle;

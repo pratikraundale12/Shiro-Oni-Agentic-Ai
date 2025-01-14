@@ -207,7 +207,7 @@ export const Grid = ({
           height: 52px;
           background-color: ${theme.colors.lightGrey} !important;
           color:  ${theme.colors.darker} !important;
-          z-index:8
+          z-index:6
         }
 
         td {

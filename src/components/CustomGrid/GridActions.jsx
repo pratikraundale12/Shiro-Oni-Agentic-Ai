@@ -21,7 +21,7 @@ import {
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { getButtonPermissions } from '../../helpers/permissions';
-import { Button, SelectField } from '../../shared';
+import { Button, DateRangePickerInput, SelectField } from '../../shared';
 import {
   AuthenticationSelectors,
   DashboardActions,
@@ -196,10 +196,7 @@ export const GridActions = ({
   const breadcrumbs = useSelector(state =>
     GridSelectors.getGridBreadcrumb(state, module)
   );
-  // const selectedEntity = useSelector(
-  //   ActivityHistorySelectors.getSelectedEntity
-  // );
-  // const selectedEvent = useSelector(ActivityHistorySelectors.getSelectedEvent);
+  const [dateRange, setDateRange] = useState(null);
   const { setState } = useGlobalContext();
 
   const entity = watch('entityName');
@@ -244,7 +241,7 @@ export const GridActions = ({
   }, []);
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
   useEffect(() => {
-    if (watchStatus || entity || event) {
+    if (watchStatus || entity || event || dateRange) {
       dispatch(
         GridSagsActions.fetchGrid({
           module,
@@ -259,12 +256,16 @@ export const GridActions = ({
               }),
             ...(entity && entity !== 'all' && { entity }),
             ...(event && event !== 'all' && { event }),
+            ...(dateRange && {
+              start_date: dateRange?.[0]?.toISOString(),
+              end_date: dateRange?.[1]?.toISOString(),
+            }),
           },
         })
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchStatus, entity, event, search]);
+  }, [watchStatus, entity, event, search, dateRange]);
 
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
@@ -293,6 +294,61 @@ export const GridActions = ({
     dispatch(NamespacesActions.setdeployRegistryFlow(false));
     dispatch(NamespacesActions.setScheduleByRegistry(true));
   };
+
+  const handleChange = value => {
+    setDateRange(value);
+    if (!value) {
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module,
+          clusterId,
+          params: {
+            page: 1,
+            id: scheduleToken,
+            ...(search && { search: search }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && {
+                [getModuleBasedStatusKey(module)]: watchStatus,
+              }),
+            ...(entity && entity !== 'all' && { entity }),
+            ...(event && event !== 'all' && { event }),
+          },
+        })
+      );
+    }
+  };
+
+  const customRanges = [
+    {
+      label: 'Last Day',
+      value: [
+        new Date(new Date().setDate(new Date().getDate() - 1)),
+        new Date(),
+      ],
+    },
+    {
+      label: 'Last 7 Days',
+      value: [
+        new Date(new Date().setDate(new Date().getDate() - 7)),
+        new Date(),
+      ],
+    },
+    {
+      label: 'Last Month',
+      value: [
+        new Date(new Date().setMonth(new Date().getMonth() - 1)),
+        new Date(),
+      ],
+    },
+    {
+      label: 'Last 6 Months',
+      value: [
+        new Date(new Date().setMonth(new Date().getMonth() - 6)),
+        new Date(),
+      ],
+    },
+  ];
+
   return (
     <>
       <Flex className="flex-wrap gap-2">
@@ -330,6 +386,11 @@ export const GridActions = ({
                     </div>
                   </Button>
                 )}
+                <DateRangePickerInput
+                  value={dateRange}
+                  handleChange={handleChange}
+                  customRanges={customRanges}
+                />
               </ButtonsContainerScheduleList>
             }
           </>
