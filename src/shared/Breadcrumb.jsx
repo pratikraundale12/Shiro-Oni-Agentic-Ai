@@ -52,6 +52,7 @@ const Breadcrumb = ({ module, path, onClick, fromDetailPage = false }) => {
   const handleClick = value => {
     if (module === 'namespaces') {
       dispatch(NamespacesActions.setSelectedNamespace(value));
+      dispatch(NamespacesActions.setSelectedNameSpaceForDetail(value));
       if (fromDetailPage) {
         history.push(`/process-group`);
       }
