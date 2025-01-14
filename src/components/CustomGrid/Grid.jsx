@@ -35,6 +35,7 @@ import {
   ActivityHistorySelectors,
 } from '../../store/activityHistory/redux';
 import { Table } from './Table';
+import { SchedularSelectors } from '../../store/schedular';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -152,7 +153,7 @@ export const Grid = ({
     NamespacesSelectors.getSelectedNamespace
   );
   const itemsPerPage = 10;
-
+  const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const selectedEvent = useSelector(ActivityHistorySelectors.getSelectedEvent);
   const selectedEntity = useSelector(
@@ -290,6 +291,10 @@ export const Grid = ({
             }),
             ...(location?.pathname?.includes('activity-history') && {
               entity: selectedEntity?.value,
+            }),
+            ...(selectedRange && {
+              start_date: selectedRange?.[0]?.toISOString(),
+              end_date: selectedRange?.[1]?.toISOString(),
             }),
           },
         })

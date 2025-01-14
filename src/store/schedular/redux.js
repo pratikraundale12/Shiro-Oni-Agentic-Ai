@@ -18,6 +18,7 @@ export const SchedularActions = {
   setScheduleFromList: createAction(`${prefix}setScheduleFromList`),
   editScheduleByRegistry: createAction(`${prefix}editScheduleByRegistry`),
   rejectScheduleDeployment: createAction(`${prefix}rejectScheduleDeployment`),
+  setScheduleSelectRange: createAction(`${prefix}setScheduleSelectRange`),
 };
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
@@ -30,6 +31,7 @@ export const SCHEDULAR_INITIAL_STATE = {
   approveScheduleModal: false,
   tokenScheduleModal: false,
   scheduleFromList: false,
+  scheduleSelectRange: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -43,6 +45,7 @@ export const SchedularSelectors = {
   getApproveScheduleModal: state => state.schedular.approveScheduleModal,
   getTokenScheduleModal: state => state.schedular.tokenScheduleModal,
   getScheduleFromList: state => state.schedular.scheduleFromList,
+  getScheduleSelectRange: state => state.schedular.scheduleSelectRange,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -101,6 +104,13 @@ const setScheduleFromList = (state, { payload }) => {
     scheduleFromList: payload,
   };
 };
+const setScheduleSelectRange = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleSelectRange: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const schedularReducer = createReducer(
   SCHEDULAR_INITIAL_STATE,
@@ -117,6 +127,7 @@ export const schedularReducer = createReducer(
         setApproveScheduleModal
       )
       .addCase(SchedularActions.setTokenScheduleModal, setTokenScheduleModal)
-      .addCase(SchedularActions.setScheduleFromList, setScheduleFromList);
+      .addCase(SchedularActions.setScheduleFromList, setScheduleFromList)
+      .addCase(SchedularActions.setScheduleSelectRange, setScheduleSelectRange);
   }
 );

@@ -38,6 +38,7 @@ import { GridSelectors } from '../../store/grid';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../FullPageLoader';
+import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 
 const Flex = styled.div`
   display: flex;
@@ -212,7 +213,7 @@ export const GridActions = ({
     }
   };
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-
+  const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   useEffect(() => {
     setIsButtonDisabled(isEmpty(selectedCluster?.value));
@@ -239,9 +240,14 @@ export const GridActions = ({
       window.localStorage.removeItem('scheduleTokenid');
     }
   }, []);
+  useEffect(() => {
+    if (location.pathname !== '/schedule-deployment') {
+      dispatch(SchedularActions.setScheduleSelectRange([]));
+    }
+  }, [dispatch]);
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
   useEffect(() => {
-    if (watchStatus || entity || event || dateRange) {
+    if (watchStatus || entity || event || selectedRange) {
       dispatch(
         GridSagsActions.fetchGrid({
           module,
@@ -256,16 +262,16 @@ export const GridActions = ({
               }),
             ...(entity && entity !== 'all' && { entity }),
             ...(event && event !== 'all' && { event }),
-            ...(dateRange && {
-              start_date: dateRange?.[0]?.toISOString(),
-              end_date: dateRange?.[1]?.toISOString(),
+            ...(selectedRange && {
+              start_date: selectedRange?.[0]?.toISOString(),
+              end_date: selectedRange?.[1]?.toISOString(),
             }),
           },
         })
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchStatus, entity, event, search, dateRange]);
+  }, [watchStatus, entity, event, search, selectedRange]);
 
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
@@ -296,8 +302,10 @@ export const GridActions = ({
   };
 
   const handleChange = value => {
+    dispatch(SchedularActions.setScheduleSelectRange(value));
     setDateRange(value);
     if (!value) {
+      dispatch(SchedularActions.setScheduleSelectRange([]));
       dispatch(
         GridSagsActions.fetchGrid({
           module,
