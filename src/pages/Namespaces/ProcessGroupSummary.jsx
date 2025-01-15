@@ -104,6 +104,9 @@ const ConfigDetailsPage = () => {
     }
   }, [location?.pathname]);
 
+  const singleNamespaceData = useSelector(
+    NamespacesSelectors.getSingleNamespaceData
+  );
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
     { label: 'Process Group Details', path: `/process-group/${idFromUrl}` },
@@ -127,12 +130,7 @@ const ConfigDetailsPage = () => {
   const breadcrumbs = useSelector(state =>
     GridSelectors.getGridBreadcrumb(state, 'namespaces')
   );
-  const selectedNamespaceForDetail = useSelector(
-    NamespacesSelectors.getSelectedNameSpaceForDetail
-  );
-  const selectedNamepaceFromList = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
+
   //need to add the components for respective tabs
   const renderContent = () => {
     switch (activeTab) {
@@ -183,8 +181,8 @@ const ConfigDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {KDFM.PROCESS_GROUP_DETAILS}:
-            {selectedNamepaceFromList?.name || selectedNamespaceForDetail?.name}
+            {KDFM.PROCESS_GROUP_DETAILS}: &nbsp;
+            {singleNamespaceData?.name || ''}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>

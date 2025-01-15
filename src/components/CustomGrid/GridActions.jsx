@@ -221,7 +221,7 @@ export const GridActions = ({
   }, [selectedCluster]);
 
   const selecedNamespaceDetails = useSelector(
-    NamespacesSelectors.getSelectedNameSpaceForDetail
+    NamespacesSelectors.getSelectedNamespace
   );
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');

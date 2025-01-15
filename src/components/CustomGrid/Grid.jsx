@@ -150,7 +150,7 @@ export const Grid = ({
   const prev = useSelector(state => GridSelectors.getGridPrev(state, module));
   const next = useSelector(state => GridSelectors.getGridNext(state, module));
   const selectedNamespaceForDetail = useSelector(
-    NamespacesSelectors.getSelectedNameSpaceForDetail
+    NamespacesSelectors.getSelectedNamespace
   );
   const itemsPerPage = 10;
   const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);

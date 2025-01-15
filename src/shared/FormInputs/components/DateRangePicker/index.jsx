@@ -13,6 +13,7 @@ const ContainerRangePicker = styled.div`
   div > div > input {
     color: black !important;
     background-color: #f5f7fa;
+    pointer-events: none;
   }
   div > div > input::placeholder {
     color: #4c5055 !important;
