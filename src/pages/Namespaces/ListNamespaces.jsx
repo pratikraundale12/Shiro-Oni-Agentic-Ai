@@ -115,6 +115,7 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setRegistryFlowXCord(null));
     dispatch(NamespacesActions.setRegistryFlowYCord(null));
     dispatch(NamespacesActions.setFlowControlAfterDeploy(false));
+    dispatch(NamespacesActions.setDeployedModal(false));
   }, []);
 
   const COLUMNS = [
@@ -129,12 +130,7 @@ export const ListNamespaces = () => {
             onClick={() => {
               setState(prev => ({ ...prev, search: '' }));
               dispatch(NamespacesActions.setFlowPath(item.flowId));
-              dispatch(
-                NamespacesActions.setSelectedNamespace({
-                  label: item.name,
-                  value: item.id,
-                })
-              );
+              dispatch(NamespacesActions.setSelectedNamespace({}));
               dispatch(
                 NamespacesActions.setSelectedNameSpaceForDetail({
                   label: item.name,
@@ -314,6 +310,7 @@ export const ListNamespaces = () => {
             onClick={() => {
               history.push(`/process-group/${item.id}`);
               dispatch(NamespacesActions.setSelectedNameSpaceForDetail(item));
+              dispatch(NamespacesActions.setSelectedNamespace({}));
             }}
             style={{
               background: 'none',
@@ -391,6 +388,7 @@ export const ListNamespaces = () => {
         ...item,
       })
     );
+    dispatch(NamespacesActions.setSelectedNameSpaceForDetail({}));
     dispatch(NamespacesActions.setVersionSelect({ version: item.version }));
     dispatch(NamespacesActions.setDeployByRegistryFlow(false));
     dispatch(

@@ -130,6 +130,9 @@ const ConfigDetailsPage = () => {
   const selectedNamespaceForDetail = useSelector(
     NamespacesSelectors.getSelectedNameSpaceForDetail
   );
+  const selectedNamepaceFromList = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   //need to add the components for respective tabs
   const renderContent = () => {
     switch (activeTab) {
@@ -180,7 +183,8 @@ const ConfigDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {KDFM.PROCESS_GROUP_DETAILS}: {selectedNamespaceForDetail?.name}
+            {KDFM.PROCESS_GROUP_DETAILS}:
+            {selectedNamepaceFromList?.name || selectedNamespaceForDetail?.name}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>

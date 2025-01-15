@@ -174,6 +174,7 @@ const ParameterContext = ({
         return (
           <EnhancedTextRender
             key={item?.value}
+            capitalizeText={false}
             text={
               (item.sensitive === true || item.sensitive === 'true') &&
               !item?.value
