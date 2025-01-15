@@ -39,6 +39,7 @@ import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../FullPageLoader';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
+import { startOfDay, endOfDay } from 'date-fns';
 
 const Flex = styled.div`
   display: flex;
@@ -327,11 +328,8 @@ export const GridActions = ({
 
   const customRanges = [
     {
-      label: 'Last Day',
-      value: [
-        new Date(new Date().setDate(new Date().getDate() - 1)),
-        new Date(),
-      ],
+      label: 'Today',
+      value: [startOfDay(new Date()), endOfDay(new Date())],
       placement: 'left',
     },
     {
@@ -354,6 +352,14 @@ export const GridActions = ({
       label: 'Last 6 Months',
       value: [
         new Date(new Date().setMonth(new Date().getMonth() - 6)),
+        new Date(),
+      ],
+      placement: 'left',
+    },
+    {
+      label: 'Last Year',
+      value: [
+        new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
         new Date(),
       ],
       placement: 'left',
