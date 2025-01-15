@@ -88,23 +88,25 @@ const LinkButton = styled(TextButton)`
 export const settingSchema = yup.object().shape({
   email: yup
     .string()
+    .required('Support email is required')
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
   from_email: yup
     .string()
+    .required('From email is required')
     .nullable()
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
   title: yup
     .string()
+    .trim()
+    .required('Title is required')
     .max(25, 'Title must be 25 characters or less')
-    .matches(/^[a-zA-Z0-9\s]+$/, 'Title must not contain special characters')
-    .required('Title is required'),
-
+    .matches(/^[a-zA-Z0-9\s]+$/, 'Title must not contain special characters'),
   group_email_id: yup
     .string()
+    .required('Group email is required')
     .nullable()
-
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
 

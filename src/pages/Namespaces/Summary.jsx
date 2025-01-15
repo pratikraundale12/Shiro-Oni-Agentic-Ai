@@ -1129,7 +1129,11 @@ const Summary = () => {
                             activeColor="#58e715"
                             hoverColor="#58e715"
                             activeTextColor="#fff"
-                            onClick={() => handleUpdateStatus('RUNNING')}
+                            onClick={() =>
+                              activeButton === 'RUNNING'
+                                ? null
+                                : handleUpdateStatus('RUNNING')
+                            }
                           >
                             <TriangleIcons color="#B5BDC8" />
                           </ActiveButtonDiv>
@@ -1144,7 +1148,11 @@ const Summary = () => {
                             activeColor="#c52b2b"
                             hoverColor="#c52b2b"
                             activeTextColor="#fff"
-                            onClick={() => handleUpdateStatus('STOPPED')}
+                            onClick={() =>
+                              activeButton === 'STOPPED'
+                                ? null
+                                : handleUpdateStatus('STOPPED')
+                            }
                           >
                             <SquareBoxIcon color="#B5BDC8" />
                           </ActiveButtonDiv>

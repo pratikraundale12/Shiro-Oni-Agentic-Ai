@@ -360,7 +360,13 @@ const NamespaceDeploy = ({
                         hoverColor="#58e715"
                         activeTextColor="#fff"
                         onClick={() => {
-                          handleFlowConfirmPopup('RUNNING');
+                          (
+                            checkFlowControlAfterUpgrade
+                              ? dataAfterUpgradeProcessor?.runningCount
+                              : deployOrUpgradeDetails?.runningCount
+                          )
+                            ? null
+                            : handleFlowConfirmPopup('RUNNING');
                         }}
                         data-tooltip-id="running-tooltip"
                       >
@@ -379,7 +385,13 @@ const NamespaceDeploy = ({
                         hoverColor="#c52b2b"
                         activeTextColor="#fff"
                         onClick={() => {
-                          handleFlowConfirmPopup('STOPPED');
+                          (
+                            checkFlowControlAfterUpgrade
+                              ? dataAfterUpgradeProcessor?.stoppedCount
+                              : deployOrUpgradeDetails?.stoppedCount
+                          )
+                            ? null
+                            : handleFlowConfirmPopup('STOPPED');
                         }}
                         data-tooltip-id="stopped-tooltip"
                       >

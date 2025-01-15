@@ -14,7 +14,12 @@ import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
 import { KDFM } from '../../constants';
 import { ModalWithIcon } from '../../shared';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  LoadingSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
+import { FullPageLoader } from '../../components';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -176,9 +181,12 @@ const FlowControl = () => {
       forPopup: false,
     });
   };
-
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
+  );
   return (
     <DataWrapper>
+      <FullPageLoader loading={loading} />
       <ScrollSetGrey className="scroll-set-grey pe-1">
         <IconsvgDiv>
           <CustomNine className="col-4 mb-3">
@@ -248,7 +256,11 @@ const FlowControl = () => {
                       activeColor="#58e715"
                       hoverColor="#58e715"
                       activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('RUNNING')}
+                      onClick={() =>
+                        sigleNamespaceData?.runningCount
+                          ? null
+                          : handleUpdateStatus('RUNNING')
+                      }
                     >
                       <TriangleIcons color="#B5BDC8" />
                     </ActiveButtonDiv>
@@ -265,7 +277,11 @@ const FlowControl = () => {
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"
-                      onClick={() => handleUpdateStatus('STOPPED')}
+                      onClick={() =>
+                        sigleNamespaceData?.stoppedCount
+                          ? null
+                          : handleUpdateStatus('STOPPED')
+                      }
                     >
                       <SquareBoxIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
