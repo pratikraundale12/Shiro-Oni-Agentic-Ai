@@ -237,7 +237,7 @@ export const GridActions = ({
         })
       );
     } else {
-      window.location.reload();
+      dispatch(GridActions.fetchGrid({ module: 'namespaces' }));
     }
   };
   useEffect(() => {
