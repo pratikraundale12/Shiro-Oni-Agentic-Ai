@@ -81,6 +81,7 @@ export const Login = () => {
     watch,
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(loginSchema),
@@ -113,7 +114,7 @@ export const Login = () => {
             watch={watch}
             errors={errors}
             icon={<MailIcon />}
-            rightIcon={getRightIcon(watch, errors)}
+            rightIcon={getRightIcon(watch, errors, setValue)}
             required
           />
           <PasswordField

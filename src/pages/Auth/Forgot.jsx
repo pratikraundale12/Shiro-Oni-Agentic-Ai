@@ -97,7 +97,7 @@ const DEFAULT_VALUES = {
   email: '',
 };
 
-export const getRightIcon = (watch, errors) => {
+export const getRightIcon = (watch, errors, setValue) => {
   const emailValue = watch('email');
   const isEmailValid = !errors.email && EMAIL_REGEX.test(emailValue);
 
@@ -105,7 +105,16 @@ export const getRightIcon = (watch, errors) => {
     return isEmailValid ? (
       <RightArrowIcon color={theme.colors.primary} />
     ) : (
-      <CrossIcons color={theme.colors.primary} width={16} height={16} /> // Add CrossIcon or similar
+      <CrossIcons
+        color={theme.colors.primary}
+        width={16}
+        height={16}
+        style={{ cursor: 'pointer' }}
+        onClick={e => {
+          e.stopPropagation();
+          setValue('email', '');
+        }}
+      />
     );
   }
   return null;
@@ -118,6 +127,7 @@ export const Forgot = () => {
     watch,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(resetSchema),
@@ -157,7 +167,7 @@ export const Forgot = () => {
             register={register}
             errors={errors}
             icon={<MailIcon />}
-            rightIcon={getRightIcon(watch, errors)}
+            rightIcon={getRightIcon(watch, errors, setValue)}
           />
         </div>
         <SubmitButton

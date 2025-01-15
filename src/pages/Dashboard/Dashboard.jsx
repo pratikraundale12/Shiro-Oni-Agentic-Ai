@@ -314,7 +314,7 @@ export const Dashboard = () => {
         })
       );
     } else {
-      window.location.reload(true); // Hard reload
+      dispatch(DashboardActions.fetchDashboard());
     }
   };
   let ClusterActivated = localStorage.getItem('clusters');
