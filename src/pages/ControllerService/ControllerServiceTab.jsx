@@ -438,11 +438,7 @@ const ControllerServiceTab = ({
             : version
         )
       );
-    } else if (
-      !isNewlyAddedExternalServiceResponse &&
-      !isPropertyResponse &&
-      !stateChangeResponse
-    ) {
+    } else {
       const version = selectedItemFromList?.version;
       setVersionList(prev => addOrUpdateVersion(prev, version));
     }
@@ -608,7 +604,7 @@ const ControllerServiceTab = ({
             )}
 
             {/* Enable/Disable Button */}
-            {isButtonVisible && !item?.configured && (
+            {isButtonVisible && (
               <>
                 <button
                   className="border-0 bg-white ms-2"
@@ -830,12 +826,14 @@ const ControllerServiceTab = ({
                   style={{
                     opacity:
                       stateItem?.state === 'ENABLING' ||
-                      stateItem?.state === 'ENABLED'
+                      stateItem?.state === 'ENABLED'  ||
+                      stateItem?.state === 'DISABLING'
                         ? 0.3
                         : 1,
                     cursor:
                       stateItem?.state === 'ENABLING' ||
-                      stateItem?.state === 'ENABLED'
+                      stateItem?.state === 'ENABLED'  ||
+                      stateItem?.state === 'DISABLING'
                         ? 'not-allowed'
                         : 'pointer',
                   }}
@@ -856,7 +854,7 @@ const ControllerServiceTab = ({
             )}
 
             {/* Enable/Disable Button */}
-            {isButtonVisible && !item?.configured && (
+            {isButtonVisible && (
               <>
                 <button
                   className="border-0 bg-white ms-2"
@@ -1146,16 +1144,26 @@ const ControllerServiceTab = ({
                 index === 0
                   ? {
                       ...cs,
-                      state:
-                        selectedItemFromList?.state === 'DISABLED' ||
-                        selectedItemFromList?.state === 'DISABLING'
-                          ? 'ENABLED'
-                          : 'DISABLED',
+                      state: stateChangeResponse?.data?.status?.runStatus,
                       validationStatus:
                         stateChangeResponse?.data?.status?.validationStatus,
                     }
                   : cs
               ),
+            };
+          }
+          if (
+            service?.configured &&
+            service?.configuredData?.id === selectedItemFromList?.id
+          ) {
+            return {
+              ...service,
+              configuredData: {
+                ...service?.configuredData,
+                state: stateChangeResponse?.data?.status?.runStatus,
+                validationStatus:
+                  stateChangeResponse?.data?.status?.validationStatus,
+              },
             };
           }
           return service;
@@ -1255,7 +1263,7 @@ const ControllerServiceTab = ({
             service?.id === item?.id || service?.id === item?.identifier
         );
       }
-      if (data?.configured) {
+      if (data?.configured && data?.configuredData?.id === item?.id) {
         return true;
       }
       return (
