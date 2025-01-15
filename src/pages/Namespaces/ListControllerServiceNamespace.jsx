@@ -13,7 +13,7 @@ import {
   SettingSmallIcon,
   SmallSearchIcon,
 } from '../../assets';
-import { Table, TextRender } from '../../components';
+import { FullPageLoader, Table, TextRender } from '../../components';
 import { ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -151,7 +151,9 @@ export const ListControllerService = () => {
     NamespacesSelectors.getControllerServicePropertyModel
   );
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-
+  const stateChangeResponse = useSelector(
+    NamespacesSelectors.getChangeStatusCSRespone
+  );
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllRootControllerServiceNamespace')
   );
@@ -177,6 +179,13 @@ export const ListControllerService = () => {
     setSelectedItemFromList(item);
     setIsDeleteModalOpen(true);
   };
+
+  useEffect(() => {
+    if (!isEmpty(stateChangeResponse)) {
+      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
+    }
+  }, [stateChangeResponse]);
+
   const handleStatusClick = () => {
     dispatch(
       NamespacesActions.changeStatusControllerService({
@@ -187,11 +196,12 @@ export const ListControllerService = () => {
         isFromPgDetails: true,
       })
     );
-    setTimeout(() => {
-      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
-    }, 500);
+    // setTimeout(() => {
+    //  if(!isEmpty(stateChangeResponse)) && dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
+    // }, 500);
     setIsEnableModalOpen(false);
   };
+
   const handleDeleteControllerServiceClick = () => {
     dispatch(
       NamespacesActions.deleteControllerService({
@@ -292,57 +302,63 @@ export const ListControllerService = () => {
     },
     {
       label: 'Actions',
-      renderCell: item => (
-        <>
-          {controllerPermissions.includes('edit_controller_services') && (
-            <>
-              <button
-                className="border-0 bg-white"
-                onClick={() => handleSettingClick(item)}
-                data-tooltip-id={'global-tooltip'}
-                data-tooltip-content={'Settings'}
-                data-tooltip-place="left"
-                disabled={
-                  !canWrite ||
-                  item?.state === 'ENABLING' ||
-                  item?.state === 'ENABLED'
-                }
-                style={{
-                  opacity:
+      renderCell: item => {
+        const isBtnDisable =
+          item?.state === 'INVALID' ||
+          item?.state === 'VALIDATING' ||
+          item?.state === 'DISABLING' ||
+          (item?.state === 'DISABLED' && item?.validationStatus === 'INVALID');
+        return (
+          <>
+            {controllerPermissions.includes('edit_controller_services') && (
+              <>
+                <button
+                  className="border-0 bg-white"
+                  onClick={() => handleSettingClick(item)}
+                  data-tooltip-id={'global-tooltip'}
+                  data-tooltip-content={'Settings'}
+                  data-tooltip-place="left"
+                  disabled={
                     !canWrite ||
                     item?.state === 'ENABLING' ||
                     item?.state === 'ENABLED'
-                      ? 0.3
-                      : 1,
-                  cursor:
-                    !canWrite ||
-                    item?.state === 'ENABLING' ||
-                    item?.state === 'ENABLED'
-                      ? 'not-allowed'
-                      : 'pointer',
-                }}
-              >
-                <SettingSmallIcon />
-              </button>
-            </>
-          )}
-          {item?.state != 'INVALID' &&
-            item?.state != 'VALIDATING' &&
-            item?.state != 'DISABLING' &&
-            controllerPermissions.includes('edit_controller_services') && (
+                  }
+                  style={{
+                    opacity:
+                      !canWrite ||
+                      item?.state === 'ENABLING' ||
+                      item?.state === 'ENABLED'
+                        ? 0.3
+                        : 1,
+                    cursor:
+                      !canWrite ||
+                      item?.state === 'ENABLING' ||
+                      item?.state === 'ENABLED'
+                        ? 'not-allowed'
+                        : 'pointer',
+                  }}
+                >
+                  <SettingSmallIcon />
+                </button>
+              </>
+            )}
+            {
               <>
                 <button
                   className="border-0 bg-white ms-1"
                   onClick={() => handleEnableClick(item)}
                   data-tooltip-id={'global-tooltip'}
                   data-tooltip-content={
-                    item?.state !== 'DISABLED' ? 'Disable' : 'Enable'
+                    isBtnDisable
+                      ? ''
+                      : item?.state !== 'DISABLED'
+                        ? 'Disable'
+                        : 'Enable'
                   }
                   data-tooltip-place="left"
-                  disabled={!canWrite}
+                  disabled={!canWrite || isBtnDisable}
                   style={{
-                    opacity: canWrite ? 1 : 0.3,
-                    cursor: canWrite ? 'pointer' : 'not-allowed',
+                    opacity: !canWrite || isBtnDisable ? 0.3 : 1,
                   }}
                 >
                   {item?.state !== 'DISABLED' ? (
@@ -352,30 +368,31 @@ export const ListControllerService = () => {
                   )}
                 </button>
               </>
-            )}
-          {item?.state != 'ENABLED' &&
-            item?.state != 'ENABLING' &&
-            item?.state != 'DISABLING' &&
-            controllerPermissions.includes('delete_controller_services') && (
-              <>
-                <button
-                  className="border-0 bg-white ms-1"
-                  onClick={() => handleDeleteClick(item)}
-                  data-tooltip-id={'global-tooltip'}
-                  data-tooltip-content={'Delete'}
-                  data-tooltip-place="left"
-                  disabled={!canWrite}
-                  style={{
-                    opacity: canWrite ? 1 : 0.3,
-                    cursor: canWrite ? 'pointer' : 'not-allowed',
-                  }}
-                >
-                  <DeleteSmallIcon color="black" height="28" />
-                </button>
-              </>
-            )}
-        </>
-      ),
+            }
+            {item?.state != 'ENABLED' &&
+              item?.state != 'ENABLING' &&
+              item?.state != 'DISABLING' &&
+              controllerPermissions.includes('delete_controller_services') && (
+                <>
+                  <button
+                    className="border-0 bg-white ms-1"
+                    onClick={() => handleDeleteClick(item)}
+                    data-tooltip-id={'global-tooltip'}
+                    data-tooltip-content={'Delete'}
+                    data-tooltip-place="left"
+                    disabled={!canWrite}
+                    style={{
+                      opacity: canWrite ? 1 : 0.3,
+                      cursor: canWrite ? 'pointer' : 'not-allowed',
+                    }}
+                  >
+                    <DeleteSmallIcon color="black" height="28" />
+                  </button>
+                </>
+              )}
+          </>
+        );
+      },
       width: '10%',
     },
   ];
@@ -398,117 +415,126 @@ export const ListControllerService = () => {
     setSelectedPropertyToEdit(item);
   };
 
+  const statusLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'changeStatusControllerService')
+  );
+
   return (
-    <ScrollSetGrey className="scroll-set-grey pe-1">
-      <Collapsible
-        isAddBtnDisable={!canWrite}
-        title={singleNamespaceData?.name}
-        isTableOpen={isOpen}
-        toggleCollapsible={() => handleToggle()}
-        onBtnClick={() => {
-          if (canWrite) {
-            dispatch(NamespacesActions.setIsAddControllerServiceModal(true));
-          }
-        }}
-      >
-        <SearchContainer>
-          <SmallSearchIcon
-            width={18}
-            height={18}
-            color={theme.colors.darkGrey1}
+    <>
+      <FullPageLoader loading={statusLoading} />
+      <ScrollSetGrey className="scroll-set-grey pe-1">
+        <Collapsible
+          isAddBtnDisable={!canWrite}
+          title={singleNamespaceData?.name}
+          isTableOpen={isOpen}
+          toggleCollapsible={() => handleToggle()}
+          onBtnClick={() => {
+            if (canWrite) {
+              dispatch(NamespacesActions.setIsAddControllerServiceModal(true));
+            }
+          }}
+        >
+          <SearchContainer>
+            <SmallSearchIcon
+              width={18}
+              height={18}
+              color={theme.colors.darkGrey1}
+            />
+            <Search
+              type="search"
+              value={search}
+              placeholder="Search Controller Service by Name"
+              onChange={e => {
+                const value = e.target.value;
+                if (value.length <= 100) {
+                  setSearch(value);
+                }
+              }}
+            />
+          </SearchContainer>
+          <Table
+            data={filteredModulesData}
+            columns={COLUMNS}
+            controllerModule={true}
+            loading={loading}
+            showPagination={true}
           />
-          <Search
-            type="search"
-            value={search}
-            placeholder="Search Controller Service by Name"
-            onChange={e => {
-              const value = e.target.value;
-              if (value.length <= 100) {
-                setSearch(value);
-              }
-            }}
-          />
-        </SearchContainer>
-        <Table
-          data={filteredModulesData}
-          columns={COLUMNS}
-          controllerModule={true}
-          loading={loading}
-          showPagination={true}
+        </Collapsible>
+
+        <ReactTooltip
+          id="global-tooltip"
+          style={{
+            width: '100px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+          }}
         />
-      </Collapsible>
 
-      <ReactTooltip
-        id="global-tooltip"
-        style={{
-          width: '100px',
-          whiteSpace: 'normal',
-          wordWrap: 'break-word',
-        }}
-      />
+        <AddControllerServiceModal isFromPgDetails={true} />
 
-      <AddControllerServiceModal isFromPgDetails={true} />
-
-      <ConfigControllerService
-        isFromPgDetails={true}
-        isOpen={isListProprtyModel}
-        onClose={handleCloseModal}
-        selectedItemFromList={selectedItemFromList}
-        handleAddValueModal={handleAddValueModal}
-        listPropertyTableData={listPropertyTableData}
-        setListPropertTableData={setListPropertTableData}
-        setSelectedPropertyToEdit={setSelectedPropertyToEdit}
-        updatedData={updatedData}
-        setUpdatedData={setUpdatedData}
-      />
-      <AddProperties
-        isOpen={isAddpropertiesModalOpen}
-        onClose={() => {
-          setIsAddpropertiesModalOpen(false);
-          dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
-        }}
-        selectedPropertyToEdit={selectedPropertyToEdit}
-        listPropertyTableData={listPropertyTableData}
-        setListPropertTableData={setListPropertTableData}
-        setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
-        setUpdatedData={setUpdatedData}
-        updatedData={updatedData}
-      />
-      <PropertyDropdownModal
-        selectedPropertyToEdit={selectedPropertyToEdit}
-        setListPropertTableData={setListPropertTableData}
-        setUpdatedData={setUpdatedData}
-        updatedData={updatedData}
-      />
-      <ConfigurePropertyModal
-        setListPropertTableData={setListPropertTableData}
-        setUpdatedData={setUpdatedData}
-        updatedData={updatedData}
-      />
-      <ModalWithIcon
-        title={`${selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
-        primaryButtonText={
-          selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'
-        }
-        secondaryButtonText="Cancel"
-        icon={<ConfirmScheduleDeploymentIcon />}
-        isOpen={isEnableModalOpen}
-        onRequestClose={() => setIsEnableModalOpen(false)}
-        primaryText={`Are you sure you want to ${selectedItemFromList?.state !== 'DISABLED' ? 'disable' : 'enable'} ${selectedItemFromList?.name}?`}
-        onSubmit={handleStatusClick}
-      />
-      <ModalWithIcon
-        title={`Delete : ${selectedItemFromList?.name}`}
-        primaryButtonText={'Delete'}
-        secondaryButtonText="Cancel"
-        icon={<DeleteDustbinIcon />}
-        isOpen={isDeleteModalOpen}
-        onRequestClose={() => setIsDeleteModalOpen(false)}
-        primaryText={`Are you sure you want to delete ${selectedItemFromList?.name}?`}
-        onSubmit={handleDeleteControllerServiceClick}
-      />
-      <ControllerServerRefreshModal refreshItem={refreshItem} />
-    </ScrollSetGrey>
+        <ConfigControllerService
+          isFromPgDetails={true}
+          isOpen={isListProprtyModel}
+          onClose={handleCloseModal}
+          selectedItemFromList={selectedItemFromList}
+          handleAddValueModal={handleAddValueModal}
+          listPropertyTableData={listPropertyTableData}
+          setListPropertTableData={setListPropertTableData}
+          setSelectedPropertyToEdit={setSelectedPropertyToEdit}
+          updatedData={updatedData}
+          setUpdatedData={setUpdatedData}
+        />
+        <AddProperties
+          isOpen={isAddpropertiesModalOpen}
+          onClose={() => {
+            setIsAddpropertiesModalOpen(false);
+            dispatch(
+              NamespacesActions.setIsControllerServicePropertyModel(true)
+            );
+          }}
+          selectedPropertyToEdit={selectedPropertyToEdit}
+          listPropertyTableData={listPropertyTableData}
+          setListPropertTableData={setListPropertTableData}
+          setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
+          setUpdatedData={setUpdatedData}
+          updatedData={updatedData}
+        />
+        <PropertyDropdownModal
+          selectedPropertyToEdit={selectedPropertyToEdit}
+          setListPropertTableData={setListPropertTableData}
+          setUpdatedData={setUpdatedData}
+          updatedData={updatedData}
+        />
+        <ConfigurePropertyModal
+          setListPropertTableData={setListPropertTableData}
+          setUpdatedData={setUpdatedData}
+          updatedData={updatedData}
+        />
+        <ModalWithIcon
+          title={`${selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
+          primaryButtonText={
+            selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'
+          }
+          secondaryButtonText="Cancel"
+          icon={<ConfirmScheduleDeploymentIcon />}
+          isOpen={isEnableModalOpen}
+          onRequestClose={() => setIsEnableModalOpen(false)}
+          primaryText={`Are you sure you want to ${selectedItemFromList?.state !== 'DISABLED' ? 'disable' : 'enable'} ${selectedItemFromList?.name}?`}
+          onSubmit={handleStatusClick}
+        />
+        <ModalWithIcon
+          title={`Delete : ${selectedItemFromList?.name}`}
+          primaryButtonText={'Delete'}
+          secondaryButtonText="Cancel"
+          icon={<DeleteDustbinIcon />}
+          isOpen={isDeleteModalOpen}
+          onRequestClose={() => setIsDeleteModalOpen(false)}
+          primaryText={`Are you sure you want to delete ${selectedItemFromList?.name}?`}
+          onSubmit={handleDeleteControllerServiceClick}
+        />
+        <ControllerServerRefreshModal refreshItem={refreshItem} />
+      </ScrollSetGrey>
+    </>
   );
 };
 

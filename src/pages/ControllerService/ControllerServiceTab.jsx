@@ -16,7 +16,7 @@ import {
   SettingSmallIcon,
   SmallSearchIcon,
 } from '../../assets';
-import { Table, TextRender } from '../../components';
+import { FullPageLoader, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { ModalWithIcon } from '../../shared';
 import {
@@ -549,19 +549,18 @@ const ControllerServiceTab = ({
             : item;
         const state = stateItem?.state;
         const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
+        const isButtonVisible = state ? true : false;
 
-        const isButtonVisible =
-          (item.updatedValue &&
-            state !== 'INVALID' &&
-            state !== 'VALIDATING' &&
-            state !== 'DISABLING') ||
-          (state === 'DISABLED' && stateItem?.validationStatus !== 'INVALID') ||
-          (state === 'ENABLED' && stateItem?.validationStatus === 'VALID');
-
+        const isBtnDisabled =
+          !item.updatedValue ||
+          state === 'INVALID' ||
+          state === 'VALIDATING' ||
+          state === 'DISABLING' ||
+          (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
         return (
           <div>
             {/* Settings Button */}
-            {(stateItem.hasOwnProperty('properties')) && (
+            {stateItem.hasOwnProperty('properties') && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -570,19 +569,19 @@ const ControllerServiceTab = ({
                   aria-label="Settings"
                   disabled={
                     stateItem?.state === 'ENABLING' ||
-                    stateItem?.state === 'ENABLED'  ||
+                    stateItem?.state === 'ENABLED' ||
                     stateItem?.state === 'DISABLING'
                   }
                   style={{
                     opacity:
                       stateItem?.state === 'ENABLING' ||
-                      stateItem?.state === 'ENABLED'  ||
+                      stateItem?.state === 'ENABLED' ||
                       stateItem?.state === 'DISABLING'
                         ? 0.3
                         : 1,
                     cursor:
                       stateItem?.state === 'ENABLING' ||
-                      stateItem?.state === 'ENABLED'  ||
+                      stateItem?.state === 'ENABLED' ||
                       stateItem?.state === 'DISABLING'
                         ? 'not-allowed'
                         : 'pointer',
@@ -607,16 +606,24 @@ const ControllerServiceTab = ({
             {isButtonVisible && (
               <>
                 <button
+                  style={{
+                    opacity: isBtnDisabled ? 0.3 : 1,
+                  }}
+                  disabled={isBtnDisabled}
                   className="border-0 bg-white ms-2"
                   onClick={() => handleEnableClick(stateItem)}
                   data-tooltip-id={stateItem?.id}
                 >
-                  {state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
+                  {state !== 'DISABLED' || state !== 'DISABLING' ? (
+                    <FlashCutIcon />
+                  ) : (
+                    <FlashIcon />
+                  )}
                 </button>
                 <ReactTooltip
                   id={stateItem?.id}
                   place="left"
-                  content={tooltipContent}
+                  content={isBtnDisabled ? '' : tooltipContent}
                   style={{
                     width: '130px',
                     whiteSpace: 'normal',
@@ -799,19 +806,17 @@ const ControllerServiceTab = ({
             : item;
         const state = stateItem?.state;
         const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
-
-        const isButtonVisible =
-          (item.updatedValue &&
-            state !== 'INVALID' &&
-            state !== 'VALIDATING' &&
-            state !== 'DISABLING') ||
-          (state === 'DISABLED' && stateItem?.validationStatus !== 'INVALID') ||
-          (state === 'ENABLED' && stateItem?.validationStatus === 'VALID');
-
+        const isButtonVisible = state ? true : false;
+        const isBtnDisabled =
+          !item.updatedValue ||
+          state === 'INVALID' ||
+          state === 'VALIDATING' ||
+          state === 'DISABLING' ||
+          (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
         return (
           <div>
             {/* Settings Button */}
-            {(stateItem.hasOwnProperty('properties')) && (
+            {stateItem.hasOwnProperty('properties') && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -820,19 +825,19 @@ const ControllerServiceTab = ({
                   aria-label="Settings"
                   disabled={
                     stateItem?.state === 'ENABLING' ||
-                    stateItem?.state === 'ENABLED'  ||
+                    stateItem?.state === 'ENABLED' ||
                     stateItem?.state === 'DISABLING'
                   }
                   style={{
                     opacity:
                       stateItem?.state === 'ENABLING' ||
-                      stateItem?.state === 'ENABLED'  ||
+                      stateItem?.state === 'ENABLED' ||
                       stateItem?.state === 'DISABLING'
                         ? 0.3
                         : 1,
                     cursor:
                       stateItem?.state === 'ENABLING' ||
-                      stateItem?.state === 'ENABLED'  ||
+                      stateItem?.state === 'ENABLED' ||
                       stateItem?.state === 'DISABLING'
                         ? 'not-allowed'
                         : 'pointer',
@@ -857,6 +862,10 @@ const ControllerServiceTab = ({
             {isButtonVisible && (
               <>
                 <button
+                  style={{
+                    opacity: isBtnDisabled ? 0.3 : 1,
+                  }}
+                  disabled={isBtnDisabled}
                   className="border-0 bg-white ms-2"
                   onClick={() => handleEnableClick(stateItem)}
                   data-tooltip-id={stateItem?.id}
@@ -866,7 +875,7 @@ const ControllerServiceTab = ({
                 <ReactTooltip
                   id={stateItem?.id}
                   place="left"
-                  content={tooltipContent}
+                  content={isBtnDisabled ? '' : tooltipContent}
                   style={{
                     width: '130px',
                     whiteSpace: 'normal',
@@ -1712,116 +1721,124 @@ const ControllerServiceTab = ({
     });
   }, [localServices, externalControllerServices]);
 
+  const statusLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'changeStatusControllerService')
+  );
   return (
-    <DataWrapper>
-      <ScrollSetGrey className="scroll-set-grey pe-1">
-        {localServices?.length || externalControllerServices?.length ? (
-          collapsibles &&
-          collapsibles?.map((item, index) => (
-            <Collapsible
-              key={index}
-              title={item.title}
-              isTableOpen={openIndex === index}
-              toggleCollapsible={() => handleToggle(index, item)}
-              isAddBtnVisible={false}
-              onBtnClick={() => {
-                setOpenIndex(index);
-                dispatch(
-                  NamespacesActions.setIsAddControllerServiceModal(true)
-                );
-              }}
-            >
-              {item.content}
-            </Collapsible>
-          ))
-        ) : (
-          <>
-            <div className="d-flex justify-content-center h-100 align-items-center">
-              <div className="text-center">
-                <NoDataIcon width={130} />
-                <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+    <>
+      <FullPageLoader loading={statusLoading} />
+      <DataWrapper>
+        <ScrollSetGrey className="scroll-set-grey pe-1">
+          {localServices?.length || externalControllerServices?.length ? (
+            collapsibles &&
+            collapsibles?.map((item, index) => (
+              <Collapsible
+                key={index}
+                title={item.title}
+                isTableOpen={openIndex === index}
+                toggleCollapsible={() => handleToggle(index, item)}
+                isAddBtnVisible={false}
+                onBtnClick={() => {
+                  setOpenIndex(index);
+                  dispatch(
+                    NamespacesActions.setIsAddControllerServiceModal(true)
+                  );
+                }}
+              >
+                {item.content}
+              </Collapsible>
+            ))
+          ) : (
+            <>
+              <div className="d-flex justify-content-center h-100 align-items-center">
+                <div className="text-center">
+                  <NoDataIcon width={130} />
+                  <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+                </div>
               </div>
-            </div>
-          </>
+            </>
+          )}
+        </ScrollSetGrey>
+
+        {isModalOpen && (
+          <ConfigurePage
+            isOpen={isModalOpen}
+            onClose={handleConfigCloseModal}
+            service={selectedService}
+            handleConfigureSubmit={handleConfigureSubmit}
+            loading={loadingForConfigureTable}
+            setIsModalOpen={setIsModalOpen}
+          />
         )}
-      </ScrollSetGrey>
 
-      {isModalOpen && (
-        <ConfigurePage
-          isOpen={isModalOpen}
-          onClose={handleConfigCloseModal}
-          service={selectedService}
-          handleConfigureSubmit={handleConfigureSubmit}
-          loading={loadingForConfigureTable}
-          setIsModalOpen={setIsModalOpen}
+        <AddControllerServiceModal
+          setIsAddedViaAdd={setIsAddedViaAdd}
+          handleSubmitData={handleConfigureSubmit}
+          isFromControllerServiceTab={true}
         />
-      )}
 
-      <AddControllerServiceModal
-        setIsAddedViaAdd={setIsAddedViaAdd}
-        handleSubmitData={handleConfigureSubmit}
-        isFromControllerServiceTab={true}
-      />
+        <ConfigControllerService
+          isOpen={isListProprtyModel}
+          onClose={handleCloseModal}
+          selectedItemFromList={selectedItemFromList}
+          handleAddValueModal={handleAddValueModal}
+          listPropertyTableData={listPropertyTableData}
+          setListPropertTableData={setListPropertTableData}
+          setSelectedPropertyToEdit={setSelectedPropertyToEdit}
+          updatedData={updatedData}
+          setUpdatedData={setUpdatedData}
+          isFromControllerServiceTab={true}
+          isFromExternalService={isFromExternalService}
+          handlePropertyUpdate={handleServiceConfigure}
+          versionList={versionList}
+          setSelectedItemFromList={setSelectedItemFromList}
+        />
 
-      <ConfigControllerService
-        isOpen={isListProprtyModel}
-        onClose={handleCloseModal}
-        selectedItemFromList={selectedItemFromList}
-        handleAddValueModal={handleAddValueModal}
-        listPropertyTableData={listPropertyTableData}
-        setListPropertTableData={setListPropertTableData}
-        setSelectedPropertyToEdit={setSelectedPropertyToEdit}
-        updatedData={updatedData}
-        setUpdatedData={setUpdatedData}
-        isFromControllerServiceTab={true}
-        isFromExternalService={isFromExternalService}
-        handlePropertyUpdate={handleServiceConfigure}
-        versionList={versionList}
-        setSelectedItemFromList={setSelectedItemFromList}
-      />
+        <AddProperties
+          isOpen={isAddpropertiesModalOpen}
+          onClose={() => {
+            setIsAddpropertiesModalOpen(false);
+            dispatch(
+              NamespacesActions.setIsControllerServicePropertyModel(true)
+            );
+          }}
+          selectedPropertyToEdit={selectedPropertyToEdit}
+          listPropertyTableData={listPropertyTableData}
+          setListPropertTableData={setListPropertTableData}
+          setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
+          setUpdatedData={setUpdatedData}
+          updatedData={updatedData}
+        />
 
-      <AddProperties
-        isOpen={isAddpropertiesModalOpen}
-        onClose={() => {
-          setIsAddpropertiesModalOpen(false);
-          dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
-        }}
-        selectedPropertyToEdit={selectedPropertyToEdit}
-        listPropertyTableData={listPropertyTableData}
-        setListPropertTableData={setListPropertTableData}
-        setIsAddpropertiesModalOpen={setIsAddpropertiesModalOpen}
-        setUpdatedData={setUpdatedData}
-        updatedData={updatedData}
-      />
+        <PropertyDropdownModal
+          isFromControllerServiceTab={true}
+          selectedPropertyToEdit={selectedPropertyToEdit}
+          setListPropertTableData={setListPropertTableData}
+          setUpdatedData={setUpdatedData}
+          updatedData={updatedData}
+        />
 
-      <PropertyDropdownModal
-        isFromControllerServiceTab={true}
-        selectedPropertyToEdit={selectedPropertyToEdit}
-        setListPropertTableData={setListPropertTableData}
-        setUpdatedData={setUpdatedData}
-        updatedData={updatedData}
-      />
+        <ConfigurePropertyModal
+          setListPropertTableData={setListPropertTableData}
+          setUpdatedData={setUpdatedData}
+          updatedData={updatedData}
+        />
 
-      <ConfigurePropertyModal
-        setListPropertTableData={setListPropertTableData}
-        setUpdatedData={setUpdatedData}
-        updatedData={updatedData}
-      />
-
-      <ModalWithIcon
-        title={`${selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
-        primaryButtonText={
-          selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'
-        }
-        secondaryButtonText="Cancel"
-        icon={<ConfirmScheduleDeploymentIcon />}
-        isOpen={isEnableModalOpen}
-        onRequestClose={() => setIsEnableModalOpen(false)}
-        primaryText={`Are you sure you want to ${selectedItemFromList?.state !== 'DISABLED' ? 'disable' : 'enable'} ${selectedItemFromList?.name}?`}
-        onSubmit={handleStatusClick}
-      />
-      <ControllerServerRefreshModal refreshItem={refreshItem} />
-    </DataWrapper>
+        <ModalWithIcon
+          title={`${selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
+          primaryButtonText={
+            selectedItemFromList?.state !== 'DISABLED' ? 'Disable' : 'Enable'
+          }
+          secondaryButtonText="Cancel"
+          icon={<ConfirmScheduleDeploymentIcon />}
+          isOpen={isEnableModalOpen}
+          onRequestClose={() => setIsEnableModalOpen(false)}
+          primaryText={`Are you sure you want to ${selectedItemFromList?.state !== 'DISABLED' ? 'disable' : 'enable'} ${selectedItemFromList?.name}?`}
+          onSubmit={handleStatusClick}
+        />
+        <ControllerServerRefreshModal refreshItem={refreshItem} />
+      </DataWrapper>
+    </>
   );
 };
 ControllerServiceTab.propTypes = {

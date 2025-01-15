@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { DeleteSmallIcon, QRIcons } from '../../assets';
+import { DeleteSmallIcon, PencilIcon, QRIcons } from '../../assets';
 import { Table } from '../../components';
 import { Button, InputField, Modal } from '../../shared';
 import { NamespacesActions } from '../../store';
@@ -82,13 +82,26 @@ export const ConfigControllerService = ({
     },
     {
       label: 'Action',
-      renderCell: item =>
-        (item?.new_added || item.dynamic) && (
-          <div onClick={() => handleDeleteClick(item)}>
+      renderCell: item => (
+        <div className="d-flex gap-2">
+          {(item?.new_added || item.dynamic) && (
+            <div
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleDeleteClick(item)}
+            >
+              {' '}
+              <DeleteSmallIcon color="black" height="28" />
+            </div>
+          )}
+          <div
+            style={{ cursor: 'pointer' }}
+            onClick={() => handleAddValueModal(item)}
+          >
             {' '}
-            <DeleteSmallIcon color="black" height="28" />
+            <PencilIcon height="28" />
           </div>
-        ),
+        </div>
+      ),
       width: '10%',
     },
   ];
@@ -141,7 +154,7 @@ export const ConfigControllerService = ({
       sensitiveDynamicPropertyNames: sensitiveNames,
       currentState: selectedItemFromList?.state,
       name: data?.name,
-      use_service_account: isFromExternalService ? true : false
+      use_service_account: isFromExternalService ? true : false,
     };
     const configPayload = updateProperties(selectedItemFromList, updatedData);
     if (isFromControllerServiceTab && !isFromExternalService) {
