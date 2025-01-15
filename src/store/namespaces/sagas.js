@@ -326,9 +326,10 @@ export function* fetchParameterContext(
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        parameterId:
-          deployOrUpgradeDetails?.parameterContextId ||
-          singleNamespaceData?.parameterContextId,
+        parameterId: parentParameterSelectData?.parent
+          ? parentParameterSelectData?.id
+          : deployOrUpgradeDetails?.parameterContextId ||
+            singleNamespaceData?.parameterContextId,
         includeInherited: !parentParameterSelectData?.parent,
       },
     ],
@@ -407,7 +408,7 @@ export function* updateParameterContext(api, { payload }) {
   if (response.ok && !response.data?.complete && response.data?.requestId) {
     yield call(getStatusAndDeleteParameterContext, api, {
       method: 'get',
-      additionalData: { requestId: response.data?.requestId },
+      additionalData: { requestId: response?.data?.requestId },
     });
 
     yield put(
@@ -697,12 +698,14 @@ export function* getControllerServiceList(api, action) {
   let isLocalOnly = false;
   let namespaceIdentifier = '';
   let use_service_account = false;
-
+  let isFromToggle = false;
   if (action.payload) {
-    const { localOnly, namespaceId, use_service_ac } = action.payload;
+    const { localOnly, namespaceId, use_service_ac, is_from_toggle } =
+      action.payload;
     isLocalOnly = localOnly;
     namespaceIdentifier = namespaceId;
     use_service_account = use_service_ac;
+    isFromToggle = is_from_toggle;
   }
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
@@ -717,6 +720,19 @@ export function* getControllerServiceList(api, action) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
+  let namespaceId = '';
+  if (use_service_account === true && !isFromToggle) {
+    namespaceId = '';
+  } else if (namespaceIdentifier?.length && (isFromToggle || isLocalOnly)) {
+    namespaceId = namespaceIdentifier;
+  } else if (
+    (selectedNamespaceId?.id || selectedNamespace?.id) &&
+    (isFromToggle || isLocalOnly)
+  ) {
+    namespaceId = selectedNamespaceId?.id
+      ? selectedNamespaceId?.id
+      : selectedNamespace?.id;
+  }
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
@@ -726,11 +742,10 @@ export function* getControllerServiceList(api, action) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: namespaceIdentifier?.length
-          ? namespaceIdentifier
-          : selectedNamespaceId?.id || selectedNamespace?.id,
+        namespaceId: namespaceId,
         localOnly: isLocalOnly,
         use_service_account: use_service_account,
+        is_from_toggle: isFromToggle,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
@@ -744,9 +759,13 @@ export function* getControllerServiceList(api, action) {
   }
 }
 
-export function* getAllControllerServiceListToAdd(api) {
+export function* getAllControllerServiceListToAdd(api, action) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-
+  let use_service_ac = false;
+  if (action.payload) {
+    const { isFromControllerServiceTab } = action.payload;
+    use_service_ac = isFromControllerServiceTab;
+  }
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -762,6 +781,7 @@ export function* getAllControllerServiceListToAdd(api) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
+        use_service_account: use_service_ac,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
@@ -819,7 +839,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
 
 export function* addPropertyControllerService(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const { id, ...rest } = payload;
+  const { id, use_service_account, ...rest } = payload;
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -837,6 +857,7 @@ export function* addPropertyControllerService(api, { payload }) {
         clusterId: selectedCluster?.value,
         controllerId: id,
         payloadData: rest,
+        use_service_account: use_service_account,
       },
     ],
   });
@@ -952,9 +973,13 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
 export function* changeStatusControllerService(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   let fromPgDetailsPage = false;
-  const { id, isFromPgDetails, ...rest } = payload;
-  if (payload) {
+  let use_service_account = false;
+  const { id, isFromPgDetails, use_service_ac, ...rest } = payload;
+  if (isFromPgDetails) {
     fromPgDetailsPage = isFromPgDetails;
+  }
+  if (use_service_ac) {
+    use_service_account = use_service_ac;
   }
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -973,6 +998,7 @@ export function* changeStatusControllerService(api, { payload }) {
         clusterId: selectedCluster?.value,
         payloadData: rest,
         controllerId: id,
+        use_service_account: use_service_account,
       },
     ],
   });

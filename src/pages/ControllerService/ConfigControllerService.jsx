@@ -141,6 +141,7 @@ export const ConfigControllerService = ({
       sensitiveDynamicPropertyNames: sensitiveNames,
       currentState: selectedItemFromList?.state,
       name: data?.name,
+      use_service_account: isFromExternalService ? true : false
     };
     const configPayload = updateProperties(selectedItemFromList, updatedData);
     if (isFromControllerServiceTab && !isFromExternalService) {

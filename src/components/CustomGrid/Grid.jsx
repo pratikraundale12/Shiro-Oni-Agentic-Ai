@@ -149,8 +149,8 @@ export const Grid = ({
   );
   const prev = useSelector(state => GridSelectors.getGridPrev(state, module));
   const next = useSelector(state => GridSelectors.getGridNext(state, module));
-  const selectedNamespace = useSelector(
-    NamespacesSelectors.getSelectedNamespace
+  const selectedNamespaceForDetail = useSelector(
+    NamespacesSelectors.getSelectedNameSpaceForDetail
   );
   const itemsPerPage = 10;
   const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
@@ -306,11 +306,10 @@ export const Grid = ({
     clusterId,
     search,
     page,
-    selectedNamespace,
     selectedCluster,
     currentPage,
+    selectedNamespaceForDetail,
   ]);
-
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
     dispatch(ActivityHistoryActions.setSelectedEntity(null));

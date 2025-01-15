@@ -130,6 +130,9 @@ const ConfigDetailsPage = () => {
   const selectedNamespaceForDetail = useSelector(
     NamespacesSelectors.getSelectedNameSpaceForDetail
   );
+  const selectedNamepaceFromList = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
   //need to add the components for respective tabs
   const renderContent = () => {
     switch (activeTab) {
@@ -163,6 +166,7 @@ const ConfigDetailsPage = () => {
         return null;
     }
   };
+  const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
   return (
     <div>
       {breadcrumbs.length === 1 && (
@@ -179,7 +183,8 @@ const ConfigDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {KDFM.PROCESS_GROUP_DETAILS}: {selectedNamespaceForDetail?.name}
+            {KDFM.PROCESS_GROUP_DETAILS}:
+            {selectedNamepaceFromList?.name || selectedNamespaceForDetail?.name}
           </MainTitleHfour>
         </MainTitleDiv>
       </TopTitleBar>
@@ -201,7 +206,17 @@ const ConfigDetailsPage = () => {
           </Tab>
           <Tab
             active={activeTab === KDFM.PARAMETER_CONTEXT}
-            onClick={() => setActiveTab(KDFM.PARAMETER_CONTEXT)}
+            onClick={() => {
+              setActiveTab(KDFM.PARAMETER_CONTEXT);
+              if (isParentEdit?.parent) {
+                dispatch(
+                  NamespacesActions.setParameterEditParent({
+                    parent: false,
+                    id: '',
+                  })
+                );
+              }
+            }}
             className="nav-item"
           >
             {KDFM.PARAMETER_CONTEXT}
