@@ -335,32 +335,34 @@ export const GridActions = ({
     {
       label: 'Last 7 Days',
       value: [
-        new Date(new Date().setDate(new Date().getDate() - 7)),
-        new Date(),
+        startOfDay(new Date(new Date().setDate(new Date().getDate() - 7))),
+        endOfDay(new Date()),
       ],
       placement: 'left',
     },
     {
       label: 'Last Month',
       value: [
-        new Date(new Date().setMonth(new Date().getMonth() - 1)),
-        new Date(),
+        startOfDay(new Date(new Date().setMonth(new Date().getMonth() - 1))),
+        endOfDay(new Date()),
       ],
       placement: 'left',
     },
     {
       label: 'Last 6 Months',
       value: [
-        new Date(new Date().setMonth(new Date().getMonth() - 6)),
-        new Date(),
+        startOfDay(new Date(new Date().setMonth(new Date().getMonth() - 6))),
+        endOfDay(new Date()),
       ],
       placement: 'left',
     },
     {
       label: 'Last Year',
       value: [
-        new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
-        new Date(),
+        startOfDay(
+          new Date(new Date().setFullYear(new Date().getFullYear() - 1))
+        ),
+        endOfDay(new Date()),
       ],
       placement: 'left',
     },
