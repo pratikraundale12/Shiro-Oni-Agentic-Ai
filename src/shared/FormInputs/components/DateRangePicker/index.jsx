@@ -5,10 +5,15 @@ import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
 
 const ContainerRangePicker = styled.div`
+  & div {
+    cursor: pointer;
+  }
+  cursor: pointer;
   div > div {
     border: 1px solid #b5b5bd !important;
     color: black;
     background-color: #f5f7fa;
+    min-height: 38px;
   }
   div > div > input {
     color: black !important;
@@ -22,9 +27,6 @@ const ContainerRangePicker = styled.div`
   }
 `;
 const DateRangePickerInput = ({ value, handleChange, customRanges }) => {
-  const disabledDate = date => {
-    return date > new Date();
-  };
   return (
     <>
       <ContainerRangePicker>
@@ -34,9 +36,9 @@ const DateRangePickerInput = ({ value, handleChange, customRanges }) => {
           placeholder="Select Deployment Schedule Range"
           style={{ width: 280 }}
           ranges={customRanges}
-          disabledDate={disabledDate}
           showOneCalendar
           size="md"
+          showHeader={false}
         />
       </ContainerRangePicker>
     </>

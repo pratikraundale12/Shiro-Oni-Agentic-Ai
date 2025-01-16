@@ -300,12 +300,24 @@ const FlowDetailsPage = () => {
   }, [updatedDataForUpgrade]);
 
   const breadcrumbOnDeploy = [
-    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+    {
+      label: KDFM.NIFI_FLOW,
+      path: '/process-group',
+      callback: () => {
+        dispatch(NamespacesActions.setSelectedNamespace({}));
+      },
+    },
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
     { label: 'Flow Details' },
   ];
   const breadcrumbOnUpgrade = [
-    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+    {
+      label: KDFM.NIFI_FLOW,
+      path: '/process-group',
+      callback: () => {
+        dispatch(NamespacesActions.setSelectedNamespace({}));
+      },
+    },
     { label: KDFM.FLOW_DETAILS },
   ];
 
@@ -339,6 +351,9 @@ const FlowDetailsPage = () => {
     !isUpgrade
       ? history.push('/process-group')
       : history.push('/process-group/deployPage');
+    if (!isUpgrade) {
+      dispatch(NamespacesActions.setSelectedNamespace({}));
+    }
   };
 
   const handleXCoordinateChangeInput = e => {
@@ -450,7 +465,7 @@ const FlowDetailsPage = () => {
                 />
                 <ReactTooltip
                   id="state-tooltip"
-                  place="left"
+                  place="top"
                   effect="solid"
                   content={
                     selectedNameSpace?.stateExplanation ||

@@ -305,20 +305,6 @@ export const scheduleSchema = yup.object().shape({
   approver_ids: yup.array().required('Approver is required'),
 });
 
-const breadcrumbDataOnDeploy = [
-  { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
-  { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
-  { label: 'Flow Details', path: '/process-group/flow-details' },
-  { label: 'Configuration Details', path: '/process-group/config-details' },
-  { label: 'Summary' },
-];
-const breadcrumbDataOnUpgrade = [
-  { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
-  { label: 'Flow Details', path: '/process-group/flow-details' },
-  { label: 'Configuration Details', path: '/process-group/config-details' },
-  { label: 'Summary' },
-];
-
 const Summary = () => {
   const dispatch = useDispatch();
   const selectedDestCluster =
@@ -435,6 +421,31 @@ const Summary = () => {
     text: '',
     forPopup: false,
   });
+  const breadcrumbDataOnDeploy = [
+    {
+      label: KDFM.NIFI_FLOW,
+      path: '/process-group',
+      callback: () => {
+        dispatch(NamespacesActions.setSelectedNamespace({}));
+      },
+    },
+    { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
+    { label: 'Flow Details', path: '/process-group/flow-details' },
+    { label: 'Configuration Details', path: '/process-group/config-details' },
+    { label: 'Summary' },
+  ];
+  const breadcrumbDataOnUpgrade = [
+    {
+      label: KDFM.NIFI_FLOW,
+      path: '/process-group',
+      callback: () => {
+        dispatch(NamespacesActions.setSelectedNamespace({}));
+      },
+    },
+    { label: 'Flow Details', path: '/process-group/flow-details' },
+    { label: 'Configuration Details', path: '/process-group/config-details' },
+    { label: 'Summary' },
+  ];
   const [flowControlState, setFlowControlState] = useState(null);
   const getParamerterContext = async () => {
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));

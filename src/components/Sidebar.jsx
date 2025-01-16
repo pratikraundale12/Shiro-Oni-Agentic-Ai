@@ -18,6 +18,7 @@ import {
   AuthenticationActions,
   AuthenticationSelectors,
   LoadingSelectors,
+  NamespacesActions,
 } from '../store';
 import { SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
@@ -202,6 +203,9 @@ export const Sidebar = ({
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));
     history.push(`/${path}`);
+    if (path === 'process-group') {
+      dispatch(NamespacesActions.setSelectedNamespace({}));
+    }
   };
 
   const getImage = () => {
