@@ -119,7 +119,6 @@ const ConfigDetailsPage = () => {
   );
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
-    // { label: 'Process Group Details', path: `/process-group/${idFromUrl}` },
   ];
   const [variablesModalOpen, setVariablesModalOpen] = useState(false);
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
