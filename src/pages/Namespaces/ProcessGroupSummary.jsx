@@ -181,7 +181,7 @@ const ConfigDetailsPage = () => {
             <TodoIcon />
           </ImageContainer>
           <MainTitleHfour className="mb-0">
-            {KDFM.PROCESS_GROUP_DETAILS}: &nbsp;
+            {KDFM.PROCESS_GROUP_DETAILS} : &nbsp;
             {singleNamespaceData?.name || ''}
           </MainTitleHfour>
         </MainTitleDiv>
