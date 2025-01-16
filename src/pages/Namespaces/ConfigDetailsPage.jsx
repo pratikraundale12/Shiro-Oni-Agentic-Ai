@@ -97,17 +97,28 @@ const TabContent = styled.div`
   padding: 0px 0.5rem;
   border-radius: 0.25rem;
 `;
-
 const ConfigDetailsPage = () => {
   const dispatch = useDispatch();
   const breadcrumbDataOnDeploy = [
-    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+    {
+      label: KDFM.NIFI_FLOW,
+      path: '/process-group',
+      callback: () => {
+        dispatch(NamespacesActions.setSelectedNamespace({}));
+      },
+    },
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
   const breadcrumbDataOnUpgrade = [
-    { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
+    {
+      label: KDFM.NIFI_FLOW,
+      path: '/process-group',
+      callback: () => {
+        dispatch(NamespacesActions.setSelectedNamespace({}));
+      },
+    },
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];

@@ -50,6 +50,9 @@ const Breadcrumb = ({ module, path, onClick, fromDetailPage = false }) => {
   );
   const data = isEmpty(path) ? breadcrumbs : path;
   const handleClick = value => {
+    if (value?.callback) {
+      value.callback();
+    }
     if (module === 'namespaces') {
       dispatch(NamespacesActions.setSelectedNamespace(value));
       dispatch(NamespacesActions.setSelectedNameSpaceForDetail(value));

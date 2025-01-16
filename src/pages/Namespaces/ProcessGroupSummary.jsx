@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets';
 import { KDFM } from '../../constants';
@@ -16,6 +16,7 @@ import ListControllerService from './ListControllerServiceNamespace';
 import ListVariables from './Listvariables';
 import ParameterContext from './ParameterContext';
 import SummaryDetails from './SummaryDetails';
+import { history } from '../../helpers/history';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -90,26 +91,34 @@ const TabContent = styled.div`
   border-radius: 0.25rem;
   background-color: #f8f9fa;
 `;
+const BreadcrumbItem = styled.span`
+  cursor: pointer;
+  font-size: 16px;
+  &::after {
+    content: '>';
+    padding: 0 8px;
+    text-decoration: none;
+  }
+
+  &:last-child::after {
+    content: '';
+  }
+
+  &:last-child {
+    color: #ff7a00;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
 
 const ConfigDetailsPage = () => {
-  const location = useLocation();
-  const [idFromUrl, setIdFromUrl] = useState(null);
-  useEffect(() => {
-    const match = location?.pathname.match(/process-group\/([a-f0-9-]+)/);
-    if (match) {
-      const id = match[1];
-      setIdFromUrl(id);
-    } else {
-      setIdFromUrl(null);
-    }
-  }, [location?.pathname]);
-
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
   const breadcrumbData = [
     { label: KDFM.NAMESPACE_LIST, path: '/process-group' },
-    { label: 'Process Group Details', path: `/process-group/${idFromUrl}` },
   ];
   const [variablesModalOpen, setVariablesModalOpen] = useState(false);
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
@@ -169,6 +178,9 @@ const ConfigDetailsPage = () => {
     <div>
       {breadcrumbs.length === 1 && (
         <BreadcrumbContainer className="d-flex  mb-3">
+          <BreadcrumbItem onClick={() => history.push(`/process-group`)}>
+            {KDFM.NIFI_FLOW}
+          </BreadcrumbItem>
           <Breadcrumb module="upgrade" path={breadcrumbData} />
         </BreadcrumbContainer>
       )}

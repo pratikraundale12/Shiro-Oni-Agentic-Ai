@@ -160,11 +160,6 @@ const Para = styled.p`
   font-weight: 600;
 `;
 
-const breadcrumbData = [
-  { label: 'Process Group List', path: '/process-group' },
-  { label: 'Registry & Flow Name', path: '/process-group/DeployPage' },
-];
-
 function DeployPage() {
   const dispatch = useDispatch();
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
@@ -187,6 +182,16 @@ function DeployPage() {
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
+  const breadcrumbData = [
+    {
+      label: KDFM.NIFI_FLOW,
+      path: '/process-group',
+      callback: () => {
+        dispatch(NamespacesActions.setSelectedNamespace({}));
+      },
+    },
+    { label: 'Registry & Flow Name', path: '/process-group/DeployPage' },
+  ];
   const bucketListOptions = bucketListData?.bucketList?.map(item => ({
     label: item?.name,
     value: item?.id,
@@ -347,6 +352,7 @@ function DeployPage() {
 
   const handleBackAction = () => {
     history.push('/process-group');
+    dispatch(NamespacesActions.setSelectedNamespace({}));
   };
   const gridData = useSelector(state =>
     GridSelectors.getGridData(state, 'namespaces')

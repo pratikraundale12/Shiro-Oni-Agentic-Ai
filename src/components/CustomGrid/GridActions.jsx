@@ -126,7 +126,6 @@ const StyledSelectField = styled(SelectField)`
   }
 `;
 const DropdownContainer = styled.div`
-  margin-left: 10px;
   min-width: 175px;
   max-width: 175px;
   cursor: pointer;
@@ -327,6 +326,40 @@ export const GridActions = ({
   };
 
   const customRanges = [
+    {
+      label: 'Next Year',
+      value: [
+        startOfDay(new Date()),
+        endOfDay(
+          new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+        ),
+      ],
+      placement: 'left',
+    },
+    {
+      label: 'Next 6 Months',
+      value: [
+        startOfDay(new Date()),
+        endOfDay(new Date(new Date().setMonth(new Date().getMonth() + 6))),
+      ],
+      placement: 'left',
+    },
+    {
+      label: 'Next Month',
+      value: [
+        startOfDay(new Date()),
+        endOfDay(new Date(new Date().setMonth(new Date().getMonth() + 1))),
+      ],
+      placement: 'left',
+    },
+    {
+      label: 'Next 7 Days',
+      value: [
+        startOfDay(new Date()),
+        endOfDay(new Date(new Date().setDate(new Date().getDate() + 7))),
+      ],
+      placement: 'left',
+    },
     {
       label: 'Today',
       value: [startOfDay(new Date()), endOfDay(new Date())],
