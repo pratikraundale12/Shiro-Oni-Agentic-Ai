@@ -17,6 +17,7 @@ import {
 import { Grid, IconButton, TextRender } from '../../components';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
+import SortingComponent from '../../shared/SortingComponent';
 import { AuthenticationSelectors } from '../../store';
 import {
   SchedularActions,
@@ -270,12 +271,22 @@ export const ListScheduleDeployment = () => {
 
   const COLUMNS = [
     {
-      label: 'Process Group',
+      label: (
+        <>
+          Process Group{' '}
+          <SortingComponent sortProperty="namespace_name" module="scheduler" />
+        </>
+      ),
       renderCell: item => <TextRender text={item?.namespace_name || 'N/A'} />,
       width: '12%',
     },
     {
-      label: 'Flow Name',
+      label: (
+        <>
+          Flow Name{' '}
+          <SortingComponent sortProperty="flow_name" module="scheduler" />
+        </>
+      ),
       renderCell: item => <TextRender text={item?.flow_name || 'N/A'} />,
       width: '11%',
     },
@@ -292,7 +303,12 @@ export const ListScheduleDeployment = () => {
       width: '10%',
     },
     {
-      label: 'Scheduler',
+      label: (
+        <>
+          Scheduler{' '}
+          <SortingComponent sortProperty="scheduled_by" module="scheduler" />
+        </>
+      ),
       renderCell: item => <TextRender text={item?.scheduled_by || 'N/A'} />,
       width: '8%',
     },
