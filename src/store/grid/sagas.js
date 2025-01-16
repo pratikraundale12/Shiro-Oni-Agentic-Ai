@@ -13,7 +13,7 @@ export function* fetchGrid(
 ) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const selecedNamespaceDetails = yield select(
-    NamespacesSelectors.getSelectedNameSpaceForDetail
+    NamespacesSelectors.getSelectedNamespace
   );
 
   const selectedDestCluster = yield select(

@@ -293,12 +293,11 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     setDisplaySessionTab(false);
   };
   useEffect(() => {
-    if (window.location.pathname !== '/process-group') {
+    if (!window.location.pathname.includes('/process-group')) {
       dispatch(
         GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
       dispatch(NamespacesActions.setSelectedNamespace({}));
-      dispatch(NamespacesActions.setSelectedNameSpaceForDetail({}));
     }
     if (window.location.pathname !== '/clusters') {
       dispatch(GridActions.fetchGridSuccess({ module: 'clusters', data: {} }));

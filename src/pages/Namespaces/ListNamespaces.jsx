@@ -74,7 +74,9 @@ export const ListNamespaces = () => {
   const dispatch = useDispatch();
   const { setState } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
-
+  useEffect(() => {
+    dispatch(NamespacesActions.resetDeployData());
+  }, []);
   const sortFns = {
     name: array => sortByNameWithVersionFilter(array),
   };
@@ -132,9 +134,8 @@ export const ListNamespaces = () => {
             onClick={() => {
               setState(prev => ({ ...prev, search: '' }));
               dispatch(NamespacesActions.setFlowPath(item.flowId));
-              dispatch(NamespacesActions.setSelectedNamespace({}));
               dispatch(
-                NamespacesActions.setSelectedNameSpaceForDetail({
+                NamespacesActions.setSelectedNamespace({
                   label: item.name,
                   value: item.id,
                 })
@@ -311,8 +312,7 @@ export const ListNamespaces = () => {
           <button
             onClick={() => {
               history.push(`/process-group/${item.id}`);
-              dispatch(NamespacesActions.setSelectedNameSpaceForDetail(item));
-              dispatch(NamespacesActions.setSelectedNamespace({}));
+              dispatch(NamespacesActions.setSelectedNamespace(item));
             }}
             style={{
               background: 'none',
@@ -336,31 +336,35 @@ export const ListNamespaces = () => {
               wordWrap: 'break-word',
             }}
           />
-          <button
-            onClick={() => handleScheduleClick(item)}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: !item?.version ? 'not-allowed' : 'pointer',
-            }}
-            data-tooltip-id={`tooltip-schedule-deployment-list`}
-            disabled={!item?.version}
-          >
-            <IconButton>
-              <CalenderIcon2 width={14} height={14} color="grey" />
-            </IconButton>
-          </button>
-          <ReactTooltip
-            id={`tooltip-schedule-deployment-list`}
-            place="right"
-            content={'Schedule Upgrade'}
-            style={{
-              width: '180px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
+          {item?.version && (
+            <>
+              <button
+                onClick={() => handleScheduleClick(item)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: !item?.version ? 'not-allowed' : 'pointer',
+                }}
+                data-tooltip-id={`tooltip-schedule-deployment-list`}
+                disabled={!item?.version}
+              >
+                <IconButton>
+                  <CalenderIcon2 width={14} height={14} color="grey" />
+                </IconButton>
+              </button>
+              <ReactTooltip
+                id={`tooltip-schedule-deployment-list`}
+                place="right"
+                content={'Schedule Upgrade'}
+                style={{
+                  width: '180px',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
           {!(!item?.permissions?.canWrite || !item?.version) && (
             <button
               type="button"

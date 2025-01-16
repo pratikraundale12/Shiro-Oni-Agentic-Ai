@@ -517,6 +517,7 @@ const resetDeployData = state => {
   return {
     ...NAMESPACES_INITIAL_STATE,
     selectedCluster: state.selectedCluster,
+    selectedNamespace: state.selectedNamespace,
   };
 };
 
