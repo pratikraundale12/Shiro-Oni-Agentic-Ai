@@ -23,6 +23,7 @@ export const TextRender = ({
   capitalizeText = true,
   tooltipPlacement = 'right',
   toolTip = true,
+  ListForTooltip = null,
   ...rest
 }) => {
   const textToRender = typeof text === 'number' ? String(text) : text;
@@ -37,12 +38,12 @@ export const TextRender = ({
       {toolTip && (
         <ReactTooltip
           id={textToRender}
-          content={textToRender}
+          content={ListForTooltip ? ListForTooltip : textToRender}
           place={tooltipPlacement}
           positionStrategy="fixed"
           style={{
             width: 'max-content',
-            maxWidth: '320px',
+            maxWidth: '355px',
             whiteSpace: 'normal',
             wordWrap: 'break-word',
             zIndex: 9999,
@@ -58,4 +59,5 @@ TextRender.propTypes = {
   capitalizeText: PropTypes.bool,
   tooltipPlacement: PropTypes.string,
   toolTip: PropTypes.bool,
+  ListForTooltip: PropTypes.string,
 };
