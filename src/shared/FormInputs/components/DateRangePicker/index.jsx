@@ -33,12 +33,15 @@ const DateRangePickerInput = ({ value, handleChange, customRanges }) => {
         <DateRangePicker
           value={value}
           onChange={handleChange}
-          placeholder="Select Deployment Schedule Range"
+          placeholder="Select Date Range"
           style={{ width: 280 }}
           ranges={customRanges}
           showOneCalendar
           size="md"
           showHeader={false}
+          editable={false}
+          showTime={false}
+          format="MM/dd/yyyy"
         />
       </ContainerRangePicker>
     </>

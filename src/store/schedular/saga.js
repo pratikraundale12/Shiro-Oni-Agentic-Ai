@@ -61,6 +61,7 @@ export function* editScheduleDeployment(api, { payload }) {
       yield put(SchedularActions.setApproveScheduleModal());
     if (scheduleModal) yield put(SchedularActions.setScheduleModal());
     if (tokenScheduleModal) yield put(SchedularActions.setTokenScheduleModal());
+    yield put(SchedularActions.setScheduleSelectRange([]));
     yield call(fetchGrid, api, {
       payload: { module: 'scheduler' },
     });
@@ -93,6 +94,7 @@ export function* editScheduleByRegistry(api, { payload }) {
     yield put(SchedularActions.setCancelScheduleModal(false));
     yield put(SchedularActions.setApproveScheduleModal(false));
     yield put(GridActions.fetchGrid({ module: 'scheduler' }));
+    yield put(SchedularActions.setScheduleSelectRange([]));
     toast.success(response?.data?.message);
   } else {
     toast.error(response?.data?.error);
@@ -111,6 +113,7 @@ export function* rejectScheduleDeployment(api, { payload }) {
     toast.success(response?.data?.message);
     yield put(SchedularActions.setRejectScheduleModal(false));
     yield put(SchedularActions.setCancelScheduleModal(false));
+    yield put(SchedularActions.setScheduleSelectRange([]));
     yield put(GridActions.fetchGrid({ module: 'scheduler' }));
   } else {
     toast.error(response?.data?.error);

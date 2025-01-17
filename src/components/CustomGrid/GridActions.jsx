@@ -200,7 +200,6 @@ export const GridActions = ({
   const breadcrumbs = useSelector(state =>
     GridSelectors.getGridBreadcrumb(state, module)
   );
-  const [dateRange, setDateRange] = useState(null);
   const { setState } = useGlobalContext();
   const uniqueRoles = useMemo(() => {
     return Array.from(new Set(roles.map(role => role.name))).map(name => {
@@ -210,7 +209,6 @@ export const GridActions = ({
 
   const entity = watch('entityName');
   const event = watch('activityEvent');
-
   const getModuleBasedStatusKey = module => {
     if (module === 'activityHistory') {
       return 'status';
@@ -310,7 +308,6 @@ export const GridActions = ({
 
   const handleChange = value => {
     dispatch(SchedularActions.setScheduleSelectRange(value));
-    setDateRange(value);
     if (!value) {
       dispatch(SchedularActions.setScheduleSelectRange([]));
       dispatch(
@@ -451,7 +448,7 @@ export const GridActions = ({
                   </Button>
                 )}
                 <DateRangePickerInput
-                  value={dateRange}
+                  value={selectedRange}
                   handleChange={handleChange}
                   customRanges={customRanges}
                 />
