@@ -74,7 +74,9 @@ export const ActvityHistory = () => {
     {
       label: KDFM.TIMESTAMP,
       width: '12%',
-      renderCell: item => <TextRender text={convertDateTime(item.timestamp) || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender text={convertDateTime(item.timestamp) || KDFM.NA} />
+      ),
       sort: { sortKey: 'timestamp' },
     },
     {

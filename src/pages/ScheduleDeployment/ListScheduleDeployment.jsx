@@ -12,6 +12,8 @@ import {
   // HoldIcon,
   PencilIcon,
   RejectIcon,
+  SortDownIcon,
+  SortUpIcon,
   TickIconWithCircle,
 } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
@@ -43,7 +45,6 @@ const StyledButton = styled.button`
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const cancelScheduleModal = useSelector(
@@ -56,6 +57,15 @@ export const ListScheduleDeployment = () => {
   const location = useLocation();
 
   const params = new URLSearchParams(location.search);
+  const [sortingState, setSortingState] = useState('');
+  const toggleSorting = column => {
+    setSortingState(prevState => {
+      if (prevState === column) {
+        return `-${column}`;
+      }
+      return column;
+    });
+  };
   const tokenId = params.get('id');
   if (tokenId) {
     window.localStorage.setItem('scheduleTokenid', tokenId);
@@ -290,7 +300,15 @@ export const ListScheduleDeployment = () => {
       label: (
         <>
           Process Group{' '}
-          <SortingComponent sortProperty="namespace_name" module="scheduler" />
+          <button onClick={() => toggleSorting('namespace_name')}>
+            {sortingState === 'namespace_name' ? (
+              <SortUpIcon />
+            ) : sortingState === '-namespace_name' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
         </>
       ),
       renderCell: item => <TextRender text={item?.namespace_name || 'N/A'} />,
@@ -300,7 +318,15 @@ export const ListScheduleDeployment = () => {
       label: (
         <>
           Flow Name{' '}
-          <SortingComponent sortProperty="flow_name" module="scheduler" />
+          <button onClick={() => toggleSorting('flow_name')}>
+            {sortingState === 'flow_name' ? (
+              <SortUpIcon />
+            ) : sortingState === '-flow_name' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
         </>
       ),
       renderCell: item => <TextRender text={item?.flow_name || 'N/A'} />,
@@ -322,14 +348,35 @@ export const ListScheduleDeployment = () => {
       label: (
         <>
           Scheduler{' '}
-          <SortingComponent sortProperty="scheduled_by" module="scheduler" />
+          <button onClick={() => toggleSorting('scheduled_by')}>
+            {sortingState === 'scheduled_by' ? (
+              <SortUpIcon />
+            ) : sortingState === '-scheduled_by' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
         </>
       ),
       renderCell: item => <TextRender text={item?.scheduled_by || 'N/A'} />,
       width: '8%',
     },
     {
-      label: 'Deploy Time',
+      label: (
+        <>
+          Deploy Time{' '}
+          <button onClick={() => toggleSorting('scheduled_date_time')}>
+            {sortingState === 'scheduled_date_time' ? (
+              <SortUpIcon />
+            ) : sortingState === '-scheduled_date_time' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
       renderCell: item => (
         <TextRender
           text={convertDateTime(item?.scheduled_date_time) || 'N/A'}
@@ -441,6 +488,7 @@ export const ListScheduleDeployment = () => {
         placeholder="Search Process Group or Flow Name"
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
+        sortingState={sortingState}
       />
     </>
   );

@@ -182,6 +182,18 @@ function DeployPage() {
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
+  const tableRef = useRef(null);
+
+  const handleScrollOnClick = () => {
+    if (!tableRef?.current) return;
+    if (isEmpty(versionSelected)) {
+      tableRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      });
+    }
+  };
   const breadcrumbData = [
     {
       label: KDFM.NIFI_FLOW,
@@ -508,7 +520,7 @@ function DeployPage() {
               </div>
             </RowConfig>
 
-            <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
+            <VersionDiv ref={tableRef}>{KDFM.VERSION_CONTROL}</VersionDiv>
             <CustomTable data={sortedData || []} columns={COLUMNS} />
           </ScrollSetGrey>
         </GreyBoxNamespace>
@@ -521,7 +533,9 @@ function DeployPage() {
             >
               {KDFM.BACK}
             </Button>
-            <Button type="submit">{KDFM.CONTINUE}</Button>
+            <Button type="submit" onClick={handleScrollOnClick}>
+              {KDFM.CONTINUE}
+            </Button>
           </BottomButtonDiv>
         </BottomButton>
       </form>

@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { DeleteDustbinIcon } from '../../assets';
+import { DeleteDustbinIcon, SortDownIcon, SortUpIcon } from '../../assets';
 import {
   Grid,
   ProfileRender,
@@ -8,12 +8,21 @@ import {
 } from '../../components';
 import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { ModalWithIcon } from '../../shared';
-import SortingComponent from '../../shared/SortingComponent';
 import { useGlobalContext } from '../../utils';
 
 export const ListUsers = () => {
   const { state, setState } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortingState, setSortingState] = useState('');
+
+  const toggleSorting = column => {
+    setSortingState(prevState => {
+      if (prevState === column) {
+        return `-${column}`;
+      }
+      return column;
+    });
+  };
 
   const COLUMNS = [
     {
@@ -25,7 +34,15 @@ export const ListUsers = () => {
       label: (
         <>
           {KDFM.NAME}{' '}
-          <SortingComponent sortProperty="first_name" module="users" />
+          <button onClick={() => toggleSorting('first_name')}>
+            {sortingState === 'first_name' ? (
+              <SortUpIcon />
+            ) : sortingState === '-first_name' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
         </>
       ),
       width: '20%',
@@ -41,7 +58,15 @@ export const ListUsers = () => {
       label: (
         <>
           {KDFM.USERNAME}{' '}
-          <SortingComponent sortProperty="username" module="users" />
+          <button onClick={() => toggleSorting('username')}>
+            {sortingState === 'username' ? (
+              <SortUpIcon />
+            ) : sortingState === '-username' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
         </>
       ),
       width: '20%',
@@ -63,7 +88,9 @@ export const ListUsers = () => {
     {
       label: KDFM.ROLE,
       width: '20%',
-      renderCell: item => <TextRender text={item?.role?.join(', ')} />,
+      renderCell: item => (
+        <TextRender text={item?.role?.join(', ')} capitalizeText={false} />
+      ),
     },
     {
       label: KDFM.STATUS,
@@ -94,6 +121,7 @@ export const ListUsers = () => {
         placeholder={KDFM.SEARCH_USER_PLACEHOLDER}
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
+        sortingState={sortingState}
       />
     </>
   );

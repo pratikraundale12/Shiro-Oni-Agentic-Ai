@@ -117,6 +117,7 @@ export const Grid = ({
   isNamespace = false,
   currentPage = 1,
   setCurrentPage = () => {},
+  sortingState,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -263,9 +264,17 @@ export const Grid = ({
               start_date: selectedRange?.[0]?.toISOString(),
               end_date: selectedRange?.[1]?.toISOString(),
             }),
-            ...(location?.pathname?.includes('user-management') && {
-              role: selectedRole?.value,
-            }),
+            ...(location?.pathname?.includes('user-management') &&
+              selectedRole?.value !== 'all' && {
+                role_id: selectedRole?.value,
+              }),
+
+            ...(location?.pathname?.match(
+              /user-management|clusters|schedule-deployment/
+            ) &&
+              sortingState && {
+                sort: sortingState,
+              }),
           },
         })
       );
@@ -280,6 +289,7 @@ export const Grid = ({
     currentPage,
     selectedNamespaceForDetail,
     selectedRole,
+    sortingState,
   ]);
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
@@ -442,4 +452,5 @@ Grid.propTypes = {
   setOffset: PropTypes.func,
   isNamespace: PropTypes.bool,
   state: PropTypes.object.isRequired,
+  sortingState: PropTypes.string,
 };

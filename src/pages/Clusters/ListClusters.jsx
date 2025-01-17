@@ -8,6 +8,8 @@ import {
   DeleteSmallIcon,
   OpenEyeIcon,
   PencilIcon,
+  SortDownIcon,
+  SortUpIcon,
 } from '../../assets';
 import {
   ActionRender,
@@ -20,7 +22,6 @@ import {
 import { CLUSTER_STATUS, Cluster_STATUS_OPTIONS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
-import SortingComponent from '../../shared/SortingComponent';
 import { DashboardActions, GridActions, NamespacesActions } from '../../store';
 import { updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
@@ -76,6 +77,15 @@ export const ListClusters = () => {
   const [deactiveId, setDeactiveId] = useState(null);
   const menuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortingState, setSortingState] = useState('');
+  const toggleSorting = column => {
+    setSortingState(prevState => {
+      if (prevState === column) {
+        return `-${column}`;
+      }
+      return column;
+    });
+  };
 
   const [menuState, setMenuState] = useState({
     isVisible: false,
@@ -89,7 +99,15 @@ export const ListClusters = () => {
       label: (
         <>
           {KDFM.CLUSTER_NAME}{' '}
-          <SortingComponent sortProperty="name" module="clusters" />
+          <button onClick={() => toggleSorting('name')}>
+            {sortingState === 'name' ? (
+              <SortUpIcon />
+            ) : sortingState === '-name' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
         </>
       ),
       renderCell: item => (
@@ -302,6 +320,7 @@ export const ListClusters = () => {
         sortFns={sortFns}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        sortingState={sortingState}
       />
       <ClusterSuccessModal />
     </>
