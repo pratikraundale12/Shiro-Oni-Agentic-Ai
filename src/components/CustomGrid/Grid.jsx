@@ -163,9 +163,15 @@ export const Grid = ({
     setState,
   } = useGlobalContext();
 
+  const prioritizedData = gridData.filter(item => item.version);
+  const remainingData = gridData.filter(item => !item.version);
+  const sortedData = [...prioritizedData, ...remainingData].filter(
+    item => !item.isProcessor
+  );
+
   const DATA = {
     nodes: isNamespace
-      ? getData(loading, gridData, clusterSummary.nodes).slice(
+      ? getData(loading, sortedData, clusterSummary.nodes).slice(
           (currentPage - 1) * itemsPerPage,
           currentPage * itemsPerPage
         )
@@ -238,7 +244,47 @@ export const Grid = ({
   };
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
   useEffect(() => {
-    if (isNamespace && currentPage > 1) {
+    dispatch(
+      GridActions.fetchGrid({
+        module,
+        clusterId,
+        params: {
+          page: currentPage,
+          ...(scheduleToken && { id: scheduleToken }),
+          ...(search && { search }),
+          ...(watchStatus &&
+            watchStatus !== 'all' && {
+              [getModuleBasedStatusKey(module)]: watchStatus,
+            }),
+
+          ...(location?.pathname?.includes('activity-history') && {
+            event: selectedEvent?.value,
+          }),
+          ...(location?.pathname?.includes('activity-history') && {
+            entity: selectedEntity?.value,
+          }),
+          ...(selectedRange && {
+            start_date: selectedRange?.[0]?.toISOString(),
+            end_date: selectedRange?.[1]?.toISOString(),
+          }),
+          ...(location?.pathname?.includes('user-management') &&
+            selectedRole?.value !== 'all' && {
+              role_id: selectedRole?.value,
+            }),
+
+          ...(location?.pathname?.match(
+            /user-management|clusters|schedule-deployment/
+          ) &&
+            sortingState && {
+              sort: sortingState,
+            }),
+        },
+      })
+    );
+  }, [selectedNamespaceForDetail]);
+
+  useEffect(() => {
+    if (isNamespace && currentPage > 0) {
       return;
     } else {
       dispatch(

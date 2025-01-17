@@ -380,7 +380,9 @@ export const Add = () => {
       .required('NiFi URL is required')
       .test('unique-registry-url', 'NiFi URL already exists', function (value) {
         if (!value) return true;
-        return !filteredGridData?.some(reg => reg.nifi_url + '/nifi' === value);
+        return !filteredGridData?.some(
+          reg => reg.nifi_url === value || reg.nifi_url + '/nifi' === value
+        );
       }),
   });
   const RegistrySchema = yup.object().shape({

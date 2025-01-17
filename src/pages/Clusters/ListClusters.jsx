@@ -308,7 +308,6 @@ export const ListClusters = () => {
         onSubmit={() => deleteUserConfirmed(deactiveId)}
         onRequestClose={() => setState({ ...state, clusterDeleteModal: false })}
         primaryText={KDFM.DELETE_CLUSTER_WARNING}
-        secondaryText={KDFM.DELETE_CLUSTER_DESCRIPTION}
       />
       <Grid
         module="clusters"
