@@ -380,7 +380,7 @@ export const Add = () => {
       .required('NiFi URL is required')
       .test('unique-registry-url', 'NiFi URL already exists', function (value) {
         if (!value) return true;
-        return !filteredGridData?.some(reg => reg.nifi_url === value);
+        return !filteredGridData?.some(reg => reg.nifi_url + '/nifi' === value);
       }),
   });
   const RegistrySchema = yup.object().shape({
@@ -530,6 +530,7 @@ export const Add = () => {
     'registryUrl',
     'tags',
   ]);
+
   const checkDuplicate = filteredGridData?.some(
     reg => reg.nifi_url === watchedFields?.[1]
   );
@@ -769,13 +770,19 @@ export const Add = () => {
                   ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
                   : {}
               }
-              disabled={watchedFields?.[1] !== data?.nifi_url}
+              disabled={
+                watchedFields?.[1] !== data?.nifi_url ||
+                watchedFields?.[0] !== data?.name ||
+                !checkEditSave()
+              }
               data-tooltip-id="navButtonTooltip"
             >
               {KDFM.REGISTRY_DETAILS}
             </NavButton>
 
-            {watchedFields?.[1] !== data?.nifi_url && (
+            {(watchedFields?.[1] !== data?.nifi_url ||
+              watchedFields?.[0] !== data?.name ||
+              !checkEditSave()) && (
               <ReactTooltip
                 id="navButtonTooltip"
                 place="right"

@@ -17,6 +17,7 @@ import { NamespacesActions } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
+import ProcessGroupSorting from './ProcessGroupSorting';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -64,7 +65,6 @@ const StatusDiv = styled.div`
   background: none;
   display: inline-block;
   white-space: nowrap;
-  // width: 28px;
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
   }
@@ -77,27 +77,10 @@ export const ListNamespaces = () => {
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
   }, []);
-  const sortFns = {
-    name: array => sortByNameWithVersionFilter(array),
-  };
   const state = {
     sortKey: 'name',
     reverse: false,
   };
-
-  function sortByNameWithVersionFilter(arr) {
-    const objectsWithVersion = arr.filter(item => item.version !== undefined);
-    const objectsWithoutVersion = arr.filter(
-      item => item.version === undefined
-    );
-    const sortedWithVersion = objectsWithVersion.sort((a, b) =>
-      a?.name?.localeCompare(b?.name)
-    );
-    const sortedWithoutVersion = objectsWithoutVersion.sort((a, b) =>
-      a?.name?.localeCompare(b?.name)
-    );
-    return [...sortedWithVersion, ...sortedWithoutVersion];
-  }
 
   const handleScheduleClick = item => {
     dispatch(SchedularActions.setScheduleFromList(true));
@@ -124,7 +107,13 @@ export const ListNamespaces = () => {
 
   const COLUMNS = [
     {
-      label: KDFM.NAMESPACE,
+      label: (
+        <>
+          {' '}
+          {KDFM.NAMESPACE}{' '}
+          <ProcessGroupSorting sortProperty="name" module="namespaces" />
+        </>
+      ),
       renderCell: item => (
         <>
           <StyledButton
@@ -159,10 +148,15 @@ export const ListNamespaces = () => {
         </>
       ),
       width: '22%',
-      sort: { sortKey: 'name' },
     },
+
     {
-      label: KDFM.FLOW_NAME,
+      label: (
+        <>
+          {KDFM.FLOW_NAME}
+          <ProcessGroupSorting sortProperty="flowName" module="namespaces" />
+        </>
+      ),
       renderCell: item => (
         <>
           <FlowNameDiv data-tooltip-id={`tooltip-${item.flowName}1`}>
@@ -183,7 +177,12 @@ export const ListNamespaces = () => {
       width: '16%',
     },
     {
-      label: KDFM.BUCKET_NAME,
+      label: (
+        <>
+          {KDFM.BUCKET_NAME}{' '}
+          <ProcessGroupSorting sortProperty="flowName" module="namespaces" />
+        </>
+      ),
       renderCell: item => (
         <>
           <FlowNameDiv data-tooltip-id={`tooltip-${item.bucketName}`}>
@@ -419,7 +418,6 @@ export const ListNamespaces = () => {
         columns={COLUMNS}
         refreshOptions={REFRESH_OPTIONS}
         placeholder={KDFM.SEARCH_NAMESPACE_FLOW_BUCKET_NAME}
-        sortFns={sortFns}
         state={state}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}

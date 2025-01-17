@@ -144,7 +144,7 @@ const ListRoleModal = () => {
   return (
     <>
       <Modal
-        title={'Roles'}
+        title={'Manage Roles'}
         isOpen={modalOpen}
         onRequestClose={closePopup}
         size="md"
@@ -166,7 +166,7 @@ const ListRoleModal = () => {
           <Search
             type="search"
             value={search}
-            placeholder="Search DFM access"
+            placeholder="Search DFM Role"
             onChange={e => {
               const value = e.target.value;
               if (value.length <= 100) {

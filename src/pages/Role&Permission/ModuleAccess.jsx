@@ -7,7 +7,7 @@ import { difference, isEmpty, unionBy, uniqBy } from 'lodash';
 import {
   DeleteDustbinIcon,
   GreenRightCircleIcon,
-  PlusCircleIcon,
+  // PlusCircleIcon,
   SmallSearchIcon,
   TodoIcon,
 } from '../../assets';
@@ -422,14 +422,14 @@ export const ModuleAccess = () => {
           {(userPermissions.includes('add_permission') ||
             userPermissions.includes('edit_permission')) && (
             <Button
-              icon={<PlusCircleIcon width={16} height={16} />}
+              // icon={<PlusCircleIcon width={16} height={16} />}
               onClick={() => {
                 dispatch(RolesActions.setIsRoleListModalOpen(true));
               }}
               variant="secondary"
               size="sm"
             >
-              Roles
+              Manage Roles
             </Button>
           )}
 
