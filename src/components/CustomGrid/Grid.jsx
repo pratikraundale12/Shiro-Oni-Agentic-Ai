@@ -4,37 +4,28 @@ import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { default as React, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import {
-  NoDataIcon,
-  QRIcons,
-  SortDownIcon,
-  SortIcon,
-  SortUpIcon,
-} from '../../assets';
+import { NoDataIcon, QRIcons } from '../../assets';
+import { KDFM } from '../../constants';
 import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
 import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { InputField, Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { LoadingSelectors, NamespacesSelectors } from '../../store';
+import {
+  ActivityHistoryActions,
+  ActivityHistorySelectors,
+} from '../../store/activityHistory/redux';
 import { GridActions, GridSelectors } from '../../store/grid';
+import { SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
 import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
-// import ReactPagination from './ReactPagnation';
-import { useSort } from '@table-library/react-table-library/sort';
-import { useParams } from 'react-router-dom';
-import { KDFM } from '../../constants';
-// import { TextRender } from './CellRenders';
-import { useForm } from 'react-hook-form';
-import {
-  ActivityHistoryActions,
-  ActivityHistorySelectors,
-} from '../../store/activityHistory/redux';
-import { SchedularSelectors } from '../../store/schedular';
 import { Table } from './Table';
 
 const Container = styled.div`
@@ -126,11 +117,6 @@ export const Grid = ({
   isNamespace = false,
   currentPage = 1,
   setCurrentPage = () => {},
-  // LIMIT,
-  // offset,
-  // setOffset,
-  sortFns = () => {},
-  state,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -176,15 +162,9 @@ export const Grid = ({
     setState,
   } = useGlobalContext();
 
-  const prioritizedData = gridData.filter(item => item.version);
-  const remainingData = gridData.filter(item => !item.version);
-  const sortedData = [...prioritizedData, ...remainingData].filter(
-    item => !item.isProcessor
-  );
-
   const DATA = {
     nodes: isNamespace
-      ? getData(loading, sortedData, clusterSummary.nodes).slice(
+      ? getData(loading, gridData, clusterSummary.nodes).slice(
           (currentPage - 1) * itemsPerPage,
           currentPage * itemsPerPage
         )
@@ -225,21 +205,6 @@ export const Grid = ({
       `,
     },
   ]);
-
-  const sort = useSort(
-    DATA,
-    {
-      state,
-    },
-    {
-      sortFns,
-      sortIcon: {
-        iconDefault: <SortIcon />,
-        iconUp: <SortUpIcon />,
-        iconDown: <SortDownIcon />,
-      },
-    }
-  );
 
   const messages = {
     namespaces: 'No Process Group Available',
@@ -435,7 +400,7 @@ export const Grid = ({
           data={TABLE_DATA}
           columns={columns}
           theme={tableTheme}
-          sort={sort}
+          // sort={sort}
         />
         {getLoader()}
       </TableContainer>
@@ -477,6 +442,4 @@ Grid.propTypes = {
   setOffset: PropTypes.func,
   isNamespace: PropTypes.bool,
   state: PropTypes.object.isRequired,
-
-  // sortFns: PropTypes.func,
 };

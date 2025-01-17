@@ -20,6 +20,7 @@ import {
 import { CLUSTER_STATUS, Cluster_STATUS_OPTIONS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
+import SortingComponent from '../../shared/SortingComponent';
 import { DashboardActions, GridActions, NamespacesActions } from '../../store';
 import { updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
@@ -85,7 +86,12 @@ export const ListClusters = () => {
 
   const COLUMNS = [
     {
-      label: KDFM.CLUSTER_NAME,
+      label: (
+        <>
+          {KDFM.CLUSTER_NAME}{' '}
+          <SortingComponent sortProperty="name" module="clusters" />
+        </>
+      ),
       renderCell: item => (
         <TextRender text={item.name} capitalizeText={false} />
       ),

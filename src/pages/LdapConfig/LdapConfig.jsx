@@ -596,7 +596,7 @@ export const LdapConfig = () => {
                 disabled={!ldapEnabled}
                 loading={loading}
               >
-                Test Configuration
+                Connect
               </StyledButton>
             </div>
           </ButtonFlex>

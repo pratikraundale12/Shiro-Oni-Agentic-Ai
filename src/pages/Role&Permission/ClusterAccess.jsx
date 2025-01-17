@@ -170,7 +170,7 @@ export const ClusterAccess = () => {
       ),
     },
     {
-      label: 'Delete',
+      label: 'De-activate',
       renderCell: item => (
         <CellRender
           isEdit={hasEditPermssion}

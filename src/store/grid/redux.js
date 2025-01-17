@@ -1,4 +1,4 @@
-import { createReducer, createAction } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
 const prefix = '@@KDFM-GRID/';
 
@@ -27,6 +27,7 @@ export const GridSelectors = {
     })) || [],
   getNamespaceGridRegistry: (state, module) =>
     state.grid?.[module]?.registry || [],
+  getModuleAllData: (state, module) => state.grid?.[module],
 };
 
 /* ------------- REDUCERS ------------------- */

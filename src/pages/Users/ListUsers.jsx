@@ -8,6 +8,7 @@ import {
 } from '../../components';
 import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { ModalWithIcon } from '../../shared';
+import SortingComponent from '../../shared/SortingComponent';
 import { useGlobalContext } from '../../utils';
 
 export const ListUsers = () => {
@@ -21,7 +22,12 @@ export const ListUsers = () => {
       width: '10%',
     },
     {
-      label: KDFM.NAME,
+      label: (
+        <>
+          {KDFM.NAME}{' '}
+          <SortingComponent sortProperty="first_name" module="users" />
+        </>
+      ),
       width: '20%',
       renderCell: item => (
         <TextRender
@@ -32,7 +38,12 @@ export const ListUsers = () => {
       ),
     },
     {
-      label: KDFM.USERNAME,
+      label: (
+        <>
+          {KDFM.USERNAME}{' '}
+          <SortingComponent sortProperty="username" module="users" />
+        </>
+      ),
       width: '20%',
       renderCell: item => (
         <TextRender
@@ -63,8 +74,6 @@ export const ListUsers = () => {
     },
   ];
 
-  const sortFns = {};
-
   return (
     <>
       <ModalWithIcon
@@ -83,7 +92,6 @@ export const ListUsers = () => {
         columns={COLUMNS}
         statusOptions={STATUS_OPTIONS}
         placeholder={KDFM.SEARCH_USER_PLACEHOLDER}
-        sortFns={sortFns}
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
       />
