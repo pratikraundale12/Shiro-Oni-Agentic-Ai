@@ -4,6 +4,20 @@ import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 
 export const ActvityHistory = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const convertDateTime = dateString => {
+    if (!dateString) return 'No date provided';
+
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
+  };
   const COLUMNS = [
     {
       label: KDFM.EVENT,
@@ -60,7 +74,7 @@ export const ActvityHistory = () => {
     {
       label: KDFM.TIMESTAMP,
       width: '12%',
-      renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
+      renderCell: item => <TextRender text={convertDateTime(item.timestamp) || KDFM.NA} />,
       sort: { sortKey: 'timestamp' },
     },
     {
