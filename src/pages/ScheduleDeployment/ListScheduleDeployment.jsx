@@ -224,7 +224,9 @@ export const ListScheduleDeployment = () => {
                     {ApprovIconRender(item)}
                   </>
                 )}
-                {(item?.state === 'PENDING' || item?.state === 'TIME_LAPSED') &&
+                {(item?.state === 'PENDING' ||
+                  item?.state === 'TIME_LAPSED' ||
+                  item?.state === 'FAILED') &&
                   currentUser?.id === item?.deployer_id && (
                     <>{editIconRender(item)}</>
                   )}
@@ -252,6 +254,7 @@ export const ListScheduleDeployment = () => {
               )}
               {item?.action_by === 'NO_APPROVER_REQUIRED' &&
                 item?.state === 'PENDING' && <>{editIconRender(item)}</>}
+              {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
             </>
           )}
         {/* NON SUPERADMIN + SCHEDULAR + IN APPROVER GROUP */}
@@ -274,6 +277,7 @@ export const ListScheduleDeployment = () => {
               )}
               {item?.action_by === 'NO_APPROVER_REQUIRED' &&
                 item?.state === 'PENDING' && <>{editIconRender(item)}</>}
+              {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
             </>
           )}
         {/* NON SUPERADMIN + NON SCHEDULAR + IN APPROVER GROUP */}
@@ -294,6 +298,14 @@ export const ListScheduleDeployment = () => {
       </ActionTd>
     );
   };
+  const ListForTooltip = item => {
+    return (
+      <>
+        <li>Name : {item?.namespace_name}</li>
+        {item?.namespace_id !== 'root' && <li>ID : {item?.namespace_id}</li>}
+      </>
+    );
+  };
 
   const COLUMNS = [
     {
@@ -311,17 +323,22 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => <TextRender text={item?.namespace_name || 'N/A'} />,
+      renderCell: item => (
+        <TextRender
+          text={item?.namespace_name || 'N/A'}
+          ListForTooltip={ListForTooltip(item)}
+        />
+      ),
       width: '12%',
     },
     {
       label: (
         <>
-          Flow Name{' '}
-          <button onClick={() => toggleSorting('flow_name')}>
-            {sortingState === 'flow_name' ? (
+          Cluster{' '}
+          <button onClick={() => toggleSorting('cluster_name')}>
+            {sortingState === 'cluster_name' ? (
               <SortUpIcon />
-            ) : sortingState === '-flow_name' ? (
+            ) : sortingState === '-cluster_name' ? (
               <SortDownIcon />
             ) : (
               <SortDownIcon />
@@ -329,7 +346,7 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => <TextRender text={item?.flow_name || 'N/A'} />,
+      renderCell: item => <TextRender text={item?.cluster_name || 'N/A'} />,
       width: '11%',
     },
     {

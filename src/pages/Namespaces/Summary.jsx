@@ -458,6 +458,7 @@ const Summary = () => {
   };
 
   const handleCloseModal = () => {
+    dispatch(NamespacesActions.setSelectedNamespace({}));
     history.push('/process-group');
   };
 
