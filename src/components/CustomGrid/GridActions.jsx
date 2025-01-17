@@ -1,7 +1,8 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 // import { useForm } from 'react-hook-form';
+import { endOfDay, startOfDay } from 'date-fns';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -35,11 +36,10 @@ import {
 } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { GridSelectors } from '../../store/grid';
+import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { FullPageLoader } from '../FullPageLoader';
-import { SchedularActions, SchedularSelectors } from '../../store/schedular';
-import { startOfDay, endOfDay } from 'date-fns';
 
 const Flex = styled.div`
   display: flex;
@@ -188,17 +188,25 @@ export const GridActions = ({
   watchStatus,
   watch,
   control,
+  setSelectedRole,
+  selectedRole,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const accessType = useSelector(RolesSelectors.getAccessType);
   const userModalOpen = useSelector(UsersSelectors.getUserModalOpen);
+  const roles = useSelector(RolesSelectors.getRoles);
   const breadcrumbs = useSelector(state =>
     GridSelectors.getGridBreadcrumb(state, module)
   );
   const [dateRange, setDateRange] = useState(null);
   const { setState } = useGlobalContext();
+  const uniqueRoles = useMemo(() => {
+    return Array.from(new Set(roles.map(role => role.name))).map(name => {
+      return roles.find(role => role.name === name);
+    });
+  }, [roles]);
 
   const entity = watch('entityName');
   const event = watch('activityEvent');
@@ -401,6 +409,10 @@ export const GridActions = ({
     },
   ];
 
+  const handleRolesChange = selectedOption => {
+    setSelectedRole(selectedOption);
+  };
+
   return (
     <>
       <Flex className="flex-wrap gap-2">
@@ -447,7 +459,27 @@ export const GridActions = ({
             }
           </>
         )}
+
         <ButtonsContainer>
+          {module === 'users' && (
+            <StyledSelectField
+              size="sm"
+              name="roles"
+              control={control}
+              title="Select Roles"
+              placeholder="Select Roles"
+              value={selectedRole}
+              options={[
+                { label: 'All', value: 'all' },
+                ...uniqueRoles.map(role => ({
+                  label: role.name,
+                  value: role.role_id,
+                })),
+              ]}
+              backgroundColor={theme.colors.lightGrey}
+              onChange={handleRolesChange}
+            />
+          )}
           {!isEmpty(statusOptions) && (
             <DropdownContainer>
               <StyledSelectField
@@ -622,4 +654,6 @@ GridActions.propTypes = {
   watchStatus: PropTypes.string,
   watch: PropTypes.func.isRequired,
   control: PropTypes.object.isRequired,
+  setSelectedRole: PropTypes.func.isRequired,
+  selectedRole: PropTypes.string,
 };

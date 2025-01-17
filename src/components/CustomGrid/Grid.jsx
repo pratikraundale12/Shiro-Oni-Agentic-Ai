@@ -3,7 +3,7 @@ import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import { default as React, useEffect } from 'react';
+import { default as React, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -34,8 +34,8 @@ import {
   ActivityHistoryActions,
   ActivityHistorySelectors,
 } from '../../store/activityHistory/redux';
-import { Table } from './Table';
 import { SchedularSelectors } from '../../store/schedular';
+import { Table } from './Table';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -159,6 +159,7 @@ export const Grid = ({
   const selectedEntity = useSelector(
     ActivityHistorySelectors.getSelectedEntity
   );
+  const [selectedRole, setSelectedRole] = useState(null);
 
   const { watch, control } = useForm();
   const watchStatus = watch('is_active');
@@ -286,6 +287,7 @@ export const Grid = ({
               watchStatus !== 'all' && {
                 [getModuleBasedStatusKey(module)]: watchStatus,
               }),
+
             ...(location?.pathname?.includes('activity-history') && {
               event: selectedEvent?.value,
             }),
@@ -295,6 +297,9 @@ export const Grid = ({
             ...(selectedRange && {
               start_date: selectedRange?.[0]?.toISOString(),
               end_date: selectedRange?.[1]?.toISOString(),
+            }),
+            ...(location?.pathname?.includes('user-management') && {
+              role: selectedRole?.value,
             }),
           },
         })
@@ -309,6 +314,7 @@ export const Grid = ({
     selectedCluster,
     currentPage,
     selectedNamespaceForDetail,
+    selectedRole,
   ]);
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
@@ -366,6 +372,8 @@ export const Grid = ({
         watchStatus={watchStatus}
         watch={watch}
         control={control}
+        setSelectedRole={setSelectedRole}
+        selectedRole={selectedRole}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>

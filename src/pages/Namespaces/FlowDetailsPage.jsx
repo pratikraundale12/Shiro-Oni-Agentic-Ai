@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import styled from 'styled-components';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import styled from 'styled-components';
 import {
   CanvasXIcon,
   CanvasYIcon,
@@ -27,10 +27,10 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import RectangleGraph from './birdEyeViewGraph';
-import { SchedularSelectors } from '../../store/schedular';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -208,6 +208,8 @@ const FlowDetailsPage = () => {
   );
   const [xStateCoordinate, setXStateCoordiate] = useState(null);
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
+  const tableRef = useRef(null);
+
   useEffect(() => {
     if (isUpgrade) {
       if (registryDetailsData?.positions?.[0]?.x !== undefined) {
@@ -340,6 +342,18 @@ const FlowDetailsPage = () => {
         history.push('/process-group/config-details');
       }
     }
+  };
+
+  const handleScrollOnClick = () => {
+    if (!tableRef?.current) return;
+    if (selectedVersion === selectedNameSpace?.version) {
+      tableRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      });
+    }
+    handleClick();
   };
 
   const handleRowClick = item => {
@@ -587,7 +601,7 @@ const FlowDetailsPage = () => {
           </RowConfig>
           {!isUpgrade && (
             <>
-              <VersionDiv>{KDFM.VERSION_CONTROL}</VersionDiv>
+              <VersionDiv ref={tableRef}>{KDFM.VERSION_CONTROL}</VersionDiv>
               <CustomTable
                 className="td-text-wrap"
                 data={sortedData || []}
@@ -608,7 +622,7 @@ const FlowDetailsPage = () => {
           </Button>
           <Button
             disabled={isUpgrade ? false : !isStateStale}
-            onClick={handleClick}
+            onClick={handleScrollOnClick}
           >
             Continue
           </Button>
