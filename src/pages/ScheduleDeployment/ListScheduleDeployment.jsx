@@ -184,6 +184,22 @@ export const ListScheduleDeployment = () => {
       </>
     );
   };
+
+  const convertDateTime = dateString => {
+    if (!dateString) return 'No date provided';
+
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
+  };
+  //
   const getActionsMenu = item => {
     return (
       <ActionTd>
@@ -298,7 +314,11 @@ export const ListScheduleDeployment = () => {
     },
     {
       label: 'Deploy Time',
-      renderCell: item => <TextRender text={item.scheduled_time || 'N/A'} />,
+      renderCell: item => (
+        <TextRender
+          text={convertDateTime(item?.scheduled_date_time) || 'N/A'}
+        />
+      ),
       width: '14%',
       sort: { sortKey: 'deploy_time' },
     },
