@@ -240,7 +240,7 @@ export const ListScheduleDeployment = () => {
         {/* NON SUPERADMIN + SCHEDULAR + NOT IN APPROVER GROUP */}
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id === item?.deployer_id &&
-          !item?.groupUsersData.some(
+          !item?.groupUsersData?.some(
             ele => ele?.id === currentUserData?.id
           ) && (
             <>
@@ -260,7 +260,9 @@ export const ListScheduleDeployment = () => {
         {/* NON SUPERADMIN + SCHEDULAR + IN APPROVER GROUP */}
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id === item?.deployer_id &&
-          item?.groupUsersData.some(ele => ele?.id === currentUserData?.id) && (
+          item?.groupUsersData?.some(
+            ele => ele?.id === currentUserData?.id
+          ) && (
             <>
               {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
                 <>
@@ -284,7 +286,9 @@ export const ListScheduleDeployment = () => {
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id !== item?.deployer_id &&
           item?.action_by !== 'NO_APPROVER_REQUIRED' &&
-          item?.groupUsersData.some(ele => ele?.id === currentUserData?.id) && (
+          item?.groupUsersData?.some(
+            ele => ele?.id === currentUserData?.id
+          ) && (
             <>
               {item?.state === 'PENDING' && (
                 <>
