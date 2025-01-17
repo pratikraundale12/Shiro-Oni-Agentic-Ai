@@ -345,7 +345,7 @@ const FlowDetailsPage = () => {
   };
 
   const handleScrollOnClick = () => {
-    if (!tableRef?.current) return;
+    if (!tableRef?.current);
     if (selectedVersion === selectedNameSpace?.version) {
       tableRef.current.scrollIntoView({
         behavior: 'smooth',
