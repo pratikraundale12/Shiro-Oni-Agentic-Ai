@@ -578,7 +578,7 @@ const Summary = () => {
       bucketId: registryFlowVerion?.bucketId,
       registryId: registryData?.id,
       flowName: formDataRegistry?.selectedFlowName,
-      namespaceStatus: flowControlState || 'STOPPED',
+      namespaceStatus: flowControlState,
       position: {
         x: XcordUpdated || registryDetailsData?.positions[0]?.x,
         y: YcordUpdated || registryDetailsData?.positions[0]?.y,
@@ -607,7 +607,7 @@ const Summary = () => {
     const payload = {
       version: versionSelected?.version,
       namespaceId: checkDestCluster?.id,
-      namespaceStatus: flowControlState || 'STOPPED',
+      namespaceStatus: flowControlState,
       payload: {
         namespaceId: checkDestCluster?.value,
       },
@@ -651,7 +651,7 @@ const Summary = () => {
         y: YcordUpdated || registryDetailsData?.positions[0]?.y,
       },
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
-      namespaceStatus: flowControlSelectedScheduleStored || 'STOPPED',
+      namespaceStatus: flowControlSelectedScheduleStored,
       nameSpaceName: registryAllDetails?.processGroupName,
     };
     //
@@ -687,7 +687,7 @@ const Summary = () => {
           y: YcordUpdated || registryDetailsData?.positions[0]?.y,
         },
         keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
-        namespaceStatus: flowControlSelectedScheduleStored || 'STOPPED',
+        namespaceStatus: flowControlSelectedScheduleStored,
         nameSpaceName: registryAllDetails?.processGroupName,
       };
       //
@@ -711,7 +711,7 @@ const Summary = () => {
         version: versionSelected?.version,
         flowId: selectedNameSpace?.flowId,
         namespaceId: checkDestCluster?.id,
-        namespaceStatus: flowControlSelectedScheduleStored || 'STOPPED',
+        namespaceStatus: flowControlSelectedScheduleStored,
         payload: {
           namespaceId: checkDestCluster?.value,
         },
@@ -748,7 +748,7 @@ const Summary = () => {
       version: versionSelected?.version,
       flowId: selectedNameSpace?.flowId,
       namespaceId: checkDestCluster?.id,
-      namespaceStatus: flowControlSelectedScheduleStored || 'STOPPED',
+      namespaceStatus: flowControlSelectedScheduleStored,
       payload: {
         namespaceId: checkDestCluster?.value,
       },
