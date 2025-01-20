@@ -346,7 +346,7 @@ export const ListControllerService = () => {
 
   return (
     <>
-      <FullPageLoader loading={statusLoading} />
+      <FullPageLoader loading={statusLoading || loading} />
       {controllerPermissions.includes('add_controller_services') && (
         <div className="d-flex justify-content-between align-items-center">
           <div className="d-flex  align-items-center gap-3">
@@ -399,7 +399,6 @@ export const ListControllerService = () => {
         data={filteredModulesData}
         columns={COLUMNS}
         controllerModule={true}
-        loading={loading}
       />
 
       <ConfigControllerService
