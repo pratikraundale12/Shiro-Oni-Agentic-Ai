@@ -378,12 +378,14 @@ export const Dashboard = () => {
           icon={TotalProcessorIcon}
           count={dashboardData?.total_processors || '0'}
           text="Total Processors"
+          selectedNamespace={selectedNamespace}
         />
         <InsightContainer
           backgroundCss="#FEFBEC"
           icon={RunningProcessorIcon}
           count={dashboardData?.running_processors || '0'}
           text="Running Processors"
+          selectedNamespace={selectedNamespace}
         />
 
         <InsightContainer
@@ -391,36 +393,42 @@ export const Dashboard = () => {
           icon={StoppedProcessorIcon}
           count={dashboardData?.stopped_processors || '0'}
           text="Stopped Processors"
+          selectedNamespace={selectedNamespace}
         />
         <InsightContainer
           backgroundCss="#FDF3FC"
           icon={DisabledProcessorIcon}
           count={dashboardData?.disabled_processors || '0'}
           text="Disabled Processors"
+          selectedNamespace={selectedNamespace}
         />
         <InsightContainer
           backgroundCss="#FFF7ED"
           icon={InvalidProcessorIcon}
           count={dashboardData?.invalid_count || '0'}
           text="Invalid Processors"
+          selectedNamespace={selectedNamespace}
         />
         <InsightContainer
           backgroundCss="#F0F0F2"
           icon={ActiveThreadIcon}
           count={dashboardData?.active_thread_count || '0'}
           text="Active Threads"
+          selectedNamespace={selectedNamespace}
         />
         <InsightContainer
           backgroundCss="#EEF8FF"
           icon={TotalQuedIcon}
           count={dashboardData?.queued_size || '0 MB'}
           text="Total Queued"
+          selectedNamespace={selectedNamespace}
         />
         <InsightContainer
           backgroundCss="#EEF0F4"
           icon={FlowFiledQuedIcon}
           count={dashboardData?.flow_files_queued || '0'}
           text="Flow Files Queued"
+          selectedNamespace={selectedNamespace}
         />
       </InsightDataContiner>
       <FlowMetricContainer>
