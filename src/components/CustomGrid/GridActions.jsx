@@ -275,6 +275,10 @@ export const GridActions = ({
               start_date: selectedRange?.[0]?.toISOString(),
               end_date: selectedRange?.[1]?.toISOString(),
             }),
+            ...(location?.pathname?.includes('user-management') &&
+              selectedRole?.value !== 'all' && {
+                role_id: selectedRole?.value,
+              }),
           },
         })
       );

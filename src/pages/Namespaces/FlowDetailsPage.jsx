@@ -422,6 +422,9 @@ const FlowDetailsPage = () => {
   const isStateStale =
     selectedNameSpace?.state === 'STALE' ||
     selectedNameSpace?.state === 'UP_TO_DATE';
+
+  const isButtonDisabled = versionListData?.versionList?.length === 1;
+
   return (
     <div>
       <FullPageLoader loading={loadingregistry || loadingVersion} />
@@ -625,7 +628,7 @@ const FlowDetailsPage = () => {
             {KDFM.BACK}
           </Button>
           <Button
-            disabled={isUpgrade ? false : !isStateStale}
+            disabled={isUpgrade ? false : !isStateStale || isButtonDisabled}
             onClick={handleScrollOnClick}
           >
             Continue
