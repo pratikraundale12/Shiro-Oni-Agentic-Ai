@@ -614,7 +614,7 @@ const ControllerServiceTab = ({
                   onClick={() => handleEnableClick(stateItem)}
                   data-tooltip-id={stateItem?.id}
                 >
-                  {state !== 'DISABLED' || state !== 'DISABLING' ? (
+                  {state !== 'DISABLED' && state !== 'DISABLING' ? (
                     <FlashCutIcon />
                   ) : (
                     <FlashIcon />
@@ -870,7 +870,11 @@ const ControllerServiceTab = ({
                   onClick={() => handleEnableClick(stateItem)}
                   data-tooltip-id={stateItem?.id}
                 >
-                  {state !== 'DISABLED' ? <FlashCutIcon /> : <FlashIcon />}
+                  {state !== 'DISABLED' && state !== 'DISABLING' ? (
+                    <FlashCutIcon />
+                  ) : (
+                    <FlashIcon />
+                  )}
                 </button>
                 <ReactTooltip
                   id={stateItem?.id}

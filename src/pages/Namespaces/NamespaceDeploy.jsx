@@ -197,8 +197,9 @@ const NamespaceDeploy = ({
   );
   const handleClick = () => {
     const updatedUrl = deployOrUpgradeDetails?.nifiUrl?.endsWith('/nifi')
-      ? deployOrUpgradeDetails.nifiUrl
-      : `${deployOrUpgradeDetails.nifiUrl}/nifi`;
+      ? `${deployOrUpgradeDetails.nifiUrl}?processGroupId=${deployOrUpgradeDetails?.id}`
+      : `${deployOrUpgradeDetails.nifiUrl}/nifi?processGroupId=${deployOrUpgradeDetails?.id}`;
+
     window.open(updatedUrl, '_blank');
   };
 

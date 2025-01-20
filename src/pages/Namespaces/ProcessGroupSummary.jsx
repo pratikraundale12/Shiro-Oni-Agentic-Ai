@@ -7,6 +7,7 @@ import { KDFM } from '../../constants';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
+  LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
@@ -17,6 +18,7 @@ import ListVariables from './Listvariables';
 import ParameterContext from './ParameterContext';
 import SummaryDetails from './SummaryDetails';
 import { history } from '../../helpers/history';
+import { FullPageLoader } from '../../components';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -140,6 +142,10 @@ const ConfigDetailsPage = () => {
     GridSelectors.getGridBreadcrumb(state, 'namespaces')
   );
 
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'singleNamespaceData')
+  );
+
   //need to add the components for respective tabs
   const renderContent = () => {
     switch (activeTab) {
@@ -176,6 +182,7 @@ const ConfigDetailsPage = () => {
   const isParentEdit = useSelector(NamespacesSelectors.getParameterEditParent);
   return (
     <div>
+      <FullPageLoader loading={loading} />
       {breadcrumbs.length === 1 && (
         <BreadcrumbContainer className="d-flex  mb-3">
           <BreadcrumbItem onClick={() => history.push(`/process-group`)}>
