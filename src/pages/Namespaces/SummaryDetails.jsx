@@ -79,6 +79,21 @@ const SummaryDetails = () => {
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
+  const handleClick = () => {
+    if (!singleNamespaceData?.nifiUrl) return;
+
+    const updatedUrl = singleNamespaceData.nifiUrl.endsWith('/nifi')
+      ? `${singleNamespaceData.nifiUrl}?processGroupId=${singleNamespaceData?.id}`
+      : `${singleNamespaceData.nifiUrl}/nifi?processGroupId=${singleNamespaceData?.id}`;
+
+    window.open(updatedUrl, '_blank');
+  };
+
+  const handleRegistryClick = () => {
+    if (!registryData?.url) return;
+    window.open(registryData.url, '_blank');
+  };
+
   return (
     <DataWrapper className="w-100">
       <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -108,7 +123,15 @@ const SummaryDetails = () => {
               <SummaryDetailsHFourTag className="mb-2">
                 Registry URL
               </SummaryDetailsHFourTag>
-              <SummaryDetailsPtag className="mb-0">
+              <SummaryDetailsPtag
+                className="mb-0"
+                onClick={handleRegistryClick}
+                style={{
+                  cursor: 'pointer',
+                  color: 'blue',
+                  textDecoration: 'underline',
+                }}
+              >
                 <div>
                   <span>{registryData?.url || 'N/A'}</span>
                 </div>
@@ -120,7 +143,15 @@ const SummaryDetails = () => {
               <SummaryDetailsHFourTag className="mb-2">
                 NiFi URL
               </SummaryDetailsHFourTag>
-              <SummaryDetailsPtag className="mb-0">
+              <SummaryDetailsPtag
+                className="mb-0"
+                onClick={handleClick}
+                style={{
+                  cursor: 'pointer',
+                  color: 'blue',
+                  textDecoration: 'underline',
+                }}
+              >
                 {singleNamespaceData?.nifiUrl || 'N/A'}
               </SummaryDetailsPtag>
             </div>

@@ -814,6 +814,28 @@ const Summary = () => {
     margin-left: 4px !important;
   `;
 
+  const handleClick = () => {
+    if (!isUpgrade) {
+      if (!registryAllDetails?.nifi_url) return;
+      const updatedUrl = registryAllDetails?.nifi_url?.endsWith('/nifi')
+        ? `${registryAllDetails.nifi_url}?processGroupId=${checkDestCluster?.value || deployOrUpgradeDetails?.id}`
+        : `${registryAllDetails.nifi_url}/nifi?processGroupId=${checkDestCluster?.value || deployOrUpgradeDetails?.id}`;
+
+      window.open(updatedUrl, '_blank');
+    } else {
+      const updatedUrl = registryAllDetails?.nifi_url?.endsWith('/nifi')
+        ? registryAllDetails.nifi_url
+        : `${registryAllDetails.nifi_url}/nifi`;
+
+      window.open(updatedUrl, '_blank');
+    }
+  };
+
+  const handleRegistryClick = () => {
+    if (!registryData?.url) return;
+    window.open(registryData.url, '_blank');
+  };
+
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -901,7 +923,16 @@ const Summary = () => {
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
                         <div>
-                          <span>{registryData?.url}</span>
+                          <span
+                            onClick={handleRegistryClick}
+                            style={{
+                              cursor: 'pointer',
+                              color: 'blue',
+                              textDecoration: 'underline',
+                            }}
+                          >
+                            {registryData?.url}
+                          </span>
                           <div
                             data-tooltip-id={`copy-board-namespace-summary1`}
                           >
@@ -933,7 +964,16 @@ const Summary = () => {
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
                         <div>
-                          <span>{registryAllDetails?.nifi_url}</span>
+                          <span
+                            onClick={handleClick}
+                            style={{
+                              cursor: 'pointer',
+                              color: 'blue',
+                              textDecoration: 'underline',
+                            }}
+                          >
+                            {registryAllDetails?.nifi_url}
+                          </span>
                           <div
                             data-tooltip-id={`copy-board-namespace-summary2`}
                           >
