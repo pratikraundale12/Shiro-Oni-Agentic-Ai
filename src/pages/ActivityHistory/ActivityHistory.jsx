@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
+import { SortDownIcon, SortUpIcon } from '../../assets';
 import { Grid, StatusRender, TextRender } from '../../components';
 import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 
 export const ActvityHistory = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortingState, setSortingState] = useState('');
+  const toggleSorting = column => {
+    setSortingState(prevState => {
+      if (prevState === column) {
+        return `-${column}`;
+      }
+      return column;
+    });
+  };
   const convertDateTime = dateString => {
     if (!dateString) return 'No date provided';
 
@@ -38,18 +48,57 @@ export const ActvityHistory = () => {
       ),
     },
     {
-      label: KDFM.NAMESPACE,
+      label: (
+        <>
+          {KDFM.NAMESPACE}{' '}
+          <button onClick={() => toggleSorting('namespace')}>
+            {sortingState === 'namespace' ? (
+              <SortUpIcon />
+            ) : sortingState === '-namespace' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
       width: '10%',
       renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
       sort: { sortKey: 'namespace' },
     },
     {
-      label: KDFM.FLOW_NAME,
+      label: (
+        <>
+          {KDFM.FLOW_NAME}{' '}
+          <button onClick={() => toggleSorting('flow_name')}>
+            {sortingState === 'flow_name' ? (
+              <SortUpIcon />
+            ) : sortingState === '-flow_name' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
       width: '10%',
       renderCell: item => <TextRender text={item.flow_name || KDFM.NA} />,
     },
     {
-      label: KDFM.CLUSTER,
+      label: (
+        <>
+          {KDFM.CLUSTER}{' '}
+          <button onClick={() => toggleSorting('cluster')}>
+            {sortingState === 'cluster' ? (
+              <SortUpIcon />
+            ) : sortingState === '-cluster' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
       width: '10%',
       renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
       sort: { sortKey: 'cluster' },
@@ -109,6 +158,7 @@ export const ActvityHistory = () => {
       sortFns={sortFns}
       currentPage={currentPage}
       setCurrentPage={setCurrentPage}
+      sortingState={sortingState}
     />
   );
 };

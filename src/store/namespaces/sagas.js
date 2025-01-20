@@ -628,7 +628,7 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
   } else toast.error(response.data.message);
 }
 
-export function* fetchNamespaceAudit(api) {
+export function* fetchNamespaceAudit(api, { payload }) {
   const selectedNamespaceId = yield select(
     NamespacesSelectors.getSelectedSourceNamespace
   );
@@ -644,6 +644,7 @@ export function* fetchNamespaceAudit(api) {
         params: {
           recordId: selectedNamespaceId,
           nameSpaceName: singleNamespaceData?.name,
+          sort: payload,
         },
         payload: {},
       },

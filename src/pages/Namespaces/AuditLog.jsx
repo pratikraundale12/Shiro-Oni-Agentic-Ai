@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { SortDownIcon, SortUpIcon } from '../../assets';
 import {
   FullPageLoader,
   StatusRender,
@@ -26,55 +27,103 @@ const ScrollSetGrey = styled.div`
   overflow-y: auto;
 `;
 
-const COLUMNS = [
-  {
-    label: KDFM.EVENT,
-    renderCell: item => <TextRender text={item.event || KDFM.NA} />,
-  },
-  {
-    label: KDFM.NAMESPACE,
-    renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
-  },
-  {
-    label: KDFM.FLOW_NAME,
-    renderCell: item => <TextRender text={item.flow_name || KDFM.NA} />,
-  },
-  {
-    label: KDFM.CLUSTER,
-    renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
-  },
-  {
-    label: KDFM.MESSAGE,
-    renderCell: item => (
-      <TextRender text={item.message || KDFM.NA} capitalizeText={false} />
-    ),
-    width: '25%',
-  },
-  {
-    label: KDFM.VERSION,
-    renderCell: item => <TextRender text={item.version || KDFM.NA} />,
-  },
-  {
-    label: KDFM.STATUS,
-    renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
-  },
-  {
-    label: KDFM.TIMESTAMP,
-    renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
-  },
-  {
-    label: KDFM.CREATED_BY,
-    renderCell: item => <TextRender text={item.created_by_name || KDFM.NA} />,
-  },
-];
-
 const AuditLog = () => {
   const dispatch = useDispatch();
   const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
+  const [sortingState, setSortingState] = useState('');
+  const toggleSorting = column => {
+    setSortingState(prevState => {
+      if (prevState === column) {
+        return `-${column}`;
+      }
+      return column;
+    });
+  };
+
+  const COLUMNS = [
+    {
+      label: (
+        <>
+          {KDFM.EVENT}{' '}
+          <button onClick={() => toggleSorting('event')}>
+            {sortingState === 'event' ? (
+              <SortUpIcon />
+            ) : sortingState === '-event' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
+      renderCell: item => <TextRender text={item.event || KDFM.NA} />,
+    },
+    {
+      label: KDFM.NAMESPACE,
+      renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
+    },
+    {
+      label: KDFM.FLOW_NAME,
+      renderCell: item => <TextRender text={item.flow_name || KDFM.NA} />,
+    },
+    {
+      label: (
+        <>
+          {KDFM.CLUSTER}{' '}
+          <button onClick={() => toggleSorting('cluster')}>
+            {sortingState === 'cluster' ? (
+              <SortUpIcon />
+            ) : sortingState === '-cluster' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
+      renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
+    },
+    {
+      label: KDFM.MESSAGE,
+      renderCell: item => (
+        <TextRender text={item.message || KDFM.NA} capitalizeText={false} />
+      ),
+      width: '25%',
+    },
+    {
+      label: KDFM.VERSION,
+      renderCell: item => <TextRender text={item.version || KDFM.NA} />,
+    },
+    {
+      label: KDFM.STATUS,
+      renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
+    },
+    {
+      label: KDFM.TIMESTAMP,
+      renderCell: item => <TextRender text={item.timestamp || KDFM.NA} />,
+    },
+    {
+      label: (
+        <>
+          {KDFM.CREATED_BY}{' '}
+          <button onClick={() => toggleSorting('created_by_name')}>
+            {sortingState === 'created_by_name' ? (
+              <SortUpIcon />
+            ) : sortingState === '-created_by_name' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
+      renderCell: item => <TextRender text={item.created_by_name || KDFM.NA} />,
+    },
+  ];
 
   useEffect(() => {
-    dispatch(NamespacesActions.fetchNamespaceAudit());
-  }, [dispatch]);
+    dispatch(NamespacesActions.fetchNamespaceAudit(sortingState));
+  }, [dispatch, sortingState]);
 
   const auditLogLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchNamespaceAudit')

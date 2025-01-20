@@ -273,7 +273,7 @@ export const Grid = ({
             }),
 
           ...(location?.pathname?.match(
-            /user-management|clusters|schedule-deployment/
+            /user-management|clusters|schedule-deployment|activity-history/
           ) &&
             sortingState && {
               sort: sortingState,
@@ -316,7 +316,7 @@ export const Grid = ({
               }),
 
             ...(location?.pathname?.match(
-              /user-management|clusters|schedule-deployment/
+              /user-management|clusters|schedule-deployment|activity-history/
             ) &&
               sortingState && {
                 sort: sortingState,
