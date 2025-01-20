@@ -400,6 +400,10 @@ const FlowDetailsPage = () => {
     LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
   );
 
+  const loadingVersion = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchVersionData')
+  );
+
   const getIconForState = state => {
     switch (state) {
       case 'LOCALLY_MODIFIED_AND_STALE':
@@ -420,7 +424,7 @@ const FlowDetailsPage = () => {
     selectedNameSpace?.state === 'UP_TO_DATE';
   return (
     <div>
-      <FullPageLoader loading={loadingregistry} />
+      <FullPageLoader loading={loadingregistry || loadingVersion} />
 
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
