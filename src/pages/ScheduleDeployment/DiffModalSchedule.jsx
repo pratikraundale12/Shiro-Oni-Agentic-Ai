@@ -83,7 +83,7 @@ export const DiffModalScheduleList = props => {
         isOpen={modalOpen}
         onRequestClose={closeModal}
         primaryButtonText="Cancel"
-        // onSubmit={handleSubmit(onSubmit)}
+        onSubmit={() => closeModal()}
         footerAlign="start"
         contentStyles={{ minWidth: '65%' }}
       >

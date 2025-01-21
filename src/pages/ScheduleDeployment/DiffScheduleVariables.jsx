@@ -64,13 +64,12 @@ const NoDataText = styled.div`
 `;
 const DiffScheduleVariables = () => {
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
-  console.log(scheduleDiffData?.diffVariables, 'scheduleDiffData');
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1 pb-2 ">
         {' '}
         {scheduleDiffData?.diffVariables?.map(element => (
-          <div key={element?.pgId} className="mt-2">
+          <div key={element?.pgId} className="mt-4">
             <PgHead className="mb-2">{element?.pgName}</PgHead>
             <GreyBoxNamespace key={element?.pgId}>
               <div className="row mb-3">
@@ -81,11 +80,19 @@ const DiffScheduleVariables = () => {
                 </div>
               </div>
               {element?.variables?.map(item => (
-                <div className="row mt-2" key={item?.name}>
+                <div className="row mt-4" key={item?.name}>
                   <div className="d-flex">
                     <TileItem className="col-3">{item?.name}</TileItem>
                     <TileItem className="col-5">
-                      <span>{item?.new_value}</span>
+                      <span
+                        style={{
+                          backgroundColor: '#E9ECF1',
+                          borderRadius: '6px',
+                        }}
+                        className="p-2"
+                      >
+                        {item?.new_value}
+                      </span>
                     </TileItem>
                     <TileItem className="col-4">{item?.old_value}</TileItem>
                   </div>

@@ -435,8 +435,8 @@ const Summary = () => {
     ...(parameterReduxData?.inherited || []),
     ...(parameterReduxData?.parent || []),
   ];
-  
-  const filteredArray = orignalParameterData
+
+  const filteredArrayPCold = orignalParameterData
     .filter(item1 =>
       paramterDeployArray.some(item2 => item1.name === item2.name)
     )
@@ -451,7 +451,6 @@ const Summary = () => {
         ),
       };
     });
-  console.log(filteredArray, 'filteredArray?????????????/');
 
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
 
@@ -708,7 +707,7 @@ const Summary = () => {
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
       registryId: registryData?.id,
-      namespaceId: checkDestCluster?.value,
+      namespaceId: checkDestCluster?.value, 
       mode: 'deploy',
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       isScheduled: true,
@@ -721,6 +720,7 @@ const Summary = () => {
       // namespaceStatus: flowControlSelectedScheduleStored,
       nameSpaceName: registryAllDetails?.processGroupName,
       oldVariablesData: orignalVariables,
+      oldParameterContextData: filteredArrayPCold,
     };
     //
     if (!isEmpty(flowControlSelectedScheduleStored)) {
@@ -762,6 +762,7 @@ const Summary = () => {
         namespaceStatus: flowControlSelectedScheduleStored,
         nameSpaceName: registryAllDetails?.processGroupName,
         oldVariablesData: orignalVariables,
+        oldParameterContextData: filteredArrayPCold,
       };
       //
       if (!isEmpty(variblesReduxData)) {
@@ -788,6 +789,7 @@ const Summary = () => {
         payload: {
           namespaceId: checkDestCluster?.value,
           oldVariablesData: orignalVariables,
+          oldParameterContextData: filteredArrayPCold,
         },
         flowName: selectedNameSpace?.flowName,
         isScheduled: true,
@@ -826,6 +828,7 @@ const Summary = () => {
       payload: {
         namespaceId: checkDestCluster?.value,
         oldVariablesData: orignalVariables,
+        oldParameterContextData: filteredArrayPCold,
       },
       flowName: selectedNameSpace?.flowName,
       isScheduled: true,
