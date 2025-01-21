@@ -219,6 +219,9 @@ const ActiveButtonDiv = styled.div`
   svg path {
     fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
+  .div-btn-1.disabled {
+    cursor: not-allowed;
+  }
 `;
 const BottomButtonDiv = styled.div`
   gap: 16px;
@@ -1176,40 +1179,96 @@ const Summary = () => {
                       <TextsvgDiv className="d-flex">
                         <ActiveButtonDiv className="div-btn-1 mr-2">
                           <ActiveButtonDiv
-                            className="div-btn-1 "
+                            disabled={
+                              processStatus?.runningCount > 0 &&
+                              processStatus?.stoppedCount === 0
+                            }
+                            className={`div-btn-1 ${
+                              processStatus?.runningCount > 0 &&
+                              processStatus?.stoppedCount === 0
+                                ? 'disabled'
+                                : ''
+                            }`}
                             isActive={activeButton === 'RUNNING'}
+                            data-tooltip-id="runningProcessor"
                             activeColor="#58e715"
                             hoverColor="#58e715"
                             activeTextColor="#fff"
-                            onClick={() =>
-                              activeButton === 'RUNNING'
-                                ? null
-                                : handleUpdateStatus('RUNNING')
-                            }
+                            onClick={() => {
+                              if (
+                                processStatus?.runningCount > 0 &&
+                                processStatus?.stoppedCount === 0
+                              ) {
+                                return;
+                              }
+                              handleUpdateStatus('RUNNING');
+                            }}
+                            // onClick={() =>
+                            //   activeButton === 'RUNNING'
+                            //     ? null
+                            //     : handleUpdateStatus('RUNNING')
+                            // }
                           >
                             <TriangleIcons color="#B5BDC8" />
                           </ActiveButtonDiv>
                         </ActiveButtonDiv>
                         <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                        {processStatus?.runningCount > 0 &&
+                          processStatus?.stoppedCount === 0 && (
+                            <ReactTooltip
+                              id="runningProcessor"
+                              content="Running Components"
+                              place="right"
+                              positionStrategy="fixed"
+                            />
+                          )}
                       </TextsvgDiv>
                       <TextsvgDiv className="d-flex">
                         <ActiveButtonDiv className="div-btn-2 mr-2">
                           <ActiveButtonDiv
-                            className="div-btn-1"
+                            className={`div-btn-1 ${
+                              processStatus?.runningCount === 0 &&
+                              processStatus?.stoppedCount > 0
+                                ? 'disabled'
+                                : ''
+                            }`}
+                            disabled={
+                              processStatus?.runningCount === 0 &&
+                              processStatus?.stoppedCount > 0
+                            }
                             isActive={activeButton === 'STOPPED'}
                             activeColor="#c52b2b"
                             hoverColor="#c52b2b"
                             activeTextColor="#fff"
-                            onClick={() =>
-                              activeButton === 'STOPPED'
-                                ? null
-                                : handleUpdateStatus('STOPPED')
-                            }
+                            data-tooltip-id="stoppedProcessor"
+                            onClick={() => {
+                              if (
+                                processStatus?.runningCount === 0 &&
+                                processStatus?.stoppedCount > 0
+                              ) {
+                                return;
+                              }
+                              handleUpdateStatus('STOPPED');
+                            }}
+                            // onClick={() =>
+                            //   activeButton === 'STOPPED'
+                            //     ? null
+                            //     : handleUpdateStatus('STOPPED')
+                            // }
                           >
                             <SquareBoxIcon color="#B5BDC8" />
                           </ActiveButtonDiv>
                         </ActiveButtonDiv>
                         <div>{KDFM.STOPPED_FLOW}</div>
+                        {processStatus?.runningCount === 0 &&
+                          processStatus?.stoppedCount > 0 && (
+                            <ReactTooltip
+                              id="stoppedProcessor"
+                              content="Stopped Components"
+                              place="right"
+                              positionStrategy="fixed"
+                            />
+                          )}
                       </TextsvgDiv>
                     </>
                   ) : (

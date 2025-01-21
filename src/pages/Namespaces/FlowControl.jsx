@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   SmallNotThunderIcon,
@@ -12,6 +13,7 @@ import DisbaleIconImage from '../../assets/images/disable.png';
 import EnableIconImage from '../../assets/images/enable.png';
 import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
+import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
 import { ModalWithIcon } from '../../shared';
 import {
@@ -19,7 +21,6 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { FullPageLoader } from '../../components';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -248,45 +249,79 @@ const FlowControl = () => {
                     <ActiveButtonDiv
                       disabled={
                         !canWrite ||
-                        (sigleNamespaceData?.runningCount === 0 &&
-                          sigleNamespaceData?.stopCount === 0)
+                        (sigleNamespaceData?.runningCount > 0 &&
+                          sigleNamespaceData?.stoppedCount === 0)
                       }
                       className="div-btn-1 "
                       isActive={activeButton === 'RUNNING'}
                       activeColor="#58e715"
                       hoverColor="#58e715"
                       activeTextColor="#fff"
-                      onClick={() =>
-                        sigleNamespaceData?.runningCount
-                          ? null
-                          : handleUpdateStatus('RUNNING')
-                      }
+                      data-tooltip-id="runningProcessor"
+                      onClick={() => {
+                        if (
+                          !canWrite ||
+                          (sigleNamespaceData?.runningCount > 0 &&
+                            sigleNamespaceData?.stoppedCount === 0)
+                        ) {
+                          return;
+                        }
+                        handleUpdateStatus('RUNNING');
+                      }}
                     >
                       <TriangleIcons color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
                   <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+                  {sigleNamespaceData?.runningCount > 0 &&
+                    sigleNamespaceData?.stoppedCount === 0 && (
+                      <ReactTooltip
+                        id="runningProcessor"
+                        content="Running Components"
+                        place="right"
+                        positionStrategy="fixed"
+                      />
+                    )}
                 </TextsvgDiv>
 
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-2 mr-2">
                     <ActiveButtonDiv
-                      disabled={!canWrite}
+                      disabled={
+                        !canWrite ||
+                        (sigleNamespaceData?.runningCount === 0 &&
+                          sigleNamespaceData?.stoppedCount > 0)
+                      }
                       className="div-btn-1"
                       isActive={activeButton === 'STOPPED'}
                       activeColor="#c52b2b"
                       hoverColor="#c52b2b"
                       activeTextColor="#fff"
-                      onClick={() =>
-                        sigleNamespaceData?.stoppedCount
-                          ? null
-                          : handleUpdateStatus('STOPPED')
-                      }
+                      data-tooltip-id="stoppedProcessor"
+                      onClick={() => {
+                        if (
+                          !canWrite ||
+                          (sigleNamespaceData?.runningCount === 0 &&
+                            sigleNamespaceData?.stoppedCount > 0)
+                        ) {
+                          return;
+                        }
+                        handleUpdateStatus('STOPPED');
+                      }}
                     >
                       <SquareBoxIcon color="#B5BDC8" />
                     </ActiveButtonDiv>
                   </ActiveButtonDiv>
                   <div>{KDFM.STOPPED_FLOW}</div>
+                  {sigleNamespaceData?.runningCount === 0 &&
+                    sigleNamespaceData?.stoppedCount > 0 && (
+                      <ReactTooltip
+                        id="stoppedProcessor"
+                        content="Stopped Components"
+                        place="right"
+                        positionStrategy="fixed"
+                      />
+                    )}
                 </TextsvgDiv>
               </>
             ) : (
@@ -316,6 +351,7 @@ const FlowControl = () => {
           }
           isOpen={confirmDialogue?.state}
           onRequestClose={() => {
+            setActiveButton(null);
             setConfirmDialogue({
               state: false,
               action: '',
