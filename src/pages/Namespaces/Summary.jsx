@@ -429,7 +429,7 @@ const Summary = () => {
   );
   console.log(
     controllerServiceReduxData.localServicesData,
-    'controllerServiceReduxData'
+    'controllerServiceReduxData   '
   );
   const filteredCSArrayDiff = CSorignalData.filter(item1 =>
     controllerServiceReduxData?.localServicesData?.some(
@@ -744,6 +744,7 @@ const Summary = () => {
       nameSpaceName: registryAllDetails?.processGroupName,
       oldVariablesData: orignalVariables,
       oldParameterContextData: filteredArrayPCold,
+      previousControllerServices: { localServices: filteredCSArrayDiff },
     };
     //
     if (!isEmpty(flowControlSelectedScheduleStored)) {
@@ -786,6 +787,7 @@ const Summary = () => {
         nameSpaceName: registryAllDetails?.processGroupName,
         oldVariablesData: orignalVariables,
         oldParameterContextData: filteredArrayPCold,
+        previousControllerServices: { localServices: filteredCSArrayDiff },
       };
       //
       if (!isEmpty(variblesReduxData)) {
@@ -813,6 +815,7 @@ const Summary = () => {
           namespaceId: checkDestCluster?.value,
           oldVariablesData: orignalVariables,
           oldParameterContextData: filteredArrayPCold,
+          previousControllerServices: { localServices: filteredCSArrayDiff },
         },
         flowName: selectedNameSpace?.flowName,
         isScheduled: true,
@@ -852,6 +855,7 @@ const Summary = () => {
         namespaceId: checkDestCluster?.value,
         oldVariablesData: orignalVariables,
         oldParameterContextData: filteredArrayPCold,
+        previousControllerServices: { localServices: filteredCSArrayDiff },
       },
       flowName: selectedNameSpace?.flowName,
       isScheduled: true,
