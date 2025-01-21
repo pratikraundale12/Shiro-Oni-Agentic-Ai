@@ -6,6 +6,8 @@ import { CheckboxField, InputField, Modal } from '../../shared';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { toast } from 'react-toastify';
+import { KDFM } from '../../constants';
 
 const ModalBody = styled.div`
   position: relative;
@@ -51,6 +53,7 @@ const ConfigurePropertyModal = ({
         new_added: true,
       },
     ]);
+    toast.success(KDFM.PROPERTY_ADDED);
     dispatch(
       NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(false)
     );

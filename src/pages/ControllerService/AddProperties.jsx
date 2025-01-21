@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { QRIcons } from '../../assets';
 import { CheckboxField, InputField, Modal } from '../../shared';
 import { useForm, useWatch } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { KDFM } from '../../constants';
 
 const ModalBody = styled.div`
   position: relative;
@@ -47,6 +49,7 @@ const AddProperties = ({
           : item
       )
     );
+    toast.success(KDFM.PROPERTY_EDITED);
     setIsAddpropertiesModalOpen(false);
   };
   const check = useWatch({
