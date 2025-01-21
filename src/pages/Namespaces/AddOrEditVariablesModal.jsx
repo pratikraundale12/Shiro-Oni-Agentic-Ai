@@ -73,6 +73,9 @@ const AddOrEditVariablesModal = ({
       return;
     }
     handleSave(formData);
+    isAddVariablesOpen?.mode === 'edit'
+      ? toast.success(KDFM.VARIABLE_EDITED)
+      : toast.success(KDFM.VARIABLE_ADDED);
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
   };
 

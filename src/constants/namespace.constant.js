@@ -55,4 +55,12 @@ export const NAMESPACE_CONSTANTS = {
   SELECT_SCHEDULE_TIME: 'Please select schedule time',
   INCORRECT_SCHEDULE_TIME: 'Selected date and time is invalid',
   PROCESS_GROUP_DETAILS: 'Process Group Details',
+  PROPERTY_DELETED: 'Property deleted successfully',
+  PROPERTY_EDITED: 'Property edited successfully',
+  PROPERTY_ADDED: 'Property added successfully',
+  SERVICE_ADDED: 'Service added successfully',
+  PARAMETER_EDITED: 'Parameters edited successfully',
+  PARAMETER_ADDED: 'Parameters added successfully',
+  VARIABLE_EDITED: 'Variables edited successfully',
+  VARIABLE_ADDED: 'Variables added successfully',
 };

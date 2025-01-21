@@ -8,6 +8,8 @@ import { Table } from '../../components';
 import { Button, InputField, Modal } from '../../shared';
 import { NamespacesActions } from '../../store';
 import ValueRender from './ValueRender';
+import { toast } from 'react-toastify';
+import { KDFM } from '../../constants';
 
 const ModalBody = styled.div`
   position: relative;
@@ -61,6 +63,12 @@ export const ConfigControllerService = ({
       );
       setUpdatedData(sortedUpdatedList);
     }
+    toast.success(KDFM.PROPERTY_DELETED);
+  };
+
+  const handleOpenPropertyDropDownModal = item => {
+    dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(true));
+    setSelectedPropertyToEdit(item);
   };
 
   const COLUMNS = [
@@ -95,7 +103,11 @@ export const ConfigControllerService = ({
           )}
           <div
             style={{ cursor: 'pointer' }}
-            onClick={() => handleAddValueModal(item)}
+            onClick={() =>
+              !item?.isSelective
+                ? handleAddValueModal(item)
+                : handleOpenPropertyDropDownModal(item)
+            }
           >
             {' '}
             <PencilIcon height="28" />
