@@ -9,6 +9,7 @@ import {
   ConfirmScheduleDeploymentIcon,
   CrossWithCircleIcon,
   DeleteDustbinIcon,
+  DiffIcon,
   // HoldIcon,
   PencilIcon,
   RejectIcon,
@@ -31,6 +32,7 @@ import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
+import { DiffModalScheduleList } from './DiffModalSchedule';
 
 const ActionTd = styled.div`
   display: flex;
@@ -211,9 +213,20 @@ export const ListScheduleDeployment = () => {
     });
   };
   //
+  const getDefSchedule = async item => {
+    dispatch(SchedularActions.setIsDiffModalOpen(true));
+    dispatch(SchedularActions.fetchDiffScheduleData(item?.id));
+  };
   const getActionsMenu = item => {
     return (
       <ActionTd>
+        {' '}
+        <IconButton
+          onClick={() => getDefSchedule(item)}
+          data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
+        >
+          <DiffIcon />
+        </IconButton>
         {currentUserData?.role === 'superadmin' && (
           <>
             {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
@@ -511,6 +524,7 @@ export const ListScheduleDeployment = () => {
         currentPage={currentPage}
         sortingState={sortingState}
       />
+      <DiffModalScheduleList />
     </>
   );
 };

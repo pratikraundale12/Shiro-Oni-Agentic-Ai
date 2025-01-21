@@ -119,7 +119,20 @@ export function* rejectScheduleDeployment(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
-//
+
+export function* fetchDiffScheduleData(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchDiffScheduleData',
+    loadingSection: 'fetchDiffScheduleData',
+    apiMethod: api.fetchDiffScheduleData,
+    apiParams: [{ schedularId: payload }],
+  });
+  if (response.ok) {
+    yield put(SchedularActions.setDiffAllData(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
 
 export function* schedularSagas(api) {
   yield all([
@@ -142,6 +155,11 @@ export function* schedularSagas(api) {
     takeLatest(
       SchedularActions.rejectScheduleDeployment,
       rejectScheduleDeployment,
+      api
+    ),
+    takeLatest(
+      SchedularActions.fetchDiffScheduleData,
+      fetchDiffScheduleData,
       api
     ),
   ]);
