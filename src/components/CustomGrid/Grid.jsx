@@ -163,15 +163,9 @@ export const Grid = ({
     setState,
   } = useGlobalContext();
 
-  const prioritizedData = gridData.filter(item => item.version);
-  const remainingData = gridData.filter(item => !item.version);
-  const sortedData = [...prioritizedData, ...remainingData].filter(
-    item => !item.isProcessor
-  );
-
   const DATA = {
     nodes: isNamespace
-      ? getData(loading, sortedData, clusterSummary.nodes).slice(
+      ? getData(loading, gridData, clusterSummary.nodes).slice(
           (currentPage - 1) * itemsPerPage,
           currentPage * itemsPerPage
         )

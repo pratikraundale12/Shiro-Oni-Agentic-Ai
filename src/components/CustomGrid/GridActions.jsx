@@ -463,23 +463,25 @@ export const GridActions = ({
 
         <ButtonsContainer>
           {module === 'users' && (
-            <StyledSelectField
-              size="sm"
-              name="roles"
-              control={control}
-              title="Select Roles"
-              placeholder="Select Roles"
-              value={selectedRole}
-              options={[
-                { label: 'All', value: 'all' },
-                ...uniqueRoles.map(role => ({
-                  label: role.name,
-                  value: role.role_id,
-                })),
-              ]}
-              backgroundColor={theme.colors.lightGrey}
-              onChange={handleRolesChange}
-            />
+            <DropdownContainer>
+              <StyledSelectField
+                size="sm"
+                name="roles"
+                control={control}
+                title="Select Roles"
+                placeholder="Select Roles"
+                value={selectedRole}
+                options={[
+                  { label: 'All', value: 'all' },
+                  ...uniqueRoles.map(role => ({
+                    label: role.name,
+                    value: role.role_id,
+                  })),
+                ]}
+                backgroundColor={theme.colors.lightGrey}
+                onChange={handleRolesChange}
+              />
+            </DropdownContainer>
           )}
           {!isEmpty(statusOptions) && (
             <DropdownContainer>

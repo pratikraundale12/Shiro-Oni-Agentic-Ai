@@ -1,14 +1,14 @@
-import React from 'react';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
+import React from 'react';
 import DatePicker from 'react-datepicker';
 import { Controller } from 'react-hook-form';
 import styled from 'styled-components';
-import classNames from 'classnames';
 
 import 'react-datepicker/dist/react-datepicker.css';
-import FieldErrorMessage from '../FieldErrorMessage';
 import { CalendarIcon } from '../../../../assets';
 import { hasError } from '../../../../helpers';
+import FieldErrorMessage from '../FieldErrorMessage';
 
 const Container = styled.div`
   width: 100%;
@@ -36,7 +36,7 @@ const Container = styled.div`
 
   .icon-placeholder {
     width: 34px;
-    height: 40px;
+    height: 39px;
     top: 11px;
     left: 1px;
     z-index: 1;

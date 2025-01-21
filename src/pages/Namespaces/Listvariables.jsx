@@ -1,9 +1,10 @@
 /*eslint-disable*/
+import { isEmpty, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { NoDataIcon, PencilIcon } from '../../assets';
+import { ArrowIcon, NoDataIcon, PencilIcon } from '../../assets';
 import {
   FullPageLoader,
   IconButton,
@@ -18,7 +19,6 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { isEmpty, uniqBy } from 'lodash';
 import { SchedularSelectors } from '../../store/schedular/redux';
 import AddVariables from './AddVariables';
 import Collapsible from './Collapsible';
@@ -162,33 +162,47 @@ const Listvariables = ({
     {
       renderCell: item => (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <IconButton
-            onClick={() => {
-              if (canWrite) {
-                setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
-                if (isVariablesModalOpen?.schedule) {
-                  setVariablesModalOpen({
-                    isOpen: true,
-                    mode: 'add',
-                    schedule: true,
-                  });
-                } else {
-                  setVariablesModalOpen({
-                    isOpen: true,
-                    mode: 'add',
-                    schedule: false,
-                  });
+          {item?.showArrow ? (
+            <IconButton
+              onClick={() => {
+                dispatch(
+                  NamespacesActions.fetchVariableList(
+                    item?.variable?.processGroupId
+                  )
+                );
+              }}
+            >
+              <ArrowIcon />
+            </IconButton>
+          ) : (
+            <IconButton
+              onClick={() => {
+                if (canWrite) {
+                  setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
+                  if (isVariablesModalOpen?.schedule) {
+                    setVariablesModalOpen({
+                      isOpen: true,
+                      mode: 'add',
+                      schedule: true,
+                    });
+                  } else {
+                    setVariablesModalOpen({
+                      isOpen: true,
+                      mode: 'add',
+                      schedule: false,
+                    });
+                  }
+                  dispatch(NamespacesActions.setVariableContextItem(item));
                 }
-                dispatch(NamespacesActions.setVariableContextItem(item));
-              }
-            }}
-            style={{
-              opacity: canWrite ? 1 : 0.3,
-              cursor: canWrite ? 'pointer' : 'not-allowed',
-            }}
-          >
-            <PencilIcon style={{ color: 'black' }} />
-          </IconButton>
+              }}
+              style={{
+                opacity: canWrite ? 1 : 0.3,
+                cursor: canWrite ? 'pointer' : 'not-allowed',
+              }}
+            >
+              <PencilIcon style={{ color: 'black' }} />
+            </IconButton>
+          )}
         </div>
       ),
     },

@@ -21,9 +21,7 @@ const ProcessGroupSorting = ({ sortProperty, module = 'namespaces' }) => {
     return clonedArray.sort((a, b) => {
       const valueA = a[property] ? a[property].toLowerCase() : '';
       const valueB = b[property] ? b[property].toLowerCase() : '';
-      if (valueA === '' && valueB === '') return 0;
-      if (valueA === '') return 1;
-      if (valueB === '') return -1;
+
       return ascending
         ? valueA.localeCompare(valueB)
         : valueB.localeCompare(valueA);
