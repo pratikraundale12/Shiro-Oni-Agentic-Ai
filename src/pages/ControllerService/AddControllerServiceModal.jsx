@@ -105,6 +105,7 @@ const AddControllerServiceModal = ({
 
   const closeModal = () => {
     dispatch(NamespacesActions.setIsAddControllerServiceModal(false));
+    setSearch('');
   };
   const csLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllControllerServiceToAdd')

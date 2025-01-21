@@ -85,6 +85,7 @@ const NewAddControllerService = () => {
   const [search, setSearch] = useState('');
   const closeModal = () => {
     dispatch(NamespacesActions.setIsNewAddControllerServiceModal(false));
+    setSearch('');
   };
 
   const dummyData = [

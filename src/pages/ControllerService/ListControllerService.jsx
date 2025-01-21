@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { isEmpty } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -149,10 +149,15 @@ export const ListControllerService = () => {
   const [listPropertyTableData, setListPropertTableData] = useState(
     selectedItemFromList?.properties
   );
-  const filteredModulesData = listData.filter(
-    module =>
-      module?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      module?.type?.toLowerCase().includes(search.toLowerCase())
+  const [isResetNotRequired, setIsResetNotRequired] = useState(false);
+  const filteredModulesData = useMemo(
+    () =>
+      listData.filter(
+        module =>
+          module?.name?.toLowerCase().includes(search.toLowerCase()) ||
+          module?.type?.toLowerCase().includes(search.toLowerCase())
+      ),
+    [listData, search]
   );
 
   const isListProprtyModel = useSelector(
@@ -193,8 +198,8 @@ export const ListControllerService = () => {
         id: selectedItemFromList?.id,
       })
     );
-
     setIsDeleteModalOpen(false);
+    setIsResetNotRequired(true);
   };
 
   const controllerPermissions = useSelector(
@@ -360,11 +365,12 @@ export const ListControllerService = () => {
               <Button
                 type="button"
                 size={'md'}
-                onClick={() =>
+                onClick={() => {
                   dispatch(
                     NamespacesActions.setIsAddControllerServiceModal(true)
-                  )
-                }
+                  );
+                  setIsResetNotRequired(true);
+                }}
               >
                 Add
               </Button>
@@ -384,6 +390,7 @@ export const ListControllerService = () => {
           value={search}
           placeholder="Search Controller Service by Name"
           onChange={e => {
+            setIsResetNotRequired(false);
             const value = e.target.value;
             if (value.length <= 100) {
               setSearch(value);
@@ -399,6 +406,8 @@ export const ListControllerService = () => {
         data={filteredModulesData}
         columns={COLUMNS}
         controllerModule={true}
+        csList={true}
+        isResetNotRequired={isResetNotRequired}
       />
 
       <ConfigControllerService
