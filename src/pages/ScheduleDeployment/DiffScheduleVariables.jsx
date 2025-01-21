@@ -23,7 +23,7 @@ const ScrollSetGrey = styled.div`
 const GreyBoxNamespace = styled.div`
   background-color: #f5f7fa;
   padding: 5px 10px 0px 10px;
-  border-radius: 20px;
+  border-radius: 15px;
   padding: 20px 15px 20px 15px;
 `;
 const PgHead = styled.div`
@@ -87,7 +87,7 @@ const DiffScheduleVariables = () => {
                       <span
                         style={{
                           backgroundColor: '#E9ECF1',
-                          borderRadius: '6px',
+                          borderRadius: '12px',
                         }}
                         className="p-2"
                       >

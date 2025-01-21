@@ -436,7 +436,7 @@ const Summary = () => {
     ...(parameterReduxData?.parent || []),
   ];
 
-  const filteredArrayPCold = orignalParameterData
+  const PColdValues = orignalParameterData
     .filter(item1 =>
       paramterDeployArray.some(item2 => item1.name === item2.name)
     )
@@ -451,6 +451,10 @@ const Summary = () => {
         ),
       };
     });
+  const filteredArrayPCold = PColdValues.map(item => ({
+    parameterName: item.name,
+    parameters: item.parameters,
+  }));
 
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
 
@@ -707,7 +711,7 @@ const Summary = () => {
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
       registryId: registryData?.id,
-      namespaceId: checkDestCluster?.value, 
+      namespaceId: checkDestCluster?.value,
       mode: 'deploy',
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       isScheduled: true,

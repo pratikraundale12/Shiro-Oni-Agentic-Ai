@@ -82,10 +82,11 @@ export const DiffModalScheduleList = props => {
         title={'Schedule Deployment Comparison'}
         isOpen={modalOpen}
         onRequestClose={closeModal}
-        primaryButtonText="Cancel"
+        primaryButtonText="Close"
         onSubmit={() => closeModal()}
         footerAlign="start"
         contentStyles={{ minWidth: '65%' }}
+        noPadding={true}
       >
         <GreyBoxNamespace className="w-100  mb-3">
           <TabWrapper className="nav">
