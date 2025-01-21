@@ -7,6 +7,8 @@ import { Button, Modal, SelectField } from '../../shared';
 import { theme } from '../../styles';
 import { useForm } from 'react-hook-form';
 import { isEmpty } from 'lodash';
+import { toast } from 'react-toastify';
+import { KDFM } from '../../constants';
 
 const ModalBody = styled.div`
   position: relative;
@@ -90,6 +92,7 @@ const PropertyDropdownModal = ({
           : item
       )
     );
+    toast.success(KDFM.PROPERTY_EDITED);
     handleClose();
   };
 
@@ -101,6 +104,7 @@ const PropertyDropdownModal = ({
       dispatch(
         NamespacesActions.addControllerServicePropertyByDropdown(selectedObject)
       );
+    toast.success(KDFM.SERVICE_ADDED);
     setAddNewProperty(false);
   };
   useEffect(() => {
