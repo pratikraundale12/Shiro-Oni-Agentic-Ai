@@ -1491,15 +1491,14 @@ const ControllerServiceTab = ({
             <div className="d-flex">
               {KDFM.CONTROLLER_SERVICE_DATA}
               <div
-                data-tooltip-id="External Controller Services"
+                data-tooltip-id="External-Controller-Services-tip"
                 className="ml-2"
               >
                 <InfoIcon />
                 <ReactTooltip
-                  id="External Controller Services"
+                  id="External-Controller-Services-tip"
                   place="right"
-                  content="Available external controller services to configure
-                  "
+                  content="The available external controller services can be configured in this section, and any settings changes made here will be applied immediately"
                   style={{
                     width: 'auto',
                     whiteSpace: 'normal',
@@ -1525,15 +1524,14 @@ const ControllerServiceTab = ({
             <div className="d-flex">
               {KDFM.CONTROLLER_SERVICE_DATA}
               <div
-                data-tooltip-id="External Controller Services"
+                data-tooltip-id="External-Controller-Services"
                 className="ml-2"
               >
                 <InfoIcon />
                 <ReactTooltip
-                  id="External Controller Services"
+                  id="External-Controller-Services"
                   place="right"
-                  content="Available external controller services to configure
-                  "
+                  content="The available external controller services can be configured in this section, and any settings changes made here will be applied immediately"
                   style={{
                     width: 'auto',
                     whiteSpace: 'normal',
