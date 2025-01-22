@@ -176,6 +176,20 @@ export const ClusterAccess = () => {
           isEdit={hasEditPermssion}
           clusterId={item.value}
           roleClusters={updatedRoleClusters}
+          policy={policies?.find(
+            policy => policy.name === 'deactivate_cluster'
+          )}
+          onChange={handleChange}
+        />
+      ),
+    },
+    {
+      label: 'Delete',
+      renderCell: item => (
+        <CellRender
+          isEdit={hasEditPermssion}
+          clusterId={item.value}
+          roleClusters={updatedRoleClusters}
           policy={policies?.find(policy => policy.name === 'delete_cluster')}
           onChange={handleChange}
         />

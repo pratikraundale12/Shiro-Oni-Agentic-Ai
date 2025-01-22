@@ -6,6 +6,7 @@ import {
   ActiveIcon,
   DeleteDustbinIcon,
   DeleteSmallIcon,
+  LogoutIcon,
   OpenEyeIcon,
   PencilIcon,
   SortDownIcon,
@@ -176,7 +177,7 @@ export const ListClusters = () => {
                       )}
                       {item.deactivate_cluster && (
                         <Item onClick={() => handleClick('delete', item.id)}>
-                          <DeleteSmallIcon width={18} height={18} />
+                          <LogoutIcon color="black" />
                           <span>{KDFM.DEACTIVATE}</span>
                         </Item>
                       )}
