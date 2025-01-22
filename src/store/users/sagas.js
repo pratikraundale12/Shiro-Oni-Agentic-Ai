@@ -15,7 +15,7 @@ export function* fetchUsers(api, { payload }) {
   if (response.ok) {
     yield put(UsersActions.fetchUsersSuccess(response.data));
   } else {
-    toast.error(response.data?.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 

@@ -355,9 +355,7 @@ export const LdapConfig = () => {
       setSaveButtonStatus(true);
       setLoading(false);
     } else {
-      toast.error(
-        response?.message || 'Something went wrong. Please try again'
-      );
+      toast.error(response?.message || response?.data?.message);
       setLoading(false);
     }
   };
@@ -367,7 +365,7 @@ export const LdapConfig = () => {
       setExistingMappingArray(responseMap?.data);
       dispatch(RolesActions.updateLdapGroup(responseMap?.data));
     } else {
-      toast.error(responseMap?.message || 'Something went wrong');
+      toast.error(responseMap?.message || responseMap?.data?.message);
     }
   };
   useEffect(() => {
@@ -422,7 +420,7 @@ export const LdapConfig = () => {
         });
       }
     } else {
-      toast.error(response?.message || 'Something went wrong');
+      toast.error(response?.message || response?.data?.message);
     }
   };
 
@@ -461,9 +459,7 @@ export const LdapConfig = () => {
       setSyncUsers(true);
       setLoading(false);
     } else {
-      toast.error(
-        response?.message || 'Something went wrong. Please try again'
-      );
+      toast.error(response?.message || response?.data?.message);
       setLoading(false);
     }
   };

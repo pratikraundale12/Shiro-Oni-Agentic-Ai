@@ -20,7 +20,7 @@ export const request = async (setState, path, api, data) => {
         [path]: error,
       },
     }));
-    toast.error(error?.message || 'Something went wrong. Please try again.');
+    toast.error(error?.message || error?.data?.message);
   } finally {
     setState(prev => ({
       ...prev,

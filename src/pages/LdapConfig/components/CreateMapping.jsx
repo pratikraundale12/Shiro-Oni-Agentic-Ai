@@ -127,9 +127,7 @@ export const CreateMapping = ({
       setIsOpen(false);
       getLDAPGroupForMapping();
     } else {
-      toast.error(
-        response?.message || 'Something went wrong. Please try again'
-      );
+      toast.error(response?.message || response?.data?.message);
       setIsOpen(false);
     }
   };

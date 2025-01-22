@@ -27,7 +27,7 @@ export function* fetchLdap(api, payload) {
     yield put(RolesActions.setSelectedLdapGroup(response.data));
     yield put(RolesActions.displayGroup(false));
   } else {
-    toast.error(response.data.message || 'Something went wrong');
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -93,7 +93,7 @@ export function* createNewRole(api, { payload }) {
     toast.error(
       response.data.type === 'FieldError'
         ? response.data.fieldErrors[0]?.name
-        : response.data.message || KDFM.SOMETHING_WENT_WRONG
+        : response?.message || response?.data?.message
     );
   }
 }
@@ -116,7 +116,7 @@ export function* deleteRole(api) {
     yield put(RolesActions.fetchRoles());
     toast.success('Role deleted successfully');
   } else if (!response.ok)
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
 }
 
 export function* editRole(api, { payload }) {
@@ -142,7 +142,7 @@ export function* editRole(api, { payload }) {
     toast.error(
       response.data.type === 'FieldError'
         ? response.data.fieldErrors[0]?.name
-        : response.data.message || KDFM.SOMETHING_WENT_WRONG
+        : response?.message || response?.data?.message
     );
     yield put(RolesActions.roleModal(false));
   }

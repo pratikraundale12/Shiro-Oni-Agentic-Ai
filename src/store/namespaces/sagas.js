@@ -93,7 +93,7 @@ export function* checkDestCluster(api) {
     successAction: NamespacesActions.checkDestClusterSuccess,
   });
   if (response.ok && response.data.message) {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -139,7 +139,7 @@ export function* deployCluster(api) {
     yield put(NamespacesActions.setDeployedModal());
     yield put(NamespacesActions.setNamespaceSummaryLoadingState(false));
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
     yield put(NamespacesActions.setNamespaceSummaryLoadingState(false));
   }
 }
@@ -184,7 +184,7 @@ export function* updateNamespaceStatus(api, { payload }) {
     yield put(NamespacesActions.deployClusterSuccess(responseData));
   }
   if (!response.ok) {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -230,7 +230,7 @@ export function* clusterProgress(api) {
     yield call(clusterProgressDelete, api);
   }
   if (!response.ok) {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -262,7 +262,7 @@ export function* clusterProgressDelete(api) {
   if (response.ok) {
     yield call(getCountDetails, api);
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -293,7 +293,7 @@ export function* getCountDetails(api) {
   });
 
   if (response.ok) yield put(NamespacesActions.setDeployedModal());
-  else toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+  else toast.error(response?.message || response?.data?.message);
 }
 
 export function* fetchParameterContext(
@@ -341,7 +341,7 @@ export function* fetchParameterContext(
       NamespacesActions.setParameterContextListAtDeploy(response?.data)
     );
   } else if (!response.ok || (showError && !initialCall)) {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -525,7 +525,7 @@ export function* fetchVariableList(
   if (response.ok && initialCall)
     yield put(NamespacesActions.setDeployedModal());
   else if (!response.ok || (showError && !initialCall))
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   if (response) {
     yield put(NamespacesActions.setVariableListLoading(false));
   }
@@ -786,7 +786,7 @@ export function* getAllControllerServiceListToAdd(api, action) {
   if (response.ok)
     yield put(NamespacesActions.setAddControllerServiceList(response?.data));
   else if (!response.ok)
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
 }
 
 export function* addControllerServiceRootLevel(api, { payload }) {
@@ -830,7 +830,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
     }
     yield put(NamespacesActions.setNewlyAddedExternalServiceCS(response?.data));
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -864,7 +864,7 @@ export function* addPropertyControllerService(api, { payload }) {
       NamespacesActions.setPropertyUpdateResponse(response?.data?.data)
     );
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -899,7 +899,7 @@ export function* getNewPropertyControllerService(api, { payload }) {
       NamespacesActions.setNewProperToAddControllerService(response?.data)
     );
   else if (!response.ok)
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
 }
 
 export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
@@ -930,7 +930,7 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
       NamespacesActions.setNewProperToAddControllerService(response?.data?.data)
     );
   else if (!response.ok)
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
 }
 
 export function* addControllerServicePropertyByDropdown(api, { payload }) {
@@ -963,7 +963,7 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
     toast.success('Proprty Added Successfully');
     yield put(NamespacesActions.setResponseNewAddedProprty(response?.data));
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -1007,7 +1007,7 @@ export function* changeStatusControllerService(api, { payload }) {
     }
     yield put(NamespacesActions.setChangeStatusCSRespone(response));
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
     yield put(NamespacesActions.setChangeStatusCSRespone({}));
   }
 }
@@ -1046,7 +1046,7 @@ export function* deleteControllerService(api, { payload }) {
       yield put(NamespacesActions.getControllerServiceList());
     }
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -1077,7 +1077,7 @@ export function* fetchNamespacesForDestiationCluster(api, { payload }) {
       NamespacesActions.setChildLevelDeployProcessorData(response?.data)
     );
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -1109,7 +1109,7 @@ export function* fetchRegistryData(api) {
   if (response.ok) {
     yield put(NamespacesActions.setBucketListDropDownData(response?.data));
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -1143,7 +1143,7 @@ export function* fetchFlowNameList(api, { payload }) {
   if (response.ok) {
     yield put(NamespacesActions.setFlowListRegistry(response?.data));
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -1178,7 +1178,7 @@ export function* fetchVersionData(api, { payload }) {
   if (response.ok) {
     yield put(NamespacesActions.setVersionListData(response?.data));
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -1215,7 +1215,7 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   if (response.ok) {
     yield put(NamespacesActions.setRegistryAllDetails(response?.data));
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -1256,7 +1256,7 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
       yield put(NamespacesActions.setFlowControlAfterDeploy(true));
     }
   } else {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 export function* upgradeCluster(api, { payload }) {
@@ -1296,7 +1296,7 @@ export function* upgradeCluster(api, { payload }) {
   }
 
   if (!response.ok) {
-    toast.error(response?.data?.message || KDFM.SOMETHING_WENT_WRONG, {
+    toast.error(response?.message || response?.data?.message, {
       autoClose: 5000,
     });
   }
@@ -1338,7 +1338,7 @@ export function* updateNamespaceStatusRegistry(api, { payload }) {
     yield put(NamespacesActions.deployClusterSuccess(data));
   }
   if (!response.ok) {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
@@ -1375,7 +1375,7 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
     }
   }
   if (!response.ok) {
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
   }
 }
 //

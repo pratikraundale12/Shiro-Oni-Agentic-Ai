@@ -85,10 +85,7 @@ export const fetchGridData = debounce(
           [module]: error,
         },
       }));
-      toast.error(
-        error?.response?.data?.message ||
-          'Something went wrong. Please try again.'
-      );
+      toast.error(error?.response?.message || error?.response?.data?.message);
     } finally {
       setState(prev => ({
         ...prev,

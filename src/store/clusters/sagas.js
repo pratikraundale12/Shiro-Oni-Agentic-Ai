@@ -115,7 +115,7 @@ export function* getClusterToken(api, { payload }) {
       toast.error(response.message || 'Error while getting data');
     }
   } else if (!response.ok)
-    toast.error(response.data.message || KDFM.SOMETHING_WENT_WRONG);
+    toast.error(response?.message || response?.data?.message);
 }
 
 export function* clustersSagas(api) {

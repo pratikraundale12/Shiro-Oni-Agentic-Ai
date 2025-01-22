@@ -23,7 +23,7 @@ export function* createSettings(api, { payload }) {
     // yield put(RolesActions.permissionModal());
     // yield call(api, { payload: { module: 'fetchSettingsSuccess' } });
   } else {
-    toast.error(response.data?.message || 'Something went wrong');
+    toast.error(response?.message || response?.data?.message);
   }
 }
 
