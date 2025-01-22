@@ -744,7 +744,7 @@ const Summary = () => {
       nameSpaceName: registryAllDetails?.processGroupName,
       oldVariablesData: orignalVariables,
       oldParameterContextData: filteredArrayPCold,
-      previousControllerServices: { localServices: filteredCSArrayDiff },
+      previousControllerServices: { localServicesData: filteredCSArrayDiff },
     };
     //
     if (!isEmpty(flowControlSelectedScheduleStored)) {
@@ -787,7 +787,7 @@ const Summary = () => {
         nameSpaceName: registryAllDetails?.processGroupName,
         oldVariablesData: orignalVariables,
         oldParameterContextData: filteredArrayPCold,
-        previousControllerServices: { localServices: filteredCSArrayDiff },
+        previousControllerServices: { localServicesData: filteredCSArrayDiff },
       };
       //
       if (!isEmpty(variblesReduxData)) {
@@ -815,7 +815,9 @@ const Summary = () => {
           namespaceId: checkDestCluster?.value,
           oldVariablesData: orignalVariables,
           oldParameterContextData: filteredArrayPCold,
-          previousControllerServices: { localServices: filteredCSArrayDiff },
+          previousControllerServices: {
+            localServicesData: filteredCSArrayDiff,
+          },
         },
         flowName: selectedNameSpace?.flowName,
         isScheduled: true,
@@ -855,7 +857,7 @@ const Summary = () => {
         namespaceId: checkDestCluster?.value,
         oldVariablesData: orignalVariables,
         oldParameterContextData: filteredArrayPCold,
-        previousControllerServices: { localServices: filteredCSArrayDiff },
+        previousControllerServices: { localServicesData: filteredCSArrayDiff },
       },
       flowName: selectedNameSpace?.flowName,
       isScheduled: true,

@@ -84,17 +84,19 @@ const DiffScheduleVariables = () => {
                   <div className="d-flex">
                     <TileItem className="col-3">{item?.name}</TileItem>
                     <TileItem className="col-5">
-                      <span
+                      <div
                         style={{
                           backgroundColor: '#E9ECF1',
                           borderRadius: '12px',
                         }}
-                        className="p-2"
+                        className="p-2 me-2"
                       >
-                        {item?.new_value}
-                      </span>
+                        {item?.new_value || 'N/A'}
+                      </div>
                     </TileItem>
-                    <TileItem className="col-4">{item?.old_value}</TileItem>
+                    <TileItem className="col-4">
+                      {item?.old_value || 'N/A'}
+                    </TileItem>
                   </div>
                 </div>
               ))}

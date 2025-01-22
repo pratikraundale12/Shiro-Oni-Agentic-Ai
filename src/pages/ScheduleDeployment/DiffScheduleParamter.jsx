@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { SchedularSelectors } from '../../store/schedular';
 import { useSelector } from 'react-redux';
 import { theme } from '../../styles';
+import { NoDataIcon } from '../../assets';
+import { isEmpty } from 'lodash';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -54,6 +56,13 @@ const TileItem = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
 `;
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+`;
 //
 const DiffScheduleParameter = () => {
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
@@ -85,18 +94,18 @@ const DiffScheduleParameter = () => {
                   <div className="d-flex mb-4">
                     <TileHeader className="col-3">Value</TileHeader>
                     <TileItem className="col-5">
-                      <span
+                      <div
                         style={{
                           backgroundColor: '#E9ECF1',
                           borderRadius: '12px',
                         }}
-                        className="p-2"
+                        className="p-2 me-2"
                       >
-                        {element?.parameters?.[0]?.new_value?.value}
-                      </span>
+                        {item?.new_value?.value || 'N/A'}
+                      </div>
                     </TileItem>
                     <TileItem className="col-4">
-                      {element?.parameters?.[0]?.old_value?.value}
+                      {item?.old_value?.value || 'N/A'}
                     </TileItem>
                   </div>
                   <div className="d-flex">
@@ -109,13 +118,11 @@ const DiffScheduleParameter = () => {
                         }}
                         className="p-2"
                       >
-                        {element?.parameters?.[0]?.new_value?.description ||
-                          'N/A'}
+                        {item?.new_value?.description || 'N/A'}
                       </span>
                     </TileItem>
                     <TileItem className="col-4">
-                      {element?.parameters?.[0]?.old_value?.description ||
-                        'N/A'}
+                      {item?.old_value?.description || 'N/A'}
                     </TileItem>
                   </div>
                 </div>
@@ -123,6 +130,12 @@ const DiffScheduleParameter = () => {
             </GreyBoxNamespace>
           </div>
         ))}
+        {isEmpty(scheduleDiffData?.diffParameters) && (
+          <div className="d-flex flex-column align-items-center mt-5">
+            <NoDataIcon width={130} />
+            <NoDataText>No Data Found!!</NoDataText>
+          </div>
+        )}
       </ScrollSetGrey>
     </DataWrapper>
   );
