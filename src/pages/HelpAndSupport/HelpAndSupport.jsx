@@ -364,9 +364,9 @@ export const HelpAndSupport = () => {
           question: 'How can I schedule the deployment of a process group?',
           answer: (
             <>
-              Under the “Schedule Deployment” menu :
+              Under the “Deployment Schedule” menu :
               <br />
-              ● Click a button named “Schedule Deployment” on the top right
+              ● Click a button named “Deployment Schedule” on the top right
               corner.
               <br />
               <br />
@@ -383,7 +383,7 @@ export const HelpAndSupport = () => {
               <img
                 src={scheduleDeploymentImage}
                 className="img-fluid"
-                alt="Schedule Deployment"
+                alt="Deployment Schedule"
               />
               <br />
               <br />

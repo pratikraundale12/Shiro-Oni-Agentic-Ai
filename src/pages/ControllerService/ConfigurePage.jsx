@@ -8,6 +8,7 @@ import { KDFM } from '../../constants';
 import { Button, CheckboxField, Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { theme } from '../../styles';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const NewClassAddes = styled.div`
   &.mt-n3 {
@@ -83,20 +84,72 @@ const ConfigurePage = ({
     {
       label: 'Name',
       renderCell: item => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <CheckboxField
-            name={`check-${item.id}`}
-            label=""
-            checked={selectedItem?.id === item.id}
-            onChange={() => handleCheckboxChange(item)}
+        <>
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            data-tooltip-id={`tooltip-${item.id}-name`}
+          >
+            <CheckboxField
+              name={`check-${item.id}`}
+              label=""
+              checked={selectedItem?.id === item.id}
+              onChange={() => handleCheckboxChange(item)}
+            />
+            {item?.name}
+          </div>
+          <ReactTooltip
+            id={`tooltip-${item?.id}-name`}
+            place="right"
+            content={item?.name}
+            style={{
+              whiteSpace: 'normal',
+              zIndex: 9999,
+            }}
           />
-          {item?.name}
-        </div>
+        </>
       ),
       width: '20%',
     },
-    { label: 'Type', renderCell: item => item?.typeValue, width: '20%' },
-    { label: 'Bundle', renderCell: item => item?.bundleValue, width: '20%' },
+    {
+      label: 'Type',
+      renderCell: item => (
+        <>
+          <div data-tooltip-id={`tooltip-${item.id}-typeValue`}>
+            {item?.typeValue}
+          </div>
+          <ReactTooltip
+            id={`tooltip-${item?.id}-typeValue`}
+            place="right"
+            content={item?.typeValue}
+            style={{
+              whiteSpace: 'normal',
+              zIndex: 9999,
+            }}
+          />
+        </>
+      ),
+      width: '20%',
+    },
+    {
+      label: 'Bundle',
+      renderCell: item => (
+        <>
+          <div data-tooltip-id={`tooltip-${item.id}-bundleValue`}>
+            {item?.bundleValue}
+          </div>
+          <ReactTooltip
+            id={`tooltip-${item?.id}-bundleValue`}
+            place="right"
+            content={item?.bundleValue}
+            style={{
+              whiteSpace: 'normal',
+              zIndex: 9999,
+            }}
+          />
+        </>
+      ),
+      width: '20%',
+    },
     { label: 'State', renderCell: item => item?.state, width: '20%' },
     { label: 'Scope', renderCell: item => item?.scope, width: '20%' },
   ];
@@ -121,7 +174,7 @@ const ConfigurePage = ({
       secondaryButtonText="Back"
       onSubmit={handleSubmit}
     >
-      <NewClassAddes className="d-flex align-center justify-content-between w-100 mb-2 mt-n3">
+      <NewClassAddes className="d-flex align-center justify-content-between w-100 mb-2 mt-n3 gap-2">
         <SearchContainer>
           <SmallSearchIcon
             width={18}
@@ -155,6 +208,7 @@ const ConfigurePage = ({
             dispatch(NamespacesActions.setIsAddControllerServiceModal(true));
             setIsModalOpen();
           }}
+          style={{ cursor: 'pointer' }}
         >
           {KDFM.ADD_NEW}
         </Button>

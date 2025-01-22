@@ -13,6 +13,7 @@ import {
   SettingSmallIcon,
   SmallSearchIcon,
   TodoIcon,
+  RefreshIcon,
 } from '../../assets';
 import { FullPageLoader, Table } from '../../components';
 import { Button, ModalWithIcon } from '../../shared';
@@ -85,6 +86,20 @@ const StatusTexts = styled.div`
     border-radius: 50%;
   }
 `;
+
+const RefreshIocnPanel = styled.div`
+  cursor: pointer;
+  background-color: #f5f7fa;
+  border: 1px solid #dde4f0;
+  width: 37px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  border-radius: 4px;
+`;
+
 const statusColors = {
   DISABLED: '#b5b5bd',
   SCHEDULED: '#0cbf59',
@@ -345,6 +360,10 @@ export const ListControllerService = () => {
     setSelectedPropertyToEdit(item);
   };
 
+  const handleRefresh = () => {
+    dispatch(NamespacesActions.getControllerServiceList());
+  };
+
   const statusLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'changeStatusControllerService')
   );
@@ -354,27 +373,32 @@ export const ListControllerService = () => {
       <FullPageLoader loading={statusLoading || loading} />
       {controllerPermissions.includes('add_controller_services') && (
         <div className="d-flex justify-content-between align-items-center">
-          <div className="d-flex  align-items-center gap-3">
-            <div className="d-flex  align-items-center gap-2">
+          <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center gap-2">
               <TodoIcon width={22} height={24} />
               <HeadingStyle>Controller Services List</HeadingStyle>
             </div>
           </div>
-          <div className="row mb-2 d-flex justify-content-end">
-            <div>
-              <Button
-                type="button"
-                size={'md'}
-                onClick={() => {
-                  dispatch(
-                    NamespacesActions.setIsAddControllerServiceModal(true)
-                  );
-                  setIsResetNotRequired(true);
-                }}
-              >
-                Add
-              </Button>
-            </div>
+          <div className="mb-2 d-flex align-items-center">
+            <Button
+              type="button"
+              size={'md'}
+              onClick={() =>
+                dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
+              }
+            >
+              Add
+            </Button>
+            <RefreshIocnPanel
+              onClick={handleRefresh}
+              style={{
+                opacity: 1,
+                minWidth: '37px',
+              }}
+              data-tooltip-id={`tooltip-group-namespace-refresh`}
+            >
+              <RefreshIcon style={{ cursor: 'pointer' }} />
+            </RefreshIocnPanel>
           </div>
         </div>
       )}

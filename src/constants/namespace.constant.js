@@ -43,7 +43,7 @@ export const NAMESPACE_CONSTANTS = {
   ENTER_PARAMETER: 'Enter Parameter',
   ENTER_VARIABLE: 'Enter Variable',
   ENTER_DESCRIPTION: 'Enter Description',
-  SCHEDULE_DEPLOYMENT: 'Schedule Deployment',
+  SCHEDULE_DEPLOYMENT: 'Deployment Schedule',
   DEPLOY: 'Deploy',
   CONTROLLER_SERVICE: 'Controller Service',
   SCHEDULE_DETAILS: 'Schedule Details',

@@ -371,9 +371,13 @@ const FlowDetailsPage = () => {
   };
 
   const handleXCoordinateChangeInput = e => {
-    if (e.target.value) {
+    console.log('e--------', e.target.value, typeof e.target.value);
+    if (e.target.value && e.target.value !== '-') {
       setXStateCoordiate(Number(e.target.value));
       dispatch(NamespacesActions.setRegistryFlowXCord(Number(e.target.value)));
+    } else if (e.target.value === '-') {
+      setXStateCoordiate(Number(0));
+      dispatch(NamespacesActions.setRegistryFlowXCord(Number(0)));
     } else {
       setXStateCoordiate(null);
       dispatch(NamespacesActions.setRegistryFlowXCord(null));
@@ -539,6 +543,7 @@ const FlowDetailsPage = () => {
                       <InputField
                         name="x"
                         type="text"
+                        disabled="true"
                         label={KDFM.CANVAS_POSITION}
                         value={
                           storedXcord ||
@@ -554,6 +559,7 @@ const FlowDetailsPage = () => {
                         name="y"
                         type="text"
                         label=""
+                        disabled="true"
                         value={
                           storedYcord ||
                           yStateCoordinate ||

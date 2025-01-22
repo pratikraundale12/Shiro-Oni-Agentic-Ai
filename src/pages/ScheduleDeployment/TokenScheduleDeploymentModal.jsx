@@ -86,7 +86,7 @@ export const TokenScheduleDeploymentModal = () => {
 
   return (
     <Modal
-      title="Schedule Deployment"
+      title="Deployment Schedule"
       isOpen={tokenScheduleModal}
       onRequestClose={onRequestClose}
       secondaryButtonText="Decline"

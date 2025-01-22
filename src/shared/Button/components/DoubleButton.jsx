@@ -45,7 +45,7 @@ const DoubleButton = ({
               style={{ cursor: 'pointer' }}
               onClick={() => handleRightClick(item)}
             >
-              Schedule Deployment
+              Deployment Schedule
             </div>
           </li>
           {/* <li>

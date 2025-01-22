@@ -53,11 +53,11 @@ const ScrollSetGrey = styled.div`
   overflow-y: auto;
 `;
 const ConfigureButton = styled.button`
-  padding: 5px 10px;
+  padding: 8px 1rem;
   background-color: #ff7a00;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   &:hover {
     background-color: #ff7a00;

@@ -884,7 +884,7 @@ export const Add = () => {
             <CheckBoxFlex>
               <CheckboxField
                 name="check"
-                label="Need approval for the schedule deployment?"
+                label="Need approval for the deployment schedule?"
                 checked={approverEnable}
                 onChange={e => setApproverEnable(e.target.checked)}
               />

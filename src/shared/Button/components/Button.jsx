@@ -12,7 +12,7 @@ const size = {
     fontSize: '12px',
   },
   md: {
-    height: '48px',
+    height: '40px',
     padding: '0 28px',
     margin: '10px',
     fontSize: '14px',
@@ -33,7 +33,7 @@ const StyledButton = styled.button.withConfig({
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: ${props => size[props.size].padding};
+  padding: 0 1rem;
   cursor: pointer;
   border-radius: 8px;
   border: 1px solid

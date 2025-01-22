@@ -242,8 +242,8 @@ export const Grid = ({
       );
     return null;
   };
-  const scheduleToken = window.localStorage.getItem('scheduleTokenid');
-  useEffect(() => {
+
+  const getNamespacesListData = () => {
     dispatch(
       GridActions.fetchGrid({
         module,
@@ -281,49 +281,18 @@ export const Grid = ({
         },
       })
     );
-  }, [selectedNamespaceForDetail]);
+  };
+
+  const scheduleToken = window.localStorage.getItem('scheduleTokenid');
+  useEffect(() => {
+    getNamespacesListData();
+  }, [selectedNamespaceForDetail, selectedCluster]);
 
   useEffect(() => {
     if (isNamespace && currentPage > 0) {
       return;
     } else {
-      dispatch(
-        GridActions.fetchGrid({
-          module,
-          clusterId,
-          params: {
-            page: currentPage,
-            ...(scheduleToken && { id: scheduleToken }),
-            ...(search && { search }),
-            ...(watchStatus &&
-              watchStatus !== 'all' && {
-                [getModuleBasedStatusKey(module)]: watchStatus,
-              }),
-
-            ...(location?.pathname?.includes('activity-history') && {
-              event: selectedEvent?.value,
-            }),
-            ...(location?.pathname?.includes('activity-history') && {
-              entity: selectedEntity?.value,
-            }),
-            ...(selectedRange && {
-              start_date: selectedRange?.[0]?.toISOString(),
-              end_date: selectedRange?.[1]?.toISOString(),
-            }),
-            ...(location?.pathname?.includes('user-management') &&
-              selectedRole?.value !== 'all' && {
-                role_id: selectedRole?.value,
-              }),
-
-            ...(location?.pathname?.match(
-              /user-management|clusters|schedule-deployment|activity-history/
-            ) &&
-              sortingState && {
-                sort: sortingState,
-              }),
-          },
-        })
-      );
+      getNamespacesListData();
     }
   }, [
     setState,
@@ -331,9 +300,7 @@ export const Grid = ({
     clusterId,
     search,
     page,
-    selectedCluster,
     currentPage,
-    selectedNamespaceForDetail,
     selectedRole,
     sortingState,
   ]);

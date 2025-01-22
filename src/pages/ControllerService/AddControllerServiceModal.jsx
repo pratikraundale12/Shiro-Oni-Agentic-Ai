@@ -104,6 +104,7 @@ const AddControllerServiceModal = ({
   );
 
   const closeModal = () => {
+    setSearch('');
     dispatch(NamespacesActions.setIsAddControllerServiceModal(false));
     setSearch('');
   };

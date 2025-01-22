@@ -90,12 +90,11 @@ const StyledButton = styled(Button)`
 const ButtonFlex = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 22px;
+  margin-top: 10px;
 `;
 
 const SmallButtonFlex = styled.div`
   display: flex;
-  gap: 10px;
   margin-top: 10px;
   margin-bottom: 30px;
 `;
@@ -590,14 +589,14 @@ export const LdapConfig = () => {
           </InputFieldFlex>
           <ButtonFlex>
             <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-              <StyledButton
-                size="sm"
+              <Button
+                size="md"
                 onClick={handleSubmitForm1(onSubmitForm1)}
                 disabled={!ldapEnabled}
                 loading={loading}
               >
                 Connect
-              </StyledButton>
+              </Button>
             </div>
           </ButtonFlex>
 
@@ -745,15 +744,16 @@ export const LdapConfig = () => {
               />
             </div>
           </InputFieldFlex>
-          <SmallButtonFlex className="row">
+          <SmallButtonFlex>
             <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-              <StyledSecondButton
+              <Button
+                size="md"
                 onClick={handleSubmitForm2(getLDAPGroup)}
                 disabled={!saveButtonStatus || !ldapEnabled}
                 loading={loadings && 'Fetching..'}
               >
                 Continue
-              </StyledSecondButton>
+              </Button>
             </div>
           </SmallButtonFlex>
         </>

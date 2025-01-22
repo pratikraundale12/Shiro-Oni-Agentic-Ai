@@ -110,8 +110,8 @@ export const ScheduleDeploymentModal = () => {
       size="md"
       title={
         !isEmpty(selectedSchedule)
-          ? 'Edit Schedule Deployment'
-          : 'Schedule Deployment'
+          ? 'Edit Deployment Schedule'
+          : 'Deployment Schedule'
       }
       isOpen={scheduleModal}
       onRequestClose={onRequestClose}

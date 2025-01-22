@@ -115,8 +115,6 @@ const ErrorTexts = styled.div`
 `;
 const DropdownContainer = styled.div`
   margin-left: 10px;
-  min-width: 175px;
-  max-width: 175px;
   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   @media (max-width: 1040px) {
     max-width: 100%;
@@ -163,6 +161,7 @@ const DropdownContainer = styled.div`
 `;
 const DropdownWrapper = styled.div`
   display: flex;
+  gap: 10px;
   @media (max-width: 1040px) {
     width: 100%;
   }
@@ -199,11 +198,10 @@ const RefreshIocn = styled.div`
   background-color: #f5f7fa;
   border: 1px solid #dde4f0;
   width: 37px;
-  height: 42px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 27px;
   border-radius: 4px;
 `;
 
