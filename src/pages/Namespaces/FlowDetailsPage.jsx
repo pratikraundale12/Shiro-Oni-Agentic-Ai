@@ -430,12 +430,14 @@ const FlowDetailsPage = () => {
   const isButtonDisabled = versionListData?.versionList?.length === 1;
 
   useEffect(() => {
-    if (versionListData?.versionList?.length === 1) {
-      toast.info(
-        "This process group can't be upgraded as there is only one version available"
-      );
+    if (!isUpgrade) {
+      if (versionListData?.versionList?.length === 1) {
+        toast.info(
+          "This process group can't be upgraded as there is only one version available"
+        );
+      }
     }
-  }, [versionListData?.versionList]);
+  }, [versionListData?.versionList, isUpgrade]);
 
   return (
     <div>

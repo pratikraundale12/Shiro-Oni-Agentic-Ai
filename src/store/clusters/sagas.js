@@ -1,15 +1,15 @@
 import { isEmpty } from 'lodash';
-import { all, call, put, select, takeLatest } from 'redux-saga/effects';
-import { CLUSTERS_TOKEN, KDFM } from '../../constants';
-import { requestSaga } from '../helpers/request_sagas';
-import { NamespacesActions, NamespacesSelectors } from '../namespaces';
-import { ClustersActions } from './redux';
 import { toast } from 'react-toastify';
+import { all, call, put, select, takeLatest } from 'redux-saga/effects';
+import { CLUSTERS_TOKEN } from '../../constants';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
 } from '../authentication';
 import { GridActions } from '../grid';
+import { requestSaga } from '../helpers/request_sagas';
+import { NamespacesActions, NamespacesSelectors } from '../namespaces';
+import { ClustersActions } from './redux';
 
 export function* fetchClusterList(api, { payload: { params } = {} }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);

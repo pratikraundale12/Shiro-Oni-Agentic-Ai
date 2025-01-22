@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
-import { CLUSTERS_TOKEN, KDFM } from '../../constants';
+import { CLUSTERS_TOKEN } from '../../constants';
 import { history } from '../../helpers/history';
 import { AuthenticationActions } from '../authentication';
 import { GridSelectors } from '../grid';
