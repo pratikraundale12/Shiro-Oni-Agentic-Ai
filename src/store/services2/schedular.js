@@ -14,6 +14,9 @@ export const schedularAPI = api => {
   const rejectScheduleDeployment = ({ schedularId, payload = {} }) =>
     api.post(`/cancel-scheduled/${schedularId}`, payload);
 
+  const fetchDiffScheduleData = ({ schedularId }) =>
+    api.get(`/diff-schedule-deployment/${schedularId}`);
+
   return {
     fetchSchedular,
     createScheduleDeployment,
@@ -21,5 +24,6 @@ export const schedularAPI = api => {
     checkApproverToken,
     editScheduleByRegistry,
     rejectScheduleDeployment,
+    fetchDiffScheduleData,
   };
 };

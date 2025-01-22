@@ -19,6 +19,9 @@ export const SchedularActions = {
   editScheduleByRegistry: createAction(`${prefix}editScheduleByRegistry`),
   rejectScheduleDeployment: createAction(`${prefix}rejectScheduleDeployment`),
   setScheduleSelectRange: createAction(`${prefix}setScheduleSelectRange`),
+  fetchDiffScheduleData: createAction(`${prefix}fetchDiffScheduleData`),
+  setIsDiffModalOpen: createAction(`${prefix}setIsDiffModalOpen`),
+  setDiffAllData: createAction(`${prefix}setDiffAllData`),
 };
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
@@ -32,6 +35,8 @@ export const SCHEDULAR_INITIAL_STATE = {
   tokenScheduleModal: false,
   scheduleFromList: false,
   scheduleSelectRange: [],
+  isDiffModalOpen: false,
+  diffAllData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -46,6 +51,8 @@ export const SchedularSelectors = {
   getTokenScheduleModal: state => state.schedular.tokenScheduleModal,
   getScheduleFromList: state => state.schedular.scheduleFromList,
   getScheduleSelectRange: state => state.schedular.scheduleSelectRange,
+  getIsDiffModalOpen: state => state.schedular.isDiffModalOpen,
+  getDiffAllData: state => state.schedular.diffAllData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -110,7 +117,18 @@ const setScheduleSelectRange = (state, { payload }) => {
     scheduleSelectRange: payload,
   };
 };
-
+const setIsDiffModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isDiffModalOpen: payload,
+  };
+};
+const setDiffAllData = (state, { payload }) => {
+  return {
+    ...state,
+    diffAllData: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const schedularReducer = createReducer(
   SCHEDULAR_INITIAL_STATE,
@@ -128,6 +146,8 @@ export const schedularReducer = createReducer(
       )
       .addCase(SchedularActions.setTokenScheduleModal, setTokenScheduleModal)
       .addCase(SchedularActions.setScheduleFromList, setScheduleFromList)
-      .addCase(SchedularActions.setScheduleSelectRange, setScheduleSelectRange);
+      .addCase(SchedularActions.setScheduleSelectRange, setScheduleSelectRange)
+      .addCase(SchedularActions.setIsDiffModalOpen, setIsDiffModalOpen)
+      .addCase(SchedularActions.setDiffAllData, setDiffAllData);
   }
 );

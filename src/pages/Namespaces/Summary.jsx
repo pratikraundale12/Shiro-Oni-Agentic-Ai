@@ -353,6 +353,48 @@ const Summary = () => {
   const registryAllDetails = useSelector(
     NamespacesSelectors.getRegistryAllDetails
   );
+  const CSorignalData =
+    registryAllDetails?.controllerServicesData?.localServices.map(
+      ele => ele.controllerData?.[0]
+    );
+  const getChangedObjects = (originalData, updatedData) => {
+    const updatedMap = updatedData.reduce((acc, item) => {
+      acc[item.pgId] = item;
+      return acc;
+    }, {});
+
+    return originalData
+      .map(originalItem => {
+        const updatedItem = updatedMap[originalItem.pgId];
+
+        if (!updatedItem) {
+          return null;
+        }
+
+        const changedVariables = originalItem.variables.filter(
+          originalVariable => {
+            const updatedVariable = updatedItem.variables.find(
+              varItem => varItem.name === originalVariable.name
+            );
+
+            return (
+              updatedVariable &&
+              updatedVariable.value !== originalVariable.value
+            );
+          }
+        );
+
+        if (changedVariables.length > 0) {
+          return {
+            ...originalItem,
+            variables: changedVariables,
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+  };
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
 
@@ -370,8 +412,23 @@ const Summary = () => {
   const variblesReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployVariable
   );
+  const orignalVariables = getChangedObjects(
+    registryAllDetails?.variablesData,
+    variblesReduxData
+  );
+
+  const orignalParameterData = [
+    ...(registryAllDetails?.parameterContextData?.inherited || []),
+    ...(registryAllDetails?.parameterContextData?.parent || []),
+  ];
+
   const controllerServiceReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployControllerService
+  );
+  const filteredCSArrayDiff = CSorignalData.filter(item1 =>
+    controllerServiceReduxData?.localServicesData?.some(
+      item2 => item1.identifier === item2.identifier
+    )
   );
   const parameterReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployParameterContext
@@ -390,6 +447,27 @@ const Summary = () => {
     ...(parameterReduxData?.inherited || []),
     ...(parameterReduxData?.parent || []),
   ];
+
+  const PColdValues = orignalParameterData
+    .filter(item1 =>
+      paramterDeployArray.some(item2 => item1.name === item2.name)
+    )
+    .map(item1 => {
+      const matchingItem2 = paramterDeployArray.find(
+        item2 => item2.name === item1.name
+      );
+      return {
+        ...item1,
+        parameters: item1.parameters.filter(param1 =>
+          matchingItem2.parameters.some(param2 => param1.name === param2.name)
+        ),
+      };
+    });
+  const filteredArrayPCold = PColdValues.map(item => ({
+    parameterName: item.name,
+    parameters: item.parameters,
+  }));
+
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
 
   const [isAddParameterContextOpen, setIsAddParameterContextOpen] = useState({
@@ -634,6 +712,7 @@ const Summary = () => {
     }
     dispatch(NamespacesActions.upgradeCluster(payload));
   };
+
   const handleScheduleDeploy = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -654,10 +733,16 @@ const Summary = () => {
         y: YcordUpdated || registryDetailsData?.positions[0]?.y,
       },
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
-      namespaceStatus: flowControlSelectedScheduleStored,
+      // namespaceStatus: flowControlSelectedScheduleStored,
       nameSpaceName: registryAllDetails?.processGroupName,
+      oldVariablesData: orignalVariables,
+      oldParameterContextData: filteredArrayPCold,
+      previousControllerServices: { localServicesData: filteredCSArrayDiff },
     };
     //
+    if (!isEmpty(flowControlSelectedScheduleStored)) {
+      payload.namespaceStatus = flowControlSelectedScheduleStored;
+    }
     if (!isEmpty(variblesReduxData)) {
       payload.variablesData = variblesReduxData;
     }
@@ -669,6 +754,7 @@ const Summary = () => {
     }
     dispatch(NamespacesActions.fetchDuplicateScheduleData(payload));
   };
+
   const handleScheduleDeployDuplicate = () => {
     if (scheduleDeploymentFlow) {
       const updatedData = paramterDeployArray.map(item => ({
@@ -692,6 +778,9 @@ const Summary = () => {
         keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
         namespaceStatus: flowControlSelectedScheduleStored,
         nameSpaceName: registryAllDetails?.processGroupName,
+        oldVariablesData: orignalVariables,
+        oldParameterContextData: filteredArrayPCold,
+        previousControllerServices: { localServicesData: filteredCSArrayDiff },
       };
       //
       if (!isEmpty(variblesReduxData)) {
@@ -717,6 +806,11 @@ const Summary = () => {
         namespaceStatus: flowControlSelectedScheduleStored,
         payload: {
           namespaceId: checkDestCluster?.value,
+          oldVariablesData: orignalVariables,
+          oldParameterContextData: filteredArrayPCold,
+          previousControllerServices: {
+            localServicesData: filteredCSArrayDiff,
+          },
         },
         flowName: selectedNameSpace?.flowName,
         isScheduled: true,
@@ -754,6 +848,9 @@ const Summary = () => {
       namespaceStatus: flowControlSelectedScheduleStored,
       payload: {
         namespaceId: checkDestCluster?.value,
+        oldVariablesData: orignalVariables,
+        oldParameterContextData: filteredArrayPCold,
+        previousControllerServices: { localServicesData: filteredCSArrayDiff },
       },
       flowName: selectedNameSpace?.flowName,
       isScheduled: true,
