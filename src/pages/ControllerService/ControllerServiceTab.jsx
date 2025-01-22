@@ -141,8 +141,25 @@ const ControllerServiceTab = ({
   const [selectedPropertyToEdit, setSelectedPropertyToEdit] = useState({});
 
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const csReduxData = useSelector(NamespacesSelectors.getCsLocalData);
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+  const [controllerServicesData, setControllerServicesData] =
+    useState(csReduxData);
+  useEffect(() => {
+    if (
+      !csReduxData ||
+      Object.keys(csReduxData).length === 0 ||
+      (csReduxData.externalControllerServices === undefined &&
+        csReduxData.localServices === undefined)
+    ) {
+      setControllerServicesData(registryDetailsData?.controllerServicesData);
+    } else {
+      setControllerServicesData(csReduxData);
+    }
+  }, [csReduxData, registryDetailsData]);
 
-  const controllerServicesData = csFromParent;
   const isListProprtyModel = useSelector(
     NamespacesSelectors.getControllerServicePropertyModel
   );
@@ -175,6 +192,26 @@ const ControllerServiceTab = ({
     controllerServicesData?.localServices
   );
 
+  const [initialExternalService, setInitialExternalService] = useState(
+    registryDetailsData?.controllerServicesData?.externalControllerServices
+  );
+
+  useEffect(() => {
+    setInitialExternalService(
+      registryDetailsData?.controllerServicesData?.externalControllerServices
+    );
+  }, [registryDetailsData]);
+
+  useEffect(() => {
+    setExternalControllerServices(
+      controllerServicesData?.externalControllerServices
+    );
+    setLocalServices(controllerServicesData?.localServices);
+    setExternalControllerServicesTableData(
+      controllerServicesData?.externalControllerServices
+    );
+  }, [controllerServicesData]);
+
   const [isAddpropertiesModalOpen, setIsAddpropertiesModalOpen] =
     useState(false);
 
@@ -196,10 +233,6 @@ const ControllerServiceTab = ({
   const [isAddedViaAdd, setIsAddedViaAdd] = useState(null);
   const [refreshItem, setRefreshItem] = useState(null);
 
-  const [initialExternalService] = useState(
-    controllerServicesData?.externalControllerServices
-  );
-
   const [
     selectedExternalServiceIdentifier,
     setSelectedExternalServiceIdentifier,
@@ -208,9 +241,13 @@ const ControllerServiceTab = ({
   const [collapsibles, setCollapsibles] = useState([]);
 
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
-  const listData = useSelector(
+  const rootCsData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
   );
+  const [listData, setListData] = useState(rootCsData);
+  useEffect(() => {
+    setListData(rootCsData);
+  }, [rootCsData]);
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
 
   const [isPropertyResponse, setIsPropertyResponse] = useState(false);
@@ -222,7 +259,12 @@ const ControllerServiceTab = ({
 
   const [versionList, setVersionList] = useState([]);
 
-  const [lsForUpgrade, setLsForUpgrade] = useState(localServices);
+  const [lsForUpgrade, setLsForUpgrade] = useState(
+    registryDetailsData?.controllerServicesData?.localServices
+  );
+  useEffect(() => {
+    setLsForUpgrade(registryDetailsData?.controllerServicesData?.localServices);
+  }, [registryDetailsData]);
   const [updatedLsForUpgrade, setUpdatedLsForUpgrade] = useState([]);
 
   const onSearch = (e, currentService) => {
@@ -286,7 +328,6 @@ const ControllerServiceTab = ({
           controllerData: updatedControllerData,
         };
       });
-
       setLsForUpgrade(updatedServices);
     };
 
@@ -808,7 +849,6 @@ const ControllerServiceTab = ({
         const tooltipContent = state === 'DISABLED' ? 'Enable' : 'Disable';
         const isButtonVisible = state ? true : false;
         const isBtnDisabled =
-          !item.updatedValue ||
           state === 'INVALID' ||
           state === 'VALIDATING' ||
           state === 'DISABLING' ||
@@ -1395,6 +1435,7 @@ const ControllerServiceTab = ({
     );
     if (isLocal) {
       localServiceState.push(serviceObject);
+      dispatch(NamespacesActions.setIsLocalCsConfigured(true));
     }
     return { localServiceState };
   };
@@ -1532,6 +1573,7 @@ const ControllerServiceTab = ({
           ...lsForUpgrade.map(service => ({
             isUpgradeLocal: true,
             instanceIdentifier: service?.instanceIdentifier,
+            isParent: service?.isParent,
             title: service?.processGroupName || 'Unnamed Group',
             content: (
               <>
@@ -1573,6 +1615,10 @@ const ControllerServiceTab = ({
     listData,
     lsForUpgrade,
   ]);
+
+  const checkIfLocalCsConfigured = useSelector(
+    NamespacesSelectors.getIsLocalCsConfigured
+  );
 
   const handleServiceConfigure = data => {
     const { localServiceState } = classifyServiceData(
@@ -1651,30 +1697,32 @@ const ControllerServiceTab = ({
   }, [updatedLocalServicesData]);
 
   useEffect(() => {
-    setLsForUpgrade(prevLocalServices => {
-      const updatedServices = prevLocalServices?.map(processGroup => {
-        return {
-          ...processGroup,
-          controllerData: processGroup?.controllerData?.map(controller => {
-            const updatedController = updatedLsForUpgrade?.find(
-              updated => updated?.identifier === controller?.identifier
-            );
-            if (updatedController) {
-              return {
-                ...controller,
-                ...updatedController,
-                properties: mergeProperties(
-                  controller.properties,
-                  updatedController.properties
-                ),
-              };
-            }
-            return controller;
-          }),
-        };
+    if (updatedLsForUpgrade?.length) {
+      setLsForUpgrade(prevLocalServices => {
+        const updatedServices = prevLocalServices?.map(processGroup => {
+          return {
+            ...processGroup,
+            controllerData: processGroup?.controllerData?.map(controller => {
+              const updatedController = updatedLsForUpgrade?.find(
+                updated => updated?.identifier === controller?.identifier
+              );
+              if (updatedController) {
+                return {
+                  ...controller,
+                  ...updatedController,
+                  properties: mergeProperties(
+                    controller.properties,
+                    updatedController.properties
+                  ),
+                };
+              }
+              return controller;
+            }),
+          };
+        });
+        return updatedServices;
       });
-      return updatedServices;
-    });
+    }
   }, [updatedLsForUpgrade]);
 
   useEffect(() => {
@@ -1683,6 +1731,12 @@ const ControllerServiceTab = ({
         const newPayload = {};
         if (!isEmpty(externalServicePayload)) {
           newPayload.externalServicesData = externalServicePayload;
+          // dispatch(
+          //   NamespacesActions.setRegistryDeployControllerService({
+          //     externalServicesData: externalServicePayload,
+          //     localServicesData: newPayload.localServicesData
+          //   })
+          // );
         }
         if (
           !isEmpty(updatedLocalServicesData) ||
@@ -1692,6 +1746,38 @@ const ControllerServiceTab = ({
             ? updatedLocalServicesData
             : prevState.localServicesData;
         }
+        if (
+          checkIfLocalCsConfigured &&
+          externalServicePayload?.length > 0 &&
+          Object.keys(newPayload).length > 0
+        ) {
+          dispatch(
+            NamespacesActions.setRegistryDeployControllerService({
+              externalServicesData: externalServicePayload,
+              localServicesData: newPayload.localServicesData,
+            })
+          );
+        } else if (
+          checkIfLocalCsConfigured &&
+          externalServicePayload?.length <= 0 &&
+          Object.keys(newPayload).length > 0
+        ) {
+          dispatch(
+            NamespacesActions.setRegistryDeployControllerService({
+              localServicesData: newPayload.localServicesData,
+            })
+          );
+        } else if (
+          !checkIfLocalCsConfigured &&
+          externalServicePayload?.length > 0 &&
+          Object.keys(newPayload).length > 0
+        ) {
+          dispatch(
+            NamespacesActions.setRegistryDeployControllerService({
+              externalServicesData: externalServicePayload,
+            })
+          );
+        }
         return newPayload;
       });
     } else {
@@ -1699,6 +1785,12 @@ const ControllerServiceTab = ({
         const newPayload = {};
         if (!isEmpty(externalServicePayload)) {
           newPayload.externalServicesData = externalServicePayload;
+          // dispatch(
+          //   NamespacesActions.setRegistryDeployControllerService({
+          //     externalServicesData: externalServicePayload,
+          //     localServicesData: newPayload.localServicesData
+          //   })
+          // );
         }
         if (
           !isEmpty(updatedLsForUpgrade) ||
@@ -1708,6 +1800,38 @@ const ControllerServiceTab = ({
             ? updatedLsForUpgrade
             : prevState.localServicesData;
         }
+        if (
+          checkIfLocalCsConfigured &&
+          externalServicePayload?.length > 0 &&
+          Object.keys(newPayload).length > 0
+        ) {
+          dispatch(
+            NamespacesActions.setRegistryDeployControllerService({
+              externalServicesData: externalServicePayload,
+              localServicesData: newPayload.localServicesData,
+            })
+          );
+        } else if (
+          checkIfLocalCsConfigured &&
+          !externalServicePayload?.length &&
+          Object.keys(newPayload).length > 0
+        ) {
+          dispatch(
+            NamespacesActions.setRegistryDeployControllerService({
+              localServicesData: newPayload.localServicesData,
+            })
+          );
+        } else if (
+          !checkIfLocalCsConfigured &&
+          externalServicePayload?.length > 0 &&
+          Object.keys(newPayload).length > 0
+        ) {
+          dispatch(
+            NamespacesActions.setRegistryDeployControllerService({
+              externalServicesData: externalServicePayload,
+            })
+          );
+        }
         return newPayload;
       });
     }
@@ -1716,13 +1840,16 @@ const ControllerServiceTab = ({
     updatedLsForUpgrade,
     isExternalServiceUpdated,
     updatedLocalServicesData,
+    checkIfLocalCsConfigured,
   ]);
 
   useEffect(() => {
-    setCsFromParent({
-      externalControllerServices: externalControllerServices,
-      localServices: localServices,
-    });
+    dispatch(
+      NamespacesActions.setCsLocalData({
+        externalControllerServices: externalControllerServices,
+        localServices: localServices,
+      })
+    );
   }, [localServices, externalControllerServices]);
 
   const statusLoading = useSelector(state =>

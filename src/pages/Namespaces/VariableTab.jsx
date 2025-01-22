@@ -1,12 +1,14 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { NoDataIcon, PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import AddOrEditVariablesModal from './AddOrEditVariablesModal';
 import Collapsible from './Collapsible';
+import { useDispatch, useSelector } from 'react-redux';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -26,12 +28,33 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-const VariableTab = ({ setVariablePayload, variableData, setVariableData }) => {
+const VariableTab = () => {
+  const dispatch = useDispatch();
+  const variableReduxPayload = useSelector(
+    NamespacesSelectors.getRegistryDeployVariable
+  );
+  const [variablePayload, setVariablePayload] = useState(variableReduxPayload);
   const [isAddVariablesOpen, setIsAddVariablesOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
-
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+  const variableReduxData = useSelector(
+    NamespacesSelectors.getVariableLocalData
+  );
+  const checkIfVariableUpdated = useSelector(
+    NamespacesSelectors.getIsLocalVariableUpdated
+  );
+  const [variableData, setVariableData] = useState(variableReduxData);
+  useEffect(() => {
+    if (!variableReduxData || !variableReduxData?.length) {
+      setVariableData(registryDetailsData?.variablesData);
+    } else {
+      setVariableData(variableReduxData);
+    }
+  }, [variableReduxData, registryDetailsData]);
   const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
 
@@ -96,6 +119,7 @@ const VariableTab = ({ setVariablePayload, variableData, setVariableData }) => {
   ];
 
   const handleAddOrEditVariableSave = data => {
+    dispatch(NamespacesActions.setIsLocalVariableUpdated(true));
     setVariableData(prev =>
       prev.map(item =>
         item.pgId === currentPgId
@@ -154,6 +178,16 @@ const VariableTab = ({ setVariablePayload, variableData, setVariableData }) => {
       }
     });
   };
+
+  useEffect(() => {
+    if (checkIfVariableUpdated && variablePayload?.length) {
+      dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
+    }
+  }, [variablePayload, checkIfVariableUpdated]);
+
+  useEffect(() => {
+    dispatch(NamespacesActions.setVariableLocalData(variableData));
+  }, [variableData]);
 
   const closeAddVariablesModal = () => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
