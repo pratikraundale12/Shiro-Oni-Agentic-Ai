@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { InfoIcon, NoDataIcon, PencilIcon, RefrenceIcon } from '../../assets';
@@ -12,7 +12,7 @@ import {
   TextRender,
 } from '../../components';
 import { KDFM } from '../../constants';
-import { NamespacesActions } from '../../store';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import AddOrEditParameterContextModal from './AddOrEditParameterContextModal';
 import Collapsible from './Collapsible';
 import RefreshModal from './RefreshModal';
@@ -51,16 +51,32 @@ const SrollableTable = styled.div`
   }
 `;
 
-const ParameterContextTab = ({
-  pcPayload,
-  setPcPayload,
-  pcData,
-  setPcData,
-}) => {
+const ParameterContextTab = () => {
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+  const pcReduxData = useSelector(NamespacesSelectors.getPcLocalData);
+  const pcReduxPayload = useSelector(
+    NamespacesSelectors.getRegistryDeployParameterContext
+  );
+  const checkIfPcUpdated = useSelector(NamespacesSelectors.getIsLocalPcUpdated);
   const [isAddPcOpen, setIsAddPcOpen] = useState({
     isOpen: false,
     mode: 'add',
   });
+  const [pcData, setPcData] = useState(pcReduxData);
+  const [pcPayload, setPcPayload] = useState(pcReduxPayload);
+  useEffect(() => {
+    if (
+      !pcReduxData ||
+      Object.keys(pcReduxData).length === 0 ||
+      (pcReduxData.inherited.length <= 0 && pcReduxData.parent.length <= 0)
+    ) {
+      setPcData(registryDetailsData?.parameterContextData);
+    } else {
+      setPcData(pcReduxData);
+    }
+  }, [pcReduxData, registryDetailsData]);
 
   const [openIndex, setOpenIndex] = useState(null);
   const [currentEditData, setCurrentEditData] = useState({});
@@ -192,6 +208,7 @@ const ParameterContextTab = ({
   ];
 
   const handleAddOrEditVariableSave = data => {
+    dispatch(NamespacesActions.setIsLocalPcUpdated(true));
     const updatedState = JSON.parse(JSON.stringify(pcData));
     const updatedPayload = {
       inherited: Array.isArray(pcPayload.inherited)
@@ -271,7 +288,6 @@ const ParameterContextTab = ({
     });
 
     setPcPayload(updatedPayload);
-
     setPcData(prevState => {
       const updatedState = JSON.parse(JSON.stringify(prevState));
 
@@ -299,7 +315,14 @@ const ParameterContextTab = ({
       return updatedState;
     });
   };
-
+  useEffect(() => {
+    dispatch(NamespacesActions.setPcLocalData(pcData));
+  }, [pcData]);
+  useEffect(() => {
+    if (checkIfPcUpdated && Object.keys(pcPayload)?.length) {
+      dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
+    }
+  });
   const closeAddVPcModal = () => {
     setIsAddPcOpen({
       isOpen: false,

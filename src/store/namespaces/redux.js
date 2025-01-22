@@ -196,6 +196,12 @@ export const NamespacesActions = {
   setSelectedNameSpaceForDetail: createAction(
     `${prefix}setSelectedNameSpaceForDetail`
   ),
+  setCsLocalData: createAction(`${prefix}setCsLocalData`),
+  setIsLocalCsConfigured: createAction(`${prefix}setIsLocalCsConfigured`),
+  setPcLocalData: createAction(`${prefix}setPcLocalData`),
+  setIsLocalPcUpdated: createAction(`${prefix}setIsLocalPcUpdated`),
+  setVariableLocalData: createAction(`${prefix}setVariableLocalData`),
+  setIsLocalVariableUpdated: createAction(`${prefix}setIsLocalVariableUpdated`),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -290,6 +296,12 @@ export const NAMESPACES_INITIAL_STATE = {
   duplicateScheduleModalData: {},
   flowControlAfterDeploy: false,
   selectedNameSpaceForDetail: {},
+  csLocalData: {},
+  isLocalCsConfigured: false,
+  pcLocalData: {},
+  variableLocalData: [],
+  isLocalPcUpdated: false,
+  isLocalVariableUpdated: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -387,6 +399,12 @@ export const NamespacesSelectors = {
   getflowControlAfterDeploy: state => state.namespaces.flowControlAfterDeploy,
   getSelectedNameSpaceForDetail: state =>
     state.namespaces.selectedNameSpaceForDetail,
+  getCsLocalData: state => state.namespaces.csLocalData,
+  getIsLocalCsConfigured: state => state.namespaces.isLocalCsConfigured,
+  getPcLocalData: state => state.namespaces.pcLocalData,
+  getIsLocalPcUpdated: state => state.namespaces.isLocalPcUpdated,
+  getVariableLocalData: state => state.namespaces.variableLocalData,
+  getIsLocalVariableUpdated: state => state.namespaces.isLocalVariableUpdated,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -880,6 +898,48 @@ const setSelectedNameSpaceForDetail = (state, { payload }) => {
     selectedNameSpaceForDetail: payload,
   };
 };
+
+const setCsLocalData = (state, { payload }) => {
+  return {
+    ...state,
+    csLocalData: payload,
+  };
+};
+
+const setIsLocalCsConfigured = (state, { payload }) => {
+  return {
+    ...state,
+    isLocalCsConfigured: payload,
+  };
+};
+
+const setPcLocalData = (state, { payload }) => {
+  return {
+    ...state,
+    pcLocalData: payload,
+  };
+};
+
+const setVariableLocalData = (state, { payload }) => {
+  return {
+    ...state,
+    variableLocalData: payload,
+  };
+};
+
+const setIsLocalPcUpdated = (state, { payload }) => {
+  return {
+    ...state,
+    isLocalPcUpdated: payload,
+  };
+};
+
+const setIsLocalVariableUpdated = (state, { payload }) => {
+  return {
+    ...state,
+    isLocalVariableUpdated: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1079,6 +1139,15 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setSelectedNameSpaceForDetail,
         setSelectedNameSpaceForDetail
+      )
+      .addCase(NamespacesActions.setCsLocalData, setCsLocalData)
+      .addCase(NamespacesActions.setIsLocalCsConfigured, setIsLocalCsConfigured)
+      .addCase(NamespacesActions.setPcLocalData, setPcLocalData)
+      .addCase(NamespacesActions.setVariableLocalData, setVariableLocalData)
+      .addCase(NamespacesActions.setIsLocalPcUpdated, setIsLocalPcUpdated)
+      .addCase(
+        NamespacesActions.setIsLocalVariableUpdated,
+        setIsLocalVariableUpdated
       );
   }
 );
