@@ -46,8 +46,6 @@ export const DiffModalScheduleList = props => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
   const modalOpen = useSelector(SchedularSelectors.getIsDiffModalOpen);
-  const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
-  console.log(scheduleDiffData, 'scheduleDiffData');
 
   const renderContent = () => {
     switch (activeTab) {
@@ -69,10 +67,6 @@ export const DiffModalScheduleList = props => {
   };
   const handleSetTab = tab => {
     setActiveTab(tab);
-  };
-
-  const onSubmit = data => {
-    console.log(data);
   };
 
   return (

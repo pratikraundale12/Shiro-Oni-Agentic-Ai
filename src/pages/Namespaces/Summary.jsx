@@ -357,11 +357,6 @@ const Summary = () => {
     registryAllDetails?.controllerServicesData?.localServices.map(
       ele => ele.controllerData?.[0]
     );
-
-  console.log(
-    CSorignalData,
-    'CSorignalData>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>registryAllDetails'
-  );
   const getChangedObjects = (originalData, updatedData) => {
     const updatedMap = updatedData.reduce((acc, item) => {
       acc[item.pgId] = item;
