@@ -53,7 +53,7 @@ class ErrorBoundary extends React.Component {
 
   handleNavigation = url => {
     if (url === window.location.href) {
-      history.back(-1);
+      history.back();
     }
 
     this.setState({ hasError: false, errorMessage: '' }, () => {
