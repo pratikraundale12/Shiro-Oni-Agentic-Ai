@@ -370,7 +370,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
 
   const displayTitle = routeVal => {
     let resultant = SIDE_MENUS_DISPLAY.find(ele => ele.path === routeVal);
-    return resultant.label;
+    return resultant?.label;
     // route?.replace(/-/g, ' ')
   };
 
