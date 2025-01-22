@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   ActiveIcon,
   DeleteDustbinIcon,
   DeleteSmallIcon,
+  LogoutIcon,
   OpenEyeIcon,
   PencilIcon,
   SortDownIcon,
@@ -22,8 +23,14 @@ import {
 import { CLUSTER_STATUS, Cluster_STATUS_OPTIONS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
-import { DashboardActions, GridActions, NamespacesActions } from '../../store';
-import { updateCluster } from '../../store/index1';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  DashboardActions,
+  GridActions,
+  NamespacesActions,
+} from '../../store';
+import { deleteCluster, updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
 
@@ -75,9 +82,13 @@ export const ListClusters = () => {
   const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
   const [deactiveId, setDeactiveId] = useState(null);
+  const [deleteHardId, setDeleteHardId] = useState(null);
   const menuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('');
+  const hardDeleteModalOpen = useSelector(
+    ClustersSelectors.getIsclusterHardDeleteModalOpen
+  );
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -157,7 +168,6 @@ export const ListClusters = () => {
                         <span>{KDFM.EDIT}</span>
                       </Item>
                     )}
-
                     <>
                       {item.status !== CLUSTER_STATUS.DISCONNECTED && (
                         <Item onClick={() => handleClick('view')}>
@@ -165,9 +175,9 @@ export const ListClusters = () => {
                           <span>{KDFM.VIEW}</span>
                         </Item>
                       )}
-                      {item.delete_cluster && (
+                      {item.deactivate_cluster && (
                         <Item onClick={() => handleClick('delete', item.id)}>
-                          <DeleteSmallIcon width={18} height={18} />
+                          <LogoutIcon color="black" />
                           <span>{KDFM.DEACTIVATE}</span>
                         </Item>
                       )}
@@ -176,10 +186,22 @@ export const ListClusters = () => {
                 ) : (
                   <>
                     {item.status === CLUSTER_STATUS.DISCONNECTED ? null : (
-                      <Item onClick={() => handleClick('active', item.id)}>
-                        <ActiveIcon />
-                        <span>{KDFM.ACTIVATE}</span>
-                      </Item>
+                      <>
+                        {item.delete_cluster && (
+                          <Item
+                            onClick={() => handleClick('deleteHard', item.id)}
+                          >
+                            <DeleteSmallIcon width={18} height={18} />
+                            <span> Delete</span>
+                          </Item>
+                        )}
+                        {item?.deactivate_cluster && (
+                          <Item onClick={() => handleClick('active', item.id)}>
+                            <ActiveIcon />
+                            <span>{KDFM.ACTIVATE}</span>
+                          </Item>
+                        )}
+                      </>
                     )}
                   </>
                 )}
@@ -193,6 +215,16 @@ export const ListClusters = () => {
 
   const sortFns = {
     name: data => data.sort((a, b) => a?.name?.localeCompare(b?.name)),
+  };
+  const handleDeleteHard = async () => {
+    const response = await deleteCluster(deleteHardId);
+    if (response?.status == 200) {
+      toast.success(response?.data?.message);
+      dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+    } else {
+      toast.error(response?.message);
+    }
+    dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
   };
 
   const updateClusterStatus = async id => {
@@ -287,6 +319,10 @@ export const ListClusters = () => {
       setState({ ...state, clusterDeleteModal: true });
       setDeactiveId(id);
     }
+    if (type === 'deleteHard') {
+      dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(true));
+      setDeleteHardId(id);
+    }
   };
 
   useEffect(() => {
@@ -308,6 +344,18 @@ export const ListClusters = () => {
         onSubmit={() => deleteUserConfirmed(deactiveId)}
         onRequestClose={() => setState({ ...state, clusterDeleteModal: false })}
         primaryText={KDFM.DELETE_CLUSTER_WARNING}
+      />
+      <ModalWithIcon
+        title={'Delete Cluster'}
+        primaryButtonText={'Delete'}
+        secondaryButtonText={KDFM.CANCEL}
+        icon={<DeleteDustbinIcon />}
+        isOpen={hardDeleteModalOpen}
+        onSubmit={() => handleDeleteHard()}
+        onRequestClose={() =>
+          dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false))
+        }
+        primaryText={KDFM.HARD_DELETE_CLUSTER_WARNING}
       />
       <Grid
         module="clusters"
