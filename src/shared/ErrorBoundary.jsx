@@ -53,7 +53,7 @@ class ErrorBoundary extends React.Component {
 
   handleNavigation = url => {
     if (url === window.location.href) {
-      history.back();
+      history.back(-1);
     }
 
     this.setState({ hasError: false, errorMessage: '' }, () => {
@@ -72,9 +72,6 @@ class ErrorBoundary extends React.Component {
           <div>
             <Button onClick={() => this.handleNavigation(window.location.href)}>
               Retry Again
-            </Button>
-            <Button onClick={() => this.handleNavigation('/dashboard')}>
-              Back to Dashboard
             </Button>
           </div>
           <Link href="mailto:support@ksolves.com">Contact Support</Link>
