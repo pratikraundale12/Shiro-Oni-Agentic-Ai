@@ -198,6 +198,7 @@ export const GridActions = ({
   control,
   setSelectedRole,
   selectedRole,
+  sortingState,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -308,6 +309,12 @@ export const GridActions = ({
             ...(location?.pathname?.includes('user-management') &&
               selectedRole?.value !== 'all' && {
                 role_id: selectedRole?.value,
+              }),
+            ...(location?.pathname?.match(
+              /user-management|clusters|schedule-deployment|activity-history/
+            ) &&
+              sortingState && {
+                sort: sortingState,
               }),
           },
         })
@@ -697,4 +704,5 @@ GridActions.propTypes = {
   control: PropTypes.object.isRequired,
   setSelectedRole: PropTypes.func.isRequired,
   selectedRole: PropTypes.string,
+  sortingState: PropTypes.string,
 };

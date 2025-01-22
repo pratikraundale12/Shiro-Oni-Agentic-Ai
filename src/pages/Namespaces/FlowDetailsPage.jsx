@@ -225,19 +225,19 @@ const FlowDetailsPage = () => {
     }
   }, [registryDetailsData, selectedNameSpace, isUpgrade]);
 
-  const gridDataDest = useSelector(state =>
-    GridSelectors.getGridData(state, 'namespaces')
-  );
-
   const sortedArray = useMemo(() => {
-    return gridDataDest.map(item => ({
+    const data = versionListData?.graphData?.data ?? [];
+    if (!Array.isArray(data)) {
+      return [];
+    }
+    return data.map(item => ({
       x: Number(item?.position?.x),
       y: Number(item?.position?.y),
       width: 384,
       height: 176,
       color: item?.isProcessor ? '#BFDFDF' : 'teal',
     }));
-  }, [gridDataDest]);
+  }, [versionListData]);
 
   const updatedDataForGraph = useMemo(() => {
     const newBox = {

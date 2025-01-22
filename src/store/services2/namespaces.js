@@ -269,9 +269,15 @@ export const namespacesAPI = api => {
     );
   };
 
-  const fetchVersionData = ({ clusterId, registriesId, bucketId, flowId }) => {
+  const fetchVersionData = ({
+    clusterId,
+    registriesId,
+    bucketId,
+    flowId,
+    namespaceId,
+  }) => {
     return api.get(
-      `/versions/${clusterId}/registry/${registriesId}/buckets/${bucketId}/flows/${flowId}`
+      `/versions/${clusterId}/registry/${registriesId}/buckets/${bucketId}/flows/${flowId}?namespaceId=${namespaceId}`
     );
   };
 

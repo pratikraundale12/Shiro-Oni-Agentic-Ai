@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash';
+import { toast } from 'react-toastify';
 import { all, call, debounce, put, select } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, DEBOUNCE_DELAY } from '../../constants';
 import { DashboardActions } from '../dashboard';
@@ -135,6 +136,8 @@ export function* fetchGrid(
   }
   if (response.ok) {
     yield put(GridActions.fetchGridSuccess({ module, data: response.data }));
+  } else if (!response?.ok) {
+    toast.error(response?.message || response?.data?.message);
   }
 }
 

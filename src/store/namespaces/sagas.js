@@ -1159,6 +1159,10 @@ export function* fetchVersionData(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const childNamespace = yield select(NamespacesSelectors.getSelectedNamespace);
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -1172,6 +1176,8 @@ export function* fetchVersionData(api, { payload }) {
         registriesId: gridData?.id,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,
+        namespaceId:
+          selectedNamespace?.parentGroupId || childNamespace?.value || 'root',
       },
     ],
   });

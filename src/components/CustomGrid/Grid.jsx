@@ -162,10 +162,11 @@ export const Grid = ({
     },
     setState,
   } = useGlobalContext();
+  const filteredData = gridData.filter(item => item.isProcessor === false);
 
   const DATA = {
     nodes: isNamespace
-      ? getData(loading, gridData, clusterSummary.nodes).slice(
+      ? getData(loading, filteredData, clusterSummary.nodes).slice(
           (currentPage - 1) * itemsPerPage,
           currentPage * itemsPerPage
         )
@@ -356,6 +357,7 @@ export const Grid = ({
         control={control}
         setSelectedRole={setSelectedRole}
         selectedRole={selectedRole}
+        sortingState={sortingState}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>
