@@ -66,7 +66,7 @@ const PropertyDropdownModal = ({
   };
   const { handleSubmit, control, watch, reset } = useForm({});
   const selectedNewValue = watch('newService');
-
+  const selectedProperty = watch('value');
   const handleFormSubmit = data => {
     setUpdatedData(() => [
       ...filterData,
@@ -104,7 +104,6 @@ const PropertyDropdownModal = ({
       dispatch(
         NamespacesActions.addControllerServicePropertyByDropdown(selectedObject)
       );
-    toast.success(KDFM.SERVICE_ADDED);
     setAddNewProperty(false);
   };
   useEffect(() => {
@@ -155,7 +154,7 @@ const PropertyDropdownModal = ({
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
         contentStyles={{ maxWidth: '35%', maxHeight: '50%' }}
-        primaryButtonDisabled={addNewProperty}
+        primaryButtonDisabled={selectedProperty === null || addNewProperty}
       >
         <ModalBody className="modal-body">
           <div style={{ height: '150px' }} className="mb-4">

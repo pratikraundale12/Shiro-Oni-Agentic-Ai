@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
-import { CLUSTERS_TOKEN } from '../../constants';
+import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { AuthenticationActions } from '../authentication';
 import { GridSelectors } from '../grid';
@@ -960,6 +960,7 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
     ],
   });
   if (response.ok) {
+    toast.success(KDFM.SERVICE_ADDED);
     yield put(NamespacesActions.setResponseNewAddedProprty(response?.data));
   } else {
     toast.error(response?.message || response?.data?.message);
