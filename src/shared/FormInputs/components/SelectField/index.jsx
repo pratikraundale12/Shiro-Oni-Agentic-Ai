@@ -138,7 +138,9 @@ const SelectField = ({
     return [...options].sort((a, b) => {
       if (a.label === 'All') return -1;
       if (b.label === 'All') return 1;
-      return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+      return a?.name
+        ? a?.name?.toLowerCase().localeCompare(b?.label?.toLowerCase())
+        : a?.label?.toLowerCase().localeCompare(b?.label?.toLowerCase());
     });
   };
 

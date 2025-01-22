@@ -960,7 +960,6 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
     ],
   });
   if (response.ok) {
-    toast.success('Proprty Added Successfully');
     yield put(NamespacesActions.setResponseNewAddedProprty(response?.data));
   } else {
     toast.error(response?.message || response?.data?.message);
