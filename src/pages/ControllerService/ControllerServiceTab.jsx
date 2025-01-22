@@ -557,6 +557,7 @@ const ControllerServiceTab = ({
           state === 'VALIDATING' ||
           state === 'DISABLING' ||
           (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
+          console.log('tipcontent-------', tooltipContent, isBtnDisabled, isButtonVisible);
         return (
           <div>
             {/* Settings Button */}
@@ -601,7 +602,6 @@ const ControllerServiceTab = ({
                 />
               </>
             )}
-
             {/* Enable/Disable Button */}
             {isButtonVisible && (
               <>
@@ -612,7 +612,7 @@ const ControllerServiceTab = ({
                   disabled={isBtnDisabled}
                   className="border-0 bg-white ms-2"
                   onClick={() => handleEnableClick(stateItem)}
-                  data-tooltip-id={stateItem?.id}
+                  data-tooltip-id={`tooltip-${stateItem?.id}-${tooltipContent}`}
                 >
                   {state !== 'DISABLED' && state !== 'DISABLING' ? (
                     <FlashCutIcon />
@@ -621,9 +621,10 @@ const ControllerServiceTab = ({
                   )}
                 </button>
                 <ReactTooltip
-                  id={stateItem?.id}
+                  id={`tooltip-${stateItem?.id}-${tooltipContent}`}
                   place="left"
-                  content={isBtnDisabled ? '' : tooltipContent}
+                  content={!isBtnDisabled ? tooltipContent : ''}
+                  key={tooltipContent}
                   style={{
                     width: '130px',
                     whiteSpace: 'normal',
