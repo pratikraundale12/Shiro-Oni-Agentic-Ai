@@ -406,7 +406,7 @@ const Upgrade = () => {
                     label={KDFM.CANVAS_POSITION}
                     value={xStateCoordinate || formData.position.x}
                     icon={<CanvasXIcon />}
-                    disabled={selectedNameSpace.mode === 'upgrade'}
+                    disabled="true"
                     onChange={e => handleXCoordinateChangeInput(e)}
                   />
                   <InputField
@@ -415,7 +415,7 @@ const Upgrade = () => {
                     label=""
                     value={yStateCoordinate || formData.position.y}
                     icon={<CanvasYIcon />}
-                    disabled={selectedNameSpace.mode === 'upgrade'}
+                    disabled="true"
                     onChange={e => handleYCoordinateChangeInput(e)}
                   />
                 </ColXlFive>

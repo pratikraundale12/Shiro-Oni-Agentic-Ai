@@ -1,9 +1,9 @@
 /*eslint-disable*/
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { useDispatch } from 'react-redux';
-import { NamespacesActions } from '../../store';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { NamespacesActions } from '../../store';
 const ValueRender = ({
   item,
   handleAddValueModal,
@@ -16,15 +16,7 @@ const ValueRender = ({
   };
   return (
     <>
-      <div
-        onClick={() =>
-          !item?.isSelective
-            ? handleAddValueModal(item)
-            : handleOpenPropertyDropDownModal(item)
-        }
-        style={{ cursor: 'pointer' }}
-        data-tooltip-id={`tooltip-${item.dropDownName}`}
-      >
+      <div>
         {item?.empty_string_set ? (
           'Empty String Set'
         ) : item?.dropDownName ? (
@@ -37,17 +29,6 @@ const ValueRender = ({
           'No Value Set'
         )}
       </div>
-      <ReactTooltip
-        id={`tooltip-${item.dropDownName}`}
-        place="right"
-        content={'Click to edit'}
-        style={{
-          width: '110px',
-          whiteSpace: 'normal',
-          wordWrap: 'break-word',
-          zIndex: 9999,
-        }}
-      />
     </>
   );
 };

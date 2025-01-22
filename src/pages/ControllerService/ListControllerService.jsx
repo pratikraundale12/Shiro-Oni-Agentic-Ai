@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { isEmpty } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -13,6 +13,7 @@ import {
   SettingSmallIcon,
   SmallSearchIcon,
   TodoIcon,
+  RefreshIcon,
 } from '../../assets';
 import { FullPageLoader, Table } from '../../components';
 import { Button, ModalWithIcon } from '../../shared';
@@ -85,6 +86,20 @@ const StatusTexts = styled.div`
     border-radius: 50%;
   }
 `;
+
+const RefreshIocnPanel = styled.div`
+  cursor: pointer;
+  background-color: #f5f7fa;
+  border: 1px solid #dde4f0;
+  width: 37px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  border-radius: 4px;
+`;
+
 const statusColors = {
   DISABLED: '#b5b5bd',
   SCHEDULED: '#0cbf59',
@@ -149,10 +164,15 @@ export const ListControllerService = () => {
   const [listPropertyTableData, setListPropertTableData] = useState(
     selectedItemFromList?.properties
   );
-  const filteredModulesData = listData.filter(
-    module =>
-      module?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      module?.type?.toLowerCase().includes(search.toLowerCase())
+  const [isResetNotRequired, setIsResetNotRequired] = useState(false);
+  const filteredModulesData = useMemo(
+    () =>
+      listData.filter(
+        module =>
+          module?.name?.toLowerCase().includes(search.toLowerCase()) ||
+          module?.type?.toLowerCase().includes(search.toLowerCase())
+      ),
+    [listData, search]
   );
 
   const isListProprtyModel = useSelector(
@@ -193,8 +213,8 @@ export const ListControllerService = () => {
         id: selectedItemFromList?.id,
       })
     );
-
     setIsDeleteModalOpen(false);
+    setIsResetNotRequired(true);
   };
 
   const controllerPermissions = useSelector(
@@ -340,35 +360,45 @@ export const ListControllerService = () => {
     setSelectedPropertyToEdit(item);
   };
 
+  const handleRefresh = () => {
+    dispatch(NamespacesActions.getControllerServiceList());
+  };
+
   const statusLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'changeStatusControllerService')
   );
 
   return (
     <>
-      <FullPageLoader loading={statusLoading} />
+      <FullPageLoader loading={statusLoading || loading} />
       {controllerPermissions.includes('add_controller_services') && (
         <div className="d-flex justify-content-between align-items-center">
-          <div className="d-flex  align-items-center gap-3">
-            <div className="d-flex  align-items-center gap-2">
+          <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center gap-2">
               <TodoIcon width={22} height={24} />
               <HeadingStyle>Controller Services List</HeadingStyle>
             </div>
           </div>
-          <div className="row mb-2 d-flex justify-content-end">
-            <div>
-              <Button
-                type="button"
-                size={'md'}
-                onClick={() =>
-                  dispatch(
-                    NamespacesActions.setIsAddControllerServiceModal(true)
-                  )
-                }
-              >
-                Add
-              </Button>
-            </div>
+          <div className="mb-2 d-flex align-items-center">
+            <Button
+              type="button"
+              size={'md'}
+              onClick={() =>
+                dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
+              }
+            >
+              Add
+            </Button>
+            <RefreshIocnPanel
+              onClick={handleRefresh}
+              style={{
+                opacity: 1,
+                minWidth: '37px',
+              }}
+              data-tooltip-id={`tooltip-group-namespace-refresh`}
+            >
+              <RefreshIcon style={{ cursor: 'pointer' }} />
+            </RefreshIocnPanel>
           </div>
         </div>
       )}
@@ -384,6 +414,7 @@ export const ListControllerService = () => {
           value={search}
           placeholder="Search Controller Service by Name"
           onChange={e => {
+            setIsResetNotRequired(false);
             const value = e.target.value;
             if (value.length <= 100) {
               setSearch(value);
@@ -399,7 +430,8 @@ export const ListControllerService = () => {
         data={filteredModulesData}
         columns={COLUMNS}
         controllerModule={true}
-        loading={loading}
+        csList={true}
+        isResetNotRequired={isResetNotRequired}
       />
 
       <ConfigControllerService

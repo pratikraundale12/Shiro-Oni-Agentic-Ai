@@ -371,9 +371,13 @@ const FlowDetailsPage = () => {
   };
 
   const handleXCoordinateChangeInput = e => {
-    if (e.target.value) {
+    console.log('e--------', e.target.value, typeof e.target.value);
+    if (e.target.value && e.target.value !== '-') {
       setXStateCoordiate(Number(e.target.value));
       dispatch(NamespacesActions.setRegistryFlowXCord(Number(e.target.value)));
+    } else if (e.target.value === '-') {
+      setXStateCoordiate(Number(0));
+      dispatch(NamespacesActions.setRegistryFlowXCord(Number(0)));
     } else {
       setXStateCoordiate(null);
       dispatch(NamespacesActions.setRegistryFlowXCord(null));
@@ -400,6 +404,10 @@ const FlowDetailsPage = () => {
     LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
   );
 
+  const loadingVersion = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchVersionData')
+  );
+
   const getIconForState = state => {
     switch (state) {
       case 'LOCALLY_MODIFIED_AND_STALE':
@@ -418,9 +426,20 @@ const FlowDetailsPage = () => {
   const isStateStale =
     selectedNameSpace?.state === 'STALE' ||
     selectedNameSpace?.state === 'UP_TO_DATE';
+
+  const isButtonDisabled = versionListData?.versionList?.length === 1;
+
+  useEffect(() => {
+    if (versionListData?.versionList?.length === 1) {
+      toast.info(
+        "This process group can't be upgraded as there is only one version available"
+      );
+    }
+  }, [versionListData?.versionList]);
+
   return (
     <div>
-      <FullPageLoader loading={loadingregistry} />
+      <FullPageLoader loading={loadingregistry || loadingVersion} />
 
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
@@ -532,6 +551,7 @@ const FlowDetailsPage = () => {
                       <InputField
                         name="x"
                         type="text"
+                        disabled="true"
                         label={KDFM.CANVAS_POSITION}
                         value={
                           storedXcord ||
@@ -547,6 +567,7 @@ const FlowDetailsPage = () => {
                         name="y"
                         type="text"
                         label=""
+                        disabled="true"
                         value={
                           storedYcord ||
                           yStateCoordinate ||
@@ -621,7 +642,7 @@ const FlowDetailsPage = () => {
             {KDFM.BACK}
           </Button>
           <Button
-            disabled={isUpgrade ? false : !isStateStale}
+            disabled={isUpgrade ? false : !isStateStale || isButtonDisabled}
             onClick={handleScrollOnClick}
           >
             Continue

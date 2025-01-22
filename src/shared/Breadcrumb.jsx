@@ -11,6 +11,7 @@ const BreadcrumbContainer = styled.div`
   display: flex;
   align-items: center;
   font-size: 16px;
+  flex-wrap: wrap;
 `;
 
 const BreadcrumbItem = styled.span`

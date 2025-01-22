@@ -53,11 +53,11 @@ const ScrollSetGrey = styled.div`
   overflow-y: auto;
 `;
 const ConfigureButton = styled.button`
-  padding: 5px 10px;
+  padding: 8px 1rem;
   background-color: #ff7a00;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   &:hover {
     background-color: #ff7a00;
@@ -601,7 +601,6 @@ const ControllerServiceTab = ({
                 />
               </>
             )}
-
             {/* Enable/Disable Button */}
             {isButtonVisible && (
               <>
@@ -612,7 +611,7 @@ const ControllerServiceTab = ({
                   disabled={isBtnDisabled}
                   className="border-0 bg-white ms-2"
                   onClick={() => handleEnableClick(stateItem)}
-                  data-tooltip-id={stateItem?.id}
+                  data-tooltip-id={`tooltip-${stateItem?.id}-${tooltipContent}`}
                 >
                   {state !== 'DISABLED' && state !== 'DISABLING' ? (
                     <FlashCutIcon />
@@ -621,9 +620,10 @@ const ControllerServiceTab = ({
                   )}
                 </button>
                 <ReactTooltip
-                  id={stateItem?.id}
+                  id={`tooltip-${stateItem?.id}-${tooltipContent}`}
                   place="left"
-                  content={isBtnDisabled ? '' : tooltipContent}
+                  content={!isBtnDisabled ? tooltipContent : ''}
+                  key={tooltipContent}
                   style={{
                     width: '130px',
                     whiteSpace: 'normal',

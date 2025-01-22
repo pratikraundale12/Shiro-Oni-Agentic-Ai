@@ -160,12 +160,20 @@ const RefreshIocn = styled.div`
   background-color: #f5f7fa;
   border: 1px solid #dde4f0;
   width: 37px;
-  height: 42px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 10px;
   border-radius: 4px;
+  min-width: 37px;
+`;
+
+const SpanEle = styled.span`
+  cursor: pointer;
+  color: #ff7a00;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 // const checkIfPropertyExists = (data, key) => {
@@ -228,9 +236,30 @@ export const GridActions = ({
   const selecedNamespaceDetails = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
-    dispatch(GridSagsActions.fetchGrid({ module, clusterId, params: {} }));
+    if (module === 'scheduler') {
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module,
+          clusterId,
+          params: {
+            page: 1,
+            ...(selectedRange && {
+              start_date: selectedRange?.[0]?.toISOString(),
+              end_date: selectedRange?.[1]?.toISOString(),
+            }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && {
+                [getModuleBasedStatusKey(module)]: watchStatus,
+              }),
+          },
+        })
+      );
+    } else {
+      dispatch(GridSagsActions.fetchGrid({ module, clusterId, params: {} }));
+    }
     if (!isEmpty(selectedCluster) && breadcrumbs?.length > 1) {
       const payload = {
         selectedNamespace: selecedNamespaceDetails,
@@ -244,6 +273,7 @@ export const GridActions = ({
       dispatch(GridActions.fetchGrid({ module: 'namespaces' }));
     }
   };
+
   useEffect(() => {
     if (location.pathname !== '/schedule-deployment') {
       window.localStorage.removeItem('scheduleTokenid');
@@ -275,6 +305,10 @@ export const GridActions = ({
               start_date: selectedRange?.[0]?.toISOString(),
               end_date: selectedRange?.[1]?.toISOString(),
             }),
+            ...(location?.pathname?.includes('user-management') &&
+              selectedRole?.value !== 'all' && {
+                role_id: selectedRole?.value,
+              }),
           },
         })
       );
@@ -410,6 +444,12 @@ export const GridActions = ({
     setSelectedRole(selectedOption);
   };
 
+  const handleClearFilter = () => {
+    if (module === 'scheduler') {
+      dispatch(GridSagsActions.fetchGrid({ module, clusterId, params: {} }));
+    }
+  };
+
   return (
     <>
       <Flex className="flex-wrap gap-2">
@@ -459,23 +499,25 @@ export const GridActions = ({
 
         <ButtonsContainer>
           {module === 'users' && (
-            <StyledSelectField
-              size="sm"
-              name="roles"
-              control={control}
-              title="Select Roles"
-              placeholder="Select Roles"
-              value={selectedRole}
-              options={[
-                { label: 'All', value: 'all' },
-                ...uniqueRoles.map(role => ({
-                  label: role.name,
-                  value: role.role_id,
-                })),
-              ]}
-              backgroundColor={theme.colors.lightGrey}
-              onChange={handleRolesChange}
-            />
+            <DropdownContainer>
+              <StyledSelectField
+                size="sm"
+                name="roles"
+                control={control}
+                title="Select Roles"
+                placeholder="Select Roles"
+                value={selectedRole}
+                options={[
+                  { label: 'All', value: 'all' },
+                  ...uniqueRoles.map(role => ({
+                    label: role.name,
+                    value: role.role_id,
+                  })),
+                ]}
+                backgroundColor={theme.colors.lightGrey}
+                onChange={handleRolesChange}
+              />
+            </DropdownContainer>
           )}
           {!isEmpty(statusOptions) && (
             <DropdownContainer>
@@ -553,7 +595,6 @@ export const GridActions = ({
                   <Button
                     size="md"
                     disabled={isButtonDisabled}
-                    style={{ width: '250px' }}
                     onClick={() => handleScheduleClick()}
                   >
                     <div
@@ -609,6 +650,9 @@ export const GridActions = ({
                   }}
                 />
               </>
+            )}
+            {module === 'scheduler' && (
+              <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
             )}
           </ButtonsContainer>
         )}

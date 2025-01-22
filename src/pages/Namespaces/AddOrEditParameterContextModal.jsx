@@ -9,6 +9,7 @@ import {
   Modal,
   RadioSelectField,
 } from '../../shared';
+import { toast } from 'react-toastify';
 
 const ModalBody = styled.div`
   position: relative;
@@ -103,6 +104,9 @@ const AddOrEditParameterContextModal = ({
   const handleAddEditParameterContext = () => {
     if (!formData) return;
     handleSave(formData);
+    isAddParameterContextOpen?.mode === 'edit'
+      ? toast.success(KDFM.PARAMETER_EDITED)
+      : toast.success(KDFM.PARAMETER_ADDED);
     setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
   };
 

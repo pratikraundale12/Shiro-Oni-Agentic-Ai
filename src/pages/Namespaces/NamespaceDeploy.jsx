@@ -158,6 +158,9 @@ const ActiveButtonDiv = styled.div`
   svg path {
     fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
   }
+  .div-btn-1.disabled {
+    cursor: not-allowed;
+  }
 `;
 
 const NamespaceDeploy = ({
@@ -197,8 +200,9 @@ const NamespaceDeploy = ({
   );
   const handleClick = () => {
     const updatedUrl = deployOrUpgradeDetails?.nifiUrl?.endsWith('/nifi')
-      ? deployOrUpgradeDetails.nifiUrl
-      : `${deployOrUpgradeDetails.nifiUrl}/nifi`;
+      ? `${deployOrUpgradeDetails.nifiUrl}?processGroupId=${deployOrUpgradeDetails?.id}`
+      : `${deployOrUpgradeDetails.nifiUrl}/nifi?processGroupId=${deployOrUpgradeDetails?.id}`;
+
     window.open(updatedUrl, '_blank');
   };
 
@@ -354,19 +358,28 @@ const NamespaceDeploy = ({
                         Start
                       </Tooltip>
                       <ActiveButtonDiv
-                        className="div-btn-1"
+                        className={`div-btn-1 ${
+                          (dataAfterUpgradeProcessor?.runningCount ||
+                            deployOrUpgradeDetails?.runningCount) > 0 &&
+                          (dataAfterUpgradeProcessor?.stoppedCount ||
+                            deployOrUpgradeDetails?.stoppedCount) === 0
+                            ? 'disabled'
+                            : ''
+                        }`}
                         isActive={activeButtonPopup === 'RUNNING'}
                         activeColor="#58e715"
                         hoverColor="#58e715"
                         activeTextColor="#fff"
                         onClick={() => {
-                          (
-                            checkFlowControlAfterUpgrade
-                              ? dataAfterUpgradeProcessor?.runningCount
-                              : deployOrUpgradeDetails?.runningCount
-                          )
-                            ? null
-                            : handleFlowConfirmPopup('RUNNING');
+                          if (
+                            (dataAfterUpgradeProcessor?.runningCount ||
+                              deployOrUpgradeDetails?.runningCount) > 0 &&
+                            (dataAfterUpgradeProcessor?.stoppedCount ||
+                              deployOrUpgradeDetails?.stoppedCount) === 0
+                          ) {
+                            return;
+                          }
+                          handleFlowConfirmPopup('RUNNING');
                         }}
                         data-tooltip-id="running-tooltip"
                       >
@@ -379,19 +392,28 @@ const NamespaceDeploy = ({
                         Stop
                       </Tooltip>
                       <ActiveButtonDiv
-                        className="div-btn-1"
+                        className={`div-btn-1 ${
+                          (dataAfterUpgradeProcessor?.runningCount ||
+                            deployOrUpgradeDetails?.runningCount) === 0 &&
+                          (dataAfterUpgradeProcessor?.stoppedCount ||
+                            deployOrUpgradeDetails?.stoppedCount) > 0
+                            ? 'disabled'
+                            : ''
+                        }`}
                         isActive={activeButtonPopup === 'STOPPED'}
                         activeColor="#c52b2b"
                         hoverColor="#c52b2b"
                         activeTextColor="#fff"
                         onClick={() => {
-                          (
-                            checkFlowControlAfterUpgrade
-                              ? dataAfterUpgradeProcessor?.stoppedCount
-                              : deployOrUpgradeDetails?.stoppedCount
-                          )
-                            ? null
-                            : handleFlowConfirmPopup('STOPPED');
+                          if (
+                            (dataAfterUpgradeProcessor?.runningCount ||
+                              deployOrUpgradeDetails?.runningCount) === 0 &&
+                            (dataAfterUpgradeProcessor?.stoppedCount ||
+                              deployOrUpgradeDetails?.stoppedCount) > 0
+                          ) {
+                            return;
+                          }
+                          handleFlowConfirmPopup('STOPPED');
                         }}
                         data-tooltip-id="stopped-tooltip"
                       >

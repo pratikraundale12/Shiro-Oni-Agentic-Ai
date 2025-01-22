@@ -189,11 +189,11 @@ export const KDFM = {
   GROUP_EMAIL: 'Group Email Id',
   ENTER_GROUP_EMAIL: 'Enter your Group Email',
   EMAIL_REMINDER: 'Email Reminder Time',
-  REMINDER_EMPHASISED_TEXT: 'before schedule deployment time',
+  REMINDER_EMPHASISED_TEXT: 'before deployment schedule time',
   CONFIGURE: 'Configure',
   APP: 'App',
   LDAP: 'Ldap',
-  SCHEDULE_DIPLOYMENT: 'Schedule Deployment',
+  SCHEDULE_DIPLOYMENT: 'Deployment Schedule',
   SERVICE_ACCOUNT: 'Service Account',
   CONTROLLER_SERVICE_DATA: 'External Controller Services',
   SMTP: 'Email Configuration',
@@ -221,3 +221,16 @@ export const KDFM = {
   ...ACTIVITY_HISTORY_CONSTANTS,
   ...USER_CONSTANTS,
 };
+
+export const SIDE_MENUS_DISPLAY = [
+  { path: 'dashboard', label: 'Dashboard' },
+  { path: 'clusters', label: 'Clusters' },
+  { path: 'process-group', label: 'Process Groups' },
+  { path: 'schedule-deployment', label: 'Deployment Schedule' },
+  { path: 'user-management', label: 'Users' },
+  { path: 'role-&-permission', label: 'Roles & Permissions' },
+  { path: 'activity-history', label: 'Activity History' },
+  { path: 'ldap-configuration', label: 'LDAP Configuration' },
+  { path: 'controller-service', label: 'Controller Services' },
+  { path: 'setting', label: 'Settings' },
+];

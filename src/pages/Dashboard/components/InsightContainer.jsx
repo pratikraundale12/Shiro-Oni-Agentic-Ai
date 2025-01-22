@@ -1,9 +1,12 @@
+/* eslint-disable */
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
+import { DashboardSelectors } from '../../../store';
 
 const Container = styled.div`
-  /* height: fit-content; */
   padding-left: 8px;
   padding-right: 8px;
 `;
@@ -18,6 +21,7 @@ const InnerContainer = styled.div`
   background-color: ${props => props.backgroundCss || 'white'};
   position: relative;
   height: 100%;
+  cursor: pointer;
 `;
 
 const IconContainer = styled.div`
@@ -56,19 +60,48 @@ export const InsightContainer = ({
   icon: Icon,
   count = '',
   text = '',
-}) => (
-  <Container className="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6">
-    <InnerContainer backgroundCss={backgroundCss}>
-      <IconContainer>
-        <Icon />
-      </IconContainer>
-      <CountDisplay>
-        <CountNumber>{count}</CountNumber>
-      </CountDisplay>
-      <InsightText>{text}</InsightText>
-    </InnerContainer>
-  </Container>
-);
+  selectedNamespace,
+}) => {
+  const dashboardData = useSelector(DashboardSelectors.getDashboardData);
+  const handleClick = () => {
+    if (selectedNamespace?.value) {
+      const updatedUrl = dashboardData?.namespaces?.nifiUrl.endsWith('/nifi')
+        ? `${dashboardData?.namespaces?.nifiUrl}?processGroupId=${selectedNamespace?.value}`
+        : `${dashboardData?.namespaces?.nifiUrl}/nifi?processGroupId=${selectedNamespace?.value}`;
+      window.open(updatedUrl, '_blank');
+    } else {
+      const updatedUrl = dashboardData?.namespaces?.nifiUrl?.endsWith('/nifi')
+        ? dashboardData?.namespaces?.nifiUrl
+        : `${dashboardData?.namespaces?.nifiUrl}/nifi`;
+      window.open(updatedUrl, '_blank');
+    }
+  };
+
+  return (
+    <Container className="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6">
+      <InnerContainer
+        backgroundCss={backgroundCss}
+        onClick={handleClick}
+        data-tooltip-id={`tooltip-${text}`}
+      >
+        <IconContainer>
+          <Icon />
+        </IconContainer>
+        <CountDisplay>
+          <CountNumber>{count}</CountNumber>
+        </CountDisplay>
+        <InsightText>{text}</InsightText>
+      </InnerContainer>
+      <ReactTooltip
+        id={`tooltip-${text}`}
+        place="top"
+        effect="solid"
+        content={`Click on ${text} to view details`}
+      />
+    </Container>
+  );
+};
+
 InsightContainer.propTypes = {
   backgroundCss: PropTypes.string.isRequired,
   icon: PropTypes.elementType.isRequired,

@@ -378,7 +378,7 @@ export const Add = () => {
       .string()
       .url('Enter a valid NiFi URL')
       .required('NiFi URL is required')
-      .test('unique-registry-url', 'NiFi URL already exists', function (value) {
+      .test('unique-registry-url', ' Cluster already exists', function (value) {
         if (!value) return true;
         return !filteredGridData?.some(
           reg => reg.nifi_url === value || reg.nifi_url + '/nifi' === value
@@ -884,7 +884,7 @@ export const Add = () => {
             <CheckBoxFlex>
               <CheckboxField
                 name="check"
-                label="Need approval for the schedule deployment?"
+                label="Need approval for the deployment schedule?"
                 checked={approverEnable}
                 onChange={e => setApproverEnable(e.target.checked)}
               />

@@ -2,7 +2,7 @@ import { getTheme } from '@table-library/react-table-library/baseline';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
 import { NoDataIcon } from '../../assets';
@@ -13,7 +13,8 @@ import { KDFM } from '../../constants';
 
 const TableContainer = styled.div`
   /* height: 90%; */
-  height: ${props => (props.deployTable ? 'calc(100vh - 475px)' : '83%')};
+  height: ${props =>
+    props.deployTable ? 'calc(100vh - 475px)' : props?.csList ? '77%' : '83%'};
   /* height: calc(100vh - 475px); */
   overflow-x: auto;
   border-radius: 16px;
@@ -66,6 +67,8 @@ export const Table = ({
   deployTable = false,
   rowsPerPage = 10,
   showPagination = false,
+  csList = false,
+  isResetNotRequired = false,
 }) => {
   const DATA = { nodes: data || [] };
   const [currentPage, setCurrentPage] = useState(1);
@@ -122,13 +125,24 @@ export const Table = ({
     return null;
   };
 
+  const previousDataRef = useRef(data);
   useEffect(() => {
-    setCurrentPage(1);
+    if (
+      previousDataRef.current?.length !== data?.length &&
+      !isResetNotRequired
+    ) {
+      setCurrentPage(1);
+    }
+    previousDataRef.current = data;
   }, [data]);
 
   return (
     <>
-      <TableContainer className={className} deployTable={deployTable}>
+      <TableContainer
+        className={className}
+        csList={csList}
+        deployTable={deployTable}
+      >
         <CompactTable
           data={{ nodes: showPagination ? currentItems : DATA.nodes }}
           columns={columns}
@@ -160,4 +174,6 @@ Table.propTypes = {
   deployTable: PropTypes.bool,
   rowsPerPage: PropTypes.number,
   showPagination: PropTypes.bool,
+  csList: PropTypes.bool,
+  isResetNotRequired: PropTypes.bool,
 };

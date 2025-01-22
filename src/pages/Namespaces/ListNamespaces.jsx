@@ -180,7 +180,7 @@ export const ListNamespaces = () => {
       label: (
         <>
           {KDFM.BUCKET_NAME}{' '}
-          <ProcessGroupSorting sortProperty="flowName" module="namespaces" />
+          <ProcessGroupSorting sortProperty="bucketName" module="namespaces" />
         </>
       ),
       renderCell: item => (

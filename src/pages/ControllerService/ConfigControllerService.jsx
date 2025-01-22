@@ -2,9 +2,11 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { DeleteSmallIcon, PencilIcon, QRIcons } from '../../assets';
 import { Table } from '../../components';
+import { KDFM } from '../../constants';
 import { Button, InputField, Modal } from '../../shared';
 import { NamespacesActions } from '../../store';
 import ValueRender from './ValueRender';
@@ -61,6 +63,12 @@ export const ConfigControllerService = ({
       );
       setUpdatedData(sortedUpdatedList);
     }
+    toast.success(KDFM.PROPERTY_DELETED);
+  };
+
+  const handleOpenPropertyDropDownModal = item => {
+    dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(true));
+    setSelectedPropertyToEdit(item);
   };
 
   const COLUMNS = [
@@ -74,7 +82,6 @@ export const ConfigControllerService = ({
       renderCell: item => (
         <ValueRender
           item={item}
-          handleAddValueModal={handleAddValueModal}
           setSelectedPropertyToEdit={setSelectedPropertyToEdit}
         />
       ),
@@ -95,7 +102,11 @@ export const ConfigControllerService = ({
           )}
           <div
             style={{ cursor: 'pointer' }}
-            onClick={() => handleAddValueModal(item)}
+            onClick={() =>
+              !item?.isSelective
+                ? handleAddValueModal(item)
+                : handleOpenPropertyDropDownModal(item)
+            }
           >
             {' '}
             <PencilIcon height="28" />

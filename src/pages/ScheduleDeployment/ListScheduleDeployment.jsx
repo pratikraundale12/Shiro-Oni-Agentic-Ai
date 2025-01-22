@@ -494,7 +494,7 @@ export const ListScheduleDeployment = () => {
   return (
     <>
       <ModalWithIcon
-        title={'Disapprove Schedule Deployment'}
+        title={'Disapprove Deployment Schedule'}
         primaryButtonText={'Stop'}
         secondaryButtonText="Cancel"
         icon={<DeleteDustbinIcon />}
@@ -506,7 +506,7 @@ export const ListScheduleDeployment = () => {
         onSubmit={handleCancelClick}
       />
       <ModalWithIcon
-        title={'Schedule Deployment Confirmation'}
+        title={'Deployment Schedule Confirmation'}
         primaryButtonText={'Confirm'}
         secondaryButtonText="Cancel"
         icon={<ConfirmScheduleDeploymentIcon />}
@@ -525,7 +525,7 @@ export const ListScheduleDeployment = () => {
       <TokenScheduleDeploymentModal />
       <Grid
         module="scheduler"
-        title="Deployment List"
+        title="Deployment Schedule List"
         columns={COLUMNS}
         sortFns={sortFns}
         statusOptions={STATUS_OPTIONS}

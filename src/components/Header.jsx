@@ -14,6 +14,7 @@ import {
   LICENSE_DATE_ISO_FORMAT,
   LICENSE_EXPIRE_PROMPT_DAYS,
   LICENSE_TYPE,
+  SIDE_MENUS_DISPLAY,
 } from '../constants';
 import { history } from '../helpers/history';
 import { AddUserModal } from '../pages/Users/AddUserModal';
@@ -367,14 +368,18 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     history.push(`/${path}`);
   };
 
+  const displayTitle = routeVal => {
+    let resultant = SIDE_MENUS_DISPLAY.find(ele => ele.path === routeVal);
+    return resultant.label;
+    // route?.replace(/-/g, ' ')
+  };
+
   return (
     <>
       <Container>
         <Title isOpenSidebar={isOpenSidebar}>
           {isLoggedIn
-            ? route === 'ldap-configuration'
-              ? 'LDAP Configuration'
-              : route?.replace(/-/g, ' ')
+            ? displayTitle(route)
             : currentRoute?.split('/')?.[2].replace(/-/g, ' ')}
         </Title>
 
