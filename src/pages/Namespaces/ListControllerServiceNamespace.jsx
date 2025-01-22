@@ -194,6 +194,8 @@ export const ListControllerService = () => {
         version: selectedItemFromList?.version,
         id: selectedItemFromList?.id,
         isFromPgDetails: true,
+        referencingComponents:
+          selectedItemFromList?.referencingComponents || {},
       })
     );
     // setTimeout(() => {
