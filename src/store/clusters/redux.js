@@ -14,6 +14,9 @@ export const ClustersActions = {
   addEditClusterData: createAction(`${prefix}addEditClusterData`),
   setClusterFormData: createAction(`${prefix}setClusterFormData`),
   getClusterToken: createAction(`${prefix}getClusterToken`),
+  setIsclusterHardDeleteModalOpen: createAction(
+    `${prefix}setIsclusterHardDeleteModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -24,6 +27,7 @@ export const CLUSTERS_INITIAL_STATE = {
   clusterList: [],
   addEditClusterData: {},
   clusterFormDataResponse: {},
+  isclusterHardDeleteModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -34,6 +38,8 @@ export const ClustersSelectors = {
   getAllClustersList: state => state.clusters.clusterList,
   getAddEditClusterData: state => state.clusters.addEditClusterData,
   getClusterFormData: state => state.clusters.clusterFormDataResponse,
+  getIsclusterHardDeleteModalOpen: state =>
+    state.clusters.isclusterHardDeleteModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -86,6 +92,12 @@ const setClusterFormData = (state, { payload }) => {
   };
 };
 
+const setIsclusterHardDeleteModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isclusterHardDeleteModalOpen: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -102,6 +114,10 @@ export const clustersReducer = createReducer(
       )
       .addCase(ClustersActions.fetchClustersSuccess, fetchClustersSuccess)
       .addCase(ClustersActions.addEditClusterData, addEditClusterData)
-      .addCase(ClustersActions.setClusterFormData, setClusterFormData);
+      .addCase(ClustersActions.setClusterFormData, setClusterFormData)
+      .addCase(
+        ClustersActions.setIsclusterHardDeleteModalOpen,
+        setIsclusterHardDeleteModalOpen
+      );
   }
 );

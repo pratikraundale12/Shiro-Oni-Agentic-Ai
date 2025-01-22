@@ -69,4 +69,5 @@ export const CLUSTER_CONSTANTS = {
   CLUSTER_TESTED_SUCCES: 'Your cluster test was successful.',
   REGISTRY_TESTED_SUCCESS_PROMPT:
     'Your registry test was successful. Continue with the next steps..',
+  HARD_DELETE_CLUSTER_WARNING: 'Are you sure you want to delete this cluster?',
 };
