@@ -1295,6 +1295,8 @@ const ControllerServiceTab = ({
             : 'DISABLED',
         version: currentVersion?.version,
         id: selectedItemFromList?.id || selectedItemFromList?.updatedValue,
+        referencingComponents:
+        selectedItemFromList?.referencingComponents || {},
       })
     );
     setIsEnableModalOpen(false);

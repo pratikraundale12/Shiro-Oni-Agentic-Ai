@@ -201,6 +201,8 @@ export const ListControllerService = () => {
             : 'DISABLED',
         version: selectedItemFromList?.version,
         id: selectedItemFromList?.id,
+        referencingComponents:
+          selectedItemFromList?.referencingComponents || {},
       })
     );
 
