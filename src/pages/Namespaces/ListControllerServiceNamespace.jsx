@@ -165,6 +165,7 @@ export const ListControllerService = () => {
       module?.name?.toLowerCase().includes(search.toLowerCase()) ||
       module?.type?.toLowerCase().includes(search.toLowerCase())
   );
+  const [isResetNotRequired, setIsResetNotRequired] = useState(false);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -203,6 +204,7 @@ export const ListControllerService = () => {
   };
 
   const handleDeleteControllerServiceClick = () => {
+    setIsResetNotRequired(true);
     dispatch(
       NamespacesActions.deleteControllerService({
         version: selectedItemFromList?.version,
@@ -210,11 +212,11 @@ export const ListControllerService = () => {
         isFromPgDetails: true,
       })
     );
-
     setTimeout(() => {
       dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
     }, 500);
     setIsDeleteModalOpen(false);
+    setIsResetNotRequired(true);
   };
 
   const controllerPermissions = useSelector(
@@ -445,6 +447,7 @@ export const ListControllerService = () => {
               value={search}
               placeholder="Search Controller Service by Name"
               onChange={e => {
+                setIsResetNotRequired(false);
                 const value = e.target.value;
                 if (value.length <= 100) {
                   setSearch(value);
@@ -458,6 +461,7 @@ export const ListControllerService = () => {
             controllerModule={true}
             loading={loading}
             showPagination={true}
+            isResetNotRequired={isResetNotRequired}
           />
         </Collapsible>
 

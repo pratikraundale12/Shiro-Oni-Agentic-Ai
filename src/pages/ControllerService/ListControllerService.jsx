@@ -207,6 +207,7 @@ export const ListControllerService = () => {
     setIsEnableModalOpen(false);
   };
   const handleDeleteControllerServiceClick = () => {
+    setIsResetNotRequired(true);
     dispatch(
       NamespacesActions.deleteControllerService({
         version: selectedItemFromList?.version,
