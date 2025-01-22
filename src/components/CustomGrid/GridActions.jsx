@@ -169,6 +169,7 @@ const RefreshIocn = styled.div`
 `;
 
 const SpanEle = styled.span`
+  width: 100%;
   cursor: pointer;
   color: #ff7a00;
   &:hover {
@@ -198,6 +199,7 @@ export const GridActions = ({
   control,
   setSelectedRole,
   selectedRole,
+  setValue,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -446,7 +448,16 @@ export const GridActions = ({
 
   const handleClearFilter = () => {
     if (module === 'scheduler') {
+      setValue('is_active', null);
+      dispatch(SchedularActions.setScheduleSelectRange([]));
       dispatch(GridSagsActions.fetchGrid({ module, clusterId, params: {} }));
+    } else if (module === 'activityHistory') {
+      setValue('is_active', null);
+      setValue('entityName', null);
+      setValue('activityEvent', null);
+    } else if (module === 'users') {
+      setValue('is_active', null);
+      setSelectedRole(null);
     }
   };
 
@@ -519,6 +530,7 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
+
           {!isEmpty(statusOptions) && (
             <DropdownContainer>
               <StyledSelectField
@@ -532,6 +544,9 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
+          {module === 'users' && (
+            <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
+          )}
           {location.pathname.includes('permission-matrix') && (
             <StyledSelectField
               size="sm"
@@ -542,37 +557,38 @@ export const GridActions = ({
               onChange={option => dispatch(RolesActions.setAccessType(option))}
             />
           )}
-          {location.pathname.includes('activity-history') && (
-            <StyledSelectField
-              size="sm"
-              name="activityEvent"
-              control={control}
-              title={KDFM.SELECT_EVENT}
-              className="entity-dropdown"
-              placeholder={KDFM.SELECT_EVENT}
-              options={ACTIVITY_EVENTS}
-              // defaultValue={selectedEvent}
-              backgroundColor={theme.colors.lightGrey}
-              onChange={option =>
-                dispatch(ActivityHistoryActions.setSelectedEvent(option))
-              }
-            />
-          )}
-          {location.pathname.includes('activity-history') && (
-            <StyledSelectField
-              size="sm"
-              name="entityName"
-              control={control}
-              className="entity-dropdown"
-              title={KDFM.SELECT_ENTITY}
-              placeholder={KDFM.SELECT_ENTITY}
-              options={MODULE_LIST_MAP}
-              // defaultValue={selectedEntity}
-              backgroundColor={theme.colors.lightGrey}
-              onChange={option =>
-                dispatch(ActivityHistoryActions.setSelectedEntity(option))
-              }
-            />
+          {module === 'activityHistory' && (
+            <>
+              <StyledSelectField
+                size="sm"
+                name="activityEvent"
+                control={control}
+                title={KDFM.SELECT_EVENT}
+                className="entity-dropdown"
+                placeholder={KDFM.SELECT_EVENT}
+                options={ACTIVITY_EVENTS}
+                // defaultValue={selectedEvent}
+                backgroundColor={theme.colors.lightGrey}
+                onChange={option =>
+                  dispatch(ActivityHistoryActions.setSelectedEvent(option))
+                }
+              />
+              <StyledSelectField
+                size="sm"
+                name="entityName"
+                control={control}
+                className="entity-dropdown"
+                title={KDFM.SELECT_ENTITY}
+                placeholder={KDFM.SELECT_ENTITY}
+                options={MODULE_LIST_MAP}
+                // defaultValue={selectedEntity}
+                backgroundColor={theme.colors.lightGrey}
+                onChange={option =>
+                  dispatch(ActivityHistoryActions.setSelectedEntity(option))
+                }
+              />
+              <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
+            </>
           )}
           {!isEmpty(buttonText) &&
             userPermissions.includes(getButtonPermissions(module)) && (
@@ -697,4 +713,5 @@ GridActions.propTypes = {
   control: PropTypes.object.isRequired,
   setSelectedRole: PropTypes.func.isRequired,
   selectedRole: PropTypes.string,
+  setValue: PropTypes.func,
 };

@@ -148,7 +148,7 @@ export const Grid = ({
   );
   const [selectedRole, setSelectedRole] = useState(null);
 
-  const { watch, control } = useForm();
+  const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
   const {
     state: {
@@ -356,6 +356,7 @@ export const Grid = ({
         control={control}
         setSelectedRole={setSelectedRole}
         selectedRole={selectedRole}
+        setValue={setValue}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>
