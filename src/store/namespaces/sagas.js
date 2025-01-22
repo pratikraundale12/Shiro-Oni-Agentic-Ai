@@ -490,7 +490,7 @@ export function* getStatusAndDeleteParameterContext(
 
 export function* fetchVariableList(
   api,
-  { initialCall = true, showError = false }
+  { initialCall = true, showError = false, payload }
 ) {
   yield put(NamespacesActions.setVariableListLoading(true));
   const deployOrUpgradeDetails = yield select(
@@ -515,7 +515,9 @@ export function* fetchVariableList(
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: deployOrUpgradeDetails?.id || singleNamespaceData?.id,
+        namespaceId: payload
+          ? payload
+          : deployOrUpgradeDetails?.id || singleNamespaceData?.id,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
@@ -531,9 +533,6 @@ export function* fetchVariableList(
 
 export function* addVariableServices(api, { payload }) {
   yield put(NamespacesActions.setVariableListLoading(true));
-  const deployOrUpgradeDetails = yield select(
-    NamespacesSelectors.getRegistryDeployResponseData
-  );
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -545,8 +544,8 @@ export function* addVariableServices(api, { payload }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
-  const singleNamespaceData = yield select(
-    NamespacesSelectors.getSingleNamespaceData
+  const variableContextItem = yield select(
+    NamespacesSelectors.getVariableContextItem
   );
   const variableList = yield select(NamespacesSelectors.getVariableList);
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
@@ -558,7 +557,7 @@ export function* addVariableServices(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: deployOrUpgradeDetails?.id || singleNamespaceData?.id,
+        namespaceId: variableContextItem?.variable?.processGroupId,
         version: variableList.version,
         variables: variables,
         sourceNamespaceName: selectedNamespace?.label,
@@ -576,9 +575,6 @@ export function* addVariableServices(api, { payload }) {
   }
 }
 export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
-  const deployOrUpgradeDetails = yield select(
-    NamespacesSelectors.getRegistryDeployResponseData
-  );
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -589,8 +585,8 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
   const selectedNamespace = yield select(
     NamespacesSelectors.getSelectedNamespace
   );
-  const singleNamespaceData = yield select(
-    NamespacesSelectors.getSingleNamespaceData
+  const variableContextItem = yield select(
+    NamespacesSelectors.getVariableContextItem
   );
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
@@ -603,7 +599,7 @@ export function* getStatusAndDeleteVariables(api, { method, additionalData }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        namespaceId: deployOrUpgradeDetails?.id || singleNamespaceData?.id,
+        namespaceId: variableContextItem?.variable?.processGroupId,
         requestId: additionalData?.requestId,
         sourceNamespaceName: selectedNamespace?.label,
       },

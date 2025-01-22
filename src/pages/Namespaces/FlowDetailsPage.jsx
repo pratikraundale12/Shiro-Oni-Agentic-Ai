@@ -429,6 +429,14 @@ const FlowDetailsPage = () => {
 
   const isButtonDisabled = versionListData?.versionList?.length === 1;
 
+  useEffect(() => {
+    if (versionListData?.versionList?.length === 1) {
+      toast.info(
+        "This process group can't be upgraded as there is only one version available"
+      );
+    }
+  }, [versionListData?.versionList]);
+
   return (
     <div>
       <FullPageLoader loading={loadingregistry || loadingVersion} />
