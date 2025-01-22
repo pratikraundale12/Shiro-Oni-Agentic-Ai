@@ -557,7 +557,6 @@ const ControllerServiceTab = ({
           state === 'VALIDATING' ||
           state === 'DISABLING' ||
           (state === 'DISABLED' && stateItem?.validationStatus === 'INVALID');
-          console.log('tipcontent-------', tooltipContent, isBtnDisabled, isButtonVisible);
         return (
           <div>
             {/* Settings Button */}
