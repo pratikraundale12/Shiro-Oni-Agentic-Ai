@@ -223,10 +223,20 @@ export const ListScheduleDeployment = () => {
         {' '}
         <IconButton
           onClick={() => getDefSchedule(item)}
-          data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
+          data-tooltip-id={`${`tooltip-group-diff-schedule`}`}
         >
           <DiffIcon />
         </IconButton>
+        <ReactTooltip
+          id={`tooltip-group-diff-schedule`}
+          place="left"
+          content={'Properties Diff'}
+          style={{
+            width: '140px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+          }}
+        />
         {currentUserData?.role === 'superadmin' && (
           <>
             {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
@@ -374,7 +384,7 @@ export const ListScheduleDeployment = () => {
     {
       label: 'Post Deploy State',
       renderCell: item => (
-        <TextRender text={item?.deployment_status || 'STOPPED'} />
+        <TextRender text={item?.deployment_status || 'N/A'} />
       ),
       width: '10%',
     },

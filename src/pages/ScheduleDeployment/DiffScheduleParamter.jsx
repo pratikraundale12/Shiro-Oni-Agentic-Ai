@@ -111,15 +111,15 @@ const DiffScheduleParameter = () => {
                   <div className="d-flex">
                     <TileHeader className="col-3">Description</TileHeader>
                     <TileItem className="col-5">
-                      <span
+                      <div
                         style={{
                           backgroundColor: '#E9ECF1',
                           borderRadius: '12px',
                         }}
-                        className="p-2"
+                        className="p-2 me-2"
                       >
                         {item?.new_value?.description || 'N/A'}
-                      </span>
+                      </div>
                     </TileItem>
                     <TileItem className="col-4">
                       {item?.old_value?.description || 'N/A'}

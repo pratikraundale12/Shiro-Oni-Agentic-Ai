@@ -427,16 +427,11 @@ const Summary = () => {
   const controllerServiceReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployControllerService
   );
-  console.log(
-    controllerServiceReduxData.localServicesData,
-    'controllerServiceReduxData   '
-  );
   const filteredCSArrayDiff = CSorignalData.filter(item1 =>
     controllerServiceReduxData?.localServicesData?.some(
       item2 => item1.identifier === item2.identifier
     )
   );
-  console.log(filteredCSArrayDiff, 'filteredCSArrayDiff');
   const parameterReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployParameterContext
   );
