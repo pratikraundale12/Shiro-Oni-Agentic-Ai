@@ -32,7 +32,6 @@ import {
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
-import { timeFormatDefaultLocale } from 'd3';
 
 const List = styled.div`
   position: absolute;
@@ -168,7 +167,6 @@ export const ListClusters = () => {
                         <span>{KDFM.EDIT}</span>
                       </Item>
                     )}
-
                     <>
                       {item.status !== CLUSTER_STATUS.DISCONNECTED && (
                         <Item onClick={() => handleClick('view')}>
@@ -176,7 +174,7 @@ export const ListClusters = () => {
                           <span>{KDFM.VIEW}</span>
                         </Item>
                       )}
-                      {item.delete_cluster && (
+                      {item.deactivate_cluster && (
                         <Item onClick={() => handleClick('delete', item.id)}>
                           <DeleteSmallIcon width={18} height={18} />
                           <span>{KDFM.DEACTIVATE}</span>
@@ -188,16 +186,20 @@ export const ListClusters = () => {
                   <>
                     {item.status === CLUSTER_STATUS.DISCONNECTED ? null : (
                       <>
-                        <Item
-                          onClick={() => handleClick('deleteHard', item.id)}
-                        >
-                          <DeleteSmallIcon width={18} height={18} />
-                          <span> Delete</span>
-                        </Item>
-                        <Item onClick={() => handleClick('active', item.id)}>
-                          <ActiveIcon />
-                          <span>{KDFM.ACTIVATE}</span>
-                        </Item>
+                        {item.delete_cluster && (
+                          <Item
+                            onClick={() => handleClick('deleteHard', item.id)}
+                          >
+                            <DeleteSmallIcon width={18} height={18} />
+                            <span> Delete</span>
+                          </Item>
+                        )}
+                        {item?.deactivate_cluster && (
+                          <Item onClick={() => handleClick('active', item.id)}>
+                            <ActiveIcon />
+                            <span>{KDFM.ACTIVATE}</span>
+                          </Item>
+                        )}
                       </>
                     )}
                   </>
@@ -215,12 +217,13 @@ export const ListClusters = () => {
   };
   const handleDeleteHard = async () => {
     const response = await deleteCluster(deleteHardId);
-    if (response) {
-      toast.success('The cluster is now activated successfully.');
-      dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
+    if (response?.status == 200) {
+      toast.success(response?.data?.message);
       dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+    } else {
+      toast.error(response?.message);
     }
-    console.log(response, '>>>>>>>>>>>>>>>>>>>>>');
+    dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
   };
 
   const updateClusterStatus = async id => {
