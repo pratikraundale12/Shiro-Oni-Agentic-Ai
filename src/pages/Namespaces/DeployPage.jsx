@@ -318,10 +318,32 @@ function DeployPage() {
   const handleRowClick = item => {
     setSelectedVersion(item.version);
     dispatch(NamespacesActions.setVersionSelect(item));
+    if (item?.version !== selectedVersion) {
+      dispatch(NamespacesActions.setCsLocalData({}));
+      dispatch(NamespacesActions.setIsLocalCsConfigured(false));
+      dispatch(NamespacesActions.setPcLocalData({}));
+      dispatch(NamespacesActions.setVariableLocalData([]));
+      dispatch(NamespacesActions.setIsLocalPcUpdated(false));
+      dispatch(NamespacesActions.setIsLocalVariableUpdated(false));
+      dispatch(NamespacesActions.setRegistryDeployControllerService({}));
+      dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
+      dispatch(NamespacesActions.setRegistryDeployVariable([]));
+    }
   };
 
   const handleRadioChange = item => {
     setSelectedVersion(item.version);
+    if (item?.version !== selectedVersion) {
+      dispatch(NamespacesActions.setCsLocalData({}));
+      dispatch(NamespacesActions.setIsLocalCsConfigured(false));
+      dispatch(NamespacesActions.setPcLocalData({}));
+      dispatch(NamespacesActions.setVariableLocalData([]));
+      dispatch(NamespacesActions.setIsLocalPcUpdated(false));
+      dispatch(NamespacesActions.setIsLocalVariableUpdated(false));
+      dispatch(NamespacesActions.setRegistryDeployControllerService({}));
+      dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
+      dispatch(NamespacesActions.setRegistryDeployVariable([]));
+    }
   };
 
   const selectedValuebucketId = watch('bucketId');

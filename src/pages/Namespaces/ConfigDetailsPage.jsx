@@ -122,48 +122,26 @@ const ConfigDetailsPage = () => {
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
-  const registryDetailsData = useSelector(
-    NamespacesSelectors.getRegistryAllDetails
-  );
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
   const scheduleUpgradeFromList = useSelector(
     SchedularSelectors.getScheduleFromList
   );
-
-  const [pcData, setPcData] = useState(
-    registryDetailsData?.parameterContextData
-  );
   const controlSelectedStored = useSelector(
     NamespacesSelectors.getflowControlStateAtScheduleDeploy
   );
-  const [pcPayload, setPcPayload] = useState({});
-  const [variablePayload, setVariablePayload] = useState([]);
   const [controllerServicePayload, setControllerServicePayload] = useState({});
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
   const [scheduleDeployTime, setScheduleDeployTime] = useState(null);
   const [activeButton, setActiveButton] = useState(controlSelectedStored);
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
-  const [variableData, setVariableData] = useState(
-    registryDetailsData?.variablesData
-  );
-  const [csData, setcsData] = useState(
-    registryDetailsData?.controllerServicesData
-  );
   const [scheduleErrors, setScheduleErrors] = useState({});
-
   useEffect(() => {
     if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
       setActiveTab(KDFM.SCHEDULE_DETAILS);
     }
   }, [scheduleDeploymentFlow, scheduleUpgradeFromList]);
-
-  useEffect(() => {
-    setPcData(registryDetailsData?.parameterContextData);
-    setVariableData(registryDetailsData?.variablesData);
-    setcsData(registryDetailsData?.controllerServicesData);
-  }, [registryDetailsData]);
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
   const selectedNameSpace = useSelector(
@@ -202,13 +180,6 @@ const ConfigDetailsPage = () => {
       });
       setActiveTab(KDFM.SCHEDULE_DETAILS);
     } else {
-      dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
-      dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
-      dispatch(
-        NamespacesActions.setRegistryDeployControllerService(
-          controllerServicePayload
-        )
-      );
       dispatch(NamespacesActions.setScheduleTimeByRegistry(scheduleDeployTime));
       history.push('/process-group/summary');
     }
@@ -217,30 +188,14 @@ const ConfigDetailsPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
-        return (
-          <ParameterContextTab
-            pcData={pcData}
-            setPcData={setPcData}
-            pcPayload={pcPayload}
-            setPcPayload={setPcPayload}
-          />
-        );
+        return <ParameterContextTab />;
       case KDFM.VARIABLES:
-        return (
-          <VariableTab
-            variableData={variableData}
-            setVariableData={setVariableData}
-            variablePayload={variablePayload}
-            setVariablePayload={setVariablePayload}
-          />
-        );
+        return <VariableTab />;
       case KDFM.CONTROLLER_SERVICE:
         return (
           <ControllerServiceTab
             controllerServicePayload={controllerServicePayload}
             setControllerServicePayload={setControllerServicePayload}
-            setCsFromParent={setcsData}
-            csFromParent={csData}
           />
         );
       case KDFM.SCHEDULE_DETAILS:
@@ -260,19 +215,19 @@ const ConfigDetailsPage = () => {
   };
   // ScheduleDeploymentTab
   const handleSetTab = tab => {
-    if (tab !== 'Parameter Context') {
-      dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
-    }
-    if (tab !== 'Variables') {
-      dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
-    }
-    if (tab !== 'Controller Service') {
-      dispatch(
-        NamespacesActions.setRegistryDeployControllerService(
-          controllerServicePayload
-        )
-      );
-    }
+    // if (tab !== 'Parameter Context') {
+    //   dispatch(NamespacesActions.setRegistryDeployParameterContext(pcPayload));
+    // }
+    // if (tab !== 'Variables') {
+    //   dispatch(NamespacesActions.setRegistryDeployVariable(variablePayload));
+    // }
+    // if (tab !== 'Controller Service') {
+    //   dispatch(
+    //     NamespacesActions.setRegistryDeployControllerService(
+    //       controllerServicePayload
+    //     )
+    //   );
+    // }
 
     setActiveTab(tab);
   };

@@ -293,7 +293,6 @@ const FlowDetailsPage = () => {
     yStateCoordinate,
     theme,
   ]);
-
   const enhancedDataForUpgrade = useMemo(() => {
     return updatedDataForUpgrade.map((d, index) => ({
       ...d,
@@ -359,6 +358,17 @@ const FlowDetailsPage = () => {
   const handleRowClick = item => {
     setSelectedVersion(item?.version);
     dispatch(NamespacesActions.setVersionSelect({ version: item?.version }));
+    if (item?.version !== selectedVersion) {
+      dispatch(NamespacesActions.setCsLocalData({}));
+      dispatch(NamespacesActions.setIsLocalCsConfigured(false));
+      dispatch(NamespacesActions.setPcLocalData({}));
+      dispatch(NamespacesActions.setVariableLocalData([]));
+      dispatch(NamespacesActions.setIsLocalPcUpdated(false));
+      dispatch(NamespacesActions.setIsLocalVariableUpdated(false));
+      dispatch(NamespacesActions.setRegistryDeployControllerService({}));
+      dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
+      dispatch(NamespacesActions.setRegistryDeployVariable([]));
+    }
   };
 
   const handleBackClick = () => {
@@ -371,7 +381,6 @@ const FlowDetailsPage = () => {
   };
 
   const handleXCoordinateChangeInput = e => {
-    console.log('e--------', e.target.value, typeof e.target.value);
     if (e.target.value && e.target.value !== '-') {
       setXStateCoordiate(Number(e.target.value));
       dispatch(NamespacesActions.setRegistryFlowXCord(Number(e.target.value)));

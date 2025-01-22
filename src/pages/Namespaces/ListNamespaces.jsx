@@ -103,6 +103,15 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setDeployFormData({}));
     dispatch(NamespacesActions.setVersionListData({}));
     dispatch(NamespacesActions.setDeployedModal(false));
+    dispatch(NamespacesActions.setCsLocalData({}));
+    dispatch(NamespacesActions.setIsLocalCsConfigured(false));
+    dispatch(NamespacesActions.setPcLocalData({}));
+    dispatch(NamespacesActions.setVariableLocalData([]));
+    dispatch(NamespacesActions.setIsLocalPcUpdated(false));
+    dispatch(NamespacesActions.setIsLocalVariableUpdated(false));
+    dispatch(NamespacesActions.setRegistryDeployControllerService({}));
+    dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
+    dispatch(NamespacesActions.setRegistryDeployVariable([]));
   }, []);
 
   const COLUMNS = [
