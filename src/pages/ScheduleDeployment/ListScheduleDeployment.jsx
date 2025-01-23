@@ -214,6 +214,7 @@ export const ListScheduleDeployment = () => {
   };
   //
   const getDefSchedule = async item => {
+    dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setIsDiffModalOpen(true));
     dispatch(SchedularActions.fetchDiffScheduleData(item?.id));
   };
@@ -230,9 +231,9 @@ export const ListScheduleDeployment = () => {
         <ReactTooltip
           id={`tooltip-group-diff-schedule`}
           place="left"
-          content={'Properties Diff'}
+          content={'View Changes'}
           style={{
-            width: '140px',
+            width: '125px',
             whiteSpace: 'normal',
             wordWrap: 'break-word',
           }}
