@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { ClusterIcon, UserIcon } from '../assets';
 import { CLUSTERS_TOKEN } from '../constants';
@@ -20,7 +21,6 @@ import {
 } from '../store';
 import { getClusterToken } from '../store/apis';
 import { FullPageLoader } from './FullPageLoader';
-import { toast } from 'react-toastify';
 
 const clusterSchema = yup.object().shape({
   cluster_id: yup.string().required('Cluster is required'),
@@ -132,6 +132,7 @@ export const ClusterLoginModal = () => {
         reset(DEFAULT_VALUES);
         dispatch(GridActions.fetchGrid({ module: 'clusters' }));
         if (window.location.pathname.includes('/process-group')) {
+          window.location.reload();
           history.push('/process-group');
         }
       } else {
@@ -163,6 +164,7 @@ export const ClusterLoginModal = () => {
   }, [dispatch]);
   const onSwitchCluster = () => {
     if (window.location.pathname.includes('/process-group')) {
+      window.location.reload();
       history.push('/process-group');
     }
 
