@@ -112,6 +112,7 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setRegistryDeployControllerService({}));
     dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
     dispatch(NamespacesActions.setRegistryDeployVariable([]));
+    dispatch(NamespacesActions.setVersionListReduxData([]));
   }, []);
 
   const COLUMNS = [

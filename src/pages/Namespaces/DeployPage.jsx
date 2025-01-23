@@ -328,6 +328,7 @@ function DeployPage() {
       dispatch(NamespacesActions.setRegistryDeployControllerService({}));
       dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
       dispatch(NamespacesActions.setRegistryDeployVariable([]));
+      dispatch(NamespacesActions.setVersionListReduxData([]));
     }
   };
 
@@ -343,6 +344,7 @@ function DeployPage() {
       dispatch(NamespacesActions.setRegistryDeployControllerService({}));
       dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
       dispatch(NamespacesActions.setRegistryDeployVariable([]));
+      dispatch(NamespacesActions.setVersionListReduxData([]));
     }
   };
 

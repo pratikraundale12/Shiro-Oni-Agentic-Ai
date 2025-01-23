@@ -368,6 +368,7 @@ const FlowDetailsPage = () => {
       dispatch(NamespacesActions.setRegistryDeployControllerService({}));
       dispatch(NamespacesActions.setRegistryDeployParameterContext([]));
       dispatch(NamespacesActions.setRegistryDeployVariable([]));
+      dispatch(NamespacesActions.setVersionListReduxData([]));
     }
   };
 
