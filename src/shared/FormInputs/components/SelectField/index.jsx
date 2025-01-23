@@ -129,23 +129,36 @@ const SelectField = ({
   optionEntity = '',
   showCircleIcon = false,
   defaultValue = null,
+  menuHeight = '150px',
   ...props
 }) => {
   const animatedComponents = makeAnimated();
   const error = hasError(errors, name);
 
+  const normalizeOptions = options => {
+    return options.map(option => {
+      if (option.label && option.value) {
+        return option;
+      } else {
+        return {
+          label: option.name || option.type || 'Unknown',
+          value: option.id || option.value || 'Unknown',
+          ...option,
+        };
+      }
+    });
+  };
+
   const sortOptionsAlphabetically = options => {
-    return [...options].sort((a, b) => {
+    const normalizedOptions = normalizeOptions(options);
+    return [...normalizedOptions].sort((a, b) => {
       if (a.label === 'All') return -1;
       if (b.label === 'All') return 1;
-      return a?.name
-        ? a?.name?.toLowerCase().localeCompare(b?.label?.toLowerCase())
-        : a?.label?.toLowerCase().localeCompare(b?.label?.toLowerCase());
+      return a?.label?.toLowerCase().localeCompare(b?.label?.toLowerCase());
     });
   };
 
   const sortedOptions = sortOptionsAlphabetically(options);
-
   const getBorderColor = ({ isFocused }) => {
     if (isFocused && !error) return theme.colors.darker;
     if (error) return theme.colors.error;
@@ -203,6 +216,7 @@ const SelectField = ({
     menuList: styles => ({
       ...styles,
       padding: 0,
+      maxHeight: menuHeight,
     }),
     placeholder: styles => ({
       ...styles,
@@ -325,10 +339,11 @@ const SelectField = ({
               value={
                 isMulti
                   ? sortedOptions.filter(option =>
-                      value?.includes(option.value)
+                      value?.includes(option.value ?? option?.id)
                     )
-                  : sortedOptions.find(option => option.value === value) ||
-                    defaultValue
+                  : sortedOptions.find(
+                      option => option.value === value || option?.id === value
+                    ) || defaultValue
               }
               placeholder={placeholder}
               theme={theme.reactSelecttheme}
@@ -388,6 +403,7 @@ SelectField.propTypes = {
   ldap: PropTypes.bool,
   optionEntity: PropTypes.string,
   handleCreateOption: PropTypes.func,
+  menuHeight: PropTypes.string,
 };
 
 export default SelectField;

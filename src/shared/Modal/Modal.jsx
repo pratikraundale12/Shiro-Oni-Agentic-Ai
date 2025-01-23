@@ -33,7 +33,7 @@ const Header = styled.div`
 
 const Body = styled.div`
   flex: 1;
-  overflow-y: auto;
+  overflow-y: ${({ noScroll }) => (noScroll ? 'unset' : 'auto')};
   padding: ${({ noPadding }) =>
     noPadding ? '0' : '2.25rem 1.125rem 1.125rem'};
 `;
@@ -84,6 +84,7 @@ export const Modal = ({
   tertiaryButtonLoading,
   thirdVarint = false,
   noPadding = false,
+  noScroll = false
 }) => {
   const styleObject = {
     overlay: {
@@ -143,7 +144,7 @@ export const Modal = ({
             <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
           )}
         </Header>
-        <Body noPadding={noPadding}>{children}</Body>
+        <Body noPadding={noPadding} noScroll={noScroll}>{children}</Body>
         {(primaryButtonText || secondaryButtonText || tertiaryButton) && (
           <Footer
             footerAlign={footerAlign}
@@ -213,4 +214,5 @@ Modal.propTypes = {
     tertiaryButtonLoading: PropTypes.bool,
   }),
   noPadding: PropTypes.bool,
+  noScroll: PropTypes.bool,
 };
