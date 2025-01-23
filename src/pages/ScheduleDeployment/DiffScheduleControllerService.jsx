@@ -63,11 +63,22 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
+const WarningSection = styled.div`
+  font-size: 16px;
+  color: ${props => props.theme.colors.primary};
+`;
 const DiffScheduleCS = () => {
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
+        {!isEmpty(scheduleDiffData?.diffControllerServices) && (
+          <WarningSection className="mt-2">
+            * External controller services changes take effect immediately when
+            changed, so the changes made are not listed here
+          </WarningSection>
+        )}
+
         {scheduleDiffData?.diffControllerServices?.map(element => (
           <div className="mt-4" key={element?.identifier}>
             <PgHead className="mb-2">{element?.name}</PgHead>

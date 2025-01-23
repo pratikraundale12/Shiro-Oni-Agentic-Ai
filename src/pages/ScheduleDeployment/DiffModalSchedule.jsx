@@ -46,6 +46,7 @@ export const DiffModalScheduleList = props => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
   const modalOpen = useSelector(SchedularSelectors.getIsDiffModalOpen);
+  const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -73,7 +74,7 @@ export const DiffModalScheduleList = props => {
     <div {...props}>
       <Modal
         size="lg"
-        title={'Schedule Deployment Comparison'}
+        title={`${selectedSchedule?.namespace_name} : Schedule Deployment Changes`}
         isOpen={modalOpen}
         onRequestClose={closeModal}
         primaryButtonText="Close"

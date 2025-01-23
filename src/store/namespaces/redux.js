@@ -202,6 +202,7 @@ export const NamespacesActions = {
   setIsLocalPcUpdated: createAction(`${prefix}setIsLocalPcUpdated`),
   setVariableLocalData: createAction(`${prefix}setVariableLocalData`),
   setIsLocalVariableUpdated: createAction(`${prefix}setIsLocalVariableUpdated`),
+  setVersionListReduxData: createAction(`${prefix}setVersionListReduxData`),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -302,6 +303,7 @@ export const NAMESPACES_INITIAL_STATE = {
   variableLocalData: [],
   isLocalPcUpdated: false,
   isLocalVariableUpdated: false,
+  versionListReduxData: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -405,6 +407,7 @@ export const NamespacesSelectors = {
   getIsLocalPcUpdated: state => state.namespaces.isLocalPcUpdated,
   getVariableLocalData: state => state.namespaces.variableLocalData,
   getIsLocalVariableUpdated: state => state.namespaces.isLocalVariableUpdated,
+  getVersionListReduxData: state => state.namespaces.versionListReduxData,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -940,6 +943,13 @@ const setIsLocalVariableUpdated = (state, { payload }) => {
     isLocalVariableUpdated: payload,
   };
 };
+
+const setVersionListReduxData = (state, { payload }) => {
+  return {
+    ...state,
+    versionListReduxData: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1148,6 +1158,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setIsLocalVariableUpdated,
         setIsLocalVariableUpdated
+      )
+      .addCase(
+        NamespacesActions.setVersionListReduxData,
+        setVersionListReduxData
       );
   }
 );

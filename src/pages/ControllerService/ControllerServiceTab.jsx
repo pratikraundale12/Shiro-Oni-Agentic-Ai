@@ -256,8 +256,20 @@ const ControllerServiceTab = ({
     isNewlyAddedExternalServiceResponse,
     setIsNewlyAddedExternalServiceResponse,
   ] = useState(false);
-
-  const [versionList, setVersionList] = useState([]);
+  const versionListRedux = useSelector(
+    NamespacesSelectors.getVersionListReduxData
+  );
+  const [versionList, setVersionList] = useState(versionListRedux);
+  useEffect(() => {
+    if (versionListRedux?.length) {
+      setVersionList(versionListRedux);
+    }
+  }, [versionListRedux]);
+  useEffect(() => {
+    if (versionList?.length) {
+      dispatch(NamespacesActions.setVersionListReduxData(versionList));
+    }
+  }, [versionList, stateChangeResponse, propertyUpdateResponse]);
 
   const [lsForUpgrade, setLsForUpgrade] = useState(
     registryDetailsData?.controllerServicesData?.localServices
@@ -481,7 +493,14 @@ const ControllerServiceTab = ({
       );
     } else {
       const version = selectedItemFromList?.version;
-      setVersionList(prev => addOrUpdateVersion(prev, version));
+      setVersionList(prev =>
+        addOrUpdateVersion(
+          prev,
+          prev?.find(item => item.uniqueId === uniqueId)
+            ? prev.find(item => item.uniqueId === uniqueId)?.version
+            : version
+        )
+      );
     }
   }, [
     propertyUpdateResponse,
@@ -1168,7 +1187,7 @@ const ControllerServiceTab = ({
   useEffect(() => {
     if (!isEmpty(stateChangeResponse)) {
       setExternalControllerServices(prevServices =>
-        prevServices.map(service => {
+        prevServices?.map(service => {
           if (
             service.updatedValue === stateChangeResponse?.data?.id &&
             service.updatedValue === selectedItemFromList?.updatedValue
@@ -1188,10 +1207,13 @@ const ControllerServiceTab = ({
   }, [stateChangeResponse, externalControllerServicesTableData]);
 
   useEffect(() => {
-    if (!isEmpty(stateChangeResponse)) {
+    if (!isEmpty(stateChangeResponse) && stateChangeResponse?.data !== null) {
       setExternalControllerServices(prevServices =>
         prevServices?.map(service => {
-          if (service?.updatedValue === selectedItemFromList?.id) {
+          if (
+            service?.updatedValue === selectedItemFromList?.id &&
+            service?.controllerService?.length
+          ) {
             return {
               ...service,
               controllerService: service?.controllerService?.map((cs, index) =>
@@ -1205,8 +1227,7 @@ const ControllerServiceTab = ({
                   : cs
               ),
             };
-          }
-          if (
+          } else if (
             service?.configured &&
             service?.configuredData?.id === selectedItemFromList?.id
           ) {
@@ -1296,7 +1317,7 @@ const ControllerServiceTab = ({
         version: currentVersion?.version,
         id: selectedItemFromList?.id || selectedItemFromList?.updatedValue,
         referencingComponents:
-        selectedItemFromList?.referencingComponents || {},
+          selectedItemFromList?.referencingComponents || {},
       })
     );
     setIsEnableModalOpen(false);
