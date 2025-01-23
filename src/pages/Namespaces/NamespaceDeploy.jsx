@@ -196,12 +196,12 @@ const NamespaceDeploy = ({
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
   useEffect(() => {
     if (isUpgrade) {
-      if (selectedNamespace?.invalidCount > 0) {
-        toast.warning(`Invalid components detected in your current deployment. Would you like
-        to proceed with deploying your configuration`);
+      if (deployOrUpgradeDetails?.invalidCount > 0) {
+        console.log('invalidCount', deployOrUpgradeDetails?.invalidCount);
+        toast.warning(deployOrUpgradeDetails?.invalid_message);
       }
     }
-  });
+  }, [deployOrUpgradeDetails?.invalidCount]);
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
 
