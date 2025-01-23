@@ -197,7 +197,6 @@ const NamespaceDeploy = ({
   useEffect(() => {
     if (isUpgrade) {
       if (deployOrUpgradeDetails?.invalidCount > 0) {
-        console.log('invalidCount', deployOrUpgradeDetails?.invalidCount);
         toast.warning(deployOrUpgradeDetails?.invalid_message);
       }
     }
