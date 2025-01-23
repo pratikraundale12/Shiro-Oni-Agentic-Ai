@@ -850,7 +850,7 @@ const Summary = () => {
       dispatch(NamespacesActions.upgradeCluster(payload));
     }
   };
-
+  console.log(timeDeployScheduleDeployment, 'timeDeployScheduleDeployment');
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,

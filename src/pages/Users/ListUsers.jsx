@@ -99,7 +99,23 @@ export const ListUsers = () => {
       ),
     },
     {
-      label: KDFM.STATUS,
+      label: (
+        <>
+          <button
+            onClick={() => toggleSorting('is_active')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.STATUS}{' '}
+            {sortingState === 'is_active' ? (
+              <SortUpIcon />
+            ) : sortingState === '-is_active' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
       width: '10%',
       renderCell: item => (
         <StatusRender status={item?.is_active ? 'Active' : 'Inactive'} />

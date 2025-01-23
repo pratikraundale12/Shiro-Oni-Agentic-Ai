@@ -242,6 +242,8 @@ export const GridActions = ({
 
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
+    setState(prev => ({ ...prev, search: null }));
+    inputRef.current.value = '';
     if (module === 'scheduler') {
       dispatch(
         GridSagsActions.fetchGrid({
@@ -464,9 +466,13 @@ export const GridActions = ({
       setValue('is_active', null);
       setValue('entityName', null);
       setValue('activityEvent', null);
+      setState(prev => ({ ...prev, search: null }));
+      inputRef.current.value = '';
     } else if (module === 'users') {
       setValue('is_active', null);
       setSelectedRole(null);
+      setState(prev => ({ ...prev, search: null }));
+      inputRef.current.value = '';
     }
   };
 

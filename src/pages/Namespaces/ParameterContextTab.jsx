@@ -127,10 +127,10 @@ const ParameterContextTab = () => {
         return (
           <EnhancedTextRender
             key={item?.value}
+            capitalizeText={false}
             text={
               (item.sensitive === true || item.sensitive === 'true') &&
-              !item?.value &&
-              !item.check
+              !item?.value
                 ? KDFM.NO_VALUE_SET
                 : item.sensitive === true || item.sensitive === 'true'
                   ? KDFM.SENSITIVE_VALUE_SET

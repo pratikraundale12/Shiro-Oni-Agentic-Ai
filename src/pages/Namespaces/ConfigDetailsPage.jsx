@@ -259,7 +259,31 @@ const ConfigDetailsPage = () => {
 
   const handleContinueClick = () => {
     setIsModalOpen(false);
-    history.push('/process-group/summary');
+    if (isScheduleTimeValid === false) {
+      setScheduleErrors({
+        scheduled_time: {
+          message: KDFM.INCORRECT_SCHEDULE_TIME,
+        },
+      });
+      setActiveTab(KDFM.SCHEDULE_DETAILS);
+    } else if (scheduleDeploymentFlow && !scheduleDeployTime) {
+      setScheduleErrors({
+        scheduled_time: {
+          message: KDFM.SELECT_SCHEDULE_TIME,
+        },
+      });
+      setActiveTab(KDFM.SCHEDULE_DETAILS);
+    } else if (scheduleUpgradeFromList && !scheduleDeployTime) {
+      setScheduleErrors({
+        scheduled_time: {
+          message: KDFM.SELECT_SCHEDULE_TIME,
+        },
+      });
+      setActiveTab(KDFM.SCHEDULE_DETAILS);
+    } else {
+      dispatch(NamespacesActions.setScheduleTimeByRegistry(scheduleDeployTime));
+      history.push('/process-group/summary');
+    }
   };
   return (
     <div>

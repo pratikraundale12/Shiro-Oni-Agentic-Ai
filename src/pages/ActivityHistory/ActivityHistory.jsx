@@ -30,12 +30,44 @@ export const ActvityHistory = () => {
   };
   const COLUMNS = [
     {
-      label: KDFM.EVENT,
+      label: (
+        <>
+          <button
+            onClick={() => toggleSorting('event')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.EVENT}{' '}
+            {sortingState === 'event' ? (
+              <SortUpIcon />
+            ) : sortingState === '-event' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
       width: '10%',
       renderCell: item => <TextRender text={item.event || KDFM.NA} />,
     },
     {
-      label: KDFM.ENTITY,
+      label: (
+        <>
+          <button
+            onClick={() => toggleSorting('entity')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.ENTITY}{' '}
+            {sortingState === 'entity' ? (
+              <SortUpIcon />
+            ) : sortingState === '-entity' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
       width: '10%',
       renderCell: item => (
         <TextRender
@@ -125,7 +157,23 @@ export const ActvityHistory = () => {
       renderCell: item => <TextRender text={item.version || KDFM.NA} />,
     },
     {
-      label: KDFM.STATUS,
+      label: (
+        <>
+          <button
+            onClick={() => toggleSorting('status')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.STATUS}{' '}
+            {sortingState === 'status' ? (
+              <SortUpIcon />
+            ) : sortingState === '-status' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
       width: '8%',
       renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
     },
@@ -138,7 +186,23 @@ export const ActvityHistory = () => {
       sort: { sortKey: 'timestamp' },
     },
     {
-      label: KDFM.CREATED_BY,
+      label: (
+        <>
+          <button
+            onClick={() => toggleSorting('created_by_name')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.CREATED_BY}{' '}
+            {sortingState === 'created_by_name' ? (
+              <SortUpIcon />
+            ) : sortingState === '-created_by_name' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
       width: '10%',
       renderCell: item => <TextRender text={item.created_by_name || KDFM.NA} />,
     },

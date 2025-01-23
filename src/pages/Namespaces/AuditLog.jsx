@@ -72,8 +72,8 @@ const AuditLog = () => {
     {
       label: (
         <>
-          {KDFM.CLUSTER}{' '}
           <button onClick={() => toggleSorting('cluster')}>
+            {KDFM.CLUSTER}{' '}
             {sortingState === 'cluster' ? (
               <SortUpIcon />
             ) : sortingState === '-cluster' ? (
