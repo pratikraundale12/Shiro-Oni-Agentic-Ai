@@ -425,11 +425,26 @@ const Summary = () => {
   const controllerServiceReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployControllerService
   );
+  const newProcessorEC =
+    registryAllDetails.controllerServicesData?.externalControllerServices?.filter(
+      element => element?.newProcessorAvailable
+    );
+  // controllerServiceReduxData.externalServicesData = newProcessorEC;
   const filteredCSArrayDiff = CSorignalData.filter(item1 =>
     controllerServiceReduxData?.localServicesData?.some(
       item2 => item1.identifier === item2.identifier
     )
   );
+
+  const newControllerServiceData = {
+    ...((!isEmpty(newProcessorEC) ||
+      controllerServiceReduxData.externalServicesData) && {
+      externalServicesData: !isEmpty(newProcessorEC)
+        ? newProcessorEC
+        : controllerServiceReduxData.externalServicesData,
+    }),
+    localServicesData: controllerServiceReduxData.localServicesData,
+  };
   const parameterReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployParameterContext
   );
@@ -673,8 +688,8 @@ const Summary = () => {
     if (!isEmpty(updatedData)) {
       payload.parameterData = updatedData;
     }
-    if (!isEmpty(controllerServiceReduxData)) {
-      payload.controllerServiceData = controllerServiceReduxData;
+    if (!isEmpty(newControllerServiceData)) {
+      payload.controllerServiceData = newControllerServiceData;
     }
 
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
@@ -707,8 +722,8 @@ const Summary = () => {
     if (!isEmpty(updatedData)) {
       payload.payload.parameterData = updatedData;
     }
-    if (!isEmpty(controllerServiceReduxData)) {
-      payload.payload.controllerServiceData = controllerServiceReduxData;
+    if (!isEmpty(newControllerServiceData)) {
+      payload.payload.controllerServiceData = newControllerServiceData;
     }
     dispatch(NamespacesActions.upgradeCluster(payload));
   };
@@ -749,8 +764,8 @@ const Summary = () => {
     if (!isEmpty(updatedData)) {
       payload.parameterData = updatedData;
     }
-    if (!isEmpty(controllerServiceReduxData)) {
-      payload.controllerServiceData = controllerServiceReduxData;
+    if (!isEmpty(newControllerServiceData)) {
+      payload.controllerServiceData = newControllerServiceData;
     }
     dispatch(NamespacesActions.fetchDuplicateScheduleData(payload));
   };
@@ -789,8 +804,8 @@ const Summary = () => {
       if (!isEmpty(updatedData)) {
         payload.parameterData = updatedData;
       }
-      if (!isEmpty(controllerServiceReduxData)) {
-        payload.controllerServiceData = controllerServiceReduxData;
+      if (!isEmpty(newControllerServiceData)) {
+        payload.controllerServiceData = newControllerServiceData;
       }
 
       dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
@@ -829,8 +844,8 @@ const Summary = () => {
       if (!isEmpty(updatedData)) {
         payload.payload.parameterData = updatedData;
       }
-      if (!isEmpty(controllerServiceReduxData)) {
-        payload.payload.controllerServiceData = controllerServiceReduxData;
+      if (!isEmpty(newControllerServiceData)) {
+        payload.payload.controllerServiceData = newControllerServiceData;
       }
       dispatch(NamespacesActions.upgradeCluster(payload));
     }
@@ -869,8 +884,8 @@ const Summary = () => {
     if (!isEmpty(updatedData)) {
       payload.payload.parameterData = updatedData;
     }
-    if (!isEmpty(controllerServiceReduxData)) {
-      payload.payload.controllerServiceData = controllerServiceReduxData;
+    if (!isEmpty(newControllerServiceData)) {
+      payload.payload.controllerServiceData = newControllerServiceData;
     }
     dispatch(NamespacesActions.fetchDuplicateScheduleData(payload));
     // dispatch(NamespacesActions.upgradeCluster(payload));
