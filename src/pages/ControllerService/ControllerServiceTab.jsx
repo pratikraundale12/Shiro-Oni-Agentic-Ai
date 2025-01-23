@@ -256,8 +256,20 @@ const ControllerServiceTab = ({
     isNewlyAddedExternalServiceResponse,
     setIsNewlyAddedExternalServiceResponse,
   ] = useState(false);
-
-  const [versionList, setVersionList] = useState([]);
+  const versionListRedux = useSelector(
+    NamespacesSelectors.getVersionListReduxData
+  );
+  const [versionList, setVersionList] = useState(versionListRedux);
+  useEffect(() => {
+    if (versionListRedux?.length) {
+      setVersionList(versionListRedux);
+    }
+  }, [versionListRedux]);
+  useEffect(() => {
+    if (versionList?.length) {
+      dispatch(NamespacesActions.setVersionListReduxData(versionList));
+    }
+  }, [versionList, stateChangeResponse, propertyUpdateResponse]);
 
   const [lsForUpgrade, setLsForUpgrade] = useState(
     registryDetailsData?.controllerServicesData?.localServices
@@ -481,7 +493,14 @@ const ControllerServiceTab = ({
       );
     } else {
       const version = selectedItemFromList?.version;
-      setVersionList(prev => addOrUpdateVersion(prev, version));
+      setVersionList(prev =>
+        addOrUpdateVersion(
+          prev,
+          prev?.find(item => item.uniqueId === uniqueId)
+            ? prev.find(item => item.uniqueId === uniqueId)?.version
+            : version
+        )
+      );
     }
   }, [
     propertyUpdateResponse,
