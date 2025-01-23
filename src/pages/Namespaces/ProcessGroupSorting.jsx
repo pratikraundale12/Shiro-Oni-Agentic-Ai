@@ -49,7 +49,7 @@ const ProcessGroupSorting = ({ sortProperty, module = 'namespaces' }) => {
   };
 
   return (
-    <button onClick={handleToggleSort} style={{ border: 'none' }}>
+    <button onClick={handleToggleSort} style={{ background: 'none' }}>
       {isAscending ? <SortDownIcon /> : <SortUpIcon />}
     </button>
   );

@@ -109,8 +109,11 @@ export const ListClusters = () => {
     {
       label: (
         <>
-          {KDFM.CLUSTER_NAME}{' '}
-          <button onClick={() => toggleSorting('name')}>
+          <button
+            onClick={() => toggleSorting('name')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.CLUSTER_NAME}{' '}
             {sortingState === 'name' ? (
               <SortUpIcon />
             ) : sortingState === '-name' ? (

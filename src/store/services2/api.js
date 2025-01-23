@@ -1,14 +1,15 @@
 import apisauce from 'apisauce';
 import { ACCESS_TOKEN, API_URL } from '../../constants';
+import { history } from '../../helpers/history';
 import { activityHistoryAPI } from './activityHistory';
 import { authenticationAPI } from './auth';
 import { clustersAPI } from './clusters';
 import { dashboardAPI } from './dashboard';
 import { namespacesAPI } from './namespaces';
 import { policiesAPI } from './policies';
+import { rolesAPI } from './roles';
 import { schedularAPI } from './schedular';
 import { settingsAPI } from './setting';
-import { rolesAPI } from './roles';
 import { usersAPI } from './users';
 
 const create = (baseURL = `${API_URL}/api`) => {
@@ -30,6 +31,17 @@ const create = (baseURL = `${API_URL}/api`) => {
       return config;
     },
     error => {
+      return Promise.reject(error);
+    }
+  );
+
+  api.axiosInstance.interceptors.response.use(
+    response => response,
+    error => {
+      if (error.response && error.response.data.message === 'jwt expired') {
+        localStorage.removeItem(ACCESS_TOKEN);
+        history.push('/login');
+      }
       return Promise.reject(error);
     }
   );

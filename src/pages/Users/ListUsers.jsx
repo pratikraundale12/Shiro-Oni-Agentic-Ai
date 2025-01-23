@@ -33,8 +33,11 @@ export const ListUsers = () => {
     {
       label: (
         <>
-          {KDFM.NAME}{' '}
-          <button onClick={() => toggleSorting('first_name')}>
+          <button
+            onClick={() => toggleSorting('first_name')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.NAME}{' '}
             {sortingState === 'first_name' ? (
               <SortUpIcon />
             ) : sortingState === '-first_name' ? (
@@ -57,8 +60,11 @@ export const ListUsers = () => {
     {
       label: (
         <>
-          {KDFM.USERNAME}{' '}
-          <button onClick={() => toggleSorting('username')}>
+          <button
+            onClick={() => toggleSorting('username')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.USERNAME}{' '}
             {sortingState === 'username' ? (
               <SortUpIcon />
             ) : sortingState === '-username' ? (

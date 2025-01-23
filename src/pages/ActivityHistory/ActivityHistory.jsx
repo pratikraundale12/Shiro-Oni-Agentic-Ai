@@ -50,8 +50,11 @@ export const ActvityHistory = () => {
     {
       label: (
         <>
-          {KDFM.NAMESPACE}{' '}
-          <button onClick={() => toggleSorting('namespace')}>
+          <button
+            onClick={() => toggleSorting('namespace')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.NAMESPACE}{' '}
             {sortingState === 'namespace' ? (
               <SortUpIcon />
             ) : sortingState === '-namespace' ? (
@@ -69,8 +72,11 @@ export const ActvityHistory = () => {
     {
       label: (
         <>
-          {KDFM.FLOW_NAME}{' '}
-          <button onClick={() => toggleSorting('flow_name')}>
+          <button
+            onClick={() => toggleSorting('flow_name')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.FLOW_NAME}{' '}
             {sortingState === 'flow_name' ? (
               <SortUpIcon />
             ) : sortingState === '-flow_name' ? (
@@ -87,8 +93,11 @@ export const ActvityHistory = () => {
     {
       label: (
         <>
-          {KDFM.CLUSTER}{' '}
-          <button onClick={() => toggleSorting('cluster')}>
+          <button
+            onClick={() => toggleSorting('cluster')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.CLUSTER}{' '}
             {sortingState === 'cluster' ? (
               <SortUpIcon />
             ) : sortingState === '-cluster' ? (

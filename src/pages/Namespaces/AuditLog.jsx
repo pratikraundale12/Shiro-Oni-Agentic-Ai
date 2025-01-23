@@ -44,8 +44,11 @@ const AuditLog = () => {
     {
       label: (
         <>
-          {KDFM.EVENT}{' '}
-          <button onClick={() => toggleSorting('event')}>
+          <button
+            onClick={() => toggleSorting('event')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.EVENT}{' '}
             {sortingState === 'event' ? (
               <SortUpIcon />
             ) : sortingState === '-event' ? (
@@ -105,8 +108,8 @@ const AuditLog = () => {
     {
       label: (
         <>
-          {KDFM.CREATED_BY}{' '}
           <button onClick={() => toggleSorting('created_by_name')}>
+            {KDFM.CREATED_BY}{' '}
             {sortingState === 'created_by_name' ? (
               <SortUpIcon />
             ) : sortingState === '-created_by_name' ? (

@@ -1,9 +1,10 @@
+import PropTypes from 'prop-types';
 import React from 'react';
-export const InvalidProcessorIcon = () => {
+export const InvalidProcessorIcon = ({ width = 35, height = 30 }) => {
   return (
     <svg
-      width={35}
-      height={30}
+      width={width}
+      height={height}
       viewBox="0 0 35 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -16,4 +17,10 @@ export const InvalidProcessorIcon = () => {
       />
     </svg>
   );
+};
+
+InvalidProcessorIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
 };
