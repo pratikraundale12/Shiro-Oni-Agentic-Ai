@@ -74,7 +74,7 @@ export const DiffModalScheduleList = props => {
     <div {...props}>
       <Modal
         size="lg"
-        title={`${selectedSchedule?.namespace_name} : Schedule Deployment Changes`}
+        title={`${selectedSchedule?.namespace_name} : Deployment Schedule Changes`}
         isOpen={modalOpen}
         onRequestClose={closeModal}
         primaryButtonText="Close"
