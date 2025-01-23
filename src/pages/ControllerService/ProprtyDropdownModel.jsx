@@ -155,6 +155,7 @@ const PropertyDropdownModal = ({
         footerAlign="start"
         contentStyles={{ maxWidth: '35%', maxHeight: '50%' }}
         primaryButtonDisabled={selectedProperty === null || addNewProperty}
+        noScroll={true}
       >
         <ModalBody className="modal-body">
           <div style={{ height: '150px' }} className="mb-4">
