@@ -1,7 +1,8 @@
 /*eslint-disable*/
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Tooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -192,6 +193,14 @@ const NamespaceDeploy = ({
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+  const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
+  useEffect(() => {
+    if (isUpgrade) {
+      if (deployOrUpgradeDetails?.invalidCount > 0) {
+        toast.warning(deployOrUpgradeDetails?.invalid_message);
+      }
+    }
+  }, [deployOrUpgradeDetails?.invalidCount]);
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
 

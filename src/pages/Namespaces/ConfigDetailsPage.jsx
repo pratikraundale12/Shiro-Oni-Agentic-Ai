@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { TodoIcon } from '../../assets';
+import { InvalidProcessorIcon, TodoIcon } from '../../assets';
+import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button } from '../../shared';
+import { Button, Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
-import VariableTab from './VariableTab';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import ParameterContextTab from './ParameterContextTab';
-import { FullPageLoader } from '../../components';
-import ScheduleDeploymentTab from './ScheduleDetailsPage.jsx';
 import { SchedularSelectors } from '../../store/schedular/redux.js';
+import ControllerServiceTab from '../ControllerService/ControllerServiceTab';
+import ParameterContextTab from './ParameterContextTab';
+import ScheduleDeploymentTab from './ScheduleDetailsPage.jsx';
+import VariableTab from './VariableTab';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -137,6 +137,20 @@ const ConfigDetailsPage = () => {
   const [activeButton, setActiveButton] = useState(controlSelectedStored);
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
   const [scheduleErrors, setScheduleErrors] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const singleNameSpace = useSelector(NamespacesSelectors.getSelectedNamespace);
+  const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
+  let type = '';
+  if (versionSelected?.version > singleNameSpace?.version) {
+    type = 'upgrade';
+  } else {
+    type = 'downgrade';
+  }
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    dispatch(NamespacesActions.setSelectedNamespace({}));
+    history.push('/process-group');
+  };
   useEffect(() => {
     if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
       setActiveTab(KDFM.SCHEDULE_DETAILS);
@@ -156,8 +170,13 @@ const ConfigDetailsPage = () => {
   const currentTime = new Date();
   const isScheduleTimeValid =
     scheduleDeployTime && scheduleDeployTime > currentTime;
-
   const handleContinue = () => {
+    if (!isUpgrade) {
+      if (singleNameSpace?.invalidCount > 0) {
+        setIsModalOpen(true);
+        return;
+      }
+    }
     if (isScheduleTimeValid === false) {
       setScheduleErrors({
         scheduled_time: {
@@ -237,6 +256,11 @@ const ConfigDetailsPage = () => {
   const loadingregistry = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
   );
+
+  const handleContinueClick = () => {
+    setIsModalOpen(false);
+    history.push('/process-group/summary');
+  };
   return (
     <div>
       <FullPageLoader loading={loading1 || loadingregistry} />
@@ -310,6 +334,23 @@ const ConfigDetailsPage = () => {
           <Button onClick={handleContinue}>{KDFM.CONTINUE}</Button>
         </BottomButtonDiv>
       </BottomButton>
+      <Modal
+        title="Invalid Component Detected"
+        size="sm"
+        onRequestClose={handleCloseModal}
+        isOpen={isModalOpen}
+        primaryButtonText="Continue"
+        secondaryButtonText="Cancel"
+        onSubmit={handleContinueClick}
+      >
+        <div className="d-flex justify-content-center align-items-center">
+          <InvalidProcessorIcon width={80} height={80} />
+        </div>
+        <div style={{ fontSize: '16px' }}>
+          Invalid components detected in your current deployment. Would you like
+          to proceed with {type} your configuration
+        </div>
+      </Modal>
     </div>
   );
 };

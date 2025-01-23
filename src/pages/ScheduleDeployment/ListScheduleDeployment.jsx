@@ -27,12 +27,12 @@ import {
   SchedularSelectors,
 } from '../../store/schedular/redux';
 import { ApproverGroupDisplay } from './ApproverGroupDisplay';
+import { DiffModalScheduleList } from './DiffModalSchedule';
 import { RejectScheduleModal } from './RejectScheduleModal';
 import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
-import { DiffModalScheduleList } from './DiffModalSchedule';
 
 const ActionTd = styled.div`
   display: flex;
@@ -339,8 +339,11 @@ export const ListScheduleDeployment = () => {
     {
       label: (
         <>
-          Process Group{' '}
-          <button onClick={() => toggleSorting('namespace_name')}>
+          <button
+            onClick={() => toggleSorting('namespace_name')}
+            style={{ background: 'none' }}
+          >
+            Process Group{' '}
             {sortingState === 'namespace_name' ? (
               <SortUpIcon />
             ) : sortingState === '-namespace_name' ? (
@@ -362,8 +365,11 @@ export const ListScheduleDeployment = () => {
     {
       label: (
         <>
-          Cluster{' '}
-          <button onClick={() => toggleSorting('cluster_name')}>
+          <button
+            onClick={() => toggleSorting('cluster_name')}
+            style={{ background: 'none' }}
+          >
+            Cluster{' '}
             {sortingState === 'cluster_name' ? (
               <SortUpIcon />
             ) : sortingState === '-cluster_name' ? (
@@ -392,8 +398,11 @@ export const ListScheduleDeployment = () => {
     {
       label: (
         <>
-          Scheduler{' '}
-          <button onClick={() => toggleSorting('scheduled_by')}>
+          <button
+            onClick={() => toggleSorting('scheduled_by')}
+            style={{ background: 'none' }}
+          >
+            Scheduler{' '}
             {sortingState === 'scheduled_by' ? (
               <SortUpIcon />
             ) : sortingState === '-scheduled_by' ? (
@@ -410,8 +419,11 @@ export const ListScheduleDeployment = () => {
     {
       label: (
         <>
-          Deploy Time{' '}
-          <button onClick={() => toggleSorting('scheduled_date_time')}>
+          <button
+            onClick={() => toggleSorting('scheduled_date_time')}
+            style={{ background: 'none' }}
+          >
+            Deploy Time{' '}
             {sortingState === 'scheduled_date_time' ? (
               <SortUpIcon />
             ) : sortingState === '-scheduled_date_time' ? (
