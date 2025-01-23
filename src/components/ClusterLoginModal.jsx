@@ -160,8 +160,11 @@ export const ClusterLoginModal = () => {
   }, [clusterLogin, setValue, reset]);
 
   useEffect(() => {
-    dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
-  }, [dispatch]);
+    if (clusterLogin) {
+      dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
+    }
+  }, [dispatch, clusterLogin]);
+
   const onSwitchCluster = () => {
     if (window.location.pathname.includes('/process-group')) {
       window.location.reload();

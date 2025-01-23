@@ -22,6 +22,8 @@ export const SchedularActions = {
   fetchDiffScheduleData: createAction(`${prefix}fetchDiffScheduleData`),
   setIsDiffModalOpen: createAction(`${prefix}setIsDiffModalOpen`),
   setDiffAllData: createAction(`${prefix}setDiffAllData`),
+  setStatusFilterData: createAction(`${prefix}setStatusFilterData`),
+  setSearchText: createAction(`${prefix}setSearchText`),
 };
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
@@ -37,6 +39,8 @@ export const SCHEDULAR_INITIAL_STATE = {
   scheduleSelectRange: [],
   isDiffModalOpen: false,
   diffAllData: {},
+  statusFilterData: null,
+  searchText: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -53,6 +57,8 @@ export const SchedularSelectors = {
   getScheduleSelectRange: state => state.schedular.scheduleSelectRange,
   getIsDiffModalOpen: state => state.schedular.isDiffModalOpen,
   getDiffAllData: state => state.schedular.diffAllData,
+  getStatusFilterData: state => state.schedular.statusFilterData,
+  getSearchText: state => state.schedular.searchText,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -129,6 +135,18 @@ const setDiffAllData = (state, { payload }) => {
     diffAllData: payload,
   };
 };
+const setStatusFilterData = (state, { payload }) => {
+  return {
+    ...state,
+    statusFilterData: payload,
+  };
+};
+const setSearchText = (state, { payload }) => {
+  return {
+    ...state,
+    searchText: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const schedularReducer = createReducer(
   SCHEDULAR_INITIAL_STATE,
@@ -148,6 +166,8 @@ export const schedularReducer = createReducer(
       .addCase(SchedularActions.setScheduleFromList, setScheduleFromList)
       .addCase(SchedularActions.setScheduleSelectRange, setScheduleSelectRange)
       .addCase(SchedularActions.setIsDiffModalOpen, setIsDiffModalOpen)
-      .addCase(SchedularActions.setDiffAllData, setDiffAllData);
+      .addCase(SchedularActions.setDiffAllData, setDiffAllData)
+      .addCase(SchedularActions.setStatusFilterData, setStatusFilterData)
+      .addCase(SchedularActions.setSearchText, setSearchText);
   }
 );

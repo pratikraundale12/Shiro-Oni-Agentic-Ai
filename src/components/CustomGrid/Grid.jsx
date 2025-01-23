@@ -20,7 +20,7 @@ import {
   ActivityHistorySelectors,
 } from '../../store/activityHistory/redux';
 import { GridActions, GridSelectors } from '../../store/grid';
-import { SchedularSelectors } from '../../store/schedular';
+import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
@@ -150,6 +150,13 @@ export const Grid = ({
 
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
+
+  useEffect(() => {
+    if (watchStatus) {
+      dispatch(SchedularActions.setStatusFilterData(watchStatus));
+    }
+  }, [watchStatus]);
+
   const {
     state: {
       search,
@@ -162,6 +169,11 @@ export const Grid = ({
     },
     setState,
   } = useGlobalContext();
+  useEffect(() => {
+    if (search) {
+      dispatch(SchedularActions.setSearchText(search));
+    }
+  }, [search]);
   const filteredData = gridData.filter(item => item.isProcessor === false);
 
   const DATA = {

@@ -49,6 +49,9 @@ export function* editScheduleDeployment(api, { payload }) {
   const tokenScheduleModal = yield select(
     SchedularSelectors.getTokenScheduleModal
   );
+  const selectedRange = yield select(SchedularSelectors.getScheduleSelectRange);
+  const statusData = yield select(SchedularSelectors.getStatusFilterData);
+  const search = yield select(SchedularSelectors.getSearchText);
   const scheduleModal = yield select(SchedularSelectors.getScheduleModal);
   if (response.ok) {
     toast.success(response?.data?.message);
@@ -62,9 +65,22 @@ export function* editScheduleDeployment(api, { payload }) {
     if (scheduleModal) yield put(SchedularActions.setScheduleModal());
     if (tokenScheduleModal) yield put(SchedularActions.setTokenScheduleModal());
     // yield put(SchedularActions.setScheduleSelectRange([]));
-    yield call(fetchGrid, api, {
-      payload: { module: 'scheduler' },
-    });
+    yield put(
+      GridActions.fetchGrid({
+        module: 'scheduler',
+        params: {
+          ...(search && { search }),
+          ...(statusData &&
+            statusData !== 'all' && {
+              deployment_status: statusData,
+            }),
+          ...(selectedRange && {
+            start_date: selectedRange?.[0]?.toISOString(),
+            end_date: selectedRange?.[1]?.toISOString(),
+          }),
+        },
+      })
+    );
   } else toast.error(response.data.message);
 }
 
@@ -84,6 +100,9 @@ export function* checkApproverToken(api, { payload: { params } }) {
 }
 
 export function* editScheduleByRegistry(api, { payload }) {
+  const selectedRange = yield select(SchedularSelectors.getScheduleSelectRange);
+  const statusData = yield select(SchedularSelectors.getStatusFilterData);
+  const search = yield select(SchedularSelectors.getSearchText);
   const response = yield call(requestSaga, {
     errorSection: 'editScheduleByRegistry',
     loadingSection: 'editScheduleByRegistry',
@@ -93,7 +112,22 @@ export function* editScheduleByRegistry(api, { payload }) {
   if (response.ok) {
     yield put(SchedularActions.setCancelScheduleModal(false));
     yield put(SchedularActions.setApproveScheduleModal(false));
-    yield put(GridActions.fetchGrid({ module: 'scheduler' }));
+    yield put(
+      GridActions.fetchGrid({
+        module: 'scheduler',
+        params: {
+          ...(search && { search }),
+          ...(statusData &&
+            statusData !== 'all' && {
+              deployment_status: statusData,
+            }),
+          ...(selectedRange && {
+            start_date: selectedRange?.[0]?.toISOString(),
+            end_date: selectedRange?.[1]?.toISOString(),
+          }),
+        },
+      })
+    );
     // yield put(SchedularActions.setScheduleSelectRange([]));
     toast.success(response?.data?.message);
   } else {
@@ -103,6 +137,9 @@ export function* editScheduleByRegistry(api, { payload }) {
 
 export function* rejectScheduleDeployment(api, { payload }) {
   const { schedularId, ...rest } = payload;
+  const selectedRange = yield select(SchedularSelectors.getScheduleSelectRange);
+  const statusData = yield select(SchedularSelectors.getStatusFilterData);
+  const search = yield select(SchedularSelectors.getSearchText);
   const response = yield call(requestSaga, {
     errorSection: 'rejectScheduleDeployment',
     loadingSection: 'rejectScheduleDeployment',
@@ -113,8 +150,22 @@ export function* rejectScheduleDeployment(api, { payload }) {
     toast.success(response?.data?.message);
     yield put(SchedularActions.setRejectScheduleModal(false));
     yield put(SchedularActions.setCancelScheduleModal(false));
-    // yield put(SchedularActions.setScheduleSelectRange([]));
-    yield put(GridActions.fetchGrid({ module: 'scheduler' }));
+    yield put(
+      GridActions.fetchGrid({
+        module: 'scheduler',
+        params: {
+          ...(search && { search }),
+          ...(statusData &&
+            statusData !== 'all' && {
+              deployment_status: statusData,
+            }),
+          ...(selectedRange && {
+            start_date: selectedRange?.[0]?.toISOString(),
+            end_date: selectedRange?.[1]?.toISOString(),
+          }),
+        },
+      })
+    );
   } else {
     toast.error(response?.data?.error);
   }

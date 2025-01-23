@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { useForm } from 'react-hook-form';
 import { endOfDay, startOfDay } from 'date-fns';
 import { useDispatch, useSelector } from 'react-redux';
@@ -217,7 +217,7 @@ export const GridActions = ({
       return roles.find(role => role.name === name);
     });
   }, [roles]);
-
+  const inputRef = useRef(null);
   const entity = watch('entityName');
   const event = watch('activityEvent');
   const getModuleBasedStatusKey = module => {
@@ -458,6 +458,8 @@ export const GridActions = ({
       setValue('is_active', null);
       dispatch(SchedularActions.setScheduleSelectRange([]));
       dispatch(GridSagsActions.fetchGrid({ module, clusterId, params: {} }));
+      setState(prev => ({ ...prev, search: null }));
+      inputRef.current.value = '';
     } else if (module === 'activityHistory') {
       setValue('is_active', null);
       setValue('entityName', null);
@@ -689,6 +691,7 @@ export const GridActions = ({
         <Search
           type="search"
           value={search}
+          ref={inputRef}
           placeholder={placeholder}
           onChange={e => {
             const value = e.target.value;
