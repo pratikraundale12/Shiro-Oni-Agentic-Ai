@@ -187,18 +187,18 @@ export const ListClusters = () => {
                   <>
                     {item.status === CLUSTER_STATUS.DISCONNECTED ? null : (
                       <>
+                        {item?.deactivate_cluster && (
+                          <Item onClick={() => handleClick('active', item.id)}>
+                            <ActiveIcon />
+                            <span>{KDFM.ACTIVATE}</span>
+                          </Item>
+                        )}
                         {item.delete_cluster && (
                           <Item
                             onClick={() => handleClick('deleteHard', item.id)}
                           >
                             <DeleteSmallIcon width={18} height={18} />
                             <span> Delete</span>
-                          </Item>
-                        )}
-                        {item?.deactivate_cluster && (
-                          <Item onClick={() => handleClick('active', item.id)}>
-                            <ActiveIcon />
-                            <span>{KDFM.ACTIVATE}</span>
                           </Item>
                         )}
                       </>
