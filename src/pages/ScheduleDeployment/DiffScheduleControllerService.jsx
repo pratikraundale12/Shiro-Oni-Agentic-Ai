@@ -75,7 +75,7 @@ const DiffScheduleCS = () => {
         {!isEmpty(scheduleDiffData?.diffControllerServices) && (
           <WarningSection className="mt-2">
             * External controller services changes take effect immediately when
-            changed, so the changes made are not listed below
+            changed, so the changes made are not listed here
           </WarningSection>
         )}
 
