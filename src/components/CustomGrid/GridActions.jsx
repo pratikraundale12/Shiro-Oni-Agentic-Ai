@@ -503,7 +503,7 @@ export const GridActions = ({
                         width={19}
                         color={'#fff'}
                       />
-                      {KDFM.SCHEDULE_DEPLOYMENT}
+                      Schedule Deployment
                     </div>
                   </Button>
                 )}
@@ -631,7 +631,7 @@ export const GridActions = ({
                         width={19}
                         color={'#fff'}
                       />
-                      {KDFM.SCHEDULE_DEPLOYMENT}
+                      Schedule Deployment
                     </div>
                   </Button>
                 )}
