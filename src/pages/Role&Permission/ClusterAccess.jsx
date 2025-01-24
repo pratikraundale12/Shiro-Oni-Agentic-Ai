@@ -139,6 +139,11 @@ export const ClusterAccess = () => {
   const hasEditPermssion = userPermissions.includes('edit_permission');
   const [updatedRoleClusters, setUpdatedRoleClusters] = useState([]);
   const [search, setSearch] = useState('');
+  const viewId = policies?.filter(ele => ele?.name === 'access_cluster');
+  const deleteId = policies?.filter(ele => ele?.name === 'delete_cluster');
+  const deActivateId = policies?.filter(
+    ele => ele?.name === 'deactivate_cluster'
+  );
 
   const CLUSTERS_ACCESS_COLUMNS = [
     {
@@ -217,20 +222,74 @@ export const ClusterAccess = () => {
     dispatch(RolesActions.setSelectedRole(option));
     dispatch(PoliciesActions.fetchPoliciesRoles({ roleId: option.value }));
   };
+  const handleCheckboxAutoClick = value => {
+    if (viewId?.[0]?.id !== value?.policy_id) {
+      setUpdatedRoleClusters(prevItems => {
+        const doesItemExist = prevItems.some(
+          item =>
+            item.cluster_id === value?.cluster_id &&
+            item.policy_id === viewId?.[0]?.id
+        );
+        if (doesItemExist) {
+          return prevItems;
+        }
+        return [
+          ...prevItems,
+          {
+            cluster_id: value?.cluster_id,
+            policy_id: viewId?.[0]?.id,
+          },
+        ];
+      });
+    }
+    if (deleteId?.[0]?.id === value?.policy_id) {
+      setUpdatedRoleClusters(prevItems => {
+        const doesItemExist = prevItems.some(
+          item =>
+            item.cluster_id === value?.cluster_id &&
+            item.policy_id === deActivateId?.[0]?.id
+        );
+
+        if (doesItemExist) {
+          return prevItems;
+        }
+        return [
+          ...prevItems,
+          {
+            cluster_id: value?.cluster_id,
+            policy_id: deActivateId?.[0]?.id,
+          },
+        ];
+      });
+    }
+  };
 
   const handleChange = (checked, item) => {
+    const samecluster = updatedRoleClusters.filter(
+      ele => ele?.cluster_id === item.cluster_id
+    );
     if (!checked) {
-      setUpdatedRoleClusters(prev =>
-        prev.filter(
-          policy =>
-            !(
+      if (item.policy_id === viewId?.[0]?.id && samecluster.length > 1) {
+        null;
+      } else {
+        setUpdatedRoleClusters(prev =>
+          prev.filter(policy => {
+            const isSameClusterAndPolicy =
               policy.cluster_id === item.cluster_id &&
-              policy.policy_id === item.policy_id
-            )
-        )
-      );
+              policy.policy_id === item.policy_id;
+
+            const isDeactivateCondition =
+              item.policy_id === deActivateId?.[0]?.id &&
+              policy.cluster_id === item.cluster_id &&
+              policy.policy_id === deleteId?.[0]?.id;
+
+            return !(isSameClusterAndPolicy || isDeactivateCondition);
+          })
+        );
+      }
     } else {
       setUpdatedRoleClusters(prev => [...prev, item]);
+      handleCheckboxAutoClick(item);
     }
   };
 
