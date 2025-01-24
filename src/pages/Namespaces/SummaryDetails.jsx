@@ -128,7 +128,7 @@ const SummaryDetails = () => {
                 onClick={handleRegistryClick}
                 style={{
                   cursor: 'pointer',
-                  color: 'blue',
+                  color: '#FF7A00',
                   textDecoration: 'underline',
                 }}
               >
@@ -148,7 +148,7 @@ const SummaryDetails = () => {
                 onClick={handleClick}
                 style={{
                   cursor: 'pointer',
-                  color: 'blue',
+                  color: '#FF7A00',
                   textDecoration: 'underline',
                 }}
               >

@@ -102,6 +102,8 @@ export const ACTIVITY_EVENTS = [
   { label: 'Schedule Upgrade', value: 'Schedule upgrade' },
   { label: 'Schedule Downgrade', value: 'Schedule downgrade' },
   { label: 'Update', value: 'Update' },
+  { label: 'Reject', value: 'Reject' },
+  { label: 'Stop', value: 'Stop' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
