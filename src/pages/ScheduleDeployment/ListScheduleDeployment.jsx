@@ -44,6 +44,20 @@ const StyledButton = styled.button`
   border: none;
   background: transparent;
 `;
+const TextColor = styled.div`
+  color: ${props => props.theme.colors.darker};
+  font-family: ${props => props.theme.fontNato};
+  font-size: ${props => props.theme.size.lg};
+  font-weight: 400;
+  text-transform: ${props => (props.capitalizeText ? 'capitalize' : 'none')};
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  z-index: 2;
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
+`;
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -340,6 +354,27 @@ export const ListScheduleDeployment = () => {
       </>
     );
   };
+  const pgNameDisplay = item => {
+    return (
+      <>
+        <TextColor data-tooltip-id={`${item?.id}`}>
+          {item?.namespace_name}
+        </TextColor>
+        <ReactTooltip
+          id={`${item?.id}`}
+          place="left"
+          content={ListForTooltip(item)}
+          style={{
+            width: 'max-content',
+            maxWidth: '400px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+            zIndex: 9999,
+          }}
+        />
+      </>
+    );
+  };
 
   const COLUMNS = [
     {
@@ -360,12 +395,7 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => (
-        <TextRender
-          text={item?.namespace_name}
-          ListForTooltip={ListForTooltip(item)}
-        />
-      ),
+      renderCell: item => pgNameDisplay(item),
       resize: true,
     },
     {
