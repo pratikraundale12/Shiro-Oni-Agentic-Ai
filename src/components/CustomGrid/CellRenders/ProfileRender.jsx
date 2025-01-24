@@ -20,15 +20,25 @@ const ProfileImage = styled.img`
   border-radius: 50%;
 `;
 
-export const ProfileRender = ({ url }) => (
-  <ImageContainer>
-    {url ? (
-      <ProfileImage src={url} alt="profile" width={40} height={40} />
-    ) : (
-      <ProfileIcon width={40} height={40} />
-    )}
-  </ImageContainer>
-);
+export const ProfileRender = ({ url }) => {
+  const isValidUrl = url => {
+    try {
+      return Boolean(new URL(url));
+    } catch (error) {
+      return false;
+    }
+  };
+
+  return (
+    <ImageContainer>
+      {url && isValidUrl(url) ? (
+        <ProfileImage src={url} alt="profile" width={40} height={40} />
+      ) : (
+        <ProfileIcon width={40} height={40} />
+      )}
+    </ImageContainer>
+  );
+};
 
 ProfileRender.propTypes = {
   url: PropTypes.string.isRequired,
