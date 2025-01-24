@@ -4,7 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SortDownIcon, SortUpIcon } from '../../assets';
 import { GridActions, GridSelectors } from '../../store';
 
-const ProcessGroupSorting = ({ sortProperty, module = 'namespaces' }) => {
+const ProcessGroupSorting = ({
+  sortProperty,
+  module = 'namespaces',
+  clickableName = null,
+  onNameClick = () => {},
+}) => {
   const [isAscending, setIsAscending] = useState(true);
   const dispatch = useDispatch();
 
@@ -27,6 +32,7 @@ const ProcessGroupSorting = ({ sortProperty, module = 'namespaces' }) => {
         : valueB.localeCompare(valueA);
     });
   };
+
   // Handle toggle sort
   const handleToggleSort = () => {
     const sortedData = sortByProperty(gridData, sortProperty, isAscending);
@@ -49,9 +55,25 @@ const ProcessGroupSorting = ({ sortProperty, module = 'namespaces' }) => {
   };
 
   return (
-    <button onClick={handleToggleSort} style={{ background: 'none' }}>
-      {isAscending ? <SortDownIcon /> : <SortUpIcon />}
-    </button>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      {clickableName && (
+        <button
+          onClick={() => handleToggleSort(clickableName)}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          {clickableName}
+        </button>
+      )}
+
+      {/* Sorting Button */}
+      <button onClick={handleToggleSort} style={{ background: 'none' }}>
+        {isAscending ? <SortDownIcon /> : <SortUpIcon />}
+      </button>
+    </div>
   );
 };
 
