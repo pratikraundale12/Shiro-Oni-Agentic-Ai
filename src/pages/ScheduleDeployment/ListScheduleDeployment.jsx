@@ -366,7 +366,7 @@ export const ListScheduleDeployment = () => {
           ListForTooltip={ListForTooltip(item)}
         />
       ),
-      width: '12%',
+      resize: true,
     },
     {
       label: (
@@ -387,17 +387,17 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => <TextRender text={item?.cluster_name} />,
-      width: '11%',
+      resize: true,
     },
     {
       label: 'Version',
       renderCell: item => <TextRender text={item?.version} />,
-      width: '5%',
+      resize: true,
     },
     {
       label: 'Post Deploy State',
       renderCell: item => <TextRender text={item?.deployment_status} />,
-      width: '10%',
+      resize: true,
     },
     {
       label: (
@@ -418,7 +418,7 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => <TextRender text={item?.scheduled_by} />,
-      width: '8%',
+      resize: true,
     },
     {
       label: (
@@ -441,8 +441,8 @@ export const ListScheduleDeployment = () => {
       renderCell: item => (
         <TextRender text={convertDateTime(item?.scheduled_date_time)} />
       ),
-      width: '14%',
       sort: { sortKey: 'deploy_time' },
+      resize: true,
     },
     {
       label: 'Approver group/Approver',
@@ -452,7 +452,7 @@ export const ListScheduleDeployment = () => {
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
-      width: '14%',
+      resize: true,
     },
     {
       label: 'Status',
@@ -462,12 +462,12 @@ export const ListScheduleDeployment = () => {
           item={item}
         />
       ),
-      width: '10%',
+      resize: true,
     },
     {
       label: 'Actions',
-      width: '16%',
       renderCell: item => getActionsMenu(item),
+      resize: true,
     },
   ];
 
