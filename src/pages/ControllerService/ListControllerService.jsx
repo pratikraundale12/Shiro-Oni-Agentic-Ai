@@ -227,17 +227,65 @@ export const ListControllerService = () => {
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => item?.name,
+      renderCell: item => (
+        <>
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            data-tooltip-id={`tooltip-${item.id}-name`}
+          >
+            {item?.name}
+          </div>
+          <ReactTooltip
+            id={`tooltip-${item?.id}-name`}
+            place="right"
+            content={item?.name}
+            style={{
+              whiteSpace: 'normal',
+              zIndex: 9999,
+            }}
+          />
+        </>
+      ),
       width: '21%',
     },
     {
       label: 'Type',
-      renderCell: item => item?.typeValue,
-      width: '20%',
+      renderCell: item => (
+        <>
+          <div data-tooltip-id={`tooltip-${item.id}-typeValue`}>
+            {item?.typeValue}
+          </div>
+          <ReactTooltip
+            id={`tooltip-${item?.id}-typeValue`}
+            place="right"
+            content={item?.typeValue}
+            style={{
+              whiteSpace: 'normal',
+              zIndex: 9999,
+            }}
+          />
+        </>
+      ),
+      width: '18%',
     },
     {
       label: 'Bundle',
-      renderCell: item => item?.bundleValue,
+      renderCell: item => (
+        <>
+          <div data-tooltip-id={`tooltip-${item.id}-bundleValue`}>
+            {item?.bundleValue}
+          </div>
+          <ReactTooltip
+            id={`tooltip-${item?.id}-bundleValue`}
+            place="right"
+            content={item?.bundleValue}
+            style={{
+              whiteSpace: 'normal',
+              zIndex: 9999,
+            }}
+          />
+        </>
+      ),
       width: '18%',
     },
     {

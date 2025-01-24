@@ -329,8 +329,14 @@ export const ListScheduleDeployment = () => {
   const ListForTooltip = item => {
     return (
       <>
-        <li>Name : {item?.namespace_name}</li>
-        {item?.namespace_id !== 'root' && <li>ID : {item?.namespace_id}</li>}
+        {item?.namespace_name && (
+          <>
+            <li>Name : {item?.namespace_name}</li>
+            {item?.namespace_id !== 'root' && (
+              <li>ID : {item?.namespace_id}</li>
+            )}
+          </>
+        )}
       </>
     );
   };
@@ -356,7 +362,7 @@ export const ListScheduleDeployment = () => {
       ),
       renderCell: item => (
         <TextRender
-          text={item?.namespace_name || 'N/A'}
+          text={item?.namespace_name}
           ListForTooltip={ListForTooltip(item)}
         />
       ),
@@ -380,19 +386,17 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => <TextRender text={item?.cluster_name || 'N/A'} />,
+      renderCell: item => <TextRender text={item?.cluster_name} />,
       width: '11%',
     },
     {
       label: 'Version',
-      renderCell: item => <TextRender text={item?.version || 'N/A'} />,
+      renderCell: item => <TextRender text={item?.version} />,
       width: '5%',
     },
     {
       label: 'Post Deploy State',
-      renderCell: item => (
-        <TextRender text={item?.deployment_status || 'N/A'} />
-      ),
+      renderCell: item => <TextRender text={item?.deployment_status} />,
       width: '10%',
     },
     {
@@ -413,7 +417,7 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => <TextRender text={item?.scheduled_by || 'N/A'} />,
+      renderCell: item => <TextRender text={item?.scheduled_by} />,
       width: '8%',
     },
     {
@@ -435,9 +439,7 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => (
-        <TextRender
-          text={convertDateTime(item?.scheduled_date_time) || 'N/A'}
-        />
+        <TextRender text={convertDateTime(item?.scheduled_date_time)} />
       ),
       width: '14%',
       sort: { sortKey: 'deploy_time' },
