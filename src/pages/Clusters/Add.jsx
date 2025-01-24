@@ -1149,7 +1149,7 @@ export const Add = () => {
           successTest={suceessModal}
           setSuccessTest={setSuccessModal}
           name={`${activeTab} test Successful`}
-          text="Your Configuration test was successful.
+          text="Your configuration test was successful.
            Continue with the next steps."
           title="Testing Successful"
         />
