@@ -91,23 +91,25 @@ const DiffScheduleParameter = () => {
                   >
                     <span className="p-2">{item?.name}</span>
                   </TileHeader>
-                  <div className="d-flex mb-4">
-                    <TileHeader className="col-3">Value</TileHeader>
-                    <TileItem className="col-5">
-                      <div
-                        style={{
-                          backgroundColor: '#E9ECF1',
-                          borderRadius: '12px',
-                        }}
-                        className="p-2 me-2"
-                      >
-                        {item?.new_value?.value || 'N/A'}
-                      </div>
-                    </TileItem>
-                    <TileItem className="col-4">
-                      {item?.old_value?.value || 'N/A'}
-                    </TileItem>
-                  </div>
+                  {(item?.new_value?.value || item?.old_value?.value) && (
+                    <div className="d-flex mb-4">
+                      <TileHeader className="col-3">Value</TileHeader>
+                      <TileItem className="col-5">
+                        <div
+                          style={{
+                            backgroundColor: '#E9ECF1',
+                            borderRadius: '12px',
+                          }}
+                          className="p-2 me-2"
+                        >
+                          {item?.new_value?.value || 'N/A'}
+                        </div>
+                      </TileItem>
+                      <TileItem className="col-4">
+                        {item?.old_value?.value || 'N/A'}
+                      </TileItem>
+                    </div>
+                  )}
                   <div className="d-flex">
                     <TileHeader className="col-3">Description</TileHeader>
                     <TileItem className="col-5">
