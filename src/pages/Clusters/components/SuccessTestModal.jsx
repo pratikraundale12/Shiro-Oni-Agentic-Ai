@@ -34,10 +34,16 @@ const Para = styled.p`
   margin-inline-end: 0px;
 `;
 
-export const SuccessTestModal = ({ successTest, setSuccessTest, name }) => {
+export const SuccessTestModal = ({
+  successTest,
+  setSuccessTest,
+  name,
+  text,
+  title,
+}) => {
   return (
     <Modal
-      title="Testing Successful"
+      title={title}
       isOpen={successTest}
       onRequestClose={() => setSuccessTest(false)}
       size="sm"
@@ -48,11 +54,8 @@ export const SuccessTestModal = ({ successTest, setSuccessTest, name }) => {
         <Icon>
           <RightCircleIcon color="#0CBF59" />
         </Icon>
-        <Title className="text-capitalize">{name} test Successful</Title>
-        <Para>
-          Your {name} test was successful.
-          <br /> Continue with the next steps.
-        </Para>
+        <Title className="text-capitalize">{name}</Title>
+        <Para>{text}</Para>
       </>
     </Modal>
   );
