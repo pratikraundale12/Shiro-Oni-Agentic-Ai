@@ -203,6 +203,7 @@ export const NamespacesActions = {
   setVariableLocalData: createAction(`${prefix}setVariableLocalData`),
   setIsLocalVariableUpdated: createAction(`${prefix}setIsLocalVariableUpdated`),
   setVersionListReduxData: createAction(`${prefix}setVersionListReduxData`),
+  fetchAddPropertyToAdd: createAction(`${prefix}fetchAddPropertyToAdd`),
 };
 //
 /* ------------- INITIAL STATE ------------- */

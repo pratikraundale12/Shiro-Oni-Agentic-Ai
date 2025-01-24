@@ -436,7 +436,7 @@ export const ListControllerService = () => {
         csList={true}
         isResetNotRequired={isResetNotRequired}
       />
-
+      {/* gear click modal */}
       <ConfigControllerService
         isOpen={isListProprtyModel}
         onClose={handleCloseModal}
@@ -471,6 +471,7 @@ export const ListControllerService = () => {
         setListPropertTableData={setListPropertTableData}
         setUpdatedData={setUpdatedData}
         updatedData={updatedData}
+        selectedItemFromList={selectedItemFromList}
       />
       <ModalWithIcon
         title={`${selectedItemFromList?.state !== 'DISABLED' || selectedItemFromList?.state !== 'DISABLING' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}
