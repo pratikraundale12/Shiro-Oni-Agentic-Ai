@@ -528,7 +528,7 @@ export const GridActions = ({
                   </Button>
                 )}
                 <DropdownContainer>
-                  <SelectField
+                  <StyledSelectField
                     size="sm"
                     name="cluster_id"
                     control={control}
