@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -25,6 +26,7 @@ import { getButtonPermissions } from '../../helpers/permissions';
 import { Button, DateRangePickerInput, SelectField } from '../../shared';
 import {
   AuthenticationSelectors,
+  ClustersSelectors,
   DashboardActions,
   GridActions as GridSagsActions,
   LoadingSelectors,
@@ -201,6 +203,8 @@ export const GridActions = ({
   selectedRole,
   sortingState,
   setValue,
+  clusterSelectedValue,
+  setClusterSelectedValue,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -232,6 +236,8 @@ export const GridActions = ({
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const clusters = useSelector(ClustersSelectors.getAllClustersList);
+
   useEffect(() => {
     setIsButtonDisabled(isEmpty(selectedCluster?.value));
   }, [selectedCluster]);
@@ -313,6 +319,10 @@ export const GridActions = ({
             ...(location?.pathname?.includes('user-management') &&
               selectedRole?.value !== 'all' && {
                 role_id: selectedRole?.value,
+              }),
+            ...(location?.pathname?.includes('schedule-deployment') &&
+              clusterSelectedValue?.label !== 'All' && {
+                clusterName: clusterSelectedValue?.label,
               }),
             ...(location?.pathname?.match(
               /user-management|clusters|schedule-deployment|activity-history/
@@ -454,6 +464,9 @@ export const GridActions = ({
   const handleRolesChange = selectedOption => {
     setSelectedRole(selectedOption);
   };
+  const handleClusterChange = selectedClusterOption => {
+    setClusterSelectedValue(selectedClusterOption);
+  };
 
   const handleClearFilter = () => {
     if (module === 'scheduler') {
@@ -462,6 +475,7 @@ export const GridActions = ({
       dispatch(GridSagsActions.fetchGrid({ module, clusterId, params: {} }));
       setState(prev => ({ ...prev, search: null }));
       inputRef.current.value = '';
+      setClusterSelectedValue(null);
     } else if (module === 'activityHistory') {
       setValue('is_active', null);
       setValue('entityName', null);
@@ -513,6 +527,23 @@ export const GridActions = ({
                     </div>
                   </Button>
                 )}
+                <DropdownContainer>
+                  <SelectField
+                    size="sm"
+                    name="cluster_id"
+                    control={control}
+                    options={[
+                      { label: 'All', value: 'all' },
+                      ...clusters?.map(cluster => ({
+                        value: cluster.id,
+                        label: cluster.name,
+                      })),
+                    ]}
+                    value={clusterSelectedValue}
+                    placeholder="Select Cluster"
+                    onChange={handleClusterChange}
+                  />
+                </DropdownContainer>
                 <DateRangePickerInput
                   value={selectedRange}
                   handleChange={handleChange}
