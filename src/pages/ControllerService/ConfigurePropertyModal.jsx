@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable react */
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
@@ -6,8 +6,8 @@ import { CheckboxField, InputField, Modal } from '../../shared';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-import { toast } from 'react-toastify';
-import { KDFM } from '../../constants';
+// import { toast } from 'react-toastify';
+// import { KDFM } from '../../constants';
 import { Button } from '../../shared';
 
 const ModalBody = styled.div`
@@ -32,11 +32,14 @@ const ConfigurePropertyModal = ({
   const isModalOpen = useSelector(
     NamespacesSelectors.getIsConfigurePropertyControllerServiceModalOpen
   );
-  const { register, handleSubmit, reset } = useForm({});
+  const { register, handleSubmit, reset, watch } = useForm({});
+
+  const nameState = watch('name');
+  const sensitiveState = watch('sensitive');
   console.log(selectedItemFromList?.id, 'selectedItemFromList>>>>>>>>>>>>>>>>');
   const handleFormSubmit = data => {
-    setAddNewProperty(true);
-    dispatch(NamespacesActions.fetchAddPropertyToAdd(selectedItemFromList?.id));
+    console.log(data);
+
     // const filterData = updatedData.filter(item => {
     //   return item.name != data.name;
     // });
@@ -64,7 +67,15 @@ const ConfigurePropertyModal = ({
     // );
   };
   const handleGetValue = () => {
+    console.log(nameState, 'nameState');
+    console.log(sensitiveState, 'sensitiveState');
+    const payload = {
+      id: selectedItemFromList?.id,
+      name: nameState,
+      sensitiveState: sensitiveState,
+    };
     setAddNewProperty(true);
+    dispatch(NamespacesActions.fetchAddPropertyToAdd(payload));
   };
 
   const handleCloseAction = () => {
@@ -113,13 +124,13 @@ const ConfigurePropertyModal = ({
               Get Value
             </Button>
           </div>
-          <InputField
+          {/* <InputField
             name="value"
             type="text"
             label="Value"
             icon={<QRIcons />}
             register={register}
-          />
+          /> */}
         </ModalBody>
       </Modal>
     </div>

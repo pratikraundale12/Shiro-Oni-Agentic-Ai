@@ -298,11 +298,17 @@ export const namespacesAPI = api => {
     return api.get(`/check-exisiting-flow/${flowId}`);
   };
 
-  const fetchAddPropertyToAdd = ({ clusterId, controllerId }) => {
+  const fetchAddPropertyToAdd = ({
+    clusterId,
+    controllerId,
+    propertyName,
+    sensitive,
+  }) => {
     return api.get(
-      `controller-services/${clusterId}/service/${controllerId}/descriptor?propertyName=TestProp&sensitive=true`
+      `controller-services/${clusterId}/service/${controllerId}/descriptor?propertyName=${propertyName}&sensitive=${sensitive || false}`
     );
   };
+  
   return {
     fetchNamespaces,
     checkDestCluster,

@@ -1386,7 +1386,6 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
 }
 export function* fetchAddPropertyToAdd(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
-  const { id, use_service_account, ...rest } = payload;
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1402,7 +1401,9 @@ export function* fetchAddPropertyToAdd(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        controllerId: payload,
+        controllerId: payload?.id,
+        propertyName: payload?.name,
+        sensitive: payload?.sensitiveState,
       },
     ],
   });
