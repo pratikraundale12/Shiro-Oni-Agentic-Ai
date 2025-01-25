@@ -21,7 +21,7 @@ import { Grid, IconButton, TextRender } from '../../components';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import SortingComponent from '../../shared/SortingComponent';
-import { AuthenticationSelectors } from '../../store';
+import { AuthenticationSelectors, NamespacesSelectors } from '../../store';
 import {
   SchedularActions,
   SchedularSelectors,
@@ -376,6 +376,13 @@ export const ListScheduleDeployment = () => {
     );
   };
 
+  const handleProcessGroupClick = item => {
+    const updatedUrl = item?.nifi_url?.endsWith('/nifi')
+      ? `${item?.nifi_url}?processGroupId=${item?.namespace_id}`
+      : `${item?.nifi_url}/nifi?processGroupId=${item?.namespace_id}`;
+    window.open(updatedUrl, '_blank');
+  };
+
   const COLUMNS = [
     {
       label: (
@@ -395,7 +402,16 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => pgNameDisplay(item),
+      renderCell: item => (
+        <>
+          <button
+            onClick={() => handleProcessGroupClick(item)}
+            style={{ background: 'none' }}
+          >
+            {pgNameDisplay(item)}
+          </button>
+        </>
+      ),
       resize: true,
     },
     {
