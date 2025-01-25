@@ -89,13 +89,12 @@ export const DiffModalScheduleList = props => {
         noPadding={true}
       >
         <GreyBoxNamespace className="w-100  mb-3">
-          <div className="d-flex" style={{ fontSize: '16px' }}>
-            <WarningSection style={{ color: ` ${theme.colors.primary}` }}>
-              Version changes &nbsp; : &nbsp;
-            </WarningSection>
-            V {scheduleDiffData?.previous_version || null} to V
-            {scheduleDiffData?.current_version}
-          </div>
+          <WarningSection
+            style={{ color: ` ${theme.colors.primary}` }}
+            className="ms-2"
+          >
+            {scheduleDiffData?.versionDetailText}
+          </WarningSection>
 
           <TabWrapper className="nav">
             <Tab
