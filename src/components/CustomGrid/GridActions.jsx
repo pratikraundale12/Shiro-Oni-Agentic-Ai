@@ -542,6 +542,7 @@ export const GridActions = ({
                     value={clusterSelectedValue}
                     placeholder="Select Cluster"
                     onChange={handleClusterChange}
+                    backgroundColor={theme.colors.lightGrey}
                   />
                 </DropdownContainer>
                 <DateRangePickerInput
