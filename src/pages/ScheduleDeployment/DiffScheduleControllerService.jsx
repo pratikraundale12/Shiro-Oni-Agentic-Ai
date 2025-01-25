@@ -16,8 +16,8 @@ const DataWrapper = styled.div`
 `;
 
 const ScrollSetGrey = styled.div`
-  height: calc(100vh - 341px);
-  max-height: calc(100vh - 341px);
+  height: calc(100vh - 381px);
+  max-height: calc(100vh - 381px);
   overflow-x: hidden;
   overflow-y: auto;
 `;

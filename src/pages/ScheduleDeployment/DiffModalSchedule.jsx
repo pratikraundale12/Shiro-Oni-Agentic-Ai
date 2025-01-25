@@ -7,8 +7,8 @@ import { KDFM } from '../../constants';
 import DiffScheduleVariables from './DiffScheduleVariables';
 import DiffScheduleParameter from './DiffScheduleParamter';
 import DiffScheduleCS from './DiffScheduleControllerService';
+import { theme } from '../../styles';
 const GreyBoxNamespace = styled.div`
-  //   background-color: #f5f7fa;
   padding: 5px 10px 0px 10px;
   border-radius: 20px;
 `;
@@ -42,12 +42,17 @@ const TabContent = styled.div`
   padding: 0px 0.5rem;
   border-radius: 0.25rem;
 `;
+const WarningSection = styled.div`
+  font-size: 16px;
+  // color: ${props => props.theme.colors.primary};
+`;
 export const DiffModalScheduleList = props => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
   const modalOpen = useSelector(SchedularSelectors.getIsDiffModalOpen);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
-
+  const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
+  console.log(scheduleDiffData, 'scheduleDiffData');
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
@@ -84,6 +89,14 @@ export const DiffModalScheduleList = props => {
         noPadding={true}
       >
         <GreyBoxNamespace className="w-100  mb-3">
+          <div className="d-flex" style={{ fontSize: '16px' }}>
+            <WarningSection style={{ color: ` ${theme.colors.primary}` }}>
+              Version changes &nbsp; : &nbsp;
+            </WarningSection>
+            V {scheduleDiffData?.previous_version || null} to V
+            {scheduleDiffData?.current_version}
+          </div>
+
           <TabWrapper className="nav">
             <Tab
               active={activeTab === KDFM.PARAMETER_CONTEXT}

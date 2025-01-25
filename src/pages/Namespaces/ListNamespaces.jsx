@@ -115,6 +115,18 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setVersionListReduxData([]));
   }, []);
 
+  const ListForTooltip = item => {
+    return (
+      <>
+        {item?.name && (
+          <>
+            <li>Name : {item?.name}</li>
+            {<li>ID : {item?.id}</li>}
+          </>
+        )}
+      </>
+    );
+  };
   const COLUMNS = [
     {
       label: (
@@ -129,7 +141,7 @@ export const ListNamespaces = () => {
       renderCell: item => (
         <>
           <StyledButton
-            data-tooltip-id={`tooltip-${item?.name}`}
+            data-tooltip-id={`${item?.id}-name`}
             key={item.flowId}
             tabIndex="0"
             onClick={() => {
@@ -147,10 +159,10 @@ export const ListNamespaces = () => {
             {item?.name}
           </StyledButton>
           <ReactTooltip
-            id={`tooltip-${item?.name}`}
+            id={`${item?.id}-name`}
             place="right"
             // effect="solid"
-            content={item?.name}
+            content={ListForTooltip(item)}
             style={{
               width: 'auto',
               whiteSpace: 'normal',
