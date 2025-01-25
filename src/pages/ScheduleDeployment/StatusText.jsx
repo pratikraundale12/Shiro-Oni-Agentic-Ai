@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import styled from 'styled-components';
 
 const statusColors = {
-  PENDING: '#b5b5bd',
+  PENDING: '#F2891F',
   APPROVED: '#0cbf59',
   NOT_APPROVED: 'red',
   'IN PROGRESS': '#444445',
@@ -14,6 +14,9 @@ const statusColors = {
   'NOT APPROVED': 'red',
   'N/A': '#b5b5bd',
   CANCELLED: 'red',
+  FAILED: 'red',
+  REJECTED: 'red',
+  'TIME LAPSED': '#F2891F',
 };
 
 const StatusTexts = styled.div`
