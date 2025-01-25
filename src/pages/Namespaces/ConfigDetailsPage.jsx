@@ -172,6 +172,15 @@ const ConfigDetailsPage = () => {
     scheduleDeployTime && scheduleDeployTime > currentTime;
   const handleContinue = () => {
     if (!isUpgrade) {
+      if (scheduleUpgradeFromList && !scheduleDeployTime) {
+        setScheduleErrors({
+          scheduled_time: {
+            message: KDFM.SELECT_SCHEDULE_TIME,
+          },
+        });
+        return;
+      }
+
       if (singleNameSpace?.invalidCount > 0) {
         setIsModalOpen(true);
         return;

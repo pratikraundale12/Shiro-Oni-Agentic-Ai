@@ -44,6 +44,20 @@ const StyledButton = styled.button`
   border: none;
   background: transparent;
 `;
+const TextColor = styled.div`
+  color: ${props => props.theme.colors.darker};
+  font-family: ${props => props.theme.fontNato};
+  font-size: ${props => props.theme.size.lg};
+  font-weight: 400;
+  text-transform: ${props => (props.capitalizeText ? 'capitalize' : 'none')};
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  z-index: 2;
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
+`;
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -329,8 +343,35 @@ export const ListScheduleDeployment = () => {
   const ListForTooltip = item => {
     return (
       <>
-        <li>Name : {item?.namespace_name}</li>
-        {item?.namespace_id !== 'root' && <li>ID : {item?.namespace_id}</li>}
+        {item?.namespace_name && (
+          <>
+            <li>Name : {item?.namespace_name}</li>
+            {item?.namespace_id !== 'root' && (
+              <li>ID : {item?.namespace_id}</li>
+            )}
+          </>
+        )}
+      </>
+    );
+  };
+  const pgNameDisplay = item => {
+    return (
+      <>
+        <TextColor data-tooltip-id={`${item?.id}`}>
+          {item?.namespace_name}
+        </TextColor>
+        <ReactTooltip
+          id={`${item?.id}`}
+          place="left"
+          content={ListForTooltip(item)}
+          style={{
+            width: 'max-content',
+            maxWidth: '400px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+            zIndex: 9999,
+          }}
+        />
       </>
     );
   };
@@ -354,13 +395,8 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => (
-        <TextRender
-          text={item?.namespace_name || 'N/A'}
-          ListForTooltip={ListForTooltip(item)}
-        />
-      ),
-      width: '12%',
+      renderCell: item => pgNameDisplay(item),
+      resize: true,
     },
     {
       label: (
@@ -380,20 +416,18 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => <TextRender text={item?.cluster_name || 'N/A'} />,
-      width: '11%',
+      renderCell: item => <TextRender text={item?.cluster_name} />,
+      resize: true,
     },
     {
       label: 'Version',
-      renderCell: item => <TextRender text={item?.version || 'N/A'} />,
-      width: '5%',
+      renderCell: item => <TextRender text={item?.version} />,
+      resize: true,
     },
     {
       label: 'Post Deploy State',
-      renderCell: item => (
-        <TextRender text={item?.deployment_status || 'N/A'} />
-      ),
-      width: '10%',
+      renderCell: item => <TextRender text={item?.deployment_status} />,
+      resize: true,
     },
     {
       label: (
@@ -413,8 +447,8 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => <TextRender text={item?.scheduled_by || 'N/A'} />,
-      width: '8%',
+      renderCell: item => <TextRender text={item?.scheduled_by} />,
+      resize: true,
     },
     {
       label: (
@@ -435,12 +469,10 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => (
-        <TextRender
-          text={convertDateTime(item?.scheduled_date_time) || 'N/A'}
-        />
+        <TextRender text={convertDateTime(item?.scheduled_date_time)} />
       ),
-      width: '14%',
       sort: { sortKey: 'deploy_time' },
+      resize: true,
     },
     {
       label: 'Approver group/Approver',
@@ -450,7 +482,7 @@ export const ListScheduleDeployment = () => {
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
-      width: '14%',
+      resize: true,
     },
     {
       label: 'Status',
@@ -460,12 +492,12 @@ export const ListScheduleDeployment = () => {
           item={item}
         />
       ),
-      width: '10%',
+      resize: true,
     },
     {
       label: 'Actions',
-      width: '16%',
       renderCell: item => getActionsMenu(item),
+      resize: true,
     },
   ];
 

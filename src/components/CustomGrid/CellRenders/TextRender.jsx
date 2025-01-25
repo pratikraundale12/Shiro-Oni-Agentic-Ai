@@ -26,6 +26,7 @@ export const TextRender = ({
   ListForTooltip = null,
   ...rest
 }) => {
+  text = text ? text : 'N/A';
   const textToRender = typeof text === 'number' ? String(text) : text;
   return (
     <TextColor

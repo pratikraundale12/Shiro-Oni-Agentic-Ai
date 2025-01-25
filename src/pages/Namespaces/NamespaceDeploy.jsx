@@ -7,6 +7,7 @@ import { Tooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   GreenRightCircleIcon,
+  InvalidProcessorIcon,
   SmallNotThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
@@ -194,13 +195,7 @@ const NamespaceDeploy = ({
     NamespacesSelectors.getSelectedNamespace
   );
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
-  useEffect(() => {
-    if (isUpgrade) {
-      if (deployOrUpgradeDetails?.invalidCount > 0) {
-        toast.warning(deployOrUpgradeDetails?.invalid_message);
-      }
-    }
-  }, [deployOrUpgradeDetails?.invalidCount]);
+
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
 
@@ -238,15 +233,25 @@ const NamespaceDeploy = ({
       >
         <ModalBody className="modal-body">
           <div className="d-flex justify-content-center align-items-center">
-            <ModalIcon className="d-flex me-3 ">
-              <GreenRightCircleIcon />
+            <ModalIcon className="d-flex me-3 ms-2 ">
+              {deployOrUpgradeDetails?.invalidCount > 0 ? (
+                <InvalidProcessorIcon width={80} height={80} />
+              ) : (
+                <GreenRightCircleIcon />
+              )}
             </ModalIcon>
             <ModalHFive>
-              Process Group Successfully&nbsp;
-              {deployByRegistryFlow
-                ? `Deployed To ${currentSelectedCluster.label}`
-                : `${type.charAt(0).toUpperCase() + type.slice(1)}d
+              {deployOrUpgradeDetails?.invalidCount > 0 ? (
+                deployOrUpgradeDetails?.invalid_message
+              ) : (
+                <>
+                  Process Group Successfully&nbsp;
+                  {deployByRegistryFlow
+                    ? `Deployed To ${currentSelectedCluster.label}`
+                    : `${type.charAt(0).toUpperCase() + type.slice(1)}d
                 To ${currentSelectedCluster.label}`}
+                </>
+              )}
             </ModalHFive>
           </div>
           <RowModal>

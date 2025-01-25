@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { ProfileIcon } from '../../../assets';
@@ -20,16 +20,37 @@ const ProfileImage = styled.img`
   border-radius: 50%;
 `;
 
-export const ProfileRender = ({ url }) => (
-  <ImageContainer>
-    {url ? (
-      <ProfileImage src={url} alt="profile" width={40} height={40} />
-    ) : (
-      <ProfileIcon width={40} height={40} />
-    )}
-  </ImageContainer>
-);
+const checkImageExists = url => {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
+};
+
+export const ProfileRender = ({ url }) => {
+  const [isValidImage, setIsValidImage] = useState(false);
+
+  useEffect(() => {
+    if (url) {
+      checkImageExists(url).then(exists => setIsValidImage(exists));
+    } else {
+      setIsValidImage(false);
+    }
+  }, [url]);
+
+  return (
+    <ImageContainer>
+      {isValidImage ? (
+        <ProfileImage src={url} alt="profile" />
+      ) : (
+        <ProfileIcon width={40} height={40} />
+      )}
+    </ImageContainer>
+  );
+};
 
 ProfileRender.propTypes = {
-  url: PropTypes.string.isRequired,
+  url: PropTypes.string,
 };

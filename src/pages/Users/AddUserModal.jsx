@@ -11,7 +11,7 @@ import {
   editUserSchema,
   userSchema,
 } from '../../components/UserManagement/userValidation';
-import { API_URL } from '../../constants';
+import { API_URL, ACCESS_TOKEN } from '../../constants';
 import { Button, InputField, Modal, PasswordField } from '../../shared';
 import {
   AuthenticationActions,
@@ -179,6 +179,7 @@ export const AddUserModal = props => {
           });
           dispatch(UsersActions.setUserModalOpen(false));
         }
+        localStorage.setItem(ACCESS_TOKEN, response.data.token);
       } else {
         toast.error(response.message);
       }

@@ -798,7 +798,9 @@ export const LdapConfig = () => {
       <SuccessTestModal
         successTest={successTest}
         setSuccessTest={setSuccessTest}
-        name="Configuration"
+        name="Connected with LDAP successfully"
+        text="Continue with the next steps"
+        title="Connection Successful"
       />
       <SyncUsersSuccess successTest={syncUsers} setSuccessTest={setSyncUsers} />
       <AddNewRoleModal />

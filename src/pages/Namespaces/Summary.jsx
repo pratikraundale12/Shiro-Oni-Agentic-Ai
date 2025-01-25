@@ -427,8 +427,22 @@ const Summary = () => {
   );
   const newProcessorEC =
     registryAllDetails.controllerServicesData?.externalControllerServices?.filter(
-      element => element?.newProcessorAvailable
+      element =>
+        element?.newProcessorAvailable === true ||
+        element?.newProcessorAvailable === false
     );
+  const array2Map = new Map(
+    controllerServiceReduxData?.externalServicesData?.map(item => [
+      item?.identifier,
+      item,
+    ])
+  );
+  const updatedArrayForES = newProcessorEC?.map(
+    item => array2Map?.get(item.identifier) || item
+  );
+  // const extServiceAllData =
+  newProcessorEC.controllerServiceReduxData?.externalServicesData;
+
   // controllerServiceReduxData.externalServicesData = newProcessorEC;
   const filteredCSArrayDiff = CSorignalData.filter(item1 =>
     controllerServiceReduxData?.localServicesData?.some(
@@ -440,7 +454,7 @@ const Summary = () => {
     ...((!isEmpty(newProcessorEC) ||
       controllerServiceReduxData.externalServicesData) && {
       externalServicesData: !isEmpty(newProcessorEC)
-        ? newProcessorEC
+        ? updatedArrayForES
         : controllerServiceReduxData.externalServicesData,
     }),
     localServicesData: controllerServiceReduxData.localServicesData,
@@ -850,7 +864,6 @@ const Summary = () => {
       dispatch(NamespacesActions.upgradeCluster(payload));
     }
   };
-  console.log(timeDeployScheduleDeployment, 'timeDeployScheduleDeployment');
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -1042,7 +1055,7 @@ const Summary = () => {
                             onClick={handleRegistryClick}
                             style={{
                               cursor: 'pointer',
-                              color: 'blue',
+                              color: '#FF7A00',
                               textDecoration: 'underline',
                             }}
                           >
@@ -1083,7 +1096,7 @@ const Summary = () => {
                             onClick={handleClick}
                             style={{
                               cursor: 'pointer',
-                              color: 'blue',
+                              color: '#FF7A00',
                               textDecoration: 'underline',
                             }}
                           >

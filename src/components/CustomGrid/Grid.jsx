@@ -191,7 +191,7 @@ export const Grid = ({
       Table: `
         --data-table-library_grid-template-columns: ${columns
           .map(column => column.width || 'auto')
-          .join(' ')} !important;
+          .join(' ')};
         margin-bottom: 0;
 
         th, td {

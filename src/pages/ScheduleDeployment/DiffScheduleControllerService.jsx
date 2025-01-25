@@ -72,12 +72,12 @@ const DiffScheduleCS = () => {
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {!isEmpty(scheduleDiffData?.diffControllerServices) && (
+        {
           <WarningSection className="mt-2">
             * External controller services changes take effect immediately when
             changed, so the changes made are not listed here
           </WarningSection>
-        )}
+        }
 
         {scheduleDiffData?.diffControllerServices?.map(element => (
           <div className="mt-4" key={element?.identifier}>

@@ -119,9 +119,11 @@ export const ListNamespaces = () => {
     {
       label: (
         <>
-          {' '}
-          {KDFM.NAMESPACE}{' '}
-          <ProcessGroupSorting sortProperty="name" module="namespaces" />
+          <ProcessGroupSorting
+            sortProperty="name"
+            module="namespaces"
+            clickableName={KDFM.NAMESPACE}
+          />
         </>
       ),
       renderCell: item => (
@@ -163,8 +165,11 @@ export const ListNamespaces = () => {
     {
       label: (
         <>
-          {KDFM.FLOW_NAME}
-          <ProcessGroupSorting sortProperty="flowName" module="namespaces" />
+          <ProcessGroupSorting
+            sortProperty="flowName"
+            module="namespaces"
+            clickableName={KDFM.FLOW_NAME}
+          />
         </>
       ),
       renderCell: item => (
@@ -189,8 +194,11 @@ export const ListNamespaces = () => {
     {
       label: (
         <>
-          {KDFM.BUCKET_NAME}{' '}
-          <ProcessGroupSorting sortProperty="bucketName" module="namespaces" />
+          <ProcessGroupSorting
+            sortProperty="bucketName"
+            module="namespaces"
+            clickableName={KDFM.BUCKET_NAME}
+          />
         </>
       ),
       renderCell: item => (
