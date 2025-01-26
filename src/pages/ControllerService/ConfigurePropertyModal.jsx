@@ -6,9 +6,9 @@ import { CheckboxField, InputField, Modal } from '../../shared';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
-// import { toast } from 'react-toastify';
-// import { KDFM } from '../../constants';
 import { Button } from '../../shared';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const ModalBody = styled.div`
   position: relative;
@@ -32,39 +32,34 @@ const ConfigurePropertyModal = ({
   const isModalOpen = useSelector(
     NamespacesSelectors.getIsConfigurePropertyControllerServiceModalOpen
   );
-  const { register, handleSubmit, reset, watch } = useForm({});
+  // const { register, handleSubmit, reset, watch } = useForm({});
+  const nameSchema = yup.object().shape({
+    name: yup.string().required('Name is required'),
+  });
+  const {
+    register,
+    reset,
+    handleSubmit,
+    watch,
+    setValue,
+    control,
+    formState: { errors },
+  } = useForm({
+    // defaultValues: DEFAULT_VALUES,
+    resolver: yupResolver(!addNewProperty ? nameSchema : null),
+  });
 
   const nameState = watch('name');
   const sensitiveState = watch('sensitive');
-  console.log(selectedItemFromList?.id, 'selectedItemFromList>>>>>>>>>>>>>>>>');
   const handleFormSubmit = data => {
-    console.log(data);
-
-    // const filterData = updatedData.filter(item => {
-    //   return item.name != data.name;
-    // });
-    // setUpdatedData(() => [
-    //   ...filterData,
-    //   {
-    //     name: data.name,
-    //     value: data.value,
-    //     sensitive: data.sensitive,
-    //   },
-    // ]);
-    // setListPropertTableData(prevArray => [
-    //   ...prevArray,
-    //   {
-    //     ...data,
-    //     displayName: data?.name,
-    //     sensitive: data?.sensitive,
-    //     empty_string_set: false,
-    //     new_added: true,
-    //   },
-    // ]);
-    // toast.success(KDFM.PROPERTY_ADDED);
-    // dispatch(
-    //   NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(false)
-    // );
+    console.log(data?.name);
+    const payload = {
+      id: selectedItemFromList?.id,
+      name: data?.name,
+      sensitiveState: data?.sensitive,
+    };
+    setAddNewProperty(true);
+    dispatch(NamespacesActions.fetchAddPropertyToAdd(payload));
   };
   const handleGetValue = () => {
     console.log(nameState, 'nameState');
@@ -105,6 +100,8 @@ const ConfigurePropertyModal = ({
             name="name"
             type="text"
             label="Name"
+            control={control}
+            errors={errors}
             icon={<QRIcons />}
             register={register}
           />
