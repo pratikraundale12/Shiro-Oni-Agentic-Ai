@@ -351,9 +351,9 @@ export const ListScheduleDeployment = () => {
       <>
         {item?.namespace_name && (
           <>
-            <li>Name : {item?.namespace_name}</li>
+            <li style={{ textAlign: 'left' }}>Name : {item?.namespace_name}</li>
             {item?.namespace_id !== 'root' && (
-              <li>ID : {item?.namespace_id}</li>
+              <li style={{ textAlign: 'left' }}>ID : {item?.namespace_id}</li>
             )}
           </>
         )}
