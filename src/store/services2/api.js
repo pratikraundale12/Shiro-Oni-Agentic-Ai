@@ -38,10 +38,20 @@ const create = (baseURL = `${API_URL}/api`) => {
   api.axiosInstance.interceptors.response.use(
     response => response,
     error => {
-      if (error.response && error.response.data.message === 'jwt expired') {
-        localStorage.removeItem(ACCESS_TOKEN);
-        history.push('/login');
+      if (error.response) {
+        const { data } = error.response;
+        if (data.message === 'jwt expired') {
+          localStorage.removeItem(ACCESS_TOKEN);
+          history.push('/login');
+        }
+
+        if (data.raw?.log_out) {
+          localStorage.removeItem(ACCESS_TOKEN);
+          history.push('/login');
+        }
       }
+
+      // Reject the promise with the error
       return Promise.reject(error);
     }
   );

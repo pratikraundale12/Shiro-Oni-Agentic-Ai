@@ -51,7 +51,7 @@ const StyledButton = styled.button`
   background: transparent;
 `;
 const TextColor = styled.div`
-  color: ${props => props.theme.colors.darker};
+  color: #ff7700;
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.lg};
   font-weight: 400;
@@ -412,7 +412,12 @@ export const ListScheduleDeployment = () => {
         <>
           <button
             onClick={() => handleProcessGroupClick(item)}
-            style={{ background: 'none' }}
+            style={{
+              background: 'none',
+              textDecoration: 'underline',
+              color: '#ff7700',
+            }}
+            data-tooltip-id={`${item?.id}`}
           >
             {pgNameDisplay(item)}
           </button>
