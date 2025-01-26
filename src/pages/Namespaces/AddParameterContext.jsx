@@ -122,7 +122,6 @@ const AddParameterContext = ({
     resolver: yupResolver(parameterContextSchema),
     defaultValues: DEFAULT_VALUES,
   });
-
   useEffect(() => {
     if (isAddParameterContextOpen?.isOpen) {
       if (
@@ -166,7 +165,12 @@ const AddParameterContext = ({
     if (!data) return;
     const processData = {
       ...data,
-      value: !data?.value || data?.check ? null : data?.value,
+      value:
+        !data?.value || data?.check
+          ? null
+          : isEmpty(data.value)
+            ? null
+            : data.value,
     };
     const nameExists = (contextList, name) =>
       contextList?.some(

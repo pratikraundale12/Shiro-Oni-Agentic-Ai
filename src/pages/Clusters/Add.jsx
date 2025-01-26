@@ -390,7 +390,15 @@ export const Add = () => {
       .string()
       .min(3, 'Registry Name must be at least 3 characters long')
       .max(30, 'Registry Name must be at most 30 characters long')
-      .required('Registry Name is required'),
+      .required('Registry Name is required')
+      .test(
+        'unique-registry-name',
+        'Registry name already exists',
+        function (value) {
+          if (!value) return true;
+          return !registries?.some(reg => reg.label === value);
+        }
+      ),
     registryUrl: yup
       .string()
       .url('Enter a valid Registry URL')
@@ -539,6 +547,9 @@ export const Add = () => {
   const checkDuplicateName = filteredGridData?.some(
     reg => reg.name === watchedFields?.[0]
   );
+  const checkDuplicateRegistryName = registries?.some(
+    reg => reg.name === watchedFields?.[2]
+  );
   const checkDuplicateRegistry = registries?.some(
     reg => reg.registry_url === watchedFields?.[3]
   );
@@ -670,16 +681,25 @@ export const Add = () => {
     }
 
     if (e.key === 'Enter' || e.key === ',' || e.type === 'blur') {
-      const trimmedValue = value.trim().replace(/,$/, ''); // Remove trailing comma if any
+      const trimmedValue = value.trim().replace(/,$/, '');
       if (!trimmedValue) return;
 
       if (trimmedValue.length > 20) {
         toast.error('Maximum 20 characters allowed');
-        return;
       }
 
       const currentTags = tags.split(',').filter(tag => tag);
-      if (currentTags.length >= 5) return;
+
+      // Prevent adding duplicates
+      if (currentTags.includes(trimmedValue)) {
+        toast.error('Tag already exists');
+        return;
+      }
+
+      if (currentTags.length >= 5) {
+        toast.error('Tag limit reached (5 tags max)');
+        return;
+      }
 
       setTags([...currentTags, trimmedValue].join(','));
       e.target.value = '';
@@ -773,31 +793,33 @@ export const Add = () => {
                   : {}
               }
               disabled={
-                watchedFields?.[1] !== data?.nifi_url ||
-                watchedFields?.[0] !== data?.name ||
-                !checkEditSave()
+                clusterId &&
+                (watchedFields?.[1] !== data?.nifi_url ||
+                  watchedFields?.[0] !== data?.name ||
+                  !checkEditSave())
               }
               data-tooltip-id="navButtonTooltip"
             >
               {KDFM.REGISTRY_DETAILS}
             </NavButton>
 
-            {(watchedFields?.[1] !== data?.nifi_url ||
-              watchedFields?.[0] !== data?.name ||
-              !checkEditSave()) && (
-              <ReactTooltip
-                id="navButtonTooltip"
-                place="right"
-                effect="solid"
-                content="You have unsaved changes on Cluster Details"
-                style={{
-                  whiteSpace: 'normal',
-                  zIndex: 9999,
-                }}
-                event="focus"
-                eventOff="blur"
-              />
-            )}
+            {clusterId &&
+              (watchedFields?.[1] !== data?.nifi_url ||
+                watchedFields?.[0] !== data?.name ||
+                !checkEditSave()) && (
+                <ReactTooltip
+                  id="navButtonTooltip"
+                  place="right"
+                  effect="solid"
+                  content="You have unsaved changes on Cluster Details"
+                  style={{
+                    whiteSpace: 'normal',
+                    zIndex: 9999,
+                  }}
+                  event="focus"
+                  eventOff="blur"
+                />
+              )}
           </>
         </NavTabs>
 
@@ -861,8 +883,8 @@ export const Add = () => {
                 }
                 name="tags"
                 {...register('tags')}
-                onKeyDown={handleKeyDown}
-                onBlur={handleKeyDown}
+                onKeyDown={e => handleKeyDown(e)}
+                onBlur={e => handleKeyDown(e)}
                 aria-label="Add a tag"
               />
 
@@ -1029,7 +1051,10 @@ export const Add = () => {
                     <Button
                       onClick={() => setIsCertificateOpen(true)}
                       disabled={
-                        testSuccess || !dataFill || checkDuplicateRegistry
+                        testSuccess ||
+                        !dataFill ||
+                        checkDuplicateRegistry ||
+                        checkDuplicateRegistryName
                       }
                     >
                       {KDFM.ADD_CERTIFICATE}
@@ -1041,7 +1066,10 @@ export const Add = () => {
                     <Button
                       onClick={() => setIsCredOpen(true)}
                       disabled={
-                        testSuccess || !dataFill || checkDuplicateRegistry
+                        testSuccess ||
+                        !dataFill ||
+                        checkDuplicateRegistry ||
+                        checkDuplicateRegistryName
                       }
                     >
                       {KDFM.ENTER_CREDENTIALS}
