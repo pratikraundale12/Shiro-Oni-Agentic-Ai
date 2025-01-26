@@ -136,7 +136,7 @@ const AddParameterContext = ({
           name: parameterContextItem?.name,
           value:
             parameterContextItem?.sensitive === 'true'
-              ? null
+              ? ''
               : parameterContextItem?.value,
           sensitive: isString(parameterContextItem?.sensitive)
             ? parameterContextItem?.sensitive
