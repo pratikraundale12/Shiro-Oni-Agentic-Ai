@@ -165,12 +165,7 @@ const AddParameterContext = ({
     if (!data) return;
     const processData = {
       ...data,
-      value:
-        !data?.value || data?.check
-          ? null
-          : isEmpty(data.value)
-            ? null
-            : data.value,
+      value: data?.check ? '' : isEmpty(data.value) ? null : data.value,
     };
     const nameExists = (contextList, name) =>
       contextList?.some(

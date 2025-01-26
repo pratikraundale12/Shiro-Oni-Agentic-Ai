@@ -227,7 +227,11 @@ const ParameterContextTab = () => {
               isGroupUpdated = true;
               return {
                 ...parameter,
-                value: isEmpty(data.value) ? null : data.value,
+                value: data?.check
+                  ? ''
+                  : isEmpty(data.value)
+                    ? null
+                    : data.value,
                 check: data.check,
                 description: data.description,
               };
@@ -278,7 +282,11 @@ const ParameterContextTab = () => {
             return param.name === data.name
               ? {
                   ...param,
-                  value: isEmpty(data.value) ? null : data.value,
+                  value: data?.check
+                    ? ''
+                    : isEmpty(data.value)
+                      ? null
+                      : data.value,
                   check: data.check,
                   description: data.description,
                 }
@@ -301,7 +309,11 @@ const ParameterContextTab = () => {
                 return parameter.name === data.name
                   ? {
                       ...parameter,
-                      value: data.value,
+                      value: data?.check
+                        ? ''
+                        : isEmpty(data.value)
+                          ? null
+                          : data.value,
                       check: data.check,
                       description: data.description,
                     }
