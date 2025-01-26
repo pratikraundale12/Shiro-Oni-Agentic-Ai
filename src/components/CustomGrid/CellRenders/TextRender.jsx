@@ -17,6 +17,13 @@ const TextColor = styled.div`
     font-size: 14px !important;
   }
 `;
+const TextDispalyEllipses = styled.span`
+  max-width: 12ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+`;
 
 export const TextRender = ({
   text,
@@ -34,7 +41,7 @@ export const TextRender = ({
       capitalizeText={capitalizeText}
       data-tooltip-id={textToRender}
     >
-      <span>{textToRender}</span>
+      <TextDispalyEllipses>{textToRender}</TextDispalyEllipses>
 
       {toolTip && (
         <ReactTooltip
