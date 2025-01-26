@@ -227,7 +227,7 @@ const ParameterContextTab = () => {
               isGroupUpdated = true;
               return {
                 ...parameter,
-                value: data.value,
+                value: isEmpty(data.value) ? null : data.value,
                 check: data.check,
                 description: data.description,
               };
@@ -278,7 +278,7 @@ const ParameterContextTab = () => {
             return param.name === data.name
               ? {
                   ...param,
-                  value: data.value,
+                  value: isEmpty(data.value) ? null : data.value,
                   check: data.check,
                   description: data.description,
                 }

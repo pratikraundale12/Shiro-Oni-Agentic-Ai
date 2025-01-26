@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
 import { KDFM } from '../../constants';
@@ -9,7 +10,6 @@ import {
   Modal,
   RadioSelectField,
 } from '../../shared';
-import { toast } from 'react-toastify';
 
 const ModalBody = styled.div`
   position: relative;
