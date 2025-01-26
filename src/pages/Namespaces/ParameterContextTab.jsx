@@ -128,31 +128,32 @@ const ParameterContextTab = () => {
           <EnhancedTextRender
             key={item?.value}
             capitalizeText={false}
-            text={
-              (item.sensitive === true || item.sensitive === 'true') &&
-              !item?.value
-                ? KDFM.NO_VALUE_SET
-                : item.sensitive === true || item.sensitive === 'true'
-                  ? KDFM.SENSITIVE_VALUE_SET
-                  : item.value
-                    ? truncateString(item.value, 40)
-                    : item.check
-                      ? KDFM.EMPTY_STRING_SET
-                      : KDFM.NO_VALUE_SET
-            }
-            tooltipText={
-              (item.sensitive === true || item.sensitive === 'true') &&
-              !item?.value &&
-              !item.check
-                ? KDFM.NO_VALUE_SET
-                : item.sensitive === true || item.sensitive === 'true'
-                  ? KDFM.SENSITIVE_VALUE_SET
-                  : item.value
-                    ? item.value
-                    : item.check
-                      ? KDFM.EMPTY_STRING_SET
-                      : KDFM.NO_VALUE_SET
-            }
+            text={(() => {
+              if (item?.sensitive && item?.value) {
+                return KDFM.SENSITIVE_VALUE_SET;
+              } else if (item?.sensitive && !item?.value) {
+                return KDFM.NO_VALUE_SET;
+              } else if (item?.value === '') {
+                return KDFM.EMPTY_STRING_SET;
+              } else if (item?.value) {
+                return truncateString(item.value, 40);
+              } else {
+                return KDFM.NO_VALUE_SET;
+              }
+            })()}
+            tooltipText={(() => {
+              if (item?.sensitive && !item?.value) {
+                return KDFM.NO_VALUE_SET;
+              } else if (item?.sensitive) {
+                return KDFM.SENSITIVE_VALUE_SET;
+              } else if (item?.value) {
+                return item.value;
+              } else if (item?.value === '') {
+                return KDFM.EMPTY_STRING_SET;
+              } else {
+                return KDFM.NO_VALUE_SET;
+              }
+            })()}
           />
         );
       },

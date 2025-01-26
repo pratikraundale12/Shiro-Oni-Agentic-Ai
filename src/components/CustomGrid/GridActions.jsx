@@ -527,6 +527,12 @@ export const GridActions = ({
                     </div>
                   </Button>
                 )}
+
+                <DateRangePickerInput
+                  value={selectedRange}
+                  handleChange={handleChange}
+                  customRanges={customRanges}
+                />
                 <DropdownContainer>
                   <StyledSelectField
                     size="sm"
@@ -545,11 +551,6 @@ export const GridActions = ({
                     backgroundColor={theme.colors.lightGrey}
                   />
                 </DropdownContainer>
-                <DateRangePickerInput
-                  value={selectedRange}
-                  handleChange={handleChange}
-                  customRanges={customRanges}
-                />
               </ButtonsContainerScheduleList>
             }
           </>
