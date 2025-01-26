@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { cluster } from 'd3';
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,7 +22,12 @@ import { Grid, IconButton, TextRender } from '../../components';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import SortingComponent from '../../shared/SortingComponent';
-import { AuthenticationSelectors } from '../../store';
+import {
+  AuthenticationSelectors,
+  ClustersActions,
+  GridActions,
+  NamespacesSelectors,
+} from '../../store';
 import {
   SchedularActions,
   SchedularSelectors,
@@ -376,6 +382,13 @@ export const ListScheduleDeployment = () => {
     );
   };
 
+  const handleProcessGroupClick = item => {
+    const updatedUrl = item?.nifi_url?.endsWith('/nifi')
+      ? `${item?.nifi_url}?processGroupId=${item?.namespace_id}`
+      : `${item?.nifi_url}/nifi?processGroupId=${item?.namespace_id}`;
+    window.open(updatedUrl, '_blank');
+  };
+
   const COLUMNS = [
     {
       label: (
@@ -395,7 +408,16 @@ export const ListScheduleDeployment = () => {
           </button>
         </>
       ),
-      renderCell: item => pgNameDisplay(item),
+      renderCell: item => (
+        <>
+          <button
+            onClick={() => handleProcessGroupClick(item)}
+            style={{ background: 'none' }}
+          >
+            {pgNameDisplay(item)}
+          </button>
+        </>
+      ),
       resize: true,
     },
     {
@@ -535,7 +557,9 @@ export const ListScheduleDeployment = () => {
     deploy_time: data =>
       data.sort((a, b) => a?.deploy_time?.localeCompare(b?.deploy_time)),
   };
-
+  useEffect(() => {
+    dispatch(ClustersActions.fetchClusters());
+  }, [dispatch]);
   return (
     <>
       <ModalWithIcon

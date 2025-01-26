@@ -147,6 +147,7 @@ export const Grid = ({
     ActivityHistorySelectors.getSelectedEntity
   );
   const [selectedRole, setSelectedRole] = useState(null);
+  const [clusterSelectedValue, setClusterSelectedValue] = useState(null);
 
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
@@ -278,6 +279,10 @@ export const Grid = ({
             selectedRole?.value !== 'all' && {
               role_id: selectedRole?.value,
             }),
+          ...(location?.pathname?.includes('schedule-deployment') &&
+            clusterSelectedValue?.label !== 'All' && {
+              clusterName: clusterSelectedValue?.label,
+            }),
 
           ...(location?.pathname?.match(
             /user-management|clusters|schedule-deployment|activity-history/
@@ -310,6 +315,7 @@ export const Grid = ({
     currentPage,
     selectedRole,
     sortingState,
+    clusterSelectedValue,
   ]);
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
@@ -371,6 +377,8 @@ export const Grid = ({
         selectedRole={selectedRole}
         sortingState={sortingState}
         setValue={setValue}
+        setClusterSelectedValue={setClusterSelectedValue}
+        clusterSelectedValue={clusterSelectedValue}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>
