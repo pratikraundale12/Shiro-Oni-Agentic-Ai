@@ -1,4 +1,4 @@
-/* eslint-disable react */
+/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
@@ -61,17 +61,17 @@ const ConfigurePropertyModal = ({
     setAddNewProperty(true);
     dispatch(NamespacesActions.fetchAddPropertyToAdd(payload));
   };
-  const handleGetValue = () => {
-    console.log(nameState, 'nameState');
-    console.log(sensitiveState, 'sensitiveState');
-    const payload = {
-      id: selectedItemFromList?.id,
-      name: nameState,
-      sensitiveState: sensitiveState,
-    };
-    setAddNewProperty(true);
-    dispatch(NamespacesActions.fetchAddPropertyToAdd(payload));
-  };
+  // const handleGetValue = () => {
+  //   console.log(nameState, 'nameState');
+  //   console.log(sensitiveState, 'sensitiveState');
+  //   const payload = {
+  //     id: selectedItemFromList?.id,
+  //     name: nameState,
+  //     sensitiveState: sensitiveState,
+  //   };
+  //   setAddNewProperty(true);
+  //   dispatch(NamespacesActions.fetchAddPropertyToAdd(payload));
+  // };
 
   const handleCloseAction = () => {
     dispatch(
@@ -111,7 +111,7 @@ const ConfigurePropertyModal = ({
             defaultChecked={false}
             register={register}
           />
-          <div className="col-4 mt-3">
+          {/* <div className="col-4 mt-3">
             <Button
               type="button"
               size={'md'}
@@ -120,7 +120,7 @@ const ConfigurePropertyModal = ({
             >
               Get Value
             </Button>
-          </div>
+          </div> */}
           {/* <InputField
             name="value"
             type="text"
