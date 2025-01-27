@@ -42,10 +42,7 @@ const TabContent = styled.div`
   padding: 0px 0.5rem;
   border-radius: 0.25rem;
 `;
-const WarningSection = styled.div`
-  font-size: 16px;
-  // color: ${props => props.theme.colors.primary};
-`;
+
 export const DiffModalScheduleList = props => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState(KDFM.PARAMETER_CONTEXT);
@@ -89,12 +86,20 @@ export const DiffModalScheduleList = props => {
         noPadding={true}
       >
         <GreyBoxNamespace className="w-100  mb-3">
-          <WarningSection
-            style={{ color: ` ${theme.colors.primary}` }}
-            className="ms-2"
-          >
-            {scheduleDiffData?.versionDetailText}
-          </WarningSection>
+          <div className="d-flex align-items-center justify-content-end mt-2">
+            <div
+              className="py-2 d-flex align-items-center gap-2 px-3"
+              style={{
+                backgroundColor: '#F5F7FA',
+                borderRadius: '10px',
+                fontSize: '16px',
+                border: `1px solid ${theme.colors.primary}`,
+                color: '#444445',
+              }}
+            >
+              {scheduleDiffData?.versionDetailText}
+            </div>
+          </div>
 
           <TabWrapper className="nav">
             <Tab
