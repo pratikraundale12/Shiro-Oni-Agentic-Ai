@@ -204,6 +204,7 @@ export const NamespacesActions = {
   setVariableLocalData: createAction(`${prefix}setVariableLocalData`),
   setIsLocalVariableUpdated: createAction(`${prefix}setIsLocalVariableUpdated`),
   setVersionListReduxData: createAction(`${prefix}setVersionListReduxData`),
+  setPcId: createAction(`${prefix}setPcId`),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -306,6 +307,7 @@ export const NAMESPACES_INITIAL_STATE = {
   isLocalVariableUpdated: false,
   versionListReduxData: [],
   propertyOptionOnDeploy: [],
+  pcId: '',
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -411,6 +413,7 @@ export const NamespacesSelectors = {
   getVariableLocalData: state => state.namespaces.variableLocalData,
   getIsLocalVariableUpdated: state => state.namespaces.isLocalVariableUpdated,
   getVersionListReduxData: state => state.namespaces.versionListReduxData,
+  getPcId: state => state.namespaces.pcId,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -959,6 +962,14 @@ const setVersionListReduxData = (state, { payload }) => {
     versionListReduxData: payload,
   };
 };
+
+const setPcId = (state, { payload }) => {
+  return {
+    ...state,
+    pcId: payload,
+  };
+};
+
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1175,7 +1186,8 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setVersionListReduxData,
         setVersionListReduxData
-      );
+      )
+      .addCase(NamespacesActions.setPcId, setPcId);
   }
 );
 //

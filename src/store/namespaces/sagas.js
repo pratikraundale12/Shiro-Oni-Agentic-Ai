@@ -300,6 +300,8 @@ export function* fetchParameterContext(
   api,
   { initialCall = true, showError = false }
 ) {
+  const pcid = yield select(NamespacesSelectors.getPcId);
+
   const deployOrUpgradeDetails = yield select(
     NamespacesSelectors.getRegistryDeployResponseData
   );
@@ -329,7 +331,8 @@ export function* fetchParameterContext(
         parameterId: parentParameterSelectData?.parent
           ? parentParameterSelectData?.id
           : deployOrUpgradeDetails?.parameterContextId ||
-            singleNamespaceData?.parameterContextId,
+            singleNamespaceData?.parameterContextId ||
+            pcid,
         includeInherited: !parentParameterSelectData?.parent,
       },
     ],

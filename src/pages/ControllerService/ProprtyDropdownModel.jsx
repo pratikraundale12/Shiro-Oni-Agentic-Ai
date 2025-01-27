@@ -32,21 +32,42 @@ const PropertyDropdownModal = ({
   isFromExternalService,
 }) => {
   const dispatch = useDispatch();
+  const parameterContextObject = useSelector(
+    NamespacesSelectors.getParameterContextListAtDeploy
+  );
   const [addNewProperty, setAddNewProperty] = useState(false);
-  const [proprtyOptionsArray, setPropertyOptionsArray] = useState([]);
+  const [isRefParams, setIsRefParams] = useState(false);
+  const [proprtyOptionsArray, setPropertyOptionsArray] = useState([
+    {
+      value: '',
+      label: 'No value set',
+    },
+  ]);
+  const [refParamsData, setRefParamsData] = useState([]);
+  useEffect(() => {
+    const options = parameterContextObject?.parameterContexts?.map(element => ({
+      value: `#{${element?.name}}`,
+      label: element?.name,
+    }));
+    setRefParamsData(options);
+  }, [parameterContextObject]);
+
   const filterData = updatedData.filter(item => {
     return item.name != selectedPropertyToEdit.name;
   });
   useEffect(() => {
-    if (selectedPropertyToEdit?.allowableValues) {
-      const optionArrayToUpdate = selectedPropertyToEdit?.allowableValues?.map(
-        element => ({
-          value: element?.allowableValue?.value,
-          label: element?.allowableValue?.displayName,
-        })
-      );
-      setPropertyOptionsArray(optionArrayToUpdate);
-    }
+    const updatedOptions = selectedPropertyToEdit?.allowableValues?.map(
+      element => ({
+        value: element?.allowableValue?.value,
+        label: element?.allowableValue?.displayName,
+      })
+    );
+
+    selectedPropertyToEdit?.allowableValues?.length &&
+      setPropertyOptionsArray([
+        { value: '', label: 'No value set' },
+        ...updatedOptions,
+      ]);
   }, [selectedPropertyToEdit]);
 
   const isModalOpen = useSelector(
@@ -65,16 +86,27 @@ const PropertyDropdownModal = ({
     value: element?.name,
     label: element?.name,
   }));
-  const [propertyOptionsDeploy, setPropertyOptionsDeploy] = useState(
-    propertyOptionOnDeploy
-  );
+  const [propertyOptionsDeploy, setPropertyOptionsDeploy] = useState([
+    { value: '', label: 'No value set' },
+  ]);
+  const pcid = useSelector(NamespacesSelectors.getPcId);
+
   useEffect(() => {
-    const options = propertyOptionOnDeploy?.map(element => ({
+    const options = propertyOptionOnDeploy.map(element => ({
       value: element?.name,
       label: element?.name,
+      id: element?.id,
     }));
-    setPropertyOptionsDeploy(options);
+
+    setPropertyOptionsDeploy(prevArray => {
+      const mergedArray = [...prevArray, ...options];
+      const uniqueArray = Array.from(
+        new Map(mergedArray.map(item => [item.id, item])).values()
+      );
+      return uniqueArray;
+    });
   }, [propertyOptionOnDeploy]);
+
   const handleClose = () => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(false));
   };
@@ -136,6 +168,7 @@ const PropertyDropdownModal = ({
           );
       }
       setAddNewProperty(false);
+      setIsRefParams(false);
     }
   }, [selectedPropertyToEdit?.add, isModalOpen]);
 
@@ -156,6 +189,12 @@ const PropertyDropdownModal = ({
       reset();
     }
   }, [isModalOpen]);
+
+  const onRefParamsClick = () => {
+    pcid !== undefined && dispatch(NamespacesActions.fetchParameterContext());
+    setIsRefParams(true);
+  };
+
   return (
     <div>
       <Modal
@@ -252,6 +291,31 @@ const PropertyDropdownModal = ({
                       size={'md'}
                       variant="secondary"
                       onClick={() => setAddNewProperty(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+            {isRefParams && (
+              <>
+                <StyledSelectField
+                  name="value"
+                  size="sm"
+                  options={refParamsData}
+                  control={control}
+                  placeholder="Select Value"
+                  backgroundColor={theme.colors.lightGrey}
+                  title="Select Status"
+                />
+                <div className="row">
+                  <div className="col-2 mt-3">
+                    <Button
+                      type="button"
+                      size={'md'}
+                      variant="secondary"
+                      onClick={() => setIsRefParams(false)}
                     >
                       Cancel
                     </Button>
