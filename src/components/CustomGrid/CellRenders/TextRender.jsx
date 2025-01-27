@@ -31,6 +31,7 @@ export const TextRender = ({
   tooltipPlacement = 'right',
   toolTip = true,
   ListForTooltip = null,
+  withEllipses = false,
   ...rest
 }) => {
   text = text ? text : 'N/A';
@@ -41,7 +42,11 @@ export const TextRender = ({
       capitalizeText={capitalizeText}
       data-tooltip-id={textToRender}
     >
-      <TextDispalyEllipses>{textToRender}</TextDispalyEllipses>
+      {withEllipses ? (
+        <TextDispalyEllipses>{textToRender}</TextDispalyEllipses>
+      ) : (
+        <span>{textToRender}</span>
+      )}
 
       {toolTip && (
         <ReactTooltip
@@ -68,4 +73,5 @@ TextRender.propTypes = {
   tooltipPlacement: PropTypes.string,
   toolTip: PropTypes.bool,
   ListForTooltip: PropTypes.string,
+  withEllipses: PropTypes.bool,
 };
