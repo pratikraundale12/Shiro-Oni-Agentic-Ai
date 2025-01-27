@@ -28,7 +28,7 @@ const PropertyDropdownModal = ({
   setListPropertTableData,
   setUpdatedData,
   updatedData,
-  isFromControllerServiceTab,
+  isUpgrade,
 }) => {
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
@@ -47,6 +47,7 @@ const PropertyDropdownModal = ({
       setPropertyOptionsArray(optionArrayToUpdate);
     }
   }, [selectedPropertyToEdit]);
+
   const isModalOpen = useSelector(
     NamespacesSelectors.getAddPropertyDropdownModal
   );
@@ -56,11 +57,23 @@ const PropertyDropdownModal = ({
   const newResponseAddedProperty = useSelector(
     NamespacesSelectors.getResponseNewAddedProperty
   );
+  const propertyOptionOnDeploy = useSelector(
+    NamespacesSelectors.getPropertyOptionOnDeploy
+  );
   const optionsToNewPropertyAdd = newPropertyToAdd?.map(element => ({
     value: element?.name,
     label: element?.name,
   }));
-
+  const [propertyOptionsDeploy, setPropertyOptionsDeploy] = useState(
+    propertyOptionOnDeploy
+  );
+  useEffect(() => {
+    const options = propertyOptionOnDeploy?.map(element => ({
+      value: element?.name,
+      label: element?.name,
+    }));
+    setPropertyOptionsArray(options);
+  }, [propertyOptionOnDeploy]);
   const handleClose = () => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(false));
   };
@@ -100,7 +113,7 @@ const PropertyDropdownModal = ({
     const selectedObject = newPropertyToAdd.find(
       element => element.name === selectedNewValue
     );
-    optionsToNewPropertyAdd?.length &&
+    selectedNewValue !== null &&
       dispatch(
         NamespacesActions.addControllerServicePropertyByDropdown(selectedObject)
       );
@@ -108,19 +121,16 @@ const PropertyDropdownModal = ({
   };
   useEffect(() => {
     if (selectedPropertyToEdit?.add && isModalOpen) {
-      if (isFromControllerServiceTab) {
-        dispatch(
-          NamespacesActions.getNewPropertyControllerServiceUpdated(
-            selectedPropertyToEdit
-          )
-        );
-      } else {
-        dispatch(
-          NamespacesActions.getNewPropertyControllerService(
-            selectedPropertyToEdit
-          )
-        );
-      }
+      dispatch(
+        NamespacesActions.getNewPropertyControllerServiceUpdated(
+          selectedPropertyToEdit
+        )
+      );
+      dispatch(
+        NamespacesActions.getNewPropertyControllerService(
+          selectedPropertyToEdit
+        )
+      );
       setAddNewProperty(false);
     }
   }, [selectedPropertyToEdit?.add, isModalOpen]);
@@ -128,6 +138,10 @@ const PropertyDropdownModal = ({
   useEffect(() => {
     if (!isEmpty(newResponseAddedProperty)) {
       setPropertyOptionsArray(prevArray => [
+        ...prevArray,
+        newResponseAddedProperty,
+      ]);
+      setPropertyOptionsDeploy(prevArray => [
         ...prevArray,
         newResponseAddedProperty,
       ]);
@@ -164,7 +178,9 @@ const PropertyDropdownModal = ({
                 <StyledSelectField
                   name="value"
                   size="sm"
-                  options={proprtyOptionsArray}
+                  options={
+                    isUpgrade ? proprtyOptionsArray : propertyOptionsDeploy
+                  }
                   control={control}
                   placeholder="Select Value"
                   backgroundColor={theme.colors.lightGrey}
@@ -182,7 +198,7 @@ const PropertyDropdownModal = ({
                 </div>
               </>
             )}
-            {addNewProperty && (
+            {addNewProperty && selectedPropertyToEdit?.add && (
               <>
                 <StyledSelectField
                   name="newService"

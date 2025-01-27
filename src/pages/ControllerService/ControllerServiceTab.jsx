@@ -1969,6 +1969,7 @@ const ControllerServiceTab = ({
           setListPropertTableData={setListPropertTableData}
           setUpdatedData={setUpdatedData}
           updatedData={updatedData}
+          isUpgrade={isUpgrade}
         />
 
         <ConfigurePropertyModal

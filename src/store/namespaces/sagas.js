@@ -927,7 +927,7 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
   });
   if (response.ok)
     yield put(
-      NamespacesActions.setNewProperToAddControllerService(response?.data?.data)
+      NamespacesActions.setPropertyOptionOnDeploy(response?.data?.data)
     );
   else if (!response.ok)
     toast.error(response?.message || response?.data?.message);
