@@ -94,6 +94,7 @@ export const NamespacesActions = {
   setNewProperToAddControllerService: createAction(
     `${prefix}setNewProperToAddControllerService`
   ),
+  setPropertyOptionOnDeploy: createAction(`${prefix}setPropertyOptionOnDeploy`),
   addControllerServicePropertyByDropdown: createAction(
     `${prefix}addControllerServicePropertyByDropdown`
   ),
@@ -304,6 +305,7 @@ export const NAMESPACES_INITIAL_STATE = {
   isLocalPcUpdated: false,
   isLocalVariableUpdated: false,
   versionListReduxData: [],
+  propertyOptionOnDeploy: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -346,6 +348,7 @@ export const NamespacesSelectors = {
     state.namespaces.isAddPropertyDropdownModalOpen,
   getNewProprtyToAddControllerService: state =>
     state.namespaces.newPropertyToAddControllerService,
+  getPropertyOptionOnDeploy: state => state.namespaces.propertyOptionOnDeploy,
   getResponseNewAddedProperty: state =>
     state.namespaces.responseNewAddedProperty,
   getIsConfigurePropertyControllerServiceModalOpen: state =>
@@ -651,6 +654,12 @@ const setNewProperToAddControllerService = (state, { payload }) => {
   return {
     ...state,
     newPropertyToAddControllerService: payload,
+  };
+};
+const setPropertyOptionOnDeploy = (state, { payload }) => {
+  return {
+    ...state,
+    propertyOptionOnDeploy: payload,
   };
 };
 const setResponseNewAddedProprty = (state, { payload }) => {
@@ -1036,6 +1045,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setNewProperToAddControllerService,
         setNewProperToAddControllerService
+      )
+      .addCase(
+        NamespacesActions.setPropertyOptionOnDeploy,
+        setPropertyOptionOnDeploy
       )
       .addCase(
         NamespacesActions.setResponseNewAddedProprty,
