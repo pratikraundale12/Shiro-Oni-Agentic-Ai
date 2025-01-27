@@ -64,6 +64,7 @@ export const InsightContainer = ({
 }) => {
   const dashboardData = useSelector(DashboardSelectors.getDashboardData);
   const getActiveCluster = localStorage.getItem('selected_cluster');
+  const parsedCluster = JSON.parse(getActiveCluster);
   const handleClick = () => {
     if (selectedNamespace?.value) {
       const updatedUrl = dashboardData?.namespaces?.nifiUrl.endsWith('/nifi')
@@ -82,9 +83,9 @@ export const InsightContainer = ({
     <Container className="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6">
       <InnerContainer
         backgroundCss={backgroundCss}
-        onClick={getActiveCluster?.label ? handleClick : undefined}
+        onClick={parsedCluster?.label ? handleClick : undefined}
         data-tooltip-id={`tooltip-${text}`}
-        style={{ cursor: getActiveCluster?.label ? 'pointer' : 'not-allowed' }}
+        style={{ cursor: parsedCluster?.label ? 'pointer' : 'not-allowed' }}
       >
         <IconContainer>
           <Icon />
@@ -94,14 +95,9 @@ export const InsightContainer = ({
         </CountDisplay>
         <InsightText>{text}</InsightText>
       </InnerContainer>
-      {getActiveCluster?.label && (
-        <ReactTooltip
-          id={`tooltip-${text}`}
-          place="top"
-          effect="solid"
-          content={`Click on ${text} to view details`}
-        />
-      )}
+      <ReactTooltip id={`tooltip-${text}`} place="top" effect="solid">
+        {parsedCluster?.label ? `Click on ${text} to view details` : ''}
+      </ReactTooltip>
     </Container>
   );
 };

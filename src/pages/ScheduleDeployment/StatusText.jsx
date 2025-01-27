@@ -20,7 +20,7 @@ const statusColors = {
 };
 
 const StatusTexts = styled.div`
-  font-family: Inter;
+  font-family: 'Red Hat Display', sans-serif;
   font-size: 16px;
   font-weight: 500;
   line-height: 19.36px;
