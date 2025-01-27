@@ -15,10 +15,7 @@ import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { InputField, Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import { LoadingSelectors, NamespacesSelectors } from '../../store';
-import {
-  ActivityHistoryActions,
-  ActivityHistorySelectors,
-} from '../../store/activityHistory/redux';
+import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { GridActions, GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
@@ -118,6 +115,7 @@ export const Grid = ({
   currentPage = 1,
   setCurrentPage = () => {},
   sortingState,
+  setSortingState,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -142,12 +140,10 @@ export const Grid = ({
   const itemsPerPage = 10;
   const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
-  const selectedEvent = useSelector(ActivityHistorySelectors.getSelectedEvent);
-  const selectedEntity = useSelector(
-    ActivityHistorySelectors.getSelectedEntity
-  );
   const [selectedRole, setSelectedRole] = useState(null);
   const [clusterSelectedValue, setClusterSelectedValue] = useState(null);
+  const [selectEvent, setSelectEvent] = useState(null);
+  const [selectEntity, setSelectEntity] = useState(null);
 
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
@@ -265,12 +261,6 @@ export const Grid = ({
               [getModuleBasedStatusKey(module)]: watchStatus,
             }),
 
-          ...(location?.pathname?.includes('activity-history') && {
-            event: selectedEvent?.value,
-          }),
-          ...(location?.pathname?.includes('activity-history') && {
-            entity: selectedEntity?.value,
-          }),
           ...(selectedRange && {
             start_date: selectedRange?.[0]?.toISOString(),
             end_date: selectedRange?.[1]?.toISOString(),
@@ -282,6 +272,14 @@ export const Grid = ({
           ...(location?.pathname?.includes('schedule-deployment') &&
             clusterSelectedValue?.label !== 'All' && {
               clusterName: clusterSelectedValue?.label,
+            }),
+          ...(location?.pathname?.includes('activity-history') &&
+            selectEvent?.value !== 'all' && {
+              event: selectEvent?.value,
+            }),
+          ...(location?.pathname?.includes('activity-history') &&
+            selectEntity?.value !== 'all' && {
+              entity: selectEntity?.value,
             }),
 
           ...(location?.pathname?.match(
@@ -316,6 +314,8 @@ export const Grid = ({
     selectedRole,
     sortingState,
     clusterSelectedValue,
+    selectEvent,
+    selectEntity,
   ]);
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
@@ -379,6 +379,11 @@ export const Grid = ({
         setValue={setValue}
         setClusterSelectedValue={setClusterSelectedValue}
         clusterSelectedValue={clusterSelectedValue}
+        setSelectEvent={setSelectEvent}
+        selectEvent={selectEvent}
+        selectEntity={selectEntity}
+        setSelectEntity={setSelectEntity}
+        setSortingState={setSortingState}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>
@@ -483,4 +488,5 @@ Grid.propTypes = {
   isNamespace: PropTypes.bool,
   state: PropTypes.object.isRequired,
   sortingState: PropTypes.string,
+  setSortingState: PropTypes.func,
 };

@@ -51,7 +51,7 @@ const StyledButton = styled.button`
   background: transparent;
 `;
 const TextColor = styled.div`
-  color: ${props => props.theme.colors.darker};
+  color: #ff7700;
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.lg};
   font-weight: 400;
@@ -351,9 +351,9 @@ export const ListScheduleDeployment = () => {
       <>
         {item?.namespace_name && (
           <>
-            <li>Name : {item?.namespace_name}</li>
+            <li style={{ textAlign: 'left' }}>Name : {item?.namespace_name}</li>
             {item?.namespace_id !== 'root' && (
-              <li>ID : {item?.namespace_id}</li>
+              <li style={{ textAlign: 'left' }}>ID : {item?.namespace_id}</li>
             )}
           </>
         )}
@@ -412,7 +412,12 @@ export const ListScheduleDeployment = () => {
         <>
           <button
             onClick={() => handleProcessGroupClick(item)}
-            style={{ background: 'none' }}
+            style={{
+              background: 'none',
+              textDecoration: 'underline',
+              color: '#ff7700',
+            }}
+            data-tooltip-id={`${item?.id}`}
           >
             {pgNameDisplay(item)}
           </button>
@@ -602,6 +607,7 @@ export const ListScheduleDeployment = () => {
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
         sortingState={sortingState}
+        setSortingState={setSortingState}
       />
       <DiffModalScheduleList />
     </>

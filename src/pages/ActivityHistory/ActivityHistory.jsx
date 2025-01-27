@@ -204,7 +204,12 @@ export const ActvityHistory = () => {
         </>
       ),
       width: '10%',
-      renderCell: item => <TextRender text={item.created_by_name || KDFM.NA} />,
+      renderCell: item => (
+        <TextRender
+          text={item.created_by_name || KDFM.NA}
+          withEllipses={true}
+        />
+      ),
     },
   ];
 
@@ -232,6 +237,7 @@ export const ActvityHistory = () => {
       currentPage={currentPage}
       setCurrentPage={setCurrentPage}
       sortingState={sortingState}
+      setSortingState={setSortingState}
     />
   );
 };

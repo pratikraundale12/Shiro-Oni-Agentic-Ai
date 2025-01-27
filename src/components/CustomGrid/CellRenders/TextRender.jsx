@@ -17,6 +17,13 @@ const TextColor = styled.div`
     font-size: 14px !important;
   }
 `;
+const TextDispalyEllipses = styled.span`
+  max-width: 12ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+`;
 
 export const TextRender = ({
   text,
@@ -24,6 +31,7 @@ export const TextRender = ({
   tooltipPlacement = 'right',
   toolTip = true,
   ListForTooltip = null,
+  withEllipses = false,
   ...rest
 }) => {
   text = text ? text : 'N/A';
@@ -34,7 +42,11 @@ export const TextRender = ({
       capitalizeText={capitalizeText}
       data-tooltip-id={textToRender}
     >
-      <span>{textToRender}</span>
+      {withEllipses ? (
+        <TextDispalyEllipses>{textToRender}</TextDispalyEllipses>
+      ) : (
+        <span>{textToRender}</span>
+      )}
 
       {toolTip && (
         <ReactTooltip
@@ -61,4 +73,5 @@ TextRender.propTypes = {
   tooltipPlacement: PropTypes.string,
   toolTip: PropTypes.bool,
   ListForTooltip: PropTypes.string,
+  withEllipses: PropTypes.bool,
 };

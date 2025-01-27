@@ -24,6 +24,15 @@ function App() {
     }
   };
 
+  const handleContinue = () => {
+    setIsModal(false);
+    setTimeout(() => {
+      if (!navigator.onLine) {
+        setIsModal(true);
+      }
+    }, 1000);
+  };
+
   useEffect(() => {
     window.addEventListener('load', updateNetworkStatus);
     window.addEventListener('online', updateNetworkStatus);
@@ -35,6 +44,7 @@ function App() {
       window.removeEventListener('offline', updateNetworkStatus);
     };
   }, [navigator.onLine]);
+
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
@@ -48,7 +58,7 @@ function App() {
             isOpen={isModal}
             onRequestClose={() => setIsModal(false)}
             primaryText={`It looks like you've lost internet access.`}
-            onSubmit={() => setIsModal(false)}
+            onSubmit={() => handleContinue()}
           />
         </GlobalProvider>
       </Provider>
