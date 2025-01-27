@@ -205,6 +205,11 @@ export const GridActions = ({
   setValue,
   clusterSelectedValue,
   setClusterSelectedValue,
+  selectEvent,
+  setSelectEvent,
+  selectEntity,
+  setSelectEntity,
+  setSortingState,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -250,6 +255,15 @@ export const GridActions = ({
     window.localStorage.removeItem('scheduleTokenid');
     setState(prev => ({ ...prev, search: null }));
     inputRef.current.value = '';
+
+    if (module === 'namespaces') {
+      dispatch(
+        GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
+      );
+      setState(prev => ({ ...prev, search: null }));
+      inputRef.current.value = '';
+    }
+    setSortingState(null);
     if (module === 'scheduler') {
       dispatch(
         GridSagsActions.fetchGrid({
@@ -297,7 +311,14 @@ export const GridActions = ({
   }, [dispatch]);
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
   useEffect(() => {
-    if (watchStatus || entity || event || selectedRange) {
+    if (
+      watchStatus ||
+      selectedRange ||
+      selectedRole ||
+      clusterSelectedValue ||
+      selectEvent ||
+      selectEntity
+    ) {
       dispatch(
         GridSagsActions.fetchGrid({
           module,
@@ -310,8 +331,6 @@ export const GridActions = ({
               watchStatus !== 'all' && {
                 [getModuleBasedStatusKey(module)]: watchStatus,
               }),
-            ...(entity && entity !== 'all' && { entity }),
-            ...(event && event !== 'all' && { event }),
             ...(selectedRange && {
               start_date: selectedRange?.[0]?.toISOString(),
               end_date: selectedRange?.[1]?.toISOString(),
@@ -324,6 +343,14 @@ export const GridActions = ({
               clusterSelectedValue?.label !== 'All' && {
                 clusterName: clusterSelectedValue?.label,
               }),
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEvent?.value !== 'all' && {
+                event: selectEvent?.value,
+              }),
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEntity?.value !== 'all' && {
+                entity: selectEntity?.value,
+              }),
             ...(location?.pathname?.match(
               /user-management|clusters|schedule-deployment|activity-history/
             ) &&
@@ -335,7 +362,15 @@ export const GridActions = ({
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchStatus, entity, event, search, selectedRange]);
+  }, [
+    watchStatus,
+    entity,
+    event,
+    search,
+    selectedRange,
+    selectEvent,
+    selectEntity,
+  ]);
   const [canWrite, setCanWrite] = useState(false); // State to store canWrite value
   const gridPermissions = useSelector(state =>
     GridSelectors.getGridDataPermissions(state, module)
@@ -377,8 +412,6 @@ export const GridActions = ({
               watchStatus !== 'all' && {
                 [getModuleBasedStatusKey(module)]: watchStatus,
               }),
-            ...(entity && entity !== 'all' && { entity }),
-            ...(event && event !== 'all' && { event }),
           },
         })
       );
@@ -464,6 +497,12 @@ export const GridActions = ({
   const handleRolesChange = selectedOption => {
     setSelectedRole(selectedOption);
   };
+  const handleEventChange = selectedEventOption => {
+    setSelectEvent(selectedEventOption);
+  };
+  const handleEntityChange = selectedEntityOption => {
+    setSelectEntity(selectedEntityOption);
+  };
   const handleClusterChange = selectedClusterOption => {
     setClusterSelectedValue(selectedClusterOption);
   };
@@ -476,17 +515,20 @@ export const GridActions = ({
       setState(prev => ({ ...prev, search: null }));
       inputRef.current.value = '';
       setClusterSelectedValue(null);
+      setSortingState(null);
     } else if (module === 'activityHistory') {
       setValue('is_active', null);
-      setValue('entityName', null);
-      setValue('activityEvent', null);
       setState(prev => ({ ...prev, search: null }));
       inputRef.current.value = '';
+      setSelectEvent(null);
+      setSelectEntity(null);
+      setSortingState(null);
     } else if (module === 'users') {
       setValue('is_active', null);
       setSelectedRole(null);
       setState(prev => ({ ...prev, search: null }));
       inputRef.current.value = '';
+      setSortingState(null);
     }
   };
 
@@ -540,10 +582,12 @@ export const GridActions = ({
                     control={control}
                     options={[
                       { label: 'All', value: 'all' },
-                      ...clusters?.map(cluster => ({
-                        value: cluster.id,
-                        label: cluster.name,
-                      })),
+                      ...clusters
+                        ?.filter(ele => ele.is_active)
+                        .map(cluster => ({
+                          value: cluster.id,
+                          label: cluster.name,
+                        })),
                     ]}
                     value={clusterSelectedValue}
                     placeholder="Select Cluster"
@@ -610,30 +654,24 @@ export const GridActions = ({
               <StyledSelectField
                 size="sm"
                 name="activityEvent"
-                control={control}
                 title={KDFM.SELECT_EVENT}
                 className="entity-dropdown"
                 placeholder={KDFM.SELECT_EVENT}
                 options={ACTIVITY_EVENTS}
-                // defaultValue={selectedEvent}
+                value={selectEvent}
                 backgroundColor={theme.colors.lightGrey}
-                onChange={option =>
-                  dispatch(ActivityHistoryActions.setSelectedEvent(option))
-                }
+                onChange={handleEventChange}
               />
               <StyledSelectField
                 size="sm"
                 name="entityName"
-                control={control}
                 className="entity-dropdown"
                 title={KDFM.SELECT_ENTITY}
                 placeholder={KDFM.SELECT_ENTITY}
                 options={MODULE_LIST_MAP}
-                // defaultValue={selectedEntity}
+                value={selectEntity}
                 backgroundColor={theme.colors.lightGrey}
-                onChange={option =>
-                  dispatch(ActivityHistoryActions.setSelectedEntity(option))
-                }
+                onChange={handleEntityChange}
               />
               <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
             </>

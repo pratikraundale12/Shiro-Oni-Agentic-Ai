@@ -232,6 +232,7 @@ export const ActvityHistory = () => {
       currentPage={currentPage}
       setCurrentPage={setCurrentPage}
       sortingState={sortingState}
+      setSortingState={setSortingState}
     />
   );
 };

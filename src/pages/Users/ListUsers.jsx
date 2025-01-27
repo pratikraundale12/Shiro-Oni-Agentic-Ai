@@ -144,6 +144,7 @@ export const ListUsers = () => {
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
         sortingState={sortingState}
+        setSortingState={setSortingState}
       />
     </>
   );

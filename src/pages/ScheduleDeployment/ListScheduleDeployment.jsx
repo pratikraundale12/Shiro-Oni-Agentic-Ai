@@ -607,6 +607,7 @@ export const ListScheduleDeployment = () => {
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
         sortingState={sortingState}
+        setSortingState={setSortingState}
       />
       <DiffModalScheduleList />
     </>
