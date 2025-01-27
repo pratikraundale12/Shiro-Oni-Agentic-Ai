@@ -16,8 +16,8 @@ const DataWrapper = styled.div`
 `;
 
 const ScrollSetGrey = styled.div`
-  height: calc(100vh - 381px);
-  max-height: calc(100vh - 381px);
+  height: calc(100vh - 410px);
+  max-height: calc(100vh - 410px);
   overflow-x: hidden;
   overflow-y: auto;
 `;
@@ -79,7 +79,7 @@ const DiffScheduleParameter = () => {
                 <TileHeader className="col-4">Current</TileHeader>
               </div>
               {element?.parameters?.map(item => (
-                <div className="row mb-4 mt-2" key={item?.name}>
+                <div className="row" key={item?.name}>
                   <TileHeader
                     style={{
                       backgroundColor: '#E9ECF1',
@@ -87,18 +87,19 @@ const DiffScheduleParameter = () => {
                       color: theme.colors.primary,
                       // borderRadius: '12px',
                     }}
-                    className="d-flex align-items-center mb-3"
+                    className="d-flex align-items-center"
                   >
-                    <span className="p-2">{item?.name}</span>
+                    <span className="">{item?.name}</span>
                   </TileHeader>
                   {(item?.new_value?.value || item?.old_value?.value) && (
-                    <div className="d-flex mb-4">
+                    <div className="d-flex">
                       <TileHeader className="col-3">Value</TileHeader>
                       <TileItem className="col-5">
                         <div
                           style={{
                             backgroundColor: '#E9ECF1',
                             borderRadius: '12px',
+                            margin: '2px 0px 1px 0px',
                           }}
                           className="p-2 me-2"
                         >
@@ -119,6 +120,7 @@ const DiffScheduleParameter = () => {
                           style={{
                             backgroundColor: '#E9ECF1',
                             borderRadius: '12px',
+                            margin: '1px 0px 2px 0px',
                           }}
                           className="p-2 me-2"
                         >

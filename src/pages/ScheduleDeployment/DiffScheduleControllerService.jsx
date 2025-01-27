@@ -16,8 +16,8 @@ const DataWrapper = styled.div`
 `;
 
 const ScrollSetGrey = styled.div`
-  height: calc(100vh - 381px);
-  max-height: calc(100vh - 381px);
+  height: calc(100vh - 410px);
+  max-height: calc(100vh - 410px);
   overflow-x: hidden;
   overflow-y: auto;
 `;
@@ -63,21 +63,28 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-const WarningSection = styled.div`
-  font-size: 16px;
-  color: ${props => props.theme.colors.primary};
-`;
+
 const DiffScheduleCS = () => {
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
-        {
-          <WarningSection className="mt-2">
-            * External controller services changes take effect immediately when
-            changed, so the changes made are not listed here
-          </WarningSection>
-        }
+        <div className="d-flex align-items-center justify-content-start mt-2">
+          <div
+            className="py-2 d-flex align-items-center gap-2 px-3"
+            style={{
+              backgroundColor: '#F5F7FA',
+              borderRadius: '10px',
+              fontSize: '16px',
+              border: `1px solid ${theme.colors.primary}`,
+              color: '#444445',
+            }}
+          >
+            <span style={{ color: 'red' }}>*</span>External controller services
+            changes take effect immediately when changed, so the changes made
+            are not listed here
+          </div>
+        </div>
 
         {scheduleDiffData?.diffControllerServices?.map(element => (
           <div className="mt-4" key={element?.identifier}>
@@ -99,12 +106,12 @@ const DiffScheduleCS = () => {
                     }}
                     className="d-flex align-items-center mb-3"
                   >
-                    <span className="p-2">{item?.name}</span>
+                    <span className="">{item?.name}</span>
                   </TileHeader>
                   <div className="d-flex mb-4">
                     <TileHeader className="col-3">Value</TileHeader>
                     <TileItem className="col-5">
-                      <span
+                      <div
                         style={{
                           backgroundColor: '#E9ECF1',
                           borderRadius: '12px',
@@ -112,7 +119,7 @@ const DiffScheduleCS = () => {
                         className="p-2"
                       >
                         {item?.new_value || 'N/A'}
-                      </span>
+                      </div>
                     </TileItem>
                     <TileItem className="col-4">
                       {item?.old_value || 'N/A'}
