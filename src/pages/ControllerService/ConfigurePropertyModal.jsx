@@ -2,13 +2,17 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
-import { CheckboxField, InputField, Modal } from '../../shared';
+import { CheckboxField, InputField, Modal, SelectField } from '../../shared';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { Button } from '../../shared';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { theme } from '../../styles';
+import { isEmpty } from 'lodash';
+import { toast } from 'react-toastify';
+import { KDFM } from '../../constants';
 
 const ModalBody = styled.div`
   position: relative;
@@ -19,6 +23,12 @@ const ModalBody = styled.div`
     }
   }
 `;
+const StyledSelectField = styled(SelectField)`
+  margin-bottom: 0.9rem;
+`;
+const DropdownHolder = styled.div`
+  height: 150px;
+`;
 
 const ConfigurePropertyModal = ({
   setListPropertTableData,
@@ -26,13 +36,28 @@ const ConfigurePropertyModal = ({
   updatedData,
   selectedItemFromList = {},
 }) => {
-  setUpdatedData;
+  console.log(updatedData, 'updatedData');
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
   const isModalOpen = useSelector(
     NamespacesSelectors.getIsConfigurePropertyControllerServiceModalOpen
   );
-  // const { register, handleSubmit, reset, watch } = useForm({});
+  const propertyResponse = useSelector(
+    NamespacesSelectors.getAddPropertyCSResponse
+  );
+  const responseOptions1 =
+    propertyResponse?.propertyDescriptor?.allowableValues &&
+    propertyResponse?.propertyDescriptor?.allowableValues.length > 0 &&
+    propertyResponse?.propertyDescriptor?.allowableValues?.map(ele => ({
+      label: ele?.allowableValue?.displayName,
+      value: ele?.allowableValue?.value,
+    }));
+  console.log(responseOptions1, '??????????????????');
+  console.log(
+    propertyResponse?.propertyDescriptor?.allowableValues,
+    'propertyResponse'
+  );
+
   const nameSchema = yup.object().shape({
     name: yup.string().required('Name is required'),
   });
@@ -45,12 +70,15 @@ const ConfigurePropertyModal = ({
     control,
     formState: { errors },
   } = useForm({
+    resolver: yupResolver(nameSchema),
     // defaultValues: DEFAULT_VALUES,
-    resolver: yupResolver(!addNewProperty ? nameSchema : null),
+    // resolver: yupResolver(!addNewProperty ? nameSchema : null),
   });
 
   const nameState = watch('name');
   const sensitiveState = watch('sensitive');
+  const valueString = watch('valueString');
+
   const handleFormSubmit = data => {
     console.log(data?.name);
     const payload = {
@@ -61,19 +89,36 @@ const ConfigurePropertyModal = ({
     setAddNewProperty(true);
     dispatch(NamespacesActions.fetchAddPropertyToAdd(payload));
   };
-  // const handleGetValue = () => {
-  //   console.log(nameState, 'nameState');
-  //   console.log(sensitiveState, 'sensitiveState');
-  //   const payload = {
-  //     id: selectedItemFromList?.id,
-  //     name: nameState,
-  //     sensitiveState: sensitiveState,
-  //   };
-  //   setAddNewProperty(true);
-  //   dispatch(NamespacesActions.fetchAddPropertyToAdd(payload));
-  // };
-
   const handleCloseAction = () => {
+    dispatch(
+      NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(false)
+    );
+    setAddNewProperty(false);
+  };
+  const handleFinalSubmit = () => {
+    const filterData = updatedData.filter(item => {
+      return item.name != nameState;
+    });
+    setUpdatedData(() => [
+      ...filterData,
+      {
+        name: nameState,
+        value: valueString,
+        sensitive: sensitiveState,
+      },
+    ]);
+    setListPropertTableData(prevArray => [
+      ...prevArray,
+      {
+        // ...data,
+        displayName: nameState,
+        sensitive: sensitiveState,
+        empty_string_set: false,
+        new_added: true,
+      },
+    ]);
+    toast.success(KDFM.PROPERTY_ADDED);
+    setAddNewProperty(false);
     dispatch(
       NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(false)
     );
@@ -92,42 +137,83 @@ const ConfigurePropertyModal = ({
         onRequestClose={handleCloseAction}
         size="md"
         primaryButtonText="Save"
-        onSubmit={handleSubmit(handleFormSubmit)}
+        onSubmit={handleSubmit(handleFinalSubmit)}
         footerAlign="start"
       >
         <ModalBody className="modal-body">
-          <InputField
-            name="name"
-            type="text"
-            label="Name"
-            control={control}
-            errors={errors}
-            icon={<QRIcons />}
-            register={register}
-          />
-          <CheckboxField
-            name="sensitive"
-            label={'Is Sensitive value'}
-            defaultChecked={false}
-            register={register}
-          />
-          {/* <div className="col-4 mt-3">
-            <Button
-              type="button"
-              size={'md'}
-              variant="tertiary"
-              onClick={() => handleGetValue()}
-            >
-              Get Value
-            </Button>
-          </div> */}
-          {/* <InputField
-            name="value"
-            type="text"
-            label="Value"
-            icon={<QRIcons />}
-            register={register}
-          /> */}
+          {addNewProperty ? (
+            <>
+              <></>
+              <DropdownHolder>
+                {propertyResponse &&
+                propertyResponse?.propertyDescriptor?.hasOwnProperty(
+                  'identifiesControllerService'
+                ) ? (
+                  <>
+                    <StyledSelectField
+                      name="value"
+                      size="sm"
+                      options={responseOptions1 || []}
+                      control={control}
+                      placeholder="Select Value"
+                      backgroundColor={theme.colors.lightGrey}
+                      title="Select Status"
+                    />
+                    <div className="col-4 mt-3">
+                      <Button
+                        type="button"
+                        size={'md'}
+                        variant="tertiary"
+                        onClick={handleSubmit(handleFormSubmit)}
+                      >
+                        Add new service
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <InputField
+                    name="valueString"
+                    type="text"
+                    label="Value"
+                    control={control}
+                    errors={errors}
+                    icon={<QRIcons />}
+                    register={register}
+                    placeholder="Enter value"
+                  />
+                )}
+              </DropdownHolder>
+            </>
+          ) : (
+            <>
+              <InputField
+                name="name"
+                type="text"
+                label="Name"
+                control={control}
+                errors={errors}
+                icon={<QRIcons />}
+                register={register}
+                placeholder="Enter Name"
+              />
+              <CheckboxField
+                name="sensitive"
+                label={'Is Sensitive value'}
+                defaultChecked={false}
+                register={register}
+              />
+              <div className="col-4 mt-3">
+                <Button
+                  type="button"
+                  size={'md'}
+                  variant="tertiary"
+                  onClick={handleSubmit(handleFormSubmit)}
+                >
+                  Add Value
+                </Button>
+              </div>
+            </>
+          )}
         </ModalBody>
       </Modal>
     </div>

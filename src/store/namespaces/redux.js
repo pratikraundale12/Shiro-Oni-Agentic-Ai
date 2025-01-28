@@ -205,6 +205,7 @@ export const NamespacesActions = {
   setIsLocalVariableUpdated: createAction(`${prefix}setIsLocalVariableUpdated`),
   setVersionListReduxData: createAction(`${prefix}setVersionListReduxData`),
   fetchAddPropertyToAdd: createAction(`${prefix}fetchAddPropertyToAdd`),
+  setAddPropertyCSResponse: createAction(`${prefix}setAddPropertyCSResponse`),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -307,6 +308,7 @@ export const NAMESPACES_INITIAL_STATE = {
   isLocalVariableUpdated: false,
   versionListReduxData: [],
   propertyOptionOnDeploy: [],
+  addPropertyCSResponse: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -412,6 +414,7 @@ export const NamespacesSelectors = {
   getVariableLocalData: state => state.namespaces.variableLocalData,
   getIsLocalVariableUpdated: state => state.namespaces.isLocalVariableUpdated,
   getVersionListReduxData: state => state.namespaces.versionListReduxData,
+  getAddPropertyCSResponse: state => state.namespaces.addPropertyCSResponse,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -960,6 +963,12 @@ const setVersionListReduxData = (state, { payload }) => {
     versionListReduxData: payload,
   };
 };
+const setAddPropertyCSResponse = (state, { payload }) => {
+  return {
+    ...state,
+    addPropertyCSResponse: payload,
+  };
+};
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1176,6 +1185,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setVersionListReduxData,
         setVersionListReduxData
+      )
+      .addCase(
+        NamespacesActions.setAddPropertyCSResponse,
+        setAddPropertyCSResponse
       );
   }
 );

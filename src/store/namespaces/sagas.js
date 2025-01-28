@@ -1409,7 +1409,7 @@ export function* fetchAddPropertyToAdd(api, { payload }) {
   });
   if (response.ok) {
     toast.success(response?.data?.message);
-    console.log(response);
+    yield put(NamespacesActions.setAddPropertyCSResponse(response?.data));
   } else {
     toast.error(response?.message || response?.data?.message);
   }
