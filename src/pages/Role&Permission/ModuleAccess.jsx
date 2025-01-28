@@ -206,6 +206,63 @@ export const ModuleAccess = () => {
   const [updatedRolePolicies, setUpdatedRolePolicies] = useState([]);
   const [search, setSearch] = useState('');
 
+  const clusterPolicies =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['view_cluster', 'add_cluster'].includes(element?.name)
+    );
+
+  const viewClusterPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element => ['view_cluster'].includes(element?.name));
+
+  const controllerServicePolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      [
+        'view_controller_services',
+        'add_controller_services',
+        'edit_controller_services',
+        'delete_controller_services',
+      ].includes(element?.name)
+    );
+
+  const viewControllerServicePolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['view_controller_services'].includes(element?.name)
+    );
+
+  const roleandPermissionPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['view_permission', 'add_permission', 'edit_permission'].includes(
+        element?.name
+      )
+    );
+
+  const viewRoleandPermissionPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element => ['view_permission'].includes(element?.name));
+
+  const ldapPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['add_ldap', 'edit_ldap', 'view_ldap'].includes(element?.name)
+    );
+
+  const viewldapPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element => ['view_ldap'].includes(element?.name));
+
   useEffect(() => {
     dispatch(RolesActions.setIsRoleListModalOpen(false));
   }, []);
@@ -348,9 +405,42 @@ export const ModuleAccess = () => {
   const handleChange = (checked, value) => {
     if (!isEmpty(selectedRole)) {
       if (!checked) {
-        setUpdatedRolePolicies(prev =>
-          prev.filter(item => item.policy_id !== value.id)
-        );
+        if (viewClusterPolicy?.[0]?.id === value?.id) {
+          setUpdatedRolePolicies(prev =>
+            prev.filter(
+              item =>
+                !clusterPolicies?.some(remove => remove.id === item.policy_id)
+            )
+          );
+        } else if (viewControllerServicePolicy?.[0]?.id === value?.id) {
+          setUpdatedRolePolicies(prev =>
+            prev.filter(
+              item =>
+                !controllerServicePolicy?.some(
+                  remove => remove.id === item.policy_id
+                )
+            )
+          );
+        } else if (viewRoleandPermissionPolicy?.[0]?.id === value?.id) {
+          setUpdatedRolePolicies(prev =>
+            prev.filter(
+              item =>
+                !roleandPermissionPolicy?.some(
+                  remove => remove.id === item.policy_id
+                )
+            )
+          );
+        } else if (viewldapPolicy?.[0]?.id === value?.id) {
+          setUpdatedRolePolicies(prev =>
+            prev.filter(
+              item => !ldapPolicy?.some(remove => remove.id === item.policy_id)
+            )
+          );
+        } else {
+          setUpdatedRolePolicies(prev =>
+            prev.filter(item => item.policy_id !== value.id)
+          );
+        }
       } else {
         setUpdatedRolePolicies(prev => [
           ...prev,
