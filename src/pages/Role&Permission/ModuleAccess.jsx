@@ -31,6 +31,7 @@ import {
 } from '../../store';
 import { theme } from '../../styles';
 import ListRoleModal from './ListRoleModal';
+import { toast } from 'react-toastify';
 
 const Flex = styled.div`
   display: flex;
@@ -157,7 +158,11 @@ const CellRender = ({
   updatedRolePolicies = [],
   onChange = () => {},
 }) => {
-  const item = policies.find(item => item.name === policy_name) || {};
+  const item =
+    (policies &&
+      policies.length > 0 &&
+      policies.find(item => item.name === policy_name)) ||
+    {};
   const checked = !!updatedRolePolicies.find(
     policy => policy.policy_id === item.id
   )?.policy_id;
@@ -171,8 +176,10 @@ const CellRender = ({
 };
 
 const getDifference = (existing, updated) => {
-  const exists = existing.map(item => item.policy_id);
-  const updates = updated.map(item => item.policy_id);
+  const exists =
+    existing && existing.length > 0 && existing.map(item => item.policy_id);
+  const updates =
+    updated && updated.length > 0 && updated.map(item => item.policy_id);
   return [difference(updates, exists), difference(exists, updates)];
 };
 
@@ -183,6 +190,7 @@ export const ModuleAccess = () => {
   const roles = useSelector(RolesSelectors.getRoles);
   const selectedRole = useSelector(RolesSelectors.getSelectedRole);
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const openRoleModal = useSelector(RolesSelectors.getRoleModal);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateRolesPolicies')
@@ -201,6 +209,13 @@ export const ModuleAccess = () => {
   useEffect(() => {
     dispatch(RolesActions.setIsRoleListModalOpen(false));
   }, []);
+
+  const linkToClusterList = () => {
+    dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
+    dispatch(RolesActions.setSelectedRole({}));
+    dispatch(RolesActions.fetchRoleClustersSuccess({}));
+    history.push('/role-&-permission/cluster-access');
+  };
 
   const DFM_ACCESS_COLUMNS = [
     {
@@ -263,16 +278,16 @@ export const ModuleAccess = () => {
       renderCell: item =>
         item.value === 'cluster' && (
           <LinkButton
-            onClick={() => history.push('/role-&-permission/cluster-access')}
+            onClick={linkToClusterList}
           >{`Manage ${item.value} List`}</LinkButton>
         ),
     },
   ];
 
-  const roleOptions = roles.map(role => ({
-    value: role.role_id,
-    label: role.name,
-  }));
+  const roleOptions =
+    roles && roles.length > 0
+      ? roles.filter(item => item.name !== currentUser?.role)
+      : [];
 
   const isUpdated = () => {
     const [added, remove] = getDifference(rolePolicies, updatedRolePolicies);
@@ -282,30 +297,20 @@ export const ModuleAccess = () => {
 
   const onChange = option => {
     dispatch(RolesActions.setSelectedRole(option));
-    dispatch(PoliciesActions.fetchPoliciesRoles({ roleId: option.value }));
+    dispatch(PoliciesActions.fetchPoliciesRoles({ roleId: option.role_id }));
   };
   useEffect(() => {
     const uniqueArray = unionBy(updatedRolePolicies, 'policy_id');
     if (
+      updatedRolePolicies &&
       updatedRolePolicies.length !==
-      uniqBy(updatedRolePolicies, 'policy_id').length
+        uniqBy(updatedRolePolicies, 'policy_id').length
     ) {
       setUpdatedRolePolicies(uniqueArray);
     }
   }, [updatedRolePolicies]);
 
   const handleCheckboxAutoClick = value => {
-    const controllerPolicies = [
-      'delete_controller_services',
-      'add_controller_services',
-      'edit_controller_services',
-    ];
-
-    const userPolicies = ['add_user', 'edit_user', 'delete_user'];
-    const clusterPolicies = ['add_cluster'];
-    const ldapPolicies = ['add_ldap', 'edit_ldap'];
-    const rolesPolicies = ['add_permission', 'edit_permission'];
-
     const handlePolicyCheck = (policiesArray, viewPolicyName) => {
       if (policiesArray.some(element => element.includes(value.name))) {
         const item = policies.find(element => element.name === viewPolicyName);
@@ -324,27 +329,38 @@ export const ModuleAccess = () => {
       }
     };
 
+    const controllerPolicies = [
+      'delete_controller_services',
+      'add_controller_services',
+      'edit_controller_services',
+    ];
+    const userPolicies = ['add_user', 'edit_user', 'delete_user'];
+    const clusterPolicies = ['add_cluster'];
+    const ldapPolicies = ['add_ldap', 'edit_ldap'];
+    const rolesPolicies = ['add_permission', 'edit_permission'];
     handlePolicyCheck(controllerPolicies, 'view_controller_services');
     handlePolicyCheck(userPolicies, 'view_user');
     handlePolicyCheck(clusterPolicies, 'view_cluster');
     handlePolicyCheck(ldapPolicies, 'view_ldap');
     handlePolicyCheck(rolesPolicies, 'view_permission');
-    //
   };
 
   const handleChange = (checked, value) => {
-    if (!checked) {
-      setUpdatedRolePolicies(prev =>
-        prev.filter(item => item.policy_id !== value.id)
-      );
+    if (!isEmpty(selectedRole)) {
+      if (!checked) {
+        setUpdatedRolePolicies(prev =>
+          prev.filter(item => item.policy_id !== value.id)
+        );
+      } else {
+        setUpdatedRolePolicies(prev => [
+          ...prev,
+          { policy_id: value.id, policy_name: value.name },
+        ]);
+      }
+      handleCheckboxAutoClick(value);
     } else {
-      setUpdatedRolePolicies(prev => [
-        ...prev,
-        { policy_id: value.id, policy_name: value.name },
-      ]);
+      toast.error('Please select a role');
     }
-
-    handleCheckboxAutoClick(value);
   };
 
   const handleSubmit = () => {
@@ -352,15 +368,21 @@ export const ModuleAccess = () => {
 
     const [added, remove] = getDifference(rolePolicies, updatedRolePolicies);
 
-    payload.add = added.map(policy_id => ({
-      role_id: selectedRole.value,
-      policy_id,
-    }));
-    payload.remove = remove.map(policy_id => ({
-      role_id: selectedRole.value,
-      policy_id,
-    }));
-    payload.roleId = selectedRole.value;
+    payload.add =
+      added &&
+      added.length > 0 &&
+      added.map(policy_id => ({
+        role_id: selectedRole.role_id,
+        policy_id,
+      }));
+    payload.remove =
+      remove &&
+      remove.length > 0 &&
+      remove.map(policy_id => ({
+        role_id: selectedRole.role_id,
+        policy_id,
+      }));
+    payload.roleId = selectedRole.role_id;
 
     dispatch(PoliciesActions.updateRolesPolicies(payload));
   };
@@ -373,13 +395,6 @@ export const ModuleAccess = () => {
       dispatch(PoliciesActions.fetchPolicies());
     }
   }, [dispatch]);
-
-  useEffect(() => {
-    if (!isEmpty(selectedRole))
-      dispatch(
-        PoliciesActions.fetchPoliciesRoles({ roleId: selectedRole.value })
-      );
-  }, [dispatch, selectedRole]);
 
   useEffect(() => {
     setUpdatedRolePolicies(rolePolicies);
@@ -415,7 +430,6 @@ export const ModuleAccess = () => {
             size="sm"
             placeholder="Select Role"
             options={roleOptions}
-            value={selectedRole}
             backgroundColor={theme.colors.lightGrey}
             onChange={onChange}
           />

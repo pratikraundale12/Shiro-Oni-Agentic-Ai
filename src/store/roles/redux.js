@@ -76,13 +76,13 @@ const fetchRolesSuccess = (state, { payload }) => {
   return {
     ...state,
     data: payload.data,
-    selectedRole:
-      state.selectedRole?.label || state.selectedRole?.value
-        ? state.selectedRole
-        : {
-            label: payload.data[0]?.name,
-            value: payload.data[0]?.role_id,
-          },
+    // selectedRole:
+    //   state.selectedRole?.label || state.selectedRole?.value
+    //     ? state.selectedRole
+    //     : {
+    //         label: payload.data[0]?.name,
+    //         value: payload.data[0]?.role_id,
+    //       },
   };
 };
 
