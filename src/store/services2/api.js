@@ -40,7 +40,7 @@ const create = (baseURL = `${API_URL}/api`) => {
     error => {
       if (error.response) {
         const { data } = error.response;
-        if (data.message === 'jwt expired') {
+        if (data.raw?.log_out) {
           localStorage.removeItem(ACCESS_TOKEN);
           history.push('/login');
         }
