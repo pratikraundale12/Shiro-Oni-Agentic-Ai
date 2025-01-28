@@ -5,9 +5,11 @@ import { ActivityHistoryIcon } from '../../assets';
 import { Grid, IconButton, StatusRender, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
 import { useGlobalContext } from '../../utils';
+import { Button } from '../../shared';
+import { history } from '../../helpers/history';
 
 const Container = styled.div`
-  height: 100%;
+  height: 95%;
 `;
 
 const ActionTd = styled.div`
@@ -81,6 +83,10 @@ export const ClusterSummary = () => {
     },
   ];
 
+  const handleBackAction = () => {
+    history.push('/clusters');
+  };
+
   return (
     <Container>
       <Grid
@@ -91,6 +97,11 @@ export const ClusterSummary = () => {
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
       />
+      <div style={{ width: '74px', marginTop: '10px' }}>
+        <Button variant="secondary" type="button" onClick={handleBackAction}>
+          {KDFM.BACK}
+        </Button>
+      </div>
     </Container>
   );
 };
