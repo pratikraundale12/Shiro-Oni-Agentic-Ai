@@ -210,6 +210,7 @@ export const GridActions = ({
   selectEntity,
   setSelectEntity,
   setSortingState,
+  setCurrentPage,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -397,6 +398,7 @@ export const GridActions = ({
   };
 
   const handleChange = value => {
+    setCurrentPage(1);
     const testEqual = isEqual(value?.[0], value?.[1]);
     const checkedArray = testEqual ? [value?.[0], endOfDay(value?.[1])] : value;
     dispatch(SchedularActions.setScheduleSelectRange(checkedArray));
@@ -497,15 +499,19 @@ export const GridActions = ({
   ];
 
   const handleRolesChange = selectedOption => {
+    setCurrentPage(1);
     setSelectedRole(selectedOption);
   };
   const handleEventChange = selectedEventOption => {
+    setCurrentPage(1);
     setSelectEvent(selectedEventOption);
   };
   const handleEntityChange = selectedEntityOption => {
+    setCurrentPage(1);
     setSelectEntity(selectedEntityOption);
   };
   const handleClusterChange = selectedClusterOption => {
+    setCurrentPage(1);
     setClusterSelectedValue(selectedClusterOption);
   };
 

@@ -384,6 +384,7 @@ export const Grid = ({
         selectEntity={selectEntity}
         setSelectEntity={setSelectEntity}
         setSortingState={setSortingState}
+        setCurrentPage={setCurrentPage}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
         <>

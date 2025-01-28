@@ -371,7 +371,9 @@ export const Add = () => {
         'Cluster name already exists',
         function (value) {
           if (!value) return true;
-          return !filteredGridData?.some(reg => reg.name === value);
+          return !filteredGridData?.some(
+            reg => reg.name.toLowerCase() === value.toLowerCase()
+          );
         }
       ),
     nifiUrl: yup
@@ -396,7 +398,9 @@ export const Add = () => {
         'Registry name already exists',
         function (value) {
           if (!value) return true;
-          return !registries?.some(reg => reg.label === value);
+          return !registries?.some(
+            reg => reg.label.toLowerCase() === value.toLowerCase()
+          );
         }
       ),
     registryUrl: yup
@@ -686,16 +690,18 @@ export const Add = () => {
 
       if (trimmedValue.length > 20) {
         toast.error('Maximum 20 characters allowed');
-      }
-
-      const currentTags = tags.split(',').filter(tag => tag);
-
-      // Prevent adding duplicates
-      if (currentTags.includes(trimmedValue)) {
-        toast.error('Tag already exists');
         return;
       }
 
+      const currentTags = tags.split(',').filter(tag => tag);
+      if (
+        currentTags.some(
+          tag => tag.toLowerCase() === trimmedValue.toLowerCase()
+        )
+      ) {
+        toast.error('Tag already exists');
+        return;
+      }
       if (currentTags.length >= 5) {
         toast.error('Tag limit reached (5 tags max)');
         return;

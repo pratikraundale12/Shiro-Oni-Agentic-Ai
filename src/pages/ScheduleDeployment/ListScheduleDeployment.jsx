@@ -51,8 +51,13 @@ const StyledButton = styled.button`
   background: transparent;
 `;
 const TextColor = styled.div`
-  color: #ff7700;
-  font-family: ${props => props.theme.fontNato};
+  color: ${props =>
+    props.mode === 'upgrade'
+      ? '#ff7700'
+      : props.mode === 'downgrade'
+        ? '#ff7700'
+        : '#444445;'};
+  font-family: ${props => props.theme.fontRedHat};
   font-size: ${props => props.theme.size.lg};
   font-weight: 400;
   text-transform: ${props => (props.capitalizeText ? 'capitalize' : 'none')};
@@ -363,7 +368,7 @@ export const ListScheduleDeployment = () => {
   const pgNameDisplay = item => {
     return (
       <>
-        <TextColor data-tooltip-id={`${item?.id}`}>
+        <TextColor data-tooltip-id={`${item?.id}`} mode={item?.mode}>
           {item?.namespace_name}
         </TextColor>
         <ReactTooltip
@@ -410,17 +415,23 @@ export const ListScheduleDeployment = () => {
       ),
       renderCell: item => (
         <>
-          <button
-            onClick={() => handleProcessGroupClick(item)}
-            style={{
-              background: 'none',
-              textDecoration: 'underline',
-              color: '#ff7700',
-            }}
-            data-tooltip-id={`${item?.id}`}
-          >
-            {pgNameDisplay(item)}
-          </button>
+          {['upgrade', 'downgrade'].includes(item?.mode) ? (
+            <button
+              onClick={() => handleProcessGroupClick(item)}
+              className="process-group-button"
+              data-tooltip-id={item?.id ?? ''}
+              style={{
+                background: 'none',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                color: '#ff7700',
+              }}
+            >
+              {pgNameDisplay(item)}
+            </button>
+          ) : (
+            <span>{pgNameDisplay(item)}</span>
+          )}
         </>
       ),
       resize: true,
