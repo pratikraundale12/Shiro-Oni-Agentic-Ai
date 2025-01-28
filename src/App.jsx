@@ -30,7 +30,7 @@ function App() {
       if (!navigator.onLine) {
         setIsModal(true);
       }
-    }, 1000);
+    }, 100);
   };
 
   useEffect(() => {
@@ -56,7 +56,7 @@ function App() {
             primaryButtonText={'Continue'}
             icon={<ExclamationFailedTestingIcon color="#FF7A00" />}
             isOpen={isModal}
-            onRequestClose={() => setIsModal(false)}
+            onRequestClose={() => handleContinue()}
             primaryText={`It looks like you've lost internet access.`}
             onSubmit={() => handleContinue()}
           />
