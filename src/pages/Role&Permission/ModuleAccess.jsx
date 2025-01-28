@@ -484,11 +484,19 @@ export const ModuleAccess = () => {
     if (isEmpty(policies)) {
       dispatch(PoliciesActions.fetchPolicies());
     }
-  }, [dispatch]);
+  }, [dispatch, policies, roles]);
 
   useEffect(() => {
     setUpdatedRolePolicies(rolePolicies);
   }, [rolePolicies]);
+
+  useEffect(() => {
+    // Cleanup function that clears the state when the component unmounts
+    return () => {
+      dispatch(RolesActions.setSelectedRole({}));
+      dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
+    };
+  }, [dispatch]);
 
   // Filter the modules based on the search query
   const filteredModules = MODULES.filter(module =>
