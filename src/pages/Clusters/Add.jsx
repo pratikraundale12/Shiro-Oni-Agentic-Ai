@@ -68,7 +68,9 @@ const NavButton = styled.button`
   font-family: ${props => props.theme.fontNato};
   color: ${props =>
     props.active ? props.theme.colors.primary : props.theme.colors.darkGrey2};
-  cursor: auto;
+  cursor: ${({ disabled }) =>
+    disabled ? 'not-allowed !important' : 'pointer !important'};
+  opacity: ${({ disabled }) => (disabled ? '0.5 !important' : '1')};
   transition:
     color 0.3s,
     border-bottom 0.3s;
@@ -429,6 +431,7 @@ export const Add = () => {
   });
 
   const [isEditDetails, setIsEditDetails] = useState(false);
+  const [inputValue, setInputValue] = useState('');
   const [notificationEnable, setNotificationEnable] = useState(
     data?.notification_enable || false
   );
@@ -669,10 +672,8 @@ export const Add = () => {
       toast.error('This registry do not  exist!');
     }
   };
-
   function handleKeyDown(e) {
-    const value = e.target.value;
-
+    const value = inputValue;
     if (e.key === 'Backspace') {
       if (value === '') {
         const currentTags = tags.split(',').filter(tag => tag);
@@ -683,16 +684,13 @@ export const Add = () => {
       }
       return;
     }
-
-    if (e.key === 'Enter' || e.key === ',' || e.type === 'blur') {
+    if (e.key === 'Enter') {
       const trimmedValue = value.trim().replace(/,$/, '');
       if (!trimmedValue) return;
-
       if (trimmedValue.length > 20) {
         toast.error('Maximum 20 characters allowed');
         return;
       }
-
       const currentTags = tags.split(',').filter(tag => tag);
       if (
         currentTags.some(
@@ -706,11 +704,14 @@ export const Add = () => {
         toast.error('Tag limit reached (5 tags max)');
         return;
       }
-
       setTags([...currentTags, trimmedValue].join(','));
-      e.target.value = '';
+      setInputValue('');
     }
   }
+
+  const handleBlur = () => {
+    setInputValue('');
+  };
 
   function removeTag(tagToRemove) {
     const currentTags = tags.split(',').filter(tag => tag);
@@ -882,6 +883,7 @@ export const Add = () => {
 
               <TagsInput
                 type="text"
+                value={inputValue}
                 placeholder={
                   tags.split(',').filter(tag => tag).length === 0
                     ? 'Cluster Tags'
@@ -890,7 +892,8 @@ export const Add = () => {
                 name="tags"
                 {...register('tags')}
                 onKeyDown={e => handleKeyDown(e)}
-                onBlur={e => handleKeyDown(e)}
+                onBlur={handleBlur}
+                onChange={e => setInputValue(e.target.value)}
                 aria-label="Add a tag"
               />
 
