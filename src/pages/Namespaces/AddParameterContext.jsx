@@ -279,7 +279,6 @@ const AddParameterContext = ({
   if (check) {
     setValue('value', '');
   }
-  console.log(parameterContextItem);
 
   return (
     <Modal
