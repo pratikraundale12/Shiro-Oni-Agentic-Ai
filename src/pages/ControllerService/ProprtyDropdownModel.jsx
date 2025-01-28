@@ -30,11 +30,9 @@ const PropertyDropdownModal = ({
   updatedData,
   isUpgrade,
   isFromExternalService,
+  selectedItemFromList,
 }) => {
   const dispatch = useDispatch();
-  const parameterContextObject = useSelector(
-    NamespacesSelectors.getParameterContextListAtDeploy
-  );
   const [addNewProperty, setAddNewProperty] = useState(false);
   const [isRefParams, setIsRefParams] = useState(false);
   const [proprtyOptionsArray, setPropertyOptionsArray] = useState([
@@ -43,14 +41,19 @@ const PropertyDropdownModal = ({
       label: 'No value set',
     },
   ]);
-  const [refParamsData, setRefParamsData] = useState([]);
+  const [refParamsData, setRefParamsData] = useState();
+
   useEffect(() => {
-    const options = parameterContextObject?.parameterContexts?.map(element => ({
-      value: `#{${element?.name}}`,
-      label: element?.name,
-    }));
-    setRefParamsData(options);
-  }, [parameterContextObject]);
+    let options = [];
+    if (selectedItemFromList?.parameters?.length) {
+      let data = selectedItemFromList?.parameters?.map(parameter => ({
+        value: `#{${parameter}}`,
+        label: parameter,
+      }));
+      options = data;
+    }
+    setRefParamsData(options || []);
+  }, [selectedItemFromList?.parameters]);
 
   const filterData = updatedData.filter(item => {
     return item.name != selectedPropertyToEdit.name;
@@ -89,7 +92,6 @@ const PropertyDropdownModal = ({
   const [propertyOptionsDeploy, setPropertyOptionsDeploy] = useState([
     { value: '', label: 'No value set' },
   ]);
-  const pcid = useSelector(NamespacesSelectors.getPcId);
 
   useEffect(() => {
     const options = propertyOptionOnDeploy.map(element => ({
@@ -191,7 +193,6 @@ const PropertyDropdownModal = ({
   }, [isModalOpen]);
 
   const onRefParamsClick = () => {
-    pcid !== undefined && dispatch(NamespacesActions.fetchParameterContext());
     setIsRefParams(true);
   };
 
@@ -223,7 +224,7 @@ const PropertyDropdownModal = ({
             style={{ height: selectedPropertyToEdit?.add ? '150px' : '70px' }}
             className="mb-4"
           >
-            {!addNewProperty && (
+            {!addNewProperty && !isRefParams && (
               <>
                 <StyledSelectField
                   menuHeight={selectedPropertyToEdit?.add ? '150px' : '120px'}

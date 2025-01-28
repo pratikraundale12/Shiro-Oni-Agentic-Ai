@@ -513,6 +513,7 @@ export const ListControllerService = () => {
           updatedData={updatedData}
         />
         <PropertyDropdownModal
+          selectedItemFromList={selectedItemFromList}
           selectedPropertyToEdit={selectedPropertyToEdit}
           setListPropertTableData={setListPropertTableData}
           setUpdatedData={setUpdatedData}
