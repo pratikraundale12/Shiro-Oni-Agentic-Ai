@@ -188,7 +188,7 @@ const FlowControl = () => {
   useEffect(() => {
     dispatch(NamespacesActions.setSourceNamespaceId(id));
     dispatch(NamespacesActions.singleNamespaceData(id));
-  }, [id]);
+  }, [dispatch, id]);
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
