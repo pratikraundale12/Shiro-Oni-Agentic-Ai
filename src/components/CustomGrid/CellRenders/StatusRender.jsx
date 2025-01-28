@@ -35,6 +35,9 @@ const ActiveTd = styled.div`
 const GreenActiveness = styled(ActiveTd)`
   color: ${props => props.theme.colors.success};
   text-transform: capitalize;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   &::after {
     background-color: ${props => props.theme.colors.success};
   }

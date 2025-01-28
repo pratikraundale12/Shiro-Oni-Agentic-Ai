@@ -237,6 +237,7 @@ export const ListControllerService = () => {
         <TextRender key={item?.name} text={item?.name} capitalizeText={false} />
       ),
       width: '20%',
+      resize: true,
     },
     {
       label: 'Type',
@@ -248,6 +249,7 @@ export const ListControllerService = () => {
         />
       ),
       width: '20%',
+      resize: true,
     },
     {
       label: 'Bundle',
@@ -259,16 +261,19 @@ export const ListControllerService = () => {
         />
       ),
       width: '18%',
+      resize: true,
     },
     {
       label: 'State',
       renderCell: item => <StatusText text={item?.state} item={item} />,
       width: '8%',
+      resize: true,
     },
     {
       label: 'Scope',
       renderCell: item => item?.scope,
       width: '8%',
+      resize: true,
     },
     {
       label: 'Referencing Component',
@@ -303,6 +308,7 @@ export const ListControllerService = () => {
         </div>
       ),
       width: '16%',
+      resize: true,
     },
     {
       label: 'Actions',
@@ -398,6 +404,7 @@ export const ListControllerService = () => {
         );
       },
       width: '10%',
+      resize: true,
     },
   ];
 

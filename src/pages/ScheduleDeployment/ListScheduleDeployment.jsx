@@ -368,11 +368,11 @@ export const ListScheduleDeployment = () => {
   const pgNameDisplay = item => {
     return (
       <>
-        <TextColor data-tooltip-id={`${item?.id}`} mode={item?.mode}>
+        <TextColor data-tooltip-id={`${item?.id}name`} mode={item?.mode}>
           {item?.namespace_name}
         </TextColor>
         <ReactTooltip
-          id={`${item?.id}`}
+          id={`${item?.id}name`}
           place="left"
           content={ListForTooltip(item)}
           style={{

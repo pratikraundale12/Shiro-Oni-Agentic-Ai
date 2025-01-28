@@ -29,6 +29,7 @@ export const ListUsers = () => {
       label: KDFM.PROFILE,
       renderCell: item => <ProfileRender url={item.photo} />,
       width: '10%',
+      resize: true,
     },
     {
       label: (
@@ -49,6 +50,7 @@ export const ListUsers = () => {
         </>
       ),
       width: '20%',
+      resize: true,
       renderCell: item => (
         <TextRender
           text={`${item?.first_name || ''} ${item?.middle_name || ''} ${item?.last_name || ''}`}
@@ -76,6 +78,7 @@ export const ListUsers = () => {
         </>
       ),
       width: '20%',
+      resize: true,
       renderCell: item => (
         <TextRender
           text={item.username || ''}
@@ -87,6 +90,7 @@ export const ListUsers = () => {
     {
       label: KDFM.EMAIL,
       width: '20%',
+      resize: true,
       renderCell: item => (
         <TextRender text={item?.email} capitalizeText={false} toolTip={false} />
       ),
@@ -94,6 +98,7 @@ export const ListUsers = () => {
     {
       label: KDFM.ROLE,
       width: '20%',
+      resize: true,
       renderCell: item => (
         <TextRender text={item?.role?.join(', ')} capitalizeText={false} />
       ),
@@ -117,6 +122,7 @@ export const ListUsers = () => {
         </>
       ),
       width: '10%',
+      resize: true,
       renderCell: item => (
         <StatusRender status={item?.is_active ? 'Active' : 'Inactive'} />
       ),

@@ -53,26 +53,31 @@ export const ClusterSummary = () => {
       label: 'Address',
       renderCell: item => <TextRender text={item.address} />,
       width: '20%',
+      resize: true,
     },
     {
       label: 'Node Id',
       renderCell: item => <TextRender text={item.nodeId} />,
       width: '20%',
+      resize: true,
     },
     {
       label: 'Heartbeat',
       renderCell: item => <TextRender text={item.heartbeat} />,
       width: '20%',
+      resize: true,
     },
     {
       label: 'Status',
       renderCell: item => <StatusRender status={item.status} />,
       width: '20%',
+      resize: true,
     },
     {
       label: 'Event Log',
       renderCell: item => getActionsMenu(item),
       width: '20%',
+      resize: true,
     },
   ];
 

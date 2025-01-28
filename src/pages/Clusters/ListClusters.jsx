@@ -129,6 +129,7 @@ export const ListClusters = () => {
       ),
       width: '15%',
       sort: { sortKey: 'name' },
+      resize: true,
     },
     {
       label: KDFM.NIFI_URL,
@@ -140,6 +141,7 @@ export const ListClusters = () => {
         return <UrlRender url={updatedUrl} />;
       },
       width: '35%',
+      resize: true,
     },
     {
       label: KDFM.CLUSTER_STATUS,
@@ -151,10 +153,12 @@ export const ListClusters = () => {
           status={item.status}
         />
       ),
+      resize: true,
     },
     {
       label: KDFM.STATUS,
       renderCell: item => <StatusRender status={item.status} />,
+      resize: true,
     },
     {
       label: KDFM.ACTIONS,
@@ -213,6 +217,7 @@ export const ListClusters = () => {
           </ActionRender>
         );
       },
+      resize: true,
     },
   ];
 

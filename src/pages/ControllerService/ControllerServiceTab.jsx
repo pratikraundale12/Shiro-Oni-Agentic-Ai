@@ -530,6 +530,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '21%',
+      resize: true,
     },
     {
       label: 'Type',
@@ -548,6 +549,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '20%',
+      resize: true,
     },
     {
       label: 'Bundle',
@@ -566,6 +568,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '18%',
+      resize: true,
     },
     {
       label: 'State',
@@ -587,6 +590,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '16%',
+      resize: true,
     },
     {
       label: 'Scope',
@@ -597,6 +601,7 @@ const ControllerServiceTab = ({
         return currentItem?.scope || 'N/A';
       },
       width: '11%',
+      resize: true,
     },
     {
       label: 'Action',
@@ -729,6 +734,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '14%',
+      resize: true,
     },
   ];
   const COLUMNS_Upgrade_External = [
@@ -749,6 +755,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '20%',
+      resize: true,
     },
     {
       label: 'Type',
@@ -767,6 +774,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '16%',
+      resize: true,
     },
     {
       label: 'Bundle',
@@ -785,6 +793,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '15%',
+      resize: true,
     },
     {
       label: 'State',
@@ -806,6 +815,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '14%',
+      resize: true,
     },
     {
       label: 'Scope',
@@ -816,6 +826,7 @@ const ControllerServiceTab = ({
         return currentItem?.scope || 'N/A';
       },
       width: '10%',
+      resize: true,
     },
     {
       label: 'Referencing Component',
@@ -854,6 +865,7 @@ const ControllerServiceTab = ({
         </div>
       ),
       width: '15%',
+      resize: true,
     },
     {
       label: 'Action',
@@ -985,6 +997,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '10%',
+      resize: true,
     },
   ];
   const COLUMNS_2 = [
@@ -998,6 +1011,7 @@ const ControllerServiceTab = ({
         />
       ),
       width: '21%',
+      resize: true,
     },
     {
       label: 'Type',
@@ -1009,6 +1023,7 @@ const ControllerServiceTab = ({
         />
       ),
       width: '20%',
+      resize: true,
     },
     {
       label: 'Bundle',
@@ -1020,17 +1035,20 @@ const ControllerServiceTab = ({
         />
       ),
       width: '18%',
+      resize: true,
     },
     {
       label: 'State',
       renderCell: item =>
         item?.state ? <StatusText text={item?.state} item={item} /> : 'N/A',
       width: '16%',
+      resize: true,
     },
     {
       label: 'Scope',
       renderCell: item => item?.scope || 'N/A',
       width: '11%',
+      resize: true,
     },
 
     {
@@ -1069,6 +1087,7 @@ const ControllerServiceTab = ({
         </div>
       ),
       width: '14%',
+      resize: true,
     },
   ];
   const COLUMNS_3 = [
@@ -1082,6 +1101,7 @@ const ControllerServiceTab = ({
         />
       ),
       width: '20%',
+      resize: true,
     },
     {
       label: 'Type',
@@ -1093,6 +1113,7 @@ const ControllerServiceTab = ({
         />
       ),
       width: '20%',
+      resize: true,
     },
     {
       label: 'Bundle',
@@ -1104,17 +1125,20 @@ const ControllerServiceTab = ({
         />
       ),
       width: '15%',
+      resize: true,
     },
     {
       label: 'State',
       renderCell: item =>
         item?.state ? <StatusText text={item?.state} item={item} /> : 'N/A',
       width: '10%',
+      resize: true,
     },
     {
       label: 'Scope',
       renderCell: item => item?.scope || 'N/A',
       width: '10%',
+      resize: true,
     },
     {
       label: 'Referencing Component',
@@ -1149,6 +1173,7 @@ const ControllerServiceTab = ({
         </div>
       ),
       width: '14%',
+      resize: true,
     },
 
     {
