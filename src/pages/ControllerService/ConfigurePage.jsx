@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PlusCircleIcon, SmallSearchIcon } from '../../assets';
-import { Table } from '../../components';
+import { Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { Button, CheckboxField, Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
@@ -95,7 +95,7 @@ const ConfigurePage = ({
               checked={selectedItem?.id === item.id}
               onChange={() => handleCheckboxChange(item)}
             />
-            {item?.name}
+            <TextRender text={item.name} />
           </div>
           <ReactTooltip
             id={`tooltip-${item?.id}-name`}
@@ -109,14 +109,16 @@ const ConfigurePage = ({
         </>
       ),
       width: '20%',
+      resize: true,
     },
     {
       label: 'Type',
       renderCell: item => (
         <>
-          <div data-tooltip-id={`tooltip-${item.id}-typeValue`}>
-            {item?.typeValue}
-          </div>
+          <TextRender
+            text={item?.typeValue}
+            data-tooltip-id={`tooltip-${item.id}-typeValue`}
+          />
           <ReactTooltip
             id={`tooltip-${item?.id}-typeValue`}
             place="right"
@@ -129,14 +131,16 @@ const ConfigurePage = ({
         </>
       ),
       width: '20%',
+      resize: true,
     },
     {
       label: 'Bundle',
       renderCell: item => (
         <>
-          <div data-tooltip-id={`tooltip-${item.id}-bundleValue`}>
-            {item?.bundleValue}
-          </div>
+          <TextRender
+            text={item?.bundleValue}
+            data-tooltip-id={`tooltip-${item.id}-bundleValue`}
+          />
           <ReactTooltip
             id={`tooltip-${item?.id}-bundleValue`}
             place="right"
@@ -149,9 +153,20 @@ const ConfigurePage = ({
         </>
       ),
       width: '20%',
+      resize: true,
     },
-    { label: 'State', renderCell: item => item?.state, width: '20%' },
-    { label: 'Scope', renderCell: item => item?.scope, width: '20%' },
+    {
+      label: 'State',
+      renderCell: item => item?.state,
+      width: '20%',
+      resize: true,
+    },
+    {
+      label: 'Scope',
+      renderCell: item => item?.scope,
+      width: '20%',
+      resize: true,
+    },
   ];
 
   const handleCheckboxChange = item => {

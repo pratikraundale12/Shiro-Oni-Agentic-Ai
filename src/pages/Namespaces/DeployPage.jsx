@@ -107,7 +107,7 @@ const VersionDiv = styled.div`
 const StyledTableCell = styled.div`
   cursor: pointer;
   padding: 6px 12px !important;
-  min-width: 4rem !important;
+  // min-width: 4rem !important;
   &.p-0 {
     padding: 0px !important;
   }
@@ -118,6 +118,10 @@ const CustomTable = styled(Table)`
   overflow-x: auto;
   max-height: 34vh;
   width: 100%;
+  table {
+    --data-table-library_grid-template-columns: minmax(0px, 0.5fr)
+      minmax(0px, 1fr) minmax(0px, 1fr) minmax(0px, 1.5fr) !important;
+  }
   td {
     height: auto !important;
     .td-text-wrap {
@@ -248,6 +252,7 @@ function DeployPage() {
   const COLUMNS = [
     {
       label: '',
+      resize: true,
       renderCell: item => (
         <StyledTableCell
           role="button"
@@ -268,10 +273,11 @@ function DeployPage() {
           />
         </StyledTableCell>
       ),
-      width: '7%',
+      width: '10%',
     },
     {
       label: KDFM.VERSION,
+      resize: true,
       renderCell: item => (
         <StyledTableCell
           role="button"
@@ -286,6 +292,7 @@ function DeployPage() {
     },
     {
       label: KDFM.CREATED,
+      resize: true,
       renderCell: item => (
         <StyledTableCell
           role="button"
@@ -301,6 +308,7 @@ function DeployPage() {
     },
     {
       label: KDFM.COMMENT,
+      resize: true,
       renderCell: item => (
         <StyledTableCell
           role="button"

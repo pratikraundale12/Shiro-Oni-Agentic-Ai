@@ -26,14 +26,15 @@ const StyledButton = styled.button`
   border: none;
   text-decoration: underline;
   text-underline-offset: 3px;
-  display: inline-block;
+  text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
-  z-index: 3;
-  font-size: 15px;
   font-weight: 400;
+  font-size: 15px;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
   }
@@ -46,11 +47,9 @@ const FlowNameDiv = styled.div`
   text-transform: ${props => (props.capitalizeText ? 'capitalize' : 'none')};
   background: none;
   border: none;
-  display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 185px;
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
   }
@@ -172,6 +171,7 @@ export const ListNamespaces = () => {
         </>
       ),
       width: '22%',
+      resize: true,
     },
 
     {
@@ -202,6 +202,7 @@ export const ListNamespaces = () => {
         </>
       ),
       width: '16%',
+      resize: true,
     },
     {
       label: (
@@ -231,11 +232,13 @@ export const ListNamespaces = () => {
         </>
       ),
       width: '16%',
+      resize: true,
     },
     {
       label: KDFM.VERSION,
       renderCell: item => <TextRender text={item.version || KDFM.NA} />,
       width: '10%',
+      resize: true,
     },
     {
       label: KDFM.STATUS,
@@ -332,6 +335,7 @@ export const ListNamespaces = () => {
         );
       },
       width: '18%',
+      resize: true,
     },
 
     {
@@ -411,6 +415,7 @@ export const ListNamespaces = () => {
           )}
         </div>
       ),
+      resize: true,
     },
   ];
 

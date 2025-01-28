@@ -27,17 +27,10 @@ const StatusTexts = styled.div`
   letter-spacing: -0.005em;
   text-align: left;
   color: ${props => props.color || '#b5b5bd'};
-  display: flex;
-  align-items: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   // cursor: pointer;
-  div {
-    align-items: center;
-    height: 8px;
-    width: 8px;
-    background: ${props => props.color || '#b5b5bd'};
-    margin-right: 5px;
-    border-radius: 50%;
-  }
 `;
 export const StatusText = ({ text = '', item }) => {
   const color = statusColors[text] || statusColors.DEFAULT;
