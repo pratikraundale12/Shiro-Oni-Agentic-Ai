@@ -417,9 +417,12 @@ export const ListScheduleDeployment = () => {
         <>
           {['upgrade', 'downgrade'].includes(item?.mode) ? (
             <button
-              onClick={() => handleProcessGroupClick(item)}
+              onClick={event => {
+                handleProcessGroupClick(item);
+                event.currentTarget.blur();
+              }}
               className="process-group-button"
-              data-tooltip-id={item?.id ?? ''}
+              data-tooltip-id={`${item?.id}name`}
               style={{
                 background: 'none',
                 cursor: 'pointer',
