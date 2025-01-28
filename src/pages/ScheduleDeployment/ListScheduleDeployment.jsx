@@ -57,7 +57,7 @@ const TextColor = styled.div`
       : props.mode === 'downgrade'
         ? '#ff7700'
         : '#444445;'};
-  font-family: ${props => props.theme.fontNato};
+  font-family: ${props => props.theme.fontRedHat};
   font-size: ${props => props.theme.size.lg};
   font-weight: 400;
   text-transform: ${props => (props.capitalizeText ? 'capitalize' : 'none')};

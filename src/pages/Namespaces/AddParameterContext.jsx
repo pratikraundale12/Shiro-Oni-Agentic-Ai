@@ -144,13 +144,7 @@ const AddParameterContext = ({
               ? 'true'
               : 'false',
         });
-        setValue(
-          'check',
-          (!parameterContextItem?.sensitive && !parameterContextItem?.value) ||
-            parameterContextItem?.check
-            ? true
-            : false
-        );
+        setValue('check', parameterContextItem?.value === '' ? true : false);
       }
     }
   }, [
@@ -285,6 +279,7 @@ const AddParameterContext = ({
   if (check) {
     setValue('value', '');
   }
+  console.log(parameterContextItem);
 
   return (
     <Modal
@@ -331,7 +326,7 @@ const AddParameterContext = ({
                       parameterContextItem?.sensitive == true) &&
                     !parameterContextItem?.value
                       ? KDFM.NO_VALUE_SET
-                      : check || parameterContextItem?.check
+                      : check || parameterContextItem?.value === ''
                         ? KDFM.EMPTY_STRING_SET
                         : parameterContextItem?.sensitive
                           ? KDFM.SENSITIVE_VALUE_SET

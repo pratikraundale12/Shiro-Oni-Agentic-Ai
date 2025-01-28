@@ -1,11 +1,11 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import Chart from 'react-apexcharts';
-import PropTypes from 'prop-types';
 
 export const FlowMetrics = ({ flowMetricsDataDynamic = [] }) => {
   const flowMetricsData = [
     {
-      name: 'Flow Files Qued',
+      name: 'Flow Files Queued',
       data: flowMetricsDataDynamic,
     },
   ];
