@@ -93,7 +93,9 @@ const DiffScheduleParameter = () => {
                   </TileHeader>
                   {(item?.new_value?.value || item?.old_value?.value) && (
                     <div className="d-flex">
-                      <TileHeader className="col-3">Value</TileHeader>
+                      <TileHeader className="col-3 d-flex align-items-center">
+                        Value
+                      </TileHeader>
                       <TileItem className="col-5">
                         <div
                           style={{
@@ -106,7 +108,7 @@ const DiffScheduleParameter = () => {
                           {item?.new_value?.value || 'N/A'}
                         </div>
                       </TileItem>
-                      <TileItem className="col-4">
+                      <TileItem className="col-4 d-flex align-items-center">
                         {item?.old_value?.value || 'N/A'}
                       </TileItem>
                     </div>
@@ -114,7 +116,9 @@ const DiffScheduleParameter = () => {
                   {(item?.new_value?.description ||
                     item?.old_value?.description) && (
                     <div className="d-flex">
-                      <TileHeader className="col-3">Description</TileHeader>
+                      <TileHeader className="col-3 d-flex align-items-center">
+                        Description
+                      </TileHeader>
                       <TileItem className="col-5">
                         <div
                           style={{
@@ -127,7 +131,7 @@ const DiffScheduleParameter = () => {
                           {item?.new_value?.description || 'N/A'}
                         </div>
                       </TileItem>
-                      <TileItem className="col-4">
+                      <TileItem className="col-4 d-flex align-items-center">
                         {item?.old_value?.description || 'N/A'}
                       </TileItem>
                     </div>
