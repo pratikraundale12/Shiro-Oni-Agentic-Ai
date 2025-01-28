@@ -1286,6 +1286,8 @@ const ControllerServiceTab = ({
                 index === 0
                   ? {
                       ...cs,
+                      properties: propertyUpdateResponse?.properties,
+                      name: propertyUpdateResponse?.name,
                       state: propertyUpdateResponse?.state,
                       validationStatus:
                         propertyUpdateResponse?.validationStatus,
@@ -1299,6 +1301,8 @@ const ControllerServiceTab = ({
           ) {
             return {
               ...service,
+              properties: propertyUpdateResponse?.properties,
+              name: propertyUpdateResponse?.name,
               state: propertyUpdateResponse?.state,
               validationStatus: propertyUpdateResponse?.validationStatus,
               isPropertyUpdated: true,
@@ -1729,6 +1733,7 @@ const ControllerServiceTab = ({
               return {
                 ...controller,
                 ...updatedController,
+                name: updatedController?.name,
                 properties: mergeProperties(
                   controller.properties,
                   updatedController.properties
@@ -1771,32 +1776,35 @@ const ControllerServiceTab = ({
       });
     }
   }, [updatedLsForUpgrade]);
-
+  const controllerServiceReduxData = useSelector(
+    NamespacesSelectors.getRegistryDeployControllerService
+  );
   useEffect(() => {
     if (isUpgrade) {
       setControllerServicePayload(prevState => {
-        const newPayload = {};
+        const newPayload = { ...controllerServiceReduxData };
         if (!isEmpty(externalServicePayload)) {
           newPayload.externalServicesData = externalServicePayload;
-          // dispatch(
-          //   NamespacesActions.setRegistryDeployControllerService({
-          //     externalServicesData: externalServicePayload,
-          //     localServicesData: newPayload.localServicesData
-          //   })
-          // );
         }
         if (
           !isEmpty(updatedLocalServicesData) ||
           !isEmpty(prevState.localServicesData)
         ) {
-          newPayload.localServicesData = updatedLocalServicesData?.length
-            ? updatedLocalServicesData
-            : prevState.localServicesData;
+          const prevDataMap = new Map(
+            prevState?.localServicesData?.map(item => [item.identifier, item])
+          );
+
+          updatedLocalServicesData?.forEach(updatedItem => {
+            prevDataMap?.set(updatedItem.identifier, updatedItem); // Replace if exists, add if not
+          });
+
+          newPayload.localServicesData = Array.from(prevDataMap.values());
         }
         if (
           checkIfLocalCsConfigured &&
           externalServicePayload?.length > 0 &&
-          Object.keys(newPayload).length > 0
+          Object.keys(newPayload).length > 0 &&
+          newPayload.hasOwnProperty('localServicesData')
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1816,8 +1824,7 @@ const ControllerServiceTab = ({
           );
         } else if (
           !checkIfLocalCsConfigured &&
-          externalServicePayload?.length > 0 &&
-          Object.keys(newPayload).length > 0
+          externalServicePayload?.length > 0
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1829,28 +1836,29 @@ const ControllerServiceTab = ({
       });
     } else {
       setControllerServicePayload(prevState => {
-        const newPayload = {};
+        const newPayload = { ...controllerServiceReduxData };
         if (!isEmpty(externalServicePayload)) {
           newPayload.externalServicesData = externalServicePayload;
-          // dispatch(
-          //   NamespacesActions.setRegistryDeployControllerService({
-          //     externalServicesData: externalServicePayload,
-          //     localServicesData: newPayload.localServicesData
-          //   })
-          // );
         }
         if (
           !isEmpty(updatedLsForUpgrade) ||
-          !isEmpty(prevState.localServicesData)
+          !isEmpty(prevState?.localServicesData)
         ) {
-          newPayload.localServicesData = updatedLsForUpgrade?.length
-            ? updatedLsForUpgrade
-            : prevState.localServicesData;
+          const prevDataMap = new Map(
+            prevState?.localServicesData?.map(item => [item.identifier, item])
+          );
+
+          updatedLsForUpgrade?.forEach(updatedItem => {
+            prevDataMap?.set(updatedItem?.identifier, updatedItem);
+          });
+
+          newPayload.localServicesData = Array.from(prevDataMap.values());
         }
         if (
           checkIfLocalCsConfigured &&
           externalServicePayload?.length > 0 &&
-          Object.keys(newPayload).length > 0
+          Object.keys(newPayload).length > 0 &&
+          newPayload.hasOwnProperty('localServicesData')
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1860,7 +1868,7 @@ const ControllerServiceTab = ({
           );
         } else if (
           checkIfLocalCsConfigured &&
-          !externalServicePayload?.length &&
+          externalServicePayload?.length <= 0 &&
           Object.keys(newPayload).length > 0
         ) {
           dispatch(
@@ -1870,8 +1878,7 @@ const ControllerServiceTab = ({
           );
         } else if (
           !checkIfLocalCsConfigured &&
-          externalServicePayload?.length > 0 &&
-          Object.keys(newPayload).length > 0
+          externalServicePayload?.length > 0
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1995,6 +2002,7 @@ const ControllerServiceTab = ({
           setUpdatedData={setUpdatedData}
           updatedData={updatedData}
           isUpgrade={isUpgrade}
+          isFromExternalService={isFromExternalService}
         />
 
         <ConfigurePropertyModal

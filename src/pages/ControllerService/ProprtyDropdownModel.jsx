@@ -29,6 +29,7 @@ const PropertyDropdownModal = ({
   setUpdatedData,
   updatedData,
   isUpgrade,
+  isFromExternalService,
 }) => {
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
@@ -72,7 +73,7 @@ const PropertyDropdownModal = ({
       value: element?.name,
       label: element?.name,
     }));
-    setPropertyOptionsArray(options);
+    setPropertyOptionsDeploy(options);
   }, [propertyOptionOnDeploy]);
   const handleClose = () => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(false));
@@ -120,17 +121,20 @@ const PropertyDropdownModal = ({
     setAddNewProperty(false);
   };
   useEffect(() => {
-    if (selectedPropertyToEdit?.add && isModalOpen) {
+    if (isModalOpen) {
       dispatch(
         NamespacesActions.getNewPropertyControllerServiceUpdated(
           selectedPropertyToEdit
         )
       );
-      dispatch(
-        NamespacesActions.getNewPropertyControllerService(
-          selectedPropertyToEdit
-        )
-      );
+      {
+        selectedPropertyToEdit?.add &&
+          dispatch(
+            NamespacesActions.getNewPropertyControllerService(
+              selectedPropertyToEdit
+            )
+          );
+      }
       setAddNewProperty(false);
     }
   }, [selectedPropertyToEdit?.add, isModalOpen]);
@@ -179,15 +183,18 @@ const PropertyDropdownModal = ({
                   name="value"
                   size="sm"
                   options={
-                    isUpgrade ? proprtyOptionsArray : propertyOptionsDeploy
+                    !isUpgrade || isFromExternalService
+                      ? proprtyOptionsArray
+                      : propertyOptionsDeploy
                   }
                   control={control}
-                  placeholder="Select Value"
+                  placeholder="Select Service"
                   backgroundColor={theme.colors.lightGrey}
-                  title="Select Status"
+                  title="Select Service"
                 />
                 <div className="col-4 mt-3">
                   <Button
+                    isBtnDisable={!selectedPropertyToEdit?.add}
                     type="button"
                     size={'md'}
                     variant="tertiary"
@@ -198,16 +205,16 @@ const PropertyDropdownModal = ({
                 </div>
               </>
             )}
-            {addNewProperty && selectedPropertyToEdit?.add && (
+            {addNewProperty && (
               <>
                 <StyledSelectField
                   name="newService"
                   size="sm"
                   options={optionsToNewPropertyAdd}
                   control={control}
-                  placeholder="Select Value"
+                  placeholder="Select Service"
                   backgroundColor={theme.colors.lightGrey}
-                  title="Select Status"
+                  title="Select Service"
                 />
                 <div className="row">
                   <div className="col-4 mt-3">
