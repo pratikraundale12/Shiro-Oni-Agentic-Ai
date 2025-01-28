@@ -386,16 +386,16 @@ export const Grid = ({
         setSortingState={setSortingState}
         setCurrentPage={setCurrentPage}
       />
-      {module === 'nodes' && !loading && !isEmpty(clusterSummary) && (
+      {module === 'nodes' && !loading && !isEmpty(clusterSummary?.nodes) && (
         <>
           <ClusterRegistryContainer className="row">
             <ClusterDetail
               data={{
-                name: clusterSummary.name,
-                nifi_url: clusterSummary.nifi_url,
+                name: clusterSummary?.name,
+                nifi_url: clusterSummary?.nifi_url,
               }}
             />
-            <RegistryDetail data={clusterSummary.registry} />
+            <RegistryDetail data={clusterSummary?.registry} />
           </ClusterRegistryContainer>
           <Modal
             title="Event Log"

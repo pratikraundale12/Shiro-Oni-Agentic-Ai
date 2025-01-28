@@ -376,7 +376,7 @@ export const ClusterAccess = () => {
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>
-          <Title>DFM Role Management</Title>
+          <Title>Cluster Management</Title>
         </Flex>
         <ButtonsContainer>
           <StyledSelectField
