@@ -22,7 +22,11 @@ const schema = yup.object().shape({
   roleName: yup
     .string()
     .required('Role Name is required')
-    .max(30, 'Role Name cannot exceed 30 characters'),
+    .max(30, 'Role Name cannot exceed 30 characters')
+    .matches(
+      /^[A-Za-z]+( [A-Za-z]+)*$/,
+      'Role Name must contain only letters and spaces'
+    ),
 });
 
 const AddNewRoleModal = ({ selectedOption, ldapGroupName }) => {
@@ -112,6 +116,7 @@ const AddNewRoleModal = ({ selectedOption, ldapGroupName }) => {
           placeholder="Enter Role Name "
           icon={<UserIcon />}
           register={register}
+          required={true}
           errors={errors}
         />
       </RoleFormContainer>
