@@ -120,7 +120,7 @@ const PropertyDropdownModal = ({
       ...filterData,
       {
         name: selectedPropertyToEdit.name,
-        value: data.value,
+        value: data.value === '' ? null : data.value,
         sensitive: false,
       },
     ]);
@@ -133,7 +133,7 @@ const PropertyDropdownModal = ({
         item.name === selectedPropertyToEdit.name
           ? {
               ...item,
-              value: data?.value,
+              value: data.value === '' ? null : data.value,
               dropDownName: selectedName,
               empty_string_set: false,
             }
