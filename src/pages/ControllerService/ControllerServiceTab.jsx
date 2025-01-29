@@ -1996,6 +1996,7 @@ const ControllerServiceTab = ({
         />
 
         <PropertyDropdownModal
+          selectedItemFromList={selectedItemFromList}
           isFromControllerServiceTab={true}
           selectedPropertyToEdit={selectedPropertyToEdit}
           setListPropertTableData={setListPropertTableData}
