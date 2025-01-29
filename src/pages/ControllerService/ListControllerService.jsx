@@ -10,10 +10,10 @@ import {
   DeleteSmallIcon,
   FlashCutIcon,
   FlashIcon,
+  RefreshIcon,
   SettingSmallIcon,
   SmallSearchIcon,
   TodoIcon,
-  RefreshIcon,
 } from '../../assets';
 
 import { FullPageLoader, Table, TextRender } from '../../components';
@@ -127,12 +127,13 @@ const StatusText = ({ text = '', item }) => {
       {!isEmpty(item?.tooltip) && (
         <ReactTooltip
           id={`tooltip-cs-${item?.id}`}
-          place="right"
+          place="top"
           content={item?.tooltip ? item?.tooltip : null}
           style={{
             width: '520px',
             whiteSpace: 'normal',
             wordWrap: 'break-word',
+            zIndex: '9999',
           }}
         />
       )}
