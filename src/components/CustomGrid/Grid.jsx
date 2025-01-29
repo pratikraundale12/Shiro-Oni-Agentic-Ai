@@ -202,6 +202,14 @@ export const Grid = ({
           color:  ${theme.colors.darker} !important;
           z-index:6
         }
+        thead th.resize button[style='background: none;'] {
+          display: block;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          text-align: left;
+          width: 100%;
+        }
 
         td {
           height: 73px;

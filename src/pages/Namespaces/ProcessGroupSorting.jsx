@@ -63,6 +63,9 @@ const ProcessGroupSorting = ({
             background: 'none',
             border: 'none',
             cursor: 'pointer',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
           }}
         >
           {clickableName}
@@ -70,7 +73,11 @@ const ProcessGroupSorting = ({
       )}
 
       {/* Sorting Button */}
-      <button onClick={handleToggleSort} style={{ background: 'none' }}>
+      <button
+        className="w-auto me-1"
+        onClick={handleToggleSort}
+        style={{ background: 'none' }}
+      >
         {isAscending ? <SortDownIcon /> : <SortUpIcon />}
       </button>
     </div>

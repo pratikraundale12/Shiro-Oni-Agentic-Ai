@@ -90,6 +90,14 @@ export const Table = ({
           background-color: ${theme.colors.lightGrey} !important;
           color:  ${theme.colors.darker} !important;
         }
+        thead th.resize button[style='background: none;'] {
+          display: block;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          text-align: left;
+          width: 100%;
+        }
 
         td {
           height: 60px;

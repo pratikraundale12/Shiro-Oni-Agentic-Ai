@@ -95,7 +95,11 @@ export const ApproverGroupDisplay = ({
 
     return (
       <div
-        style={{ display: 'inline-block', position: 'relative' }}
+        style={{
+          display: 'inline-block',
+          position: 'relative',
+          verticalAlign: 'middle',
+        }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
