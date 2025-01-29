@@ -212,7 +212,7 @@ const PropertyDropdownModal = ({
         footerAlign="start"
         contentStyles={{
           minWidth: selectedPropertyToEdit?.add ? '30%' : '15%',
-          maxWidth: selectedPropertyToEdit?.add ? '30%' : '25%',
+          maxWidth: selectedPropertyToEdit?.add ? '34%' : '25%',
           maxHeight: '50%',
         }}
         primaryButtonDisabled={selectedProperty === null || addNewProperty}
@@ -271,19 +271,30 @@ const PropertyDropdownModal = ({
                   }
                   defaultValue={selectedPropertyToEdit?.dropDownName}
                 />
-                {selectedPropertyToEdit?.add && (
-                  <div className="col-4 mt-3">
+                <div className="d-flex gap-3">
+                  {selectedPropertyToEdit?.add && (
+                    <div className="col-4 mt-3">
+                      <Button
+                        type="button"
+                        size={'md'}
+                        variant="tertiary"
+                        onClick={() => setAddNewProperty(true)}
+                      >
+                        Create New Service
+                      </Button>
+                    </div>
+                  )}
+                  <div className="col-4 mt-3" style={{ width: '188px' }}>
                     <Button
-                      isBtnDisable={!selectedPropertyToEdit?.add}
                       type="button"
                       size={'md'}
                       variant="tertiary"
-                      onClick={() => setAddNewProperty(true)}
+                      onClick={() => onRefParamsClick()}
                     >
-                      Create New Service
+                      Referencing Parameter
                     </Button>
                   </div>
-                )}
+                </div>
               </>
             )}
             {addNewProperty && (
