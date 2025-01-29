@@ -841,9 +841,10 @@ const ControllerServiceTab = ({
             <>
               <button
                 className="border-0 bg-white"
-                onClick={() => {
+                onClick={event => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                  event.currentTarget.blur();
                 }}
                 data-tooltip-id={`Referencing-${item?.id}`}
                 aria-label="Referencing"
