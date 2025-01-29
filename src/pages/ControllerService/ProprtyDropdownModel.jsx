@@ -60,18 +60,16 @@ const PropertyDropdownModal = ({
     return item.name != selectedPropertyToEdit.name;
   });
   useEffect(() => {
-    const updatedOptions = selectedPropertyToEdit?.allowableValues?.map(
-      element => ({
+    const updatedOptions =
+      selectedPropertyToEdit?.allowableValues?.map(element => ({
         value: element?.allowableValue?.value,
         label: element?.allowableValue?.displayName,
-      })
-    );
+      })) ?? [];
 
-    selectedPropertyToEdit?.allowableValues?.length &&
-      setPropertyOptionsArray([
-        { value: '', label: 'No value set' },
-        ...updatedOptions,
-      ]);
+    setPropertyOptionsArray([
+      { value: '', label: 'No value set' },
+      ...updatedOptions,
+    ]);
   }, [selectedPropertyToEdit]);
 
   const isModalOpen = useSelector(
