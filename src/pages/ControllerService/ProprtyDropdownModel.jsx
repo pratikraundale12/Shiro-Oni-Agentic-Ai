@@ -171,15 +171,23 @@ const PropertyDropdownModal = ({
         secondaryButtonText="Back"
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
-        contentStyles={{ maxWidth: '35%', maxHeight: '50%' }}
+        contentStyles={{
+          minWidth: selectedPropertyToEdit?.add ? '30%' : '15%',
+          maxWidth: selectedPropertyToEdit?.add ? '30%' : '25%',
+          maxHeight: '50%',
+        }}
         primaryButtonDisabled={selectedProperty === null || addNewProperty}
         noScroll={true}
       >
         <ModalBody className="modal-body">
-          <div style={{ height: '150px' }} className="mb-4">
+          <div
+            style={{ height: selectedPropertyToEdit?.add ? '150px' : '70px' }}
+            className="mb-4"
+          >
             {!addNewProperty && (
               <>
                 <StyledSelectField
+                  menuHeight={selectedPropertyToEdit?.add ? '150px' : '120px'}
                   name="value"
                   size="sm"
                   options={
@@ -188,21 +196,32 @@ const PropertyDropdownModal = ({
                       : propertyOptionsDeploy
                   }
                   control={control}
-                  placeholder="Select Service"
+                  placeholder={
+                    selectedPropertyToEdit?.add
+                      ? 'Select Service'
+                      : 'Select Value'
+                  }
                   backgroundColor={theme.colors.lightGrey}
-                  title="Select Service"
+                  title={
+                    selectedPropertyToEdit?.add
+                      ? 'Select Service'
+                      : 'Select Value'
+                  }
+                  defaultValue={selectedPropertyToEdit?.dropDownName}
                 />
-                <div className="col-4 mt-3">
-                  <Button
-                    isBtnDisable={!selectedPropertyToEdit?.add}
-                    type="button"
-                    size={'md'}
-                    variant="tertiary"
-                    onClick={() => setAddNewProperty(true)}
-                  >
-                    Create New Service
-                  </Button>
-                </div>
+                {selectedPropertyToEdit?.add && (
+                  <div className="col-4 mt-3">
+                    <Button
+                      isBtnDisable={!selectedPropertyToEdit?.add}
+                      type="button"
+                      size={'md'}
+                      variant="tertiary"
+                      onClick={() => setAddNewProperty(true)}
+                    >
+                      Create New Service
+                    </Button>
+                  </div>
+                )}
               </>
             )}
             {addNewProperty && (
