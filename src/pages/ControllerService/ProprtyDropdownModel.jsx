@@ -12,6 +12,7 @@ import { KDFM } from '../../constants';
 
 const ModalBody = styled.div`
   position: relative;
+  padding: 10px 20px 20px 20px;
   flex: 1 1 auto;
   & .variables-table {
     th {
@@ -218,8 +219,31 @@ const PropertyDropdownModal = ({
         }}
         primaryButtonDisabled={selectedProperty === null || addNewProperty}
         noScroll={true}
+        noPadding={true}
       >
         <ModalBody className="modal-body">
+          {isRefParams && (
+            <div className="d-flex align-items-center justify-content-start mt-2">
+              <div
+                className="py-2 d-flex align-items-center gap-2"
+                style={{
+                  backgroundColor: '#F5F7FA',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  border: `1px solid ${theme.colors.primary}`,
+                  color: '#444445',
+                  padding: '6px',
+                  marginBottom: '20px',
+                }}
+              >
+                <span style={{ color: 'red' }}>*</span>
+                <span style={{ fontStyle: 'italic' }}>
+                  Note: Configuring the reference parameters incorrectly will
+                  fail the deployment.
+                </span>
+              </div>
+            </div>
+          )}
           <div
             style={{ height: selectedPropertyToEdit?.add ? '150px' : '70px' }}
             className="mb-4"
