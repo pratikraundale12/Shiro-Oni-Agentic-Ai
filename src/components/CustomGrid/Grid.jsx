@@ -137,7 +137,7 @@ export const Grid = ({
   const selectedNamespaceForDetail = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  const itemsPerPage = 10;
+  const itemsPerPage = 2;
   const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedRole, setSelectedRole] = useState(null);
