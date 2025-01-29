@@ -284,9 +284,10 @@ export const ListControllerService = () => {
             <>
               <button
                 className="border-0 bg-white"
-                onClick={() => {
+                onClick={event => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                  event.currentTarget.blur();
                 }}
                 data-tooltip-id={`Referencing-${item?.id}`}
                 aria-label="Referencing"
@@ -324,7 +325,10 @@ export const ListControllerService = () => {
               <>
                 <button
                   className="border-0 bg-white"
-                  onClick={() => handleSettingClick(item)}
+                  onClick={event => {
+                    handleSettingClick(item);
+                    event.currentTarget.blur();
+                  }}
                   data-tooltip-id={'global-tooltip'}
                   data-tooltip-content={'Settings'}
                   data-tooltip-place="left"
@@ -356,7 +360,10 @@ export const ListControllerService = () => {
               <>
                 <button
                   className="border-0 bg-white ms-1"
-                  onClick={() => handleEnableClick(item)}
+                  onClick={event => {
+                    handleEnableClick(item);
+                    event.currentTarget.blur();
+                  }}
                   data-tooltip-id={'global-tooltip'}
                   data-tooltip-content={
                     isBtnDisable
@@ -386,7 +393,10 @@ export const ListControllerService = () => {
                 <>
                   <button
                     className="border-0 bg-white ms-1"
-                    onClick={() => handleDeleteClick(item)}
+                    onClick={event => {
+                      handleDeleteClick(item);
+                      event.currentTarget.blur();
+                    }}
                     data-tooltip-id={'global-tooltip'}
                     data-tooltip-content={'Delete'}
                     data-tooltip-place="left"

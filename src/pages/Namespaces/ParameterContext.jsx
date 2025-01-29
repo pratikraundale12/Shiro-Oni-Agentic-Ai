@@ -219,9 +219,10 @@ const ParameterContext = ({
             <>
               <button
                 className="border-0 bg-white"
-                onClick={() => {
+                onClick={event => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                  event.currentTarget.blur();
                 }}
                 data-tooltip-id={`Reference-${item?.id}`}
                 aria-label="Reference"
