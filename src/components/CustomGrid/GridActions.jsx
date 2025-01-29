@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { isEmpty, isEqual } from 'lodash';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { useForm } from 'react-hook-form';
@@ -399,9 +399,12 @@ export const GridActions = ({
 
   const handleChange = value => {
     setCurrentPage(1);
-    const testEqual = isEqual(value?.[0], value?.[1]);
-    const checkedArray = testEqual ? [value?.[0], endOfDay(value?.[1])] : value;
-    dispatch(SchedularActions.setScheduleSelectRange(checkedArray));
+    dispatch(
+      SchedularActions.setScheduleSelectRange([
+        startOfDay(value?.[0]),
+        endOfDay(value?.[1]),
+      ])
+    );
     if (!value) {
       dispatch(SchedularActions.setScheduleSelectRange([]));
       dispatch(
