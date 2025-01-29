@@ -169,7 +169,10 @@ export const ListScheduleDeployment = () => {
     return (
       <>
         <IconButton
-          onClick={() => handleEditClick(item)}
+          onClick={event => {
+            handleEditClick(item);
+            event.currentTarget.blur();
+          }}
           // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-edit-schedule`}`}
           className="pencil-icon-schedule-list"
@@ -195,7 +198,10 @@ export const ListScheduleDeployment = () => {
     return (
       <>
         <IconButton
-          onClick={() => handleRejectCrossClick(item)}
+          onClick={event => {
+            handleRejectCrossClick(item);
+            event.currentTarget.blur();
+          }}
           // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
           style={{ border: 'transparent' }}

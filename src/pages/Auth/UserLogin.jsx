@@ -120,9 +120,7 @@ export const UserLogin = () => {
             label="Password"
           />
           <ForgetLinkContainer>
-            <PasswordTextMessage>
-              Must be 8 characters at least
-            </PasswordTextMessage>
+            <PasswordTextMessage></PasswordTextMessage>
             <TextButton
               onClick={() =>
                 toast.error(

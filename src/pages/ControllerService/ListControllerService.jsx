@@ -315,7 +315,10 @@ export const ListControllerService = () => {
               <>
                 <button
                   className="border-0 bg-white"
-                  onClick={() => handleSettingClick(item)}
+                  onClick={event => {
+                    handleSettingClick(item);
+                    event.currentTarget.blur();
+                  }}
                   data-tooltip-id={'Settings'}
                 >
                   <SettingSmallIcon />
@@ -338,7 +341,10 @@ export const ListControllerService = () => {
                   disabled={isBtnDisabled}
                   style={{ opacity: isBtnDisabled ? 0.3 : 1 }}
                   className="border-0 bg-white ms-1"
-                  onClick={() => handleEnableClick(item)}
+                  onClick={event => {
+                    handleEnableClick(item);
+                    event.currentTarget.blur();
+                  }}
                   data-tooltip-id={item?.id}
                 >
                   {item?.state !== 'DISABLED' ? (
@@ -368,7 +374,10 @@ export const ListControllerService = () => {
                 <>
                   <button
                     className="border-0 bg-white ms-1"
-                    onClick={() => handleDeleteClick(item)}
+                    onClick={event => {
+                      handleDeleteClick(item);
+                      event.currentTarget.blur();
+                    }}
                     data-tooltip-id={'Delete'}
                   >
                     <DeleteSmallIcon color="black" height="28" />
