@@ -80,9 +80,11 @@ const DiffScheduleVariables = () => {
                 </div>
               </div>
               {element?.variables?.map(item => (
-                <div className="row mt-4" key={item?.name}>
+                <div className="row mt-1" key={item?.name}>
                   <div className="d-flex">
-                    <TileItem className="col-3">{item?.name}</TileItem>
+                    <TileItem className="col-3 d-flex align-items-center">
+                      {item?.name}
+                    </TileItem>
                     <TileItem className="col-5">
                       <div
                         style={{
@@ -94,7 +96,7 @@ const DiffScheduleVariables = () => {
                         {item?.new_value || 'N/A'}
                       </div>
                     </TileItem>
-                    <TileItem className="col-4">
+                    <TileItem className="col-4 d-flex align-items-center">
                       {item?.old_value || 'N/A'}
                     </TileItem>
                   </div>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -146,11 +147,11 @@ const FlowControl = () => {
     forPopup: false,
   });
 
-  const singleNamespaceData = useSelector(
+  const singleNamespaceData1 = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
 
-  const permissions = singleNamespaceData?.permissions;
+  const permissions = singleNamespaceData1?.permissions;
   const { canWrite } = permissions || {};
   const handleUpdateStatus = status => {
     if (!canWrite) return;
@@ -182,6 +183,13 @@ const FlowControl = () => {
       forPopup: false,
     });
   };
+
+  const { id } = useParams();
+  useEffect(() => {
+    dispatch(NamespacesActions.setSourceNamespaceId(id));
+    dispatch(NamespacesActions.singleNamespaceData(id));
+  }, [dispatch, id]);
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
   );
@@ -228,11 +236,11 @@ const FlowControl = () => {
               <TextDiv className="d-flex">
                 <CountDiv
                   className="div-btn-4 mr-2"
-                  count={singleNamespaceData?.disabledCount}
+                  count={singleNamespaceData1?.disabledCount}
                   activeColor="#2c7cf3"
                 >
                   <SmallNotThunderIcon width={16} color="#B5BDC8" />
-                  <span>{singleNamespaceData?.disabledCount}</span>
+                  <span>{singleNamespaceData1?.disabledCount}</span>
                 </CountDiv>
                 <div>{KDFM.DISABLED_PROCESSORS}</div>
               </TextDiv>

@@ -324,14 +324,14 @@ const AddParameterContext = ({
                     (parameterContextItem?.sensitive == 'true' ||
                       parameterContextItem?.sensitive == true) &&
                     !parameterContextItem?.value
-                      ? KDFM.NO_VALUE_SET
+                      ? ''
                       : check || parameterContextItem?.value === ''
                         ? KDFM.EMPTY_STRING_SET
                         : parameterContextItem?.sensitive
                           ? KDFM.SENSITIVE_VALUE_SET
                           : isAddParameterContextOpen?.mode === 'add'
                             ? KDFM.ENTER_PARAMETER
-                            : KDFM.NO_VALUE_SET
+                            : ''
                   }
                   disabled={check}
                   errors={errors}

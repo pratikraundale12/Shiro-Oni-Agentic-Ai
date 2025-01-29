@@ -96,7 +96,7 @@ const DiffScheduleCS = () => {
                 <TileHeader className="col-4">Current</TileHeader>
               </div>
               {element?.property_differences?.map(item => (
-                <div className="row mb-4 mt-2" key={item?.name}>
+                <div className="row  " key={item?.name}>
                   <TileHeader
                     style={{
                       backgroundColor: '#E9ECF1',
@@ -104,13 +104,15 @@ const DiffScheduleCS = () => {
                       color: theme.colors.primary,
                       // borderRadius: '12px',
                     }}
-                    className="d-flex align-items-center mb-3"
+                    className="d-flex align-items-center mb-1"
                   >
                     <span className="">{item?.name}</span>
                   </TileHeader>
-                  <div className="d-flex mb-4">
-                    <TileHeader className="col-3">Value</TileHeader>
-                    <TileItem className="col-5">
+                  <div className="d-flex mb-1">
+                    <TileHeader className="col-3 d-flex align-items-center">
+                      Value
+                    </TileHeader>
+                    <TileItem className="col-5 me-2">
                       <div
                         style={{
                           backgroundColor: '#E9ECF1',
@@ -121,7 +123,7 @@ const DiffScheduleCS = () => {
                         {item?.new_value || 'N/A'}
                       </div>
                     </TileItem>
-                    <TileItem className="col-4">
+                    <TileItem className="col-4 d-flex align-items-center">
                       {item?.old_value || 'N/A'}
                     </TileItem>
                   </div>

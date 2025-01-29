@@ -48,6 +48,7 @@ export const ActvityHistory = () => {
         </>
       ),
       width: '10%',
+      resize: true,
       renderCell: item => <TextRender text={item.event || KDFM.NA} />,
     },
     {
@@ -69,6 +70,7 @@ export const ActvityHistory = () => {
         </>
       ),
       width: '10%',
+      resize: true,
       renderCell: item => (
         <TextRender
           text={
@@ -98,6 +100,7 @@ export const ActvityHistory = () => {
         </>
       ),
       width: '10%',
+      resize: true,
       renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
       sort: { sortKey: 'namespace' },
     },
@@ -120,6 +123,7 @@ export const ActvityHistory = () => {
         </>
       ),
       width: '10%',
+      resize: true,
       renderCell: item => <TextRender text={item.flow_name || KDFM.NA} />,
     },
     {
@@ -141,6 +145,7 @@ export const ActvityHistory = () => {
         </>
       ),
       width: '10%',
+      resize: true,
       renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
       sort: { sortKey: 'cluster' },
     },
@@ -150,10 +155,12 @@ export const ActvityHistory = () => {
         <TextRender text={item.message || KDFM.NA} capitalizeText={false} />
       ),
       width: '12%',
+      resize: true,
     },
     {
       label: KDFM.VERSION,
       width: '8%',
+      resize: true,
       renderCell: item => <TextRender text={item.version || KDFM.NA} />,
     },
     {
@@ -175,11 +182,13 @@ export const ActvityHistory = () => {
         </>
       ),
       width: '8%',
+      resize: true,
       renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
     },
     {
       label: KDFM.TIMESTAMP,
       width: '12%',
+      resize: true,
       renderCell: item => (
         <TextRender text={convertDateTime(item.timestamp) || KDFM.NA} />
       ),
@@ -204,6 +213,7 @@ export const ActvityHistory = () => {
         </>
       ),
       width: '10%',
+      resize: true,
       renderCell: item => (
         <TextRender
           text={item.created_by_name || KDFM.NA}

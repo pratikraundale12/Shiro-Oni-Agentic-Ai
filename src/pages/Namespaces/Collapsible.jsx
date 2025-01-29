@@ -89,7 +89,7 @@ const Collapsible = ({
         <div className="d-flex gap-3 w-70">
           {isAddBtnVisible && (
             <Button
-              idBtnDisable={isAddBtnDisable}
+              isBtnDisable={isAddBtnDisable}
               icon={<PlusCircleIcon width={16} height={16} color="white" />}
               onClick={onBtnClick}
               size="sm"

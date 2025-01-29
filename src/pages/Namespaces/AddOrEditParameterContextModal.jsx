@@ -98,7 +98,7 @@ const AddOrEditParameterContextModal = ({
   );
   const [valPlaceHolder, setValPlaceHolder] = useState('');
   const [isChecked, setIsChecked] = useState(
-    pcEditData ? pcEditData?.check : false
+    pcEditData ? pcEditData?.value === '' : false
   );
 
   const handleAddEditParameterContext = () => {

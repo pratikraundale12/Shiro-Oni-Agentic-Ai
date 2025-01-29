@@ -19,6 +19,7 @@ import {
   RolesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
+import { toast } from 'react-toastify';
 
 const Flex = styled.div`
   display: flex;
@@ -91,11 +92,14 @@ const CellRender = ({
   roleClusters = [],
   onChange = () => {},
 }) => {
-  const checked = roleClusters.find(
-    roleCluster =>
-      roleCluster.cluster_id === clusterId &&
-      roleCluster.policy_id === policy.id
-  );
+  const checked =
+    roleClusters &&
+    roleClusters.length > 0 &&
+    roleClusters.find(
+      roleCluster =>
+        roleCluster.cluster_id === clusterId &&
+        roleCluster.policy_id === policy.id
+    );
   const item = { cluster_id: clusterId, policy_id: policy.id };
 
   return (
@@ -108,20 +112,30 @@ const CellRender = ({
 };
 
 const getDifference = (existing, updated) => {
-  const exists = updated.filter(
-    item =>
-      !existing.some(
-        itm =>
-          item.policy_id === itm.policy_id && item.cluster_id === itm.cluster_id
-      )
-  );
-  const updates = existing.filter(
-    item =>
-      !updated.some(
-        itm =>
-          item.policy_id === itm.policy_id && item.cluster_id === itm.cluster_id
-      )
-  );
+  const exists =
+    updated &&
+    updated.length > 0 &&
+    updated.filter(
+      item =>
+        existing &&
+        !existing.some(
+          itm =>
+            item.policy_id === itm.policy_id &&
+            item.cluster_id === itm.cluster_id
+        )
+    );
+  const updates =
+    existing &&
+    existing.length > 0 &&
+    existing.filter(
+      item =>
+        updated &&
+        !updated.some(
+          itm =>
+            item.policy_id === itm.policy_id &&
+            item.cluster_id === itm.cluster_id
+        )
+    );
   return [exists, updates];
 };
 
@@ -132,6 +146,7 @@ export const ClusterAccess = () => {
   const clusters = useSelector(ClustersSelectors.getClusters);
   const roleClusters = useSelector(RolesSelectors.getRoleClusters);
   const selectedRole = useSelector(RolesSelectors.getSelectedRole);
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateRoleClusters')
@@ -202,13 +217,21 @@ export const ClusterAccess = () => {
     },
   ];
 
-  const roleOptions = roles.map(role => ({
-    value: role.role_id,
-    label: role.name,
-  }));
+  const roleOptions =
+    roles && roles.length > 0
+      ? roles.filter(item => item.name !== currentUser?.role)
+      : [];
 
   const path = [
-    { label: 'DFM Access', path: '/role-&-permission' },
+    {
+      label: 'DFM Access',
+      path: '/role-&-permission',
+      callback: () => {
+        dispatch(RolesActions.setSelectedRole({}));
+        dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
+        dispatch(PoliciesActions.fetchPoliciesSuccess({}));
+      },
+    },
     { label: 'Cluster Management' },
   ];
 
@@ -220,7 +243,8 @@ export const ClusterAccess = () => {
 
   const onChange = option => {
     dispatch(RolesActions.setSelectedRole(option));
-    dispatch(PoliciesActions.fetchPoliciesRoles({ roleId: option.value }));
+    dispatch(PoliciesActions.fetchPoliciesRoles({ roleId: option.role_id }));
+    dispatch(RolesActions.fetchRoleClusters({ roleId: option.role_id }));
   };
   const handleCheckboxAutoClick = value => {
     if (viewId?.[0]?.id !== value?.policy_id) {
@@ -265,31 +289,35 @@ export const ClusterAccess = () => {
   };
 
   const handleChange = (checked, item) => {
-    const samecluster = updatedRoleClusters.filter(
-      ele => ele?.cluster_id === item.cluster_id
-    );
-    if (!checked) {
-      if (item.policy_id === viewId?.[0]?.id && samecluster.length > 1) {
-        null;
+    if (!isEmpty(selectedRole)) {
+      const samecluster = updatedRoleClusters.filter(
+        ele => ele?.cluster_id === item.cluster_id
+      );
+      if (!checked) {
+        if (item.policy_id === viewId?.[0]?.id && samecluster.length > 1) {
+          null;
+        } else {
+          setUpdatedRoleClusters(prev =>
+            prev.filter(policy => {
+              const isSameClusterAndPolicy =
+                policy.cluster_id === item.cluster_id &&
+                policy.policy_id === item.policy_id;
+
+              const isDeactivateCondition =
+                item.policy_id === deActivateId?.[0]?.id &&
+                policy.cluster_id === item.cluster_id &&
+                policy.policy_id === deleteId?.[0]?.id;
+
+              return !(isSameClusterAndPolicy || isDeactivateCondition);
+            })
+          );
+        }
       } else {
-        setUpdatedRoleClusters(prev =>
-          prev.filter(policy => {
-            const isSameClusterAndPolicy =
-              policy.cluster_id === item.cluster_id &&
-              policy.policy_id === item.policy_id;
-
-            const isDeactivateCondition =
-              item.policy_id === deActivateId?.[0]?.id &&
-              policy.cluster_id === item.cluster_id &&
-              policy.policy_id === deleteId?.[0]?.id;
-
-            return !(isSameClusterAndPolicy || isDeactivateCondition);
-          })
-        );
+        setUpdatedRoleClusters(prev => [...prev, item]);
+        handleCheckboxAutoClick(item);
       }
     } else {
-      setUpdatedRoleClusters(prev => [...prev, item]);
-      handleCheckboxAutoClick(item);
+      toast.error('Please select a role');
     }
   };
 
@@ -297,18 +325,24 @@ export const ClusterAccess = () => {
     const payload = { add: [], remove: [] };
 
     const [added, remove] = getDifference(roleClusters, updatedRoleClusters);
+    payload.add =
+      added &&
+      added.length > 0 &&
+      added.map(item => ({
+        role_id: selectedRole.role_id,
+        cluster_id: item.cluster_id,
+        policy_id: item.policy_id,
+      }));
+    payload.remove =
+      remove &&
+      remove.length > 0 &&
+      remove.map(item => ({
+        role_id: selectedRole.role_id,
+        cluster_id: item.cluster_id,
+        policy_id: item.policy_id,
+      }));
 
-    payload.add = added.map(item => ({
-      role_id: selectedRole.value,
-      cluster_id: item.cluster_id,
-      policy_id: item.policy_id,
-    }));
-    payload.remove = remove.map(item => ({
-      role_id: selectedRole.value,
-      cluster_id: item.cluster_id,
-      policy_id: item.policy_id,
-    }));
-    payload.roleId = selectedRole.value;
+    payload.roleId = selectedRole.role_id;
 
     dispatch(RolesActions.updateRoleClusters(payload));
   };
@@ -326,10 +360,10 @@ export const ClusterAccess = () => {
     dispatch(ClustersActions.fetchClusterList());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (!isEmpty(selectedRole))
-      dispatch(RolesActions.fetchRoleClusters({ roleId: selectedRole.value }));
-  }, [dispatch, selectedRole]);
+  // useEffect(() => {
+  //   if (!isEmpty(selectedRole))
+  //     dispatch(RolesActions.fetchRoleClusters({ roleId: selectedRole.value }));
+  // }, [dispatch, selectedRole]);
 
   useEffect(() => {
     setUpdatedRoleClusters(roleClusters);
@@ -342,14 +376,13 @@ export const ClusterAccess = () => {
           <ImageContainer>
             <TodoIcon width={22} height={24} />
           </ImageContainer>
-          <Title>DFM Role Management</Title>
+          <Title>Cluster Management</Title>
         </Flex>
         <ButtonsContainer>
           <StyledSelectField
             size="sm"
             placeholder="Select Role"
             options={roleOptions}
-            value={selectedRole}
             backgroundColor={theme.colors.lightGrey}
             onChange={onChange}
           />

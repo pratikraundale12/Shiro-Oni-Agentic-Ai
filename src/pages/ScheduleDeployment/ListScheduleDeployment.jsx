@@ -368,11 +368,11 @@ export const ListScheduleDeployment = () => {
   const pgNameDisplay = item => {
     return (
       <>
-        <TextColor data-tooltip-id={`${item?.id}`} mode={item?.mode}>
+        <TextColor data-tooltip-id={`${item?.id}name`} mode={item?.mode}>
           {item?.namespace_name}
         </TextColor>
         <ReactTooltip
-          id={`${item?.id}`}
+          id={`${item?.id}name`}
           place="left"
           content={ListForTooltip(item)}
           style={{
@@ -417,9 +417,12 @@ export const ListScheduleDeployment = () => {
         <>
           {['upgrade', 'downgrade'].includes(item?.mode) ? (
             <button
-              onClick={() => handleProcessGroupClick(item)}
+              onClick={event => {
+                handleProcessGroupClick(item);
+                event.currentTarget.blur();
+              }}
               className="process-group-button"
-              data-tooltip-id={item?.id ?? ''}
+              data-tooltip-id={`${item?.id}name`}
               style={{
                 background: 'none',
                 cursor: 'pointer',

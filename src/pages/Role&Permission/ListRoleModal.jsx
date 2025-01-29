@@ -55,6 +55,7 @@ const ListRoleModal = () => {
   const modalOpen = useSelector(RolesSelectors.getIsRoleListModalOpen);
   const roles = useSelector(RolesSelectors.getRoles);
   const closePopup = () => {
+    setSearch('');
     dispatch(RolesActions.setIsRoleListModalOpen(false));
     dispatch(RolesActions.setRoleListSelectedItem({}));
   };

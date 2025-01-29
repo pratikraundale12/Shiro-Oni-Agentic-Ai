@@ -530,6 +530,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '21%',
+      resize: true,
     },
     {
       label: 'Type',
@@ -548,6 +549,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '20%',
+      resize: true,
     },
     {
       label: 'Bundle',
@@ -566,6 +568,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '18%',
+      resize: true,
     },
     {
       label: 'State',
@@ -587,6 +590,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '16%',
+      resize: true,
     },
     {
       label: 'Scope',
@@ -597,6 +601,7 @@ const ControllerServiceTab = ({
         return currentItem?.scope || 'N/A';
       },
       width: '11%',
+      resize: true,
     },
     {
       label: 'Action',
@@ -729,6 +734,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '14%',
+      resize: true,
     },
   ];
   const COLUMNS_Upgrade_External = [
@@ -749,6 +755,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '20%',
+      resize: true,
     },
     {
       label: 'Type',
@@ -767,6 +774,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '16%',
+      resize: true,
     },
     {
       label: 'Bundle',
@@ -785,6 +793,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '15%',
+      resize: true,
     },
     {
       label: 'State',
@@ -806,6 +815,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '14%',
+      resize: true,
     },
     {
       label: 'Scope',
@@ -816,6 +826,7 @@ const ControllerServiceTab = ({
         return currentItem?.scope || 'N/A';
       },
       width: '10%',
+      resize: true,
     },
     {
       label: 'Referencing Component',
@@ -854,6 +865,7 @@ const ControllerServiceTab = ({
         </div>
       ),
       width: '15%',
+      resize: true,
     },
     {
       label: 'Action',
@@ -985,6 +997,7 @@ const ControllerServiceTab = ({
         );
       },
       width: '10%',
+      resize: true,
     },
   ];
   const COLUMNS_2 = [
@@ -998,6 +1011,7 @@ const ControllerServiceTab = ({
         />
       ),
       width: '21%',
+      resize: true,
     },
     {
       label: 'Type',
@@ -1009,6 +1023,7 @@ const ControllerServiceTab = ({
         />
       ),
       width: '20%',
+      resize: true,
     },
     {
       label: 'Bundle',
@@ -1020,17 +1035,20 @@ const ControllerServiceTab = ({
         />
       ),
       width: '18%',
+      resize: true,
     },
     {
       label: 'State',
       renderCell: item =>
         item?.state ? <StatusText text={item?.state} item={item} /> : 'N/A',
       width: '16%',
+      resize: true,
     },
     {
       label: 'Scope',
       renderCell: item => item?.scope || 'N/A',
       width: '11%',
+      resize: true,
     },
 
     {
@@ -1069,6 +1087,7 @@ const ControllerServiceTab = ({
         </div>
       ),
       width: '14%',
+      resize: true,
     },
   ];
   const COLUMNS_3 = [
@@ -1082,6 +1101,7 @@ const ControllerServiceTab = ({
         />
       ),
       width: '20%',
+      resize: true,
     },
     {
       label: 'Type',
@@ -1093,6 +1113,7 @@ const ControllerServiceTab = ({
         />
       ),
       width: '20%',
+      resize: true,
     },
     {
       label: 'Bundle',
@@ -1104,17 +1125,20 @@ const ControllerServiceTab = ({
         />
       ),
       width: '15%',
+      resize: true,
     },
     {
       label: 'State',
       renderCell: item =>
         item?.state ? <StatusText text={item?.state} item={item} /> : 'N/A',
       width: '10%',
+      resize: true,
     },
     {
       label: 'Scope',
       renderCell: item => item?.scope || 'N/A',
       width: '10%',
+      resize: true,
     },
     {
       label: 'Referencing Component',
@@ -1149,6 +1173,7 @@ const ControllerServiceTab = ({
         </div>
       ),
       width: '14%',
+      resize: true,
     },
 
     {
@@ -1261,6 +1286,8 @@ const ControllerServiceTab = ({
                 index === 0
                   ? {
                       ...cs,
+                      properties: propertyUpdateResponse?.properties,
+                      name: propertyUpdateResponse?.name,
                       state: propertyUpdateResponse?.state,
                       validationStatus:
                         propertyUpdateResponse?.validationStatus,
@@ -1274,6 +1301,8 @@ const ControllerServiceTab = ({
           ) {
             return {
               ...service,
+              properties: propertyUpdateResponse?.properties,
+              name: propertyUpdateResponse?.name,
               state: propertyUpdateResponse?.state,
               validationStatus: propertyUpdateResponse?.validationStatus,
               isPropertyUpdated: true,
@@ -1704,6 +1733,7 @@ const ControllerServiceTab = ({
               return {
                 ...controller,
                 ...updatedController,
+                name: updatedController?.name,
                 properties: mergeProperties(
                   controller.properties,
                   updatedController.properties
@@ -1746,32 +1776,35 @@ const ControllerServiceTab = ({
       });
     }
   }, [updatedLsForUpgrade]);
-
+  const controllerServiceReduxData = useSelector(
+    NamespacesSelectors.getRegistryDeployControllerService
+  );
   useEffect(() => {
     if (isUpgrade) {
       setControllerServicePayload(prevState => {
-        const newPayload = {};
+        const newPayload = { ...controllerServiceReduxData };
         if (!isEmpty(externalServicePayload)) {
           newPayload.externalServicesData = externalServicePayload;
-          // dispatch(
-          //   NamespacesActions.setRegistryDeployControllerService({
-          //     externalServicesData: externalServicePayload,
-          //     localServicesData: newPayload.localServicesData
-          //   })
-          // );
         }
         if (
           !isEmpty(updatedLocalServicesData) ||
           !isEmpty(prevState.localServicesData)
         ) {
-          newPayload.localServicesData = updatedLocalServicesData?.length
-            ? updatedLocalServicesData
-            : prevState.localServicesData;
+          const prevDataMap = new Map(
+            prevState?.localServicesData?.map(item => [item.identifier, item])
+          );
+
+          updatedLocalServicesData?.forEach(updatedItem => {
+            prevDataMap?.set(updatedItem.identifier, updatedItem); // Replace if exists, add if not
+          });
+
+          newPayload.localServicesData = Array.from(prevDataMap.values());
         }
         if (
           checkIfLocalCsConfigured &&
           externalServicePayload?.length > 0 &&
-          Object.keys(newPayload).length > 0
+          Object.keys(newPayload).length > 0 &&
+          newPayload.hasOwnProperty('localServicesData')
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1791,8 +1824,7 @@ const ControllerServiceTab = ({
           );
         } else if (
           !checkIfLocalCsConfigured &&
-          externalServicePayload?.length > 0 &&
-          Object.keys(newPayload).length > 0
+          externalServicePayload?.length > 0
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1804,28 +1836,29 @@ const ControllerServiceTab = ({
       });
     } else {
       setControllerServicePayload(prevState => {
-        const newPayload = {};
+        const newPayload = { ...controllerServiceReduxData };
         if (!isEmpty(externalServicePayload)) {
           newPayload.externalServicesData = externalServicePayload;
-          // dispatch(
-          //   NamespacesActions.setRegistryDeployControllerService({
-          //     externalServicesData: externalServicePayload,
-          //     localServicesData: newPayload.localServicesData
-          //   })
-          // );
         }
         if (
           !isEmpty(updatedLsForUpgrade) ||
-          !isEmpty(prevState.localServicesData)
+          !isEmpty(prevState?.localServicesData)
         ) {
-          newPayload.localServicesData = updatedLsForUpgrade?.length
-            ? updatedLsForUpgrade
-            : prevState.localServicesData;
+          const prevDataMap = new Map(
+            prevState?.localServicesData?.map(item => [item.identifier, item])
+          );
+
+          updatedLsForUpgrade?.forEach(updatedItem => {
+            prevDataMap?.set(updatedItem?.identifier, updatedItem);
+          });
+
+          newPayload.localServicesData = Array.from(prevDataMap.values());
         }
         if (
           checkIfLocalCsConfigured &&
           externalServicePayload?.length > 0 &&
-          Object.keys(newPayload).length > 0
+          Object.keys(newPayload).length > 0 &&
+          newPayload.hasOwnProperty('localServicesData')
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1835,7 +1868,7 @@ const ControllerServiceTab = ({
           );
         } else if (
           checkIfLocalCsConfigured &&
-          !externalServicePayload?.length &&
+          externalServicePayload?.length <= 0 &&
           Object.keys(newPayload).length > 0
         ) {
           dispatch(
@@ -1845,8 +1878,7 @@ const ControllerServiceTab = ({
           );
         } else if (
           !checkIfLocalCsConfigured &&
-          externalServicePayload?.length > 0 &&
-          Object.keys(newPayload).length > 0
+          externalServicePayload?.length > 0
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1970,6 +2002,7 @@ const ControllerServiceTab = ({
           setUpdatedData={setUpdatedData}
           updatedData={updatedData}
           isUpgrade={isUpgrade}
+          isFromExternalService={isFromExternalService}
         />
 
         <ConfigurePropertyModal

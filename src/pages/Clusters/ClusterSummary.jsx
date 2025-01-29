@@ -5,9 +5,11 @@ import { ActivityHistoryIcon } from '../../assets';
 import { Grid, IconButton, StatusRender, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
 import { useGlobalContext } from '../../utils';
+import { Button } from '../../shared';
+import { history } from '../../helpers/history';
 
 const Container = styled.div`
-  height: 100%;
+  height: 95%;
 `;
 
 const ActionTd = styled.div`
@@ -53,28 +55,37 @@ export const ClusterSummary = () => {
       label: 'Address',
       renderCell: item => <TextRender text={item.address} />,
       width: '20%',
+      resize: true,
     },
     {
       label: 'Node Id',
       renderCell: item => <TextRender text={item.nodeId} />,
       width: '20%',
+      resize: true,
     },
     {
       label: 'Heartbeat',
       renderCell: item => <TextRender text={item.heartbeat} />,
       width: '20%',
+      resize: true,
     },
     {
       label: 'Status',
       renderCell: item => <StatusRender status={item.status} />,
       width: '20%',
+      resize: true,
     },
     {
       label: 'Event Log',
       renderCell: item => getActionsMenu(item),
       width: '20%',
+      resize: true,
     },
   ];
+
+  const handleBackAction = () => {
+    history.push('/clusters');
+  };
 
   return (
     <Container>
@@ -86,6 +97,11 @@ export const ClusterSummary = () => {
         statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
       />
+      <div style={{ width: '74px', marginTop: '10px' }}>
+        <Button variant="secondary" type="button" onClick={handleBackAction}>
+          {KDFM.BACK}
+        </Button>
+      </div>
     </Container>
   );
 };

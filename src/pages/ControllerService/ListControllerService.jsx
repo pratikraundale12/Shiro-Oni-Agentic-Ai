@@ -15,7 +15,8 @@ import {
   TodoIcon,
   RefreshIcon,
 } from '../../assets';
-import { FullPageLoader, Table } from '../../components';
+
+import { FullPageLoader, Table, TextRender } from '../../components';
 import { Button, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
@@ -74,17 +75,11 @@ const StatusTexts = styled.div`
   letter-spacing: -0.005em;
   text-align: left;
   color: ${props => props.color || '#b5b5bd'};
-  display: flex;
-  align-items: center;
+  text-transform: capitalize;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   cursor: pointer;
-  div {
-    align-items: center;
-    height: 8px;
-    width: 8px;
-    background: ${props => props.color || '#b5b5bd'};
-    margin-right: 5px;
-    border-radius: 50%;
-  }
 `;
 
 const RefreshIocnPanel = styled.div`
@@ -229,12 +224,10 @@ export const ListControllerService = () => {
       label: 'Name',
       renderCell: item => (
         <>
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          <TextRender
+            text={item?.name}
             data-tooltip-id={`tooltip-${item.id}-name`}
-          >
-            {item?.name}
-          </div>
+          />
           <ReactTooltip
             id={`tooltip-${item?.id}-name`}
             place="right"
@@ -247,14 +240,16 @@ export const ListControllerService = () => {
         </>
       ),
       width: '21%',
+      resize: true,
     },
     {
       label: 'Type',
       renderCell: item => (
         <>
-          <div data-tooltip-id={`tooltip-${item.id}-typeValue`}>
-            {item?.typeValue}
-          </div>
+          <TextRender
+            text={item?.typeValue}
+            data-tooltip-id={`tooltip-${item.id}-typeValue`}
+          />
           <ReactTooltip
             id={`tooltip-${item?.id}-typeValue`}
             place="right"
@@ -267,14 +262,16 @@ export const ListControllerService = () => {
         </>
       ),
       width: '18%',
+      resize: true,
     },
     {
       label: 'Bundle',
       renderCell: item => (
         <>
-          <div data-tooltip-id={`tooltip-${item.id}-bundleValue`}>
-            {item?.bundleValue}
-          </div>
+          <TextRender
+            text={item?.bundleValue}
+            data-tooltip-id={`tooltip-${item.id}-bundleValue`}
+          />
           <ReactTooltip
             id={`tooltip-${item?.id}-bundleValue`}
             place="right"
@@ -287,16 +284,19 @@ export const ListControllerService = () => {
         </>
       ),
       width: '18%',
+      resize: true,
     },
     {
       label: 'State',
       renderCell: item => <StatusText text={item?.state} item={item} />,
       width: '16%',
+      resize: true,
     },
     {
       label: 'Scope',
       renderCell: item => item?.scope,
       width: '11%',
+      resize: true,
     },
     {
       label: 'Actions',
@@ -388,6 +388,7 @@ export const ListControllerService = () => {
         );
       },
       width: '14%',
+      resize: true,
     },
   ];
   useEffect(() => {
