@@ -344,7 +344,7 @@ const PropertyDropdownModal = ({
                   title="Select Status"
                 />
                 <div className="row">
-                  <div className="col-2 mt-3">
+                  <div className="col-2 mt-3" style={{ width: '90px' }}>
                     <Button
                       type="button"
                       size={'md'}
