@@ -353,7 +353,13 @@ export const ClusterAccess = () => {
         item.label.toLowerCase().includes(search.toLowerCase())
       );
     }
-    return clusters;
+    const data = [...clusters];
+    const sortedData =
+      data &&
+      data?.length > 0 &&
+      data?.sort((a, b) => a?.label?.localeCompare(b?.label));
+
+    return sortedData;
   };
 
   useEffect(() => {

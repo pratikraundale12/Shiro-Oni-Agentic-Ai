@@ -322,7 +322,7 @@ const SelectField = ({
       <Controller
         control={control}
         name={name}
-        defaultValue={defaultValue ? defaultValue.value : null}
+        defaultValue={defaultValue ? defaultValue.value || defaultValue : null}
         render={({ field: { onChange, value, ref } }) => (
           <>
             {label && (
