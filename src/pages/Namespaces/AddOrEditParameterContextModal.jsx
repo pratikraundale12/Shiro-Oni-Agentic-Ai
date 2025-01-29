@@ -129,9 +129,8 @@ const AddOrEditParameterContextModal = ({
   };
 
   useEffect(() => {
-    isChecked
-      ? setValPlaceHolder(KDFM.SET_EMPTY_STRING)
-      : setValPlaceHolder('');
+    isChecked;
+    setValPlaceHolder('');
   }, [isChecked]);
 
   return (

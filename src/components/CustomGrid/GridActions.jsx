@@ -280,6 +280,10 @@ export const GridActions = ({
               watchStatus !== 'all' && {
                 [getModuleBasedStatusKey(module)]: watchStatus,
               }),
+            ...(location?.pathname?.includes('schedule-deployment') &&
+              clusterSelectedValue?.label !== 'All' && {
+                clusterName: clusterSelectedValue?.label,
+              }),
           },
         })
       );
