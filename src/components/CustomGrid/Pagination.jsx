@@ -58,7 +58,7 @@ const StyledButton = styled.button`
 `;
 
 const Pagination = ({ page, count, setCurrentPage }) => {
-  const itemsPerPage = 2;
+  const itemsPerPage = 10;
   const totalPage = Math.ceil(count / itemsPerPage);
 
   const getPageRange = () => {

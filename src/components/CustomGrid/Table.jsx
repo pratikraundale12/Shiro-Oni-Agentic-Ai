@@ -65,7 +65,7 @@ export const Table = ({
   loading,
   className,
   deployTable = false,
-  rowsPerPage = 2,
+  rowsPerPage = 10,
   showPagination = false,
   csList = false,
   isResetNotRequired = false,
