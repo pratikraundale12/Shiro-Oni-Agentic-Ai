@@ -52,11 +52,6 @@ const ConfigurePropertyModal = ({
       label: ele?.allowableValue?.displayName,
       value: ele?.allowableValue?.value,
     }));
-  console.log(responseOptions1, '??????????????????');
-  console.log(
-    propertyResponse?.propertyDescriptor?.allowableValues,
-    'propertyResponse'
-  );
 
   const nameSchema = yup.object().shape({
     name: yup.string().required('Name is required'),

@@ -196,6 +196,8 @@ export const ConfigControllerService = ({
       name: selectedItemFromList?.name || '',
     });
   }, [reset, isOpen]);
+  console.log(listPropertyTableData, 'listPropertyTableData>>>>>>>>>');
+  console.log(updatedData, 'updatedData');
   return (
     <Modal
       title={` ${selectedItemFromList?.name} : Properties`}
