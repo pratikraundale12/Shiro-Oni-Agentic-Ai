@@ -76,7 +76,7 @@ export function* resetPassword(api, { payload: { password, resetToken } }) {
     apiMethod: api.resetPassword,
     apiParams: [{ password, resetToken }],
   });
-  if (response.ok) yield call(history.push, '/success');
+  if (response.ok) yield call(history.push, '/admin/login');
   if (!response.ok) toast.error(response.data.message);
 }
 
