@@ -425,6 +425,7 @@ export const ListControllerService = () => {
 
   const handleSettingClick = item => {
     setSelectedItemFromList(item);
+    setListPropertTableData(item?.properties);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
