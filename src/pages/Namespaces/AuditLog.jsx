@@ -86,7 +86,10 @@ const AuditLog = () => {
     {
       label: (
         <>
-          <button onClick={() => toggleSorting('cluster')}>
+          <button
+            style={{ background: 'none' }}
+            onClick={() => toggleSorting('cluster')}
+          >
             {KDFM.CLUSTER}{' '}
             {sortingState === 'cluster' ? (
               <SortUpIcon />
@@ -124,7 +127,10 @@ const AuditLog = () => {
     {
       label: (
         <>
-          <button onClick={() => toggleSorting('created_by_name')}>
+          <button
+            style={{ background: 'none' }}
+            onClick={() => toggleSorting('created_by_name')}
+          >
             {KDFM.CREATED_BY}{' '}
             {sortingState === 'created_by_name' ? (
               <SortUpIcon />

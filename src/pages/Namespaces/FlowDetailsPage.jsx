@@ -86,6 +86,10 @@ const BottomButtonDiv = styled.div`
 const CustomTable = styled(Table)`
   max-height: 400px;
   overflow: auto;
+  table {
+    --data-table-library_grid-template-columns: minmax(0px, 0.3fr)
+      minmax(0px, 1.2fr) minmax(0px, 1fr) minmax(0px, 1.2fr) !important;
+  }
   tr {
     padding: 0;
     height: 0;

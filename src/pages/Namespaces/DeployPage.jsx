@@ -119,8 +119,8 @@ const CustomTable = styled(Table)`
   max-height: 34vh;
   width: 100%;
   table {
-    --data-table-library_grid-template-columns: minmax(0px, 0.5fr)
-      minmax(0px, 1fr) minmax(0px, 1fr) minmax(0px, 1.5fr) !important;
+    --data-table-library_grid-template-columns: minmax(0px, 0.3fr)
+      minmax(0px, 1.2fr) minmax(0px, 1fr) minmax(0px, 1.5fr) !important;
   }
   td {
     height: auto !important;
@@ -252,7 +252,6 @@ function DeployPage() {
   const COLUMNS = [
     {
       label: '',
-      resize: true,
       renderCell: item => (
         <StyledTableCell
           role="button"
@@ -261,7 +260,7 @@ function DeployPage() {
           onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
           style={{
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: 'end',
           }}
         >
           <RadioField
@@ -277,7 +276,6 @@ function DeployPage() {
     },
     {
       label: KDFM.VERSION,
-      resize: true,
       renderCell: item => (
         <StyledTableCell
           role="button"
@@ -292,7 +290,6 @@ function DeployPage() {
     },
     {
       label: KDFM.CREATED,
-      resize: true,
       renderCell: item => (
         <StyledTableCell
           role="button"
@@ -308,7 +305,6 @@ function DeployPage() {
     },
     {
       label: KDFM.COMMENT,
-      resize: true,
       renderCell: item => (
         <StyledTableCell
           role="button"
