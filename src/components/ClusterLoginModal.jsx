@@ -174,6 +174,22 @@ export const ClusterLoginModal = () => {
     const clusterData = JSON.parse(
       localStorage.getItem(CLUSTERS_TOKEN) || '[]'
     );
+
+    const updatedCluster = [];
+    if (clusterData && clusterData.length > 0) {
+      for (const item of clusterData) {
+        const new_sorted_cluster = sortedClusters?.find(
+          temp => item?.id === temp?.id
+        );
+        const new_cluster_token_Updated = {
+          id: new_sorted_cluster.id,
+          name: new_sorted_cluster.name,
+          token: item.token,
+        };
+        updatedCluster.push(new_cluster_token_Updated);
+      }
+    }
+    localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(updatedCluster));
     const clusterName = clusterData.find(
       cluster => cluster?.id == getValues()?.cluster_id
     )?.name;
