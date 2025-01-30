@@ -219,7 +219,7 @@ export const ClusterAccess = () => {
 
   const roleOptions =
     roles && roles.length > 0
-      ? roles.filter(role => !currentUser.assignedRole.includes(role.name))
+      ? roles.filter(item => item.name !== currentUser?.role)
       : [];
 
   const path = [
