@@ -343,7 +343,7 @@ export const ModuleAccess = () => {
 
   const roleOptions =
     roles && roles.length > 0
-      ? roles.filter(role => !currentUser?.assigned_roles.has(role.name))
+      ? roles.filter(role => !currentUser.assignedRole.includes(role.name))
       : [];
 
   const isUpdated = () => {
