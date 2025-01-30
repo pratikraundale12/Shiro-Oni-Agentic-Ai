@@ -10,6 +10,7 @@ import { KDFM } from '../../constants';
 import { Button, InputField, Modal } from '../../shared';
 import { NamespacesActions } from '../../store';
 import ValueRender from './ValueRender';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const ModalBody = styled.div`
   position: relative;
@@ -74,7 +75,52 @@ export const ConfigControllerService = ({
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => item?.displayName || item?.name,
+      renderCell: item => (
+        <div className="d-flex">
+          <div
+            className="mt-1"
+            data-tooltip-id={`name-${item?.name}`}
+            aria-label={item?.description}
+          >
+            {item?.displayName || item?.name}
+          </div>
+          {item?.description && (
+            <ReactTooltip
+              id={`name-${item?.name}`}
+              place="bottom"
+              render={() => (
+                <div
+                  style={{
+                    maxWidth: '500px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                >
+                  {item?.description && <p>{item?.description}</p>}
+                  {item?.expressionLanguageScope && (
+                    <p>
+                      <strong>Expression Language Scope:</strong>{' '}
+                      {item?.expressionLanguageScope}
+                    </p>
+                  )}
+                  {item.hasOwnProperty('sensitive') && (
+                    <p>
+                      <strong>Sensitive Property:</strong>{' '}
+                      {item?.sensitive ? 'true' : 'false'}
+                    </p>
+                  )}
+                </div>
+              )}
+              style={{
+                maxWidth: '500px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+                zIndex: 1000, // Ensure tooltip is on top
+              }}
+            />
+          )}
+        </div>
+      ),
       width: '40%',
     },
     {

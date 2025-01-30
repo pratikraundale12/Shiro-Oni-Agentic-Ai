@@ -184,6 +184,7 @@ const ConfigurePage = ({
       onRequestClose={onClose}
       size="md"
       primaryButtonText="Submit"
+      primaryButtonDisabled={selectedItem === null}
       footerAlign="start"
       contentStyles={{ maxWidth: '60%', maxHeight: '70%' }}
       secondaryButtonText="Back"
