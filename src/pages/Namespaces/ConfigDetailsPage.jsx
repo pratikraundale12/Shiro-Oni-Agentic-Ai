@@ -178,6 +178,7 @@ const ConfigDetailsPage = () => {
             message: KDFM.SELECT_SCHEDULE_TIME,
           },
         });
+        setActiveTab(KDFM.SCHEDULE_DETAILS);
         return;
       }
 
