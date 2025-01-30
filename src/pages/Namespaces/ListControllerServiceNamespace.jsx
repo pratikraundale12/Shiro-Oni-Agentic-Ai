@@ -123,6 +123,7 @@ const StatusText = ({ text = '', item }) => {
             width: '520px',
             whiteSpace: 'normal',
             wordWrap: 'break-word',
+            zIndex: 9999,
           }}
         />
       )}
