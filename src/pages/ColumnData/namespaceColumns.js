@@ -23,7 +23,7 @@ export const VERSION_COLUMNS = ({
         onKeyDown={e => e.key === 'Enter' && handleRowClick(item)}
         style={{
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: 'end',
         }}
       >
         <RadioField
