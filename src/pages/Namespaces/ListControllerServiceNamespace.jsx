@@ -123,6 +123,7 @@ const StatusText = ({ text = '', item }) => {
             width: '520px',
             whiteSpace: 'normal',
             wordWrap: 'break-word',
+            zIndex: 9999,
           }}
         />
       )}
@@ -424,6 +425,7 @@ export const ListControllerService = () => {
 
   const handleSettingClick = item => {
     setSelectedItemFromList(item);
+    setListPropertTableData(item?.properties);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 

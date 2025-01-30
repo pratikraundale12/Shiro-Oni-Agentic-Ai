@@ -1360,6 +1360,7 @@ const ControllerServiceTab = ({
 
   const handleSettingClick = item => {
     setSelectedItemFromList(item);
+    setListPropertTableData(item?.properties);
     setIsPropertyResponse(true);
     setIsNewlyAddedExternalServiceResponse(false);
     setIsStateChangeResponse(false);

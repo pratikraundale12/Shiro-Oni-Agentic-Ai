@@ -320,6 +320,19 @@ export const ListControllerService = () => {
                     event.currentTarget.blur();
                   }}
                   data-tooltip-id={'Settings'}
+                  disabled={
+                    item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                  }
+                  style={{
+                    opacity:
+                      item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                        ? 0.3
+                        : 1,
+                    cursor:
+                      item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                        ? 'not-allowed'
+                        : 'pointer',
+                  }}
                 >
                   <SettingSmallIcon />
                 </button>
@@ -409,6 +422,7 @@ export const ListControllerService = () => {
 
   const handleSettingClick = item => {
     setSelectedItemFromList(item);
+    setListPropertTableData(item?.properties);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
