@@ -44,7 +44,10 @@ const create = (baseURL = `${API_URL}/api`) => {
           localStorage.removeItem(ACCESS_TOKEN);
           history.push('/login');
         }
-
+        if (data?.message === 'Please login to the cluster.') {
+          localStorage.removeItem('selected_cluster');
+          window.location.reload();
+        }
         if (data.raw?.log_out) {
           localStorage.removeItem(ACCESS_TOKEN);
           history.push('/login');

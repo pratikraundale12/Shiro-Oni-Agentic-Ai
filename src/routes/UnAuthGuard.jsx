@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Outlet } from 'react-router-dom';
-import styled from 'styled-components';
-import { Container, Header, Item, KDFMVersion, List } from '../components';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Outlet, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+import { DfmCollapsedIcon, KsolvesDataFlowIcon, LoginIcon } from '../assets';
+import { CollapseSidebarIconLeft } from '../assets/Icons/CollapseSidebarIconLeft';
+import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRight';
+import { PolicyIcon } from '../assets/Icons/PolicyIcon';
+import { Container, Header, Item, KDFMVersion, List } from '../components';
+import { history } from '../helpers/history';
 import { PrivacyPolicy } from '../pages/PolicyAndTermsOfUse/PrivacyPolicy';
-import { KsolvesDataFlowIcon, DfmCollapsedIcon, LoginIcon } from '../assets';
 import { TermsOfUse } from '../pages/PolicyAndTermsOfUse/TermsOfUse';
 import { SettingsSelectors } from '../store/settings';
-import { useLocation } from 'react-router-dom';
 import { theme } from '../styles';
-import { history } from '../helpers/history';
-import { PolicyIcon } from '../assets/Icons/PolicyIcon';
-import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRight';
-import { CollapseSidebarIconLeft } from '../assets/Icons/CollapseSidebarIconLeft';
 
 const MainContainer = styled.div`
   width: 100%;
@@ -160,7 +159,7 @@ const UnAuthGuard = () => {
         </List>
         <KDFMVersion>
           {/* FIX_ME: Later will come from API */}
-          <span className="version-content">Version 2.1.2</span>
+          <span className="version-content">Version 2.1.3</span>
         </KDFMVersion>
       </Container>
       <Content>
