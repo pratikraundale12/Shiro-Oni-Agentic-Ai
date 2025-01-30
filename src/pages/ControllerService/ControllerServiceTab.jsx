@@ -625,7 +625,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {stateItem.hasOwnProperty('properties') && (
+            {stateItem?.hasOwnProperty('properties') && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -888,7 +888,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {stateItem.hasOwnProperty('properties') && (
+            {stateItem?.hasOwnProperty('properties') && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -1805,7 +1805,7 @@ const ControllerServiceTab = ({
           checkIfLocalCsConfigured &&
           externalServicePayload?.length > 0 &&
           Object.keys(newPayload).length > 0 &&
-          newPayload.hasOwnProperty('localServicesData')
+          newPayload?.hasOwnProperty('localServicesData')
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1859,7 +1859,7 @@ const ControllerServiceTab = ({
           checkIfLocalCsConfigured &&
           externalServicePayload?.length > 0 &&
           Object.keys(newPayload).length > 0 &&
-          newPayload.hasOwnProperty('localServicesData')
+          newPayload?.hasOwnProperty('localServicesData')
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
