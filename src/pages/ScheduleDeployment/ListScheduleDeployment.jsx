@@ -379,7 +379,9 @@ export const ListScheduleDeployment = () => {
             (item?.state === 'TIME_LAPSED' ||
               item?.state === 'FAILED' ||
               item?.state === 'PENDING' ||
-              item?.state === 'APPROVED')
+              item?.state === 'APPROVED' ||
+              item?.state === 'STOPPED' ||
+              item?.state === 'REJECTED')
           }
         >
           {item?.namespace_name}
@@ -432,7 +434,9 @@ export const ListScheduleDeployment = () => {
           (item?.state === 'TIME_LAPSED' ||
             item?.state === 'FAILED' ||
             item?.state === 'PENDING' ||
-            item?.state === 'APPROVED') ? (
+            item?.state === 'APPROVED' ||
+            item?.state === 'STOPPED' ||
+            item?.state === 'REJECTED') ? (
             <span>{pgNameDisplay(item)}</span>
           ) : (
             <button
