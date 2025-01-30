@@ -234,9 +234,7 @@ export const ConfigControllerService = ({
     }
     setUpdatedData([]);
   };
-  useEffect(() => {
-    setListPropertTableData(selectedItemFromList?.properties);
-  }, [selectedItemFromList?.properties]);
+
   useEffect(() => {
     reset({
       name: selectedItemFromList?.name || '',
