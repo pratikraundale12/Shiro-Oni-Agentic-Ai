@@ -116,7 +116,9 @@ const AuditLog = () => {
     },
     {
       label: KDFM.STATUS,
-      renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
+      renderCell: item => (
+        <StatusRender status={item.status || KDFM.NA} redColor="#FF0000" />
+      ),
     },
     {
       label: KDFM.TIMESTAMP,

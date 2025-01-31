@@ -183,7 +183,9 @@ export const ActvityHistory = () => {
       ),
       width: '8%',
       resize: true,
-      renderCell: item => <StatusRender status={item.status || KDFM.NA} />,
+      renderCell: item => (
+        <StatusRender status={item.status || KDFM.NA} redColor="#FF0000" />
+      ),
     },
     {
       label: KDFM.TIMESTAMP,
