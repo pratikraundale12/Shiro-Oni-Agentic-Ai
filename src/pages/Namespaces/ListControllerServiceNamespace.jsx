@@ -12,6 +12,7 @@ import {
   RefrenceIcon,
   SettingSmallIcon,
   SmallSearchIcon,
+  TriangleExclamationMarkIcon,
 } from '../../assets';
 import { FullPageLoader, Table, TextRender } from '../../components';
 import { ModalWithIcon } from '../../shared';
@@ -42,7 +43,6 @@ const StatusTexts = styled.div`
   color: ${props => props.color || '#b5b5bd'};
   display: flex;
   align-items: center;
-  cursor: pointer;
   div {
     align-items: center;
     height: 8px;
@@ -114,19 +114,6 @@ const StatusText = ({ text = '', item }) => {
       <StatusTexts color={color} data-tooltip-id={`tooltip-cs-${item?.id}`}>
         {capitalizeFirstLetter(text)}
       </StatusTexts>{' '}
-      {!isEmpty(item?.tooltip) && (
-        <ReactTooltip
-          id={`tooltip-cs-${item?.id}`}
-          place="right"
-          content={item?.tooltip ? item?.tooltip : null}
-          style={{
-            width: '520px',
-            whiteSpace: 'normal',
-            wordWrap: 'break-word',
-            zIndex: 9999,
-          }}
-        />
-      )}
     </>
   );
 };
@@ -235,9 +222,59 @@ export const ListControllerService = () => {
     {
       label: 'Name',
       renderCell: item => (
-        <TextRender key={item?.name} text={item?.name} capitalizeText={false} />
+        <div className="d-flex">
+          {
+            <>
+              <div
+                className="cursor-pointer mr-2"
+                data-tooltip-id={`tooltip-${item?.id}-validationErrors`}
+                style={{
+                  visibility:
+                    item?.validationErrors?.length > 0 ? 'visible' : 'hidden',
+                }}
+              >
+                <TriangleExclamationMarkIcon
+                  height={18}
+                  width={18}
+                  color="#CF9F5D"
+                />
+              </div>
+              {item?.validationErrors?.length > 0 && (
+                <ReactTooltip
+                  id={`tooltip-${item?.id}-validationErrors`}
+                  place="right"
+                  render={() => (
+                    <ul style={{ padding: '5px', margin: '0px' }}>
+                      {item?.validationErrors?.map(h => {
+                        return <li key={h}>{h}</li>;
+                      })}
+                    </ul>
+                  )}
+                  style={{
+                    maxWidth: '500px',
+                    whiteSpace: 'normal',
+                    zIndex: 9999,
+                  }}
+                />
+              )}
+            </>
+          }
+          <TextRender
+            text={item?.name}
+            data-tooltip-id={`tooltip-${item.id}-name`}
+          />
+          <ReactTooltip
+            id={`tooltip-${item?.id}-name`}
+            place="right"
+            content={item?.name}
+            style={{
+              whiteSpace: 'normal',
+              zIndex: 9999,
+            }}
+          />
+        </div>
       ),
-      width: '20%',
+      width: '21%',
       resize: true,
     },
     {

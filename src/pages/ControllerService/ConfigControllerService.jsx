@@ -4,7 +4,12 @@ import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { DeleteSmallIcon, PencilIcon, QRIcons } from '../../assets';
+import {
+  DeleteSmallIcon,
+  PencilIcon,
+  QRIcons,
+  QuestionMarkIcon,
+} from '../../assets';
 import { Table } from '../../components';
 import { KDFM } from '../../constants';
 import { Button, InputField, Modal } from '../../shared';
@@ -74,51 +79,92 @@ export const ConfigControllerService = ({
 
   const COLUMNS = [
     {
-      label: 'Name',
+      label: 'Property',
       renderCell: item => (
-        <div className="d-flex">
+        <div className="w-100 d-flex justify-content-between">
           <div
-            className="mt-1"
             data-tooltip-id={`name-${item?.name}`}
-            aria-label={item?.description}
+            style={{
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              marginRight: '10px',
+            }}
           >
             {item?.displayName || item?.name}
           </div>
-          {item?.description && (
-            <ReactTooltip
-              id={`name-${item?.name}`}
-              place="bottom"
-              render={() => (
-                <div
-                  style={{
-                    maxWidth: '500px',
-                    whiteSpace: 'normal',
-                    wordWrap: 'break-word',
-                  }}
-                >
-                  {item?.description && <p>{item?.description}</p>}
-                  {item?.expressionLanguageScope && (
-                    <p>
-                      <strong>Expression Language Scope:</strong>{' '}
-                      {item?.expressionLanguageScope}
-                    </p>
-                  )}
-                  {item.hasOwnProperty('sensitive') && (
-                    <p>
-                      <strong>Sensitive Property:</strong>{' '}
-                      {item?.sensitive ? 'true' : 'false'}
-                    </p>
-                  )}
-                </div>
-              )}
-              style={{
-                maxWidth: '500px',
-                whiteSpace: 'normal',
-                wordWrap: 'break-word',
-                zIndex: 1000, // Ensure tooltip is on top
-              }}
-            />
-          )}
+          <ReactTooltip
+            id={`name-${item?.name}`}
+            place="left"
+            content={item?.displayName || item?.name}
+            style={{
+              maxWidth: '500px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 9999,
+            }}
+          />
+          <div
+            className="cursor-pointer mr-2"
+            data-tooltip-id={`tooltip-${item?.name}`}
+            aria-label={item?.description}
+          >
+            <QuestionMarkIcon />
+          </div>
+          <ReactTooltip
+            id={`tooltip-${item?.name}`}
+            place="right"
+            render={() => (
+              <div
+                style={{
+                  maxWidth: '500px',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              >
+                {item?.description && <p>{item?.description}</p>}
+                {item?.defaultValue && (
+                  <p>
+                    <strong>Default Value:</strong> {item?.defaultValue}
+                  </p>
+                )}
+                {item?.expressionLanguageScope && (
+                  <p>
+                    <strong>Expression Language Scope:</strong>{' '}
+                    {item?.expressionLanguageScope}
+                  </p>
+                )}
+                {item.hasOwnProperty('sensitive') && (
+                  <p>
+                    <strong>Sensitive Property:</strong>{' '}
+                    {item?.sensitive ? 'true' : 'false'}
+                  </p>
+                )}
+                {item?.requiredCS && (
+                  <p>
+                    <strong>Requires Controller Service:</strong>{' '}
+                    {item?.requiredCS}
+                  </p>
+                )}
+                {item?.history?.length && (
+                  <p>
+                    <strong>History:</strong>{' '}
+                    <ul>
+                      {item?.history?.map(h => {
+                        return <li>{h}</li>;
+                      })}
+                    </ul>
+                  </p>
+                )}
+              </div>
+            )}
+            style={{
+              maxWidth: '500px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 9999,
+            }}
+          />
         </div>
       ),
       width: '40%',

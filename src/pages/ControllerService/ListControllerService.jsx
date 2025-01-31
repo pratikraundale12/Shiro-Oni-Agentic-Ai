@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import { isEmpty } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -14,6 +13,7 @@ import {
   SettingSmallIcon,
   SmallSearchIcon,
   TodoIcon,
+  TriangleExclamationMarkIcon,
 } from '../../assets';
 
 import { FullPageLoader, Table, TextRender } from '../../components';
@@ -79,7 +79,6 @@ const StatusTexts = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  cursor: pointer;
 `;
 
 const RefreshIocnPanel = styled.div`
@@ -124,19 +123,6 @@ const StatusText = ({ text = '', item }) => {
       <StatusTexts color={color} data-tooltip-id={`tooltip-cs-${item?.id}`}>
         {capitalizeFirstLetter(text)}
       </StatusTexts>{' '}
-      {!isEmpty(item?.tooltip) && (
-        <ReactTooltip
-          id={`tooltip-cs-${item?.id}`}
-          place="top"
-          content={item?.tooltip ? item?.tooltip : null}
-          style={{
-            width: '520px',
-            whiteSpace: 'normal',
-            wordWrap: 'break-word',
-            zIndex: '9999',
-          }}
-        />
-      )}
     </>
   );
 };
@@ -224,7 +210,43 @@ export const ListControllerService = () => {
     {
       label: 'Name',
       renderCell: item => (
-        <>
+        <div className="d-flex">
+          {
+            <>
+              <div
+                className="cursor-pointer mr-2"
+                data-tooltip-id={`tooltip-${item?.id}-validationErrors`}
+                style={{
+                  visibility:
+                    item?.validationErrors?.length > 0 ? 'visible' : 'hidden',
+                }}
+              >
+                <TriangleExclamationMarkIcon
+                  height={18}
+                  width={18}
+                  color="#CF9F5D"
+                />{' '}
+              </div>
+              {item?.validationErrors?.length > 0 && (
+                <ReactTooltip
+                  id={`tooltip-${item?.id}-validationErrors`}
+                  place="right"
+                  render={() => (
+                    <ul style={{ paddingLeft: '8px', margin: '0px' }}>
+                      {item?.validationErrors?.map(h => {
+                        return <li key={h}>{h}</li>;
+                      })}
+                    </ul>
+                  )}
+                  style={{
+                    maxWidth: '500px',
+                    whiteSpace: 'normal',
+                    zIndex: 9999,
+                  }}
+                />
+              )}
+            </>
+          }
           <TextRender
             text={item?.name}
             data-tooltip-id={`tooltip-${item.id}-name`}
@@ -238,7 +260,7 @@ export const ListControllerService = () => {
               zIndex: 9999,
             }}
           />
-        </>
+        </div>
       ),
       width: '21%',
       resize: true,
