@@ -17,6 +17,9 @@ const ModalBody = styled.div`
   flex: 1 1 auto;
 
   & .parameter-context-table {
+    table {
+      --data-table-library_grid-template-columns: 80% 20% !important;
+    }
     th {
       background-color: #dde4f0 !important;
     }
