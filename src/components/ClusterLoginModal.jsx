@@ -91,9 +91,9 @@ export const ClusterLoginModal = () => {
       const response = await getClusterToken(payload);
       if (response.cluster_id) {
         const newCluster = {
-          id: response.cluster_id,
-          name: response.cluster_name,
-          token: response.token,
+          id: response?.cluster_id,
+          name: response?.cluster_name,
+          token: response?.token,
         };
         clusterData.push(newCluster);
         localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(clusterData));
@@ -101,7 +101,7 @@ export const ClusterLoginModal = () => {
           localStorage.setItem(
             'selected_cluster',
             JSON.stringify({
-              label: response.cluster_name,
+              label: response?.cluster_name,
               value: response?.cluster_id,
             })
           );
@@ -182,9 +182,9 @@ export const ClusterLoginModal = () => {
           temp => item?.id === temp?.id
         );
         const new_cluster_token_Updated = {
-          id: new_sorted_cluster.id,
-          name: new_sorted_cluster.name,
-          token: item.token,
+          id: new_sorted_cluster?.id,
+          name: new_sorted_cluster?.name,
+          token: item?.token,
         };
         updatedCluster.push(new_cluster_token_Updated);
       }
