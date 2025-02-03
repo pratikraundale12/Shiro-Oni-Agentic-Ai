@@ -117,6 +117,7 @@ const AddParameterContext = ({
     control,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(parameterContextSchema),
@@ -276,9 +277,14 @@ const AddParameterContext = ({
     name: 'check',
   });
 
-  if (check) {
-    setValue('value', '');
-  }
+  useEffect(() => {
+    if (check) {
+      setValue('value', '');
+    }
+  }, [check, setValue]);
+
+  const pcValue = watch('value');
+  const pcDesc = watch('description');
 
   return (
     <Modal
@@ -291,9 +297,13 @@ const AddParameterContext = ({
       onRequestClose={closePopup}
       size="md"
       footerAlign="start"
-      secondaryButtonText={KDFM.BACK}
-      primaryButtonText={KDFM.ADD}
+      secondaryButtonText={KDFM.CANCEL}
+      primaryButtonText={KDFM.SAVE}
       onSubmit={handleSubmit(handleAddEditParameterContext)}
+      primaryButtonDisabled={
+        pcValue === parameterContextItem?.value &&
+        pcDesc === parameterContextItem?.description
+      }
     >
       <ModalBody className="modal-body">
         <ModalBodyDiv className="d-flex">

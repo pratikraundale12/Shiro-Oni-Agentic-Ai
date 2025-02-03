@@ -10,6 +10,7 @@ import {
   Modal,
   RadioSelectField,
 } from '../../shared';
+import { isEmpty, isEqual } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -96,11 +97,20 @@ const AddOrEditParameterContextModal = ({
   const [formData, setFormData] = useState(
     isAddParameterContextOpen?.mode === 'edit' ? pcEditData : DEFAULT_VALUES
   );
+  const isValueChanged = (obj1, obj2) => {
+    return isEqual(obj1, obj2);
+  };
+
+  const [isSaveBtnDisabled, setIsSaveBtnDisabled] = useState(
+    !isEmpty(pcEditData) && !isEmpty(formData)
+      ? isValueChanged(pcEditData, formData)
+      : false
+  );
+
   const [valPlaceHolder, setValPlaceHolder] = useState('');
   const [isChecked, setIsChecked] = useState(
     pcEditData ? pcEditData?.value === '' : false
   );
-
   const handleAddEditParameterContext = () => {
     if (!formData) return;
     handleSave(formData);
@@ -119,7 +129,13 @@ const AddOrEditParameterContextModal = ({
       check: checked,
     }));
   };
-
+  useEffect(() => {
+    setIsSaveBtnDisabled(
+      !isEmpty(pcEditData) && !isEmpty(formData)
+        ? isValueChanged(pcEditData, formData)
+        : false
+    );
+  }, [formData]);
   const handleInputChange = data => {
     const { name, value } = data.target;
     setFormData(prev => ({
@@ -144,9 +160,12 @@ const AddOrEditParameterContextModal = ({
       onRequestClose={closePopup}
       size="md"
       footerAlign="start"
-      secondaryButtonText={KDFM.BACK}
+      secondaryButtonText={KDFM.CANCEL}
       primaryButtonText={KDFM.SAVE}
       onSubmit={handleAddEditParameterContext}
+      primaryButtonDisabled={
+        !isEmpty(pcEditData) && !isEmpty(formData) ? isSaveBtnDisabled : false
+      }
     >
       <ModalBody className="modal-body">
         <ModalBodyDiv className="d-flex">

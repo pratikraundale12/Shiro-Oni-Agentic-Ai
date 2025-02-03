@@ -29,8 +29,9 @@ const ConfigurePropertyModal = ({
   const isModalOpen = useSelector(
     NamespacesSelectors.getIsConfigurePropertyControllerServiceModalOpen
   );
-  const { register, handleSubmit, reset } = useForm({});
-
+  const { register, handleSubmit, reset, watch } = useForm({});
+  const propertyName = watch('name');
+  const propertyValue = watch('value');
   const handleFormSubmit = data => {
     const filterData = updatedData.filter(item => {
       return item.name != data.name;
@@ -80,6 +81,12 @@ const ConfigurePropertyModal = ({
         primaryButtonText="Save"
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
+        primaryButtonDisabled={
+          propertyName === undefined ||
+          propertyValue === undefined ||
+          propertyName === '' ||
+          propertyValue === ''
+        }
       >
         <ModalBody className="modal-body">
           <InputField
