@@ -148,7 +148,7 @@ export const ConfigControllerService = ({
                     {item?.requiredCS}
                   </p>
                 )}
-                {item?.history?.length && (
+                {item?.history?.length > 0 && (
                   <p>
                     <strong>History:</strong>{' '}
                     <ul>

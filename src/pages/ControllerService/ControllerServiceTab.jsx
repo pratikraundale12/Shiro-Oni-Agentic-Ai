@@ -52,6 +52,9 @@ const ScrollSetGrey = styled.div`
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
   overflow-y: auto;
+  table {
+    position: static;
+  }
 `;
 const ConfigureButton = styled.button`
   padding: 8px 1rem;

@@ -195,6 +195,16 @@ const PropertyDropdownModal = ({
     setIsRefParams(true);
   };
 
+  const handlebackBtnClick = () => {
+    if (isRefParams && !addNewProperty) {
+      setIsRefParams(false);
+    } else if (addNewProperty && !isRefParams) {
+      setAddNewProperty(false);
+    } else if (!addNewProperty && !isRefParams) {
+      handleClose();
+    }
+  };
+
   return (
     <div>
       <Modal
@@ -208,6 +218,7 @@ const PropertyDropdownModal = ({
         size="md"
         primaryButtonText="Save"
         secondaryButtonText="Back"
+        onSecondarySubmit={handlebackBtnClick}
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
         contentStyles={{
@@ -215,7 +226,13 @@ const PropertyDropdownModal = ({
           maxWidth: selectedPropertyToEdit?.add ? '34%' : '25%',
           maxHeight: '50%',
         }}
-        primaryButtonDisabled={selectedProperty === null || addNewProperty}
+        primaryButtonDisabled={
+          selectedProperty === null ||
+          selectedProperty === selectedPropertyToEdit?.dropDownName ||
+          selectedProperty?.value === selectedPropertyToEdit?.value ||
+          selectedProperty === selectedPropertyToEdit?.value ||
+          addNewProperty
+        }
         noScroll={true}
         noPadding={true}
       >
@@ -315,18 +332,12 @@ const PropertyDropdownModal = ({
                       size={'md'}
                       variant="tertiary"
                       onClick={() => handleNewService()}
+                      isBtnDisable={
+                        selectedNewValue === null ||
+                        selectedNewValue === undefined
+                      }
                     >
                       Add New Service
-                    </Button>
-                  </div>
-                  <div className="col-2 mt-3">
-                    <Button
-                      type="button"
-                      size={'md'}
-                      variant="secondary"
-                      onClick={() => setAddNewProperty(false)}
-                    >
-                      Cancel
                     </Button>
                   </div>
                 </div>
@@ -342,19 +353,17 @@ const PropertyDropdownModal = ({
                   placeholder="Select Value"
                   backgroundColor={theme.colors.lightGrey}
                   title="Select Status"
+                  defaultValue={
+                    refParamsData?.some(
+                      item => item.value === selectedPropertyToEdit?.value
+                    )
+                      ? selectedPropertyToEdit?.value?.replace(
+                          /^#\{(.+)\}$/,
+                          '$1'
+                        )
+                      : ''
+                  }
                 />
-                <div className="row">
-                  <div className="col-2 mt-3" style={{ width: '90px' }}>
-                    <Button
-                      type="button"
-                      size={'md'}
-                      variant="secondary"
-                      onClick={() => setIsRefParams(false)}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
               </>
             )}
           </div>
