@@ -292,7 +292,7 @@ export const ListControllerService = () => {
           />
         </>
       ),
-      width: '18%',
+      width: 'auto',
       resize: true,
     },
     {
@@ -314,19 +314,19 @@ export const ListControllerService = () => {
           />
         </>
       ),
-      width: '18%',
+      width: '20%',
       resize: true,
     },
     {
       label: 'State',
       renderCell: item => <StatusText text={item?.state} item={item} />,
-      width: '16%',
+      width: '12%',
       resize: true,
     },
     {
       label: 'Scope',
       renderCell: item => item?.scope,
-      width: '11%',
+      width: '12%',
       resize: true,
     },
     {
@@ -440,7 +440,7 @@ export const ListControllerService = () => {
           </>
         );
       },
-      width: '14%',
+      width: '12%',
       resize: true,
     },
   ];

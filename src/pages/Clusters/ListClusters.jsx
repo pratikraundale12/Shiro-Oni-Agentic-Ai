@@ -127,7 +127,7 @@ export const ListClusters = () => {
       renderCell: item => (
         <TextRender text={item.name} capitalizeText={false} />
       ),
-      width: '15%',
+      width: '17%',
       sort: { sortKey: 'name' },
       resize: true,
     },
@@ -218,6 +218,7 @@ export const ListClusters = () => {
         );
       },
       resize: true,
+      width: '12%',
     },
   ];
 

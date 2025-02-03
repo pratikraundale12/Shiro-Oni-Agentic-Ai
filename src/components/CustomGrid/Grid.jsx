@@ -454,6 +454,7 @@ export const Grid = ({
           data={TABLE_DATA}
           columns={columns}
           theme={tableTheme}
+          layout={{ custom: true }}
           // sort={sort}
         />
         {getLoader()}

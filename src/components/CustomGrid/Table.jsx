@@ -155,6 +155,7 @@ export const Table = ({
           data={{ nodes: showPagination ? currentItems : DATA.nodes }}
           columns={columns}
           theme={tableTheme}
+          layout={{ custom: true }}
         />
         {getLoader()}
       </TableContainer>

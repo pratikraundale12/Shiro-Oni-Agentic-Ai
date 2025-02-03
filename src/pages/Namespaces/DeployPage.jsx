@@ -118,10 +118,6 @@ const CustomTable = styled(Table)`
   overflow-x: auto;
   max-height: 34vh;
   width: 100%;
-  table {
-    --data-table-library_grid-template-columns: minmax(0px, 0.3fr)
-      minmax(0px, 1.2fr) minmax(0px, 1fr) minmax(0px, 1.5fr) !important;
-  }
   td {
     height: auto !important;
     .td-text-wrap {
@@ -316,7 +312,7 @@ function DeployPage() {
           {item.comments}
         </StyledTableCell>
       ),
-      width: '53%',
+      width: '50%',
     },
   ];
   const handleRowClick = item => {

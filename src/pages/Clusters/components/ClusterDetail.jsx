@@ -7,9 +7,6 @@ import { KDFM } from '../../../constants';
 const Container = styled.div`
   .customTable {
     height: auto;
-    table {
-      --data-table-library_grid-template-columns: 25% 75% !important;
-    }
   }
 `;
 const ClusterDetail = ({ data }) => {

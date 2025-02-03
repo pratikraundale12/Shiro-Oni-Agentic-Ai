@@ -21,9 +21,6 @@ const ModalBody = styled.div`
   position: relative;
   flex: 1 1 auto;
   & .variables-table {
-    table {
-      --data-table-library_grid-template-columns: 40% 50% 10% !important;
-    }
     th {
       background-color: #dde4f0 !important;
     }

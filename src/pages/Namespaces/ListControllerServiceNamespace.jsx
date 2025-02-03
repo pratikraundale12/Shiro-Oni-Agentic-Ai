@@ -66,6 +66,9 @@ const ScrollSetGrey = styled.div`
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
   overflow-y: auto;
+  table {
+    position: static;
+  }
 `;
 
 const SearchContainer = styled.div`
@@ -293,7 +296,7 @@ export const ListControllerService = () => {
           capitalizeText={false}
         />
       ),
-      width: '20%',
+      width: '19%',
       resize: true,
     },
     {
