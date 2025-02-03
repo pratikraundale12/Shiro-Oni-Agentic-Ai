@@ -27,6 +27,19 @@ const ModalBody = styled.div`
   }
 `;
 
+const PropertyContainer = styled.div`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+  white-space: nowrap;
+`;
+
+const TooltipContent = styled.div`
+  max-width: 500px;
+  white-space: normal;
+  word-wrap: break-word;
+`;
+
 export const ConfigControllerService = ({
   isOpen,
   onClose,
@@ -82,17 +95,9 @@ export const ConfigControllerService = ({
       label: 'Property',
       renderCell: item => (
         <div className="w-100 d-flex justify-content-between">
-          <div
-            data-tooltip-id={`name-${item?.name}`}
-            style={{
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              marginRight: '10px',
-            }}
-          >
+          <PropertyContainer data-tooltip-id={`name-${item?.name}`}>
             {item?.displayName || item?.name}
-          </div>
+          </PropertyContainer>
           <ReactTooltip
             id={`name-${item?.name}`}
             place="left"
@@ -115,13 +120,7 @@ export const ConfigControllerService = ({
             id={`tooltip-${item?.name}`}
             place="right"
             render={() => (
-              <div
-                style={{
-                  maxWidth: '500px',
-                  whiteSpace: 'normal',
-                  wordWrap: 'break-word',
-                }}
-              >
+              <TooltipContent>
                 {item?.description && <p>{item?.description}</p>}
                 {item?.defaultValue && (
                   <p>
@@ -156,7 +155,7 @@ export const ConfigControllerService = ({
                     </ul>
                   </p>
                 )}
-              </div>
+              </TooltipContent>
             )}
             style={{
               maxWidth: '500px',

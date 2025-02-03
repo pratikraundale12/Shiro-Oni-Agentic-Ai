@@ -128,6 +128,17 @@ const Search = styled.input`
   }
 `;
 
+const ValidationIconWrapper = styled.div`
+  cursor: pointer;
+  margin-right: 8px;
+  visibility: ${props => (props.hasErrors ? 'visible' : 'hidden')};
+`;
+
+const TooltipList = styled.ul`
+  padding-left: 8px;
+  marign: 0;
+`;
+
 const ControllerServiceTab = ({
   setControllerServicePayload,
   setCsFromParent,
@@ -512,30 +523,26 @@ const ControllerServiceTab = ({
         return (
           <div className="d-flex">
             <>
-              <div
-                className="cursor-pointer mr-2"
+              <ValidationIconWrapper
+                hasErrors={currentItem?.validationErrors?.length > 0}
                 data-tooltip-id={`tooltip-${currentItem?.id}-validationErrors`}
-                style={{
-                  visibility:
-                  currentItem?.validationErrors?.length > 0 ? 'visible' : 'hidden',
-                }}
               >
                 <TriangleExclamationMarkIcon
                   height={18}
                   width={18}
                   color="#CF9F5D"
                 />{' '}
-              </div>
+              </ValidationIconWrapper>
               {currentItem?.validationErrors?.length > 0 && (
                 <ReactTooltip
                   id={`tooltip-${currentItem?.id}-validationErrors`}
                   place="right"
                   render={() => (
-                    <ul style={{ paddingLeft: '5px', margin: '0px' }}>
+                    <TooltipList>
                       {currentItem?.validationErrors?.map(h => {
                         return <li key={h}>{h}</li>;
                       })}
-                    </ul>
+                    </TooltipList>
                   )}
                   style={{
                     maxWidth: '500px',
@@ -773,30 +780,26 @@ const ControllerServiceTab = ({
         return (
           <div className="d-flex">
             <>
-              <div
-                className="cursor-pointer mr-2"
+              <ValidationIconWrapper
+                hasErrors={currentItem?.validationErrors?.length > 0}
                 data-tooltip-id={`tooltip-${item?.id}-validationErrors`}
-                style={{
-                  visibility:
-                    item?.validationErrors?.length > 0 ? 'visible' : 'hidden',
-                }}
               >
                 <TriangleExclamationMarkIcon
                   height={18}
                   width={18}
                   color="#CF9F5D"
                 />{' '}
-              </div>
+              </ValidationIconWrapper>
               {item?.validationErrors?.length > 0 && (
                 <ReactTooltip
                   id={`tooltip-${item?.id}-validationErrors`}
                   place="right"
                   render={() => (
-                    <ul style={{ paddingLeft: '8px', margin: '0px' }}>
+                    <TooltipList>
                       {item?.validationErrors?.map(h => {
                         return <li key={h}>{h}</li>;
                       })}
-                    </ul>
+                    </TooltipList>
                   )}
                   style={{
                     maxWidth: '500px',

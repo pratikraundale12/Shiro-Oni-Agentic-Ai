@@ -96,6 +96,17 @@ const Search = styled.input`
   }
 `;
 
+const ValidationIconWrapper = styled.div`
+  cursor: pointer;
+  margin-right: 8px;
+  visibility: ${props => (props.hasErrors ? 'visible' : 'hidden')};
+`;
+
+const TooltipList = styled.ul`
+  padding-left: 8px;
+  marign: 0;
+`;
+
 const StatusText = ({ text = '', item }) => {
   const color = statusColors[text] || statusColors.DEFAULT;
   function capitalizeFirstLetter(text) {
@@ -225,30 +236,26 @@ export const ListControllerService = () => {
         <div className="d-flex">
           {
             <>
-              <div
-                className="cursor-pointer mr-2"
+              <ValidationIconWrapper
+                hasErrors={item?.validationErrors?.length > 0}
                 data-tooltip-id={`tooltip-${item?.id}-validationErrors`}
-                style={{
-                  visibility:
-                    item?.validationErrors?.length > 0 ? 'visible' : 'hidden',
-                }}
               >
                 <TriangleExclamationMarkIcon
                   height={18}
                   width={18}
                   color="#CF9F5D"
                 />
-              </div>
+              </ValidationIconWrapper>
               {item?.validationErrors?.length > 0 && (
                 <ReactTooltip
                   id={`tooltip-${item?.id}-validationErrors`}
                   place="right"
                   render={() => (
-                    <ul style={{ padding: '5px', margin: '0px' }}>
+                    <TooltipList>
                       {item?.validationErrors?.map(h => {
                         return <li key={h}>{h}</li>;
                       })}
-                    </ul>
+                    </TooltipList>
                   )}
                   style={{
                     maxWidth: '500px',
