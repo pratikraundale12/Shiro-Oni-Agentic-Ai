@@ -378,7 +378,6 @@ const SelectField = ({
                   e.stopPropagation();
                 }
               }}
-              // defaultInputValue={defaultValue || ''}
             />
             <FieldErrorMessage errors={errors} name={name} />
           </>
