@@ -205,6 +205,11 @@ const PropertyDropdownModal = ({
     }
   };
 
+  const getRefParamDefaultValue = (data, selecetdData) => {
+    return data?.some(item => item.value === selecetdData?.value)
+      ? selecetdData?.value?.replace(/^#\{(.+)\}$/, '$1')
+      : '';
+  };
   return (
     <div>
       <Modal
@@ -353,16 +358,10 @@ const PropertyDropdownModal = ({
                   placeholder="Select Value"
                   backgroundColor={theme.colors.lightGrey}
                   title="Select Status"
-                  defaultValue={
-                    refParamsData?.some(
-                      item => item.value === selectedPropertyToEdit?.value
-                    )
-                      ? selectedPropertyToEdit?.value?.replace(
-                          /^#\{(.+)\}$/,
-                          '$1'
-                        )
-                      : ''
-                  }
+                  defaultValue={getRefParamDefaultValue(
+                    refParamsData,
+                    selectedPropertyToEdit
+                  )}
                 />
               </>
             )}
