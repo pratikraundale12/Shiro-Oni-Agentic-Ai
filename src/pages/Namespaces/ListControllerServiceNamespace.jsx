@@ -12,6 +12,7 @@ import {
   RefrenceIcon,
   SettingSmallIcon,
   SmallSearchIcon,
+  TriangleExclamationMarkIcon,
 } from '../../assets';
 import { FullPageLoader, Table, TextRender } from '../../components';
 import { ModalWithIcon } from '../../shared';
@@ -42,7 +43,6 @@ const StatusTexts = styled.div`
   color: ${props => props.color || '#b5b5bd'};
   display: flex;
   align-items: center;
-  cursor: pointer;
   div {
     align-items: center;
     height: 8px;
@@ -96,6 +96,17 @@ const Search = styled.input`
   }
 `;
 
+const ValidationIconWrapper = styled.div`
+  cursor: pointer;
+  margin-right: 8px;
+  visibility: ${props => (props.hasErrors ? 'visible' : 'hidden')};
+`;
+
+const TooltipList = styled.ul`
+  padding-left: 8px;
+  marign: 0;
+`;
+
 const StatusText = ({ text = '', item }) => {
   const color = statusColors[text] || statusColors.DEFAULT;
   function capitalizeFirstLetter(text) {
@@ -114,19 +125,6 @@ const StatusText = ({ text = '', item }) => {
       <StatusTexts color={color} data-tooltip-id={`tooltip-cs-${item?.id}`}>
         {capitalizeFirstLetter(text)}
       </StatusTexts>{' '}
-      {!isEmpty(item?.tooltip) && (
-        <ReactTooltip
-          id={`tooltip-cs-${item?.id}`}
-          place="right"
-          content={item?.tooltip ? item?.tooltip : null}
-          style={{
-            width: '520px',
-            whiteSpace: 'normal',
-            wordWrap: 'break-word',
-            zIndex: 9999,
-          }}
-        />
-      )}
     </>
   );
 };
@@ -235,9 +233,55 @@ export const ListControllerService = () => {
     {
       label: 'Name',
       renderCell: item => (
-        <TextRender key={item?.name} text={item?.name} capitalizeText={false} />
+        <div className="d-flex">
+          {
+            <>
+              <ValidationIconWrapper
+                hasErrors={item?.validationErrors?.length > 0}
+                data-tooltip-id={`tooltip-${item?.id}-validationErrors`}
+              >
+                <TriangleExclamationMarkIcon
+                  height={18}
+                  width={18}
+                  color="#CF9F5D"
+                />
+              </ValidationIconWrapper>
+              {item?.validationErrors?.length > 0 && (
+                <ReactTooltip
+                  id={`tooltip-${item?.id}-validationErrors`}
+                  place="right"
+                  render={() => (
+                    <TooltipList>
+                      {item?.validationErrors?.map(h => {
+                        return <li key={h}>{h}</li>;
+                      })}
+                    </TooltipList>
+                  )}
+                  style={{
+                    maxWidth: '500px',
+                    whiteSpace: 'normal',
+                    zIndex: 9999,
+                  }}
+                />
+              )}
+            </>
+          }
+          <TextRender
+            text={item?.name}
+            data-tooltip-id={`tooltip-${item.id}-name`}
+          />
+          <ReactTooltip
+            id={`tooltip-${item?.id}-name`}
+            place="right"
+            content={item?.name}
+            style={{
+              whiteSpace: 'normal',
+              zIndex: 9999,
+            }}
+          />
+        </div>
       ),
-      width: '20%',
+      width: '21%',
       resize: true,
     },
     {
