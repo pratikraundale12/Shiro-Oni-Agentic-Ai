@@ -110,8 +110,6 @@ const PropertyDropdownModal = ({
 
   const handleClose = () => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(false));
-    setPropertyOptionsArray([]);
-    setPropertyOptionsDeploy([]);
   };
   const { handleSubmit, control, watch, reset } = useForm({});
   const selectedNewValue = watch('newService');
