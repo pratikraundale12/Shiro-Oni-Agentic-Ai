@@ -9,7 +9,7 @@ const Container = styled.div`
     height: auto;
   }
 `;
-const ClusterDetail = ({ data }) => {
+const ClusterDetail = ({ data, columns }) => {
   const CLUSTERCOLUMNS = [
     {
       label: KDFM.CLUSTER_NAME,
@@ -40,7 +40,7 @@ const ClusterDetail = ({ data }) => {
     <Container className="col-6">
       <Table
         data={[data || {}]}
-        columns={CLUSTERCOLUMNS}
+        columns={columns?.length > 0 ? columns : CLUSTERCOLUMNS}
         className={'customTable'}
       />
     </Container>
@@ -49,6 +49,7 @@ const ClusterDetail = ({ data }) => {
 
 ClusterDetail.propTypes = {
   data: PropTypes.object.isRequired,
+  columns: PropTypes.array,
 };
 
 export default ClusterDetail;

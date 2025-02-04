@@ -25,7 +25,7 @@ const ClusterDetailsContainer = styled.div`
   background-color: #f5f7fa;
   border-radius: 16px;
   padding: 14px 16px;
-  min-height: 120px;
+  // min-height: 120px;
   width: 100%;
   margin-bottom: 18px;
 `;
@@ -33,7 +33,7 @@ const ClusterDetailsContainer = styled.div`
 const Row = styled.div`
   display: flex;
   flex-wrap: wrap;
-  margin-top: 10px;
+  // margin-top: 10px;
   width: 100%;
 `;
 
@@ -74,7 +74,7 @@ const ClusterName = styled.div`
   color: #7a7a7a;
   white-space: nowrap;
   max-width: 100%;
-  margin-top: 1rem;
+  // margin-top: 1rem;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
@@ -144,6 +144,8 @@ export const SummaryModal = ({
       tag: tags,
       notification_enable: notificationEnable,
       approver_enable: approverEnable,
+      ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
+      ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
     };
     const response = await createCluster(data);
     if (response?.status === 201) {
@@ -236,7 +238,28 @@ export const SummaryModal = ({
       entityUrlValue: clusterData?.nifiUrl?.includes('/nifi')
         ? clusterData.nifiUrl
         : `${clusterData.nifiUrl}/nifi`,
+      tooltipContent: 'Copy Cluster URL',
     },
+    ...(clusterData?.metrics_url?.length > 0
+      ? [
+          {
+            entityUrlLabel: KDFM.METRICS_URL,
+            entityUrlValue: clusterData.metrics_url,
+            width: '100%',
+            tooltipContent: 'Copy Metrics URL',
+          },
+        ]
+      : []),
+    ...(clusterData?.logs_url?.length > 0
+      ? [
+          {
+            entityUrlLabel: KDFM.LOGS_URL,
+            entityUrlValue: clusterData.logs_url,
+            width: '100%',
+            tooltipContent: 'Copy Logs URL',
+          },
+        ]
+      : []),
     {
       title: KDFM.REGISTRY_DETAILS,
       entityNameLabel: KDFM.REGISTRY_NAME,
@@ -247,6 +270,7 @@ export const SummaryModal = ({
       )?.includes('/nifi-registry')
         ? registryData?.registryUrl || registryData?.registry_url
         : `${registryData?.registryUrl || registryData?.registry_url}/nifi-registry`,
+      tooltipContent: 'Copy Registry URL',
     },
   ];
 
@@ -273,7 +297,7 @@ export const SummaryModal = ({
                     <Title>{data?.entityNameLabel}</Title>
                     <ClusterName>{data?.entityNameValue}</ClusterName>
                   </Info>
-                  <Info width="50%">
+                  <Info width={data?.width ? data?.width : '40%'}>
                     <Title>{data?.entityUrlLabel}</Title>
                     <Flex className="d-flex align-items-center">
                       <TextEllipses data-tooltip-id={data?.entityUrlValue}>
@@ -291,7 +315,7 @@ export const SummaryModal = ({
                         id={`copy-board-summary-modal${data?.entityUrlValue}`}
                         place="bottom"
                         effect="solid"
-                        content={`${data?.title == 'Registry Details' ? 'Copy registry URL' : 'Copy cluster URL'}`}
+                        content={data?.tooltipContent}
                         style={{
                           width: '120px',
                           whiteSpace: 'normal',

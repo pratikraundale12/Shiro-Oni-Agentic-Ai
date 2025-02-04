@@ -8,6 +8,7 @@ import {
   DeleteSmallIcon,
   LogoutIcon,
   OpenEyeIcon,
+  OpenLinkIcon,
   PencilIcon,
   SortDownIcon,
   SortUpIcon,
@@ -78,6 +79,25 @@ const Item = styled.div`
   }
 `;
 
+const StyledLink = styled.a`
+  width: 8rem;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 14px 12px;
+  font-family: ${props => props.theme.fontNato};
+  font-size: ${props => props.theme.size.md};
+  color: ${props => props.theme.colors.darker};
+  &:hover {
+    background-color: ${props => props.theme.colors.lightGrey};
+  }
+  & > svg {
+    flex-shrink: 0;
+    margin-right: 10px;
+  }
+`;
+
 export const ListClusters = () => {
   const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
@@ -140,7 +160,7 @@ export const ListClusters = () => {
 
         return <UrlRender url={updatedUrl} />;
       },
-      width: '35%',
+      width: '20%',
       resize: true,
     },
     {
@@ -153,6 +173,19 @@ export const ListClusters = () => {
           status={item.status}
         />
       ),
+      resize: true,
+    },
+    {
+      label: KDFM.METRICS,
+      renderCell: item => {
+        return (
+          <UrlRender
+            copy_btn_tooltip={'Copy Metrics URL'}
+            url={item.metrics_url}
+          />
+        );
+      },
+      width: '20%',
       resize: true,
     },
     {
@@ -187,6 +220,22 @@ export const ListClusters = () => {
                           <LogoutIcon color="black" />
                           <span>{KDFM.DEACTIVATE}</span>
                         </Item>
+                      )}
+                      {item?.logs_url && (
+                        <StyledLink
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href={item?.logs_url}
+                        >
+                          <OpenLinkIcon />
+                          <a
+                            href={item?.logs_url}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            {KDFM.LOGS}
+                          </a>
+                        </StyledLink>
                       )}
                     </>
                   </>

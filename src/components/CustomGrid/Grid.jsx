@@ -24,6 +24,7 @@ import { Loader, LoaderContainer } from '../Loader';
 import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
 import { Table } from './Table';
+import { UrlRender } from './CellRenders';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -365,6 +366,36 @@ export const Grid = ({
       setCurrentPage(prev + 1);
     }
   }, [next, prev]);
+
+  const METRICS_URL_COLUMN = [
+    {
+      label: KDFM.METRICS_URL,
+      renderCell: item => (
+        <UrlRender
+          tooltipId={`metrix_url${item?.metrics_url}`}
+          url={item?.metrics_url}
+          tooltipPlacement="top"
+          copy_btn_tooltip={'Copy Metrics URL'}
+        />
+      ),
+      width: '100%',
+    },
+  ];
+
+  const LOGS_URL_COLUMN = [
+    {
+      label: KDFM.LOGS_URL,
+      renderCell: item => (
+        <UrlRender
+          tooltipId={`logs_url${item?.logs_url}`}
+          url={item?.logs_url}
+          tooltipPlacement="top"
+          copy_btn_tooltip={'Copy Logs URL'}
+        />
+      ),
+      width: '100%',
+    },
+  ];
   return (
     <Container>
       <GridActionsComponent
@@ -404,6 +435,20 @@ export const Grid = ({
               }}
             />
             <RegistryDetail data={clusterSummary?.registry} />
+          </ClusterRegistryContainer>
+          <ClusterRegistryContainer className="row">
+            <ClusterDetail
+              data={{
+                metrics_url: clusterSummary?.metrics_url,
+              }}
+              columns={METRICS_URL_COLUMN}
+            />
+            <ClusterDetail
+              data={{
+                logs_url: clusterSummary?.logs_url,
+              }}
+              columns={LOGS_URL_COLUMN}
+            />{' '}
           </ClusterRegistryContainer>
           <Modal
             title="Event Log"

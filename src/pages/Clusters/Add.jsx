@@ -39,6 +39,7 @@ import { FailedTestModal } from './components/FailedTestModal';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
+import { isEmpty } from 'lodash';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -352,6 +353,8 @@ export const Add = () => {
   const [clusterData, setClusterData] = useState({
     clusterName: data?.name || '',
     nifiUrl: data?.nifi_url || '',
+    metrics_url: data?.metrics_url || '',
+    logs_url: data?.logs_url || '',
   });
   const [clusterId, setClusterId] = useState(data?.id);
   const gridData = useSelector(state =>
@@ -388,6 +391,8 @@ export const Add = () => {
           reg => reg.nifi_url === value || reg.nifi_url + '/nifi' === value
         );
       }),
+    metrics_url: yup.string().url('Enter a valid Metrics URL'),
+    logs_url: yup.string().url('Enter a valid Logs URL'),
   });
   const RegistrySchema = yup.object().shape({
     registryName: yup
@@ -476,10 +481,16 @@ export const Add = () => {
       setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
     }
   };
+
   const editClusterData = async () => {
     const payload = {
-      name: clusterData.clusterName,
-      nifi_url: clusterData.nifiUrl,
+      name: clusterData?.clusterName,
+      logs_url:
+        clusterData?.logs_url?.length === 0 ? null : clusterData?.logs_url,
+      metrics_url:
+        clusterData?.metrics_url?.length === 0
+          ? null
+          : clusterData?.metrics_url,
       tag: tags,
       notification_enable: notificationEnable,
       approver_enable: approverEnable,
@@ -543,6 +554,8 @@ export const Add = () => {
   const watchedFields = watch([
     'clusterName',
     'nifiUrl',
+    'metrics_url',
+    'logs_url',
     'registryName',
     'registryUrl',
     'tags',
@@ -555,22 +568,27 @@ export const Add = () => {
     reg => reg.name === watchedFields?.[0]
   );
   const checkDuplicateRegistryName = registries?.some(
-    reg => reg.name === watchedFields?.[2]
+    reg => reg.name === watchedFields?.[4]
   );
   const checkDuplicateRegistry = registries?.some(
-    reg => reg.registry_url === watchedFields?.[3]
+    reg => reg.registry_url === watchedFields?.[5]
   );
   useEffect(() => {
     const [clusterName, nifiUrl, registryName, registryUrl] = watchedFields;
-
+    const logs_url = watchedFields?.[3];
+    const metrics_url = watchedFields?.[2];
     if (activeTab === 'cluster') {
       if (
         clusterName !== clusterData.clusterName ||
-        nifiUrl !== clusterData.nifiUrl
+        nifiUrl !== clusterData.nifiUrl ||
+        logs_url !== clusterData.logs_url ||
+        metrics_url !== clusterData.metrics_url
       ) {
         setClusterData({
           clusterName: clusterName || '',
           nifiUrl: nifiUrl || '',
+          metrics_url: metrics_url || '',
+          logs_url: logs_url || '',
         });
       }
     } else if (
@@ -599,9 +617,19 @@ export const Add = () => {
       setDataFill(false);
     }
 
-    if (nifiUrl?.startsWith('https') || registryUrl?.startsWith('https')) {
+    if (
+      nifiUrl?.startsWith('https') ||
+      registryUrl?.startsWith('https') ||
+      metrics_url?.startsWith('https') ||
+      logs_url?.startsWith('https')
+    ) {
       setTest(true);
-    } else if (nifiUrl?.startsWith('http') || registryUrl?.startsWith('http')) {
+    } else if (
+      nifiUrl?.startsWith('http') ||
+      registryUrl?.startsWith('http') ||
+      metrics_url?.startsWith('http') ||
+      logs_url?.startsWith('http')
+    ) {
       setTest(false);
     }
   }, [
@@ -617,6 +645,8 @@ export const Add = () => {
       reset({
         registry: data?.registry_id || '',
         clusterName: clusterData?.clusterName,
+        metrics_url: clusterData?.metrics_url || '',
+        logs_url: clusterData?.logs_url || '',
         nifiUrl: clusterData?.nifiUrl,
         registryName: registryData?.name,
         registryUrl: registryData?.registry_url || '',
@@ -847,6 +877,24 @@ export const Add = () => {
               label={KDFM.NIFI_URL}
               disabled={testSuccess}
               placeholder={KDFM.ENTER_NIFI_URL}
+              errors={errors}
+            />
+            <InputField
+              name="metrics_url"
+              register={register}
+              icon={<LinkIcon />}
+              label={KDFM.METRICS_URL}
+              disabled={testSuccess}
+              placeholder={KDFM.ENTER_METRICS_URL}
+              errors={errors}
+            />
+            <InputField
+              name="logs_url"
+              register={register}
+              icon={<LinkIcon />}
+              label={KDFM.LOGS_URL}
+              disabled={testSuccess}
+              placeholder={KDFM.ENTER_LOGS_URL}
               errors={errors}
             />
             <label htmlFor="tags-input" className="tags-input-label">
@@ -1125,6 +1173,10 @@ export const Add = () => {
                   ? !testSuccess
                   : clusterId
                     ? watchedFields?.[0] === data?.name &&
+                      watchedFields?.[2] ===
+                        (data?.metrics_url === null ? '' : data?.metrics_url) &&
+                      watchedFields?.[3] ===
+                        (data?.logs_url === null ? '' : data?.logs_url) &&
                       checkEditSave() &&
                       saveButtonEnable
                     : !testSuccess
