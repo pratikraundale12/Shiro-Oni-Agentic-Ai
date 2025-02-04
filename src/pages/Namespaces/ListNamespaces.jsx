@@ -80,6 +80,9 @@ export const ListNamespaces = () => {
     sortKey: 'name',
     reverse: false,
   };
+  const {
+    state: { search },
+  } = useGlobalContext();
 
   const handleScheduleClick = item => {
     dispatch(SchedularActions.setScheduleFromList(true));
@@ -121,6 +124,9 @@ export const ListNamespaces = () => {
           <>
             <li>Name : {item?.name}</li>
             {<li>ID : {item?.id}</li>}
+            {search.length > 0 && item?.parent && (
+              <li>Parent : {item?.parent}</li>
+            )}
           </>
         )}
       </>

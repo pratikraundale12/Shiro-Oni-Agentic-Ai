@@ -167,7 +167,7 @@ const ConfigurePropertyModal = ({
       listPropertyTableData.length > 0 &&
       !listPropertyTableData?.some(ele => ele.name == nameState);
 
-    if (checkDuplicateProperty) {
+    if (checkDuplicateProperty || listPropertyTableData?.length == 0) {
       if (
         propertyResponse &&
         propertyResponse?.propertyDescriptor?.hasOwnProperty(

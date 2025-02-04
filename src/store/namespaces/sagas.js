@@ -752,7 +752,7 @@ export function* getControllerServiceList(api, action) {
       NamespacesActions.getRootControllerServiceNamespace(response?.data)
     );
   else if (!response.ok) {
-    toast.error(response.data.message || 'Please login to cluster');
+    toast.error(response.data.message);
   }
 }
 
