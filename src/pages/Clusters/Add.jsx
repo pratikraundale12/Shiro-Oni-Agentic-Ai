@@ -1169,7 +1169,8 @@ export const Add = () => {
             <Button
               onClick={handleSubmit(onSubmit)}
               disabled={
-                newRegistry
+                Object.keys(errors).length > 0 ||
+                (newRegistry
                   ? !testSuccess
                   : clusterId
                     ? watchedFields?.[0] === data?.name &&
@@ -1179,7 +1180,7 @@ export const Add = () => {
                         (data?.logs_url === null ? '' : data?.logs_url) &&
                       checkEditSave() &&
                       saveButtonEnable
-                    : !testSuccess
+                    : !testSuccess)
               }
             >
               {newRegistry
