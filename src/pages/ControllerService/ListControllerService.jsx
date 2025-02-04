@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import { isEmpty } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -10,10 +9,11 @@ import {
   DeleteSmallIcon,
   FlashCutIcon,
   FlashIcon,
+  RefreshIcon,
   SettingSmallIcon,
   SmallSearchIcon,
   TodoIcon,
-  RefreshIcon,
+  TriangleExclamationMarkIcon,
 } from '../../assets';
 
 import { FullPageLoader, Table, TextRender } from '../../components';
@@ -79,7 +79,6 @@ const StatusTexts = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  cursor: pointer;
 `;
 
 const RefreshIocnPanel = styled.div`
@@ -106,6 +105,18 @@ const statusColors = {
   ENABLING: '#F2891F',
   VALIDATING: '#F2891F',
 };
+
+const ValidationIconWrapper = styled.div`
+  cursor: pointer;
+  margin-right: 8px;
+  visibility: ${props => (props.hasErrors ? 'visible' : 'hidden')};
+`;
+
+const TooltipList = styled.ul`
+  padding-left: 8px;
+  marign: 0;
+`;
+
 const StatusText = ({ text = '', item }) => {
   const color = statusColors[text] || statusColors.DEFAULT;
   function capitalizeFirstLetter(text) {
@@ -124,18 +135,6 @@ const StatusText = ({ text = '', item }) => {
       <StatusTexts color={color} data-tooltip-id={`tooltip-cs-${item?.id}`}>
         {capitalizeFirstLetter(text)}
       </StatusTexts>{' '}
-      {!isEmpty(item?.tooltip) && (
-        <ReactTooltip
-          id={`tooltip-cs-${item?.id}`}
-          place="right"
-          content={item?.tooltip ? item?.tooltip : null}
-          style={{
-            width: '520px',
-            whiteSpace: 'normal',
-            wordWrap: 'break-word',
-          }}
-        />
-      )}
     </>
   );
 };
@@ -223,7 +222,39 @@ export const ListControllerService = () => {
     {
       label: 'Name',
       renderCell: item => (
-        <>
+        <div className="d-flex">
+          {
+            <>
+              <ValidationIconWrapper
+                hasErrors={item?.validationErrors?.length > 0}
+                data-tooltip-id={`tooltip-${item?.id}-validationErrors`}
+              >
+                <TriangleExclamationMarkIcon
+                  height={18}
+                  width={18}
+                  color="#CF9F5D"
+                />{' '}
+              </ValidationIconWrapper>
+              {item?.validationErrors?.length > 0 && (
+                <ReactTooltip
+                  id={`tooltip-${item?.id}-validationErrors`}
+                  place="right"
+                  render={() => (
+                    <TooltipList>
+                      {item?.validationErrors?.map(h => {
+                        return <li key={h}>{h}</li>;
+                      })}
+                    </TooltipList>
+                  )}
+                  style={{
+                    maxWidth: '500px',
+                    whiteSpace: 'normal',
+                    zIndex: 9999,
+                  }}
+                />
+              )}
+            </>
+          }
           <TextRender
             text={item?.name}
             data-tooltip-id={`tooltip-${item.id}-name`}
@@ -237,7 +268,7 @@ export const ListControllerService = () => {
               zIndex: 9999,
             }}
           />
-        </>
+        </div>
       ),
       width: '21%',
       resize: true,
@@ -261,7 +292,7 @@ export const ListControllerService = () => {
           />
         </>
       ),
-      width: '18%',
+      width: 'auto',
       resize: true,
     },
     {
@@ -283,19 +314,19 @@ export const ListControllerService = () => {
           />
         </>
       ),
-      width: '18%',
+      width: '20%',
       resize: true,
     },
     {
       label: 'State',
       renderCell: item => <StatusText text={item?.state} item={item} />,
-      width: '16%',
+      width: '12%',
       resize: true,
     },
     {
       label: 'Scope',
       renderCell: item => item?.scope,
-      width: '11%',
+      width: '12%',
       resize: true,
     },
     {
@@ -314,8 +345,24 @@ export const ListControllerService = () => {
               <>
                 <button
                   className="border-0 bg-white"
-                  onClick={() => handleSettingClick(item)}
+                  onClick={event => {
+                    handleSettingClick(item);
+                    event.currentTarget.blur();
+                  }}
                   data-tooltip-id={'Settings'}
+                  disabled={
+                    item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                  }
+                  style={{
+                    opacity:
+                      item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                        ? 0.3
+                        : 1,
+                    cursor:
+                      item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                        ? 'not-allowed'
+                        : 'pointer',
+                  }}
                 >
                   <SettingSmallIcon />
                 </button>
@@ -337,7 +384,10 @@ export const ListControllerService = () => {
                   disabled={isBtnDisabled}
                   style={{ opacity: isBtnDisabled ? 0.3 : 1 }}
                   className="border-0 bg-white ms-1"
-                  onClick={() => handleEnableClick(item)}
+                  onClick={event => {
+                    handleEnableClick(item);
+                    event.currentTarget.blur();
+                  }}
                   data-tooltip-id={item?.id}
                 >
                   {item?.state !== 'DISABLED' ? (
@@ -367,7 +417,10 @@ export const ListControllerService = () => {
                 <>
                   <button
                     className="border-0 bg-white ms-1"
-                    onClick={() => handleDeleteClick(item)}
+                    onClick={event => {
+                      handleDeleteClick(item);
+                      event.currentTarget.blur();
+                    }}
                     data-tooltip-id={'Delete'}
                   >
                     <DeleteSmallIcon color="black" height="28" />
@@ -387,7 +440,7 @@ export const ListControllerService = () => {
           </>
         );
       },
-      width: '14%',
+      width: '12%',
       resize: true,
     },
   ];
@@ -399,6 +452,7 @@ export const ListControllerService = () => {
 
   const handleSettingClick = item => {
     setSelectedItemFromList(item);
+    setListPropertTableData(item?.properties);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
@@ -511,6 +565,7 @@ export const ListControllerService = () => {
         updatedData={updatedData}
       />
       <PropertyDropdownModal
+        selectedItemFromList={selectedItemFromList}
         selectedPropertyToEdit={selectedPropertyToEdit}
         setListPropertTableData={setListPropertTableData}
         setUpdatedData={setUpdatedData}

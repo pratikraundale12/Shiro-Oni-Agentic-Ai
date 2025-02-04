@@ -15,6 +15,7 @@ import {
   RefrenceIcon,
   SettingSmallIcon,
   SmallSearchIcon,
+  TriangleExclamationMarkIcon,
 } from '../../assets';
 import { FullPageLoader, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
@@ -51,6 +52,9 @@ const ScrollSetGrey = styled.div`
   max-height: calc(100vh - 341px);
   overflow-x: hidden;
   overflow-y: auto;
+  table {
+    position: static;
+  }
 `;
 const ConfigureButton = styled.button`
   padding: 8px 1rem;
@@ -80,7 +84,6 @@ const StatusTexts = styled.div`
   color: ${props => props.color || '#b5b5bd'};
   display: flex;
   align-items: center;
-  cursor: pointer;
   div {
     align-items: center;
     height: 8px;
@@ -126,6 +129,17 @@ const Search = styled.input`
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
   }
+`;
+
+const ValidationIconWrapper = styled.div`
+  cursor: pointer;
+  margin-right: 8px;
+  visibility: ${props => (props.hasErrors ? 'visible' : 'hidden')};
+`;
+
+const TooltipList = styled.ul`
+  padding-left: 8px;
+  marign: 0;
 `;
 
 const ControllerServiceTab = ({
@@ -392,18 +406,6 @@ const ControllerServiceTab = ({
         <StatusTexts color={color} data-tooltip-id={`tooltip-cs-${item?.id}`}>
           {capitalizeFirstLetter(text)}
         </StatusTexts>{' '}
-        {!isEmpty(item?.tooltip) && (
-          <ReactTooltip
-            id={`tooltip-cs-${item?.id}`}
-            place="right"
-            content={item?.tooltip ? item?.tooltip : null}
-            style={{
-              width: '520px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
-        )}
       </>
     );
   };
@@ -522,11 +524,43 @@ const ControllerServiceTab = ({
             ? item?.configuredData
             : item;
         return (
-          <TextRender
-            key={currentItem?.name}
-            text={currentItem?.name}
-            capitalizeText={false}
-          />
+          <div className="d-flex">
+            <>
+              <ValidationIconWrapper
+                hasErrors={currentItem?.validationErrors?.length > 0}
+                data-tooltip-id={`tooltip-${currentItem?.id}-validationErrors`}
+              >
+                <TriangleExclamationMarkIcon
+                  height={18}
+                  width={18}
+                  color="#CF9F5D"
+                />{' '}
+              </ValidationIconWrapper>
+              {currentItem?.validationErrors?.length > 0 && (
+                <ReactTooltip
+                  id={`tooltip-${currentItem?.id}-validationErrors`}
+                  place="right"
+                  render={() => (
+                    <TooltipList>
+                      {currentItem?.validationErrors?.map(h => {
+                        return <li key={h}>{h}</li>;
+                      })}
+                    </TooltipList>
+                  )}
+                  style={{
+                    maxWidth: '500px',
+                    whiteSpace: 'normal',
+                    zIndex: 9999,
+                  }}
+                />
+              )}
+            </>
+            <TextRender
+              key={currentItem?.name}
+              text={currentItem?.name}
+              capitalizeText={false}
+            />
+          </div>
         );
       },
       width: '21%',
@@ -625,7 +659,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {stateItem.hasOwnProperty('properties') && (
+            {stateItem?.hasOwnProperty('properties') && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -747,11 +781,43 @@ const ControllerServiceTab = ({
             ? item?.configuredData
             : item;
         return (
-          <TextRender
-            key={currentItem?.name}
-            text={currentItem?.name}
-            capitalizeText={false}
-          />
+          <div className="d-flex">
+            <>
+              <ValidationIconWrapper
+                hasErrors={currentItem?.validationErrors?.length > 0}
+                data-tooltip-id={`tooltip-${item?.id}-validationErrors`}
+              >
+                <TriangleExclamationMarkIcon
+                  height={18}
+                  width={18}
+                  color="#CF9F5D"
+                />{' '}
+              </ValidationIconWrapper>
+              {item?.validationErrors?.length > 0 && (
+                <ReactTooltip
+                  id={`tooltip-${item?.id}-validationErrors`}
+                  place="right"
+                  render={() => (
+                    <TooltipList>
+                      {item?.validationErrors?.map(h => {
+                        return <li key={h}>{h}</li>;
+                      })}
+                    </TooltipList>
+                  )}
+                  style={{
+                    maxWidth: '500px',
+                    whiteSpace: 'normal',
+                    zIndex: 9999,
+                  }}
+                />
+              )}
+            </>
+            <TextRender
+              key={currentItem?.name}
+              text={currentItem?.name}
+              capitalizeText={false}
+            />
+          </div>
         );
       },
       width: '20%',
@@ -841,9 +907,10 @@ const ControllerServiceTab = ({
             <>
               <button
                 className="border-0 bg-white"
-                onClick={() => {
+                onClick={event => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                  event.currentTarget.blur();
                 }}
                 data-tooltip-id={`Referencing-${item?.id}`}
                 aria-label="Referencing"
@@ -887,7 +954,7 @@ const ControllerServiceTab = ({
         return (
           <div>
             {/* Settings Button */}
-            {stateItem.hasOwnProperty('properties') && (
+            {stateItem?.hasOwnProperty('properties') && (
               <>
                 <button
                   className="border-0 bg-white"
@@ -1004,11 +1071,47 @@ const ControllerServiceTab = ({
     {
       label: 'Name',
       renderCell: item => (
-        <TextRender
-          key={item?.name}
-          text={item?.name || 'N/A'}
-          capitalizeText={false}
-        />
+        <div className="d-flex">
+          <>
+            <div
+              className="cursor-pointer mr-2"
+              data-tooltip-id={`tooltip-${item?.id}-validationErrors`}
+              style={{
+                visibility:
+                  item?.validationErrors?.length > 0 ? 'visible' : 'hidden',
+              }}
+            >
+              <TriangleExclamationMarkIcon
+                height={18}
+                width={18}
+                color="#CF9F5D"
+              />{' '}
+            </div>
+            {item?.validationErrors?.length > 0 && (
+              <ReactTooltip
+                id={`tooltip-${item?.id}-validationErrors`}
+                place="right"
+                render={() => (
+                  <ul style={{ paddingLeft: '8px', margin: '0px' }}>
+                    {item?.validationErrors?.map(h => {
+                      return <li key={h}>{h}</li>;
+                    })}
+                  </ul>
+                )}
+                style={{
+                  maxWidth: '500px',
+                  whiteSpace: 'normal',
+                  zIndex: 9999,
+                }}
+              />
+            )}
+          </>
+          <TextRender
+            key={item?.name}
+            text={item?.name || 'N/A'}
+            capitalizeText={false}
+          />
+        </div>
       ),
       width: '21%',
       resize: true,
@@ -1094,11 +1197,47 @@ const ControllerServiceTab = ({
     {
       label: 'Name',
       renderCell: item => (
-        <TextRender
-          key={item?.name}
-          text={item?.name || 'N/A'}
-          capitalizeText={false}
-        />
+        <div className="d-flex">
+          <>
+            <div
+              className="cursor-pointer mr-2"
+              data-tooltip-id={`tooltip-${item?.id}-validationErrors`}
+              style={{
+                visibility:
+                  item?.validationErrors?.length > 0 ? 'visible' : 'hidden',
+              }}
+            >
+              <TriangleExclamationMarkIcon
+                height={18}
+                width={18}
+                color="#CF9F5D"
+              />{' '}
+            </div>
+            {item?.validationErrors?.length > 0 && (
+              <ReactTooltip
+                id={`tooltip-${item?.id}-validationErrors`}
+                place="right"
+                render={() => (
+                  <ul style={{ paddingLeft: '8px', margin: '0px' }}>
+                    {item?.validationErrors?.map(h => {
+                      return <li key={h}>{h}</li>;
+                    })}
+                  </ul>
+                )}
+                style={{
+                  maxWidth: '500px',
+                  whiteSpace: 'normal',
+                  zIndex: 9999,
+                }}
+              />
+            )}
+          </>
+          <TextRender
+            key={item?.name}
+            text={item?.name || 'N/A'}
+            capitalizeText={false}
+          />
+        </div>
       ),
       width: '20%',
       resize: true,
@@ -1359,6 +1498,7 @@ const ControllerServiceTab = ({
 
   const handleSettingClick = item => {
     setSelectedItemFromList(item);
+    setListPropertTableData(item?.properties);
     setIsPropertyResponse(true);
     setIsNewlyAddedExternalServiceResponse(false);
     setIsStateChangeResponse(false);
@@ -1804,7 +1944,7 @@ const ControllerServiceTab = ({
           checkIfLocalCsConfigured &&
           externalServicePayload?.length > 0 &&
           Object.keys(newPayload).length > 0 &&
-          newPayload.hasOwnProperty('localServicesData')
+          newPayload?.hasOwnProperty('localServicesData')
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1858,7 +1998,7 @@ const ControllerServiceTab = ({
           checkIfLocalCsConfigured &&
           externalServicePayload?.length > 0 &&
           Object.keys(newPayload).length > 0 &&
-          newPayload.hasOwnProperty('localServicesData')
+          newPayload?.hasOwnProperty('localServicesData')
         ) {
           dispatch(
             NamespacesActions.setRegistryDeployControllerService({
@@ -1996,6 +2136,7 @@ const ControllerServiceTab = ({
         />
 
         <PropertyDropdownModal
+          selectedItemFromList={selectedItemFromList}
           isFromControllerServiceTab={true}
           selectedPropertyToEdit={selectedPropertyToEdit}
           setListPropertTableData={setListPropertTableData}

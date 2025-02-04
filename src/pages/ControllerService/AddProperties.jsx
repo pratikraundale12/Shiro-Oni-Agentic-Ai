@@ -26,7 +26,7 @@ const AddProperties = ({
   setUpdatedData,
   updatedData,
 }) => {
-  const { register, handleSubmit, control, reset, setValue } = useForm({});
+  const { register, handleSubmit, control, reset, setValue, watch } = useForm();
   const filterData = updatedData.filter(item => {
     return item.name != selectedPropertyToEdit.name;
   });
@@ -57,15 +57,19 @@ const AddProperties = ({
     name: 'check',
   });
 
-  if (check) {
-    setValue('value', '');
-  }
+  useEffect(() => {
+    if (check) {
+      setValue('value', '');
+    }
+  }, [check, setValue]);
   useEffect(() => {
     reset({
       value: selectedPropertyToEdit?.value || '',
       check: selectedPropertyToEdit?.empty_string_set || false,
     });
   }, [reset, isOpen]);
+
+  const propertyValue = watch('value');
 
   return (
     <div>
@@ -77,6 +81,11 @@ const AddProperties = ({
         primaryButtonText="Save"
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
+        primaryButtonDisabled={
+          (propertyValue === selectedPropertyToEdit?.value ||
+            (propertyValue === '' && !check)) ??
+          false
+        }
       >
         <ModalBody className="modal-body">
           <InputField

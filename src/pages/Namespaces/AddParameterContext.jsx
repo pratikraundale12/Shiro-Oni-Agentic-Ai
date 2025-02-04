@@ -117,6 +117,7 @@ const AddParameterContext = ({
     control,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(parameterContextSchema),
@@ -276,9 +277,14 @@ const AddParameterContext = ({
     name: 'check',
   });
 
-  if (check) {
-    setValue('value', '');
-  }
+  useEffect(() => {
+    if (check) {
+      setValue('value', '');
+    }
+  }, [check, setValue]);
+
+  const pcValue = watch('value');
+  const pcDesc = watch('description');
 
   return (
     <Modal
@@ -291,9 +297,13 @@ const AddParameterContext = ({
       onRequestClose={closePopup}
       size="md"
       footerAlign="start"
-      secondaryButtonText={KDFM.BACK}
-      primaryButtonText={KDFM.ADD}
+      secondaryButtonText={KDFM.CANCEL}
+      primaryButtonText={KDFM.SAVE}
       onSubmit={handleSubmit(handleAddEditParameterContext)}
+      primaryButtonDisabled={
+        pcValue === parameterContextItem?.value &&
+        pcDesc === parameterContextItem?.description
+      }
     >
       <ModalBody className="modal-body">
         <ModalBodyDiv className="d-flex">
@@ -321,17 +331,9 @@ const AddParameterContext = ({
                   icon={<QRIcons />}
                   register={register}
                   placeholder={
-                    (parameterContextItem?.sensitive == 'true' ||
-                      parameterContextItem?.sensitive == true) &&
-                    !parameterContextItem?.value
-                      ? ''
-                      : check || parameterContextItem?.value === ''
-                        ? KDFM.EMPTY_STRING_SET
-                        : parameterContextItem?.sensitive
-                          ? KDFM.SENSITIVE_VALUE_SET
-                          : isAddParameterContextOpen?.mode === 'add'
-                            ? KDFM.ENTER_PARAMETER
-                            : ''
+                    isAddParameterContextOpen?.mode === 'add'
+                      ? KDFM.ENTER_PARAMETER
+                      : ''
                   }
                   disabled={check}
                   errors={errors}

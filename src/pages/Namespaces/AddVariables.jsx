@@ -28,7 +28,7 @@ const AddVariables = ({
   isVariablesModalOpen,
   setIsAddVariablesOpen,
 }) => {
-  const { register, handleSubmit, reset, control, setValue } = useForm({
+  const { register, handleSubmit, reset, control, watch, setValue } = useForm({
     defaultValues: DEFAULT_VALUES,
   });
   const variableList = useSelector(NamespacesSelectors.getVariableList);
@@ -269,9 +269,13 @@ const AddVariables = ({
     name: 'check',
   });
 
-  if (check) {
-    setValue('value', '');
-  }
+  useEffect(() => {
+    if (check) {
+      setValue('value', '');
+    }
+  }, [check, setValue]);
+
+  const variableValue = watch('value');
   return (
     <Modal
       title={
@@ -282,7 +286,7 @@ const AddVariables = ({
       isOpen={isAddVariablesOpen?.isOpen}
       onRequestClose={closePopup}
       size="md"
-      secondaryButtonText={KDFM.BACK}
+      secondaryButtonText={KDFM.CANCEL}
       primaryButtonText={KDFM.ADD}
       footerAlign="start"
       onSubmit={handleSubmit(
@@ -290,6 +294,9 @@ const AddVariables = ({
           ? handleAddEditVariablesSchedule
           : handleAddEditVariables
       )}
+      primaryButtonDisabled={
+        variableValue === variableContextItem?.variable?.value ?? false
+      }
     >
       <ModalBody className="modal-body">
         <form>

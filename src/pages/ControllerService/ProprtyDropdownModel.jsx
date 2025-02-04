@@ -12,6 +12,7 @@ import { KDFM } from '../../constants';
 
 const ModalBody = styled.div`
   position: relative;
+  padding: 10px 20px 20px 20px;
   flex: 1 1 auto;
   & .variables-table {
     th {
@@ -30,10 +31,31 @@ const PropertyDropdownModal = ({
   updatedData,
   isUpgrade,
   isFromExternalService,
+  selectedItemFromList,
 }) => {
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
-  const [proprtyOptionsArray, setPropertyOptionsArray] = useState([]);
+  const [isRefParams, setIsRefParams] = useState(false);
+  const [proprtyOptionsArray, setPropertyOptionsArray] = useState([
+    {
+      value: '',
+      label: 'No value set',
+    },
+  ]);
+  const [refParamsData, setRefParamsData] = useState();
+
+  useEffect(() => {
+    let options = [];
+    if (selectedItemFromList?.parameters?.length) {
+      let data = selectedItemFromList?.parameters?.map(parameter => ({
+        value: `#{${parameter}}`,
+        label: parameter,
+      }));
+      options = data;
+    }
+    setRefParamsData(options || []);
+  }, [selectedItemFromList?.parameters]);
+
   const filterData = updatedData.filter(item => {
     return item.name != selectedPropertyToEdit.name;
   });
@@ -41,16 +63,17 @@ const PropertyDropdownModal = ({
     NamespacesSelectors.getAddPropertyDropdownModal
   );
   useEffect(() => {
-    if (selectedPropertyToEdit?.allowableValues && isModalOpen) {
-      const optionArrayToUpdate = selectedPropertyToEdit?.allowableValues?.map(
-        element => ({
-          value: element?.allowableValue?.value,
-          label: element?.allowableValue?.displayName,
-        })
-      );
-      setPropertyOptionsArray(optionArrayToUpdate);
-    }
-  }, [selectedPropertyToEdit, isModalOpen]);
+    const updatedOptions =
+      selectedPropertyToEdit?.allowableValues?.map(element => ({
+        value: element?.allowableValue?.value,
+        label: element?.allowableValue?.displayName,
+      })) ?? [];
+
+    setPropertyOptionsArray([
+      { value: '', label: 'No value set' },
+      ...updatedOptions,
+    ]);
+  }, [selectedPropertyToEdit]);
 
   const newPropertyToAdd = useSelector(
     NamespacesSelectors.getNewProprtyToAddControllerService
@@ -65,16 +88,26 @@ const PropertyDropdownModal = ({
     value: element?.name,
     label: element?.name,
   }));
-  const [propertyOptionsDeploy, setPropertyOptionsDeploy] = useState(
-    propertyOptionOnDeploy
-  );
+  const [propertyOptionsDeploy, setPropertyOptionsDeploy] = useState([
+    { value: '', label: 'No value set' },
+  ]);
+
   useEffect(() => {
-    const options = propertyOptionOnDeploy?.map(element => ({
+    const options = propertyOptionOnDeploy.map(element => ({
       value: element?.name,
       label: element?.name,
+      id: element?.id,
     }));
-    setPropertyOptionsDeploy(options);
+
+    setPropertyOptionsDeploy(prevArray => {
+      const mergedArray = [...prevArray, ...options];
+      const uniqueArray = Array.from(
+        new Map(mergedArray.map(item => [item.id, item])).values()
+      );
+      return uniqueArray;
+    });
   }, [propertyOptionOnDeploy]);
+
   const handleClose = () => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(false));
     setPropertyOptionsArray([]);
@@ -89,7 +122,7 @@ const PropertyDropdownModal = ({
       ...filterData,
       {
         name: selectedPropertyToEdit.name,
-        value: data.value,
+        value: data.value === '' ? null : data.value,
         sensitive: false,
       },
     ]);
@@ -102,7 +135,7 @@ const PropertyDropdownModal = ({
         item.name === selectedPropertyToEdit.name
           ? {
               ...item,
-              value: data?.value,
+              value: data.value === '' ? null : data.value,
               dropDownName: selectedName,
               empty_string_set: false,
             }
@@ -139,6 +172,7 @@ const PropertyDropdownModal = ({
           );
       }
       setAddNewProperty(false);
+      setIsRefParams(false);
     }
   }, [selectedPropertyToEdit?.add, isModalOpen]);
 
@@ -159,6 +193,26 @@ const PropertyDropdownModal = ({
       reset();
     }
   }, [isModalOpen]);
+
+  const onRefParamsClick = () => {
+    setIsRefParams(true);
+  };
+
+  const handlebackBtnClick = () => {
+    if (isRefParams && !addNewProperty) {
+      setIsRefParams(false);
+    } else if (addNewProperty && !isRefParams) {
+      setAddNewProperty(false);
+    } else if (!addNewProperty && !isRefParams) {
+      handleClose();
+    }
+  };
+
+  const getRefParamDefaultValue = (data, selecetdData) => {
+    return data?.some(item => item.value === selecetdData?.value)
+      ? selecetdData?.value?.replace(/^#\{(.+)\}$/, '$1')
+      : '';
+  };
   return (
     <div>
       <Modal
@@ -172,17 +226,55 @@ const PropertyDropdownModal = ({
         size="md"
         primaryButtonText="Save"
         secondaryButtonText="Back"
+        onSecondarySubmit={handlebackBtnClick}
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
-        contentStyles={{ maxWidth: '35%', maxHeight: '50%' }}
-        primaryButtonDisabled={selectedProperty === null || addNewProperty}
+        contentStyles={{
+          minWidth: selectedPropertyToEdit?.add ? '30%' : '15%',
+          maxWidth: selectedPropertyToEdit?.add ? '34%' : '25%',
+          maxHeight: '50%',
+        }}
+        primaryButtonDisabled={
+          selectedProperty === null ||
+          selectedProperty === selectedPropertyToEdit?.dropDownName ||
+          selectedProperty?.value === selectedPropertyToEdit?.value ||
+          selectedProperty === selectedPropertyToEdit?.value ||
+          addNewProperty
+        }
         noScroll={true}
+        noPadding={true}
       >
         <ModalBody className="modal-body">
-          <div style={{ height: '150px' }} className="mb-4">
-            {!addNewProperty && (
+          {isRefParams && (
+            <div className="d-flex align-items-center justify-content-start mt-2">
+              <div
+                className="py-2 d-flex align-items-center gap-2"
+                style={{
+                  backgroundColor: '#F5F7FA',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  border: `1px solid ${theme.colors.primary}`,
+                  color: '#444445',
+                  padding: '6px',
+                  marginBottom: '20px',
+                }}
+              >
+                <span style={{ color: 'red' }}>*</span>
+                <span style={{ fontStyle: 'italic' }}>
+                  Note: Configuring the reference parameters incorrectly will
+                  fail the deployment.
+                </span>
+              </div>
+            </div>
+          )}
+          <div
+            style={{ height: selectedPropertyToEdit?.add ? '150px' : '70px' }}
+            className="mb-4"
+          >
+            {!addNewProperty && !isRefParams && (
               <>
                 <StyledSelectField
+                  menuHeight={selectedPropertyToEdit?.add ? '150px' : '120px'}
                   name="value"
                   size="sm"
                   options={
@@ -191,20 +283,42 @@ const PropertyDropdownModal = ({
                       : propertyOptionsDeploy
                   }
                   control={control}
-                  placeholder="Select Service"
+                  placeholder={
+                    selectedPropertyToEdit?.add
+                      ? 'Select Service'
+                      : 'Select Value'
+                  }
                   backgroundColor={theme.colors.lightGrey}
-                  title="Select Service"
+                  title={
+                    selectedPropertyToEdit?.add
+                      ? 'Select Service'
+                      : 'Select Value'
+                  }
+                  defaultValue={selectedPropertyToEdit?.dropDownName}
                 />
-                <div className="col-4 mt-3">
-                  <Button
-                    isBtnDisable={!selectedPropertyToEdit?.add}
-                    type="button"
-                    size={'md'}
-                    variant="tertiary"
-                    onClick={() => setAddNewProperty(true)}
-                  >
-                    Create New Service
-                  </Button>
+                <div className="d-flex gap-3">
+                  {selectedPropertyToEdit?.add && (
+                    <div className="col-4 mt-3">
+                      <Button
+                        type="button"
+                        size={'md'}
+                        variant="tertiary"
+                        onClick={() => setAddNewProperty(true)}
+                      >
+                        Create New Service
+                      </Button>
+                    </div>
+                  )}
+                  <div className="col-4 mt-3" style={{ width: '188px' }}>
+                    <Button
+                      type="button"
+                      size={'md'}
+                      variant="tertiary"
+                      onClick={() => onRefParamsClick()}
+                    >
+                      Referencing Parameter
+                    </Button>
+                  </div>
                 </div>
               </>
             )}
@@ -226,21 +340,32 @@ const PropertyDropdownModal = ({
                       size={'md'}
                       variant="tertiary"
                       onClick={() => handleNewService()}
+                      isBtnDisable={
+                        selectedNewValue === null ||
+                        selectedNewValue === undefined
+                      }
                     >
                       Add New Service
                     </Button>
                   </div>
-                  <div className="col-2 mt-3">
-                    <Button
-                      type="button"
-                      size={'md'}
-                      variant="secondary"
-                      onClick={() => setAddNewProperty(false)}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
                 </div>
+              </>
+            )}
+            {isRefParams && (
+              <>
+                <StyledSelectField
+                  name="value"
+                  size="sm"
+                  options={refParamsData}
+                  control={control}
+                  placeholder="Select Value"
+                  backgroundColor={theme.colors.lightGrey}
+                  title="Select Status"
+                  defaultValue={getRefParamDefaultValue(
+                    refParamsData,
+                    selectedPropertyToEdit
+                  )}
+                />
               </>
             )}
           </div>

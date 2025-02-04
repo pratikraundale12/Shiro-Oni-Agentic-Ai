@@ -4,12 +4,18 @@ import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { DeleteSmallIcon, PencilIcon, QRIcons } from '../../assets';
+import {
+  DeleteSmallIcon,
+  PencilIcon,
+  QRIcons,
+  QuestionMarkIcon,
+} from '../../assets';
 import { Table } from '../../components';
 import { KDFM } from '../../constants';
 import { Button, InputField, Modal } from '../../shared';
 import { NamespacesActions } from '../../store';
 import ValueRender from './ValueRender';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const ModalBody = styled.div`
   position: relative;
@@ -19,6 +25,19 @@ const ModalBody = styled.div`
       background-color: #dde4f0 !important;
     }
   }
+`;
+
+const PropertyContainer = styled.div`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+  white-space: nowrap;
+`;
+
+const TooltipContent = styled.div`
+  max-width: 500px;
+  white-space: normal;
+  word-wrap: break-word;
 `;
 
 export const ConfigControllerService = ({
@@ -73,8 +92,80 @@ export const ConfigControllerService = ({
 
   const COLUMNS = [
     {
-      label: 'Name',
-      renderCell: item => item?.displayName || item?.name,
+      label: 'Property',
+      renderCell: item => (
+        <div className="w-100 d-flex justify-content-between">
+          <PropertyContainer data-tooltip-id={`name-${item?.name}`}>
+            {item?.displayName || item?.name}
+          </PropertyContainer>
+          <ReactTooltip
+            id={`name-${item?.name}`}
+            place="left"
+            content={item?.displayName || item?.name}
+            style={{
+              maxWidth: '500px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 9999,
+            }}
+          />
+          <div
+            className="cursor-pointer mr-2"
+            data-tooltip-id={`tooltip-${item?.name}`}
+            aria-label={item?.description}
+          >
+            <QuestionMarkIcon />
+          </div>
+          <ReactTooltip
+            id={`tooltip-${item?.name}`}
+            place="right"
+            render={() => (
+              <TooltipContent>
+                {item?.description && <p>{item?.description}</p>}
+                {item?.defaultValue && (
+                  <p>
+                    <strong>Default Value:</strong> {item?.defaultValue}
+                  </p>
+                )}
+                {item?.expressionLanguageScope && (
+                  <p>
+                    <strong>Expression Language Scope:</strong>{' '}
+                    {item?.expressionLanguageScope}
+                  </p>
+                )}
+                {item.hasOwnProperty('sensitive') && (
+                  <p>
+                    <strong>Sensitive Property:</strong>{' '}
+                    {item?.sensitive ? 'true' : 'false'}
+                  </p>
+                )}
+                {item?.requiredCS && (
+                  <p>
+                    <strong>Requires Controller Service:</strong>{' '}
+                    {item?.requiredCS}
+                  </p>
+                )}
+                {item?.history?.length > 0 && (
+                  <p>
+                    <strong>History:</strong>{' '}
+                    <ul>
+                      {item?.history?.map(h => {
+                        return <li>{h}</li>;
+                      })}
+                    </ul>
+                  </p>
+                )}
+              </TooltipContent>
+            )}
+            style={{
+              maxWidth: '500px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 9999,
+            }}
+          />
+        </div>
+      ),
       width: '40%',
     },
     {
@@ -188,9 +279,7 @@ export const ConfigControllerService = ({
     }
     setUpdatedData([]);
   };
-  useEffect(() => {
-    setListPropertTableData(selectedItemFromList?.properties);
-  }, [selectedItemFromList?.properties]);
+
   useEffect(() => {
     reset({
       name: selectedItemFromList?.name || '',

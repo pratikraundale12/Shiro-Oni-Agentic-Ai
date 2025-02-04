@@ -44,22 +44,22 @@ const GreenActiveness = styled(ActiveTd)`
 `;
 
 const RedInactive = styled(ActiveTd)`
-  color: #808080;
+  color: ${props => props.redColor || '#808080'};
   text-transform: capitalize;
   &::after {
-    background-color: #808080;
+    background-color: ${props => props.redColor || '#808080'};
   }
 `;
 
 // Usage in your component
-export const StatusRender = ({ status }) => {
+export const StatusRender = ({ status, redColor }) => {
   const statusText = status?.toLowerCase();
   return (
     <Container>
       {['active', 'connected', 'success'].includes(statusText) ? (
         <GreenActiveness>{statusText}</GreenActiveness>
       ) : (
-        <RedInactive>{statusText}</RedInactive>
+        <RedInactive redColor={redColor}>{statusText}</RedInactive>
       )}
     </Container>
   );
@@ -67,4 +67,5 @@ export const StatusRender = ({ status }) => {
 
 StatusRender.propTypes = {
   status: PropTypes.string,
+  redColor: PropTypes.string,
 };

@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { QRIcons } from '../../assets';
 import { KDFM } from '../../constants';
 import { CheckboxField, InputField, Modal } from '../../shared';
+import { isEmpty, isEqual } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -30,6 +31,22 @@ const AddOrEditVariablesModal = ({
   const [isChecked, setIsChecked] = useState(false);
   const [valPlaceHolder, setValPlaceHolder] = useState('');
 
+  const isValueChanged = (obj1, obj2) => {
+    return isEqual(obj1, obj2);
+  };
+
+  const [isSaveBtnDisabled, setIsSaveBtnDisabled] = useState(
+    !isEmpty(editVariableData) && !isEmpty(formData)
+      ? isValueChanged(editVariableData, formData)
+      : false
+  );
+  useEffect(() => {
+    setIsSaveBtnDisabled(
+      !isEmpty(editVariableData) && !isEmpty(formData)
+        ? isValueChanged(editVariableData, formData)
+        : false
+    );
+  }, [formData]);
   useEffect(() => {
     isChecked
       ? setValPlaceHolder(KDFM.SET_EMPTY_STRING)
@@ -89,10 +106,15 @@ const AddOrEditVariablesModal = ({
       isOpen={isAddVariablesOpen?.isOpen}
       onRequestClose={closePopup}
       size="md"
-      secondaryButtonText={KDFM.BACK}
+      secondaryButtonText={KDFM.CANCEL}
       primaryButtonText={KDFM.SAVE}
       footerAlign="start"
       onSubmit={() => handleAddEditVariables(formData)}
+      primaryButtonDisabled={
+        !isEmpty(editVariableData) && !isEmpty(formData)
+          ? isSaveBtnDisabled
+          : false
+      }
     >
       <ModalBody className="modal-body">
         <form>

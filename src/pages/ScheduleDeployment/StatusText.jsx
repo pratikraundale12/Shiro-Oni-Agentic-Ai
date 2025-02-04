@@ -23,7 +23,7 @@ const StatusTexts = styled.div`
   font-family: 'Red Hat Display', sans-serif;
   font-size: 16px;
   font-weight: 500;
-  line-height: 19.36px;
+  // line-height: 19.36px;
   letter-spacing: -0.005em;
   text-align: left;
   color: ${props => props.color || '#b5b5bd'};

@@ -51,12 +51,7 @@ const StyledButton = styled.button`
   background: transparent;
 `;
 const TextColor = styled.div`
-  color: ${props =>
-    props.mode === 'upgrade'
-      ? '#ff7700'
-      : props.mode === 'downgrade'
-        ? '#ff7700'
-        : '#444445;'};
+  color: ${props => (props.mode ? '#444445' : '#ff7700;')};
   font-family: ${props => props.theme.fontRedHat};
   font-size: ${props => props.theme.size.lg};
   font-weight: 400;
@@ -174,7 +169,10 @@ export const ListScheduleDeployment = () => {
     return (
       <>
         <IconButton
-          onClick={() => handleEditClick(item)}
+          onClick={event => {
+            handleEditClick(item);
+            event.currentTarget.blur();
+          }}
           // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-edit-schedule`}`}
           className="pencil-icon-schedule-list"
@@ -200,7 +198,10 @@ export const ListScheduleDeployment = () => {
     return (
       <>
         <IconButton
-          onClick={() => handleRejectCrossClick(item)}
+          onClick={event => {
+            handleRejectCrossClick(item);
+            event.currentTarget.blur();
+          }}
           // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
           style={{ border: 'transparent' }}
@@ -248,7 +249,10 @@ export const ListScheduleDeployment = () => {
       <ActionTd>
         {' '}
         <IconButton
-          onClick={() => getDefSchedule(item)}
+          onClick={event => {
+            getDefSchedule(item);
+            event.currentTarget.blur();
+          }}
           data-tooltip-id={`${`tooltip-group-diff-schedule`}`}
         >
           <DiffIcon />
@@ -368,7 +372,18 @@ export const ListScheduleDeployment = () => {
   const pgNameDisplay = item => {
     return (
       <>
-        <TextColor data-tooltip-id={`${item?.id}name`} mode={item?.mode}>
+        <TextColor
+          data-tooltip-id={`${item?.id}name`}
+          mode={
+            item?.mode === 'deploy' &&
+            (item?.state === 'TIME_LAPSED' ||
+              item?.state === 'FAILED' ||
+              item?.state === 'PENDING' ||
+              item?.state === 'APPROVED' ||
+              item?.state === 'STOPPED' ||
+              item?.state === 'REJECTED')
+          }
+        >
           {item?.namespace_name}
         </TextColor>
         <ReactTooltip
@@ -415,7 +430,15 @@ export const ListScheduleDeployment = () => {
       ),
       renderCell: item => (
         <>
-          {['upgrade', 'downgrade'].includes(item?.mode) ? (
+          {item?.mode === 'deploy' &&
+          (item?.state === 'TIME_LAPSED' ||
+            item?.state === 'FAILED' ||
+            item?.state === 'PENDING' ||
+            item?.state === 'APPROVED' ||
+            item?.state === 'STOPPED' ||
+            item?.state === 'REJECTED') ? (
+            <span>{pgNameDisplay(item)}</span>
+          ) : (
             <button
               onClick={event => {
                 handleProcessGroupClick(item);
@@ -432,8 +455,6 @@ export const ListScheduleDeployment = () => {
             >
               {pgNameDisplay(item)}
             </button>
-          ) : (
-            <span>{pgNameDisplay(item)}</span>
           )}
         </>
       ),
@@ -617,7 +638,7 @@ export const ListScheduleDeployment = () => {
         columns={COLUMNS}
         sortFns={sortFns}
         statusOptions={STATUS_OPTIONS}
-        placeholder="Search Process Group or Flow Name"
+        placeholder="Search Process Group"
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
         sortingState={sortingState}

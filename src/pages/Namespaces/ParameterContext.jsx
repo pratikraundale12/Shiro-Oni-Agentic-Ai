@@ -176,9 +176,15 @@ const ParameterContext = ({
             key={item?.value}
             capitalizeText={false}
             text={(() => {
-              if (item?.sensitive && item?.value) {
+              if (
+                (item?.sensitive === true || item?.sensitive === 'true') &&
+                item?.value
+              ) {
                 return KDFM.SENSITIVE_VALUE_SET;
-              } else if (item?.sensitive && !item?.value) {
+              } else if (
+                (item?.sensitive === true || item?.sensitive === 'true') &&
+                !item?.value
+              ) {
                 return KDFM.NO_VALUE_SET;
               } else if (item?.value === '') {
                 return KDFM.EMPTY_STRING_SET;
@@ -195,7 +201,7 @@ const ParameterContext = ({
                 return KDFM.SENSITIVE_VALUE_SET;
               } else if (item?.value) {
                 return item.value;
-              } else if (item?.value === '') {
+              } else if (item?.value === '' && item?.check) {
                 return KDFM.EMPTY_STRING_SET;
               } else {
                 return KDFM.NO_VALUE_SET;
@@ -213,9 +219,10 @@ const ParameterContext = ({
             <>
               <button
                 className="border-0 bg-white"
-                onClick={() => {
+                onClick={event => {
                   setRefreshItem(item);
                   dispatch(NamespacesActions.setRefreshmodalOpen(true));
+                  event.currentTarget.blur();
                 }}
                 data-tooltip-id={`Reference-${item?.id}`}
                 aria-label="Reference"

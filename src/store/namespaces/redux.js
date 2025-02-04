@@ -969,6 +969,7 @@ const setAddPropertyCSResponse = (state, { payload }) => {
     addPropertyCSResponse: payload,
   };
 };
+
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(

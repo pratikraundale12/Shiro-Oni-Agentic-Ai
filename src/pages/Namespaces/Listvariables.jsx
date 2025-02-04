@@ -289,7 +289,7 @@ const Listvariables = ({
               />
               <Button
                 type="button"
-                disabled={!canWrite}
+                disabled={!canWrite || newlyAddVariables?.length <= 0 }
                 className="w-auto mt-2"
                 size="sm"
                 onClick={handleSubmit}

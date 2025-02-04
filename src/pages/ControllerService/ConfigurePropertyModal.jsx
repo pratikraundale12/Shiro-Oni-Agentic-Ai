@@ -144,7 +144,6 @@ const ConfigurePropertyModal = ({
   const valueString = watch('valueString');
   const dropDownOne = watch('dropdownOne');
   const dropDownTwoAddNewProperty = watch('dropdownTwoToAddNewProperty');
-
   const handleFormSubmit = data => {
     const payload = {
       id: selectedItemFromList?.id || controllerServiceId,
@@ -194,7 +193,7 @@ const ConfigurePropertyModal = ({
             sensitive: sensitiveState,
             empty_string_set: false,
             new_added: true,
-            value: valueString,
+            value: dropDownOne,
             isSelective: true,
             dropDownName: selectedName,
             allowableValues:
