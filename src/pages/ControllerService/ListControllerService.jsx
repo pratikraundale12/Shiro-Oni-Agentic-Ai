@@ -440,7 +440,7 @@ export const ListControllerService = () => {
           </>
         );
       },
-      width: '12%',
+      width: '11%',
       resize: true,
     },
   ];
