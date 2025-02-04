@@ -71,7 +71,10 @@ const StatusDiv = styled.div`
 
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
-  const { setState } = useGlobalContext();
+  const {
+    state: { search },
+    setState,
+  } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
@@ -121,6 +124,9 @@ export const ListNamespaces = () => {
           <>
             <li>Name : {item?.name}</li>
             {<li>ID : {item?.id}</li>}
+            {search.length > 0 && item?.parent && (
+              <li>Parent : {item?.parent}</li>
+            )}
           </>
         )}
       </>
