@@ -141,8 +141,8 @@ const SelectField = ({
         return option;
       } else {
         return {
-          label: option.name || option.type || 'Unknown',
-          value: option.id || option.value || 'Unknown',
+          label: option?.name || option?.type || 'Unknown',
+          value: option?.id || option?.value || 'Unknown',
           ...option,
         };
       }
@@ -305,7 +305,7 @@ const SelectField = ({
           isDisabled={disabled}
           styles={customStyles}
           options={sortedOptions}
-          placeholder={placeholder}
+          placeholder={placeholder || 'Select Value'}
           components={{
             ...animatedComponents,
             IndicatorSeparator: () => null,
@@ -322,7 +322,9 @@ const SelectField = ({
       <Controller
         control={control}
         name={name}
-        defaultValue={defaultValue ? defaultValue.value || defaultValue : null}
+        defaultValue={
+          sortedOptions.find(option => option.label === defaultValue) || null
+        }
         render={({ field: { onChange, value, ref } }) => (
           <>
             {label && (
@@ -341,9 +343,11 @@ const SelectField = ({
                   ? sortedOptions.filter(option =>
                       value?.includes(option.value ?? option?.id)
                     )
-                  : sortedOptions.find(
-                      option => option.value === value || option?.id === value
-                    ) || defaultValue
+                  : sortedOptions.find(option => option.value === value) ||
+                    sortedOptions.find(
+                      option => option.label === defaultValue
+                    ) ||
+                    ''
               }
               placeholder={placeholder}
               theme={theme.reactSelecttheme}
