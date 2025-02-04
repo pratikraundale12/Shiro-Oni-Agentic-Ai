@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Table, TextRender, UrlRender } from '../../../components';
 import { KDFM } from '../../../constants';
+import { isEmpty } from 'lodash';
 
 const Container = styled.div`
   .customTable {
@@ -42,7 +43,7 @@ const ClusterDetail = ({ data, columns }) => {
     <Container className="col-6">
       <Table
         data={[data || {}]}
-        columns={columns?.length > 0 ? columns : CLUSTERCOLUMNS}
+        columns={!isEmpty(columns) ? columns : CLUSTERCOLUMNS}
         className={'customTable'}
       />
     </Container>
