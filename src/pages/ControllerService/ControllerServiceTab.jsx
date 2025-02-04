@@ -2009,6 +2009,8 @@ const ControllerServiceTab = ({
           setListPropertTableData={setListPropertTableData}
           setUpdatedData={setUpdatedData}
           updatedData={updatedData}
+          selectedPropertyToEdit={selectedPropertyToEdit}
+          controllerServiceId={selectedItemFromList?.id}
         />
 
         <ModalWithIcon

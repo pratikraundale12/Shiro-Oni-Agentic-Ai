@@ -521,6 +521,8 @@ export const ListControllerService = () => {
         setUpdatedData={setUpdatedData}
         updatedData={updatedData}
         selectedItemFromList={selectedItemFromList}
+        selectedPropertyToEdit={selectedPropertyToEdit}
+        listPropertyTableData={listPropertyTableData}
       />
       <ModalWithIcon
         title={`${selectedItemFromList?.state !== 'DISABLED' || selectedItemFromList?.state !== 'DISABLING' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}

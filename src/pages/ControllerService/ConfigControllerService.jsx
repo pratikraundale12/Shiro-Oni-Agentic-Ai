@@ -31,7 +31,7 @@ export const ConfigControllerService = ({
   setSelectedPropertyToEdit,
   updatedData,
   setUpdatedData,
-  isFromControllerServiceTab,
+  isFromControllerServiceTab = false,
   handlePropertyUpdate,
   isFromExternalService = false,
   versionList,
@@ -196,8 +196,6 @@ export const ConfigControllerService = ({
       name: selectedItemFromList?.name || '',
     });
   }, [reset, isOpen]);
-  console.log(listPropertyTableData, 'listPropertyTableData>>>>>>>>>');
-  console.log(updatedData, 'updatedData');
   return (
     <Modal
       title={` ${selectedItemFromList?.name} : Properties`}
@@ -229,18 +227,20 @@ export const ConfigControllerService = ({
           </div>
 
           <div className=" col-auto mt-4 pt-2">
-            <Button
-              type="button"
-              onClick={() =>
-                dispatch(
-                  NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(
-                    true
+            {!isFromControllerServiceTab && (
+              <Button
+                type="button"
+                onClick={() =>
+                  dispatch(
+                    NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(
+                      true
+                    )
                   )
-                )
-              }
-            >
-              <div className="h2 mb-0">+</div>
-            </Button>
+                }
+              >
+                <div className="h2 mb-0">+</div>
+              </Button>
+            )}
           </div>
         </div>
         <Table

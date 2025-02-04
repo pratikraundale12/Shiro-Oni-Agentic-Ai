@@ -37,8 +37,11 @@ const PropertyDropdownModal = ({
   const filterData = updatedData.filter(item => {
     return item.name != selectedPropertyToEdit.name;
   });
+  const isModalOpen = useSelector(
+    NamespacesSelectors.getAddPropertyDropdownModal
+  );
   useEffect(() => {
-    if (selectedPropertyToEdit?.allowableValues) {
+    if (selectedPropertyToEdit?.allowableValues && isModalOpen) {
       const optionArrayToUpdate = selectedPropertyToEdit?.allowableValues?.map(
         element => ({
           value: element?.allowableValue?.value,
@@ -47,11 +50,8 @@ const PropertyDropdownModal = ({
       );
       setPropertyOptionsArray(optionArrayToUpdate);
     }
-  }, [selectedPropertyToEdit]);
+  }, [selectedPropertyToEdit, isModalOpen]);
 
-  const isModalOpen = useSelector(
-    NamespacesSelectors.getAddPropertyDropdownModal
-  );
   const newPropertyToAdd = useSelector(
     NamespacesSelectors.getNewProprtyToAddControllerService
   );
@@ -77,10 +77,13 @@ const PropertyDropdownModal = ({
   }, [propertyOptionOnDeploy]);
   const handleClose = () => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(false));
+    setPropertyOptionsArray([]);
+    setPropertyOptionsDeploy([]);
   };
   const { handleSubmit, control, watch, reset } = useForm({});
   const selectedNewValue = watch('newService');
   const selectedProperty = watch('value');
+
   const handleFormSubmit = data => {
     setUpdatedData(() => [
       ...filterData,
