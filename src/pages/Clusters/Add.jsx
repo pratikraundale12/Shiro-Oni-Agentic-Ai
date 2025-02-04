@@ -485,6 +485,7 @@ export const Add = () => {
   const editClusterData = async () => {
     const payload = {
       name: clusterData?.clusterName,
+      nifi_url: clusterData?.nifiUrl,
       logs_url:
         clusterData?.logs_url?.length === 0 ? null : clusterData?.logs_url,
       metrics_url:

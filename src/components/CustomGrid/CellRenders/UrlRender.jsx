@@ -31,14 +31,9 @@ const StyledLink = styled.a`
 export const UrlRender = ({
   url,
   tooltipPlacement = 'bottom',
-  type,
   copy_btn_tooltip,
   tooltipId,
 }) => {
-  const linkIconTooltipId =
-    tooltipId?.length > 0 ? tooltipId : `link-tooltip-${url}`;
-  const copyIconTooltipId =
-    tooltipId?.length > 0 ? `copy-tooltip-${tooltipId}` : `copy-tooltip-${url}`;
   return (
     <Container>
       <TextRender
@@ -48,19 +43,22 @@ export const UrlRender = ({
       />
       <Container>
         <StyledLink
-          disabled={!url?.length}
+          disabled={isEmpty(url)}
           href={url}
           target="_blank"
-          data-tooltip-id={linkIconTooltipId}
+          data-tooltip-id={`link-${tooltipId}`}
         >
           <OpenLinkIcon />
         </StyledLink>
-        <StyledLink disabled={!url?.length} data-tooltip-id={copyIconTooltipId}>
+        <StyledLink
+          disabled={isEmpty(url)}
+          data-tooltip-id={`copy-${tooltipId}`}
+        >
           <CopyToClipboard copyItem={url} />
         </StyledLink>
       </Container>
       <ReactTooltip
-        id={linkIconTooltipId}
+        id={`link-${tooltipId}`}
         place="bottom"
         effect="solid"
         content={'Navigate to URL'}
@@ -72,11 +70,11 @@ export const UrlRender = ({
         }}
       />
       <ReactTooltip
-        id={copyIconTooltipId}
+        id={`copy-${tooltipId}`}
         place="bottom"
         effect="solid"
         // content={'Copy URL '}
-        content={`${!isEmpty(copy_btn_tooltip) ? copy_btn_tooltip : type === 'Registry' ? 'Copy registry URL' : 'Copy cluster URL'}`}
+        content={copy_btn_tooltip}
         style={{
           width: '150px',
           whiteSpace: 'normal',

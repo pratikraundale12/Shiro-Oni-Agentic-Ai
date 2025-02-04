@@ -22,6 +22,7 @@ const ClusterDetail = ({ data, columns }) => {
       label: KDFM.CLUSTER_URL,
       renderCell: item => (
         <UrlRender
+          tooltipId={'cluster-url-tooltip'}
           key={item.nifi_url}
           url={
             item?.nifi_url?.includes('/nifi')
@@ -30,6 +31,7 @@ const ClusterDetail = ({ data, columns }) => {
           }
           tooltipPlacement="top"
           type="Cluster"
+          copy_btn_tooltip={'Copy Cluster URL'}
         />
       ),
       width: '75%',

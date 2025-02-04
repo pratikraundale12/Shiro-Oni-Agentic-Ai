@@ -372,7 +372,7 @@ export const Grid = ({
       label: KDFM.METRICS_URL,
       renderCell: item => (
         <UrlRender
-          tooltipId={`metrix_url${item?.metrics_url}`}
+          tooltipId={`metrics-url-tootip`}
           url={item?.metrics_url}
           tooltipPlacement="top"
           copy_btn_tooltip={'Copy Metrics URL'}
@@ -387,7 +387,7 @@ export const Grid = ({
       label: KDFM.LOGS_URL,
       renderCell: item => (
         <UrlRender
-          tooltipId={`logs_url${item?.logs_url}`}
+          tooltipId={`logs-url-tooltip`}
           url={item?.logs_url}
           tooltipPlacement="top"
           copy_btn_tooltip={'Copy Logs URL'}

@@ -158,7 +158,13 @@ export const ListClusters = () => {
           ? item.nifi_url
           : `${item.nifi_url}/nifi`;
 
-        return <UrlRender url={updatedUrl} />;
+        return (
+          <UrlRender
+            tooltipId={'cluster-url-tooltip'}
+            copy_btn_tooltip={'Copy cluster URL'}
+            url={updatedUrl}
+          />
+        );
       },
       width: '20%',
       resize: true,
@@ -180,6 +186,7 @@ export const ListClusters = () => {
       renderCell: item => {
         return (
           <UrlRender
+            tooltipId={'metrics-url-tooltip'}
             copy_btn_tooltip={'Copy Metrics URL'}
             url={item.metrics_url}
           />

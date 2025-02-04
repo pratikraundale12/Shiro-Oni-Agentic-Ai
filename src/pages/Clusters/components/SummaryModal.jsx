@@ -25,7 +25,6 @@ const ClusterDetailsContainer = styled.div`
   background-color: #f5f7fa;
   border-radius: 16px;
   padding: 14px 16px;
-  // min-height: 120px;
   width: 100%;
   margin-bottom: 18px;
 `;
@@ -33,7 +32,6 @@ const ClusterDetailsContainer = styled.div`
 const Row = styled.div`
   display: flex;
   flex-wrap: wrap;
-  // margin-top: 10px;
   width: 100%;
 `;
 
@@ -74,7 +72,6 @@ const ClusterName = styled.div`
   color: #7a7a7a;
   white-space: nowrap;
   max-width: 100%;
-  // margin-top: 1rem;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
