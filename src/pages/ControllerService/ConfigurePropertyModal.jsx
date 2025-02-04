@@ -29,7 +29,7 @@ const ConfigurePropertyModal = ({
   const isModalOpen = useSelector(
     NamespacesSelectors.getIsConfigurePropertyControllerServiceModalOpen
   );
-  const { register, handleSubmit, reset, watch } = useForm({});
+  const { register, handleSubmit, reset, watch } = useForm();
   const propertyName = watch('name');
   const propertyValue = watch('value');
   const handleFormSubmit = data => {

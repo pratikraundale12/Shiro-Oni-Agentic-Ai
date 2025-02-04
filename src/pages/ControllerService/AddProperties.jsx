@@ -26,9 +26,7 @@ const AddProperties = ({
   setUpdatedData,
   updatedData,
 }) => {
-  const { register, handleSubmit, control, reset, setValue, watch } = useForm(
-    {}
-  );
+  const { register, handleSubmit, control, reset, setValue, watch } = useForm();
   const filterData = updatedData.filter(item => {
     return item.name != selectedPropertyToEdit.name;
   });
