@@ -539,7 +539,6 @@ export const ListControllerService = () => {
         csList={true}
         isResetNotRequired={isResetNotRequired}
       />
-      {/* gear click modal */}
       <ConfigControllerService
         isOpen={isListProprtyModel}
         onClose={handleCloseModal}
