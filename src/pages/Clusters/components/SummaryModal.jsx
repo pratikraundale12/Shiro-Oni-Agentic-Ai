@@ -20,6 +20,7 @@ import {
   updateRegistry,
 } from '../../../store/index1';
 import { FullPageLoader } from '../../../components';
+import { isEmpty } from 'lodash';
 
 const ClusterDetailsContainer = styled.div`
   background-color: #f5f7fa;
@@ -237,7 +238,7 @@ export const SummaryModal = ({
         : `${clusterData.nifiUrl}/nifi`,
       tooltipContent: 'Copy Cluster URL',
     },
-    ...(clusterData?.metrics_url?.length > 0
+    ...(!isEmpty(clusterData?.metrics_url)
       ? [
           {
             entityUrlLabel: KDFM.METRICS_URL,
@@ -247,7 +248,7 @@ export const SummaryModal = ({
           },
         ]
       : []),
-    ...(clusterData?.logs_url?.length > 0
+    ...(!isEmpty(clusterData?.logs_url)
       ? [
           {
             entityUrlLabel: KDFM.LOGS_URL,
