@@ -12,6 +12,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  margin-right: 5px;
 `;
 
 const StyledLink = styled.a`
@@ -41,22 +42,24 @@ export const UrlRender = ({
         capitalizeText={false}
         tooltipPlacement={tooltipPlacement}
       />
-      <Container>
-        <StyledLink
-          disabled={isEmpty(url)}
-          href={url}
-          target="_blank"
-          data-tooltip-id={`link-${tooltipId}`}
-        >
-          <OpenLinkIcon />
-        </StyledLink>
-        <StyledLink
-          disabled={isEmpty(url)}
-          data-tooltip-id={`copy-${tooltipId}`}
-        >
-          <CopyToClipboard copyItem={url} />
-        </StyledLink>
-      </Container>
+      {!isEmpty(url) && (
+        <Container>
+          <StyledLink
+            disabled={isEmpty(url)}
+            href={url}
+            target="_blank"
+            data-tooltip-id={`link-${tooltipId}`}
+          >
+            <OpenLinkIcon />
+          </StyledLink>
+          <StyledLink
+            disabled={isEmpty(url)}
+            data-tooltip-id={`copy-${tooltipId}`}
+          >
+            <CopyToClipboard copyItem={url} />
+          </StyledLink>
+        </Container>
+      )}
       <ReactTooltip
         id={`link-${tooltipId}`}
         place="bottom"
