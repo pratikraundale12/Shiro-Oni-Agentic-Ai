@@ -192,6 +192,9 @@ const VariableTab = () => {
   const closeAddVariablesModal = () => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
   };
+  const sortByName = array => {
+    return [...array].sort((a, b) => a.name.localeCompare(b.name));
+  };
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -207,7 +210,7 @@ const VariableTab = () => {
                 toggleCollapsible={() => handleToggle(item?.pgId, index)}
               >
                 <Table
-                  data={item.variables}
+                  data={sortByName(item?.variables)}
                   columns={VARIABLE_COLUMNS}
                   className={'variables-table'}
                 />

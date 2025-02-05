@@ -410,6 +410,9 @@ const ParameterContext = ({
   const pcLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchParameterContext')
   );
+  const sortByName = array => {
+    return [...array].sort((a, b) => a.name.localeCompare(b.name));
+  };
   return (
     <>
       <FullPageLoader loading={pcLoading} />
@@ -424,7 +427,7 @@ const ParameterContext = ({
             >
               <ParameterTable>
                 <Table
-                  data={tableStateData}
+                  data={sortByName(tableStateData)}
                   columns={COLUMNS}
                   className={'parameter-context-table'}
                 />

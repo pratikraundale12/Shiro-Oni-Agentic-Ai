@@ -130,6 +130,7 @@ const SelectField = ({
   showCircleIcon = false,
   defaultValue = null,
   menuHeight = '150px',
+  isFromAddNewService,
   ...props
 }) => {
   const animatedComponents = makeAnimated();
@@ -343,11 +344,13 @@ const SelectField = ({
                   ? sortedOptions.filter(option =>
                       value?.includes(option.value ?? option?.id)
                     )
-                  : sortedOptions.find(option => option.value === value) ||
-                    sortedOptions.find(
-                      option => option.label === defaultValue
-                    ) ||
-                    ''
+                  : isFromAddNewService
+                    ? value
+                    : sortedOptions.find(option => option.value === value) ||
+                      sortedOptions.find(
+                        option => option.label === defaultValue
+                      ) ||
+                      ''
               }
               placeholder={placeholder}
               theme={theme.reactSelecttheme}

@@ -268,6 +268,12 @@ const Listvariables = ({
   };
 
   const toggleCollapsible = () => setIsTableOpen(!isTableOpen);
+  console.log('variablesData--', variablesData);
+  const sortByVariableName = array => {
+    return [...array].sort((a, b) =>
+      a.variable.name.localeCompare(b.variable.name)
+    );
+  };
 
   return (
     <>
@@ -282,14 +288,18 @@ const Listvariables = ({
               isAddBtnVisible={false}
             >
               <Table
-                data={variablesData || []}
+                data={
+                  !isEmpty(variablesData)
+                    ? sortByVariableName(variablesData)
+                    : []
+                }
                 columns={COLUMNS}
                 className={'variables-table'}
                 loading={variableLoadingStateAPI}
               />
               <Button
                 type="button"
-                disabled={!canWrite || newlyAddVariables?.length <= 0 }
+                disabled={!canWrite || newlyAddVariables?.length <= 0}
                 className="w-auto mt-2"
                 size="sm"
                 onClick={handleSubmit}
