@@ -25,10 +25,12 @@ const AddOrEditVariablesModal = ({
   variablesDetailsData,
   editVariableData,
 }) => {
+  console.log('editVariableData--', editVariableData);
   const [formData, setFormData] = useState(
     isAddVariablesOpen?.mode === 'edit' ? editVariableData : DEFAULT_VALUES
   );
-  const [isChecked, setIsChecked] = useState(false);
+  console.log('formData---', formData);
+  const [isChecked, setIsChecked] = useState(editVariableData?.check);
   const [valPlaceHolder, setValPlaceHolder] = useState('');
 
   const isValueChanged = (obj1, obj2) => {
@@ -65,13 +67,9 @@ const AddOrEditVariablesModal = ({
     const { checked } = event.target;
     setFormData(prev => ({
       ...prev,
+      value: checked ? '' : editVariableData?.value,
       check: checked,
     }));
-    checked &&
-      setFormData(prev => ({
-        ...prev,
-        value: '',
-      }));
     setIsChecked(checked);
   };
 
@@ -141,6 +139,7 @@ const AddOrEditVariablesModal = ({
             name="check"
             label={KDFM.SET_EMPTY_STRING}
             onCheckBoxChange={handleCheckboxChange}
+            defaultChecked={formData?.check}
           />
         </form>
       </ModalBody>

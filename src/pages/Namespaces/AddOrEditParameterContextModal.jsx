@@ -122,20 +122,24 @@ const AddOrEditParameterContextModal = ({
 
   const handleCheckboxChange = event => {
     const { checked } = event.target;
+    console.log('checked--', checked);
     setIsChecked(checked);
     setFormData(prev => ({
       ...prev,
-      value: checked ? '' : prev.value,
+      value: checked ? '' : pcEditData?.value,
       check: checked,
     }));
   };
+  console.log('formdata-', formData);
+  console.log('pcEditData---', pcEditData);
+
   useEffect(() => {
     setIsSaveBtnDisabled(
       !isEmpty(pcEditData) && !isEmpty(formData)
         ? isValueChanged(pcEditData, formData)
         : false
     );
-  }, [formData]);
+  }, [formData, isChecked]);
   const handleInputChange = data => {
     const { name, value } = data.target;
     setFormData(prev => ({
@@ -147,6 +151,7 @@ const AddOrEditParameterContextModal = ({
   useEffect(() => {
     isChecked;
     setValPlaceHolder('');
+    // formData?.sensitive && setValPlaceHolder('Sensitive Value Set');
   }, [isChecked]);
 
   return (
@@ -194,6 +199,13 @@ const AddOrEditParameterContextModal = ({
                   placeholder={valPlaceHolder}
                   disabled={isChecked}
                   value={isChecked ? '' : formData.value}
+                  // value={
+                  //   isChecked
+                  //     ? ''
+                  //     : formData?.value?.includes('*')
+                  //       ? ''
+                  //       : formData?.value
+                  // }
                   onChange={e => handleInputChange(e)}
                 />
               </InputBox>

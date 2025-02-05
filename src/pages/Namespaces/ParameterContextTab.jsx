@@ -100,7 +100,11 @@ const ParameterContextTab = () => {
 
   const handleEditClick = item => {
     setIsAddPcOpen({ isOpen: true, mode: 'edit' });
-    setCurrentEditData(item);
+    setCurrentEditData({
+      check: item?.value === '' ? true : false,
+      value: item?.value ? item?.value : null,
+      ...item,
+    });
   };
 
   const truncateString = (str, maxLength) => {

@@ -6,6 +6,7 @@ import { CheckboxField, InputField, Modal } from '../../shared';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { KDFM } from '../../constants';
+import { isEmpty } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -31,25 +32,39 @@ const AddProperties = ({
     return item.name != selectedPropertyToEdit.name;
   });
   const handleFormSubmit = data => {
+    console.log('selectedPropertyToEdit--', selectedPropertyToEdit);
+    console.log('data--', data, check);
     setUpdatedData(() => {
       return [
         ...filterData,
         {
           name: selectedPropertyToEdit.name,
-          value: data.value,
+          value:
+            isEmpty(data?.value) && !check
+              ? selectedPropertyToEdit.value
+              : data.value,
           sensitive: false,
         },
       ];
     });
 
+    console.log('updatedData---', updatedData);
+
     setListPropertTableData(prevData =>
       prevData.map(item =>
         item.name === selectedPropertyToEdit.name
-          ? { ...item, value: data?.value, empty_string_set: data?.check }
+          ? {
+              ...item,
+              value:
+                isEmpty(data?.value) && !check
+                  ? selectedPropertyToEdit.value
+                  : data.value,
+              empty_string_set: data?.check,
+            }
           : item
       )
     );
-    toast.success(KDFM.PROPERTY_EDITED);
+    !(isEmpty(data?.value) && !check) && toast.success(KDFM.PROPERTY_EDITED);
     setIsAddpropertiesModalOpen(false);
   };
   const check = useWatch({
@@ -60,6 +75,8 @@ const AddProperties = ({
   useEffect(() => {
     if (check) {
       setValue('value', '');
+    } else if (!check) {
+      setValue('value', selectedPropertyToEdit?.value);
     }
   }, [check, setValue]);
   useEffect(() => {
@@ -70,6 +87,12 @@ const AddProperties = ({
   }, [reset, isOpen]);
 
   const propertyValue = watch('value');
+
+  // useEffect(() => {
+  //   if (isEmpty(propertyValue) && !check) {
+  //     setValue('value', null);
+  //   }
+  // }, [check, propertyValue]);
 
   return (
     <div>
@@ -82,9 +105,7 @@ const AddProperties = ({
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
         primaryButtonDisabled={
-          (propertyValue === selectedPropertyToEdit?.value ||
-            (propertyValue === '' && !check)) ??
-          false
+          propertyValue === selectedPropertyToEdit?.value ?? false
         }
       >
         <ModalBody className="modal-body">
