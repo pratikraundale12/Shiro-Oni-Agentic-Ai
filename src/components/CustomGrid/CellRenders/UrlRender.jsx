@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { OpenLinkIcon } from '../../../assets';
 import CopyToClipboard from '../../../shared/CopyToClipboard';
 import { TextRender } from './TextRender';
+import { isEmpty } from 'lodash';
 
 const Container = styled.div`
   display: flex;
@@ -16,20 +17,23 @@ const Container = styled.div`
 const StyledLink = styled.a`
   min-width: 32px;
   min-height: 32px;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 100%;
-  background-color: ${props => props.theme.colors.white};
-  border: 1px solid ${props => props.theme.colors.border};
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
+  background-color: ${({ theme }) => theme.colors.white};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  opacity: ${({ disabled }) => (disabled ? 0.4 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
 `;
 
-export const UrlRender = ({ url, tooltipPlacement = 'bottom', type }) => {
+export const UrlRender = ({
+  url,
+  tooltipPlacement = 'bottom',
+  copy_btn_tooltip,
+  tooltipId,
+}) => {
   return (
     <Container>
       <TextRender
@@ -38,15 +42,23 @@ export const UrlRender = ({ url, tooltipPlacement = 'bottom', type }) => {
         tooltipPlacement={tooltipPlacement}
       />
       <Container>
-        <StyledLink href={url} target="_blank" data-tooltip-id={`${url}1`}>
+        <StyledLink
+          disabled={isEmpty(url)}
+          href={url}
+          target="_blank"
+          data-tooltip-id={`link-${tooltipId}`}
+        >
           <OpenLinkIcon />
         </StyledLink>
-        <span data-tooltip-id={`${url}copy-board`}>
+        <StyledLink
+          disabled={isEmpty(url)}
+          data-tooltip-id={`copy-${tooltipId}`}
+        >
           <CopyToClipboard copyItem={url} />
-        </span>
+        </StyledLink>
       </Container>
       <ReactTooltip
-        id={`${url}1`}
+        id={`link-${tooltipId}`}
         place="bottom"
         effect="solid"
         content={'Navigate to URL'}
@@ -58,11 +70,11 @@ export const UrlRender = ({ url, tooltipPlacement = 'bottom', type }) => {
         }}
       />
       <ReactTooltip
-        id={`${url}copy-board`}
+        id={`copy-${tooltipId}`}
         place="bottom"
         effect="solid"
         // content={'Copy URL '}
-        content={`${type === 'Registry' ? 'Copy registry URL' : 'Copy cluster URL'}`}
+        content={copy_btn_tooltip}
         style={{
           width: '150px',
           whiteSpace: 'normal',
@@ -78,4 +90,6 @@ UrlRender.propTypes = {
   url: PropTypes.string.isRequired,
   tooltipPlacement: PropTypes.string,
   type: PropTypes.string,
+  copy_btn_tooltip: PropTypes.string,
+  tooltipId: PropTypes.string,
 };

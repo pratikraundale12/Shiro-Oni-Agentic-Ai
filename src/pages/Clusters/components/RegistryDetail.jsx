@@ -22,6 +22,7 @@ const RegistryDetail = ({ data }) => {
       label: KDFM.REGISTRY_URL,
       renderCell: item => (
         <UrlRender
+          tooltipId={'registry-url-tooltip'}
           key={item.registry_url}
           url={
             item?.registry_url?.includes('/nifi-registry')
@@ -30,6 +31,7 @@ const RegistryDetail = ({ data }) => {
           }
           tooltipPlacement="top"
           type="Registry"
+          copy_btn_tooltip={'Copy registry URL'}
         />
       ),
       width: '75%',

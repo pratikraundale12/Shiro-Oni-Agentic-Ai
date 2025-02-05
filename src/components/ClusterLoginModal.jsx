@@ -120,8 +120,8 @@ export const ClusterLoginModal = () => {
           dispatch(AuthenticationActions.setDestinationFlag());
           dispatch(
             NamespacesActions.setSelectedDestCluster({
-              label: response.cluster_name,
-              value: response.cluster_id,
+              label: response?.cluster_name,
+              value: response?.cluster_id,
             })
           );
           dispatch(NamespacesActions.checkDestCluster());
@@ -190,7 +190,7 @@ export const ClusterLoginModal = () => {
       }
     }
     localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(updatedCluster));
-    const clusterName = clusterData.find(
+    const clusterName = updatedCluster?.find(
       cluster => cluster?.id == getValues()?.cluster_id
     )?.name;
 
