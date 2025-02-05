@@ -308,7 +308,7 @@ export const namespacesAPI = api => {
       `controller-services/${clusterId}/service/${controllerId}/descriptor?propertyName=${propertyName}&sensitive=${sensitive || false}`
     );
   };
-  
+
   return {
     fetchNamespaces,
     checkDestCluster,
