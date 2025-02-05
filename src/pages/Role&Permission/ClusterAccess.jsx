@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import styled from 'styled-components';
 import { SmallSearchIcon, TodoIcon } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { Button, CheckboxField, SelectField } from '../../shared';
@@ -19,7 +19,6 @@ import {
   RolesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
-import { toast } from 'react-toastify';
 
 const Flex = styled.div`
   display: flex;
@@ -146,7 +145,6 @@ export const ClusterAccess = () => {
   const clusters = useSelector(ClustersSelectors.getClusters);
   const roleClusters = useSelector(RolesSelectors.getRoleClusters);
   const selectedRole = useSelector(RolesSelectors.getSelectedRole);
-  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateRoleClusters')
@@ -216,11 +214,6 @@ export const ClusterAccess = () => {
       ),
     },
   ];
-
-  const roleOptions =
-    roles && roles.length > 0
-      ? roles.filter(item => item.name !== currentUser?.role)
-      : [];
 
   const path = [
     {
@@ -388,7 +381,7 @@ export const ClusterAccess = () => {
           <StyledSelectField
             size="sm"
             placeholder="Select Role"
-            options={roleOptions}
+            options={roles}
             backgroundColor={theme.colors.lightGrey}
             onChange={onChange}
           />

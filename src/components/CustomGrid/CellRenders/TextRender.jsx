@@ -12,7 +12,6 @@ const TextColor = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  z-index: 2;
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
   }
