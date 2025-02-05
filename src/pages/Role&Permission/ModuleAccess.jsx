@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { difference, isEmpty, unionBy, uniqBy } from 'lodash';
+import { toast } from 'react-toastify';
 import {
   DeleteDustbinIcon,
   GreenRightCircleIcon,
@@ -31,7 +32,6 @@ import {
 } from '../../store';
 import { theme } from '../../styles';
 import ListRoleModal from './ListRoleModal';
-import { toast } from 'react-toastify';
 
 const Flex = styled.div`
   display: flex;
@@ -190,7 +190,6 @@ export const ModuleAccess = () => {
   const roles = useSelector(RolesSelectors.getRoles);
   const selectedRole = useSelector(RolesSelectors.getSelectedRole);
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
-  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const openRoleModal = useSelector(RolesSelectors.getRoleModal);
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateRolesPolicies')
@@ -340,11 +339,6 @@ export const ModuleAccess = () => {
         ),
     },
   ];
-
-  const roleOptions =
-    roles && roles.length > 0
-      ? roles.filter(item => item.name !== currentUser?.role)
-      : [];
 
   const isUpdated = () => {
     const [added, remove] = getDifference(rolePolicies, updatedRolePolicies);
@@ -527,7 +521,7 @@ export const ModuleAccess = () => {
           <StyledSelectField
             size="sm"
             placeholder="Select Role"
-            options={roleOptions}
+            options={roles}
             backgroundColor={theme.colors.lightGrey}
             onChange={onChange}
           />
