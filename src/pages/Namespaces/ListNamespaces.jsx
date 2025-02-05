@@ -83,9 +83,6 @@ export const ListNamespaces = () => {
     sortKey: 'name',
     reverse: false,
   };
-  const {
-    state: { search },
-  } = useGlobalContext();
 
   const handleScheduleClick = item => {
     dispatch(SchedularActions.setScheduleFromList(true));
