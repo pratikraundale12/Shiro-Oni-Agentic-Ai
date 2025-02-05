@@ -295,7 +295,7 @@ export const SummaryModal = ({
                     <Title>{data?.entityNameLabel}</Title>
                     <ClusterName>{data?.entityNameValue}</ClusterName>
                   </Info>
-                  <Info width={data?.width ? data?.width : '40%'}>
+                  <Info width={data?.width || '40%'}>
                     <Title>{data?.entityUrlLabel}</Title>
                     <Flex className="d-flex align-items-center">
                       <TextEllipses data-tooltip-id={data?.entityUrlValue}>
