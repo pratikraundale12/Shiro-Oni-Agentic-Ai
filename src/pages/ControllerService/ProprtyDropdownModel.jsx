@@ -237,6 +237,7 @@ const PropertyDropdownModal = ({
           selectedProperty === selectedPropertyToEdit?.dropDownName ||
           selectedProperty?.value === selectedPropertyToEdit?.value ||
           selectedProperty === selectedPropertyToEdit?.value ||
+          selectedProperty?.label === selectedPropertyToEdit?.dropDownName ||
           addNewProperty
         }
         noScroll={true}

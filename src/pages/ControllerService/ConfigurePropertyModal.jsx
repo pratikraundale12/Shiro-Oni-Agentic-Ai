@@ -89,7 +89,7 @@ const ConfigurePropertyModal = ({
   useEffect(() => {
     const responseOptions1 =
       propertyResponse?.propertyDescriptor?.allowableValues &&
-      propertyResponse?.propertyDescriptor?.allowableValues.length > 0 &&
+      !isEmpty(propertyResponse?.propertyDescriptor?.allowableValues) &&
       propertyResponse?.propertyDescriptor?.allowableValues?.map(ele => ({
         label: ele?.allowableValue?.displayName,
         value: ele?.allowableValue?.value,
@@ -101,7 +101,7 @@ const ConfigurePropertyModal = ({
 
   const optionsToNewPropertyAdd =
     newPropertyToAdd &&
-    newPropertyToAdd.length > 0 &&
+    !isEmpty(newPropertyToAdd) &&
     newPropertyToAdd?.map(element => ({
       value: element?.name,
       label: element?.name,
@@ -246,6 +246,7 @@ const ConfigurePropertyModal = ({
     setAddNewServiceDropdownDisplay(false);
   };
   const handleAddNewServiceOption = () => {
+    setValue('dropdownOne', null);
     setAddNewServiceDropdownDisplay(true);
   };
   const handleCancelToAddService = () => {
