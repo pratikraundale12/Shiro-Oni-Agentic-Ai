@@ -3,13 +3,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { Table, TextRender, UrlRender } from '../../../components';
 import { KDFM } from '../../../constants';
+import { isEmpty } from 'lodash';
 
 const Container = styled.div`
   .customTable {
     height: auto;
   }
 `;
-const ClusterDetail = ({ data }) => {
+const ClusterDetail = ({ data, columns }) => {
   const CLUSTERCOLUMNS = [
     {
       label: KDFM.CLUSTER_NAME,
@@ -22,6 +23,7 @@ const ClusterDetail = ({ data }) => {
       label: KDFM.CLUSTER_URL,
       renderCell: item => (
         <UrlRender
+          tooltipId={'cluster-url-tooltip'}
           key={item.nifi_url}
           url={
             item?.nifi_url?.includes('/nifi')
@@ -30,6 +32,7 @@ const ClusterDetail = ({ data }) => {
           }
           tooltipPlacement="top"
           type="Cluster"
+          copy_btn_tooltip={'Copy Cluster URL'}
         />
       ),
       width: '75%',
@@ -40,7 +43,7 @@ const ClusterDetail = ({ data }) => {
     <Container className="col-6">
       <Table
         data={[data || {}]}
-        columns={CLUSTERCOLUMNS}
+        columns={!isEmpty(columns) ? columns : CLUSTERCOLUMNS}
         className={'customTable'}
       />
     </Container>
@@ -49,6 +52,7 @@ const ClusterDetail = ({ data }) => {
 
 ClusterDetail.propTypes = {
   data: PropTypes.object.isRequired,
+  columns: PropTypes.array,
 };
 
 export default ClusterDetail;

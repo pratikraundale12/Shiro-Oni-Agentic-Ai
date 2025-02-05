@@ -13,6 +13,8 @@ export const CLUSTER_CONSTANTS = {
   ENTER_CLUSTER_NAME: 'Enter your Cluster Name',
   ENTER_REGISTRY_NAME: 'Enter your Registry Name',
   ENTER_NIFI_URL: 'Enter your NiFi URL',
+  ENTER_LOGS_URL: 'Enter your Logs URL',
+  ENTER_METRICS_URL: 'Enter your Metrics URL',
   ENTER_REGISTRY_URL: 'Enter your Registry URL',
   PFX_TEST_FAIL_MESSAGE: arg =>
     `We encountered an issue while testing your ${arg}. Please check if your file is correct`,
