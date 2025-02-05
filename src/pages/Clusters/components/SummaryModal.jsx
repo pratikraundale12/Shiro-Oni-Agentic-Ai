@@ -237,6 +237,7 @@ export const SummaryModal = ({
         ? clusterData.nifiUrl
         : `${clusterData.nifiUrl}/nifi`,
       tooltipContent: 'Copy Cluster URL',
+      tooltipId: 'cluster-url-tooltip-id',
     },
     {
       title: KDFM.REGISTRY_DETAILS,
@@ -249,6 +250,7 @@ export const SummaryModal = ({
         ? registryData?.registryUrl || registryData?.registry_url
         : `${registryData?.registryUrl || registryData?.registry_url}/nifi-registry`,
       tooltipContent: 'Copy Registry URL',
+      tooltipId: 'registry-url-tooltip-id',
     },
     ...(!isEmpty(clusterData?.metrics_url)
       ? [
@@ -257,7 +259,8 @@ export const SummaryModal = ({
             entityUrlValue: clusterData.metrics_url,
             width: '100%',
             tooltipContent: 'Copy Metrics URL',
-            linkMaxWidth: '24rem',
+            linkMaxWidth: '24.3rem',
+            tooltipId: 'metrics-url-tooltip-id',
           },
         ]
       : []),
@@ -268,7 +271,8 @@ export const SummaryModal = ({
             entityUrlValue: clusterData.logs_url,
             width: '100%',
             tooltipContent: 'Copy Logs URL',
-            linkMaxWidth: '24rem',
+            linkMaxWidth: '24.3rem',
+            tooltipId: 'logs-url-tooltip-id',
           },
         ]
       : []),
@@ -306,16 +310,14 @@ export const SummaryModal = ({
                       >
                         {data?.entityUrlValue}
                       </TextEllipses>
-                      <span
-                        data-tooltip-id={`copy-board-summary-modal${data?.entityUrlValue}`}
-                      >
+                      <span data-tooltip-id={data?.tooltipId}>
                         <CopyToClipboard
                           className="copy-button"
                           copyItem={data?.entityUrlValue}
                         />
                       </span>
                       <ReactTooltip
-                        id={`copy-board-summary-modal${data?.entityUrlValue}`}
+                        id={data?.tooltipId}
                         place="bottom"
                         effect="solid"
                         content={data?.tooltipContent}

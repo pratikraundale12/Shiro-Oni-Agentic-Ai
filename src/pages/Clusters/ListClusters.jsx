@@ -239,7 +239,7 @@ export const ListClusters = () => {
                           rel="noopener noreferrer"
                           href={item?.logs_url}
                         >
-                          <OpenLinkIcon color="black" />
+                          <OpenLinkIcon color="rgb(68, 68, 69)" />
                           <a
                             href={item?.logs_url}
                             rel="noopener noreferrer"
@@ -275,7 +275,7 @@ export const ListClusters = () => {
                             rel="noopener noreferrer"
                             href={item?.logs_url}
                           >
-                            <OpenLinkIcon color="black" />
+                            <OpenLinkIcon color="rgb(68, 68, 69)" />
                             <a
                               href={item?.logs_url}
                               rel="noopener noreferrer"
