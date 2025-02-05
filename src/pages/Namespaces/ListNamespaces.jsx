@@ -34,7 +34,7 @@ const StyledButton = styled.button`
   display: block;
   width: 100%;
   text-align: left;
-}
+
   @media screen and (max-width: 1400px) {
     font-size: 14px !important;
   }
@@ -124,7 +124,7 @@ export const ListNamespaces = () => {
           <>
             <li>Name : {item?.name}</li>
             {<li>ID : {item?.id}</li>}
-            {search.length > 0 && item?.parent && (
+            {search?.length > 0 && item?.parent && (
               <li>Parent : {item?.parent}</li>
             )}
           </>
