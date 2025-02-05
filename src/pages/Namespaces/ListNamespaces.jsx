@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -124,8 +125,8 @@ export const ListNamespaces = () => {
           <>
             <li>Name : {item?.name}</li>
             {<li>ID : {item?.id}</li>}
-            {search?.length > 0 && item?.parent && (
-              <li>Parent : {item?.parent}</li>
+            {!isEmpty(search) && item?.parent && (
+              <li>Parent : {item.parent}</li>
             )}
           </>
         )}
