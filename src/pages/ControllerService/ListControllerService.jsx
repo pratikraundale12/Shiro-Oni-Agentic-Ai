@@ -30,6 +30,7 @@ import AddProperties from './AddProperties';
 import ConfigControllerService from './ConfigControllerService';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
+import { isEmpty } from 'lodash';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -158,6 +159,8 @@ export const ListControllerService = () => {
   const [listPropertyTableData, setListPropertTableData] = useState(
     selectedItemFromList?.properties
   );
+  const [referenceListPropertyTableData, setReferenceListPropertyTableData] =
+    useState(selectedItemFromList?.properties);
   const [isResetNotRequired, setIsResetNotRequired] = useState(false);
   const filteredModulesData = useMemo(
     () =>
@@ -451,8 +454,22 @@ export const ListControllerService = () => {
   }, [dispatch, modalOpenState, selectedCluster]);
 
   const handleSettingClick = item => {
+    const filteredData =
+      !isEmpty(item?.properties) &&
+      item?.properties?.filter(
+        item =>
+          isEmpty(item?.dependencies) ||
+          item?.dependencies?.every(dep =>
+            item?.properties?.some(
+              obj =>
+                obj?.name === dep?.propertyName &&
+                dep?.dependentValues?.includes(obj?.value)
+            )
+          )
+      );
     setSelectedItemFromList(item);
-    setListPropertTableData(item?.properties);
+    setListPropertTableData(filteredData);
+    setReferenceListPropertyTableData(item?.properties);
     dispatch(NamespacesActions.setIsControllerServicePropertyModel(true));
   };
 
@@ -550,6 +567,8 @@ export const ListControllerService = () => {
         setSelectedPropertyToEdit={setSelectedPropertyToEdit}
         updatedData={updatedData}
         setUpdatedData={setUpdatedData}
+        referenceListPropertyTableData={referenceListPropertyTableData}
+        setReferenceListPropertyTableData={setReferenceListPropertyTableData}
       />
       <AddProperties
         isOpen={isAddpropertiesModalOpen}
@@ -570,6 +589,8 @@ export const ListControllerService = () => {
         setListPropertTableData={setListPropertTableData}
         setUpdatedData={setUpdatedData}
         updatedData={updatedData}
+        referenceListPropertyTableData={referenceListPropertyTableData}
+        setReferenceListPropertyTableData={setReferenceListPropertyTableData}
       />
       <ConfigurePropertyModal
         setListPropertTableData={setListPropertTableData}
