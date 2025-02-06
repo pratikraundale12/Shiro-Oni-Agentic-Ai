@@ -582,9 +582,12 @@ export const Add = () => {
     reg => reg.registry_url === watchedFields?.[5]
   );
   useEffect(() => {
-    const [clusterName, nifiUrl, registryName, registryUrl] = watchedFields;
+    const clusterName = watchedFields?.[0];
     const logs_url = watchedFields?.[3];
+    const nifiUrl = watchedFields?.[1];
     const metrics_url = watchedFields?.[2];
+    const registryUrl = watchedFields?.[5];
+    const registryName = watchedFields?.[4];
     if (activeTab === 'cluster') {
       if (
         clusterName !== clusterData.clusterName ||
@@ -625,19 +628,9 @@ export const Add = () => {
       setDataFill(false);
     }
 
-    if (
-      nifiUrl?.startsWith('https') ||
-      registryUrl?.startsWith('https') ||
-      metrics_url?.startsWith('https') ||
-      logs_url?.startsWith('https')
-    ) {
+    if (nifiUrl?.startsWith('https') || registryUrl?.startsWith('https')) {
       setTest(true);
-    } else if (
-      nifiUrl?.startsWith('http') ||
-      registryUrl?.startsWith('http') ||
-      metrics_url?.startsWith('http') ||
-      logs_url?.startsWith('http')
-    ) {
+    } else if (nifiUrl?.startsWith('http') || registryUrl?.startsWith('http')) {
       setTest(false);
     }
   }, [
@@ -892,7 +885,6 @@ export const Add = () => {
               register={register}
               icon={<LinkIcon />}
               label={KDFM.METRICS_URL}
-              disabled={testSuccess}
               placeholder={KDFM.ENTER_METRICS_URL}
               errors={errors}
             />
@@ -901,7 +893,6 @@ export const Add = () => {
               register={register}
               icon={<LinkIcon />}
               label={KDFM.LOGS_URL}
-              disabled={testSuccess}
               placeholder={KDFM.ENTER_LOGS_URL}
               errors={errors}
             />
@@ -1023,7 +1014,7 @@ export const Add = () => {
                   <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
                   <Button
                     onClick={testData}
-                    disabled={!isEditDetails}
+                    // disabled={!isEditDetails}
                     loading={loading}
                   >
                     {KDFM.TEST_CLUSTER}
@@ -1181,13 +1172,16 @@ export const Add = () => {
                 (newRegistry
                   ? !testSuccess
                   : clusterId
-                    ? watchedFields?.[0] === data?.name &&
-                      watchedFields?.[2] ===
-                        (data?.metrics_url === null ? '' : data?.metrics_url) &&
-                      watchedFields?.[3] ===
-                        (data?.logs_url === null ? '' : data?.logs_url) &&
-                      checkEditSave() &&
-                      saveButtonEnable
+                    ? (watchedFields?.[0] === data?.name &&
+                        watchedFields?.[2] ===
+                          (data?.metrics_url === null
+                            ? ''
+                            : data?.metrics_url) &&
+                        watchedFields?.[3] ===
+                          (data?.logs_url === null ? '' : data?.logs_url) &&
+                        checkEditSave() &&
+                        saveButtonEnable) ||
+                      !test
                     : !testSuccess)
               }
             >

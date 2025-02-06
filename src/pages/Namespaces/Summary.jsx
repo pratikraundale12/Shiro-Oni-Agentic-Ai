@@ -1075,7 +1075,7 @@ const Summary = () => {
                             id={`copy-board-namespace-summary1`}
                             place="bottom"
                             effect="solid"
-                            content={'Copy registry URL'}
+                            content={'Copy Registry URL'}
                             style={{
                               width: '150px',
                               whiteSpace: 'normal',
@@ -1116,7 +1116,7 @@ const Summary = () => {
                             id={`copy-board-namespace-summary2`}
                             place="bottom"
                             effect="solid"
-                            content={'Copy cluster URL'}
+                            content={'Copy Cluster URL'}
                             style={{
                               width: '150px',
                               whiteSpace: 'normal',

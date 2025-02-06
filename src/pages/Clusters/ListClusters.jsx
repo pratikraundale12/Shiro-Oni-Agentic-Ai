@@ -166,7 +166,7 @@ export const ListClusters = () => {
         return (
           <UrlRender
             tooltipId={'cluster-url-tooltip'}
-            copy_btn_tooltip={'Copy cluster URL'}
+            copy_btn_tooltip={'Copy Cluster URL'}
             url={updatedUrl}
           />
         );
