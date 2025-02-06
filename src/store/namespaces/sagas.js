@@ -752,6 +752,8 @@ export function* getControllerServiceList(api, action) {
       NamespacesActions.getRootControllerServiceNamespace(response?.data)
     );
   else if (!response.ok) {
+    console.log('failed');
+    yield put(NamespacesActions.getRootControllerServiceNamespace([]));
     toast.error(response.data.message || 'Please login to cluster');
   }
 }
@@ -792,9 +794,13 @@ export function* getAllControllerServiceListToAdd(api, action) {
 export function* addControllerServiceRootLevel(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   let fromPgDetailsPage = false;
+  let isFromControllerServiceDeployUpgarde = false;
   if (payload) {
-    const { isFromPgDetails } = payload;
+    const { isFromPgDetails, isFromControllerServiceTab } = payload;
     fromPgDetailsPage = isFromPgDetails;
+    if (isFromControllerServiceTab) {
+      isFromControllerServiceDeployUpgarde = isFromControllerServiceTab;
+    }
   }
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -825,7 +831,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
       yield put(
         NamespacesActions.getControllerServiceList({ localOnly: true })
       );
-    } else {
+    } else if (!isFromControllerServiceDeployUpgarde) {
       yield put(NamespacesActions.getControllerServiceList());
     }
     yield put(NamespacesActions.setNewlyAddedExternalServiceCS(response?.data));
@@ -969,14 +975,24 @@ export function* addControllerServicePropertyByDropdown(api, { payload }) {
 
 export function* changeStatusControllerService(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  let isFromControllerServiceDeployUpgarde = false;
   let fromPgDetailsPage = false;
   let use_service_account = false;
-  const { id, isFromPgDetails, use_service_ac, ...rest } = payload;
+  const {
+    id,
+    isFromPgDetails,
+    isFromControllerServiceTab,
+    use_service_ac,
+    ...rest
+  } = payload;
   if (isFromPgDetails) {
     fromPgDetailsPage = isFromPgDetails;
   }
   if (use_service_ac) {
     use_service_account = use_service_ac;
+  }
+  if (isFromControllerServiceTab) {
+    isFromControllerServiceDeployUpgarde = isFromControllerServiceTab;
   }
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -1002,7 +1018,7 @@ export function* changeStatusControllerService(api, { payload }) {
   if (response.ok) {
     toast.success('Status updated Successfully');
     yield delay(400);
-    if (!fromPgDetailsPage) {
+    if (!fromPgDetailsPage && !isFromControllerServiceDeployUpgarde) {
       yield put(NamespacesActions.getControllerServiceList());
     }
     yield put(NamespacesActions.setChangeStatusCSRespone(response));

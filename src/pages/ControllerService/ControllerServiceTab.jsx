@@ -1477,6 +1477,7 @@ const ControllerServiceTab = ({
     );
     dispatch(
       NamespacesActions.changeStatusControllerService({
+        isFromControllerServiceTab: true,
         use_service_ac: true,
         state:
           selectedItemFromList?.state === 'DISABLED' ||
