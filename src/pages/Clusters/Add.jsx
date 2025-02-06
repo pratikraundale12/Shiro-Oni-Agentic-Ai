@@ -1,5 +1,6 @@
 /*eslint-disable*/
 import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,6 +24,7 @@ import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
   ClustersActions,
   ClustersSelectors,
+  GridActions,
   GridSelectors,
   NamespacesActions,
 } from '../../store';
@@ -39,7 +41,6 @@ import { FailedTestModal } from './components/FailedTestModal';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
-import { isEmpty } from 'lodash';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -508,14 +509,20 @@ export const Add = () => {
           localStorage.setItem(
             'selected_cluster',
             JSON.stringify({
-              label: response.name,
-              value: response.id,
+              label: response?.name,
+              value: response?.id,
             })
           );
           dispatch(
             NamespacesActions.setSelectedCluster({
-              label: response.name,
-              value: response.id,
+              label: response?.name,
+              value: response?.id,
+            })
+          );
+          dispatch(
+            GridActions.fetchGridSuccess({
+              module: 'clusters',
+              data: { name: response?.name },
             })
           );
         }
