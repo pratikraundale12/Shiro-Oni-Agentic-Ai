@@ -192,10 +192,6 @@ export const schedularReducer = createReducer(
         SchedularActions.setSelectedClusterState,
         setSelectedClusterState
       )
-      .addCase(
-        SchedularActions.setSelectedStatusState,
-        setSelectedStatusState
-      );
+      .addCase(SchedularActions.setSelectedStatusState, setSelectedStatusState);
   }
 );
-//
