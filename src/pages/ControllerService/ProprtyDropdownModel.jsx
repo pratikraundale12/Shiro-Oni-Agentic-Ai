@@ -60,6 +60,9 @@ const PropertyDropdownModal = ({
   const filterData = updatedData.filter(item => {
     return item.name != selectedPropertyToEdit.name;
   });
+  const isModalOpen = useSelector(
+    NamespacesSelectors.getAddPropertyDropdownModal
+  );
   useEffect(() => {
     const updatedOptions =
       selectedPropertyToEdit?.allowableValues?.map(element => ({
@@ -73,9 +76,6 @@ const PropertyDropdownModal = ({
     ]);
   }, [selectedPropertyToEdit]);
 
-  const isModalOpen = useSelector(
-    NamespacesSelectors.getAddPropertyDropdownModal
-  );
   const newPropertyToAdd = useSelector(
     NamespacesSelectors.getNewProprtyToAddControllerService
   );
@@ -115,6 +115,7 @@ const PropertyDropdownModal = ({
   const { handleSubmit, control, watch, reset } = useForm({});
   const selectedNewValue = watch('newService');
   const selectedProperty = watch('value');
+
   const handleFormSubmit = data => {
     setUpdatedData(() => [
       ...filterData,
@@ -249,6 +250,7 @@ const PropertyDropdownModal = ({
           selectedProperty === selectedPropertyToEdit?.dropDownName ||
           selectedProperty?.value === selectedPropertyToEdit?.value ||
           selectedProperty === selectedPropertyToEdit?.value ||
+          selectedProperty?.label === selectedPropertyToEdit?.dropDownName ||
           addNewProperty
         }
         noScroll={true}

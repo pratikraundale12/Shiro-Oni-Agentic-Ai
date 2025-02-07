@@ -24,6 +24,8 @@ export const SchedularActions = {
   setDiffAllData: createAction(`${prefix}setDiffAllData`),
   setStatusFilterData: createAction(`${prefix}setStatusFilterData`),
   setSearchText: createAction(`${prefix}setSearchText`),
+  setSelectedClusterState: createAction(`${prefix}setSelectedClusterState`),
+  setSelectedStatusState: createAction(`${prefix}setSelectedStatusState`),
 };
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
@@ -41,6 +43,8 @@ export const SCHEDULAR_INITIAL_STATE = {
   diffAllData: {},
   statusFilterData: null,
   searchText: null,
+  selectedClusterState: null,
+  selectedStatusState: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -59,6 +63,8 @@ export const SchedularSelectors = {
   getDiffAllData: state => state.schedular.diffAllData,
   getStatusFilterData: state => state.schedular.statusFilterData,
   getSearchText: state => state.schedular.searchText,
+  getSelectedClusterState: state => state.schedular.selectedClusterState,
+  getSelectedStatusState: state => state.schedular.selectedStatusState,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -147,6 +153,19 @@ const setSearchText = (state, { payload }) => {
     searchText: payload,
   };
 };
+const setSelectedClusterState = (state, { payload }) => {
+  return {
+    ...state,
+    selectedClusterState: payload,
+  };
+};
+const setSelectedStatusState = (state, { payload }) => {
+  return {
+    ...state,
+    selectedStatusState: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const schedularReducer = createReducer(
   SCHEDULAR_INITIAL_STATE,
@@ -168,6 +187,11 @@ export const schedularReducer = createReducer(
       .addCase(SchedularActions.setIsDiffModalOpen, setIsDiffModalOpen)
       .addCase(SchedularActions.setDiffAllData, setDiffAllData)
       .addCase(SchedularActions.setStatusFilterData, setStatusFilterData)
-      .addCase(SchedularActions.setSearchText, setSearchText);
+      .addCase(SchedularActions.setSearchText, setSearchText)
+      .addCase(
+        SchedularActions.setSelectedClusterState,
+        setSelectedClusterState
+      )
+      .addCase(SchedularActions.setSelectedStatusState, setSelectedStatusState);
   }
 );

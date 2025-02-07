@@ -753,7 +753,7 @@ export function* getControllerServiceList(api, action) {
     );
   else if (!response.ok) {
     yield put(NamespacesActions.getRootControllerServiceNamespace([]));
-    toast.error(response.data.message || 'Please login to cluster');
+    toast.error(response.data.message);
   }
 }
 
@@ -1399,6 +1399,36 @@ export function* fetchDuplicateScheduleData(api, { payload }) {
     toast.error(response?.message || response?.data?.message);
   }
 }
+export function* fetchAddPropertyToAdd(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchAddPropertyToAdd',
+    loadingSection: 'fetchAddPropertyToAdd',
+    apiMethod: api.fetchAddPropertyToAdd,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        controllerId: payload?.id,
+        propertyName: payload?.name,
+        sensitive: payload?.sensitiveState,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield put(NamespacesActions.setAddPropertyCSResponse(response?.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
 //
 export function* namespacesSagas(api) {
   yield all([
@@ -1514,6 +1544,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.fetchDuplicateScheduleData,
       fetchDuplicateScheduleData,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchAddPropertyToAdd,
+      fetchAddPropertyToAdd,
       api
     ),
   ]);

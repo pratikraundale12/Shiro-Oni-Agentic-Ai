@@ -33,6 +33,7 @@ import {
 import { useGlobalContext } from '../utils';
 import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';
+import { SchedularActions } from '../store/schedular';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -314,6 +315,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
           data: {},
         })
       );
+      dispatch(SchedularActions.setSelectedClusterState(null));
     }
     if (window.location.pathname !== '/user-management') {
       dispatch(

@@ -556,7 +556,6 @@ export const ListControllerService = () => {
         csList={true}
         isResetNotRequired={isResetNotRequired}
       />
-
       <ConfigControllerService
         isOpen={isListProprtyModel}
         onClose={handleCloseModal}
@@ -596,6 +595,9 @@ export const ListControllerService = () => {
         setListPropertTableData={setListPropertTableData}
         setUpdatedData={setUpdatedData}
         updatedData={updatedData}
+        selectedItemFromList={selectedItemFromList}
+        selectedPropertyToEdit={selectedPropertyToEdit}
+        listPropertyTableData={listPropertyTableData}
       />
       <ModalWithIcon
         title={`${selectedItemFromList?.state !== 'DISABLED' || selectedItemFromList?.state !== 'DISABLING' ? 'Disable' : 'Enable'}  : ${selectedItemFromList?.name}`}

@@ -1,4 +1,4 @@
-export const VERSION = 'Version 2.1.4';
+export const VERSION = 'Version 2.1.5';
 export const WELCOME_BACK = 'Welcome Back!';
 export const LOGIN_TO_YOUR_ACCOUNT = 'Login to your account';
 export const FORGOT_PASSWORD = 'Forgot password?';
