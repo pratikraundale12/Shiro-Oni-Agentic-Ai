@@ -11,6 +11,7 @@ import {
   UserIcon,
 } from '../assets';
 import {
+  CLUSTERS_TOKEN,
   LICENSE_DATE_ISO_FORMAT,
   LICENSE_EXPIRE_PROMPT_DAYS,
   LICENSE_TYPE,
@@ -22,6 +23,8 @@ import SessionExpiredLabel from '../shared/SessionExpiredLabel';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
+  ClustersActions,
+  ClustersSelectors,
   GridActions,
   NamespacesActions,
   NamespacesSelectors,
@@ -289,6 +292,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   const { licenseExpireDate, licenseType } = useSelector(
     AuthenticationSelectors.getLicense
   );
+  const clusters_new_list = useSelector(ClustersSelectors.getAllClustersList);
 
   const closeTab = () => {
     setDisplaySessionTab(false);
@@ -320,6 +324,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
       );
     }
   }, [dispatch, GridActions, window?.location?.pathname]);
+
   useEffect(() => {
     const cluster = localStorage.getItem('selected_cluster');
     const enableCluster = JSON.parse(cluster) ?? {};
@@ -327,6 +332,63 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
       dispatch(NamespacesActions.setSelectedCluster(enableCluster));
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(ClustersActions.fetchClusters());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!clusters_new_list?.length) return;
+    const storedClusters = JSON.parse(
+      localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+    );
+    if (storedClusters?.length > 0) {
+      const updatedClusters = storedClusters?.map(item => {
+        const matchedCluster = clusters_new_list?.find(
+          temp => item?.id === temp?.id
+        );
+        return matchedCluster
+          ? {
+              id: matchedCluster?.id,
+              name: matchedCluster?.name,
+              token: item?.token,
+            }
+          : item;
+      });
+
+      const isStorageUpdated =
+        JSON.stringify(storedClusters) !== JSON.stringify(updatedClusters);
+      if (isStorageUpdated) {
+        localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(updatedClusters));
+      }
+
+      const selectedClusterString = localStorage.getItem('selected_cluster');
+      if (selectedClusterString) {
+        const parsedSelectedCluster = JSON.parse(selectedClusterString);
+        const matchingCluster = updatedClusters.find(
+          cluster => cluster?.id === parsedSelectedCluster?.value
+        );
+
+        if (matchingCluster) {
+          const newSelectedCluster = {
+            label: matchingCluster?.name,
+            value: matchingCluster?.id,
+          };
+
+          if (
+            newSelectedCluster?.label !== parsedSelectedCluster?.label ||
+            newSelectedCluster?.value !== parsedSelectedCluster?.value
+          ) {
+            localStorage.setItem(
+              'selected_cluster',
+              JSON.stringify(newSelectedCluster)
+            );
+            dispatch(NamespacesActions.setSelectedCluster(newSelectedCluster));
+          }
+        }
+      }
+    }
+  }, [clusters_new_list, dispatch]);
 
   // Function to calculate remaining days before expiration using moment.js
   const calculateRemainingDays = expirationDateString => {
