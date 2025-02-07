@@ -204,7 +204,8 @@ export const NamespacesActions = {
   setVariableLocalData: createAction(`${prefix}setVariableLocalData`),
   setIsLocalVariableUpdated: createAction(`${prefix}setIsLocalVariableUpdated`),
   setVersionListReduxData: createAction(`${prefix}setVersionListReduxData`),
-  setPcId: createAction(`${prefix}setPcId`),
+  fetchAddPropertyToAdd: createAction(`${prefix}fetchAddPropertyToAdd`),
+  setAddPropertyCSResponse: createAction(`${prefix}setAddPropertyCSResponse`),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -307,7 +308,7 @@ export const NAMESPACES_INITIAL_STATE = {
   isLocalVariableUpdated: false,
   versionListReduxData: [],
   propertyOptionOnDeploy: [],
-  pcId: '',
+  addPropertyCSResponse: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -413,7 +414,7 @@ export const NamespacesSelectors = {
   getVariableLocalData: state => state.namespaces.variableLocalData,
   getIsLocalVariableUpdated: state => state.namespaces.isLocalVariableUpdated,
   getVersionListReduxData: state => state.namespaces.versionListReduxData,
-  getPcId: state => state.namespaces.pcId,
+  getAddPropertyCSResponse: state => state.namespaces.addPropertyCSResponse,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -962,11 +963,10 @@ const setVersionListReduxData = (state, { payload }) => {
     versionListReduxData: payload,
   };
 };
-
-const setPcId = (state, { payload }) => {
+const setAddPropertyCSResponse = (state, { payload }) => {
   return {
     ...state,
-    pcId: payload,
+    addPropertyCSResponse: payload,
   };
 };
 
@@ -1187,7 +1187,10 @@ export const namespacesReducer = createReducer(
         NamespacesActions.setVersionListReduxData,
         setVersionListReduxData
       )
-      .addCase(NamespacesActions.setPcId, setPcId);
+      .addCase(
+        NamespacesActions.setAddPropertyCSResponse,
+        setAddPropertyCSResponse
+      );
   }
 );
 //

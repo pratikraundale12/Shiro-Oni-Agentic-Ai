@@ -32,6 +32,7 @@ const PropertyDropdownModal = ({
   isUpgrade,
   isFromExternalService,
   selectedItemFromList,
+  setReferenceListPropertyTableData = () => {},
 }) => {
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
@@ -59,6 +60,9 @@ const PropertyDropdownModal = ({
   const filterData = updatedData.filter(item => {
     return item.name != selectedPropertyToEdit.name;
   });
+  const isModalOpen = useSelector(
+    NamespacesSelectors.getAddPropertyDropdownModal
+  );
   useEffect(() => {
     const updatedOptions =
       selectedPropertyToEdit?.allowableValues?.map(element => ({
@@ -72,9 +76,6 @@ const PropertyDropdownModal = ({
     ]);
   }, [selectedPropertyToEdit]);
 
-  const isModalOpen = useSelector(
-    NamespacesSelectors.getAddPropertyDropdownModal
-  );
   const newPropertyToAdd = useSelector(
     NamespacesSelectors.getNewProprtyToAddControllerService
   );
@@ -114,6 +115,7 @@ const PropertyDropdownModal = ({
   const { handleSubmit, control, watch, reset } = useForm({});
   const selectedNewValue = watch('newService');
   const selectedProperty = watch('value');
+
   const handleFormSubmit = data => {
     setUpdatedData(() => [
       ...filterData,
@@ -128,6 +130,18 @@ const PropertyDropdownModal = ({
       element => element.value === data.value
     )?.label;
     setListPropertTableData(prevData =>
+      prevData.map(item =>
+        item.name === selectedPropertyToEdit.name
+          ? {
+              ...item,
+              value: data.value === '' ? null : data.value,
+              dropDownName: selectedName,
+              empty_string_set: false,
+            }
+          : item
+      )
+    );
+    setReferenceListPropertyTableData(prevData =>
       prevData.map(item =>
         item.name === selectedPropertyToEdit.name
           ? {
@@ -238,6 +252,7 @@ const PropertyDropdownModal = ({
           selectedProperty === selectedPropertyToEdit?.dropDownName ||
           selectedProperty?.value === selectedPropertyToEdit?.value ||
           selectedProperty === selectedPropertyToEdit?.value ||
+          selectedProperty?.label === selectedPropertyToEdit?.dropDownName ||
           addNewProperty
         }
         noScroll={true}

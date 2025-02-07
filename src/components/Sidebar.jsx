@@ -323,7 +323,7 @@ export const Sidebar = ({
 
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
-        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 2.1.3`}</span>
+        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 2.1.5`}</span>
       </KDFMVersion>
     </Container>
   );

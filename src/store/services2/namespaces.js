@@ -297,6 +297,18 @@ export const namespacesAPI = api => {
   const fetchDuplicateScheduleData = ({ flowId }) => {
     return api.get(`/check-exisiting-flow/${flowId}`);
   };
+
+  const fetchAddPropertyToAdd = ({
+    clusterId,
+    controllerId,
+    propertyName,
+    sensitive,
+  }) => {
+    return api.get(
+      `controller-services/${clusterId}/service/${controllerId}/descriptor?propertyName=${propertyName}&sensitive=${sensitive || false}`
+    );
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -331,5 +343,6 @@ export const namespacesAPI = api => {
     fetchVersionData,
     fetchRegistryFlowDetails,
     fetchDuplicateScheduleData,
+    fetchAddPropertyToAdd,
   };
 };

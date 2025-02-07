@@ -136,7 +136,6 @@ export function* fetchGrid(
   }
   if (response.ok) {
     yield put(GridActions.fetchGridSuccess({ module, data: response.data }));
-    yield put(NamespacesActions.setPcId(response?.data?.parameterContextId));
   } else if (!response?.ok) {
     toast.error(response?.message || response?.data?.message);
   }

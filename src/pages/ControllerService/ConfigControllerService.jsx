@@ -1,7 +1,7 @@
 /* eslint-disable  */
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
@@ -13,9 +13,10 @@ import {
 import { Table } from '../../components';
 import { KDFM } from '../../constants';
 import { Button, InputField, Modal } from '../../shared';
-import { NamespacesActions } from '../../store';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import ValueRender from './ValueRender';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { isEmpty } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -50,14 +51,41 @@ export const ConfigControllerService = ({
   setSelectedPropertyToEdit,
   updatedData,
   setUpdatedData,
-  isFromControllerServiceTab,
+  isFromControllerServiceTab = false,
   handlePropertyUpdate,
   isFromExternalService = false,
   versionList,
   isFromPgDetails = false,
+  referenceListPropertyTableData = [],
+  setReferenceListPropertyTableData = () => {},
 }) => {
   const dispatch = useDispatch();
+  const isModalOpenDropdownProperty = useSelector(
+    NamespacesSelectors.getAddPropertyDropdownModal
+  );
+  const filteredData =
+    !isEmpty(referenceListPropertyTableData) &&
+    referenceListPropertyTableData?.filter(
+      item =>
+        isEmpty(item?.dependencies) ||
+        item?.dependencies.every(dep =>
+          referenceListPropertyTableData?.some(
+            obj =>
+              obj?.name === dep?.propertyName &&
+              dep?.dependentValues?.includes(obj?.value)
+          )
+        )
+    );
 
+  const updateDataOnList = () => {
+    setListPropertTableData(filteredData || []);
+  };
+  isModalOpenDropdownProperty;
+  useEffect(() => {
+    setTimeout(() => {
+      updateDataOnList();
+    }, 200);
+  }, [filteredData?.length, referenceListPropertyTableData]);
   const handleDeleteClick = item => {
     const filterData = updatedData.filter(ele => {
       return ele.name != item.name;
@@ -66,6 +94,10 @@ export const ConfigControllerService = ({
     const sortedList = listPropertyTableData.filter(
       element => element.displayName !== item.displayName
     );
+    const sortedListAfterDelete = referenceListPropertyTableData?.filter(
+      element => element.displayName !== item.displayName
+    );
+    setReferenceListPropertyTableData(sortedListAfterDelete);
     setListPropertTableData(sortedList);
     if (item?.dynamic) {
       setUpdatedData(() => [
@@ -316,18 +348,20 @@ export const ConfigControllerService = ({
           </div>
 
           <div className=" col-auto mt-4 pt-2">
-            <Button
-              type="button"
-              onClick={() =>
-                dispatch(
-                  NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(
-                    true
+            {!isFromControllerServiceTab && (
+              <Button
+                type="button"
+                onClick={() =>
+                  dispatch(
+                    NamespacesActions.setIsConfigurePropertyControllerServiceModalOpen(
+                      true
+                    )
                   )
-                )
-              }
-            >
-              <div className="h2 mb-0">+</div>
-            </Button>
+                }
+              >
+                <div className="h2 mb-0">+</div>
+              </Button>
+            )}
           </div>
         </div>
         <Table

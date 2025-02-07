@@ -31,7 +31,7 @@ const RegistryDetail = ({ data }) => {
           }
           tooltipPlacement="top"
           type="Registry"
-          copy_btn_tooltip={'Copy registry URL'}
+          copy_btn_tooltip={'Copy Registry URL'}
         />
       ),
       width: '75%',

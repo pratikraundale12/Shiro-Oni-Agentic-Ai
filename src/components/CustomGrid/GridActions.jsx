@@ -519,6 +519,7 @@ export const GridActions = ({
   const handleClusterChange = selectedClusterOption => {
     setCurrentPage(1);
     setClusterSelectedValue(selectedClusterOption);
+    dispatch(SchedularActions.setSelectedClusterState(selectedClusterOption));
   };
 
   const handleClearFilter = () => {
@@ -529,6 +530,7 @@ export const GridActions = ({
       setState(prev => ({ ...prev, search: null }));
       inputRef.current.value = '';
       setClusterSelectedValue(null);
+      dispatch(SchedularActions.setSelectedClusterState(null));
       setSortingState(null);
     } else if (module === 'activityHistory') {
       setValue('is_active', null);
@@ -545,6 +547,10 @@ export const GridActions = ({
       setSortingState(null);
     }
   };
+
+  useEffect(() => {
+    dispatch(SchedularActions.setSelectedStatusState(watchStatus));
+  }, [watchStatus]);
 
   return (
     <>
