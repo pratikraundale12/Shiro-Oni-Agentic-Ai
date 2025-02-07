@@ -268,10 +268,9 @@ const Listvariables = ({
   };
 
   const toggleCollapsible = () => setIsTableOpen(!isTableOpen);
-  console.log('variablesData--', variablesData);
   const sortByVariableName = array => {
     return [...array].sort((a, b) =>
-      a.variable.name.localeCompare(b.variable.name)
+      a?.variable?.name?.localeCompare(b?.variable?.name)
     );
   };
 
