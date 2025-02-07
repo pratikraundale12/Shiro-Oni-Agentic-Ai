@@ -484,54 +484,64 @@ export const Add = () => {
   };
 
   const editClusterData = async () => {
-    const payload = {
-      name: clusterData?.clusterName,
-      nifi_url: clusterData?.nifiUrl,
-      logs_url:
-        clusterData?.logs_url?.length === 0 ? null : clusterData?.logs_url,
-      metrics_url:
-        clusterData?.metrics_url?.length === 0
-          ? null
-          : clusterData?.metrics_url,
-      tag: tags,
-      notification_enable: notificationEnable,
-      approver_enable: approverEnable,
-    };
-    const id = clusterId;
-    const response = await updateCluster(id, payload);
-    if (response?.id) {
-      const cluster = localStorage.getItem('selected_cluster');
-      // Check if the cluster exists in localStorage
-      if (cluster) {
-        const parsedCluster = JSON.parse(cluster); // Parse the string into an object
-        // Now you can safely check if the value matches clusterId
-        if (parsedCluster.value === clusterId) {
-          localStorage.setItem(
-            'selected_cluster',
-            JSON.stringify({
-              label: response?.name,
-              value: response?.id,
-            })
-          );
-          dispatch(
-            NamespacesActions.setSelectedCluster({
-              label: response?.name,
-              value: response?.id,
-            })
-          );
-          dispatch(
-            GridActions.fetchGridSuccess({
-              module: 'clusters',
-              data: { name: response?.name },
-            })
-          );
+    setLoading(true);
+    try {
+      const payload = {
+        name: clusterData?.clusterName,
+        nifi_url: clusterData?.nifiUrl,
+        logs_url:
+          clusterData?.logs_url?.length === 0 ? null : clusterData?.logs_url,
+        metrics_url:
+          clusterData?.metrics_url?.length === 0
+            ? null
+            : clusterData?.metrics_url,
+        tag: tags,
+        notification_enable: notificationEnable,
+        approver_enable: approverEnable,
+      };
+
+      const id = clusterId;
+      const response = await updateCluster(id, payload);
+
+      if (response?.id) {
+        const cluster = localStorage.getItem('selected_cluster');
+        if (cluster) {
+          const parsedCluster = JSON.parse(cluster);
+          if (parsedCluster.value === clusterId) {
+            localStorage.setItem(
+              'selected_cluster',
+              JSON.stringify({ label: response?.name, value: response?.id })
+            );
+            dispatch(
+              NamespacesActions.setSelectedCluster({
+                label: response?.name,
+                value: response?.id,
+              })
+            );
+            dispatch(
+              GridActions.fetchGridSuccess({
+                module: 'clusters',
+                data: { name: response?.name },
+              })
+            );
+          }
         }
+        toast.success('Cluster updated successfully!');
+      } else {
+        throw new Error(response?.message || 'Failed to update cluster');
       }
-    } else {
+    } catch (error) {
+      console.error('Error updating cluster:', error);
+      toast.error(
+        error.response?.data?.message ||
+          'An error occurred while updating the cluster'
+      );
+    } finally {
       setLoading(false);
       toast.error(response.message);
     }
   };
+
   const onSubmit = data => {
     if (clusterId) {
       editClusterData();
@@ -638,8 +648,8 @@ export const Add = () => {
     clusterData,
     setClusterData,
     setRegistryData,
-    setDataFill,
     setTest,
+    activeTab,
   ]);
   useEffect(() => {
     if (data?.registry_id) {
