@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable  */
 import { cluster } from 'd3';
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
@@ -39,6 +39,7 @@ import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
+import { KDFM } from '../../constants';
 
 const ActionTd = styled.div`
   display: flex;
@@ -75,7 +76,12 @@ export const ListScheduleDeployment = () => {
   const approveScheduleModal = useSelector(
     SchedularSelectors.getApproveScheduleModal
   );
-
+  const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
+  const selctedCluster = useSelector(
+    SchedularSelectors.getSelectedClusterState
+  );
+  const selctedStatus = useSelector(SchedularSelectors.getSelectedStatusState);
+  const search = useSelector(SchedularSelectors.getSearchText);
   const location = useLocation();
 
   const params = new URLSearchParams(location.search);
@@ -600,6 +606,37 @@ export const ListScheduleDeployment = () => {
   useEffect(() => {
     dispatch(ClustersActions.fetchClusters());
   }, [dispatch]);
+
+  const fetchRecords = () => {
+    dispatch(
+      GridActions.fetchGrid({
+        module: 'scheduler',
+        params: {
+          page: currentPage,
+          ...(selectedRange && {
+            start_date: selectedRange?.[0]?.toISOString(),
+            end_date: selectedRange?.[1]?.toISOString(),
+          }),
+          ...(selctedCluster?.label !== 'All' && {
+            clusterName: selctedCluster?.label,
+          }),
+          ...(selctedStatus &&
+            selctedStatus !== 'all' && {
+              deployment_status: selctedStatus,
+            }),
+          ...(search && { search }),
+        },
+      })
+    );
+  };
+  useEffect(() => {
+    fetchRecords();
+    const intervalId = setInterval(
+      fetchRecords,
+      KDFM?.SCHEDULE_LIST_RELOAD_TIME
+    );
+    return () => clearInterval(intervalId);
+  }, [selectedRange, selctedCluster, selctedStatus, search, currentPage]);
   return (
     <>
       <ModalWithIcon
