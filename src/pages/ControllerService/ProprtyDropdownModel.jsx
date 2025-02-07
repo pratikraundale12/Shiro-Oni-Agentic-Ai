@@ -230,7 +230,9 @@ const PropertyDropdownModal = ({
         title={
           addNewProperty
             ? 'Create New Service'
-            : `Edit  : ${selectedPropertyToEdit?.displayName}`
+            : isRefParams
+              ? 'Select Referencing Parameter'
+              : `Edit  : ${selectedPropertyToEdit?.displayName}`
         }
         isOpen={isModalOpen}
         onRequestClose={handleClose}

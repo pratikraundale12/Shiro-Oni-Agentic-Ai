@@ -1,14 +1,14 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { NoDataIcon, PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import AddOrEditVariablesModal from './AddOrEditVariablesModal';
 import Collapsible from './Collapsible';
-import { useDispatch, useSelector } from 'react-redux';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -192,6 +192,9 @@ const VariableTab = () => {
   const closeAddVariablesModal = () => {
     setIsAddVariablesOpen({ isOpen: false, mode: 'add' });
   };
+  const sortByName = array => {
+    return [...array].sort((a, b) => a.name.localeCompare(b.name));
+  };
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -207,7 +210,11 @@ const VariableTab = () => {
                 toggleCollapsible={() => handleToggle(item?.pgId, index)}
               >
                 <Table
-                  data={item.variables}
+                  data={
+                    !isEmpty(sortByName(item?.variables))
+                      ? sortByName(item?.variables)
+                      : []
+                  }
                   columns={VARIABLE_COLUMNS}
                   className={'variables-table'}
                 />

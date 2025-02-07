@@ -381,7 +381,16 @@ const ParameterContextTab = () => {
                 toggleCollapsible={() => handleToggle(item?.name)}
               >
                 <SrollableTable className="scroll-table-y">
-                  <Table data={item?.parameters} columns={PC_COLUMNS} />
+                  <Table
+                    data={
+                      !isEmpty(item?.parameters)
+                        ? [...item.parameters].sort((a, b) =>
+                            a.name?.localeCompare(b.name)
+                          )
+                        : []
+                    }
+                    columns={PC_COLUMNS}
+                  />
                 </SrollableTable>
               </Collapsible>
             )}
@@ -401,7 +410,18 @@ const ParameterContextTab = () => {
                 toggleCollapsible={() => handleToggle(item?.name)}
               >
                 <SrollableTable className="scroll-table-y">
-                  <Table data={item?.parameters} columns={PC_COLUMNS} />
+                  <SrollableTable className="scroll-table-y">
+                    <Table
+                      data={
+                        !isEmpty(item?.parameters)
+                          ? [...item.parameters].sort((a, b) =>
+                              a.name?.localeCompare(b.name)
+                            )
+                          : []
+                      }
+                      columns={PC_COLUMNS}
+                    />
+                  </SrollableTable>
                 </SrollableTable>
               </Collapsible>
             )}
