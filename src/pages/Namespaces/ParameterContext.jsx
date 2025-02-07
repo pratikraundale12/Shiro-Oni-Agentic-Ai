@@ -432,7 +432,11 @@ const ParameterContext = ({
             >
               <ParameterTable>
                 <Table
-                  data={sortByParentGroupAndName(tableStateData)}
+                  data={
+                    !isEmpty(sortByParentGroupAndName(tableStateData))
+                      ? sortByParentGroupAndName(tableStateData)
+                      : []
+                  }
                   columns={COLUMNS}
                   className={'parameter-context-table'}
                 />

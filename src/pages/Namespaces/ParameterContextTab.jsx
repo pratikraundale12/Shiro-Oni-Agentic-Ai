@@ -382,9 +382,13 @@ const ParameterContextTab = () => {
               >
                 <SrollableTable className="scroll-table-y">
                   <Table
-                    data={[...(item?.parameters || [])].sort((a, b) =>
-                      a.name?.localeCompare(b.name)
-                    )}
+                    data={
+                      !isEmpty(item?.parameters)
+                        ? [...item.parameters].sort((a, b) =>
+                            a.name?.localeCompare(b.name)
+                          )
+                        : []
+                    }
                     columns={PC_COLUMNS}
                   />
                 </SrollableTable>
@@ -408,9 +412,13 @@ const ParameterContextTab = () => {
                 <SrollableTable className="scroll-table-y">
                   <SrollableTable className="scroll-table-y">
                     <Table
-                      data={[...(item?.parameters || [])].sort((a, b) =>
-                        a.name?.localeCompare(b.name)
-                      )}
+                      data={
+                        !isEmpty(item?.parameters)
+                          ? [...item.parameters].sort((a, b) =>
+                              a.name?.localeCompare(b.name)
+                            )
+                          : []
+                      }
                       columns={PC_COLUMNS}
                     />
                   </SrollableTable>

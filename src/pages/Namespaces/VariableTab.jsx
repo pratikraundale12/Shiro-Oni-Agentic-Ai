@@ -1,14 +1,14 @@
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { NoDataIcon, PencilIcon } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import { KDFM } from '../../constants';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import AddOrEditVariablesModal from './AddOrEditVariablesModal';
 import Collapsible from './Collapsible';
-import { useDispatch, useSelector } from 'react-redux';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -210,7 +210,11 @@ const VariableTab = () => {
                 toggleCollapsible={() => handleToggle(item?.pgId, index)}
               >
                 <Table
-                  data={sortByName(item?.variables)}
+                  data={
+                    !isEmpty(sortByName(item?.variables))
+                      ? sortByName(item?.variables)
+                      : []
+                  }
                   columns={VARIABLE_COLUMNS}
                   className={'variables-table'}
                 />
