@@ -122,3 +122,4 @@ export * from './ZoomInIcon';
 export * from './ZoomOutIcon';
 export * from './canvasYIcon';
 export * from './DiffIcon';
+export * from './MetricsIcon';
