@@ -505,7 +505,7 @@ export const Add = () => {
         const cluster = localStorage.getItem('selected_cluster');
         if (cluster) {
           const parsedCluster = JSON.parse(cluster);
-          if (parsedCluster.value === clusterId) {
+          if (parsedCluster?.value === clusterId) {
             localStorage.setItem(
               'selected_cluster',
               JSON.stringify({ label: response?.name, value: response?.id })
@@ -529,7 +529,6 @@ export const Add = () => {
         throw new Error(response?.message || 'Failed to update cluster');
       }
     } catch (error) {
-      console.error('Error updating cluster:', error);
       toast.error(
         error.response?.data?.message ||
           'An error occurred while updating the cluster'
