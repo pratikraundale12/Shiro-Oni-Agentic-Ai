@@ -98,7 +98,7 @@ const TextEllipses = styled.div`
   letter-spacing: -0.005em;
   color: #7a7a7a;
   white-space: nowrap;
-  max-width: 16rem;
+  max-width: ${props => (props.linkMaxWidth ? props.linkMaxWidth : '16rem')};
   overflow: hidden;
   text-overflow: ellipsis;
   border-bottom: 1px solid #7a7a7a;
@@ -237,27 +237,8 @@ export const SummaryModal = ({
         ? clusterData.nifiUrl
         : `${clusterData.nifiUrl}/nifi`,
       tooltipContent: 'Copy Cluster URL',
+      tooltipId: 'cluster-url-tooltip-id',
     },
-    ...(!isEmpty(clusterData?.metrics_url)
-      ? [
-          {
-            entityUrlLabel: KDFM.METRICS_URL,
-            entityUrlValue: clusterData.metrics_url,
-            width: '100%',
-            tooltipContent: 'Copy Metrics URL',
-          },
-        ]
-      : []),
-    ...(!isEmpty(clusterData?.logs_url)
-      ? [
-          {
-            entityUrlLabel: KDFM.LOGS_URL,
-            entityUrlValue: clusterData.logs_url,
-            width: '100%',
-            tooltipContent: 'Copy Logs URL',
-          },
-        ]
-      : []),
     {
       title: KDFM.REGISTRY_DETAILS,
       entityNameLabel: KDFM.REGISTRY_NAME,
@@ -269,7 +250,32 @@ export const SummaryModal = ({
         ? registryData?.registryUrl || registryData?.registry_url
         : `${registryData?.registryUrl || registryData?.registry_url}/nifi-registry`,
       tooltipContent: 'Copy Registry URL',
+      tooltipId: 'registry-url-tooltip-id',
     },
+    ...(!isEmpty(clusterData?.metrics_url)
+      ? [
+          {
+            entityUrlLabel: KDFM.METRICS_URL,
+            entityUrlValue: clusterData.metrics_url,
+            width: '100%',
+            tooltipContent: 'Copy Metrics URL',
+            linkMaxWidth: '24.3rem',
+            tooltipId: 'metrics-url-tooltip-id',
+          },
+        ]
+      : []),
+    ...(!isEmpty(clusterData?.logs_url)
+      ? [
+          {
+            entityUrlLabel: KDFM.LOGS_URL,
+            entityUrlValue: clusterData.logs_url,
+            width: '100%',
+            tooltipContent: 'Copy Logs URL',
+            linkMaxWidth: '24.3rem',
+            tooltipId: 'logs-url-tooltip-id',
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -298,19 +304,20 @@ export const SummaryModal = ({
                   <Info width={data?.width || '40%'}>
                     <Title>{data?.entityUrlLabel}</Title>
                     <Flex className="d-flex align-items-center">
-                      <TextEllipses data-tooltip-id={data?.entityUrlValue}>
+                      <TextEllipses
+                        linkMaxWidth={data?.linkMaxWidth || '16rem'}
+                        data-tooltip-id={data?.entityUrlValue}
+                      >
                         {data?.entityUrlValue}
                       </TextEllipses>
-                      <span
-                        data-tooltip-id={`copy-board-summary-modal${data?.entityUrlValue}`}
-                      >
+                      <span data-tooltip-id={data?.tooltipId}>
                         <CopyToClipboard
                           className="copy-button"
                           copyItem={data?.entityUrlValue}
                         />
                       </span>
                       <ReactTooltip
-                        id={`copy-board-summary-modal${data?.entityUrlValue}`}
+                        id={data?.tooltipId}
                         place="bottom"
                         effect="solid"
                         content={data?.tooltipContent}

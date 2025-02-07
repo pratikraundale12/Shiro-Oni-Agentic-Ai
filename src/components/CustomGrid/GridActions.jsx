@@ -259,12 +259,11 @@ export const GridActions = ({
 
     if (module === 'namespaces') {
       dispatch(
-        GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
+        GridSagsActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
       setState(prev => ({ ...prev, search: null }));
       inputRef.current.value = '';
     }
-    setSortingState(null);
     if (module === 'scheduler') {
       dispatch(
         GridSagsActions.fetchGrid({
@@ -300,7 +299,7 @@ export const GridActions = ({
         })
       );
     } else {
-      dispatch(GridActions.fetchGrid({ module: 'namespaces' }));
+      dispatch(GridSagsActions.fetchGrid({ module: 'namespaces' }));
     }
   };
 

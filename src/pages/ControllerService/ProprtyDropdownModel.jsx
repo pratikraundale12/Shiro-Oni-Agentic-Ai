@@ -32,6 +32,7 @@ const PropertyDropdownModal = ({
   isUpgrade,
   isFromExternalService,
   selectedItemFromList,
+  setReferenceListPropertyTableData = () => {},
 }) => {
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
@@ -129,6 +130,18 @@ const PropertyDropdownModal = ({
       element => element.value === data.value
     )?.label;
     setListPropertTableData(prevData =>
+      prevData.map(item =>
+        item.name === selectedPropertyToEdit.name
+          ? {
+              ...item,
+              value: data.value === '' ? null : data.value,
+              dropDownName: selectedName,
+              empty_string_set: false,
+            }
+          : item
+      )
+    );
+    setReferenceListPropertyTableData(prevData =>
       prevData.map(item =>
         item.name === selectedPropertyToEdit.name
           ? {

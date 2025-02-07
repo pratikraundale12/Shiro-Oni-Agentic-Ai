@@ -85,12 +85,17 @@ const StyledLink = styled.a`
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding: 14px 12px;
+  padding: 14px 15px;
+  text-decoration: none !important;
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.md};
   color: ${props => props.theme.colors.darker};
   &:hover {
     background-color: ${props => props.theme.colors.lightGrey};
+  }
+  & > a {
+    text-decoration: none !important;
+    color: black;
   }
   & > svg {
     flex-shrink: 0;
@@ -161,7 +166,7 @@ export const ListClusters = () => {
         return (
           <UrlRender
             tooltipId={'cluster-url-tooltip'}
-            copy_btn_tooltip={'Copy cluster URL'}
+            copy_btn_tooltip={'Copy Cluster URL'}
             url={updatedUrl}
           />
         );
@@ -182,6 +187,11 @@ export const ListClusters = () => {
       resize: true,
     },
     {
+      label: KDFM.STATUS,
+      renderCell: item => <StatusRender status={item.status} />,
+      resize: true,
+    },
+    {
       label: KDFM.METRICS,
       renderCell: item => {
         return (
@@ -193,11 +203,6 @@ export const ListClusters = () => {
         );
       },
       width: '20%',
-      resize: true,
-    },
-    {
-      label: KDFM.STATUS,
-      renderCell: item => <StatusRender status={item.status} />,
       resize: true,
     },
     {
@@ -234,7 +239,7 @@ export const ListClusters = () => {
                           rel="noopener noreferrer"
                           href={item?.logs_url}
                         >
-                          <OpenLinkIcon />
+                          <OpenLinkIcon color="rgb(68, 68, 69)" />
                           <a
                             href={item?.logs_url}
                             rel="noopener noreferrer"
@@ -263,6 +268,22 @@ export const ListClusters = () => {
                             <DeleteSmallIcon width={18} height={18} />
                             <span> Delete</span>
                           </Item>
+                        )}
+                        {item?.logs_url && (
+                          <StyledLink
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href={item?.logs_url}
+                          >
+                            <OpenLinkIcon color="rgb(68, 68, 69)" />
+                            <a
+                              href={item?.logs_url}
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              {KDFM.LOGS}
+                            </a>
+                          </StyledLink>
                         )}
                       </>
                     )}
