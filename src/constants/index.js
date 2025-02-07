@@ -212,6 +212,8 @@ export const KDFM = {
   SCHEDULE_UPGRADE: 'Schedule Upgrade',
   SCHEDULE_DOWNGRADE: 'Schedule Downgrade',
 
+  SCHEDULE_LIST_RELOAD_TIME: 45000,
+
   // License constants
   TRIAL: 'Trial',
   PURCHASED: 'Purchased',

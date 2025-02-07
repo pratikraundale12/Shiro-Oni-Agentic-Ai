@@ -95,7 +95,7 @@ const EVENTCOLUMNS = [
 
 const getData = (loader = false, data = [], nodes = []) => {
   if (loader) {
-    return [];
+    return data || [];
   }
   if (!isEmpty(nodes)) {
     return nodes;
@@ -170,6 +170,8 @@ export const Grid = ({
   useEffect(() => {
     if (search) {
       dispatch(SchedularActions.setSearchText(search));
+    } else {
+      dispatch(SchedularActions.setSearchText(null));
     }
   }, [search]);
   const filteredData = gridData.filter(item => item.isProcessor === false);
@@ -502,7 +504,7 @@ export const Grid = ({
           layout={{ custom: true }}
           // sort={sort}
         />
-        {getLoader()}
+        {isEmpty(TABLE_DATA?.nodes) && getLoader()}
       </TableContainer>
       {gridCount > itemsPerPage && (
         <Pagination
