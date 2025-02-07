@@ -4,9 +4,11 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   ActiveIcon,
+  ActivityHistoryIcon,
   DeleteDustbinIcon,
   DeleteSmallIcon,
   LogoutIcon,
+  MetricsIcon,
   OpenEyeIcon,
   OpenLinkIcon,
   PencilIcon,
@@ -34,6 +36,7 @@ import {
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
+import { isEmpty } from 'lodash';
 
 const List = styled.div`
   position: absolute;
@@ -90,6 +93,9 @@ const StyledLink = styled.a`
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.md};
   color: ${props => props.theme.colors.darker};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.4 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
   &:hover {
     background-color: ${props => props.theme.colors.lightGrey};
   }
@@ -99,6 +105,13 @@ const StyledLink = styled.a`
   }
   & > svg {
     flex-shrink: 0;
+    margin-right: 10px;
+  }
+`;
+
+const MetricsIconContainer = styled.div`
+  & > svg {
+    margin-left: -3px !important;
     margin-right: 10px;
   }
 `;
@@ -192,20 +205,6 @@ export const ListClusters = () => {
       resize: true,
     },
     {
-      label: KDFM.METRICS,
-      renderCell: item => {
-        return (
-          <UrlRender
-            tooltipId={'metrics-url-tooltip'}
-            copy_btn_tooltip={'Copy Metrics URL'}
-            url={item.metrics_url}
-          />
-        );
-      },
-      width: '20%',
-      resize: true,
-    },
-    {
       label: KDFM.ACTIONS,
       renderCell: item => {
         return (
@@ -233,13 +232,33 @@ export const ListClusters = () => {
                           <span>{KDFM.DEACTIVATE}</span>
                         </Item>
                       )}
-                      {item?.logs_url && (
+                      {
+                        <StyledLink
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href={item?.metrics_url}
+                          disabled={isEmpty(item?.metrics_url)}
+                        >
+                          <MetricsIconContainer>
+                            <MetricsIcon color="rgb(68, 68, 69)" />
+                          </MetricsIconContainer>
+                          <a
+                            href={item?.metrics_url}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            {KDFM.METRICS}
+                          </a>
+                        </StyledLink>
+                      }
+                      {
                         <StyledLink
                           target="_blank"
                           rel="noopener noreferrer"
                           href={item?.logs_url}
+                          disabled={isEmpty(item?.logs_url)}
                         >
-                          <OpenLinkIcon color="rgb(68, 68, 69)" />
+                          <ActivityHistoryIcon color="rgb(68, 68, 69)" />
                           <a
                             href={item?.logs_url}
                             rel="noopener noreferrer"
@@ -248,7 +267,7 @@ export const ListClusters = () => {
                             {KDFM.LOGS}
                           </a>
                         </StyledLink>
-                      )}
+                      }
                     </>
                   </>
                 ) : (
@@ -269,13 +288,31 @@ export const ListClusters = () => {
                             <span> Delete</span>
                           </Item>
                         )}
-                        {item?.logs_url && (
+                        {
+                          <StyledLink
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href={item?.metrics_url}
+                            disabled={isEmpty(item?.metrics_url)}
+                          >
+                            <OpenLinkIcon color="rgb(68, 68, 69)" />
+                            <a
+                              href={item?.metrics_url}
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              {KDFM.METRICS}
+                            </a>
+                          </StyledLink>
+                        }
+                        {
                           <StyledLink
                             target="_blank"
                             rel="noopener noreferrer"
                             href={item?.logs_url}
+                            disabled={isEmpty(item?.logs_url)}
                           >
-                            <OpenLinkIcon color="rgb(68, 68, 69)" />
+                            <ActivityHistoryIcon color="rgb(68, 68, 69)" />
                             <a
                               href={item?.logs_url}
                               rel="noopener noreferrer"
@@ -284,7 +321,7 @@ export const ListClusters = () => {
                               {KDFM.LOGS}
                             </a>
                           </StyledLink>
-                        )}
+                        }
                       </>
                     )}
                   </>

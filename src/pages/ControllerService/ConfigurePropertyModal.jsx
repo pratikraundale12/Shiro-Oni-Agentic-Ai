@@ -46,6 +46,7 @@ const ConfigurePropertyModal = ({
 }) => {
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
+  const [checkStringValidations, setCheckStringValidations] = useState(false);
   const [addNewServiceDropdownDisplay, setAddNewServiceDropdownDisplay] =
     useState(false);
   const [
@@ -113,10 +114,14 @@ const ConfigurePropertyModal = ({
   const optionSchema = yup.object().shape({
     dropdownOne: yup.string().required('Select value'),
   });
+  const isValidationDisabled = checkStringValidations;
   const stringSchema = yup.object().shape({
-    valueString: yup.string().required('Value is required'),
+    valueString: yup.string().when([], {
+      is: () => !isValidationDisabled,
+      then: schema => schema.required('Value is required'),
+      otherwise: schema => schema.notRequired(),
+    }),
   });
-
   const {
     register,
     reset,
@@ -144,6 +149,16 @@ const ConfigurePropertyModal = ({
   const valueString = watch('valueString');
   const dropDownOne = watch('dropdownOne');
   const dropDownTwoAddNewProperty = watch('dropdownTwoToAddNewProperty');
+  const setEmptyStringCheck = watch('setEmptyString');
+
+  useEffect(() => {
+    if (setEmptyStringCheck) {
+      setValue('valueString', '');
+      setCheckStringValidations(true);
+    } else {
+      setCheckStringValidations(false);
+    }
+  }, [setEmptyStringCheck, setValue]);
   const handleFormSubmit = data => {
     const payload = {
       id: selectedItemFromList?.id || controllerServiceId,
@@ -285,7 +300,9 @@ const ConfigurePropertyModal = ({
         primaryButtonText="Save"
         onSubmit={handleSubmit(handleFinalSubmit)}
         footerAlign="start"
-        primaryButtonDisabled={!(valueString || dropDownOne)}
+        primaryButtonDisabled={
+          !(valueString || dropDownOne || setEmptyStringCheck)
+        }
       >
         <ModalBody className="modal-body">
           {addNewProperty ? (
@@ -374,10 +391,11 @@ const ConfigurePropertyModal = ({
                         placeholder="Enter value"
                       />
                       <CheckboxField
-                        name="sensitive"
-                        label={'Is Sensitive value'}
+                        name="setEmptyString"
+                        label={'Set empty string'}
                         defaultChecked={false}
                         register={register}
+                        onChange={() => setValue('valueString', '')}
                       />
                     </>
                   )}
@@ -396,7 +414,15 @@ const ConfigurePropertyModal = ({
                 register={register}
                 placeholder="Enter Name"
               />
-
+              <CheckboxField
+                name="sensitive"
+                label={'Is Sensitive value'}
+                defaultChecked={false}
+                register={register}
+                disabled={
+                  !selectedItemFromList?.supportsSensitiveDynamicProperties
+                }
+              />
               <div className="col-4 mt-3">
                 <Button
                   type="button"

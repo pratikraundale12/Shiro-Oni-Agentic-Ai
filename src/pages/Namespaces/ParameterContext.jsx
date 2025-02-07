@@ -410,6 +410,14 @@ const ParameterContext = ({
   const pcLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchParameterContext')
   );
+  const sortByParentGroupAndName = array => {
+    return [...array].sort((a, b) => {
+      if (a?.parentParameterId === b?.parentParameterId) {
+        return a?.name?.localeCompare(b?.name);
+      }
+      return a?.parentParameterId - b?.parentParameterId;
+    });
+  };
   return (
     <>
       <FullPageLoader loading={pcLoading} />
@@ -424,7 +432,11 @@ const ParameterContext = ({
             >
               <ParameterTable>
                 <Table
-                  data={tableStateData}
+                  data={
+                    !isEmpty(sortByParentGroupAndName(tableStateData))
+                      ? sortByParentGroupAndName(tableStateData)
+                      : []
+                  }
                   columns={COLUMNS}
                   className={'parameter-context-table'}
                 />
