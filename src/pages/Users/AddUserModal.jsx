@@ -88,11 +88,13 @@ const StyledPasswordField = styled(PasswordField)`
 
 export const AddUserModal = props => {
   const dispatch = useDispatch();
-  // const roles = useSelector(RolesSelectors.getRoles);
   const { state, setState } = useGlobalContext();
   const currentUser = state.currentUser;
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
   const userModalOpen = useSelector(UsersSelectors.getUserModalOpen);
+  const userSchemaProvider = () => {
+    return isEmpty(state?.selectedItem) ? userSchema : editUserSchema;
+  };
   const {
     register,
     reset,
@@ -103,9 +105,7 @@ export const AddUserModal = props => {
     formState: { errors },
   } = useForm({
     defaultValues: DEFAULT_VALUES,
-    resolver: yupResolver(
-      isEmpty(state?.selectedItem) ? userSchema : editUserSchema
-    ),
+    resolver: yupResolver(userSchemaProvider()),
   });
 
   const openModal = () => {
@@ -123,7 +123,7 @@ export const AddUserModal = props => {
 
   const password = watch('password');
 
-  const onSubmit = async data => {
+  const createFormData = data => {
     const formData = new FormData();
     formData.append('first_name', data.first_name);
     formData.append('middle_name', data.middle_name);
@@ -137,51 +137,50 @@ export const AddUserModal = props => {
     formData.append('username', data.username);
     if (data.photo && data.photo.size > 0) {
       formData.append('photo', data.photo);
-    }
-    if (state.selectedItem && !data.photo) {
+    } else if (state.selectedItem && !data.photo) {
       formData.append('photo', null);
     }
+    return formData;
+  };
+
+  const handleApiResponse = (response, successMessage) => {
+    if (response.status === 200 || response.status === 201) {
+      dispatch(GridActions.fetchGrid({ module: 'users' }));
+      toast.success(successMessage);
+      setState(prevState => ({
+        ...prevState,
+        userModal: false,
+        selectedItem: null,
+      }));
+      dispatch(UsersActions.setUserModalOpen(false));
+      return true;
+    }
+    toast.error(response.message);
+    return false;
+  };
+
+  const onSubmit = async data => {
+    const formData = createFormData(data);
 
     if (isEmpty(state.selectedItem)) {
       const response = await createUserApi(formData);
-      if (response.status == 201) {
-        dispatch(GridActions.fetchGrid({ module: 'users' }));
-        toast.success('User Created Successfully');
-        setState({
-          ...state,
-          userModal: false,
-          selectedItem: null,
-        });
-        dispatch(UsersActions.setUserModalOpen(false));
-      } else {
-        toast.error(response.message);
-      }
+      handleApiResponse(response, 'User Created Successfully');
     } else {
       const response = await editUserDataApi(state.selectedItem?.id, formData);
-      if (response.status == 200) {
-        dispatch(GridActions.fetchGrid({ module: 'users' }));
-        (state?.label == 'Profile' ||
-          response?.data?.id == currentUserData?.id) &&
+      if (handleApiResponse(response, 'User Updated Successfully')) {
+        if (
+          state?.label === 'Profile' ||
+          response?.data?.id === currentUserData?.id
+        ) {
           dispatch(AuthenticationActions.setCurrentUser(response?.data));
-        toast.success('User Updated Successfully');
-        setState({
-          ...state,
-          userModal: false,
-          selectedItem: null,
-        });
-        dispatch(UsersActions.setUserModalOpen(false));
-        if (response?.data?.id == currentUser?.id) {
-          setState({
-            ...state,
+        }
+        if (response?.data?.id === currentUser?.id) {
+          setState(prevState => ({
+            ...prevState,
             currentUser: response.data,
-            userModal: false,
-            selectedItem: null,
-          });
-          dispatch(UsersActions.setUserModalOpen(false));
+          }));
         }
         localStorage.setItem(ACCESS_TOKEN, response.data.token);
-      } else {
-        toast.error(response.message);
       }
     }
   };
@@ -194,6 +193,15 @@ export const AddUserModal = props => {
       else reset(state.selectedItem);
     }
   }, [reset, state.userModal, state.selectedItem]);
+  const userModalTitleProvider = () => {
+    return state.selectedItem ? `Edit ${state.label}` : 'Add New User';
+  };
+  const isFieldsDisabled = () => {
+    return currentUserData?.role === 'superadmin' &&
+      currentUserData?.id === state?.selectedItem?.id
+      ? false
+      : state.selectedItem;
+  };
 
   return (
     <div {...props}>
@@ -206,7 +214,7 @@ export const AddUserModal = props => {
       </Button>
       <Modal
         size="lg"
-        title={state.selectedItem ? `Edit ${state.label}` : 'Add New User'}
+        title={userModalTitleProvider()}
         isOpen={userModalOpen}
         onRequestClose={closeModal}
         secondaryButtonText="Cancel"
@@ -223,12 +231,7 @@ export const AddUserModal = props => {
             setValue={setValue}
             errors={errors}
             url={`${API_URL}${state.selectedItem?.photo}`}
-            disabled={
-              currentUserData?.role === 'superadmin' &&
-              currentUserData?.id === state?.selectedItem?.id
-                ? false
-                : state.selectedItem
-            }
+            disabled={isFieldsDisabled()}
           />
         </ImageContainer>
         <Continer>
@@ -246,12 +249,7 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
-                    disabled={
-                      currentUserData?.role === 'superadmin' &&
-                      currentUserData?.id === state?.selectedItem?.id
-                        ? false
-                        : state.selectedItem
-                    }
+                    disabled={isFieldsDisabled()}
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
@@ -263,12 +261,7 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
-                    disabled={
-                      currentUserData?.role === 'superadmin' &&
-                      currentUserData?.id === state?.selectedItem?.id
-                        ? false
-                        : state.selectedItem
-                    }
+                    disabled={isFieldsDisabled()}
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
@@ -281,12 +274,7 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
-                    disabled={
-                      currentUserData?.role === 'superadmin' &&
-                      currentUserData?.id === state?.selectedItem?.id
-                        ? false
-                        : state.selectedItem
-                    }
+                    disabled={isFieldsDisabled()}
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
@@ -299,12 +287,7 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
-                    disabled={
-                      currentUserData?.role === 'superadmin' &&
-                      currentUserData?.id === state?.selectedItem?.id
-                        ? false
-                        : state.selectedItem
-                    }
+                    disabled={isFieldsDisabled()}
                   />
                 </div>
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 form-ele">
@@ -317,12 +300,7 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<MailIcon />}
-                    disabled={
-                      currentUserData?.role === 'superadmin' &&
-                      currentUserData?.id === state?.selectedItem?.id
-                        ? false
-                        : state.selectedItem
-                    }
+                    disabled={isFieldsDisabled()}
                   />
                 </div>
                 {currentUserData.role === 'superadmin' && (
@@ -363,12 +341,7 @@ export const AddUserModal = props => {
                     register={register}
                     errors={errors}
                     icon={<PhoneIcon />}
-                    disabled={
-                      currentUserData?.role === 'superadmin' &&
-                      currentUserData?.id === state?.selectedItem?.id
-                        ? false
-                        : state.selectedItem
-                    }
+                    disabled={isFieldsDisabled()}
                   />
                 </div>
               </div>
