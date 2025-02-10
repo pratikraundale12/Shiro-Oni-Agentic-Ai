@@ -10,7 +10,6 @@ import {
   LogoutIcon,
   MetricsIcon,
   OpenEyeIcon,
-  OpenLinkIcon,
   PencilIcon,
   SortDownIcon,
   SortUpIcon,
@@ -84,6 +83,7 @@ const Item = styled.div`
 
 const StyledLink = styled.a`
   width: 8rem;
+  color: #444445;
   position: relative;
   cursor: pointer;
   display: flex;
@@ -92,7 +92,6 @@ const StyledLink = styled.a`
   text-decoration: none !important;
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.md};
-  color: ${props => props.theme.colors.darker};
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.4 : 1)};
   pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
@@ -101,7 +100,7 @@ const StyledLink = styled.a`
   }
   & > a {
     text-decoration: none !important;
-    color: black;
+    color: #444445;
   }
   & > svg {
     flex-shrink: 0;
@@ -239,7 +238,7 @@ export const ListClusters = () => {
                           href={item?.metrics_url}
                         >
                           <MetricsIconContainer>
-                            <MetricsIcon color="rgb(68, 68, 69)" />
+                            <MetricsIcon color="#444445" />
                           </MetricsIconContainer>
                           <a
                             href={item?.metrics_url}
@@ -256,7 +255,7 @@ export const ListClusters = () => {
                           rel="noopener noreferrer"
                           href={item?.logs_url}
                         >
-                          <ActivityHistoryIcon color="rgb(68, 68, 69)" />
+                          <ActivityHistoryIcon />
                           <a
                             href={item?.logs_url}
                             rel="noopener noreferrer"
@@ -292,7 +291,7 @@ export const ListClusters = () => {
                             rel="noopener noreferrer"
                             href={item?.metrics_url}
                           >
-                            <OpenLinkIcon color="rgb(68, 68, 69)" />
+                            <MetricsIcon color="rgb(68, 68, 69)" />
                             <a
                               href={item?.metrics_url}
                               rel="noopener noreferrer"
@@ -308,7 +307,7 @@ export const ListClusters = () => {
                             rel="noopener noreferrer"
                             href={item?.logs_url}
                           >
-                            <ActivityHistoryIcon color="rgb(68, 68, 69)" />
+                            <ActivityHistoryIcon />
                             <a
                               href={item?.logs_url}
                               rel="noopener noreferrer"
