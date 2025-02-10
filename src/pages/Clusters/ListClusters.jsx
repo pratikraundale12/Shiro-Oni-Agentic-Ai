@@ -164,7 +164,7 @@ export const ListClusters = () => {
       renderCell: item => (
         <TextRender text={item.name} capitalizeText={false} />
       ),
-      width: '17%',
+      width: '18%',
       sort: { sortKey: 'name' },
       resize: true,
     },
@@ -183,7 +183,7 @@ export const ListClusters = () => {
           />
         );
       },
-      width: '20%',
+      width: '40%',
       resize: true,
     },
     {
@@ -196,11 +196,13 @@ export const ListClusters = () => {
           status={item.status}
         />
       ),
+      width: '15%',
       resize: true,
     },
     {
       label: KDFM.STATUS,
       renderCell: item => <StatusRender status={item.status} />,
+      width: '15%',
       resize: true,
     },
     {
