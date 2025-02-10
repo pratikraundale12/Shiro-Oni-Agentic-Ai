@@ -139,7 +139,7 @@ const ValidationIconWrapper = styled.div`
 
 const TooltipList = styled.ul`
   padding-left: 8px;
-  marign: 0;
+  margin: 0;
 `;
 
 const ControllerServiceTab = ({
@@ -338,28 +338,29 @@ const ControllerServiceTab = ({
     }
   };
 
-  useEffect(() => {
-    const updateControllerData = () => {
-      const updatedServices = lsForUpgrade?.map(service => {
-        const updatedControllerData = service?.controllerData?.map(
-          controller => {
-            const matchingObject = listData?.find(
-              item => item.identifier === controller?.identifier
-            );
-            return matchingObject ? matchingObject : controller;
-          }
+  const updateControllerData = (services, listData) => {
+    if (!services || !listData) return services;
+
+    return services?.map(service => {
+      const updatedControllerData = service?.controllerData?.map(controller => {
+        return (
+          listData.find(item => item?.identifier === controller?.identifier) ||
+          controller
         );
-
-        return {
-          ...service,
-          controllerData: updatedControllerData,
-        };
       });
-      setLsForUpgrade(updatedServices);
-    };
 
-    updateControllerData();
-  }, [listData]);
+      return {
+        ...service,
+        controllerData: updatedControllerData,
+      };
+    });
+  };
+
+  useEffect(() => {
+    if (lsForUpgrade) {
+      setLsForUpgrade(updateControllerData(lsForUpgrade, listData));
+    }
+  }, [listData, lsForUpgrade]);
 
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
