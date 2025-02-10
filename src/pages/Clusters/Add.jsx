@@ -306,8 +306,7 @@ const TagItem = styled.div`
   padding: 0.5em 0.75em;
   border-radius: 20px;
 `;
-const CloseButton = styled.span`
-  padding-top: 3px;
+const CloseButton = styled.button`
   height: 20px;
   width: 20px;
   background-color: rgb(48, 48, 48);
@@ -808,9 +807,11 @@ export const Add = () => {
     }
   }, [data, tags, approverEnable, notificationEnable]);
   const handleTitleProvider = data => {
-    return data
-      ? `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`
-      : 'Add New Cluster Details';
+    if (data) {
+      return `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`;
+    } else {
+      return 'Add New Cluster Details';
+    }
   };
   const isRegistryDetailDisable = () => {
     return (
@@ -824,25 +825,53 @@ export const Add = () => {
     return isEmpty(tags.split(',').filter(tag => tag)) ? 'Cluster Tags' : '';
   };
   const giveSubmitButtonText = () => {
-    return newRegistry ? KDFM.CONTINUE : clusterId ? KDFM.SAVE : KDFM.CONTINUE;
+    if (newRegistry) {
+      return KDFM.CONTINUE;
+    } else if (clusterId) {
+      return KDFM.SAVE;
+    } else {
+      return KDFM.CONTINUE;
+    }
   };
   const isSubmitButtonDisable = () => {
-    return (
-      Object.keys(errors).length > 0 ||
-      (newRegistry
-        ? !testSuccess
-        : clusterId
-          ? (watchedFields?.[0] === data?.name &&
-              watchedFields?.[2] ===
-                (data?.metrics_url === null ? '' : data?.metrics_url) &&
-              watchedFields?.[3] ===
-                (data?.logs_url === null ? '' : data?.logs_url) &&
-              checkEditSave() &&
-              saveButtonEnable) ||
-            !test
-          : !testSuccess)
-    );
+    if (Object.keys(errors).length > 0) {
+      return true;
+    }
+
+    if (newRegistry) {
+      if (!testSuccess) {
+        return true;
+      }
+      if (
+        watchedFields?.[0] === data?.name &&
+        watchedFields?.[2] ===
+          (data?.metrics_url === null ? '' : data?.metrics_url) &&
+        watchedFields?.[3] ===
+          (data?.logs_url === null ? '' : data?.logs_url) &&
+        checkEditSave() &&
+        saveButtonEnable
+      ) {
+        return false;
+      }
+      return !test;
+    } else if (clusterId) {
+      if (
+        watchedFields?.[0] === data?.name &&
+        watchedFields?.[2] ===
+          (data?.metrics_url === null ? '' : data?.metrics_url) &&
+        watchedFields?.[3] ===
+          (data?.logs_url === null ? '' : data?.logs_url) &&
+        checkEditSave() &&
+        saveButtonEnable
+      ) {
+        return false;
+      }
+      return !testSuccess;
+    }
+
+    return !testSuccess;
   };
+
   const showSubmitButtonOnCluster = () => {
     return activeTab === 'cluster' || newRegistry;
   };
@@ -856,11 +885,15 @@ export const Add = () => {
       : KDFM.CLUSTER_TESTED_SUCCESSFULLY;
   };
   const giveTestClusterTexts = () => {
-    return activeTab === CLUSTER_MODULE_TABS.CLUSTER
-      ? clusterId
-        ? KDFM.CLUSTER_TESTED_SUCCES
-        : KDFM.CLUSTER_TESTED_SUCCES_PROMPT
-      : KDFM.REGISTRY_TESTED_SUCCESS_PROMPT;
+    if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
+      if (clusterId) {
+        return KDFM.CLUSTER_TESTED_SUCCES;
+      } else {
+        return KDFM.CLUSTER_TESTED_SUCCES_PROMPT;
+      }
+    } else {
+      return KDFM.REGISTRY_TESTED_SUCCESS_PROMPT;
+    }
   };
 
   return (
@@ -954,13 +987,12 @@ export const Add = () => {
                 .split(',')
                 .filter(tag => tag)
                 .map((tag, index) => (
-                  <TagItem className="tag-item" key={index}>
+                  <TagItem className="tag-item" key={tag}>
                     <CharacterCount className="text">
                       {tag.length > 10 ? `${tag.substring(0, 10)}...` : tag}
                     </CharacterCount>
                     <CloseButton
                       className="close"
-                      role="button"
                       tabIndex={0}
                       onClick={() => removeTag(tag)}
                       onKeyDown={e => {
