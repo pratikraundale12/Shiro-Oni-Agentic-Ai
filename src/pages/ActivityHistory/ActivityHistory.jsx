@@ -32,15 +32,13 @@ export const ActvityHistory = () => {
   const COLUMNS = [
     {
       label: (
-        <>
-          <button
-            onClick={() => toggleSorting('event')}
-            style={{ background: 'none' }}
-          >
-            {KDFM.EVENT}
-            {getSortIcon(sortingState, 'event')}
-          </button>
-        </>
+        <button
+          onClick={() => toggleSorting('event')}
+          style={{ background: 'none' }}
+        >
+          {KDFM.EVENT}
+          {getSortIcon(sortingState, 'event')}
+        </button>
       ),
       width: '10%',
       resize: true,
@@ -48,15 +46,13 @@ export const ActvityHistory = () => {
     },
     {
       label: (
-        <>
-          <button
-            onClick={() => toggleSorting('entity')}
-            style={{ background: 'none' }}
-          >
-            {KDFM.ENTITY}
-            {getSortIcon(sortingState, 'entity')}
-          </button>
-        </>
+        <button
+          onClick={() => toggleSorting('entity')}
+          style={{ background: 'none' }}
+        >
+          {KDFM.ENTITY}
+          {getSortIcon(sortingState, 'entity')}
+        </button>
       ),
       width: '10%',
       resize: true,
@@ -72,15 +68,13 @@ export const ActvityHistory = () => {
     },
     {
       label: (
-        <>
-          <button
-            onClick={() => toggleSorting('namespace')}
-            style={{ background: 'none' }}
-          >
-            {KDFM.NAMESPACE}
-            {getSortIcon(sortingState, 'namespace')}
-          </button>
-        </>
+        <button
+          onClick={() => toggleSorting('namespace')}
+          style={{ background: 'none' }}
+        >
+          {KDFM.NAMESPACE}
+          {getSortIcon(sortingState, 'namespace')}
+        </button>
       ),
       width: '10%',
       resize: true,
@@ -89,14 +83,12 @@ export const ActvityHistory = () => {
     },
     {
       label: (
-        <>
-          <button
-            onClick={() => toggleSorting('flow_name')}
-            style={{ background: 'none' }}
-          >
-            {KDFM.FLOW_NAME} {getSortIcon(sortingState, 'flow_name')}
-          </button>
-        </>
+        <button
+          onClick={() => toggleSorting('flow_name')}
+          style={{ background: 'none' }}
+        >
+          {KDFM.FLOW_NAME} {getSortIcon(sortingState, 'flow_name')}
+        </button>
       ),
       width: '10%',
       resize: true,
@@ -104,14 +96,12 @@ export const ActvityHistory = () => {
     },
     {
       label: (
-        <>
-          <button
-            onClick={() => toggleSorting('cluster')}
-            style={{ background: 'none' }}
-          >
-            {KDFM.CLUSTER} {getSortIcon(sortingState, 'cluster')}
-          </button>
-        </>
+        <button
+          onClick={() => toggleSorting('cluster')}
+          style={{ background: 'none' }}
+        >
+          {KDFM.CLUSTER} {getSortIcon(sortingState, 'cluster')}
+        </button>
       ),
       width: '10%',
       resize: true,
@@ -134,14 +124,12 @@ export const ActvityHistory = () => {
     },
     {
       label: (
-        <>
-          <button
-            onClick={() => toggleSorting('status')}
-            style={{ background: 'none' }}
-          >
-            {KDFM.STATUS} {getSortIcon(sortingState, 'status')}
-          </button>
-        </>
+        <button
+          onClick={() => toggleSorting('status')}
+          style={{ background: 'none' }}
+        >
+          {KDFM.STATUS} {getSortIcon(sortingState, 'status')}
+        </button>
       ),
       width: '8%',
       resize: true,
@@ -160,14 +148,12 @@ export const ActvityHistory = () => {
     },
     {
       label: (
-        <>
-          <button
-            onClick={() => toggleSorting('created_by_name')}
-            style={{ background: 'none' }}
-          >
-            {KDFM.CREATED_BY} {getSortIcon(sortingState, 'created_by_name')}
-          </button>
-        </>
+        <button
+          onClick={() => toggleSorting('created_by_name')}
+          style={{ background: 'none' }}
+        >
+          {KDFM.CREATED_BY} {getSortIcon(sortingState, 'created_by_name')}
+        </button>
       ),
       width: '10%',
       resize: true,
