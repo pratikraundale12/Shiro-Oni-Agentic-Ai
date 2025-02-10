@@ -339,6 +339,7 @@ export const ListControllerService = () => {
           item?.state === 'INVALID' ||
           item?.state === 'VALIDATING' ||
           item?.state === 'DISABLING' ||
+          !item?.canWrite ||
           (item?.state === 'DISABLED' &&
             item?.validationStatus === 'INVALID') ||
           !controllerPermissions.includes('edit_controller_services');
@@ -354,15 +355,21 @@ export const ListControllerService = () => {
                   }}
                   data-tooltip-id={'Settings'}
                   disabled={
-                    item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                    item?.state === 'ENABLING' ||
+                    item?.state === 'ENABLED' ||
+                    !item?.canWrite
                   }
                   style={{
                     opacity:
-                      item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                      item?.state === 'ENABLING' ||
+                      item?.state === 'ENABLED' ||
+                      !item?.canWrite
                         ? 0.3
                         : 1,
                     cursor:
-                      item?.state === 'ENABLING' || item?.state === 'ENABLED'
+                      item?.state === 'ENABLING' ||
+                      item?.state === 'ENABLED' ||
+                      !item?.canWrite
                         ? 'not-allowed'
                         : 'pointer',
                   }}
@@ -425,6 +432,8 @@ export const ListControllerService = () => {
                       event.currentTarget.blur();
                     }}
                     data-tooltip-id={'Delete'}
+                    disabled={!item?.canWrite}
+                    style={{ opacity: !item?.canWrite ? 0.3 : 1 }}
                   >
                     <DeleteSmallIcon color="black" height="28" />
                   </button>
