@@ -4,13 +4,16 @@ import { requestSaga } from '../helpers/request_sagas';
 import { RolesActions, RolesSelectors } from './redux';
 
 export function* fetchRoles(api) {
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'fetchRoles',
     loadingSection: 'fetchRoles',
     apiMethod: api.fetchRoles,
     apiParams: [{ params: {} }],
     successAction: RolesActions.fetchRolesSuccess,
   });
+  if (response?.data?.message) {
+    toast.error(response?.data?.message);
+  }
 }
 
 export function* fetchLdap(api, payload) {
