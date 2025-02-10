@@ -4,10 +4,10 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   ActiveIcon,
-  ActivityHistoryIcon,
   DeleteDustbinIcon,
   DeleteSmallIcon,
   LogoutIcon,
+  LogsIcon,
   MetricsIcon,
   OpenEyeIcon,
   PencilIcon,
@@ -110,8 +110,8 @@ const StyledLink = styled.a`
 
 const MetricsIconContainer = styled.div`
   & > svg {
-    margin-left: -3px !important;
-    margin-right: 10px;
+    margin-left: -1px !important;
+    margin-right: 8px !important;
   }
 `;
 
@@ -238,7 +238,7 @@ export const ListClusters = () => {
                           href={item?.metrics_url}
                         >
                           <MetricsIconContainer>
-                            <MetricsIcon color="#444445" />
+                            <MetricsIcon />
                           </MetricsIconContainer>
                           <a
                             href={item?.metrics_url}
@@ -255,7 +255,10 @@ export const ListClusters = () => {
                           rel="noopener noreferrer"
                           href={item?.logs_url}
                         >
-                          <ActivityHistoryIcon />
+                          <MetricsIconContainer>
+                            {' '}
+                            <LogsIcon />
+                          </MetricsIconContainer>
                           <a
                             href={item?.logs_url}
                             rel="noopener noreferrer"
@@ -291,7 +294,10 @@ export const ListClusters = () => {
                             rel="noopener noreferrer"
                             href={item?.metrics_url}
                           >
-                            <MetricsIcon color="rgb(68, 68, 69)" />
+                            <MetricsIconContainer>
+                              {' '}
+                              <MetricsIcon />
+                            </MetricsIconContainer>
                             <a
                               href={item?.metrics_url}
                               rel="noopener noreferrer"
@@ -301,13 +307,16 @@ export const ListClusters = () => {
                             </a>
                           </StyledLink>
                         )}
-                        {!isEmpty(item?.logs) && (
+                        {!isEmpty(item?.logs_url) && (
                           <StyledLink
                             target="_blank"
                             rel="noopener noreferrer"
                             href={item?.logs_url}
                           >
-                            <ActivityHistoryIcon />
+                            <MetricsIconContainer>
+                              {' '}
+                              <LogsIcon />
+                            </MetricsIconContainer>
                             <a
                               href={item?.logs_url}
                               rel="noopener noreferrer"
