@@ -20,7 +20,6 @@ import {
 import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, CheckboxField, InputField, SelectField } from '../../shared';
-import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
   ClustersActions,
   ClustersSelectors,
@@ -339,7 +338,7 @@ export const Add = () => {
   const [loading, setLoading] = useState(false);
   const [isCredOpen, setIsCredOpen] = useState(false);
   const [test, setTest] = useState(true);
-  const [suceessModal, setSuccessModal] = useState(false);
+  const [successModal, setSuccessModal] = useState(false);
   const [failedModal, setFailedModal] = useState(false);
   const [newRegistry, setNewRegistry] = useState(false);
   const [testSuccess, setTestSuccess] = useState(false);
@@ -447,6 +446,11 @@ export const Add = () => {
   const sortRegisrtyURL = registries?.map(ele => ele?.registry_url);
   const registryURLs =
     useSelector(ClustersSelectors.getClusterFormData) || sortRegisrtyURL;
+  const handleSchemaCheck = activeTab => {
+    return activeTab === CLUSTER_MODULE_TABS.CLUSTER
+      ? ClusterSchema
+      : RegistrySchema;
+  };
 
   const {
     control,
@@ -454,12 +458,9 @@ export const Add = () => {
     register,
     reset,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(
-      activeTab === CLUSTER_MODULE_TABS.CLUSTER ? ClusterSchema : RegistrySchema
-    ),
+    resolver: yupResolver(handleSchemaCheck(activeTab)),
     mode: 'all',
     reValidateMode: 'onChange',
   });
@@ -676,17 +677,6 @@ export const Add = () => {
       console.error('Failed to fetch registries:', error);
     }
   };
-
-  useEffect(() => {
-    fetchRegistry();
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (selectedRegistryId) {
-      fetchRegistryDetails(selectedRegistryId);
-    }
-  }, [registries, selectedRegistryId, activeTab, newRegistry]);
-
   const fetchRegistryDetails = async () => {
     try {
       const response = await getOneRegistry(selectedRegistryId);
@@ -695,6 +685,15 @@ export const Add = () => {
       console.error('Failed to fetch registry details:', error);
     }
   };
+  useEffect(() => {
+    fetchRegistry();
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (selectedRegistryId) {
+      fetchRegistryDetails();
+    }
+  }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const handleRegistry = () => {
     if (
@@ -808,16 +807,65 @@ export const Add = () => {
       setSaveButtonEnable(false);
     }
   }, [data, tags, approverEnable, notificationEnable]);
+  const handleTitleProvider = data => {
+    return data
+      ? `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`
+      : 'Add New Cluster Details';
+  };
+  const isRegistryDetailDisable = () => {
+    return (
+      clusterId &&
+      (watchedFields?.[1] !== data?.nifi_url ||
+        watchedFields?.[0] !== data?.name ||
+        !checkEditSave())
+    );
+  };
+  const tagsPlaceholder = () => {
+    return isEmpty(tags.split(',').filter(tag => tag)) ? 'Cluster Tags' : '';
+  };
+  const giveSubmitButtonText = () => {
+    return newRegistry ? KDFM.CONTINUE : clusterId ? KDFM.SAVE : KDFM.CONTINUE;
+  };
+  const isSubmitButtonDisable = () => {
+    return (
+      Object.keys(errors).length > 0 ||
+      (newRegistry
+        ? !testSuccess
+        : clusterId
+          ? (watchedFields?.[0] === data?.name &&
+              watchedFields?.[2] ===
+                (data?.metrics_url === null ? '' : data?.metrics_url) &&
+              watchedFields?.[3] ===
+                (data?.logs_url === null ? '' : data?.logs_url) &&
+              checkEditSave() &&
+              saveButtonEnable) ||
+            !test
+          : !testSuccess)
+    );
+  };
+  const showSubmitButtonOnCluster = () => {
+    return activeTab === 'cluster' || newRegistry;
+  };
+  const showRegistryContiueButton = () => {
+    return !newRegistry && activeTab === 'registry';
+  };
+
+  const giveTestText = () => {
+    return activeTab === CLUSTER_MODULE_TABS.REGISTRY
+      ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
+      : KDFM.CLUSTER_TESTED_SUCCESSFULLY;
+  };
+  const giveTestClusterTexts = () => {
+    return activeTab === CLUSTER_MODULE_TABS.CLUSTER
+      ? clusterId
+        ? KDFM.CLUSTER_TESTED_SUCCES
+        : KDFM.CLUSTER_TESTED_SUCCES_PROMPT
+      : KDFM.REGISTRY_TESTED_SUCCESS_PROMPT;
+  };
 
   return (
     <Wrapper>
-      <Title
-        title={
-          data
-            ? `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`
-            : 'Add New Cluster Details'
-        }
-      />
+      <Title title={handleTitleProvider(data)} />
       <Container>
         <NavTabs id="nav-tab" role="tablist">
           <NavButton
@@ -837,34 +885,26 @@ export const Add = () => {
                   ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
                   : {}
               }
-              disabled={
-                clusterId &&
-                (watchedFields?.[1] !== data?.nifi_url ||
-                  watchedFields?.[0] !== data?.name ||
-                  !checkEditSave())
-              }
+              disabled={isRegistryDetailDisable()}
               data-tooltip-id="navButtonTooltip"
             >
               {KDFM.REGISTRY_DETAILS}
             </NavButton>
 
-            {clusterId &&
-              (watchedFields?.[1] !== data?.nifi_url ||
-                watchedFields?.[0] !== data?.name ||
-                !checkEditSave()) && (
-                <ReactTooltip
-                  id="navButtonTooltip"
-                  place="right"
-                  effect="solid"
-                  content="You have unsaved changes on Cluster Details"
-                  style={{
-                    whiteSpace: 'normal',
-                    zIndex: 9999,
-                  }}
-                  event="focus"
-                  eventOff="blur"
-                />
-              )}
+            {isRegistryDetailDisable() && (
+              <ReactTooltip
+                id="navButtonTooltip"
+                place="right"
+                effect="solid"
+                content="You have unsaved changes on Cluster Details"
+                style={{
+                  whiteSpace: 'normal',
+                  zIndex: 9999,
+                }}
+                event="focus"
+                eventOff="blur"
+              />
+            )}
           </>
         </NavTabs>
 
@@ -938,11 +978,7 @@ export const Add = () => {
               <TagsInput
                 type="text"
                 value={inputValue}
-                placeholder={
-                  tags.split(',').filter(tag => tag).length === 0
-                    ? 'Cluster Tags'
-                    : ''
-                }
+                placeholder={tagsPlaceholder()}
                 name="tags"
                 {...register('tags')}
                 onKeyDown={e => handleKeyDown(e)}
@@ -1029,17 +1065,11 @@ export const Add = () => {
                 </div>
               )}
             </Flex>
-            {testSuccess && !suceessModal && (
+            {testSuccess && !successModal && (
               <UploadCertificateContainer>
                 <CertificateMessage>
                   <RightCircleIcon width={60} height={60} />
-                  <TextTest>
-                    {activeTab === CLUSTER_MODULE_TABS.CLUSTER
-                      ? clusterId
-                        ? KDFM.CLUSTER_TESTED_SUCCES
-                        : KDFM.CLUSTER_TESTED_SUCCES_PROMPT
-                      : KDFM.REGISTRY_TESTED_SUCCESS_PROMPT}
-                  </TextTest>
+                  <TextTest>{giveTestClusterTexts()}</TextTest>
                 </CertificateMessage>
               </UploadCertificateContainer>
             )}
@@ -1077,9 +1107,7 @@ export const Add = () => {
                 {KDFM.ADD_NEW_REGISTRY}
               </StyledButton>
             </div>
-            {selectedRegistryId ? (
-              <></>
-            ) : (
+            {!selectedRegistryId && (
               <NoDataContainer>
                 <NoDataIcon />
                 <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
@@ -1151,15 +1179,11 @@ export const Add = () => {
                 </div>
               )}
             </Flex>
-            {testSuccess && !suceessModal && (
+            {testSuccess && !successModal && (
               <UploadCertificateContainer>
                 <CertificateMessage>
                   <RightCircleIcon width={60} height={60} />
-                  <TextTest>
-                    {activeTab === CLUSTER_MODULE_TABS.REGISTRY
-                      ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
-                      : KDFM.CLUSTER_TESTED_SUCCESSFULLY}
-                  </TextTest>
+                  <TextTest>{giveTestText()}</TextTest>
                 </CertificateMessage>
               </UploadCertificateContainer>
             )}
@@ -1171,35 +1195,15 @@ export const Add = () => {
           <Button variant="secondary" onClick={handleBack}>
             {KDFM.BACK}
           </Button>
-          {(activeTab === 'cluster' || newRegistry) && (
+          {showSubmitButtonOnCluster() && (
             <Button
               onClick={handleSubmit(onSubmit)}
-              disabled={
-                Object.keys(errors).length > 0 ||
-                (newRegistry
-                  ? !testSuccess
-                  : clusterId
-                    ? (watchedFields?.[0] === data?.name &&
-                        watchedFields?.[2] ===
-                          (data?.metrics_url === null
-                            ? ''
-                            : data?.metrics_url) &&
-                        watchedFields?.[3] ===
-                          (data?.logs_url === null ? '' : data?.logs_url) &&
-                        checkEditSave() &&
-                        saveButtonEnable) ||
-                      !test
-                    : !testSuccess)
-              }
+              disabled={isSubmitButtonDisable()}
             >
-              {newRegistry
-                ? KDFM.CONTINUE
-                : clusterId
-                  ? KDFM.SAVE
-                  : KDFM.CONTINUE}
+              {giveSubmitButtonText()}
             </Button>
           )}
-          {!newRegistry && activeTab === 'registry' && (
+          {showRegistryContiueButton() && (
             <Button
               onClick={handleRegistry}
               // disabled={ !testSuccess}
@@ -1238,14 +1242,14 @@ export const Add = () => {
         setOpenSummary={setOpenSummary}
         registry_id={selectedRegistryId}
         clusterId={clusterId}
-        edit={clusterId ? true : false}
+        edit={!!clusterId}
         notificationEnable={notificationEnable}
         approverEnable={approverEnable}
         tags={tags}
       />
-      {suceessModal && (
+      {successModal && (
         <SuccessTestModal
-          successTest={suceessModal}
+          successTest={successModal}
           setSuccessTest={setSuccessModal}
           name={`${activeTab} test Successful`}
           text="Your configuration test was successful.
