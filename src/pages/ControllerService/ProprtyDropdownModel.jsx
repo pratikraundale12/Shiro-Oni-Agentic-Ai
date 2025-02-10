@@ -205,6 +205,19 @@ const PropertyDropdownModal = ({
     }
   }, [isModalOpen]);
 
+  useEffect(() => {
+    if (!addNewProperty) {
+      reset({
+        newService: null,
+      });
+    }
+    if (addNewProperty) {
+      reset({
+        value: null,
+      });
+    }
+  }, [addNewProperty]);
+
   const onRefParamsClick = () => {
     setIsRefParams(true);
   };
@@ -252,7 +265,7 @@ const PropertyDropdownModal = ({
           selectedProperty === selectedPropertyToEdit?.dropDownName ||
           selectedProperty?.value === selectedPropertyToEdit?.value ||
           selectedProperty === selectedPropertyToEdit?.value ||
-          selectedProperty?.label === selectedPropertyToEdit?.dropDownName ||
+          (selectedProperty === '' && selectedPropertyToEdit?.value === null) ||
           addNewProperty
         }
         noScroll={true}
