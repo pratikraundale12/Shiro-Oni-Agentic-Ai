@@ -81,13 +81,12 @@ const AddProperties = ({
   }, [check, setValue]);
   useEffect(() => {
     reset({
-      value: selectedPropertyToEdit?.value || '',
+      value: selectedPropertyToEdit?.value,
       check: selectedPropertyToEdit?.empty_string_set || false,
     });
   }, [reset, isOpen]);
 
   const propertyValue = watch('value');
-
   // useEffect(() => {
   //   if (isEmpty(propertyValue) && !check) {
   //     setValue('value', null);
@@ -120,7 +119,10 @@ const AddProperties = ({
           <CheckboxField
             name="check"
             label={'Set empty string'}
-            defaultChecked={false}
+            defaultChecked={
+              selectedPropertyToEdit?.check ||
+              selectedPropertyToEdit?.value === ''
+            }
             register={register}
           />
         </ModalBody>

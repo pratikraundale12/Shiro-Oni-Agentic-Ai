@@ -280,6 +280,8 @@ const AddParameterContext = ({
   useEffect(() => {
     if (check) {
       setValue('value', '');
+    } else if (!check) {
+      setValue('value', parameterContextItem?.value);
     }
   }, [check, setValue]);
 
@@ -302,7 +304,8 @@ const AddParameterContext = ({
       onSubmit={handleSubmit(handleAddEditParameterContext)}
       primaryButtonDisabled={
         pcValue === parameterContextItem?.value &&
-        pcDesc === parameterContextItem?.description
+        pcDesc === parameterContextItem?.description &&
+        check === parameterContextItem?.check
       }
     >
       <ModalBody className="modal-body">
