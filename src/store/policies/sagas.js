@@ -1,5 +1,6 @@
-import { call, all, takeLatest } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
+import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { AuthenticationActions } from '../authentication';
 import { requestSaga } from '../helpers/request_sagas';
 import { PoliciesActions } from './redux';
 // import { fetchGrid } from '../grid';
@@ -46,6 +47,7 @@ export function* updateRolesPolicies(api, { payload }) {
     yield call(fetchPoliciesRoles, api, {
       payload: { roleId: payload.roleId },
     });
+    yield put(AuthenticationActions.fetchCurrentUser());
   }
   if (!response.ok) toast.error(response.data.message);
 }

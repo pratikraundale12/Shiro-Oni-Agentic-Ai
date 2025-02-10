@@ -3,10 +3,10 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { ActivityHistoryIcon } from '../../assets';
 import { Grid, IconButton, StatusRender, TextRender } from '../../components';
-import { KDFM, REFRESH_OPTIONS, STATUS_OPTIONS } from '../../constants';
-import { useGlobalContext } from '../../utils';
-import { Button } from '../../shared';
+import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
+import { Button } from '../../shared';
+import { useGlobalContext } from '../../utils';
 
 const Container = styled.div`
   height: 95%;
@@ -94,7 +94,6 @@ export const ClusterSummary = () => {
         title="Clusters Summary"
         placeholder={KDFM.SEARCH_NODES}
         columns={COLUMNS}
-        statusOptions={STATUS_OPTIONS}
         refreshOptions={REFRESH_OPTIONS}
       />
       <div style={{ width: '74px', marginTop: '10px' }}>
