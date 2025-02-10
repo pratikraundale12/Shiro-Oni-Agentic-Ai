@@ -535,7 +535,6 @@ export const Add = () => {
       );
     } finally {
       setLoading(false);
-      toast.error(response.message);
     }
   };
 
@@ -835,33 +834,6 @@ export const Add = () => {
   };
   const hasValidationErrors = () => Object.keys(errors).length > 0;
 
-  const isFieldValuesMatch = () => {
-    return (
-      watchedFields?.[0] === data?.name &&
-      watchedFields?.[2] ===
-        (data?.metrics_url === null ? '' : data?.metrics_url) &&
-      watchedFields?.[3] === (data?.logs_url === null ? '' : data?.logs_url)
-    );
-  };
-
-  const isSaveEnabled = () => checkEditSave() && saveButtonEnable;
-
-  const isSubmitButtonDisable = () => {
-    if (hasValidationErrors()) {
-      return true;
-    }
-
-    if (newRegistry) {
-      return !testSuccess || (isFieldValuesMatch() && isSaveEnabled()) || !test;
-    }
-
-    if (clusterId) {
-      return (isFieldValuesMatch() && isSaveEnabled()) || !testSuccess;
-    }
-
-    return !testSuccess;
-  };
-
   const showSubmitButtonOnCluster = () => {
     return activeTab === 'cluster' || newRegistry;
   };
@@ -884,6 +856,28 @@ export const Add = () => {
     } else {
       return KDFM.REGISTRY_TESTED_SUCCESS_PROMPT;
     }
+  };
+
+  const isTestInvalid = () => !testSuccess;
+
+  const isFieldValuesUnchanged = () =>
+    watchedFields?.[0] === data?.name &&
+    watchedFields?.[2] ===
+      (data?.metrics_url === null ? '' : data?.metrics_url) &&
+    watchedFields?.[3] === (data?.logs_url === null ? '' : data?.logs_url);
+
+  const isSaveDisabled = () =>
+    isFieldValuesUnchanged() && checkEditSave() && saveButtonEnable;
+
+  const isDisabled = () => {
+    if (hasValidationErrors()) return true;
+    if (newRegistry) {
+      return isTestInvalid();
+    }
+    if (clusterId) {
+      return isSaveDisabled() || !test;
+    }
+    return isTestInvalid();
   };
 
   return (
@@ -1218,10 +1212,7 @@ export const Add = () => {
             {KDFM.BACK}
           </Button>
           {showSubmitButtonOnCluster() && (
-            <Button
-              onClick={handleSubmit(onSubmit)}
-              disabled={isSubmitButtonDisable()}
-            >
+            <Button onClick={handleSubmit(onSubmit)} disabled={isDisabled()}>
               {giveSubmitButtonText()}
             </Button>
           )}
