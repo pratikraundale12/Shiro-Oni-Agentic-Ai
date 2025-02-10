@@ -109,7 +109,7 @@ const AddOrEditVariablesModal = ({
       secondaryButtonText={KDFM.CANCEL}
       primaryButtonText={KDFM.SAVE}
       footerAlign="start"
-      onSubmit={() => handleAddEditVariables(formData)}
+      onSubmit={() => handleAddEditVariables()}
       primaryButtonDisabled={
         !isEmpty(editVariableData) && !isEmpty(formData)
           ? isSaveBtnDisabled

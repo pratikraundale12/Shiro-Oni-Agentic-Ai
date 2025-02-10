@@ -7,12 +7,9 @@ export const ActvityHistory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('');
   const toggleSorting = column => {
-    setSortingState(prevState => {
-      if (prevState === column) {
-        return `-${column}`;
-      }
-      return column;
-    });
+    setSortingState(prevState =>
+      prevState === column ? `-${column}` : column
+    );
   };
   const convertDateTime = dateString => {
     if (!dateString) return 'No date provided';
@@ -28,6 +25,10 @@ export const ActvityHistory = () => {
       hour12: true,
     });
   };
+
+  const getSortIcon = (sortingState, type) => {
+    return sortingState === type ? <SortUpIcon /> : <SortDownIcon />;
+  };
   const COLUMNS = [
     {
       label: (
@@ -36,14 +37,8 @@ export const ActvityHistory = () => {
             onClick={() => toggleSorting('event')}
             style={{ background: 'none' }}
           >
-            {KDFM.EVENT}{' '}
-            {sortingState === 'event' ? (
-              <SortUpIcon />
-            ) : sortingState === '-event' ? (
-              <SortDownIcon />
-            ) : (
-              <SortDownIcon />
-            )}
+            {KDFM.EVENT}
+            {getSortIcon(sortingState, 'event')}
           </button>
         </>
       ),
@@ -58,14 +53,8 @@ export const ActvityHistory = () => {
             onClick={() => toggleSorting('entity')}
             style={{ background: 'none' }}
           >
-            {KDFM.ENTITY}{' '}
-            {sortingState === 'entity' ? (
-              <SortUpIcon />
-            ) : sortingState === '-entity' ? (
-              <SortDownIcon />
-            ) : (
-              <SortDownIcon />
-            )}
+            {KDFM.ENTITY}
+            {getSortIcon(sortingState, 'entity')}
           </button>
         </>
       ),
@@ -88,14 +77,8 @@ export const ActvityHistory = () => {
             onClick={() => toggleSorting('namespace')}
             style={{ background: 'none' }}
           >
-            {KDFM.NAMESPACE}{' '}
-            {sortingState === 'namespace' ? (
-              <SortUpIcon />
-            ) : sortingState === '-namespace' ? (
-              <SortDownIcon />
-            ) : (
-              <SortDownIcon />
-            )}
+            {KDFM.NAMESPACE}
+            {getSortIcon(sortingState, 'namespace')}
           </button>
         </>
       ),
@@ -111,14 +94,7 @@ export const ActvityHistory = () => {
             onClick={() => toggleSorting('flow_name')}
             style={{ background: 'none' }}
           >
-            {KDFM.FLOW_NAME}{' '}
-            {sortingState === 'flow_name' ? (
-              <SortUpIcon />
-            ) : sortingState === '-flow_name' ? (
-              <SortDownIcon />
-            ) : (
-              <SortDownIcon />
-            )}
+            {KDFM.FLOW_NAME} {getSortIcon(sortingState, 'flow_name')}
           </button>
         </>
       ),
@@ -133,14 +109,7 @@ export const ActvityHistory = () => {
             onClick={() => toggleSorting('cluster')}
             style={{ background: 'none' }}
           >
-            {KDFM.CLUSTER}{' '}
-            {sortingState === 'cluster' ? (
-              <SortUpIcon />
-            ) : sortingState === '-cluster' ? (
-              <SortDownIcon />
-            ) : (
-              <SortDownIcon />
-            )}
+            {KDFM.CLUSTER} {getSortIcon(sortingState, 'cluster')}
           </button>
         </>
       ),
@@ -170,14 +139,7 @@ export const ActvityHistory = () => {
             onClick={() => toggleSorting('status')}
             style={{ background: 'none' }}
           >
-            {KDFM.STATUS}{' '}
-            {sortingState === 'status' ? (
-              <SortUpIcon />
-            ) : sortingState === '-status' ? (
-              <SortDownIcon />
-            ) : (
-              <SortDownIcon />
-            )}
+            {KDFM.STATUS} {getSortIcon(sortingState, 'status')}
           </button>
         </>
       ),
@@ -203,14 +165,7 @@ export const ActvityHistory = () => {
             onClick={() => toggleSorting('created_by_name')}
             style={{ background: 'none' }}
           >
-            {KDFM.CREATED_BY}{' '}
-            {sortingState === 'created_by_name' ? (
-              <SortUpIcon />
-            ) : sortingState === '-created_by_name' ? (
-              <SortDownIcon />
-            ) : (
-              <SortDownIcon />
-            )}
+            {KDFM.CREATED_BY} {getSortIcon(sortingState, 'created_by_name')}
           </button>
         </>
       ),
