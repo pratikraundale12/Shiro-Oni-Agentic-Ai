@@ -925,7 +925,7 @@ export function* getNewPropertyControllerServiceUpdated(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        serviceName: payload?.name,
+        serviceName: payload?.type,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,

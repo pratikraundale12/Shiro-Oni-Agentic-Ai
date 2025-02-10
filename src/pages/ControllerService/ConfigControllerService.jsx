@@ -225,11 +225,11 @@ export const ConfigControllerService = ({
           )}
           <div
             style={{ cursor: 'pointer' }}
-            onClick={() =>
+            onClick={() => {
               !item?.isSelective
                 ? handleAddValueModal(item)
-                : handleOpenPropertyDropDownModal(item)
-            }
+                : handleOpenPropertyDropDownModal(item);
+            }}
           >
             {' '}
             <PencilIcon height="28" />
