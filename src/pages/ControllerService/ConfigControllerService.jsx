@@ -226,7 +226,6 @@ export const ConfigControllerService = ({
           <div
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              console.log(item);
               !item?.isSelective
                 ? handleAddValueModal(item)
                 : handleOpenPropertyDropDownModal(item);
