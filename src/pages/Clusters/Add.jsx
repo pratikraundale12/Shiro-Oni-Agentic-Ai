@@ -833,40 +833,30 @@ export const Add = () => {
       return KDFM.CONTINUE;
     }
   };
+  const hasValidationErrors = () => Object.keys(errors).length > 0;
+
+  const isFieldValuesMatch = () => {
+    return (
+      watchedFields?.[0] === data?.name &&
+      watchedFields?.[2] ===
+        (data?.metrics_url === null ? '' : data?.metrics_url) &&
+      watchedFields?.[3] === (data?.logs_url === null ? '' : data?.logs_url)
+    );
+  };
+
+  const isSaveEnabled = () => checkEditSave() && saveButtonEnable;
+
   const isSubmitButtonDisable = () => {
-    if (Object.keys(errors).length > 0) {
+    if (hasValidationErrors()) {
       return true;
     }
 
     if (newRegistry) {
-      if (!testSuccess) {
-        return true;
-      }
-      if (
-        watchedFields?.[0] === data?.name &&
-        watchedFields?.[2] ===
-          (data?.metrics_url === null ? '' : data?.metrics_url) &&
-        watchedFields?.[3] ===
-          (data?.logs_url === null ? '' : data?.logs_url) &&
-        checkEditSave() &&
-        saveButtonEnable
-      ) {
-        return false;
-      }
-      return !test;
-    } else if (clusterId) {
-      if (
-        watchedFields?.[0] === data?.name &&
-        watchedFields?.[2] ===
-          (data?.metrics_url === null ? '' : data?.metrics_url) &&
-        watchedFields?.[3] ===
-          (data?.logs_url === null ? '' : data?.logs_url) &&
-        checkEditSave() &&
-        saveButtonEnable
-      ) {
-        return false;
-      }
-      return !testSuccess;
+      return !testSuccess || (isFieldValuesMatch() && isSaveEnabled()) || !test;
+    }
+
+    if (clusterId) {
+      return (isFieldValuesMatch() && isSaveEnabled()) || !testSuccess;
     }
 
     return !testSuccess;
