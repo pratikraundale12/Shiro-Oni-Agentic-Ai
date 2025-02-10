@@ -464,6 +464,7 @@ export const ListScheduleDeployment = () => {
           )}
         </>
       ),
+      width: '14%',
       resize: true,
     },
     {
@@ -485,16 +486,19 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => <TextRender text={item?.cluster_name} />,
+      width: '9%',
       resize: true,
     },
     {
       label: 'Version',
       renderCell: item => <TextRender text={item?.version} />,
+      width: '7%',
       resize: true,
     },
     {
       label: 'Post Deploy State',
       renderCell: item => <TextRender text={item?.deployment_status} />,
+      width: '12%',
       resize: true,
     },
     {
@@ -516,6 +520,7 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => <TextRender text={item?.scheduled_by} />,
+      width: '10%',
       resize: true,
     },
     {
@@ -540,6 +545,7 @@ export const ListScheduleDeployment = () => {
         <TextRender text={convertDateTime(item?.scheduled_date_time)} />
       ),
       sort: { sortKey: 'deploy_time' },
+      width: '13%',
       resize: true,
     },
     {
@@ -550,6 +556,7 @@ export const ListScheduleDeployment = () => {
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
+      width: '14%',
       resize: true,
     },
     {
@@ -560,6 +567,7 @@ export const ListScheduleDeployment = () => {
           item={item}
         />
       ),
+      width: '10%',
       resize: true,
     },
     {
