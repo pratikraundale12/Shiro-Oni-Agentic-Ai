@@ -396,55 +396,61 @@ export const ModuleAccess = () => {
     handlePolicyCheck(rolesPolicies, 'view_permission');
   };
 
+  const handleRemovePolicy = (policyType, value) => {
+    const policyMap = {
+      clusterPolicy: viewClusterPolicy?.[0]?.id,
+      controllerServicePolicy: viewControllerServicePolicy?.[0]?.id,
+      roleAndPermissionPolicy: viewRoleandPermissionPolicy?.[0]?.id,
+      ldapPolicy: viewldapPolicy?.[0]?.id,
+    };
+
+    return prev =>
+      prev.filter(
+        item =>
+          !policyType.some(remove => remove.id === item.policy_id) ||
+          policyMap[policyType] !== value.id
+      );
+  };
+
+  const handleAddPolicy = (prev, value) => [
+    ...prev,
+    { policy_id: value.id, policy_name: value.name },
+  ];
+
   const handleChange = (checked, value) => {
-    if (!isEmpty(selectedRole)) {
-      if (!checked) {
-        if (viewClusterPolicy?.[0]?.id === value?.id) {
-          setUpdatedRolePolicies(prev =>
-            prev.filter(
-              item =>
-                !clusterPolicies?.some(remove => remove.id === item.policy_id)
-            )
+    if (isEmpty(selectedRole)) {
+      toast.error('Please select a role');
+      return;
+    }
+
+    if (!checked) {
+      switch (value.id) {
+        case viewClusterPolicy?.[0]?.id:
+          setUpdatedRolePolicies(handleRemovePolicy(clusterPolicies, value));
+          break;
+        case viewControllerServicePolicy?.[0]?.id:
+          setUpdatedRolePolicies(
+            handleRemovePolicy(controllerServicePolicy, value)
           );
-        } else if (viewControllerServicePolicy?.[0]?.id === value?.id) {
-          setUpdatedRolePolicies(prev =>
-            prev.filter(
-              item =>
-                !controllerServicePolicy?.some(
-                  remove => remove.id === item.policy_id
-                )
-            )
+          break;
+        case viewRoleandPermissionPolicy?.[0]?.id:
+          setUpdatedRolePolicies(
+            handleRemovePolicy(roleandPermissionPolicy, value)
           );
-        } else if (viewRoleandPermissionPolicy?.[0]?.id === value?.id) {
-          setUpdatedRolePolicies(prev =>
-            prev.filter(
-              item =>
-                !roleandPermissionPolicy?.some(
-                  remove => remove.id === item.policy_id
-                )
-            )
-          );
-        } else if (viewldapPolicy?.[0]?.id === value?.id) {
-          setUpdatedRolePolicies(prev =>
-            prev.filter(
-              item => !ldapPolicy?.some(remove => remove.id === item.policy_id)
-            )
-          );
-        } else {
+          break;
+        case viewldapPolicy?.[0]?.id:
+          setUpdatedRolePolicies(handleRemovePolicy(ldapPolicy, value));
+          break;
+        default:
           setUpdatedRolePolicies(prev =>
             prev.filter(item => item.policy_id !== value.id)
           );
-        }
-      } else {
-        setUpdatedRolePolicies(prev => [
-          ...prev,
-          { policy_id: value.id, policy_name: value.name },
-        ]);
       }
-      handleCheckboxAutoClick(value);
     } else {
-      toast.error('Please select a role');
+      setUpdatedRolePolicies(prev => handleAddPolicy(prev, value));
     }
+
+    handleCheckboxAutoClick(value);
   };
 
   const handleSubmit = () => {
