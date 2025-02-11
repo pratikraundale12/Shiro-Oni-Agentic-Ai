@@ -86,7 +86,6 @@ export const ClusterLoginModal = () => {
       username: data?.username,
       password: data?.password,
     };
-    // dispatch(ClustersActions.getClusterToken(payload));
     try {
       const response = await getClusterToken(payload);
       if (response.cluster_id) {
