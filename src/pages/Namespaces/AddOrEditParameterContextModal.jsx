@@ -124,7 +124,6 @@ const AddOrEditParameterContextModal = ({
 
   const handleCheckboxChange = event => {
     const { checked } = event.target;
-    console.log('checked--', checked);
     setIsChecked(checked);
     setFormData(prev => ({
       ...prev,

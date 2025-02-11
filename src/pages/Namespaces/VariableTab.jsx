@@ -92,7 +92,6 @@ const VariableTab = () => {
     {
       label: KDFM.VALUE,
       renderCell: item => {
-        console.log('item---', item);
         return (
           <TextRender
             key={item?.value}
