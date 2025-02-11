@@ -127,7 +127,7 @@ const AddOrEditParameterContextModal = ({
     setIsChecked(checked);
     setFormData(prev => ({
       ...prev,
-      value: checked ? '' : currentParameter[0]?.value || pcEditData?.value,
+      value: checked ? '' : pcEditData?.value || currentParameter[0]?.value,
       check: checked,
     }));
   };
@@ -143,7 +143,7 @@ const AddOrEditParameterContextModal = ({
 
   const [currentParameter, setCurrentParameter] = useState({});
   useEffect(() => {
-    const filteredParameter = parametersData.filter(
+    const filteredParameter = parametersData?.filter(
       item => item?.name === pcEditData?.name
     );
     setCurrentParameter(filteredParameter);

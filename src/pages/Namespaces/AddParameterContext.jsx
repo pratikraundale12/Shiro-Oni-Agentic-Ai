@@ -114,10 +114,11 @@ const AddParameterContext = ({
   const parameterContextObjectAtDeloy = useSelector(
     NamespacesSelectors.getParameterContextListAtDeploy
   );
-  const parametersArray = parameterContextObjectAtDeloy?.parameterContexts;
+  const parametersArray =
+    parameterContextObjectAtDeloy?.parameterContexts || [];
   const [currentParameter, setCurrentParameter] = useState({});
   useEffect(() => {
-    const filteredParameter = parametersArray.filter(
+    const filteredParameter = parametersArray?.filter(
       item => item?.name === parameterContextItem?.name
     );
     setCurrentParameter(filteredParameter);
@@ -293,7 +294,12 @@ const AddParameterContext = ({
     if (check) {
       setValue('value', '');
     } else if (!check) {
-      setValue('value', currentParameter[0]?.value);
+      setValue(
+        'value',
+        parameterContextItem?.value === null
+          ? parameterContextItem?.value
+          : currentParameter[0]?.value
+      );
     }
   }, [check, setValue]);
 
@@ -350,7 +356,6 @@ const AddParameterContext = ({
                   }
                   disabled={check}
                   errors={errors}
-                  defaultValue={check ? currentParameter[0]?.name : null}
                 />
               </InputBox>
             </ColumnSix>
