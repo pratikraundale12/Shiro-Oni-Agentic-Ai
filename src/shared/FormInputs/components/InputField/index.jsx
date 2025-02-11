@@ -98,6 +98,7 @@ const InputField = ({
   onChange,
   placeholder,
   onKeyDown,
+  defaultValue = null,
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -135,6 +136,7 @@ const InputField = ({
           aria-invalid={error}
           placeholder={placeholder}
           onChange={onChange}
+          defaultValue={defaultValue}
           onKeyDown={handleKeyDown}
           {...props}
           {...(isFunction(register) && register(name, { ...registerOptions }))}
@@ -161,6 +163,7 @@ InputField.propTypes = {
   onChange: PropTypes.func,
   onKeyDown: PropTypes.func,
   placeholder: PropTypes.string,
+  defaultValue: PropTypes.string,
 };
 
 export default InputField;

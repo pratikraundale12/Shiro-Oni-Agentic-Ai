@@ -32,33 +32,23 @@ const AddProperties = ({
     return item.name != selectedPropertyToEdit.name;
   });
   const handleFormSubmit = data => {
-    console.log('selectedPropertyToEdit--', selectedPropertyToEdit);
-    console.log('data--', data, check);
     setUpdatedData(() => {
       return [
         ...filterData,
         {
           name: selectedPropertyToEdit.name,
-          value:
-            isEmpty(data?.value) && !check
-              ? selectedPropertyToEdit.value
-              : data.value,
+          value: isEmpty(data?.value) && !check ? null : data.value,
           sensitive: false,
         },
       ];
     });
-
-    console.log('updatedData---', updatedData);
 
     setListPropertTableData(prevData =>
       prevData.map(item =>
         item.name === selectedPropertyToEdit.name
           ? {
               ...item,
-              value:
-                isEmpty(data?.value) && !check
-                  ? selectedPropertyToEdit.value
-                  : data.value,
+              value: isEmpty(data?.value) && !check ? null : data.value,
               empty_string_set: data?.check,
             }
           : item
@@ -87,11 +77,9 @@ const AddProperties = ({
   }, [reset, isOpen]);
 
   const propertyValue = watch('value');
-  // useEffect(() => {
-  //   if (isEmpty(propertyValue) && !check) {
-  //     setValue('value', null);
-  //   }
-  // }, [check, propertyValue]);
+  useEffect(() => {
+    setValue('check', selectedPropertyToEdit?.check);
+  }, [selectedPropertyToEdit, setValue]);
 
   return (
     <div>
@@ -104,7 +92,9 @@ const AddProperties = ({
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
         primaryButtonDisabled={
-          propertyValue === selectedPropertyToEdit?.value ?? false
+          (propertyValue === selectedPropertyToEdit?.value &&
+            check === selectedPropertyToEdit?.check) ??
+          false
         }
       >
         <ModalBody className="modal-body">

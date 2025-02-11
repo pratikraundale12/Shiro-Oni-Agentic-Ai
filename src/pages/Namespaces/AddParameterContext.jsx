@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isArray, isEmpty, isString, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -111,6 +111,18 @@ const AddParameterContext = ({
     : isParentEdit?.parent
       ? parameterDetails?.parameterContexts
       : parameterDetails?.parameterContexts || [];
+  const parameterContextObjectAtDeloy = useSelector(
+    NamespacesSelectors.getParameterContextListAtDeploy
+  );
+  const parametersArray = parameterContextObjectAtDeloy?.parameterContexts;
+  const [currentParameter, setCurrentParameter] = useState({});
+  useEffect(() => {
+    const filteredParameter = parametersArray.filter(
+      item => item?.name === parameterContextItem?.name
+    );
+    setCurrentParameter(filteredParameter);
+  }, [parameterContextItem]);
+
   const {
     register,
     handleSubmit,
@@ -281,13 +293,12 @@ const AddParameterContext = ({
     if (check) {
       setValue('value', '');
     } else if (!check) {
-      setValue('value', parameterContextItem?.value);
+      setValue('value', currentParameter[0]?.value);
     }
   }, [check, setValue]);
 
   const pcValue = watch('value');
   const pcDesc = watch('description');
-
   return (
     <Modal
       title={
@@ -304,8 +315,7 @@ const AddParameterContext = ({
       onSubmit={handleSubmit(handleAddEditParameterContext)}
       primaryButtonDisabled={
         pcValue === parameterContextItem?.value &&
-        pcDesc === parameterContextItem?.description &&
-        check === parameterContextItem?.check
+        pcDesc === parameterContextItem?.description
       }
     >
       <ModalBody className="modal-body">
@@ -340,6 +350,7 @@ const AddParameterContext = ({
                   }
                   disabled={check}
                   errors={errors}
+                  defaultValue={check ? currentParameter[0]?.name : null}
                 />
               </InputBox>
             </ColumnSix>

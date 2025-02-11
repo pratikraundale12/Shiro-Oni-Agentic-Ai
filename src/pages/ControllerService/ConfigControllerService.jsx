@@ -123,7 +123,10 @@ export const ConfigControllerService = ({
 
   const handleOpenPropertyDropDownModal = item => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(true));
-    setSelectedPropertyToEdit(item);
+    setSelectedPropertyToEdit({
+      check: item?.value === '' ? true : false,
+      ...item,
+    });
   };
 
   const COLUMNS = [

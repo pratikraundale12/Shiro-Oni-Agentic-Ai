@@ -25,13 +25,10 @@ const AddOrEditVariablesModal = ({
   variablesDetailsData,
   editVariableData,
 }) => {
-  console.log('editVariableData--', editVariableData);
   const [formData, setFormData] = useState(
     isAddVariablesOpen?.mode === 'edit' ? editVariableData : DEFAULT_VALUES
   );
-  console.log('formData---', formData);
   const [isChecked, setIsChecked] = useState(editVariableData?.check);
-  const [valPlaceHolder, setValPlaceHolder] = useState('');
 
   const isValueChanged = (obj1, obj2) => {
     return isEqual(obj1, obj2);
@@ -49,11 +46,6 @@ const AddOrEditVariablesModal = ({
         : false
     );
   }, [formData]);
-  useEffect(() => {
-    isChecked
-      ? setValPlaceHolder(KDFM.SET_EMPTY_STRING)
-      : setValPlaceHolder('');
-  }, [isChecked]);
 
   const handleInputChange = data => {
     const { name, value } = data.target;
@@ -131,7 +123,6 @@ const AddOrEditVariablesModal = ({
             label={KDFM.VALUE}
             icon={<QRIcons />}
             disabled={isChecked}
-            placeholder={valPlaceHolder}
             value={isChecked ? '' : formData.value}
             onChange={e => handleInputChange(e)}
           />

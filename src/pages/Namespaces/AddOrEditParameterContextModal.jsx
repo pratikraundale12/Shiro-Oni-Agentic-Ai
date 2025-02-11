@@ -11,6 +11,8 @@ import {
   RadioSelectField,
 } from '../../shared';
 import { isEmpty, isEqual } from 'lodash';
+import { useSelector } from 'react-redux';
+import { NamespacesSelectors } from '../../store';
 
 const ModalBody = styled.div`
   position: relative;
@@ -126,12 +128,27 @@ const AddOrEditParameterContextModal = ({
     setIsChecked(checked);
     setFormData(prev => ({
       ...prev,
-      value: checked ? '' : pcEditData?.value,
+      value: checked ? '' : currentParameter[0]?.value || pcEditData?.value,
       check: checked,
     }));
   };
-  console.log('formdata-', formData);
-  console.log('pcEditData---', pcEditData);
+
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+  const parametersData = [
+    ...(registryDetailsData?.parameterContextData?.inherited[0]?.parameters ||
+      []),
+    ...(registryDetailsData?.parameterContextData?.parent[0]?.parameters || []),
+  ];
+
+  const [currentParameter, setCurrentParameter] = useState({});
+  useEffect(() => {
+    const filteredParameter = parametersData.filter(
+      item => item?.name === pcEditData?.name
+    );
+    setCurrentParameter(filteredParameter);
+  }, [pcEditData]);
 
   useEffect(() => {
     setIsSaveBtnDisabled(

@@ -55,7 +55,11 @@ const AddVariables = ({
           name: variableContextItem?.variable?.name,
           value: variableContextItem?.variable?.value,
         });
-        setValue('check', variableContextItem?.variable?.check || variableContextItem?.variable?.value === '');
+        setValue(
+          'check',
+          variableContextItem?.variable?.check ||
+            variableContextItem?.variable?.value === ''
+        );
       }
     }
   }, [
@@ -335,7 +339,6 @@ const AddVariables = ({
             type="text"
             label={KDFM.VALUE}
             icon={<QRIcons />}
-            placeholder={check ? KDFM.EMPTY_STRING_SET : ''}
             disabled={check}
             register={register}
           />
