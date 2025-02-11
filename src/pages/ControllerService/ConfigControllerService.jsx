@@ -78,7 +78,9 @@ export const ConfigControllerService = ({
     );
 
   const updateDataOnList = () => {
-    setListPropertTableData(filteredData || []);
+    if (!isEmpty(referenceListPropertyTableData)) {
+      setListPropertTableData(filteredData || []);
+    }
   };
   isModalOpenDropdownProperty;
   useEffect(() => {
@@ -97,7 +99,9 @@ export const ConfigControllerService = ({
     const sortedListAfterDelete = referenceListPropertyTableData?.filter(
       element => element.displayName !== item.displayName
     );
-    setReferenceListPropertyTableData(sortedListAfterDelete);
+    if (!isEmpty(referenceListPropertyTableData)) {
+      setReferenceListPropertyTableData(sortedListAfterDelete);
+    }
     setListPropertTableData(sortedList);
     if (item?.dynamic) {
       setUpdatedData(() => [

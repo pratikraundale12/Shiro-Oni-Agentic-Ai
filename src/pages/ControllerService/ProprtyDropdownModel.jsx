@@ -33,6 +33,7 @@ const PropertyDropdownModal = ({
   isFromExternalService,
   selectedItemFromList,
   setReferenceListPropertyTableData = () => {},
+  isFromControllerServieTab = false,
 }) => {
   const dispatch = useDispatch();
   const [addNewProperty, setAddNewProperty] = useState(false);
@@ -141,18 +142,20 @@ const PropertyDropdownModal = ({
           : item
       )
     );
-    setReferenceListPropertyTableData(prevData =>
-      prevData.map(item =>
-        item.name === selectedPropertyToEdit.name
-          ? {
-              ...item,
-              value: data.value === '' ? null : data.value,
-              dropDownName: selectedName,
-              empty_string_set: false,
-            }
-          : item
-      )
-    );
+    if (!isFromControllerServieTab) {
+      setReferenceListPropertyTableData(prevData =>
+        prevData.map(item =>
+          item.name === selectedPropertyToEdit.name
+            ? {
+                ...item,
+                value: data.value === '' ? null : data.value,
+                dropDownName: selectedName,
+                empty_string_set: false,
+              }
+            : item
+        )
+      );
+    }
     toast.success(KDFM.PROPERTY_EDITED);
     handleClose();
   };

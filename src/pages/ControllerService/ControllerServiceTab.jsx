@@ -233,7 +233,7 @@ const ControllerServiceTab = ({
     selectedItemFromList?.properties
   );
   const [referenceListPropertyTableData, setReferenceListPropertyTableData] =
-    useState(selectedItemFromList?.properties);
+    useState([]);
   const [updatedData, setUpdatedData] = useState([]);
 
   const [updatedLocalServicesData, setUpdatedLocalServicesData] = useState([]);
@@ -1500,22 +1500,9 @@ const ControllerServiceTab = ({
   };
 
   const handleSettingClick = item => {
-    const filteredData =
-      !isEmpty(item?.properties) &&
-      item?.properties?.filter(
-        item =>
-          isEmpty(item?.dependencies) ||
-          item?.dependencies.every(dep =>
-            item?.properties?.some(
-              obj =>
-                obj?.name === dep?.propertyName &&
-                dep?.dependentValues?.includes(obj?.value)
-            )
-          )
-      );
-    setReferenceListPropertyTableData(item?.properties);
+    setReferenceListPropertyTableData([]);
     setSelectedItemFromList(item);
-    setListPropertTableData(filteredData);
+    setListPropertTableData(item?.properties);
     setIsPropertyResponse(true);
     setIsNewlyAddedExternalServiceResponse(false);
     setIsStateChangeResponse(false);
@@ -2165,6 +2152,7 @@ const ControllerServiceTab = ({
           isFromExternalService={isFromExternalService}
           referenceListPropertyTableData={referenceListPropertyTableData}
           setReferenceListPropertyTableData={setReferenceListPropertyTableData}
+          isFromControllerServieTab={true}
         />
 
         <ConfigurePropertyModal
