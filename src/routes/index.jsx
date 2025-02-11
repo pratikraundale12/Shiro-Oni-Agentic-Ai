@@ -286,10 +286,25 @@ const Routes = () => {
       location.pathname === '/admin/login'
     ) {
       dispatch(AuthenticationActions.fetchSettingLogo());
-    } else {
+    }
+    if (
+      [
+        '/setting',
+        '/controller-service',
+        '/ldap-configuration',
+        '/help-&-support',
+        '/role-&-permission',
+        '/activity-history',
+        '/user-management',
+        '/schedule-deployment',
+        '/process-group',
+        '/clusters',
+        '/dashboard',
+      ].includes(location.pathname)
+    ) {
       dispatch(SettingsActions.fetchSettings());
     }
-  }, [dispatch]);
+  }, [dispatch, location.pathname]);
 
   useEffect(() => {
     if (settingsData) {
