@@ -1,8 +1,7 @@
 /*eslint-disable*/
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import { Tooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -168,7 +167,6 @@ const ActiveButtonDiv = styled.div`
 const NamespaceDeploy = ({
   isOpen,
   closePopup,
-  processStatus,
   handleFlowConfirmPopup = () => {},
   activeButtonPopup,
   type,
@@ -183,18 +181,12 @@ const NamespaceDeploy = ({
   const checkFlowControlAfterUpgrade = useSelector(
     NamespacesSelectors.getFlowControlAfterUpgrade
   );
-  const formData = useSelector(NamespacesSelectors.getFormData);
-  const checkDestCluster = useSelector(NamespacesSelectors.getCheckDestCluster);
-  const selectedDestCluster = useSelector(
-    NamespacesSelectors.getSelectedDestCluster
-  );
   const deployByRegistryFlow = useSelector(
     NamespacesSelectors.getdeployRegistryFlow
   );
   const selectedNamespace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
 
   const registryFlowVerion = useSelector(NamespacesSelectors.getVersionSelect);
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
@@ -215,12 +207,46 @@ const NamespaceDeploy = ({
     dispatch(NamespacesActions.setRegistryAllDetails({}));
     dispatch(NamespacesActions.setregistryDetailsFlow(true));
   };
+  const provideTitle = () => {
+    return `Process Group 
+        ${checkFlowControlAfterUpgrade ? KDFM.UPGRADE : KDFM.DEPLOY}
+        `;
+  };
+  const provideIconForModal = () => {
+    return deployOrUpgradeDetails?.invalidCount > 0 ? (
+      <InvalidProcessorIcon width={80} height={80} />
+    ) : (
+      <GreenRightCircleIcon />
+    );
+  };
+
+  const getFlowName = () => {
+    return deployByRegistryFlow
+      ? formDataRegistry?.selectedFlowName
+      : selectedNamespace?.name;
+  };
+  const getRunningFlowCount = () => {
+    return checkFlowControlAfterUpgrade
+      ? dataAfterUpgradeProcessor?.runningCount
+      : deployOrUpgradeDetails?.runningCount;
+  };
+  const getStoppedFlowCount = () => {
+    return checkFlowControlAfterUpgrade
+      ? dataAfterUpgradeProcessor?.stoppedCount
+      : deployOrUpgradeDetails?.stoppedCount;
+  };
+  const getFlowCount = countType => {
+    return checkFlowControlAfterUpgrade
+      ? dataAfterUpgradeProcessor?.[countType]
+      : deployOrUpgradeDetails?.[countType];
+  };
+  checkFlowControlAfterUpgrade
+                          ? dataAfterUpgradeProcessor?.invalidCount
+                          : deployOrUpgradeDetails?.invalidCount
   return (
     <>
       <Modal
-        title={`Process Group 
-        ${checkFlowControlAfterUpgrade ? KDFM.UPGRADE : KDFM.DEPLOY}
-        `}
+        title={provideTitle()}
         isOpen={isOpen}
         onRequestClose={closePopup}
         size="sm"
@@ -234,11 +260,7 @@ const NamespaceDeploy = ({
         <ModalBody className="modal-body">
           <div className="d-flex justify-content-center align-items-center">
             <ModalIcon className="d-flex me-3 ms-2 ">
-              {deployOrUpgradeDetails?.invalidCount > 0 ? (
-                <InvalidProcessorIcon width={80} height={80} />
-              ) : (
-                <GreenRightCircleIcon />
-              )}
+              {provideIconForModal()}
             </ModalIcon>
             <ModalHFive>
               {deployOrUpgradeDetails?.invalidCount > 0 ? (
@@ -258,11 +280,7 @@ const NamespaceDeploy = ({
             <ColumnThree className="col-5 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
                 <ActionTitleSet className="mb-0 ">Flow Name</ActionTitleSet>
-                <SubTitleSet className="mb-0 ">
-                  {deployByRegistryFlow
-                    ? formDataRegistry?.selectedFlowName
-                    : selectedNamespace?.name}
-                </SubTitleSet>
+                <SubTitleSet className="mb-0 ">{getFlowName()}</SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
             <ColumnThree className="col-5 mb-3">
@@ -281,38 +299,22 @@ const NamespaceDeploy = ({
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-1"
-                      count={
-                        checkFlowControlAfterUpgrade
-                          ? dataAfterUpgradeProcessor?.runningCount
-                          : deployOrUpgradeDetails?.runningCount
-                      }
+                      count={getFlowCount('runningCount')}
                       activeColor="#58e715"
                     >
                       <TriangleIcons color="#B5BDC8" />
-                      <span>
-                        {checkFlowControlAfterUpgrade
-                          ? dataAfterUpgradeProcessor?.runningCount
-                          : deployOrUpgradeDetails?.runningCount}
-                      </span>
+                      <span>{getFlowCount('runningCount')}</span>
                     </CountDiv>
                     <div>Running Processors</div>
                   </div>
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-2"
-                      count={
-                        checkFlowControlAfterUpgrade
-                          ? dataAfterUpgradeProcessor?.stoppedCount
-                          : deployOrUpgradeDetails?.stoppedCount
-                      }
+                      count={getFlowCount('stoppedCount')}
                       activeColor="#c52b2b"
                     >
                       <SquareBoxIcon color="#B5BDC8" />
-                      <span>
-                        {checkFlowControlAfterUpgrade
-                          ? dataAfterUpgradeProcessor?.stoppedCount
-                          : deployOrUpgradeDetails?.stoppedCount}
-                      </span>
+                      <span>{getFlowCount('stoppedCount')}</span>
                     </CountDiv>
                     <div>Stopped Processors</div>
                   </div>
