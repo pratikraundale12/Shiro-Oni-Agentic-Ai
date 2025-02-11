@@ -457,6 +457,12 @@ export const ListScheduleDeployment = () => {
                 cursor: 'pointer',
                 textDecoration: 'underline',
                 color: '#ff7700',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                display: 'block',
+                width: '100%',
+                textAlign: 'left',
               }}
             >
               {pgNameDisplay(item)}
