@@ -210,121 +210,66 @@ export const Setting = () => {
     const payload = new FormData();
     const updatedFields = [];
 
+    const appendIfChanged = (key, value, compareValue) => {
+      if (dirtyFields[key] && value !== compareValue) {
+        payload.append(key, value);
+        updatedFields.push(key);
+      }
+    };
+
     if (settingData?.id) payload.append('id', settingData.id);
 
-    if (data?.logo !== settingData?.logo) {
-      payload.append('logo', data?.logo || null);
-      updatedFields.push('logo');
-    }
-
-    if (data?.favicon !== settingData?.favicon) {
-      payload.append('favicon', data?.favicon || null);
-      updatedFields.push('favicon');
-    }
-
-    if (dirtyFields.title && data?.title !== settingData?.title) {
-      payload.append('title', data?.title);
-      updatedFields.push('title');
-    }
-
-    if (dirtyFields.username && data?.username !== settingData?.username) {
-      payload.append('username', data?.username);
-      updatedFields.push('username');
-    }
-
-    if (dirtyFields.password && data.password !== settingData?.password) {
-      payload.append('password', data.password);
-      updatedFields.push('password');
-    }
-
-    if (dirtyFields.email && data?.email !== settingData?.email) {
-      payload.append('email', data?.email);
-      updatedFields.push('email');
-    }
-
-    if (
-      dirtyFields.from_email &&
-      data?.from_email !== settingData?.from_email
-    ) {
-      payload.append('from_email', data?.from_email);
-      updatedFields.push('from_email');
-    }
+    appendIfChanged('logo', data?.logo || null, settingData?.logo);
+    appendIfChanged('favicon', data?.favicon || null, settingData?.favicon);
+    appendIfChanged('title', data?.title, settingData?.title);
+    appendIfChanged('username', data?.username, settingData?.username);
+    appendIfChanged('password', data?.password, settingData?.password);
+    appendIfChanged('email', data?.email, settingData?.email);
+    appendIfChanged('from_email', data?.from_email, settingData?.from_email);
+    appendIfChanged(
+      'approver_groups',
+      data?.approver_groups,
+      settingData?.approver_groups
+    );
+    appendIfChanged(
+      'group_email_id',
+      data?.group_email_id,
+      settingData?.group_email_id
+    );
+    appendIfChanged(
+      'email_reminder_time',
+      data?.email_reminder_time,
+      settingData?.email_reminder_time
+    );
+    appendIfChanged(
+      'smtp_service',
+      data?.smtp_service,
+      settingData?.smtp_service
+    );
+    appendIfChanged('smtp_host', data?.smtp_host, settingData?.smtp_host);
+    appendIfChanged('smtp_port', data?.smtp_port, settingData?.smtp_port);
+    appendIfChanged('smtp_user', data?.smtp_user, settingData?.smtp_user);
+    appendIfChanged('smtp_pass', data?.smtp_pass, settingData?.smtp_pass);
 
     if (dirtyFields.refresh || data.refresh !== settingData?.refresh) {
-      const refreshValue =
-        data.refresh === false || data.refresh === 'Off' ? 0 : data.refresh;
-      payload.append('refresh', refreshValue);
-      updatedFields.push('refresh');
+      const refreshValue = [false, 'Off'].includes(data.refresh)
+        ? 0
+        : data.refresh;
+      appendIfChanged('refresh', refreshValue, settingData?.refresh);
     }
 
     if (
-      dirtyFields.approver_groups &&
-      data?.approver_groups !== settingData?.approver_groups
-    ) {
-      payload.append('approver_groups', data?.approver_groups);
-      updatedFields.push('approver_groups');
-    }
-
-    if (
-      dirtyFields.group_email_id &&
-      data?.group_email_id !== settingData?.group_email_id
-    ) {
-      payload.append('group_email_id', data?.group_email_id);
-      updatedFields.push('group_email_id');
-    }
-
-    if (
-      dirtyFields.email_reminder_time &&
-      data?.email_reminder_time !== settingData?.email_reminder_time
-    ) {
-      payload.append('email_reminder_time', data?.email_reminder_time);
-      updatedFields.push('email_reminder_time');
-    }
-
-    if (
-      dirtyFields.smtp_service &&
-      data?.smtp_service !== settingData?.smtp_service
-    ) {
-      payload.append('smtp_service', data?.smtp_service);
-      updatedFields.push('smtp_service');
-    }
-    if (dirtyFields.smtp_host && data?.smtp_host !== settingData?.smtp_host) {
-      payload.append('smtp_host', data?.smtp_host);
-      updatedFields.push('smtp_host');
-    }
-    if (dirtyFields.smtp_port && data?.smtp_port !== settingData?.smtp_port) {
-      payload.append('smtp_port', data?.smtp_port);
-      updatedFields.push('smtp_port');
-    }
-    if (dirtyFields.smtp_user && data?.smtp_user !== settingData?.smtp_user) {
-      payload.append('smtp_user', data?.smtp_user);
-      updatedFields.push('smtp_user');
-    }
-    if (dirtyFields.smtp_pass && data?.smtp_pass !== settingData?.smtp_pass) {
-      payload.append('smtp_pass', data?.smtp_pass);
-      updatedFields.push('smtp_pass');
-    }
-
-    if (
-      (dirtyFields.ldapEnabled &&
-        data?.ldapEnabled !== settingData?.ldapEnabled) ||
-      (dirtyFields.ldap_auto_sync &&
-        data?.ldap_auto_sync !== settingData?.ldap_auto_sync) ||
-      (dirtyFields.ldap_auto_sync_time_interval &&
-        data?.ldap_auto_sync_time_interval !==
-          settingData?.ldap_auto_sync_time_interval)
+      ['ldapEnabled', 'ldap_auto_sync', 'ldap_auto_sync_time_interval'].some(
+        field => dirtyFields[field] && data[field] !== settingData?.[field]
+      )
     ) {
       payload.append('ldapEnabled', isLdapEnabled);
-
       payload.append('ldap_auto_sync', ldapAutoSync);
-      updatedFields.push('ldap_auto_sync');
-
+      updatedFields.push('ldapEnabled', 'ldap_auto_sync');
       if (ldapAutoSync) {
         payload.append('ldap_auto_sync_time_interval', selectedOptions);
         updatedFields.push('ldap_auto_sync_time_interval');
       }
-
-      updatedFields.push('ldapEnabled');
     }
 
     try {
@@ -334,20 +279,11 @@ export const Setting = () => {
           dispatch(SettingsActions.fetchSettings());
           history.push('/setting');
         }, 1000);
-        setLoading(false);
-        if (data?.favicon) {
-          changeFavicon(data.favicon);
-        } else {
-          changeFavicon(favicon);
-        }
-      } else {
-        setLoading(false);
+        changeFavicon(data?.favicon || favicon);
       }
-    } catch (error) {
+    } finally {
       setLoading(false);
-      console.error('Failed to submit settings:', error);
     }
-    // window.location.reload();
   };
   useEffect(() => {
     if (settingData) {
@@ -480,31 +416,6 @@ export const Setting = () => {
         </div>
         <HeadingContentHr className="mt-3 mb-4" />
         <InputFields className="row">
-          {/* <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6">
-            <SelectField
-              label="Refresh"
-              name="refresh"
-              control={control}
-              icon={<RefreshIcon />}
-              errors={errors}
-              defaultValue={
-                settingData
-                  ? {
-                      label:
-                        settingData.refresh === 0
-                          ? 'Off'
-                          : settingData?.refresh,
-                      value:
-                        settingData.refresh === 0
-                          ? 'Off'
-                          : settingData?.refresh,
-                    }
-                  : null
-              }
-              options={REFRESH_OPTIONS}
-              placeholder="Select Cluster"
-            />
-          </div> */}
           <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
             <InputField
               name="email"
