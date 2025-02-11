@@ -296,7 +296,11 @@ export const ConfigControllerService = ({
     };
     const configPayload = updateProperties(selectedItemFromList, updatedData);
     if (isFromControllerServiceTab && !isFromExternalService) {
-      handlePropertyUpdate(configPayload);
+      const updatedPayload = {
+        ...configPayload,
+        name: data?.name,
+      };
+      handlePropertyUpdate(updatedPayload);
       onClose();
     } else {
       dispatch(NamespacesActions.addPropertyControllerService(payload));
