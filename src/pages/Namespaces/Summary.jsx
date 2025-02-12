@@ -354,43 +354,38 @@ const Summary = () => {
     registryAllDetails?.controllerServicesData?.localServices.map(
       ele => ele.controllerData?.[0]
     );
+
+  const getChangedVariables = (originalVariables, updatedVariables) => {
+    const updatedMap = updatedVariables.reduce((acc, item) => {
+      acc[item.name] = item.value;
+      return acc;
+    }, {});
+
+    return originalVariables.filter(
+      ({ name, value }) =>
+        updatedMap[name] !== undefined && updatedMap[name] !== value
+    );
+  };
   const getChangedObjects = (originalData, updatedData) => {
     const updatedMap = updatedData.reduce((acc, item) => {
       acc[item.pgId] = item;
       return acc;
     }, {});
 
-    return originalData
-      .map(originalItem => {
-        const updatedItem = updatedMap[originalItem.pgId];
+    return originalData.reduce((result, originalItem) => {
+      const updatedItem = updatedMap[originalItem.pgId];
+      if (!updatedItem) return result;
 
-        if (!updatedItem) {
-          return null;
-        }
+      const changedVariables = getChangedVariables(
+        originalItem.variables,
+        updatedItem.variables
+      );
+      if (changedVariables.length > 0) {
+        result.push({ ...originalItem, variables: changedVariables });
+      }
 
-        const changedVariables = originalItem.variables.filter(
-          originalVariable => {
-            const updatedVariable = updatedItem.variables.find(
-              varItem => varItem.name === originalVariable.name
-            );
-
-            return (
-              updatedVariable &&
-              updatedVariable.value !== originalVariable.value
-            );
-          }
-        );
-
-        if (changedVariables.length > 0) {
-          return {
-            ...originalItem,
-            variables: changedVariables,
-          };
-        }
-
-        return null;
-      })
-      .filter(Boolean);
+      return result;
+    }, []);
   };
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
