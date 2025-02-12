@@ -258,69 +258,67 @@ const ParameterContextTab = () => {
     }
   };
 
-  // Main handler function
   const handleAddOrEditVariableSave = data => {
     dispatch(NamespacesActions.setIsLocalPcUpdated(true));
 
-    // Deep clone pcData and initialize updatedPayload
-    const updatedState = JSON.parse(JSON.stringify(pcData));
-    const updatedPayload = {
-      inherited: Array.isArray(pcPayload.inherited)
-        ? [...pcPayload.inherited]
-        : [],
-      parent: Array.isArray(pcPayload.parent) ? [...pcPayload.parent] : [],
-    };
+    // Clone state
+    const updatedState = deepClone(pcData);
+    const updatedPayload = initializeUpdatedPayload(pcPayload);
 
+    // Process each group type
     ['inherited', 'parent'].forEach(key => {
-      updatedState[key] = updatedState[key].map(group => {
-        let isGroupUpdated = false;
-        const updatedParameters = group.parameters
-          .map(parameter => {
-            if (parameter.name === data.name) {
-              isGroupUpdated = true;
-              return {
-                ...parameter,
-                value: data?.check
-                  ? ''
-                  : isEmpty(data.value)
-                    ? null
-                    : data.value,
-                check: data.check,
-                description: data.description,
-              };
-            }
-            return null;
-          })
-          .filter(Boolean);
-
-        if (isGroupUpdated) {
-          updatePayload(key, group, updatedParameters, updatedPayload);
-        }
-
-        return {
-          ...group,
-          parameters: updateGroupParameters(group, data),
-        };
-      });
+      updatedState[key] = updatedState[key].map(group =>
+        processGroup(group, data, key, updatedPayload)
+      );
     });
 
     setPcPayload(updatedPayload);
+    setPcData(prevState => updateState(prevState, data));
+  };
 
-    setPcData(prevState => {
-      const newState = JSON.parse(JSON.stringify(prevState));
-      ['inherited', 'parent'].forEach(key => {
-        newState[key] = newState[key].map(group => {
-          if (group.name === currentPgId) {
-            return {
-              ...group,
-              parameters: updateGroupParameters(group, data),
-            };
-          }
-          return group;
-        });
-      });
-      return newState;
+  // Helper function to deep clone an object
+  const deepClone = obj => JSON.parse(JSON.stringify(obj));
+
+  // Initialize updated payload
+  const initializeUpdatedPayload = pcPayload => ({
+    inherited: Array.isArray(pcPayload.inherited)
+      ? [...pcPayload.inherited]
+      : [],
+    parent: Array.isArray(pcPayload.parent) ? [...pcPayload.parent] : [],
+  });
+
+  // Process each group
+  const processGroup = (group, data, key, updatedPayload) => {
+    let isUpdated = false;
+    const updatedParameters = group.parameters.map(param => {
+      if (param.name === data.name) {
+        isUpdated = true;
+        return {
+          ...param,
+          value: data?.check ? '' : isEmpty(data.value) ? null : data.value,
+          check: data.check,
+          description: data.description,
+        };
+      }
+      return param;
     });
+
+    if (isUpdated) updatePayload(key, group, updatedParameters, updatedPayload);
+
+    return { ...group, parameters: updateGroupParameters(group, data) };
+  };
+
+  // Update state with new parameters
+  const updateState = (prevState, data) => {
+    const newState = deepClone(prevState);
+    ['inherited', 'parent'].forEach(key => {
+      newState[key] = newState[key].map(group =>
+        group.name === currentPgId
+          ? { ...group, parameters: updateGroupParameters(group, data) }
+          : group
+      );
+    });
+    return newState;
   };
 
   useEffect(() => {
