@@ -1403,39 +1403,37 @@ const ControllerServiceTab = ({
 
   useEffect(() => {
     if (!isEmpty(stateChangeResponse) && stateChangeResponse?.data !== null) {
+      const { runStatus, validationStatus } =
+        stateChangeResponse?.data?.status || {};
+
       setExternalControllerServices(prevServices =>
         prevServices?.map(service => {
-          if (
-            service?.updatedValue === selectedItemFromList?.id &&
-            service?.controllerService?.length
-          ) {
+          const isMatchingUpdatedValue =
+            service?.updatedValue === selectedItemFromList?.id;
+          const isMatchingConfiguredData =
+            service?.configured &&
+            service?.configuredData?.id === selectedItemFromList?.id;
+
+          if (isMatchingUpdatedValue && service?.controllerService?.length) {
             return {
               ...service,
-              controllerService: service?.controllerService?.map((cs, index) =>
-                index === 0
-                  ? {
-                      ...cs,
-                      state: stateChangeResponse?.data?.status?.runStatus,
-                      validationStatus:
-                        stateChangeResponse?.data?.status?.validationStatus,
-                    }
-                  : cs
+              controllerService: service.controllerService.map((cs, index) =>
+                index === 0 ? { ...cs, state: runStatus, validationStatus } : cs
               ),
             };
-          } else if (
-            service?.configured &&
-            service?.configuredData?.id === selectedItemFromList?.id
-          ) {
+          }
+
+          if (isMatchingConfiguredData) {
             return {
               ...service,
               configuredData: {
-                ...service?.configuredData,
-                state: stateChangeResponse?.data?.status?.runStatus,
-                validationStatus:
-                  stateChangeResponse?.data?.status?.validationStatus,
+                ...service.configuredData,
+                state: runStatus,
+                validationStatus,
               },
             };
           }
+
           return service;
         })
       );
