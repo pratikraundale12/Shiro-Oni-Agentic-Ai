@@ -1349,7 +1349,6 @@ const Summary = () => {
                               onClick={() => {
                                 setActiveButton(null);
                                 setFlowControlState(null);
-                                console.log('clicked');
                               }}
                             >
                               <CrossIcon color="#B5BDC8" />
