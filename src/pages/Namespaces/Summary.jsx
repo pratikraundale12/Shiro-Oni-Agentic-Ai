@@ -417,11 +417,44 @@ const Summary = () => {
   const controllerServiceReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployControllerService
   );
+  const localServiceData = registryAllDetails?.controllerServicesData?.localServices;
+  const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
+
+  const updatedLocalCsPayloadOnDeploy = controllerServiceReduxData?.localServicesData
+  ?.map(service => {
+    const matchingController = localServiceData
+      ?.flatMap(item => item?.controllerData || [])
+      ?.find(controller => controller?.identifier === service?.identifier);
+
+    if (!matchingController) return null;
+    const updatedProperties = service?.properties
+      ?.filter(prop => {
+        const matchingProp = matchingController?.properties?.find(p => p.name === prop.name);
+        return matchingProp && matchingProp.value !== prop.value;
+      })
+      ?.map(prop => ({ name: prop.name, value: prop.value }));
+    return {
+          name: service?.name,
+          identifier: service?.identifier,
+          instanceIdentifier: service?.instanceIdentifier,
+          properties: updatedProperties || []
+        }
+     
+  })
+  .filter(Boolean);
+
+  const cleanedPayloadForExternalCs = controllerServiceReduxData?.externalServicesData?.map(item => ({
+    ...item,
+    processors: item.processors.map(processor => {
+        const { groupHierarchy, ...rest } = processor;
+        return rest;
+    })
+}));
+
   const newProcessorEC =
     registryAllDetails.controllerServicesData?.externalControllerServices?.filter(
       element =>
-        element?.newProcessorAvailable === true ||
-        element?.newProcessorAvailable === false
+        element?.newProcessorAvailable === true
     );
   const array2Map = new Map(
     controllerServiceReduxData?.externalServicesData?.map(item => [
@@ -431,11 +464,15 @@ const Summary = () => {
   );
   const updatedArrayForES = newProcessorEC?.map(
     item => array2Map?.get(item.identifier) || item
-  );
-  // const extServiceAllData =
-  newProcessorEC.controllerServiceReduxData?.externalServicesData;
+  )?.map(item => ({
+    ...item,
+    configuredData: [],
+    processors: item.processors.map(processor => {
+        const { groupHierarchy, ...rest } = processor;
+        return rest;
+    })
+}));
 
-  // controllerServiceReduxData.externalServicesData = newProcessorEC;
   const filteredCSArrayDiff = CSorignalData.filter(item1 =>
     controllerServiceReduxData?.localServicesData?.some(
       item2 => item1.identifier === item2.identifier
@@ -447,9 +484,9 @@ const Summary = () => {
     ...(hasExternalServices && {
       externalServicesData: !isEmpty(newProcessorEC)
         ? updatedArrayForES
-        : controllerServiceReduxData.externalServicesData,
+        : cleanedPayloadForExternalCs,
     }),
-    localServicesData: controllerServiceReduxData.localServicesData,
+    localServicesData: updatedLocalCsPayloadOnDeploy,
   };
   const parameterReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployParameterContext
@@ -499,7 +536,6 @@ const Summary = () => {
   const parameterContextItem = useSelector(
     NamespacesSelectors.getParameterContextItem
   );
-  const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
@@ -758,7 +794,7 @@ const Summary = () => {
       nameSpaceName: registryAllDetails?.processGroupName,
       oldVariablesData: orignalVariables,
       oldParameterContextData: filteredArrayPCold,
-      previousControllerServices: { localServicesData: filteredCSArrayDiff },
+      previousControllerServices: { localServicesData: updatedLocalCsPayloadOnDeploy },
     };
     //
     if (!isEmpty(flowControlSelectedScheduleStored)) {
@@ -801,7 +837,7 @@ const Summary = () => {
         nameSpaceName: registryAllDetails?.processGroupName,
         oldVariablesData: orignalVariables,
         oldParameterContextData: filteredArrayPCold,
-        previousControllerServices: { localServicesData: filteredCSArrayDiff },
+        previousControllerServices: { localServicesData: updatedLocalCsPayloadOnDeploy },
       };
       //
       if (!isEmpty(variblesReduxData)) {
@@ -830,7 +866,7 @@ const Summary = () => {
           oldVariablesData: orignalVariables,
           oldParameterContextData: filteredArrayPCold,
           previousControllerServices: {
-            localServicesData: filteredCSArrayDiff,
+            localServicesData: updatedLocalCsPayloadOnDeploy,
           },
         },
         previousVersion: selectedNameSpace?.version || 1,
