@@ -1729,45 +1729,85 @@ const ControllerServiceTab = ({
     return { localServiceState };
   };
 
+  // useEffect(() => {
+  //   const updatedControllerServices = externalControllerServices?.map(
+  //     service => {
+  //       const matchingTableData = externalControllerServicesTableData?.find(
+  //         tableItem =>
+  //           tableItem?.parentId === service?.identifier &&
+  //           !service?.isStatusUpdated &&
+  //           !service?.isPropertyUpdated
+  //       );
+
+  //       if (matchingTableData) {
+  //         return {
+  //           ...service,
+  //           controllerService: isAddedViaAdd ? [] : service?.controllerService,
+  //           name: matchingTableData?.name,
+  //           updatedValue: matchingTableData?.identifier,
+  //           typeValue: matchingTableData?.typeValue
+  //             ? matchingTableData?.typeValue
+  //             : '',
+  //           bundleValue: matchingTableData?.bundleValue
+  //             ? matchingTableData?.bundleValue
+  //             : '',
+  //           state: matchingTableData?.state ? matchingTableData?.state : '',
+  //           scope: matchingTableData?.scope ? matchingTableData?.scope : '',
+  //           version: matchingTableData?.version
+  //             ? matchingTableData?.version
+  //             : '',
+  //           properties: matchingTableData?.properties
+  //             ? matchingTableData?.properties
+  //             : [],
+  //           validationStatus: matchingTableData?.validationStatus
+  //             ? matchingTableData?.validationStatus
+  //             : '',
+  //         };
+  //       }
+  //       return service;
+  //     }
+  //   );
+  //   setExternalControllerServices(updatedControllerServices);
+  // }, [externalControllerServicesTableData]);
   useEffect(() => {
-    const updatedControllerServices = externalControllerServices?.map(
-      service => {
+    setExternalControllerServices(prevServices =>
+      prevServices?.map(service => {
+        if (service?.isStatusUpdated || service?.isPropertyUpdated)
+          return service;
+
         const matchingTableData = externalControllerServicesTableData?.find(
-          tableItem =>
-            tableItem?.parentId === service?.identifier &&
-            !service?.isStatusUpdated &&
-            !service?.isPropertyUpdated
+          tableItem => tableItem?.parentId === service?.identifier
         );
 
-        if (matchingTableData) {
-          return {
-            ...service,
-            controllerService: isAddedViaAdd ? [] : service?.controllerService,
-            name: matchingTableData?.name,
-            updatedValue: matchingTableData?.identifier,
-            typeValue: matchingTableData?.typeValue
-              ? matchingTableData?.typeValue
-              : '',
-            bundleValue: matchingTableData?.bundleValue
-              ? matchingTableData?.bundleValue
-              : '',
-            state: matchingTableData?.state ? matchingTableData?.state : '',
-            scope: matchingTableData?.scope ? matchingTableData?.scope : '',
-            version: matchingTableData?.version
-              ? matchingTableData?.version
-              : '',
-            properties: matchingTableData?.properties
-              ? matchingTableData?.properties
-              : [],
-            validationStatus: matchingTableData?.validationStatus
-              ? matchingTableData?.validationStatus
-              : '',
-          };
-        }
-        return service;
-      }
+        if (!matchingTableData) return service;
+
+        const {
+          name,
+          identifier: updatedValue,
+          typeValue = '',
+          bundleValue = '',
+          state = '',
+          scope = '',
+          version = '',
+          properties = [],
+          validationStatus = '',
+        } = matchingTableData;
+
+        return {
+          ...service,
+          controllerService: isAddedViaAdd ? [] : service?.controllerService,
+          name,
+          updatedValue,
+          typeValue,
+          bundleValue,
+          state,
+          scope,
+          version,
+          properties,
+          validationStatus,
+        };
+      })
     );
-    setExternalControllerServices(updatedControllerServices);
   }, [externalControllerServicesTableData]);
 
   useEffect(() => {
