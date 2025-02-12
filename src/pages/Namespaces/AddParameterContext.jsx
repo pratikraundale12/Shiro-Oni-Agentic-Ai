@@ -226,7 +226,7 @@ const AddParameterContext = ({
     }
 
     if (isAddParameterContextOpen?.mode === 'edit') {
-      const updatedData = newlyAddParameters.map(item =>
+      const updatedData = newlyAddParameters?.map(item =>
         item?.name?.toLowerCase() === processData?.name?.toLowerCase()
           ? { ...item, ...processData }
           : item

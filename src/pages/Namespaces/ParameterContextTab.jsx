@@ -214,13 +214,13 @@ const ParameterContextTab = () => {
 
   // Helper function to update parameters within a group
   const updateGroupParameters = (group, data) => {
-    return group.parameters.map(param =>
-      param.name === data.name
+    return group?.parameters?.map(param =>
+      param?.name === data?.name
         ? {
             ...param,
-            value: data?.check ? '' : isEmpty(data.value) ? null : data.value,
-            check: data.check,
-            description: data.description,
+            value: data?.check ? '' : isEmpty(data?.value) ? null : data?.value,
+            check: data?.check,
+            description: data?.description,
           }
         : param
     );
@@ -228,33 +228,33 @@ const ParameterContextTab = () => {
 
   // Helper function to update the payload
   const updatePayload = (key, group, updatedParameters, payload) => {
-    const groupIndex = payload[key].findIndex(g => g.name === group.name);
+    const groupIndex = payload[key]?.findIndex(g => g?.name === group?.name);
 
     if (groupIndex > -1) {
       // Update existing group
       payload[key][groupIndex] = {
         ...payload[key][groupIndex],
-        parameters: payload[key][groupIndex].parameters.map(param => {
-          const updatedParam = updatedParameters.find(
-            p => p.name === param.name
+        parameters: payload[key][groupIndex]?.parameters?.map(param => {
+          const updatedParam = updatedParameters?.find(
+            p => p?.name === param?.name
           );
           return updatedParam || param;
         }),
       };
 
       // Add new parameters if they don't already exist
-      updatedParameters.forEach(updatedParam => {
+      updatedParameters?.forEach(updatedParam => {
         if (
-          !payload[key][groupIndex].parameters.some(
-            p => p.name === updatedParam.name
+          !payload[key][groupIndex]?.parameters?.some(
+            p => p?.name === updatedParam?.name
           )
         ) {
-          payload[key][groupIndex].parameters.push(updatedParam);
+          payload[key][groupIndex]?.parameters?.push(updatedParam);
         }
       });
     } else {
       // Add new group
-      payload[key].push({ name: group.name, parameters: updatedParameters });
+      payload[key]?.push({ name: group?.name, parameters: updatedParameters });
     }
   };
 
@@ -266,8 +266,8 @@ const ParameterContextTab = () => {
     const updatedPayload = initializeUpdatedPayload(pcPayload);
 
     // Process each group type
-    ['inherited', 'parent'].forEach(key => {
-      updatedState[key] = updatedState[key].map(group =>
+    ['inherited', 'parent']?.forEach(key => {
+      updatedState[key] = updatedState[key]?.map(group =>
         processGroup(group, data, key, updatedPayload)
       );
     });
@@ -281,23 +281,23 @@ const ParameterContextTab = () => {
 
   // Initialize updated payload
   const initializeUpdatedPayload = pcPayload => ({
-    inherited: Array.isArray(pcPayload.inherited)
+    inherited: Array.isArray(pcPayload?.inherited)
       ? [...pcPayload.inherited]
       : [],
-    parent: Array.isArray(pcPayload.parent) ? [...pcPayload.parent] : [],
+    parent: Array.isArray(pcPayload?.parent) ? [...pcPayload.parent] : [],
   });
 
   // Process each group
   const processGroup = (group, data, key, updatedPayload) => {
     let isUpdated = false;
-    const updatedParameters = group.parameters.map(param => {
-      if (param.name === data.name) {
+    const updatedParameters = group?.parameters?.map(param => {
+      if (param?.name === data?.name) {
         isUpdated = true;
         return {
           ...param,
-          value: data?.check ? '' : isEmpty(data.value) ? null : data.value,
-          check: data.check,
-          description: data.description,
+          value: data?.check ? '' : isEmpty(data?.value) ? null : data?.value,
+          check: data?.check,
+          description: data?.description,
         };
       }
       return param;
@@ -311,9 +311,9 @@ const ParameterContextTab = () => {
   // Update state with new parameters
   const updateState = (prevState, data) => {
     const newState = deepClone(prevState);
-    ['inherited', 'parent'].forEach(key => {
-      newState[key] = newState[key].map(group =>
-        group.name === currentPgId
+    ['inherited', 'parent']?.forEach(key => {
+      newState[key] = newState[key]?.map(group =>
+        group?.name === currentPgId
           ? { ...group, parameters: updateGroupParameters(group, data) }
           : group
       );
