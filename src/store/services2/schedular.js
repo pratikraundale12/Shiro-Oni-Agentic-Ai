@@ -5,9 +5,6 @@ export const schedularAPI = api => {
     api.post('/schedule-deployment', payload);
   const editScheduleDeployment = ({ schedularId, payloadData }) =>
     api.post(`/rechedule-job/${schedularId}`, payloadData);
-  const checkApproverToken = ({ params }) => {
-    return api.get('/schedule-deployment/token', params);
-  };
   const editScheduleByRegistry = ({ schedularId, state }) =>
     api.get(`/namespace-schedule/${schedularId}/state/${state}`);
 
@@ -21,7 +18,6 @@ export const schedularAPI = api => {
     fetchSchedular,
     createScheduleDeployment,
     editScheduleDeployment,
-    checkApproverToken,
     editScheduleByRegistry,
     rejectScheduleDeployment,
     fetchDiffScheduleData,

@@ -635,7 +635,7 @@ export const Setting = () => {
               icon={<CalendarIcon />}
               errors={errors}
               options={EMAIL_REMINDER_OPTIONS}
-              placeholder="Select Reminter Time"
+              placeholder="Select Reminder Time"
               defaultValue={EMAIL_REMINDER_OPTIONS[0]}
             />
           </div>

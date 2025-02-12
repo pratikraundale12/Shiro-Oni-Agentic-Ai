@@ -84,21 +84,6 @@ export function* editScheduleDeployment(api, { payload }) {
   } else toast.error(response.data.message);
 }
 
-export function* checkApproverToken(api, { payload: { params } }) {
-  const response = yield call(requestSaga, {
-    errorSection: 'checkApproverToken',
-    loadingSection: 'checkApproverToken',
-    apiMethod: api.checkApproverToken,
-    apiParams: [{ params: params }],
-  });
-  if (response.ok) {
-    yield put(SchedularActions.setSelectedSchedule(response.data));
-    yield put(SchedularActions.setTokenScheduleModal(true));
-  } else {
-    toast.error(response.data.message, { toastId: 'token-error-toast' });
-  }
-}
-
 export function* editScheduleByRegistry(api, { payload }) {
   const selectedRange = yield select(SchedularSelectors.getScheduleSelectRange);
   const statusData = yield select(SchedularSelectors.getStatusFilterData);
@@ -197,7 +182,6 @@ export function* schedularSagas(api) {
       editScheduleDeployment,
       api
     ),
-    takeLatest(SchedularActions.checkApproverToken, checkApproverToken, api),
     takeLatest(
       SchedularActions.editScheduleByRegistry,
       editScheduleByRegistry,

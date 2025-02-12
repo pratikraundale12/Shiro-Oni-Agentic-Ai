@@ -212,126 +212,115 @@ const ParameterContextTab = () => {
     },
   ];
 
+  // Helper function to update parameters within a group
+  const updateGroupParameters = (group, data) => {
+    return group?.parameters?.map(param =>
+      param?.name === data?.name
+        ? {
+            ...param,
+            value: data?.check ? '' : isEmpty(data?.value) ? null : data?.value,
+            check: data?.check,
+            description: data?.description,
+          }
+        : param
+    );
+  };
+
+  // Helper function to update the payload
+  const updatePayload = (key, group, updatedParameters, payload) => {
+    const groupIndex = payload[key]?.findIndex(g => g?.name === group?.name);
+
+    if (groupIndex > -1) {
+      // Update existing group
+      payload[key][groupIndex] = {
+        ...payload[key][groupIndex],
+        parameters: payload[key][groupIndex]?.parameters?.map(param => {
+          const updatedParam = updatedParameters?.find(
+            p => p?.name === param?.name
+          );
+          return updatedParam || param;
+        }),
+      };
+
+      // Add new parameters if they don't already exist
+      updatedParameters?.forEach(updatedParam => {
+        if (
+          !payload[key][groupIndex]?.parameters?.some(
+            p => p?.name === updatedParam?.name
+          )
+        ) {
+          payload[key][groupIndex]?.parameters?.push(updatedParam);
+        }
+      });
+    } else {
+      // Add new group
+      payload[key]?.push({ name: group?.name, parameters: updatedParameters });
+    }
+  };
+
   const handleAddOrEditVariableSave = data => {
     dispatch(NamespacesActions.setIsLocalPcUpdated(true));
-    const updatedState = JSON.parse(JSON.stringify(pcData));
-    const updatedPayload = {
-      inherited: Array.isArray(pcPayload.inherited)
-        ? [...pcPayload.inherited]
-        : [],
-      parent: Array.isArray(pcPayload.parent) ? [...pcPayload.parent] : [],
-    };
 
-    ['inherited', 'parent'].forEach(key => {
-      updatedState[key] = updatedState[key].map(group => {
-        let isGroupUpdated = false;
-        const updatedParameters = group.parameters
-          .map(parameter => {
-            if (parameter.name === data.name) {
-              isGroupUpdated = true;
-              return {
-                ...parameter,
-                value: data?.check
-                  ? ''
-                  : isEmpty(data.value)
-                    ? null
-                    : data.value,
-                check: data.check,
-                description: data.description,
-              };
-            }
-            return null;
-          })
-          .filter(Boolean);
+    // Clone state
+    const updatedState = deepClone(pcData);
+    const updatedPayload = initializeUpdatedPayload(pcPayload);
 
-        if (isGroupUpdated) {
-          const existingGroupIndex = updatedPayload[key].findIndex(
-            g => g.name === group.name
-          );
-
-          if (existingGroupIndex > -1) {
-            updatedPayload[key][existingGroupIndex] = {
-              ...updatedPayload[key][existingGroupIndex],
-              parameters: updatedPayload[key][
-                existingGroupIndex
-              ].parameters.map(param => {
-                const updatedParam = updatedParameters.find(
-                  p => p.name === param.name
-                );
-                return updatedParam || param;
-              }),
-            };
-            updatedParameters.forEach(updatedParam => {
-              if (
-                !updatedPayload[key][existingGroupIndex].parameters.some(
-                  p => p.name === updatedParam.name
-                )
-              ) {
-                updatedPayload[key][existingGroupIndex].parameters.push(
-                  updatedParam
-                );
-              }
-            });
-          } else {
-            updatedPayload[key].push({
-              name: group.name,
-              parameters: updatedParameters,
-            });
-          }
-        }
-
-        return {
-          ...group,
-          parameters: group.parameters.map(param => {
-            return param.name === data.name
-              ? {
-                  ...param,
-                  value: data?.check
-                    ? ''
-                    : isEmpty(data.value)
-                      ? null
-                      : data.value,
-                  check: data.check,
-                  description: data.description,
-                }
-              : param;
-          }),
-        };
-      });
+    // Process each group type
+    ['inherited', 'parent']?.forEach(key => {
+      updatedState[key] = updatedState[key]?.map(group =>
+        processGroup(group, data, key, updatedPayload)
+      );
     });
 
     setPcPayload(updatedPayload);
-    setPcData(prevState => {
-      const updatedState = JSON.parse(JSON.stringify(prevState));
-
-      ['inherited', 'parent'].forEach(key => {
-        updatedState[key] = updatedState[key].map(group => {
-          if (group.name === currentPgId) {
-            return {
-              ...group,
-              parameters: group.parameters.map(parameter => {
-                return parameter.name === data.name
-                  ? {
-                      ...parameter,
-                      value: data?.check
-                        ? ''
-                        : isEmpty(data.value)
-                          ? null
-                          : data.value,
-                      check: data.check,
-                      description: data.description,
-                    }
-                  : parameter;
-              }),
-            };
-          }
-          return group;
-        });
-      });
-
-      return updatedState;
-    });
+    setPcData(prevState => updateState(prevState, data));
   };
+
+  // Helper function to deep clone an object
+  const deepClone = obj => JSON.parse(JSON.stringify(obj));
+
+  // Initialize updated payload
+  const initializeUpdatedPayload = pcPayload => ({
+    inherited: Array.isArray(pcPayload?.inherited)
+      ? [...pcPayload.inherited]
+      : [],
+    parent: Array.isArray(pcPayload?.parent) ? [...pcPayload.parent] : [],
+  });
+
+  // Process each group
+  const processGroup = (group, data, key, updatedPayload) => {
+    let isUpdated = false;
+    const updatedParameters = group?.parameters?.map(param => {
+      if (param?.name === data?.name) {
+        isUpdated = true;
+        return {
+          ...param,
+          value: data?.check ? '' : isEmpty(data?.value) ? null : data?.value,
+          check: data?.check,
+          description: data?.description,
+        };
+      }
+      return param;
+    });
+
+    if (isUpdated) updatePayload(key, group, updatedParameters, updatedPayload);
+
+    return { ...group, parameters: updateGroupParameters(group, data) };
+  };
+
+  // Update state with new parameters
+  const updateState = (prevState, data) => {
+    const newState = deepClone(prevState);
+    ['inherited', 'parent']?.forEach(key => {
+      newState[key] = newState[key]?.map(group =>
+        group?.name === currentPgId
+          ? { ...group, parameters: updateGroupParameters(group, data) }
+          : group
+      );
+    });
+    return newState;
+  };
+
   useEffect(() => {
     dispatch(NamespacesActions.setPcLocalData(pcData));
   }, [pcData]);

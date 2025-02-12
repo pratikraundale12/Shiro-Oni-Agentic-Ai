@@ -58,7 +58,7 @@ const ProcessGroupSorting = ({
     <div style={{ display: 'flex', alignItems: 'center' }}>
       {clickableName && (
         <button
-          onClick={() => handleToggleSort(clickableName)}
+          onClick={handleToggleSort}
           style={{
             background: 'none',
             border: 'none',

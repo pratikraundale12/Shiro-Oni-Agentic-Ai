@@ -223,7 +223,7 @@ export const Dashboard = () => {
       width: '25%',
     },
     {
-      label: 'Processor ID',
+      label: 'Process Group ID',
       renderCell: item => (
         <div>
           <IdWrapper data-tooltip-id={`tooltip-${item.processor_group_id}`}>
