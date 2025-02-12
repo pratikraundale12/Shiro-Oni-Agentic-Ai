@@ -75,7 +75,11 @@ const VariableTab = () => {
 
   const handleEditClick = item => {
     setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
-    setCurrentEditData(item);
+    setCurrentEditData({
+      check: item?.value === '' ? true : false,
+      value: item?.value ? item?.value : null,
+      ...item,
+    });
   };
 
   const VARIABLE_COLUMNS = [
@@ -92,7 +96,7 @@ const VariableTab = () => {
           <TextRender
             key={item?.value}
             text={
-              item?.check || item?.value === ''
+              item?.check
                 ? KDFM.EMPTY_STRING_SET
                 : item?.value
                   ? item?.value
@@ -120,63 +124,74 @@ const VariableTab = () => {
 
   const handleAddOrEditVariableSave = data => {
     dispatch(NamespacesActions.setIsLocalVariableUpdated(true));
+    updateVariableData(data);
+    updateVariablePayload(data);
+  };
+
+  const updateVariableData = data => {
     setVariableData(prev =>
       prev.map(item =>
-        item.pgId === currentPgId
-          ? {
-              ...item,
-              variables: item.variables.some(
-                variable => variable.name === data.name
-              )
-                ? item.variables.map(variable =>
-                    variable.name === data.name
-                      ? { ...variable, value: data.value }
-                      : variable
-                  )
-                : [...item.variables, data],
-            }
-          : item
+        item.pgId === currentPgId ? updateVariables(item, data) : item
       )
     );
+  };
 
+  const updateVariables = (item, data) => ({
+    ...item,
+    variables: item.variables.some(variable => variable.name === data.name)
+      ? item.variables.map(variable =>
+          variable.name === data.name
+            ? {
+                ...variable,
+                value: data?.check
+                  ? ''
+                  : isEmpty(data.value)
+                    ? null
+                    : data.value,
+                check: data.check,
+              }
+            : variable
+        )
+      : [...item.variables, data],
+  });
+
+  const updateVariablePayload = data => {
     setVariablePayload(prevPayload => {
       const existingPg = prevPayload.find(pg => pg.pgId === currentPgId);
 
       if (existingPg) {
-        const updatedVariables = existingPg.variables.some(
-          variable => variable.name === data.name
-        )
-          ? existingPg.variables.map(variable =>
-              variable.name === data.name
-                ? { ...variable, value: data.value }
-                : variable
-            )
-          : [...existingPg.variables, data];
-
         return prevPayload.map(pg =>
           pg.pgId === currentPgId
-            ? {
-                ...pg,
-                variables: updatedVariables,
-              }
+            ? { ...pg, variables: updateExistingVariables(existingPg, data) }
             : pg
         );
-      } else {
-        const currentPgData = variableData.find(
-          item => item.pgId === currentPgId
-        );
-        return [
-          ...prevPayload,
-          {
-            pgId: currentPgId,
-            parent: currentPgData.parent,
-            pgName: currentPgData.pgName,
-            variables: [data],
-            path: currentPgData.path,
-          },
-        ];
       }
+
+      return addNewPgData(prevPayload, data);
     });
+  };
+
+  const updateExistingVariables = (pg, data) =>
+    pg.variables.some(variable => variable.name === data.name)
+      ? pg.variables.map(variable =>
+          variable.name === data.name
+            ? { ...variable, value: data.value }
+            : variable
+        )
+      : [...pg.variables, data];
+
+  const addNewPgData = (prevPayload, data) => {
+    const currentPgData = variableData.find(item => item.pgId === currentPgId);
+    return [
+      ...prevPayload,
+      {
+        pgId: currentPgId,
+        parent: currentPgData.parent,
+        pgName: currentPgData.pgName,
+        variables: [data],
+        path: currentPgData.path,
+      },
+    ];
   };
 
   useEffect(() => {

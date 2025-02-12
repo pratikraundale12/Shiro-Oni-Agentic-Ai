@@ -290,44 +290,6 @@ export const ListClusters = () => {
                             <span> Delete</span>
                           </Item>
                         )}
-                        {!isEmpty(item?.metrics_url) && (
-                          <StyledLink
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href={item?.metrics_url}
-                          >
-                            <MetricsIconContainer>
-                              {' '}
-                              <MetricsIcon />
-                            </MetricsIconContainer>
-                            <a
-                              href={item?.metrics_url}
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              {KDFM.METRICS}
-                            </a>
-                          </StyledLink>
-                        )}
-                        {!isEmpty(item?.logs_url) && (
-                          <StyledLink
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href={item?.logs_url}
-                          >
-                            <MetricsIconContainer>
-                              {' '}
-                              <LogsIcon />
-                            </MetricsIconContainer>
-                            <a
-                              href={item?.logs_url}
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              {KDFM.LOGS}
-                            </a>
-                          </StyledLink>
-                        )}
                       </>
                     )}
                   </>

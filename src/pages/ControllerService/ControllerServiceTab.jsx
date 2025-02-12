@@ -169,8 +169,12 @@ const ControllerServiceTab = ({
         csReduxData.localServices === undefined)
     ) {
       setControllerServicesData(registryDetailsData?.controllerServicesData);
+      setLocalServices(
+        registryDetailsData?.controllerServicesData?.localServices
+      );
     } else {
       setControllerServicesData(csReduxData);
+      setLocalServices(csReduxData?.localServices);
     }
   }, [csReduxData, registryDetailsData]);
 
@@ -220,7 +224,6 @@ const ControllerServiceTab = ({
     setExternalControllerServices(
       controllerServicesData?.externalControllerServices
     );
-    setLocalServices(controllerServicesData?.localServices);
     setExternalControllerServicesTableData(
       controllerServicesData?.externalControllerServices
     );
@@ -1456,6 +1459,8 @@ const ControllerServiceTab = ({
               ...service,
               configuredData: {
                 ...service?.configuredData,
+                properties: propertyUpdateResponse?.properties,
+                name: propertyUpdateResponse?.name,
                 state: propertyUpdateResponse?.state,
                 validationStatus: propertyUpdateResponse?.validationStatus,
               },
@@ -1496,7 +1501,10 @@ const ControllerServiceTab = ({
 
   const handleAddValueModal = item => {
     setIsAddpropertiesModalOpen(true);
-    setSelectedPropertyToEdit(item);
+    setSelectedPropertyToEdit({
+      check: item?.value === '' ? true : false,
+      ...item,
+    });
   };
 
   const handleSettingClick = item => {
@@ -1863,8 +1871,8 @@ const ControllerServiceTab = ({
     });
     return Array.from(propertyMap.values());
   };
-
   useEffect(() => {
+    if (isEmpty(updatedLocalServicesData)) return;
     setLocalServices(prevLocalServices => {
       const updatedServices = prevLocalServices?.map(processGroup => {
         return {
@@ -1877,11 +1885,11 @@ const ControllerServiceTab = ({
               return {
                 ...controller,
                 ...updatedController,
-                name: updatedController?.name,
                 properties: mergeProperties(
                   controller.properties,
                   updatedController.properties
                 ),
+                name: updatedController?.name,
               };
             }
             return controller;
