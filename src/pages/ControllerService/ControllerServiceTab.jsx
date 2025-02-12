@@ -1440,60 +1440,108 @@ const ControllerServiceTab = ({
     }
   }, [stateChangeResponse]);
 
+  // useEffect(() => {
+  //   if (!isEmpty(propertyUpdateResponse)) {
+  //     setExternalControllerServices(prevServices =>
+  //       prevServices.map(service => {
+  //         if (
+  //           service.updatedValue === selectedItemFromList?.id &&
+  //           service?.controllerService?.length
+  //         ) {
+  //           return {
+  //             ...service,
+  //             controllerService: service?.controllerService?.map((cs, index) =>
+  //               index === 0
+  //                 ? {
+  //                     ...cs,
+  //                     properties: propertyUpdateResponse?.properties,
+  //                     name: propertyUpdateResponse?.name,
+  //                     state: propertyUpdateResponse?.state,
+  //                     validationStatus:
+  //                       propertyUpdateResponse?.validationStatus,
+  //                   }
+  //                 : cs
+  //             ),
+  //           };
+  //         } else if (
+  //           service.updatedValue === propertyUpdateResponse?.id &&
+  //           service.updatedValue === selectedItemFromList?.updatedValue
+  //         ) {
+  //           return {
+  //             ...service,
+  //             properties: propertyUpdateResponse?.properties,
+  //             name: propertyUpdateResponse?.name,
+  //             state: propertyUpdateResponse?.state,
+  //             validationStatus: propertyUpdateResponse?.validationStatus,
+  //             isPropertyUpdated: true,
+  //           };
+  //         } else if (
+  //           service?.configured &&
+  //           service?.configuredData?.id === selectedItemFromList?.id
+  //         ) {
+  //           return {
+  //             ...service,
+  //             configuredData: {
+  //               ...service?.configuredData,
+  //               properties: propertyUpdateResponse?.properties,
+  //               name: propertyUpdateResponse?.name,
+  //               state: propertyUpdateResponse?.state,
+  //               validationStatus: propertyUpdateResponse?.validationStatus,
+  //             },
+  //           };
+  //         }
+  //         return service;
+  //       })
+  //     );
+  //   }
+  // }, [propertyUpdateResponse]);
   useEffect(() => {
-    if (!isEmpty(propertyUpdateResponse)) {
-      setExternalControllerServices(prevServices =>
-        prevServices.map(service => {
-          if (
-            service.updatedValue === selectedItemFromList?.id &&
-            service?.controllerService?.length
-          ) {
-            return {
-              ...service,
-              controllerService: service?.controllerService?.map((cs, index) =>
-                index === 0
-                  ? {
-                      ...cs,
-                      properties: propertyUpdateResponse?.properties,
-                      name: propertyUpdateResponse?.name,
-                      state: propertyUpdateResponse?.state,
-                      validationStatus:
-                        propertyUpdateResponse?.validationStatus,
-                    }
-                  : cs
-              ),
-            };
-          } else if (
-            service.updatedValue === propertyUpdateResponse?.id &&
-            service.updatedValue === selectedItemFromList?.updatedValue
-          ) {
-            return {
-              ...service,
-              properties: propertyUpdateResponse?.properties,
-              name: propertyUpdateResponse?.name,
-              state: propertyUpdateResponse?.state,
-              validationStatus: propertyUpdateResponse?.validationStatus,
-              isPropertyUpdated: true,
-            };
-          } else if (
-            service?.configured &&
-            service?.configuredData?.id === selectedItemFromList?.id
-          ) {
-            return {
-              ...service,
-              configuredData: {
-                ...service?.configuredData,
-                properties: propertyUpdateResponse?.properties,
-                name: propertyUpdateResponse?.name,
-                state: propertyUpdateResponse?.state,
-                validationStatus: propertyUpdateResponse?.validationStatus,
-              },
-            };
-          }
-          return service;
-        })
-      );
-    }
+    if (isEmpty(propertyUpdateResponse)) return;
+
+    setExternalControllerServices(prevServices =>
+      prevServices.map(service => {
+        const isMatchingUpdatedValue =
+          service.updatedValue === propertyUpdateResponse?.id &&
+          service.updatedValue === selectedItemFromList?.updatedValue;
+
+        const shouldUpdateControllerService =
+          service.updatedValue === selectedItemFromList?.id &&
+          service?.controllerService?.length;
+
+        const shouldUpdateConfiguredData =
+          service?.configured &&
+          service?.configuredData?.id === selectedItemFromList?.id;
+
+        if (shouldUpdateControllerService) {
+          return {
+            ...service,
+            controllerService: service.controllerService.map((cs, index) =>
+              index === 0 ? { ...cs, ...propertyUpdateResponse } : cs
+            ),
+          };
+        }
+
+        if (isMatchingUpdatedValue) {
+          return {
+            ...service,
+            ...propertyUpdateResponse,
+            isPropertyUpdated: true,
+          };
+        }
+
+        if (shouldUpdateConfiguredData) {
+          return {
+            ...service,
+            configuredData: {
+              ...service.configuredData,
+              ...propertyUpdateResponse,
+            },
+          };
+        }
+
+        return service;
+      })
+    );
   }, [propertyUpdateResponse]);
 
   const handleStatusClick = () => {
