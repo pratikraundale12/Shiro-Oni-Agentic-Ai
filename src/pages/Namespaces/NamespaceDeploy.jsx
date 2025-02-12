@@ -225,24 +225,33 @@ const NamespaceDeploy = ({
       ? formDataRegistry?.selectedFlowName
       : selectedNamespace?.name;
   };
-  const getRunningFlowCount = () => {
-    return checkFlowControlAfterUpgrade
-      ? dataAfterUpgradeProcessor?.runningCount
-      : deployOrUpgradeDetails?.runningCount;
-  };
-  const getStoppedFlowCount = () => {
-    return checkFlowControlAfterUpgrade
-      ? dataAfterUpgradeProcessor?.stoppedCount
-      : deployOrUpgradeDetails?.stoppedCount;
-  };
   const getFlowCount = countType => {
     return checkFlowControlAfterUpgrade
       ? dataAfterUpgradeProcessor?.[countType]
       : deployOrUpgradeDetails?.[countType];
   };
-  checkFlowControlAfterUpgrade
-                          ? dataAfterUpgradeProcessor?.invalidCount
-                          : deployOrUpgradeDetails?.invalidCount
+  const checkFlowControlsDisplay = () => {
+    return (
+      deployOrUpgradeDetails?.stoppedCount === 0 &&
+      deployOrUpgradeDetails?.runningCount === 0
+    );
+  };
+  const checkStartFlowCondition = () => {
+    return (
+      (dataAfterUpgradeProcessor?.runningCount ||
+        deployOrUpgradeDetails?.runningCount) > 0 &&
+      (dataAfterUpgradeProcessor?.stoppedCount ||
+        deployOrUpgradeDetails?.stoppedCount) === 0
+    );
+  };
+  const checkStopFlowCondition = () => {
+    return (
+      (dataAfterUpgradeProcessor?.runningCount ||
+        deployOrUpgradeDetails?.runningCount) === 0 &&
+      (dataAfterUpgradeProcessor?.stoppedCount ||
+        deployOrUpgradeDetails?.stoppedCount) > 0
+    );
+  };
   return (
     <>
       <Modal
@@ -323,38 +332,22 @@ const NamespaceDeploy = ({
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-3"
-                      count={
-                        checkFlowControlAfterUpgrade
-                          ? dataAfterUpgradeProcessor?.invalidCount
-                          : deployOrUpgradeDetails?.invalidCount
-                      }
+                      count={getFlowCount('invalidCount')}
                       activeColor="#CF9F5D"
                     >
                       <TriangleExclamationMarkIcon color="#B5BDC8" />
-                      <span>
-                        {checkFlowControlAfterUpgrade
-                          ? dataAfterUpgradeProcessor?.invalidCount
-                          : deployOrUpgradeDetails?.invalidCount}
-                      </span>
+                      <span>{getFlowCount('invalidCount')}</span>
                     </CountDiv>
                     <div>Invalid Processors</div>
                   </div>
                   <div className="d-flex align-items-center">
                     <CountDiv
                       className="div-btn-4"
-                      count={
-                        checkFlowControlAfterUpgrade
-                          ? dataAfterUpgradeProcessor?.disabledCount
-                          : deployOrUpgradeDetails?.disabledCount
-                      }
+                      count={getFlowCount('disabledCount')}
                       activeColor="#2c7cf3"
                     >
                       <SmallNotThunderIcon width={16} color="#B5BDC8" />
-                      <span>
-                        {checkFlowControlAfterUpgrade
-                          ? dataAfterUpgradeProcessor?.disabledCount
-                          : deployOrUpgradeDetails?.disabledCount}
-                      </span>
+                      <span>{getFlowCount('disabledCount')}</span>
                     </CountDiv>
                     <div>Disabled Processors</div>
                   </div>
@@ -364,10 +357,7 @@ const NamespaceDeploy = ({
 
             <CustomNine className="col-8 mb-3">
               <ActiveButtonContainer className="d-flex">
-                {!(
-                  deployOrUpgradeDetails?.stoppedCount === 0 &&
-                  deployOrUpgradeDetails?.runningCount === 0
-                ) ? (
+                {!checkFlowControlsDisplay() ? (
                   <>
                     <ActiveButtonDiv className="div-btn-1">
                       <Tooltip id="running-tooltip" place="top">
@@ -375,28 +365,16 @@ const NamespaceDeploy = ({
                       </Tooltip>
                       <ActiveButtonDiv
                         className={`div-btn-1 ${
-                          (dataAfterUpgradeProcessor?.runningCount ||
-                            deployOrUpgradeDetails?.runningCount) > 0 &&
-                          (dataAfterUpgradeProcessor?.stoppedCount ||
-                            deployOrUpgradeDetails?.stoppedCount) === 0
-                            ? 'disabled'
-                            : ''
+                          checkStartFlowCondition() ? 'disabled' : ''
                         }`}
                         isActive={activeButtonPopup === 'RUNNING'}
                         activeColor="#58e715"
                         hoverColor="#58e715"
                         activeTextColor="#fff"
-                        onClick={() => {
-                          if (
-                            (dataAfterUpgradeProcessor?.runningCount ||
-                              deployOrUpgradeDetails?.runningCount) > 0 &&
-                            (dataAfterUpgradeProcessor?.stoppedCount ||
-                              deployOrUpgradeDetails?.stoppedCount) === 0
-                          ) {
-                            return;
-                          }
-                          handleFlowConfirmPopup('RUNNING');
-                        }}
+                        onClick={() =>
+                          checkStartFlowCondition() ||
+                          handleFlowConfirmPopup('RUNNING')
+                        }
                         data-tooltip-id="running-tooltip"
                       >
                         <TriangleIcons color="#B5BDC8" />
@@ -409,28 +387,16 @@ const NamespaceDeploy = ({
                       </Tooltip>
                       <ActiveButtonDiv
                         className={`div-btn-1 ${
-                          (dataAfterUpgradeProcessor?.runningCount ||
-                            deployOrUpgradeDetails?.runningCount) === 0 &&
-                          (dataAfterUpgradeProcessor?.stoppedCount ||
-                            deployOrUpgradeDetails?.stoppedCount) > 0
-                            ? 'disabled'
-                            : ''
+                          checkStopFlowCondition() ? 'disabled' : ''
                         }`}
                         isActive={activeButtonPopup === 'STOPPED'}
                         activeColor="#c52b2b"
                         hoverColor="#c52b2b"
                         activeTextColor="#fff"
-                        onClick={() => {
-                          if (
-                            (dataAfterUpgradeProcessor?.runningCount ||
-                              deployOrUpgradeDetails?.runningCount) === 0 &&
-                            (dataAfterUpgradeProcessor?.stoppedCount ||
-                              deployOrUpgradeDetails?.stoppedCount) > 0
-                          ) {
-                            return;
-                          }
-                          handleFlowConfirmPopup('STOPPED');
-                        }}
+                        onClick={() =>
+                          checkStopFlowCondition() ||
+                          handleFlowConfirmPopup('STOPPED')
+                        }
                         data-tooltip-id="stopped-tooltip"
                       >
                         <SquareBoxIcon color="#B5BDC8" />
