@@ -963,11 +963,33 @@ const Summary = () => {
     window.open(registryData.url, '_blank');
   };
   const isScheduled = scheduleDeploymentFlow || scheduleUpgradeFromList;
-  const deploymentAction = !deployByRegistryFlow
-    ? checkDestCluster?.version <= versionSelected.version
+
+  const getDeploymentAction = () => {
+    if (deployByRegistryFlow) return KDFM.DEPLOY;
+    return checkDestCluster?.version <= versionSelected.version
       ? KDFM.UPGRADE
-      : KDFM.DOWNGRADE
-    : KDFM.DEPLOY;
+      : KDFM.DOWNGRADE;
+  };
+
+  const deploymentAction = getDeploymentAction();
+
+  const providePrimaryTextForFlowConfirmationModal = () => {
+    return checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy
+      ? `Do you really want to ${confirmDialogue?.text}?`
+      : `Flow will be ${confirmDialogue?.text} after the ${isRegistryDeploy ? 'deploy' : 'upgrade'}?`;
+  };
+
+  const actionIcons = {
+    STOPPED: StopIconImage,
+    RUNNING: StartIconImage,
+    ENABLED: EnableIconImage,
+  };
+
+  const defaultIcon = DisbaleIconImage;
+  const selectedIcon = actionIcons[confirmDialogue?.action] || defaultIcon;
+  const progressbarText =
+    deployOrUpgradeDetails?.percentCompleted < 100 ? 'Upgrading' : 'Upgraded';
+
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -1374,9 +1396,7 @@ const Summary = () => {
             <div className="w-100 mt-3">
               <Progressox className="w-100">
                 <ProgressLabel className="progress-label">
-                  {deployOrUpgradeDetails?.percentCompleted < 100
-                    ? 'Upgrading'
-                    : 'Upgraded'}
+                  {progressbarText}
                 </ProgressLabel>
                 <CustomRedProgress className="progress w-100 custom-red-progress">
                   <ProgressBar
@@ -1431,22 +1451,7 @@ const Summary = () => {
           title={'Flow Confirmation'}
           primaryButtonText={'Confirm'}
           secondaryButtonText="Cancel"
-          icon={
-            <img
-              src={
-                confirmDialogue?.action === 'STOPPED'
-                  ? StopIconImage
-                  : confirmDialogue?.action === 'RUNNING'
-                    ? StartIconImage
-                    : confirmDialogue?.action === 'ENABLED'
-                      ? EnableIconImage
-                      : DisbaleIconImage
-              }
-              height="80px"
-              width="80px"
-              alt="img"
-            />
-          }
+          icon={<img src={selectedIcon} height="80px" width="80px" alt="img" />}
           isOpen={confirmDialogue?.state}
           onRequestClose={() => {
             setConfirmDialogue({
@@ -1457,11 +1462,7 @@ const Summary = () => {
             });
             setActiveButtonPopup(null);
           }}
-          primaryText={
-            checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy
-              ? `Do you really want to ${confirmDialogue?.text}?`
-              : `Flow will be ${confirmDialogue?.text} after the ${isRegistryDeploy ? 'deploy' : 'upgrade'}?`
-          }
+          primaryText={providePrimaryTextForFlowConfirmationModal()}
           onSubmit={handleConfirmUpdateStatus}
         />
         <DuplicateScheduleModal
