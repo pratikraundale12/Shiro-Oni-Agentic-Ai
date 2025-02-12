@@ -123,7 +123,10 @@ export const ConfigControllerService = ({
 
   const handleOpenPropertyDropDownModal = item => {
     dispatch(NamespacesActions.setIsAddPropertyDropdownModalOpen(true));
-    setSelectedPropertyToEdit(item);
+    setSelectedPropertyToEdit({
+      check: item?.value === '' ? true : false,
+      ...item,
+    });
   };
 
   const COLUMNS = [
@@ -296,7 +299,11 @@ export const ConfigControllerService = ({
     };
     const configPayload = updateProperties(selectedItemFromList, updatedData);
     if (isFromControllerServiceTab && !isFromExternalService) {
-      handlePropertyUpdate(configPayload);
+      const updatedPayload = {
+        ...configPayload,
+        name: data?.name,
+      };
+      handlePropertyUpdate(updatedPayload);
       onClose();
     } else {
       dispatch(NamespacesActions.addPropertyControllerService(payload));

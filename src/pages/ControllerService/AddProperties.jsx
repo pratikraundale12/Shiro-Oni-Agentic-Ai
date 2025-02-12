@@ -6,6 +6,7 @@ import { CheckboxField, InputField, Modal } from '../../shared';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { KDFM } from '../../constants';
+import { isEmpty } from 'lodash';
 
 const ModalBody = styled.div`
   position: relative;
@@ -36,7 +37,7 @@ const AddProperties = ({
         ...filterData,
         {
           name: selectedPropertyToEdit.name,
-          value: data.value,
+          value: isEmpty(data?.value) && !check ? null : data.value,
           sensitive: false,
         },
       ];
@@ -45,11 +46,15 @@ const AddProperties = ({
     setListPropertTableData(prevData =>
       prevData.map(item =>
         item.name === selectedPropertyToEdit.name
-          ? { ...item, value: data?.value, empty_string_set: data?.check }
+          ? {
+              ...item,
+              value: isEmpty(data?.value) && !check ? null : data.value,
+              empty_string_set: data?.check,
+            }
           : item
       )
     );
-    toast.success(KDFM.PROPERTY_EDITED);
+    !(isEmpty(data?.value) && !check) && toast.success(KDFM.PROPERTY_EDITED);
     setIsAddpropertiesModalOpen(false);
   };
   const check = useWatch({
@@ -60,16 +65,21 @@ const AddProperties = ({
   useEffect(() => {
     if (check) {
       setValue('value', '');
+    } else if (!check) {
+      setValue('value', selectedPropertyToEdit?.value);
     }
   }, [check, setValue]);
   useEffect(() => {
     reset({
-      value: selectedPropertyToEdit?.value || '',
+      value: selectedPropertyToEdit?.value,
       check: selectedPropertyToEdit?.empty_string_set || false,
     });
   }, [reset, isOpen]);
 
   const propertyValue = watch('value');
+  useEffect(() => {
+    setValue('check', selectedPropertyToEdit?.check);
+  }, [selectedPropertyToEdit, setValue]);
 
   return (
     <div>
@@ -82,8 +92,8 @@ const AddProperties = ({
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
         primaryButtonDisabled={
-          (propertyValue === selectedPropertyToEdit?.value ||
-            (propertyValue === '' && !check)) ??
+          (propertyValue === selectedPropertyToEdit?.value &&
+            check === selectedPropertyToEdit?.check) ??
           false
         }
       >
@@ -99,7 +109,10 @@ const AddProperties = ({
           <CheckboxField
             name="check"
             label={'Set empty string'}
-            defaultChecked={false}
+            defaultChecked={
+              selectedPropertyToEdit?.check ||
+              selectedPropertyToEdit?.value === ''
+            }
             register={register}
           />
         </ModalBody>

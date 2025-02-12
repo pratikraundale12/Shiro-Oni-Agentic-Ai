@@ -11,6 +11,8 @@ import {
   RadioSelectField,
 } from '../../shared';
 import { isEmpty, isEqual } from 'lodash';
+import { useSelector } from 'react-redux';
+import { NamespacesSelectors } from '../../store';
 
 const ModalBody = styled.div`
   position: relative;
@@ -125,17 +127,35 @@ const AddOrEditParameterContextModal = ({
     setIsChecked(checked);
     setFormData(prev => ({
       ...prev,
-      value: checked ? '' : prev.value,
+      value: checked ? '' : pcEditData?.value || currentParameter[0]?.value,
       check: checked,
     }));
   };
+
+  const registryDetailsData = useSelector(
+    NamespacesSelectors.getRegistryAllDetails
+  );
+  const parametersData = [
+    ...(registryDetailsData?.parameterContextData?.inherited[0]?.parameters ||
+      []),
+    ...(registryDetailsData?.parameterContextData?.parent[0]?.parameters || []),
+  ];
+
+  const [currentParameter, setCurrentParameter] = useState({});
+  useEffect(() => {
+    const filteredParameter = parametersData?.filter(
+      item => item?.name === pcEditData?.name
+    );
+    setCurrentParameter(filteredParameter);
+  }, [pcEditData]);
+
   useEffect(() => {
     setIsSaveBtnDisabled(
       !isEmpty(pcEditData) && !isEmpty(formData)
         ? isValueChanged(pcEditData, formData)
         : false
     );
-  }, [formData]);
+  }, [formData, isChecked]);
   const handleInputChange = data => {
     const { name, value } = data.target;
     setFormData(prev => ({
@@ -147,6 +167,7 @@ const AddOrEditParameterContextModal = ({
   useEffect(() => {
     isChecked;
     setValPlaceHolder('');
+    // formData?.sensitive && setValPlaceHolder('Sensitive Value Set');
   }, [isChecked]);
 
   return (
@@ -194,6 +215,13 @@ const AddOrEditParameterContextModal = ({
                   placeholder={valPlaceHolder}
                   disabled={isChecked}
                   value={isChecked ? '' : formData.value}
+                  // value={
+                  //   isChecked
+                  //     ? ''
+                  //     : formData?.value?.includes('*')
+                  //       ? ''
+                  //       : formData?.value
+                  // }
                   onChange={e => handleInputChange(e)}
                 />
               </InputBox>

@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { isEmpty, isString, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -111,6 +111,19 @@ const AddParameterContext = ({
     : isParentEdit?.parent
       ? parameterDetails?.parameterContexts
       : parameterDetails?.parameterContexts || [];
+  const parameterContextObjectAtDeloy = useSelector(
+    NamespacesSelectors.getParameterContextListAtDeploy
+  );
+  const parametersArray =
+    parameterContextObjectAtDeloy?.parameterContexts || [];
+  const [currentParameter, setCurrentParameter] = useState({});
+  useEffect(() => {
+    const filteredParameter = parametersArray?.filter(
+      item => item?.name === parameterContextItem?.name
+    );
+    setCurrentParameter(filteredParameter);
+  }, [parameterContextItem]);
+
   const {
     register,
     handleSubmit,
@@ -273,12 +286,18 @@ const AddParameterContext = ({
   useEffect(() => {
     if (check) {
       setValue('value', '');
+    } else if (!check) {
+      setValue(
+        'value',
+        parameterContextItem?.value === null
+          ? parameterContextItem?.value
+          : currentParameter[0]?.value
+      );
     }
   }, [check, setValue]);
 
   const pcValue = watch('value');
   const pcDesc = watch('description');
-
   return (
     <Modal
       title={

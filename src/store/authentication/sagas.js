@@ -120,7 +120,7 @@ export function* login(api, { payload: { type, token, ...payload } }) {
 
     if (!token) {
       yield put(AuthenticationActions.setRoute(DEFAULT_ROUTE));
-      window.location.pathname = DEFAULT_ROUTE;
+      window.location.pathname = '/dashboard';
     } else {
       yield put(AuthenticationActions.setRoute('schedule-deployment'));
       yield call(history.push, `schedule-deployment?token=${token}`);
