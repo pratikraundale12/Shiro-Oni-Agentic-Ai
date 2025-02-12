@@ -308,7 +308,9 @@ const PropertyDropdownModal = ({
                   name="value"
                   size="sm"
                   options={
-                    !isUpgrade || isFromExternalService
+                    !isUpgrade ||
+                    isFromExternalService ||
+                    !selectedPropertyToEdit?.add
                       ? proprtyOptionsArray
                       : propertyOptionsDeploy
                   }
@@ -324,7 +326,10 @@ const PropertyDropdownModal = ({
                       ? 'Select Service'
                       : 'Select Value'
                   }
-                  defaultValue={selectedPropertyToEdit?.dropDownName}
+                  defaultValue={
+                    selectedPropertyToEdit?.dropDownName ||
+                    selectedPropertyToEdit?.value
+                  }
                 />
                 <div className="d-flex gap-3">
                   {selectedPropertyToEdit?.add && (
