@@ -1,17 +1,18 @@
+import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import styled from 'styled-components';
-import { DateField } from '../../shared';
 import { useDispatch, useSelector } from 'react-redux';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
-import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import {
+  CrossIcon,
   SmallNotThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
 import { KDFM } from '../../constants';
+import { DateField } from '../../shared';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { SchedularSelectors } from '../../store/schedular';
 
 const ScrollSetGrey = styled.div`
@@ -302,6 +303,26 @@ const ScheduleDeploymentTab = ({
                     </ActiveButtonDiv>
                     <div>{KDFM.STOPPED_FLOW}</div>
                   </TextsvgDiv>
+                  {activeButton && (
+                    <TextsvgDiv className="d-flex">
+                      <ActiveButtonDiv className="div-btn-2 mr-2">
+                        <ActiveButtonDiv
+                          className="div-btn-1"
+                          onClick={() => {
+                            setActiveButton(null);
+                            dispatch(
+                              NamespacesActions.setFlowControlStateAtScheduleDeploy(
+                                null
+                              )
+                            );
+                          }}
+                        >
+                          <CrossIcon color="#B5BDC8" />
+                        </ActiveButtonDiv>
+                      </ActiveButtonDiv>
+                      <div>Reset Flow</div>
+                    </TextsvgDiv>
+                  )}
                 </>
               ) : (
                 <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
