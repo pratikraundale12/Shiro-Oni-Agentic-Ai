@@ -1440,61 +1440,6 @@ const ControllerServiceTab = ({
     }
   }, [stateChangeResponse]);
 
-  // useEffect(() => {
-  //   if (!isEmpty(propertyUpdateResponse)) {
-  //     setExternalControllerServices(prevServices =>
-  //       prevServices.map(service => {
-  //         if (
-  //           service.updatedValue === selectedItemFromList?.id &&
-  //           service?.controllerService?.length
-  //         ) {
-  //           return {
-  //             ...service,
-  //             controllerService: service?.controllerService?.map((cs, index) =>
-  //               index === 0
-  //                 ? {
-  //                     ...cs,
-  //                     properties: propertyUpdateResponse?.properties,
-  //                     name: propertyUpdateResponse?.name,
-  //                     state: propertyUpdateResponse?.state,
-  //                     validationStatus:
-  //                       propertyUpdateResponse?.validationStatus,
-  //                   }
-  //                 : cs
-  //             ),
-  //           };
-  //         } else if (
-  //           service.updatedValue === propertyUpdateResponse?.id &&
-  //           service.updatedValue === selectedItemFromList?.updatedValue
-  //         ) {
-  //           return {
-  //             ...service,
-  //             properties: propertyUpdateResponse?.properties,
-  //             name: propertyUpdateResponse?.name,
-  //             state: propertyUpdateResponse?.state,
-  //             validationStatus: propertyUpdateResponse?.validationStatus,
-  //             isPropertyUpdated: true,
-  //           };
-  //         } else if (
-  //           service?.configured &&
-  //           service?.configuredData?.id === selectedItemFromList?.id
-  //         ) {
-  //           return {
-  //             ...service,
-  //             configuredData: {
-  //               ...service?.configuredData,
-  //               properties: propertyUpdateResponse?.properties,
-  //               name: propertyUpdateResponse?.name,
-  //               state: propertyUpdateResponse?.state,
-  //               validationStatus: propertyUpdateResponse?.validationStatus,
-  //             },
-  //           };
-  //         }
-  //         return service;
-  //       })
-  //     );
-  //   }
-  // }, [propertyUpdateResponse]);
   useEffect(() => {
     if (isEmpty(propertyUpdateResponse)) return;
 
@@ -1907,44 +1852,6 @@ const ControllerServiceTab = ({
     NamespacesSelectors.getIsLocalCsConfigured
   );
 
-  // const handleServiceConfigure = data => {
-  //   const { localServiceState } = classifyServiceData(
-  //     controllerServicesData,
-  //     data
-  //   );
-  //   if (localServiceState?.length) {
-  //     setUpdatedLocalServicesData(prevState => {
-  //       const mergedLocalState = [
-  //         ...prevState.filter(
-  //           item =>
-  //             !localServiceState?.some(
-  //               newItem => newItem?.identifier === item?.identifier
-  //             )
-  //         ),
-  //         ...localServiceState,
-  //       ];
-  //       return mergedLocalState;
-  //     });
-  //   }
-
-  //   if (!isUpgrade) {
-  //     let newLsData = [];
-  //     newLsData.push(data);
-
-  //     if (newLsData?.length) {
-  //       setUpdatedLsForUpgrade(prevState => {
-  //         const prevStateMap = new Map(
-  //           prevState.map(item => [item?.identifier, item])
-  //         );
-  //         newLsData.forEach(newItem => {
-  //           const key = newItem?.identifier;
-  //           prevStateMap.set(key, newItem);
-  //         });
-  //         return Array.from(prevStateMap.values());
-  //       });
-  //     }
-  //   }
-  // };
   const handleServiceConfigure = data => {
     const { localServiceState } = classifyServiceData(
       controllerServicesData,
@@ -1983,34 +1890,6 @@ const ControllerServiceTab = ({
     });
     return Array.from(propertyMap.values());
   };
-  // useEffect(() => {
-  //   if (isEmpty(updatedLocalServicesData)) return;
-  //   setLocalServices(prevLocalServices => {
-  //     const updatedServices = prevLocalServices?.map(processGroup => {
-  //       return {
-  //         ...processGroup,
-  //         controllerData: processGroup?.controllerData?.map(controller => {
-  //           const updatedController = updatedLocalServicesData?.find(
-  //             updated => updated.identifier === controller.identifier
-  //           );
-  //           if (updatedController) {
-  //             return {
-  //               ...controller,
-  //               ...updatedController,
-  //               properties: mergeProperties(
-  //                 controller.properties,
-  //                 updatedController.properties
-  //               ),
-  //               name: updatedController?.name,
-  //             };
-  //           }
-  //           return controller;
-  //         }),
-  //       };
-  //     });
-  //     return updatedServices;
-  //   });
-  // }, [updatedLocalServicesData]);
 
   useEffect(() => {
     if (isEmpty(updatedLocalServicesData)) return;
@@ -2039,35 +1918,6 @@ const ControllerServiceTab = ({
       }))
     );
   }, [updatedLocalServicesData]);
-
-  // useEffect(() => {
-  //   if (updatedLsForUpgrade?.length) {
-  //     setLsForUpgrade(prevLocalServices => {
-  //       const updatedServices = prevLocalServices?.map(processGroup => {
-  //         return {
-  //           ...processGroup,
-  //           controllerData: processGroup?.controllerData?.map(controller => {
-  //             const updatedController = updatedLsForUpgrade?.find(
-  //               updated => updated?.identifier === controller?.identifier
-  //             );
-  //             if (updatedController) {
-  //               return {
-  //                 ...controller,
-  //                 ...updatedController,
-  //                 properties: mergeProperties(
-  //                   controller.properties,
-  //                   updatedController.properties
-  //                 ),
-  //               };
-  //             }
-  //             return controller;
-  //           }),
-  //         };
-  //       });
-  //       return updatedServices;
-  //     });
-  //   }
-  // }, [updatedLsForUpgrade]);
 
   useEffect(() => {
     if (!updatedLsForUpgrade?.length) return;
