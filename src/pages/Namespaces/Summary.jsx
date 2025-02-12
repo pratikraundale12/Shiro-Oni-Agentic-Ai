@@ -995,6 +995,15 @@ const Summary = () => {
   const provideUpgradeBtnText = () => {
     return `${type === 'upgrade' ? KDFM.UPGRADE : KDFM.DOWNGRADE}`;
   };
+  const provideRegistryFlowBtnText = () => {
+    return isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE;
+  };
+  const getSelectedFlowName = () => {
+    if (deployByRegistryFlow) return formDataRegistry?.selectedFlowName;
+    return checkDestCluster?.name || formDataRegistry?.selectedFlowName;
+  };
+
+  const selectedFlowNameProvider = getSelectedFlowName();
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -1060,10 +1069,7 @@ const Summary = () => {
                         {!isUpgrade ? KDFM.NAMESPACE : 'Flow Name'}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
-                        {deployByRegistryFlow
-                          ? formDataRegistry?.selectedFlowName
-                          : checkDestCluster?.name ||
-                            formDataRegistry?.selectedFlowName}
+                        {selectedFlowNameProvider}
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
@@ -1376,7 +1382,7 @@ const Summary = () => {
             </Button>
             {isRegistryDeploy && !scheduleDeploymentFlow && (
               <Button onClick={handledeployByRegistry}>
-                {isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE}
+                {provideRegistryFlowBtnText()}
               </Button>
             )}
             {!isRegistryDeploy &&
