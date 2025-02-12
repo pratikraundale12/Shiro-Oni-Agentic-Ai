@@ -288,14 +288,42 @@ const ControllerServiceTab = ({
       dispatch(NamespacesActions.setVersionListReduxData(versionList));
     }
   }, [versionList, stateChangeResponse, propertyUpdateResponse]);
+  const lsForUpgradeRedux = useSelector(
+    NamespacesSelectors.getLocalServiceInUpgrade
+  );
 
   const [lsForUpgrade, setLsForUpgrade] = useState(
     registryDetailsData?.controllerServicesData?.localServices
   );
   useEffect(() => {
-    setLsForUpgrade(registryDetailsData?.controllerServicesData?.localServices);
-  }, [registryDetailsData]);
+    setLsForUpgrade(
+      !isEmpty(lsForUpgradeRedux)
+        ? lsForUpgradeRedux
+        : registryDetailsData?.controllerServicesData?.localServices
+    );
+  }, [registryDetailsData, lsForUpgradeRedux]);
+
+  useEffect(() => {
+    if (!isEmpty(lsForUpgrade)) {
+      dispatch(NamespacesActions.setLocalServiceInUpgrade(lsForUpgrade));
+    }
+  }, [lsForUpgrade]);
+
+  const alreadyFetchedLsIdentifierForUpgradeRedux = useSelector(
+    NamespacesSelectors.getAlreadyFetchedLsIdentifierForUpgrade
+  );
   const [updatedLsForUpgrade, setUpdatedLsForUpgrade] = useState([]);
+  const [fetchedLsIdentifierForUpgrade, setFetchedLsIdentifierForUpgrade] =
+    useState(alreadyFetchedLsIdentifierForUpgradeRedux);
+  useEffect(() => {
+    if (!isEmpty(fetchedLsIdentifierForUpgrade)) {
+      dispatch(
+        NamespacesActions.setAlreadyFetchedLsIdentifierForUpgrade(
+          fetchedLsIdentifierForUpgrade
+        )
+      );
+    }
+  }, [fetchedLsIdentifierForUpgrade]);
 
   const onSearch = (e, currentService) => {
     const value = e.target.value;
@@ -340,30 +368,28 @@ const ControllerServiceTab = ({
       }
     }
   };
-
-  const updateControllerData = (services, listData) => {
-    if (!services || !listData) return services;
-
-    return services?.map(service => {
-      const updatedControllerData = service?.controllerData?.map(controller => {
-        return (
-          listData.find(item => item?.identifier === controller?.identifier) ||
-          controller
-        );
-      });
-
-      return {
-        ...service,
-        controllerData: updatedControllerData,
-      };
-    });
-  };
-
   useEffect(() => {
-    if (lsForUpgrade) {
-      setLsForUpgrade(updateControllerData(lsForUpgrade, listData));
-    }
-  }, [listData, lsForUpgrade]);
+    const updateControllerData = () => {
+      const updatedServices = lsForUpgrade?.map(service => {
+        const updatedControllerData = service?.controllerData?.map(
+          controller => {
+            const matchingObject = listData?.find(
+              item => item.identifier === controller?.identifier
+            );
+            return matchingObject ? matchingObject : controller;
+          }
+        );
+
+        return {
+          ...service,
+          controllerData: updatedControllerData,
+        };
+      });
+      setLsForUpgrade(updatedServices);
+    };
+
+    updateControllerData();
+  }, [listData]);
 
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
@@ -1617,7 +1643,19 @@ const ControllerServiceTab = ({
     NamespacesSelectors.getSelectedNamespace
   );
   const handleToggle = (index, item) => {
-    if (!isUpgrade && openIndex !== index && item?.isUpgradeLocal) {
+    const isAlreadyFetched = fetchedLsIdentifierForUpgrade.some(
+      data => data === item?.instanceIdentifier
+    );
+    if (
+      !isUpgrade &&
+      openIndex !== index &&
+      item?.isUpgradeLocal &&
+      !isAlreadyFetched
+    ) {
+      setFetchedLsIdentifierForUpgrade(prev => [
+        item?.instanceIdentifier,
+        ...prev,
+      ]);
       dispatch(
         NamespacesActions.getControllerServiceList({
           use_service_ac: true,
