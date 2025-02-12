@@ -42,6 +42,7 @@ const create = (baseURL = `${API_URL}/api`) => {
         const { data } = error.response;
         if (data.raw?.log_out) {
           localStorage.removeItem(ACCESS_TOKEN);
+          localStorage.removeItem('previous_path');
           history.push('/login');
         }
         if (data?.raw?.raw?.requireClusterLogin) {
@@ -50,6 +51,7 @@ const create = (baseURL = `${API_URL}/api`) => {
         }
         if (data.raw?.log_out) {
           localStorage.removeItem(ACCESS_TOKEN);
+          localStorage.removeItem('previous_path');
           history.push('/login');
         }
       }

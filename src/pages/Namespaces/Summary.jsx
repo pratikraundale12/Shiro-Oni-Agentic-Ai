@@ -7,6 +7,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
+  CrossIcon,
   DuplicateIcon,
   SmallNotThunderIcon,
   SquareBoxIcon,
@@ -1339,6 +1340,24 @@ const Summary = () => {
                         </ActiveButtonDiv>
                         <div>{KDFM.STOPPED_FLOW}</div>
                       </TextsvgDiv>
+                      {activeButton && (
+                        <TextsvgDiv className="d-flex">
+                          <ActiveButtonDiv className="div-btn-2 mr-2">
+                            <ActiveButtonDiv
+                              className="div-btn-1"
+                              activeTextColor="#fff"
+                              onClick={() => {
+                                setActiveButton(null);
+                                setFlowControlState(null);
+                                console.log('clicked');
+                              }}
+                            >
+                              <CrossIcon color="#B5BDC8" />
+                            </ActiveButtonDiv>
+                          </ActiveButtonDiv>
+                          <div>Reset Flow</div>
+                        </TextsvgDiv>
+                      )}
                     </>
                   ) : (
                     <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
