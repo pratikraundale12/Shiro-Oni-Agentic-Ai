@@ -337,15 +337,12 @@ const Summary = () => {
   } else {
     type = 'downgrade';
   }
-  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState({
     isOpen: false,
     schedule: false,
   });
-  const [successTest, setSuccessTest] = useState(false);
-  const [proceedWithDispatch, setProceedWithDispatch] = useState(false);
 
   const deployByRegistryFlow = useSelector(
     NamespacesSelectors.getdeployRegistryFlow
@@ -449,10 +446,10 @@ const Summary = () => {
       item2 => item1.identifier === item2.identifier
     )
   );
-
+  const hasExternalServices =
+    !isEmpty(newProcessorEC) || controllerServiceReduxData.externalServicesData;
   const newControllerServiceData = {
-    ...((!isEmpty(newProcessorEC) ||
-      controllerServiceReduxData.externalServicesData) && {
+    ...(hasExternalServices && {
       externalServicesData: !isEmpty(newProcessorEC)
         ? updatedArrayForES
         : controllerServiceReduxData.externalServicesData,
@@ -965,7 +962,12 @@ const Summary = () => {
     if (!registryData?.url) return;
     window.open(registryData.url, '_blank');
   };
-
+  const isScheduled = scheduleDeploymentFlow || scheduleUpgradeFromList;
+  const deploymentAction = !deployByRegistryFlow
+    ? checkDestCluster?.version <= versionSelected.version
+      ? KDFM.UPGRADE
+      : KDFM.DOWNGRADE
+    : KDFM.DEPLOY;
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -980,16 +982,8 @@ const Summary = () => {
               <TodoIcon />
             </ImageContainer>
             <MainTitleHfour className="mb-0">
-              {`${
-                scheduleDeploymentFlow || scheduleUpgradeFromList
-                  ? 'Schedule '
-                  : ''
-              } ${
-                !deployByRegistryFlow
-                  ? checkDestCluster?.version <= versionSelected.version
-                    ? KDFM.UPGRADE
-                    : KDFM.DOWNGRADE
-                  : KDFM.DEPLOY
+              {`${isScheduled ? 'Schedule ' : ''} ${
+                deploymentAction
               } ${KDFM.NAMESPACE}`}
             </MainTitleHfour>
             :
