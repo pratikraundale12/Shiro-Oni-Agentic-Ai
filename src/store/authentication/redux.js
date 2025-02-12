@@ -142,7 +142,6 @@ const updateTermsAndPoliciesSuccess = (state, { payload }) => {
   };
 };
 const fetchSettingLogoSuccess = (state, { payload }) => {
-  console.log('12345');
   return {
     ...state,
     data: payload,
