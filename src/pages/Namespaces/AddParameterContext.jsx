@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { isArray, isEmpty, isString, uniqBy } from 'lodash';
+import { isEmpty, isString, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -169,29 +169,57 @@ const AddParameterContext = ({
     setValue,
   ]);
 
+  // Helper function to check if a name exists in a list
+  const nameExists = (list, name) =>
+    list?.some(item => item?.name?.toLowerCase() === name?.toLowerCase());
+
+  // Process parameter data based on input
+  const getProcessedData = data => ({
+    ...data,
+    value: data?.check ? '' : isEmpty(data?.value) ? null : data?.value,
+  });
+
+  // Handle parameter context update logic
+  const handleParameterUpdate = (
+    dispatch,
+    updatedData,
+    processData,
+    contextList,
+    parameterDetails,
+    parentId
+  ) => {
+    const filteredList = contextList.filter(
+      item => item?.name?.toLowerCase() !== processData?.name?.toLowerCase()
+    );
+
+    dispatch(
+      NamespacesActions.setParameterDetails({
+        ...parameterDetails,
+        [parentId]: filteredList,
+      })
+    );
+
+    const uniqueSortedData = uniqBy(updatedData, 'name');
+    dispatch(
+      NamespacesActions.setNewlyAddedParameterContext([
+        ...uniqueSortedData,
+        processData,
+      ])
+    );
+  };
+
+  // Main function
   const handleAddEditParameterContext = async data => {
     if (!data) return;
-    const processData = {
-      ...data,
-      value: data?.check ? '' : isEmpty(data.value) ? null : data.value,
-    };
-    const nameExists = (contextList, name) =>
-      contextList?.some(
-        parameter => parameter?.name?.toLowerCase() === name?.toLowerCase()
-      );
-    const parameterAlreadyExist = nameExists(
-      parameterContextList,
-      processData?.name
-    );
-    const parameterAlreadyExistInNewlyAddedContext = nameExists(
-      newlyAddParameters,
-      processData?.name
-    );
+
+    const processData = getProcessedData(data);
+
+    const parameterAlreadyExist =
+      nameExists(parameterContextList, processData?.name) ||
+      nameExists(newlyAddParameters, processData?.name);
 
     const isDuplicate =
-      (parameterAlreadyExist || parameterAlreadyExistInNewlyAddedContext) &&
-      isAddParameterContextOpen?.mode === 'add';
-
+      parameterAlreadyExist && isAddParameterContextOpen?.mode === 'add';
     if (isDuplicate) {
       toast.info(KDFM.PARAMETER_ALREADY_EXISTS);
       return;
@@ -204,63 +232,28 @@ const AddParameterContext = ({
           : item
       );
 
-      const sortedArry = uniqBy(updatedData, item => item.name.toLowerCase());
-      const updatedDataUnique = isEmpty(sortedArry) ? processData : sortedArry;
-      if (isArray(updatedDataUnique)) {
-        const exists = updatedDataUnique.some(
-          obj => obj.name.toLowerCase() === processData.name.toLowerCase()
-        );
-
-        if (!exists) {
-          updatedDataUnique.push(processData);
-        }
-      } else {
-        const exists = [updatedDataUnique].some(
-          obj => obj.name.toLowerCase() === processData.name.toLowerCase()
-        );
-
-        if (!exists) {
-          updatedDataUnique.push(processData);
-        }
-      }
-      const filteredParameterContextList = parameterContextList.filter(
-        item => item?.name?.toLowerCase() !== processData?.name?.toLowerCase()
-      );
-      const existingParameterContext = parameterContextList.find(
+      const existingContext = parameterContextList.find(
         item => item?.name?.toLowerCase() === processData?.name?.toLowerCase()
       );
-      if (
-        existingParameterContext &&
-        Object.values(existingParameterContext)?.length !== 0
-      ) {
+
+      if (existingContext && Object.values(existingContext)?.length) {
         if (isParentEdit?.parent) {
-          dispatch(
-            NamespacesActions.setParameterDetails({
-              ...parameterDetails,
-              [isParentEdit?.id]: filteredParameterContextList,
-            })
-          );
-          dispatch(
-            NamespacesActions.setNewlyAddedParameterContext([
-              ...(isArray(updatedDataUnique)
-                ? updatedDataUnique
-                : [updatedDataUnique]),
-            ])
+          handleParameterUpdate(
+            dispatch,
+            updatedData,
+            processData,
+            parameterContextList,
+            parameterDetails,
+            isParentEdit?.id
           );
         } else {
-          dispatch(
-            NamespacesActions.setParameterDetails({
-              ...parameterDetails,
-              [deployOrUpgradeDetails?.parameterContextId]:
-                filteredParameterContextList,
-            })
-          );
-          const uniqueDataSorted = uniqBy(updatedData, 'name');
-          dispatch(
-            NamespacesActions.setNewlyAddedParameterContext([
-              ...uniqueDataSorted,
-              processData,
-            ])
+          handleParameterUpdate(
+            dispatch,
+            updatedData,
+            processData,
+            parameterContextList,
+            parameterDetails,
+            deployOrUpgradeDetails?.parameterContextId
           );
         }
       } else {
@@ -276,11 +269,11 @@ const AddParameterContext = ({
         ])
       );
     }
-    if (isParameterContextOpen?.schedule) {
-      setIsParameterContextOpen({ isOpen: true, schedule: true });
-    } else {
-      setIsParameterContextOpen({ isOpen: true, schedule: false });
-    }
+
+    setIsParameterContextOpen({
+      isOpen: true,
+      schedule: isParameterContextOpen?.schedule || false,
+    });
     setIsAddParameterContextOpen({ isOpen: false, mode: 'add' });
     reset(DEFAULT_VALUES);
   };

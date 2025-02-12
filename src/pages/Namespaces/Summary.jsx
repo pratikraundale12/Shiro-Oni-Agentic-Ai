@@ -7,6 +7,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
+  CrossIcon,
   DuplicateIcon,
   SmallNotThunderIcon,
   SquareBoxIcon,
@@ -337,15 +338,12 @@ const Summary = () => {
   } else {
     type = 'downgrade';
   }
-  const schedularFromList = useSelector(SchedularSelectors.getScheduleFromList);
   const isDeployedModal = useSelector(NamespacesSelectors.getDeployedModal);
   const [flowControlButtons, setFlowControlButtons] = useState('');
   const [isParameterContextOpen, setIsParameterContextOpen] = useState({
     isOpen: false,
     schedule: false,
   });
-  const [successTest, setSuccessTest] = useState(false);
-  const [proceedWithDispatch, setProceedWithDispatch] = useState(false);
 
   const deployByRegistryFlow = useSelector(
     NamespacesSelectors.getdeployRegistryFlow
@@ -357,43 +355,38 @@ const Summary = () => {
     registryAllDetails?.controllerServicesData?.localServices.map(
       ele => ele.controllerData?.[0]
     );
+
+  const getChangedVariables = (originalVariables, updatedVariables) => {
+    const updatedMap = updatedVariables.reduce((acc, item) => {
+      acc[item.name] = item.value;
+      return acc;
+    }, {});
+
+    return originalVariables.filter(
+      ({ name, value }) =>
+        updatedMap[name] !== undefined && updatedMap[name] !== value
+    );
+  };
   const getChangedObjects = (originalData, updatedData) => {
     const updatedMap = updatedData.reduce((acc, item) => {
       acc[item.pgId] = item;
       return acc;
     }, {});
 
-    return originalData
-      .map(originalItem => {
-        const updatedItem = updatedMap[originalItem.pgId];
+    return originalData.reduce((result, originalItem) => {
+      const updatedItem = updatedMap[originalItem.pgId];
+      if (!updatedItem) return result;
 
-        if (!updatedItem) {
-          return null;
-        }
+      const changedVariables = getChangedVariables(
+        originalItem.variables,
+        updatedItem.variables
+      );
+      if (changedVariables.length > 0) {
+        result.push({ ...originalItem, variables: changedVariables });
+      }
 
-        const changedVariables = originalItem.variables.filter(
-          originalVariable => {
-            const updatedVariable = updatedItem.variables.find(
-              varItem => varItem.name === originalVariable.name
-            );
-
-            return (
-              updatedVariable &&
-              updatedVariable.value !== originalVariable.value
-            );
-          }
-        );
-
-        if (changedVariables.length > 0) {
-          return {
-            ...originalItem,
-            variables: changedVariables,
-          };
-        }
-
-        return null;
-      })
-      .filter(Boolean);
+      return result;
+    }, []);
   };
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
@@ -449,10 +442,10 @@ const Summary = () => {
       item2 => item1.identifier === item2.identifier
     )
   );
-
+  const hasExternalServices =
+    !isEmpty(newProcessorEC) || controllerServiceReduxData.externalServicesData;
   const newControllerServiceData = {
-    ...((!isEmpty(newProcessorEC) ||
-      controllerServiceReduxData.externalServicesData) && {
+    ...(hasExternalServices && {
       externalServicesData: !isEmpty(newProcessorEC)
         ? updatedArrayForES
         : controllerServiceReduxData.externalServicesData,
@@ -965,7 +958,48 @@ const Summary = () => {
     if (!registryData?.url) return;
     window.open(registryData.url, '_blank');
   };
+  const isScheduled = scheduleDeploymentFlow || scheduleUpgradeFromList;
 
+  const getDeploymentAction = () => {
+    if (deployByRegistryFlow) return KDFM.DEPLOY;
+    return checkDestCluster?.version <= versionSelected.version
+      ? KDFM.UPGRADE
+      : KDFM.DOWNGRADE;
+  };
+
+  const deploymentAction = getDeploymentAction();
+
+  const providePrimaryTextForFlowConfirmationModal = () => {
+    return checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy
+      ? `Do you really want to ${confirmDialogue?.text}?`
+      : `Flow will be ${confirmDialogue?.text} after the ${isRegistryDeploy ? 'deploy' : 'upgrade'}?`;
+  };
+
+  const actionIcons = {
+    STOPPED: StopIconImage,
+    RUNNING: StartIconImage,
+    ENABLED: EnableIconImage,
+  };
+
+  const defaultIcon = DisbaleIconImage;
+  const selectedIcon = actionIcons[confirmDialogue?.action] || defaultIcon;
+  const progressbarText =
+    deployOrUpgradeDetails?.percentCompleted < 100 ? 'Upgrading' : 'Upgraded';
+  const provideScheduleUpgradeBtnText = () => {
+    return `${type === 'upgrade' ? KDFM.SCHEDULE_UPGRADE : KDFM.SCHEDULE_DOWNGRADE}`;
+  };
+  const provideUpgradeBtnText = () => {
+    return `${type === 'upgrade' ? KDFM.UPGRADE : KDFM.DOWNGRADE}`;
+  };
+  const provideRegistryFlowBtnText = () => {
+    return isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE;
+  };
+  const getSelectedFlowName = () => {
+    if (deployByRegistryFlow) return formDataRegistry?.selectedFlowName;
+    return checkDestCluster?.name || formDataRegistry?.selectedFlowName;
+  };
+
+  const selectedFlowNameProvider = getSelectedFlowName();
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -980,16 +1014,8 @@ const Summary = () => {
               <TodoIcon />
             </ImageContainer>
             <MainTitleHfour className="mb-0">
-              {`${
-                scheduleDeploymentFlow || scheduleUpgradeFromList
-                  ? 'Schedule '
-                  : ''
-              } ${
-                !deployByRegistryFlow
-                  ? checkDestCluster?.version <= versionSelected.version
-                    ? KDFM.UPGRADE
-                    : KDFM.DOWNGRADE
-                  : KDFM.DEPLOY
+              {`${isScheduled ? 'Schedule ' : ''} ${
+                deploymentAction
               } ${KDFM.NAMESPACE}`}
             </MainTitleHfour>
             :
@@ -1039,10 +1065,7 @@ const Summary = () => {
                         {!isUpgrade ? KDFM.NAMESPACE : 'Flow Name'}
                       </SummaryDetailsHFourTag>
                       <SummaryDetailsPtag className="mb-0">
-                        {deployByRegistryFlow
-                          ? formDataRegistry?.selectedFlowName
-                          : checkDestCluster?.name ||
-                            formDataRegistry?.selectedFlowName}
+                        {selectedFlowNameProvider}
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
@@ -1339,6 +1362,23 @@ const Summary = () => {
                         </ActiveButtonDiv>
                         <div>{KDFM.STOPPED_FLOW}</div>
                       </TextsvgDiv>
+                      {activeButton && (
+                        <TextsvgDiv className="d-flex">
+                          <ActiveButtonDiv className="div-btn-2 mr-2">
+                            <ActiveButtonDiv
+                              className="div-btn-1"
+                              activeTextColor="#fff"
+                              onClick={() => {
+                                setActiveButton(null);
+                                setFlowControlState(null);
+                              }}
+                            >
+                              <CrossIcon color="#B5BDC8" />
+                            </ActiveButtonDiv>
+                          </ActiveButtonDiv>
+                          <div>Reset Flow</div>
+                        </TextsvgDiv>
+                      )}
                     </>
                   ) : (
                     <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
@@ -1355,14 +1395,14 @@ const Summary = () => {
             </Button>
             {isRegistryDeploy && !scheduleDeploymentFlow && (
               <Button onClick={handledeployByRegistry}>
-                {isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE}
+                {provideRegistryFlowBtnText()}
               </Button>
             )}
             {!isRegistryDeploy &&
               !scheduleDeploymentFlow &&
               !scheduleUpgradeFromList && (
                 <Button onClick={handleUpgradeByRegistry}>
-                  {`${type === 'upgrade' ? KDFM.UPGRADE : KDFM.DOWNGRADE}`}
+                  {provideUpgradeBtnText()}
                 </Button>
               )}
             {scheduleDeploymentFlow && (
@@ -1372,7 +1412,7 @@ const Summary = () => {
             )}
             {scheduleUpgradeFromList && (
               <Button size="md" onClick={() => handleScheduleUpgrade()}>
-                {`${type === 'upgrade' ? KDFM.SCHEDULE_UPGRADE : KDFM.SCHEDULE_DOWNGRADE}`}
+                {provideScheduleUpgradeBtnText()}
               </Button>
             )}
           </BottomButtonDiv>
@@ -1380,9 +1420,7 @@ const Summary = () => {
             <div className="w-100 mt-3">
               <Progressox className="w-100">
                 <ProgressLabel className="progress-label">
-                  {deployOrUpgradeDetails?.percentCompleted < 100
-                    ? 'Upgrading'
-                    : 'Upgraded'}
+                  {progressbarText}
                 </ProgressLabel>
                 <CustomRedProgress className="progress w-100 custom-red-progress">
                   <ProgressBar
@@ -1437,22 +1475,7 @@ const Summary = () => {
           title={'Flow Confirmation'}
           primaryButtonText={'Confirm'}
           secondaryButtonText="Cancel"
-          icon={
-            <img
-              src={
-                confirmDialogue?.action === 'STOPPED'
-                  ? StopIconImage
-                  : confirmDialogue?.action === 'RUNNING'
-                    ? StartIconImage
-                    : confirmDialogue?.action === 'ENABLED'
-                      ? EnableIconImage
-                      : DisbaleIconImage
-              }
-              height="80px"
-              width="80px"
-              alt="img"
-            />
-          }
+          icon={<img src={selectedIcon} height="80px" width="80px" alt="img" />}
           isOpen={confirmDialogue?.state}
           onRequestClose={() => {
             setConfirmDialogue({
@@ -1463,11 +1486,7 @@ const Summary = () => {
             });
             setActiveButtonPopup(null);
           }}
-          primaryText={
-            checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy
-              ? `Do you really want to ${confirmDialogue?.text}?`
-              : `Flow will be ${confirmDialogue?.text} after the ${isRegistryDeploy ? 'deploy' : 'upgrade'}?`
-          }
+          primaryText={providePrimaryTextForFlowConfirmationModal()}
           onSubmit={handleConfirmUpdateStatus}
         />
         <DuplicateScheduleModal

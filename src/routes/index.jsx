@@ -47,7 +47,6 @@ import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
 // import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
-import Deploy from '../pages/Namespaces/Deploy';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
 import FlowDetailsPage from '../pages/Namespaces/FlowDetailsPage.jsx';
 import ListControllerServiceNamespace from '../pages/Namespaces/ListControllerServiceNamespace';
@@ -55,7 +54,6 @@ import ProcessGroupSummary from '../pages/Namespaces/ProcessGroupSummary';
 import Summary from '../pages/Namespaces/Summary';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
-import TokenPage from '../pages/ScheduleDeployment/Token';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
@@ -108,10 +106,6 @@ export const ROUTES_MENU = [
       {
         path: [':id'],
         component: <ProcessGroupSummary />,
-      },
-      {
-        path: 'deploy',
-        component: <Deploy />,
       },
       {
         path: 'upgrade',
@@ -340,7 +334,6 @@ const Routes = () => {
       <Route path="/reset" element={<Reset />} />
       <Route path="/success" element={<Success />} />
       <Route path="/login" element={<UserLogin />} />
-      <Route path="/schedule-deployment/token" element={<TokenPage />} />
       <Route path="/policy" element={<UnAuthGuard />}>
         {UNAUTHROUTES_MENU?.map(item => (
           <Route key={item.path} path={item.path} exact element={<Outlet />}>

@@ -395,60 +395,32 @@ export const ModuleAccess = () => {
     handlePolicyCheck(ldapPolicies, 'view_ldap');
     handlePolicyCheck(rolesPolicies, 'view_permission');
   };
-
-  const handleRemovePolicy = (policyType, value) => {
-    const policyMap = {
-      clusterPolicy: viewClusterPolicy?.[0]?.id,
-      controllerServicePolicy: viewControllerServicePolicy?.[0]?.id,
-      roleAndPermissionPolicy: viewRoleandPermissionPolicy?.[0]?.id,
-      ldapPolicy: viewldapPolicy?.[0]?.id,
-    };
-
-    return prev =>
-      prev.filter(
-        item =>
-          !policyType.some(remove => remove.id === item.policy_id) ||
-          policyMap[policyType] !== value.id
-      );
-  };
-
-  const handleAddPolicy = (prev, value) => [
-    ...prev,
-    { policy_id: value.id, policy_name: value.name },
-  ];
-
   const handleChange = (checked, value) => {
     if (isEmpty(selectedRole)) {
       toast.error('Please select a role');
       return;
     }
 
-    if (!checked) {
-      switch (value.id) {
-        case viewClusterPolicy?.[0]?.id:
-          setUpdatedRolePolicies(handleRemovePolicy(clusterPolicies, value));
-          break;
-        case viewControllerServicePolicy?.[0]?.id:
-          setUpdatedRolePolicies(
-            handleRemovePolicy(controllerServicePolicy, value)
-          );
-          break;
-        case viewRoleandPermissionPolicy?.[0]?.id:
-          setUpdatedRolePolicies(
-            handleRemovePolicy(roleandPermissionPolicy, value)
-          );
-          break;
-        case viewldapPolicy?.[0]?.id:
-          setUpdatedRolePolicies(handleRemovePolicy(ldapPolicy, value));
-          break;
-        default:
-          setUpdatedRolePolicies(prev =>
-            prev.filter(item => item.policy_id !== value.id)
-          );
+    const policiesMap = {
+      [viewClusterPolicy?.[0]?.id]: clusterPolicies,
+      [viewControllerServicePolicy?.[0]?.id]: controllerServicePolicy,
+      [viewRoleandPermissionPolicy?.[0]?.id]: roleandPermissionPolicy,
+      [viewldapPolicy?.[0]?.id]: ldapPolicy,
+    };
+
+    setUpdatedRolePolicies(prev => {
+      if (!checked) {
+        return policiesMap[value?.id]
+          ? prev.filter(
+              item =>
+                !policiesMap[value?.id]?.some(
+                  remove => remove?.id === item?.policy_id
+                )
+            )
+          : prev.filter(item => item?.policy_id !== value?.id);
       }
-    } else {
-      setUpdatedRolePolicies(prev => handleAddPolicy(prev, value));
-    }
+      return [...prev, { policy_id: value?.id, policy_name: value?.name }];
+    });
 
     handleCheckboxAutoClick(value);
   };
