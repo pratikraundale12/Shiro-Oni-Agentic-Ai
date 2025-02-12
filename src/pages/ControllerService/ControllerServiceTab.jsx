@@ -1729,85 +1729,45 @@ const ControllerServiceTab = ({
     return { localServiceState };
   };
 
-  // useEffect(() => {
-  //   const updatedControllerServices = externalControllerServices?.map(
-  //     service => {
-  //       const matchingTableData = externalControllerServicesTableData?.find(
-  //         tableItem =>
-  //           tableItem?.parentId === service?.identifier &&
-  //           !service?.isStatusUpdated &&
-  //           !service?.isPropertyUpdated
-  //       );
-
-  //       if (matchingTableData) {
-  //         return {
-  //           ...service,
-  //           controllerService: isAddedViaAdd ? [] : service?.controllerService,
-  //           name: matchingTableData?.name,
-  //           updatedValue: matchingTableData?.identifier,
-  //           typeValue: matchingTableData?.typeValue
-  //             ? matchingTableData?.typeValue
-  //             : '',
-  //           bundleValue: matchingTableData?.bundleValue
-  //             ? matchingTableData?.bundleValue
-  //             : '',
-  //           state: matchingTableData?.state ? matchingTableData?.state : '',
-  //           scope: matchingTableData?.scope ? matchingTableData?.scope : '',
-  //           version: matchingTableData?.version
-  //             ? matchingTableData?.version
-  //             : '',
-  //           properties: matchingTableData?.properties
-  //             ? matchingTableData?.properties
-  //             : [],
-  //           validationStatus: matchingTableData?.validationStatus
-  //             ? matchingTableData?.validationStatus
-  //             : '',
-  //         };
-  //       }
-  //       return service;
-  //     }
-  //   );
-  //   setExternalControllerServices(updatedControllerServices);
-  // }, [externalControllerServicesTableData]);
   useEffect(() => {
-    setExternalControllerServices(prevServices =>
-      prevServices?.map(service => {
-        if (service?.isStatusUpdated || service?.isPropertyUpdated)
-          return service;
-
+    const updatedControllerServices = externalControllerServices?.map(
+      service => {
         const matchingTableData = externalControllerServicesTableData?.find(
-          tableItem => tableItem?.parentId === service?.identifier
+          tableItem =>
+            tableItem?.parentId === service?.identifier &&
+            !service?.isStatusUpdated &&
+            !service?.isPropertyUpdated
         );
 
-        if (!matchingTableData) return service;
-
-        const {
-          name,
-          identifier: updatedValue,
-          typeValue = '',
-          bundleValue = '',
-          state = '',
-          scope = '',
-          version = '',
-          properties = [],
-          validationStatus = '',
-        } = matchingTableData;
-
-        return {
-          ...service,
-          controllerService: isAddedViaAdd ? [] : service?.controllerService,
-          name,
-          updatedValue,
-          typeValue,
-          bundleValue,
-          state,
-          scope,
-          version,
-          properties,
-          validationStatus,
-        };
-      })
+        if (matchingTableData) {
+          return {
+            ...service,
+            controllerService: isAddedViaAdd ? [] : service?.controllerService,
+            name: matchingTableData?.name,
+            updatedValue: matchingTableData?.identifier,
+            typeValue: matchingTableData?.typeValue
+              ? matchingTableData?.typeValue
+              : '',
+            bundleValue: matchingTableData?.bundleValue
+              ? matchingTableData?.bundleValue
+              : '',
+            state: matchingTableData?.state ? matchingTableData?.state : '',
+            scope: matchingTableData?.scope ? matchingTableData?.scope : '',
+            version: matchingTableData?.version
+              ? matchingTableData?.version
+              : '',
+            properties: matchingTableData?.properties
+              ? matchingTableData?.properties
+              : [],
+            validationStatus: matchingTableData?.validationStatus
+              ? matchingTableData?.validationStatus
+              : '',
+          };
+        }
+        return service;
+      }
     );
+    setExternalControllerServices(updatedControllerServices);
   }, [externalControllerServicesTableData]);
 
   useEffect(() => {
@@ -1947,42 +1907,70 @@ const ControllerServiceTab = ({
     NamespacesSelectors.getIsLocalCsConfigured
   );
 
+  // const handleServiceConfigure = data => {
+  //   const { localServiceState } = classifyServiceData(
+  //     controllerServicesData,
+  //     data
+  //   );
+  //   if (localServiceState?.length) {
+  //     setUpdatedLocalServicesData(prevState => {
+  //       const mergedLocalState = [
+  //         ...prevState.filter(
+  //           item =>
+  //             !localServiceState?.some(
+  //               newItem => newItem?.identifier === item?.identifier
+  //             )
+  //         ),
+  //         ...localServiceState,
+  //       ];
+  //       return mergedLocalState;
+  //     });
+  //   }
+
+  //   if (!isUpgrade) {
+  //     let newLsData = [];
+  //     newLsData.push(data);
+
+  //     if (newLsData?.length) {
+  //       setUpdatedLsForUpgrade(prevState => {
+  //         const prevStateMap = new Map(
+  //           prevState.map(item => [item?.identifier, item])
+  //         );
+  //         newLsData.forEach(newItem => {
+  //           const key = newItem?.identifier;
+  //           prevStateMap.set(key, newItem);
+  //         });
+  //         return Array.from(prevStateMap.values());
+  //       });
+  //     }
+  //   }
+  // };
   const handleServiceConfigure = data => {
     const { localServiceState } = classifyServiceData(
       controllerServicesData,
       data
     );
+
     if (localServiceState?.length) {
       setUpdatedLocalServicesData(prevState => {
-        const mergedLocalState = [
-          ...prevState.filter(
-            item =>
-              !localServiceState?.some(
-                newItem => newItem?.identifier === item?.identifier
-              )
-          ),
-          ...localServiceState,
-        ];
-        return mergedLocalState;
+        const updatedState = new Map(
+          prevState.map(item => [item.identifier, item])
+        );
+        localServiceState.forEach(item =>
+          updatedState.set(item.identifier, item)
+        );
+        return Array.from(updatedState.values());
       });
     }
 
     if (!isUpgrade) {
-      let newLsData = [];
-      newLsData.push(data);
-
-      if (newLsData?.length) {
-        setUpdatedLsForUpgrade(prevState => {
-          const prevStateMap = new Map(
-            prevState.map(item => [item?.identifier, item])
-          );
-          newLsData.forEach(newItem => {
-            const key = newItem?.identifier;
-            prevStateMap.set(key, newItem);
-          });
-          return Array.from(prevStateMap.values());
-        });
-      }
+      setUpdatedLsForUpgrade(prevState => {
+        const updatedState = new Map(
+          prevState.map(item => [item.identifier, item])
+        );
+        updatedState.set(data.identifier, data);
+        return Array.from(updatedState.values());
+      });
     }
   };
 
@@ -1995,63 +1983,121 @@ const ControllerServiceTab = ({
     });
     return Array.from(propertyMap.values());
   };
-  useEffect(() => {
-    if (isEmpty(updatedLocalServicesData)) return;
-    setLocalServices(prevLocalServices => {
-      const updatedServices = prevLocalServices?.map(processGroup => {
-        return {
-          ...processGroup,
-          controllerData: processGroup?.controllerData?.map(controller => {
-            const updatedController = updatedLocalServicesData?.find(
-              updated => updated.identifier === controller.identifier
-            );
-            if (updatedController) {
-              return {
-                ...controller,
-                ...updatedController,
-                properties: mergeProperties(
-                  controller.properties,
-                  updatedController.properties
-                ),
-                name: updatedController?.name,
-              };
-            }
-            return controller;
-          }),
-        };
-      });
-      return updatedServices;
-    });
-  }, [updatedLocalServicesData]);
+  // useEffect(() => {
+  //   if (isEmpty(updatedLocalServicesData)) return;
+  //   setLocalServices(prevLocalServices => {
+  //     const updatedServices = prevLocalServices?.map(processGroup => {
+  //       return {
+  //         ...processGroup,
+  //         controllerData: processGroup?.controllerData?.map(controller => {
+  //           const updatedController = updatedLocalServicesData?.find(
+  //             updated => updated.identifier === controller.identifier
+  //           );
+  //           if (updatedController) {
+  //             return {
+  //               ...controller,
+  //               ...updatedController,
+  //               properties: mergeProperties(
+  //                 controller.properties,
+  //                 updatedController.properties
+  //               ),
+  //               name: updatedController?.name,
+  //             };
+  //           }
+  //           return controller;
+  //         }),
+  //       };
+  //     });
+  //     return updatedServices;
+  //   });
+  // }, [updatedLocalServicesData]);
 
   useEffect(() => {
-    if (updatedLsForUpgrade?.length) {
-      setLsForUpgrade(prevLocalServices => {
-        const updatedServices = prevLocalServices?.map(processGroup => {
-          return {
-            ...processGroup,
-            controllerData: processGroup?.controllerData?.map(controller => {
-              const updatedController = updatedLsForUpgrade?.find(
-                updated => updated?.identifier === controller?.identifier
-              );
-              if (updatedController) {
-                return {
-                  ...controller,
-                  ...updatedController,
-                  properties: mergeProperties(
-                    controller.properties,
-                    updatedController.properties
-                  ),
-                };
-              }
-              return controller;
-            }),
-          };
-        });
-        return updatedServices;
-      });
-    }
+    if (isEmpty(updatedLocalServicesData)) return;
+
+    const updateController = controller => {
+      const updatedController = updatedLocalServicesData?.find(
+        updated => updated.identifier === controller.identifier
+      );
+      return updatedController
+        ? {
+            ...controller,
+            ...updatedController,
+            properties: mergeProperties(
+              controller.properties,
+              updatedController.properties
+            ),
+            name: updatedController.name,
+          }
+        : controller;
+    };
+
+    setLocalServices(prevLocalServices =>
+      prevLocalServices?.map(processGroup => ({
+        ...processGroup,
+        controllerData: processGroup?.controllerData?.map(updateController),
+      }))
+    );
+  }, [updatedLocalServicesData]);
+
+  // useEffect(() => {
+  //   if (updatedLsForUpgrade?.length) {
+  //     setLsForUpgrade(prevLocalServices => {
+  //       const updatedServices = prevLocalServices?.map(processGroup => {
+  //         return {
+  //           ...processGroup,
+  //           controllerData: processGroup?.controllerData?.map(controller => {
+  //             const updatedController = updatedLsForUpgrade?.find(
+  //               updated => updated?.identifier === controller?.identifier
+  //             );
+  //             if (updatedController) {
+  //               return {
+  //                 ...controller,
+  //                 ...updatedController,
+  //                 properties: mergeProperties(
+  //                   controller.properties,
+  //                   updatedController.properties
+  //                 ),
+  //               };
+  //             }
+  //             return controller;
+  //           }),
+  //         };
+  //       });
+  //       return updatedServices;
+  //     });
+  //   }
+  // }, [updatedLsForUpgrade]);
+
+  useEffect(() => {
+    if (!updatedLsForUpgrade?.length) return;
+
+    const updateController = controller => {
+      const updatedController = updatedLsForUpgrade?.find(
+        updated => updated?.identifier === controller?.identifier
+      );
+      return updatedController
+        ? {
+            ...controller,
+            ...updatedController,
+            properties: mergeProperties(
+              controller.properties,
+              updatedController.properties
+            ),
+          }
+        : controller;
+    };
+
+    const updateProcessGroup = processGroup => ({
+      ...processGroup,
+      controllerData: processGroup?.controllerData?.map(updateController),
+    });
+
+    setLsForUpgrade(prevLocalServices =>
+      prevLocalServices?.map(updateProcessGroup)
+    );
   }, [updatedLsForUpgrade]);
+
   const controllerServiceReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployControllerService
   );
