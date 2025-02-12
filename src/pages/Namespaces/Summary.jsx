@@ -989,7 +989,12 @@ const Summary = () => {
   const selectedIcon = actionIcons[confirmDialogue?.action] || defaultIcon;
   const progressbarText =
     deployOrUpgradeDetails?.percentCompleted < 100 ? 'Upgrading' : 'Upgraded';
-
+  const provideScheduleUpgradeBtnText = () => {
+    return `${type === 'upgrade' ? KDFM.SCHEDULE_UPGRADE : KDFM.SCHEDULE_DOWNGRADE}`;
+  };
+  const provideUpgradeBtnText = () => {
+    return `${type === 'upgrade' ? KDFM.UPGRADE : KDFM.DOWNGRADE}`;
+  };
   return (
     <>
       <MainContainer className="main-space bg-white">
@@ -1378,7 +1383,7 @@ const Summary = () => {
               !scheduleDeploymentFlow &&
               !scheduleUpgradeFromList && (
                 <Button onClick={handleUpgradeByRegistry}>
-                  {`${type === 'upgrade' ? KDFM.UPGRADE : KDFM.DOWNGRADE}`}
+                  {provideUpgradeBtnText()}
                 </Button>
               )}
             {scheduleDeploymentFlow && (
@@ -1388,7 +1393,7 @@ const Summary = () => {
             )}
             {scheduleUpgradeFromList && (
               <Button size="md" onClick={() => handleScheduleUpgrade()}>
-                {`${type === 'upgrade' ? KDFM.SCHEDULE_UPGRADE : KDFM.SCHEDULE_DOWNGRADE}`}
+                {provideScheduleUpgradeBtnText()}
               </Button>
             )}
           </BottomButtonDiv>
