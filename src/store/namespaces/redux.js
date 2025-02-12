@@ -206,6 +206,10 @@ export const NamespacesActions = {
   setVersionListReduxData: createAction(`${prefix}setVersionListReduxData`),
   fetchAddPropertyToAdd: createAction(`${prefix}fetchAddPropertyToAdd`),
   setAddPropertyCSResponse: createAction(`${prefix}setAddPropertyCSResponse`),
+  setAlreadyFetchedLsIdentifierForUpgrade: createAction(
+    `${prefix}setAlreadyFetchedLsIdentifierForUpgrade`
+  ),
+  setLocalServiceInUpgrade: createAction(`${prefix}setLocalServiceInUpgrade`),
 };
 //
 /* ------------- INITIAL STATE ------------- */
@@ -309,6 +313,8 @@ export const NAMESPACES_INITIAL_STATE = {
   versionListReduxData: [],
   propertyOptionOnDeploy: [],
   addPropertyCSResponse: {},
+  alreadyFetchedLsIdentifierForUpgrade: [],
+  localServiceInUpgrade: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -415,6 +421,9 @@ export const NamespacesSelectors = {
   getIsLocalVariableUpdated: state => state.namespaces.isLocalVariableUpdated,
   getVersionListReduxData: state => state.namespaces.versionListReduxData,
   getAddPropertyCSResponse: state => state.namespaces.addPropertyCSResponse,
+  getAlreadyFetchedLsIdentifierForUpgrade: state =>
+    state.namespaces.alreadyFetchedLsIdentifierForUpgrade,
+  getLocalServiceInUpgrade: state => state.namespaces.localServiceInUpgrade,
 };
 //
 /* ------------- REDUCERS ------------------- */
@@ -970,6 +979,20 @@ const setAddPropertyCSResponse = (state, { payload }) => {
   };
 };
 
+const setAlreadyFetchedLsIdentifierForUpgrade = (state, { payload }) => {
+  return {
+    ...state,
+    alreadyFetchedLsIdentifierForUpgrade: payload,
+  };
+};
+
+const setLocalServiceInUpgrade = (state, { payload }) => {
+  return {
+    ...state,
+    localServiceInUpgrade: payload,
+  };
+};
+
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1190,6 +1213,14 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setAddPropertyCSResponse,
         setAddPropertyCSResponse
+      )
+      .addCase(
+        NamespacesActions.setAlreadyFetchedLsIdentifierForUpgrade,
+        setAlreadyFetchedLsIdentifierForUpgrade
+      )
+      .addCase(
+        NamespacesActions.setLocalServiceInUpgrade,
+        setLocalServiceInUpgrade
       );
   }
 );
