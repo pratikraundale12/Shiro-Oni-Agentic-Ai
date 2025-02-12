@@ -75,7 +75,11 @@ const VariableTab = () => {
 
   const handleEditClick = item => {
     setIsAddVariablesOpen({ isOpen: true, mode: 'edit' });
-    setCurrentEditData(item);
+    setCurrentEditData({
+      check: item?.value === '' ? true : false,
+      value: item?.value ? item?.value : null,
+      ...item,
+    });
   };
 
   const VARIABLE_COLUMNS = [
@@ -92,7 +96,7 @@ const VariableTab = () => {
           <TextRender
             key={item?.value}
             text={
-              item?.check || item?.value === ''
+              item?.check
                 ? KDFM.EMPTY_STRING_SET
                 : item?.value
                   ? item?.value
@@ -137,7 +141,15 @@ const VariableTab = () => {
     variables: item.variables.some(variable => variable.name === data.name)
       ? item.variables.map(variable =>
           variable.name === data.name
-            ? { ...variable, value: data.value }
+            ? {
+                ...variable,
+                value: data?.check
+                  ? ''
+                  : isEmpty(data.value)
+                    ? null
+                    : data.value,
+                check: data.check,
+              }
             : variable
         )
       : [...item.variables, data],

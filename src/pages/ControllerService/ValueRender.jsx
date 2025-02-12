@@ -25,6 +25,10 @@ const ValueRender = ({
           <div> {item?.dropDownName}</div>
         ) : item?.value ? (
           <div>{item?.value}</div>
+        ) : item?.value === '' ? (
+          'Empty String Set'
+        ) : item?.value === null ? (
+          'No Value Set'
         ) : (
           'No Value Set'
         )}

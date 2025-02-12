@@ -489,7 +489,10 @@ export const ListControllerService = () => {
 
   const handleAddValueModal = item => {
     setIsAddpropertiesModalOpen(true);
-    setSelectedPropertyToEdit(item);
+    setSelectedPropertyToEdit({
+      check: item?.value === '' ? true : false,
+      ...item,
+    });
   };
 
   const handleRefresh = () => {

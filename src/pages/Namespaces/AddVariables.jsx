@@ -55,7 +55,11 @@ const AddVariables = ({
           name: variableContextItem?.variable?.name,
           value: variableContextItem?.variable?.value,
         });
-        setValue('check', variableContextItem?.variable?.value ? false : true);
+        setValue(
+          'check',
+          variableContextItem?.variable?.check ||
+            variableContextItem?.variable?.value === ''
+        );
       }
     }
   }, [
@@ -69,6 +73,11 @@ const AddVariables = ({
 
   const handleAddEditVariables = async data => {
     if (!data) return;
+    const variableData = {
+      value: !data?.check && data?.value === '' ? null : data?.value,
+      name: data?.name,
+      check: data?.check,
+    };
     const nameExists = (contextList, name) =>
       contextList.some(
         parameter => parameter?.name?.toLowerCase() === name?.toLowerCase()
@@ -79,10 +88,13 @@ const AddVariables = ({
       };
     });
 
-    const parameterAlreadyExist = nameExists(newlyAddVariables, data?.name);
+    const parameterAlreadyExist = nameExists(
+      newlyAddVariables,
+      variableData?.name
+    );
     const parameterAlreadyExistInNewlyAddedContext = nameExists(
       oldParameters,
-      data?.name
+      variableData?.name
     );
 
     const isDuplicate =
@@ -96,17 +108,19 @@ const AddVariables = ({
 
     if (isAddVariablesOpen?.mode === 'edit' && isEmpty(scheduleFormData)) {
       const updatedData = newlyAddVariables.map(item =>
-        item?.variable?.toLowerCase() === data?.name?.toLowerCase()
-          ? { ...item, ...data }
+        item?.variable?.toLowerCase() === variableData?.name?.toLowerCase()
+          ? { ...item, ...variableData }
           : item
       );
       const filteredVariableList = variablesDetailsData.filter(
         item =>
-          item?.variable?.name?.toLowerCase() !== data?.name?.toLowerCase()
+          item?.variable?.name?.toLowerCase() !==
+          variableData?.name?.toLowerCase()
       );
       const existingVariableDetails = variablesDetailsData.find(
         item =>
-          item?.variable?.name?.toLowerCase() === data?.name?.toLowerCase()
+          item?.variable?.name?.toLowerCase() ===
+          variableData?.name?.toLowerCase()
       );
 
       if (existingVariableDetails && existingVariableDetails.length !== 0) {
@@ -117,28 +131,34 @@ const AddVariables = ({
           })
         );
         dispatch(
-          NamespacesActions.setNewlyAddVariables([...updatedData, data])
+          NamespacesActions.setNewlyAddVariables([...updatedData, variableData])
         );
       } else {
         dispatch(NamespacesActions.setNewlyAddVariables([...updatedData]));
       }
     } else {
       dispatch(
-        NamespacesActions.setNewlyAddVariables([...newlyAddVariables, data])
+        NamespacesActions.setNewlyAddVariables([
+          ...newlyAddVariables,
+          variableData,
+        ])
       );
     }
 
     if (isAddVariablesOpen?.mode === 'edit' && !isEmpty(scheduleFormData)) {
       const updatedData = newlyAddVariables.map(item =>
-        item.name.toLowerCase() === data.name.toLowerCase()
-          ? { ...item, ...data }
+        item.name.toLowerCase() === variableData.name.toLowerCase()
+          ? { ...item, ...variableData }
           : item
       );
 
       dispatch(NamespacesActions.setNewlyAddVariables(updatedData));
     } else {
       dispatch(
-        NamespacesActions.setNewlyAddVariables([...newlyAddVariables, data])
+        NamespacesActions.setNewlyAddVariables([
+          ...newlyAddVariables,
+          variableData,
+        ])
       );
     }
 
@@ -274,6 +294,8 @@ const AddVariables = ({
   useEffect(() => {
     if (check) {
       setValue('value', '');
+    } else if (!check) {
+      setValue('value', variableContextItem?.variable?.value);
     }
   }, [check, setValue]);
 
@@ -297,7 +319,9 @@ const AddVariables = ({
           : handleAddEditVariables
       )}
       primaryButtonDisabled={
-        variableValue === variableContextItem?.variable?.value ?? false
+        (variableValue === variableContextItem?.variable?.value &&
+          check === variableContextItem?.variable?.check) ??
+        false
       }
     >
       <ModalBody className="modal-body">
@@ -315,7 +339,6 @@ const AddVariables = ({
             type="text"
             label={KDFM.VALUE}
             icon={<QRIcons />}
-            placeholder={check ? KDFM.EMPTY_STRING_SET : ''}
             disabled={check}
             register={register}
           />
