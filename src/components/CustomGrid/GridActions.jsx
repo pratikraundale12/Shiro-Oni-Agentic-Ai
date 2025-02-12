@@ -231,6 +231,7 @@ export const GridActions = ({
   const entity = watch('entityName');
   const event = watch('activityEvent');
   const getModuleBasedStatusKey = module => {
+    setCurrentPage(1);
     if (module === 'activityHistory') {
       return 'status';
     } else if (module === 'scheduler') {
@@ -642,7 +643,6 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
-
           {!isEmpty(statusOptions) && (
             <DropdownContainer>
               <StyledSelectField
