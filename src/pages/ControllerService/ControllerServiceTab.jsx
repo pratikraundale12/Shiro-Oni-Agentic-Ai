@@ -1405,39 +1405,37 @@ const ControllerServiceTab = ({
 
   useEffect(() => {
     if (!isEmpty(stateChangeResponse) && stateChangeResponse?.data !== null) {
+      const { runStatus, validationStatus } =
+        stateChangeResponse?.data?.status || {};
+
       setExternalControllerServices(prevServices =>
         prevServices?.map(service => {
-          if (
-            service?.updatedValue === selectedItemFromList?.id &&
-            service?.controllerService?.length
-          ) {
+          const isMatchingUpdatedValue =
+            service?.updatedValue === selectedItemFromList?.id;
+          const isMatchingConfiguredData =
+            service?.configured &&
+            service?.configuredData?.id === selectedItemFromList?.id;
+
+          if (isMatchingUpdatedValue && service?.controllerService?.length) {
             return {
               ...service,
-              controllerService: service?.controllerService?.map((cs, index) =>
-                index === 0
-                  ? {
-                      ...cs,
-                      state: stateChangeResponse?.data?.status?.runStatus,
-                      validationStatus:
-                        stateChangeResponse?.data?.status?.validationStatus,
-                    }
-                  : cs
+              controllerService: service.controllerService.map((cs, index) =>
+                index === 0 ? { ...cs, state: runStatus, validationStatus } : cs
               ),
             };
-          } else if (
-            service?.configured &&
-            service?.configuredData?.id === selectedItemFromList?.id
-          ) {
+          }
+
+          if (isMatchingConfiguredData) {
             return {
               ...service,
               configuredData: {
-                ...service?.configuredData,
-                state: stateChangeResponse?.data?.status?.runStatus,
-                validationStatus:
-                  stateChangeResponse?.data?.status?.validationStatus,
+                ...service.configuredData,
+                state: runStatus,
+                validationStatus,
               },
             };
           }
+
           return service;
         })
       );
@@ -1445,59 +1443,52 @@ const ControllerServiceTab = ({
   }, [stateChangeResponse]);
 
   useEffect(() => {
-    if (!isEmpty(propertyUpdateResponse)) {
-      setExternalControllerServices(prevServices =>
-        prevServices.map(service => {
-          if (
-            service.updatedValue === selectedItemFromList?.id &&
-            service?.controllerService?.length
-          ) {
-            return {
-              ...service,
-              controllerService: service?.controllerService?.map((cs, index) =>
-                index === 0
-                  ? {
-                      ...cs,
-                      properties: propertyUpdateResponse?.properties,
-                      name: propertyUpdateResponse?.name,
-                      state: propertyUpdateResponse?.state,
-                      validationStatus:
-                        propertyUpdateResponse?.validationStatus,
-                    }
-                  : cs
-              ),
-            };
-          } else if (
-            service.updatedValue === propertyUpdateResponse?.id &&
-            service.updatedValue === selectedItemFromList?.updatedValue
-          ) {
-            return {
-              ...service,
-              properties: propertyUpdateResponse?.properties,
-              name: propertyUpdateResponse?.name,
-              state: propertyUpdateResponse?.state,
-              validationStatus: propertyUpdateResponse?.validationStatus,
-              isPropertyUpdated: true,
-            };
-          } else if (
-            service?.configured &&
-            service?.configuredData?.id === selectedItemFromList?.id
-          ) {
-            return {
-              ...service,
-              configuredData: {
-                ...service?.configuredData,
-                properties: propertyUpdateResponse?.properties,
-                name: propertyUpdateResponse?.name,
-                state: propertyUpdateResponse?.state,
-                validationStatus: propertyUpdateResponse?.validationStatus,
-              },
-            };
-          }
-          return service;
-        })
-      );
-    }
+    if (isEmpty(propertyUpdateResponse)) return;
+
+    setExternalControllerServices(prevServices =>
+      prevServices.map(service => {
+        const isMatchingUpdatedValue =
+          service.updatedValue === propertyUpdateResponse?.id &&
+          service.updatedValue === selectedItemFromList?.updatedValue;
+
+        const shouldUpdateControllerService =
+          service.updatedValue === selectedItemFromList?.id &&
+          service?.controllerService?.length;
+
+        const shouldUpdateConfiguredData =
+          service?.configured &&
+          service?.configuredData?.id === selectedItemFromList?.id;
+
+        if (shouldUpdateControllerService) {
+          return {
+            ...service,
+            controllerService: service.controllerService.map((cs, index) =>
+              index === 0 ? { ...cs, ...propertyUpdateResponse } : cs
+            ),
+          };
+        }
+
+        if (isMatchingUpdatedValue) {
+          return {
+            ...service,
+            ...propertyUpdateResponse,
+            isPropertyUpdated: true,
+          };
+        }
+
+        if (shouldUpdateConfiguredData) {
+          return {
+            ...service,
+            configuredData: {
+              ...service.configuredData,
+              ...propertyUpdateResponse,
+            },
+          };
+        }
+
+        return service;
+      })
+    );
   }, [propertyUpdateResponse]);
 
   const handleStatusClick = () => {
@@ -1881,37 +1872,27 @@ const ControllerServiceTab = ({
       controllerServicesData,
       data
     );
+
     if (localServiceState?.length) {
       setUpdatedLocalServicesData(prevState => {
-        const mergedLocalState = [
-          ...prevState.filter(
-            item =>
-              !localServiceState?.some(
-                newItem => newItem?.identifier === item?.identifier
-              )
-          ),
-          ...localServiceState,
-        ];
-        return mergedLocalState;
+        const updatedState = new Map(
+          prevState.map(item => [item.identifier, item])
+        );
+        localServiceState.forEach(item =>
+          updatedState.set(item.identifier, item)
+        );
+        return Array.from(updatedState.values());
       });
     }
 
     if (!isUpgrade) {
-      let newLsData = [];
-      newLsData.push(data);
-
-      if (newLsData?.length) {
-        setUpdatedLsForUpgrade(prevState => {
-          const prevStateMap = new Map(
-            prevState.map(item => [item?.identifier, item])
-          );
-          newLsData.forEach(newItem => {
-            const key = newItem?.identifier;
-            prevStateMap.set(key, newItem);
-          });
-          return Array.from(prevStateMap.values());
-        });
-      }
+      setUpdatedLsForUpgrade(prevState => {
+        const updatedState = new Map(
+          prevState.map(item => [item.identifier, item])
+        );
+        updatedState.set(data.identifier, data);
+        return Array.from(updatedState.values());
+      });
     }
   };
 
@@ -1924,63 +1905,64 @@ const ControllerServiceTab = ({
     });
     return Array.from(propertyMap.values());
   };
+
   useEffect(() => {
     if (isEmpty(updatedLocalServicesData)) return;
-    setLocalServices(prevLocalServices => {
-      const updatedServices = prevLocalServices?.map(processGroup => {
-        return {
-          ...processGroup,
-          controllerData: processGroup?.controllerData?.map(controller => {
-            const updatedController = updatedLocalServicesData?.find(
-              updated => updated.identifier === controller.identifier
-            );
-            if (updatedController) {
-              return {
-                ...controller,
-                ...updatedController,
-                properties: mergeProperties(
-                  controller.properties,
-                  updatedController.properties
-                ),
-                name: updatedController?.name,
-              };
-            }
-            return controller;
-          }),
-        };
-      });
-      return updatedServices;
-    });
+
+    const updateController = controller => {
+      const updatedController = updatedLocalServicesData?.find(
+        updated => updated.identifier === controller.identifier
+      );
+      return updatedController
+        ? {
+            ...controller,
+            ...updatedController,
+            properties: mergeProperties(
+              controller.properties,
+              updatedController.properties
+            ),
+            name: updatedController.name,
+          }
+        : controller;
+    };
+
+    setLocalServices(prevLocalServices =>
+      prevLocalServices?.map(processGroup => ({
+        ...processGroup,
+        controllerData: processGroup?.controllerData?.map(updateController),
+      }))
+    );
   }, [updatedLocalServicesData]);
 
   useEffect(() => {
-    if (updatedLsForUpgrade?.length) {
-      setLsForUpgrade(prevLocalServices => {
-        const updatedServices = prevLocalServices?.map(processGroup => {
-          return {
-            ...processGroup,
-            controllerData: processGroup?.controllerData?.map(controller => {
-              const updatedController = updatedLsForUpgrade?.find(
-                updated => updated?.identifier === controller?.identifier
-              );
-              if (updatedController) {
-                return {
-                  ...controller,
-                  ...updatedController,
-                  properties: mergeProperties(
-                    controller.properties,
-                    updatedController.properties
-                  ),
-                };
-              }
-              return controller;
-            }),
-          };
-        });
-        return updatedServices;
-      });
-    }
+    if (!updatedLsForUpgrade?.length) return;
+
+    const updateController = controller => {
+      const updatedController = updatedLsForUpgrade?.find(
+        updated => updated?.identifier === controller?.identifier
+      );
+      return updatedController
+        ? {
+            ...controller,
+            ...updatedController,
+            properties: mergeProperties(
+              controller.properties,
+              updatedController.properties
+            ),
+          }
+        : controller;
+    };
+
+    const updateProcessGroup = processGroup => ({
+      ...processGroup,
+      controllerData: processGroup?.controllerData?.map(updateController),
+    });
+
+    setLsForUpgrade(prevLocalServices =>
+      prevLocalServices?.map(updateProcessGroup)
+    );
   }, [updatedLsForUpgrade]);
+
   const controllerServiceReduxData = useSelector(
     NamespacesSelectors.getRegistryDeployControllerService
   );
