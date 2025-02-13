@@ -165,7 +165,7 @@ export const ListControllerService = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const filteredModulesData = listData?.data?.filter(
+  const filteredModulesData = listData?.filter(
     module =>
       module?.name?.toLowerCase().includes(search.toLowerCase()) ||
       module?.type?.toLowerCase().includes(search.toLowerCase())

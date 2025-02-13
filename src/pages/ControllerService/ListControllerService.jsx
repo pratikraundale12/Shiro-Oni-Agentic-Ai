@@ -164,7 +164,7 @@ export const ListControllerService = () => {
   const [isResetNotRequired, setIsResetNotRequired] = useState(false);
   const filteredModulesData = useMemo(
     () =>
-      listData?.data?.filter(
+      listData?.filter(
         module =>
           module?.name?.toLowerCase().includes(search.toLowerCase()) ||
           module?.type?.toLowerCase().includes(search.toLowerCase())
@@ -513,32 +513,29 @@ export const ListControllerService = () => {
             <HeadingStyle>Controller Services List</HeadingStyle>
           </div>
         </div>
-        {controllerPermissions.includes('add_controller_services') &&
-          listData?.permissions?.canWrite && (
-            <div className="mb-2 d-flex align-items-center">
-              <Button
-                type="button"
-                size={'md'}
-                onClick={() =>
-                  dispatch(
-                    NamespacesActions.setIsAddControllerServiceModal(true)
-                  )
-                }
-              >
-                Add
-              </Button>
-              <RefreshIocnPanel
-                onClick={handleRefresh}
-                style={{
-                  opacity: 1,
-                  minWidth: '37px',
-                }}
-                data-tooltip-id={`tooltip-group-namespace-refresh`}
-              >
-                <RefreshIcon style={{ cursor: 'pointer' }} />
-              </RefreshIocnPanel>
-            </div>
-          )}
+        {controllerPermissions.includes('add_controller_services') && (
+          <div className="mb-2 d-flex align-items-center">
+            <Button
+              type="button"
+              size={'md'}
+              onClick={() =>
+                dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
+              }
+            >
+              Add
+            </Button>
+            <RefreshIocnPanel
+              onClick={handleRefresh}
+              style={{
+                opacity: 1,
+                minWidth: '37px',
+              }}
+              data-tooltip-id={`tooltip-group-namespace-refresh`}
+            >
+              <RefreshIcon style={{ cursor: 'pointer' }} />
+            </RefreshIocnPanel>
+          </div>
+        )}
       </div>
 
       <SearchContainer>
