@@ -164,7 +164,7 @@ export const ListControllerService = () => {
   const [isResetNotRequired, setIsResetNotRequired] = useState(false);
   const filteredModulesData = useMemo(
     () =>
-      listData.filter(
+      listData?.data?.filter(
         module =>
           module?.name?.toLowerCase().includes(search.toLowerCase()) ||
           module?.type?.toLowerCase().includes(search.toLowerCase())
@@ -502,41 +502,44 @@ export const ListControllerService = () => {
   const statusLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'changeStatusControllerService')
   );
-
   return (
     <>
       <FullPageLoader loading={statusLoading || loading} />
-      {controllerPermissions.includes('add_controller_services') && (
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center gap-3">
-            <div className="d-flex align-items-center gap-2">
-              <TodoIcon width={22} height={24} />
-              <HeadingStyle>Controller Services List</HeadingStyle>
-            </div>
-          </div>
-          <div className="mb-2 d-flex align-items-center">
-            <Button
-              type="button"
-              size={'md'}
-              onClick={() =>
-                dispatch(NamespacesActions.setIsAddControllerServiceModal(true))
-              }
-            >
-              Add
-            </Button>
-            <RefreshIocnPanel
-              onClick={handleRefresh}
-              style={{
-                opacity: 1,
-                minWidth: '37px',
-              }}
-              data-tooltip-id={`tooltip-group-namespace-refresh`}
-            >
-              <RefreshIcon style={{ cursor: 'pointer' }} />
-            </RefreshIocnPanel>
+
+      <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-2">
+            <TodoIcon width={22} height={24} />
+            <HeadingStyle>Controller Services List</HeadingStyle>
           </div>
         </div>
-      )}
+        {controllerPermissions.includes('add_controller_services') &&
+          listData?.permissions?.canWrite && (
+            <div className="mb-2 d-flex align-items-center">
+              <Button
+                type="button"
+                size={'md'}
+                onClick={() =>
+                  dispatch(
+                    NamespacesActions.setIsAddControllerServiceModal(true)
+                  )
+                }
+              >
+                Add
+              </Button>
+              <RefreshIocnPanel
+                onClick={handleRefresh}
+                style={{
+                  opacity: 1,
+                  minWidth: '37px',
+                }}
+                data-tooltip-id={`tooltip-group-namespace-refresh`}
+              >
+                <RefreshIcon style={{ cursor: 'pointer' }} />
+              </RefreshIocnPanel>
+            </div>
+          )}
+      </div>
 
       <SearchContainer>
         <SmallSearchIcon
