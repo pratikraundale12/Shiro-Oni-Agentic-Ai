@@ -473,20 +473,20 @@ const Summary = () => {
 }));
 
   const filteredCSArrayDiff = CSorignalData
-  .filter(item1 =>
+  ?.filter(item1 =>
     controllerServiceReduxData?.localServicesData?.some(
-      item2 => item1.identifier === item2.identifier
+      item2 => item1?.identifier === item2?.identifier
     )
   )
   .map(diffdata => {
     const matchingService = controllerServiceReduxData?.localServicesData
-      ?.find(service => service.identifier === diffdata.identifier);
+      ?.find(service => service?.identifier === diffdata?.identifier);
 
     if (!matchingService) return null;
 
-    const filteredProperties = diffdata.properties?.filter(diffProp =>
+    const filteredProperties = diffdata?.properties?.filter(diffProp =>
       matchingService.properties?.some(prop =>
-        prop.name === diffProp.name && prop.value !== diffProp.value
+        prop?.name === diffProp?.name && prop?.value !== diffProp?.value
       )
     ) || [];
 
@@ -810,13 +810,11 @@ const Summary = () => {
         y: YcordUpdated || registryDetailsData?.positions[0]?.y,
       },
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
-      // namespaceStatus: flowControlSelectedScheduleStored,
       nameSpaceName: registryAllDetails?.processGroupName,
       oldVariablesData: orignalVariables,
       oldParameterContextData: filteredArrayPCold,
       previousControllerServices: { localServicesData: filteredCSArrayDiff },
     };
-    //
     if (!isEmpty(flowControlSelectedScheduleStored)) {
       payload.namespaceStatus = flowControlSelectedScheduleStored;
     }
@@ -859,7 +857,6 @@ const Summary = () => {
         oldParameterContextData: filteredArrayPCold,
         previousControllerServices: { localServicesData: filteredCSArrayDiff },
       };
-      //
       if (!isEmpty(variblesReduxData)) {
         payload.variablesData = variblesReduxData;
       }
