@@ -437,13 +437,11 @@ const Summary = () => {
     return {
           name: service?.name,
           identifier: service?.identifier,
-          instanceIdentifier: service?.instanceIdentifier,
+          instanceIdentifier: matchingController?.instanceIdentifier,
           properties: updatedProperties || []
         }
-     
   })
   .filter(Boolean);
-
   const cleanedPayloadForExternalCs = controllerServiceReduxData?.externalServicesData?.map(item => ({
     ...item,
     processors: item.processors.map(processor => {
@@ -474,11 +472,32 @@ const Summary = () => {
     })
 }));
 
-  const filteredCSArrayDiff = CSorignalData.filter(item1 =>
+  const filteredCSArrayDiff = CSorignalData
+  .filter(item1 =>
     controllerServiceReduxData?.localServicesData?.some(
       item2 => item1.identifier === item2.identifier
     )
-  );
+  )
+  .map(diffdata => {
+    const matchingService = controllerServiceReduxData?.localServicesData
+      ?.find(service => service.identifier === diffdata.identifier);
+
+    if (!matchingService) return null;
+
+    const filteredProperties = diffdata.properties?.filter(diffProp =>
+      matchingService.properties?.some(prop =>
+        prop.name === diffProp.name && prop.value !== diffProp.value
+      )
+    ) || [];
+
+    return {
+      identifier: diffdata?.identifier,
+      instanceIdentifier: diffdata?.instanceIdentifier,
+      name: diffdata?.name,
+      properties: filteredProperties
+    };
+  })
+  .filter(item => item !== null);
   const hasExternalServices =
     !isEmpty(newProcessorEC) || controllerServiceReduxData.externalServicesData;
   const newControllerServiceData = {
@@ -795,7 +814,7 @@ const Summary = () => {
       nameSpaceName: registryAllDetails?.processGroupName,
       oldVariablesData: orignalVariables,
       oldParameterContextData: filteredArrayPCold,
-      previousControllerServices: { localServicesData: updatedLocalCsPayloadOnDeploy },
+      previousControllerServices: { localServicesData: filteredCSArrayDiff },
     };
     //
     if (!isEmpty(flowControlSelectedScheduleStored)) {
@@ -838,7 +857,7 @@ const Summary = () => {
         nameSpaceName: registryAllDetails?.processGroupName,
         oldVariablesData: orignalVariables,
         oldParameterContextData: filteredArrayPCold,
-        previousControllerServices: { localServicesData: updatedLocalCsPayloadOnDeploy },
+        previousControllerServices: { localServicesData: filteredCSArrayDiff },
       };
       //
       if (!isEmpty(variblesReduxData)) {
@@ -867,7 +886,7 @@ const Summary = () => {
           oldVariablesData: orignalVariables,
           oldParameterContextData: filteredArrayPCold,
           previousControllerServices: {
-            localServicesData: updatedLocalCsPayloadOnDeploy,
+            localServicesData: filteredCSArrayDiff,
           },
         },
         previousVersion: selectedNameSpace?.version || 1,
