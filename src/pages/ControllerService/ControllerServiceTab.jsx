@@ -293,7 +293,9 @@ const ControllerServiceTab = ({
   );
 
   const [lsForUpgrade, setLsForUpgrade] = useState(
-    registryDetailsData?.controllerServicesData?.localServices
+    !isEmpty(lsForUpgradeRedux)
+        ? lsForUpgradeRedux
+        : registryDetailsData?.controllerServicesData?.localServices
   );
   useEffect(() => {
     setLsForUpgrade(
