@@ -223,7 +223,6 @@ export const KDFM = {
   SCHEDULE_UPGRADE: 'Schedule Upgrade',
   SCHEDULE_DOWNGRADE: 'Schedule Downgrade',
 
-  SCHEDULE_LIST_RELOAD_TIME: 45000,
   DEPLOYMENT_SCHEDULE_LIST_REFRESH: 'Deployment Schedule List Refresh',
 
   // License constants

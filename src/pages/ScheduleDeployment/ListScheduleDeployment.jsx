@@ -39,7 +39,6 @@ import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
-import { KDFM } from '../../constants';
 import { SettingsSelectors } from '../../store/settings';
 
 const ActionTd = styled.div`
