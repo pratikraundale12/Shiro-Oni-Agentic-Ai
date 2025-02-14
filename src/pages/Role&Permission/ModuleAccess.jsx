@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { difference, isEmpty, unionBy, uniqBy } from 'lodash';
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import {
   DeleteDustbinIcon,
@@ -465,7 +466,6 @@ export const ModuleAccess = () => {
   useEffect(() => {
     // Cleanup function that clears the state when the component unmounts
     return () => {
-      dispatch(RolesActions.setSelectedRole({}));
       dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
     };
   }, [dispatch]);
@@ -486,6 +486,23 @@ export const ModuleAccess = () => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
+
+  const { control, setValue } = useForm({});
+  useEffect(() => {
+    if (selectedRole?.role_id) {
+      dispatch(
+        PoliciesActions.fetchPoliciesRoles({ roleId: selectedRole.role_id })
+      );
+      setValue('rolesSelect', selectedRole.role_id);
+    }
+  }, [selectedRole, dispatch]);
+
+  const optinsForRoles = roles?.map(element => ({
+    value: element?.role_id,
+    label: element?.name,
+    ...element,
+  }));
+
   return (
     <>
       <Flex>
@@ -499,9 +516,11 @@ export const ModuleAccess = () => {
           <StyledSelectField
             size="sm"
             placeholder="Select Role"
-            options={roles}
+            options={optinsForRoles}
             backgroundColor={theme.colors.lightGrey}
             onChange={onChange}
+            control={control}
+            name="rolesSelect"
           />
           {(userPermissions.includes('add_permission') ||
             userPermissions.includes('edit_permission')) && (
