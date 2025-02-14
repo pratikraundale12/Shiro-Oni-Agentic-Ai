@@ -87,12 +87,7 @@ export const Login = () => {
     resolver: yupResolver(loginSchema),
   });
   useEffect(() => {
-    dispatch(
-      NamespacesActions.setSelectedCluster({
-        label: '',
-        value: '',
-      })
-    );
+    dispatch(NamespacesActions.setSelectedCluster({}));
   }, [dispatch]);
 
   const onSubmit = data => {
