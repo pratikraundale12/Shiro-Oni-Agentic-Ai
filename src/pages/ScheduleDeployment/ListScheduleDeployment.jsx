@@ -39,7 +39,7 @@ import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
-import { KDFM } from '../../constants';
+import { SettingsSelectors } from '../../store/settings';
 
 const ActionTd = styled.div`
   display: flex;
@@ -83,7 +83,7 @@ export const ListScheduleDeployment = () => {
   const selctedStatus = useSelector(SchedularSelectors.getSelectedStatusState);
   const search = useSelector(SchedularSelectors.getSearchText);
   const location = useLocation();
-
+  const settingData = useSelector(SettingsSelectors.getSettings);
   const params = new URLSearchParams(location.search);
   const [sortingState, setSortingState] = useState('');
   const toggleSorting = column => {
@@ -644,13 +644,19 @@ export const ListScheduleDeployment = () => {
     );
   };
   useEffect(() => {
-    fetchRecords();
-    const intervalId = setInterval(
-      fetchRecords,
-      KDFM?.SCHEDULE_LIST_RELOAD_TIME
-    );
-    return () => clearInterval(intervalId);
-  }, [selectedRange, selctedCluster, selctedStatus, search, currentPage]);
+    if (settingData?.refresh && settingData?.refresh > 0) {
+      fetchRecords();
+      const intervalId = setInterval(fetchRecords, settingData?.refresh);
+      return () => clearInterval(intervalId);
+    }
+  }, [
+    selectedRange,
+    selctedCluster,
+    selctedStatus,
+    search,
+    currentPage,
+    settingData?.refresh,
+  ]);
   return (
     <>
       <ModalWithIcon

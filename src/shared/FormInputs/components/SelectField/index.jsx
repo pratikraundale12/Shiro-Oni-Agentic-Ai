@@ -131,6 +131,7 @@ const SelectField = ({
   defaultValue = null,
   menuHeight = '150px',
   isFromAddNewService,
+  sortAlphabetically = true,
   ...props
 }) => {
   const animatedComponents = makeAnimated();
@@ -159,7 +160,9 @@ const SelectField = ({
     });
   };
 
-  const sortedOptions = sortOptionsAlphabetically(options);
+  const sortedOptions = sortAlphabetically
+    ? sortOptionsAlphabetically(options)
+    : options;
   const getBorderColor = ({ isFocused }) => {
     if (isFocused && !error) return theme.colors.darker;
     if (error) return theme.colors.error;
@@ -411,6 +414,7 @@ SelectField.propTypes = {
   optionEntity: PropTypes.string,
   handleCreateOption: PropTypes.func,
   menuHeight: PropTypes.string,
+  sortAlphabetically: PropTypes.bool,
 };
 
 export default SelectField;

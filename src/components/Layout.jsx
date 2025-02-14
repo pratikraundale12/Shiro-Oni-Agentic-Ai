@@ -9,7 +9,11 @@ import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
 import { changeFavicon, changeTitle } from '../helpers';
 import { history } from '../helpers/history';
 import { TextButton } from '../shared';
-import { AuthenticationActions, AuthenticationSelectors } from '../store';
+import {
+  AuthenticationActions,
+  AuthenticationSelectors,
+  NamespacesActions,
+} from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 
 const Container = styled.div`
@@ -301,6 +305,10 @@ export const Layout = ({ children }) => {
         dispatch(SettingsActions.fetchSettings());
       }
     }
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(NamespacesActions.setSelectedCluster({}));
   }, [dispatch]);
 
   return (

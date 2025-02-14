@@ -34,6 +34,7 @@ import { useGlobalContext } from '../utils';
 import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';
 import { SchedularActions } from '../store/schedular';
+import { isEmpty } from 'lodash';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -336,7 +337,9 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(ClustersActions.fetchClusters());
+    if (!isEmpty(currentUser)) {
+      dispatch(ClustersActions.fetchClusters());
+    }
   }, [dispatch]);
 
   useEffect(() => {
