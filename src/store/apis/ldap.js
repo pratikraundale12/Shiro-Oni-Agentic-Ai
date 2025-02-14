@@ -1,9 +1,22 @@
+import { history } from '../../helpers/history';
 import API from './api';
 
 export const checkLdapConfig = async () => {
   try {
     return await API.get(`/check-ldap`);
   } catch (error) {
+    if (error.response) {
+      const { data } = error.response;
+      if (data?.raw?.log_out) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('previous_path');
+        history.push('/login');
+      }
+      if (data?.raw?.raw?.requireClusterLogin) {
+        localStorage.removeItem('selected_cluster');
+        window.location.reload();
+      }
+    }
     return error?.response?.data;
   }
 };

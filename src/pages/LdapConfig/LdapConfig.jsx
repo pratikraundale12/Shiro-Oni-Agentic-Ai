@@ -384,6 +384,7 @@ export const LdapConfig = () => {
   const handleCheckLdapConfig = async () => {
     const response = await checkLdapConfig();
     if (response.status === 200) {
+      dispatch(RolesActions.fetchRoles());
       if (response?.data?.ldapEnabled) {
         reset1({
           url: response?.data?.url,
@@ -526,9 +527,6 @@ export const LdapConfig = () => {
     dispatch(RolesActions.roleModal(true));
     closePopup();
   };
-  useEffect(() => {
-    dispatch(RolesActions.fetchRoles());
-  }, [dispatch]);
 
   return (
     <Wrapper>
