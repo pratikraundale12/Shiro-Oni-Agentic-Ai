@@ -497,7 +497,7 @@ export const ModuleAccess = () => {
     }
   }, [selectedRole, dispatch]);
 
-  const optinsForRoles = roles?.map(element => ({
+  const optionsForRoles = roles?.map(element => ({
     value: element?.role_id,
     label: element?.name,
     ...element,
@@ -516,7 +516,7 @@ export const ModuleAccess = () => {
           <StyledSelectField
             size="sm"
             placeholder="Select Role"
-            options={optinsForRoles}
+            options={optionsForRoles}
             backgroundColor={theme.colors.lightGrey}
             onChange={onChange}
             control={control}
