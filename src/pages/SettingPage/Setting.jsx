@@ -19,6 +19,7 @@ import {
   EMAIL_REGEX,
   EMAIL_REMINDER_OPTIONS,
   KDFM,
+  SCHEDULE_LIST_REFRESH_OPTIONS,
   // REFRESH_OPTIONS,
 } from '../../constants';
 import {
@@ -299,7 +300,7 @@ export const Setting = () => {
 
       setValue(
         'refresh',
-        settingData.refresh === 0 ? 'Off' : settingData.refresh
+        settingData.refresh === 0 ? 'Off' : String(settingData.refresh)
       );
 
       setLdapAutoSync(settingData?.ldap_auto_sync);
@@ -637,6 +638,20 @@ export const Setting = () => {
               options={EMAIL_REMINDER_OPTIONS}
               placeholder="Select Reminder Time"
               defaultValue={EMAIL_REMINDER_OPTIONS[0]}
+            />
+          </div>
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+            <LabelSelect className="mb-3">
+              {KDFM.DEPLOYMENT_SCHEDULE_LIST_REFRESH}
+            </LabelSelect>
+            <SelectField
+              name="refresh"
+              control={control}
+              icon={<CalendarIcon />}
+              errors={errors}
+              options={SCHEDULE_LIST_REFRESH_OPTIONS}
+              placeholder="Select Schedule List Refresh Time"
+              sortAlphabetically={false}
             />
           </div>
         </InputFields>

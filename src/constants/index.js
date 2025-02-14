@@ -112,6 +112,17 @@ export const EMAIL_REMINDER_OPTIONS = [
   { label: '30 mins', value: '1800000' },
   { label: '1 hour', value: '3600000' },
 ];
+export const SCHEDULE_LIST_REFRESH_OPTIONS = [
+  { label: 'Stop', value: false },
+  { label: '15 Sec', value: '15000' },
+  { label: '30 Sec', value: '30000' },
+  { label: '45 Sec', value: '45000' },
+  { label: '1 min', value: '60000' },
+  { label: '2 min', value: '120000' },
+  { label: '3 min', value: '360000' },
+  { label: '5 min', value: '300000' },
+  { label: '10 min', value: '600000' },
+];
 
 export const LICENSE_TYPE = {
   TRIAL: 'trial',
@@ -213,6 +224,7 @@ export const KDFM = {
   SCHEDULE_DOWNGRADE: 'Schedule Downgrade',
 
   SCHEDULE_LIST_RELOAD_TIME: 45000,
+  DEPLOYMENT_SCHEDULE_LIST_REFRESH: 'Deployment Schedule List Refresh',
 
   // License constants
   TRIAL: 'Trial',
