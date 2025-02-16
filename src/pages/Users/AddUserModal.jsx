@@ -186,8 +186,6 @@ export const AddUserModal = props => {
   };
 
   useEffect(() => {
-    dispatch(RolesActions.fetchRoles());
-
     if (state.userModal) {
       if (isEmpty(state.selectedItem)) reset(DEFAULT_VALUES);
       else reset(state.selectedItem);
@@ -202,6 +200,11 @@ export const AddUserModal = props => {
       ? false
       : state.selectedItem;
   };
+  useEffect(() => {
+    if (userModalOpen) {
+      dispatch(RolesActions.fetchRoles());
+    }
+  }, [userModalOpen]);
 
   return (
     <div {...props}>

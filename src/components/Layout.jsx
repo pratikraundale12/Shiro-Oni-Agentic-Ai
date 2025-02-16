@@ -309,6 +309,7 @@ export const Layout = ({ children }) => {
 
   useEffect(() => {
     dispatch(NamespacesActions.setSelectedCluster({}));
+    dispatch(SettingsActions.fetchSettingsSuccess());
   }, [dispatch]);
 
   return (

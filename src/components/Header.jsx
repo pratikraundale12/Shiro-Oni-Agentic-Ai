@@ -28,6 +28,7 @@ import {
   GridActions,
   NamespacesActions,
   NamespacesSelectors,
+  RolesActions,
   UsersActions,
 } from '../store';
 import { useGlobalContext } from '../utils';
@@ -35,6 +36,7 @@ import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';
 import { SchedularActions } from '../store/schedular';
 import { isEmpty } from 'lodash';
+import { SettingsSelectors } from '../store/settings';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -295,7 +297,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     AuthenticationSelectors.getLicense
   );
   const clusters_new_list = useSelector(ClustersSelectors.getAllClustersList);
-
+  const settingsData = useSelector(SettingsSelectors.getSettings);
   const closeTab = () => {
     setDisplaySessionTab(false);
   };
@@ -337,8 +339,9 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!isEmpty(currentUser)) {
+    if (!isEmpty(currentUser) && !isEmpty(settingsData)) {
       dispatch(ClustersActions.fetchClusters());
+      dispatch(RolesActions.fetchRoles());
     }
   }, [dispatch]);
 
