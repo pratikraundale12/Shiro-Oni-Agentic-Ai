@@ -117,7 +117,7 @@ export const Grid = ({
   setCurrentPage = () => {},
   sortingState,
   setSortingState,
-  itemsPerPage = 10,
+  itemsPerPage = KDFM.ITEMS_PER_PAGE,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();

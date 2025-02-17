@@ -65,7 +65,7 @@ export const Table = ({
   loading,
   className,
   deployTable = false,
-  rowsPerPage = 20,
+  rowsPerPage = KDFM.ITEMS_PER_PAGE,
   showPagination = false,
   csList = false,
   isResetNotRequired = false,

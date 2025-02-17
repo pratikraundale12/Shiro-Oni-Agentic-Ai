@@ -198,7 +198,7 @@ export const ActvityHistory = () => {
       setCurrentPage={setCurrentPage}
       sortingState={sortingState}
       setSortingState={setSortingState}
-      itemsPerPage={20}
+      itemsPerPage={KDFM.ITEMS_PER_PAGE}
     />
   );
 };

@@ -466,7 +466,7 @@ export const ListClusters = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         sortingState={sortingState}
-        itemsPerPage={20}
+        itemsPerPage={KDFM.ITEMS_PER_PAGE}
       />
       <ClusterSuccessModal />
     </>

@@ -224,6 +224,7 @@ export const KDFM = {
   SCHEDULE_DOWNGRADE: 'Schedule Downgrade',
 
   DEPLOYMENT_SCHEDULE_LIST_REFRESH: 'Deployment Schedule List Refresh',
+  ITEMS_PER_PAGE: 20,
 
   // License constants
   TRIAL: 'Trial',

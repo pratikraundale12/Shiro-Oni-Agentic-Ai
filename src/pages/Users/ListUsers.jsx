@@ -160,7 +160,7 @@ export const ListUsers = () => {
         currentPage={currentPage}
         sortingState={sortingState}
         setSortingState={setSortingState}
-        itemsPerPage={20}
+        itemsPerPage={KDFM.ITEMS_PER_PAGE}
       />
     </>
   );

@@ -19,6 +19,7 @@ import {
   TickIconWithCircle,
 } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
+import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import SortingComponent from '../../shared/SortingComponent';
@@ -700,7 +701,7 @@ export const ListScheduleDeployment = () => {
         currentPage={currentPage}
         sortingState={sortingState}
         setSortingState={setSortingState}
-        itemsPerPage={20}
+        itemsPerPage={KDFM.ITEMS_PER_PAGE}
       />
       <DiffModalScheduleList />
     </>

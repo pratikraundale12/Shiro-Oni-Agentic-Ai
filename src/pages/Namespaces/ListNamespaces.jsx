@@ -465,7 +465,7 @@ export const ListNamespaces = () => {
         state={state}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
-        itemsPerPage={20}
+        itemsPerPage={KDFM.ITEMS_PER_PAGE}
       />
     </>
   );
