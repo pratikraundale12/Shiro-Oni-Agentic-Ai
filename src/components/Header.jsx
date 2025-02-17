@@ -213,7 +213,6 @@ const ProfileDropdown = () => {
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [showMenu, setShowMenu] = useState(false);
   const { setState } = useGlobalContext();
-  console.log('currentUser---', currentUser);
   const menuRef = useRef(null);
   const options = [
     {
