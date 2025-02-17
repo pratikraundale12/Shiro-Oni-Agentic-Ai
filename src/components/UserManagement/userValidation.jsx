@@ -4,12 +4,12 @@ export const userSchema = yup.object().shape({
   first_name: yup
     .string()
     .trim()
-    .matches(/^[A-Za-z\s]+$/, 'First Name must contain only letters and spaces')
+    .matches(/^[A-Za-z]+$/, 'First Name must contain only letters')
     .required('Name is required'),
   last_name: yup
     .string()
     .trim()
-    .matches(/^[A-Za-z\s]+$/, 'Last Name must contain only letters and spaces')
+    .matches(/^[A-Za-z]+$/, 'Last Name must contain only letters')
     .required('Name is required'),
   email: yup
     .string()
@@ -22,25 +22,52 @@ export const editUserSchema = yup.object().shape(
   {
     first_name: yup
       .string()
+      .max(30, 'First Name must be at most 30 characters')
       .trim()
-      .matches(
-        /^[A-Za-z\s]+$/,
-        'First Name must contain only letters and spaces'
-      )
+      .matches(/^[A-Za-z]+$/, 'First Name must contain only letters(no spaces)')
       .required('Name is required'),
     last_name: yup
       .string()
+      .max(30, 'Last Name must be at most 30 characters')
       .trim()
-      .matches(
-        /^[A-Za-z\s]+$/,
-        'Last Name must contain only letters and spaces'
-      )
+      .matches(/^[A-Za-z]+$/, 'Last Name must contain only letters(no spaces)')
       .required('Name is required'),
+    middle_name: yup
+      .string()
+      .trim()
+      .nullable()
+      .notRequired()
+      .max(30, 'Middle Name must be at most 30 characters')
+      .test(
+        'is-valid-middle-name',
+        'Middle Name must contain only letters(no spaces)',
+        value => !value || /^[A-Za-z]+$/.test(value) // ✅ Only validate if value exists
+      ),
     email: yup
       .string()
-      .matches(EMAIL_REGEX, 'Invalid email address')
+      .email()
+      .trim()
+      .matches(
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org|edu|gov|mil|io|co|uk|us|in)$/i,
+        'Invalid email address'
+      )
       .required('Email is required'),
-    username: yup.string().required('Username is required'),
+    username: yup
+      .string()
+      .trim()
+      .max(30, 'Username cannot exceed 30 characters')
+      .matches(/^\S*$/, 'Username must not contain spaces') // ✅ Ensures no spaces
+      .required('Username is required'),
+    phone: yup
+      .string()
+      .trim()
+      .nullable()
+      .notRequired()
+      .test(
+        'is-valid-phone',
+        'Mobile number must be a number with 10 digits',
+        value => !value || /^\d{10}$/.test(value) // ✅ Only validate if value exists
+      ),
     password: yup
       .string()
       .default('')

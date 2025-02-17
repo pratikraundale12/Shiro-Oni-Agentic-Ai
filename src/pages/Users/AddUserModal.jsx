@@ -247,7 +247,7 @@ export const AddUserModal = props => {
                     name="first_name"
                     type="text"
                     label="First Name"
-                    placeholder="Enter your First Name"
+                    placeholder="Enter Your First Name"
                     required
                     register={register}
                     errors={errors}
@@ -260,7 +260,7 @@ export const AddUserModal = props => {
                     name="middle_name"
                     type="text"
                     label="Middle Name"
-                    placeholder="Enter your Middle Name"
+                    placeholder="Enter Your Middle Name"
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}
@@ -272,7 +272,7 @@ export const AddUserModal = props => {
                     name="last_name"
                     type="text"
                     label="Last Name"
-                    placeholder="Enter your Last Name"
+                    placeholder="Enter Your Last Name"
                     required
                     register={register}
                     errors={errors}
@@ -285,7 +285,7 @@ export const AddUserModal = props => {
                     name="username"
                     type="text"
                     label="User Name"
-                    placeholder="Enter your User Name"
+                    placeholder="Enter Your User Name"
                     required
                     register={register}
                     errors={errors}
@@ -298,7 +298,7 @@ export const AddUserModal = props => {
                     name="email"
                     type="email"
                     label="E-mail Address"
-                    placeholder="Enter your First Name"
+                    placeholder="Enter Your Email Address"
                     required
                     register={register}
                     errors={errors}
