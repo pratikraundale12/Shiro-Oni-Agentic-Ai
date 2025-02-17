@@ -288,28 +288,25 @@ const ControllerServiceTab = ({
       dispatch(NamespacesActions.setVersionListReduxData(versionList));
     }
   }, [versionList, stateChangeResponse, propertyUpdateResponse]);
-  const lsForUpgradeRedux = useSelector(
-    NamespacesSelectors.getLocalServiceInUpgrade
-  );
 
-  const [lsForUpgrade, setLsForUpgrade] = useState(
+  const lsForUpgradeRedux = useSelector(NamespacesSelectors.getLocalServiceInUpgrade);
+  const [isDataUpdated, setIsDataUpdated] = useState(false);
+  const [lsForUpgrade, setLsForUpgrade] = useState(() => 
     !isEmpty(lsForUpgradeRedux)
-        ? lsForUpgradeRedux
-        : registryDetailsData?.controllerServicesData?.localServices
-  );
-  useEffect(() => {
-    setLsForUpgrade(
-      !isEmpty(lsForUpgradeRedux)
-        ? lsForUpgradeRedux
-        : registryDetailsData?.controllerServicesData?.localServices
-    );
-  }, [registryDetailsData, lsForUpgradeRedux]);
+      ? lsForUpgradeRedux
+      : registryDetailsData?.controllerServicesData?.localServices || []
+  );  
 
-  useEffect(() => {
-    if (!isEmpty(lsForUpgrade)) {
-      dispatch(NamespacesActions.setLocalServiceInUpgrade(lsForUpgrade));
-    }
-  }, [lsForUpgrade]);
+useEffect(() => {
+  if (!isEmpty(lsForUpgradeRedux)) {    setLsForUpgrade(lsForUpgradeRedux);
+  }
+}, [lsForUpgradeRedux, dispatch]);
+
+useEffect(() => {
+  if (!isEmpty(lsForUpgrade)) {
+    dispatch(NamespacesActions.setLocalServiceInUpgrade(lsForUpgrade));
+  }
+}, [lsForUpgrade]);
 
   const alreadyFetchedLsIdentifierForUpgradeRedux = useSelector(
     NamespacesSelectors.getAlreadyFetchedLsIdentifierForUpgrade
@@ -371,11 +368,12 @@ const ControllerServiceTab = ({
     }
   };
   useEffect(() => {
+    if(isEmpty(rootCsData)) return;
     const updateControllerData = () => {
       const updatedServices = lsForUpgrade?.map(service => {
         const updatedControllerData = service?.controllerData?.map(
           controller => {
-            const matchingObject = listData?.find(
+            const matchingObject = rootCsData?.find(
               item => item.identifier === controller?.identifier
             );
             return matchingObject ? matchingObject : controller;
@@ -390,8 +388,8 @@ const ControllerServiceTab = ({
       setLsForUpgrade(updatedServices);
     };
 
-    updateControllerData();
-  }, [listData]);
+    isDataUpdated && updateControllerData();
+  }, [rootCsData, isDataUpdated]);
 
   useEffect(() => {
     if (!isEmpty(newlyAddedExternalServiceResponse)) {
@@ -1658,6 +1656,7 @@ const ControllerServiceTab = ({
       item?.isUpgradeLocal &&
       !isAlreadyFetched
     ) {
+      setIsDataUpdated(true);
       setFetchedLsIdentifierForUpgrade(prev => [
         item?.instanceIdentifier,
         ...prev,
@@ -1859,8 +1858,7 @@ const ControllerServiceTab = ({
     externalControllerServiceArray,
     newlyAddedExternalServiceResponse,
     externalControllerServicesTableData,
-    listData,
-    lsForUpgrade,
+    lsForUpgradeRedux,
   ]);
 
   const checkIfLocalCsConfigured = useSelector(
@@ -2101,7 +2099,7 @@ const ControllerServiceTab = ({
       <FullPageLoader loading={statusLoading} />
       <DataWrapper>
         <ScrollSetGrey className="scroll-set-grey pe-1">
-          {localServices?.length || externalControllerServices?.length ? (
+          {localServices?.length || externalControllerServices?.length || !isEmpty(lsForUpgrade) ? (
             collapsibles &&
             collapsibles?.map((item, index) => (
               <Collapsible
