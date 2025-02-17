@@ -298,7 +298,7 @@ export const AddUserModal = props => {
                     name="email"
                     type="email"
                     label="E-mail Address"
-                    placeholder="Enter your First Name"
+                    placeholder="Enter your Email Address"
                     required
                     register={register}
                     errors={errors}
