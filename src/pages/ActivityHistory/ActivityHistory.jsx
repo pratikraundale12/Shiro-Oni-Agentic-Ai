@@ -138,7 +138,14 @@ export const ActvityHistory = () => {
       ),
     },
     {
-      label: KDFM.TIMESTAMP,
+      label: (
+        <button
+          onClick={() => toggleSorting('timestamp')}
+          style={{ background: 'none' }}
+        >
+          {KDFM.TIMESTAMP} {getSortIcon(sortingState, 'timestamp')}
+        </button>
+      ),
       width: '12%',
       resize: true,
       renderCell: item => (

@@ -121,7 +121,23 @@ const AuditLog = () => {
       ),
     },
     {
-      label: KDFM.TIMESTAMP,
+      label: (
+        <>
+          <button
+            onClick={() => toggleSorting('timestamp')}
+            style={{ background: 'none' }}
+          >
+            {KDFM.TIMESTAMP}{' '}
+            {sortingState === 'timestamp' ? (
+              <SortUpIcon />
+            ) : sortingState === '-timestamp' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
       renderCell: item => (
         <TextRender text={convertDateTime(item.timestamp) || KDFM.NA} />
       ),

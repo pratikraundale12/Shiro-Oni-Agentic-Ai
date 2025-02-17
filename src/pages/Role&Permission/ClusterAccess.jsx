@@ -240,6 +240,7 @@ export const ClusterAccess = () => {
     dispatch(RolesActions.fetchRoleClusters({ roleId: option.role_id }));
   };
   const handleCheckboxAutoClick = value => {
+    console.log('value', value);
     if (viewId?.[0]?.id !== value?.policy_id) {
       setUpdatedRoleClusters(prevItems => {
         const doesItemExist = prevItems.some(
