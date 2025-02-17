@@ -55,7 +55,6 @@ export const editUserSchema = yup.object().shape(
     username: yup
       .string()
       .trim()
-      .min(1, 'Username must be at least 1 character')
       .max(30, 'Username cannot exceed 30 characters')
       .matches(/^\S*$/, 'Username must not contain spaces') // ✅ Ensures no spaces
       .required('Username is required'),
