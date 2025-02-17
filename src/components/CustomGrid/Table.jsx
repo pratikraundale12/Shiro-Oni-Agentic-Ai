@@ -1,15 +1,15 @@
 import { getTheme } from '@table-library/react-table-library/baseline';
 import { CompactTable } from '@table-library/react-table-library/compact';
 import { useTheme } from '@table-library/react-table-library/theme';
-import PropTypes from 'prop-types';
-import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 import { NoDataIcon } from '../../assets';
+import { KDFM } from '../../constants';
 import { theme } from '../../styles';
 import { Loader, LoaderContainer } from '../Loader';
 import Pagination from './Pagination';
-import { KDFM } from '../../constants';
 
 const TableContainer = styled.div`
   /* height: 90%; */
@@ -65,7 +65,7 @@ export const Table = ({
   loading,
   className,
   deployTable = false,
-  rowsPerPage = 10,
+  rowsPerPage = 20,
   showPagination = false,
   csList = false,
   isResetNotRequired = false,
@@ -166,6 +166,7 @@ export const Table = ({
             page={currentPage}
             count={DATA.nodes.length}
             setCurrentPage={setCurrentPage}
+            itemsPerPage={rowsPerPage}
           />
         </PaginationContainer>
       ) : (

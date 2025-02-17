@@ -465,6 +465,7 @@ export const ListNamespaces = () => {
         state={state}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        itemsPerPage={20}
       />
     </>
   );

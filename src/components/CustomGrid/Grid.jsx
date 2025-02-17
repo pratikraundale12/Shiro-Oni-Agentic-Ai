@@ -21,10 +21,10 @@ import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { Loader, LoaderContainer } from '../Loader';
+import { UrlRender } from './CellRenders';
 import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
 import { Table } from './Table';
-import { UrlRender } from './CellRenders';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -117,6 +117,7 @@ export const Grid = ({
   setCurrentPage = () => {},
   sortingState,
   setSortingState,
+  itemsPerPage = 10,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -138,7 +139,6 @@ export const Grid = ({
   const selectedNamespaceForDetail = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  const itemsPerPage = 10;
   const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [selectedRole, setSelectedRole] = useState(null);
@@ -212,10 +212,6 @@ export const Grid = ({
           text-overflow: ellipsis;
           text-align: left;
           width: 100%;
-        }
-
-        td {
-          height: 73px;
         }
 
         tbody tr:nth-of-type(even) td {
@@ -513,6 +509,7 @@ export const Grid = ({
           count={gridCount ?? 0}
           prev={prev}
           next={next}
+          itemsPerPage={itemsPerPage}
         />
       )}
     </Container>
@@ -546,4 +543,5 @@ Grid.propTypes = {
   state: PropTypes.object.isRequired,
   sortingState: PropTypes.string,
   setSortingState: PropTypes.func,
+  itemsPerPage: PropTypes.number,
 };

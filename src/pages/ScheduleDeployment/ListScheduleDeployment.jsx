@@ -32,6 +32,7 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
+import { SettingsSelectors } from '../../store/settings';
 import { ApproverGroupDisplay } from './ApproverGroupDisplay';
 import { DiffModalScheduleList } from './DiffModalSchedule';
 import { RejectScheduleModal } from './RejectScheduleModal';
@@ -39,7 +40,6 @@ import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
-import { SettingsSelectors } from '../../store/settings';
 
 const ActionTd = styled.div`
   display: flex;
@@ -700,6 +700,7 @@ export const ListScheduleDeployment = () => {
         currentPage={currentPage}
         sortingState={sortingState}
         setSortingState={setSortingState}
+        itemsPerPage={20}
       />
       <DiffModalScheduleList />
     </>

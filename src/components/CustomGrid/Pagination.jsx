@@ -57,8 +57,7 @@ const StyledButton = styled.button`
   }
 `;
 
-const Pagination = ({ page, count, setCurrentPage }) => {
-  const itemsPerPage = 10;
+const Pagination = ({ page, count, setCurrentPage, itemsPerPage }) => {
   const totalPage = Math.ceil(count / itemsPerPage);
 
   const getPageRange = () => {
@@ -155,6 +154,7 @@ Pagination.propTypes = {
   page: PropTypes.number.isRequired,
   setCurrentPage: PropTypes.func.isRequired,
   count: PropTypes.number.isRequired,
+  itemsPerPage: PropTypes.number,
 };
 
 export default Pagination;

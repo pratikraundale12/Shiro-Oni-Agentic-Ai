@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -35,7 +36,6 @@ import {
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
-import { isEmpty } from 'lodash';
 
 const List = styled.div`
   position: absolute;
@@ -112,6 +112,13 @@ const MetricsIconContainer = styled.div`
   & > svg {
     margin-left: -1px !important;
     margin-right: 8px !important;
+  }
+`;
+const GridComponent = styled(Grid)`
+  table {
+    td {
+      height: 61px;
+    }
   }
 `;
 
@@ -448,7 +455,7 @@ export const ListClusters = () => {
         }
         primaryText={KDFM.HARD_DELETE_CLUSTER_WARNING}
       />
-      <Grid
+      <GridComponent
         module="clusters"
         title={KDFM.CLUSTER_LIST}
         buttonText={KDFM.ADD_NEW_CLUSTER}
@@ -459,6 +466,7 @@ export const ListClusters = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         sortingState={sortingState}
+        itemsPerPage={20}
       />
       <ClusterSuccessModal />
     </>
