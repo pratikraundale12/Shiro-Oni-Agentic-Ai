@@ -120,7 +120,6 @@ const Name = styled.span`
   color: ${props => props.theme.colors.darker};
   font-size: 18px;
   font-weight: 500;
-  text-transform: capitalize;
   @media screen and (max-width: 1400px) {
     font-size: 16px !important;
   }
@@ -214,7 +213,7 @@ const ProfileDropdown = () => {
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [showMenu, setShowMenu] = useState(false);
   const { setState } = useGlobalContext();
-
+  console.log('currentUser---', currentUser);
   const menuRef = useRef(null);
   const options = [
     {

@@ -22,16 +22,19 @@ export const editUserSchema = yup.object().shape(
   {
     first_name: yup
       .string()
+      .required('First Name is required')
       .max(30, 'First Name must be at most 30 characters')
       .trim()
-      .matches(/^[A-Za-z]+$/, 'First Name must contain only letters(no spaces)')
-      .required('Name is required'),
+      .matches(
+        /^[A-Za-z]+$/,
+        'First Name must contain only letters(no spaces)'
+      ),
     last_name: yup
       .string()
+      .required('Last Name is required')
       .max(30, 'Last Name must be at most 30 characters')
       .trim()
-      .matches(/^[A-Za-z]+$/, 'Last Name must contain only letters(no spaces)')
-      .required('Name is required'),
+      .matches(/^[A-Za-z]+$/, 'Last Name must contain only letters(no spaces)'),
     middle_name: yup
       .string()
       .trim()
@@ -45,19 +48,19 @@ export const editUserSchema = yup.object().shape(
       ),
     email: yup
       .string()
-      .email()
+      .required('Email is required')
       .trim()
       .matches(
         /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|org|edu|gov|mil|io|co|uk|us|in)$/i,
         'Invalid email address'
-      )
-      .required('Email is required'),
+      ),
     username: yup
       .string()
+      .required('Username is required')
       .trim()
+      .min(3, 'Username must be at least 3 characters')
       .max(30, 'Username cannot exceed 30 characters')
-      .matches(/^\S*$/, 'Username must not contain spaces') // ✅ Ensures no spaces
-      .required('Username is required'),
+      .matches(/^\S*$/, 'Username must not contain spaces'), // ✅ Ensures no spaces,
     phone: yup
       .string()
       .trim()
@@ -65,7 +68,7 @@ export const editUserSchema = yup.object().shape(
       .notRequired()
       .test(
         'is-valid-phone',
-        'Mobile number must be a number with 10 digits',
+        'Mobile number must be a 10-digit number',
         value => !value || /^\d{10}$/.test(value) // ✅ Only validate if value exists
       ),
     password: yup
