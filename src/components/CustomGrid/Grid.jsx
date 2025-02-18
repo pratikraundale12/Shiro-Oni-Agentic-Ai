@@ -213,6 +213,9 @@ export const Grid = ({
           text-align: left;
           width: 100%;
         }
+        td {
+          height: 52px;
+        }
 
         tbody tr:nth-of-type(even) td {
           background-color: ${theme.colors.lightGrey} !important;          

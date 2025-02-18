@@ -236,6 +236,11 @@ export const ModuleAccess = () => {
     policies?.filter(element =>
       ['view_controller_services'].includes(element?.name)
     );
+  useEffect(() => {
+    if (!userPermissions.includes('view_permission')) {
+      history.push('/dashboard');
+    }
+  }, []);
 
   const roleandPermissionPolicy =
     policies &&
@@ -466,6 +471,9 @@ export const ModuleAccess = () => {
   useEffect(() => {
     // Cleanup function that clears the state when the component unmounts
     return () => {
+      if (location.pathname !== '/role-&-permission') {
+        dispatch(RolesActions.setSelectedRole({}));
+      }
       dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
     };
   }, [dispatch]);

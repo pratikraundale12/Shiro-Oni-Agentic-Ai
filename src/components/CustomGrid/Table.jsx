@@ -100,7 +100,7 @@ export const Table = ({
         }
 
         td {
-          height: 60px;
+          height: 52px;
         }
 
         tbody tr:nth-of-type(even) td {

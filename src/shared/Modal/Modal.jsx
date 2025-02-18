@@ -84,7 +84,7 @@ export const Modal = ({
   tertiaryButtonLoading,
   thirdVarint = false,
   noPadding = false,
-  noScroll = false
+  noScroll = false,
 }) => {
   const styleObject = {
     overlay: {
@@ -144,7 +144,9 @@ export const Modal = ({
             <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
           )}
         </Header>
-        <Body noPadding={noPadding} noScroll={noScroll}>{children}</Body>
+        <Body noPadding={noPadding} noScroll={noScroll}>
+          {children}
+        </Body>
         {(primaryButtonText || secondaryButtonText || tertiaryButton) && (
           <Footer
             footerAlign={footerAlign}

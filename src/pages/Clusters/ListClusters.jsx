@@ -114,13 +114,6 @@ const MetricsIconContainer = styled.div`
     margin-right: 8px !important;
   }
 `;
-const GridComponent = styled(Grid)`
-  table {
-    td {
-      height: 61px;
-    }
-  }
-`;
 
 export const ListClusters = () => {
   const dispatch = useDispatch();
@@ -455,7 +448,7 @@ export const ListClusters = () => {
         }
         primaryText={KDFM.HARD_DELETE_CLUSTER_WARNING}
       />
-      <GridComponent
+      <Grid
         module="clusters"
         title={KDFM.CLUSTER_LIST}
         buttonText={KDFM.ADD_NEW_CLUSTER}
