@@ -59,6 +59,7 @@ export const ConfigControllerService = ({
   referenceListPropertyTableData = [],
   setReferenceListPropertyTableData = () => {},
 }) => {
+  
   const dispatch = useDispatch();
   const isModalOpenDropdownProperty = useSelector(
     NamespacesSelectors.getAddPropertyDropdownModal
