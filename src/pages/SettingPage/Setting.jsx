@@ -650,7 +650,7 @@ export const Setting = () => {
               icon={<CalendarIcon />}
               errors={errors}
               options={SCHEDULE_LIST_REFRESH_OPTIONS}
-              placeholder="Select Schedule List Refresh Time"
+              placeholder="Deployment Schedule Refresh Time"
               sortAlphabetically={false}
             />
           </div>
