@@ -214,7 +214,6 @@ export const ListControllerService = () => {
       NamespacesActions.deleteControllerService({
         version: selectedItemFromList?.version,
         id: selectedItemFromList?.id,
-        namespaceId: selectedItemFromList?.parentGroupId,
       })
     );
     setIsDeleteModalOpen(false);

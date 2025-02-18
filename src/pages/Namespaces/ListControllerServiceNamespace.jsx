@@ -216,8 +216,6 @@ export const ListControllerService = () => {
       NamespacesActions.deleteControllerService({
         version: selectedItemFromList?.version,
         id: selectedItemFromList?.id,
-        namespaceId: singleNamespaceData?.id,
-        serviceName: selectedItemFromList?.name,
         isFromPgDetails: true,
       })
     );

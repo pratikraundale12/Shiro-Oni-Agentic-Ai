@@ -59,9 +59,6 @@ export const ConfigControllerService = ({
   referenceListPropertyTableData = [],
   setReferenceListPropertyTableData = () => {},
 }) => {
-  const selectedNameSpace = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
   
   const dispatch = useDispatch();
   const isModalOpenDropdownProperty = useSelector(
@@ -299,7 +296,6 @@ export const ConfigControllerService = ({
       sensitiveDynamicPropertyNames: sensitiveNames,
       currentState: selectedItemFromList?.state,
       name: data?.name,
-      namespaceId: selectedNameSpace?.id || selectedItemFromList?.parentGroupId,
       use_service_account: isFromExternalService ? true : false,
     };
     const configPayload = updateProperties(selectedItemFromList, updatedData);
