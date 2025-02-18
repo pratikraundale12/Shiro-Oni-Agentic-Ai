@@ -457,14 +457,24 @@ const FlowDetailsPage = () => {
     }
   }, [versionListData?.versionList, isUpgrade]);
   const schemaForStoryAndChangeRequest = Yup.object().shape({
-    user_story: Yup.string().required('User story is required'),
+    user_story: Yup.string()
+      .matches(
+        /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/,
+        'Must be a valid URL (http, https, or ftp)'
+      )
+      .required('User story is required'),
     change_request: Yup.string()
       .trim()
       .matches(/^\d{9,15}$/, 'Change request number must be 9 to 15 digits')
       .required('Change request is required'),
   });
   const schemaForStoryOnly = Yup.object().shape({
-    user_story: Yup.string().required('User story is required'),
+    user_story: Yup.string()
+      .matches(
+        /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/,
+        'Must be a valid URL (http, https, or ftp)'
+      )
+      .required('User story is required'),
   });
   const emptySchema = Yup.object().shape({});
   const getSchemaForValidation = () => {
