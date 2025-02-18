@@ -442,6 +442,9 @@ export const Add = () => {
   const [approverEnable, setApproverEnable] = useState(
     data?.approver_enable || false
   );
+  const [changeRequestEnable, setChangeRequestApproverEnable] = useState(
+    data?.change_request_enable || false
+  );
   const sortRegisrtyURL = registries?.map(ele => ele?.registry_url);
   const registryURLs =
     useSelector(ClustersSelectors.getClusterFormData) || sortRegisrtyURL;
@@ -450,6 +453,11 @@ export const Add = () => {
       ? ClusterSchema
       : RegistrySchema;
   };
+  useEffect(() => {
+    if (!approverEnable) {
+      setChangeRequestApproverEnable(false);
+    }
+  }, [approverEnable]);
 
   const {
     control,
@@ -496,6 +504,7 @@ export const Add = () => {
         tag: tags,
         notification_enable: notificationEnable,
         approver_enable: approverEnable,
+        change_request_enable: changeRequestEnable,
       };
 
       const id = clusterId;
@@ -794,7 +803,8 @@ export const Add = () => {
     return (
       data?.tag === tags &&
       data?.approver_enable === approverEnable &&
-      data?.notification_enable === notificationEnable
+      data?.notification_enable === notificationEnable &&
+      data?.change_request_enable === changeRequestEnable
     );
   };
 
@@ -804,7 +814,7 @@ export const Add = () => {
     } else {
       setSaveButtonEnable(false);
     }
-  }, [data, tags, approverEnable, notificationEnable]);
+  }, [data, tags, approverEnable, notificationEnable, changeRequestEnable]);
   const handleTitleProvider = data => {
     if (data) {
       return `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`;
@@ -1025,6 +1035,16 @@ export const Add = () => {
                 checked={approverEnable}
                 onChange={e => setApproverEnable(e.target.checked)}
               />
+              {approverEnable && (
+                <CheckboxField
+                  name="check"
+                  label="Change request for deployment schedule"
+                  checked={changeRequestEnable}
+                  onChange={e =>
+                    setChangeRequestApproverEnable(e.target.checked)
+                  }
+                />
+              )}
               <CheckboxField
                 name="check"
                 label="Do you want any notification for this cluster?"

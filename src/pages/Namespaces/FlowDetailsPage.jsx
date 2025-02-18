@@ -31,6 +31,10 @@ import { SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import RectangleGraph from './birdEyeViewGraph';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
+import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -199,6 +203,8 @@ const FlowDetailsPage = () => {
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
+  const userStoryValue = useSelector(NamespacesSelectors.getUserStory);
+  const changeRequestValue = useSelector(NamespacesSelectors.getChangeRequest);
   const storedXcord = useSelector(NamespacesSelectors.getregistryFlowXCord);
   const storedYcord = useSelector(NamespacesSelectors.getregistryFlowYCord);
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
@@ -450,6 +456,53 @@ const FlowDetailsPage = () => {
       }
     }
   }, [versionListData?.versionList, isUpgrade]);
+  const schemaForStoryAndChangeRequest = Yup.object().shape({
+    user_story: Yup.string().required('User story is required'),
+    change_request: Yup.string()
+      .trim()
+      .matches(/^\d{9,15}$/, 'Change request number must be 9 to 15 digits')
+      .required('Change request is required'),
+  });
+  const schemaForStoryOnly = Yup.object().shape({
+    user_story: Yup.string().required('User story is required'),
+  });
+  const emptySchema = Yup.object().shape({});
+  const getSchemaForValidation = () => {
+    if (!(scheduleDeploymentFlow || scheduleUpgradeFromList)) {
+      return emptySchema;
+    }
+    if (scheduleDeploymentFlow || scheduleUpgradeFromList) {
+      return registryDetailsData?.change_request_enable ||
+        versionListData?.change_request_enable
+        ? schemaForStoryAndChangeRequest
+        : schemaForStoryOnly;
+    }
+    return emptySchema;
+  };
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(getSchemaForValidation()),
+  });
+  const user_story_var = watch('user_story');
+  const change_request_var = watch('change_request');
+  useEffect(() => {
+    if (dispatch && !isEmpty(user_story_var)) {
+      dispatch(NamespacesActions.setUserStory(user_story_var));
+    } else if (isEmpty(user_story_var)) {
+      dispatch(NamespacesActions.setUserStory(null));
+    }
+  }, [dispatch, user_story_var]);
+  useEffect(() => {
+    if (dispatch && !isEmpty(change_request_var)) {
+      dispatch(NamespacesActions.setChangeRequest(change_request_var));
+    } else if (isEmpty(change_request_var)) {
+      dispatch(NamespacesActions.setChangeRequest(null));
+    }
+  }, [dispatch, change_request_var]);
 
   return (
     <div>
@@ -592,6 +645,35 @@ const FlowDetailsPage = () => {
                       />
                     </ColLgSix>
                   </RowConfig>
+                  {(scheduleDeploymentFlow || scheduleUpgradeFromList) && (
+                    <RowConfig className="row align-items-end order-2 order-lg-1">
+                      <ColLgSix className="col-lg-6 col-12">
+                        <InputField
+                          name="user_story"
+                          type="text"
+                          label={KDFM.USER_STORY}
+                          value={userStoryValue}
+                          icon={<QRIcons />}
+                          register={register}
+                          errors={errors}
+                        />
+                      </ColLgSix>
+                      {(registryDetailsData?.change_request_enable ||
+                        versionListData?.change_request_enable) && (
+                        <ColLgSix className="col-lg-6 col-12">
+                          <InputField
+                            name="change_request"
+                            type="text"
+                            label={KDFM.CHANGE_REQUEST}
+                            value={changeRequestValue}
+                            icon={<QRIcons />}
+                            register={register}
+                            errors={errors}
+                          />
+                        </ColLgSix>
+                      )}
+                    </RowConfig>
+                  )}
                   <ColLgSix className="order-1 order-lg-2 ps-0 mt-3 mt-lg-0 mb-3 mb-lg-0">
                     <VersionDiv>{KDFM.LEGENDS}</VersionDiv>
                     <ColLgSix className="d-flex flex-wrap gap-3 ps-0">
@@ -657,7 +739,7 @@ const FlowDetailsPage = () => {
           </Button>
           <Button
             disabled={isUpgrade ? false : !isStateStale || isButtonDisabled}
-            onClick={handleScrollOnClick}
+            onClick={handleSubmit(handleScrollOnClick)}
           >
             Continue
           </Button>

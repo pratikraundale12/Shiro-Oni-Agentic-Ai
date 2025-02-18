@@ -10,6 +10,7 @@ import FieldErrorMessage from '../FieldErrorMessage';
 const Container = styled.div`
   width: 100%;
   margin-bottom: 1.4rem;
+  position: relative;
 
   label {
     font-size: 14px;

@@ -355,7 +355,8 @@ const Summary = () => {
     registryAllDetails?.controllerServicesData?.localServices.map(
       ele => ele.controllerData?.[0]
     );
-
+  const userStoryValue = useSelector(NamespacesSelectors.getUserStory);
+  const changeRequestValue = useSelector(NamespacesSelectors.getChangeRequest);
   const getChangedVariables = (originalVariables, updatedVariables) => {
     const updatedMap = updatedVariables.reduce((acc, item) => {
       acc[item.name] = item.value;
@@ -827,6 +828,8 @@ const Summary = () => {
       oldVariablesData: orignalVariables,
       oldParameterContextData: filteredArrayPCold,
       previousControllerServices: { localServicesData: filteredCSArrayDiff },
+      ...(userStoryValue && { user_story_url: userStoryValue }),
+      ...(changeRequestValue && { change_request: changeRequestValue }),
     };
     if (!isEmpty(flowControlSelectedScheduleStored)) {
       payload.namespaceStatus = flowControlSelectedScheduleStored;
@@ -869,6 +872,8 @@ const Summary = () => {
         oldVariablesData: orignalVariables,
         oldParameterContextData: filteredArrayPCold,
         previousControllerServices: { localServicesData: filteredCSArrayDiff },
+        ...(userStoryValue && { user_story_url: userStoryValue }),
+        ...(changeRequestValue && { change_request: changeRequestValue }),
       };
       if (!isEmpty(variblesReduxData)) {
         payload.variablesData = variblesReduxData;
@@ -910,6 +915,8 @@ const Summary = () => {
           x: XcordUpdated || registryDetailsData?.positions[0]?.x,
           y: YcordUpdated || registryDetailsData?.positions[0]?.y,
         },
+        ...(userStoryValue && { user_story_url: userStoryValue }),
+        ...(changeRequestValue && { change_request: changeRequestValue }),
       };
       if (!isEmpty(variblesReduxData)) {
         payload.payload.variablesData = variblesReduxData;
@@ -950,6 +957,8 @@ const Summary = () => {
         y: YcordUpdated || selectedNameSpace?.position?.y,
       },
       type: type,
+      ...(userStoryValue && { user_story_url: userStoryValue }),
+      ...(changeRequestValue && { change_request: changeRequestValue }),
     };
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
