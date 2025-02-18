@@ -253,13 +253,25 @@ export const ClusterAccess = () => {
             prev.filter(policy => policy.cluster_id !== item.cluster_id)
           );
         } else {
-          // Otherwise, just remove the specific permission
           setUpdatedRoleClusters(prev =>
             prev.filter(
               policy =>
                 !(
                   policy.cluster_id === item.cluster_id &&
                   policy.policy_id === item.policy_id
+                )
+            )
+          );
+        }
+
+        // If "De-activate" is unchecked, also uncheck "Delete" for that cluster
+        if (item.policy_id === deActivateId?.[0]?.id) {
+          setUpdatedRoleClusters(prev =>
+            prev.filter(
+              policy =>
+                !(
+                  policy.cluster_id === item.cluster_id &&
+                  policy.policy_id === deleteId?.[0]?.id
                 )
             )
           );
