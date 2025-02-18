@@ -299,8 +299,8 @@ export const ConfigControllerService = ({
       sensitiveDynamicPropertyNames: sensitiveNames,
       currentState: selectedItemFromList?.state,
       name: data?.name,
-      namespaceName: selectedNameSpace?.name,
-      namespaceId: selectedNameSpace?.id,
+      namespaceName: selectedNameSpace?.name || selectedItemFromList?.name,
+      namespaceId: selectedNameSpace?.id || selectedItemFromList?.id,
       use_service_account: isFromExternalService ? true : false,
     };
     const configPayload = updateProperties(selectedItemFromList, updatedData);
