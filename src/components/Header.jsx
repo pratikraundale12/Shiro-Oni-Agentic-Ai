@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
@@ -28,15 +29,15 @@ import {
   GridActions,
   NamespacesActions,
   NamespacesSelectors,
+  PoliciesActions,
   RolesActions,
   UsersActions,
 } from '../store';
+import { SchedularActions } from '../store/schedular';
+import { SettingsSelectors } from '../store/settings';
 import { useGlobalContext } from '../utils';
 import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';
-import { SchedularActions } from '../store/schedular';
-import { isEmpty } from 'lodash';
-import { SettingsSelectors } from '../store/settings';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -327,6 +328,10 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
           data: {},
         })
       );
+    }
+    if (location.pathname !== '/role-&-permission') {
+      dispatch(RolesActions.setSelectedRole({}));
+      dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
     }
   }, [dispatch, GridActions, window?.location?.pathname]);
 

@@ -1,5 +1,4 @@
 import { React, useState } from 'react';
-import styled from 'styled-components';
 import { DeleteDustbinIcon, SortDownIcon, SortUpIcon } from '../../assets';
 import {
   Grid,
@@ -10,14 +9,6 @@ import {
 import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { ModalWithIcon } from '../../shared';
 import { useGlobalContext } from '../../utils';
-
-const GridComponent = styled(Grid)`
-  table {
-    td {
-      height: 61px;
-    }
-  }
-`;
 
 export const ListUsers = () => {
   const { state, setState } = useGlobalContext();
@@ -150,7 +141,7 @@ export const ListUsers = () => {
         primaryText={KDFM.DELETE_USER_WARNING}
         secondaryText={KDFM.DELETE_USER_DESCRIPTION}
       />
-      <GridComponent
+      <Grid
         module="users"
         title={KDFM.USER_LIST}
         columns={COLUMNS}
