@@ -122,7 +122,7 @@ export const SCHEDULE_LIST_REFRESH_OPTIONS = [
   { label: '45 Sec', value: '45000' },
   { label: '1 min', value: '60000' },
   { label: '2 min', value: '120000' },
-  { label: '3 min', value: '360000' },
+  { label: '3 min', value: '180000' },
   { label: '5 min', value: '300000' },
   { label: '10 min', value: '600000' },
 ];
@@ -228,6 +228,8 @@ export const KDFM = {
 
   DEPLOYMENT_SCHEDULE_LIST_REFRESH: 'Deployment Schedule List Refresh',
   ITEMS_PER_PAGE: 20,
+  USER_STORY: 'User Story',
+  CHANGE_REQUEST: 'Change Request',
 
   // License constants
   TRIAL: 'Trial',

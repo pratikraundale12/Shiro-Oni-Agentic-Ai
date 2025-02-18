@@ -210,8 +210,10 @@ export const NamespacesActions = {
     `${prefix}setAlreadyFetchedLsIdentifierForUpgrade`
   ),
   setLocalServiceInUpgrade: createAction(`${prefix}setLocalServiceInUpgrade`),
+  setUserStory: createAction(`${prefix}setUserStory`),
+  setChangeRequest: createAction(`${prefix}setChangeRequest`),
 };
-//
+
 /* ------------- INITIAL STATE ------------- */
 export const NAMESPACES_INITIAL_STATE = {
   selectedCluster: null,
@@ -315,6 +317,8 @@ export const NAMESPACES_INITIAL_STATE = {
   addPropertyCSResponse: {},
   alreadyFetchedLsIdentifierForUpgrade: [],
   localServiceInUpgrade: [],
+  userStory: '',
+  changeRequest: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -424,8 +428,9 @@ export const NamespacesSelectors = {
   getAlreadyFetchedLsIdentifierForUpgrade: state =>
     state.namespaces.alreadyFetchedLsIdentifierForUpgrade,
   getLocalServiceInUpgrade: state => state.namespaces.localServiceInUpgrade,
+  getUserStory: state => state.namespaces.userStory,
+  getChangeRequest: state => state.namespaces.changeRequest,
 };
-//
 /* ------------- REDUCERS ------------------- */
 const setSelectedCluster = (state, { payload }) => {
   return {
@@ -992,6 +997,18 @@ const setLocalServiceInUpgrade = (state, { payload }) => {
     localServiceInUpgrade: payload,
   };
 };
+const setUserStory = (state, { payload }) => {
+  return {
+    ...state,
+    userStory: payload,
+  };
+};
+const setChangeRequest = (state, { payload }) => {
+  return {
+    ...state,
+    changeRequest: payload,
+  };
+};
 
 //
 /* ------------- Hookup Reducers To Types ------------- */
@@ -1219,9 +1236,16 @@ export const namespacesReducer = createReducer(
         setAlreadyFetchedLsIdentifierForUpgrade
       )
       .addCase(
+        NamespacesActions.setUserStory,
+        setUserStory
+      )
+      .addCase(
+        NamespacesActions.setChangeRequest,
+        setChangeRequest
+      )
+      .addCase(
         NamespacesActions.setLocalServiceInUpgrade,
         setLocalServiceInUpgrade
       );
   }
 );
-//
