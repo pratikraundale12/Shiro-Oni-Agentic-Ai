@@ -26,6 +26,7 @@ export const SchedularActions = {
   setSearchText: createAction(`${prefix}setSearchText`),
   setSelectedClusterState: createAction(`${prefix}setSelectedClusterState`),
   setSelectedStatusState: createAction(`${prefix}setSelectedStatusState`),
+  setIsUserStoryModalOpen: createAction(`${prefix}setIsUserStoryModalOpen`),
 };
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
@@ -45,6 +46,7 @@ export const SCHEDULAR_INITIAL_STATE = {
   searchText: null,
   selectedClusterState: null,
   selectedStatusState: null,
+  isUserStoryModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -65,6 +67,7 @@ export const SchedularSelectors = {
   getSearchText: state => state.schedular.searchText,
   getSelectedClusterState: state => state.schedular.selectedClusterState,
   getSelectedStatusState: state => state.schedular.selectedStatusState,
+  getIsUserStoryModalOpen: state => state.schedular.isUserStoryModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -165,6 +168,12 @@ const setSelectedStatusState = (state, { payload }) => {
     selectedStatusState: payload,
   };
 };
+const setIsUserStoryModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isUserStoryModalOpen: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const schedularReducer = createReducer(
@@ -192,6 +201,10 @@ export const schedularReducer = createReducer(
         SchedularActions.setSelectedClusterState,
         setSelectedClusterState
       )
-      .addCase(SchedularActions.setSelectedStatusState, setSelectedStatusState);
+      .addCase(SchedularActions.setSelectedStatusState, setSelectedStatusState)
+      .addCase(
+        SchedularActions.setIsUserStoryModalOpen,
+        setIsUserStoryModalOpen
+      );
   }
 );

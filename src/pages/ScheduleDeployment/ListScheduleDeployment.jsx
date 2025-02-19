@@ -11,6 +11,7 @@ import {
   CrossWithCircleIcon,
   DeleteDustbinIcon,
   DiffIcon,
+  OpenEyeIcon,
   // HoldIcon,
   PencilIcon,
   RejectIcon,
@@ -41,6 +42,7 @@ import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
+import { UserStoryModal } from './UserStoryModal';
 
 const ActionTd = styled.div`
   display: flex;
@@ -180,7 +182,6 @@ export const ListScheduleDeployment = () => {
             handleEditClick(item);
             event.currentTarget.blur();
           }}
-          // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-edit-schedule`}`}
           className="pencil-icon-schedule-list"
         >
@@ -251,10 +252,32 @@ export const ListScheduleDeployment = () => {
     dispatch(SchedularActions.setIsDiffModalOpen(true));
     dispatch(SchedularActions.fetchDiffScheduleData(item?.id));
   };
+  const handleUserStoryModal = item => {
+    dispatch(SchedularActions.setSelectedSchedule(item));
+    dispatch(SchedularActions.setIsUserStoryModalOpen(true));
+  };
   const getActionsMenu = item => {
     return (
       <ActionTd>
-        {' '}
+        <IconButton
+          onClick={event => {
+            handleUserStoryModal(item);
+            event.currentTarget.blur();
+          }}
+          data-tooltip-id={`tooltip-group-user-story`}
+        >
+          <OpenEyeIcon width={14} height={14} />
+        </IconButton>{' '}
+        <ReactTooltip
+          id={`tooltip-group-user-story`}
+          place="left"
+          content={'User Story'}
+          style={{
+            width: '125px',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+          }}
+        />
         <IconButton
           onClick={event => {
             getDefSchedule(item);
@@ -690,6 +713,7 @@ export const ListScheduleDeployment = () => {
       <ScheduleDeploymentModal />
       <RejectScheduleModal />
       <TokenScheduleDeploymentModal />
+      <UserStoryModal />
       <Grid
         module="scheduler"
         title="Deployment Schedule List"

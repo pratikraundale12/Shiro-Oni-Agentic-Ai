@@ -1038,7 +1038,7 @@ export const Add = () => {
               {approverEnable && (
                 <CheckboxField
                   name="check"
-                  label="Change request for deployment schedule"
+                  label="Change request for deployment schedule?"
                   checked={changeRequestEnable}
                   onChange={e =>
                     setChangeRequestApproverEnable(e.target.checked)
