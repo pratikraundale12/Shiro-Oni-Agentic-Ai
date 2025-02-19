@@ -1278,6 +1278,7 @@ export const Add = () => {
         edit={!!clusterId}
         notificationEnable={notificationEnable}
         approverEnable={approverEnable}
+        changeRequestEnable={changeRequestEnable}
         tags={tags}
       />
       {successModal && (

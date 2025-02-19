@@ -331,6 +331,8 @@ function DeployPage() {
       dispatch(NamespacesActions.setVersionListReduxData([]));
       dispatch(NamespacesActions.setAlreadyFetchedLsIdentifierForUpgrade([]));
       dispatch(NamespacesActions.setLocalServiceInUpgrade([]));
+      dispatch(NamespacesActions.setUserStory(null));
+      dispatch(NamespacesActions.setChangeRequest(null));
     }
   };
 
@@ -349,6 +351,8 @@ function DeployPage() {
       dispatch(NamespacesActions.setVersionListReduxData([]));
       dispatch(NamespacesActions.setAlreadyFetchedLsIdentifierForUpgrade([]));
       dispatch(NamespacesActions.setLocalServiceInUpgrade([]));
+      dispatch(NamespacesActions.setUserStory(null));
+      dispatch(NamespacesActions.setChangeRequest(null));
     }
   };
 
