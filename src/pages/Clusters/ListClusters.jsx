@@ -122,16 +122,18 @@ export const ListClusters = () => {
   const [deleteHardId, setDeleteHardId] = useState(null);
   const menuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortingState, setSortingState] = useState('');
+  const [sortingState, setSortingState] = useState('name');
   const hardDeleteModalOpen = useSelector(
     ClustersSelectors.getIsclusterHardDeleteModalOpen
   );
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
-        return `-${column}`;
+        return `-${column}`; // Toggle to descending
+      } else if (prevState === `-${column}`) {
+        return column; // Toggle back to ascending
       }
-      return column;
+      return column; // Default to ascending
     });
   };
 
@@ -147,7 +149,7 @@ export const ListClusters = () => {
       label: (
         <>
           <button
-            onClick={() => toggleSorting('-name')}
+            onClick={() => toggleSorting('name')}
             style={{ background: 'none' }}
           >
             {KDFM.CLUSTER_NAME}{' '}
