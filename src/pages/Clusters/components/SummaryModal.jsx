@@ -114,6 +114,7 @@ export const SummaryModal = ({
   notificationEnable,
   approverEnable,
   tags,
+  changeRequestEnable,
 }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -142,6 +143,7 @@ export const SummaryModal = ({
       tag: tags,
       notification_enable: notificationEnable,
       approver_enable: approverEnable,
+      change_request_enable: changeRequestEnable,
       ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
       ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
     };
@@ -181,6 +183,7 @@ export const SummaryModal = ({
       tag: tags,
       notification_enable: notificationEnable,
       approver_enable: approverEnable,
+      change_request_enable: changeRequestEnable,
     };
     const id = clusterId;
     const response = await updateCluster(id, payload);
@@ -362,4 +365,5 @@ SummaryModal.propTypes = {
   notificationEnable: PropTypes.bool,
   approverEnable: PropTypes.bool,
   tags: PropTypes.string,
+  changeRequestEnable: PropTypes.bool,
 };
