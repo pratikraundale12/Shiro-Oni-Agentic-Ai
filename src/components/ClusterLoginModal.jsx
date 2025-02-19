@@ -13,7 +13,6 @@ import { InputField, Modal, PasswordField, SelectField } from '../shared';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
-  ClustersActions,
   ClustersSelectors,
   GridActions,
   NamespacesActions,
@@ -157,12 +156,6 @@ export const ClusterLoginModal = () => {
 
     return () => reset(DEFAULT_VALUES);
   }, [clusterLogin, setValue, reset]);
-
-  useEffect(() => {
-    if (clusterLogin) {
-      dispatch(ClustersActions.fetchClusters({ params: { page: 1 } }));
-    }
-  }, [dispatch, clusterLogin]);
 
   const onSwitchCluster = () => {
     if (window.location.pathname.includes('/process-group')) {
