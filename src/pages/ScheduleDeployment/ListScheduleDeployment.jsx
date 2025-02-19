@@ -348,7 +348,6 @@ export const ListScheduleDeployment = () => {
     return (
       <ActionTd>
         <div className="position-relative">
-          {console.log(item)}
           <IconButton onClick={event => handleMenuClick(event, item)}>
             <ThreedotsIcon />
           </IconButton>
