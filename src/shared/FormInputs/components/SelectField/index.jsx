@@ -357,6 +357,9 @@ const SelectField = ({
               }
               placeholder={placeholder}
               theme={theme.reactSelecttheme}
+              filterOption={(option, inputValue) =>
+                option.label.toLowerCase().includes(inputValue.toLowerCase())
+              }
               isDisabled={disabled}
               styles={customStyles}
               options={sortedOptions}

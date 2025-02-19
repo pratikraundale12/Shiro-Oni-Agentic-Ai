@@ -471,9 +471,12 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                   </>
                 )}
                 <IconCusterButton
-                  onClick={() =>
-                    dispatch(AuthenticationActions.setClusterLogin(true))
-                  }
+                  onClick={() => {
+                    dispatch(AuthenticationActions.setClusterLogin(true));
+                    dispatch(
+                      ClustersActions.fetchClusters({ params: { page: 1 } })
+                    );
+                  }}
                   title="Cluster"
                 >
                   <ClusterIcon />
