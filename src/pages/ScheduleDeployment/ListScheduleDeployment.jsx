@@ -1,7 +1,7 @@
 /* eslint-disable  */
 import { cluster } from 'd3';
 import { isEmpty } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -12,11 +12,13 @@ import {
   DeleteDustbinIcon,
   DiffIcon,
   OpenEyeIcon,
+  OpenLinkIcon,
   // HoldIcon,
   PencilIcon,
   RejectIcon,
   SortDownIcon,
   SortUpIcon,
+  ThreedotsIcon,
   TickIconWithCircle,
 } from '../../assets';
 import { Grid, IconButton, TextRender } from '../../components';
@@ -68,6 +70,73 @@ const TextColor = styled.div`
     font-size: 14px !important;
   }
 `;
+const Item = styled.div`
+  width: 8rem;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 14px 12px;
+  font-family: ${props => props.theme.fontNato};
+  font-size: ${props => props.theme.size.md};
+  color: ${props => props.theme.colors.darker};
+  // border: 1px solid ${props => props.theme.colors.border};
+
+  &:hover {
+    background-color: ${props => props.theme.colors.lightGrey};
+  }
+  > span {
+    margin-top: 2px;
+    margin-left: 10px;
+  }
+  & > svg {
+    flex-shrink: 0;
+  }
+`;
+const List = styled.div`
+  width: 175px;
+  position: absolute;
+  top: 25%;
+  right: 100%;
+  z-index: 1000;
+  background: ${props => props.theme.colors.white};
+  box-shadow: 0px 0px 5px 0px ${props => props.theme.colors.shadow};
+  border-radius: 10px;
+  & > div {
+    width: 100%;
+  }
+
+  & > div:first-child {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
+  & > div:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    // width: 100%;
+  }
+`;
+const StyledLink = styled.a`
+  min-width: 32px;
+  min-height: 32px;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  background-color: ${({ theme }) => theme.colors.white};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  opacity: ${({ disabled }) => (disabled ? 0.4 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
+`;
+const StyledLinkWrapper = styled.a`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+`;
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,6 +158,7 @@ export const ListScheduleDeployment = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const params = new URLSearchParams(location.search);
   const [sortingState, setSortingState] = useState('');
+  const menuRef = useRef(null);
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -256,18 +326,69 @@ export const ListScheduleDeployment = () => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setIsUserStoryModalOpen(true));
   };
+  const [menuState, setMenuState] = useState({
+    isVisible: false,
+    x: 0,
+    y: 0,
+    row: {},
+  });
+  const handleMenuClick = (event, item) => {
+    event.stopPropagation();
+    setMenuState({
+      isVisible: true,
+      x: event.clientX,
+      y: event.clientY,
+      row: item,
+    });
+  };
+  /* 
+   
+  */
   const getActionsMenu = item => {
     return (
       <ActionTd>
-        <IconButton
-          onClick={event => {
-            handleUserStoryModal(item);
-            event.currentTarget.blur();
-          }}
-          data-tooltip-id={`tooltip-group-user-story`}
-        >
-          <OpenEyeIcon width={14} height={14} />
-        </IconButton>{' '}
+        <div className="position-relative">
+          <IconButton onClick={event => handleMenuClick(event, item)}>
+            <ThreedotsIcon />
+          </IconButton>
+          {menuState?.isVisible && item?.id === menuState?.row?.id && (
+            <List ref={menuRef}>
+              <Item
+                onClick={event => {
+                  handleUserStoryModal(item);
+                  event.currentTarget.blur();
+                  handleCloseMenu();
+                }}
+              >
+                <IconButton>
+                  <OpenEyeIcon width={16} height={16} />
+                </IconButton>{' '}
+                &nbsp; Change Request
+              </Item>
+              <Item
+                onClick={event => {
+                  getDefSchedule(item);
+                  event.currentTarget.blur();
+                  handleCloseMenu();
+                }}
+                data-tooltip-id={`${`tooltip-group-diff-schedule`}`}
+              >
+                <IconButton>
+                  <DiffIcon />
+                </IconButton>{' '}
+                &nbsp; View Changes
+              </Item>
+              <Item>
+                <StyledLinkWrapper href={item?.user_story_url} target="_blank">
+                  <StyledLink href={item?.user_story_url} target="_blank">
+                    <OpenLinkIcon />
+                  </StyledLink>
+                  &nbsp; User Story
+                </StyledLinkWrapper>
+              </Item>
+            </List>
+          )}
+        </div>
         <ReactTooltip
           id={`tooltip-group-user-story`}
           place="left"
@@ -278,15 +399,6 @@ export const ListScheduleDeployment = () => {
             wordWrap: 'break-word',
           }}
         />
-        <IconButton
-          onClick={event => {
-            getDefSchedule(item);
-            event.currentTarget.blur();
-          }}
-          data-tooltip-id={`${`tooltip-group-diff-schedule`}`}
-        >
-          <DiffIcon />
-        </IconButton>
         <ReactTooltip
           id={`tooltip-group-diff-schedule`}
           place="left"
@@ -681,6 +793,21 @@ export const ListScheduleDeployment = () => {
     currentPage,
     settingData?.refresh,
   ]);
+  const handleCloseMenu = () => {
+    setMenuState({ isVisible: false, x: 0, y: 0, row: null });
+  };
+  const handleClickOutside = event => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      handleCloseMenu();
+    }
+  };
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <ModalWithIcon

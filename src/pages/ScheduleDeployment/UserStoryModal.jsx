@@ -9,6 +9,7 @@ import {
   SchedularSelectors,
 } from '../../store/schedular/redux';
 import { useForm } from 'react-hook-form';
+import { Table } from '../../components';
 
 const PrimaryText = styled.h5`
   color: ${props => props.theme.colors.darker};
@@ -29,6 +30,20 @@ export const UserStoryModal = () => {
   };
   const { handleSubmit } = useForm();
 
+  const COLUMNS = [
+    {
+      label: 'Property',
+      renderCell: item => item?.title,
+      width: '50%',
+      resize: true,
+    },
+    {
+      label: 'Value',
+      renderCell: item => <>{item?.value || 'N/A'}</>,
+      width: '50%',
+      resize: true,
+    },
+  ];
   return (
     <Modal
       isOpen={isModalOpen}
@@ -41,19 +56,17 @@ export const UserStoryModal = () => {
     >
       {(selectedSchedule?.change_request ||
         selectedSchedule?.user_story_url) && (
-        <>
-          {selectedSchedule?.change_request && (
-            <PrimaryText>
-              {' '}
-              Change Request :{selectedSchedule?.change_request}
-            </PrimaryText>
-          )}
-          {selectedSchedule?.user_story_url && (
-            <PrimaryText>
-              User Story : {selectedSchedule?.user_story_url}
-            </PrimaryText>
-          )}
-        </>
+        <Table
+          data={[
+            {
+              title: 'Change Request',
+              value: selectedSchedule?.change_request,
+            },
+            { title: 'User Story', value: selectedSchedule?.user_story_url },
+          ]}
+          columns={COLUMNS}
+          className="variables-table"
+        />
       )}
       {!(
         selectedSchedule?.change_request || selectedSchedule?.user_story_url
