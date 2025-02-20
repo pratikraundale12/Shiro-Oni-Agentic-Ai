@@ -37,7 +37,9 @@ export function* fetchGrid(
     scheduler: api.fetchSchedular,
   };
   let payload;
-  if (module === 'clusters') payload = localStorage.getItem(CLUSTERS_TOKEN);
+  if (module === 'clusters') {
+    payload = localStorage.getItem(CLUSTERS_TOKEN);
+  }
   let queryParams;
   if (module === 'namespaces') {
     queryParams = {
@@ -65,12 +67,16 @@ export function* fetchGrid(
     const selectedClusterToken = clustersToken.find(
       item => item.id === selectedDestCluster?.value
     );
-    api.headers['x-cluster-id'] = scheduleFromList
-      ? selectedDestCluster?.value
-      : selectedClusterToken?.id;
-    api.headers['x-cluster-token'] = scheduleFromList
-      ? undefined
-      : selectedClusterToken?.token;
+    const provideXclusterId = () => {
+      return scheduleFromList
+        ? selectedDestCluster?.value
+        : selectedClusterToken?.id;
+    };
+    const provideXclusterToken = () => {
+      return scheduleFromList ? undefined : selectedClusterToken?.token;
+    };
+    api.headers['x-cluster-id'] = provideXclusterId();
+    api.headers['x-cluster-token'] = provideXclusterToken();
   }
   if (module === 'namespaces' && isEmpty(selectedCluster)) return;
   if (module === 'nodes') {
