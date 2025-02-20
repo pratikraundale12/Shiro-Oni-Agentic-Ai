@@ -100,6 +100,7 @@ const InputField = ({
   placeholder,
   onKeyDown,
   defaultValue = null,
+  isFromUserStory = false,
   ...props
 }) => {
   const error = hasError(errors, name);
@@ -144,7 +145,11 @@ const InputField = ({
         />
         {rightIcon && <span className="icon">{rightIcon}</span>}
       </div>
-      <FieldErrorMessage errors={errors} name={name} />
+      <FieldErrorMessage
+        errors={errors}
+        name={name}
+        isFromUserStory={isFromUserStory}
+      />
     </Container>
   );
 };
@@ -165,6 +170,7 @@ InputField.propTypes = {
   onKeyDown: PropTypes.func,
   placeholder: PropTypes.string,
   defaultValue: PropTypes.string,
+  isFromUserStory: PropTypes.bool,
 };
 
 export default InputField;

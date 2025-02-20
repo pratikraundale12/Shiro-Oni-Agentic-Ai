@@ -668,6 +668,7 @@ const FlowDetailsPage = () => {
                             icon={<QRIcons />}
                             register={register}
                             errors={errors}
+                            isFromUserStory={true}
                           />
                         </ColLgSix>
                       )}
