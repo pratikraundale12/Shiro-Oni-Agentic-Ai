@@ -100,7 +100,10 @@ export function* fetchGrid(
     apiParams: [{ params, queryParams, payload }],
   });
   if (module === 'clusters') {
-    let clusterData = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
+    const provideClusterData = () => {
+      return JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
+    };
+    let clusterData = provideClusterData();
     if (Array.isArray(response.data.data)) {
       const processedClusters = response.data.data;
       const disconnectedData = processedClusters.filter(
