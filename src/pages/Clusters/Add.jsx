@@ -376,7 +376,7 @@ export const Add = () => {
         function (value) {
           if (!value) return true;
           return !filteredGridData?.some(
-            reg => reg.name.trim().toLowerCase() === value.trim().toLowerCase()
+            reg => reg?.name.trim().toLowerCase() === value.trim().toLowerCase()
           );
         }
       ),
@@ -388,8 +388,8 @@ export const Add = () => {
         if (!value) return true;
         return !filteredGridData?.some(
           reg =>
-            reg.nifi_url.trim() === value.trim() ||
-            reg.nifi_url.trim() + '/nifi' === value.trim()
+            reg?.nifi_url.trim() === value.trim() ||
+            reg?.nifi_url.trim() + '/nifi' === value.trim()
         );
       }),
     metrics_url: yup.string().url('Enter a valid Metrics URL'),
@@ -407,7 +407,8 @@ export const Add = () => {
         function (value) {
           if (!value) return true;
           return !registries?.some(
-            reg => reg.label.trim().toLowerCase() === value.trim().toLowerCase()
+            reg =>
+              reg?.label.trim().toLowerCase() === value.trim().toLowerCase()
           );
         }
       ),
@@ -421,7 +422,7 @@ export const Add = () => {
         function (value) {
           if (!value) return true;
           return !registries?.some(
-            reg => reg.registry_url.trim() === value.trim()
+            reg => reg?.registry_url.trim() === value.trim()
           );
         }
       ),
