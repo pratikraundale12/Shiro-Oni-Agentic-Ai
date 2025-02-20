@@ -148,11 +148,16 @@ export function* fetchGrid(
   const handleError = response => {
     toast.error(response?.message || response?.data?.message);
   };
-  if (response.ok) {
-    yield put(GridActions.fetchGridSuccess({ module, data: response.data }));
-    return;
+
+  function* handleResponse(response, module) {
+    if (response.ok) {
+      yield put(GridActions.fetchGridSuccess({ module, data: response.data }));
+      return;
+    }
+    handleError(response);
   }
-  handleError(response);
+
+  yield* handleResponse(response, module);
 }
 
 export function* gridSagas(api) {
