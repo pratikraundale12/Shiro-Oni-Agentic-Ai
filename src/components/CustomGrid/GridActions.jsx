@@ -264,6 +264,7 @@ export const GridActions = ({
       );
       setState(prev => ({ ...prev, search: null }));
       inputRef.current.value = '';
+      return;
     }
     if (module === 'scheduler') {
       dispatch(
@@ -287,6 +288,7 @@ export const GridActions = ({
           },
         })
       );
+      return;
     } else {
       dispatch(GridSagsActions.fetchGrid({ module, clusterId, params: {} }));
     }
