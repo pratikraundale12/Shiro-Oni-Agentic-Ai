@@ -145,11 +145,14 @@ export function* fetchGrid(
       localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(tempData));
     }
   }
+  const handleError = response => {
+    toast.error(response?.message || response?.data?.message);
+  };
   if (response.ok) {
     yield put(GridActions.fetchGridSuccess({ module, data: response.data }));
-  } else if (!response?.ok) {
-    toast.error(response?.message || response?.data?.message);
+    return;
   }
+  handleError(response);
 }
 
 export function* gridSagas(api) {
