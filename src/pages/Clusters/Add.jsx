@@ -376,7 +376,7 @@ export const Add = () => {
         function (value) {
           if (!value) return true;
           return !filteredGridData?.some(
-            reg => reg.name.toLowerCase() === value.toLowerCase()
+            reg => reg?.name.trim().toLowerCase() === value.trim().toLowerCase()
           );
         }
       ),
@@ -387,7 +387,9 @@ export const Add = () => {
       .test('unique-registry-url', ' Cluster already exists', function (value) {
         if (!value) return true;
         return !filteredGridData?.some(
-          reg => reg.nifi_url === value || reg.nifi_url + '/nifi' === value
+          reg =>
+            reg?.nifi_url.trim() === value.trim() ||
+            reg?.nifi_url.trim() + '/nifi' === value.trim()
         );
       }),
     metrics_url: yup.string().url('Enter a valid Metrics URL'),
@@ -405,7 +407,8 @@ export const Add = () => {
         function (value) {
           if (!value) return true;
           return !registries?.some(
-            reg => reg.label.toLowerCase() === value.toLowerCase()
+            reg =>
+              reg?.label.trim().toLowerCase() === value.trim().toLowerCase()
           );
         }
       ),
@@ -418,7 +421,9 @@ export const Add = () => {
         'Registry already exists',
         function (value) {
           if (!value) return true;
-          return !registries?.some(reg => reg.registry_url === value);
+          return !registries?.some(
+            reg => reg?.registry_url.trim() === value.trim()
+          );
         }
       ),
   });

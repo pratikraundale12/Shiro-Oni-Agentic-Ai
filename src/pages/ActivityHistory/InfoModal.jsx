@@ -1,13 +1,9 @@
+/*eslint-disable*/
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Modal } from '../../shared';
-import {
-  SchedularActions,
-  SchedularSelectors,
-} from '../../store/schedular/redux';
 import { useForm } from 'react-hook-form';
 import { IconButton, Table } from '../../components';
 import { OpenLinkIcon } from '../../assets';
@@ -15,16 +11,6 @@ import {
   ActivityHistoryActions,
   ActivityHistorySelectors,
 } from '../../store/activityHistory';
-
-const PrimaryText = styled.h5`
-  color: ${props => props.theme.colors.darker};
-  font-family: ${props => props.theme.fontNato};
-  font-size: 20px;
-  font-weight: 500;
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 14px;
-`;
 
 export const InfoModalActivityHistory = () => {
   const dispatch = useDispatch();
@@ -126,7 +112,6 @@ export const InfoModalActivityHistory = () => {
 
 InfoModalActivityHistory.propTypes = {
   icon: PropTypes.elementType.isRequired,
-  primaryText: PropTypes.string,
   secondaryText: PropTypes.string,
   setValue: PropTypes.func.isRequired,
   control: PropTypes.object.isRequired,
