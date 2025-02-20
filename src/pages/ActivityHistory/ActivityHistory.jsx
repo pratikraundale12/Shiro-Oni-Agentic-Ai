@@ -1,12 +1,6 @@
 /*eslint-disable*/
 import React, { useState } from 'react';
-import {
-  CircleExclamationMarkIcon,
-  OpenEyeIcon,
-  SortDownIcon,
-  SortUpIcon,
-  ThreedotsIcon,
-} from '../../assets';
+import { OpenEyeIcon, SortDownIcon, SortUpIcon } from '../../assets';
 import { Grid, IconButton, StatusRender, TextRender } from '../../components';
 import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
 import styled from 'styled-components';
@@ -69,7 +63,7 @@ export const ActvityHistory = () => {
             }}
             data-tooltip-id={`${`tooltip-group-info-icon`}`}
           >
-            <CircleExclamationMarkIcon color={theme.colors.border} />
+            <OpenEyeIcon width={16} height={16} />
           </IconButton>
           <ReactTooltip
             id={`tooltip-group-info-icon`}
