@@ -502,14 +502,17 @@ export const Grid = ({
       </div>
 
       <TableContainer module={module}>
-        <CompactTable
-          data={TABLE_DATA}
-          columns={columns}
-          theme={tableTheme}
-          layout={{ custom: true }}
-          // sort={sort}
-        />
-        {isEmpty(TABLE_DATA?.nodes) && getLoader()}
+        {loading || isEmpty(TABLE_DATA?.nodes) ? (
+          getLoader()
+        ) : (
+          <CompactTable
+            data={TABLE_DATA}
+            columns={columns}
+            theme={tableTheme}
+            layout={{ custom: true }}
+            // sort={sort}
+          />
+        )}
       </TableContainer>
       {gridCount >= 10 && (
         <Pagination

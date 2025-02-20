@@ -113,9 +113,10 @@ export const Table = ({
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = DATA.nodes.slice(indexOfFirstItem, indexOfLastItem);
+  const [pageLoading, setPageLoading] = useState(false);
 
   const getLoader = () => {
-    if (loading) {
+    if (loading || pageLoading) {
       return (
         <LoaderOverlay>
           <Loader size="lg" />
@@ -156,13 +157,18 @@ export const Table = ({
         csList={csList}
         deployTable={deployTable}
       >
-        <CompactTable
-          data={{ nodes: showPagination ? currentItems : DATA.nodes }}
-          columns={columns}
-          theme={tableTheme}
-          layout={{ custom: true }}
-        />
+        {' '}
         {getLoader()}
+        {pageLoading ? (
+          getLoader()
+        ) : (
+          <CompactTable
+            data={{ nodes: showPagination ? currentItems : DATA.nodes }}
+            columns={columns}
+            theme={tableTheme}
+            layout={{ custom: true }}
+          />
+        )}
       </TableContainer>
       {/* Pagination */}
       {DATA.nodes.length && DATA.nodes.length >= 10 && showPagination ? (
@@ -173,6 +179,7 @@ export const Table = ({
             setCurrentPage={setCurrentPage}
             itemsPerPage={itemsPerPage}
             onItemsPerPageChange={setitemsPerPage}
+            setPageLoading={setPageLoading}
           />
         </PaginationContainer>
       ) : (

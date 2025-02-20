@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
 import { theme } from '../../styles';
@@ -82,6 +82,7 @@ const Pagination = ({
   setCurrentPage,
   itemsPerPage,
   onItemsPerPageChange,
+  setPageLoading,
 }) => {
   const totalPage = Math.ceil(count / itemsPerPage);
   const getPageRange = () => {
@@ -131,22 +132,29 @@ const Pagination = ({
   const pageNumbers = getPageNumbers();
 
   const handlePrev = () => {
+    setPageLoading && setPageLoading(true);
     if (page > 1) {
       setCurrentPage(page - 1);
     }
   };
 
   const handleNext = () => {
+    setPageLoading && setPageLoading(true);
     if (page < totalPage) {
       setCurrentPage(page + 1);
     }
   };
 
   const handlePageChange = number => {
+    setPageLoading && setPageLoading(true);
     if (number !== '...') {
       setCurrentPage(number);
     }
   };
+
+  useEffect(() => {
+    setPageLoading && setPageLoading(false);
+  }, [page]);
 
   return (
     <Container>
@@ -193,6 +201,7 @@ Pagination.propTypes = {
   count: PropTypes.number.isRequired,
   itemsPerPage: PropTypes.number,
   onItemsPerPageChange: PropTypes.func.isRequired,
+  setPageLoading: PropTypes.func,
 };
 
 export default Pagination;
