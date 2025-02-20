@@ -78,7 +78,9 @@ export function* fetchGrid(
     api.headers['x-cluster-id'] = provideXclusterId();
     api.headers['x-cluster-token'] = provideXclusterToken();
   }
-  if (module === 'namespaces' && isEmpty(selectedCluster)) return;
+  const shouldReturn = () =>
+    module === 'namespaces' && isEmpty(selectedCluster);
+  if (shouldReturn()) return;
   if (module === 'nodes') {
     queryParams = {
       clusterId,
