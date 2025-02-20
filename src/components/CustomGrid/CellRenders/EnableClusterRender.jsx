@@ -8,6 +8,7 @@ import { LoginIcon, LogoutIcon } from '../../../assets';
 import { CLUSTERS_TOKEN, CLUSTER_STATUS } from '../../../constants';
 import {
   AuthenticationActions,
+  ClustersActions,
   DashboardActions,
   GridActions,
   NamespacesActions,
@@ -43,6 +44,7 @@ export const EnableClusterRender = ({ item }) => {
           value: item.id,
         })
       );
+      dispatch(ClustersActions.fetchClusters());
     } else if (item?.status === CLUSTER_STATUS.CONNECTED) {
       dispatch(GridActions.fetchGrid({ module: 'clusters' }));
       dispatch(
