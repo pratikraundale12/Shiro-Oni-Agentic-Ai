@@ -259,3 +259,5 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'controller-service', label: 'Controller Services' },
   { path: 'setting', label: 'Settings' },
 ];
+
+export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25];

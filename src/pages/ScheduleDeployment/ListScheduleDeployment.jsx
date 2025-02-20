@@ -725,7 +725,6 @@ export const ListScheduleDeployment = () => {
         currentPage={currentPage}
         sortingState={sortingState}
         setSortingState={setSortingState}
-        itemsPerPage={KDFM.ITEMS_PER_PAGE}
       />
       <DiffModalScheduleList />
     </>
