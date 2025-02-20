@@ -457,24 +457,13 @@ const FlowDetailsPage = () => {
     }
   }, [versionListData?.versionList, isUpgrade]);
   const schemaForStoryAndChangeRequest = Yup.object().shape({
-    user_story: Yup.string()
-      .matches(
-        /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/,
-        'Must be a valid URL (http, https, or ftp)'
-      )
-      .required('User story is required'),
     change_request: Yup.string()
       .trim()
-      .matches(/^\d{9,15}$/, 'Change request number must be 9 to 15 digits')
-      .required('Change request is required'),
-  });
-  const schemaForStoryOnly = Yup.object().shape({
-    user_story: Yup.string()
       .matches(
-        /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/,
-        'Must be a valid URL (http, https, or ftp)'
+        /^[a-zA-Z0-9]{10}$/,
+        'Change request number must be exactly 10 alphanumeric characters'
       )
-      .required('User story is required'),
+      .required('Change request is required'),
   });
   const emptySchema = Yup.object().shape({});
   const getSchemaForValidation = () => {
@@ -485,7 +474,7 @@ const FlowDetailsPage = () => {
       return registryDetailsData?.change_request_enable ||
         versionListData?.change_request_enable
         ? schemaForStoryAndChangeRequest
-        : schemaForStoryOnly;
+        : emptySchema;
     }
     return emptySchema;
   };
@@ -662,7 +651,7 @@ const FlowDetailsPage = () => {
                           name="user_story"
                           type="text"
                           label={KDFM.USER_STORY}
-                          value={userStoryValue}
+                          value={userStoryValue ?? ''}
                           icon={<QRIcons />}
                           register={register}
                           errors={errors}
@@ -675,7 +664,7 @@ const FlowDetailsPage = () => {
                             name="change_request"
                             type="text"
                             label={KDFM.CHANGE_REQUEST}
-                            value={changeRequestValue}
+                            value={changeRequestValue ?? ''}
                             icon={<QRIcons />}
                             register={register}
                             errors={errors}

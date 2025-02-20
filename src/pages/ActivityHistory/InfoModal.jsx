@@ -11,6 +11,10 @@ import {
 import { useForm } from 'react-hook-form';
 import { IconButton, Table } from '../../components';
 import { OpenLinkIcon } from '../../assets';
+import {
+  ActivityHistoryActions,
+  ActivityHistorySelectors,
+} from '../../store/activityHistory';
 
 const PrimaryText = styled.h5`
   color: ${props => props.theme.colors.darker};
@@ -22,12 +26,12 @@ const PrimaryText = styled.h5`
   margin-bottom: 14px;
 `;
 
-export const UserStoryModal = () => {
+export const InfoModalActivityHistory = () => {
   const dispatch = useDispatch();
-  const isModalOpen = useSelector(SchedularSelectors.getIsUserStoryModalOpen);
-  const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
+  const isModalOpen = useSelector(ActivityHistorySelectors.getIsInfoModalOpen);
+  const selectedItem = useSelector(ActivityHistorySelectors.getSelectedItem);
   const onRequestClose = () => {
-    dispatch(SchedularActions.setIsUserStoryModalOpen(false));
+    dispatch(ActivityHistoryActions.setIsInfoModalOpen(false));
   };
   const { handleSubmit } = useForm();
   const renderItems = item => {
@@ -71,8 +75,8 @@ export const UserStoryModal = () => {
   ];
 
   const handleRegistryClick = () => {
-    if (!selectedSchedule?.user_story_url) return;
-    window.open(selectedSchedule?.user_story_url, '_blank');
+    if (!selectedItem?.changes_on_action?.user_story_url) return;
+    window.open(selectedItem?.changes_on_action?.user_story_url, '_blank');
   };
 
   return (
@@ -80,38 +84,47 @@ export const UserStoryModal = () => {
       isOpen={isModalOpen}
       onRequestClose={handleSubmit(onRequestClose)}
       onSubmit={handleSubmit(onRequestClose)}
-      title={'Info'}
+      title={'Details'}
       primaryButtonText="Close"
       contentStyles={{ minWidth: '60%' }}
       footerAlign="center"
     >
-      {(selectedSchedule?.change_request ||
-        selectedSchedule?.user_story_url) && (
+      {selectedItem && (
         <Table
           data={[
             {
-              title: 'Change Request',
-              value: selectedSchedule?.change_request,
+              title: 'Message',
+              value: selectedItem?.message,
               url: false,
             },
-            {
-              title: 'User Story',
-              value: selectedSchedule?.user_story_url,
-              url: true,
-            },
+            ...(selectedItem?.changes_on_action?.change_request
+              ? [
+                  {
+                    title: 'Change Request',
+                    value: selectedItem?.changes_on_action?.change_request,
+                    url: false,
+                  },
+                ]
+              : []),
+            ...(selectedItem?.changes_on_action?.user_story_url
+              ? [
+                  {
+                    title: 'User Story',
+                    value: selectedItem?.changes_on_action?.user_story_url,
+                    url: true,
+                  },
+                ]
+              : []),
           ]}
           columns={COLUMNS}
           className="variables-table"
         />
       )}
-      {!(
-        selectedSchedule?.change_request || selectedSchedule?.user_story_url
-      ) && <PrimaryText>No Previous History Available</PrimaryText>}
     </Modal>
   );
 };
 
-UserStoryModal.propTypes = {
+InfoModalActivityHistory.propTypes = {
   icon: PropTypes.elementType.isRequired,
   primaryText: PropTypes.string,
   secondaryText: PropTypes.string,

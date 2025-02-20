@@ -11,18 +11,24 @@ export const ActivityHistoryActions = {
     `${prefix}fetchActivityHistorySuccess`
   ),
   resetActivityHistory: createAction(`${prefix}resetActivityHistory`),
+  setSelectedItem: createAction(`${prefix}setSelectedItem`),
+  setIsInfoModalOpen: createAction(`${prefix}setIsInfoModalOpen`),
 };
 
 /* ------------- Initial State ------------------ */
 export const ACTIVITY_HISTORY_INITIAL_STATE = {
   selectedEntity: null,
   selectedEvent: null,
+  selectedItem: null,
+  isInfoModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
 export const ActivityHistorySelectors = {
   getSelectedEntity: state => state.activityHistory.selectedEntity,
   getSelectedEvent: state => state.activityHistory.selectedEvent,
+  getSelectedItem: state => state.activityHistory.selectedItem,
+  getIsInfoModalOpen: state => state.activityHistory.isInfoModalOpen,
 };
 
 /* ------------- Reducers ------------------ */
@@ -45,6 +51,18 @@ const resetActivityHistory = () => {
     ...ACTIVITY_HISTORY_INITIAL_STATE,
   };
 };
+const setSelectedItem = (state, { payload }) => {
+  return {
+    ...state,
+    selectedItem: payload,
+  };
+};
+const setIsInfoModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isInfoModalOpen: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const activityHistoryReducer = createReducer(
@@ -53,6 +71,8 @@ export const activityHistoryReducer = createReducer(
     builder
       .addCase(ActivityHistoryActions.setSelectedEntity, setSelectedEntity)
       .addCase(ActivityHistoryActions.setSelectedEvent, setSelectedEvent)
+      .addCase(ActivityHistoryActions.setSelectedItem, setSelectedItem)
+      .addCase(ActivityHistoryActions.setIsInfoModalOpen, setIsInfoModalOpen)
       .addCase(
         ActivityHistoryActions.resetActivityHistory,
         resetActivityHistory

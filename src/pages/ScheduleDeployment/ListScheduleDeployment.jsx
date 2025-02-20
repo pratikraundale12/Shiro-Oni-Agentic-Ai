@@ -49,8 +49,9 @@ import { UserStoryModal } from './UserStoryModal';
 const ActionTd = styled.div`
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: end;
   gap: 6px;
+  padding-right: 10px;
 `;
 const StyledButton = styled.button`
   border: none;
@@ -347,48 +348,6 @@ export const ListScheduleDeployment = () => {
   const getActionsMenu = item => {
     return (
       <ActionTd>
-        <div className="position-relative">
-          <IconButton onClick={event => handleMenuClick(event, item)}>
-            <ThreedotsIcon />
-          </IconButton>
-          {menuState?.isVisible && item?.id === menuState?.row?.id && (
-            <List ref={menuRef}>
-              <Item
-                onClick={event => {
-                  handleUserStoryModal(item);
-                  event.currentTarget.blur();
-                  handleCloseMenu();
-                }}
-              >
-                <IconButton>
-                  <OpenEyeIcon width={16} height={16} />
-                </IconButton>{' '}
-                &nbsp; Change Request
-              </Item>
-              <Item
-                onClick={event => {
-                  getDefSchedule(item);
-                  event.currentTarget.blur();
-                  handleCloseMenu();
-                }}
-                data-tooltip-id={`${`tooltip-group-diff-schedule`}`}
-              >
-                <IconButton>
-                  <DiffIcon />
-                </IconButton>{' '}
-                &nbsp; View Changes
-              </Item>
-              <Item>
-                <StyledLinkWrapper href={item?.user_story_url} target="_blank">
-                  <StyledLink href={item?.user_story_url} target="_blank">
-                    <OpenLinkIcon />
-                  </StyledLink>
-                  &nbsp; User Story
-                </StyledLinkWrapper>
-              </Item>
-            </List>
-          )}
-        </div>
         <ReactTooltip
           id={`tooltip-group-user-story`}
           place="left"
@@ -494,6 +453,40 @@ export const ListScheduleDeployment = () => {
               {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
             </>
           )}
+        <div className="position-relative">
+          <IconButton onClick={event => handleMenuClick(event, item)}>
+            <ThreedotsIcon />
+          </IconButton>
+          {menuState?.isVisible && item?.id === menuState?.row?.id && (
+            <List ref={menuRef}>
+              <Item
+                onClick={event => {
+                  handleUserStoryModal(item);
+                  event.currentTarget.blur();
+                  handleCloseMenu();
+                }}
+              >
+                <IconButton>
+                  <OpenEyeIcon width={16} height={16} />
+                </IconButton>{' '}
+                &nbsp; Change Request
+              </Item>
+              <Item
+                onClick={event => {
+                  getDefSchedule(item);
+                  event.currentTarget.blur();
+                  handleCloseMenu();
+                }}
+                data-tooltip-id={`${`tooltip-group-diff-schedule`}`}
+              >
+                <IconButton>
+                  <DiffIcon />
+                </IconButton>{' '}
+                &nbsp; View Changes
+              </Item>
+            </List>
+          )}
+        </div>
       </ActionTd>
     );
   };

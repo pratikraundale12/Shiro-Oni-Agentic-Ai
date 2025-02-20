@@ -1,9 +1,30 @@
+/*eslint-disable*/
 import React, { useState } from 'react';
-import { SortDownIcon, SortUpIcon } from '../../assets';
-import { Grid, StatusRender, TextRender } from '../../components';
+import {
+  CircleExclamationMarkIcon,
+  OpenEyeIcon,
+  SortDownIcon,
+  SortUpIcon,
+  ThreedotsIcon,
+} from '../../assets';
+import { Grid, IconButton, StatusRender, TextRender } from '../../components';
 import { ACTIVITY_STATUS_OPTIONS, KDFM } from '../../constants';
+import styled from 'styled-components';
+import { theme } from '../../styles';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { ActivityHistoryActions } from '../../store/activityHistory';
+import { useDispatch } from 'react-redux';
+import { InfoModalActivityHistory } from './InfoModal';
+
+const ActionTd = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 6px;
+`;
 
 export const ActvityHistory = () => {
+  const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('');
   const toggleSorting = column => {
@@ -11,6 +32,13 @@ export const ActvityHistory = () => {
       prevState === column ? `-${column}` : column
     );
   };
+  const [menuState, setMenuState] = useState({
+    isVisible: false,
+    x: 0,
+    y: 0,
+    row: {},
+  });
+
   const convertDateTime = dateString => {
     if (!dateString) return 'No date provided';
 
@@ -29,6 +57,35 @@ export const ActvityHistory = () => {
   const getSortIcon = (sortingState, type) => {
     return sortingState === type ? <SortUpIcon /> : <SortDownIcon />;
   };
+  const getActionsMenu = item => {
+    return (
+      <ActionTd>
+        <div className="position-relative">
+          <IconButton
+            onClick={event => {
+              dispatch(ActivityHistoryActions.setSelectedItem(item));
+              dispatch(ActivityHistoryActions.setIsInfoModalOpen(true));
+              event.currentTarget.blur();
+            }}
+            data-tooltip-id={`${`tooltip-group-info-icon`}`}
+          >
+            <CircleExclamationMarkIcon color={theme.colors.border} />
+          </IconButton>
+          <ReactTooltip
+            id={`tooltip-group-info-icon`}
+            place="left"
+            content={'View More Details'}
+            style={{
+              width: '150px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        </div>
+      </ActionTd>
+    );
+  };
+
   const COLUMNS = [
     {
       label: (
@@ -54,7 +111,7 @@ export const ActvityHistory = () => {
           {getSortIcon(sortingState, 'entity')}
         </button>
       ),
-      width: '10%',
+      width: '12%',
       resize: true,
       renderCell: item => (
         <TextRender
@@ -76,7 +133,7 @@ export const ActvityHistory = () => {
           {getSortIcon(sortingState, 'namespace')}
         </button>
       ),
-      width: '10%',
+      width: '11%',
       resize: true,
       renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
       sort: { sortKey: 'namespace' },
@@ -90,7 +147,7 @@ export const ActvityHistory = () => {
           {KDFM.FLOW_NAME} {getSortIcon(sortingState, 'flow_name')}
         </button>
       ),
-      width: '10%',
+      width: '13%',
       resize: true,
       renderCell: item => <TextRender text={item.flow_name || KDFM.NA} />,
     },
@@ -107,14 +164,6 @@ export const ActvityHistory = () => {
       resize: true,
       renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
       sort: { sortKey: 'cluster' },
-    },
-    {
-      label: KDFM.MESSAGE,
-      renderCell: item => (
-        <TextRender text={item.message || KDFM.NA} capitalizeText={false} />
-      ),
-      width: '12%',
-      resize: true,
     },
     {
       label: KDFM.VERSION,
@@ -146,7 +195,7 @@ export const ActvityHistory = () => {
           {KDFM.TIMESTAMP} {getSortIcon(sortingState, 'timestamp')}
         </button>
       ),
-      width: '12%',
+      width: '14%',
       resize: true,
       renderCell: item => (
         <TextRender text={convertDateTime(item.timestamp) || KDFM.NA} />
@@ -171,6 +220,11 @@ export const ActvityHistory = () => {
         />
       ),
     },
+    {
+      renderCell: item => getActionsMenu(item),
+      resize: true,
+      width: '4%',
+    },
   ];
 
   const sortFns = {
@@ -187,18 +241,21 @@ export const ActvityHistory = () => {
   };
 
   return (
-    <Grid
-      module="activityHistory"
-      title={KDFM.ACTIVITY_LIST}
-      columns={COLUMNS}
-      placeholder={KDFM.ACTIVITY_HISTORY_SEARCH_PLACEHOLDER}
-      statusOptions={ACTIVITY_STATUS_OPTIONS}
-      sortFns={sortFns}
-      currentPage={currentPage}
-      setCurrentPage={setCurrentPage}
-      sortingState={sortingState}
-      setSortingState={setSortingState}
-      itemsPerPage={KDFM.ITEMS_PER_PAGE}
-    />
+    <>
+      <InfoModalActivityHistory />
+      <Grid
+        module="activityHistory"
+        title={KDFM.ACTIVITY_LIST}
+        columns={COLUMNS}
+        placeholder={KDFM.ACTIVITY_HISTORY_SEARCH_PLACEHOLDER}
+        statusOptions={ACTIVITY_STATUS_OPTIONS}
+        sortFns={sortFns}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        sortingState={sortingState}
+        setSortingState={setSortingState}
+        itemsPerPage={KDFM.ITEMS_PER_PAGE}
+      />
+    </>
   );
 };
