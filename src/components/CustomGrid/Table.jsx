@@ -70,6 +70,7 @@ export const Table = ({
   isResetNotRequired = false,
   rowsPerPage = KDFM.ITEMS_PER_PAGE,
 }) => {
+  const [itemsPerPage, setitemsPerPage] = useState(10);
   const DATA = { nodes: data || [] };
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -100,7 +101,7 @@ export const Table = ({
         }
 
         td {
-          height: 52px;
+          height: 58px;
         }
 
         tbody tr:nth-of-type(even) td {
@@ -110,8 +111,8 @@ export const Table = ({
     },
   ]);
 
-  const indexOfLastItem = currentPage * rowsPerPage;
-  const indexOfFirstItem = indexOfLastItem - rowsPerPage;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = DATA.nodes.slice(indexOfFirstItem, indexOfLastItem);
 
   const getLoader = () => {
@@ -132,6 +133,11 @@ export const Table = ({
     }
     return null;
   };
+  useEffect(() => {
+    if (showPagination && isEmpty(currentItems)) {
+      setCurrentPage(1);
+    }
+  }, [showPagination, currentItems]);
 
   const previousDataRef = useRef(data);
   useEffect(() => {
@@ -166,7 +172,8 @@ export const Table = ({
             page={currentPage}
             count={DATA.nodes.length}
             setCurrentPage={setCurrentPage}
-            itemsPerPage={rowsPerPage}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={setitemsPerPage}
           />
         </PaginationContainer>
       ) : (
@@ -182,7 +189,6 @@ Table.propTypes = {
   loading: PropTypes.bool,
   className: PropTypes.string,
   deployTable: PropTypes.bool,
-  rowsPerPage: PropTypes.number,
   showPagination: PropTypes.bool,
   csList: PropTypes.bool,
   isResetNotRequired: PropTypes.bool,
