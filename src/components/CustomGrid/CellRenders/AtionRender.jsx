@@ -8,6 +8,8 @@ import { CLUSTER_STATUS } from '../../../constants';
 import { Tooltip } from '../../../shared/Tooltip';
 import { theme } from '../../../styles';
 import { EnableClusterRender } from './EnableClusterRender';
+import { useSelector } from 'react-redux';
+import { AuthenticationSelectors } from '../../../store';
 
 const ActionTd = styled.div`
   display: flex;
@@ -100,6 +102,7 @@ const TooltipSecond = styled.div`
 `;
 
 export const ActionRender = ({ handleMenuClick, item, children }) => {
+  const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
   return (
     <ActionTd>
       <IconButton
@@ -111,7 +114,7 @@ export const ActionRender = ({ handleMenuClick, item, children }) => {
         <CircleExclamationMarkIcon color={theme.colors.border} />
       </IconButton>
 
-      <EnableClusterRender item={item} />
+      {!clusterLogin && <EnableClusterRender item={item} />}
 
       <div className="position-relative">
         <IconButton onClick={event => handleMenuClick(event, item)}>
