@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
 import { theme } from '../../styles';
+import { PAGINATION_ITEM_OPTIONS } from '../../constants';
 
 const Container = styled.div`
   display: flex;
@@ -57,7 +58,32 @@ const StyledButton = styled.button`
   }
 `;
 
-const Pagination = ({ page, count, setCurrentPage, itemsPerPage }) => {
+const Select = styled.select`
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: ${props => props.theme.fontRedHat};
+  background-color: ${props => props.theme.colors.white};
+  text-transform: capitalize;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  option {
+    text-transform: capitalize;
+  }
+`;
+
+const Pagination = ({
+  page,
+  count,
+  setCurrentPage,
+  itemsPerPage,
+  onItemsPerPageChange,
+  setPageLoading,
+}) => {
   const totalPage = Math.ceil(count / itemsPerPage);
   const getPageRange = () => {
     const start = (page - 1) * itemsPerPage + 1;
@@ -106,26 +132,46 @@ const Pagination = ({ page, count, setCurrentPage, itemsPerPage }) => {
   const pageNumbers = getPageNumbers();
 
   const handlePrev = () => {
+    setPageLoading && setPageLoading(true);
     if (page > 1) {
       setCurrentPage(page - 1);
     }
   };
 
   const handleNext = () => {
+    setPageLoading && setPageLoading(true);
     if (page < totalPage) {
       setCurrentPage(page + 1);
     }
   };
 
   const handlePageChange = number => {
+    setPageLoading && setPageLoading(true);
     if (number !== '...') {
       setCurrentPage(number);
     }
   };
 
+  useEffect(() => {
+    setPageLoading && setPageLoading(false);
+  }, [page]);
+
   return (
     <Container>
-      <span>{`${getPageRange()} of ${count} List`}</span>
+      <div className="d-flex align-items-center gap-3">
+        <span>{`${getPageRange()} of ${count} List`}</span>
+        <Select
+          value={itemsPerPage}
+          onChange={e => onItemsPerPageChange(Number(e.target.value))}
+        >
+          {PAGINATION_ITEM_OPTIONS.map(item => (
+            <option key={item} value={item}>
+              {item}
+            </option>
+          ))}
+        </Select>
+        <span>Items per page</span>
+      </div>
       <Flex>
         <StyledButton onClick={handlePrev} disabled={page === 1}>
           <GreaterArrowIcon color={theme.colors.white} />
@@ -154,6 +200,8 @@ Pagination.propTypes = {
   setCurrentPage: PropTypes.func.isRequired,
   count: PropTypes.number.isRequired,
   itemsPerPage: PropTypes.number,
+  onItemsPerPageChange: PropTypes.func.isRequired,
+  setPageLoading: PropTypes.func,
 };
 
 export default Pagination;

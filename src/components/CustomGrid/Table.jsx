@@ -68,8 +68,8 @@ export const Table = ({
   showPagination = false,
   csList = false,
   isResetNotRequired = false,
-  rowsPerPage = KDFM.ITEMS_PER_PAGE,
 }) => {
+  const [itemsPerPage, setitemsPerPage] = useState(10);
   const DATA = { nodes: data || [] };
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -100,7 +100,7 @@ export const Table = ({
         }
 
         td {
-          height: 52px;
+          height: 58px;
         }
 
         tbody tr:nth-of-type(even) td {
@@ -110,12 +110,13 @@ export const Table = ({
     },
   ]);
 
-  const indexOfLastItem = currentPage * rowsPerPage;
-  const indexOfFirstItem = indexOfLastItem - rowsPerPage;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = DATA.nodes.slice(indexOfFirstItem, indexOfLastItem);
+  const [pageLoading, setPageLoading] = useState(false);
 
   const getLoader = () => {
-    if (loading) {
+    if (loading || pageLoading) {
       return (
         <LoaderOverlay>
           <Loader size="lg" />
@@ -132,6 +133,11 @@ export const Table = ({
     }
     return null;
   };
+  useEffect(() => {
+    if (showPagination && isEmpty(currentItems)) {
+      setCurrentPage(1);
+    }
+  }, [showPagination, currentItems]);
 
   const previousDataRef = useRef(data);
   useEffect(() => {
@@ -151,13 +157,17 @@ export const Table = ({
         csList={csList}
         deployTable={deployTable}
       >
-        <CompactTable
-          data={{ nodes: showPagination ? currentItems : DATA.nodes }}
-          columns={columns}
-          theme={tableTheme}
-          layout={{ custom: true }}
-        />
-        {getLoader()}
+        {' '}
+        {pageLoading || loading || isEmpty(DATA.nodes) ? (
+          getLoader()
+        ) : (
+          <CompactTable
+            data={{ nodes: showPagination ? currentItems : DATA.nodes }}
+            columns={columns}
+            theme={tableTheme}
+            layout={{ custom: true }}
+          />
+        )}
       </TableContainer>
       {/* Pagination */}
       {DATA.nodes.length && DATA.nodes.length >= 10 && showPagination ? (
@@ -166,7 +176,9 @@ export const Table = ({
             page={currentPage}
             count={DATA.nodes.length}
             setCurrentPage={setCurrentPage}
-            itemsPerPage={rowsPerPage}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={setitemsPerPage}
+            setPageLoading={setPageLoading}
           />
         </PaginationContainer>
       ) : (
@@ -182,7 +194,6 @@ Table.propTypes = {
   loading: PropTypes.bool,
   className: PropTypes.string,
   deployTable: PropTypes.bool,
-  rowsPerPage: PropTypes.number,
   showPagination: PropTypes.bool,
   csList: PropTypes.bool,
   isResetNotRequired: PropTypes.bool,
