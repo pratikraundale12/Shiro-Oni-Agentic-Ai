@@ -127,7 +127,8 @@ export function* fetchGrid(
         const cluster = tempData?.find(
           item => item?.id !== selectedCluster?.value
         );
-        if (!cluster) {
+
+        const handleNoClusterData = function* () {
           localStorage.removeItem('selected_cluster');
           yield put(
             NamespacesActions.setSelectedCluster({
@@ -139,6 +140,9 @@ export function* fetchGrid(
             GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
           );
           yield put(DashboardActions.fetchDashboardSuccess({ data: {} }));
+        };
+        if (!cluster) {
+          yield* handleNoClusterData();
         }
       }
 
