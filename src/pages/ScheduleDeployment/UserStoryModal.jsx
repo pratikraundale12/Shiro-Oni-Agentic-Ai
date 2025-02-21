@@ -81,7 +81,7 @@ export const UserStoryModal = () => {
       isOpen={isModalOpen}
       onRequestClose={handleSubmit(onRequestClose)}
       onSubmit={handleSubmit(onRequestClose)}
-      title={'Info'}
+      title={'Details'}
       primaryButtonText="Close"
       contentStyles={{ minWidth: '60%' }}
       footerAlign="center"

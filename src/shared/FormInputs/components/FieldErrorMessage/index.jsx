@@ -9,14 +9,23 @@ const Errors = styled.div`
   color: ${props => props.theme.colors.error};
   font-weight: 500;
   font-size: 14px;
-  position: absolute;
+  position: ${props => (props.isFromUserStory ? 'absolute' : 'relative')};
 `;
 
-const FieldErrorMessage = ({ errors, name, className }) => (
+const FieldErrorMessage = ({
+  errors,
+  name,
+  className,
+  isFromUserStory = false,
+}) => (
   <ErrorMessage
     errors={errors}
     name={name}
-    render={({ message }) => <Errors className={className}>{message}</Errors>}
+    render={({ message }) => (
+      <Errors isFromUserStory={isFromUserStory} className={className}>
+        {message}
+      </Errors>
+    )}
   />
 );
 
@@ -24,6 +33,7 @@ FieldErrorMessage.propTypes = {
   name: PropTypes.string.isRequired,
   errors: PropTypes.shape({}).isRequired,
   className: PropTypes.string,
+  isFromUserStory: PropTypes.bool,
 };
 
 export default FieldErrorMessage;
