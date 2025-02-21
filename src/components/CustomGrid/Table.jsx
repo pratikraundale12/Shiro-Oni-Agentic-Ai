@@ -68,7 +68,6 @@ export const Table = ({
   showPagination = false,
   csList = false,
   isResetNotRequired = false,
-  rowsPerPage = KDFM.ITEMS_PER_PAGE,
 }) => {
   const [itemsPerPage, setitemsPerPage] = useState(10);
   const DATA = { nodes: data || [] };
@@ -159,8 +158,7 @@ export const Table = ({
         deployTable={deployTable}
       >
         {' '}
-        {getLoader()}
-        {pageLoading ? (
+        {pageLoading || loading || isEmpty(DATA.nodes) ? (
           getLoader()
         ) : (
           <CompactTable

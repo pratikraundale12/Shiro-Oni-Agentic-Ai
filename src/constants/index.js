@@ -12,7 +12,7 @@ export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 export const ACCESS_TOKEN = 'access_token';
 export const CLUSTERS_TOKEN = 'clusters';
 
-export const DEBOUNCE_DELAY = 200;
+export const DEBOUNCE_DELAY = 500;
 
 export const PREVIOUS_PATH = 'previous_path';
 export const DEFAULT_ROUTE = 'dashboard';
