@@ -99,7 +99,7 @@ export function* fetchGrid(
     apiMethod: API[module],
     apiParams: [{ params, queryParams, payload }],
   });
-  if (module === 'clusters') {
+  const handleForClusterModule = function* () {
     const provideClusterData = () => {
       return JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
     };
@@ -148,6 +148,9 @@ export function* fetchGrid(
 
       localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(tempData));
     }
+  };
+  if (module === 'clusters') {
+    yield* handleForClusterModule();
   }
   const handleError = response => {
     toast.error(response?.message || response?.data?.message);
