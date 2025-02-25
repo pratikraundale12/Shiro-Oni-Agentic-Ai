@@ -142,7 +142,6 @@ export const TokenScheduleDeploymentModal = () => {
               label="Deploy Time"
               placeholder="Select deploy time"
               required
-              // disabled={true}
             />
           </div>
         )}

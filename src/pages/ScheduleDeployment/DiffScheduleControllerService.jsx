@@ -102,7 +102,6 @@ const DiffScheduleCS = () => {
                       backgroundColor: '#E9ECF1',
                       height: '30px',
                       color: theme.colors.primary,
-                      // borderRadius: '12px',
                     }}
                     className="d-flex align-items-center mb-1"
                   >

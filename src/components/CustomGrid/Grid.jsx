@@ -156,15 +156,7 @@ export const Grid = ({
   }, [watchStatus]);
 
   const {
-    state: {
-      search,
-      page,
-      eventModal,
-      selectedNode,
-      // nodeClusterId,
-      // selectedSourceClusterId = '',
-      // loaders,
-    },
+    state: { search, page, eventModal, selectedNode },
     setState,
   } = useGlobalContext();
   useEffect(() => {

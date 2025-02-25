@@ -1,6 +1,3 @@
-/* eslint-disable  */
-import { cluster } from 'd3';
-import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -12,8 +9,6 @@ import {
   DeleteDustbinIcon,
   DiffIcon,
   OpenEyeIcon,
-  OpenLinkIcon,
-  // HoldIcon,
   PencilIcon,
   RejectIcon,
   SortDownIcon,
@@ -25,12 +20,10 @@ import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
-import SortingComponent from '../../shared/SortingComponent';
 import {
   AuthenticationSelectors,
   ClustersActions,
   GridActions,
-  NamespacesSelectors,
 } from '../../store';
 import {
   SchedularActions,
@@ -42,7 +35,6 @@ import { DiffModalScheduleList } from './DiffModalSchedule';
 import { RejectScheduleModal } from './RejectScheduleModal';
 import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
-import { TextWithPhotoRender } from './TextWithPhotoRender';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
 import { UserStoryModal } from './UserStoryModal';
 
@@ -52,10 +44,6 @@ const ActionTd = styled.div`
   justify-content: end;
   gap: 6px;
   padding-right: 10px;
-`;
-const StyledButton = styled.button`
-  border: none;
-  background: transparent;
 `;
 const TextColor = styled.div`
   color: ${props => (props.mode ? '#444445' : '#ff7700;')};
@@ -118,34 +106,11 @@ const List = styled.div`
     // width: 100%;
   }
 `;
-const StyledLink = styled.a`
-  min-width: 32px;
-  min-height: 32px;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100%;
-  background-color: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  opacity: ${({ disabled }) => (disabled ? 0.4 : 1)};
-  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
-`;
-const StyledLinkWrapper = styled.a`
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-`;
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
-  const cancelScheduleModal = useSelector(
-    SchedularSelectors.getCancelScheduleModal
-  );
   const approveScheduleModal = useSelector(
     SchedularSelectors.getApproveScheduleModal
   );
@@ -197,7 +162,6 @@ export const ListScheduleDeployment = () => {
       <>
         <IconButton
           onClick={() => handleCancelModel(item)}
-          // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
           style={{ border: 'transparent' }}
         >
@@ -224,7 +188,6 @@ export const ListScheduleDeployment = () => {
       <>
         <IconButton
           onClick={() => handleApproveCheck(item)}
-          // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
           style={{ border: 'transparent' }}
         >
@@ -281,7 +244,6 @@ export const ListScheduleDeployment = () => {
             handleRejectCrossClick(item);
             event.currentTarget.blur();
           }}
-          // disabled={!item?.can_cancel}
           data-tooltip-id={`${`tooltip-group-reject-schedule`}`}
           style={{ border: 'transparent' }}
         >
@@ -317,7 +279,7 @@ export const ListScheduleDeployment = () => {
       hour12: true,
     });
   };
-  //
+
   const getDefSchedule = async item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setIsDiffModalOpen(true));
@@ -342,9 +304,7 @@ export const ListScheduleDeployment = () => {
       row: item,
     });
   };
-  /* 
-   
-  */
+
   const getActionsMenu = item => {
     return (
       <ActionTd>

@@ -749,12 +749,7 @@ export const GridActions = ({
             {['scheduler', 'namespaces'].includes(module) && (
               <>
                 <RefreshIocn
-                  // onClick={handleRefresh}
-                  onClick={isButtonDisabled ? null : handleRefresh}
-                  style={{
-                    cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
-                    opacity: isButtonDisabled ? 0.5 : 1,
-                  }}
+                  onClick={handleRefresh}
                   data-tooltip-id={`tooltip-group-namespace-refresh`}
                 >
                   <RefreshIcon style={{ cursor: 'pointer' }} />
@@ -762,11 +757,7 @@ export const GridActions = ({
                 <ReactTooltip
                   id={`tooltip-group-namespace-refresh`}
                   place="left"
-                  content={
-                    isButtonDisabled
-                      ? 'Log in to a cluster to Refresh.'
-                      : 'Refresh'
-                  }
+                  content={'Refresh'}
                   style={{
                     width: 'auto',
                     whiteSpace: 'normal',
