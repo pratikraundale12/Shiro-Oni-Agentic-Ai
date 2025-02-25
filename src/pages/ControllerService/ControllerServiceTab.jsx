@@ -262,10 +262,7 @@ const ControllerServiceTab = ({
   const rootCsData = useSelector(
     NamespacesSelectors?.getRootControllerServiceNamespace
   );
-  const [listData, setListData] = useState(rootCsData);
-  useEffect(() => {
-    setListData(rootCsData);
-  }, [rootCsData]);
+
   const isUpgrade = useSelector(NamespacesSelectors.getDeployRegistryFlow);
 
   const [isPropertyResponse, setIsPropertyResponse] = useState(false);
@@ -289,24 +286,27 @@ const ControllerServiceTab = ({
     }
   }, [versionList, stateChangeResponse, propertyUpdateResponse]);
 
-  const lsForUpgradeRedux = useSelector(NamespacesSelectors.getLocalServiceInUpgrade);
+  const lsForUpgradeRedux = useSelector(
+    NamespacesSelectors.getLocalServiceInUpgrade
+  );
   const [isDataUpdated, setIsDataUpdated] = useState(false);
-  const [lsForUpgrade, setLsForUpgrade] = useState(() => 
+  const [lsForUpgrade, setLsForUpgrade] = useState(() =>
     !isEmpty(lsForUpgradeRedux)
       ? lsForUpgradeRedux
       : registryDetailsData?.controllerServicesData?.localServices || []
-  );  
+  );
 
-useEffect(() => {
-  if (!isEmpty(lsForUpgradeRedux)) {    setLsForUpgrade(lsForUpgradeRedux);
-  }
-}, [lsForUpgradeRedux, dispatch]);
+  useEffect(() => {
+    if (!isEmpty(lsForUpgradeRedux)) {
+      setLsForUpgrade(lsForUpgradeRedux);
+    }
+  }, [lsForUpgradeRedux, dispatch]);
 
-useEffect(() => {
-  if (!isEmpty(lsForUpgrade)) {
-    dispatch(NamespacesActions.setLocalServiceInUpgrade(lsForUpgrade));
-  }
-}, [lsForUpgrade]);
+  useEffect(() => {
+    if (!isEmpty(lsForUpgrade)) {
+      dispatch(NamespacesActions.setLocalServiceInUpgrade(lsForUpgrade));
+    }
+  }, [lsForUpgrade]);
 
   const alreadyFetchedLsIdentifierForUpgradeRedux = useSelector(
     NamespacesSelectors.getAlreadyFetchedLsIdentifierForUpgrade
@@ -368,7 +368,7 @@ useEffect(() => {
     }
   };
   useEffect(() => {
-    if(isEmpty(rootCsData)) return;
+    if (isEmpty(rootCsData)) return;
     const updateControllerData = () => {
       const updatedServices = lsForUpgrade?.map(service => {
         const updatedControllerData = service?.controllerData?.map(
@@ -2083,13 +2083,18 @@ useEffect(() => {
   ]);
 
   useEffect(() => {
-    dispatch(
-      NamespacesActions.setCsLocalData({
-        externalControllerServices: externalControllerServices,
-        localServices: localServices,
-      })
-    );
-  }, [localServices, externalControllerServices]);
+    if (localServices && externalControllerServices) {
+      dispatch(
+        NamespacesActions.setCsLocalData({
+          externalControllerServices,
+          localServices,
+        })
+      );
+    }
+  }, [
+    JSON.stringify(localServices),
+    JSON.stringify(externalControllerServices),
+  ]);
 
   const statusLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'changeStatusControllerService')

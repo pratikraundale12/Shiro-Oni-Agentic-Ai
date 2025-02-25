@@ -37,7 +37,9 @@ export function* fetchGrid(
     scheduler: api.fetchSchedular,
   };
   let payload;
-  if (module === 'clusters') payload = localStorage.getItem(CLUSTERS_TOKEN);
+  if (module === 'clusters') {
+    payload = localStorage.getItem(CLUSTERS_TOKEN);
+  }
   let queryParams;
   if (module === 'namespaces') {
     queryParams = {
@@ -65,14 +67,20 @@ export function* fetchGrid(
     const selectedClusterToken = clustersToken.find(
       item => item.id === selectedDestCluster?.value
     );
-    api.headers['x-cluster-id'] = scheduleFromList
-      ? selectedDestCluster?.value
-      : selectedClusterToken?.id;
-    api.headers['x-cluster-token'] = scheduleFromList
-      ? undefined
-      : selectedClusterToken?.token;
+    const provideXclusterId = () => {
+      return scheduleFromList
+        ? selectedDestCluster?.value
+        : selectedClusterToken?.id;
+    };
+    const provideXclusterToken = () => {
+      return scheduleFromList ? undefined : selectedClusterToken?.token;
+    };
+    api.headers['x-cluster-id'] = provideXclusterId();
+    api.headers['x-cluster-token'] = provideXclusterToken();
   }
-  if (module === 'namespaces' && isEmpty(selectedCluster)) return;
+  const shouldReturn = () =>
+    module === 'namespaces' && isEmpty(selectedCluster);
+  if (shouldReturn()) return;
   if (module === 'nodes') {
     queryParams = {
       clusterId,
@@ -91,8 +99,11 @@ export function* fetchGrid(
     apiMethod: API[module],
     apiParams: [{ params, queryParams, payload }],
   });
-  if (module === 'clusters') {
-    let clusterData = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
+  const handleForClusterModule = function* () {
+    const provideClusterData = () => {
+      return JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
+    };
+    let clusterData = provideClusterData();
     if (Array.isArray(response.data.data)) {
       const processedClusters = response.data.data;
       const disconnectedData = processedClusters.filter(
@@ -116,7 +127,8 @@ export function* fetchGrid(
         const cluster = tempData?.find(
           item => item?.id !== selectedCluster?.value
         );
-        if (!cluster) {
+
+        const handleNoClusterData = function* () {
           localStorage.removeItem('selected_cluster');
           yield put(
             NamespacesActions.setSelectedCluster({
@@ -128,17 +140,31 @@ export function* fetchGrid(
             GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
           );
           yield put(DashboardActions.fetchDashboardSuccess({ data: {} }));
+        };
+        if (!cluster) {
+          yield* handleNoClusterData();
         }
       }
 
       localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(tempData));
     }
+  };
+  if (module === 'clusters') {
+    yield* handleForClusterModule();
   }
-  if (response.ok) {
-    yield put(GridActions.fetchGridSuccess({ module, data: response.data }));
-  } else if (!response?.ok) {
+  const handleError = response => {
     toast.error(response?.message || response?.data?.message);
+  };
+
+  function* handleResponse(response, module) {
+    if (response.ok) {
+      yield put(GridActions.fetchGridSuccess({ module, data: response.data }));
+      return;
+    }
+    handleError(response);
   }
+
+  yield* handleResponse(response, module);
 }
 
 export function* gridSagas(api) {

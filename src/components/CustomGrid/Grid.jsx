@@ -117,7 +117,6 @@ export const Grid = ({
   setCurrentPage = () => {},
   sortingState,
   setSortingState,
-  itemsPerPage = KDFM.ITEMS_PER_PAGE,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -167,6 +166,7 @@ export const Grid = ({
     }
   }, [search]);
   const filteredData = gridData.filter(item => item.isProcessor === false);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const DATA = {
     nodes: isNamespace
@@ -206,7 +206,7 @@ export const Grid = ({
           width: 100%;
         }
         td {
-          height: 52px;
+          height: 58px;
         }
 
         tbody tr:nth-of-type(even) td {
@@ -256,6 +256,7 @@ export const Grid = ({
         clusterId,
         params: {
           page: currentPage,
+          limit: itemsPerPage,
           ...(scheduleToken && { id: scheduleToken }),
           ...(search && { search }),
           ...(watchStatus &&
@@ -318,6 +319,7 @@ export const Grid = ({
     clusterSelectedValue,
     selectEvent,
     selectEntity,
+    itemsPerPage,
   ]);
   useEffect(() => {
     dispatch(ActivityHistoryActions.setSelectedEvent(null));
@@ -351,7 +353,11 @@ export const Grid = ({
     : search
       ? filterClusterView(DATA)
       : DATA;
-
+  useEffect(() => {
+    if (isEmpty(TABLE_DATA?.nodes)) {
+      setCurrentPage(1);
+    }
+  }, [TABLE_DATA]);
   useEffect(() => {
     if (next) {
       setCurrentPage(next - 1);
@@ -500,7 +506,7 @@ export const Grid = ({
           />
         )}
       </TableContainer>
-      {gridCount > itemsPerPage && (
+      {gridCount >= 10 && (
         <Pagination
           page={currentPage}
           setCurrentPage={setCurrentPage}
@@ -508,6 +514,7 @@ export const Grid = ({
           prev={prev}
           next={next}
           itemsPerPage={itemsPerPage}
+          onItemsPerPageChange={setItemsPerPage}
         />
       )}
     </Container>
@@ -541,5 +548,4 @@ Grid.propTypes = {
   state: PropTypes.object.isRequired,
   sortingState: PropTypes.string,
   setSortingState: PropTypes.func,
-  itemsPerPage: PropTypes.number,
 };
