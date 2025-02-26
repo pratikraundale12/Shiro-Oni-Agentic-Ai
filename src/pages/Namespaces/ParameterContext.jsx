@@ -178,7 +178,7 @@ const ParameterContext = ({
             text={(() => {
               if (
                 (item?.sensitive === true || item?.sensitive === 'true') &&
-                item?.value
+                (item?.value || item?.value === '')
               ) {
                 return KDFM.SENSITIVE_VALUE_SET;
               } else if (

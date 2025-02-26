@@ -149,6 +149,7 @@ const AddParameterContext = ({
           ...parameterContextItem,
           name: parameterContextItem?.name,
           value:
+            parameterContextItem?.sensitive === true ||
             parameterContextItem?.sensitive === 'true'
               ? ''
               : parameterContextItem?.value,
@@ -158,7 +159,16 @@ const AddParameterContext = ({
               ? 'true'
               : 'false',
         });
-        setValue('check', parameterContextItem?.value === '' ? true : false);
+        setValue(
+          'check',
+          parameterContextItem?.sensitive === true ||
+            parameterContextItem?.sensitive === 'true'
+            ? false
+            : parameterContextItem?.value === ''
+              ? true
+              : false
+        );
+        setSenstiiveValueChanged(false);
       }
     }
   }, [
@@ -176,7 +186,11 @@ const AddParameterContext = ({
   // Process parameter data based on input
   const getProcessedData = data => ({
     ...data,
-    value: data?.check ? '' : isEmpty(data?.value) ? null : data?.value,
+    value: data?.check
+      ? ''
+      : isEmpty(data?.value) && !data?.check
+        ? null
+        : data?.value,
   });
 
   // Handle parameter context update logic
@@ -286,18 +300,56 @@ const AddParameterContext = ({
   useEffect(() => {
     if (check) {
       setValue('value', '');
+      setSenstiiveValueChanged(true);
     } else if (!check) {
       setValue(
         'value',
         parameterContextItem?.value === null
           ? parameterContextItem?.value
-          : currentParameter[0]?.value
+          : parameterContextItem?.sensitive === true ||
+              parameterContextItem?.sensitive === 'true'
+            ? ''
+            : currentParameter[0]?.value
       );
+      setSenstiiveValueChanged(false);
     }
   }, [check, setValue]);
+  console.log('parameterContextItem--->', parameterContextItem);
 
   const pcValue = watch('value');
   const pcDesc = watch('description');
+  const [sensitiveValueChanged, setSenstiiveValueChanged] = useState(false);
+  const handleKeyDown = e => {
+    console.log('e.key--', e.key.code);
+    if (
+      (['Backspace', ' '].includes(e.key) || /^[a-zA-Z0-9]$/.test(e.key)) &&
+      (parameterContextItem?.sensitive === true ||
+        String(parameterContextItem?.sensitive) === 'true')
+    ) {
+      setSenstiiveValueChanged(true);
+    }
+  };
+  console.log('pcValue--', pcValue);
+  console.log('sensitiveValueChanged--', sensitiveValueChanged);
+  const disableSave = (
+    pcValue,
+    pcDesc,
+    parameterData,
+    isSensitiveValueChanged
+  ) => {
+    if (isSensitiveValueChanged) {
+      return false;
+    } else if (
+      pcValue === parameterData?.value &&
+      (parameterData?.sensitive !== true ||
+        parameterData?.sensitive !== 'true') &&
+      pcDesc === parameterData?.description
+    ) {
+      return true;
+    } else if (pcDesc !== parameterData?.description) {
+      return false;
+    } else return true;
+  };
   return (
     <Modal
       title={
@@ -312,10 +364,12 @@ const AddParameterContext = ({
       secondaryButtonText={KDFM.CANCEL}
       primaryButtonText={KDFM.SAVE}
       onSubmit={handleSubmit(handleAddEditParameterContext)}
-      primaryButtonDisabled={
-        pcValue === parameterContextItem?.value &&
-        pcDesc === parameterContextItem?.description
-      }
+      primaryButtonDisabled={disableSave(
+        pcValue,
+        pcDesc,
+        parameterContextItem,
+        sensitiveValueChanged
+      )}
     >
       <ModalBody className="modal-body">
         <ModalBodyDiv className="d-flex">
@@ -345,10 +399,21 @@ const AddParameterContext = ({
                   placeholder={
                     isAddParameterContextOpen?.mode === 'add'
                       ? KDFM.ENTER_PARAMETER
-                      : ''
+                      : parameterContextItem?.sensitive && !check
+                        ? 'Sensitive Value Set'
+                        : parameterContextItem?.value?.includes('*') && !check
+                          ? 'Sensitive Value Set'
+                          : ''
                   }
-                  disabled={check}
+                  disabled={
+                    (parameterContextItem?.sensitive === true ||
+                      parameterContextItem?.sensitive === 'true') &&
+                    !sensitiveValueChanged
+                      ? false
+                      : check
+                  }
                   errors={errors}
+                  onKeyDown={handleKeyDown}
                 />
               </InputBox>
             </ColumnSix>
@@ -356,7 +421,12 @@ const AddParameterContext = ({
               <CheckboxField
                 name="check"
                 label={KDFM.SET_EMPTY_STRING}
-                defaultChecked={parameterContextItem?.check || false}
+                defaultChecked={
+                  parameterContextItem?.sensitive === true ||
+                  parameterContextItem?.sensitive === 'true'
+                    ? false
+                    : parameterContextItem?.check || false
+                }
                 register={register}
               />
               <RedioButtonDiv>
