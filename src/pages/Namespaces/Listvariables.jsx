@@ -192,7 +192,12 @@ const Listvariables = ({
                       schedule: false,
                     });
                   }
-                  dispatch(NamespacesActions.setVariableContextItem(item));
+                  dispatch(
+                    NamespacesActions.setVariableContextItem({
+                      ...item,
+                      check: item?.variable?.value === '' ? true : false,
+                    })
+                  );
                 }
               }}
               style={{

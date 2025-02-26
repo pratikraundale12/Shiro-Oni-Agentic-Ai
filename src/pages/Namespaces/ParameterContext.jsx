@@ -275,7 +275,13 @@ const ParameterContext = ({
                       schedule: false,
                     });
                   }
-                  dispatch(NamespacesActions.setParameterContextItem(item));
+                  dispatch(
+                    NamespacesActions.setParameterContextItem({
+                      ...item,
+                      value: item?.sensitive ? null : item?.value,
+                      check: item?.value === '' ? true : false,
+                    })
+                  );
                   if (!isParentEdit?.parent) {
                     dispatch(
                       NamespacesActions.setParameterEditParent({

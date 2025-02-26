@@ -262,7 +262,6 @@ const ParameterContextTab = () => {
   };
 
   const handleAddOrEditVariableSave = data => {
-    console.log('data--->', data);
     dispatch(NamespacesActions.setIsLocalPcUpdated(true));
 
     // Clone state

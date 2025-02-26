@@ -99,10 +99,8 @@ const AddOrEditParameterContextModal = ({
   const [formData, setFormData] = useState(
     isAddParameterContextOpen?.mode === 'edit' ? pcEditData : DEFAULT_VALUES
   );
-  console.log('formData--->', formData);
 
   const isValueChanged = (obj1, obj2) => {
-    console.log('in isvaluechanged');
     return isEqual(obj1, obj2);
   };
 
@@ -176,9 +174,7 @@ const AddOrEditParameterContextModal = ({
       [name]: value,
     }));
   };
-  console.log('sensitiveValueChanged--->', sensitiveValueChanged);
   const handleKeyDown = e => {
-    console.log('in handleKeyDown');
     if (e.key === 'Backspace' && formData?.sensitive) {
       setFormData(prev => ({
         ...prev,
