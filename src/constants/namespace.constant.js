@@ -52,7 +52,7 @@ export const NAMESPACE_CONSTANTS = {
   ZOOM_OUT: 'Zoom Out',
   FIT: 'Fit',
   LEGENDS: 'Legends',
-  SELECT_SCHEDULE_TIME: 'Please select schedule time',
+  SELECT_SCHEDULE_TIME: 'Please select schedule deploy time',
   INCORRECT_SCHEDULE_TIME: 'Selected date and time is invalid',
   PROCESS_GROUP_DETAILS: 'Process Group Details',
   PROPERTY_DELETED: 'Property have been deleted successfully',

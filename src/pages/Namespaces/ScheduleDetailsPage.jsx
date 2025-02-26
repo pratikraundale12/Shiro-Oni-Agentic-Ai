@@ -188,9 +188,9 @@ const ScheduleDeploymentTab = ({
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
         <DateField
-          label="Deploy Time"
+          label="Schedule Deploy Time"
           name="scheduled_time"
-          placeholder="Select deploy time"
+          placeholder="select schedule deploy time"
           control={control}
           errors={scheduleErrors}
           required

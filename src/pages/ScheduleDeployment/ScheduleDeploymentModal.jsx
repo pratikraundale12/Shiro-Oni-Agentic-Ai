@@ -37,7 +37,7 @@ const SchemaWithApprover = yup.object().shape({
   approver_ids: yup.array().required('Approvers is required'),
 });
 const SchemaWithoutApprover = yup.object().shape({
-  scheduled_time: yup.string().required('Deploy time is required'),
+  scheduled_time: yup.string().required('Schedule deploy time is required'),
 });
 
 export const ScheduleDeploymentModal = () => {
@@ -89,7 +89,6 @@ export const ScheduleDeploymentModal = () => {
   useEffect(() => {
     if (!isEmpty(selectedSchedule)) {
       reset({
-        scheduled_time: new Date(selectedSchedule?.scheduled_time),
         approver_ids: selectedSchedule?.approvers?.map(
           item => item.approver_id
         ),
@@ -110,7 +109,7 @@ export const ScheduleDeploymentModal = () => {
       size="md"
       title={
         !isEmpty(selectedSchedule)
-          ? 'Edit Deployment Schedule'
+          ? 'Re-Schedule Deployment Schedule'
           : 'Deployment Schedule'
       }
       isOpen={scheduleModal}
