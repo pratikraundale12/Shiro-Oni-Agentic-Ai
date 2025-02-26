@@ -48,10 +48,25 @@ export function* fetchClusterNodes(api, { payload }) {
   });
 }
 
+export function* clusterLogout(api, { payload }) {
+  if (payload?.id) {
+    yield call(requestSaga, {
+      errorSection: 'clusterLogout',
+      loadingSection: 'clusterLogout',
+      apiMethod: api.clusterLogout,
+      apiParams: [
+        { clusterId: payload?.id, payload: { token: payload?.token } },
+      ],
+      successAction: ClustersActions.clusterLogout,
+    });
+  }
+}
+
 export function* clustersSagas(api) {
   yield all([
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
     takeLatest(ClustersActions.fetchClusterNodes, fetchClusterNodes, api),
     takeLatest(ClustersActions.fetchClusters, fetchClusters, api),
+    takeLatest(ClustersActions.clusterLogout, clusterLogout, api),
   ]);
 }
