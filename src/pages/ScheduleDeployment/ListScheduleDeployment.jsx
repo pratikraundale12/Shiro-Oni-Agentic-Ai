@@ -225,9 +225,9 @@ export const ListScheduleDeployment = () => {
           <ReactTooltip
             id={`tooltip-group-edit-schedule`}
             place="left"
-            content={'Edit'}
+            content={'Re-Schedule'}
             style={{
-              width: '100px',
+              width: '120px',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}
