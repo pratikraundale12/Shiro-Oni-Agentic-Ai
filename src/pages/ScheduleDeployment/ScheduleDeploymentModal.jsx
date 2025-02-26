@@ -126,7 +126,7 @@ export const ScheduleDeploymentModal = () => {
         <div className="row">
           <div className="col-12">
             <DateField
-              label="Deploy Time"
+              label="Schedule Deploy Time"
               name="scheduled_time"
               placeholder="select schedule deploy time"
               onChange={() => setScheduleErrors({})}
