@@ -54,7 +54,9 @@ export const EnableClusterRender = ({ item }) => {
 
       const clusterItem = localStorage.getItem('selected_cluster');
       const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
-
+      const tokenToRemove = clustersToken.filter(token => token.id === item.id);
+      const payload = { id: item?.id, token: tokenToRemove?.[0]?.token };
+      dispatch(ClustersActions.clusterLogout(payload));
       if (clusterItem) {
         const cluster = JSON.parse(clusterItem);
         if (cluster.value === item.id) {
@@ -76,7 +78,6 @@ export const EnableClusterRender = ({ item }) => {
         CLUSTERS_TOKEN,
         JSON.stringify(updatedClustersToken)
       );
-
       toast.success('The cluster is now disconnected successfully');
     }
   };

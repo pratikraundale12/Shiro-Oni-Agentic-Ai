@@ -17,6 +17,7 @@ export const ClustersActions = {
   setIsclusterHardDeleteModalOpen: createAction(
     `${prefix}setIsclusterHardDeleteModalOpen`
   ),
+  clusterLogout: createAction(`${prefix}clusterLogout`),
 };
 
 /* ------------- INITIAL STATE ------------- */

@@ -109,6 +109,7 @@ export const ACTIVITY_EVENTS = [
   { label: 'Reject', value: 'Reject' },
   { label: 'Stop', value: 'Stop' },
   { label: 'Login', value: 'Login' },
+  { label: 'Logout', value: 'Logout' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },

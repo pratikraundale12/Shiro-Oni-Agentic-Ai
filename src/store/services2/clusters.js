@@ -9,11 +9,13 @@ export const clustersAPI = api => {
     api.get(`/clusters/${clusterId}/nodes`, params);
 
   const getClusterToken = ({ payload }) => api.post(`/clusters/token`, payload);
-
+  const clusterLogout = ({ clusterId, payload = {} }) =>
+    api.post(`/clusters/${clusterId}/logout`, payload);
   return {
     fetchClusters,
     fetchClusterList,
     fetchClusterNodes,
     getClusterToken,
+    clusterLogout,
   };
 };
