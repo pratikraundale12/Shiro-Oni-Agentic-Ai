@@ -155,15 +155,6 @@ const AddParameterContext = ({
               ? 'true'
               : 'false',
         });
-        // setValue(
-        //   'check',
-        //   parameterContextItem?.sensitive === true ||
-        //     parameterContextItem?.sensitive === 'true'
-        //     ? false
-        //     : parameterContextItem?.value === ''
-        //       ? true
-        //       : false
-        // );
         setSenstiiveValueChanged(false);
       }
     }
