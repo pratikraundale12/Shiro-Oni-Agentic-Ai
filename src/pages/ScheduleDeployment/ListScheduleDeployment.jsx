@@ -36,6 +36,7 @@ import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
 import { UserStoryModal } from './UserStoryModal';
+import { GroupListModal } from './GroupListModal';
 
 const ActionTd = styled.div`
   display: flex;
@@ -353,9 +354,7 @@ export const ListScheduleDeployment = () => {
         {/* NON SUPERADMIN + SCHEDULAR + NOT IN APPROVER GROUP */}
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id === item?.deployer_id &&
-          !item?.groupUsersData?.some(
-            ele => ele?.id === currentUserData?.id
-          ) && (
+          !item?.is_scheduler_in_approver_group && (
             <>
               {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
                 <>
@@ -373,9 +372,7 @@ export const ListScheduleDeployment = () => {
         {/* NON SUPERADMIN + SCHEDULAR + IN APPROVER GROUP */}
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id === item?.deployer_id &&
-          item?.groupUsersData?.some(
-            ele => ele?.id === currentUserData?.id
-          ) && (
+          item?.is_scheduler_in_approver_group && (
             <>
               {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
                 <>
@@ -399,9 +396,7 @@ export const ListScheduleDeployment = () => {
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id !== item?.deployer_id &&
           item?.action_by !== 'NO_APPROVER_REQUIRED' &&
-          item?.groupUsersData?.some(
-            ele => ele?.id === currentUserData?.id
-          ) && (
+          item?.is_scheduler_in_approver_group && (
             <>
               {item?.state === 'PENDING' && (
                 <>
@@ -793,6 +788,7 @@ export const ListScheduleDeployment = () => {
       <RejectScheduleModal />
       <TokenScheduleDeploymentModal />
       <UserStoryModal />
+      <GroupListModal />
       <Grid
         module="scheduler"
         title="Deployment Schedule List"

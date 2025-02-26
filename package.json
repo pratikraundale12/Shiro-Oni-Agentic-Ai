@@ -19,7 +19,7 @@
     "@table-library/react-table-library": "^4.1.7",
     "apexcharts": "^4.0.0",
     "apisauce": "3.0.0",
-    "axios": "^1.7.2",
+    "axios": "^0.26.1",
     "bootstrap": "^5.0.1",
     "classnames": "^2.5.1",
     "d3": "^7.9.0",

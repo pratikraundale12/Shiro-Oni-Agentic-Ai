@@ -27,6 +27,9 @@ export const SchedularActions = {
   setSelectedClusterState: createAction(`${prefix}setSelectedClusterState`),
   setSelectedStatusState: createAction(`${prefix}setSelectedStatusState`),
   setIsUserStoryModalOpen: createAction(`${prefix}setIsUserStoryModalOpen`),
+  setIsGroupListModalOpen: createAction(`${prefix}setIsGroupListModalOpen`),
+  fetchGroupUserData: createAction(`${prefix}fetchGroupUserData`),
+  setListGroupMembers: createAction(`${prefix}setListGroupMembers`),
 };
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
@@ -47,6 +50,8 @@ export const SCHEDULAR_INITIAL_STATE = {
   selectedClusterState: null,
   selectedStatusState: null,
   isUserStoryModalOpen: false,
+  isGroupListModalOpen: false,
+  listGroupMembers: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -68,6 +73,8 @@ export const SchedularSelectors = {
   getSelectedClusterState: state => state.schedular.selectedClusterState,
   getSelectedStatusState: state => state.schedular.selectedStatusState,
   getIsUserStoryModalOpen: state => state.schedular.isUserStoryModalOpen,
+  getisGroupListModalOpen: state => state.schedular.isGroupListModalOpen,
+  getListGroupMembers: state => state.schedular.listGroupMembers,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -174,6 +181,18 @@ const setIsUserStoryModalOpen = (state, { payload }) => {
     isUserStoryModalOpen: payload,
   };
 };
+const setIsGroupListModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isGroupListModalOpen: payload,
+  };
+};
+const setListGroupMembers = (state, { payload }) => {
+  return {
+    ...state,
+    listGroupMembers: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const schedularReducer = createReducer(
@@ -205,6 +224,11 @@ export const schedularReducer = createReducer(
       .addCase(
         SchedularActions.setIsUserStoryModalOpen,
         setIsUserStoryModalOpen
-      );
+      )
+      .addCase(
+        SchedularActions.setIsGroupListModalOpen,
+        setIsGroupListModalOpen
+      )
+      .addCase(SchedularActions.setListGroupMembers, setListGroupMembers);
   }
 );

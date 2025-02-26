@@ -169,6 +169,19 @@ export function* fetchDiffScheduleData(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
+export function* fetchGroupUserData(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchGroupUserData',
+    loadingSection: 'fetchGroupUserData',
+    apiMethod: api.fetchGroupUserData,
+    apiParams: [{ groupId: payload }],
+  });
+  if (response.ok) {
+    yield put(SchedularActions.setListGroupMembers(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
 
 export function* schedularSagas(api) {
   yield all([
@@ -197,6 +210,6 @@ export function* schedularSagas(api) {
       fetchDiffScheduleData,
       api
     ),
+    takeLatest(SchedularActions.fetchGroupUserData, fetchGroupUserData, api),
   ]);
 }
-//
