@@ -1235,14 +1235,8 @@ export const namespacesReducer = createReducer(
         NamespacesActions.setAlreadyFetchedLsIdentifierForUpgrade,
         setAlreadyFetchedLsIdentifierForUpgrade
       )
-      .addCase(
-        NamespacesActions.setUserStory,
-        setUserStory
-      )
-      .addCase(
-        NamespacesActions.setChangeRequest,
-        setChangeRequest
-      )
+      .addCase(NamespacesActions.setUserStory, setUserStory)
+      .addCase(NamespacesActions.setChangeRequest, setChangeRequest)
       .addCase(
         NamespacesActions.setLocalServiceInUpgrade,
         setLocalServiceInUpgrade

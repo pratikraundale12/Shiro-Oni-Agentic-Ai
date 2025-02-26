@@ -8,7 +8,8 @@ import { USER_CONSTANTS } from './user.constant';
 export * from './login';
 
 // generalconstants
-export const API_URL = window.env?.REACT_APP_API_URL || process.env.REACT_APP_API_URL;
+export const API_URL =
+  window.env?.REACT_APP_API_URL || process.env.REACT_APP_API_URL;
 export const ACCESS_TOKEN = 'access_token';
 export const CLUSTERS_TOKEN = 'clusters';
 
