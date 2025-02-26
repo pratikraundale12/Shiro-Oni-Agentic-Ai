@@ -133,9 +133,12 @@ const ParameterContextTab = () => {
             key={item?.value}
             capitalizeText={false}
             text={(() => {
-              if (item?.sensitive && item?.value) {
+              if (item?.sensitive && (item?.value || item?.value === '')) {
                 return KDFM.SENSITIVE_VALUE_SET;
-              } else if (item?.sensitive && !item?.value) {
+              } else if (
+                item?.sensitive &&
+                (!item?.value || item?.value === null)
+              ) {
                 return KDFM.NO_VALUE_SET;
               } else if (item?.value === '') {
                 return KDFM.EMPTY_STRING_SET;

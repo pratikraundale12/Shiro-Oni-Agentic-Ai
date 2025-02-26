@@ -178,7 +178,7 @@ const ParameterContext = ({
             text={(() => {
               if (
                 (item?.sensitive === true || item?.sensitive === 'true') &&
-                item?.value
+                (item?.value || item?.value === '')
               ) {
                 return KDFM.SENSITIVE_VALUE_SET;
               } else if (
@@ -275,7 +275,13 @@ const ParameterContext = ({
                       schedule: false,
                     });
                   }
-                  dispatch(NamespacesActions.setParameterContextItem(item));
+                  dispatch(
+                    NamespacesActions.setParameterContextItem({
+                      ...item,
+                      value: item?.sensitive ? null : item?.value,
+                      check: item?.value === '' ? true : false,
+                    })
+                  );
                   if (!isParentEdit?.parent) {
                     dispatch(
                       NamespacesActions.setParameterEditParent({

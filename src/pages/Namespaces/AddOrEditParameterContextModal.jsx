@@ -99,19 +99,18 @@ const AddOrEditParameterContextModal = ({
   const [formData, setFormData] = useState(
     isAddParameterContextOpen?.mode === 'edit' ? pcEditData : DEFAULT_VALUES
   );
+
   const isValueChanged = (obj1, obj2) => {
     return isEqual(obj1, obj2);
   };
 
-  const [isSaveBtnDisabled, setIsSaveBtnDisabled] = useState(
-    !isEmpty(pcEditData) && !isEmpty(formData)
-      ? isValueChanged(pcEditData, formData)
-      : false
-  );
-
   const [valPlaceHolder, setValPlaceHolder] = useState('');
   const [isChecked, setIsChecked] = useState(
-    pcEditData ? pcEditData?.value === '' : false
+    pcEditData
+      ? pcEditData?.sensitive
+        ? false
+        : pcEditData?.value === ''
+      : false
   );
   const handleAddEditParameterContext = () => {
     if (!formData) return;
@@ -142,6 +141,15 @@ const AddOrEditParameterContextModal = ({
   ];
 
   const [currentParameter, setCurrentParameter] = useState({});
+  const [sensitiveValueChanged, setSenstiiveValueChanged] = useState(false);
+  const [isSaveBtnDisabled, setIsSaveBtnDisabled] = useState(
+    sensitiveValueChanged
+      ? false
+      : !isEmpty(pcEditData) && !isEmpty(formData)
+        ? isValueChanged(pcEditData, formData)
+        : false
+  );
+
   useEffect(() => {
     const filteredParameter = parametersData?.filter(
       item => item?.name === pcEditData?.name
@@ -153,21 +161,35 @@ const AddOrEditParameterContextModal = ({
     setIsSaveBtnDisabled(
       !isEmpty(pcEditData) && !isEmpty(formData)
         ? isValueChanged(pcEditData, formData)
-        : false
+        : sensitiveValueChanged
+          ? false
+          : false
     );
   }, [formData, isChecked]);
   const handleInputChange = data => {
+    // setSenstiiveValueChanged(true);
     const { name, value } = data.target;
     setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
   };
-
+  const handleKeyDown = e => {
+    if (e.key === 'Backspace' && formData?.sensitive) {
+      setFormData(prev => ({
+        ...prev,
+        value: null,
+        check: false,
+      }));
+      setSenstiiveValueChanged(true);
+    }
+  };
   useEffect(() => {
     isChecked;
     setValPlaceHolder('');
-    // formData?.sensitive && setValPlaceHolder('Sensitive Value Set');
+    !isChecked &&
+      formData?.sensitive &&
+      setValPlaceHolder('Sensitive Value Set');
   }, [isChecked]);
 
   return (
@@ -185,7 +207,11 @@ const AddOrEditParameterContextModal = ({
       primaryButtonText={KDFM.SAVE}
       onSubmit={handleAddEditParameterContext}
       primaryButtonDisabled={
-        !isEmpty(pcEditData) && !isEmpty(formData) ? isSaveBtnDisabled : false
+        sensitiveValueChanged
+          ? false
+          : !isEmpty(pcEditData) && !isEmpty(formData)
+            ? isSaveBtnDisabled
+            : false
       }
     >
       <ModalBody className="modal-body">
@@ -214,15 +240,16 @@ const AddOrEditParameterContextModal = ({
                   icon={<QRIcons />}
                   placeholder={valPlaceHolder}
                   disabled={isChecked}
-                  value={isChecked ? '' : formData.value}
-                  // value={
-                  //   isChecked
-                  //     ? ''
-                  //     : formData?.value?.includes('*')
-                  //       ? ''
-                  //       : formData?.value
-                  // }
+                  // value={isChecked ? '' : formData?.value}
+                  value={
+                    isChecked
+                      ? ''
+                      : formData?.sensitive && !sensitiveValueChanged
+                        ? ''
+                        : formData?.value
+                  }
                   onChange={e => handleInputChange(e)}
+                  onKeyDown={e => handleKeyDown(e)}
                 />
               </InputBox>
             </ColumnSix>

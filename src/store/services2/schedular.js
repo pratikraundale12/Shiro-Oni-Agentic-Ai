@@ -13,7 +13,8 @@ export const schedularAPI = api => {
 
   const fetchDiffScheduleData = ({ schedularId }) =>
     api.get(`/diff-schedule-deployment/${schedularId}`);
-
+  const fetchGroupUserData = ({ groupId }) =>
+    api.get(`/group-users/${groupId}`);
   return {
     fetchSchedular,
     createScheduleDeployment,
@@ -21,5 +22,6 @@ export const schedularAPI = api => {
     editScheduleByRegistry,
     rejectScheduleDeployment,
     fetchDiffScheduleData,
+    fetchGroupUserData,
   };
 };

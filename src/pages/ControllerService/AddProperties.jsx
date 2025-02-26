@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { QRIcons } from '../../assets';
 import { CheckboxField, InputField, Modal } from '../../shared';
@@ -28,48 +28,78 @@ const AddProperties = ({
   updatedData,
 }) => {
   const { register, handleSubmit, control, reset, setValue, watch } = useForm();
+  const [sensitiveValueChanged, setSenstiveValueChanged] = useState(false);
   const filterData = updatedData.filter(item => {
     return item.name != selectedPropertyToEdit.name;
   });
   const handleFormSubmit = data => {
-    setUpdatedData(() => {
-      return [
-        ...filterData,
-        {
-          name: selectedPropertyToEdit.name,
-          value: isEmpty(data?.value) && !check ? null : data.value,
-          sensitive: false,
-        },
-      ];
-    });
+    if (
+      !data?.check &&
+      isEmpty(data?.value) &&
+      selectedPropertyToEdit?.required
+    ) {
+      toast.error(`Can not set "No Value" to ${selectedPropertyToEdit?.name}`);
+      !selectedPropertyToEdit?.sensitive &&
+        setListPropertTableData(prevData =>
+          prevData.map(item =>
+            item.name === selectedPropertyToEdit.name
+              ? {
+                  ...item,
+                  value:
+                    selectedPropertyToEdit?.defaultValue ||
+                    selectedPropertyToEdit?.value,
+                }
+              : item
+          )
+        );
+      setIsAddpropertiesModalOpen(false);
+      return;
+    } else {
+      setUpdatedData(() => {
+        return [
+          ...filterData,
+          {
+            name: selectedPropertyToEdit.name,
+            value: isEmpty(data?.value) && !check ? null : data.value,
+            sensitive: false,
+          },
+        ];
+      });
 
-    setListPropertTableData(prevData =>
-      prevData.map(item =>
-        item.name === selectedPropertyToEdit.name
-          ? {
-              ...item,
-              value: isEmpty(data?.value) && !check ? null : data.value,
-              empty_string_set: data?.check,
-            }
-          : item
-      )
-    );
-    !(isEmpty(data?.value) && !check) && toast.success(KDFM.PROPERTY_EDITED);
+      setListPropertTableData(prevData =>
+        prevData.map(item =>
+          item.name === selectedPropertyToEdit.name
+            ? {
+                ...item,
+                value: isEmpty(data?.value) && !check ? null : data.value,
+                empty_string_set: data?.check,
+              }
+            : item
+        )
+      );
+      toast.success(KDFM.PROPERTY_EDITED);
+    }
     setIsAddpropertiesModalOpen(false);
   };
   const check = useWatch({
     control,
     name: 'check',
   });
-
   useEffect(() => {
     if (check) {
-      setValue('value', '');
+      if (selectedPropertyToEdit?.sensitive) {
+        setSenstiveValueChanged(true);
+        setValue('value', '');
+      } else {
+        setValue('value', '');
+      }
     } else if (!check) {
       setValue('value', selectedPropertyToEdit?.value);
+      setSenstiveValueChanged(false);
     }
-  }, [check, setValue]);
+  }, [check, setValue, selectedPropertyToEdit]);
   useEffect(() => {
+    setSenstiveValueChanged(false);
     reset({
       value: selectedPropertyToEdit?.value,
       check: selectedPropertyToEdit?.empty_string_set || false,
@@ -78,9 +108,31 @@ const AddProperties = ({
 
   const propertyValue = watch('value');
   useEffect(() => {
-    setValue('check', selectedPropertyToEdit?.check);
+    setValue(
+      'check',
+      selectedPropertyToEdit?.sensitive ? false : selectedPropertyToEdit?.check
+    );
   }, [selectedPropertyToEdit, setValue]);
 
+  const disableSaveButton = (value, check, selecetdData) => {
+    if (sensitiveValueChanged) {
+      return false;
+    } else if (value === selecetdData?.value && selecetdData?.sensitive) {
+      return true;
+    } else if (
+      value === selecetdData?.value &&
+      !selecetdData?.sensitive &&
+      check === selecetdData?.check
+    ) {
+      return true;
+    } else return false;
+  };
+
+  const handleKeyDown = e => {
+    if (e.key === 'Backspace' && selectedPropertyToEdit?.sensitive) {
+      setSenstiveValueChanged(true);
+    }
+  };
   return (
     <div>
       <Modal
@@ -91,11 +143,11 @@ const AddProperties = ({
         primaryButtonText="Save"
         onSubmit={handleSubmit(handleFormSubmit)}
         footerAlign="start"
-        primaryButtonDisabled={
-          (propertyValue === selectedPropertyToEdit?.value &&
-            check === selectedPropertyToEdit?.check) ??
-          false
-        }
+        primaryButtonDisabled={disableSaveButton(
+          propertyValue,
+          check,
+          selectedPropertyToEdit
+        )}
       >
         <ModalBody className="modal-body">
           <InputField
@@ -105,13 +157,22 @@ const AddProperties = ({
             icon={<QRIcons />}
             register={register}
             disabled={check}
+            onKeyDown={handleKeyDown}
+            placeholder={
+              selectedPropertyToEdit?.sensitive && !check
+                ? 'Sensitive Value Set'
+                : selectedPropertyToEdit?.value?.includes('*') && !check
+                  ? 'Sensitive Value Set'
+                  : ''
+            }
           />
           <CheckboxField
             name="check"
             label={'Set empty string'}
             defaultChecked={
-              selectedPropertyToEdit?.check ||
-              selectedPropertyToEdit?.value === ''
+              !selectedPropertyToEdit?.sensitive &&
+              (selectedPropertyToEdit?.check ||
+                selectedPropertyToEdit?.value === '')
             }
             register={register}
           />

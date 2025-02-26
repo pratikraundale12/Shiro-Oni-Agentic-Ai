@@ -70,7 +70,6 @@ const AddVariables = ({
     variableContextItem,
     setValue,
   ]);
-
   const handleAddEditVariables = async data => {
     if (!data) return;
     const variableData = {
@@ -290,7 +289,6 @@ const AddVariables = ({
     control,
     name: 'check',
   });
-
   useEffect(() => {
     if (check) {
       setValue('value', '');
@@ -300,6 +298,7 @@ const AddVariables = ({
   }, [check, setValue]);
 
   const variableValue = watch('value');
+
   return (
     <Modal
       title={
@@ -320,7 +319,7 @@ const AddVariables = ({
       )}
       primaryButtonDisabled={
         (variableValue === variableContextItem?.variable?.value &&
-          check === variableContextItem?.variable?.check) ??
+          check === variableContextItem?.check) ??
         false
       }
     >

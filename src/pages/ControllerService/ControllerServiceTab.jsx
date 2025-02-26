@@ -1519,8 +1519,9 @@ const ControllerServiceTab = ({
   const handleAddValueModal = item => {
     setIsAddpropertiesModalOpen(true);
     setSelectedPropertyToEdit({
-      check: item?.value === '' ? true : false,
       ...item,
+      check: item?.value === '' ? true : false,
+      value: item?.sensitive ? null : item?.value,
     });
   };
 

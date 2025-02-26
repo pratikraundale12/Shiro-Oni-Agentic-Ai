@@ -31,7 +31,7 @@ const Schema = yup.object().shape({
   namespace_name: yup.string(),
   source_cluster_name: yup.string(),
   destination_cluster_name: yup.string(),
-  scheduled_time: yup.string().required('Deploy time is required'),
+  scheduled_time: yup.string().required('Schedule deploy time is required'),
 });
 
 export const TokenScheduleDeploymentModal = () => {
