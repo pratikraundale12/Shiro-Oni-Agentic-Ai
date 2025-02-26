@@ -17,11 +17,11 @@ const ValueRender = ({
   return (
     <>
       <div>
-        {item?.empty_string_set ? (
+        {item?.empty_string_set && !item?.sensitive ? (
           'Empty String Set'
-        ) : item?.sensitive ? (
+        ) : item?.sensitive && item?.value !== null ? (
           'Sensitive value set'
-        ) : item?.dropDownName ? (
+        ) : item?.dropDownName  ? (
           <div> {item?.dropDownName}</div>
         ) : item?.value ? (
           <div>{item?.value}</div>
