@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { KsolvesDataFlowIcon, MicroSoftIcon } from '../assets';
 import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
 import { changeFavicon, changeTitle } from '../helpers';
@@ -386,7 +387,6 @@ export const Layout = ({ children }) => {
     }
   };
 
-
   useEffect(() => {
     if (settingLogo?.favicon) {
       changeFavicon(settingLogo?.favicon);
@@ -446,18 +446,18 @@ export const Layout = ({ children }) => {
             </Content>
             {(isUserLogin || isAdminLogin) && (
               <LoginBtnContainer
-              style={btnStyles(isUserLogin)}
-              className={`d-flex align-items-center justify-content-between`}
-            >
-              <StyledLoginBox onClick={handleRedirection}>
-                <RedirectionSection>
-                  <RedirectionText>
-                    Login via &nbsp;
-                    {isUserLogin ? 'Admin' : 'User'}
-                  </RedirectionText>
-                </RedirectionSection>
-              </StyledLoginBox>
-            </LoginBtnContainer>
+                style={btnStyles(isUserLogin)}
+                className={`d-flex align-items-center justify-content-between`}
+              >
+                <StyledLoginBox onClick={handleRedirection}>
+                  <RedirectionSection>
+                    <RedirectionText>
+                      Login via &nbsp;
+                      {isUserLogin ? 'Admin' : 'User'}
+                    </RedirectionText>
+                  </RedirectionSection>
+                </StyledLoginBox>
+              </LoginBtnContainer>
             )}
             {(isForgotPassword || isReset) && (
               <SignInContainer>

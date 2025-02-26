@@ -62,6 +62,7 @@ import {
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 
 export const ROUTES_MENU = [
   {

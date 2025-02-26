@@ -9,7 +9,7 @@ import { history } from '../../helpers/history';
 
 const AZURE_CALLBACK_ENDPOINT = `${API_URL}/api/auth/azure/callback`;
 
-export const AzureCallbackHandler = () => {
+const AzureCallbackHandler = () => {
   const isMounted = useRef(false);
   const dispatch = useDispatch();
   const location = useLocation();
@@ -64,3 +64,5 @@ export const AzureCallbackHandler = () => {
 
   return null;
 };
+
+export default AzureCallbackHandler;
