@@ -15,6 +15,7 @@ import {
 } from '../../../store';
 import { ClusterLoginModal } from '../../ClusterLoginModal';
 import { IconButton } from './AtionRender';
+import { isEmpty } from 'lodash';
 
 const EnableClusterText = styled.div`
   display: block;
@@ -54,7 +55,9 @@ export const EnableClusterRender = ({ item }) => {
 
       const clusterItem = localStorage.getItem('selected_cluster');
       const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
-      const tokenToRemove = clustersToken.filter(token => token.id === item.id);
+      const tokenToRemove =
+        !isEmpty(clustersToken) &&
+        clustersToken?.filter(token => token.id === item?.id);
       const payload = { id: item?.id, token: tokenToRemove?.[0]?.token };
       dispatch(ClustersActions.clusterLogout(payload));
       if (clusterItem) {
