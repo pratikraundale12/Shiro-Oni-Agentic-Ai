@@ -30,7 +30,7 @@ jobs:
           username: ${{ secrets.STAGING_SERVER_USER }}
           key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
           source: "build/*"
-          target: "~/dfm-bundle/dist/client/build/*"
+          target: "~/dfm-bundle/dist/client/"
 
       - name: Restart Staging Backend Service
         uses: appleboy/ssh-action@master
