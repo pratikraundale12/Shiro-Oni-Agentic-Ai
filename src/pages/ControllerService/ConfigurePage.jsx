@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { PlusCircleIcon, SmallSearchIcon } from '../../assets';
 import { Table, TextRender } from '../../components';
-import { KDFM } from '../../constants';
-import { Button, CheckboxField, Modal } from '../../shared';
+import { KDFM, SEARCH_INPUT_ERROR } from '../../constants';
+import { Button, CheckboxField, Modal, FieldErrorMessage } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { theme } from '../../styles';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -75,6 +75,8 @@ const ConfigurePage = ({
     NamespacesSelectors?.getRootControllerServiceNamespace
   );
   const [search, setSearch] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [searchErrorMsg, setSearchErrorMsg] = useState({});
   const filteredModulesData = listData.filter(
     module =>
       module?.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -199,11 +201,21 @@ const ConfigurePage = ({
           />
           <Search
             type="search"
-            value={search}
+            value={searchText}
             placeholder="Search Controller Service by Name and State"
             onChange={e => {
               const value = e.target.value;
-              if (value.length <= 100) {
+              setSearchText(value);
+              setSearchErrorMsg({
+                search: {
+                  message: SEARCH_INPUT_ERROR,
+                },
+              });
+              if (
+                value.length <= 100 &&
+                (value.length >= 3 || value?.length === 0)
+              ) {
+                setSearchErrorMsg({});
                 setSearch(value);
               }
             }}
@@ -215,6 +227,11 @@ const ConfigurePage = ({
             }}
           />
         </SearchContainer>
+        <FieldErrorMessage
+          name="search"
+          errors={searchErrorMsg}
+          className={'mb-1'}
+        />
         <Button
           icon={<PlusCircleIcon width={16} height={16} color="white" />}
           type="button"
