@@ -358,13 +358,6 @@ export const Grid = ({
       setCurrentPage(1);
     }
   }, [TABLE_DATA]);
-  useEffect(() => {
-    if (next) {
-      setCurrentPage(next - 1);
-    } else {
-      setCurrentPage(prev + 1);
-    }
-  }, [next, prev]);
 
   const METRICS_URL_COLUMN = [
     {
