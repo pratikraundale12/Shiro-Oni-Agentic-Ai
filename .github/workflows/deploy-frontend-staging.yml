@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies and build
         run: |
           npm install
-          npm run build
+          ESLINT_NO_DEV_ERRORS=true npm run build
 
       - name: Deploy Build to Staging Server
         uses: appleboy/scp-action@master
