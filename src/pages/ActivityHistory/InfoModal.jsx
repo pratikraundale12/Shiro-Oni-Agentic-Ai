@@ -23,7 +23,7 @@ export const InfoModalActivityHistory = () => {
   const renderItems = item => {
     if (item.url) {
       return (
-        <div
+        <span
           onClick={() => handleRegistryClick()}
           style={{
             cursor: 'pointer',
@@ -38,24 +38,21 @@ export const InfoModalActivityHistory = () => {
             <OpenLinkIcon />
           </IconButton>
           {item?.value || 'N/A'}
-        </div>
+        </span>
       );
     } else {
-      return item?.value || 'N/A';
+      return <span> {item?.value || 'N/A'}</span>;
     }
   };
-
   const COLUMNS = [
     {
       label: 'Property',
       renderCell: item => item?.title,
-      width: '50%',
       resize: true,
     },
     {
       label: 'Value',
       renderCell: item => <>{renderItems(item)}</>,
-      width: '50%',
       resize: true,
     },
   ];
