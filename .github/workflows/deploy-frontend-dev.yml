@@ -40,4 +40,4 @@ jobs:
           key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/dfm-bundle
-            pm2 restart dist/bundle.obfuscated.js
+            pm2 restart dist/bundle.js
