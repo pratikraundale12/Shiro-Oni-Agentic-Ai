@@ -23,7 +23,12 @@ import {
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { getButtonPermissions } from '../../helpers/permissions';
-import { Button, DateRangePickerInput, SelectField } from '../../shared';
+import {
+  Button,
+  DateRangePickerInput,
+  FieldErrorMessage,
+  SelectField,
+} from '../../shared';
 import {
   AuthenticationSelectors,
   ClustersSelectors,
@@ -75,7 +80,7 @@ const SearchContainer = styled.div`
 
   svg {
     position: absolute;
-    top: 50%;
+    top: ${props => props.topPosition};
     left: 16px;
     transform: translateY(-50%);
   }
@@ -222,6 +227,7 @@ export const GridActions = ({
     GridSelectors.getGridBreadcrumb(state, module)
   );
   const { setState } = useGlobalContext();
+  const [searchValue, setSearchValue] = useState('');
   const uniqueRoles = useMemo(() => {
     return Array.from(new Set(roles.map(role => role.name))).map(name => {
       return roles.find(role => role.name === name);
@@ -256,6 +262,8 @@ export const GridActions = ({
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
     setState(prev => ({ ...prev, search: null }));
+    setSearchValue('');
+    setSearchErrorMsg({});
     inputRef.current.value = '';
 
     if (module === 'namespaces') {
@@ -263,6 +271,8 @@ export const GridActions = ({
         GridSagsActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );
       setState(prev => ({ ...prev, search: null }));
+      setSearchValue('');
+      setSearchErrorMsg({});
       inputRef.current.value = '';
     }
     if (module === 'scheduler') {
@@ -530,6 +540,8 @@ export const GridActions = ({
       dispatch(SchedularActions.setScheduleSelectRange([]));
       dispatch(GridSagsActions.fetchGrid({ module, clusterId, params: {} }));
       setState(prev => ({ ...prev, search: null }));
+      setSearchValue('');
+      setSearchErrorMsg({});
       inputRef.current.value = '';
       setClusterSelectedValue(null);
       dispatch(SchedularActions.setSelectedClusterState(null));
@@ -537,6 +549,8 @@ export const GridActions = ({
     } else if (module === 'activityHistory') {
       setValue('is_active', null);
       setState(prev => ({ ...prev, search: null }));
+      setSearchValue('');
+      setSearchErrorMsg({});
       inputRef.current.value = '';
       setSelectEvent(null);
       setSelectEntity(null);
@@ -545,6 +559,8 @@ export const GridActions = ({
       setValue('is_active', null);
       setSelectedRole(null);
       setState(prev => ({ ...prev, search: null }));
+      setSearchValue('');
+      setSearchErrorMsg({});
       inputRef.current.value = '';
       setSortingState(null);
     }
@@ -553,6 +569,8 @@ export const GridActions = ({
   useEffect(() => {
     dispatch(SchedularActions.setSelectedStatusState(watchStatus));
   }, [watchStatus]);
+
+  const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
   return (
     <>
@@ -771,7 +789,9 @@ export const GridActions = ({
           </ButtonsContainer>
         )}
       </Flex>
-      <SearchContainer>
+      <SearchContainer
+        topPosition={Object.keys(searchErrorMsg).length ? '39%' : '50%'}
+      >
         <SmallSearchIcon
           width={18}
           height={18}
@@ -779,16 +799,32 @@ export const GridActions = ({
         />
         <Search
           type="search"
-          value={search}
+          value={searchValue}
           ref={inputRef}
           placeholder={placeholder}
           onChange={e => {
             const value = e.target.value;
-            if (value.length <= 100) {
-              setState(prev => ({ ...prev, search: value }));
+            setSearchValue(value);
+            if (value.length < 3) {
+              setSearchErrorMsg({
+                search: {
+                  message: 'Please enter atleast 3 characters to search',
+                },
+              });
+            }
+            if (
+              value.length <= 100 &&
+              (value.length >= 3 || value?.length === 0)
+            ) {
+              setSearchErrorMsg({});
+              setState(prev => ({
+                ...prev,
+                search: value.trim().replace(/\s+/g, ' '),
+              }));
             }
           }}
         />
+        <FieldErrorMessage name="search" errors={searchErrorMsg} />
       </SearchContainer>
     </>
   );
