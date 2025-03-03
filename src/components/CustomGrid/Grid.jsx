@@ -238,7 +238,8 @@ export const Grid = ({
   };
 
   const getLoader = () => {
-    if (loading) return <Loader size="lg" />;
+    if (loading || (gridCount > 0 && isEmpty(gridData)))
+      return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
       return (
         <LoaderContainer>
