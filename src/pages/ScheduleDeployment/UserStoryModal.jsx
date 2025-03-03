@@ -73,7 +73,11 @@ export const UserStoryModal = () => {
 
   const handleRegistryClick = () => {
     if (!selectedSchedule?.user_story_url) return;
-    window.open(selectedSchedule?.user_story_url, '_blank');
+    let url = selectedSchedule?.user_story_url;
+    if (!/^https?:\/\//i.test(url)) {
+      url = 'https://' + url;
+    }
+    window.open(url, '_blank');
   };
 
   return (
