@@ -6,20 +6,12 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import {
-  LinkIcon,
-  NoDataIcon,
-  PlusCircleIcon,
-  QRIcons,
-  RightCircleIcon,
-  TagIcon,
-} from '../../assets';
+import { LinkIcon, NoDataIcon, PlusCircleIcon, QRIcons } from '../../assets';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, CheckboxField, InputField, SelectField } from '../../shared';
+import { Button, InputField, SelectField } from '../../shared';
 import {
   ClustersActions,
   ClustersSelectors,
@@ -40,6 +32,13 @@ import { FailedTestModal } from './components/FailedTestModal';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
+import ClusterFieldsForm from './components/ClusterFieldsForm';
+import ClusterTagInput from './components/ClusterTagInput';
+import ClusterCheckBoxSection from './components/ClusterCheckboxSection';
+import CertificateTextDisplay from './components/CertificateTextDisplay';
+import ClusterTestSection from './components/ClusterTestSection';
+import RegistryFormSection from './components/RegistryFormSection';
+import ClusterNavigationTab from './components/ClusterNavigationTab';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -53,50 +52,6 @@ const Container = styled.div`
   margin-bottom: 2rem;
   height: 88%;
   overflow: auto;
-`;
-
-const NavTabs = styled.div`
-  border-bottom: 1px solid ${props => props.theme.colors.border};
-  display: flex;
-`;
-
-const NavButton = styled.button`
-  border: 0;
-  background: none;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: 600;
-  font-family: ${props => props.theme.fontNato};
-  color: ${props =>
-    props.active ? props.theme.colors.primary : props.theme.colors.darkGrey2};
-  cursor: ${({ disabled }) =>
-    disabled ? 'not-allowed !important' : 'pointer !important'};
-  opacity: ${({ disabled }) => (disabled ? '0.5 !important' : '1')};
-  transition:
-    color 0.3s,
-    border-bottom 0.3s;
-  ${props =>
-    props.active &&
-    `border-bottom: 1px solid ${props.theme.colors.primaryActive};`}
-`;
-
-const Flex = styled.div`
-  display: flex;
-  gap: 2rem;
-  align-items: center;
-`;
-const CheckBoxFlex = styled.div`
-  display: flex;
-  gap: 1rem;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-`;
-const FlexTwo = styled.div`
-  display: flex;
-  gap: 2rem;
-  justify-content: space-between;
-  align-items: flex-end;
 `;
 
 const FlexWrapper = styled.div`
@@ -118,41 +73,6 @@ const ORText = styled.div`
   font-weight: 500;
   font-size: 20px;
   line-height: 26px;
-`;
-
-const ButtonLabel = styled.h6`
-  margin-bottom: 10px;
-  color: #425466;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 18px;
-  margin-top: 15px;
-`;
-
-const UploadCertificateContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  padding: 20px;
-  border-radius: 20px;
-  margin-top: auto;
-  height: 95px;
-`;
-
-const CertificateMessage = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 22px;
-`;
-
-const TextTest = styled.div`
-  font-family: ${props => props.theme.fontNato};
-  font-weight: 500;
-  font-size: 1.25rem;
-  color: #444445;
-  line-height: 27.24px;
-  max-width: 100%;
 `;
 
 const StyledButton = styled(Button)`
@@ -183,63 +103,6 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const RegistryDetailsDiv = styled.div`
-  background-color: ${props => props.theme.colors.white};
-  padding: 25px;
-  border-radius: 8px;
-  margin-top: auto;
-`;
-
-const TitleRegistry = styled.h6`
-  font-family: noto sans;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 21.79px;
-  letter-spacing: -0.005em;
-  margin-bottom: 20px;
-  color: #4b5564;
-`;
-
-const BoxContentArea = styled.div`
-  margin-bottom: 20px;
-
-  & .copy-button {
-    position: absolute;
-    right: -3rem;
-    top: -0.5rem;
-  }
-
-  p {
-    margin-bottom: 16px;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 15.73px;
-    letter-spacing: -0.005em;
-    color: #2d343f;
-  }
-
-  span {
-    display: flex;
-    position: relative;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 14.52px;
-    letter-spacing: -0.005em;
-    color: #7a7a7a;
-  }
-`;
-
-const RegistryDetailsDivTwo = styled.div`
-  padding-left: -4px;
-  margin-top: 1.5rem;
-`;
-
-const ButtonDiv = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
 const NoDataContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -258,83 +121,9 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
-const TagsInputContainer = styled.div`
-  position: relative;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #ffffff;
-  padding: 0.5em 0.5em 0.5em 56px;
-  border-radius: 3px;
-  width: 100%;
-  font-size: 14px;
-  color: #444445;
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5em;
-  margin-bottom: 40px;
-  input::placeholder {
-    color: ${props => props.theme.colors.grey};
-    font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
-  }
-  input:focus-visible {
-    outline: none;
-  }
-  input:focus {
-    border: none;
-  }
-`;
-const IconTag = styled.span`
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  bottom: 2px;
-  z-index: 1;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  padding: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f7fa;
-`;
-const TagItem = styled.div`
-  background-color: rgb(218, 216, 216);
-  display: flex;
-  padding: 0.5em 0.75em;
-  border-radius: 20px;
-`;
-const CloseButton = styled.button`
-  height: 20px;
-  width: 20px;
-  background-color: rgb(48, 48, 48);
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: 0.5em;
-  font-size: 18px;
-  cursor: pointer;
-`;
-const TagsInput = styled.input`
-  flex-grow: 1;
-  padding: 0.5em 0;
-  border: none;
-  outline: none;
-`;
-const CharacterCount = styled.span`
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-`;
-
 export const Add = () => {
   const [activeTab, setActiveTab] = useState(CLUSTER_MODULE_TABS.CLUSTER);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [isCredOpen, setIsCredOpen] = useState(false);
   const [test, setTest] = useState(true);
   const [successModal, setSuccessModal] = useState(false);
@@ -497,7 +286,6 @@ export const Add = () => {
   };
 
   const editClusterData = async () => {
-    setLoading(true);
     try {
       const payload = {
         name: clusterData?.clusterName,
@@ -547,8 +335,6 @@ export const Add = () => {
         error.response?.data?.message ||
           'An error occurred while updating the cluster'
       );
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -758,17 +544,12 @@ export const Add = () => {
     }
   }
 
-  const handleBlur = () => {
-    setInputValue('');
-  };
-
   function removeTag(tagToRemove) {
     const currentTags = tags.split(',').filter(tag => tag);
     const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
     setTags(updatedTags.join(','));
   }
   const testData = async () => {
-    setLoading(true);
     const payload = new FormData();
     if (activeTab === 'cluster') {
       payload.append('name', clusterData.clusterName);
@@ -778,11 +559,9 @@ export const Add = () => {
       if (response.status === 200) {
         setTestSuccess(true);
         setSuccessModal(true);
-        setLoading(false);
       } else {
         setFailedTestMessage(response.message);
         setFailedModal(true);
-        setLoading(false);
       }
     } else {
       //this code needs to updateee for edit functionality
@@ -796,10 +575,8 @@ export const Add = () => {
       if (response.status === 204) {
         setTestSuccess(true);
         setSuccessModal(true);
-        setLoading(false);
       } else {
         setFailedModal(true);
-        setLoading(false);
       }
     }
   };
@@ -835,9 +612,7 @@ export const Add = () => {
         !checkEditSave())
     );
   };
-  const tagsPlaceholder = () => {
-    return isEmpty(tags.split(',').filter(tag => tag)) ? 'Cluster Tags' : '';
-  };
+
   const giveSubmitButtonText = () => {
     if (newRegistry) {
       return KDFM.CONTINUE;
@@ -854,23 +629,6 @@ export const Add = () => {
   };
   const showRegistryContiueButton = () => {
     return !newRegistry && activeTab === 'registry';
-  };
-
-  const giveTestText = () => {
-    return activeTab === CLUSTER_MODULE_TABS.REGISTRY
-      ? KDFM.REGISTRY_TESTED_SUCCESS_PROMPT
-      : KDFM.CLUSTER_TESTED_SUCCESSFULLY;
-  };
-  const giveTestClusterTexts = () => {
-    if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
-      if (clusterId) {
-        return KDFM.CLUSTER_TESTED_SUCCES;
-      } else {
-        return KDFM.CLUSTER_TESTED_SUCCES_PROMPT;
-      }
-    } else {
-      return KDFM.REGISTRY_TESTED_SUCCESS_PROMPT;
-    }
   };
 
   const isTestInvalid = () => !testSuccess;
@@ -899,220 +657,55 @@ export const Add = () => {
     <Wrapper>
       <Title title={handleTitleProvider(data)} />
       <Container>
-        <NavTabs id="nav-tab" role="tablist">
-          <NavButton
-            active={activeTab === CLUSTER_MODULE_TABS.CLUSTER}
-            onClick={() => {
-              setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
-              setNewRegistry(false);
-            }}
-          >
-            {KDFM.CLUSTER_DETAILS}
-          </NavButton>
-          <>
-            <NavButton
-              active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
-              onClick={() =>
-                Object.keys(data || {})?.length
-                  ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
-                  : {}
-              }
-              disabled={isRegistryDetailDisable()}
-              data-tooltip-id="navButtonTooltip"
-            >
-              {KDFM.REGISTRY_DETAILS}
-            </NavButton>
-
-            {isRegistryDetailDisable() && (
-              <ReactTooltip
-                id="navButtonTooltip"
-                place="right"
-                effect="solid"
-                content="You have unsaved changes on Cluster Details"
-                style={{
-                  whiteSpace: 'normal',
-                  zIndex: 9999,
-                }}
-                event="focus"
-                eventOff="blur"
-              />
-            )}
-          </>
-        </NavTabs>
+        <ClusterNavigationTab
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          setNewRegistry={setNewRegistry}
+          isRegistryDetailDisable={isRegistryDetailDisable()}
+          data={data}
+        />
 
         {activeTab === CLUSTER_MODULE_TABS.CLUSTER && (
           <FormContainer>
-            <InputField
-              name="clusterName"
+            <ClusterFieldsForm
               register={register}
-              icon={<QRIcons />}
-              label={KDFM.CLUSTER_NAME}
-              placeholder={KDFM.ENTER_CLUSTER_NAME}
               errors={errors}
+              testSuccess={testSuccess}
             />
-            <InputField
-              name="nifiUrl"
+            <ClusterTagInput
+              tags={tags}
+              removeTag={removeTag}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
               register={register}
-              icon={<LinkIcon />}
-              label={KDFM.NIFI_URL}
-              disabled={testSuccess}
-              placeholder={KDFM.ENTER_NIFI_URL}
-              errors={errors}
+              handleKeyDown={handleKeyDown}
             />
-            <InputField
-              name="metrics_url"
-              register={register}
-              icon={<LinkIcon />}
-              label={KDFM.METRICS_URL}
-              placeholder={KDFM.ENTER_METRICS_URL}
-              errors={errors}
+            <ClusterCheckBoxSection
+              approverEnable={approverEnable}
+              setApproverEnable={setApproverEnable}
+              setChangeRequestApproverEnable={setChangeRequestApproverEnable}
+              setNotificationEnable={setNotificationEnable}
+              changeRequestEnable={changeRequestEnable}
+              notificationEnable={notificationEnable}
             />
-            <InputField
-              name="logs_url"
-              register={register}
-              icon={<LinkIcon />}
-              label={KDFM.LOGS_URL}
-              placeholder={KDFM.ENTER_LOGS_URL}
-              errors={errors}
+            <ClusterTestSection
+              test={test}
+              setIsCertificateOpen={setIsCertificateOpen}
+              testSuccess={testSuccess}
+              dataFill={dataFill}
+              checkDuplicate={checkDuplicate}
+              checkDuplicateName={checkDuplicateName}
+              setIsCredOpen={setIsCredOpen}
+              testData={testData}
+              watchedFields={watchedFields}
+              data={data}
             />
-            <label htmlFor="tags-input" className="tags-input-label">
-              Cluster Tags
-            </label>
-            <TagsInputContainer className="tags-input-container">
-              <IconTag className="icon-placeholder">
-                <TagIcon />
-              </IconTag>
-              {tags
-                .split(',')
-                .filter(tag => tag)
-                .map((tag, index) => (
-                  <TagItem className="tag-item" key={tag}>
-                    <CharacterCount className="text">
-                      {tag.length > 10 ? `${tag.substring(0, 10)}...` : tag}
-                    </CharacterCount>
-                    <CloseButton
-                      className="close"
-                      tabIndex={0}
-                      onClick={() => removeTag(tag)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          removeTag(tag);
-                        }
-                      }}
-                      aria-label={`Remove tag ${tag}`}
-                    >
-                      &times;
-                    </CloseButton>
-                  </TagItem>
-                ))}
-
-              <TagsInput
-                type="text"
-                value={inputValue}
-                placeholder={tagsPlaceholder()}
-                name="tags"
-                {...register('tags')}
-                onKeyDown={e => handleKeyDown(e)}
-                onBlur={handleBlur}
-                onChange={e => setInputValue(e.target.value)}
-                aria-label="Add a tag"
-              />
-
-              {tags.split(',').filter(tag => tag).length >= 5 && (
-                <p
-                  className="mb-0"
-                  style={{
-                    color: 'red',
-                    position: 'absolute',
-                    bottom: '-25px',
-                    left: '0px',
-                  }}
-                >
-                  Tag limit reached (5 tags max)
-                </p>
-              )}
-            </TagsInputContainer>
-
-            <CheckBoxFlex>
-              <CheckboxField
-                name="check"
-                label="Need approval for the deployment schedule?"
-                checked={approverEnable}
-                onChange={e => setApproverEnable(e.target.checked)}
-              />
-              {approverEnable && (
-                <CheckboxField
-                  name="check"
-                  label="Change request for deployment schedule?"
-                  checked={changeRequestEnable}
-                  onChange={e =>
-                    setChangeRequestApproverEnable(e.target.checked)
-                  }
-                />
-              )}
-              <CheckboxField
-                name="check"
-                label="Do you want any notification for this cluster?"
-                checked={notificationEnable}
-                onChange={e => setNotificationEnable(e.target.checked)}
-              />
-            </CheckBoxFlex>
-
-            <Flex>
-              {test ? (
-                <>
-                  <div>
-                    <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
-                    <Button
-                      onClick={() => setIsCertificateOpen(true)}
-                      disabled={
-                        testSuccess ||
-                        !dataFill ||
-                        checkDuplicate ||
-                        checkDuplicateName ||
-                        watchedFields?.[1] === data?.nifi_url
-                      }
-                    >
-                      {KDFM.ADD_CERTIFICATE}
-                    </Button>
-                  </div>
-                  <ORText>{KDFM.SEPARATOR}</ORText>
-                  <div>
-                    <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
-                    <Button
-                      onClick={() => setIsCredOpen(true)}
-                      disabled={
-                        testSuccess ||
-                        !dataFill ||
-                        checkDuplicate ||
-                        checkDuplicateName ||
-                        watchedFields?.[1] === data?.nifi_url
-                      }
-                    >
-                      {KDFM.ENTER_CREDENTIALS}
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <div>
-                  <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
-                  <Button
-                    onClick={testData}
-                    // disabled={!isEditDetails}
-                    loading={loading}
-                  >
-                    {KDFM.TEST_CLUSTER}
-                  </Button>
-                </div>
-              )}
-            </Flex>
             {testSuccess && !successModal && (
-              <UploadCertificateContainer>
-                <CertificateMessage>
-                  <RightCircleIcon width={60} height={60} />
-                  <TextTest>{giveTestClusterTexts()}</TextTest>
-                </CertificateMessage>
-              </UploadCertificateContainer>
+              <CertificateTextDisplay
+                clusterModule={true}
+                activeTab={activeTab}
+                clusterId={clusterId}
+              />
             )}
           </FormContainer>
         )}
@@ -1158,76 +751,21 @@ export const Add = () => {
         )}
         {activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry && (
           <FormContainer>
-            <InputField
-              name="registryName"
+            <RegistryFormSection
               register={register}
-              icon={<QRIcons />}
-              label={KDFM.REGISTRY_NAME}
-              placeholder={KDFM.ENTER_REGISTRY_NAME}
               errors={errors}
+              testSuccess={testSuccess}
+              test={test}
+              setIsCertificateOpen={setIsCertificateOpen}
+              dataFill={dataFill}
+              checkDuplicateRegistry={checkDuplicateRegistry}
+              checkDuplicateRegistryName={checkDuplicateRegistryName}
+              setIsCredOpen={setIsCredOpen}
+              testData={testData}
+              successModal={successModal}
+              activeTab={activeTab}
+              clusterId={clusterId}
             />
-            <InputField
-              name="registryUrl"
-              register={register}
-              icon={<LinkIcon />}
-              label={KDFM.REGISTRY_URL}
-              disabled={testSuccess}
-              placeholder={KDFM.ENTER_REGISTRY_URL}
-              errors={errors}
-            />
-            <Flex>
-              {test ? (
-                <>
-                  <div>
-                    <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
-                    <Button
-                      onClick={() => setIsCertificateOpen(true)}
-                      disabled={
-                        testSuccess ||
-                        !dataFill ||
-                        checkDuplicateRegistry ||
-                        checkDuplicateRegistryName
-                      }
-                    >
-                      {KDFM.ADD_CERTIFICATE}
-                    </Button>
-                  </div>
-                  <ORText>OR</ORText>
-                  <div>
-                    <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
-                    <Button
-                      onClick={() => setIsCredOpen(true)}
-                      disabled={
-                        testSuccess ||
-                        !dataFill ||
-                        checkDuplicateRegistry ||
-                        checkDuplicateRegistryName
-                      }
-                    >
-                      {KDFM.ENTER_CREDENTIALS}
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <div>
-                  <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
-                  <Button
-                    onClick={testData}
-                    // disabled={addCertificateSatus}
-                  >
-                    {KDFM.TEST_REGISTRY}
-                  </Button>
-                </div>
-              )}
-            </Flex>
-            {testSuccess && !successModal && (
-              <UploadCertificateContainer>
-                <CertificateMessage>
-                  <RightCircleIcon width={60} height={60} />
-                  <TextTest>{giveTestText()}</TextTest>
-                </CertificateMessage>
-              </UploadCertificateContainer>
-            )}
           </FormContainer>
         )}
       </Container>
@@ -1242,11 +780,7 @@ export const Add = () => {
             </Button>
           )}
           {showRegistryContiueButton() && (
-            <Button
-              onClick={handleRegistry}
-              // disabled={ !testSuccess}
-              disabled={!selectedRegistryId}
-            >
+            <Button onClick={handleRegistry} disabled={!selectedRegistryId}>
               {KDFM.CONTINUE}
             </Button>
           )}
@@ -1295,7 +829,7 @@ export const Add = () => {
            Continue with the next steps."
           title="Testing Successful"
         />
-      )}
+      )} 
       <FailedTestModal
         failedTest={failedModal}
         setFailedTest={setFailedModal}
