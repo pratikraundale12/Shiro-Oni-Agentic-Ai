@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { isEmpty } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { useForm } from 'react-hook-form';
@@ -326,6 +326,71 @@ export const GridActions = ({
     }
   }, [dispatch]);
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
+
+  const getDataForList = () => {
+    dispatch(
+      GridSagsActions.fetchGrid({
+        module,
+        clusterId,
+        params: {
+          page: 1,
+          id: scheduleToken,
+          ...(search && { search: search }),
+          ...(watchStatus &&
+            watchStatus !== 'all' && {
+              [getModuleBasedStatusKey(module)]: watchStatus,
+            }),
+          ...(selectedRange && {
+            start_date: selectedRange?.[0]?.toISOString(),
+            end_date: selectedRange?.[1]?.toISOString(),
+          }),
+          ...(location?.pathname?.includes('user-management') &&
+            selectedRole?.value !== 'all' && {
+              role_id: selectedRole?.value,
+            }),
+          ...(location?.pathname?.includes('schedule-deployment') &&
+            clusterSelectedValue?.label !== 'All' && {
+              clusterName: clusterSelectedValue?.label,
+            }),
+          ...(location?.pathname?.includes('activity-history') &&
+            selectEvent?.value !== 'all' && {
+              event: selectEvent?.value,
+            }),
+          ...(location?.pathname?.includes('activity-history') &&
+            selectEntity?.value !== 'all' && {
+              entity: selectEntity?.value,
+            }),
+          ...(location?.pathname?.match(
+            /user-management|clusters|schedule-deployment|activity-history/
+          ) &&
+            sortingState && {
+              sort: sortingState,
+            }),
+        },
+      })
+    );
+  };
+  const fetchSearchData = debounce(() => {
+    if (
+      watchStatus ||
+      selectedRange ||
+      selectedRole ||
+      clusterSelectedValue ||
+      selectEvent ||
+      selectEntity
+    ) {
+      getDataForList();
+    }
+  }, 500);
+
+  useEffect(() => {
+    fetchSearchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      fetchSearchData.cancel();
+    };
+  }, [search]);
+
   useEffect(() => {
     if (
       watchStatus ||
@@ -335,58 +400,10 @@ export const GridActions = ({
       selectEvent ||
       selectEntity
     ) {
-      dispatch(
-        GridSagsActions.fetchGrid({
-          module,
-          clusterId,
-          params: {
-            page: 1,
-            id: scheduleToken,
-            ...(search && { search: search }),
-            ...(watchStatus &&
-              watchStatus !== 'all' && {
-                [getModuleBasedStatusKey(module)]: watchStatus,
-              }),
-            ...(selectedRange && {
-              start_date: selectedRange?.[0]?.toISOString(),
-              end_date: selectedRange?.[1]?.toISOString(),
-            }),
-            ...(location?.pathname?.includes('user-management') &&
-              selectedRole?.value !== 'all' && {
-                role_id: selectedRole?.value,
-              }),
-            ...(location?.pathname?.includes('schedule-deployment') &&
-              clusterSelectedValue?.label !== 'All' && {
-                clusterName: clusterSelectedValue?.label,
-              }),
-            ...(location?.pathname?.includes('activity-history') &&
-              selectEvent?.value !== 'all' && {
-                event: selectEvent?.value,
-              }),
-            ...(location?.pathname?.includes('activity-history') &&
-              selectEntity?.value !== 'all' && {
-                entity: selectEntity?.value,
-              }),
-            ...(location?.pathname?.match(
-              /user-management|clusters|schedule-deployment|activity-history/
-            ) &&
-              sortingState && {
-                sort: sortingState,
-              }),
-          },
-        })
-      );
+      getDataForList();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    watchStatus,
-    entity,
-    event,
-    search,
-    selectedRange,
-    selectEvent,
-    selectEntity,
-  ]);
+  }, [watchStatus, entity, event, selectedRange, selectEvent, selectEntity]);
   const [canWrite, setCanWrite] = useState(false); // State to store canWrite value
   const gridPermissions = useSelector(state =>
     GridSelectors.getGridDataPermissions(state, module)
