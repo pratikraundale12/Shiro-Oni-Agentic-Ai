@@ -40,4 +40,4 @@ jobs:
           key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/dfm-bundle/
-            sudo pm2 restart dist/bundle.js
+            sudo pm2 restart dist/bundle.js --update-env
