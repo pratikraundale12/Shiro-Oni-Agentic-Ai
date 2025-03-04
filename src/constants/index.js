@@ -264,4 +264,4 @@ export const SIDE_MENUS_DISPLAY = [
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];
-export const SEARCH_INPUT_ERROR = 'Please enter atleast 3 characters to search';
+export const SEARCH_INPUT_ERROR = 'Please enter atleast 2 characters to search';
