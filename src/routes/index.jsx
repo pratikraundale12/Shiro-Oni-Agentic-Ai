@@ -10,7 +10,7 @@ import {
   BookIcon,
   ClusterIcon,
   DashboardIcon,
-  GenrateFlowIcon,
+  GenAiIcon,
   LdapConfigIcon,
   LicenseIcon,
   LockIcon,
@@ -29,7 +29,7 @@ import {
   ClusterAccess,
   Dashboard,
   Forgot,
-  GenrateFlow,
+  AiFlowGenerator,
   HelpAndSupport,
   LdapConfig,
   ListClusters,
@@ -65,6 +65,7 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import { KDFM } from '../constants/index.js';
 
 export const ROUTES_MENU = [
   {
@@ -167,16 +168,16 @@ export const ROUTES_MENU = [
     hidden: true,
   },
   {
-    name: 'Generate Flow',
-    path: 'generate-flow',
-    icon: GenrateFlowIcon,
+    name: KDFM.AI_FLOW_GENERATOR,
+    path: 'ai-flow-generator',
+    icon: GenAiIcon,
     pages: [
       {
         path: '',
-        component: <GenrateFlow />,
+        component: <AiFlowGenerator />,
       },
     ],
-    hidden: true,
+    permission: 'view_namespace',
   },
   {
     name: 'User Management',

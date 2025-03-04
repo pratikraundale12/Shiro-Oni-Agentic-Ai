@@ -5,3 +5,4 @@ export * from './clusters';
 export * from './namespaces';
 export * from './dashboard';
 export * from './roles';
+export * from './aiFlowGenerator';

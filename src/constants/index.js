@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
+import { AI_FLOW_GENERATOR_CONSTANTS } from './aiFlowGenerator.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
 import { USER_CONSTANTS } from './user.constant';
@@ -51,7 +52,7 @@ export const RegexConst = {
 export const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
 // Make it true when working on local to make debugging easier
-export const ENABLE_CONSOLE_LOGS = false;
+export const ENABLE_CONSOLE_LOGS = true;
 
 export const STATUS_CODE = {
   BAD_REQUEST: 400,
@@ -262,6 +263,7 @@ export const KDFM = {
   ...NAMESPACE_CONSTANTS,
   ...ACTIVITY_HISTORY_CONSTANTS,
   ...USER_CONSTANTS,
+  ...AI_FLOW_GENERATOR_CONSTANTS,
 };
 
 export const SIDE_MENUS_DISPLAY = [
@@ -276,6 +278,7 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'controller-service', label: 'Controller Services' },
   { path: 'setting', label: 'Settings' },
   { path: 'licensing', label: 'Licensing' },
+  { path: 'ai-flow-generator', label: 'AI Flow Generator' },
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];
