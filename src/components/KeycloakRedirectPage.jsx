@@ -4,12 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AuthenticationActions, LoadingSelectors } from '../store';
 import { FullPageLoader } from './FullPageLoader';
 
-const TempLoadingPage = () => {
+const KeycloakRedirectPage = () => {
   const { keycloak, initialized } = useKeycloak();
   const dispatch = useDispatch();
   useEffect(() => {
     if (initialized && keycloak.token) {
-      console.log(keycloak.token, 'line no. 12');
       dispatch(
         AuthenticationActions.ssoUserLogin({
           loginToken: keycloak.token,
@@ -29,4 +28,4 @@ const TempLoadingPage = () => {
   );
 };
 
-export default TempLoadingPage;
+export default KeycloakRedirectPage;
