@@ -130,6 +130,11 @@ export const SCHEDULE_LIST_REFRESH_OPTIONS = [
   { label: '10 min', value: '600000' },
 ];
 
+export const SSO_LOGIN_TYPE = [
+  { label: 'Azure', value: 'azure' },
+  { label: 'Keycloak', value: 'keycloak' },
+];
+
 export const LICENSE_TYPE = {
   TRIAL: 'trial',
   PURCHASED: 'purchased',
@@ -218,6 +223,8 @@ export const KDFM = {
   LDAP: 'Ldap',
   SCHEDULE_DIPLOYMENT: 'Deployment Schedule',
   SERVICE_ACCOUNT: 'Service Account',
+  SSO_LoGIN: 'SSO Login',
+  LOGIN_TYPE: 'Login Type',
   CONTROLLER_SERVICE_DATA: 'External Controller Services',
   SMTP: 'Email Configuration',
   FLOW_CONTROL_WARNING:

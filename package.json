@@ -15,6 +15,7 @@
     "@emotion/react": "^11.11.4",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.9.0",
+    "@react-keycloak/web": "^3.4.0",
     "@reduxjs/toolkit": "^2.2.7",
     "@table-library/react-table-library": "^4.1.7",
     "apexcharts": "^4.0.0",

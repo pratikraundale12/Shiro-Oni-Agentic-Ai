@@ -46,8 +46,9 @@ import {
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
 // import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
+import TempLoadingPage from '../components/TempLoadingPage.jsx';
+import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
-import RedirectToLogin from './RedirectToLogin.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
 import FlowDetailsPage from '../pages/Namespaces/FlowDetailsPage.jsx';
 import ListControllerServiceNamespace from '../pages/Namespaces/ListControllerServiceNamespace';
@@ -61,8 +62,8 @@ import {
   LoadingSelectors,
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
+import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
-import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -335,6 +336,7 @@ const Routes = () => {
         path="/api/auth/azure/callback"
         element={<AzureCallbackHandler />}
       />
+      <Route path="/keycloakLogin" element={<TempLoadingPage />} />
       <Route path="/back-to-login" element={<RedirectToLogin />} />
       <Route path="/admin/login" element={<Login />} />
       <Route path="/forgot" element={<Forgot />} />

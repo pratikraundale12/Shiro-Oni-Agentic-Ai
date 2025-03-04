@@ -6,30 +6,33 @@ import styled from 'styled-components';
 import * as yup from 'yup';
 import {
   CalendarIcon,
+  LoginIcon,
   LogoFieldIcon,
   MailIcon,
+  OpenLinkIcon,
   QRIcons,
   // RefreshIcon,
   UploadIcon,
   UserIcon,
 } from '../../assets';
-import { history } from '../../helpers/history';
 import favicon from '../../assets/images/default-favicon.ico';
 import {
   EMAIL_REGEX,
   EMAIL_REMINDER_OPTIONS,
   KDFM,
   SCHEDULE_LIST_REFRESH_OPTIONS,
-  // REFRESH_OPTIONS,
+  SSO_LOGIN_TYPE,
 } from '../../constants';
+import { history } from '../../helpers/history';
 import {
   Button,
+  CheckboxField,
   InputField,
-  SelectField,
-  UploadField,
   PasswordField,
+  SelectField,
   SwitchButton,
   TextButton,
+  UploadField,
 } from '../../shared';
 import { RolesSelectors } from '../../store';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
@@ -243,6 +246,52 @@ export const Setting = () => {
       settingData?.email_reminder_time
     );
     appendIfChanged(
+      'selected_sso',
+      data?.selected_sso,
+      settingData?.selected_sso
+    );
+    appendIfChanged(
+      'azure_client_id',
+      data?.azure_client_id,
+      settingData?.azure_client_id
+    );
+    appendIfChanged(
+      'azure_redirect_uri',
+      data?.azure_redirect_uri,
+      settingData?.azure_redirect_uri
+    );
+    appendIfChanged(
+      'azure_tenant_id',
+      data?.azure_tenant_id,
+      settingData?.azure_tenant_id
+    );
+    appendIfChanged(
+      'azure_client_secret',
+      data?.azure_client_secret,
+      settingData?.azure_client_secret
+    );
+    appendIfChanged(
+      'show_sso_page',
+      data?.show_sso_page,
+      settingData?.show_sso_page
+    );
+    appendIfChanged(
+      'keycloak_realm',
+      data?.keycloak_realm,
+      settingData?.keycloak_realm
+    );
+    appendIfChanged(
+      'keycloak_url',
+      data?.keycloak_url,
+      settingData?.keycloak_url
+    );
+    appendIfChanged(
+      'keycloak_client_id',
+      data?.keycloak_client_id,
+      settingData?.keycloak_client_id
+    );
+
+    appendIfChanged(
       'smtp_service',
       data?.smtp_service,
       settingData?.smtp_service
@@ -309,7 +358,16 @@ export const Setting = () => {
         settingData?.ldap_auto_sync_time_interval
       );
       setValue('email_reminder_time', settingData?.email_reminder_time);
+      setValue('selected_sso', settingData?.selected_sso);
       setValue('group_email_id', settingData?.group_email_id);
+      setValue('azure_client_id', settingData?.azure_client_id);
+      setValue('azure_redirect_uri', settingData?.azure_redirect_uri);
+      setValue('azure_client_secret', settingData?.azure_client_secret);
+      setValue('azure_tenant_id', settingData?.azure_tenant_id);
+      setValue('show_sso_page', settingData?.show_sso_page);
+      setValue('keycloak_realm', settingData?.keycloak_realm);
+      setValue('keycloak_url', settingData?.keycloak_url);
+      setValue('keycloak_client_id', settingData?.keycloak_client_id);
       setValue('email', settingData?.email);
       setValue('from_email', settingData?.from_email);
       setValue('smtp_service', settingData?.smtp_service);
@@ -354,6 +412,15 @@ export const Setting = () => {
         value.approver_groups !== settingData?.approver_groups ||
         value.group_email_id !== settingData?.group_email_id ||
         value.email_reminder_time !== settingData?.email_reminder_time ||
+        value.selected_sso !== settingData?.selected_sso ||
+        value.azure_client_id !== settingData?.azure_client_id ||
+        value.azure_tenant_id !== settingData?.azure_tenant_id ||
+        value.azure_redirect_uri !== settingData?.azure_redirect_uri ||
+        value.azure_client_secret !== settingData?.azure_client_secret ||
+        value.show_sso_page !== settingData?.show_sso_page ||
+        value?.keycloak_realm !== settingData?.keycloak_realm ||
+        value?.keycloak_url !== settingData?.keycloak_url ||
+        value?.keycloak_client_id !== settingData?.keycloak_client_id ||
         value.ldapEnabled !== settingData?.ldapEnabled;
 
       setIsChanged(isModified);
@@ -402,6 +469,9 @@ export const Setting = () => {
       document.head.appendChild(newFavicon);
     }
   }
+
+  const selectedSSO = watch('selected_sso');
+
   return (
     <Wrapper>
       <form
@@ -688,7 +758,126 @@ export const Setting = () => {
           </InputFields>
         </div>
 
-        <FlexWrapper>
+        <div className="d-flex justify-content-start me-4">
+          <HeadingContent className="mt-4">{KDFM.SSO_LoGIN}</HeadingContent>
+        </div>
+        <HeadingContentHr className="mt-3 mb-4" />
+        <InputFields className="row mb-4">
+          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+            <LabelSelect className="mb-3">{KDFM.LOGIN_TYPE}</LabelSelect>
+            <SelectField
+              name="selected_sso"
+              control={control}
+              icon={<LoginIcon />}
+              errors={errors}
+              options={SSO_LOGIN_TYPE}
+              placeholder="Select SSO Login Type"
+            />
+          </div>
+        </InputFields>
+
+        {selectedSSO === 'azure' && (
+          <>
+            <InputFields className="row mb-4">
+              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                <InputField
+                  name="azure_client_id"
+                  register={register}
+                  icon={<UserIcon />}
+                  label="Azure Client ID"
+                  placeholder="Enter Client ID"
+                  errors={errors}
+                />
+              </div>
+              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                <InputField
+                  name="azure_client_secret"
+                  register={register}
+                  icon={<UserIcon />}
+                  label="Azure Client Secret"
+                  placeholder="Enter Client Secret"
+                  errors={errors}
+                />
+              </div>
+              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                <InputField
+                  name="azure_tenant_id"
+                  register={register}
+                  icon={<UserIcon />}
+                  label="Azure Tenant ID"
+                  placeholder="Enter Tenant ID"
+                  errors={errors}
+                />
+              </div>
+            </InputFields>
+
+            <InputFields className="row mb-4 align-items-center">
+              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                <InputField
+                  name="azure_redirect_uri"
+                  register={register}
+                  icon={<OpenLinkIcon color="#444445" />}
+                  label="Azure Redirect URL"
+                  placeholder="Enter Redirect URL"
+                  errors={errors}
+                />
+              </div>
+
+              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                <CheckboxField
+                  name="show_sso_page"
+                  label="Show SSO Page"
+                  register={register}
+                />
+              </div>
+            </InputFields>
+          </>
+        )}
+        {selectedSSO === 'keycloak' && (
+          <>
+            <InputFields className="row mb-4">
+              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                <InputField
+                  name="keycloak_client_id"
+                  register={register}
+                  icon={<UserIcon />}
+                  label="Client ID"
+                  placeholder="Enter Client ID"
+                  errors={errors}
+                />
+              </div>
+              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                <InputField
+                  name="keycloak_url"
+                  register={register}
+                  icon={<OpenLinkIcon color="#444445" />}
+                  label="URL"
+                  placeholder="Enter URL"
+                  errors={errors}
+                />
+              </div>
+              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                <InputField
+                  name="keycloak_realm"
+                  register={register}
+                  icon={<OpenLinkIcon color="#444445" />}
+                  label="Realm"
+                  placeholder="Enter Realm"
+                  errors={errors}
+                />
+              </div>
+              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                <CheckboxField
+                  name="show_sso_page"
+                  label="Show SSO Page"
+                  register={register}
+                />
+              </div>
+            </InputFields>
+          </>
+        )}
+
+        <FlexWrapper className="mt-3">
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Button type="submit" loading={loading} disabled={!isChanged}>
               {KDFM.SAVE_SETTINGS}
