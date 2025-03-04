@@ -213,7 +213,7 @@ const ConfigurePage = ({
               });
               if (
                 value.length <= 100 &&
-                (value.length >= 3 || value?.length === 0)
+                (value.length >= 2 || value?.length === 0)
               ) {
                 setSearchErrorMsg({});
                 setSearch(value);

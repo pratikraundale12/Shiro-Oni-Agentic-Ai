@@ -1,0 +1,81 @@
+/*eslint-disable*/
+import React from 'react';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
+import styled from 'styled-components';
+
+const NavTabs = styled.div`
+  border-bottom: 1px solid ${props => props.theme.colors.border};
+  display: flex;
+`;
+const NavButton = styled.button`
+  border: 0;
+  background: none;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: ${props => props.theme.fontNato};
+  color: ${props =>
+    props.active ? props.theme.colors.primary : props.theme.colors.darkGrey2};
+  cursor: ${({ disabled }) =>
+    disabled ? 'not-allowed !important' : 'pointer !important'};
+  opacity: ${({ disabled }) => (disabled ? '0.5 !important' : '1')};
+  transition:
+    color 0.3s,
+    border-bottom 0.3s;
+  ${props =>
+    props.active &&
+    `border-bottom: 1px solid ${props.theme.colors.primaryActive};`}
+`;
+
+const ClusterNavigationTab = ({
+  activeTab,
+  setActiveTab,
+  setNewRegistry,
+  isRegistryDetailDisable,
+  data,
+}) => {
+  return (
+    <NavTabs id="nav-tab" role="tablist">
+      <NavButton
+        active={activeTab === CLUSTER_MODULE_TABS.CLUSTER}
+        onClick={() => {
+          setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
+          setNewRegistry(false);
+        }}
+      >
+        {KDFM.CLUSTER_DETAILS}
+      </NavButton>
+      <>
+        <NavButton
+          active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
+          onClick={() =>
+            Object.keys(data || {})?.length
+              ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
+              : {}
+          }
+          disabled={isRegistryDetailDisable}
+          data-tooltip-id="navButtonTooltip"
+        >
+          {KDFM.REGISTRY_DETAILS}
+        </NavButton>
+
+        {isRegistryDetailDisable && (
+          <ReactTooltip
+            id="navButtonTooltip"
+            place="right"
+            effect="solid"
+            content="You have unsaved changes on Cluster Details"
+            style={{
+              whiteSpace: 'normal',
+              zIndex: 9999,
+            }}
+            event="focus"
+            eventOff="blur"
+          />
+        )}
+      </>
+    </NavTabs>
+  );
+};
+export default ClusterNavigationTab;

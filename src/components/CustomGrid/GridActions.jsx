@@ -20,6 +20,7 @@ import {
   ACTIVITY_EVENTS,
   KDFM,
   MODULE_LIST_MAP,
+  SEARCH_INPUT_ERROR,
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { getButtonPermissions } from '../../helpers/permissions';
@@ -805,16 +806,16 @@ export const GridActions = ({
           onChange={e => {
             const value = e.target.value;
             setSearchValue(value);
-            if (value.length < 3) {
+            if (value.length < 2) {
               setSearchErrorMsg({
                 search: {
-                  message: 'Please enter atleast 3 characters to search',
+                  message: SEARCH_INPUT_ERROR,
                 },
               });
             }
             if (
               value.length <= 100 &&
-              (value.length >= 3 || value?.length === 0)
+              (value.length >= 2 || value?.length === 0)
             ) {
               setSearchErrorMsg({});
               setState(prev => ({

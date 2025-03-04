@@ -67,7 +67,6 @@ const Item = styled.div`
   font-family: ${props => props.theme.fontNato};
   font-size: ${props => props.theme.size.md};
   color: ${props => props.theme.colors.darker};
-  // border: 1px solid ${props => props.theme.colors.border};
 
   &:hover {
     background-color: ${props => props.theme.colors.lightGrey};
