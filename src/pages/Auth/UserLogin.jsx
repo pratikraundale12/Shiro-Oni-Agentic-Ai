@@ -19,6 +19,7 @@ import { Button, InputField, PasswordField, TextButton } from '../../shared';
 import { AuthenticationActions, NamespacesActions } from '../../store';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
+import { useLocation } from 'react-router-dom';
 
 const Title = styled.h3`
   font-weight: 500;
@@ -64,6 +65,7 @@ const PATH = 'login';
 export const UserLogin = () => {
   const dispatch = useDispatch();
   // setState
+  const location = useLocation();
   const { state } = useGlobalContext();
   const params = new URLSearchParams(location.search);
 

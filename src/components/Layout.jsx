@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
-import { KsolvesDataFlowIcon } from '../assets';
+import { toast } from 'react-toastify';
+import { KsolvesDataFlowIcon, MicroSoftIcon } from '../assets';
 import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
 import { changeFavicon, changeTitle } from '../helpers';
 import { history } from '../helpers/history';
@@ -14,7 +15,9 @@ import {
   AuthenticationSelectors,
   NamespacesActions,
 } from '../store';
+import { getAzureLoginUrl } from '../store/apis';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
+import { FullPageLoader } from './FullPageLoader';
 
 const Container = styled.div`
   max-height: 100vh;
@@ -227,6 +230,8 @@ const StyledLoginBox = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
 `;
 const ForgotResetHeadingText1 = styled.h1`
   font-family: 'Red Hat Display', sans-serif;
@@ -251,7 +256,82 @@ const ForgotResetHeadingText2 = styled.h1`
   margin-bottom: 40px;
   white-space: pre-line;
 `;
+
+const SmallText = styled.div`
+  display: block;
+  margin-top: 0.4rem;
+  color: ${props => props.theme.colors.darker};
+  text-align: center;
+  font-size: 16px;
+  position: relative;
+  &:after {
+    content: '';
+    width: 80%;
+    display: block;
+    border-bottom: 1px solid ${props => props.theme.colors.border};
+    position: absolute;
+    top: 50%;
+    margin: auto;
+    left: 0;
+    right: 0;
+  }
+  span {
+    background-color: #f5f7fa;
+    padding: 5px;
+    position: relative;
+    z-index: 1;
+  }
+`;
+
+const BtnText = styled.span`
+  font-family: Red Hat Display;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 21.17px;
+  text-align: center;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+  color: ${props => props.theme.colors.darker};
+`;
+
+const SSOButtonsContainer = styled.div`
+  margin-top: 0.4rem;
+`;
+
+const SSOButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 1rem;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  // border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.white};
+  // box-shadow: 0px 1px 3px ${props => props.theme.colors.shadow};
+  box-shadow:
+    0px 3px 8px -1px #3232470d,
+    0px 0px 1px 0px #0c1a4b3d;
+`;
+
+const LoginBtnContainer = styled.div`
+  @media (max-width: 768px) {
+    width: 82% !important;
+  }
+  @media (max-width: 1599px) and (min-width: 1478px) {
+    width: 77% !important;
+  }
+  @media (max-width: 1479px) and (min-width: 1300px) {
+    width: 80% !important;
+  }
+  @media (max-width: 1299px) and (min-width: 991px) {
+    width: 89% !important;
+  }
+`;
+
 export const Layout = ({ children }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const pathname = history.location.pathname;
   const isUserLogin = pathname === '/login';
@@ -286,6 +366,27 @@ export const Layout = ({ children }) => {
       history.push('/login');
     }
   };
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [history]);
+
+  const handleMSLogin = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAzureLoginUrl();
+      if (response.status !== 200) {
+        throw new Error('Failed to continue login with Microsoft');
+      } else {
+        const msRedirectUrl = response?.data?.authUrl;
+        history.push(msRedirectUrl);
+      }
+    } catch (error) {
+      console.error('Azure login Error:', error);
+      toast.error(error ? error : 'Failed to continue login with Microsoft');
+    }
+  };
+
   useEffect(() => {
     if (settingLogo?.favicon) {
       changeFavicon(settingLogo?.favicon);
@@ -312,9 +413,14 @@ export const Layout = ({ children }) => {
     dispatch(SettingsActions.fetchSettingsSuccess());
   }, [dispatch]);
 
+  const btnStyles = isUserLogin => ({
+    width: isUserLogin ? '64%' : 'auto',
+  });
+
   return (
     <Container>
       <Wrapper>
+        <FullPageLoader loading={isLoading} />
         <div className="row">
           <LeftSection>
             {!image ? (
@@ -322,16 +428,36 @@ export const Layout = ({ children }) => {
             ) : (
               <img src={image} alt="Logo" width={200} height={80} />
             )}
-            <Content>{children}</Content>
+            <Content>
+              {children}
+              {isUserLogin && (
+                <>
+                  <SmallText>
+                    <span>or</span>
+                  </SmallText>
+                  <SSOButtonsContainer>
+                    <SSOButton onClick={handleMSLogin}>
+                      <MicroSoftIcon />
+                      <BtnText>Sign in via Microsoft</BtnText>
+                    </SSOButton>
+                  </SSOButtonsContainer>
+                </>
+              )}
+            </Content>
             {(isUserLogin || isAdminLogin) && (
-              <StyledLoginBox onClick={handleRedirection}>
-                <RedirectionSection>
-                  <RedirectionText>
-                    Login via &nbsp;
-                    {isUserLogin ? 'Admin' : 'User'}
-                  </RedirectionText>
-                </RedirectionSection>
-              </StyledLoginBox>
+              <LoginBtnContainer
+                style={btnStyles(isUserLogin)}
+                className={`d-flex align-items-center justify-content-between`}
+              >
+                <StyledLoginBox onClick={handleRedirection}>
+                  <RedirectionSection>
+                    <RedirectionText>
+                      Login via &nbsp;
+                      {isUserLogin ? 'Admin' : 'User'}
+                    </RedirectionText>
+                  </RedirectionSection>
+                </StyledLoginBox>
+              </LoginBtnContainer>
             )}
             {(isForgotPassword || isReset) && (
               <SignInContainer>

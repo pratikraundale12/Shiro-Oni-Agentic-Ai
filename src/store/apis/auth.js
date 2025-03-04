@@ -63,3 +63,24 @@ export const userLogin = async payload => {
     return error.response.data;
   }
 };
+
+export const handleAzureCallback = async payload => {
+  try {
+    const { code } = payload;
+    const response = await API.get(`/api/auth/azure/callback?code=${code}`);
+    return response.data;
+  } catch (error) {
+    return (
+      error?.response?.data || { message: 'Error handling Azure callback' }
+    );
+  }
+};
+
+export const getAzureLoginUrl = async () => {
+  try {
+    const response = await API.get('/login/azure');
+    return response;
+  } catch (error) {
+    return error?.response?.data;
+  }
+};

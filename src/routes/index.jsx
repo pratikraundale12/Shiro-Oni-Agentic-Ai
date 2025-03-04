@@ -47,6 +47,7 @@ import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
 // import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
+import RedirectToLogin from './RedirectToLogin.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
 import FlowDetailsPage from '../pages/Namespaces/FlowDetailsPage.jsx';
 import ListControllerServiceNamespace from '../pages/Namespaces/ListControllerServiceNamespace';
@@ -61,6 +62,7 @@ import {
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -329,6 +331,11 @@ const Routes = () => {
   return (
     <HistoryRouter>
       {/* Public Routes */}
+      <Route
+        path="/api/auth/azure/callback"
+        element={<AzureCallbackHandler />}
+      />
+      <Route path="/back-to-login" element={<RedirectToLogin />} />
       <Route path="/admin/login" element={<Login />} />
       <Route path="/forgot" element={<Forgot />} />
       <Route path="/reset" element={<Reset />} />
