@@ -15,7 +15,7 @@ import {
   TriangleExclamationMarkIcon,
 } from '../../assets';
 import { FullPageLoader, Table, TextRender } from '../../components';
-import { ModalWithIcon } from '../../shared';
+import { ModalWithIcon, FieldErrorMessage } from '../../shared';
 import {
   AuthenticationSelectors,
   LoadingSelectors,
@@ -32,6 +32,7 @@ import ConfigurePropertyModal from '../ControllerService/ConfigurePropertyModal'
 import PropertyDropdownModal from '../ControllerService/ProprtyDropdownModel';
 import Collapsible from './Collapsible';
 import ControllerServerRefreshModal from './ControllerServerRefreshModal';
+import { SEARCH_INPUT_ERROR } from '../../constants';
 
 const StatusTexts = styled.div`
   font-family: Inter;
@@ -165,6 +166,8 @@ export const ListControllerService = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [searchErrorMsg, setSearchErrorMsg] = useState({});
   const filteredModulesData = listData?.filter(
     module =>
       module?.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -471,6 +474,9 @@ export const ListControllerService = () => {
 
   useEffect(() => {
     dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
+    setSearch('');
+    setSearchErrorMsg({});
+    setSearchText('');
   }, [dispatch, selectedCluster]);
 
   const handleSettingClick = item => {
@@ -533,17 +539,32 @@ export const ListControllerService = () => {
             />
             <Search
               type="search"
-              value={search}
+              value={searchText}
               placeholder="Search Controller Service by Name"
               onChange={e => {
                 setIsResetNotRequired(false);
                 const value = e.target.value;
-                if (value.length <= 100) {
+                setSearchText(value);
+                setSearchErrorMsg({
+                  search: {
+                    message: SEARCH_INPUT_ERROR,
+                  },
+                });
+                if (
+                  value.length <= 100 &&
+                  (value.length >= 2 || value?.length === 0)
+                ) {
+                  setSearchErrorMsg({});
                   setSearch(value);
                 }
               }}
             />
           </SearchContainer>
+          <FieldErrorMessage
+            name="search"
+            errors={searchErrorMsg}
+            className={'mb-1'}
+          />
           <Table
             data={filteredModulesData}
             columns={COLUMNS}

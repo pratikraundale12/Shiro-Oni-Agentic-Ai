@@ -238,7 +238,8 @@ export const Grid = ({
   };
 
   const getLoader = () => {
-    if (loading) return <Loader size="lg" />;
+    if (loading || (gridCount > 0 && isEmpty(gridData)))
+      return <Loader size="lg" />;
     if (isEmpty(DATA.nodes))
       return (
         <LoaderContainer>
@@ -358,13 +359,6 @@ export const Grid = ({
       setCurrentPage(1);
     }
   }, [TABLE_DATA]);
-  useEffect(() => {
-    if (next) {
-      setCurrentPage(next - 1);
-    } else {
-      setCurrentPage(prev + 1);
-    }
-  }, [next, prev]);
 
   const METRICS_URL_COLUMN = [
     {

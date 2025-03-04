@@ -5,13 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CrossIcon, SmallSearchIcon } from '../../assets';
 import { FullPageLoader, Table } from '../../components';
-import { Modal } from '../../shared';
+import { Modal, FieldErrorMessage } from '../../shared';
 import {
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
 import { theme } from '../../styles';
+import { SEARCH_INPUT_ERROR } from '../../constants';
 
 const TextDisplay = styled.div`
   cursor: pointer;
@@ -95,6 +96,8 @@ const AddControllerServiceModal = ({
   );
   const [selectedItem, setSelectedItem] = useState({});
   const [search, setSearch] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [searchErrorMsg, setSearchErrorMsg] = useState({});
   const dispatch = useDispatch();
   const modalOpenState = useSelector(
     NamespacesSelectors.getIsAddControllerServiceMOdalOpen
@@ -207,11 +210,21 @@ const AddControllerServiceModal = ({
           />
           <Search
             type="search"
-            value={search}
+            value={searchText}
             placeholder="Search Controller Service"
             onChange={e => {
               const value = e.target.value;
-              if (value.length <= 100) {
+              setSearchText(value);
+              setSearchErrorMsg({
+                search: {
+                  message: SEARCH_INPUT_ERROR,
+                },
+              });
+              if (
+                value.length <= 100 &&
+                (value.length >= 2 || value?.length === 0)
+              ) {
+                setSearchErrorMsg({});
                 setSearch(value);
               }
             }}
@@ -223,11 +236,14 @@ const AddControllerServiceModal = ({
             }}
           />
         </SearchContainer>
-
+        <FieldErrorMessage
+          name="search"
+          errors={searchErrorMsg}
+          className={'mb-1'}
+        />{' '}
         <div style={{ height: selectedItem?.name ? '300px' : '500px' }}>
           <Table data={filteredModulesData || []} columns={COLUMNS} />
         </div>
-
         {selectedItem?.name && (
           <Container>
             <FloatingAlertBox>

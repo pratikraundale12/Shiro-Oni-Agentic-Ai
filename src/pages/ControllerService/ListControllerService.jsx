@@ -17,7 +17,7 @@ import {
 } from '../../assets';
 
 import { FullPageLoader, Table, TextRender } from '../../components';
-import { Button, ModalWithIcon } from '../../shared';
+import { Button, FieldErrorMessage, ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
   LoadingSelectors,
@@ -31,6 +31,7 @@ import ConfigControllerService from './ConfigControllerService';
 import ConfigurePropertyModal from './ConfigurePropertyModal';
 import PropertyDropdownModal from './ProprtyDropdownModel';
 import { isEmpty } from 'lodash';
+import { SEARCH_INPUT_ERROR } from '../../constants';
 
 const SearchContainer = styled.div`
   position: relative;
@@ -141,6 +142,9 @@ const StatusText = ({ text = '', item }) => {
 };
 export const ListControllerService = () => {
   const [search, setSearch] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [searchErrorMsg, setSearchErrorMsg] = useState({});
+
   const [updatedData, setUpdatedData] = useState([]);
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -500,6 +504,9 @@ export const ListControllerService = () => {
   };
 
   const handleRefresh = () => {
+    setSearch('');
+    setSearchErrorMsg({});
+    setSearchText('');
     dispatch(NamespacesActions.getControllerServiceList());
   };
 
@@ -551,18 +558,32 @@ export const ListControllerService = () => {
         />
         <Search
           type="search"
-          value={search}
+          value={searchText}
           placeholder="Search Controller Service by Name"
           onChange={e => {
             setIsResetNotRequired(false);
             const value = e.target.value;
-            if (value.length <= 100) {
+            setSearchText(value);
+            setSearchErrorMsg({
+              search: {
+                message: SEARCH_INPUT_ERROR,
+              },
+            });
+            if (
+              value.length <= 100 &&
+              (value.length >= 2 || value?.length === 0)
+            ) {
+              setSearchErrorMsg({});
               setSearch(value);
             }
           }}
         />
       </SearchContainer>
-
+      <FieldErrorMessage
+        name="search"
+        errors={searchErrorMsg}
+        className={'mb-1'}
+      />
       <AddControllerServiceModal />
 
       <Table
