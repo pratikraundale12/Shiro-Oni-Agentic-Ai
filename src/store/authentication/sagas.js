@@ -7,7 +7,6 @@ import {
   PREVIOUS_PATH,
 } from '../../constants';
 import { history } from '../../helpers/history';
-import keycloak from '../../keyCloak';
 import { LoadingActions } from '../helpers/loading_redux';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions } from '../namespaces';
@@ -132,12 +131,7 @@ export function* login(api, { payload: { type, token, ...payload } }) {
 export function* logout(api, { payload: { url } }) {
   yield put(AuthenticationActions.logoutSuccess());
   yield put({ type: 'RESET' });
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('previous_path');
-  localStorage.removeItem('selected_cluster');
-  localStorage.removeItem('clusters');
-  localStorage.removeItem('scheduleTokenid');
-  yield keycloak.logout({ redirectUri: 'http://localhost:8080/login' });
+  localStorage.clear();
   history.replace(url); // Example: '/login'
 }
 export function* fetchSettingLogo(api) {
@@ -148,45 +142,6 @@ export function* fetchSettingLogo(api) {
     apiParams: [{ params: {} }],
     successAction: AuthenticationActions.fetchSettingLogoSuccess,
   });
-}
-
-export function* fetchKeycloakConfig(api) {
-  const response = yield call(requestSaga, {
-    errorSection: 'fetchKeycloakConfig',
-    loadingSection: 'fetchKeycloakConfig',
-    apiMethod: api.fetchKeycloakConfig,
-    apiParams: [{ params: {} }],
-  });
-
-  if (response.ok) {
-    yield call(
-      [localStorage, 'setItem'],
-      'keycloakStroage',
-      JSON.stringify(response?.data)
-    );
-    yield put(AuthenticationActions.fetchKeycloakConfigSuccess(response.data));
-  } else {
-    toast.error('Failed to fetch Keycloak config:', response.data.message);
-  }
-}
-export function* ssoUserLogin(api, { payload }) {
-  const response = yield call(requestSaga, {
-    errorSection: 'ssoUserLogin',
-    loadingSection: 'ssoUserLogin',
-    apiMethod: api.ssoUserLogin,
-    apiParams: [payload],
-  });
-  if (response.ok) {
-    const token = response?.data?.token;
-    localStorage.setItem(ACCESS_TOKEN, token);
-    if (token) {
-      yield call(fetchCurrentUser, api);
-      toast.success('Welcome! You’ve successfully logged in.');
-      history.push('/dashboard');
-    }
-  } else {
-    toast.error(response.data.message, { toastId: 'login-toast-error1' });
-  }
 }
 
 export function* authenticationSagas(api) {
@@ -207,11 +162,5 @@ export function* authenticationSagas(api) {
       api
     ),
     takeLatest(AuthenticationActions.fetchSettingLogo, fetchSettingLogo, api),
-    takeLatest(
-      AuthenticationActions.fetchKeycloakConfig,
-      fetchKeycloakConfig,
-      api
-    ),
-    takeLatest(AuthenticationActions.ssoUserLogin, ssoUserLogin, api),
   ]);
 }

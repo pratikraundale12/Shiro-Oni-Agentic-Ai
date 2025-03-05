@@ -27,11 +27,6 @@ export const AuthenticationActions = {
   setCurrentUser: createAction(`${prefix}setCurrentUser`),
   fetchSettingLogo: createAction(`${prefix}fetchSettingLogo`),
   fetchSettingLogoSuccess: createAction(`${prefix}fetchSettingLogoSuccess`),
-  fetchKeycloakConfig: createAction(`${prefix}fetchKeycloakConfig`),
-  fetchKeycloakConfigSuccess: createAction(
-    `${prefix}fetchKeycloakConfigSuccess`
-  ),
-  ssoUserLogin: createAction(`${prefix}ssoUserLogin`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -48,7 +43,6 @@ export const AUTHENTICATION_INITIAL_STATE = {
   isButtonDisabled: false,
   hasTermsAndPoliciesAccepted: false,
   data: {},
-  keycloakConfig: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -66,7 +60,6 @@ export const AuthenticationSelectors = {
   getHasTermsAndPoliciesAccepted: state =>
     state.auth.hasTermsAndPoliciesAccepted,
   getSettingLogo: state => state.auth.data,
-  getKeycloakConfig: state => state.auth.keycloakConfig,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -155,13 +148,6 @@ const fetchSettingLogoSuccess = (state, { payload }) => {
   };
 };
 
-const fetchKeycloakConfigSuccess = (state, { payload }) => {
-  return {
-    ...state,
-    keycloakConfig: payload,
-  };
-};
-
 /* ------------- Hookup Reducers To Types ------------- */
 export const authenticationReducer = createReducer(
   AUTHENTICATION_INITIAL_STATE,
@@ -189,10 +175,6 @@ export const authenticationReducer = createReducer(
       .addCase(
         AuthenticationActions.fetchSettingLogoSuccess,
         fetchSettingLogoSuccess
-      )
-      .addCase(
-        AuthenticationActions.fetchKeycloakConfigSuccess,
-        fetchKeycloakConfigSuccess
       );
   }
 );
