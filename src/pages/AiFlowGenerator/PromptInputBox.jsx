@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { SendMessageIcon } from '../../assets';
 import { KDFM } from '../../constants';
@@ -9,48 +9,39 @@ const InputContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
 `;
 
-const InputBox = styled.input`
+const InputBox = styled.textarea`
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0%;
   border-radius: 30px;
   border-width: 1px;
   width: 100%;
+  font-family: 'Red Hat Display', sans-serif;
   height: 90px;
   padding: 20px;
   outline: none;
   border: 1px solid rgba(221, 228, 240, 1);
+  box-shadow: 0px 19px 29px 0px rgba(30, 31, 34, 0.05);
+  font-size: 20px;
+  color: rgba(68, 68, 67, 1);
+  resize: none; /* Disable manual resizing */
+  overflow-y: auto; /* Enable vertical scroll */
+  word-break: break-word; /* Ensure long words break to avoid overflow */
+  white-space: pre-wrap; /* Preserve line breaks and wrap text */
 
   :focus {
     outline: none;
-    border-color: rgba(160, 167, 187, 1); /* Add a visible change for focus */
+    border-color: rgba(160, 167, 187, 1);
   }
 
   &::placeholder {
     color: rgba(160, 167, 187, 1);
-    font-family:
-      'Red Hat Display', sans-serif; /* Ensure correct font loading */
+    font-family: 'Red Hat Display', sans-serif;
     font-weight: 400;
     font-size: 20px;
-    line-height: 16px;
-    letter-spacing: 0%;
-  }
-
-  /* Add cross-browser compatibility */
-  ::-webkit-input-placeholder {
-    color: rgba(160, 167, 187, 1);
-    font-family: 'Red Hat Display', sans-serif;
-  }
-  :-moz-placeholder {
-    color: rgba(160, 167, 187, 1);
-    font-family: 'Red Hat Display', sans-serif;
-  }
-  ::-moz-placeholder {
-    color: rgba(160, 167, 187, 1);
-    font-family: 'Red Hat Display', sans-serif;
-  }
-  :-ms-input-placeholder {
-    color: rgba(160, 167, 187, 1);
-    font-family: 'Red Hat Display', sans-serif;
   }
 `;
 
@@ -70,8 +61,7 @@ const GenerateFLowButton = styled.div`
   }
 `;
 
-const PromptInputBox = () => {
-  const [queryText, setQueryText] = useState('');
+export const PromptInputBox = ({ queryText, setQueryText }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
   const handleGenerateFLowClick = () => {
     console.log('queryText', queryText);
@@ -102,4 +92,7 @@ const PromptInputBox = () => {
   );
 };
 
-export default PromptInputBox;
+PromptInputBox.propTypes = {
+  queryText: PropTypes.string.isRequired,
+  setQueryText: PropTypes.func.isRequired,
+};

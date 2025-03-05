@@ -1,13 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RefreshIcon, TodoIcon } from '../../assets';
 import styled from 'styled-components';
-import { KDFM } from '../../constants';
+import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiFlowGeneratorSelectors } from '../../store';
 import { isEmpty } from 'lodash';
 import { fetchDefaultRecentFlowsData } from './services';
 import { RecommendedFlow } from './RecommendedFlow';
-import PromptInputBox from './PromptInputBox';
+import { PromptInputBox } from './PromptInputBox';
+import { getLoginToClusterPopup } from './utils';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+`;
 
 const RefreshIocnPanel = styled.div`
   cursor: pointer;
@@ -63,6 +71,12 @@ const BoxItem1 = styled.div`
   background: rgba(245, 247, 250, 1);
 `;
 
+const PromptSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+`;
+
 export const AiFlowGenerator = () => {
   const handleRefresh = () => {
     console.log('Refresh');
@@ -72,48 +86,60 @@ export const AiFlowGenerator = () => {
   const defaultFLows = useSelector(AiFlowGeneratorSelectors.getDefaultFlows);
   const recentFlows = useSelector(AiFlowGeneratorSelectors.getRecentFlows);
 
+  // query prompt
+  const [queryText, setQueryText] = useState('');
+
   useEffect(() => {
     fetchDefaultRecentFlowsData(dispatch);
   }, []);
 
-  return (
-    <>
-      <Flex>
-        <HeadingWrapper
-          showHeading={!(isEmpty(recentFlows) && isEmpty(defaultFLows))}
-        >
-          <TodoIcon width={22} height={24} />
-          <HeadingStyle>
-            {!isEmpty(recentFlows)
-              ? KDFM.RECENT_GENERATED_FLOWS
-              : KDFM.RECOMMENDED_FLOWS}
-          </HeadingStyle>
-        </HeadingWrapper>
-        <div className="mb-2 d-flex align-items-center">
-          <RefreshIocnPanel
-            onClick={handleRefresh}
-            style={{
-              opacity: 1,
-              minWidth: '37px',
-            }}
-            data-tooltip-id={`tooltip-group-generate-flow-refresh`}
+  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  console.log('cluser--', clusters);
+
+  return isEmpty(clusters) ? (
+    getLoginToClusterPopup()
+  ) : (
+    <Container>
+      <Flex className="flex-column align-items-start w-100">
+        <Flex className="w-100">
+          <HeadingWrapper
+            showHeading={!(isEmpty(recentFlows) && isEmpty(defaultFLows))}
           >
-            <RefreshIcon style={{ cursor: 'pointer' }} />
-          </RefreshIocnPanel>
-        </div>
-      </Flex>
-      {!(isEmpty(recentFlows) && isEmpty(defaultFLows)) && (
-        <Flex>
-          <RecommendedFlowBox>
-            <BoxItem1></BoxItem1>
-            <RecommendedFlow
-              defaultFlows={defaultFLows}
-              recentFlows={recentFlows}
-            />
-          </RecommendedFlowBox>
+            <TodoIcon width={22} height={24} />
+            <HeadingStyle>
+              {!isEmpty(recentFlows)
+                ? KDFM.RECENT_GENERATED_FLOWS
+                : KDFM.RECOMMENDED_FLOWS}
+            </HeadingStyle>
+          </HeadingWrapper>
+          <div className="mb-2 d-flex align-items-center">
+            <RefreshIocnPanel
+              onClick={handleRefresh}
+              style={{
+                opacity: 1,
+                minWidth: '37px',
+              }}
+              data-tooltip-id={`tooltip-group-generate-flow-refresh`}
+            >
+              <RefreshIcon style={{ cursor: 'pointer' }} />
+            </RefreshIocnPanel>
+          </div>
         </Flex>
-      )}
-      <PromptInputBox />
-    </>
+        {!(isEmpty(recentFlows) && isEmpty(defaultFLows)) && (
+          <Flex>
+            <RecommendedFlowBox>
+              <BoxItem1></BoxItem1>
+              <RecommendedFlow
+                defaultFlows={defaultFLows}
+                recentFlows={recentFlows}
+              />
+            </RecommendedFlowBox>
+          </Flex>
+        )}
+      </Flex>
+      <PromptSection>
+        <PromptInputBox queryText={queryText} setQueryText={setQueryText} />
+      </PromptSection>
+    </Container>
   );
 };
