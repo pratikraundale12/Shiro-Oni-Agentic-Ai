@@ -11,6 +11,8 @@ export const authenticationAPI = api => {
   const fetchLicenseInfo = () => api.get('/license-info');
   const fetchCurrentUser = () => api.get('/current-user');
   const fetchSettingLogo = () => api.get('/settings/login');
+  const fetchKeycloakConfig = () => api.get('/settings/keycloak-config');
+  const ssoUserLogin = payload => api.post('/login/sso-user', payload);
   const updateTermsAndPolicies = ({ userId, payload }) =>
     api.patch(`/users/${userId}`, payload);
 
@@ -23,5 +25,7 @@ export const authenticationAPI = api => {
     fetchCurrentUser,
     updateTermsAndPolicies,
     fetchSettingLogo,
+    fetchKeycloakConfig,
+    ssoUserLogin,
   };
 };

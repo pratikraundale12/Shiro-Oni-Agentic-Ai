@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import { useKeycloak } from '@react-keycloak/web';
 import { isEmpty } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { KsolvesDataFlowIcon, MicroSoftIcon } from '../assets';
+import { KeycloakIcon, KsolvesDataFlowIcon, MicroSoftIcon } from '../assets';
 import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
 import { changeFavicon, changeTitle } from '../helpers';
 import { history } from '../helpers/history';
@@ -329,7 +330,6 @@ const LoginBtnContainer = styled.div`
     width: 89% !important;
   }
 `;
-
 export const Layout = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
@@ -340,6 +340,8 @@ export const Layout = ({ children }) => {
   const isReset = pathname === '/reset';
   const settingsData = useSelector(SettingsSelectors.getSettings);
   const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
+  const { keycloak, initialized } = useKeycloak();
+  const ssoEnabled = true;
   let image = settingsData?.logo || settingLogo?.logo;
 
   let imageUrl;
@@ -387,6 +389,38 @@ export const Layout = ({ children }) => {
     }
   };
 
+  const handleKeycloakLogin = async () => {
+    if (initialized && !keycloak.authenticated && ssoEnabled) {
+      await keycloak.login({
+        redirectUri: 'http://localhost:8080/keycloakLogin',
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (
+      settingLogo?.show_sso_page &&
+      settingLogo?.selected_sso === 'azure' &&
+      location.pathname === '/login' &&
+      settingLogo?.details_for_sso_exist
+    ) {
+      handleMSLogin();
+    }
+  }, [settingLogo]);
+
+  useEffect(() => {
+    if (
+      settingLogo?.show_sso_page &&
+      settingLogo?.selected_sso === 'keycloak' &&
+      location.pathname === '/login' &&
+      settingLogo?.details_for_sso_exist
+    ) {
+      keycloak.login({
+        redirectUri: 'http://localhost:8080/keycloakLogin',
+      });
+    }
+  }, [settingLogo, location.pathname]);
+
   useEffect(() => {
     if (settingLogo?.favicon) {
       changeFavicon(settingLogo?.favicon);
@@ -417,6 +451,12 @@ export const Layout = ({ children }) => {
     width: isUserLogin ? '64%' : 'auto',
   });
 
+  useEffect(() => {
+    if (settingLogo?.selected_sso === 'keycloak') {
+      dispatch(AuthenticationActions.fetchKeycloakConfig());
+    }
+  }, [dispatch, settingLogo?.selected_sso]);
+
   return (
     <Container>
       <Wrapper>
@@ -430,19 +470,36 @@ export const Layout = ({ children }) => {
             )}
             <Content>
               {children}
-              {isUserLogin && (
-                <>
-                  <SmallText>
-                    <span>or</span>
-                  </SmallText>
-                  <SSOButtonsContainer>
-                    <SSOButton onClick={handleMSLogin}>
-                      <MicroSoftIcon />
-                      <BtnText>Sign in via Microsoft</BtnText>
-                    </SSOButton>
-                  </SSOButtonsContainer>
-                </>
-              )}
+              {isUserLogin &&
+                settingLogo?.selected_sso === 'azure' &&
+                !settingLogo?.show_sso_page && (
+                  <>
+                    <SmallText>
+                      <span>or</span>
+                    </SmallText>{' '}
+                    <SSOButtonsContainer>
+                      <SSOButton onClick={handleMSLogin}>
+                        <MicroSoftIcon />
+                        <BtnText>Sign in via Microsoft</BtnText>
+                      </SSOButton>
+                    </SSOButtonsContainer>
+                  </>
+                )}
+              {isUserLogin &&
+                settingLogo?.selected_sso === 'keycloak' &&
+                !settingLogo?.show_sso_page && (
+                  <>
+                    <SmallText>
+                      <span>or</span>
+                    </SmallText>{' '}
+                    <SSOButtonsContainer>
+                      <SSOButton onClick={handleKeycloakLogin}>
+                        <KeycloakIcon />
+                        <BtnText>Sign in via Keycloak</BtnText>
+                      </SSOButton>
+                    </SSOButtonsContainer>
+                  </>
+                )}
             </Content>
             {(isUserLogin || isAdminLogin) && (
               <LoginBtnContainer

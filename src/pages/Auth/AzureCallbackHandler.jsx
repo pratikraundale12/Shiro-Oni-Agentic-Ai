@@ -1,11 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useRef } from 'react';
 import { ACCESS_TOKEN, API_URL } from '../../constants';
-import { useDispatch } from 'react-redux';
-import { AuthenticationActions } from '../../store/authentication';
 import { history } from '../../helpers/history';
+import { AuthenticationActions } from '../../store/authentication';
 
 const AZURE_CALLBACK_ENDPOINT = `${API_URL}/api/auth/azure/callback`;
 
@@ -40,7 +39,6 @@ const AzureCallbackHandler = () => {
             const { token } = data;
             if (token) {
               window.localStorage.setItem(ACCESS_TOKEN, token);
-              toast.success('Login successful! Redirecting to dashboard...');
               dispatch(AuthenticationActions.fetchCurrentUser({ token }));
             } else {
               throw new Error('No token received');
