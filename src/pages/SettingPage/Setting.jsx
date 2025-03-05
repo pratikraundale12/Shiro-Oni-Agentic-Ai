@@ -183,9 +183,6 @@ export const settingSchema = yup.object().shape({
   azure_client_id: yup.string().required('Azure Client ID is required'),
   azure_client_secret: yup.string().required('Azure Client Secret is required'),
   azure_tenant_id: yup.string().required('Azure Tenant ID is required'),
-  keycloak_client_id: yup.string().required('Keycloak Client ID is required'),
-  keycloak_url: yup.string().required('Keycloak url is required'),
-  keycloak_realm: yup.string().required('Keycloak keycloak_realm is required'),
 });
 export const Setting = () => {
   const {
@@ -282,21 +279,6 @@ export const Setting = () => {
       data?.show_sso_page,
       settingData?.show_sso_page
     );
-    appendIfChanged(
-      'keycloak_realm',
-      data?.keycloak_realm,
-      settingData?.keycloak_realm
-    );
-    appendIfChanged(
-      'keycloak_url',
-      data?.keycloak_url,
-      settingData?.keycloak_url
-    );
-    appendIfChanged(
-      'keycloak_client_id',
-      data?.keycloak_client_id,
-      settingData?.keycloak_client_id
-    );
 
     appendIfChanged(
       'smtp_service',
@@ -372,9 +354,6 @@ export const Setting = () => {
       setValue('azure_client_secret', settingData?.azure_client_secret);
       setValue('azure_tenant_id', settingData?.azure_tenant_id);
       setValue('show_sso_page', settingData?.show_sso_page);
-      setValue('keycloak_realm', settingData?.keycloak_realm);
-      setValue('keycloak_url', settingData?.keycloak_url);
-      setValue('keycloak_client_id', settingData?.keycloak_client_id);
       setValue('email', settingData?.email);
       setValue('from_email', settingData?.from_email);
       setValue('smtp_service', settingData?.smtp_service);
@@ -425,9 +404,6 @@ export const Setting = () => {
         value.azure_redirect_uri !== settingData?.azure_redirect_uri ||
         value.azure_client_secret !== settingData?.azure_client_secret ||
         value.show_sso_page !== settingData?.show_sso_page ||
-        value?.keycloak_realm !== settingData?.keycloak_realm ||
-        value?.keycloak_url !== settingData?.keycloak_url ||
-        value?.keycloak_client_id !== settingData?.keycloak_client_id ||
         value.ldapEnabled !== settingData?.ldapEnabled;
 
       setIsChanged(isModified);
@@ -834,52 +810,6 @@ export const Setting = () => {
                 />
               </div>
 
-              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                <CheckboxField
-                  name="show_sso_page"
-                  label="Show SSO Page"
-                  register={register}
-                />
-              </div>
-            </InputFields>
-          </>
-        )}
-        {selectedSSO === 'keycloak' && (
-          <>
-            <InputFields className="row mb-4">
-              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                <InputField
-                  name="keycloak_client_id"
-                  register={register}
-                  icon={<UserIcon />}
-                  label="Client ID"
-                  placeholder="Enter Client ID"
-                  errors={errors}
-                  required
-                />
-              </div>
-              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                <InputField
-                  name="keycloak_url"
-                  register={register}
-                  icon={<OpenLinkIcon color="#444445" />}
-                  label="URL"
-                  placeholder="Enter URL"
-                  errors={errors}
-                  required
-                />
-              </div>
-              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                <InputField
-                  name="keycloak_realm"
-                  register={register}
-                  icon={<OpenLinkIcon color="#444445" />}
-                  label="Realm"
-                  placeholder="Enter Realm"
-                  errors={errors}
-                  required
-                />
-              </div>
               <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
                 <CheckboxField
                   name="show_sso_page"

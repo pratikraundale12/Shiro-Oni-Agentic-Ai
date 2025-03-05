@@ -1,4 +1,3 @@
-import { ReactKeycloakProvider } from '@react-keycloak/web';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import React, { useEffect, useState } from 'react';
@@ -10,7 +9,6 @@ import { ThemeProvider } from 'styled-components';
 import { ExclamationFailedTestingIcon } from './assets';
 import { ENABLE_CONSOLE_LOGS } from './constants';
 import { disableConsole } from './helpers/DisableConsole';
-import keycloak, { keycloakInitOptions } from './keyCloak';
 import Routes from './routes';
 import { ModalWithIcon } from './shared';
 import store from './store/configureStore';
@@ -54,23 +52,18 @@ function App() {
     <ThemeProvider theme={theme}>
       <GlobalStyles />
       <Provider store={store}>
-        <ReactKeycloakProvider
-          authClient={keycloak}
-          initOptions={keycloakInitOptions}
-        >
-          <GlobalProvider>
-            <Routes />
-            <ModalWithIcon
-              title={'Lost Internet Connection'}
-              primaryButtonText={'Continue'}
-              icon={<ExclamationFailedTestingIcon color="#FF7A00" />}
-              isOpen={isModal}
-              onRequestClose={() => handleContinue()}
-              primaryText={`It looks like you've lost internet access.`}
-              onSubmit={() => handleContinue()}
-            />
-          </GlobalProvider>
-        </ReactKeycloakProvider>
+        <GlobalProvider>
+          <Routes />
+          <ModalWithIcon
+            title={'Lost Internet Connection'}
+            primaryButtonText={'Continue'}
+            icon={<ExclamationFailedTestingIcon color="#FF7A00" />}
+            isOpen={isModal}
+            onRequestClose={() => handleContinue()}
+            primaryText={`It looks like you've lost internet access.`}
+            onSubmit={() => handleContinue()}
+          />
+        </GlobalProvider>
       </Provider>
       <ToastContainer
         theme="colored"
