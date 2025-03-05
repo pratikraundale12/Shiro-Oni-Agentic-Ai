@@ -124,6 +124,7 @@ const PropertyDropdownModal = ({
         name: selectedPropertyToEdit.name,
         value: data.value === '' ? null : data.value,
         sensitive: false,
+        dropDownName: selectedName,
       },
     ]);
 
