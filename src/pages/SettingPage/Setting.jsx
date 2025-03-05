@@ -179,6 +179,13 @@ export const settingSchema = yup.object().shape({
       }
       return true;
     }),
+  azure_redirect_uri: yup.string().required('Azure Redirect URI is required'),
+  azure_client_id: yup.string().required('Azure Client ID is required'),
+  azure_client_secret: yup.string().required('Azure Client Secret is required'),
+  azure_tenant_id: yup.string().required('Azure Tenant ID is required'),
+  keycloak_client_id: yup.string().required('Keycloak Client ID is required'),
+  keycloak_url: yup.string().required('Keycloak url is required'),
+  keycloak_realm: yup.string().required('Keycloak keycloak_realm is required'),
 });
 export const Setting = () => {
   const {
@@ -787,6 +794,7 @@ export const Setting = () => {
                   label="Azure Client ID"
                   placeholder="Enter Client ID"
                   errors={errors}
+                  required
                 />
               </div>
               <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
@@ -797,6 +805,7 @@ export const Setting = () => {
                   label="Azure Client Secret"
                   placeholder="Enter Client Secret"
                   errors={errors}
+                  required
                 />
               </div>
               <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
@@ -807,6 +816,7 @@ export const Setting = () => {
                   label="Azure Tenant ID"
                   placeholder="Enter Tenant ID"
                   errors={errors}
+                  required
                 />
               </div>
             </InputFields>
@@ -820,6 +830,7 @@ export const Setting = () => {
                   label="Azure Redirect URL"
                   placeholder="Enter Redirect URL"
                   errors={errors}
+                  required
                 />
               </div>
 
@@ -844,6 +855,7 @@ export const Setting = () => {
                   label="Client ID"
                   placeholder="Enter Client ID"
                   errors={errors}
+                  required
                 />
               </div>
               <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
@@ -854,6 +866,7 @@ export const Setting = () => {
                   label="URL"
                   placeholder="Enter URL"
                   errors={errors}
+                  required
                 />
               </div>
               <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
@@ -864,6 +877,7 @@ export const Setting = () => {
                   label="Realm"
                   placeholder="Enter Realm"
                   errors={errors}
+                  required
                 />
               </div>
               <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
