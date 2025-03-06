@@ -131,10 +131,9 @@ export const ListUsers = () => {
       ),
     },
   ];
+
   useEffect(() => {
-    if (window.location.pathname === '/user-management') {
-      dispatch(RolesActions.fetchRoles());
-    }
+    dispatch(RolesActions.fetchRoles());
   }, [dispatch]);
 
   return (
