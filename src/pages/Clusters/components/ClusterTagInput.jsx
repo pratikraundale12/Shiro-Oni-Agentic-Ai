@@ -85,7 +85,6 @@ const ClusterTagInput = ({
   handleKeyDown,
   error,
   setError,
-  //   handleBlur
 }) => {
   const tagsPlaceholder = () => {
     return isEmpty(tags.split(',').filter(tag => tag)) ? 'Cluster Tags' : '';
