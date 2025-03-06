@@ -1,8 +1,8 @@
 /*eslint-disable*/
+import { isEmpty } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { TagIcon } from '../../../assets';
-import { isEmpty } from 'lodash';
 
 const TagsInputContainer = styled.div`
   position: relative;
@@ -83,13 +83,15 @@ const ClusterTagInput = ({
   setInputValue,
   register,
   handleKeyDown,
-  //   handleBlur
+  error,
+  setError,
 }) => {
   const tagsPlaceholder = () => {
     return isEmpty(tags.split(',').filter(tag => tag)) ? 'Cluster Tags' : '';
   };
   const handleBlur = () => {
     setInputValue('');
+    setError('');
   };
   return (
     <>
@@ -123,7 +125,6 @@ const ClusterTagInput = ({
               </CloseButton>
             </TagItem>
           ))}
-
         <TagsInput
           type="text"
           value={inputValue}
@@ -135,10 +136,9 @@ const ClusterTagInput = ({
           onChange={e => setInputValue(e.target.value)}
           aria-label="Add a tag"
         />
-
-        {tags.split(',').filter(tag => tag).length >= 5 && (
+        {error && (
           <p
-            className="mb-0"
+            className="error-message"
             style={{
               color: 'red',
               position: 'absolute',
@@ -146,7 +146,7 @@ const ClusterTagInput = ({
               left: '0px',
             }}
           >
-            Tag limit reached (5 tags max)
+            {error}
           </p>
         )}
       </TagsInputContainer>
