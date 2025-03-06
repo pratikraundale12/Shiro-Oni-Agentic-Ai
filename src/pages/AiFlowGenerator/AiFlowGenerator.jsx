@@ -3,7 +3,7 @@ import { RefreshIcon, TodoIcon } from '../../assets';
 import styled from 'styled-components';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { AiFlowGeneratorSelectors } from '../../store';
+import { AiFlowGeneratorSelectors, AuthenticationSelectors } from '../../store';
 import { isEmpty } from 'lodash';
 import { fetchDefaultRecentFlowsData } from './services';
 import { RecommendedFlow } from './RecommendedFlow';
@@ -83,18 +83,21 @@ export const AiFlowGenerator = () => {
   };
 
   const dispatch = useDispatch();
+  const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
+
   const defaultFLows = useSelector(AiFlowGeneratorSelectors.getDefaultFlows);
   const recentFlows = useSelector(AiFlowGeneratorSelectors.getRecentFlows);
 
   // query prompt
   const [queryText, setQueryText] = useState('');
 
+  const generateFlowPermission = userPermissions.includes('add_genai');
+
   useEffect(() => {
     fetchDefaultRecentFlowsData(dispatch);
   }, []);
 
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-  console.log('cluser--', clusters);
 
   return isEmpty(clusters) ? (
     getLoginToClusterPopup()
@@ -132,13 +135,18 @@ export const AiFlowGenerator = () => {
               <RecommendedFlow
                 defaultFlows={defaultFLows}
                 recentFlows={recentFlows}
+                generateFlowPermission={generateFlowPermission}
               />
             </RecommendedFlowBox>
           </Flex>
         )}
       </Flex>
       <PromptSection>
-        <PromptInputBox queryText={queryText} setQueryText={setQueryText} />
+        <PromptInputBox
+          disabled={!generateFlowPermission}
+          queryText={queryText}
+          setQueryText={setQueryText}
+        />
       </PromptSection>
     </Container>
   );

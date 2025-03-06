@@ -32,6 +32,9 @@ const InputBox = styled.textarea`
   word-break: break-word; /* Ensure long words break to avoid overflow */
   white-space: pre-wrap; /* Preserve line breaks and wrap text */
 
+  &:disabled {
+    cursor: not-allowed;
+  }
   :focus {
     outline: none;
     border-color: rgba(160, 167, 187, 1);
@@ -61,7 +64,7 @@ const GenerateFLowButton = styled.div`
   }
 `;
 
-export const PromptInputBox = ({ queryText, setQueryText }) => {
+export const PromptInputBox = ({ disabled, queryText, setQueryText }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
   const handleGenerateFLowClick = () => {
     console.log('queryText', queryText);
@@ -69,6 +72,7 @@ export const PromptInputBox = ({ queryText, setQueryText }) => {
   return (
     <InputContainer>
       <InputBox
+        disabled={disabled}
         type="search"
         value={queryText}
         placeholder={KDFM.PROMPT_INPUT_PLACEHOLDER}
@@ -95,4 +99,5 @@ export const PromptInputBox = ({ queryText, setQueryText }) => {
 PromptInputBox.propTypes = {
   queryText: PropTypes.string.isRequired,
   setQueryText: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired,
 };

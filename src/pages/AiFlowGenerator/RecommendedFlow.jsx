@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { isEmpty } from 'lodash';
 import { GeneratedFlowIcon } from '../../assets';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { toast } from 'react-toastify';
+import { KDFM } from '../../constants';
 
 const FlowsWrapper = styled.div`
   width: 100%;
@@ -39,16 +41,37 @@ const FlowName = styled.span`
   overflow: hidden;
 `;
 
-export const RecommendedFlow = ({ defaultFlows = [], recentFlows = [] }) => {
+export const RecommendedFlow = ({
+  generateFlowPermission,
+  defaultFlows = [],
+  recentFlows = [],
+}) => {
   const flowData = (
     !isEmpty(recentFlows) ? recentFlows : defaultFlows || []
   ).slice(0, 6); // allow only 6 flows to be show on UI
+
+  const handleRecentFlowClick = id => {
+    if (generateFlowPermission) {
+      // flow generate logic
+      console.log('flow id--', id);
+    } else {
+      if (!toast.isActive('permission-error')) {
+        toast.error(KDFM.NO_PERMISSION_TO_GENERATE_FLOW, {
+          toastId: 'permission-error',
+          autoClose: 900,
+        });
+      }
+    }
+  };
   return (
     <FlowsWrapper>
       {!isEmpty(flowData) &&
         flowData?.map(flow => (
           <>
-            <FlowItems key={flow.id}>
+            <FlowItems
+              key={flow.id}
+              onClick={() => handleRecentFlowClick(flow.id)}
+            >
               <GeneratedFlowIcon />
               <FlowName data-tooltip-id={`flow-name-tooltip-${flow.id}`}>
                 {flow.name}
@@ -73,4 +96,5 @@ export const RecommendedFlow = ({ defaultFlows = [], recentFlows = [] }) => {
 RecommendedFlow.propTypes = {
   defaultFlows: PropTypes.array,
   recentFlows: PropTypes.array,
+  generateFlowPermission: PropTypes.bool.isRequired,
 };

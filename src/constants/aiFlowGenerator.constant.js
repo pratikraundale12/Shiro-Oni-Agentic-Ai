@@ -5,6 +5,8 @@ export const AI_FLOW_GENERATOR_CONSTANTS = {
   PROMPT_INPUT_PLACEHOLDER: 'Enter your Prompt here...',
   LOGIN_TO_CLUSTER_TO_GENERATE_FLOWS:
     'Please login to cluster to generate the flows',
+  NO_PERMISSION_TO_GENERATE_FLOW:
+    'You do not have the permission to generate the flows please contact your Administrator.',
 };
 
 export const DEFAULT_FLOW_JSON = [

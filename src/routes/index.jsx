@@ -177,7 +177,7 @@ export const ROUTES_MENU = [
         component: <AiFlowGenerator />,
       },
     ],
-    permission: 'view_namespace',
+    permission: 'view_genai',
   },
   {
     name: 'User Management',
@@ -312,6 +312,7 @@ const Routes = () => {
         '/clusters',
         '/dashboard',
         '/licensing',
+        '/ai-flow-generator',
       ].includes(location.pathname)
     ) {
       dispatch(SettingsActions.fetchSettings());
