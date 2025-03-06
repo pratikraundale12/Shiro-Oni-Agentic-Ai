@@ -324,7 +324,7 @@ const Routes = () => {
     }
   }
 
-  if (!isLicenseValid) return <SessionExpired />;
+  if (isLicenseValid === false) return <SessionExpired />;
 
   if (loading) return <FullPageLoader loading={loading} />;
 

@@ -13,7 +13,7 @@ export const API_URL =
 export const ACCESS_TOKEN = 'access_token';
 export const CLUSTERS_TOKEN = 'clusters';
 
-export const DEBOUNCE_DELAY = 0;
+export const DEBOUNCE_DELAY = 500;
 
 export const PREVIOUS_PATH = 'previous_path';
 export const DEFAULT_ROUTE = 'dashboard';
