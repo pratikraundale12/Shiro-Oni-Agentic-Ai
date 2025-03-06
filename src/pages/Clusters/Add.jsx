@@ -27,18 +27,18 @@ import {
   updateCluster,
 } from '../../store/apis';
 import { Certificate } from './components/Certificate';
+import CertificateTextDisplay from './components/CertificateTextDisplay';
+import ClusterCheckBoxSection from './components/ClusterCheckboxSection';
+import ClusterFieldsForm from './components/ClusterFieldsForm';
+import ClusterNavigationTab from './components/ClusterNavigationTab';
+import ClusterTagInput from './components/ClusterTagInput';
+import ClusterTestSection from './components/ClusterTestSection';
 import { Creditionals } from './components/Creditionals';
 import { FailedTestModal } from './components/FailedTestModal';
+import RegistryFormSection from './components/RegistryFormSection';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
-import ClusterFieldsForm from './components/ClusterFieldsForm';
-import ClusterTagInput from './components/ClusterTagInput';
-import ClusterCheckBoxSection from './components/ClusterCheckboxSection';
-import CertificateTextDisplay from './components/CertificateTextDisplay';
-import ClusterTestSection from './components/ClusterTestSection';
-import RegistryFormSection from './components/RegistryFormSection';
-import ClusterNavigationTab from './components/ClusterNavigationTab';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -149,6 +149,7 @@ export const Add = () => {
     GridSelectors.getGridData(state, 'clusters')
   );
   const [saveButtonEnable, setSaveButtonEnable] = useState(true);
+  const [error, setError] = useState('');
   const filteredGridData = gridData.filter(item => {
     return item?.nifi_url !== data?.nifi_url;
   });
@@ -523,7 +524,11 @@ export const Add = () => {
       const trimmedValue = value.trim().replace(/,$/, '');
       if (!trimmedValue) return;
       if (trimmedValue.length > 20) {
-        toast.error('Maximum 20 characters allowed');
+        setError('Maximum 20 characters allowed');
+        return;
+      }
+      if (trimmedValue.length < 2) {
+        setError('Minimum 2 characters required');
         return;
       }
       const currentTags = tags.split(',').filter(tag => tag);
@@ -541,6 +546,7 @@ export const Add = () => {
       }
       setTags([...currentTags, trimmedValue].join(','));
       setInputValue('');
+      setError('');
     }
   }
 
@@ -679,6 +685,8 @@ export const Add = () => {
               setInputValue={setInputValue}
               register={register}
               handleKeyDown={handleKeyDown}
+              setError={setError}
+              error={error}
             />
             <ClusterCheckBoxSection
               approverEnable={approverEnable}
@@ -829,7 +837,7 @@ export const Add = () => {
            Continue with the next steps."
           title="Testing Successful"
         />
-      )} 
+      )}
       <FailedTestModal
         failedTest={failedModal}
         setFailedTest={setFailedModal}
