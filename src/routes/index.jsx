@@ -276,12 +276,12 @@ const Routes = () => {
   const location = useLocation();
 
   useEffect(() => {
-    dispatch(AuthenticationActions.fetchLicenseInfo());
     if (
       location.pathname === '/login' ||
       location.pathname === '/admin/login'
     ) {
       dispatch(AuthenticationActions.fetchSettingLogo());
+      dispatch(AuthenticationActions.fetchLicenseInfo());
     }
     if (
       [
