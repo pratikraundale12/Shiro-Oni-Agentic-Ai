@@ -1,4 +1,5 @@
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { DeleteDustbinIcon, SortDownIcon, SortUpIcon } from '../../assets';
 import {
   Grid,
@@ -8,12 +9,14 @@ import {
 } from '../../components';
 import { KDFM, STATUS_OPTIONS } from '../../constants';
 import { ModalWithIcon } from '../../shared';
+import { RolesActions } from '../../store';
 import { useGlobalContext } from '../../utils';
 
 export const ListUsers = () => {
   const { state, setState } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('');
+  const dispatch = useDispatch();
 
   const toggleSorting = column => {
     setSortingState(prevState => {
@@ -128,6 +131,11 @@ export const ListUsers = () => {
       ),
     },
   ];
+  useEffect(() => {
+    if (window.location.pathname === '/user-management') {
+      dispatch(RolesActions.fetchRoles());
+    }
+  }, [dispatch]);
 
   return (
     <>
