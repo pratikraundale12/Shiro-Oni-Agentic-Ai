@@ -179,10 +179,6 @@ export const settingSchema = yup.object().shape({
       }
       return true;
     }),
-  azure_redirect_uri: yup.string().required('Azure Redirect URI is required'),
-  azure_client_id: yup.string().required('Azure Client ID is required'),
-  azure_client_secret: yup.string().required('Azure Client Secret is required'),
-  azure_tenant_id: yup.string().required('Azure Tenant ID is required'),
 });
 export const Setting = () => {
   const {
@@ -274,11 +270,12 @@ export const Setting = () => {
       data?.azure_client_secret,
       settingData?.azure_client_secret
     );
-    appendIfChanged(
-      'show_sso_page',
-      data?.show_sso_page,
-      settingData?.show_sso_page
-    );
+    // appendIfChanged(
+    //   'show_sso_page',
+    //   data?.show_sso_page,
+    //   settingData?.show_sso_page
+    // );
+    appendIfChanged('sso_enabled', data?.sso_enabled, settingData?.sso_enabled);
 
     appendIfChanged(
       'smtp_service',
@@ -353,7 +350,8 @@ export const Setting = () => {
       setValue('azure_redirect_uri', settingData?.azure_redirect_uri);
       setValue('azure_client_secret', settingData?.azure_client_secret);
       setValue('azure_tenant_id', settingData?.azure_tenant_id);
-      setValue('show_sso_page', settingData?.show_sso_page);
+      // setValue('show_sso_page', settingData?.show_sso_page);
+      setValue('sso_enabled', settingData?.sso_enabled);
       setValue('email', settingData?.email);
       setValue('from_email', settingData?.from_email);
       setValue('smtp_service', settingData?.smtp_service);
@@ -403,7 +401,8 @@ export const Setting = () => {
         value.azure_tenant_id !== settingData?.azure_tenant_id ||
         value.azure_redirect_uri !== settingData?.azure_redirect_uri ||
         value.azure_client_secret !== settingData?.azure_client_secret ||
-        value.show_sso_page !== settingData?.show_sso_page ||
+        // value.show_sso_page !== settingData?.show_sso_page ||
+        value.sso_enabled !== settingData?.sso_enabled ||
         value.ldapEnabled !== settingData?.ldapEnabled;
 
       setIsChanged(isModified);
@@ -454,6 +453,17 @@ export const Setting = () => {
   }
 
   const selectedSSO = watch('selected_sso');
+  const ssoEnabled = watch('sso_enabled');
+  useEffect(() => {
+    if (!ssoEnabled) {
+      setValue('selected_sso', null);
+      setValue('azure_client_id', null);
+      setValue('azure_client_secret', null);
+      setValue('azure_tenant_id', null);
+      setValue('azure_redirect_uri', null);
+      // setValue('show_sso_page', false);
+    }
+  }, [ssoEnabled, setValue]);
 
   return (
     <Wrapper>
@@ -745,81 +755,92 @@ export const Setting = () => {
           <HeadingContent className="mt-4">{KDFM.SSO_LoGIN}</HeadingContent>
         </div>
         <HeadingContentHr className="mt-3 mb-4" />
-        <InputFields className="row mb-4">
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-            <LabelSelect className="mb-3">{KDFM.LOGIN_TYPE}</LabelSelect>
-            <SelectField
-              name="selected_sso"
-              control={control}
-              icon={<LoginIcon />}
-              errors={errors}
-              options={SSO_LOGIN_TYPE}
-              placeholder="Select SSO Login Type"
-            />
-          </div>
-        </InputFields>
+        <>
+          <InputFields className="row mb-4 align-items-center">
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+              <CheckboxField
+                name="sso_enabled"
+                label="SSO Enabled"
+                register={register}
+              />
+            </div>
+          </InputFields>
 
-        {selectedSSO === 'azure' && (
-          <>
-            <InputFields className="row mb-4">
-              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                <InputField
-                  name="azure_client_id"
-                  register={register}
-                  icon={<UserIcon />}
-                  label="Azure Client ID"
-                  placeholder="Enter Client ID"
-                  errors={errors}
-                  required
-                />
-              </div>
-              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                <InputField
-                  name="azure_client_secret"
-                  register={register}
-                  icon={<UserIcon />}
-                  label="Azure Client Secret"
-                  placeholder="Enter Client Secret"
-                  errors={errors}
-                  required
-                />
-              </div>
-              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                <InputField
-                  name="azure_tenant_id"
-                  register={register}
-                  icon={<UserIcon />}
-                  label="Azure Tenant ID"
-                  placeholder="Enter Tenant ID"
-                  errors={errors}
-                  required
-                />
-              </div>
-            </InputFields>
+          {ssoEnabled && (
+            <>
+              <InputFields className="row mb-4">
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                  <LabelSelect className="mb-3">{KDFM.LOGIN_TYPE}</LabelSelect>
+                  <SelectField
+                    name="selected_sso"
+                    control={control}
+                    icon={<LoginIcon />}
+                    errors={errors}
+                    options={SSO_LOGIN_TYPE}
+                    placeholder="Select SSO Login Type"
+                  />
+                </div>
+              </InputFields>
 
-            <InputFields className="row mb-4 align-items-center">
-              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                <InputField
-                  name="azure_redirect_uri"
-                  register={register}
-                  icon={<OpenLinkIcon color="#444445" />}
-                  label="Azure Redirect URL"
-                  placeholder="Enter Redirect URL"
-                  errors={errors}
-                  required
-                />
-              </div>
+              {selectedSSO === 'azure' && (
+                <>
+                  <InputFields className="row mb-4">
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="azure_client_id"
+                        register={register}
+                        icon={<UserIcon />}
+                        label="Azure Client ID"
+                        placeholder="Enter Client ID"
+                        errors={errors}
+                      />
+                    </div>
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="azure_client_secret"
+                        register={register}
+                        icon={<UserIcon />}
+                        label="Azure Client Secret"
+                        placeholder="Enter Client Secret"
+                        errors={errors}
+                      />
+                    </div>
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="azure_tenant_id"
+                        register={register}
+                        icon={<UserIcon />}
+                        label="Azure Tenant ID"
+                        placeholder="Enter Tenant ID"
+                        errors={errors}
+                      />
+                    </div>
+                  </InputFields>
 
-              <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                <CheckboxField
-                  name="show_sso_page"
-                  label="Show SSO Page"
-                  register={register}
-                />
-              </div>
-            </InputFields>
-          </>
-        )}
+                  <InputFields className="row mb-4 align-items-center">
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="azure_redirect_uri"
+                        register={register}
+                        icon={<OpenLinkIcon color="#444445" />}
+                        label="Azure Redirect URL"
+                        placeholder="Enter Redirect URL"
+                        errors={errors}
+                      />
+                    </div>
+                    {/* <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <CheckboxField
+                        name="show_sso_page"
+                        label="Show SSO Login Page"
+                        register={register}
+                      />
+                    </div> */}
+                  </InputFields>
+                </>
+              )}
+            </>
+          )}
+        </>
 
         <FlexWrapper className="mt-3">
           <div style={{ display: 'flex', gap: '1rem' }}>

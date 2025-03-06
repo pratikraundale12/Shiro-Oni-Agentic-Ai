@@ -1,7 +1,9 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { theme } from '../styles';
 import { history } from '../helpers/history';
+import { AuthenticationActions } from '../store';
+import { theme } from '../styles';
 
 const ErrorContainer = styled.main`
   display: flex;
@@ -31,12 +33,20 @@ const Button = styled.button`
 `;
 
 const RedirectToLogin = () => {
+  const dispatch = useDispatch();
   return (
     <ErrorContainer>
       <ErrorTitle>Something went wrong!</ErrorTitle>
       <ErrorText>We encountered an issue loading the page.</ErrorText>
       <div>
-        <Button onClick={() => history.push('/login')}>Login</Button>
+        <Button
+          onClick={() => {
+            history.push('/login');
+            dispatch(AuthenticationActions.fetchSettingLogo());
+          }}
+        >
+          Login
+        </Button>
       </div>
     </ErrorContainer>
   );

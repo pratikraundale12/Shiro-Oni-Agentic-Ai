@@ -441,11 +441,12 @@ export const Layout = ({ children }) => {
               {children}
               {isUserLogin &&
                 settingLogo?.selected_sso === 'azure' &&
-                !settingLogo?.show_sso_page && (
+                !settingLogo?.show_sso_page &&
+                settingLogo?.sso_enabled && (
                   <>
                     <SmallText>
                       <span>or</span>
-                    </SmallText>{' '}
+                    </SmallText>
                     <SSOButtonsContainer>
                       <SSOButton onClick={handleMSLogin}>
                         <MicroSoftIcon />

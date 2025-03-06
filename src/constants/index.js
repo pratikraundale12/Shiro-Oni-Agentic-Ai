@@ -221,7 +221,7 @@ export const KDFM = {
   SCHEDULE_DIPLOYMENT: 'Deployment Schedule',
   SERVICE_ACCOUNT: 'Service Account',
   SSO_LoGIN: 'SSO Login',
-  LOGIN_TYPE: 'Login Type',
+  LOGIN_TYPE: 'SSO',
   CONTROLLER_SERVICE_DATA: 'External Controller Services',
   SMTP: 'Email Configuration',
   FLOW_CONTROL_WARNING:

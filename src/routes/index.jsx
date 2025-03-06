@@ -46,7 +46,6 @@ import {
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
 // import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
-import KeycloakRedirectPage from '../components/KeycloakRedirectPage.jsx';
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
@@ -336,7 +335,6 @@ const Routes = () => {
         path="/api/auth/azure/callback"
         element={<AzureCallbackHandler />}
       />
-      <Route path="/keycloakLogin" element={<KeycloakRedirectPage />} />
       <Route path="/back-to-login" element={<RedirectToLogin />} />
       <Route path="/admin/login" element={<Login />} />
       <Route path="/forgot" element={<Forgot />} />
