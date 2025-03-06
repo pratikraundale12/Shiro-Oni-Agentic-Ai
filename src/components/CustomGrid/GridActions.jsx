@@ -32,6 +32,7 @@ import {
 } from '../../shared';
 import {
   AuthenticationSelectors,
+  ClustersActions,
   ClustersSelectors,
   DashboardActions,
   GridActions as GridSagsActions,
@@ -721,7 +722,9 @@ export const GridActions = ({
             userPermissions.includes(getButtonPermissions(module)) && (
               <Button
                 icon={<PlusCircleIcon width={16} height={16} color="white" />}
-                onClick={() => history.push(`/${module}/add`)}
+                onClick={() =>
+                  dispatch(ClustersActions.setIsAddorEditClusterModalOpen(true))
+                }
                 size="sm"
               >
                 {buttonText}

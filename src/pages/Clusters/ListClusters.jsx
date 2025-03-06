@@ -36,6 +36,7 @@ import {
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
+import { AddOrEditClusterModal } from './components/AddOrEditClusterSetupModal';
 
 const List = styled.div`
   position: absolute;
@@ -427,6 +428,8 @@ export const ListClusters = () => {
 
   return (
     <>
+      {' '}
+      <AddOrEditClusterModal />
       <ModalWithIcon
         title={KDFM.DEACTIVATE_CLUSTER}
         primaryButtonText={KDFM.DEACTIVATE}
