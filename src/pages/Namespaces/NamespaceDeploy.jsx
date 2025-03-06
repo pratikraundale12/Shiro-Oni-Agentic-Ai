@@ -209,7 +209,7 @@ const NamespaceDeploy = ({
   };
   const provideTitle = () => {
     return `Process Group 
-        ${checkFlowControlAfterUpgrade ? KDFM.UPGRADE : KDFM.DEPLOY}
+        ${checkFlowControlAfterUpgrade ? type : KDFM.DEPLOY}
         `;
   };
   const provideIconForModal = () => {
@@ -273,7 +273,13 @@ const NamespaceDeploy = ({
             </ModalIcon>
             <ModalHFive>
               {deployOrUpgradeDetails?.invalidCount > 0 ? (
-                deployOrUpgradeDetails?.invalid_message
+                <>
+                  Process group&nbsp;
+                  {deployByRegistryFlow
+                    ? 'deploye'
+                    : `${type.charAt(0).toLowerCase() + type.slice(1)}`}
+                  d, but there are some Invalid components
+                </>
               ) : (
                 <>
                   Process Group Successfully&nbsp;
