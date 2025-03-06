@@ -179,6 +179,43 @@ export const settingSchema = yup.object().shape({
       }
       return true;
     }),
+  selected_sso: yup.string().nullable(),
+
+  azure_redirect_uri: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'azure', // Adjust based on the actual value in selected_sso
+      then: schema => schema.required('Azure Redirect URI is required'),
+      otherwise: schema => schema.nullable(),
+    }),
+
+  azure_client_id: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'azure',
+      then: schema => schema.required('Azure Client ID is required'),
+      otherwise: schema => schema.nullable(),
+    }),
+
+  azure_client_secret: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'azure',
+      then: schema => schema.required('Azure Client Secret is required'),
+      otherwise: schema => schema.nullable(),
+    }),
+
+  azure_tenant_id: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'azure',
+      then: schema => schema.required('Azure Tenant ID is required'),
+      otherwise: schema => schema.nullable(),
+    }),
 });
 export const Setting = () => {
   const {
@@ -270,11 +307,6 @@ export const Setting = () => {
       data?.azure_client_secret,
       settingData?.azure_client_secret
     );
-    // appendIfChanged(
-    //   'show_sso_page',
-    //   data?.show_sso_page,
-    //   settingData?.show_sso_page
-    // );
     appendIfChanged('sso_enabled', data?.sso_enabled, settingData?.sso_enabled);
 
     appendIfChanged(
@@ -350,7 +382,6 @@ export const Setting = () => {
       setValue('azure_redirect_uri', settingData?.azure_redirect_uri);
       setValue('azure_client_secret', settingData?.azure_client_secret);
       setValue('azure_tenant_id', settingData?.azure_tenant_id);
-      // setValue('show_sso_page', settingData?.show_sso_page);
       setValue('sso_enabled', settingData?.sso_enabled);
       setValue('email', settingData?.email);
       setValue('from_email', settingData?.from_email);
@@ -401,7 +432,6 @@ export const Setting = () => {
         value.azure_tenant_id !== settingData?.azure_tenant_id ||
         value.azure_redirect_uri !== settingData?.azure_redirect_uri ||
         value.azure_client_secret !== settingData?.azure_client_secret ||
-        // value.show_sso_page !== settingData?.show_sso_page ||
         value.sso_enabled !== settingData?.sso_enabled ||
         value.ldapEnabled !== settingData?.ldapEnabled;
 
@@ -455,15 +485,14 @@ export const Setting = () => {
   const selectedSSO = watch('selected_sso');
   const ssoEnabled = watch('sso_enabled');
   useEffect(() => {
-    if (!ssoEnabled) {
+    if (ssoEnabled === false) {
       setValue('selected_sso', null);
       setValue('azure_client_id', null);
       setValue('azure_client_secret', null);
       setValue('azure_tenant_id', null);
       setValue('azure_redirect_uri', null);
-      // setValue('show_sso_page', false);
     }
-  }, [ssoEnabled, setValue]);
+  }, [ssoEnabled, setValue, selectedSSO]);
 
   return (
     <Wrapper>
@@ -828,13 +857,6 @@ export const Setting = () => {
                         errors={errors}
                       />
                     </div>
-                    {/* <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                      <CheckboxField
-                        name="show_sso_page"
-                        label="Show SSO Login Page"
-                        register={register}
-                      />
-                    </div> */}
                   </InputFields>
                 </>
               )}
