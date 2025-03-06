@@ -852,8 +852,8 @@ export const Setting = () => {
                         name="azure_redirect_uri"
                         register={register}
                         icon={<OpenLinkIcon color="#444445" />}
-                        label="Azure Redirect URL"
-                        placeholder="Enter Redirect URL"
+                        label="Azure Redirect URI"
+                        placeholder="Enter Redirect URI"
                         errors={errors}
                       />
                     </div>
