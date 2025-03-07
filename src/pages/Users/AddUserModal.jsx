@@ -11,7 +11,7 @@ import {
   editUserSchema,
   userSchema,
 } from '../../components/UserManagement/userValidation';
-import { API_URL, ACCESS_TOKEN } from '../../constants';
+import { ACCESS_TOKEN, API_URL } from '../../constants';
 import { Button, InputField, Modal, PasswordField } from '../../shared';
 import {
   AuthenticationActions,
@@ -273,7 +273,6 @@ export const AddUserModal = props => {
                     type="text"
                     label="Last Name"
                     placeholder="Enter Your Last Name"
-                    required
                     register={register}
                     errors={errors}
                     icon={<UserIcon />}

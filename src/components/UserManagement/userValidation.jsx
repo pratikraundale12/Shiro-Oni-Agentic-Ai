@@ -6,11 +6,18 @@ export const userSchema = yup.object().shape({
     .trim()
     .matches(/^[A-Za-z]+$/, 'First Name must contain only letters')
     .required('Name is required'),
+
   last_name: yup
     .string()
     .trim()
-    .matches(/^[A-Za-z]+$/, 'Last Name must contain only letters')
-    .required('Name is required'),
+    .nullable()
+    .notRequired()
+    .max(30, 'Last Name must be at most 30 characters')
+    .test(
+      'is-valid-last-name',
+      'Last Name must contain only letters(no spaces)',
+      value => !value || /^[A-Za-z]+$/.test(value)
+    ),
   email: yup
     .string()
     .matches(EMAIL_REGEX, 'Invalid email address')
@@ -29,12 +36,18 @@ export const editUserSchema = yup.object().shape(
         /^[A-Za-z]+$/,
         'First Name must contain only letters(no spaces)'
       ),
+
     last_name: yup
       .string()
-      .required('Last Name is required')
-      .max(30, 'Last Name must be at most 30 characters')
       .trim()
-      .matches(/^[A-Za-z]+$/, 'Last Name must contain only letters(no spaces)'),
+      .nullable()
+      .notRequired()
+      .max(30, 'Last Name must be at most 30 characters')
+      .test(
+        'is-valid-last-name',
+        'Last Name must contain only letters(no spaces)',
+        value => !value || /^[A-Za-z]+$/.test(value)
+      ),
     middle_name: yup
       .string()
       .trim()
