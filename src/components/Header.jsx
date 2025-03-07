@@ -342,7 +342,11 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!isEmpty(currentUser) && !isEmpty(settingsData)) {
+    if (
+      !isEmpty(currentUser) &&
+      !isEmpty(settingsData) &&
+      currentUser?.permissions?.includes('view_cluster')
+    ) {
       dispatch(ClustersActions.fetchClusters());
       dispatch(RolesActions.fetchRoles());
     }
@@ -470,23 +474,25 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                     </IconButton>
                   </>
                 )}
-                <IconCusterButton
-                  onClick={() => {
-                    dispatch(AuthenticationActions.setClusterLogin(true));
-                    dispatch(
-                      ClustersActions.fetchClusters({ params: { page: 1 } })
-                    );
-                  }}
-                  title="Cluster"
-                >
-                  <ClusterIcon />
-                  {selectedCluster?.label && (
-                    <NameDiv>
-                      <StatusDiv /> {selectedCluster.label}
-                    </NameDiv>
-                  )}
-                  {selectedCluster?.label && <DownArrowIcon />}
-                </IconCusterButton>
+                {currentUser?.permissions?.includes('view_cluster') && (
+                  <IconCusterButton
+                    onClick={() => {
+                      dispatch(AuthenticationActions.setClusterLogin(true));
+                      dispatch(
+                        ClustersActions.fetchClusters({ params: { page: 1 } })
+                      );
+                    }}
+                    title="Cluster"
+                  >
+                    <ClusterIcon />
+                    {selectedCluster?.label && (
+                      <NameDiv>
+                        <StatusDiv /> {selectedCluster.label}
+                      </NameDiv>
+                    )}
+                    {selectedCluster?.label && <DownArrowIcon />}
+                  </IconCusterButton>
+                )}
                 {/* <IconButton>
                 <HeadphoneIcon />
               </IconButton>

@@ -31,12 +31,12 @@ import {
 import { SettingsSelectors } from '../../store/settings';
 import { ApproverGroupDisplay } from './ApproverGroupDisplay';
 import { DiffModalScheduleList } from './DiffModalSchedule';
+import { GroupListModal } from './GroupListModal';
 import { RejectScheduleModal } from './RejectScheduleModal';
 import { ScheduleDeploymentModal } from './ScheduleDeploymentModal';
 import { StatusText } from './StatusText';
 import { TokenScheduleDeploymentModal } from './TokenScheduleDeploymentModal';
 import { UserStoryModal } from './UserStoryModal';
-import { GroupListModal } from './GroupListModal';
 
 const ActionTd = styled.div`
   display: flex;
@@ -701,8 +701,10 @@ export const ListScheduleDeployment = () => {
       data.sort((a, b) => a?.deploy_time?.localeCompare(b?.deploy_time)),
   };
   useEffect(() => {
-    dispatch(ClustersActions.fetchClusters());
-  }, [dispatch]);
+    if (currentUser?.permissions?.includes('view_cluster')) {
+      dispatch(ClustersActions.fetchClusters());
+    }
+  }, [currentUser?.permissions, dispatch]);
 
   const fetchRecords = () => {
     dispatch(
