@@ -345,6 +345,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     if (
       !isEmpty(currentUser) &&
       !isEmpty(settingsData) &&
+      !isEmpty(currentUser?.permissions) &&
       currentUser?.permissions?.includes('view_cluster')
     ) {
       dispatch(ClustersActions.fetchClusters());
@@ -474,25 +475,26 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                     </IconButton>
                   </>
                 )}
-                {currentUser?.permissions?.includes('view_cluster') && (
-                  <IconCusterButton
-                    onClick={() => {
-                      dispatch(AuthenticationActions.setClusterLogin(true));
-                      dispatch(
-                        ClustersActions.fetchClusters({ params: { page: 1 } })
-                      );
-                    }}
-                    title="Cluster"
-                  >
-                    <ClusterIcon />
-                    {selectedCluster?.label && (
-                      <NameDiv>
-                        <StatusDiv /> {selectedCluster.label}
-                      </NameDiv>
-                    )}
-                    {selectedCluster?.label && <DownArrowIcon />}
-                  </IconCusterButton>
-                )}
+                {!isEmpty(currentUser?.permissions) &&
+                  currentUser?.permissions?.includes('view_cluster') && (
+                    <IconCusterButton
+                      onClick={() => {
+                        dispatch(AuthenticationActions.setClusterLogin(true));
+                        dispatch(
+                          ClustersActions.fetchClusters({ params: { page: 1 } })
+                        );
+                      }}
+                      title="Cluster"
+                    >
+                      <ClusterIcon />
+                      {selectedCluster?.label && (
+                        <NameDiv>
+                          <StatusDiv /> {selectedCluster.label}
+                        </NameDiv>
+                      )}
+                      {selectedCluster?.label && <DownArrowIcon />}
+                    </IconCusterButton>
+                  )}
                 {/* <IconButton>
                 <HeadphoneIcon />
               </IconButton>

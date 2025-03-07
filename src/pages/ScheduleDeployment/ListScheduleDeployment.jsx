@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -701,7 +702,10 @@ export const ListScheduleDeployment = () => {
       data.sort((a, b) => a?.deploy_time?.localeCompare(b?.deploy_time)),
   };
   useEffect(() => {
-    if (currentUser?.permissions?.includes('view_cluster')) {
+    if (
+      !isEmpty(currentUser?.permissions) &&
+      currentUser?.permissions?.includes('view_cluster')
+    ) {
       dispatch(ClustersActions.fetchClusters());
     }
   }, [currentUser?.permissions, dispatch]);
