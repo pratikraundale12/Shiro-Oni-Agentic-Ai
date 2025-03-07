@@ -79,7 +79,6 @@ export function* resetPassword(api, { payload: { password, resetToken } }) {
   if (response.ok) yield call(history.push, '/admin/login');
   if (!response.ok) toast.error(response.data.message);
 }
-
 export function* login(api, { payload: { type, token, ...payload } }) {
   const response = yield call(requestSaga, {
     errorSection: 'login',
@@ -129,12 +128,11 @@ export function* login(api, { payload: { type, token, ...payload } }) {
     toast.error(response.data.message, { toastId: 'login-toast-error1' });
   }
 }
-
 export function* logout(api, { payload: { url } }) {
   yield put(AuthenticationActions.logoutSuccess());
   yield put({ type: 'RESET' });
   localStorage.clear();
-  history.replace(url);
+  history.replace(url); // Example: '/login'
 }
 export function* fetchSettingLogo(api) {
   yield call(requestSaga, {

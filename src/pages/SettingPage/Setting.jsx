@@ -6,30 +6,33 @@ import styled from 'styled-components';
 import * as yup from 'yup';
 import {
   CalendarIcon,
+  LoginIcon,
   LogoFieldIcon,
   MailIcon,
+  OpenLinkIcon,
   QRIcons,
   // RefreshIcon,
   UploadIcon,
   UserIcon,
 } from '../../assets';
-import { history } from '../../helpers/history';
 import favicon from '../../assets/images/default-favicon.ico';
 import {
   EMAIL_REGEX,
   EMAIL_REMINDER_OPTIONS,
   KDFM,
   SCHEDULE_LIST_REFRESH_OPTIONS,
-  // REFRESH_OPTIONS,
+  SSO_LOGIN_TYPE,
 } from '../../constants';
+import { history } from '../../helpers/history';
 import {
   Button,
+  CheckboxField,
   InputField,
-  SelectField,
-  UploadField,
   PasswordField,
+  SelectField,
   SwitchButton,
   TextButton,
+  UploadField,
 } from '../../shared';
 import { RolesSelectors } from '../../store';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
@@ -176,6 +179,43 @@ export const settingSchema = yup.object().shape({
       }
       return true;
     }),
+  selected_sso: yup.string().nullable(),
+
+  azure_redirect_uri: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'azure', // Adjust based on the actual value in selected_sso
+      then: schema => schema.required('Azure Redirect URI is required'),
+      otherwise: schema => schema.nullable(),
+    }),
+
+  azure_client_id: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'azure',
+      then: schema => schema.required('Azure Client ID is required'),
+      otherwise: schema => schema.nullable(),
+    }),
+
+  azure_client_secret: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'azure',
+      then: schema => schema.required('Azure Client Secret is required'),
+      otherwise: schema => schema.nullable(),
+    }),
+
+  azure_tenant_id: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'azure',
+      then: schema => schema.required('Azure Tenant ID is required'),
+      otherwise: schema => schema.nullable(),
+    }),
 });
 export const Setting = () => {
   const {
@@ -243,6 +283,33 @@ export const Setting = () => {
       settingData?.email_reminder_time
     );
     appendIfChanged(
+      'selected_sso',
+      data?.selected_sso,
+      settingData?.selected_sso
+    );
+    appendIfChanged(
+      'azure_client_id',
+      data?.azure_client_id,
+      settingData?.azure_client_id
+    );
+    appendIfChanged(
+      'azure_redirect_uri',
+      data?.azure_redirect_uri,
+      settingData?.azure_redirect_uri
+    );
+    appendIfChanged(
+      'azure_tenant_id',
+      data?.azure_tenant_id,
+      settingData?.azure_tenant_id
+    );
+    appendIfChanged(
+      'azure_client_secret',
+      data?.azure_client_secret,
+      settingData?.azure_client_secret
+    );
+    appendIfChanged('sso_enabled', data?.sso_enabled, settingData?.sso_enabled);
+
+    appendIfChanged(
       'smtp_service',
       data?.smtp_service,
       settingData?.smtp_service
@@ -309,7 +376,13 @@ export const Setting = () => {
         settingData?.ldap_auto_sync_time_interval
       );
       setValue('email_reminder_time', settingData?.email_reminder_time);
+      setValue('selected_sso', settingData?.selected_sso);
       setValue('group_email_id', settingData?.group_email_id);
+      setValue('azure_client_id', settingData?.azure_client_id);
+      setValue('azure_redirect_uri', settingData?.azure_redirect_uri);
+      setValue('azure_client_secret', settingData?.azure_client_secret);
+      setValue('azure_tenant_id', settingData?.azure_tenant_id);
+      setValue('sso_enabled', settingData?.sso_enabled);
       setValue('email', settingData?.email);
       setValue('from_email', settingData?.from_email);
       setValue('smtp_service', settingData?.smtp_service);
@@ -354,6 +427,12 @@ export const Setting = () => {
         value.approver_groups !== settingData?.approver_groups ||
         value.group_email_id !== settingData?.group_email_id ||
         value.email_reminder_time !== settingData?.email_reminder_time ||
+        value.selected_sso !== settingData?.selected_sso ||
+        value.azure_client_id !== settingData?.azure_client_id ||
+        value.azure_tenant_id !== settingData?.azure_tenant_id ||
+        value.azure_redirect_uri !== settingData?.azure_redirect_uri ||
+        value.azure_client_secret !== settingData?.azure_client_secret ||
+        value.sso_enabled !== settingData?.sso_enabled ||
         value.ldapEnabled !== settingData?.ldapEnabled;
 
       setIsChanged(isModified);
@@ -402,6 +481,19 @@ export const Setting = () => {
       document.head.appendChild(newFavicon);
     }
   }
+
+  const selectedSSO = watch('selected_sso');
+  const ssoEnabled = watch('sso_enabled');
+  useEffect(() => {
+    if (ssoEnabled === false) {
+      setValue('selected_sso', null);
+      setValue('azure_client_id', null);
+      setValue('azure_client_secret', null);
+      setValue('azure_tenant_id', null);
+      setValue('azure_redirect_uri', null);
+    }
+  }, [ssoEnabled, setValue, selectedSSO]);
+
   return (
     <Wrapper>
       <form
@@ -688,7 +780,91 @@ export const Setting = () => {
           </InputFields>
         </div>
 
-        <FlexWrapper>
+        <div className="d-flex justify-content-start me-4">
+          <HeadingContent className="mt-4">{KDFM.SSO_LoGIN}</HeadingContent>
+        </div>
+        <HeadingContentHr className="mt-3 mb-4" />
+        <>
+          <InputFields className="row mb-4 align-items-center">
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+              <CheckboxField
+                name="sso_enabled"
+                label="SSO Enabled"
+                register={register}
+              />
+            </div>
+          </InputFields>
+
+          {ssoEnabled && (
+            <>
+              <InputFields className="row mb-4">
+                <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                  <LabelSelect className="mb-3">{KDFM.LOGIN_TYPE}</LabelSelect>
+                  <SelectField
+                    name="selected_sso"
+                    control={control}
+                    icon={<LoginIcon />}
+                    errors={errors}
+                    options={SSO_LOGIN_TYPE}
+                    placeholder="Select SSO Login Type"
+                  />
+                </div>
+              </InputFields>
+
+              {selectedSSO === 'azure' && (
+                <>
+                  <InputFields className="row mb-4">
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="azure_client_id"
+                        register={register}
+                        icon={<UserIcon />}
+                        label="Azure Client ID"
+                        placeholder="Enter Client ID"
+                        errors={errors}
+                      />
+                    </div>
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="azure_client_secret"
+                        register={register}
+                        icon={<UserIcon />}
+                        label="Azure Client Secret"
+                        placeholder="Enter Client Secret"
+                        errors={errors}
+                      />
+                    </div>
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="azure_tenant_id"
+                        register={register}
+                        icon={<UserIcon />}
+                        label="Azure Tenant ID"
+                        placeholder="Enter Tenant ID"
+                        errors={errors}
+                      />
+                    </div>
+                  </InputFields>
+
+                  <InputFields className="row mb-4 align-items-center">
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="azure_redirect_uri"
+                        register={register}
+                        icon={<OpenLinkIcon color="#444445" />}
+                        label="Azure Redirect URI"
+                        placeholder="Enter Redirect URI"
+                        errors={errors}
+                      />
+                    </div>
+                  </InputFields>
+                </>
+              )}
+            </>
+          )}
+        </>
+
+        <FlexWrapper className="mt-3">
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Button type="submit" loading={loading} disabled={!isChanged}>
               {KDFM.SAVE_SETTINGS}

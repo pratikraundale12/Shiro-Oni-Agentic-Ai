@@ -6,15 +6,14 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-tooltip/dist/react-tooltip.css';
 import { ThemeProvider } from 'styled-components';
+import { ExclamationFailedTestingIcon } from './assets';
+import { ENABLE_CONSOLE_LOGS } from './constants';
+import { disableConsole } from './helpers/DisableConsole';
 import Routes from './routes';
+import { ModalWithIcon } from './shared';
+import store from './store/configureStore';
 import { GlobalStyles, theme } from './styles';
 import { GlobalProvider } from './utils';
-
-import store from './store/configureStore';
-import { ModalWithIcon } from './shared';
-import { ExclamationFailedTestingIcon } from './assets';
-import { disableConsole } from './helpers/DisableConsole';
-import { ENABLE_CONSOLE_LOGS } from './constants';
 
 function App() {
   const [isModal, setIsModal] = useState(false);
@@ -25,7 +24,7 @@ function App() {
       setIsModal(false);
     }
   };
-  if (!ENABLE_CONSOLE_LOGS) {
+  if (ENABLE_CONSOLE_LOGS) {
     disableConsole();
   }
   const handleContinue = () => {

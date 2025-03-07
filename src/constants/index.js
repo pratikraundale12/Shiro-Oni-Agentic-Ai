@@ -13,7 +13,7 @@ export const API_URL =
 export const ACCESS_TOKEN = 'access_token';
 export const CLUSTERS_TOKEN = 'clusters';
 
-export const DEBOUNCE_DELAY = 0;
+export const DEBOUNCE_DELAY = 500;
 
 export const PREVIOUS_PATH = 'previous_path';
 export const DEFAULT_ROUTE = 'dashboard';
@@ -130,6 +130,8 @@ export const SCHEDULE_LIST_REFRESH_OPTIONS = [
   { label: '10 min', value: '600000' },
 ];
 
+export const SSO_LOGIN_TYPE = [{ label: 'Azure', value: 'azure' }];
+
 export const LICENSE_TYPE = {
   TRIAL: 'trial',
   PURCHASED: 'purchased',
@@ -218,6 +220,8 @@ export const KDFM = {
   LDAP: 'Ldap',
   SCHEDULE_DIPLOYMENT: 'Deployment Schedule',
   SERVICE_ACCOUNT: 'Service Account',
+  SSO_LoGIN: 'SSO Login',
+  LOGIN_TYPE: 'SSO',
   CONTROLLER_SERVICE_DATA: 'External Controller Services',
   SMTP: 'Email Configuration',
   FLOW_CONTROL_WARNING:

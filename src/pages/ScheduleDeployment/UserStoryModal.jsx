@@ -33,7 +33,7 @@ export const UserStoryModal = () => {
   const { handleSubmit } = useForm();
   const renderItems = item => {
     if (item.url) {
-      return (
+      return item?.value ? (
         <div
           onClick={() => handleRegistryClick()}
           style={{
@@ -50,6 +50,8 @@ export const UserStoryModal = () => {
           </IconButton>
           {item?.value || 'N/A'}
         </div>
+      ) : (
+        'N/A'
       );
     } else {
       return item?.value || 'N/A';

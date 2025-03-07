@@ -64,7 +64,11 @@ const AuthGuard = () => {
   };
 
   useEffect(() => {
-    dispatch(AuthenticationActions.fetchCurrentUser());
+    if (window.location.pathname === '/') {
+      window.location.pathname = '/login';
+    } else {
+      dispatch(AuthenticationActions.fetchCurrentUser());
+    }
   }, [dispatch]);
 
   if (loading || !isLoggedIn) {

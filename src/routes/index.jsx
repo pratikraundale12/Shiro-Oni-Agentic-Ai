@@ -46,6 +46,7 @@ import {
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
 // import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
+import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
 import FlowDetailsPage from '../pages/Namespaces/FlowDetailsPage.jsx';
@@ -60,6 +61,7 @@ import {
   LoadingSelectors,
 } from '../store';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
+import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 
 export const ROUTES_MENU = [
@@ -274,12 +276,12 @@ const Routes = () => {
   const location = useLocation();
 
   useEffect(() => {
-    dispatch(AuthenticationActions.fetchLicenseInfo());
     if (
       location.pathname === '/login' ||
       location.pathname === '/admin/login'
     ) {
       dispatch(AuthenticationActions.fetchSettingLogo());
+      dispatch(AuthenticationActions.fetchLicenseInfo());
     }
     if (
       [
@@ -322,13 +324,18 @@ const Routes = () => {
     }
   }
 
-  if (!isLicenseValid) return <SessionExpired />;
+  if (isLicenseValid === false) return <SessionExpired />;
 
   if (loading) return <FullPageLoader loading={loading} />;
 
   return (
     <HistoryRouter>
       {/* Public Routes */}
+      <Route
+        path="/api/auth/azure/callback"
+        element={<AzureCallbackHandler />}
+      />
+      <Route path="/back-to-login" element={<RedirectToLogin />} />
       <Route path="/admin/login" element={<Login />} />
       <Route path="/forgot" element={<Forgot />} />
       <Route path="/reset" element={<Reset />} />
