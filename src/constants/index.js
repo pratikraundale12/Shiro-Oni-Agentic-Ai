@@ -130,7 +130,10 @@ export const SCHEDULE_LIST_REFRESH_OPTIONS = [
   { label: '10 min', value: '600000' },
 ];
 
-export const SSO_LOGIN_TYPE = [{ label: 'Azure', value: 'azure' }];
+export const SSO_LOGIN_TYPE = [
+  { label: 'Azure', value: 'azure' },
+  { label: 'Keycloak', value: 'keycloak' },
+];
 
 export const LICENSE_TYPE = {
   TRIAL: 'trial',

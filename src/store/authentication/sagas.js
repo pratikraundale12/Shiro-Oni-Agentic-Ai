@@ -1,5 +1,6 @@
 import { toast } from 'react-toastify';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
+import keycloak from '../../Keycloak';
 import {
   ACCESS_TOKEN,
   CLUSTERS_TOKEN,
@@ -132,6 +133,7 @@ export function* logout(api, { payload: { url } }) {
   yield put(AuthenticationActions.logoutSuccess());
   yield put({ type: 'RESET' });
   localStorage.clear();
+  yield keycloak.logout({ redirectUri: 'http://localhost:8080/login' });
   history.replace(url); // Example: '/login'
 }
 export function* fetchSettingLogo(api) {
@@ -142,6 +144,45 @@ export function* fetchSettingLogo(api) {
     apiParams: [{ params: {} }],
     successAction: AuthenticationActions.fetchSettingLogoSuccess,
   });
+}
+
+export function* fetchKeycloakConfig(api) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchKeycloakConfig',
+    loadingSection: 'fetchKeycloakConfig',
+    apiMethod: api.fetchKeycloakConfig,
+    apiParams: [{ params: {} }],
+  });
+
+  if (response.ok) {
+    yield call(
+      [localStorage, 'setItem'],
+      'keycloakConfig',
+      JSON.stringify(response?.data)
+    );
+    yield put(AuthenticationActions.fetchKeycloakConfigSuccess(response.data));
+  } else {
+    toast.error('Failed to fetch Keycloak config:', response.data.message);
+  }
+}
+export function* ssoUserLogin(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'ssoUserLogin',
+    loadingSection: 'ssoUserLogin',
+    apiMethod: api.ssoUserLogin,
+    apiParams: [payload],
+  });
+  if (response.ok) {
+    const token = response?.data?.token;
+    localStorage.setItem(ACCESS_TOKEN, token);
+    if (token) {
+      yield call(fetchCurrentUser, api);
+      toast.success('Welcome! You’ve successfully logged in.');
+      history.push('/dashboard');
+    }
+  } else {
+    toast.error(response.data.message, { toastId: 'login-toast-error1' });
+  }
 }
 
 export function* authenticationSagas(api) {
@@ -162,5 +203,11 @@ export function* authenticationSagas(api) {
       api
     ),
     takeLatest(AuthenticationActions.fetchSettingLogo, fetchSettingLogo, api),
+    takeLatest(
+      AuthenticationActions.fetchKeycloakConfig,
+      fetchKeycloakConfig,
+      api
+    ),
+    takeLatest(AuthenticationActions.ssoUserLogin, ssoUserLogin, api),
   ]);
 }
