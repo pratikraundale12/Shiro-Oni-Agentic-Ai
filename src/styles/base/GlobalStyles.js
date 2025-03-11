@@ -492,6 +492,9 @@ const GlobalStyle = createGlobalStyle`
     color: red !important; 
     font-weight: bold;
   }
+  .ReactModal__Content--after-open{
+    overflow: visible !important;
+  }
 `;
 
 export default GlobalStyle;
