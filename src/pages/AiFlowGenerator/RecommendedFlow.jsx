@@ -15,6 +15,11 @@ const FlowsWrapper = styled.div`
   justify-content: flex-start;
   padding: 15px;
   gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(406px, 1fr));
+  @media (max-width: 991.98px) {
+    grid-template-columns: repeat(auto-fill, minmax(306px, 1fr));
+  }
 `;
 
 const FlowItems = styled.div`
@@ -22,7 +27,7 @@ const FlowItems = styled.div`
   align-items: center;
   justify-content: flex-start;
   gap: 12px;
-  width: 480px;
+  // width: 480px;
   height: 72px;
   cursor: pointer;
   border-radius: 10px;
