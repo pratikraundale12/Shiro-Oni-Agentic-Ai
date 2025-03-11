@@ -162,7 +162,10 @@ export const ListScheduleDeployment = () => {
     return (
       <>
         <IconButton
-          onClick={() => handleCancelModel(item)}
+          onClick={event => {
+            handleCancelModel(item);
+            event.currentTarget.blur();
+          }}
           data-tooltip-id={`${`tooltip-group-cross-schedule`}`}
           style={{ border: 'transparent' }}
         >
@@ -188,7 +191,10 @@ export const ListScheduleDeployment = () => {
     return (
       <>
         <IconButton
-          onClick={() => handleApproveCheck(item)}
+          onClick={event => {
+            handleApproveCheck(item);
+            event.currentTarget.blur();
+          }}
           data-tooltip-id={`${`tooltip-group-tick-schedule`}`}
           style={{ border: 'transparent' }}
         >
