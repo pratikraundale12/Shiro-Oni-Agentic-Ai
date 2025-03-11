@@ -29,6 +29,7 @@ const Header = styled.div`
   height: 44px;
   padding: 26px 18px;
   background-color: ${theme.colors.lightGrey};
+  border-radius: 16px 16px 0px 0px;
 `;
 
 const Body = styled.div`
