@@ -17,7 +17,7 @@ import { PromptInputBox } from './PromptInputBox';
 import {
   downloadJsonFile,
   formattedTime,
-  // getLoginToClusterPopup,
+  getLoginToClusterPopup,
 } from './utils';
 import userImage from '../../assets/images/avatar.png';
 import dfmImage from '../../assets/images/default-logo.png';
@@ -26,7 +26,7 @@ import { Button, Modal } from '../../shared';
 import { toast } from 'react-toastify';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
-// import { history } from '../../helpers/history';
+import { history } from '../../helpers/history';
 import DiscardFlowConfirmationModal from './DiscardFlowConfirmationModal';
 
 const Container = styled.div`
@@ -84,14 +84,6 @@ const RecommendedFlowBox = styled.div`
   border-width: 1px;
   border: 1px solid rgba(221, 228, 240, 1);
   margin-top: 14px;
-`;
-
-const BoxItem1 = styled.div`
-  width: 100%;
-  height: 56px;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  background: rgba(245, 247, 250, 1);
 `;
 
 const PromptSection = styled.div`
@@ -301,7 +293,9 @@ export const AiFlowGenerator = () => {
     setIsDiscardFlowModalOpen(false);
     setOpenPreviewModal(false);
   };
-  return (
+  return isEmpty(clusters) ? (
+    getLoginToClusterPopup()
+  ) : (
     <Container>
       <Flex className="flex-column align-items-start w-100">
         <Flex className="w-100">
