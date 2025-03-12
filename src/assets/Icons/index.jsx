@@ -130,3 +130,4 @@ export * from './GenAiIcon';
 export * from './GeneratedFlowIcon';
 export * from './SendMessageIcon';
 export * from './LicenseIcon';
+export * from './DownloadIcon';

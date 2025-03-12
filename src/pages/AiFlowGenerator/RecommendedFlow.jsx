@@ -8,6 +8,9 @@ import { toast } from 'react-toastify';
 import { KDFM } from '../../constants';
 
 const FlowsWrapper = styled.div`
+  max-height: 30vh;
+  overflow: auto;
+  height: 22vh;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -32,7 +35,7 @@ const FlowItems = styled.div`
   cursor: pointer;
   border-radius: 10px;
   background: rgba(245, 247, 250, 1);
-  padding: 25px;
+  padding: 17px;
 `;
 
 const FlowName = styled.span`
@@ -50,21 +53,41 @@ export const RecommendedFlow = ({
   generateFlowPermission,
   defaultFlows = [],
   recentFlows = [],
+  openConversation,
+  setQueryText,
+  loading,
 }) => {
   const flowData = (
     !isEmpty(recentFlows) ? recentFlows : defaultFlows || []
   ).slice(0, 6); // allow only 6 flows to be show on UI
 
-  const handleRecentFlowClick = id => {
-    if (generateFlowPermission) {
-      // flow generate logic
-      console.log('flow id--', id);
-    } else {
-      if (!toast.isActive('permission-error')) {
-        toast.error(KDFM.NO_PERMISSION_TO_GENERATE_FLOW, {
-          toastId: 'permission-error',
-          autoClose: 900,
+  const handleRecentFlowClick = flow => {
+    if (loading) {
+      if (!toast.isActive('generating-flow')) {
+        toast.warning('Flow is generating... please wait', {
+          toastId: 'generating-flow',
         });
+      }
+    } else if (generateFlowPermission && !openConversation) {
+      // flow generate logic
+      console.log('hii');
+      setQueryText(flow?.query);
+    } else {
+      if (openConversation) {
+        if (!toast.isActive('already-generated')) {
+          toast.warning(
+            'Please save or discard the already generated flow to generate a new flow',
+            {
+              toastId: 'already-generated',
+            }
+          );
+        }
+      } else if (!generateFlowPermission) {
+        if (!toast.isActive('permission-error')) {
+          toast.error(KDFM.NO_PERMISSION_TO_GENERATE_FLOW, {
+            toastId: 'permission-error',
+          });
+        }
       }
     }
   };
@@ -75,7 +98,7 @@ export const RecommendedFlow = ({
           <>
             <FlowItems
               key={flow.id}
-              onClick={() => handleRecentFlowClick(flow.id)}
+              onClick={() => handleRecentFlowClick(flow)}
             >
               <GeneratedFlowIcon />
               <FlowName data-tooltip-id={`flow-name-tooltip-${flow.id}`}>
@@ -102,4 +125,7 @@ RecommendedFlow.propTypes = {
   defaultFlows: PropTypes.array,
   recentFlows: PropTypes.array,
   generateFlowPermission: PropTypes.bool.isRequired,
+  openConversation: PropTypes.bool.isRequired,
+  setQueryText: PropTypes.func,
+  loading: PropTypes.bool,
 };

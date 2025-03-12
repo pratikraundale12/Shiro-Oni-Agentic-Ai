@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { SendMessageIcon } from '../../assets';
 import { KDFM } from '../../constants';
+import { toast } from 'react-toastify';
+import DOMPurify from 'dompurify';
+import _ from 'lodash';
+import { useDispatch } from 'react-redux';
+import { AiFlowGeneratorActions } from '../../store';
+import { validatePayload } from './utils';
 
 const InputContainer = styled.div`
   position: relative;
@@ -64,26 +70,81 @@ const GenerateFLowButton = styled.div`
   }
 `;
 
-export const PromptInputBox = ({ disabled, queryText, setQueryText }) => {
+export const PromptInputBox = ({
+  disabled,
+  queryText,
+  setQueryText,
+  setOpenConversation,
+  setIsPromptInputDisabled,
+}) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
+  console.log('disabled--', disabled);
+  useEffect(() => {
+    if (queryText?.length !== 0) {
+      setIsSendBtnDisabled(false);
+    } else {
+      setIsSendBtnDisabled(true);
+    }
+  }, [queryText]);
+  const dispatch = useDispatch();
   const handleGenerateFLowClick = () => {
-    console.log('queryText', queryText);
+    // add additional check
+    if (disabled) {
+      if (!toast.isActive('permission-error')) {
+        toast.error(KDFM.NO_PERMISSION_TO_GENERATE_FLOW, {
+          toastId: 'permission-error',
+        });
+      }
+      setQueryText('');
+      setIsSendBtnDisabled(true);
+      return;
+    } else {
+      setIsPromptInputDisabled(true);
+      setIsSendBtnDisabled(true);
+      setOpenConversation(true);
+      console.log('queryText', queryText);
+      const payload = {
+        session_id: process.env.REACT_APP_SESSION_ID,
+        is_audio: false,
+        query: queryText,
+        embedding_model: process.env.REACT_APP_EMBEDDING_MODEL,
+        engine: process.env.REACT_APP_ENGINE,
+        dept_id: process.env.REACT_APP_DEPT_ID,
+        org_id: process.env.REACT_APP_ORG_ID,
+        user_id: process.env.REACT_APP_USER_ID,
+        type: process.env.REACT_APP_TYPE,
+      };
+      const requiredFields = [
+        'session_id',
+        'query',
+        'embedding_model',
+        'engine',
+        'dept_id',
+        'org_id',
+        'user_id',
+        'type',
+      ];
+      if (validatePayload(payload, requiredFields)) {
+        dispatch(AiFlowGeneratorActions.generateFlowAPI(payload));
+      }
+    }
   };
   return (
     <InputContainer>
       <InputBox
         disabled={disabled}
         type="search"
-        value={queryText}
+        value={disabled ? '' : queryText}
         placeholder={KDFM.PROMPT_INPUT_PLACEHOLDER}
         onChange={e => {
-          const value = e.target.value;
+          let value = e.target.value;
+          // Sanitize HTML tags
+          value = DOMPurify.sanitize(value, { ALLOWED_TAGS: [] });
+          // Collapse multiple spaces
+          value = _.trim(value).replace(/\s+/g, ' ');
+
           setQueryText(value);
-          if (value?.length > 0) {
-            setIsSendBtnDisabled(false);
-          } else {
-            setIsSendBtnDisabled(true);
-          }
+          setIsSendBtnDisabled(value.length === 0);
         }}
       />
       <GenerateFLowButton
@@ -100,4 +161,6 @@ PromptInputBox.propTypes = {
   queryText: PropTypes.string.isRequired,
   setQueryText: PropTypes.func.isRequired,
   disabled: PropTypes.bool.isRequired,
+  setOpenConversation: PropTypes.func.isRequired,
+  setIsPromptInputDisabled: PropTypes.func.isRequired,
 };
