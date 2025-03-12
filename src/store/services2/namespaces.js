@@ -137,9 +137,11 @@ export const namespacesAPI = api => {
     clusterId,
     parameterContextId,
     requestId,
+    namespaceId,
+    flowVersion,
   }) =>
     api.get(
-      `parameter-context/${clusterId}/contextId/${parameterContextId}/requestId/${requestId}`
+      `parameter-context/${clusterId}/contextId/${parameterContextId}/requestId/${requestId}?namespaceId=${namespaceId}&flowVersion=${flowVersion}`
     );
 
   const deleteParameterContext = ({
