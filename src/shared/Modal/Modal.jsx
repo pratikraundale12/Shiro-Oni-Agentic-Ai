@@ -130,6 +130,7 @@ export const Modal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={styleObject}
+      shouldCloseOnOverlayClick={false}
     >
       <form
         className="d-flex flex-column overflow-auto"
@@ -142,7 +143,11 @@ export const Modal = ({
         <Header>
           <Title className="mb-0">{title}</Title>
           {closeIcon && (
-            <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
+            <CloseButton
+              type="button"
+              icon={<CloseIcon />}
+              onClick={onRequestClose}
+            />
           )}
         </Header>
         <Body noPadding={noPadding} noScroll={noScroll}>
@@ -169,7 +174,7 @@ export const Modal = ({
                 type="button"
                 variant={thirdVarint ? 'tertiary' : 'secondary'}
                 onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
-                disabled={tertiaryButtonConfig.disabled}
+                disabled={tertiaryButtonConfig.tertiaryButtonDisable}
                 loading={tertiaryButtonConfig.tertiaryButtonLoading}
                 {...tertiaryButtonConfig}
               >

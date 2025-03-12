@@ -14,11 +14,7 @@ import { isEmpty } from 'lodash';
 import { fetchDefaultRecentFlowsData } from './services';
 import { RecommendedFlow } from './RecommendedFlow';
 import { PromptInputBox } from './PromptInputBox';
-import {
-  downloadJsonFile,
-  formattedTime,
-  getLoginToClusterPopup,
-} from './utils';
+import { downloadJsonFile, formattedTime } from './utils';
 import userImage from '../../assets/images/avatar.png';
 import dfmImage from '../../assets/images/default-logo.png';
 import fileImage from '../../assets/images/folder (1) 1.png';
@@ -26,7 +22,6 @@ import { Button, Modal } from '../../shared';
 import { toast } from 'react-toastify';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
-import { history } from '../../helpers/history';
 import DiscardFlowConfirmationModal from './DiscardFlowConfirmationModal';
 
 const Container = styled.div`
@@ -293,9 +288,7 @@ export const AiFlowGenerator = () => {
     setIsDiscardFlowModalOpen(false);
     setOpenPreviewModal(false);
   };
-  return isEmpty(clusters) ? (
-    getLoginToClusterPopup()
-  ) : (
+  return (
     <Container>
       <Flex className="flex-column align-items-start w-100">
         <Flex className="w-100">

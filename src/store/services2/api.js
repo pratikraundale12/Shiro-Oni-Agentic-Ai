@@ -11,6 +11,7 @@ import { rolesAPI } from './roles';
 import { schedularAPI } from './schedular';
 import { settingsAPI } from './setting';
 import { usersAPI } from './users';
+import { aiFlowGeneratorAPI } from './aiFlowGenerator';
 
 const create = (baseURL = `${API_URL}/api`) => {
   const api = apisauce.create({
@@ -78,6 +79,8 @@ const create = (baseURL = `${API_URL}/api`) => {
     ...settingsAPI(api),
     // Activity History
     ...activityHistoryAPI(api),
+    // AI Flow Generator
+    ...aiFlowGeneratorAPI(api),
   };
 };
 
