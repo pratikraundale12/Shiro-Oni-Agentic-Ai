@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { ACCESS_TOKEN, API_URL } from '../../constants';
 import { history } from '../../helpers/history';
 import { AuthenticationActions } from '../../store/authentication';
+import { SettingsActions } from '../../store/settings';
 
 const AZURE_CALLBACK_ENDPOINT = `${API_URL}/api/auth/azure/callback`;
 
@@ -40,6 +41,7 @@ const AzureCallbackHandler = () => {
             if (token) {
               window.localStorage.setItem(ACCESS_TOKEN, token);
               dispatch(AuthenticationActions.fetchCurrentUser({ token }));
+              dispatch(SettingsActions.fetchSettings());
             } else {
               throw new Error('No token received');
             }
