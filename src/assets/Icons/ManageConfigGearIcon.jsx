@@ -5,7 +5,6 @@ export const ManageConfigGearIcon = ({
   width = 20,
   height = 20,
   color = '#444445',
-  ...rest
 }) => (
   <svg
     width={width}

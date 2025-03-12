@@ -12,6 +12,8 @@ export const clustersAPI = api => {
   const clusterLogout = ({ clusterId, payload = {} }) =>
     api.post(`/clusters/${clusterId}/logout`, payload);
   const getNiFiVersions = () => api.get(`/get-list-nifi-versions`);
+  const checkCredentialsClusterSetup = ({ payload }) =>
+    api.post(`/clusters/test-node-credentials/clusters`, payload);
   return {
     fetchClusters,
     fetchClusterList,
@@ -19,5 +21,6 @@ export const clustersAPI = api => {
     getClusterToken,
     clusterLogout,
     getNiFiVersions,
+    checkCredentialsClusterSetup,
   };
 };

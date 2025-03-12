@@ -76,6 +76,23 @@ export function* getNiFiVersions(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
+export function* checkCredentialsClusterSetup(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'checkCredentialsClusterSetup',
+    loadingSection: 'checkCredentialsClusterSetup',
+    apiMethod: api.checkCredentialsClusterSetup,
+    apiParams: [{ payload }],
+  });
+  if (response.ok) {
+    toast.success('Test success');
+    // yield put(SchedularActions.setScheduleDeployModal());
+    // yield call(history.push, '/schedule-deployment');
+    // yield put(AuthenticationActions.setRoute('schedule-deployment'));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+//
 export function* clustersSagas(api) {
   yield all([
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
@@ -83,5 +100,10 @@ export function* clustersSagas(api) {
     takeLatest(ClustersActions.fetchClusters, fetchClusters, api),
     takeLatest(ClustersActions.clusterLogout, clusterLogout, api),
     takeLatest(ClustersActions.getNiFiVersions, getNiFiVersions, api),
+    takeLatest(
+      ClustersActions.checkCredentialsClusterSetup,
+      checkCredentialsClusterSetup,
+      api
+    ),
   ]);
 }

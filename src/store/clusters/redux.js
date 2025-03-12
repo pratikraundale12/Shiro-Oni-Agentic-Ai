@@ -24,6 +24,9 @@ export const ClustersActions = {
   setIsAddHostIPModalOpen: createAction(`${prefix}setIsAddHostIPModalOpen`),
   getNiFiVersions: createAction(`${prefix}getNiFiVersions`),
   setNifiVersions: createAction(`${prefix}setNifiVersions`),
+  checkCredentialsClusterSetup: createAction(
+    `${prefix}checkCredentialsClusterSetup`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
