@@ -463,6 +463,8 @@ export function* getStatusAndDeleteParameterContext(
           selectedNamespace?.parameterContextId ||
           singleNamespaceData?.parameterContextId,
         requestId: additionalData?.requestId,
+        namespaceId: singleNamespaceData?.id,
+        flowVersion: singleNamespaceData?.version,
       },
     ],
   });

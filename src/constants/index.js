@@ -86,6 +86,8 @@ export const MODULE_LIST_MAP = [
   { label: 'Group Mapping', value: 'Group-mapping' },
   { label: 'Reschedule Job', value: 'Reschedule Job' },
   { label: 'Roles', value: 'Roles' },
+  { label: 'Parameter Context', value: 'Parameter Context' },
+  { label: 'Variable', value: 'Variable' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
