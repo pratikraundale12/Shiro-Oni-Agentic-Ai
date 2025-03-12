@@ -125,3 +125,7 @@ export * from './ZoomInIcon';
 export * from './ZoomOutIcon';
 export * from './canvasYIcon';
 export * from './ManageClusterIcon';
+export * from './CreateClusterIcon';
+export * from './SelectedTickIconOrange';
+export * from './SSHCredentialsPaperIcon';
+export * from './ManageConfigGearIcon';

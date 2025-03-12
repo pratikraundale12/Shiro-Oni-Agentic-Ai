@@ -4,6 +4,7 @@ import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { ClustersActions } from './redux';
+import { toast } from 'react-toastify';
 
 export function* fetchClusterList(api, { payload: { params } = {} }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -62,11 +63,25 @@ export function* clusterLogout(api, { payload }) {
   }
 }
 
+export function* getNiFiVersions(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'getNiFiVersions',
+    loadingSection: 'getNiFiVersions',
+    apiMethod: api.getNiFiVersions,
+    apiParams: [payload],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setNifiVersions(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
 export function* clustersSagas(api) {
   yield all([
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
     takeLatest(ClustersActions.fetchClusterNodes, fetchClusterNodes, api),
     takeLatest(ClustersActions.fetchClusters, fetchClusters, api),
     takeLatest(ClustersActions.clusterLogout, clusterLogout, api),
+    takeLatest(ClustersActions.getNiFiVersions, getNiFiVersions, api),
   ]);
 }

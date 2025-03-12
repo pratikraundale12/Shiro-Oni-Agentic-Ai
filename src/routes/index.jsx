@@ -63,6 +63,7 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import SetupClusterPage from '../pages/Clusters/components/setupClusterPage.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -88,6 +89,10 @@ export const ROUTES_MENU = [
       {
         path: ['add', 'edit'],
         component: <Add />,
+      },
+      {
+        path: ['setup-cluster'],
+        component: <SetupClusterPage />,
       },
       {
         path: [':id'],

@@ -30,7 +30,7 @@ export const CLUSTER_CONSTANTS = {
   ENTER_CREDENTIALS: 'Enter Credentials',
   CLUSTER_TESTED_SUCCESSFULLY: 'Cluster Tested Successfully',
   REGISRTY_TESTED_SUCCESSFULLY: 'Registry Tested Successfully',
-  ADD_NEW_CLUSTER: 'Add New Cluster',
+  ADD_NEW_CLUSTER: 'Add Cluster',
   ADD_NEW_REGISTRY: 'Add New Registry',
   ADD_CLUSTER_CERTIFICATE: 'Add Cluster Certificate',
   ADD_REGISTRY_CERTIFICATE: 'Add Registry Certificate',
@@ -73,4 +73,5 @@ export const CLUSTER_CONSTANTS = {
     'Your registry test was successful. Continue with the next steps..',
   HARD_DELETE_CLUSTER_WARNING: 'Are you sure you want to delete this cluster?',
   NEW_CLUSTER: 'New Cluster',
+  GETTING_STARTED: 'Getting Started',
 };

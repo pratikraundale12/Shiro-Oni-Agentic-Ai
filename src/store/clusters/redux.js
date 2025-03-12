@@ -21,6 +21,9 @@ export const ClustersActions = {
   setIsAddorEditClusterModalOpen: createAction(
     `${prefix}setIsAddorEditClusterModalOpen`
   ),
+  setIsAddHostIPModalOpen: createAction(`${prefix}setIsAddHostIPModalOpen`),
+  getNiFiVersions: createAction(`${prefix}getNiFiVersions`),
+  setNifiVersions: createAction(`${prefix}setNifiVersions`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -33,6 +36,8 @@ export const CLUSTERS_INITIAL_STATE = {
   clusterFormDataResponse: {},
   isclusterHardDeleteModalOpen: false,
   isAddorEditClusterModalOpen: false,
+  isAddHostIPModalOpen: false,
+  nifiVersions: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -47,6 +52,8 @@ export const ClustersSelectors = {
     state.clusters.isclusterHardDeleteModalOpen,
   getIsAddorEditClusterModalOpen: state =>
     state.clusters.isAddorEditClusterModalOpen,
+  getIsAddHostIPModalOpen: state => state.clusters.isAddHostIPModalOpen,
+  getNifiVersions: state => state.clusters.nifiVersions,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -111,6 +118,19 @@ const setIsAddorEditClusterModalOpen = (state, { payload }) => {
     isAddorEditClusterModalOpen: payload,
   };
 };
+const setIsAddHostIPModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isAddHostIPModalOpen: payload,
+  };
+};
+const setNifiVersions = (state, { payload }) => {
+  return {
+    ...state,
+    nifiVersions: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -135,6 +155,8 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setIsAddorEditClusterModalOpen,
         setIsAddorEditClusterModalOpen
-      );
+      )
+      .addCase(ClustersActions.setIsAddHostIPModalOpen, setIsAddHostIPModalOpen)
+      .addCase(ClustersActions.setNifiVersions, setNifiVersions);
   }
 );

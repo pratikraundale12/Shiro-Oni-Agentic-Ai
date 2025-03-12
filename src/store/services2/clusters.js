@@ -11,11 +11,13 @@ export const clustersAPI = api => {
   const getClusterToken = ({ payload }) => api.post(`/clusters/token`, payload);
   const clusterLogout = ({ clusterId, payload = {} }) =>
     api.post(`/clusters/${clusterId}/logout`, payload);
+  const getNiFiVersions = () => api.get(`/get-list-nifi-versions`);
   return {
     fetchClusters,
     fetchClusterList,
     fetchClusterNodes,
     getClusterToken,
     clusterLogout,
+    getNiFiVersions,
   };
 };

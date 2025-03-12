@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 // import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,18 +7,30 @@ import { useForm } from 'react-hook-form';
 import { ClustersActions, ClustersSelectors } from '../../../store';
 import { Modal } from '../../../shared';
 import { KDFM } from '../../../constants';
-import { ManageClusterIcon } from '../../../assets';
+import {
+  CreateClusterIcon,
+  ManageClusterIcon,
+  SelectedTickIconOrange,
+} from '../../../assets';
+import { theme } from '../../../styles';
+import { history } from '../../../helpers/history';
 
 const Container = styled.div``;
 const BulletContainer = styled.div`
   height: 120px;
   margin-bottom: 10px;
-  border: 2px solid red;
+  border: 2px solid
+    ${({ borderSelected }) =>
+      borderSelected ? theme.colors.primary : '#DDE4F0'};
   border-radius: 14px;
   background-color: #f5f7fa;
+  cursor: pointer;
 `;
+
 const IconContainer = styled.div`
-  border: 1px solid red;
+  border: 1px solid
+    ${({ borderSelected }) =>
+      borderSelected ? theme.colors.primary : '#DDE4F0'};
   border-radius: 14px;
   background-color: #ffff;
 `;
@@ -26,7 +38,7 @@ const LeftHolder = styled.div`
   padding: 16px 26px;
 `;
 const RightHolder = styled.div`
-  padding: 26px 26px;
+  padding: 26px 5px;
 `;
 const HighLightText = styled.span`
   font-family: Noto Sans;
@@ -44,9 +56,11 @@ const BottomText = styled.span`
   letter-spacing: 0%;
   color: #444445;
 `;
-//display: ${props => (props.show ? 'block' : 'none')};
+
 export const AddOrEditClusterModal = () => {
   const dispatch = useDispatch();
+  const [selectedFlow, setSelectedFlow] = useState(null);
+
   const isModalOpen = useSelector(
     ClustersSelectors.getIsAddorEditClusterModalOpen
   );
@@ -54,12 +68,27 @@ export const AddOrEditClusterModal = () => {
     dispatch(ClustersActions.setIsAddorEditClusterModalOpen(false));
   };
   const { handleSubmit } = useForm();
+  const handleContinueSubmit = () => {
+    if (selectedFlow === 'ManageCluster') {
+      history.push(`/clusters/add`);
+      onRequestClose();
+    } else if (selectedFlow === 'CreateCluster') {
+      history.push(`/clusters/setup-cluster`);
+      onRequestClose();
+    }
+  };
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      setSelectedFlow(null);
+    }
+  }, [isModalOpen]);
 
   return (
     <Modal
       isOpen={isModalOpen}
-      onRequestClose={handleSubmit(onRequestClose)}
-      //   onSubmit={handleSubmit(onRequestClose)}
+      onRequestClose={onRequestClose}
+      onSubmit={handleSubmit(handleContinueSubmit)}
       title={KDFM.NEW_CLUSTER}
       primaryButtonText="Continue"
       secondaryButtonText="Back"
@@ -67,15 +96,31 @@ export const AddOrEditClusterModal = () => {
       footerAlign="start"
     >
       <Container>
-        <BulletContainer>
+        <BulletContainer
+          onClick={() => {
+            setSelectedFlow('CreateCluster');
+          }}
+          borderSelected={selectedFlow === 'CreateCluster'}
+        >
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-3 align-items-center justify-content-center h-100 ">
-              <IconContainer className=" d-flex align-items-center justify-content-center h-100">
-                <ManageClusterIcon height="50" width="50" color="black" />
+              <IconContainer
+                className=" d-flex align-items-center justify-content-center h-100"
+                borderSelected={selectedFlow === 'CreateCluster'}
+              >
+                <CreateClusterIcon
+                  height="60"
+                  width="60"
+                  color={
+                    selectedFlow === 'CreateCluster'
+                      ? theme.colors.primary
+                      : 'black'
+                  }
+                />
               </IconContainer>
             </LeftHolder>
-            <RightHolder className="col-9 h-100">
-              <div className="col-11 h-100">
+            <RightHolder className="col-9 h-100 row">
+              <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <HighLightText>Create New Cluster</HighLightText>
                 </div>
@@ -83,10 +128,54 @@ export const AddOrEditClusterModal = () => {
                   <BottomText>Set up a new DFM cluster from scratch</BottomText>
                 </div>
               </div>
+              {selectedFlow === 'CreateCluster' && (
+                <div className="col-2  d-flex align-items-center justify-content-center ">
+                  <SelectedTickIconOrange height="25" width="25" />
+                </div>
+              )}
             </RightHolder>
           </div>
         </BulletContainer>
-        <BulletContainer></BulletContainer>
+        <BulletContainer
+          onClick={() => {
+            setSelectedFlow('ManageCluster');
+          }}
+          borderSelected={selectedFlow === 'ManageCluster'}
+        >
+          <div className="d-flex row align-items-center  h-100 mx-auto">
+            <LeftHolder className="col-3 align-items-center justify-content-center h-100 ">
+              <IconContainer
+                className=" d-flex align-items-center justify-content-center h-100"
+                borderSelected={selectedFlow === 'ManageCluster'}
+              >
+                <ManageClusterIcon
+                  height="50"
+                  width="50"
+                  color={
+                    selectedFlow === 'ManageCluster'
+                      ? theme.colors.primary
+                      : 'black'
+                  }
+                />
+              </IconContainer>
+            </LeftHolder>
+            <RightHolder className="col-9 h-100 row">
+              <div className="col-10 h-100">
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <HighLightText>Manage Existing Cluster</HighLightText>
+                </div>
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <BottomText>Manage an existing DFM cluster</BottomText>
+                </div>
+              </div>
+              {selectedFlow === 'ManageCluster' && (
+                <div className="col-2  d-flex align-items-center justify-content-center ">
+                  <SelectedTickIconOrange height="25" width="25" />
+                </div>
+              )}
+            </RightHolder>
+          </div>
+        </BulletContainer>
       </Container>
     </Modal>
   );
