@@ -75,7 +75,7 @@ const ClusterTestSection = ({
       ) : (
         <div>
           <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
-          <Button onClick={testData} loading={loading}>
+          <Button onClick={testData}>
             {KDFM.TEST_CLUSTER}
           </Button>
         </div>
