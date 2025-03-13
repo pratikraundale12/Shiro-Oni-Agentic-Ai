@@ -428,7 +428,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
       timer = setTimeout(() => {
         setDisplaySessionTab(true);
       }, 2000);
-    } else if (licenseType !== LICENSE_TYPE.PURCHASED) {
+    } else if (licenseType === LICENSE_TYPE.PURCHASED) {
       const remainingDays = calculateRemainingDays(licenseExpireDate);
       if (remainingDays <= LICENSE_EXPIRE_PROMPT_DAYS && remainingDays > 0) {
         timer = setTimeout(() => {
