@@ -823,6 +823,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
         clusterId: selectedCluster?.value,
         namespaceId: selectedNamespaceId?.id,
         payloadData: payload,
+        isFromPgDetails: fromPgDetailsPage,
       },
     ],
   });
