@@ -25,12 +25,11 @@ const Container = styled.div`
   background-color: #e3edf3;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   box-sizing: border-box;
   overflow: auto;
-  @media (max-width: 767.98px) {
+  @media (max-width: 1200px) {
     padding: 1rem;
-    align-items: start;
   }
 `;
 
