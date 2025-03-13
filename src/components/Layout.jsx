@@ -27,6 +27,11 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+  overflow: auto;
+  @media (max-width: 767.98px) {
+    padding: 1rem;
+    align-items: start;
+  }
 `;
 
 const LeftSection = styled.div`
@@ -120,11 +125,14 @@ const Content = styled.div`
   flex-direction: column;
   max-width: 550px;
   width: 100%;
-  height: 65vh;
+  min-height: 65vh;
   background-color: ${props => props.theme.colors.lightGrey};
   border: 1px solid ${props => props.theme.colors.border};
   border-radius: 32px;
   padding: 25px 32px 32px 32px;
+  @media (max-width: 767.98px) {
+    padding: 1rem;
+  }
 `;
 
 const RedirectionSection = styled.div`
@@ -209,7 +217,7 @@ const Wrapper = styled.div`
   border-radius: 32px;
   background-color: #ffff;
   padding: 22px;
-  height: 92vh; /* Full viewport height */
+  min-height: 92vh; /* Full viewport height */
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -218,6 +226,9 @@ const Wrapper = styled.div`
   width: 100%;
   margin: 0 auto;
   box-shadow: 0px 0px 20px 0px rgba(87, 75, 75, 0.25);
+  @media (max-width: 767.98px) {
+    padding: 1rem;
+  }
 `;
 
 const StyledLoginBox = styled.div`
