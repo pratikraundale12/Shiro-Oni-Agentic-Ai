@@ -101,7 +101,13 @@ export function* fetchGrid(
   });
   const handleForClusterModule = function* () {
     const provideClusterData = () => {
-      return JSON.parse(localStorage.getItem(CLUSTERS_TOKEN)) || [];
+      const data = localStorage.getItem(CLUSTERS_TOKEN);
+      try {
+        return data ? JSON.parse(data) : [];
+      } catch (error) {
+        console.error('Failed to parse cluster data:', error);
+        return [];
+      }
     };
     let clusterData = provideClusterData();
     if (Array.isArray(response.data.data)) {
