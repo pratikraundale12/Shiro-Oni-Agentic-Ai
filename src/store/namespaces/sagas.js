@@ -463,6 +463,8 @@ export function* getStatusAndDeleteParameterContext(
           selectedNamespace?.parameterContextId ||
           singleNamespaceData?.parameterContextId,
         requestId: additionalData?.requestId,
+        namespaceId: singleNamespaceData?.id,
+        flowVersion: singleNamespaceData?.version,
       },
     ],
   });
@@ -821,6 +823,7 @@ export function* addControllerServiceRootLevel(api, { payload }) {
         clusterId: selectedCluster?.value,
         namespaceId: selectedNamespaceId?.id,
         payloadData: payload,
+        isFromPgDetails: fromPgDetailsPage,
       },
     ],
   });

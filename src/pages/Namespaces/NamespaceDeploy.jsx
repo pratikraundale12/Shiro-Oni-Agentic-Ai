@@ -223,7 +223,7 @@ const NamespaceDeploy = ({
   const getFlowName = () => {
     return deployByRegistryFlow
       ? formDataRegistry?.selectedFlowName
-      : selectedNamespace?.name;
+      : selectedNamespace?.flowName;
   };
   const getFlowCount = countType => {
     return checkFlowControlAfterUpgrade

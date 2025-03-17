@@ -86,6 +86,8 @@ export const MODULE_LIST_MAP = [
   { label: 'Group Mapping', value: 'Group-mapping' },
   { label: 'Reschedule Job', value: 'Reschedule Job' },
   { label: 'Roles', value: 'Roles' },
+  { label: 'Parameter Context', value: 'Parameter Context' },
+  { label: 'Variable', value: 'Variable' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -134,12 +136,11 @@ export const SSO_LOGIN_TYPE = [{ label: 'Azure', value: 'azure' }];
 
 export const LICENSE_TYPE = {
   TRIAL: 'trial',
-  PURCHASED: 'purchased',
+  PURCHASED: 'production',
 };
 
-export const LICENSE_DATE_ISO_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
-export const LICENSE_EXPIRE_PROMPT_DAYS =
-  process.env.REACT_APP_LICENSE_EXPIRE_TIMESPAN_IN_DAYS || 30;
+export const LICENSE_DATE_ISO_FORMAT = 'MMMM D, YYYY [at] h:mm:ss A';
+export const LICENSE_EXPIRE_PROMPT_DAYS = 30;
 
 export const KDFM = {
   // Generic constants
@@ -245,7 +246,7 @@ export const KDFM = {
   TRIAL_EXPIRED_PROMPT: arg =>
     `Trial: Your trial license will expire on ${arg}.`,
   PURCHASED_EXPIRED_PROMPT: arg =>
-    `Licensed: Your purchased license will expire on ${arg}. Please renew it to continue using the platform.`,
+    `Licensed: Your license will expire on ${arg}. Please renew it to continue using the platform.`,
 
   // module specific constants
   ...CLUSTER_CONSTANTS,

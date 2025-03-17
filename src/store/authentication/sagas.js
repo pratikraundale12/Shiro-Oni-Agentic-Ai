@@ -90,6 +90,20 @@ export function* login(api, { payload: { type, token, ...payload } }) {
   if (response.ok) {
     toast.success('Welcome! You’ve successfully logged in. ');
     localStorage.setItem(ACCESS_TOKEN, response.data.token);
+    localStorage.setItem(CLUSTERS_TOKEN, []);
+    localStorage.setItem(
+      'selected_cluster',
+      JSON.stringify({
+        label: '',
+        value: '',
+      })
+    );
+    yield put(
+      NamespacesActions.setSelectedCluster({
+        label: '',
+        value: '',
+      })
+    );
     if (!type) {
       const cluster = {
         id: response.data.cluster_id,
@@ -100,14 +114,14 @@ export function* login(api, { payload: { type, token, ...payload } }) {
       localStorage.setItem(
         'selected_cluster',
         JSON.stringify({
-          label: cluster.name,
-          value: cluster.id,
+          label: '',
+          value: '',
         })
       );
       yield put(
         NamespacesActions.setSelectedCluster({
-          label: cluster.name,
-          value: cluster.id,
+          label: '',
+          value: '',
         })
       );
     }

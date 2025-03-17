@@ -137,9 +137,11 @@ export const namespacesAPI = api => {
     clusterId,
     parameterContextId,
     requestId,
+    namespaceId,
+    flowVersion,
   }) =>
     api.get(
-      `parameter-context/${clusterId}/contextId/${parameterContextId}/requestId/${requestId}`
+      `parameter-context/${clusterId}/contextId/${parameterContextId}/requestId/${requestId}?namespaceId=${namespaceId}&flowVersion=${flowVersion}`
     );
 
   const deleteParameterContext = ({
@@ -173,14 +175,15 @@ export const namespacesAPI = api => {
     clusterId,
     payloadData,
     namespaceId,
+    isFromPgDetails,
   }) => {
     const { isFromControllerServiceTab } = payloadData;
     const url =
-      namespaceId && !isFromControllerServiceTab
+      namespaceId && !isFromControllerServiceTab && isFromPgDetails
         ? `controller-services/${clusterId}/namespace/${namespaceId}`
-        : !namespaceId && !isFromControllerServiceTab
-          ? `controller-services/${clusterId}/namespace`
-          : `controller-services/${clusterId}/namespace?use_service_account=true`;
+        : !namespaceId && isFromControllerServiceTab && !isFromPgDetails
+          ? `controller-services/${clusterId}/namespace?use_service_account=true`
+          : `controller-services/${clusterId}/namespace`;
     const updatedPayload = {
       name: payloadData.name,
       type: payloadData?.type,
