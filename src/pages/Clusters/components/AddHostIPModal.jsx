@@ -1,11 +1,10 @@
 /*eslint-disable*/
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { ClustersActions, ClustersSelectors } from '../../../store';
 import {
-  CheckboxField,
   InputField,
   Modal,
   PasswordField,
@@ -33,16 +32,24 @@ export const AddHostIPModal = () => {
   const onRequestClose = () => {
     dispatch(ClustersActions.setIsAddHostIPModalOpen(false));
   };
-  // const { handleSubmit, watch, control } = useForm();
   const OPTIONS = [
     { id: 1, value: 'password', label: 'Password' },
     { id: 2, value: 'privatekey', label: 'Private Key' },
   ];
-  const schema = yup.object().shape({
+
+  const schemaPasswrd = yup.object().shape({
     host_ip: yup.string().required('Host IP is required'),
     port: yup.string().required('Port is required'),
     username: yup.string().required('Username is required'),
+    password: yup.string().required('Password is required'),
   });
+  const schemaPrivateKey = yup.object().shape({
+    host_ip: yup.string().required('Host IP is required'),
+    port: yup.string().required('Port is required'),
+    username: yup.string().required('Username is required'),
+    pfxFile: yup.mixed().required('File is required'),
+  });
+  const schema = method === 'password' ? schemaPasswrd : schemaPrivateKey;
   const {
     register,
     handleSubmit,
@@ -54,10 +61,26 @@ export const AddHostIPModal = () => {
     resolver: yupResolver(schema),
   });
   const watchMethodCredentials = watch('methodForCredentials');
-  const handleContinueSubmit = () => {
-    dispatch(ClustersActions.checkCredentialsClusterSetup());
+  const handleContinueSubmit = data => {
+    console.log(data, 'data');
+    const payload = new FormData();
+    payload.append('host', data?.host_ip);
+    payload.append('username', data?.username);
+    payload.append('file', data?.pfxFile);
+    const payloadData = { payload, data };
+    dispatch(ClustersActions.checkCredentialsClusterSetup(payloadData));
   };
+  useEffect(() => {
+    if (watchMethodCredentials) {
+      setMethod(watchMethodCredentials);
+    }
+  }, [watchMethodCredentials]);
 
+  useEffect(() => {
+    if (!isModalOpen) {
+      reset();
+    }
+  }, [isModalOpen]);
   return (
     <Modal
       isOpen={isModalOpen}
@@ -147,6 +170,7 @@ export const AddHostIPModal = () => {
                 placeholder={KDFM.SELECT_PFX_FILE}
                 errors={errors}
               />
+
               <PasswordField
                 name="private_file"
                 watch={watch}

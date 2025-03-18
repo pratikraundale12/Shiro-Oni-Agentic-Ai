@@ -27,6 +27,7 @@ export const ClustersActions = {
   checkCredentialsClusterSetup: createAction(
     `${prefix}checkCredentialsClusterSetup`
   ),
+  setHostIpList: createAction(`${prefix}setHostIpList`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -41,6 +42,7 @@ export const CLUSTERS_INITIAL_STATE = {
   isAddorEditClusterModalOpen: false,
   isAddHostIPModalOpen: false,
   nifiVersions: [],
+  hostIpList: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -57,6 +59,7 @@ export const ClustersSelectors = {
     state.clusters.isAddorEditClusterModalOpen,
   getIsAddHostIPModalOpen: state => state.clusters.isAddHostIPModalOpen,
   getNifiVersions: state => state.clusters.nifiVersions,
+  getHostIpList: state => state.clusters.hostIpList,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -133,6 +136,12 @@ const setNifiVersions = (state, { payload }) => {
     nifiVersions: payload,
   };
 };
+const setHostIpList = (state, { payload }) => {
+  return {
+    ...state,
+    hostIpList: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -160,6 +169,7 @@ export const clustersReducer = createReducer(
         setIsAddorEditClusterModalOpen
       )
       .addCase(ClustersActions.setIsAddHostIPModalOpen, setIsAddHostIPModalOpen)
-      .addCase(ClustersActions.setNifiVersions, setNifiVersions);
+      .addCase(ClustersActions.setNifiVersions, setNifiVersions)
+      .addCase(ClustersActions.setHostIpList, setHostIpList);
   }
 );

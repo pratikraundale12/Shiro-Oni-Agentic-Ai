@@ -3,7 +3,7 @@ import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
-import { ClustersActions } from './redux';
+import { ClustersActions, ClustersSelectors } from './redux';
 import { toast } from 'react-toastify';
 
 export function* fetchClusterList(api, { payload: { params } = {} }) {
@@ -81,13 +81,14 @@ export function* checkCredentialsClusterSetup(api, { payload }) {
     errorSection: 'checkCredentialsClusterSetup',
     loadingSection: 'checkCredentialsClusterSetup',
     apiMethod: api.checkCredentialsClusterSetup,
-    apiParams: [{ payload }],
+    apiParams: [{ payload: payload?.payload }],
   });
   if (response.ok) {
     toast.success('Test success');
-    // yield put(SchedularActions.setScheduleDeployModal());
-    // yield call(history.push, '/schedule-deployment');
-    // yield put(AuthenticationActions.setRoute('schedule-deployment'));
+    yield put(ClustersActions.setIsAddHostIPModalOpen(false));
+    const hostIpList = yield select(ClustersSelectors.getHostIpList);
+    const combinedArray = [...hostIpList, payload?.data];
+    yield put(ClustersActions.setHostIpList(combinedArray));
   } else {
     toast.error(response?.data?.error);
   }
