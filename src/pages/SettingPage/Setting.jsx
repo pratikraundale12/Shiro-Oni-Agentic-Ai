@@ -276,9 +276,11 @@ export const Setting = () => {
     setLoading(true);
     const payload = new FormData();
     const updatedFields = [];
-
-    const appendIfChanged = (key, value, compareValue) => {
-      if (dirtyFields[key] && value !== compareValue) {
+    const appendIfChanged = (key, value, compareValue, isImage = false) => {
+      if (
+        (isImage && value !== compareValue && value !== undefined) ||
+        (!isImage && dirtyFields[key] && value !== compareValue)
+      ) {
         payload.append(key, value);
         updatedFields.push(key);
       }
@@ -286,8 +288,8 @@ export const Setting = () => {
 
     if (settingData?.id) payload.append('id', settingData.id);
 
-    appendIfChanged('logo', data?.logo || null, settingData?.logo);
-    appendIfChanged('favicon', data?.favicon || null, settingData?.favicon);
+    appendIfChanged('logo', data?.logo, settingData?.logo, true);
+    appendIfChanged('favicon', data?.favicon, settingData?.favicon, true);
     appendIfChanged('title', data?.title, settingData?.title);
     appendIfChanged('username', data?.username, settingData?.username);
     appendIfChanged('password', data?.password, settingData?.password);
@@ -380,7 +382,7 @@ export const Setting = () => {
         updatedFields.push('ldap_auto_sync_time_interval');
       }
     }
-
+    console.log('updatedFields--', updatedFields);
     try {
       if (updatedFields.length > 0) {
         dispatch(SettingsActions.createSettings(payload));
