@@ -62,13 +62,11 @@ export const UserStoryModal = () => {
     {
       label: 'Property',
       renderCell: item => item?.title,
-      width: '50%',
       resize: true,
     },
     {
       label: 'Value',
       renderCell: item => <>{renderItems(item)}</>,
-      width: '50%',
       resize: true,
     },
   ];

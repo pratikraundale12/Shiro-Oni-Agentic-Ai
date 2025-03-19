@@ -168,11 +168,13 @@ export const ListControllerService = () => {
   const [isResetNotRequired, setIsResetNotRequired] = useState(false);
   const filteredModulesData = useMemo(
     () =>
-      listData?.filter(
-        module =>
-          module?.name?.toLowerCase().includes(search.toLowerCase()) ||
-          module?.type?.toLowerCase().includes(search.toLowerCase())
-      ),
+      !isEmpty(listData)
+        ? listData?.filter(
+            module =>
+              module?.name?.toLowerCase().includes(search.toLowerCase()) ||
+              module?.type?.toLowerCase().includes(search.toLowerCase())
+          )
+        : [],
     [listData, search]
   );
   const [isUserCanWrite, setIsUserCanWrite] = useState(listData?.[0]?.canWrite);
@@ -504,10 +506,12 @@ export const ListControllerService = () => {
   };
 
   const handleRefresh = () => {
-    setSearch('');
-    setSearchErrorMsg({});
-    setSearchText('');
-    dispatch(NamespacesActions.getControllerServiceList());
+    if (selectedCluster?.value && !isEmpty(selectedCluster?.value)) {
+      setSearch('');
+      setSearchErrorMsg({});
+      setSearchText('');
+      dispatch(NamespacesActions.getControllerServiceList());
+    }
   };
 
   const statusLoading = useSelector(state =>
@@ -544,8 +548,28 @@ export const ListControllerService = () => {
               }}
               data-tooltip-id={`tooltip-group-namespace-refresh`}
             >
-              <RefreshIcon style={{ cursor: 'pointer' }} />
+              <RefreshIcon
+                style={{
+                  cursor:
+                    selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                      ? 'pointer'
+                      : 'not-allowed',
+                }}
+              />
             </RefreshIocnPanel>
+            {!(selectedCluster?.value && !isEmpty(selectedCluster?.value)) && (
+              <ReactTooltip
+                id={`tooltip-group-namespace-refresh`}
+                place="left"
+                content={'Login to Cluster'}
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            )}
+           
           </div>
         )}
       </div>
