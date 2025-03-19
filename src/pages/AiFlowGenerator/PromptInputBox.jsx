@@ -54,7 +54,7 @@ const InputBox = styled.textarea`
   }
 `;
 
-const GenerateFLowButton = styled.div`
+const GenerateFLowButton = styled.button`
   position: absolute;
   width: 40px;
   height: 40px;
@@ -63,7 +63,7 @@ const GenerateFLowButton = styled.div`
   opacity: ${props => (props.isSendBtnDisabled ? 0.5 : 1)};
   cursor: ${props => (props.isSendBtnDisabled ? 'not-allowed' : 'pointer')};
   border-radius: 50%;
-  padding: 12px 10px 10px 8px;
+  padding: 10px 10px 10px 7px;
   right: 13px;
   svg {
     z-index: 9999999;
@@ -97,6 +97,13 @@ export const PromptInputBox = ({
       }
       setQueryText('');
       setIsSendBtnDisabled(true);
+      return;
+    } else if (isSendBtnDisabled) {
+      if (!toast.isActive('empty-input')) {
+        toast.error(KDFM.EMPTY_QUERY, {
+          toastId: 'empty-input',
+        });
+      }
       return;
     } else {
       setIsPromptInputDisabled(true);
@@ -132,22 +139,22 @@ export const PromptInputBox = ({
   return (
     <InputContainer>
       <InputBox
+        id='prompt-input-box'
+        name='prompt-input-box'
         disabled={disabled}
         type="search"
         value={disabled ? '' : queryText}
         placeholder={KDFM.PROMPT_INPUT_PLACEHOLDER}
         onChange={e => {
           let value = e.target.value;
-          // Sanitize HTML tags
           value = DOMPurify.sanitize(value, { ALLOWED_TAGS: [] });
-          // Collapse multiple spaces
           value = _.trim(value).replace(/\s+/g, ' ');
-
           setQueryText(value);
           setIsSendBtnDisabled(value.length === 0);
         }}
       />
       <GenerateFLowButton
+        disabled={isSendBtnDisabled}
         isSendBtnDisabled={isSendBtnDisabled}
         onClick={handleGenerateFLowClick}
       >

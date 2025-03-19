@@ -11,8 +11,6 @@ export const getLoginToClusterPopup = () => {
 };
 
 export const validatePayload = (payload, requiredFields) => {
-  console.log('payload--', payload);
-  console.log(process.env.REACT_APP_API_URL);
   const fieldLabels = {
     session_id: 'Session ID',
     query: 'Query',
@@ -58,5 +56,5 @@ export const downloadJsonFile = (jsonData, fileName = 'demo.json') => {
   link.href = url;
   link.download = fileName;
   link.click();
-  URL.revokeObjectURL(url); // Clean up memory
+  URL.revokeObjectURL(url);
 };

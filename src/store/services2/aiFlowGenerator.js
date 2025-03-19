@@ -13,8 +13,24 @@ export const aiFlowGeneratorAPI = api => {
       return error.response.data;
     }
   };
+  const deleteGeneratedFlow = async flowId => {
+    try {
+      return await api.delete(`/delete-flow/${flowId}`);
+    } catch (error) {
+      return error.response.data;
+    }
+  };
+  const updateGeneratedFlow = async ({ id, data }) => {
+    try {
+      return await api.post(`/update-flow/${id}`, data);
+    } catch (error) {
+      return error.response.data;
+    }
+  };
   return {
     fetchDefaultRecentFlows,
     generateFlowAPI,
+    deleteGeneratedFlow,
+    updateGeneratedFlow,
   };
 };

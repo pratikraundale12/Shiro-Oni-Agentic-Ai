@@ -7,11 +7,12 @@ const DiscardFlowConfirmationModal = ({
   isDiscardFlowModalOpen,
   setIsDiscardFlowModalOpen,
   handleDiscardFlow,
+  generatedFlow,
 }) => {
   const handleSubmit = e => {
-    if (e?.preventDefault) e.preventDefault(); // Safely check if event exists
-    if (e?.stopPropagation) e.stopPropagation(); // Same for stopPropagation
-    handleDiscardFlow();
+    if (e?.preventDefault) e.preventDefault();
+    if (e?.stopPropagation) e.stopPropagation();
+    handleDiscardFlow(generatedFlow);
   };
   const handleClose = e => {
     e.preventDefault(); // Ensure closing doesn't trigger form submission
@@ -28,7 +29,7 @@ const DiscardFlowConfirmationModal = ({
         isOpen={isDiscardFlowModalOpen}
         onRequestClose={handleClose}
         primaryText={`Are you sure you want to discard the flow JSON?`}
-        onSubmit={handleSubmit} // Ensure this doesn't trigger parent form submits
+        onSubmit={handleSubmit}
       />
     </div>
   );
@@ -40,4 +41,5 @@ DiscardFlowConfirmationModal.propTypes = {
   isDiscardFlowModalOpen: PropTypes.bool.isRequired,
   setIsDiscardFlowModalOpen: PropTypes.func.isRequired,
   handleDiscardFlow: PropTypes.func.isRequired,
+  generatedFlow: PropTypes.object,
 };

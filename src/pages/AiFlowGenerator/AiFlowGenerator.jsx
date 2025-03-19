@@ -1,16 +1,23 @@
 /* eslint-disable no-unused-vars */
 
 import React, { useEffect, useState } from 'react';
-import { DownloadIcon, OpenEyeIcon, RefreshIcon, TodoIcon } from '../../assets';
+import {
+  DownloadIcon,
+  OpenEyeIcon,
+  RefreshIcon,
+  TodoIcon,
+  TriangleExclamationMarkIcon,
+} from '../../assets';
 import styled from 'styled-components';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  AiFlowGeneratorActions,
   AiFlowGeneratorSelectors,
   AuthenticationSelectors,
   LoadingSelectors,
 } from '../../store';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual, set } from 'lodash';
 import { fetchDefaultRecentFlowsData } from './services';
 import { RecommendedFlow } from './RecommendedFlow';
 import { PromptInputBox } from './PromptInputBox';
@@ -23,6 +30,7 @@ import { toast } from 'react-toastify';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import DiscardFlowConfirmationModal from './DiscardFlowConfirmationModal';
+import { jsonrepair } from 'jsonrepair';
 
 const Container = styled.div`
   display: flex;
@@ -196,31 +204,58 @@ export const AiFlowGenerator = () => {
   const handleRefresh = () => {
     if (loading) {
       if (!toast.isActive('generating-flow')) {
-        toast.warning('Flow is generating... please wait', {
+        toast.warning('Flow is generating please wait', {
           toastId: 'generating-flow',
         });
       }
       return;
     } else {
+      setIsFlowUpdated(false);
+      setIsFLowDownloaded(false);
+      setAddedToRegistry(false);
       setOpenConversation(false);
       setQueryText('');
+      setJson({});
+      setOriginalFlow({});
       setIsPromptInputDisabled(!generateFlowPermission);
-      // history.push('/ai-flow-generator');
-      console.log('Refresh');
+      dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
+      dispatch(AiFlowGeneratorActions.setGenFlowError(''));
+      dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows());
     }
   };
   const handleAddToRegistryClick = e => {
     if (e?.preventDefault) e.preventDefault();
     if (e?.stopPropagation) e.stopPropagation();
+    if (e.keyCode == 13) {
+      e.preventDefault();
+      return false;
+    }
     setOpenPreviewModal(false);
     setAddedToRegistry(true);
     toast.info('Flow will be added to registry soon');
+    if (isFlowUpdated) {
+      dispatch(
+        AiFlowGeneratorActions.updateGeneratedFlow({
+          data: json,
+          id: generatedFlow?.id,
+        })
+      );
+    }
     handleRefresh();
   };
 
   const handleDownloadClick = () => {
     setIsFLowDownloaded(true);
     downloadJsonFile(json, 'demo.json');
+    if (isFlowUpdated) {
+      dispatch(
+        AiFlowGeneratorActions.updateGeneratedFlow({
+          data: json,
+          id: generatedFlow?.id,
+        })
+      );
+    }
+    setOpenPreviewModal(false);
     handleRefresh();
   };
 
@@ -228,32 +263,48 @@ export const AiFlowGenerator = () => {
     setOpenPreviewModal(true);
     setIsDiscardFlowModalOpen(false);
     setIsJsonInvalid(false);
-    handleChange(flow);
+    handleChange(generatedFlow);
   };
 
-  console.log('isPromptInputDisabled=----', isPromptInputDisabled);
   const config = {
     tertiaryButtonTest: '',
     tertiaryButtonSubmit: handleDownloadClick,
     icon: <DownloadIcon color="#444445" />,
   };
-  const flow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
-  const [json, setJson] = useState(flow || {});
+  const generatedFlow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
+  const error = useSelector(AiFlowGeneratorSelectors.getGenFlowError);
+  const [json, setJson] = useState({});
+  const [flowError, setFlowError] = useState(error || '');
+  const [originalFlow, setOriginalFlow] = useState({});
+  const [isFlowUpdated, setIsFlowUpdated] = useState(false);
 
   useEffect(() => {
-    setJson(flow || {});
-  }, [flow]);
-  console.log('json---', json);
+    setFlowError(error);
+  }, [error]);
+
+  useEffect(() => {
+    if (Object.keys(generatedFlow).length > 0) {
+      const parsedJson =
+        typeof generatedFlow?.response === 'string'
+          ? JSON.parse(generatedFlow?.response)
+          : generatedFlow?.response;
+      const repaired = jsonrepair(parsedJson?.response);
+      setJson(JSON.parse(repaired));
+      setOriginalFlow(JSON.parse(repaired));
+    }
+  }, [generatedFlow]);
 
   const handleChange = content => {
-    console.log('content---', content);
-
     if (content.jsObject) {
+      if (!isEqual(content.jsObject, originalFlow)) {
+        setIsFlowUpdated(true);
+      } else {
+        setIsFlowUpdated(false);
+      }
       setJson(content.jsObject);
       setIsJsonInvalid(false);
     } else if (content.error) {
-      console.log('hiiii');
-      setIsJsonInvalid(true); // Invalid JSON
+      setIsJsonInvalid(true);
     }
   };
 
@@ -283,7 +334,8 @@ export const AiFlowGenerator = () => {
       color: '#444443', // Keys in JSON objects
     },
   };
-  const handleDiscardFlow = () => {
+  const handleDiscardFlow = flow => {
+    dispatch(AiFlowGeneratorActions.deleteGeneratedFlow(flow?.id));
     handleRefresh();
     setIsDiscardFlowModalOpen(false);
     setOpenPreviewModal(false);
@@ -353,12 +405,19 @@ export const AiFlowGenerator = () => {
               <span className="fs-12 ms-auto">{formattedTime()}</span>
             </div>
             <div className="data-flow-content-response p-3">
-              <p className="mt-1">
+              {!isEmpty(flowError) && !loading && (
+                <TriangleExclamationMarkIcon color="red" />
+              )}{' '}
+              <p
+                className={`mt-1 d-inline ${!isEmpty(flowError) && !loading ? 'text-danger' : ''}`}
+              >
                 {loading
                   ? 'Generating Flow...'
-                  : 'Here is the JSON File generated as per your prompt....'}
+                  : !loading && isEmpty(flowError)
+                    ? 'Here is the JSON File generated as per your prompt....'
+                    : `${flowError}...`}
               </p>
-              {!loading && (
+              {!loading && isEmpty(flowError) && (
                 <>
                   <div className="d-flex flex-wrap gap-3 mb-3 mt-4">
                     <div className="data-flow-thum text-center">
@@ -404,9 +463,16 @@ export const AiFlowGenerator = () => {
         />
       </PromptSection>
       <Modal
-        title="Preview Json"
+        title={json?.label || 'Preview Json'}
         isOpen={openPreviewModal}
-        onRequestClose={() => setIsDiscardFlowModalOpen(true)}
+        onRequestClose={() => {
+          if (!isFlowDownloaded && !addedToRegistry) {
+            setIsDiscardFlowModalOpen(true);
+          } else {
+            setIsDiscardFlowModalOpen(false);
+            setOpenPreviewModal(false);
+          }
+        }}
         size="sm"
         secondaryButtonText="Close"
         primaryButtonText={'Add to Registry'}
@@ -426,7 +492,6 @@ export const AiFlowGenerator = () => {
           placeholder={json}
           width="100%"
           onChange={handleChange}
-          value={JSON.stringify(json, null, 2)} // Ensure the editor reflects the current state
           style={customStyles}
         />
       </Modal>
@@ -435,6 +500,7 @@ export const AiFlowGenerator = () => {
           isDiscardFlowModalOpen={isDiscardFlowModalOpen}
           setIsDiscardFlowModalOpen={setIsDiscardFlowModalOpen}
           handleDiscardFlow={handleDiscardFlow}
+          generatedFlow={generatedFlow}
         />
       )}
     </Container>

@@ -121,7 +121,7 @@ export const Modal = ({
   const handleKeyDown = e => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      onSubmit(); // Prevent the default action when Enter is pressed
+      onSubmit(e); // Prevent the default action when Enter is pressed
     }
   };
 
@@ -136,7 +136,7 @@ export const Modal = ({
         className="d-flex flex-column overflow-auto"
         onSubmit={e => {
           e.preventDefault();
-          onSubmit();
+          onSubmit(e);
         }}
         onKeyDown={handleKeyDown}
       >

@@ -1,7 +1,6 @@
 import { all, takeLatest, put, call } from 'redux-saga/effects';
 import { AiFlowGeneratorActions } from './redux';
 import { requestSaga } from '../helpers/request_sagas';
-// import { toast } from 'react-toastify';
 import { DEFAULT_FLOW_JSON } from '../../constants/aiFlowGenerator.constant';
 import { toast } from 'react-toastify';
 
@@ -29,38 +28,27 @@ export function* fetchDefaultRecentFlows() {
 }
 
 export function* generateFlowAPI(api, { payload }) {
-  console.log('payload--', payload, api);
+  yield put(AiFlowGeneratorActions.setGenFlowError(''));
   if (!api.generateFlowAPI) {
     console.error('generateFlowApi is undefined!');
     return;
   }
   const response = yield call(requestSaga, {
-    errorSection: 'generateFlowAPI',
+    errorSection: AiFlowGeneratorActions.generateFlowAPIFailure,
     loadingSection: 'generateFlowAPI',
     apiMethod: api.generateFlowAPI,
     apiParams: [payload],
     successAction: AiFlowGeneratorActions.generateFlowAPISuccess,
   });
-
-  // if (response.ok) {
-  //   const parsedJson = JSON.parse(response?.data?.response);
-  //   yield put(AiFlowGeneratorActions.setGeneratedFlow(parsedJson));
-  //   console.log('response?.data--', parsedJson);
-  // } else {
-  //   console.log('response--', response);
-  //   toast.error(
-  //     response?.message || response?.data?.message || 'Unexpected error occured'
-  //   );
-  // }
   if (response.ok) {
     try {
-      const rawResponse = response?.data?.response;
+      yield put(AiFlowGeneratorActions.setGenFlowError(''));
+      const rawResponse = response?.data;
       const parsedJson =
         typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
 
       if (parsedJson && typeof parsedJson === 'object') {
         yield put(AiFlowGeneratorActions.setGeneratedFlow(parsedJson));
-        console.log('Parsed JSON:', parsedJson);
       } else {
         throw new Error('Invalid JSON format');
       }
@@ -71,15 +59,53 @@ export function* generateFlowAPI(api, { payload }) {
       );
     }
   } else {
-    console.log('Response Error:', response);
-    toast.error(
+    const error =
       response?.message ||
-        response?.data?.message ||
-        'Unexpected error occurred'
+      response?.data?.message ||
+      'Unexpected error occurred while generating flow';
+    yield put(AiFlowGeneratorActions.setGenFlowError(error));
+    toast.error(error);
+  }
+}
+
+export function* deleteGeneratedFlow(api, { payload }) {
+  if (!api.deleteGeneratedFlow) {
+    console.error('deleteGeneratedFlow is undefined!');
+    return;
+  }
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteGeneratedFlow',
+    loadingSection: 'deleteGeneratedFlow',
+    apiMethod: api.deleteGeneratedFlow,
+    apiParams: [payload],
+  });
+  if (response.ok) {
+    toast.success(response?.message || 'Flow deleted successfully');
+    yield put(AiFlowGeneratorActions.setGeneratedFlow({}));
+  } else {
+    toast.error(
+      response?.message || response?.data?.message || 'Failed to delete flow'
     );
   }
 }
 
+export function* updateGeneratedFlow(api, { payload }) {
+  const { id, data } = payload;
+  const response = yield call(requestSaga, {
+    errorSection: 'updateGeneratedFlow',
+    loadingSection: 'updateGeneratedFlow',
+    apiMethod: api.updateGeneratedFlow,
+    apiParams: [{ id, data }],
+  });
+  if (response.ok) {
+    yield put(AiFlowGeneratorActions.setGeneratedFlow({}));
+    // toast.success('Flow updated successfully');
+  } else {
+    toast.error(
+      response?.message || response?.data?.message || 'Failed to update flow'
+    );
+  }
+}
 export function* aiFlowGeneratorSagas(api) {
   yield all([
     takeLatest(AiFlowGeneratorActions.fetchDefaultRecentFlows, action =>
@@ -87,6 +113,12 @@ export function* aiFlowGeneratorSagas(api) {
     ),
     takeLatest(AiFlowGeneratorActions.generateFlowAPI, action =>
       generateFlowAPI(api, action)
+    ),
+    takeLatest(AiFlowGeneratorActions.deleteGeneratedFlow, action =>
+      deleteGeneratedFlow(api, action)
+    ),
+    takeLatest(AiFlowGeneratorActions.updateGeneratedFlow, action =>
+      updateGeneratedFlow(api, action)
     ),
   ]);
 }

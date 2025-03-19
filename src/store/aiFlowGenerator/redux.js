@@ -1,5 +1,4 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
-
 const prefix = '@@KDFM-AI-FLOW-GENERATOR/';
 
 /* ------------- ACTIONS ------------------ */
@@ -11,11 +10,15 @@ export const AiFlowGeneratorActions = {
   fetchDefaultRecentFlowsFailure: createAction(
     `${prefix}fetchDefaultRecentFlowsFailure`
   ),
+  deleteGeneratedFlow: createAction(`${prefix}deleteGeneratedFlow`),
   setDefaultFlows: createAction(`${prefix}setDefaultFlows`),
   setRecentFlows: createAction(`${prefix}setRecentFlows`),
   generateFlowAPI: createAction(`${prefix}generateFlowAPI`),
   generateFlowAPISuccess: createAction(`${prefix}generateFlowAPISuccess`),
   setGeneratedFlow: createAction(`${prefix}generatedFlow`),
+  generateFlowAPIFailure: createAction(`${prefix}generateFlowAPIFailure`),
+  setGenFlowError: createAction(`${prefix}setGenFlowError`),
+  updateGeneratedFlow: createAction(`${prefix}updateGeneratedFlow`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -23,6 +26,7 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   recentFlows: [],
   defaultFlows: [],
   generatedFlow: {},
+  genFlowError: '',
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -30,6 +34,7 @@ export const AiFlowGeneratorSelectors = {
   getRecentFlows: state => state.aiFlowGenerator.recentFlows,
   getDefaultFlows: state => state.aiFlowGenerator.defaultFlows,
   getGeneratedFlow: state => state.aiFlowGenerator.generatedFlow,
+  getGenFlowError: state => state.aiFlowGenerator.genFlowError,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -61,10 +66,25 @@ const generateFlowAPISuccess = (state, { payload }) => {
   };
 };
 
+const generateFlowAPIFailure = (state, { payload }) => {
+  return {
+    ...state,
+    genFlowError: payload,
+  };
+};
+
 const setGeneratedFlow = (state, { payload }) => {
   return {
     ...state,
     generatedFlow: payload,
+  };
+};
+
+const setGenFlowError = (state, { payload }) => {
+  console.log('setGenFlowError', payload);
+  return {
+    ...state,
+    genFlowError: payload,
   };
 };
 
@@ -83,6 +103,11 @@ export const aiFlowGeneratorReducer = createReducer(
         AiFlowGeneratorActions.generateFlowAPISuccess,
         generateFlowAPISuccess
       )
-      .addCase(AiFlowGeneratorActions.setGeneratedFlow, setGeneratedFlow);
+      .addCase(AiFlowGeneratorActions.setGeneratedFlow, setGeneratedFlow)
+      .addCase(
+        AiFlowGeneratorActions.generateFlowAPIFailure,
+        generateFlowAPIFailure
+      )
+      .addCase(AiFlowGeneratorActions.setGenFlowError, setGenFlowError);
   }
 );

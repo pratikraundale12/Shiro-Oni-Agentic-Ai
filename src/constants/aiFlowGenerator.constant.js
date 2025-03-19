@@ -7,6 +7,7 @@ export const AI_FLOW_GENERATOR_CONSTANTS = {
     'Please login to cluster to generate the flows',
   NO_PERMISSION_TO_GENERATE_FLOW:
     'You do not have the permission to generate the flows please contact your Administrator.',
+  EMPTY_QUERY: 'Query cannot be empty',
 };
 
 export const DEFAULT_FLOW_JSON = [
