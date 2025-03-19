@@ -3,22 +3,24 @@ import SetupClusterWrapper from './ClusterSetupWrapper';
 
 import ClusterDetailTab from './ClusterDetailTab';
 import ClusterSetupGettingStartedTab from './ClusterSetupGettingStarted';
+import SetupClusterGettingStartedWrapper from './SetupClusterGettingStartedWraper';
 
 const SetupClusterPage = () => {
   const [activeTab, setAtiveTab] = useState('getting_started');
+  console.log(activeTab, 'activeTab');
+
   return (
-    <SetupClusterWrapper setAtiveTab={setAtiveTab} activeTab={activeTab}>
+    <>
       {activeTab === 'getting_started' && (
-        <>
-          <ClusterSetupGettingStartedTab />
-        </>
+        <SetupClusterGettingStartedWrapper
+          setAtiveTab={setAtiveTab}
+          activeTab={activeTab}
+        />
       )}
       {activeTab === 'cluster_details' && (
-        <>
-          <ClusterDetailTab />
-        </>
+        <SetupClusterWrapper setAtiveTab={setAtiveTab} activeTab={activeTab} />
       )}
-    </SetupClusterWrapper>
+    </>
   );
 };
 export default SetupClusterPage;

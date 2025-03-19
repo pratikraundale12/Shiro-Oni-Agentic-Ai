@@ -1,9 +1,20 @@
 /* eslint-disable */
 import React, { useEffect } from 'react';
 import { Button, InputField, SelectField } from '../../../shared';
-import { PlusIcon, QRIcons } from '../../../assets';
+import {
+  DeleteSmallIcon,
+  NoDataIcon,
+  PencilIcon,
+  PlusIcon,
+  QRIcons,
+} from '../../../assets';
 import styled from 'styled-components';
-import { FullPageLoader, Table } from '../../../components';
+import {
+  FullPageLoader,
+  IconButton,
+  LoaderContainer,
+  Table,
+} from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   ClustersActions,
@@ -18,6 +29,13 @@ const LabelSelect = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
+`;
+const ActionTd = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 6px;
+  padding-right: 10px;
 `;
 const ActiveButtonDiv = styled.div`
   height: 48px;
@@ -55,18 +73,22 @@ const ActiveButtonDiv = styled.div`
   }
 `;
 
-const ClusterDetailTab = () => {
+const ClusterDetailTab = ({ control, errors, register }) => {
   const dispatch = useDispatch();
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getNiFiVersions')
   );
+  const loadingAddAPI = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
+  );
+
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
+  const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
+  console.log(listHostIpData, 'listHostIpData');
+
   const nifiVerionsOptions =
     !isEmpty(nifiVersionsData) &&
     nifiVersionsData?.map(ele => ({ label: ele, value: ele }));
-  console.log(nifiVerionsOptions, 'nifiVerionsOptions');
-
-  console.log(nifiVersionsData, 'nifiVersionsData');
 
   useEffect(() => {
     dispatch(ClustersActions.getNiFiVersions());
@@ -75,34 +97,53 @@ const ClusterDetailTab = () => {
   const COLUMNS = [
     {
       label: 'Host IP',
-      renderCell: item => <>hello</>,
+      renderCell: item => <>{item?.host_ip}</>,
       resize: true,
     },
     {
       label: 'Port No.',
-      renderCell: item => <>hello</>,
+      renderCell: item => <>{item?.port}</>,
       resize: true,
     },
     {
       label: 'Username',
-      renderCell: item => <>hello</>,
+      renderCell: item => <>{item?.username}</>,
       resize: true,
     },
     {
       label: 'Status',
-      renderCell: item => <>hello</>,
+      renderCell: item => <>{item?.pfxFile.name}</>,
       resize: true,
     },
     {
       label: 'Actions',
-      renderCell: item => <>hello</>,
+      renderCell: item => (
+        <ActionTd>
+          <IconButton
+            onClick={event => {
+              console.log(event);
+            }}
+            className="pencil-icon-schedule-list"
+          >
+            <PencilIcon width={16} height={16} />
+          </IconButton>
+          <IconButton
+            onClick={event => {
+              console.log(event);
+            }}
+            className="pencil-icon-schedule-list"
+          >
+            <DeleteSmallIcon width={16} height={16} color="red" />
+          </IconButton>
+        </ActionTd>
+      ),
       resize: true,
     },
   ];
 
   return (
     <>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loadingAddAPI} />
       <div className="row mt-2 ms-2 me-2">
         {' '}
         <div className="col-8">
@@ -114,8 +155,8 @@ const ClusterDetailTab = () => {
             // label="Cluster Name"
             placeholder="Enter your Cluster Name"
             required
-            // register={register}
-            // errors={errors}
+            register={register}
+            errors={errors}
             icon={<QRIcons />}
             // rightIcon={getRightIcon(watch, errors, setValue)}
           />
@@ -123,72 +164,17 @@ const ClusterDetailTab = () => {
         <div className="col-4">
           <LabelSelect className="mb-3">NiFi Version</LabelSelect>
           <SelectField
-            name="refresh"
-            label="NiFi Version"
+            name="nifi_version"
             icon={<QRIcons />}
+            register={register}
+            errors={errors}
+            control={control}
             options={nifiVerionsOptions || []}
             placeholder="Select NiFi Version"
           />
         </div>
       </div>
-      {/* <div className="row mt-2 ms-2 ">
-        {' '}
-        <div className="col-11 row">
-          <div className="col-4">
-            <LabelSelect className="mb-3">Host IP 1</LabelSelect>
 
-            <InputField
-              name="clusterName"
-              type="text"
-              // label="Cluster Name"
-              placeholder="Enter your Host IP"
-              required
-              // register={register}
-              // errors={errors}
-              icon={<QRIcons />}
-              // rightIcon={getRightIcon(watch, errors, setValue)}
-            />
-          </div>
-          <div className="col-4">
-            <LabelSelect className="mb-3">Username</LabelSelect>
-
-            <InputField
-              name="clusterName"
-              type="text"
-              // label="Cluster Name"
-              placeholder="Enter your Username"
-              required
-              // register={register}
-              // errors={errors}
-              icon={<QRIcons />}
-              // rightIcon={getRightIcon(watch, errors, setValue)}
-            />
-          </div>
-          <div className="col-4">
-            <LabelSelect className="mb-3">Password</LabelSelect>
-
-            <InputField
-              name="clusterName"
-              type="text"
-              // label="Cluster Name"
-              placeholder="Enter your Password"
-              required
-              // register={register}
-              // errors={errors}
-              icon={<QRIcons />}
-              // rightIcon={getRightIcon(watch, errors, setValue)}
-            />
-          </div>
-        </div>
-        <div className="col-1 pt-4">
-          <div className="d-flex justify-content-center">
-            <ActiveButtonDiv className="div-btn-1 mr-2 mt-2">
-              {' '}
-              <PlusIcon color="#444445" />{' '}
-            </ActiveButtonDiv>
-          </div>
-        </div>
-      </div> */}
       <div className="col-auto ms-3">
         <Button
           size="md"
@@ -207,8 +193,12 @@ const ClusterDetailTab = () => {
           </div>
         </Button>
       </div>
-      <div className="mt-4">
-        <Table data={[{}]} columns={COLUMNS} />
+      <div className="mt-4 px-3">
+        <Table
+          data={listHostIpData}
+          columns={COLUMNS}
+          customNoDataText="No Host IP Available"
+        />
       </div>
       <AddHostIPModal />
     </>

@@ -16,6 +16,7 @@ import { UploadFile } from '../UploadFile';
 import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+
 const Container = styled.div``;
 const ModalContainer = styled.div`
   display: flex;
@@ -62,7 +63,6 @@ export const AddHostIPModal = () => {
   });
   const watchMethodCredentials = watch('methodForCredentials');
   const handleContinueSubmit = data => {
-    console.log(data, 'data');
     const payload = new FormData();
     payload.append('host', data?.host_ip);
     payload.append('username', data?.username);
@@ -87,10 +87,16 @@ export const AddHostIPModal = () => {
       onRequestClose={onRequestClose}
       onSubmit={handleSubmit(handleContinueSubmit)}
       title={'Add Host Details'}
-      primaryButtonText="Continue"
+      primaryButtonText="Test and Add"
       secondaryButtonText="Back"
       contentStyles={{ minWidth: '40%', height: '55%' }}
       footerAlign="start"
+      tertiaryButton={true}
+      tertiaryButtonConfig={{
+        tertiaryButtonTest: 'Test Credentials',
+        tertiaryButtonSubmit: () => {},
+        tertiaryButtonDisable: false,
+      }}
     >
       <Container>
         <div className="row">
@@ -168,16 +174,6 @@ export const AddHostIPModal = () => {
                 control={control}
                 label={KDFM.PFX_FILE}
                 placeholder={KDFM.SELECT_PFX_FILE}
-                errors={errors}
-              />
-
-              <PasswordField
-                name="private_file"
-                watch={watch}
-                label={KDFM.PFX_PASSPHRASE}
-                register={register}
-                placeholder={KDFM.ENTER_PFX_PASSPHRASE}
-                icon={<KeyIcons />}
                 errors={errors}
               />
             </ModalContainer>
