@@ -132,7 +132,10 @@ export function* login(api, { payload: { type, token, ...payload } }) {
 export function* logout(api, { payload: { url } }) {
   yield put(AuthenticationActions.logoutSuccess());
   yield put({ type: 'RESET' });
-  localStorage.clear();
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('previous_path');
+  localStorage.removeItem('selected_cluster');
+  localStorage.removeItem(CLUSTERS_TOKEN);
   yield keycloak.logout({ redirectUri: 'http://localhost:8080/login' });
   history.replace(url); // Example: '/login'
 }

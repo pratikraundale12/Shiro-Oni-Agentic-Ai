@@ -1,13 +1,12 @@
 /* eslint-disable no-undef */
 import Keycloak from 'keycloak-js';
 
-// Read saved config
 const savedConfig = JSON.parse(localStorage.getItem('keycloakConfig') || '{}');
 
 const keycloakConfig = {
-  url: savedConfig.url || 'http://localhost:8180/',
-  realm: savedConfig.realm || 'DFM-DEMO',
-  clientId: savedConfig.clientId || 'dfm-demo',
+  url: savedConfig.keycloak_url || 'http://localhost:8180/',
+  realm: savedConfig.keycloak_realm || 'DFM-DEMO',
+  clientId: savedConfig.keycloak_client_id || 'dfm-demo',
 };
 
 // Initialize and export Keycloak
