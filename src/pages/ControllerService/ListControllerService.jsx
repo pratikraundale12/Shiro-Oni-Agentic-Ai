@@ -569,7 +569,6 @@ export const ListControllerService = () => {
                 }}
               />
             )}
-           
           </div>
         )}
       </div>
