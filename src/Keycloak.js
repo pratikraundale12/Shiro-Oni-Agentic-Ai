@@ -5,9 +5,9 @@ import Keycloak from 'keycloak-js';
 const savedConfig = JSON.parse(localStorage.getItem('keycloakConfig') || '{}');
 
 const keycloakConfig = {
-  url: savedConfig.url || process.env.REACT_APP_KEYCLOAK_URL,
-  realm: savedConfig.realm || process.env.REACT_APP_KEYCLOAK_REALM,
-  clientId: savedConfig.clientId || process.env.REACT_APP_KEYCLOAK_CLIENT_ID,
+  url: savedConfig.url || 'http://localhost:8180/',
+  realm: savedConfig.realm || 'DFM-DEMO',
+  clientId: savedConfig.clientId || 'dfm-demo',
 };
 
 // Initialize and export Keycloak
