@@ -548,8 +548,28 @@ export const ListControllerService = () => {
               }}
               data-tooltip-id={`tooltip-group-namespace-refresh`}
             >
-              <RefreshIcon style={{ cursor: 'pointer' }} />
+              <RefreshIcon
+                style={{
+                  cursor:
+                    selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                      ? 'pointer'
+                      : 'not-allowed',
+                }}
+              />
             </RefreshIocnPanel>
+            {!(selectedCluster?.value && !isEmpty(selectedCluster?.value)) && (
+              <ReactTooltip
+                id={`tooltip-group-namespace-refresh`}
+                place="left"
+                content={'Login to Cluster'}
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            )}
+           
           </div>
         )}
       </div>
