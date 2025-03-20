@@ -8,12 +8,14 @@ export const SettingsActions = {
   fetchSettingsSuccess: createAction(`${prefix}fetchSettingsSuccess`),
   refreshSetting: createAction(`${prefix}refreshSetting`),
   flowValidationModalOpen: createAction(`${prefix}flowValidationModalOpen`),
+  AddNewValidationModalOpen: createAction(`${prefix}AddNewValidationModalOpen`),
 };
 
 // /* ------------- INITIAL STATE ------------- */
 export const SETTING_INITIAL_STATE = {
   data: {},
   flowValidationModalOpen: false,
+  AddNewValidationModalOpen: false,
 };
 
 // /* ------------- SELECTORS ------------------ */

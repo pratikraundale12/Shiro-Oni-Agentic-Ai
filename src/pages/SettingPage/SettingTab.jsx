@@ -57,7 +57,7 @@ const SettingTab = () => {
             onClick={() => setActiveTab('Setting')}
             className="nav-item"
           >
-            Setting
+            General Settings
           </Tab>
           <Tab
             active={activeTab === 'Flow Validation'}

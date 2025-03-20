@@ -1,8 +1,9 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { FlowValidationIcon, NewThreedotIcon } from '../../assets';
+import { AddIcon, FlowValidationIcon, NewEditIcon } from '../../assets';
 import { Table } from '../../components';
+import { Button } from '../../shared';
 import { SettingsActions } from '../../store/settings';
 import FlowValidationModal from './FlowValidationModal';
 
@@ -60,7 +61,7 @@ const FlowValidation = () => {
       renderCell: item => (
         <>
           <button
-            className="border-0 bg-white"
+            className="border-0 bg-white me-2"
             onClick={() =>
               dispatch(SettingsActions.flowValidationModalOpen(true))
             }
@@ -72,7 +73,7 @@ const FlowValidation = () => {
             className="border-0 bg-white"
             onClick={() => console.log(item)}
           >
-            <NewThreedotIcon />
+            <NewEditIcon />
           </button>
         </>
       ),
@@ -113,7 +114,13 @@ const FlowValidation = () => {
         <div className="d-flex align-items-center gap-3">
           <HeadingStyle>Flow Validation Settings</HeadingStyle>
         </div>
+        <div className="mb-2 d-flex align-items-center">
+          <Button type="button" size={'md'}>
+            <AddIcon color="#fff" /> Add New Validation
+          </Button>
+        </div>
       </div>
+
       <ModalBody className="modal-body">
         <Table
           columns={COLUMNS}
