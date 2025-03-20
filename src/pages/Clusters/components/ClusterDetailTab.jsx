@@ -13,6 +13,7 @@ import {
   FullPageLoader,
   IconButton,
   LoaderContainer,
+  StatusRender,
   Table,
 } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -84,8 +85,99 @@ const ClusterDetailTab = ({ control, errors, register }) => {
 
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
-  console.log(listHostIpData, 'listHostIpData');
 
+  const mockData = [
+    {
+      host_ip: '192.168.1.11',
+      port: '9090',
+      username: 'Hermione Granger',
+      status: true,
+    },
+    {
+      host_ip: '192.168.1.12',
+      port: '7070',
+      username: 'Ron Weasley',
+      status: false,
+    },
+    {
+      host_ip: '192.168.1.13',
+      port: '6060',
+      username: 'Albus Dumbledore',
+      status: true,
+    },
+    {
+      host_ip: '192.168.1.14',
+      port: '5050',
+      username: 'Severus Snape',
+      status: false,
+    },
+    {
+      host_ip: '192.168.1.15',
+      port: '4040',
+      username: 'Rubeus Hagrid',
+      status: true,
+    },
+    {
+      host_ip: '192.168.1.16',
+      port: '3030',
+      username: 'Draco Malfoy',
+      status: false,
+    },
+    {
+      host_ip: '192.168.1.17',
+      port: '2020',
+      username: 'Minerva McGonagall',
+      status: true,
+    },
+    {
+      host_ip: '192.168.1.18',
+      port: '1919',
+      username: 'Sirius Black',
+      status: false,
+    },
+    {
+      host_ip: '192.168.1.19',
+      port: '1818',
+      username: 'Remus Lupin',
+      status: true,
+    },
+    {
+      host_ip: '192.168.1.20',
+      port: '1717',
+      username: 'Luna Lovegood',
+      status: false,
+    },
+    {
+      host_ip: '192.168.1.21',
+      port: '1616',
+      username: 'Neville Longbottom',
+      status: true,
+    },
+    {
+      host_ip: '192.168.1.22',
+      port: '1515',
+      username: 'Bellatrix Lestrange',
+      status: false,
+    },
+    {
+      host_ip: '192.168.1.23',
+      port: '1414',
+      username: 'Lord Voldemort',
+      status: true,
+    },
+    {
+      host_ip: '192.168.1.24',
+      port: '1313',
+      username: 'Ginny Weasley',
+      status: false,
+    },
+    {
+      host_ip: '192.168.1.25',
+      port: '1212',
+      username: 'Fred Weasley',
+      status: true,
+    },
+  ];
   const nifiVerionsOptions =
     !isEmpty(nifiVersionsData) &&
     nifiVersionsData?.map(ele => ({ label: ele, value: ele }));
@@ -112,7 +204,12 @@ const ClusterDetailTab = ({ control, errors, register }) => {
     },
     {
       label: 'Status',
-      renderCell: item => <>{item?.pfxFile.name}</>,
+      renderCell: item => (
+        <StatusRender
+          status={item?.status ? 'Active' : 'Inactive'}
+          redColor="#FF0000"
+        />
+      ),
       resize: true,
     },
     {
@@ -122,6 +219,7 @@ const ClusterDetailTab = ({ control, errors, register }) => {
           <IconButton
             onClick={event => {
               console.log(event);
+              dispatch(ClustersActions.setIsAddHostIPModalOpen(true));
             }}
             className="pencil-icon-schedule-list"
           >
@@ -193,11 +291,15 @@ const ClusterDetailTab = ({ control, errors, register }) => {
           </div>
         </Button>
       </div>
-      <div className="mt-4 px-3">
+      <div
+        className="mt-4 px-3"
+        style={{ height: 'calc(100% - 240px)', overflow: 'auto' }}
+      >
         <Table
-          data={listHostIpData}
+          data={mockData || listHostIpData}
           columns={COLUMNS}
           customNoDataText="No Host IP Available"
+          tableWithFullHeight={true}
         />
       </div>
       <AddHostIPModal />

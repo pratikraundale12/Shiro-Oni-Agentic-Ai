@@ -9,11 +9,12 @@ import ClusterDetailTab from './ClusterDetailTab';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { history } from '../../../helpers/history';
 
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
-`;  
+`;
 const Container = styled.div`
   background-color: ${props => props.theme.colors.lightGrey};
   border-radius: 20px;
@@ -71,7 +72,13 @@ const SetupClusterWrapper = ({ setAtiveTab, activeTab }) => {
           >
             {KDFM.BACK}
           </Button>
-          <Button type="submit" onClick={handleSubmit(handleContinue)}>
+          {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
+          <Button
+            type="submit"
+            onClick={() => {
+              history.push(`/clusters/manage-configuration-details`);
+            }}
+          >
             {KDFM.CONTINUE}
           </Button>
         </BottomButtonDiv>

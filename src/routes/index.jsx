@@ -64,6 +64,7 @@ import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 import SetupClusterPage from '../pages/Clusters/components/setupClusterPage.jsx';
+import ManageConfigurationPage from '../pages/Clusters/components/ManageConfigurationPage.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -93,6 +94,10 @@ export const ROUTES_MENU = [
       {
         path: ['setup-cluster'],
         component: <SetupClusterPage />,
+      },
+      {
+        path: ['manage-configuration-details'],
+        component: <ManageConfigurationPage />,
       },
       {
         path: [':id'],

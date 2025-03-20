@@ -59,7 +59,7 @@ const ClusterSetupGettingStartedTab = () => {
         </div>
       </div>
       <div className="row w-100 px-lg-5">
-        <div className="col-md-4">
+        <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
               <ManageClusterIcon height="60" width="60" color={'black'} />
@@ -76,7 +76,7 @@ const ClusterSetupGettingStartedTab = () => {
             </RightHolder>
           </div>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
               <SSHCredentialsPaperIcon height="60" width="60" color={'black'} />
@@ -93,7 +93,7 @@ const ClusterSetupGettingStartedTab = () => {
             </RightHolder>
           </div>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
               <ManageConfigGearIcon height="60" width="60" color={'black'} />
