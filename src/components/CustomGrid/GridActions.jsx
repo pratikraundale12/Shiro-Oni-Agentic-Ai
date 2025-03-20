@@ -765,7 +765,7 @@ export const GridActions = ({
                 )}
               </>
             )}
-            {['scheduler', 'namespaces'].includes(module) && (
+            {['scheduler'].includes(module) && (
               <>
                 <RefreshIocn
                   onClick={handleRefresh}
@@ -785,6 +785,39 @@ export const GridActions = ({
                 />
               </>
             )}
+            {['namespaces'].includes(module) && (
+              <>
+                <RefreshIocn
+                  onClick={handleRefresh}
+                  data-tooltip-id={`tooltip-group-namespace-refresh-`}
+                >
+                  <RefreshIcon
+                    style={{
+                      cursor:
+                        selectedCluster?.value &&
+                        !isEmpty(selectedCluster?.value)
+                          ? 'pointer'
+                          : 'not-allowed',
+                    }}
+                  />
+                </RefreshIocn>
+                <ReactTooltip
+                  id={`tooltip-group-namespace-refresh-`}
+                  place="left"
+                  content={
+                    selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                      ? 'Refresh'
+                      : 'Login to Cluster'
+                  }
+                  style={{
+                    width: 'auto',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                  }}
+                />
+              </>
+            )}
+
             {module === 'scheduler' && (
               <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
             )}
