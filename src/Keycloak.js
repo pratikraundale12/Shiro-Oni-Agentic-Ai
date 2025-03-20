@@ -4,8 +4,8 @@ import Keycloak from 'keycloak-js';
 const savedConfig = JSON.parse(localStorage.getItem('keycloakConfig') || '{}');
 
 const keycloakConfig = {
-  url: savedConfig.keycloak_url || 'http://localhost:8180/',
-  realm: savedConfig.keycloak_realm || 'DFM-DEMO',
+  url: savedConfig.keycloak_url || 'https://keycloak.dfmanager.com:8443/',
+  realm: savedConfig.keycloak_realm || 'DFM-DEV',
   clientId: savedConfig.keycloak_client_id || 'dfm-demo',
 };
 
@@ -17,5 +17,5 @@ export const keycloakInitOptions = {
   onLoad: 'check-sso',
   checkLoginIframe: true,
   pkceMethod: 'S256',
-  silentCheckSsoRedirectUri: window.location.origin + '/check-sso-login.html',
+  // silentCheckSsoRedirectUri: window.location.origin + '/check-sso-login.html',
 };

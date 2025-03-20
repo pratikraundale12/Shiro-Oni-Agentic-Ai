@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { KsolvesDataFlowIcon, MicroSoftIcon } from '../assets';
 import KeycloakIcon from '../assets/Icons/KeycloakIcon';
-import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
+import { ALREADY_HAVE_AN_ACCOUNT, API_URL, SIGN_IN } from '../constants';
 import { changeFavicon, changeTitle } from '../helpers';
 import { history } from '../helpers/history';
 import { TextButton } from '../shared';
@@ -434,11 +434,13 @@ export const Layout = ({ children }) => {
       dispatch(AuthenticationActions.fetchKeycloakConfig());
     }
   }, [dispatch, settingLogo?.selected_sso]);
+
+  /*
+   * use http://localhost:port/keycloakLogin for configuring on local system in development mode
+   */
   const handleKeycloakLogin = async () => {
     if (initialized && !keycloak.authenticated) {
-      await keycloak.login({
-        redirectUri: 'http://localhost:8080/keycloakLogin',
-      });
+      await keycloak.login({ redirectUri: `${API_URL}/keycloakLogin` });
     }
   };
 

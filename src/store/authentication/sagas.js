@@ -136,7 +136,7 @@ export function* logout(api, { payload: { url } }) {
   localStorage.removeItem('previous_path');
   localStorage.removeItem('selected_cluster');
   localStorage.removeItem(CLUSTERS_TOKEN);
-  yield keycloak.logout({ redirectUri: 'http://localhost:8080/login' });
+  yield keycloak.logout();
   history.replace(url); // Example: '/login'
 }
 export function* fetchSettingLogo(api) {
