@@ -236,7 +236,10 @@ const ProfileDropdown = () => {
       label: 'Logout',
       icon: <LogoutIcon />,
       onClick: () => {
-        localStorage.clear();
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('previous_path');
+        localStorage.removeItem('selected_cluster');
+        localStorage.removeItem(CLUSTERS_TOKEN);
         const loginUrl =
           currentUser?.role === 'superadmin' ? '/admin/login' : '/login';
         dispatch(AuthenticationActions.logout({ url: loginUrl }));
