@@ -50,6 +50,7 @@ export * from './HoldIcon';
 export * from './InfoIcon';
 export * from './InvalidProcessorIcon';
 export * from './KeyIcons';
+export * from './KeycloakIcon';
 export * from './KsolvesDataFlowIcon';
 export * from './KsolvesIcon';
 export * from './LdapConfigIcon';
