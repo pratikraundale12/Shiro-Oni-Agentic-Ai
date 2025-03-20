@@ -382,7 +382,6 @@ export const Setting = () => {
         updatedFields.push('ldap_auto_sync_time_interval');
       }
     }
-    console.log('updatedFields--', updatedFields);
     try {
       if (updatedFields.length > 0) {
         dispatch(SettingsActions.createSettings(payload));
