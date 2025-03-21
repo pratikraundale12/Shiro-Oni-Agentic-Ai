@@ -13,63 +13,54 @@ export const AI_FLOW_GENERATOR_CONSTANTS = {
 export const DEFAULT_FLOW_JSON = [
   {
     id: 1,
-    name: 'Streaming Data to Warehouse',
+    name: 'S3 to PostgreSQL CSV Ingestion',
     query:
-      'Create a Data Pipeline to Copy a  CSV Data from one directory to different directory',
+      'Create a NiFi flow to read CSV files from an S3 bucket and store them in PostgreSQL',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Stream',
   },
   {
     id: 2,
-    name: 'CSVToJSONConverter',
+    name: 'API to MySQL Data Transformation',
     query:
-      'Create a Data Pipeline to Copy a  CSV Data from one directory to different directory',
+      'Generate a NiFi pipeline to extract data from an API, transform it, and save it in MySQL',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Batch',
   },
   {
     id: 3,
-    name: 'FileToPostgreSQL',
+    name: 'Local JSON to Kafka Publisher',
     query:
-      'Create a Data Pipeline to Copy a  CSV Data from one directory to different directory',
+      'Build a NiFi flow to read JSON files from a local directory and push them to Kafka',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Stream',
   },
   {
     id: 4,
-    name: 'CSVToMySQL',
+    name: 'Remote Logs to HDFS Storage',
     query:
-      'Create a Data Pipeline to Copy a  CSV Data from one directory to different directory',
+      'Design a NiFi flow that ingests logs from a remote server and stores them in HDFS',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Stream',
   },
   {
     id: 5,
-    name: 'Put Data to Logs',
+    name: 'MongoDB to Azure Parquet Upload',
     query:
-      'Create a Data Pipeline to Copy a  CSV Data from one directory to different directory',
+      'Create a NiFi pipeline to fetch data from MongoDB, convert it to Parquet, and upload it to Azure Blob Storage',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Stream',
   },
   {
     id: 6,
-    name: 'PostgrestoMongo',
+    name: 'Kafka Content Based Routing',
     query:
-      'Create a Data Pipeline to Copy a  CSV Data from one directory to different directory',
-    lastRun: '2021-08-01',
-    nextRun: '2021-08-02',
-    flowType: 'Stream',
-  },
-  {
-    id: 7,
-    name: 'PostgrestoMongo',
-    query:
-      'Create a Data Pipeline to Copy a  CSV Data from one directory to different directory',
+      'Generate a flow to route incoming messages from Kafka to different topics based on content.',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Stream',

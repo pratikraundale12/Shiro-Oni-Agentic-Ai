@@ -31,6 +31,9 @@ import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import DiscardFlowConfirmationModal from './DiscardFlowConfirmationModal';
 import { jsonrepair } from 'jsonrepair';
+import { FullPageLoader } from '../../components';
+import SuggetionsChip from './SuggestionsChip';
+import { DEFAULT_FLOW_JSON } from '../../constants/aiFlowGenerator.constant';
 
 const Container = styled.div`
   display: flex;
@@ -91,6 +94,7 @@ const RecommendedFlowBox = styled.div`
 
 const PromptSection = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   flex-direction: column;
 `;
@@ -176,13 +180,12 @@ const DataFlowList = styled.div`
 export const AiFlowGenerator = () => {
   const dispatch = useDispatch();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
-
-  const defaultFLows = useSelector(AiFlowGeneratorSelectors.getDefaultFlows);
   const recentFlows = useSelector(AiFlowGeneratorSelectors.getRecentFlows);
 
   // query prompt
   const generateFlowPermission = userPermissions.includes('add_genai');
   const [queryText, setQueryText] = useState('');
+  const [queryLable, setQueryLable] = useState('');
   const [openConversation, setOpenConversation] = useState(false);
   const [isPromptInputDisabled, setIsPromptInputDisabled] = useState(
     !generateFlowPermission
@@ -197,6 +200,9 @@ export const AiFlowGenerator = () => {
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   const [isJsonInvalid, setIsJsonInvalid] = useState(false); // State to track JSON validity
 
+  const recentFlowLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchDefaultRecentFlows')
+  );
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'generateFlowAPI')
   );
@@ -288,9 +294,11 @@ export const AiFlowGenerator = () => {
         typeof generatedFlow?.response === 'string'
           ? JSON.parse(generatedFlow?.response)
           : generatedFlow?.response;
-      const repaired = jsonrepair(parsedJson?.response);
-      setJson(JSON.parse(repaired));
-      setOriginalFlow(JSON.parse(repaired));
+      // const repaired = jsonrepair(parsedJson?.response);
+      // setJson(JSON.parse(repaired));
+      setJson(parsedJson);
+      setOriginalFlow(parsedJson);
+      // setOriginalFlow(JSON.parse(repaired));
     }
   }, [generatedFlow]);
 
@@ -341,168 +349,173 @@ export const AiFlowGenerator = () => {
     setOpenPreviewModal(false);
   };
   return (
-    <Container>
-      <Flex className="flex-column align-items-start w-100">
-        <Flex className="w-100">
-          <HeadingWrapper
-            showHeading={!(isEmpty(recentFlows) && isEmpty(defaultFLows))}
-          >
-            <TodoIcon width={22} height={24} />
-            <HeadingStyle>
-              {!isEmpty(recentFlows)
-                ? KDFM.RECENT_GENERATED_FLOWS
-                : KDFM.RECOMMENDED_FLOWS}
-            </HeadingStyle>
-          </HeadingWrapper>
-          <div className="mb-2 d-flex align-items-center">
-            <RefreshIocnPanel
-              onClick={handleRefresh}
-              style={{
-                opacity: 1,
-                minWidth: '37px',
-              }}
-              data-tooltip-id={`tooltip-group-generate-flow-refresh`}
-            >
-              <RefreshIcon style={{ cursor: 'pointer' }} />
-            </RefreshIocnPanel>
-          </div>
-        </Flex>
-        {!(isEmpty(recentFlows) && isEmpty(defaultFLows)) && (
-          <Flex>
-            <RecommendedFlowBox>
-              <RecommendedFlow
-                openConversation={openConversation}
-                defaultFlows={defaultFLows}
-                recentFlows={recentFlows}
-                generateFlowPermission={generateFlowPermission}
-                setQueryText={setQueryText}
-                loading={loading}
-              />
-            </RecommendedFlowBox>
-          </Flex>
-        )}
-      </Flex>
-      {openConversation && (
-        <DataFlowContainer>
-          <DataFlowList className="gen-ai-dataflow-sec mb-4">
-            <div className="d-flex gap-2 ps-3">
-              <div className="df-manager-icon">
-                <img src={userImage} alt="" className="avatar-img" />
-              </div>
-              <span className="fs-12 fw-medium">You</span>
-              <span className="fs-12 ms-auto">{formattedTime()}</span>
-            </div>
-            <div className="data-flow-content p-3">
-              <p className="mt-1">{queryText}</p>
-            </div>
-          </DataFlowList>
-          <DataFlowList className="gen-ai-dataflow-sec mb-4">
-            <div className="d-flex gap-2 ps-3">
-              <div className="df-manager-icon">
-                <img src={dfmImage} alt="" className="avatar-img" />
-              </div>
-              <span className="fs-12 fw-medium">Data Flow Manager</span>
-              <span className="fs-12 ms-auto">{formattedTime()}</span>
-            </div>
-            <div className="data-flow-content-response p-3">
-              {!isEmpty(flowError) && !loading && (
-                <TriangleExclamationMarkIcon color="red" />
-              )}{' '}
-              <p
-                className={`mt-1 d-inline ${!isEmpty(flowError) && !loading ? 'text-danger' : ''}`}
+    <>
+      <FullPageLoader loading={recentFlowLoading} />
+      <Container>
+        <Flex className="flex-column align-items-start w-100">
+          <Flex className="w-100">
+            <HeadingWrapper showHeading={!isEmpty(recentFlows)}>
+              <TodoIcon width={22} height={24} />
+              <HeadingStyle>{KDFM.RECENT_GENERATED_FLOWS}</HeadingStyle>
+            </HeadingWrapper>
+            <div className="mb-2 d-flex align-items-center">
+              <RefreshIocnPanel
+                onClick={handleRefresh}
+                style={{
+                  opacity: 1,
+                  minWidth: '37px',
+                }}
+                data-tooltip-id={`tooltip-group-generate-flow-refresh`}
               >
-                {loading
-                  ? 'Generating Flow...'
-                  : !loading && isEmpty(flowError)
-                    ? 'Here is the JSON File generated as per your prompt....'
-                    : `${flowError}...`}
-              </p>
-              {!loading && isEmpty(flowError) && (
-                <>
-                  <div className="d-flex flex-wrap gap-3 mb-3 mt-4">
-                    <div className="data-flow-thum text-center">
-                      <div className="data-flow-thum-img mb-1">
-                        <img src={fileImage} alt="" className="img-fluid" />
-                      </div>
-                      <div className="data-flow-thum-text">demo.json</div>
-                    </div>
-                  </div>
-                  <div className="d-flex gap-2">
-                    <div className="add-to-registry-btn">
-                      <Button onClick={handleAddToRegistryClick} size="sm">
-                        Add to Registry
-                      </Button>
-                    </div>
-                    <div className="flow-download-btn">
-                      <Button
-                        onClick={handleDownloadClick}
-                        variant="secondary"
-                        icon={<DownloadIcon color="#444445" />}
-                      />
-                    </div>
-                    <button
-                      onClick={handlePreviewClick}
-                      className="preview-btn d-flex align-items-center justify-content-center"
-                    >
-                      <OpenEyeIcon width={24} height={18} color="#FF7A00" />
-                    </button>
-                  </div>
-                </>
-              )}
+                <RefreshIcon style={{ cursor: 'pointer' }} />
+              </RefreshIocnPanel>
             </div>
-          </DataFlowList>
-        </DataFlowContainer>
-      )}
-      <PromptSection>
-        <PromptInputBox
-          setOpenConversation={setOpenConversation}
-          disabled={isPromptInputDisabled}
-          queryText={queryText}
-          setQueryText={setQueryText}
-          setIsPromptInputDisabled={setIsPromptInputDisabled}
-        />
-      </PromptSection>
-      <Modal
-        title={json?.label || 'Preview Json'}
-        isOpen={openPreviewModal}
-        onRequestClose={() => {
-          if (!isFlowDownloaded && !addedToRegistry) {
-            setIsDiscardFlowModalOpen(true);
-          } else {
-            setIsDiscardFlowModalOpen(false);
-            setOpenPreviewModal(false);
-          }
-        }}
-        size="sm"
-        secondaryButtonText="Close"
-        primaryButtonText={'Add to Registry'}
-        tertiaryButton={true}
-        tertiaryButtonConfig={{
-          ...config,
-          tertiaryButtonDisable: isJsonInvalid,
-        }}
-        primaryButtonDisabled={isJsonInvalid}
-        onSubmit={handleAddToRegistryClick}
-        footerAlign="start"
-        contentStyles={{ maxWidth: '40%', maxHeight: '80%' }}
-      >
-        <JSONInput
-          id="json-editor"
-          locale={locale}
-          placeholder={json}
-          width="100%"
-          onChange={handleChange}
-          style={customStyles}
-        />
-      </Modal>
-      {isDiscardFlowModalOpen && (
-        <DiscardFlowConfirmationModal
-          isDiscardFlowModalOpen={isDiscardFlowModalOpen}
-          setIsDiscardFlowModalOpen={setIsDiscardFlowModalOpen}
-          handleDiscardFlow={handleDiscardFlow}
-          generatedFlow={generatedFlow}
-        />
-      )}
-    </Container>
+          </Flex>
+          {!isEmpty(recentFlows) && (
+            <Flex>
+              <RecommendedFlowBox>
+                <RecommendedFlow
+                  openConversation={openConversation}
+                  recentFlows={recentFlows}
+                  generateFlowPermission={generateFlowPermission}
+                  setQueryText={setQueryText}
+                  loading={loading}
+                  setQueryLable={setQueryLable}
+                />
+              </RecommendedFlowBox>
+            </Flex>
+          )}
+        </Flex>
+        {openConversation && (
+          <DataFlowContainer>
+            <DataFlowList className="gen-ai-dataflow-sec mb-4">
+              <div className="d-flex gap-2 ps-3">
+                <div className="df-manager-icon">
+                  <img src={userImage} alt="" className="avatar-img" />
+                </div>
+                <span className="fs-12 fw-medium">You</span>
+                <span className="fs-12 ms-auto">{formattedTime()}</span>
+              </div>
+              <div className="data-flow-content p-3">
+                <p className="mt-1">{queryText}</p>
+              </div>
+            </DataFlowList>
+            <DataFlowList className="gen-ai-dataflow-sec mb-4">
+              <div className="d-flex gap-2 ps-3">
+                <div className="df-manager-icon">
+                  <img src={dfmImage} alt="" className="avatar-img" />
+                </div>
+                <span className="fs-12 fw-medium">Data Flow Manager</span>
+                <span className="fs-12 ms-auto">{formattedTime()}</span>
+              </div>
+              <div className="data-flow-content-response p-3">
+                {!isEmpty(flowError) && !loading && (
+                  <TriangleExclamationMarkIcon color="red" />
+                )}{' '}
+                <p
+                  className={`mt-1 d-inline ${!isEmpty(flowError) && !loading ? 'text-danger' : ''}`}
+                >
+                  {loading
+                    ? 'Generating Flow...'
+                    : !loading && isEmpty(flowError)
+                      ? 'Here is the JSON File generated as per your prompt....'
+                      : `${flowError}...`}
+                </p>
+                {!loading && isEmpty(flowError) && (
+                  <>
+                    <div className="d-flex flex-wrap gap-3 mb-3 mt-4">
+                      <div className="data-flow-thum text-center">
+                        <div className="data-flow-thum-img mb-1">
+                          <img src={fileImage} alt="" className="img-fluid" />
+                        </div>
+                        <div className="data-flow-thum-text">demo.json</div>
+                      </div>
+                    </div>
+                    <div className="d-flex gap-2">
+                      <div className="add-to-registry-btn">
+                        <Button onClick={handleAddToRegistryClick} size="sm">
+                          Add to Registry
+                        </Button>
+                      </div>
+                      <div className="flow-download-btn">
+                        <Button
+                          onClick={handleDownloadClick}
+                          variant="secondary"
+                          icon={<DownloadIcon color="#444445" />}
+                        />
+                      </div>
+                      <button
+                        onClick={handlePreviewClick}
+                        className="preview-btn d-flex align-items-center justify-content-center"
+                      >
+                        <OpenEyeIcon width={24} height={18} color="#FF7A00" />
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </DataFlowList>
+          </DataFlowContainer>
+        )}
+        <PromptSection>
+          {!loading && !openConversation && !isEmpty(DEFAULT_FLOW_JSON) && (
+            <SuggetionsChip
+              setQueryText={setQueryText}
+              SuggetionsArray={DEFAULT_FLOW_JSON}
+              setQueryLable={setQueryLable}
+            />
+          )}
+          <PromptInputBox
+            setOpenConversation={setOpenConversation}
+            disabled={isPromptInputDisabled}
+            queryText={queryText}
+            setQueryText={setQueryText}
+            setIsPromptInputDisabled={setIsPromptInputDisabled}
+            queryLabel={queryLable}
+          />
+        </PromptSection>
+        <Modal
+          title={json?.label || 'Preview Json'}
+          isOpen={openPreviewModal}
+          onRequestClose={() => {
+            if (!isFlowDownloaded && !addedToRegistry) {
+              setIsDiscardFlowModalOpen(true);
+            } else {
+              setIsDiscardFlowModalOpen(false);
+              setOpenPreviewModal(false);
+            }
+          }}
+          size="sm"
+          secondaryButtonText="Close"
+          primaryButtonText={'Add to Registry'}
+          tertiaryButton={true}
+          tertiaryButtonConfig={{
+            ...config,
+            tertiaryButtonDisable: isJsonInvalid,
+          }}
+          primaryButtonDisabled={isJsonInvalid}
+          onSubmit={handleAddToRegistryClick}
+          footerAlign="start"
+          contentStyles={{ maxWidth: '40%', maxHeight: '80%' }}
+        >
+          <JSONInput
+            id="json-editor"
+            locale={locale}
+            placeholder={json}
+            width="100%"
+            onChange={handleChange}
+            style={customStyles}
+          />
+        </Modal>
+        {isDiscardFlowModalOpen && (
+          <DiscardFlowConfirmationModal
+            isDiscardFlowModalOpen={isDiscardFlowModalOpen}
+            setIsDiscardFlowModalOpen={setIsDiscardFlowModalOpen}
+            handleDiscardFlow={handleDiscardFlow}
+            generatedFlow={generatedFlow}
+          />
+        )}
+      </Container>
+    </>
   );
 };

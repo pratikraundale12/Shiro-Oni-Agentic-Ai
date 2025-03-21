@@ -51,15 +51,13 @@ const FlowName = styled.span`
 
 export const RecommendedFlow = ({
   generateFlowPermission,
-  defaultFlows = [],
   recentFlows = [],
   openConversation,
   setQueryText,
   loading,
+  setQueryLable,
 }) => {
-  const flowData = (
-    !isEmpty(recentFlows) ? recentFlows : defaultFlows || []
-  ).slice(0, 6); // allow only 6 flows to be show on UI
+  const flowData = (!isEmpty(recentFlows) ? recentFlows : []).slice(0, 6);
 
   const handleRecentFlowClick = flow => {
     if (loading) {
@@ -69,9 +67,8 @@ export const RecommendedFlow = ({
         });
       }
     } else if (generateFlowPermission && !openConversation) {
-      // flow generate logic
-      console.log('hii');
-      setQueryText(flow?.query);
+      setQueryText(flow?.prompt);
+      setQueryLable(flow?.short_name);
     } else {
       if (openConversation) {
         if (!toast.isActive('already-generated')) {
@@ -97,18 +94,18 @@ export const RecommendedFlow = ({
         flowData?.map(flow => (
           <>
             <FlowItems
-              key={flow.id}
+              key={flow.flow_id}
               onClick={() => handleRecentFlowClick(flow)}
             >
               <GeneratedFlowIcon />
-              <FlowName data-tooltip-id={`flow-name-tooltip-${flow.id}`}>
-                {flow.name}
+              <FlowName data-tooltip-id={`flow-name-tooltip-${flow.flow_id}`}>
+                {flow.short_name}
               </FlowName>
             </FlowItems>
             <ReactTooltip
-              id={`flow-name-tooltip-${flow.id}`}
+              id={`flow-name-tooltip-${flow.flow_id}`}
               place="right"
-              content={flow.name}
+              content={flow.short_name}
               style={{
                 width: 'auto',
                 whiteSpace: 'normal',
@@ -128,4 +125,5 @@ RecommendedFlow.propTypes = {
   openConversation: PropTypes.bool.isRequired,
   setQueryText: PropTypes.func,
   loading: PropTypes.bool,
+  setQueryLable: PropTypes.func,
 };

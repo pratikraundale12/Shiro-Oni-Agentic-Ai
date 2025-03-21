@@ -1,7 +1,7 @@
 export const aiFlowGeneratorAPI = api => {
   const fetchDefaultRecentFlows = async () => {
     try {
-      return await api.get(`/default-recent-flows`);
+      return await api.get(`/recent-flows`);
     } catch (error) {
       return error?.response?.data;
     }

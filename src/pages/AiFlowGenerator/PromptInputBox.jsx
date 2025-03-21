@@ -9,6 +9,7 @@ import _ from 'lodash';
 import { useDispatch } from 'react-redux';
 import { AiFlowGeneratorActions } from '../../store';
 import { validatePayload } from './utils';
+import { v4 as uuidv4 } from 'uuid';
 
 const InputContainer = styled.div`
   position: relative;
@@ -76,6 +77,7 @@ export const PromptInputBox = ({
   setQueryText,
   setOpenConversation,
   setIsPromptInputDisabled,
+  queryLabel,
 }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
   console.log('disabled--', disabled);
@@ -111,7 +113,7 @@ export const PromptInputBox = ({
       setOpenConversation(true);
       console.log('queryText', queryText);
       const payload = {
-        session_id: process.env.REACT_APP_SESSION_ID,
+        session_id: uuidv4(), // Generate a unique session_id on each call
         is_audio: false,
         query: queryText,
         embedding_model: process.env.REACT_APP_EMBEDDING_MODEL,
@@ -120,6 +122,7 @@ export const PromptInputBox = ({
         org_id: process.env.REACT_APP_ORG_ID,
         user_id: process.env.REACT_APP_USER_ID,
         type: process.env.REACT_APP_TYPE,
+        short_name: queryLabel || '',
       };
       const requiredFields = [
         'session_id',
@@ -139,8 +142,8 @@ export const PromptInputBox = ({
   return (
     <InputContainer>
       <InputBox
-        id='prompt-input-box'
-        name='prompt-input-box'
+        id="prompt-input-box"
+        name="prompt-input-box"
         disabled={disabled}
         type="search"
         value={disabled ? '' : queryText}
@@ -170,4 +173,5 @@ PromptInputBox.propTypes = {
   disabled: PropTypes.bool.isRequired,
   setOpenConversation: PropTypes.func.isRequired,
   setIsPromptInputDisabled: PropTypes.func.isRequired,
+  queryLabel: PropTypes.string,
 };

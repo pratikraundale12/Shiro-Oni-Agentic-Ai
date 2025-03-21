@@ -11,7 +11,6 @@ export const AiFlowGeneratorActions = {
     `${prefix}fetchDefaultRecentFlowsFailure`
   ),
   deleteGeneratedFlow: createAction(`${prefix}deleteGeneratedFlow`),
-  setDefaultFlows: createAction(`${prefix}setDefaultFlows`),
   setRecentFlows: createAction(`${prefix}setRecentFlows`),
   generateFlowAPI: createAction(`${prefix}generateFlowAPI`),
   generateFlowAPISuccess: createAction(`${prefix}generateFlowAPISuccess`),
@@ -24,7 +23,6 @@ export const AiFlowGeneratorActions = {
 /* ------------- INITIAL STATE ------------- */
 export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   recentFlows: [],
-  defaultFlows: [],
   generatedFlow: {},
   genFlowError: '',
 };
@@ -42,13 +40,6 @@ const fetchDefaultRecentFlowsSuccess = (state, { payload }) => {
   return {
     ...state,
     recentFlows: payload,
-  };
-};
-
-const setDefaultFlows = (state, { payload }) => {
-  return {
-    ...state,
-    defaultFlows: payload,
   };
 };
 
@@ -97,7 +88,6 @@ export const aiFlowGeneratorReducer = createReducer(
         AiFlowGeneratorActions.fetchDefaultRecentFlowsSuccess,
         fetchDefaultRecentFlowsSuccess
       )
-      .addCase(AiFlowGeneratorActions.setDefaultFlows, setDefaultFlows)
       .addCase(AiFlowGeneratorActions.setRecentFlows, setRecentFlows)
       .addCase(
         AiFlowGeneratorActions.generateFlowAPISuccess,
