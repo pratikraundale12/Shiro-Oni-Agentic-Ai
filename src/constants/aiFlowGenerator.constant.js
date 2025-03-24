@@ -8,6 +8,9 @@ export const AI_FLOW_GENERATOR_CONSTANTS = {
   NO_PERMISSION_TO_GENERATE_FLOW:
     'You do not have the permission to generate the flows please contact your Administrator.',
   EMPTY_QUERY: 'Query cannot be empty',
+  ADD_TO_REGSITRY: 'Add to Registry',
+  DATA_FLOW_MANAGER: 'Data Flow Manager',
+  YOU: 'You',
 };
 
 export const DEFAULT_FLOW_JSON = [

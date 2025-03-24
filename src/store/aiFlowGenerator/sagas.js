@@ -1,7 +1,9 @@
-import { all, takeLatest, put, call } from 'redux-saga/effects';
+import { all, takeLatest, put, call, select } from 'redux-saga/effects';
 import { AiFlowGeneratorActions } from './redux';
 import { requestSaga } from '../helpers/request_sagas';
 import { toast } from 'react-toastify';
+import { CLUSTERS_TOKEN } from '../../constants';
+import { NamespacesSelectors } from '../namespaces';
 
 export function* fetchDefaultRecentFlows(api) {
   const response = yield call(requestSaga, {
@@ -47,7 +49,7 @@ export function* generateFlowAPI(api, { payload }) {
         throw new Error('Invalid JSON format');
       }
     } catch (error) {
-      console.error('JSON Parsing Error:', error.message);
+      console.error('JSON Parsing Error:', error?.message);
       toast.error(
         'Failed to parse the server response. Please check the data format.'
       );
@@ -100,6 +102,30 @@ export function* updateGeneratedFlow(api, { payload }) {
     );
   }
 }
+
+export function* fetchRegistry(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchRegistry',
+    loadingSection: 'fetchRegistry',
+    apiMethod: api.fetchRegistry,
+  });
+  if (response.ok) {
+    yield put(AiFlowGeneratorActions.setRegistry(response?.data));
+  } else {
+    toast.error(
+      response?.message || response?.data?.message || 'Failed to fetch registry'
+    );
+  }
+}
 export function* aiFlowGeneratorSagas(api) {
   yield all([
     takeLatest(AiFlowGeneratorActions.fetchDefaultRecentFlows, action =>
@@ -113,6 +139,9 @@ export function* aiFlowGeneratorSagas(api) {
     ),
     takeLatest(AiFlowGeneratorActions.updateGeneratedFlow, action =>
       updateGeneratedFlow(api, action)
+    ),
+    takeLatest(AiFlowGeneratorActions.fetchRegistry, action =>
+      fetchRegistry(api, action)
     ),
   ]);
 }

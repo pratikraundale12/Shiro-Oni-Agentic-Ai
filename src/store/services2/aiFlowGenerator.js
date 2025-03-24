@@ -27,10 +27,18 @@ export const aiFlowGeneratorAPI = api => {
       return error.response.data;
     }
   };
+  const fetchRegistry = async () => {
+    try {
+      return await api.get(`/get-registry`);
+    } catch (error) {
+      return error.response.data;
+    }
+  };
   return {
     fetchDefaultRecentFlows,
     generateFlowAPI,
     deleteGeneratedFlow,
     updateGeneratedFlow,
+    fetchRegistry,
   };
 };

@@ -131,3 +131,6 @@ export * from './GeneratedFlowIcon';
 export * from './SendMessageIcon';
 export * from './LicenseIcon';
 export * from './DownloadIcon';
+export * from './BucketIcon';
+export * from './FlowIcon';
+export * from './SquareBoxIcon';

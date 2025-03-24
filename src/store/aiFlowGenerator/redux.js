@@ -10,14 +10,16 @@ export const AiFlowGeneratorActions = {
   fetchDefaultRecentFlowsFailure: createAction(
     `${prefix}fetchDefaultRecentFlowsFailure`
   ),
+  updateGeneratedFlow: createAction(`${prefix}updateGeneratedFlow`),
   deleteGeneratedFlow: createAction(`${prefix}deleteGeneratedFlow`),
+  fetchRegistry: createAction(`${prefix}fetchRegistry`),
   setRecentFlows: createAction(`${prefix}setRecentFlows`),
   generateFlowAPI: createAction(`${prefix}generateFlowAPI`),
   generateFlowAPISuccess: createAction(`${prefix}generateFlowAPISuccess`),
   setGeneratedFlow: createAction(`${prefix}generatedFlow`),
   generateFlowAPIFailure: createAction(`${prefix}generateFlowAPIFailure`),
   setGenFlowError: createAction(`${prefix}setGenFlowError`),
-  updateGeneratedFlow: createAction(`${prefix}updateGeneratedFlow`),
+  setRegistry: createAction(`${prefix}setRegistry`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -25,6 +27,7 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   recentFlows: [],
   generatedFlow: {},
   genFlowError: '',
+  registry: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -33,6 +36,7 @@ export const AiFlowGeneratorSelectors = {
   getDefaultFlows: state => state.aiFlowGenerator.defaultFlows,
   getGeneratedFlow: state => state.aiFlowGenerator.generatedFlow,
   getGenFlowError: state => state.aiFlowGenerator.genFlowError,
+  getRegistry: state => state.aiFlowGenerator.registry,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -79,6 +83,13 @@ const setGenFlowError = (state, { payload }) => {
   };
 };
 
+const setRegistry = (state, { payload }) => {
+  return {
+    ...state,
+    registry: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const aiFlowGeneratorReducer = createReducer(
   AI_FLOW_GENERATOR_INITIAL_STATE,
@@ -98,6 +109,7 @@ export const aiFlowGeneratorReducer = createReducer(
         AiFlowGeneratorActions.generateFlowAPIFailure,
         generateFlowAPIFailure
       )
-      .addCase(AiFlowGeneratorActions.setGenFlowError, setGenFlowError);
+      .addCase(AiFlowGeneratorActions.setGenFlowError, setGenFlowError)
+      .addCase(AiFlowGeneratorActions.setRegistry, setRegistry);
   }
 );

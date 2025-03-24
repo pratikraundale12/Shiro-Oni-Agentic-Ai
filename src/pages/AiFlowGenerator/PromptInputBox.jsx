@@ -80,7 +80,6 @@ export const PromptInputBox = ({
   queryLabel,
 }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
-  console.log('disabled--', disabled);
   useEffect(() => {
     if (queryText?.length !== 0) {
       setIsSendBtnDisabled(false);
@@ -111,7 +110,6 @@ export const PromptInputBox = ({
       setIsPromptInputDisabled(true);
       setIsSendBtnDisabled(true);
       setOpenConversation(true);
-      console.log('queryText', queryText);
       const payload = {
         session_id: uuidv4(), // Generate a unique session_id on each call
         is_audio: false,
