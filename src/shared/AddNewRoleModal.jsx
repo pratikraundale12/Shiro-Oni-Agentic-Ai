@@ -24,8 +24,8 @@ const schema = yup.object().shape({
     .required('Role Name is required')
     .max(30, 'Role Name cannot exceed 30 characters')
     .matches(
-      /^[A-Za-z]+( [A-Za-z]+)*$/,
-      'Role Name must contain only letters and spaces'
+      /^[A-Za-z0-9]+( [A-Za-z0-9]+)*$/,
+      'Role Name must contain only letters, numbers, and spaces'
     ),
 });
 
