@@ -216,6 +216,32 @@ export const settingSchema = yup.object().shape({
       then: schema => schema.required('Azure Tenant ID is required'),
       otherwise: schema => schema.nullable(),
     }),
+  keycloak_client_id: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'keycloak',
+      then: schema => schema.required('Keycloak Client ID is required'),
+      otherwise: schema => schema.nullable(),
+    }),
+
+  keycloak_url: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'keycloak',
+      then: schema => schema.required('Keycloak URL is required'),
+      otherwise: schema => schema.nullable(),
+    }),
+
+  keycloak_realm: yup
+    .string()
+    .nullable()
+    .when('selected_sso', {
+      is: val => val === 'keycloak',
+      then: schema => schema.required('Keycloak Realm is required'),
+      otherwise: schema => schema.nullable(),
+    }),
 });
 export const Setting = () => {
   const {
@@ -250,9 +276,11 @@ export const Setting = () => {
     setLoading(true);
     const payload = new FormData();
     const updatedFields = [];
-
-    const appendIfChanged = (key, value, compareValue) => {
-      if (dirtyFields[key] && value !== compareValue) {
+    const appendIfChanged = (key, value, compareValue, isImage = false) => {
+      if (
+        (isImage && value !== compareValue && value !== undefined) ||
+        (!isImage && dirtyFields[key] && value !== compareValue)
+      ) {
         payload.append(key, value);
         updatedFields.push(key);
       }
@@ -260,8 +288,8 @@ export const Setting = () => {
 
     if (settingData?.id) payload.append('id', settingData.id);
 
-    appendIfChanged('logo', data?.logo || null, settingData?.logo);
-    appendIfChanged('favicon', data?.favicon || null, settingData?.favicon);
+    appendIfChanged('logo', data?.logo, settingData?.logo, true);
+    appendIfChanged('favicon', data?.favicon, settingData?.favicon, true);
     appendIfChanged('title', data?.title, settingData?.title);
     appendIfChanged('username', data?.username, settingData?.username);
     appendIfChanged('password', data?.password, settingData?.password);
@@ -308,6 +336,21 @@ export const Setting = () => {
       settingData?.azure_client_secret
     );
     appendIfChanged('sso_enabled', data?.sso_enabled, settingData?.sso_enabled);
+    appendIfChanged(
+      'keycloak_realm',
+      data?.keycloak_realm,
+      settingData?.keycloak_realm
+    );
+    appendIfChanged(
+      'keycloak_url',
+      data?.keycloak_url,
+      settingData?.keycloak_url
+    );
+    appendIfChanged(
+      'keycloak_client_id',
+      data?.keycloak_client_id,
+      settingData?.keycloak_client_id
+    );
 
     appendIfChanged(
       'smtp_service',
@@ -339,7 +382,6 @@ export const Setting = () => {
         updatedFields.push('ldap_auto_sync_time_interval');
       }
     }
-
     try {
       if (updatedFields.length > 0) {
         dispatch(SettingsActions.createSettings(payload));
@@ -383,6 +425,9 @@ export const Setting = () => {
       setValue('azure_client_secret', settingData?.azure_client_secret);
       setValue('azure_tenant_id', settingData?.azure_tenant_id);
       setValue('sso_enabled', settingData?.sso_enabled);
+      setValue('keycloak_realm', settingData?.keycloak_realm);
+      setValue('keycloak_url', settingData?.keycloak_url);
+      setValue('keycloak_client_id', settingData?.keycloak_client_id);
       setValue('email', settingData?.email);
       setValue('from_email', settingData?.from_email);
       setValue('smtp_service', settingData?.smtp_service);
@@ -433,8 +478,10 @@ export const Setting = () => {
         value.azure_redirect_uri !== settingData?.azure_redirect_uri ||
         value.azure_client_secret !== settingData?.azure_client_secret ||
         value.sso_enabled !== settingData?.sso_enabled ||
-        value.ldapEnabled !== settingData?.ldapEnabled;
-
+        value.ldapEnabled !== settingData?.ldapEnabled ||
+        value?.keycloak_realm !== settingData?.keycloak_realm ||
+        value?.keycloak_url !== settingData?.keycloak_url ||
+        value?.keycloak_client_id !== settingData?.keycloak_client_id;
       setIsChanged(isModified);
     });
 
@@ -491,6 +538,9 @@ export const Setting = () => {
       setValue('azure_client_secret', null);
       setValue('azure_tenant_id', null);
       setValue('azure_redirect_uri', null);
+      setValue('keycloak_client_id', null);
+      setValue('keycloak_url', null);
+      setValue('keycloak_realm', null);
     }
   }, [ssoEnabled, setValue, selectedSSO]);
 
@@ -854,6 +904,42 @@ export const Setting = () => {
                         icon={<OpenLinkIcon color="#444445" />}
                         label="Azure Redirect URI"
                         placeholder="Enter Redirect URI"
+                        errors={errors}
+                      />
+                    </div>
+                  </InputFields>
+                </>
+              )}
+              {selectedSSO === 'keycloak' && (
+                <>
+                  <InputFields className="row mb-4">
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="keycloak_client_id"
+                        register={register}
+                        icon={<UserIcon />}
+                        label="Client ID"
+                        placeholder="Enter Client ID"
+                        errors={errors}
+                      />
+                    </div>
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="keycloak_url"
+                        register={register}
+                        icon={<OpenLinkIcon color="#444445" />}
+                        label="URL"
+                        placeholder="Enter URL"
+                        errors={errors}
+                      />
+                    </div>
+                    <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+                      <InputField
+                        name="keycloak_realm"
+                        register={register}
+                        icon={<OpenLinkIcon color="#444445" />}
+                        label="Realm"
+                        placeholder="Enter Realm"
                         errors={errors}
                       />
                     </div>

@@ -356,14 +356,25 @@ export const Dashboard = () => {
             data-tooltip-id={`tooltip-group-dashboard-refresh`}
           >
             {' '}
-            <RefreshIcon style={{ cursor: 'pointer' }} />
+            <RefreshIcon
+              style={{
+                cursor:
+                  selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                    ? 'pointer'
+                    : 'not-allowed',
+              }}
+            />
           </RefreshIocn>
           <ReactTooltip
             id={`tooltip-group-dashboard-refresh`}
             place="left"
-            content={'Refresh'}
+            content={
+              selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                ? 'Refresh'
+                : 'Login to Cluster'
+            }
             style={{
-              width: '100px',
+              width: 'auto',
               whiteSpace: 'normal',
               wordWrap: 'break-word',
             }}

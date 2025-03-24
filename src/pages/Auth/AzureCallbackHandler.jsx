@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { ACCESS_TOKEN, API_URL, CLUSTERS_TOKEN } from '../../constants';
+import { ACCESS_TOKEN, API_URL } from '../../constants';
 import { history } from '../../helpers/history';
 import { AuthenticationActions } from '../../store/authentication';
 import { SettingsActions } from '../../store/settings';
@@ -42,7 +42,6 @@ const AzureCallbackHandler = () => {
               window.localStorage.setItem(ACCESS_TOKEN, token);
               dispatch(AuthenticationActions.fetchCurrentUser({ token }));
               dispatch(SettingsActions.fetchSettings());
-              localStorage.setItem(CLUSTERS_TOKEN, []);
             } else {
               throw new Error('No token received');
             }

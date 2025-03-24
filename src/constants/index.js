@@ -88,6 +88,7 @@ export const MODULE_LIST_MAP = [
   { label: 'Roles', value: 'Roles' },
   { label: 'Parameter Context', value: 'Parameter Context' },
   { label: 'Variable', value: 'Variable' },
+  { label: 'Schedule Deployment', value: 'Schedule Deployment' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -112,6 +113,8 @@ export const ACTIVITY_EVENTS = [
   { label: 'Stop', value: 'Stop' },
   { label: 'Login', value: 'Login' },
   { label: 'Logout', value: 'Logout' },
+  { label: 'Reschedule', value: 'Reschedule' },
+  { label: 'Approve', value: 'Approve' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
@@ -132,7 +135,10 @@ export const SCHEDULE_LIST_REFRESH_OPTIONS = [
   { label: '10 min', value: '600000' },
 ];
 
-export const SSO_LOGIN_TYPE = [{ label: 'Azure', value: 'azure' }];
+export const SSO_LOGIN_TYPE = [
+  { label: 'Azure', value: 'azure' },
+  { label: 'Keycloak', value: 'keycloak' },
+];
 
 export const LICENSE_TYPE = {
   TRIAL: 'trial',

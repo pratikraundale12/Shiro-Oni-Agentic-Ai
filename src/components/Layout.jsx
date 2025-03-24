@@ -1,3 +1,4 @@
+import { useKeycloak } from '@react-keycloak/web';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -5,7 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { KsolvesDataFlowIcon, MicroSoftIcon } from '../assets';
-import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
+import KeycloakIcon from '../assets/Icons/KeycloakIcon';
+import { ALREADY_HAVE_AN_ACCOUNT, API_URL, SIGN_IN } from '../constants';
 import { changeFavicon, changeTitle } from '../helpers';
 import { history } from '../helpers/history';
 import { TextButton } from '../shared';
@@ -348,6 +350,7 @@ export const Layout = ({ children }) => {
   const isReset = pathname === '/reset';
   const settingsData = useSelector(SettingsSelectors.getSettings);
   const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
+  const { keycloak, initialized } = useKeycloak();
   let image = settingsData?.logo || settingLogo?.logo;
 
   let imageUrl;
@@ -436,6 +439,21 @@ export const Layout = ({ children }) => {
     width: isUserLogin ? '64%' : 'auto',
   });
 
+  useEffect(() => {
+    if (settingLogo?.selected_sso === 'keycloak' && settingLogo?.sso_enabled) {
+      dispatch(AuthenticationActions.fetchKeycloakConfig());
+    }
+  }, [dispatch, settingLogo?.selected_sso]);
+
+  /*
+   * use http://localhost:port/keycloakLogin for configuring on local system in development mode
+   */
+  const handleKeycloakLogin = async () => {
+    if (initialized && !keycloak.authenticated) {
+      await keycloak.login({ redirectUri: `${API_URL}/keycloakLogin` });
+    }
+  };
+
   return (
     <Container>
       <Wrapper>
@@ -461,6 +479,22 @@ export const Layout = ({ children }) => {
                       <SSOButton onClick={handleMSLogin}>
                         <MicroSoftIcon />
                         <BtnText>Sign in via Microsoft</BtnText>
+                      </SSOButton>
+                    </SSOButtonsContainer>
+                  </>
+                )}
+              {isUserLogin &&
+                settingLogo?.selected_sso === 'keycloak' &&
+                !settingLogo?.show_sso_page &&
+                settingLogo?.sso_enabled && (
+                  <>
+                    <SmallText>
+                      <span>or</span>
+                    </SmallText>{' '}
+                    <SSOButtonsContainer>
+                      <SSOButton onClick={handleKeycloakLogin}>
+                        <KeycloakIcon />
+                        <BtnText>Sign in via Keycloak</BtnText>
                       </SSOButton>
                     </SSOButtonsContainer>
                   </>
@@ -523,7 +557,7 @@ export const Layout = ({ children }) => {
                     Terms Of Use
                   </RedirectionText>
                 </PolicyContainer>
-                <LabelSelect>Version 2.1.10</LabelSelect>
+                <LabelSelect>Version 2.1.11</LabelSelect>
               </RightSection>
             ) : (
               <RightSectionreset>
@@ -552,7 +586,7 @@ export const Layout = ({ children }) => {
                     Terms Of Use
                   </RedirectionText>
                 </PolicyContainer>
-                <LabelSelect>Version 2.1.10</LabelSelect>
+                <LabelSelect>Version 2.1.11</LabelSelect>
               </RightSectionreset>
             )}
           </RightWrapper>
