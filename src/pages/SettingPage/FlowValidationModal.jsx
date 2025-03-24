@@ -101,15 +101,26 @@ const FlowValidationModal = () => {
                   name="select_perperty"
                   icon={<PropertyIcon />}
                   placeholder="Select Perperty"
+                  options={[
+                    { label: 'Concurrent Task', value: 'concurrent_task' },
+                    { label: 'Independent Task', value: 'independent_task' },
+                    { label: 'Sequential Task', value: 'sequential_task' },
+                  ]}
                 />
               </PropertyDiv>
             </div>
             <div className="col-md">
               <PropertyDiv>
                 <SelectField
-                  name="select_perperty"
+                  name="condition"
                   icon={<PropertyIcon />}
-                  placeholder="Select Perperty"
+                  placeholder="Condition"
+                  options={[
+                    { label: 'Equal to', value: 'equal_to' },
+                    { label: 'Not equal to', value: 'not_equal_to' },
+                    { label: 'Greater than', value: 'greater_than' },
+                    { label: 'Less than', value: 'less_than' },
+                  ]}
                 />
               </PropertyDiv>
             </div>

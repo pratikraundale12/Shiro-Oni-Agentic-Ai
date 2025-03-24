@@ -1,14 +1,12 @@
-import React from 'react';
-import { SelectField } from '../../../shared';
-import { MailIcon } from '../../../assets';
+import React, { useState } from 'react'; // ✅ Add useState
 import styled from 'styled-components';
+import { CompareFlowIcon, CompareIcon } from '../../../assets';
+import { Table } from '../../../components';
+import { Button, SelectField } from '../../../shared';
 
 const CompareConteinter = styled.div`
   min-height: 58vh;
 `;
-// const CompareConteinterConteinterDetail = styled.div`
-//   padding: 0px;
-// `;
 const LabelSelect = styled.div`
   font-size: 14px;
   font-weight: 600;
@@ -29,244 +27,161 @@ const CompareDifferencesTitle = styled.div`
 `;
 
 const CompareValidation = () => {
+  const COLUMNS = [
+    {
+      label: 'Type',
+      renderCell: item => <div>{item.version}</div>,
+      width: '20%',
+    },
+    {
+      label: 'Name',
+      renderCell: item => <div>{item.version}</div>,
+      width: '20%',
+    },
+    {
+      label: 'ID',
+      renderCell: item => <div>{item.displayValue}</div>,
+      width: '30%',
+    },
+    {
+      label: 'Message',
+      renderCell: item => <div>{item.comments}</div>,
+      width: '30%',
+    },
+  ];
+  // ✅ Dummy data for the table
+  const DATA = [
+    {
+      version: 'Processor',
+      displayValue: 'ID-001',
+      comments: 'Updated validation logic',
+    },
+    {
+      version: 'Task',
+      displayValue: 'ID-002',
+      comments: 'Removed unused parameters',
+    },
+    {
+      version: 'Flow',
+      displayValue: 'ID-003',
+      comments: 'Added new branching condition',
+    },
+    {
+      version: 'Processor',
+      displayValue: 'ID-004',
+      comments: 'Refactored error handler',
+    },
+  ];
+  const versionOptions = [
+    { label: 'V1', value: '1.0' },
+    { label: 'V2', value: '2.0' },
+    { label: 'V3', value: '3.0' },
+    { label: 'V4', value: '4.0' },
+  ];
+  const [isCompared, setIsCompared] = useState(false); // ✅ ADD STATE
+
   return (
     <CompareConteinter>
-      <div className="d-none">
-        <div className="text-center py-4">
-          <svg
-            width="164"
-            height="224"
-            viewBox="0 0 164 224"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M160.808 58.6477V193.096C160.808 208.4 148.4 220.808 133.096 220.808H30.9367C15.6325 220.808 3.22461 208.4 3.22461 193.096V58.6477C3.22461 43.3435 15.6325 30.9356 30.9367 30.9356H133.096C148.4 30.8999 160.808 43.3435 160.808 58.6477Z"
-              fill="#F2F0F9"
-            />
-            <path
-              d="M160.809 159.842V193.097C160.809 208.401 148.401 220.809 133.097 220.809H30.9016C15.5973 220.809 3.18945 208.401 3.18945 193.097V58.6483C3.18945 43.344 15.5973 30.9004 30.9016 30.9004H68.6616C57.6482 46.8125 51.1761 66.1574 51.1761 86.9683C51.1761 141.427 95.3367 160.486 149.796 160.486C153.514 160.486 157.197 160.271 160.809 159.842Z"
-              fill="#F5F7FA"
-            />
-            <path
-              d="M133.063 223.418H30.9396C14.2408 223.418 0.617188 209.83 0.617188 193.095V58.6469C0.617188 41.9481 14.2051 28.3245 30.9396 28.3245H133.099C149.798 28.3245 163.421 41.9123 163.421 58.6469V193.095C163.386 209.83 149.798 223.418 133.063 223.418ZM30.9396 33.5093C17.0657 33.5093 5.80204 44.7729 5.80204 58.6469V193.095C5.80204 206.969 17.0657 218.233 30.9396 218.233H133.099C146.973 218.233 158.237 206.969 158.237 193.095V58.6469C158.237 44.7729 146.973 33.5093 133.099 33.5093H30.9396Z"
-              fill="#444445"
-            />
-            <path
-              d="M119.01 23.7836V34.4036C119.01 37.8006 116.257 40.5182 112.896 40.5182H51.1067C47.7098 40.5182 44.9922 37.7648 44.9922 34.4036V23.7836C44.9922 20.3867 47.7455 17.6333 51.1067 17.6333H64.7661L71.4528 6.79877C72.8473 4.54604 75.3146 3.18726 77.9607 3.18726H86.0419C88.688 3.18726 91.1552 4.54604 92.5498 6.79877L99.2364 17.6333H112.86C116.293 17.6333 119.01 20.3867 119.01 23.7836Z"
-              fill="#FF7A00"
-            />
-            <path
-              d="M119.01 31.8662V34.405C119.01 37.8019 116.257 40.5195 112.896 40.5195H51.1067C47.7455 40.5195 44.9922 37.8019 44.9922 34.405V23.8207C44.9922 20.4237 47.7455 17.6704 51.1067 17.6704H57.5073C61.3334 25.7159 86.5067 31.9377 117.008 31.9377C117.687 31.9019 118.331 31.9019 119.01 31.8662Z"
-              fill="#FF7A00"
-            />
-            <path
-              d="M68.4126 175.467H41.3441C39.9138 175.467 38.7695 174.323 38.7695 172.893C38.7695 171.463 39.9138 170.318 41.3441 170.318H68.4126C69.8429 170.318 70.9871 171.463 70.9871 172.893C70.9871 174.323 69.8071 175.467 68.4126 175.467Z"
-              fill="#444445"
-            />
-            <path
-              d="M68.4126 154.87H41.3441C39.9138 154.87 38.7695 153.726 38.7695 152.295C38.7695 150.865 39.9138 149.721 41.3441 149.721H68.4126C69.8429 149.721 70.9871 150.865 70.9871 152.295C70.9871 153.726 69.8071 154.87 68.4126 154.87Z"
-              fill="#444445"
-            />
-            <path
-              d="M68.4126 196.03H41.3441C39.9138 196.03 38.7695 194.886 38.7695 193.456C38.7695 192.025 39.9138 190.881 41.3441 190.881H68.4126C69.8429 190.881 70.9871 192.025 70.9871 193.456C70.9871 194.886 69.8071 196.03 68.4126 196.03Z"
-              fill="#444445"
-            />
-            <path
-              d="M68.4126 134.31H41.3441C39.9138 134.31 38.7695 133.166 38.7695 131.735C38.7695 130.305 39.9138 129.161 41.3441 129.161H68.4126C69.8429 129.161 70.9871 130.305 70.9871 131.735C70.9871 133.166 69.8071 134.31 68.4126 134.31Z"
-              fill="#444445"
-            />
-            <path
-              d="M26.0358 175.467H20.6722C19.2419 175.467 18.0977 174.323 18.0977 172.893C18.0977 171.463 19.2419 170.318 20.6722 170.318H26.0358C27.4661 170.318 28.6104 171.463 28.6104 172.893C28.6104 174.323 27.4661 175.467 26.0358 175.467Z"
-              fill="#444445"
-            />
-            <path
-              d="M26.0358 154.87H20.6722C19.2419 154.87 18.0977 153.726 18.0977 152.295C18.0977 150.865 19.2419 149.721 20.6722 149.721H26.0358C27.4661 149.721 28.6104 150.865 28.6104 152.295C28.6104 153.726 27.4661 154.87 26.0358 154.87Z"
-              fill="#444445"
-            />
-            <path
-              d="M26.0358 134.31H20.6722C19.2419 134.31 18.0977 133.166 18.0977 131.735C18.0977 130.305 19.2419 129.161 20.6722 129.161H26.0358C27.4661 129.161 28.6104 130.305 28.6104 131.735C28.6104 133.166 27.4661 134.31 26.0358 134.31Z"
-              fill="#444445"
-            />
-            <path
-              d="M26.0358 196.03H20.6722C19.2419 196.03 18.0977 194.886 18.0977 193.456C18.0977 192.025 19.2419 190.881 20.6722 190.881H26.0358C27.4661 190.881 28.6104 192.025 28.6104 193.456C28.6104 194.886 27.4661 196.03 26.0358 196.03Z"
-              fill="#444445"
-            />
-            <path
-              d="M143.324 175.467H116.363C114.932 175.467 113.788 174.323 113.788 172.893C113.788 171.463 114.932 170.318 116.363 170.318H143.324C144.754 170.318 145.898 171.463 145.898 172.893C145.898 174.323 144.754 175.467 143.324 175.467Z"
-              fill="#444445"
-            />
-            <path
-              d="M143.324 154.87H116.363C114.932 154.87 113.788 153.726 113.788 152.295C113.788 150.865 114.932 149.721 116.363 149.721H143.324C144.754 149.721 145.898 150.865 145.898 152.295C145.934 153.726 144.754 154.87 143.324 154.87Z"
-              fill="#444445"
-            />
-            <path
-              d="M143.324 196.03H116.363C114.932 196.03 113.788 194.886 113.788 193.456C113.788 192.025 114.932 190.881 116.363 190.881H143.324C144.754 190.881 145.898 192.025 145.898 193.456C145.898 194.886 144.754 196.03 143.324 196.03Z"
-              fill="#444445"
-            />
-            <path
-              d="M143.324 134.31H116.363C114.932 134.31 113.788 133.166 113.788 131.735C113.788 130.305 114.932 129.161 116.363 129.161H143.324C144.754 129.161 145.898 130.305 145.898 131.735C145.898 133.166 144.754 134.31 143.324 134.31Z"
-              fill="#444445"
-            />
-            <path
-              d="M101.129 175.467H95.765C94.3347 175.467 93.1904 174.323 93.1904 172.893C93.1904 171.463 94.3347 170.318 95.765 170.318H101.129C102.559 170.318 103.703 171.463 103.703 172.893C103.703 174.323 102.559 175.467 101.129 175.467Z"
-              fill="#444445"
-            />
-            <path
-              d="M101.129 154.87H95.765C94.3347 154.87 93.1904 153.726 93.1904 152.295C93.1904 150.865 94.3347 149.721 95.765 149.721H101.129C102.559 149.721 103.703 150.865 103.703 152.295C103.739 153.726 102.559 154.87 101.129 154.87Z"
-              fill="#444445"
-            />
-            <path
-              d="M101.129 134.31H95.765C94.3347 134.31 93.1904 133.166 93.1904 131.735C93.1904 130.305 94.3347 129.161 95.765 129.161H101.129C102.559 129.161 103.703 130.305 103.703 131.735C103.703 133.166 102.559 134.31 101.129 134.31Z"
-              fill="#444445"
-            />
-            <path
-              d="M101.129 196.03H95.765C94.3347 196.03 93.1904 194.886 93.1904 193.456C93.1904 192.025 94.3347 190.881 95.765 190.881H101.129C102.559 190.881 103.703 192.025 103.703 193.456C103.703 194.886 102.559 196.03 101.129 196.03Z"
-              fill="#444445"
-            />
-            <path
-              d="M112.896 43.1279H51.1067C46.3152 43.1279 42.3818 39.2304 42.3818 34.4031V23.7831C42.3818 18.9558 46.2794 15.0582 51.1067 15.0582H63.3358L69.2715 5.43945C71.1667 2.40005 74.4206 0.576416 77.9964 0.576416H86.0776C89.6533 0.576416 92.9073 2.40005 94.8024 5.43945L100.738 15.0582H112.932C117.723 15.0582 121.656 18.9916 121.656 23.7831V34.4031C121.585 39.2304 117.687 43.1279 112.896 43.1279ZM51.1067 20.2431C49.14 20.2431 47.5667 21.8522 47.5667 23.8188V34.4388C47.5667 36.4055 49.14 37.9788 51.1067 37.9788H112.896C114.862 37.9788 116.436 36.4055 116.436 34.4388V23.7831C116.436 21.8164 114.862 20.2073 112.896 20.2073H99.2721C98.3782 20.2073 97.5558 19.7425 97.0909 18.9916L90.4043 8.15702C89.4746 6.69096 87.8297 5.76126 86.0776 5.76126H77.9964C76.2443 5.76126 74.5994 6.69096 73.6697 8.15702L66.983 18.9916C66.5182 19.7425 65.6958 20.2073 64.8018 20.2073H51.1067V20.2431Z"
-              fill="#444445"
-            />
-            <path
-              d="M84.7527 16.4174H79.2103C77.78 16.4174 76.6357 15.2732 76.6357 13.8429C76.6357 12.4126 77.78 11.2683 79.2103 11.2683H84.7527C86.183 11.2683 87.3273 12.4126 87.3273 13.8429C87.3273 15.2732 86.183 16.4174 84.7527 16.4174Z"
-              fill="#444445"
-            />
-            <path
-              d="M44.9548 107.566C57.1 107.566 66.9457 97.7206 66.9457 85.5754C66.9457 73.4301 57.1 63.5845 44.9548 63.5845C32.8095 63.5845 22.9639 73.4301 22.9639 85.5754C22.9639 97.7206 32.8095 107.566 44.9548 107.566Z"
-              fill="white"
-            />
-            <path
-              d="M65.873 92.3327C63.0481 101.165 54.7524 107.565 44.9548 107.565C32.833 107.565 22.9639 97.7321 22.9639 85.5745C22.9639 73.703 32.4039 64.0127 44.1681 63.6194C43.4887 65.7648 43.0954 68.0176 43.0954 70.3776C43.0954 82.4994 52.9645 92.3685 65.0863 92.3685C65.3366 92.3685 65.6227 92.3685 65.873 92.3327Z"
-              fill="white"
-            />
-            <path
-              d="M44.9571 110.139C31.4049 110.139 20.3916 99.1261 20.3916 85.574C20.3916 72.0219 31.4049 61.0085 44.9571 61.0085C58.5092 61.0085 69.5225 72.0219 69.5225 85.574C69.5225 99.1261 58.5092 110.139 44.9571 110.139ZM44.9571 66.1934C34.2655 66.1934 25.5764 74.8825 25.5764 85.574C25.5764 96.2655 34.2655 104.955 44.9571 104.955C55.6486 104.955 64.3377 96.2655 64.3377 85.574C64.3377 74.8825 55.6486 66.1934 44.9571 66.1934Z"
-              fill="#444445"
-            />
-            <path
-              d="M120.439 107.566C132.584 107.566 142.43 97.7206 142.43 85.5754C142.43 73.4301 132.584 63.5845 120.439 63.5845C108.294 63.5845 98.4482 73.4301 98.4482 85.5754C98.4482 97.7206 108.294 107.566 120.439 107.566Z"
-              fill="white"
-            />
-            <path
-              d="M141.357 92.3327C138.532 101.165 130.237 107.565 120.439 107.565C108.317 107.565 98.4482 97.7321 98.4482 85.5745C98.4482 73.703 107.888 64.0127 119.652 63.6194C118.973 65.7648 118.58 68.0176 118.58 70.3776C118.58 82.4994 128.449 92.3685 140.571 92.3685C140.821 92.3685 141.107 92.3685 141.357 92.3327Z"
-              fill="white"
-            />
-            <path
-              d="M120.438 110.139C106.885 110.139 95.8721 99.1261 95.8721 85.574C95.8721 72.0219 106.885 61.0085 120.438 61.0085C133.99 61.0085 145.003 72.0219 145.003 85.574C145.003 99.1261 133.99 110.139 120.438 110.139ZM120.438 66.1934C109.746 66.1934 101.057 74.8825 101.057 85.574C101.057 96.2655 109.746 104.955 120.438 104.955C131.129 104.955 139.818 96.2655 139.818 85.574C139.818 74.8825 131.129 66.1934 120.438 66.1934Z"
-              fill="#444445"
-            />
-            <path
-              d="M128.59 88.1503H112.285C110.854 88.1503 109.71 87.0061 109.71 85.5758C109.71 84.1455 110.854 83.0012 112.285 83.0012H128.59C130.02 83.0012 131.165 84.1455 131.165 85.5758C131.165 87.0061 130.02 88.1503 128.59 88.1503Z"
-              fill="#444445"
-            />
-            <path
-              d="M44.9554 96.3015C43.5251 96.3015 42.3809 95.1572 42.3809 93.7269V77.4215C42.3809 75.9912 43.5251 74.8469 44.9554 74.8469C46.3857 74.8469 47.53 75.9912 47.53 77.4215V93.7269C47.53 95.1572 46.3857 96.3015 44.9554 96.3015Z"
-              fill="#444445"
-            />
-            <path
-              d="M53.1075 88.1501H36.8021C35.3718 88.1501 34.2275 87.0058 34.2275 85.5755C34.2275 84.1452 35.3718 83.001 36.8021 83.001H53.1075C54.5378 83.001 55.6821 84.1452 55.6821 85.5755C55.6821 87.0058 54.5378 88.1501 53.1075 88.1501Z"
-              fill="#444445"
-            />
-          </svg>
-        </div>
+      {!isCompared && ( // ✅ Show first block when false
+        <div>
+          <div className="text-center py-4">
+            <CompareFlowIcon />
+          </div>
 
-        <div className="row justify-content-center col-md-4 mx-auto">
+          <div className="row justify-content-center col-md-4 mx-auto">
+            <div className="col-12">
+              <LabelSelect>Compare Versions</LabelSelect>
+            </div>
+            <div className="col-6">
+              <SelectField
+                label="Select Version"
+                name="select_version"
+                icon={<CompareIcon />}
+                placeholder="Select Version"
+                options={versionOptions}
+              />
+            </div>
+            <div className="col-6">
+              <SelectField
+                label="Select Version"
+                name="select_version"
+                icon={<CompareIcon />}
+                placeholder="Select Version"
+                options={versionOptions}
+              />
+            </div>
+          </div>
+          <div className="text-center mt-4">
+            {/* <button
+              className="btn btn-primary"
+              onClick={() => setIsCompared(true)}
+            >
+              Validate Flow
+            </button> */}
+            <Button
+              onClick={() => setIsCompared(true)}
+              className="w-auto mx-auto"
+            >
+              Validate Flow
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {isCompared && ( // ✅ Show second block when true
+        <div className="">
           <div className="col-12">
-            <LabelSelect>Select Scope</LabelSelect>
+            <LabelSelect>Compare Versions</LabelSelect>
           </div>
-          <div className="col-6">
-            <SelectField
-              label="Select Rules"
-              name="select_perperty"
-              icon={<MailIcon />}
-              placeholder="Select Perperty"
-            />
+          <div className="row align-items-center mb-4 mb-lg-5">
+            <div className="col-md-3">
+              <SelectField
+                label="Select Version"
+                name="select_version"
+                icon={<CompareIcon />}
+                placeholder="Select Version"
+                options={versionOptions}
+              />
+            </div>
+            <div className="col-md-3">
+              <SelectField
+                label="Select Version"
+                name="select_version"
+                icon={<CompareIcon />}
+                placeholder="Select Version"
+                options={versionOptions}
+              />
+            </div>
+            <div className="col-md-auto pt-2">
+              <Button>Compare</Button>
+            </div>
           </div>
-          <div className="col-6">
-            <SelectField
-              label="Select Rules"
-              name="select_perperty"
-              icon={<MailIcon />}
-              placeholder="Select Perperty"
-            />
+          <div className="row align-items-center  mb-4 mb-lg-5">
+            <div className="col-md-3">
+              <LabelSelect>Latest Author</LabelSelect>
+              <LabelSelectContent>Anonymous</LabelSelectContent>
+            </div>
+            <div className="col-md-3">
+              <LabelSelect>Last commit comments</LabelSelect>
+              <LabelSelectContent>New Processor added</LabelSelectContent>
+            </div>
+            <div className="col-md-3">
+              <LabelSelect>Compared version</LabelSelect>
+              <LabelSelectContent>1 to 3</LabelSelectContent>
+            </div>
+            <div className="col-md-3">
+              <Button className="w-auto">Compare</Button>
+            </div>
           </div>
+          <CompareDifferencesTitle className="mb-3">
+            Differences
+          </CompareDifferencesTitle>
+          <Table columns={COLUMNS} data={DATA} />
+          <Button onClick={() => setIsCompared(false)} className="w-auto mt-2">
+            Back
+          </Button>
         </div>
-        <div className="text-center mt-4">
-          <button className="btn btn-primary">Validate Flow</button>
-        </div>
-      </div>
-      {/* view detial */}
-      <div className="">
-        <div className="col-12">
-          <LabelSelect>Select Scope</LabelSelect>
-        </div>
-        <div className="row align-items-center mb-4 mb-lg-5">
-          <div className="col-md-3">
-            <SelectField
-              label="Select Rules"
-              name="select_perperty"
-              icon={<MailIcon />}
-              placeholder="Select Perperty"
-            />
-          </div>
-          <div className="col-md-3">
-            <SelectField
-              label="Select Rules"
-              name="select_perperty"
-              icon={<MailIcon />}
-              placeholder="Select Perperty"
-            />
-          </div>
-          <div className="col-md-auto pt-2">
-            <button className="btn btn-primary">Compare</button>
-          </div>
-        </div>
-        <div className="row align-items-center  mb-4 mb-lg-5">
-          <div className="col-md-3">
-            <LabelSelect>Select Scope</LabelSelect>
-            <LabelSelectContent>Anonymous</LabelSelectContent>
-          </div>
-          <div className="col-md-3">
-            <LabelSelect>Last commit comments</LabelSelect>
-            <LabelSelectContent>New Processor added</LabelSelectContent>
-          </div>
-          <div className="col-md-3">
-            <LabelSelect>Compared version</LabelSelect>
-            <LabelSelectContent>1 to 3</LabelSelectContent>
-          </div>
-          <div className="col-md-3">
-            <button className="btn btn-primary">Compare</button>
-          </div>
-        </div>
-        <CompareDifferencesTitle className="mb-3">
-          Differences
-        </CompareDifferencesTitle>
-        <table className="w-100">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Name</th>
-              <th>ID</th>
-              <th>Message</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Processor</td>
-              <td>ConvertAvroToJSON</td>
-              <td>dc77ecda-fd17-3d87-804e-f795cd064c7e</td>
-              <td>Component Added Processor was added</td>
-            </tr>
-            <tr>
-              <td>Process Group </td>
-              <td>FETCH DATA from Products</td>
-              <td>a6d43ffa-bcc7-3278-908e-043843b475a3</td>
-              <td>Position Changed Position was changed</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      )}
     </CompareConteinter>
   );
 };
