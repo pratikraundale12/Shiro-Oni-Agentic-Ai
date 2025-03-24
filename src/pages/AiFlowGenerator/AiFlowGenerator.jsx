@@ -19,7 +19,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { isEmpty, isEqual, set } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import { fetchDefaultRecentFlowsData } from './services';
 import { RecommendedFlow } from './RecommendedFlow';
 import { PromptInputBox } from './PromptInputBox';
@@ -201,10 +201,13 @@ export const AiFlowGenerator = () => {
   const [isFlowDownloaded, setIsFLowDownloaded] = useState(false);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
-
+  const isArrayEmpty = arr => {
+    return arr.length === 0 || arr.every(obj => Object.keys(obj).length === 0);
+  };
   useEffect(() => {
-    if (!isEmpty(clusters)) {
+    if (!isArrayEmpty(clusters)) {
       fetchDefaultRecentFlowsData(dispatch);
+      dispatch(AiFlowGeneratorActions.fetchRegistry());
     }
   }, []);
 
@@ -221,7 +224,17 @@ export const AiFlowGenerator = () => {
   const bucketListData = useSelector(
     NamespacesSelectors.getBucketListDropDownData
   );
+  const [buckets, setBuckets] = useState(bucketListData?.bucketList);
+  useEffect(() => {
+    if (!isEmpty(bucketListData)) {
+      setBuckets(bucketListData?.bucketList);
+    }
+  });
   const registryData = useSelector(AiFlowGeneratorSelectors.getRegistry);
+  const [registry, setRegistry] = useState(registryData);
+  useEffect(() => {
+    setRegistry(registryData);
+  }, [registryData]);
   const handleRefresh = () => {
     if (loading) {
       if (!toast.isActive('generating-flow')) {
@@ -244,12 +257,12 @@ export const AiFlowGenerator = () => {
       dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows());
     }
   };
+
   const onAddToRegistryClick = e => {
-    dispatch(AiFlowGeneratorActions.fetchRegistry());
-    if (!isEmpty(registryData)) {
+    if (!isEmpty(registry)) {
       dispatch(
         NamespacesActions.fetchRegistryData({
-          registriesId: registryData[0]?.id,
+          registriesId: registry[0]?.id,
         })
       );
     }
@@ -309,18 +322,44 @@ export const AiFlowGenerator = () => {
   const [flowError, setFlowError] = useState(error || '');
   const [originalFlow, setOriginalFlow] = useState({});
   const [isFlowUpdated, setIsFlowUpdated] = useState(false);
-
+  const bucketLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchRegistryData')
+  );
   useEffect(() => {
     setFlowError(error);
   }, [error]);
 
   useEffect(() => {
+    setQueryLable(flowJson?.flowContents?.name);
+  }, [flowJson]);
+
+  // useEffect(() => {
+  //   if (Object.keys(generatedFlow).length > 0) {
+  //     const parsedJson =
+  //       typeof generatedFlow?.response === 'string'
+  //         ? JSON.parse(generatedFlow?.response)
+  //         : generatedFlow?.response;
+  //     const repaired = jsonrepair(parsedJson?.response);
+  //     setFlowJson(JSON.parse(repaired));
+  //     setOriginalFlow(JSON.parse(repaired));
+  //   }
+  // }, [generatedFlow]);
+
+  useEffect(() => {
     if (Object.keys(generatedFlow).length > 0) {
-      const parsedJson =
-        typeof generatedFlow?.response === 'string'
-          ? JSON.parse(generatedFlow?.response)
-          : generatedFlow?.response;
-      const repaired = jsonrepair(parsedJson?.response);
+      let repaired = generatedFlow?.response;
+      try {
+        const parsedJson =
+          typeof generatedFlow?.response === 'string'
+            ? JSON.parse(generatedFlow?.response)
+            : generatedFlow?.response;
+
+        repaired = jsonrepair(parsedJson?.response);
+      } catch (error) {
+        console.error('Error repairing JSON:', error);
+        return; // Exit early if jsonrepair fails
+      }
+
       setFlowJson(JSON.parse(repaired));
       setOriginalFlow(JSON.parse(repaired));
     }
@@ -351,13 +390,13 @@ export const AiFlowGenerator = () => {
       height: '100%',
       fontSize: '16px', // Font size
       color: '#444443 !important', // Font color
-      backgroundColor: '#ffffff !important', // Editor background
+      // backgroundColor: '#ffffff !important', // Editor background
     },
     body: {
       fontSize: '16px', // JSON text font size
       color: '#444443',
       fontWeight: 400,
-      backgroundColor: '#ffffff !important', // Editor background
+      // backgroundColor: '#ffffff !important', // Editor background
     },
     errorMessage: {
       color: '#ff4d4f', // Error message color
@@ -371,12 +410,14 @@ export const AiFlowGenerator = () => {
     handleRefresh();
     setIsDiscardFlowModalOpen(false);
     setOpenPreviewModal(false);
+    setOpenAddToRegistryModal(false);
   };
-  return isEmpty(clusters) ? (
+
+  return isArrayEmpty(clusters) ? (
     getLoginToClusterPopup()
   ) : (
     <>
-      <FullPageLoader loading={recentFlowLoading} />
+      <FullPageLoader loading={recentFlowLoading || bucketLoading} />
       <Container>
         <Flex className="flex-column align-items-start w-100">
           <Flex className="w-100">
@@ -543,16 +584,18 @@ export const AiFlowGenerator = () => {
             generatedFlow={generatedFlow}
           />
         )}
-        <FlowAddToRegistryModal
-          isModalOpen={openAddToRegistryModal}
-          setIsModalOpen={setOpenAddToRegistryModal}
-          bucketList={bucketListData?.bucketList || []}
-          defaultFlowName={flowJson?.flowContents?.name || queryLable || ''}
-          handleAddToRegistry={handleAddToRegistry}
-          handleClose={() => {
-            setIsDiscardFlowModalOpen(true);
-          }}
-        />
+        {openAddToRegistryModal && (
+          <FlowAddToRegistryModal
+            isModalOpen={openAddToRegistryModal}
+            setIsModalOpen={setOpenAddToRegistryModal}
+            bucketList={buckets || []}
+            defaultFlowName={queryLable || 'AI Generated Nifi Flow'}
+            handleAddToRegistry={handleAddToRegistry}
+            handleClose={() => {
+              setIsDiscardFlowModalOpen(true);
+            }}
+          />
+        )}
       </Container>
     </>
   );

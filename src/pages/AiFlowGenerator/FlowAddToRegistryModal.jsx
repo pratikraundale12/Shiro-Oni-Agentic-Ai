@@ -85,8 +85,6 @@ export const FlowAddToRegistryModal = ({
 
   const onClose = () => {
     handleClose();
-    reset(DEFAULT_fORM_DATA);
-    setIsModalOpen(false);
   };
 
   return (
