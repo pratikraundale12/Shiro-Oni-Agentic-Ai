@@ -4,6 +4,7 @@ import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
 import styled from 'styled-components';
 import {
+  AddIcon,
   DeleteSmallIcon,
   InfoIcon,
   NewLinkIcon,
@@ -143,7 +144,10 @@ const FlowValidationModal = () => {
                 Rules
                 <InfoIcon />
               </span>
-              <span>Add New Rule</span>
+              <Button className="w-auto">
+                <AddIcon color="#fff" />
+                Add New Rule
+              </Button>
             </div>
             <ul className="list-group">
               <li className="list-group-item d-flex justify-content-between align-items-center active">
