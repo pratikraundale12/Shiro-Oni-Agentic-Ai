@@ -8,20 +8,22 @@ export const SettingsActions = {
   fetchSettingsSuccess: createAction(`${prefix}fetchSettingsSuccess`),
   refreshSetting: createAction(`${prefix}refreshSetting`),
   flowValidationModalOpen: createAction(`${prefix}flowValidationModalOpen`),
-  AddNewValidationModalOpen: createAction(`${prefix}AddNewValidationModalOpen`),
+  addNewValidationModalOpen: createAction(`${prefix}addNewValidationModalOpen`),
 };
 
 // /* ------------- INITIAL STATE ------------- */
 export const SETTING_INITIAL_STATE = {
   data: {},
   flowValidationModalOpen: false,
-  AddNewValidationModalOpen: false,
+  addNewValidationModalOpen: false,
 };
 
 // /* ------------- SELECTORS ------------------ */
 export const SettingsSelectors = {
   getSettings: state => state.settings.data,
   getFlowValidationModal: state => state.settings.flowValidationModalOpen,
+  getAddNewValidationModalOpen: state =>
+    state.settings.addNewValidationModalOpen,
 };
 
 // /* ------------- REDUCERS ------------------- */
@@ -37,6 +39,12 @@ const handleFlowValidationModalOpen = (state, { payload }) => {
     flowValidationModalOpen: payload,
   };
 };
+const handleAddNewValidationModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    addNewValidationModalOpen: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
@@ -45,5 +53,9 @@ export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
     .addCase(
       SettingsActions.flowValidationModalOpen,
       handleFlowValidationModalOpen
+    )
+    .addCase(
+      SettingsActions.addNewValidationModalOpen,
+      handleAddNewValidationModalOpen
     );
 });

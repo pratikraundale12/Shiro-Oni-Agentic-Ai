@@ -5,6 +5,7 @@ import { AddIcon, FlowValidationIcon, NewEditIcon } from '../../assets';
 import { Table } from '../../components';
 import { Button } from '../../shared';
 import { SettingsActions } from '../../store/settings';
+import AddNewValidationModal from './AddNewValidationModal';
 import FlowValidationModal from './FlowValidationModal';
 
 const HeadingStyle = styled.h3`
@@ -58,7 +59,7 @@ const FlowValidation = () => {
     },
     {
       label: 'Actions',
-      renderCell: item => (
+      renderCell: () => (
         <>
           <button
             className="border-0 bg-white me-2"
@@ -71,7 +72,9 @@ const FlowValidation = () => {
 
           <button
             className="border-0 bg-white"
-            onClick={() => console.log(item)}
+            onClick={() =>
+              dispatch(SettingsActions.addNewValidationModalOpen(true))
+            }
           >
             <NewEditIcon />
           </button>
@@ -84,26 +87,26 @@ const FlowValidation = () => {
   const DATA = [
     {
       id: 1,
-      version: 'Global',
-      displayValue: 'Validation A',
-      comments: 'Checks if value is not null',
-      lastUpdated: '2025-03-18',
+      version: 'Processor',
+      displayValue: 'Concurrent Task',
+      comments: 'Rules for Concurrent Task',
+      lastUpdated: '03/12/25, 1:28:00 PM',
       status: 'Active',
     },
     {
       id: 2,
-      version: 'Project',
-      displayValue: 'Validation B',
-      comments: 'Ensures the format is correct',
-      lastUpdated: '2025-03-15',
+      version: 'Connections',
+      displayValue: 'Flowfile Expiry Time',
+      comments: 'Rules for Flowfile Expiry Time',
+      lastUpdated: '03/12/25, 1:28:00 PM',
       status: 'Inactive',
     },
     {
       id: 3,
-      version: 'User',
-      displayValue: 'Validation C',
-      comments: 'Validates range between 1 to 100',
-      lastUpdated: '2025-03-10',
+      version: 'Processor',
+      displayValue: 'Processor Color',
+      comments: 'Rules for Processor Color',
+      lastUpdated: '03/12/25, 1:28:00 PM',
       status: 'Active',
     },
   ];
@@ -115,7 +118,13 @@ const FlowValidation = () => {
           <HeadingStyle>Flow Validation Settings</HeadingStyle>
         </div>
         <div className="mb-2 d-flex align-items-center">
-          <Button type="button" size={'md'}>
+          <Button
+            type="button"
+            size={'md'}
+            onClick={() =>
+              dispatch(SettingsActions.addNewValidationModalOpen(true))
+            }
+          >
             <AddIcon color="#fff" /> Add New Validation
           </Button>
         </div>
@@ -129,6 +138,7 @@ const FlowValidation = () => {
         />
       </ModalBody>
       <FlowValidationModal />
+      <AddNewValidationModal />
     </div>
   );
 };
