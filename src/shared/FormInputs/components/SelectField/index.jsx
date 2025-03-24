@@ -351,7 +351,7 @@ const SelectField = ({
                     ? value
                     : sortedOptions.find(option => option.value === value) ||
                       sortedOptions.find(
-                        option => option.label || option?.name === defaultValue
+                        option => option.label === defaultValue
                       ) ||
                       ''
               }
