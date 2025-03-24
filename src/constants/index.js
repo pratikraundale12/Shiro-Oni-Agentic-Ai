@@ -52,7 +52,7 @@ export const RegexConst = {
 export const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
 // Make it true when working on local to make debugging easier
-export const ENABLE_CONSOLE_LOGS = true;
+export const ENABLE_CONSOLE_LOGS = false;
 
 export const STATUS_CODE = {
   BAD_REQUEST: 400,
