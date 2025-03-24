@@ -105,13 +105,13 @@ export function* login(api, { payload: { type, token, ...payload } }) {
         value: '',
       })
     );
+    const cluster = {
+      id: response.data.cluster_id,
+      name: response.data.cluster_name,
+      token: response.data.cluster_token,
+    };
+    localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify([cluster]));
     if (!type) {
-      const cluster = {
-        id: response.data.cluster_id,
-        name: response.data.cluster_name,
-        token: response.data.cluster_token,
-      };
-      localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify([cluster]));
       localStorage.setItem(
         'selected_cluster',
         JSON.stringify({

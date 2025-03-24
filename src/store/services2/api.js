@@ -40,18 +40,12 @@ const create = (baseURL = `${API_URL}/api`) => {
     error => {
       if (error.response) {
         const { data } = error.response;
-        if (data.raw?.log_out) {
-          localStorage.removeItem(ACCESS_TOKEN);
-          localStorage.removeItem('previous_path');
-          history.push('/login');
-        }
         if (data?.raw?.raw?.requireClusterLogin) {
           localStorage.removeItem('selected_cluster');
           window.location.reload();
         }
         if (data.raw?.log_out) {
-          localStorage.removeItem(ACCESS_TOKEN);
-          localStorage.removeItem('previous_path');
+          localStorage.clear();
           history.push('/login');
         }
       }
