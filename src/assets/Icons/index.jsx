@@ -129,3 +129,4 @@ export * from './CreateClusterIcon';
 export * from './SelectedTickIconOrange';
 export * from './SSHCredentialsPaperIcon';
 export * from './ManageConfigGearIcon';
+export * from './NotePadIcon';
