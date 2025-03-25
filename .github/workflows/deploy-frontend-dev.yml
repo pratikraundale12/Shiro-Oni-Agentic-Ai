@@ -40,4 +40,12 @@ jobs:
           key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/dfm-bundle
-            sudo pm2 restart dist/bundle.js
+            source ~/.bashrc
+            nexe -i dist/bundle.js -o dfm -t linux-x64-20.19.0 -r "dist/client/build/**/*" -r "dist/migrations/**/*" -r "dist/public/**/*" -r "dist/seeds/**/*" -r "dist/views/**/*" -r "ecosystem.config.js" -r "knexfile.js" -r "public.pem" -r "package.json" --build --verbose
+            cp -f dfm /home/ubuntu/dfm-binary-19march/ && rm dfm
+            sudo systemctl restart dfm.service 
+            if sudo systemctl is-active --quiet dfm.service; then
+              echo "Service 'dfm.service' is running successfully!"
+            else
+              echo "Service 'dfm.service' failed to start."
+            fi
