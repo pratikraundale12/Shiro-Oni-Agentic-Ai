@@ -24,6 +24,7 @@ export function* fetchDefaultRecentFlows(api) {
 }
 
 export function* generateFlowAPI(api, { payload }) {
+  const { refresh } = payload;
   yield put(AiFlowGeneratorActions.setGenFlowError(''));
   if (!api.generateFlowAPI) {
     console.error('generateFlowApi is undefined!');
@@ -61,6 +62,10 @@ export function* generateFlowAPI(api, { payload }) {
       'Unexpected error occurred while generating flow';
     yield put(AiFlowGeneratorActions.setGenFlowError(error));
     toast.error(error);
+    refresh &&
+      setTimeout(() => {
+        refresh();
+      }, 400);
   }
 }
 

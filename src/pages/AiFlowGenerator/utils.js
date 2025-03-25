@@ -41,12 +41,13 @@ export const formattedTime = () => {
 
   const hours = String(now.getHours() % 12 || 12).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
   const period = now.getHours() >= 12 ? 'PM' : 'AM';
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const year = String(now.getFullYear()).slice(-2); // Get last two digits of year
 
-  return `${hours}: ${minutes} ${period} ${now.getDate()}: ${minutes}: ${seconds}`;
+  return `${hours}:${minutes} ${period} ${day}-${month}-${year}`;
 };
-
 export const downloadJsonFile = (jsonData, fileName = 'demo.json') => {
   const blob = new Blob([JSON.stringify(jsonData, null, 2)], {
     type: 'application/json',

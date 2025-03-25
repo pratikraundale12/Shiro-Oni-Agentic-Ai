@@ -78,6 +78,7 @@ export const PromptInputBox = ({
   setOpenConversation,
   setIsPromptInputDisabled,
   queryLabel,
+  refresh,
 }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
   useEffect(() => {
@@ -89,7 +90,6 @@ export const PromptInputBox = ({
   }, [queryText]);
   const dispatch = useDispatch();
   const handleGenerateFLowClick = () => {
-    // add additional check
     if (disabled) {
       if (!toast.isActive('permission-error')) {
         toast.error(KDFM.NO_PERMISSION_TO_GENERATE_FLOW, {
@@ -111,7 +111,7 @@ export const PromptInputBox = ({
       setIsSendBtnDisabled(true);
       setOpenConversation(true);
       const payload = {
-        session_id: uuidv4(), // Generate a unique session_id on each call
+        session_id: uuidv4(),
         is_audio: false,
         query: queryText,
         embedding_model: process.env.REACT_APP_EMBEDDING_MODEL,
@@ -121,6 +121,7 @@ export const PromptInputBox = ({
         user_id: process.env.REACT_APP_USER_ID,
         type: process.env.REACT_APP_TYPE,
         short_name: queryLabel || '',
+        refresh: refresh,
       };
       const requiredFields = [
         'session_id',
@@ -172,4 +173,5 @@ PromptInputBox.propTypes = {
   setOpenConversation: PropTypes.func.isRequired,
   setIsPromptInputDisabled: PropTypes.func.isRequired,
   queryLabel: PropTypes.string,
+  refresh: PropTypes.func,
 };

@@ -9,7 +9,7 @@ import {
   TriangleExclamationMarkIcon,
 } from '../../assets';
 import styled from 'styled-components';
-import { CLUSTERS_TOKEN, KDFM } from '../../constants';
+import { API_URL, CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   AiFlowGeneratorActions,
@@ -29,7 +29,7 @@ import {
   getLoginToClusterPopup,
 } from './utils';
 import userImage from '../../assets/images/avatar.png';
-import dfmImage from '../../assets/images/default-logo.png';
+import dfmImage from '../../assets/images/dfm.png';
 import fileImage from '../../assets/images/folder (1) 1.png';
 import { Button, Modal } from '../../shared';
 import { toast } from 'react-toastify';
@@ -158,6 +158,12 @@ const DataFlowList = styled.div`
     width: 32px;
     border-radius: 8px;
   }
+  .dfm-img {
+    height: 22px;
+    width: 14px;
+    border-radius: 8px;
+    background: #e8e8e9;
+  }
   .add-to-registry-btn {
     width: 159px;
   }
@@ -259,16 +265,16 @@ export const AiFlowGenerator = () => {
   };
 
   const onAddToRegistryClick = e => {
+    if (e.keyCode == 13) {
+      e.preventDefault();
+      return false;
+    }
     if (!isEmpty(registry)) {
       dispatch(
         NamespacesActions.fetchRegistryData({
           registriesId: registry[0]?.id,
         })
       );
-    }
-    if (e.keyCode == 13) {
-      e.preventDefault();
-      return false;
     }
     setOpenPreviewModal(false);
     setOpenAddToRegistryModal(true);
@@ -325,6 +331,8 @@ export const AiFlowGenerator = () => {
   const bucketLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryData')
   );
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
+
   useEffect(() => {
     setFlowError(error);
   }, [error]);
@@ -332,18 +340,6 @@ export const AiFlowGenerator = () => {
   useEffect(() => {
     setQueryLable(flowJson?.flowContents?.name);
   }, [flowJson]);
-
-  // useEffect(() => {
-  //   if (Object.keys(generatedFlow).length > 0) {
-  //     const parsedJson =
-  //       typeof generatedFlow?.response === 'string'
-  //         ? JSON.parse(generatedFlow?.response)
-  //         : generatedFlow?.response;
-  //     const repaired = jsonrepair(parsedJson?.response);
-  //     setFlowJson(JSON.parse(repaired));
-  //     setOriginalFlow(JSON.parse(repaired));
-  //   }
-  // }, [generatedFlow]);
 
   useEffect(() => {
     if (Object.keys(generatedFlow).length > 0) {
@@ -357,9 +353,8 @@ export const AiFlowGenerator = () => {
         repaired = jsonrepair(parsedJson?.response);
       } catch (error) {
         console.error('Error repairing JSON:', error);
-        return; // Exit early if jsonrepair fails
+        return;
       }
-
       setFlowJson(JSON.parse(repaired));
       setOriginalFlow(JSON.parse(repaired));
     }
@@ -458,7 +453,11 @@ export const AiFlowGenerator = () => {
             <DataFlowList className="gen-ai-dataflow-sec mb-4">
               <div className="d-flex gap-2 ps-3">
                 <div className="df-manager-icon">
-                  <img src={userImage} alt="" className="avatar-img" />
+                  <img
+                    src={`${API_URL}${currentUser?.photo}` || userImage}
+                    alt=""
+                    className="avatar-img"
+                  />
                 </div>
                 <span className="fs-12 fw-medium">{KDFM.YOU}</span>
                 <span className="fs-12 ms-auto">{formattedTime()}</span>
@@ -470,7 +469,7 @@ export const AiFlowGenerator = () => {
             <DataFlowList className="gen-ai-dataflow-sec mb-4">
               <div className="d-flex gap-2 ps-3">
                 <div className="df-manager-icon">
-                  <img src={dfmImage} alt="user" className="avatar-img" />
+                  <img src={dfmImage} alt="user" className="dfm-img" />
                 </div>
                 <span className="fs-12 fw-medium">
                   {KDFM.DATA_FLOW_MANAGER}
@@ -488,7 +487,7 @@ export const AiFlowGenerator = () => {
                     ? 'Generating Flow...'
                     : !loading && isEmpty(flowError)
                       ? 'Here is the JSON File generated as per your prompt....'
-                      : `${flowError}...`}
+                      : `${flowError} please refresh...`}
                 </p>
                 {!loading && isEmpty(flowError) && (
                   <>
@@ -541,6 +540,7 @@ export const AiFlowGenerator = () => {
             setQueryText={setQueryText}
             setIsPromptInputDisabled={setIsPromptInputDisabled}
             queryLabel={queryLable}
+            refresh={handleRefresh}
           />
         </PromptSection>
         <Modal
