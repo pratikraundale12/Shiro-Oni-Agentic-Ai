@@ -87,7 +87,7 @@ export const AddHostIPModal = () => {
       onRequestClose={onRequestClose}
       onSubmit={handleSubmit(handleContinueSubmit)}
       title={'Add Host Details'}
-      primaryButtonText="Test and Add"
+      primaryButtonText="Add Host"
       secondaryButtonText="Back"
       contentStyles={{ minWidth: '40%', height: '55%' }}
       footerAlign="start"

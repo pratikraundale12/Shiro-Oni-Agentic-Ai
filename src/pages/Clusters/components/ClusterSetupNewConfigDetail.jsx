@@ -9,9 +9,15 @@ import {
 } from '../../../assets';
 import { Title } from './Title';
 import { history } from '../../../helpers/history';
-import { InputField, RadioSelectField, SelectField } from '../../../shared';
+import {
+  Button,
+  InputField,
+  RadioSelectField,
+  SelectField,
+} from '../../../shared';
 import { theme } from '../../../styles';
 import Collapsible from '../../Namespaces/Collapsible';
+import { KDFM } from '../../../constants';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -35,7 +41,9 @@ const DisplaySection = styled.div`
   height: calc(100% - 120px) !important;
   border-radius: 10px;
 `;
-const RightDisplaySection = styled.div``;
+const RightDisplaySection = styled.div`
+  overflow: auto;
+`;
 const LeftDisplaySection = styled.div`
   background-color: #fff;
 `;
@@ -82,6 +90,14 @@ export const Item = styled.li`
     font-size: 14px !important;
   }
 `;
+const BottomButtonDiv = styled.div`
+  gap: 16px;
+  align-items: center;
+`;
+const BottomButton = styled.div`
+  align-items: center;
+  justify-content: space-between !important;
+`;
 const ClusterSetupNewConfigDetailsPage = () => {
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
 
@@ -114,6 +130,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
     {
       name: 'State-Management.xml',
       path: 'state_management',
+      icon: CheckListIcon,
+    },
+    {
+      name: 'Zookeeper.properties',
+      path: 'zookeeper_properties',
       icon: CheckListIcon,
     },
   ];
@@ -412,6 +433,32 @@ const ClusterSetupNewConfigDetailsPage = () => {
           </RightDisplaySection>
         </DisplaySection>
       </OuterContainer>
+      {/*  */}
+      <BottomButton className="bottom-button-divs d-flex">
+        <BottomButtonDiv className="btn-div d-flex">
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => {
+              // dispatch(
+              //   ClustersActions.setActiveTabClusterSetup('getting_started')
+              // );
+            }}
+          >
+            {KDFM.BACK}
+          </Button>
+
+          {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
+          <Button
+            type="submit"
+            onClick={() => {
+              // history.push(`/clusters/manage-configuration-details`);
+            }}
+          >
+            {KDFM.CONTINUE}
+          </Button>
+        </BottomButtonDiv>
+      </BottomButton>
     </Wrapper>
   );
 };

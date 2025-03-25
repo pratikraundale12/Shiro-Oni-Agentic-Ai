@@ -73,9 +73,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
           >
             {KDFM.BACK}
           </Button>
-          <Button variant="tertiary" type="button">
-            {KDFM.SAVE}
-          </Button>
+
           {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button
             type="submit"
@@ -83,7 +81,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
               setIsSuccessModalOpen(true);
             }}
           >
-            {KDFM.CONTINUE}
+            Create Cluster
           </Button>
         </BottomButtonDiv>
       </BottomButton>

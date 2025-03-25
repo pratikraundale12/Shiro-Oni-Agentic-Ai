@@ -193,14 +193,12 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
           >
             {KDFM.BACK}
           </Button>
-          <Button variant="tertiary" type="button">
-            {KDFM.SAVE}
-          </Button>
+
           {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button
             type="submit"
             onClick={() => {
-            //   history.push(`/clusters/manage-configuration-details`);
+              //   history.push(`/clusters/manage-configuration-details`);
             }}
           >
             {KDFM.CONTINUE}

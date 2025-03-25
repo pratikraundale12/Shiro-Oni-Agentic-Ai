@@ -256,9 +256,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           >
             {KDFM.BACK}
           </Button>
-          <Button variant="tertiary" type="button">
-            {KDFM.SAVE}
-          </Button>
+
           {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button
             type="submit"
