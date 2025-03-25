@@ -5,6 +5,8 @@ import {
   ManageConfigGearIcon,
   SSHCredentialsPaperIcon,
 } from '../../../assets';
+import { useDispatch } from 'react-redux';
+import { ClustersActions } from '../../../store';
 const Container = styled.div`
   height: calc(100% - 57px);
 `;
@@ -29,6 +31,7 @@ const LeftHolder = styled.div`
 const RightHolder = styled.div`
   padding: 26px 5px;
 `;
+
 const HighLightText = styled.span`
   font-family: Noto Sans;
   font-weight: 600;
@@ -43,9 +46,10 @@ const BottomText = styled.span`
   font-size: 16px;
   line-height: 21.17px;
   letter-spacing: 0%;
-  color: #444445;
+  color: ${({ linkColor }) => (linkColor ? `#ff7a00` : `#444445`)};
 `;
 const ClusterSetupGettingStartedTab = () => {
+  const dispatch = useDispatch();
   return (
     <Container className="d-flex flex-column justify-content-center align-items-center w-100 ">
       <div className="d-flex justify-content-center w-100 mb-3">
@@ -59,6 +63,69 @@ const ClusterSetupGettingStartedTab = () => {
         </div>
       </div>
       <div className="row w-100 px-lg-5">
+        {' '}
+        <div className="col-md-6 col-xl-4">
+          <div className="d-flex row align-items-center  h-100 mx-auto">
+            <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
+              <ManageConfigGearIcon height="60" width="60" color={'black'} />
+            </LeftHolder>
+            <RightHolder className="col h-100 row">
+              <div className="col-10 h-100">
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <HighLightText>Manage Config Profile</HighLightText>
+                </div>
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <BottomText>Manage & Create Config file</BottomText>
+                </div>
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <BottomText
+                    linkColor={true}
+                    onClick={() =>
+                      dispatch(
+                        ClustersActions.setActiveTabClusterSetup(
+                          'manage_config'
+                        )
+                      )
+                    }
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Manage Config
+                  </BottomText>
+                </div>
+              </div>
+            </RightHolder>
+          </div>
+        </div>{' '}
+        <div className="col-md-6 col-xl-4">
+          <div className="d-flex row align-items-center  h-100 mx-auto">
+            <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
+              <SSHCredentialsPaperIcon height="60" width="60" color={'black'} />
+            </LeftHolder>
+            <RightHolder className="col h-100 row">
+              <div className="col-10 h-100">
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <HighLightText>Manage Host</HighLightText>
+                </div>
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <BottomText>Manage Host IP&apos;s</BottomText>
+                </div>
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <BottomText
+                    linkColor={true}
+                    onClick={() =>
+                      dispatch(
+                        ClustersActions.setActiveTabClusterSetup('manage_host')
+                      )
+                    }
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Manage Host
+                  </BottomText>
+                </div>
+              </div>
+            </RightHolder>
+          </div>
+        </div>
         <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
@@ -72,39 +139,20 @@ const ClusterSetupGettingStartedTab = () => {
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <BottomText>Add Cluster & Node Details</BottomText>
                 </div>
-              </div>
-            </RightHolder>
-          </div>
-        </div>
-        <div className="col-md-6 col-xl-4">
-          <div className="d-flex row align-items-center  h-100 mx-auto">
-            <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
-              <SSHCredentialsPaperIcon height="60" width="60" color={'black'} />
-            </LeftHolder>
-            <RightHolder className="col h-100 row">
-              <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <HighLightText>SSH Credentials</HighLightText>
-                </div>
-                <div className="h-50 d-flex align-items-center justify-content-start">
-                  <BottomText>Add SSH Credentials</BottomText>
-                </div>
-              </div>
-            </RightHolder>
-          </div>
-        </div>
-        <div className="col-md-6 col-xl-4">
-          <div className="d-flex row align-items-center  h-100 mx-auto">
-            <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
-              <ManageConfigGearIcon height="60" width="60" color={'black'} />
-            </LeftHolder>
-            <RightHolder className="col h-100 row">
-              <div className="col-10 h-100">
-                <div className="h-50 d-flex align-items-center justify-content-start">
-                  <HighLightText>Manage Config Profile</HighLightText>
-                </div>
-                <div className="h-50 d-flex align-items-center justify-content-start">
-                  <BottomText>Manage & Create Config file</BottomText>
+                  <BottomText
+                    linkColor={true}
+                    onClick={() =>
+                      dispatch(
+                        ClustersActions.setActiveTabClusterSetup(
+                          'cluster_details'
+                        )
+                      )
+                    }
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Add Cluster
+                  </BottomText>
                 </div>
               </div>
             </RightHolder>

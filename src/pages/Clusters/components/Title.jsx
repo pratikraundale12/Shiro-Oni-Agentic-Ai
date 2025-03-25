@@ -1,8 +1,9 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import { PlusCircleIcon, PlusIcon, TodoIcon } from '../../../assets';
+import { GreaterArrowIcon, PlusCircleIcon, TodoIcon } from '../../../assets';
 import { Button } from '../../../shared';
 
 const Container = styled.div`
@@ -29,18 +30,27 @@ export const Title = ({
   title,
   displayButton = false,
   handleButtonClick = () => {},
+  displayBackButton = false,
+  handleBackClick = () => {},
+  buttonText = '',
 }) => {
   return (
     <Container>
       <PageHeading>
-        <TodoIcon width={22} height={24} />
+        {displayBackButton ? (
+          <span onClick={() => handleBackClick()} style={{ cursor: 'pointer' }}>
+            <GreaterArrowIcon />
+          </span>
+        ) : (
+          <TodoIcon width={22} height={24} />
+        )}
         <h3>{title}</h3>
       </PageHeading>
       {displayButton && (
         <div className="col-auto ms-3">
           <Button
             size="md"
-            onClick={() => {}}
+            onClick={() => handleButtonClick()}
             className="w-auto px-3"
             style={{ minWidth: 'auto' }}
           >
@@ -49,7 +59,7 @@ export const Title = ({
               style={{ fontSize: '14px', fontWeight: '750' }}
             >
               <PlusCircleIcon height={19} width={19} color={'#fff'} />
-              Add New Config
+              {buttonText}
             </div>
           </Button>
         </div>
@@ -62,4 +72,6 @@ Title.propTypes = {
   title: PropTypes.string.isRequired,
   displayButton: PropTypes.bool,
   handleButtonClick: PropTypes.func,
+  handleBackClick: PropTypes.func,
+  buttonText: PropTypes.string,
 };

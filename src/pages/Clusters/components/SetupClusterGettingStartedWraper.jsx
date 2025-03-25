@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -17,15 +18,12 @@ const Container = styled.div`
   overflow: auto;
 `;
 
-const SetupClusterGettingStartedWrapper = ({ setAtiveTab, activeTab }) => {
+const SetupClusterGettingStartedWrapper = ({ activeTab }) => {
   return (
     <Wrapper>
       <Title title={'Add New Cluster Details'} />
       <Container>
-        <ClusterSetupNavigationTab
-          setAtiveTab={setAtiveTab}
-          activeTab={activeTab}
-        />
+        <ClusterSetupNavigationTab activeTab={activeTab} />
         <ClusterSetupGettingStartedTab />
       </Container>
     </Wrapper>
@@ -34,6 +32,5 @@ const SetupClusterGettingStartedWrapper = ({ setAtiveTab, activeTab }) => {
 SetupClusterGettingStartedWrapper.propTypes = {
   children: PropTypes.object,
   activeTab: PropTypes.string,
-  setAtiveTab: PropTypes.func,
 };
 export default SetupClusterGettingStartedWrapper;

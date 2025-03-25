@@ -1,6 +1,12 @@
 /* eslint-disable */
 import React, { useEffect } from 'react';
-import { Button, InputField, SelectField } from '../../../shared';
+import {
+  Button,
+  CheckboxField,
+  InputField,
+  RadioField,
+  SelectField,
+} from '../../../shared';
 import {
   DeleteSmallIcon,
   NoDataIcon,
@@ -24,7 +30,7 @@ import {
 } from '../../../store';
 import { AddHostIPModal } from './AddHostIPModal';
 import { isEmpty } from 'lodash';
-
+import { history } from '../../../helpers/history';
 const LabelSelect = styled.div`
   font-size: 14px;
   font-weight: 600;
@@ -188,6 +194,31 @@ const ClusterDetailTab = ({ control, errors, register }) => {
 
   const COLUMNS = [
     {
+      label: (
+        <>
+          {' '}
+          <CheckboxField
+            name="check"
+            // label="Need approval for the deployment schedule?"
+            // checked={approverEnable}
+            onChange={() => {}}
+          />
+        </>
+      ),
+      renderCell: item => (
+        <>
+          {' '}
+          <CheckboxField
+            name="check"
+            // label="Need approval for the deployment schedule?"
+            // checked={approverEnable}
+            onChange={() => {}}
+          />
+        </>
+      ),
+      resize: true,
+    },
+    {
       label: 'Host IP',
       renderCell: item => <>{item?.host_ip}</>,
       resize: true,
@@ -212,41 +243,17 @@ const ClusterDetailTab = ({ control, errors, register }) => {
       ),
       resize: true,
     },
-    {
-      label: 'Actions',
-      renderCell: item => (
-        <ActionTd>
-          <IconButton
-            onClick={event => {
-              console.log(event);
-              dispatch(ClustersActions.setIsAddHostIPModalOpen(true));
-            }}
-            className="pencil-icon-schedule-list"
-          >
-            <PencilIcon width={16} height={16} />
-          </IconButton>
-          <IconButton
-            onClick={event => {
-              console.log(event);
-            }}
-            className="pencil-icon-schedule-list"
-          >
-            <DeleteSmallIcon width={16} height={16} color="red" />
-          </IconButton>
-        </ActionTd>
-      ),
-      resize: true,
-    },
   ];
+  /* 
 
+*/
   return (
     <>
       <FullPageLoader loading={loading || loadingAddAPI} />
       <div className="row mt-2 ms-2 me-2">
         {' '}
-        <div className="col-8">
+        <div className="col-6">
           <LabelSelect className="mb-3">Cluster Name</LabelSelect>
-
           <InputField
             name="clusterName"
             type="text"
@@ -259,6 +266,8 @@ const ClusterDetailTab = ({ control, errors, register }) => {
             // rightIcon={getRightIcon(watch, errors, setValue)}
           />
         </div>
+      </div>
+      <div className="row mt-2 ms-2 me-2 mb-4">
         <div className="col-4">
           <LabelSelect className="mb-3">NiFi Version</LabelSelect>
           <SelectField
@@ -271,13 +280,37 @@ const ClusterDetailTab = ({ control, errors, register }) => {
             placeholder="Select NiFi Version"
           />
         </div>
+        <div className="col-4">
+          <LabelSelect className="mb-3">Config Name</LabelSelect>
+          <SelectField
+            name="nifi_version"
+            icon={<QRIcons />}
+            register={register}
+            errors={errors}
+            control={control}
+            options={nifiVerionsOptions || []}
+            placeholder="Select Config Name"
+          />
+        </div>
+        <div className="col-4">
+          <LabelSelect className="mb-3">Config Version</LabelSelect>
+          <SelectField
+            name="nifi_version"
+            icon={<QRIcons />}
+            register={register}
+            errors={errors}
+            control={control}
+            options={nifiVerionsOptions || []}
+            placeholder="Select Config Version"
+          />
+        </div>
       </div>
 
       <div className="col-auto ms-3">
         <Button
           size="md"
           onClick={() =>
-            dispatch(ClustersActions.setIsAddHostIPModalOpen(true))
+            dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'))
           }
           className="w-auto px-3"
           style={{ minWidth: 'auto' }}
@@ -287,13 +320,13 @@ const ClusterDetailTab = ({ control, errors, register }) => {
             style={{ fontSize: '14px', fontWeight: '750' }}
           >
             <PlusIcon height={19} width={19} color={'#fff'} />
-            Add New Host IP
+            Manage Host
           </div>
         </Button>
       </div>
       <div
         className="mt-4 px-3"
-        style={{ height: 'calc(100% - 240px)', overflow: 'auto' }}
+        style={{ height: 'calc(100% - 360px)', overflow: 'auto' }}
       >
         <Table
           data={mockData || listHostIpData}

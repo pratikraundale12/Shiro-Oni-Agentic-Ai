@@ -1,28 +1,36 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
-import { IconButton, Table } from '../../../components';
-import { CopyIcon, DeleteSmallIcon, PencilIcon } from '../../../assets';
-import { KDFM } from '../../../constants';
+import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
 import { Button } from '../../../shared';
+import { KDFM } from '../../../constants';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { history } from '../../../helpers/history';
+import { ClustersActions } from '../../../store';
+import { useDispatch } from 'react-redux';
+import { IconButton, Table } from '../../../components';
+import {
+  CopyIcon,
+  DeleteSmallIcon,
+  PencilIcon,
+  PlusCircleIcon,
+} from '../../../assets';
 
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
 `;
 const Container = styled.div`
+  background-color: ${props => props.theme.colors.lightGrey};
+  border-radius: 20px;
+  padding-top: 10px;
   margin-bottom: 2rem;
   height: 88%;
   overflow: auto;
-`;
-const ActionTd = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  gap: 6px;
-  padding-right: 10px;
 `;
 const BottomButtonDiv = styled.div`
   gap: 16px;
@@ -32,7 +40,35 @@ const BottomButton = styled.div`
   align-items: center;
   justify-content: space-between !important;
 `;
-const ManageConfigurationPage = () => {
+const TableContainer = styled.div`
+  height: calc(100% - 130px);
+`;
+const ActionTd = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 6px;
+  padding-right: 10px;
+`;
+const SetupClusterManageConfigWrapper = ({ activeTab }) => {
+  const dispatch = useDispatch();
+  const schema = yup.object().shape({
+    clusterName: yup.string().required('Cluster Name is required'),
+    nifi_version: yup.string().required('Port is required'),
+  });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+  const handleContinue = data => {
+    console.log(data);
+  };
   const mockData = [
     {
       name: 'System Config',
@@ -59,81 +95,6 @@ const ManageConfigurationPage = () => {
       version: 'NiFi V6',
       comment: 'Updated dependencies',
     },
-    {
-      name: 'Logging Settings',
-      version: 'NiFi V9',
-      comment: 'Initial version release',
-    },
-    {
-      name: 'Access Control',
-      version: 'NiFi V18',
-      comment: 'Added new feature support',
-    },
-    {
-      name: 'Service Configuration',
-      version: 'NiFi V5',
-      comment: 'Deprecated old methods',
-    },
-    {
-      name: 'Backup Policy',
-      version: 'NiFi V2',
-      comment: 'Code refactored for better efficiency',
-    },
-    {
-      name: 'Monitoring Setup',
-      version: 'NiFi V14',
-      comment: 'Security patches included',
-    },
-    {
-      name: 'Cache Settings',
-      version: 'NiFi V7',
-      comment: 'Performance improvements',
-    },
-    {
-      name: 'Data Retention',
-      version: 'NiFi V10',
-      comment: 'Minor bug fixes applied',
-    },
-    {
-      name: 'Authentication Config',
-      version: 'NiFi V20',
-      comment: 'Configuration updated successfully',
-    },
-    {
-      name: 'Firewall Rules',
-      version: 'NiFi V11',
-      comment: 'Initial version release',
-    },
-    {
-      name: 'Load Balancer',
-      version: 'NiFi V16',
-      comment: 'Added new feature support',
-    },
-    {
-      name: 'Integration Settings',
-      version: 'NiFi V4',
-      comment: 'Updated dependencies',
-    },
-    {
-      name: 'Scheduler Config',
-      version: 'NiFi V19',
-      comment: 'Deprecated old methods',
-    },
-    {
-      name: 'Encryption Policy',
-      version: 'NiFi V13',
-      comment: 'Code refactored for better efficiency',
-    },
-    {
-      name: 'Storage Limits',
-      version: 'NiFi V1',
-      comment: 'Security patches included',
-    },
-    {
-      name: 'API Gateway',
-      version: 'NiFi V17',
-      comment: 'Performance improvements',
-    },
   ];
   const COLUMNS = [
     {
@@ -153,7 +114,7 @@ const ManageConfigurationPage = () => {
     },
     {
       label: 'Actions',
-      renderCell: item => (
+      renderCell: () => (
         <ActionTd>
           <IconButton
             onClick={event => {
@@ -186,18 +147,38 @@ const ManageConfigurationPage = () => {
   ];
   return (
     <Wrapper>
-      <Title
-        title={'Manage Configuration Details'}
-        displayButton={true}
-        handleButtonClick={() => {}}
-      />
+      <Title title={'Add New Cluster Details'} />
       <Container>
-        <Table
-          data={mockData}
-          columns={COLUMNS}
-          customNoDataText="No Host IP Available"
-          tableWithFullHeight={true}
-        />
+        <ClusterSetupNavigationTab activeTab={activeTab} />
+        <TableContainer>
+          <div className="d-flex justify-content-end mt-3 mb-3">
+            <div className="col-auto me-3">
+              <Button
+                size="md"
+                onClick={() => {
+                  history.push('/clusters/new-config-details');
+                }}
+                className="w-auto px-3"
+                style={{ minWidth: 'auto' }}
+              >
+                <div
+                  className="d-flex "
+                  style={{ fontSize: '14px', fontWeight: '750' }}
+                >
+                  <PlusCircleIcon height={19} width={19} color={'#fff'} />
+                  Add New Config
+                </div>
+              </Button>
+            </div>
+          </div>
+
+          <Table
+            data={mockData}
+            columns={COLUMNS}
+            customNoDataText="No Host IP Available"
+            tableWithFullHeight={true}
+          />
+        </TableContainer>
       </Container>
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
@@ -205,27 +186,32 @@ const ManageConfigurationPage = () => {
             variant="secondary"
             type="button"
             onClick={() => {
-              history.push(`/clusters/setup-cluster`);
+              dispatch(
+                ClustersActions.setActiveTabClusterSetup('getting_started')
+              );
             }}
           >
             {KDFM.BACK}
           </Button>
+          <Button variant="tertiary" type="button">
+            {KDFM.SAVE}
+          </Button>
+          {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button
             type="submit"
             onClick={() => {
-              history.push(`/clusters/manage-configuration-details`);
+            //   history.push(`/clusters/manage-configuration-details`);
             }}
           >
-            Create
+            {KDFM.CONTINUE}
           </Button>
         </BottomButtonDiv>
       </BottomButton>
     </Wrapper>
   );
 };
-ManageConfigurationPage.propTypes = {
+SetupClusterManageConfigWrapper.propTypes = {
   children: PropTypes.object,
   activeTab: PropTypes.string,
-  setAtiveTab: PropTypes.func,
 };
-export default ManageConfigurationPage;
+export default SetupClusterManageConfigWrapper;

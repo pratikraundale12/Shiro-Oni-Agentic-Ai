@@ -425,7 +425,9 @@ export const ListClusters = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  useEffect(() => {
+    dispatch(ClustersActions.setActiveTabClusterSetup('getting_started'));
+  }, [dispatch]);
   return (
     <>
       {' '}

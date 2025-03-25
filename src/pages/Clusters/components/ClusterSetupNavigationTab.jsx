@@ -1,8 +1,9 @@
 /*eslint-disable*/
 import React from 'react';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
+import { KDFM } from '../../../constants';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { ClustersActions } from '../../../store';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -28,26 +29,42 @@ const NavButton = styled.button`
     `border-bottom: 1px solid ${props.theme.colors.primaryActive};`}
 `;
 
-const ClusterSetupNavigationTab = ({ activeTab, setAtiveTab }) => {
+const ClusterSetupNavigationTab = ({ activeTab }) => {
+  const dispatch = useDispatch();
   return (
     <NavTabs id="nav-tab" role="tablist">
       <NavButton
         active={activeTab === 'getting_started'}
         onClick={() => {
-          setAtiveTab('getting_started');
+          dispatch(ClustersActions.setActiveTabClusterSetup('getting_started'));
         }}
       >
         {KDFM.GETTING_STARTED}
       </NavButton>
-      <>
-        <NavButton
-          active={activeTab === 'cluster_details'}
-          onClick={() => setAtiveTab('cluster_details')}
-          //   disabled={isRegistryDetailDisable}
-        >
-          {KDFM.CLUSTER_DETAILS}
-        </NavButton>
-      </>
+      <NavButton
+        active={activeTab === 'manage_config'}
+        onClick={() => {
+          dispatch(ClustersActions.setActiveTabClusterSetup('manage_config'));
+        }}
+      >
+        Manage Config
+      </NavButton>
+      <NavButton
+        active={activeTab === 'manage_host'}
+        onClick={() => {
+          dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
+        }}
+      >
+        Manage Host
+      </NavButton>
+      <NavButton
+        active={activeTab === 'cluster_details'}
+        onClick={() => {
+          dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
+        }}
+      >
+        {KDFM.CLUSTER_DETAILS}
+      </NavButton>
     </NavTabs>
   );
 };

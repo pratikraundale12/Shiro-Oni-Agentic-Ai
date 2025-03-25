@@ -131,3 +131,5 @@ export * from './SelectedTickIconOrange';
 export * from './SSHCredentialsPaperIcon';
 export * from './ManageConfigGearIcon';
 export * from './NotePadIcon';
+export * from './ChecklistIcon';
+export * from './DataFlowInventoryIcon';

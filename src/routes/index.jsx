@@ -45,7 +45,6 @@ import {
 } from '../pages';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
-// import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
 import KeycloakRedirectPage from '../components/KeycloakRedirectPage.jsx';
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
@@ -65,9 +64,7 @@ import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 import SetupClusterPage from '../pages/Clusters/components/setupClusterPage.jsx';
-import ManageConfigurationPage from '../pages/Clusters/components/ManageConfigurationPage.jsx';
 import ClusterSetupNewConfigDetailsPage from '../pages/Clusters/components/ClusterSetupNewConfigDetail.jsx';
-import ManageHostDetailsPage from '../pages/Clusters/components/ManageHostDetailsPage.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -99,18 +96,9 @@ export const ROUTES_MENU = [
         component: <SetupClusterPage />,
       },
       {
-        path: ['manage-configuration-details'],
-        component: <ManageConfigurationPage />,
-      },
-      {
         path: ['new-config-details'],
         component: <ClusterSetupNewConfigDetailsPage />,
       },
-      {
-        path: ['manage-host-details'],
-        component: <ManageHostDetailsPage />,
-      },
-
       {
         path: [':id'],
         component: <ClusterSummary />,

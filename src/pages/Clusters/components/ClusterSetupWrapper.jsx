@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
-import { Button } from '../../../shared';
+import { Button, ModalWithIcon } from '../../../shared';
 import { KDFM } from '../../../constants';
 import ClusterDetailTab from './ClusterDetailTab';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { ClustersActions } from '../../../store';
+import { useDispatch } from 'react-redux';
+import { GreenRightCircleIcon } from '../../../assets';
 import { history } from '../../../helpers/history';
 
 const Wrapper = styled.div`
@@ -31,32 +34,26 @@ const BottomButton = styled.div`
   align-items: center;
   justify-content: space-between !important;
 `;
-const SetupClusterWrapper = ({ setAtiveTab, activeTab }) => {
+const SetupClusterWrapper = ({ activeTab }) => {
+  const dispatch = useDispatch();
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const schema = yup.object().shape({
     clusterName: yup.string().required('Cluster Name is required'),
     nifi_version: yup.string().required('Port is required'),
   });
   const {
     register,
-    handleSubmit,
-    watch,
-    reset,
     control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const handleContinue = data => {
-    console.log(data);
-  };
+
   return (
     <Wrapper>
       <Title title={'Add New Cluster Details'} />
       <Container>
-        <ClusterSetupNavigationTab
-          setAtiveTab={setAtiveTab}
-          activeTab={activeTab}
-        />
+        <ClusterSetupNavigationTab activeTab={activeTab} />
         <ClusterDetailTab
           register={register}
           control={control}
@@ -68,27 +65,51 @@ const SetupClusterWrapper = ({ setAtiveTab, activeTab }) => {
           <Button
             variant="secondary"
             type="button"
-            onClick={() => setAtiveTab('getting_started')}
+            onClick={() => {
+              dispatch(
+                ClustersActions.setActiveTabClusterSetup('getting_started')
+              );
+            }}
           >
             {KDFM.BACK}
+          </Button>
+          <Button variant="tertiary" type="button">
+            {KDFM.SAVE}
           </Button>
           {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button
             type="submit"
             onClick={() => {
-              history.push(`/clusters/manage-configuration-details`);
+              setIsSuccessModalOpen(true);
             }}
           >
             {KDFM.CONTINUE}
           </Button>
         </BottomButtonDiv>
       </BottomButton>
+      <ModalWithIcon
+        title={'Cluster Created Successfully'}
+        primaryButtonText={'Navigate'}
+        // secondaryButtonText={KDFM.CANCEL}
+        icon={<GreenRightCircleIcon />}
+        isOpen={isSuccessModalOpen}
+        onSubmit={() => {
+          setIsSuccessModalOpen(false);
+          history.push(`/clusters`);
+        }}
+        // onRequestClose={() => {
+        //   setIsSuccessModalOpen(false);
+        // }}
+        primaryText={'Cluster Created Successfully'}
+        secondaryText={
+          'Your Cluster was Added Successfully.You can now proceed to the next steps'
+        }
+      />
     </Wrapper>
   );
 };
 SetupClusterWrapper.propTypes = {
   children: PropTypes.object,
   activeTab: PropTypes.string,
-  setAtiveTab: PropTypes.func,
 };
 export default SetupClusterWrapper;
