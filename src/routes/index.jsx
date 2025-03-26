@@ -300,6 +300,7 @@ const Routes = () => {
       ].includes(location.pathname)
     ) {
       dispatch(SettingsActions.fetchSettings());
+      dispatch(AuthenticationActions.fetchLicenseInfo());
     }
   }, [dispatch, location.pathname]);
 
