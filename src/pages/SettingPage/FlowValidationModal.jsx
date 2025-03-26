@@ -54,6 +54,11 @@ const ConditionIcon = styled.div`
   line-height: 16px;
   color: #444445;
 `;
+const RadioContainer = styled.div`
+  > div {
+    margin: 0px;
+  }
+`;
 
 const FlowValidationModal = () => {
   const dispatch = useDispatch();
@@ -77,7 +82,7 @@ const FlowValidationModal = () => {
       contentStyles={{ maxWidth: '70%', maxHeight: '80%' }}
     >
       <div className="row">
-        <div className="col-md-8">
+        <div className="col-md-8 col-xl-9">
           <InputField
             name="rule_name"
             icon={<NewLinkIcon />}
@@ -137,7 +142,7 @@ const FlowValidationModal = () => {
             </div>
           </div>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-4 col-xl-3">
           <ModelRightSide className="p-3">
             <div className="d-flex justify-content-between mb-3">
               <span className="d-flex align-items-center gap-2">
@@ -151,19 +156,19 @@ const FlowValidationModal = () => {
             </div>
             <ul className="list-group">
               <li className="list-group-item d-flex justify-content-between align-items-center active">
-                <div className="d-flex align-items-center gap-3">
-                  <RadioField />
+                <RadioContainer className="d-flex align-items-center gap-2 pe-2">
+                  <RadioField className="m-0" />
                   Processor Colors
-                </div>
+                </RadioContainer>
                 <span>
                   <DeleteSmallIcon color="#FF7A00" />
                 </span>
               </li>
               <li className="list-group-item d-flex justify-content-between align-items-center">
-                <div className="d-flex  align-items-center gap-3">
-                  <RadioField />
+                <RadioContainer className="d-flex  align-items-center gap-2  pe-2">
+                  <RadioField className="m-0" />
                   Unknown Colors
-                </div>
+                </RadioContainer>
                 <span>
                   <DeleteSmallIcon color="#FF7A00" />
                 </span>

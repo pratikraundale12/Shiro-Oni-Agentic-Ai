@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { CompareIcon, FlowDetailIcon } from '../../../assets';
 import { Table } from '../../../components';
 import { Button, SelectField } from '../../../shared';
+import { FlowValidationActions } from '../../../store/flowValidation';
 import Collapsible from '../Collapsible';
 
 // Styled Components
@@ -30,6 +32,12 @@ const LabelSelectContent = styled.div`
 
 const FlowValidationDetails = () => {
   const [showDetail, setShowDetail] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(FlowValidationActions.ruleScopeFetch({}));
+    dispatch(FlowValidationActions.fetchRules());
+  }, [dispatch]);
 
   const COLUMNS = [
     {

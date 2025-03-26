@@ -5,13 +5,14 @@ import { activityHistoryReducer } from './activityHistory/redux';
 import { authenticationReducer } from './authentication';
 import { clustersReducer } from './clusters';
 import { dashboardReducer } from './dashboard';
+import { flowValidationReducer } from './flowValidation';
 import { gridReducer } from './grid/redux';
 import { loadingReducer } from './helpers/loading_redux';
 import { namespacesReducer } from './namespaces';
 import { policiesReducer } from './policies';
+import { rolesReducer } from './roles/redux';
 import { schedularReducer } from './schedular';
 import { settingsReducer } from './settings';
-import { rolesReducer } from './roles/redux';
 import { usersReducer } from './users';
 
 const resettable = resettableReducer('RESET');
@@ -35,4 +36,5 @@ export default combineReducers({
   schedular: resettable(schedularReducer),
   settings: resettable(settingsReducer),
   activityHistory: resettable(activityHistoryReducer),
+  flowValidation: resettable(flowValidationReducer),
 });

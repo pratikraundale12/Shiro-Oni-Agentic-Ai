@@ -1,9 +1,13 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { AddIcon, FlowValidationIcon, NewEditIcon } from '../../assets';
-import { Table } from '../../components';
+import { Table, TextRender } from '../../components';
 import { Button } from '../../shared';
+import {
+  FlowValidationActions,
+  FlowValidationSelectors,
+} from '../../store/flowValidation';
 import { SettingsActions } from '../../store/settings';
 import AddNewValidationModal from './AddNewValidationModal';
 import FlowValidationModal from './FlowValidationModal';
@@ -31,32 +35,50 @@ const ModalBody = styled.div`
 
 const FlowValidation = () => {
   const dispatch = useDispatch();
+
+  const ruleScopes = useSelector(FlowValidationSelectors.getRuleScopes);
+  console.log(ruleScopes?.rules, 'ruleScopes');
+  useEffect(() => {
+    dispatch(FlowValidationActions.ruleScopeFetch({}));
+  }, [dispatch]);
+  const convertDateTime = dateString => {
+    if (!dateString) return 'No date provided';
+
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
+  };
   const COLUMNS = [
     {
       label: 'Scope Type',
-      renderCell: item => <div>{item.version}</div>,
-      width: '15%',
-    },
-    {
-      label: 'Display Value',
-      renderCell: item => <div>{item.displayValue}</div>,
+      renderCell: item => <TextRender text={item?.scope_type} />,
       width: '20%',
     },
     {
+      label: 'Display Value',
+      renderCell: item => <TextRender text={item?.header} />,
+      width: '25%',
+    },
+    {
       label: 'Description',
-      renderCell: item => <div>{item.comments}</div>,
+      renderCell: item => <TextRender text={item?.description} />,
       width: '30%',
     },
     {
       label: 'Last Updated',
-      renderCell: item => <div>{item.lastUpdated || '-'}</div>,
+      renderCell: item => (
+        <TextRender text={convertDateTime(item?.updated_at)} />
+      ),
       width: '15%',
     },
-    {
-      label: 'Status',
-      renderCell: item => <div>{item.status || '-'}</div>,
-      width: '10%',
-    },
+
     {
       label: 'Actions',
       renderCell: () => (
@@ -84,33 +106,6 @@ const FlowValidation = () => {
     },
   ];
 
-  const DATA = [
-    {
-      id: 1,
-      version: 'Processor',
-      displayValue: 'Concurrent Task',
-      comments: 'Rules for Concurrent Task',
-      lastUpdated: '03/12/25, 1:28:00 PM',
-      status: 'Active',
-    },
-    {
-      id: 2,
-      version: 'Connections',
-      displayValue: 'Flowfile Expiry Time',
-      comments: 'Rules for Flowfile Expiry Time',
-      lastUpdated: '03/12/25, 1:28:00 PM',
-      status: 'Inactive',
-    },
-    {
-      id: 3,
-      version: 'Processor',
-      displayValue: 'Processor Color',
-      comments: 'Rules for Processor Color',
-      lastUpdated: '03/12/25, 1:28:00 PM',
-      status: 'Active',
-    },
-  ];
-
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center">
@@ -133,7 +128,7 @@ const FlowValidation = () => {
       <ModalBody className="modal-body">
         <Table
           columns={COLUMNS}
-          data={DATA}
+          data={ruleScopes?.rules}
           className="parameter-context-table"
         />
       </ModalBody>
