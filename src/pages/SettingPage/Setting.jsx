@@ -36,6 +36,7 @@ import {
 } from '../../shared';
 import { AuthenticationSelectors, RolesSelectors } from '../../store';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import { isEmpty } from 'lodash';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -611,17 +612,19 @@ export const Setting = () => {
           <HeadingContent>{KDFM.LICENSE_DETAILS}</HeadingContent>
         </div>
         <HeadingContentHr className="mt-3 mb-4" />
-        <LicenseInfoContainer>
-          {licenseInfoData?.map((data, index) => (
-            <div
-              key={index}
-              className="d-flex flex-column align-items-start gap-2"
-            >
-              <InfoLabel>{data?.label}</InfoLabel>
-              <InfoData>{data?.data}</InfoData>
-            </div>
-          ))}
-        </LicenseInfoContainer>
+        {!isEmpty(licenseInfoData) && (
+          <LicenseInfoContainer>
+            {licenseInfoData?.map((data, index) => (
+              <div
+                key={index}
+                className="d-flex flex-column align-items-start gap-2"
+              >
+                <InfoLabel>{data?.label}</InfoLabel>
+                <InfoData>{data?.data}</InfoData>
+              </div>
+            ))}
+          </LicenseInfoContainer>
+        )}
         <div className="d-flex justify-content-start me-4">
           <HeadingContent className="mt-4">{KDFM.APP}</HeadingContent>
         </div>
