@@ -312,7 +312,7 @@ export const Setting = () => {
     },
     {
       label: 'License version',
-      data: formatDate(licenseInfo?.version),
+      data: licenseInfo?.version,
     },
   ];
   const approverOptions = RoleList.map(role => ({
