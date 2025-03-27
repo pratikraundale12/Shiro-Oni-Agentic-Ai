@@ -34,9 +34,8 @@ import {
   TextButton,
   UploadField,
 } from '../../shared';
-import { AuthenticationSelectors, RolesSelectors } from '../../store';
+import { RolesSelectors } from '../../store';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
-import { isEmpty } from 'lodash';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -90,33 +89,6 @@ const LinkButton = styled(TextButton)`
   }
 `;
 
-const LicenseInfoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 80%;
-  margin-bottom: 1rem;
-`;
-
-const InfoLabel = styled.span`
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 16px;
-  letter-spacing: -0.5%;
-  text-transform: capitalize;
-  color: #444445;
-  margin-bottom: 2px;
-`;
-
-const InfoData = styled.span`
-  font-family: Red Hat Display;
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 100%;
-  letter-spacing: -0.5%;
-  color: #7a7a7a;
-  text-transform: capitalize;
-`;
 export const settingSchema = yup.object().shape({
   email: yup
     .string()
@@ -287,34 +259,7 @@ export const Setting = () => {
   const RoleList = useSelector(RolesSelectors.getRoles);
   const [ldapAutoSync, setLdapAutoSync] = useState(false);
   const [isLdapEnabled, setLdapInitialConfig] = useState(false);
-  const licenseInfo = useSelector(AuthenticationSelectors.getLicenseInfo);
 
-  const formatDate = isoString => {
-    const date = new Date(isoString);
-    return date.toLocaleString('en-US', {
-      year: '2-digit',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
-  };
-  const licenseInfoData = [
-    {
-      label: 'Created Date',
-      data: formatDate(licenseInfo?.createdDate),
-    },
-    {
-      label: 'License Expiry Date',
-      data: formatDate(licenseInfo?.exprDate),
-    },
-    {
-      label: 'License version',
-      data: licenseInfo?.version,
-    },
-  ];
   const approverOptions = RoleList.map(role => ({
     label: role.name,
     value: role.role_id,
@@ -609,24 +554,7 @@ export const Setting = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="d-flex justify-content-start me-4">
-          <HeadingContent>{KDFM.LICENSE_DETAILS}</HeadingContent>
-        </div>
-        <HeadingContentHr className="mt-3 mb-4" />
-        {!isEmpty(licenseInfoData) && (
-          <LicenseInfoContainer>
-            {licenseInfoData?.map((data, index) => (
-              <div
-                key={index}
-                className="d-flex flex-column align-items-start gap-2"
-              >
-                <InfoLabel>{data?.label}</InfoLabel>
-                <InfoData>{data?.data}</InfoData>
-              </div>
-            ))}
-          </LicenseInfoContainer>
-        )}
-        <div className="d-flex justify-content-start me-4">
-          <HeadingContent className="mt-4">{KDFM.APP}</HeadingContent>
+          <HeadingContent>{KDFM.APP}</HeadingContent>
         </div>
         <HeadingContentHr className="mt-3 mb-4" />
         <InputFields className="row">
