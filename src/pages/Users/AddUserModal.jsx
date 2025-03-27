@@ -144,7 +144,11 @@ export const AddUserModal = props => {
 
   const handleApiResponse = (response, successMessage) => {
     if (response.status === 200 || response.status === 201) {
-      dispatch(GridActions.fetchGrid({ module: 'users' }));
+      if (
+        currentUserData?.permissions?.includes(['view_user', 'view_namespace'])
+      ) {
+        dispatch(GridActions.fetchGrid({ module: 'users' }));
+      }
       toast.success(successMessage);
       setState(prevState => ({
         ...prevState,
@@ -218,7 +222,6 @@ export const AddUserModal = props => {
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
         contentStyles={{ minWidth: '65%' }}
-        primaryButtonDisabled={currentUserData?.role !== 'superadmin'}
       >
         <ImageContainer>
           <ProfileUpload
