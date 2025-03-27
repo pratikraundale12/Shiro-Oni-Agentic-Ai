@@ -17,7 +17,6 @@ import {
   AuthenticationActions,
   AuthenticationSelectors,
   GridActions,
-  RolesActions,
   UsersActions,
   UsersSelectors,
 } from '../../store';
@@ -200,12 +199,6 @@ export const AddUserModal = props => {
       ? false
       : state.selectedItem;
   };
-  useEffect(() => {
-    if (userModalOpen) {
-      dispatch(RolesActions.fetchRoles());
-    }
-  }, [userModalOpen]);
-
   return (
     <div {...props}>
       <Button
@@ -225,6 +218,7 @@ export const AddUserModal = props => {
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
         contentStyles={{ minWidth: '65%' }}
+        primaryButtonDisabled={currentUserData?.role !== 'superadmin'}
       >
         <ImageContainer>
           <ProfileUpload
