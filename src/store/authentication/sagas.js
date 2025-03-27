@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
-import keycloak from '../../Keycloak';
+// import keycloak from '../../Keycloak';
+import Keycloak from 'keycloak-js';
 import {
   ACCESS_TOKEN,
   CLUSTERS_TOKEN,
@@ -150,8 +151,17 @@ export function* logout(api, { payload: { url } }) {
   localStorage.removeItem('previous_path');
   localStorage.removeItem('selected_cluster');
   localStorage.removeItem(CLUSTERS_TOKEN);
+<<<<<<< Updated upstream
   yield keycloak.logout();
   history.replace(url); // Example: '/login'
+=======
+  const storedConfig = localStorage.getItem('keycloakConfig');
+  if (!storedConfig) {
+    throw new Error('Keycloak config not found in localStorage');
+  }
+
+  // yield keycloak.logout({ redirectUri: `${API_URL}/login` });
+>>>>>>> Stashed changes
 }
 export function* fetchSettingLogo(api) {
   yield call(requestSaga, {
@@ -199,6 +209,11 @@ export function* ssoUserLogin(api, { payload }) {
     }
   } else {
     toast.error(response.data.message, { toastId: 'login-toast-error1' });
+<<<<<<< Updated upstream
+=======
+    history.push('/login');
+    // yield keycloak.logout({ redirectUri: `${API_URL}/login` });
+>>>>>>> Stashed changes
   }
 }
 

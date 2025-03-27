@@ -1,4 +1,4 @@
-import { useKeycloak } from '@react-keycloak/web';
+import Keycloak from 'keycloak-js';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { KsolvesDataFlowIcon, MicroSoftIcon } from '../assets';
 import KeycloakIcon from '../assets/Icons/KeycloakIcon';
-import { ALREADY_HAVE_AN_ACCOUNT, API_URL, SIGN_IN } from '../constants';
+import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
 import { changeFavicon, changeTitle } from '../helpers';
 import { history } from '../helpers/history';
 import { TextButton } from '../shared';
@@ -350,7 +350,6 @@ export const Layout = ({ children }) => {
   const isReset = pathname === '/reset';
   const settingsData = useSelector(SettingsSelectors.getSettings);
   const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
-  const { keycloak, initialized } = useKeycloak();
   let image = settingsData?.logo || settingLogo?.logo;
 
   let imageUrl;
@@ -445,12 +444,65 @@ export const Layout = ({ children }) => {
     }
   }, [dispatch, settingLogo?.selected_sso]);
 
-  /*
-   * use http://localhost:port/keycloakLogin for configuring on local system in development mode
-   */
+  // let keycloak;
+  const initializeKeycloak = async () => {
+    try {
+      const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
+      if (storedConfig && storedConfig?.keycloak_url) {
+        const keycloak = new Keycloak({
+          url: storedConfig?.keycloak_url,
+          realm: storedConfig?.keycloak_realm,
+          clientId: storedConfig?.keycloak_client_id,
+        });
+        console.log(
+          'window.location.origin----',
+          window.location.origin,
+          keycloak
+        );
+        const authenticated = await keycloak.init({
+          onLoad: 'login-required',
+          checkLoginIframe: true,
+          pkceMethod: 'S256',
+          silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
+        });
+        console.log('line no 465');
+        console.log(authenticated, 'authenticated');
+        //     if (authenticated) {
+        //       console.log('User is authenticated:', keycloak.token);
+        //       localStorage.setItem('keyCloakToken', keycloak.token);
+        //       localStorage.setItem('keyCloakInitialized', true);
+
+        //       dispatch(
+        //         AuthenticationActions.ssoUserLogin({
+        //           loginToken: keycloak.token,
+        //         })
+        //       );
+        //       // Handle authentication (e.g., store token, update UI)
+        //       window.location.replace('/dashboard');
+        //     } else {
+        //       console.log('User is authenticated:', keycloak.token);
+        //       console.log('User is not authenticated');
+        //       localStorage.setItem('keyCloakInitialized', false);
+        //       // Handle not authenticated case
+        //     }
+      }
+    } catch (error) {
+      console.error('Keycloak initialization failed', error);
+    }
+  };
   const handleKeycloakLogin = async () => {
-    if (initialized && !keycloak.authenticated) {
-      await keycloak.login({ redirectUri: `${API_URL}/keycloakLogin` });
+    try {
+      await initializeKeycloak();
+      // const keyCloakInitialized = localStorage.getItem('keyCloakInitialized');
+      // if (keyCloakInitialized) {
+      //   await keycloak.login({
+      //     redirectUri: `http://localhost:8080/keycloakLogin`,
+      //   });
+      // }
+    } catch (error) {
+      console.log('line no 458');
+      console.error('Error initializing Keycloak:', error);
+      return null;
     }
   };
 

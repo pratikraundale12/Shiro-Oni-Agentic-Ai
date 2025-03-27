@@ -1,31 +1,33 @@
-import { useKeycloak } from '@react-keycloak/web';
+// import Keycloak from 'keycloak-js';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { keycloak } from '../Keycloak';
 import { AuthenticationActions, LoadingSelectors } from '../store';
 import { FullPageLoader } from './FullPageLoader';
 
 const KeycloakRedirectPage = () => {
-  const { keycloak, initialized } = useKeycloak();
   const dispatch = useDispatch();
   useEffect(() => {
-    if (initialized && keycloak.token) {
+    const keyCLoakToken = localStorage.getItem('keyCloakToken');
+    if (keyCLoakToken && keyCLoakToken !== '') {
+      console.log('User is authenticated:', keycloak.token);
       dispatch(
         AuthenticationActions.ssoUserLogin({
-          loginToken: keycloak.token,
+          loginToken: keyCLoakToken,
         })
       );
+      // Handle authentication (e.g., store token, update UI)
+    } else {
+      console.log('User is not authenticated');
+      // Handle not authenticated case
     }
-  }, [dispatch, keycloak, initialized]);
+  }, [dispatch]);
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'ssoUserLogin')
   );
 
-  return (
-    <div>
-      {' '}
-      <FullPageLoader loading={loading} />
-    </div>
-  );
+  return <FullPageLoader loading={loading} />;
 };
 
 export default KeycloakRedirectPage;
