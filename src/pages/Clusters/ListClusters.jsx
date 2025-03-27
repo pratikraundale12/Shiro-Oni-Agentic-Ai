@@ -36,6 +36,7 @@ import {
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
+import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 
 const List = styled.div`
   position: absolute;
@@ -125,6 +126,7 @@ export const ListClusters = () => {
   const hardDeleteModalOpen = useSelector(
     ClustersSelectors.getIsclusterHardDeleteModalOpen
   );
+  const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -142,6 +144,10 @@ export const ListClusters = () => {
     y: 0,
     row: {},
   });
+
+  useEffect(() => {
+    dispatch(SchedularActions.setStatusFilterData(''));
+  }, []);
 
   const COLUMNS = [
     {
@@ -328,7 +334,16 @@ export const ListClusters = () => {
       const updatedClusters = clusters.filter(cluster => cluster.id !== id);
       localStorage.setItem('clusters', JSON.stringify(updatedClusters));
       toast.success('The cluster is now activated successfully.');
-      dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+      dispatch(
+        GridActions.fetchGrid({
+          module: 'clusters',
+          params: {
+            page: 1,
+            sort: 'name',
+            ...(statusData !== '' && { is_active: statusData }),
+          },
+        })
+      );
     } else {
       toast.error('error occured');
     }
@@ -362,7 +377,16 @@ export const ListClusters = () => {
 
       if (response) {
         toast.success('The cluster is now deactivated successfully.');
-        dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+        dispatch(
+          GridActions.fetchGrid({
+            module: 'clusters',
+            params: {
+              page: 1,
+              sort: 'name',
+              ...(statusData !== '' && { is_active: statusData }),
+            },
+          })
+        );
         setState({ ...state, clusterDeleteModal: false });
         const clusterItem = localStorage.getItem('selected_cluster');
         if (clusterItem) {
