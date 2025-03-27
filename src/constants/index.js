@@ -26,7 +26,8 @@ export const STATUS_OPTIONS = [
 
 export const Cluster_STATUS_OPTIONS = [
   { value: 'all', label: 'All' },
-  { value: 'true', label: 'Connected/Disconnected' },
+  { value: 'connected', label: 'Connected' },
+  { value: 'disconnected', label: 'Disconnected' },
   { value: 'false', label: 'Deactivated' },
 ];
 
