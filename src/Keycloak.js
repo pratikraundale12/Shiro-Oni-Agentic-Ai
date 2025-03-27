@@ -43,17 +43,4 @@
 //   }
 // }
 
-<<<<<<< Updated upstream
-// Initialize and export Keycloak
-const keycloak = new Keycloak(keycloakConfig);
-export default keycloak;
-
-export const keycloakInitOptions = {
-  onLoad: 'check-sso',
-  checkLoginIframe: true,
-  pkceMethod: 'S256',
-  // silentCheckSsoRedirectUri: window.location.origin + '/check-sso-login.html',
-};
-=======
 // export { keycloak };
->>>>>>> Stashed changes
