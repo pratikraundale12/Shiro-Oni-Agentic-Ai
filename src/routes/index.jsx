@@ -12,6 +12,7 @@ import {
   DashboardIcon,
   GenrateFlowIcon,
   LdapConfigIcon,
+  LicenseIcon,
   LockIcon,
   NameSpaceIcon,
   PeopleIcon,
@@ -64,6 +65,7 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import License from '../pages/Licensing/License.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -254,6 +256,18 @@ export const ROUTES_MENU = [
     permission: 'view_setting',
   },
   {
+    name: 'Licensing',
+    path: 'licensing',
+    icon: LicenseIcon,
+    pages: [
+      {
+        path: '',
+        component: <License />,
+      },
+    ],
+    permission: 'view_setting',
+  },
+  {
     name: 'Help & Support',
     path: 'help-&-support',
     icon: QuestionMarkIcon,
@@ -297,6 +311,7 @@ const Routes = () => {
         '/process-group',
         '/clusters',
         '/dashboard',
+        '/licensing',
       ].includes(location.pathname)
     ) {
       dispatch(SettingsActions.fetchSettings());
