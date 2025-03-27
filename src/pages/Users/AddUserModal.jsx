@@ -145,7 +145,9 @@ export const AddUserModal = props => {
   const handleApiResponse = (response, successMessage) => {
     if (response.status === 200 || response.status === 201) {
       if (
-        currentUserData?.permissions?.includes(['view_user', 'view_namespace'])
+        currentUserData?.permissions?.some(perm =>
+          ['view_user', 'view_namespace'].includes(perm)
+        )
       ) {
         dispatch(GridActions.fetchGrid({ module: 'users' }));
       }
