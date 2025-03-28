@@ -49,7 +49,12 @@ const AzureCallbackHandler = () => {
             toast.error(data?.message, {
               toastId: 'login-toast-error1',
             });
-            history.push('/back-to-login');
+            if (data?.raw?.raw?.ssoUserNotExist) {
+              dispatch(AuthenticationActions.fetchSettingLogo());
+              history.push('/login');
+            } else {
+              history.push('/back-to-login');
+            }
           }
         } catch (error) {
           console.error('Azure Callback Error:', error);
