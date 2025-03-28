@@ -1,6 +1,5 @@
 import { toast } from 'react-toastify';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
-import keycloak from '../../Keycloak';
 import {
   ACCESS_TOKEN,
   CLUSTERS_TOKEN,
@@ -150,7 +149,6 @@ export function* logout(api, { payload: { url } }) {
   localStorage.removeItem('previous_path');
   localStorage.removeItem('selected_cluster');
   localStorage.removeItem(CLUSTERS_TOKEN);
-  yield keycloak.logout();
   history.replace(url); // Example: '/login'
 }
 export function* fetchSettingLogo(api) {
