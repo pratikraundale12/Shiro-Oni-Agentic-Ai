@@ -20,6 +20,7 @@ import {
 } from '../store';
 import { getClusterToken } from '../store/apis';
 import { FullPageLoader } from './FullPageLoader';
+import { SchedularSelectors } from '../store/schedular';
 
 const clusterSchema = yup.object().shape({
   cluster_id: yup.string().required('Cluster is required'),
@@ -71,6 +72,7 @@ export const ClusterLoginModal = () => {
   const selectedClusterData = sortedClusters.find(
     cluster => cluster.value === clusterId
   );
+  const statusData = useSelector(SchedularSelectors.getStatusFilterData);
 
   const isFieldsDisabled = selectedClusterData?.status === 'Connected';
 
@@ -128,7 +130,17 @@ export const ClusterLoginModal = () => {
         toast.success('The cluster is now enabled successfully');
 
         reset(DEFAULT_VALUES);
-        dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+        dispatch(
+          GridActions.fetchGrid({
+            module: 'clusters',
+            params: {
+              page: 1,
+              sort: 'name',
+              limit: 10,
+              ...(statusData !== '' && { status: statusData }),
+            },
+          })
+        );
         if (window.location.pathname.includes('/process-group')) {
           window.location.reload();
           history.push('/process-group');
