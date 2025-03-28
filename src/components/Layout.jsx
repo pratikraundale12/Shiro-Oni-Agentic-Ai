@@ -1,4 +1,3 @@
-import { useKeycloak } from '@react-keycloak/web';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -7,7 +6,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { KsolvesDataFlowIcon, MicroSoftIcon } from '../assets';
 import KeycloakIcon from '../assets/Icons/KeycloakIcon';
-import { ALREADY_HAVE_AN_ACCOUNT, API_URL, SIGN_IN } from '../constants';
+import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
 import { changeFavicon, changeTitle } from '../helpers';
 import { history } from '../helpers/history';
 import { TextButton } from '../shared';
@@ -350,7 +349,6 @@ export const Layout = ({ children }) => {
   const isReset = pathname === '/reset';
   const settingsData = useSelector(SettingsSelectors.getSettings);
   const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
-  const { keycloak, initialized } = useKeycloak();
   let image = settingsData?.logo || settingLogo?.logo;
 
   let imageUrl;
@@ -448,11 +446,7 @@ export const Layout = ({ children }) => {
   /*
    * use http://localhost:port/keycloakLogin for configuring on local system in development mode
    */
-  const handleKeycloakLogin = async () => {
-    if (initialized && !keycloak.authenticated) {
-      await keycloak.login({ redirectUri: `${API_URL}/keycloakLogin` });
-    }
-  };
+  const handleKeycloakLogin = async () => {};
 
   return (
     <Container>
