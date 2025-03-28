@@ -318,7 +318,17 @@ export const ListClusters = () => {
     const response = await deleteCluster(deleteHardId);
     if (response?.status == 200) {
       toast.success(response?.data?.message);
-      dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+      dispatch(
+        GridActions.fetchGrid({
+          module: 'clusters',
+          params: {
+            page: 1,
+            sort: 'name',
+            limit: 10,
+            ...(statusData !== '' && { status: statusData }),
+          },
+        })
+      );
     } else {
       toast.error(response?.message);
     }
@@ -340,7 +350,8 @@ export const ListClusters = () => {
           params: {
             page: 1,
             sort: 'name',
-            ...(statusData !== '' && { is_active: statusData }),
+            limit: 10,
+            ...(statusData !== '' && { status: statusData }),
           },
         })
       );
@@ -383,7 +394,8 @@ export const ListClusters = () => {
             params: {
               page: 1,
               sort: 'name',
-              ...(statusData !== '' && { is_active: statusData }),
+              limit: 10,
+              ...(statusData !== '' && { status: statusData }),
             },
           })
         );
