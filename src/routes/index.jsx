@@ -46,7 +46,7 @@ import {
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
 // import ControllerServicesNamespace from '../pages/Namespaces/ControllerServicesNamespace';
-import KeycloakRedirectPage from '../components/KeycloakRedirectPage.jsx';
+import KeycloakRedirectPage from '../components/KeyCloak/KeycloakRedirectPage.jsx';
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';

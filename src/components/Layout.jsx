@@ -1,4 +1,4 @@
-import Keycloak from 'keycloak-js';
+// import Keycloak from 'keycloak-js';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -19,6 +19,10 @@ import {
 import { getAzureLoginUrl } from '../store/apis';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import { FullPageLoader } from './FullPageLoader';
+import {
+  generateCodeVerifier,
+  generateCodeChallenge,
+} from './KeyCloak/keycloak'; // Import the Keycloak configuration
 
 const Container = styled.div`
   max-height: 100vh;
@@ -351,6 +355,7 @@ export const Layout = ({ children }) => {
   const settingsData = useSelector(SettingsSelectors.getSettings);
   const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
   let image = settingsData?.logo || settingLogo?.logo;
+  // const [keycloak, setKeycloak] = useState(null);
 
   let imageUrl;
   let customHeight;
@@ -379,7 +384,7 @@ export const Layout = ({ children }) => {
 
   useEffect(() => {
     setIsLoading(false);
-  }, [history]);
+  }, []);
 
   const handleMSLogin = async () => {
     try {
@@ -427,7 +432,7 @@ export const Layout = ({ children }) => {
         dispatch(SettingsActions.fetchSettings());
       }
     }
-  }, [dispatch]);
+  }, [dispatch, settingsData]);
 
   useEffect(() => {
     dispatch(NamespacesActions.setSelectedCluster({}));
@@ -442,68 +447,38 @@ export const Layout = ({ children }) => {
     if (settingLogo?.selected_sso === 'keycloak' && settingLogo?.sso_enabled) {
       dispatch(AuthenticationActions.fetchKeycloakConfig());
     }
-  }, [dispatch, settingLogo?.selected_sso]);
+  }, [dispatch, settingLogo?.selected_sso, settingLogo?.sso_enabled]);
 
-  // let keycloak;
-  const initializeKeycloak = async () => {
-    try {
-      const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
-      if (storedConfig && storedConfig?.keycloak_url) {
-        const keycloak = new Keycloak({
-          url: storedConfig?.keycloak_url,
-          realm: storedConfig?.keycloak_realm,
-          clientId: storedConfig?.keycloak_client_id,
-        });
-        console.log(
-          'window.location.origin----',
-          window.location.origin,
-          keycloak
-        );
-        const authenticated = await keycloak.init({
-          onLoad: 'login-required',
-          checkLoginIframe: true,
-          pkceMethod: 'S256',
-          silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
-        });
-        console.log('line no 465');
-        console.log(authenticated, 'authenticated');
-        //     if (authenticated) {
-        //       console.log('User is authenticated:', keycloak.token);
-        //       localStorage.setItem('keyCloakToken', keycloak.token);
-        //       localStorage.setItem('keyCloakInitialized', true);
-
-        //       dispatch(
-        //         AuthenticationActions.ssoUserLogin({
-        //           loginToken: keycloak.token,
-        //         })
-        //       );
-        //       // Handle authentication (e.g., store token, update UI)
-        //       window.location.replace('/dashboard');
-        //     } else {
-        //       console.log('User is authenticated:', keycloak.token);
-        //       console.log('User is not authenticated');
-        //       localStorage.setItem('keyCloakInitialized', false);
-        //       // Handle not authenticated case
-        //     }
-      }
-    } catch (error) {
-      console.error('Keycloak initialization failed', error);
-    }
-  };
+  /**
+   * This is the OIDC client implementation. it should be OFF in Keycloak account which shows it is set to public access type and while accessing token doesn't require client_secret - for ref : src/components/KeyCloak/KeycloakRedirectPage.jsx
+   */
   const handleKeycloakLogin = async () => {
-    try {
-      await initializeKeycloak();
-      // const keyCloakInitialized = localStorage.getItem('keyCloakInitialized');
-      // if (keyCloakInitialized) {
-      //   await keycloak.login({
-      //     redirectUri: `http://localhost:8080/keycloakLogin`,
-      //   });
-      // }
-    } catch (error) {
-      console.log('line no 458');
-      console.error('Error initializing Keycloak:', error);
-      return null;
-    }
+    // Generate the code verifier and code challenge
+    const codeVerifier = await generateCodeVerifier();
+    const codeChallenge = await generateCodeChallenge(codeVerifier);
+    const setStateVal = Math.random().toString(36).substring(2);
+    const clientID = 'dfm-demo'; // to be read from settings data
+    const keyCLoakRedirectURL = `http://localhost:8080/keycloakLogin`; // baseURL to be changed with API_URL when pushed to server
+    const keyCloakRealm = 'DFM-DEV'; // to be read from settings data
+    const keyCloakURL = 'https://keycloak.dfmanager.com:8443'; // to be read from settings data
+
+    // Store the code verifier for later use in localStorage
+    localStorage.setItem('keycloak_code_verifier', codeVerifier);
+    localStorage.setItem('keycloak_state_val', setStateVal);
+
+    // Construct the authorization URL with PKCE
+    const authUrl =
+      `${keyCloakURL}/realms/${keyCloakRealm}/protocol/openid-connect/auth?` +
+      `client_id=${clientID}&` + // Ensure this matches your client ID in Keycloak
+      `redirect_uri=${keyCLoakRedirectURL}&` +
+      `response_type=code&` +
+      `scope=openid&` +
+      `state=${setStateVal}&` +
+      `code_challenge=${codeChallenge}&` +
+      `code_challenge_method=S256`;
+
+    // Redirect to Keycloak login page
+    window.location.href = authUrl;
   };
 
   return (

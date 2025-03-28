@@ -1,4 +1,3 @@
-import Keycloak from 'keycloak-js';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -216,69 +215,27 @@ const ProfileDropdown = () => {
   const [showMenu, setShowMenu] = useState(false);
   const { setState } = useGlobalContext();
   const menuRef = useRef(null);
+
   const logoutFromKeycloak = async () => {
-    try {
-      console.log('Starting Keycloak logout process...');
-      const storedConfig = localStorage.getItem('keycloakConfig');
-      console.log('Stored Keycloak Config:', storedConfig);
-      if (!storedConfig) {
-        throw new Error('Keycloak config not found in localStorage');
-      }
-
-      const config = JSON.parse(storedConfig);
-      console.log('Parsed Keycloak Config:', config);
-
-      if (
-        !config.keycloak_url ||
-        !config.keycloak_realm ||
-        !config.keycloak_client_id
-      ) {
-        throw new Error('Invalid Keycloak configuration');
-      }
-
-      const keycloak = new Keycloak({
-        url: config.keycloak_url,
-        realm: config.keycloak_realm,
-        clientId: config.keycloak_client_id,
-      });
-
-      console.log('Initializing Keycloak...');
-      const initialized = await keycloak
-        .init({
-          onLoad: 'check-sso',
-          checkLoginIframe: false,
-          pkceMethod: 'S256',
-        })
-        .then(initialized => {
-          console.log('Keycloak init resolved with:', initialized);
-          return initialized;
-        })
-        .catch(error => {
-          console.error('Keycloak initialization failed:', error);
-          return false;
-        });
-
-      console.log('Keycloak initialized:', initialized);
-      if (initialized) {
-        console.log('Keycloak object before logout:', keycloak);
-        console.log('Logging out from Keycloak...');
-
-        await keycloak
-          .logout({
-            redirectUri: `${window.location.origin}/login`,
-          })
-          .then(() => {
-            console.log('Keycloak logout successful');
-          })
-          .catch(error => {
-            console.error('Keycloak logout failed:', error);
-          });
-      } else {
-        console.log('Keycloak not initialized, redirecting manually...');
-      }
-    } catch (error) {
-      console.error('Error during Keycloak logout:', error);
+    const idToken = localStorage.getItem('keycloak_id_token');
+    const keycloakUrl = 'https://keycloak.dfmanager.com:8443';
+    if (!idToken) {
+      console.error('No ID token found for logout');
+      return;
     }
+
+    localStorage.removeItem('keycloak_access_token');
+    localStorage.removeItem('keycloak_id_token');
+    localStorage.removeItem('keycloak_refresh_token');
+    localStorage.removeItem('keycloak_code_verifier');
+    localStorage.removeItem('keycloak_state_val');
+
+    const logoutUrl =
+      `${keycloakUrl}/realms/DFM-DEV/protocol/openid-connect/logout?` +
+      `id_token_hint=${idToken}&` +
+      `post_logout_redirect_uri=http://localhost:8080/login`;
+
+    window.location.href = logoutUrl;
   };
 
   const options = [
