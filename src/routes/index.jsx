@@ -22,6 +22,7 @@ import {
   SettingSmallIcon,
 } from '../assets';
 import { FullPageLoader } from '../components';
+import KeycloakRedirectPage from '../components/KeyCloak/KeycloakRedirectPage.jsx';
 import {
   ActvityHistory,
   Add,
@@ -47,6 +48,7 @@ import {
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
+import License from '../pages/Licensing/License.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
 import FlowDetailsPage from '../pages/Namespaces/FlowDetailsPage.jsx';
@@ -63,7 +65,6 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
-import License from '../pages/Licensing/License.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -350,6 +351,7 @@ const Routes = () => {
         path="/api/auth/azure/callback"
         element={<AzureCallbackHandler />}
       />
+      <Route path="/keycloakLogin" element={<KeycloakRedirectPage />} />
       <Route path="/back-to-login" element={<RedirectToLogin />} />
       <Route path="/admin/login" element={<Login />} />
       <Route path="/forgot" element={<Forgot />} />
