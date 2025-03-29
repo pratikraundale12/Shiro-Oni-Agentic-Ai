@@ -1,4 +1,3 @@
-// import { ReactKeycloakProvider } from '@react-keycloak/web';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import React, { useEffect, useState } from 'react';
@@ -7,7 +6,6 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-tooltip/dist/react-tooltip.css';
 import { ThemeProvider } from 'styled-components';
-// import keycloak, { keycloakInitOptions } from './Keycloak';
 import { ExclamationFailedTestingIcon } from './assets';
 import { ENABLE_CONSOLE_LOGS } from './constants';
 import { disableConsole } from './helpers/DisableConsole';

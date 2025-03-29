@@ -17,7 +17,6 @@ import {
   AuthenticationActions,
   AuthenticationSelectors,
   GridActions,
-  RolesActions,
   UsersActions,
   UsersSelectors,
 } from '../../store';
@@ -145,7 +144,13 @@ export const AddUserModal = props => {
 
   const handleApiResponse = (response, successMessage) => {
     if (response.status === 200 || response.status === 201) {
-      dispatch(GridActions.fetchGrid({ module: 'users' }));
+      if (
+        currentUserData?.permissions?.some(perm =>
+          ['view_user', 'view_namespace'].includes(perm)
+        )
+      ) {
+        dispatch(GridActions.fetchGrid({ module: 'users' }));
+      }
       toast.success(successMessage);
       setState(prevState => ({
         ...prevState,
@@ -200,12 +205,6 @@ export const AddUserModal = props => {
       ? false
       : state.selectedItem;
   };
-  useEffect(() => {
-    if (userModalOpen) {
-      dispatch(RolesActions.fetchRoles());
-    }
-  }, [userModalOpen]);
-
   return (
     <div {...props}>
       <Button

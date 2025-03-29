@@ -232,6 +232,8 @@ export const Grid = ({
       return 'status';
     } else if (module === 'scheduler') {
       return 'deployment_status';
+    } else if (module === 'clusters') {
+      return 'status';
     } else {
       return 'is_active';
     }
