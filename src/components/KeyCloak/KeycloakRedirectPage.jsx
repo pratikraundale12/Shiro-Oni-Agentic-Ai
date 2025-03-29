@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoadingSelectors } from '../../store';
+import { API_URL } from '../../constants';
+import { AuthenticationActions, LoadingSelectors } from '../../store';
 import { FullPageLoader } from '../FullPageLoader';
-import { AuthenticationActions } from '../../store';
-// import { API_URL } from '../../constants';
-// import axios from 'axios';
 
 const KeycloakRedirectPage = () => {
   const dispatch = useDispatch();
@@ -17,17 +15,17 @@ const KeycloakRedirectPage = () => {
     if (returnedState === storedState) {
       const code = urlParams.get('code');
       // Log the code to verify if we have successfully parsed them
-      console.log('Code:----', code);
       // Now using code to exchange for an access token
       exchangeCodeForToken(code);
     }
   }, []);
 
   const exchangeCodeForToken = async code => {
-    const keyCLoakRedirectURL = `http://localhost:8080/keycloakLogin`; // baseURL to be changed with API_URL when pushed to server
-    const keyCloakRealm = 'DFM-DEV'; // to be read from settings data
-    const keyCloakURL = 'https://keycloak.dfmanager.com:8443'; // to be read from settings data
-    const clientID = 'dfm-demo'; // to be read from settings data
+    const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
+    const keyCLoakRedirectURL = `${API_URL}/keycloakLogin`; // baseURL to be changed with API_URL when pushed to server
+    const keyCloakRealm = storedConfig?.keycloak_realm; // to be read from settings data
+    const keyCloakURL = storedConfig?.keycloak_url; // to be read from settings data
+    const clientID = storedConfig?.keycloak_client_id; // to be read from settings data
 
     const tokenEndpoint = `${keyCloakURL}/realms/${keyCloakRealm}/protocol/openid-connect/token`;
 
@@ -65,7 +63,6 @@ const KeycloakRedirectPage = () => {
         return;
       }
 
-      console.log('Token response:', responseData);
       // Store the tokens (access token, refresh token, etc.)
       const { access_token, id_token, refresh_token } = responseData;
       localStorage.setItem('keycloak_access_token', access_token);

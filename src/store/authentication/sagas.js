@@ -1,7 +1,5 @@
 import { toast } from 'react-toastify';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
-// import keycloak from '../../Keycloak';
-// import Keycloak from 'keycloak-js';
 import {
   ACCESS_TOKEN,
   CLUSTERS_TOKEN,
@@ -147,11 +145,7 @@ export function* login(api, { payload: { type, token, ...payload } }) {
 export function* logout(api, { payload: { url } }) {
   yield put(AuthenticationActions.logoutSuccess());
   yield put({ type: 'RESET' });
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('previous_path');
-  localStorage.removeItem('selected_cluster');
-  localStorage.removeItem(CLUSTERS_TOKEN);
-  // yield keycloak.logout();
+  localStorage.clear();
   history.replace(url); // Example: '/login'
 }
 export function* fetchSettingLogo(api) {

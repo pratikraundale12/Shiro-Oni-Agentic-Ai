@@ -1,4 +1,3 @@
-// import Keycloak from 'keycloak-js';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -7,7 +6,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { KsolvesDataFlowIcon, MicroSoftIcon } from '../assets';
 import KeycloakIcon from '../assets/Icons/KeycloakIcon';
-import { ALREADY_HAVE_AN_ACCOUNT, SIGN_IN } from '../constants';
+import { ALREADY_HAVE_AN_ACCOUNT, API_URL, SIGN_IN } from '../constants';
 import { changeFavicon, changeTitle } from '../helpers';
 import { history } from '../helpers/history';
 import { TextButton } from '../shared';
@@ -20,8 +19,8 @@ import { getAzureLoginUrl } from '../store/apis';
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import { FullPageLoader } from './FullPageLoader';
 import {
-  generateCodeVerifier,
   generateCodeChallenge,
+  generateCodeVerifier,
 } from './KeyCloak/keycloak'; // Import the Keycloak configuration
 
 const Container = styled.div`
@@ -354,8 +353,10 @@ export const Layout = ({ children }) => {
   const isReset = pathname === '/reset';
   const settingsData = useSelector(SettingsSelectors.getSettings);
   const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
+  const keycloakConfigDetails = useSelector(
+    AuthenticationSelectors.getKeycloakConfig
+  );
   let image = settingsData?.logo || settingLogo?.logo;
-  // const [keycloak, setKeycloak] = useState(null);
 
   let imageUrl;
   let customHeight;
@@ -457,11 +458,10 @@ export const Layout = ({ children }) => {
     const codeVerifier = await generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
     const setStateVal = Math.random().toString(36).substring(2);
-    const clientID = 'dfm-demo'; // to be read from settings data
-    const keyCLoakRedirectURL = `http://localhost:8080/keycloakLogin`; // baseURL to be changed with API_URL when pushed to server
-    const keyCloakRealm = 'DFM-DEV'; // to be read from settings data
-    const keyCloakURL = 'https://keycloak.dfmanager.com:8443'; // to be read from settings data
-
+    const clientID = keycloakConfigDetails?.keycloak_client_id; // to be read from settings data
+    const keyCLoakRedirectURL = `${API_URL}/keycloakLogin`; // baseURL to be changed with API_URL when pushed to server
+    const keyCloakRealm = keycloakConfigDetails?.keycloak_realm; // to be read from settings data
+    const keyCloakURL = keycloakConfigDetails?.keycloak_url; // to be read from settings data
     // Store the code verifier for later use in localStorage
     localStorage.setItem('keycloak_code_verifier', codeVerifier);
     localStorage.setItem('keycloak_state_val', setStateVal);
