@@ -2,6 +2,20 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import FlowValidation from './FlowValidation';
 import { Setting } from './Setting';
+import { AppSettings } from './AppSettings';
+import { DeploymentScheduleSettings } from './DeploymentScheduleSettings';
+import { LDAPSettings } from './LDAPSettings';
+import { EmailConfigurationSettings } from './EmailConfigurationSettings';
+import { ServiceAccountSettings } from './ServiceAccountSettings';
+import { SSOLoginSettings } from './SSOLoginSettings';
+import {
+  AppIcon,
+  LDAPIcon,
+  DeploymentScheduleIcon,
+  ServiceAccountIcon,
+  EmailConfigIcon,
+  SSOLoginIcon,
+} from '../../assets';
 
 const GreyBoxNamespace = styled.div`
   background-color: #f5f7fa;
@@ -27,8 +41,17 @@ const Tab = styled.div`
     props.active ? 'rgba(255, 122, 0, 1)' : 'rgba(68, 68, 69, 1)'};
   border-color: ${props =>
     props.active ? 'rgba(255, 122, 0, 1)' : 'transparent'};
+  svg {
+    stroke: ${props =>
+      props.active ? 'rgba(255, 122, 0, 1)' : 'rgba(68, 68, 69, 1)'};
+    transition: stroke 0.3s;
+  }
   &:hover {
     color: rgba(255, 122, 0, 1);
+
+    svg {
+      stroke: rgba(255, 122, 0, 1);
+    }
   }
 `;
 const TabContent = styled.div`
@@ -38,12 +61,30 @@ const TabContent = styled.div`
   background-color: #f8f9fa;
 `;
 
+const IconContent = styled.div`
+  display: inline;
+  margin-right: 6px;
+`;
+
 const SettingTab = () => {
   const [activeTab, setActiveTab] = useState('Setting');
   const renderContent = () => {
     switch (activeTab) {
       case 'Setting':
         return <Setting />;
+      case 'AppSettings':
+        return <AppSettings />;
+      case 'LDAPSettings':
+        return <LDAPSettings />;
+      case 'DeploymentScheduleSettings':
+        return <DeploymentScheduleSettings />;
+      case 'ServiceAccountSettings':
+        return <ServiceAccountSettings />;
+      case 'EmailConfigurationSettings':
+        return <EmailConfigurationSettings />;
+      case 'SSOLoginSettings':
+        return <SSOLoginSettings />;
+
       case 'Flow Validation':
         return <FlowValidation />;
     }
@@ -52,12 +93,72 @@ const SettingTab = () => {
     <div>
       <GreyBoxNamespace className="w-100  mb-3">
         <TabWrapper className="nav">
-          <Tab
+          {/* <Tab
             active={activeTab === 'Setting'}
             onClick={() => setActiveTab('Setting')}
             className="nav-item"
           >
             General Settings
+          </Tab> */}
+          <Tab
+            active={activeTab === 'AppSettings'}
+            onClick={() => setActiveTab('AppSettings')}
+            className="nav-item"
+          >
+            <IconContent className="nav-item">
+              <AppIcon />
+            </IconContent>
+            App
+          </Tab>
+          <Tab
+            active={activeTab === 'LDAPSettings'}
+            onClick={() => setActiveTab('LDAPSettings')}
+            className="nav-item"
+          >
+            <IconContent className="nav-item">
+              <LDAPIcon />
+            </IconContent>
+            LDAP
+          </Tab>
+          <Tab
+            active={activeTab === 'DeploymentScheduleSettings'}
+            onClick={() => setActiveTab('DeploymentScheduleSettings')}
+            className="nav-item"
+          >
+            <IconContent className="nav-item">
+              <DeploymentScheduleIcon />
+            </IconContent>
+            Deployment Schedule
+          </Tab>
+          <Tab
+            active={activeTab === 'ServiceAccountSettings'}
+            onClick={() => setActiveTab('ServiceAccountSettings')}
+            className="nav-item"
+          >
+            <IconContent className="nav-item">
+              <ServiceAccountIcon />
+            </IconContent>
+            Service Account
+          </Tab>
+          <Tab
+            active={activeTab === 'EmailConfigurationSettings'}
+            onClick={() => setActiveTab('EmailConfigurationSettings')}
+            className="nav-item"
+          >
+            <IconContent className="nav-item">
+              <EmailConfigIcon />
+            </IconContent>
+            Email Configuration
+          </Tab>
+          <Tab
+            active={activeTab === 'SSOLoginSettings'}
+            onClick={() => setActiveTab('SSOLoginSettings')}
+            className="nav-item"
+          >
+            <IconContent className="nav-item">
+              <SSOLoginIcon />
+            </IconContent>
+            SSO Login
           </Tab>
           <Tab
             active={activeTab === 'Flow Validation'}
