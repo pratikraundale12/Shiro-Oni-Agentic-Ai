@@ -67,7 +67,7 @@ const IconContent = styled.div`
 `;
 
 const SettingTab = () => {
-  const [activeTab, setActiveTab] = useState('Setting');
+  const [activeTab, setActiveTab] = useState('AppSettings');
   const renderContent = () => {
     switch (activeTab) {
       case 'Setting':
