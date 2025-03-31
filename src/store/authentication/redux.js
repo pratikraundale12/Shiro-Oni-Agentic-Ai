@@ -67,6 +67,7 @@ export const AuthenticationSelectors = {
     state.auth.hasTermsAndPoliciesAccepted,
   getSettingLogo: state => state.auth.data,
   getKeycloakConfig: state => state.auth.keycloakConfig,
+  getLicenseInfo: state => state.auth.licenseData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -90,6 +91,7 @@ const fetchLicenseInfoSuccess = (state, { payload }) => {
   return {
     ...state,
     isLicenseValid: payload?.isLicenseValid,
+    licenseData: payload,
   };
 };
 const loginSuccess = state => {

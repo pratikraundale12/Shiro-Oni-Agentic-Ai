@@ -1,8 +1,8 @@
 import { toast } from 'react-toastify';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
-import keycloak from '../../Keycloak';
 import {
   ACCESS_TOKEN,
+  API_URL,
   CLUSTERS_TOKEN,
   DEFAULT_ROUTE,
   PREVIOUS_PATH,
@@ -146,11 +146,7 @@ export function* login(api, { payload: { type, token, ...payload } }) {
 export function* logout(api, { payload: { url } }) {
   yield put(AuthenticationActions.logoutSuccess());
   yield put({ type: 'RESET' });
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('previous_path');
-  localStorage.removeItem('selected_cluster');
-  localStorage.removeItem(CLUSTERS_TOKEN);
-  yield keycloak.logout();
+  localStorage.clear();
   history.replace(url); // Example: '/login'
 }
 export function* fetchSettingLogo(api) {
@@ -199,6 +195,27 @@ export function* ssoUserLogin(api, { payload }) {
     }
   } else {
     toast.error(response.data.message, { toastId: 'login-toast-error1' });
+    const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
+    const idToken = localStorage.getItem('keycloak_id_token');
+    const keycloakUrl = storedConfig?.keycloak_url;
+    if (!idToken) {
+      console.error('No ID token found for logout');
+      return;
+    }
+
+    localStorage.removeItem('keycloak_access_token');
+    localStorage.removeItem('keycloak_id_token');
+    localStorage.removeItem('keycloak_refresh_token');
+    localStorage.removeItem('keycloak_code_verifier');
+    localStorage.removeItem('keycloak_state_val');
+
+    const logoutUrl =
+      `${keycloakUrl}/realms/DFM-DEV/protocol/openid-connect/logout?` +
+      `id_token_hint=${idToken}&` +
+      `post_logout_redirect_uri=${API_URL}/login`;
+
+    window.location.href = logoutUrl;
+    history.push('/login');
   }
 }
 
