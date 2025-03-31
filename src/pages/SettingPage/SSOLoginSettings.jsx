@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import * as yup from 'yup';
 import { LoginIcon, OpenLinkIcon, UserIcon } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
-import { EMAIL_REGEX, KDFM, SSO_LOGIN_TYPE } from '../../constants';
+import { KDFM, SSO_LOGIN_TYPE } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, CheckboxField, InputField, SelectField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
@@ -33,108 +33,8 @@ const LabelSelect = styled.div`
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
 `;
-const HeadingContent = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 16px;
-  color: ${props => props.theme.colors.darker};
-`;
-const HeadingContentHr = styled.div`
-  margin-left: -24px;
-  margin-right: -24px;
-  border-bottom: 1px solid #ccc;
-`;
 
 export const settingSchema = yup.object().shape({
-  email: yup
-    .string()
-    .required('Support email is required')
-    .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
-    .max(50, 'Email can not be greater than 25 characters'),
-  from_email: yup
-    .string()
-    .required('From email is required')
-    .nullable()
-    .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
-    .max(50, 'Email can not be greater than 25 characters'),
-  title: yup
-    .string()
-    .trim()
-    .required('Title is required')
-    .max(25, 'Title must be 25 characters or less')
-    .matches(/^[a-zA-Z0-9\s]+$/, 'Title must not contain special characters'),
-  group_email_id: yup
-    .string()
-    .required('Group email is required')
-    .nullable()
-    .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
-    .max(50, 'Email can not be greater than 25 characters'),
-
-  approver_groups: yup
-    .mixed()
-    .test(
-      'is-valid',
-      'Please select at least one approver group',
-      value => value !== undefined && value !== null && value !== ''
-    ),
-  smtp_service: yup
-    .string()
-    .nullable()
-    .test(
-      'smtp-service-required',
-      'SMTP Service is required',
-      function (value) {
-        const { smtp_host, smtp_port, smtp_user, smtp_pass } = this.parent;
-        if (smtp_host || smtp_port || smtp_user || smtp_pass) {
-          return value ? true : false;
-        }
-        return true;
-      }
-    ),
-
-  smtp_host: yup
-    .string()
-    .nullable()
-    .test('smtp-host-required', 'SMTP Host is required', function (value) {
-      const { smtp_service, smtp_port, smtp_user, smtp_pass } = this.parent;
-      if (smtp_service || smtp_port || smtp_user || smtp_pass) {
-        return value ? true : false;
-      }
-      return true;
-    }),
-
-  smtp_port: yup
-    .string()
-    .nullable()
-    .test('smtp-port-required', 'SMTP Port is required', function (value) {
-      const { smtp_service, smtp_host, smtp_user, smtp_pass } = this.parent;
-      if (smtp_service || smtp_host || smtp_user || smtp_pass) {
-        return value ? true : false;
-      }
-      return true;
-    }),
-
-  smtp_user: yup
-    .string()
-    .nullable()
-    .test('smtp-user-required', 'SMTP User is required', function (value) {
-      const { smtp_service, smtp_host, smtp_port, smtp_pass } = this.parent;
-      if (smtp_service || smtp_host || smtp_port || smtp_pass) {
-        return value ? true : false;
-      }
-      return true;
-    }),
-
-  smtp_pass: yup
-    .string()
-    .nullable()
-    .test('smtp-pass-required', 'SMTP Password is required', function (value) {
-      const { smtp_service, smtp_host, smtp_port, smtp_user } = this.parent;
-      if (smtp_service || smtp_host || smtp_port || smtp_user) {
-        return value ? true : false;
-      }
-      return true;
-    }),
   selected_sso: yup.string().nullable(),
 
   azure_redirect_uri: yup
@@ -212,10 +112,7 @@ export const SSOLoginSettings = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
-  const [ldapAutoSync, setLdapAutoSync] = useState(false);
-  const [isLdapEnabled, setLdapInitialConfig] = useState(false);
 
-  const selectedOptions = Number(watch('ldap_auto_sync_time_interval'));
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
@@ -232,28 +129,6 @@ export const SSOLoginSettings = () => {
 
     if (settingData?.id) payload.append('id', settingData.id);
 
-    appendIfChanged('logo', data?.logo, settingData?.logo, true);
-    appendIfChanged('favicon', data?.favicon, settingData?.favicon, true);
-    appendIfChanged('title', data?.title, settingData?.title);
-    appendIfChanged('username', data?.username, settingData?.username);
-    appendIfChanged('password', data?.password, settingData?.password);
-    appendIfChanged('email', data?.email, settingData?.email);
-    appendIfChanged('from_email', data?.from_email, settingData?.from_email);
-    appendIfChanged(
-      'approver_groups',
-      data?.approver_groups,
-      settingData?.approver_groups
-    );
-    appendIfChanged(
-      'group_email_id',
-      data?.group_email_id,
-      settingData?.group_email_id
-    );
-    appendIfChanged(
-      'email_reminder_time',
-      data?.email_reminder_time,
-      settingData?.email_reminder_time
-    );
     appendIfChanged(
       'selected_sso',
       data?.selected_sso,
@@ -296,16 +171,6 @@ export const SSOLoginSettings = () => {
       settingData?.keycloak_client_id
     );
 
-    appendIfChanged(
-      'smtp_service',
-      data?.smtp_service,
-      settingData?.smtp_service
-    );
-    appendIfChanged('smtp_host', data?.smtp_host, settingData?.smtp_host);
-    appendIfChanged('smtp_port', data?.smtp_port, settingData?.smtp_port);
-    appendIfChanged('smtp_user', data?.smtp_user, settingData?.smtp_user);
-    appendIfChanged('smtp_pass', data?.smtp_pass, settingData?.smtp_pass);
-
     if (dirtyFields.refresh || data.refresh !== settingData?.refresh) {
       const refreshValue = [false, 'Off'].includes(data.refresh)
         ? 0
@@ -313,19 +178,6 @@ export const SSOLoginSettings = () => {
       appendIfChanged('refresh', refreshValue, settingData?.refresh);
     }
 
-    if (
-      ['ldapEnabled', 'ldap_auto_sync', 'ldap_auto_sync_time_interval'].some(
-        field => dirtyFields[field] && data[field] !== settingData?.[field]
-      )
-    ) {
-      payload.append('ldapEnabled', isLdapEnabled);
-      payload.append('ldap_auto_sync', ldapAutoSync);
-      updatedFields.push('ldapEnabled', 'ldap_auto_sync');
-      if (ldapAutoSync) {
-        payload.append('ldap_auto_sync_time_interval', selectedOptions);
-        updatedFields.push('ldap_auto_sync_time_interval');
-      }
-    }
     try {
       if (updatedFields.length > 0) {
         dispatch(SettingsActions.createSettings(payload));
@@ -345,25 +197,13 @@ export const SSOLoginSettings = () => {
         changeFavicon(settingData?.favicon);
       }
       document.title = settingData?.title || 'Data Flow Manager';
-      setValue('logo', settingData?.logo);
-      setValue('favicon', settingData?.favicon);
-      setValue('title', settingData?.title);
-      setValue('username', settingData?.username);
-      setValue('password', settingData?.password);
 
       setValue(
         'refresh',
         settingData.refresh === 0 ? 'Off' : String(settingData.refresh)
       );
 
-      setLdapAutoSync(settingData?.ldap_auto_sync);
-      setValue(
-        'ldap_auto_sync_time_interval',
-        settingData?.ldap_auto_sync_time_interval
-      );
-      setValue('email_reminder_time', settingData?.email_reminder_time);
       setValue('selected_sso', settingData?.selected_sso);
-      setValue('group_email_id', settingData?.group_email_id);
       setValue('azure_client_id', settingData?.azure_client_id);
       setValue('azure_redirect_uri', settingData?.azure_redirect_uri);
       setValue('azure_client_secret', settingData?.azure_client_secret);
@@ -372,57 +212,20 @@ export const SSOLoginSettings = () => {
       setValue('keycloak_realm', settingData?.keycloak_realm);
       setValue('keycloak_url', settingData?.keycloak_url);
       setValue('keycloak_client_id', settingData?.keycloak_client_id);
-      setValue('email', settingData?.email);
-      setValue('from_email', settingData?.from_email);
-      setValue('smtp_service', settingData?.smtp_service);
-
-      setValue('smtp_host', settingData?.smtp_host);
-
-      setValue('smtp_port', settingData?.smtp_port);
-
-      setValue('smtp_user', settingData?.smtp_user);
-
-      setValue('smtp_pass', settingData?.smtp_pass);
-
-      setValue('approver_groups', settingData.approver_groups || '');
-      setLdapInitialConfig(settingData?.ldapEnabled);
-      const logoElement = document.getElementById('logo');
-      if (logoElement && settingData?.logo) {
-        logoElement.src = settingData.logo;
-      }
     }
   }, [settingData, setValue, dispatch]);
 
   useEffect(() => {
     const subscription = watch(value => {
       const isModified =
-        value.logo !== settingData?.logo ||
-        value.favicon !== settingData?.favicon ||
-        value.title !== settingData?.title ||
-        value.username !== settingData?.username ||
-        value.password !== settingData?.password ||
         value.refresh !==
           (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
-        value.email !== settingData?.email ||
-        value.from_email !== settingData?.from_email ||
-        value.smtp_service !== settingData?.smtp_service ||
-        value.smtp_host !== settingData?.smtp_host ||
-        value.smtp_port !== settingData?.smtp_port ||
-        value.smtp_user !== settingData?.smtp_user ||
-        value.smtp_pass !== settingData?.smtp_pass ||
-        value.ldap_auto_sync_time_interval !==
-          settingData?.ldap_auto_sync_time_interval ||
-        value.ldap_auto_sync !== settingData?.ldap_auto_sync ||
-        value.approver_groups !== settingData?.approver_groups ||
-        value.group_email_id !== settingData?.group_email_id ||
-        value.email_reminder_time !== settingData?.email_reminder_time ||
         value.selected_sso !== settingData?.selected_sso ||
         value.azure_client_id !== settingData?.azure_client_id ||
         value.azure_tenant_id !== settingData?.azure_tenant_id ||
         value.azure_redirect_uri !== settingData?.azure_redirect_uri ||
         value.azure_client_secret !== settingData?.azure_client_secret ||
         value.sso_enabled !== settingData?.sso_enabled ||
-        value.ldapEnabled !== settingData?.ldapEnabled ||
         value?.keycloak_realm !== settingData?.keycloak_realm ||
         value?.keycloak_url !== settingData?.keycloak_url ||
         value?.keycloak_client_id !== settingData?.keycloak_client_id;
@@ -470,10 +273,6 @@ export const SSOLoginSettings = () => {
         }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="d-flex justify-content-start me-4">
-          <HeadingContent className="mt-4">{KDFM.SSO_LoGIN}</HeadingContent>
-        </div>
-        <HeadingContentHr className="mt-3 mb-4" />
         <>
           <InputFields className="row mb-4 align-items-center">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
