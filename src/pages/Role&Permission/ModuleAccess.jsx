@@ -140,7 +140,7 @@ const MODULES = [
     value: 'controller_services',
   },
   {
-    label: 'AI Flow Generator',
+    label: 'AI-Powered Data Flow',
     value: 'genai',
   },
 ];

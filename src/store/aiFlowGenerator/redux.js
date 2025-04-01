@@ -13,13 +13,21 @@ export const AiFlowGeneratorActions = {
   updateGeneratedFlow: createAction(`${prefix}updateGeneratedFlow`),
   deleteGeneratedFlow: createAction(`${prefix}deleteGeneratedFlow`),
   fetchRegistry: createAction(`${prefix}fetchRegistry`),
+  addFlowToRegistry: createAction(`${prefix}addFlowToRegistry`),
+  addFlowToRegistryFailure: createAction(`${prefix}addFlowToRegistryFailure`),
+  addNewBucketToRegistry: createAction(`${prefix}addNewBucketToRegistry`),
+  addNewBucketToRegistrySuccess: createAction(
+    `${prefix}addNewBucketToRegistrySuccess`
+  ),
   setRecentFlows: createAction(`${prefix}setRecentFlows`),
   generateFlowAPI: createAction(`${prefix}generateFlowAPI`),
   generateFlowAPISuccess: createAction(`${prefix}generateFlowAPISuccess`),
   setGeneratedFlow: createAction(`${prefix}generatedFlow`),
   generateFlowAPIFailure: createAction(`${prefix}generateFlowAPIFailure`),
   setGenFlowError: createAction(`${prefix}setGenFlowError`),
+  setAddFlowError: createAction(`${prefix}setAddFlowError`),
   setRegistry: createAction(`${prefix}setRegistry`),
+  setNewBucket: createAction(`${prefix}setNewBucket`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -28,6 +36,8 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   generatedFlow: {},
   genFlowError: '',
   registry: [],
+  newBucekt: {},
+  addFlowError: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -37,6 +47,8 @@ export const AiFlowGeneratorSelectors = {
   getGeneratedFlow: state => state.aiFlowGenerator.generatedFlow,
   getGenFlowError: state => state.aiFlowGenerator.genFlowError,
   getRegistry: state => state.aiFlowGenerator.registry,
+  getNewBucket: state => state.aiFlowGenerator.newBucekt,
+  getAddNewFlowError: state => state.aiFlowGenerator.addFlowError,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -61,10 +73,24 @@ const generateFlowAPISuccess = (state, { payload }) => {
   };
 };
 
+const addNewBucketToRegistrySuccess = (state, { payload }) => {
+  return {
+    ...state,
+    newBucekt: payload,
+  };
+};
+
 const generateFlowAPIFailure = (state, { payload }) => {
   return {
     ...state,
     genFlowError: payload,
+  };
+};
+
+const setAddFlowError = (state, { payload }) => {
+  return {
+    ...state,
+    addFlowError: payload,
   };
 };
 
@@ -109,6 +135,11 @@ export const aiFlowGeneratorReducer = createReducer(
         generateFlowAPIFailure
       )
       .addCase(AiFlowGeneratorActions.setGenFlowError, setGenFlowError)
-      .addCase(AiFlowGeneratorActions.setRegistry, setRegistry);
+      .addCase(AiFlowGeneratorActions.setRegistry, setRegistry)
+      .addCase(
+        AiFlowGeneratorActions.addNewBucketToRegistrySuccess,
+        addNewBucketToRegistrySuccess
+      )
+      .addCase(AiFlowGeneratorActions.setAddFlowError, setAddFlowError);
   }
 );

@@ -41,6 +41,7 @@ import { FullPageLoader } from '../../components';
 import SuggetionsChip from './SuggestionsChip';
 import { DEFAULT_FLOW_JSON } from '../../constants/aiFlowGenerator.constant';
 import { FlowAddToRegistryModal } from './FlowAddToRegistryModal';
+import { AddNewBucketModal } from './AddNewBucketModal';
 
 const Container = styled.div`
   display: flex;
@@ -190,12 +191,23 @@ const DataFlowList = styled.div`
   }
 `;
 
+const MidSection = styled.div`
+  font-weight: 500;
+  font-size: 64px;
+  text-align: center;
+  color: #73737f;
+`;
+
+const JsonWrapper = styled.div`
+  #json-editor > * {
+    color: #444445 !important;
+  }
+`;
+
 export const AiFlowGenerator = () => {
   const dispatch = useDispatch();
   const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const recentFlows = useSelector(AiFlowGeneratorSelectors.getRecentFlows);
-
-  // query prompt
   const generateFlowPermission = userPermissions.includes('add_genai');
   const [queryText, setQueryText] = useState('');
   const [queryLable, setQueryLable] = useState('');
@@ -227,6 +239,7 @@ export const AiFlowGenerator = () => {
   );
   const [isDiscardFlowModalOpen, setIsDiscardFlowModalOpen] = useState(false);
   const [openAddToRegistryModal, setOpenAddToRegistryModal] = useState(false);
+  const [isAddNewBucketModalOpen, setIsAddNewBucketModalOpen] = useState(false);
   const bucketListData = useSelector(
     NamespacesSelectors.getBucketListDropDownData
   );
@@ -281,8 +294,14 @@ export const AiFlowGenerator = () => {
     setAddedToRegistry(true);
   };
 
-  const handleAddToRegistry = flowName => {
-    toast.info(`${flowName} flow will be added to the regsitry soon`);
+  const handleAddToRegistry = flowData => {
+    const payload = {
+      bucketId: flowData?.bucket,
+      flowName: flowData?.flow_name,
+      flowDesc: flowData?.flow_desc,
+      flowJson: flowJson,
+    };
+    dispatch(AiFlowGeneratorActions.addFlowToRegistry(payload));
     handleRefresh();
     if (isFlowUpdated) {
       dispatch(
@@ -331,8 +350,11 @@ export const AiFlowGenerator = () => {
   const bucketLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchRegistryData')
   );
+  const flowAddedLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'addFlowToRegistry')
+  );
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
-
+  const [isInputEmpty, setisInputEmpty] = useState(false);
   useEffect(() => {
     setFlowError(error);
   }, [error]);
@@ -377,27 +399,27 @@ export const AiFlowGenerator = () => {
   const customStyles = {
     outerBox: {
       height: '100%',
-      border: 'none', // Remove outer border if needed
+      border: 'none',
       borderRadius: '8px',
-      backgroundColor: '#ffffff !important', // Background color
+      backgroundColor: '#ffffff !important',
     },
     container: {
       height: '100%',
-      fontSize: '16px', // Font size
-      color: '#444443 !important', // Font color
-      // backgroundColor: '#ffffff !important', // Editor background
+      fontSize: '16px',
+      color: '#444443 !important',
+      backgroundColor: '#ffffff !important',
     },
     body: {
-      fontSize: '16px', // JSON text font size
+      fontSize: '16px',
       color: '#444443',
       fontWeight: 400,
-      // backgroundColor: '#ffffff !important', // Editor background
+      backgroundColor: '#ffffff !important',
     },
     errorMessage: {
-      color: '#ff4d4f', // Error message color
+      color: '#ff4d4f',
     },
     labelColumn: {
-      color: '#444443', // Keys in JSON objects
+      color: '#444443 !important',
     },
   };
   const handleDiscardFlow = flow => {
@@ -412,7 +434,9 @@ export const AiFlowGenerator = () => {
     getLoginToClusterPopup()
   ) : (
     <>
-      <FullPageLoader loading={recentFlowLoading || bucketLoading} />
+      <FullPageLoader
+        loading={recentFlowLoading || bucketLoading || flowAddedLoading}
+      />
       <Container>
         <Flex className="flex-column align-items-start w-100">
           <Flex className="w-100">
@@ -448,13 +472,18 @@ export const AiFlowGenerator = () => {
             </Flex>
           )}
         </Flex>
+        {!openConversation && <MidSection>{KDFM.AI_FLOW_GENERATOR}</MidSection>}{' '}
         {openConversation && (
           <DataFlowContainer>
             <DataFlowList className="gen-ai-dataflow-sec mb-4">
               <div className="d-flex gap-2 ps-3">
                 <div className="df-manager-icon">
                   <img
-                    src={`${API_URL}${currentUser?.photo}` || userImage}
+                    src={
+                      currentUser?.photo
+                        ? `${API_URL}${currentUser?.photo}`
+                        : userImage
+                    }
                     alt=""
                     className="avatar-img"
                   />
@@ -528,9 +557,14 @@ export const AiFlowGenerator = () => {
         <PromptSection>
           {!loading && !openConversation && !isEmpty(DEFAULT_FLOW_JSON) && (
             <SuggetionsChip
-              setQueryText={setQueryText}
+              generateFlowPermission={generateFlowPermission}
               SuggetionsArray={DEFAULT_FLOW_JSON}
               setQueryLable={setQueryLable}
+              setOpenConversation={setOpenConversation}
+              refresh={handleRefresh}
+              setQueryText={setQueryText}
+              setisInputEmpty={setisInputEmpty}
+              setIsPromptInputDisabled={setIsPromptInputDisabled}
             />
           )}
           <PromptInputBox
@@ -541,6 +575,7 @@ export const AiFlowGenerator = () => {
             setIsPromptInputDisabled={setIsPromptInputDisabled}
             queryLabel={queryLable}
             refresh={handleRefresh}
+            isInputEmpty={isInputEmpty}
           />
         </PromptSection>
         <Modal
@@ -567,14 +602,16 @@ export const AiFlowGenerator = () => {
           footerAlign="start"
           contentStyles={{ maxWidth: '40%', maxHeight: '80%' }}
         >
-          <JSONInput
-            id="json-editor"
-            locale={locale}
-            placeholder={flowJson}
-            width="100%"
-            onChange={handleChange}
-            style={customStyles}
-          />
+          <JsonWrapper>
+            <JSONInput
+              id="json-editor"
+              locale={locale}
+              placeholder={flowJson}
+              width="100%"
+              onChange={handleChange}
+              style={customStyles}
+            />
+          </JsonWrapper>
         </Modal>
         {isDiscardFlowModalOpen && (
           <DiscardFlowConfirmationModal
@@ -594,6 +631,13 @@ export const AiFlowGenerator = () => {
             handleClose={() => {
               setIsDiscardFlowModalOpen(true);
             }}
+            setIsAddNewBucketModalOpen={setIsAddNewBucketModalOpen}
+          />
+        )}
+        {isAddNewBucketModalOpen && (
+          <AddNewBucketModal
+            isModalOpen={isAddNewBucketModalOpen}
+            setIsModalOpen={setIsAddNewBucketModalOpen}
           />
         )}
       </Container>

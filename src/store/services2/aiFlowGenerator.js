@@ -34,11 +34,36 @@ export const aiFlowGeneratorAPI = api => {
       return error.response.data;
     }
   };
+  const addFlowToRegistry = async ({ clusterId, payload }) => {
+    const { bucketId } = payload;
+    const payloaDdata = {
+      flowName: payload?.flowName,
+      flowDesc: payload?.flowDesc,
+      flowJson: payload?.flowJson,
+    };
+    try {
+      return await api.post(
+        `/clusters/${clusterId}/buckets/${bucketId}/add-flows`,
+        payloaDdata
+      );
+    } catch (error) {
+      return error.response.data;
+    }
+  };
+  const addNewBucketToRegistry = async ({ clusterId, payload }) => {
+    try {
+      return await api.post(`/clusters/${clusterId}/add-buckets`, payload);
+    } catch (error) {
+      return error.response.data;
+    }
+  };
   return {
     fetchDefaultRecentFlows,
     generateFlowAPI,
     deleteGeneratedFlow,
     updateGeneratedFlow,
     fetchRegistry,
+    addFlowToRegistry,
+    addNewBucketToRegistry,
   };
 };

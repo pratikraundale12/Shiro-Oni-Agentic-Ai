@@ -1,9 +1,10 @@
 import { all, takeLatest, put, call, select } from 'redux-saga/effects';
-import { AiFlowGeneratorActions } from './redux';
+import { AiFlowGeneratorActions, AiFlowGeneratorSelectors } from './redux';
 import { requestSaga } from '../helpers/request_sagas';
 import { toast } from 'react-toastify';
 import { CLUSTERS_TOKEN } from '../../constants';
-import { NamespacesSelectors } from '../namespaces';
+import { NamespacesActions, NamespacesSelectors } from '../namespaces';
+import { isEmpty } from 'lodash';
 
 export function* fetchDefaultRecentFlows(api) {
   const response = yield call(requestSaga, {
@@ -25,6 +26,7 @@ export function* fetchDefaultRecentFlows(api) {
 
 export function* generateFlowAPI(api, { payload }) {
   const { refresh } = payload;
+  yield put(AiFlowGeneratorActions.setNewBucket({}));
   yield put(AiFlowGeneratorActions.setGenFlowError(''));
   if (!api.generateFlowAPI) {
     console.error('generateFlowApi is undefined!');
@@ -131,6 +133,68 @@ export function* fetchRegistry(api) {
     );
   }
 }
+
+export function* addFlowToRegistry(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  const clusterId = selectedClusterToken?.id;
+  const response = yield call(requestSaga, {
+    errorSection: AiFlowGeneratorActions.addFlowToRegistryFailure,
+    loadingSection: 'addFlowToRegistry',
+    apiMethod: api.addFlowToRegistry,
+    apiParams: [{ clusterId: clusterId, payload: payload }],
+  });
+  if (response.ok) {
+    toast.success('Flow is added to the registry');
+  } else {
+    yield put(AiFlowGeneratorActions.setAddFlowError(response?.data)); // Dispatch error action
+    toast.error(
+      response?.message ||
+        response?.data?.message ||
+        'Failed to add flow to registry'
+    );
+  }
+}
+
+export function* addNewBucketToRegistry(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const registryData = yield select(AiFlowGeneratorSelectors.getRegistry);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  const clusterId = selectedClusterToken?.id;
+  const response = yield call(requestSaga, {
+    errorSection: 'addNewBucketToRegistry',
+    loadingSection: 'addNewBucketToRegistry',
+    apiMethod: api.addNewBucketToRegistry,
+    apiParams: [{ clusterId: clusterId, payload: payload }],
+    successAction: AiFlowGeneratorActions.addNewBucketToRegistrySuccess,
+  });
+  if (response.ok) {
+    toast.success('Bucket is added to the registry');
+    if (!isEmpty(registryData)) {
+      yield put(
+        NamespacesActions.fetchRegistryData({
+          registriesId: registryData[0]?.id,
+        })
+      );
+    }
+  } else {
+    toast.error(
+      response?.message ||
+        response?.data?.message ||
+        'Failed to add bucket to registry'
+    );
+  }
+}
 export function* aiFlowGeneratorSagas(api) {
   yield all([
     takeLatest(AiFlowGeneratorActions.fetchDefaultRecentFlows, action =>
@@ -147,6 +211,12 @@ export function* aiFlowGeneratorSagas(api) {
     ),
     takeLatest(AiFlowGeneratorActions.fetchRegistry, action =>
       fetchRegistry(api, action)
+    ),
+    takeLatest(AiFlowGeneratorActions.addFlowToRegistry, action =>
+      addFlowToRegistry(api, action)
+    ),
+    takeLatest(AiFlowGeneratorActions.addNewBucketToRegistry, action =>
+      addNewBucketToRegistry(api, action)
     ),
   ]);
 }

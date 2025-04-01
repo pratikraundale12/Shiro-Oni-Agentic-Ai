@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { AiFlowGeneratorActions } from '../../store';
 import { validatePayload } from './utils';
 import { v4 as uuidv4 } from 'uuid';
+import { GENAI_CONFIG } from '../../constants/aiFlowGenerator.constant';
 
 const InputContainer = styled.div`
   position: relative;
@@ -79,10 +80,11 @@ export const PromptInputBox = ({
   setIsPromptInputDisabled,
   queryLabel,
   refresh,
+  isInputEmpty,
 }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
   useEffect(() => {
-    if (queryText?.length !== 0) {
+    if (queryText?.length !== 0 && !isInputEmpty) {
       setIsSendBtnDisabled(false);
     } else {
       setIsSendBtnDisabled(true);
@@ -114,12 +116,12 @@ export const PromptInputBox = ({
         session_id: uuidv4(),
         is_audio: false,
         query: queryText,
-        embedding_model: process.env.REACT_APP_EMBEDDING_MODEL,
-        engine: process.env.REACT_APP_ENGINE,
-        dept_id: process.env.REACT_APP_DEPT_ID,
-        org_id: process.env.REACT_APP_ORG_ID,
-        user_id: process.env.REACT_APP_USER_ID,
-        type: process.env.REACT_APP_TYPE,
+        embedding_model: GENAI_CONFIG.EMBEDDING_MODEL,
+        engine: GENAI_CONFIG.APP_ENGINE,
+        dept_id: GENAI_CONFIG.DEPT_ID,
+        org_id: GENAI_CONFIG.ORG_ID,
+        user_id: GENAI_CONFIG.USER_ID,
+        type: GENAI_CONFIG.APP_TYPE,
         short_name: queryLabel || '',
         refresh: refresh,
       };
@@ -145,7 +147,7 @@ export const PromptInputBox = ({
         name="prompt-input-box"
         disabled={disabled}
         type="search"
-        value={disabled ? '' : queryText}
+        value={disabled || isInputEmpty ? '' : queryText}
         placeholder={KDFM.PROMPT_INPUT_PLACEHOLDER}
         onChange={e => {
           let value = e.target.value;
@@ -174,4 +176,5 @@ PromptInputBox.propTypes = {
   setIsPromptInputDisabled: PropTypes.func.isRequired,
   queryLabel: PropTypes.string,
   refresh: PropTypes.func,
+  isInputEmpty: PropTypes.bool,
 };

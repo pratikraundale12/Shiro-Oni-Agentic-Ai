@@ -1,5 +1,5 @@
 export const AI_FLOW_GENERATOR_CONSTANTS = {
-  AI_FLOW_GENERATOR: 'AI Flow Generator',
+  AI_FLOW_GENERATOR: 'AI-Powered Data Flow',
   RECOMMENDED_FLOWS: 'Recommended Flows',
   RECENT_GENERATED_FLOWS: 'Recent Generated Flows',
   PROMPT_INPUT_PLACEHOLDER: 'Enter your Prompt here...',
@@ -11,6 +11,15 @@ export const AI_FLOW_GENERATOR_CONSTANTS = {
   ADD_TO_REGSITRY: 'Add to Registry',
   DATA_FLOW_MANAGER: 'Data Flow Manager',
   YOU: 'You',
+};
+
+export const GENAI_CONFIG = {
+  USER_ID: 'f86142d6-82e3-4e44-bc1a-cc359a0c1d73',
+  ORG_ID: 'd6069947-6be2-4ac5-ab4a-9b7faefbdcf2',
+  DEPT_ID: '5ac1d38dbdd9e0d64b1d0fb86d598dd4',
+  APP_TYPE: 'kms',
+  APP_ENGINE: 'open_ai',
+  EMBEDDING_MODEL: 'open_ai',
 };
 
 export const DEFAULT_FLOW_JSON = [

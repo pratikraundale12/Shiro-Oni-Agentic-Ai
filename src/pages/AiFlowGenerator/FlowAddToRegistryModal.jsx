@@ -8,6 +8,13 @@ import { BucketIcon, FlowIcon } from '../../assets';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
 import { AddsquareIcon } from '../../assets/Icons/AddSquareIcon';
+import { useSelector } from 'react-redux';
+import {
+  AiFlowGeneratorActions,
+  AiFlowGeneratorSelectors,
+  LoadingSelectors,
+} from '../../store';
+import { dispatch } from 'd3';
 
 const bucketSchema = yup.object().shape({
   bucket: yup.string().required('Bucket is required'),
@@ -17,8 +24,13 @@ const bucketSchema = yup.object().shape({
     .min(2, 'Please enter atleast 2 character for flow name'),
 });
 
-const AddNewBucketButton = styled.button`
+const BtnConatainer = styled.div`
   position: absolute;
+  right: 0;
+  z-index: 10; /* Ensure it appears above other elements */
+`;
+const AddNewBucketButton = styled.button`
+  pointer-events: auto;
   cursor: pointer !important;
   width: 135px;
   height: 19px;
@@ -30,7 +42,6 @@ const AddNewBucketButton = styled.button`
   justify-content: center;
   gap: 4px;
   color: #ff7a00;
-  left: 75%;
   > svg {
     cursor: pointer !important;
   }
@@ -48,18 +59,21 @@ export const FlowAddToRegistryModal = ({
   setIsModalOpen,
   bucketList,
   defaultFlowName,
+  setIsAddNewBucketModalOpen,
   handleAddToRegistry,
-  showAddNewBucket = false,
+  showAddNewBucket = true,
   handleClose,
 }) => {
+  const newBucketData = useSelector(AiFlowGeneratorSelectors.getNewBucket);
   const defaultBucket = bucketList?.filter(bucket =>
     bucket.name.toLowerCase().includes('genai')
   );
   const DEFAULT_fORM_DATA = {
-    bucket: defaultBucket[0]?.name || '',
+    bucket: newBucketData?.identifier || defaultBucket[0]?.id || '',
     flow_name: defaultFlowName,
     flow_desc: '',
   };
+
   const {
     register,
     handleSubmit,
@@ -77,70 +91,92 @@ export const FlowAddToRegistryModal = ({
   useEffect(() => {
     reset(DEFAULT_fORM_DATA);
   }, []);
+
+  useEffect(() => {
+    reset({
+      bucket: newBucketData?.identifier || defaultBucket[0]?.id || '',
+      flow_name: defaultFlowName,
+      flow_desc: '',
+    });
+  }, [newBucketData, reset, bucketList]);
   const onSubmit = data => {
-    handleAddToRegistry(data?.flow_name);
+    handleAddToRegistry(data);
     reset(DEFAULT_fORM_DATA);
     setIsModalOpen(false);
+    dispatch(AiFlowGeneratorActions.setNewBucket({}));
   };
 
   const onClose = () => {
     handleClose();
   };
 
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'addNewBucketToRegistry')
+  );
+
   return (
-    <Modal
-      title="Add to Registry"
-      isOpen={isModalOpen}
-      onRequestClose={onClose}
-      size="sm"
-      // loading={loading}
-      secondaryButtonText="Cancel"
-      primaryButtonText="Save"
-      primaryButtonDisabled={isEmpty(bucket) || isEmpty(flow)}
-      onSubmit={handleSubmit(onSubmit)}
-      footerAlign="start"
-      contentStyles={{ minWidth: '30%' }}
-    >
-      <Container>
-        {showAddNewBucket && (
-          <AddNewBucketButton type="button">
-            <AddsquareIcon />
-            <span>Add New Bucket</span>
-          </AddNewBucketButton>
-        )}
-        <SelectField
-          label="Bucket"
-          name="bucket"
-          control={control}
-          icon={<BucketIcon />}
-          errors={errors}
-          options={bucketList}
-          defaultValue={defaultBucket[0]?.name || ''}
-          placeholder="Select Bucket"
-          required
-        />
-        <InputField
-          name="flow_name"
-          type="text"
-          label="Flow Name"
-          placeholder="Enter Flow Name"
-          register={register}
-          errors={errors}
-          icon={<FlowIcon />}
-          required
-          defaultValue={defaultFlowName}
-        />
-        <InputField
-          name="flow_desc"
-          type="text"
-          label="Flow Description"
-          placeholder="Enter Flow Description"
-          register={register}
-          errors={errors}
-          icon={<FlowIcon />}
-        />
-      </Container>
-    </Modal>
+    <>
+      <Modal
+        title="Add to Registry"
+        isOpen={isModalOpen}
+        onRequestClose={onClose}
+        size="sm"
+        loading={loading}
+        secondaryButtonText="Cancel"
+        primaryButtonText="Save"
+        primaryButtonDisabled={isEmpty(bucket) || isEmpty(flow)}
+        onSubmit={handleSubmit(onSubmit)}
+        footerAlign="start"
+        contentStyles={{ minWidth: '35%' }}
+      >
+        <Container>
+          {showAddNewBucket && (
+            <BtnConatainer onClick={() => setIsAddNewBucketModalOpen(true)}>
+              <AddNewBucketButton
+                type="button"
+                onClick={() => {
+                  setIsAddNewBucketModalOpen(true);
+                }}
+              >
+                <AddsquareIcon />
+                <span>Add New Bucket</span>
+              </AddNewBucketButton>
+            </BtnConatainer>
+          )}
+          <SelectField
+            label="Bucket"
+            name="bucket"
+            control={control}
+            icon={<BucketIcon />}
+            errors={errors}
+            register={register}
+            options={bucketList}
+            placeholder="Select Bucket"
+            required
+          />
+          <InputField
+            name="flow_name"
+            type="text"
+            label="Flow Name"
+            placeholder="Enter Flow Name"
+            register={register}
+            errors={errors}
+            icon={<FlowIcon />}
+            required
+            defaultValue={defaultFlowName}
+          />
+          <InputField
+            name="flow_desc"
+            type="text"
+            label="Flow Description"
+            placeholder="Enter Flow Description"
+            register={register}
+            errors={errors}
+            icon={<FlowIcon />}
+          />
+        </Container>
+      </Modal>
+    </>
   );
 };
 
@@ -152,4 +188,5 @@ FlowAddToRegistryModal.propTypes = {
   handleAddToRegistry: PropTypes.func,
   showAddNewBucket: PropTypes.bool,
   handleClose: PropTypes.func,
+  setIsAddNewBucketModalOpen: PropTypes.func,
 };
