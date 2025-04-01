@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { KDFM } from '../../constants';
 
 const FlowsWrapper = styled.div`
-  max-height: 30vh;
+  max-height: 20vh;
   overflow: auto;
   height: 22vh;
   width: 100%;
@@ -17,7 +17,7 @@ const FlowsWrapper = styled.div`
   align-items: center;
   justify-content: flex-start;
   padding: 15px;
-  gap: 20px;
+  gap: 10px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(406px, 1fr));
   @media (max-width: 991.98px) {
@@ -31,7 +31,7 @@ const FlowItems = styled.div`
   justify-content: flex-start;
   gap: 12px;
   // width: 480px;
-  height: 72px;
+  height: 56px;
   cursor: pointer;
   border-radius: 10px;
   background: rgba(245, 247, 250, 1);

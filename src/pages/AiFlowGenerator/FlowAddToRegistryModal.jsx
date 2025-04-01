@@ -4,7 +4,7 @@ import { Modal, SelectField, InputField } from '../../shared';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import { BucketIcon, FlowIcon } from '../../assets';
+import { BucketIcon, DescIcon, FlowIcon } from '../../assets';
 import styled from 'styled-components';
 import { isEmpty } from 'lodash';
 import { AddsquareIcon } from '../../assets/Icons/AddSquareIcon';
@@ -54,6 +54,9 @@ const Container = styled.div`
   position: relative;
 `;
 
+const BucketWrapper = styled.div`
+  margin-bottom: 20px;
+`;
 export const FlowAddToRegistryModal = ({
   isModalOpen,
   setIsModalOpen,
@@ -143,17 +146,19 @@ export const FlowAddToRegistryModal = ({
               </AddNewBucketButton>
             </BtnConatainer>
           )}
-          <SelectField
-            label="Bucket"
-            name="bucket"
-            control={control}
-            icon={<BucketIcon />}
-            errors={errors}
-            register={register}
-            options={bucketList}
-            placeholder="Select Bucket"
-            required
-          />
+          <BucketWrapper>
+            <SelectField
+              label="Bucket"
+              name="bucket"
+              control={control}
+              icon={<BucketIcon />}
+              errors={errors}
+              register={register}
+              options={bucketList}
+              placeholder="Select Bucket"
+              required
+            />
+          </BucketWrapper>
           <InputField
             name="flow_name"
             type="text"
@@ -172,7 +177,7 @@ export const FlowAddToRegistryModal = ({
             placeholder="Enter Flow Description"
             register={register}
             errors={errors}
-            icon={<FlowIcon />}
+            icon={<DescIcon />}
           />
         </Container>
       </Modal>

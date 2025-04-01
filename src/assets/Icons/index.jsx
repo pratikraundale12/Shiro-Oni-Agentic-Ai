@@ -134,3 +134,4 @@ export * from './DownloadIcon';
 export * from './BucketIcon';
 export * from './FlowIcon';
 export * from './SquareBoxIcon';
+export * from './DescIcon';

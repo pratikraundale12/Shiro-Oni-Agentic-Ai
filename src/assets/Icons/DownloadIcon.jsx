@@ -7,6 +7,7 @@ export const DownloadIcon = ({
   color = '#FFFFFF',
 }) => (
   <svg
+    style={{ margin: '0' }}
     width={width}
     height={height}
     viewBox="0 0 20 20"

@@ -600,7 +600,7 @@ export const AiFlowGenerator = () => {
           primaryButtonDisabled={isJsonInvalid}
           onSubmit={onAddToRegistryClick}
           footerAlign="start"
-          contentStyles={{ maxWidth: '40%', maxHeight: '80%' }}
+          contentStyles={{ maxWidth: '50%', maxHeight: '80%' }}
         >
           <JsonWrapper>
             <JSONInput

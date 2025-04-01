@@ -36,7 +36,7 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   generatedFlow: {},
   genFlowError: '',
   registry: [],
-  newBucekt: {},
+  newBucket: {},
   addFlowError: {},
 };
 
@@ -47,7 +47,7 @@ export const AiFlowGeneratorSelectors = {
   getGeneratedFlow: state => state.aiFlowGenerator.generatedFlow,
   getGenFlowError: state => state.aiFlowGenerator.genFlowError,
   getRegistry: state => state.aiFlowGenerator.registry,
-  getNewBucket: state => state.aiFlowGenerator.newBucekt,
+  getNewBucket: state => state.aiFlowGenerator.newBucket,
   getAddNewFlowError: state => state.aiFlowGenerator.addFlowError,
 };
 
@@ -76,7 +76,7 @@ const generateFlowAPISuccess = (state, { payload }) => {
 const addNewBucketToRegistrySuccess = (state, { payload }) => {
   return {
     ...state,
-    newBucekt: payload,
+    newBucket: payload,
   };
 };
 

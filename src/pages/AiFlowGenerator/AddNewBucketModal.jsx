@@ -4,7 +4,7 @@ import { Modal, InputField, CheckboxField } from '../../shared';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import { BucketIcon } from '../../assets';
+import { BucketIcon, DescIcon } from '../../assets';
 import { isEmpty } from 'lodash';
 import { useDispatch } from 'react-redux';
 import { AiFlowGeneratorActions } from '../../store';
@@ -63,7 +63,7 @@ export const AddNewBucketModal = ({ isModalOpen, setIsModalOpen }) => {
       primaryButtonDisabled={isEmpty(bucketName)}
       onSubmit={e => onSubmit(e)}
       footerAlign="start"
-      contentStyles={{ maxWidth: '35%', minWidth: '20%' }}
+      contentStyles={{ maxWidth: '25%', minWidth: '20%' }}
     >
       <InputField
         name="bucket_name"
@@ -82,7 +82,7 @@ export const AddNewBucketModal = ({ isModalOpen, setIsModalOpen }) => {
         placeholder="Enter Bucket Description"
         register={register}
         errors={errors}
-        icon={<BucketIcon />}
+        icon={<DescIcon />}
       />
       <CheckboxField
         name="check"
