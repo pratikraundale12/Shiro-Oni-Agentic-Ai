@@ -37,12 +37,18 @@ const LabelSelect = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
+  white-space: nowrap; /* Prevents text from wrapping */
+  overflow: hidden; /* Hides overflowing text */
+  text-overflow: ellipsis; /* Adds "..." if text overflows */
 `;
 
 const EmphasisText = styled.em`
   font-style: italic;
   font-size: 13px !important;
   font-weight: 500;
+  white-space: nowrap; /* Prevents text from wrapping */
+  overflow: hidden; /* Hides overflowing text */
+  text-overflow: ellipsis; /* Adds "..." if text overflows */
 `;
 
 const ButtonText = styled.div`

@@ -26,6 +26,10 @@ const TabWrapper = styled.div`
   margin-bottom: 1rem;
   align-items: flex-start;
   border-bottom: 1px solid rgba(221, 228, 240, 1);
+  flex-wrap: nowrap; /* Prevents tabs from wrapping */
+  align-items: center;
+  border-bottom: 1px solid rgba(221, 228, 240, 1);
+  min-width: max-content; /* Ensures it doesn't shrink below content width */
 `;
 
 const Tab = styled.div`
@@ -53,6 +57,18 @@ const Tab = styled.div`
     }
   }
 `;
+
+const TabsContainer = styled.div`
+  width: 100%;
+  overflow-x: auto; /* Enables horizontal scrolling */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for Firefox */
+  scrollbar-width: none;
+`;
+
 const TabContent = styled.div`
   width: 100%;
   padding: 1rem;
@@ -88,68 +104,70 @@ const SettingTab = () => {
   return (
     <div>
       <GreyBoxNamespace className="w-100  mb-3">
-        <TabWrapper className="nav">
-          <Tab
-            active={activeTab === 'AppSettings'}
-            onClick={() => setActiveTab('AppSettings')}
-            className="nav-item"
-          >
-            <IconContent className="nav-item">
-              <AppIcon />
-            </IconContent>
-            App
-          </Tab>
-          <Tab
-            active={activeTab === 'LDAPSettings'}
-            onClick={() => setActiveTab('LDAPSettings')}
-            className="nav-item"
-          >
-            <IconContent className="nav-item">
-              <LDAPIcon />
-            </IconContent>
-            LDAP
-          </Tab>
-          <Tab
-            active={activeTab === 'DeploymentScheduleSettings'}
-            onClick={() => setActiveTab('DeploymentScheduleSettings')}
-            className="nav-item"
-          >
-            <IconContent className="nav-item">
-              <DeploymentScheduleIcon />
-            </IconContent>
-            Deployment Schedule
-          </Tab>
-          <Tab
-            active={activeTab === 'ServiceAccountSettings'}
-            onClick={() => setActiveTab('ServiceAccountSettings')}
-            className="nav-item"
-          >
-            <IconContent className="nav-item">
-              <ServiceAccountIcon />
-            </IconContent>
-            Service Account
-          </Tab>
-          <Tab
-            active={activeTab === 'EmailConfigurationSettings'}
-            onClick={() => setActiveTab('EmailConfigurationSettings')}
-            className="nav-item"
-          >
-            <IconContent className="nav-item">
-              <EmailConfigIcon />
-            </IconContent>
-            Email Configuration
-          </Tab>
-          <Tab
-            active={activeTab === 'SSOLoginSettings'}
-            onClick={() => setActiveTab('SSOLoginSettings')}
-            className="nav-item"
-          >
-            <IconContent className="nav-item">
-              <SSOLoginIcon />
-            </IconContent>
-            SSO Login
-          </Tab>
-        </TabWrapper>
+        <TabsContainer>
+          <TabWrapper className="nav">
+            <Tab
+              active={activeTab === 'AppSettings'}
+              onClick={() => setActiveTab('AppSettings')}
+              className="nav-item"
+            >
+              <IconContent className="nav-item">
+                <AppIcon />
+              </IconContent>
+              App
+            </Tab>
+            <Tab
+              active={activeTab === 'LDAPSettings'}
+              onClick={() => setActiveTab('LDAPSettings')}
+              className="nav-item"
+            >
+              <IconContent className="nav-item">
+                <LDAPIcon />
+              </IconContent>
+              LDAP
+            </Tab>
+            <Tab
+              active={activeTab === 'DeploymentScheduleSettings'}
+              onClick={() => setActiveTab('DeploymentScheduleSettings')}
+              className="nav-item"
+            >
+              <IconContent className="nav-item">
+                <DeploymentScheduleIcon />
+              </IconContent>
+              Deployment Schedule
+            </Tab>
+            <Tab
+              active={activeTab === 'ServiceAccountSettings'}
+              onClick={() => setActiveTab('ServiceAccountSettings')}
+              className="nav-item"
+            >
+              <IconContent className="nav-item">
+                <ServiceAccountIcon />
+              </IconContent>
+              Service Account
+            </Tab>
+            <Tab
+              active={activeTab === 'EmailConfigurationSettings'}
+              onClick={() => setActiveTab('EmailConfigurationSettings')}
+              className="nav-item"
+            >
+              <IconContent className="nav-item">
+                <EmailConfigIcon />
+              </IconContent>
+              Email Configuration
+            </Tab>
+            <Tab
+              active={activeTab === 'SSOLoginSettings'}
+              onClick={() => setActiveTab('SSOLoginSettings')}
+              className="nav-item"
+            >
+              <IconContent className="nav-item">
+                <SSOLoginIcon />
+              </IconContent>
+              SSO Login
+            </Tab>
+          </TabWrapper>
+        </TabsContainer>
         <TabContent>{renderContent()}</TabContent>
       </GreyBoxNamespace>
     </div>
