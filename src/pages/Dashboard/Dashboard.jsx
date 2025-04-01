@@ -29,6 +29,7 @@ import {
   DashboardActions,
   DashboardSelectors,
   LoadingSelectors,
+  NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
 import { SettingsActions } from '../../store/settings';
