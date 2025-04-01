@@ -20,10 +20,19 @@ export function* fetchRules(api, { payload }) {
     successAction: FlowValidationActions.fetchRulesSuccess,
   });
 }
-
+export function* addRuleScope(api, { payload }) {
+  yield call(requestSaga, {
+    errorSection: 'addRuleScope',
+    loadingSection: 'addRuleScope',
+    apiMethod: api.addRuleSCope, // Now correctly sending data
+    apiParams: [payload], // payload is now properly passed
+    successAction: FlowValidationActions.addRuleScopeSuccess,
+  });
+}
 export function* flowValidationSagas(api) {
   yield all([
     takeLatest(FlowValidationActions.ruleScopeFetch, ruleScopeFetch, api),
     takeLatest(FlowValidationActions.fetchRules, fetchRules, api),
+    takeLatest(FlowValidationActions.addRuleScope, addRuleScope, api),
   ]);
 }

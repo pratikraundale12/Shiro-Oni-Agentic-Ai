@@ -3,6 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { AddIcon, FlowValidationIcon, NewEditIcon } from '../../assets';
 import { Table, TextRender } from '../../components';
+import {
+  FLOWVALIDATION_CONSTANTS,
+  convertDateTime,
+} from '../../constants/flowValidation.constant';
 import { Button } from '../../shared';
 import {
   FlowValidationActions,
@@ -37,42 +41,28 @@ const FlowValidation = () => {
   const dispatch = useDispatch();
 
   const ruleScopes = useSelector(FlowValidationSelectors.getRuleScopes);
-  console.log(ruleScopes?.rules, 'ruleScopes');
   useEffect(() => {
     dispatch(FlowValidationActions.ruleScopeFetch({}));
   }, [dispatch]);
-  const convertDateTime = dateString => {
-    if (!dateString) return 'No date provided';
 
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    });
-  };
   const COLUMNS = [
     {
-      label: 'Scope Type',
+      label: FLOWVALIDATION_CONSTANTS.SCOPE_TYPE,
       renderCell: item => <TextRender text={item?.scope_type} />,
       width: '20%',
     },
     {
-      label: 'Display Value',
+      label: FLOWVALIDATION_CONSTANTS.DISPLAY_VALUE,
       renderCell: item => <TextRender text={item?.header} />,
       width: '25%',
     },
     {
-      label: 'Description',
+      label: FLOWVALIDATION_CONSTANTS.DESCRIPTION,
       renderCell: item => <TextRender text={item?.description} />,
       width: '30%',
     },
     {
-      label: 'Last Updated',
+      label: FLOWVALIDATION_CONSTANTS.LASTUPDATE,
       renderCell: item => (
         <TextRender text={convertDateTime(item?.updated_at)} />
       ),
@@ -80,7 +70,7 @@ const FlowValidation = () => {
     },
 
     {
-      label: 'Actions',
+      label: FLOWVALIDATION_CONSTANTS.ACTION,
       renderCell: () => (
         <>
           <button
@@ -110,7 +100,9 @@ const FlowValidation = () => {
     <div>
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center gap-3">
-          <HeadingStyle>Flow Validation Settings</HeadingStyle>
+          <HeadingStyle>
+            {FLOWVALIDATION_CONSTANTS.FLOW_VALIDATION_SETTINGS}
+          </HeadingStyle>
         </div>
         <div className="mb-2 d-flex align-items-center">
           <Button
@@ -120,7 +112,8 @@ const FlowValidation = () => {
               dispatch(SettingsActions.addNewValidationModalOpen(true))
             }
           >
-            <AddIcon color="#fff" /> Add New Validation
+            <AddIcon color="#fff" />{' '}
+            {FLOWVALIDATION_CONSTANTS.ADD_NEW_VALIDATION}
           </Button>
         </div>
       </div>
@@ -128,7 +121,7 @@ const FlowValidation = () => {
       <ModalBody className="modal-body">
         <Table
           columns={COLUMNS}
-          data={ruleScopes?.rules}
+          data={ruleScopes?.data}
           className="parameter-context-table"
         />
       </ModalBody>

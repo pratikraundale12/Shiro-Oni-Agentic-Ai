@@ -8,6 +8,8 @@ export const FlowValidationActions = {
   fetchRuleScopeSuccess: createAction(`${prefix}fetchRuleScopeSuccess`),
   fetchRules: createAction(`${prefix}fetchRules`),
   fetchRulesSuccess: createAction(`${prefix}fetchRulesSuccess`),
+  addRuleScope: createAction(`${prefix}addRuleScope`),
+  addRuleScopeSuccess: createAction(`${prefix}addRuleScopeSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -33,6 +35,11 @@ const fetchRulesSuccess = (state, { payload }) => ({
   rules: payload,
 });
 
+const addRuleScopeSuccess = (state, { payload }) => ({
+  ...state,
+  ruleScopes: [...state.ruleScopes, payload],
+});
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
   FlowValidation_INITIAL_STATE,
@@ -42,6 +49,7 @@ export const flowValidationReducer = createReducer(
         FlowValidationActions.fetchRuleScopeSuccess,
         fetchRuleScopeSuccess
       )
-      .addCase(FlowValidationActions.fetchRulesSuccess, fetchRulesSuccess);
+      .addCase(FlowValidationActions.fetchRulesSuccess, fetchRulesSuccess)
+      .addCase(FlowValidationActions.addRuleScopeSuccess, addRuleScopeSuccess);
   }
 );

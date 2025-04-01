@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
@@ -18,6 +18,10 @@ import {
   RadioField,
   SelectField,
 } from '../../shared';
+import {
+  FlowValidationActions,
+  FlowValidationSelectors,
+} from '../../store/flowValidation';
 
 const ModelRightSide = styled.div`
   height: 100%;
@@ -62,6 +66,17 @@ const RadioContainer = styled.div`
 
 const FlowValidationModal = () => {
   const dispatch = useDispatch();
+  const fetchRules = useSelector(FlowValidationSelectors.getRules);
+  const [selectedRuleId, setSelectedRuleId] = useState(null);
+
+  const handleRuleSelection = id => {
+    setSelectedRuleId(id);
+  };
+
+  const selectedRule = fetchRules?.data?.find(
+    rule => rule.id === selectedRuleId
+  );
+  console.log(selectedRule, 'selectedRule');
 
   // ✅ Correct way to get state from Redux
   const isFlowValidationModalOpen = useSelector(
@@ -70,6 +85,11 @@ const FlowValidationModal = () => {
 
   const isClosedFlowValidationModal = () =>
     dispatch(SettingsActions.flowValidationModalOpen(false));
+
+  useEffect(() => {
+    console.log('hiiiiii');
+    dispatch(FlowValidationActions.fetchRules());
+  }, [dispatch]);
 
   return (
     <Modal
@@ -87,12 +107,14 @@ const FlowValidationModal = () => {
             name="rule_name"
             icon={<NewLinkIcon />}
             label="Rule Name"
+            value={selectedRule?.name || ''}
             placeholder="Processor Colors"
           />
           <InputField
             name="rule_comments"
             icon={<NewMessageIcon />}
-            label="Rule Comments"
+            label="Output Value"
+            value={selectedRule?.output_value || ''}
             placeholder="Rules for Processor Colors"
           />
           <div className="col-12">
@@ -134,7 +156,7 @@ const FlowValidationModal = () => {
               <InputField
                 name="rule_name"
                 icon={<NewLinkIcon />}
-                placeholder="Processor Colors"
+                value={selectedRule?.output_value || ''}
               />
             </div>
             <div className="col-md-1">
@@ -155,24 +177,31 @@ const FlowValidationModal = () => {
               </Button>
             </div>
             <ul className="list-group">
-              <li className="list-group-item d-flex justify-content-between align-items-center active">
-                <RadioContainer className="d-flex align-items-center gap-2 pe-2">
-                  <RadioField className="m-0" />
-                  Processor Colors
-                </RadioContainer>
-                <span>
-                  <DeleteSmallIcon color="#FF7A00" />
-                </span>
-              </li>
-              <li className="list-group-item d-flex justify-content-between align-items-center">
-                <RadioContainer className="d-flex  align-items-center gap-2  pe-2">
-                  <RadioField className="m-0" />
-                  Unknown Colors
-                </RadioContainer>
-                <span>
-                  <DeleteSmallIcon color="#FF7A00" />
-                </span>
-              </li>
+              {(fetchRules?.data && fetchRules?.data.length > 0
+                ? fetchRules.data
+                : []
+              ).map(item => (
+                <li
+                  key={item.id}
+                  className={`list-group-item d-flex justify-content-between align-items-center ${
+                    item.active ? 'active' : ''
+                  }`}
+                >
+                  <RadioContainer className="d-flex align-items-center gap-2 pe-2">
+                    <RadioField
+                      className="m-0"
+                      checked={selectedRuleId === item.id}
+                      onChange={() => handleRuleSelection(item.id)}
+                    />
+                    {item?.name}
+                  </RadioContainer>
+                  <span>
+                    {fetchRules?.data?.deletable === false && (
+                      <DeleteSmallIcon color="#FF7A00" />
+                    )}
+                  </span>
+                </li>
+              ))}
             </ul>
           </ModelRightSide>
         </div>
