@@ -24,6 +24,8 @@ const InputFields = styled.div`
 
 const FlexWrapper = styled.div`
   display: flex;
+  position: absolute;
+  height: 53px;
   align-items: center;
   justify-content: space-between;
   padding-bottom: 20px;
@@ -41,6 +43,13 @@ const LinkButton = styled(TextButton)`
   &:hover {
     color: ${props => props.theme.colors.primary};
   }
+`;
+
+const ButtonText = styled.div`
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 100%;
+  letter-spacing: 1%;
 `;
 
 export const settingSchema = yup.object().shape({});
@@ -204,8 +213,8 @@ export const LDAPSettings = () => {
         }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <InputFields className="row">
-          <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-4">
+        <InputFields className="d-flex flex-column">
+          <div className="mt-4">
             <SwitchButton
               id="openModalInput1"
               name="LDAP"
@@ -214,7 +223,7 @@ export const LDAPSettings = () => {
               isDisabled={false}
             />
           </div>
-          <div className="col-6 col-sm-4 col-lg-3 col-xl-2 mt-4">
+          <div className="mt-4">
             <SwitchButton
               id="openModalInput2"
               name="AUTO SYNC"
@@ -223,7 +232,7 @@ export const LDAPSettings = () => {
               isDisabled={!isLdapEnabled}
             />
           </div>
-          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-6 mb-4">
+          <div className="mt-4 w-25">
             <SelectField
               label="LDAP Auto Sync Time"
               name="ldap_auto_sync_time_interval"
@@ -246,7 +255,7 @@ export const LDAPSettings = () => {
               }}
             />
           </div>
-          <div className="col-md mt-5">
+          <div className="mt-4">
             <LinkButton onClick={() => history.push('/ldap-configuration')}>
               {KDFM.CHANGE_CONFIGURATION}
             </LinkButton>
@@ -255,8 +264,36 @@ export const LDAPSettings = () => {
 
         <FlexWrapper className="mt-3">
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <Button type="submit" loading={loading} disabled={!isChanged}>
-              {KDFM.SAVE_SETTINGS}
+            <Button
+              variant="secondary"
+              type="cancel"
+              loading={loading}
+              disabled={!isChanged}
+              style={{
+                padding: '10px',
+                height: '50px',
+                width: '124px',
+                gap: '10px',
+                radius: '8px',
+              }}
+            >
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+            <Button
+              type="submit"
+              loading={loading}
+              disabled={!isChanged}
+              style={{
+                paddingTop: '15px',
+                paddingBottom: '15px',
+                height: '50px',
+                width: '150px',
+                gap: '10px',
+                radius: '8px',
+                left: '140px',
+              }}
+            >
+              <ButtonText>{KDFM.SAVE_SETTINGS}</ButtonText>
             </Button>
           </div>
         </FlexWrapper>

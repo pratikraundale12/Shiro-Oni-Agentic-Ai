@@ -21,11 +21,20 @@ const InputFields = styled.div`
 
 const FlexWrapper = styled.div`
   display: flex;
+  position: absolute;
+  height: 53px;
   align-items: center;
   justify-content: space-between;
   padding-bottom: 20px;
   margin-top: auto;
   bottom: 20px;
+`;
+
+const ButtonText = styled.div`
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 100%;
+  letter-spacing: 1%;
 `;
 
 export const settingSchema = yup.object().shape({});
@@ -162,8 +171,36 @@ export const ServiceAccountSettings = () => {
 
         <FlexWrapper className="mt-3">
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <Button type="submit" loading={loading} disabled={!isChanged}>
-              {KDFM.SAVE_SETTINGS}
+            <Button
+              variant="secondary"
+              type="cancel"
+              loading={loading}
+              disabled={!isChanged}
+              style={{
+                padding: '10px',
+                height: '50px',
+                width: '124px',
+                gap: '10px',
+                radius: '8px',
+              }}
+            >
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+            <Button
+              type="submit"
+              loading={loading}
+              disabled={!isChanged}
+              style={{
+                paddingTop: '15px',
+                paddingBottom: '15px',
+                height: '50px',
+                width: '150px',
+                gap: '10px',
+                radius: '8px',
+                left: '140px',
+              }}
+            >
+              <ButtonText>{KDFM.SAVE_SETTINGS}</ButtonText>
             </Button>
           </div>
         </FlexWrapper>

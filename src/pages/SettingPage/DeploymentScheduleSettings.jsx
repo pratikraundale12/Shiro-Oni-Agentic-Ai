@@ -32,6 +32,8 @@ const InputFields = styled.div`
 
 const FlexWrapper = styled.div`
   display: flex;
+  position: absolute;
+  height: 53px;
   align-items: center;
   justify-content: space-between;
   padding-bottom: 20px;
@@ -49,6 +51,13 @@ const EmphasisText = styled.em`
   font-style: italic;
   font-size: 13px !important;
   font-weight: 500;
+`;
+
+const ButtonText = styled.div`
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 100%;
+  letter-spacing: 1%;
 `;
 
 export const settingSchema = yup.object().shape({
@@ -194,7 +203,7 @@ export const DeploymentScheduleSettings = () => {
         }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-8 mb-4">
+        <div className="col-xl-6 col-lg-10 col-md-10 col-sm-10 col-6 mb-4">
           <SelectField
             label="Approver Groups"
             name="approver_groups"
@@ -211,7 +220,7 @@ export const DeploymentScheduleSettings = () => {
           />
         </div>
         <InputFields className="row">
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
+          <div className="col-xl-3 col-lg-5 col-md-5 col-sm-5 col-5 mt-1">
             <InputField
               name="group_email_id"
               register={register}
@@ -221,7 +230,7 @@ export const DeploymentScheduleSettings = () => {
               errors={errors}
             />
           </div>
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+          <div className="col-xl-3 col-lg-5 col-md-5 col-sm-5 col-5 mt-1">
             <LabelSelect className="mb-3">
               {KDFM.EMAIL_REMINDER}
               <EmphasisText> ({KDFM.REMINDER_EMPHASISED_TEXT})</EmphasisText>
@@ -236,26 +245,54 @@ export const DeploymentScheduleSettings = () => {
               defaultValue={EMAIL_REMINDER_OPTIONS[0]}
             />
           </div>
-          <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-            <LabelSelect className="mb-3">
-              {KDFM.DEPLOYMENT_SCHEDULE_LIST_REFRESH}
-            </LabelSelect>
-            <SelectField
-              name="refresh"
-              control={control}
-              icon={<CalendarIcon />}
-              errors={errors}
-              options={SCHEDULE_LIST_REFRESH_OPTIONS}
-              placeholder="Deployment Schedule Refresh Time"
-              sortAlphabetically={false}
-            />
-          </div>
         </InputFields>
+        <div className="col-xl-3 col-lg-5 col-md-5 col-sm-5 col-5 mt-1">
+          <LabelSelect className="mb-3">
+            {KDFM.DEPLOYMENT_SCHEDULE_LIST_REFRESH}
+          </LabelSelect>
+          <SelectField
+            name="refresh"
+            control={control}
+            icon={<CalendarIcon />}
+            errors={errors}
+            options={SCHEDULE_LIST_REFRESH_OPTIONS}
+            placeholder="Deployment Schedule Refresh Time"
+            sortAlphabetically={false}
+          />
+        </div>
 
         <FlexWrapper className="mt-3">
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <Button type="submit" loading={loading} disabled={!isChanged}>
-              {KDFM.SAVE_SETTINGS}
+            <Button
+              variant="secondary"
+              type="cancel"
+              loading={loading}
+              disabled={!isChanged}
+              style={{
+                padding: '10px',
+                height: '50px',
+                width: '124px',
+                gap: '10px',
+                radius: '8px',
+              }}
+            >
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+            <Button
+              type="submit"
+              loading={loading}
+              disabled={!isChanged}
+              style={{
+                paddingTop: '15px',
+                paddingBottom: '15px',
+                height: '50px',
+                width: '150px',
+                gap: '10px',
+                radius: '8px',
+                left: '140px',
+              }}
+            >
+              <ButtonText>{KDFM.SAVE_SETTINGS}</ButtonText>
             </Button>
           </div>
         </FlexWrapper>

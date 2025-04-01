@@ -46,6 +46,7 @@ export * from './FlowDetailIcon';
 export * from './FlowFilesQuedIcon';
 export * from './FlowMetricHeaderIcon';
 export * from './FlowValidationIcon';
+export * from './FlowValidationIcon2';
 export * from './ForgetPasswordIcon';
 export * from './GenrateFlowIcon';
 export * from './GoogleIcon';

@@ -15,10 +15,11 @@ import {
   ServiceAccountIcon,
   EmailConfigIcon,
   SSOLoginIcon,
+  FlowValidationIcon2,
 } from '../../assets';
 
 const GreyBoxNamespace = styled.div`
-  background-color: #f5f7fa;
+  background-color: #ffffff;
   padding: 22px 19px;
   border-radius: 20px;
 `;
@@ -58,7 +59,7 @@ const TabContent = styled.div`
   width: 100%;
   padding: 1rem;
   border-radius: 0.25rem;
-  background-color: #f8f9fa;
+  background-color: #ffffff;
 `;
 
 const IconContent = styled.div`
@@ -165,6 +166,9 @@ const SettingTab = () => {
             onClick={() => setActiveTab('Flow Validation')}
             className="nav-item"
           >
+            <IconContent className="nav-item">
+              <FlowValidationIcon2 />
+            </IconContent>
             Flow Validation
           </Tab>
         </TabWrapper>
