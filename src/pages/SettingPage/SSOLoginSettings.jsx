@@ -44,6 +44,29 @@ const ButtonText = styled.div`
   letter-spacing: 1%;
 `;
 
+const StyledCancelButton = styled(Button)`
+  padding: 10px;
+  height: 50px;
+  width: 124px;
+  gap: 10px;
+  border-radius: 8px;
+`;
+
+const StyledSaveButton = styled(Button)`
+  padding-top: 15px;
+  padding-bottom: 15px;
+  height: 50px;
+  width: 150px;
+  gap: 10px;
+  radius: 8px;
+  left: 140px;
+`;
+
+const ButtonDiv = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
 export const settingSchema = yup.object().shape({
   selected_sso: yup.string().nullable(),
 
@@ -400,39 +423,23 @@ export const SSOLoginSettings = () => {
         </>
 
         <FlexWrapper className="mt-3">
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <Button
+          <ButtonDiv>
+            <StyledCancelButton
               variant="secondary"
               type="cancel"
               loading={loading}
               disabled={!isChanged}
-              style={{
-                padding: '10px',
-                height: '50px',
-                width: '124px',
-                gap: '10px',
-                radius: '8px',
-              }}
             >
               <ButtonText>Cancel</ButtonText>
-            </Button>
-            <Button
+            </StyledCancelButton>
+            <StyledSaveButton
               type="submit"
               loading={loading}
               disabled={!isChanged}
-              style={{
-                paddingTop: '15px',
-                paddingBottom: '15px',
-                height: '50px',
-                width: '150px',
-                gap: '10px',
-                radius: '8px',
-                left: '140px',
-              }}
             >
               <ButtonText>{KDFM.SAVE_SETTINGS}</ButtonText>
-            </Button>
-          </div>
+            </StyledSaveButton>
+          </ButtonDiv>
         </FlexWrapper>
       </form>
     </Wrapper>

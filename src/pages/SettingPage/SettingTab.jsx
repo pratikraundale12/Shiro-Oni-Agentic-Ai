@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import FlowValidation from './FlowValidation';
 import { Setting } from './Setting';
 import { AppSettings } from './AppSettings';
 import { DeploymentScheduleSettings } from './DeploymentScheduleSettings';
@@ -15,7 +14,6 @@ import {
   ServiceAccountIcon,
   EmailConfigIcon,
   SSOLoginIcon,
-  FlowValidationIcon2,
 } from '../../assets';
 
 const GreyBoxNamespace = styled.div`
@@ -85,9 +83,6 @@ const SettingTab = () => {
         return <EmailConfigurationSettings />;
       case 'SSOLoginSettings':
         return <SSOLoginSettings />;
-
-      case 'Flow Validation':
-        return <FlowValidation />;
     }
   };
   return (
@@ -160,16 +155,6 @@ const SettingTab = () => {
               <SSOLoginIcon />
             </IconContent>
             SSO Login
-          </Tab>
-          <Tab
-            active={activeTab === 'Flow Validation'}
-            onClick={() => setActiveTab('Flow Validation')}
-            className="nav-item"
-          >
-            <IconContent className="nav-item">
-              <FlowValidationIcon2 />
-            </IconContent>
-            Flow Validation
           </Tab>
         </TabWrapper>
         <TabContent>{renderContent()}</TabContent>

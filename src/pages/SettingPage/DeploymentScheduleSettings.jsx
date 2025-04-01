@@ -26,9 +26,9 @@ const Wrapper = styled.div`
   height: 95%;
   padding-bottom: 120px; /* Adds space below all content */
 `;
-const InputFields = styled.div`
-  display: flex;
-`;
+// const InputFields = styled.div`
+//   display: flex;
+// `;
 
 const FlexWrapper = styled.div`
   display: flex;
@@ -58,6 +58,29 @@ const ButtonText = styled.div`
   font-weight: 600;
   line-height: 100%;
   letter-spacing: 1%;
+`;
+
+const StyledCancelButton = styled(Button)`
+  padding: 10px;
+  height: 50px;
+  width: 124px;
+  gap: 10px;
+  border-radius: 8px;
+`;
+
+const StyledSaveButton = styled(Button)`
+  padding-top: 15px;
+  padding-bottom: 15px;
+  height: 50px;
+  width: 150px;
+  gap: 10px;
+  radius: 8px;
+  left: 140px;
+`;
+
+const ButtonDiv = styled.div`
+  display: flex;
+  gap: 1rem;
 `;
 
 export const settingSchema = yup.object().shape({
@@ -219,33 +242,40 @@ export const DeploymentScheduleSettings = () => {
             )}
           />
         </div>
-        <InputFields className="row">
-          <div className="col-xl-3 col-lg-5 col-md-5 col-sm-5 col-5 mt-1">
-            <InputField
-              name="group_email_id"
-              register={register}
-              icon={<MailIcon />}
-              label={KDFM.GROUP_EMAIL}
-              placeholder={KDFM.ENTER_GROUP_EMAIL}
-              errors={errors}
-            />
+
+        {/* Modified middle rows container to match top row width */}
+        <div className="col-xl-6 col-lg-10 col-md-10 col-sm-10 col-6 ">
+          <div className="row">
+            {/* First middle field - adjust to 50% width */}
+            <div className="col-6 mb-1">
+              <InputField
+                name="group_email_id"
+                register={register}
+                icon={<MailIcon />}
+                label={KDFM.GROUP_EMAIL}
+                placeholder={KDFM.ENTER_GROUP_EMAIL}
+                errors={errors}
+              />
+            </div>
+
+            {/* Second middle field - adjust to 50% width */}
+            <div className="col-6 mb-1">
+              <LabelSelect className="mb-3">
+                {KDFM.EMAIL_REMINDER}
+                <EmphasisText> ({KDFM.REMINDER_EMPHASISED_TEXT})</EmphasisText>
+              </LabelSelect>
+              <SelectField
+                name="email_reminder_time"
+                control={control}
+                icon={<CalendarIcon />}
+                errors={errors}
+                options={EMAIL_REMINDER_OPTIONS}
+                placeholder="Select Reminder Time"
+                defaultValue={EMAIL_REMINDER_OPTIONS[0]}
+              />
+            </div>
           </div>
-          <div className="col-xl-3 col-lg-5 col-md-5 col-sm-5 col-5 mt-1">
-            <LabelSelect className="mb-3">
-              {KDFM.EMAIL_REMINDER}
-              <EmphasisText> ({KDFM.REMINDER_EMPHASISED_TEXT})</EmphasisText>
-            </LabelSelect>
-            <SelectField
-              name="email_reminder_time"
-              control={control}
-              icon={<CalendarIcon />}
-              errors={errors}
-              options={EMAIL_REMINDER_OPTIONS}
-              placeholder="Select Reminder Time"
-              defaultValue={EMAIL_REMINDER_OPTIONS[0]}
-            />
-          </div>
-        </InputFields>
+        </div>
         <div className="col-xl-3 col-lg-5 col-md-5 col-sm-5 col-5 mt-1">
           <LabelSelect className="mb-3">
             {KDFM.DEPLOYMENT_SCHEDULE_LIST_REFRESH}
@@ -262,39 +292,23 @@ export const DeploymentScheduleSettings = () => {
         </div>
 
         <FlexWrapper className="mt-3">
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <Button
+          <ButtonDiv>
+            <StyledCancelButton
               variant="secondary"
               type="cancel"
               loading={loading}
               disabled={!isChanged}
-              style={{
-                padding: '10px',
-                height: '50px',
-                width: '124px',
-                gap: '10px',
-                radius: '8px',
-              }}
             >
               <ButtonText>Cancel</ButtonText>
-            </Button>
-            <Button
+            </StyledCancelButton>
+            <StyledSaveButton
               type="submit"
               loading={loading}
               disabled={!isChanged}
-              style={{
-                paddingTop: '15px',
-                paddingBottom: '15px',
-                height: '50px',
-                width: '150px',
-                gap: '10px',
-                radius: '8px',
-                left: '140px',
-              }}
             >
               <ButtonText>{KDFM.SAVE_SETTINGS}</ButtonText>
-            </Button>
-          </div>
+            </StyledSaveButton>
+          </ButtonDiv>
         </FlexWrapper>
       </form>
     </Wrapper>
