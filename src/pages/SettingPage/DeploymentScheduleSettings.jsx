@@ -4,12 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import {
-  CalendarIcon,
-  MailIcon,
-  QRIcons,
-  // RefreshIcon,
-} from '../../assets';
+import { CalendarIcon, MailIcon, QRIcons } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import {
   EMAIL_REGEX,
@@ -26,9 +21,6 @@ const Wrapper = styled.div`
   height: 95%;
   padding-bottom: 120px; /* Adds space below all content */
 `;
-// const InputFields = styled.div`
-//   display: flex;
-// `;
 
 const FlexWrapper = styled.div`
   display: flex;

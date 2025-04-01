@@ -4,10 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import {
-  QRIcons,
-  // RefreshIcon,
-} from '../../assets';
+import { QRIcons } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';

@@ -89,13 +89,6 @@ const SettingTab = () => {
     <div>
       <GreyBoxNamespace className="w-100  mb-3">
         <TabWrapper className="nav">
-          {/* <Tab
-            active={activeTab === 'Setting'}
-            onClick={() => setActiveTab('Setting')}
-            className="nav-item"
-          >
-            General Settings
-          </Tab> */}
           <Tab
             active={activeTab === 'AppSettings'}
             onClick={() => setActiveTab('AppSettings')}

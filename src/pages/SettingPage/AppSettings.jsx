@@ -4,13 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import {
-  LogoFieldIcon,
-  MailIcon,
-  QRIcons,
-  // RefreshIcon,
-  UploadIcon,
-} from '../../assets';
+import { LogoFieldIcon, MailIcon, QRIcons, UploadIcon } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
