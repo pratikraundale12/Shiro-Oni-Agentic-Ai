@@ -65,6 +65,9 @@ export const Modal = ({
   children,
   isOpen,
   closeIcon = true,
+  isAdditionalIcon = false,
+  additionalIcon,
+  onAdditionalIconClick = () => null,
   onRequestClose,
   loading = false,
   secondaryButtonText = '',
@@ -142,13 +145,22 @@ export const Modal = ({
       >
         <Header>
           <Title className="mb-0">{title}</Title>
-          {closeIcon && (
-            <CloseButton
-              type="button"
-              icon={<CloseIcon />}
-              onClick={onRequestClose}
-            />
-          )}
+          <div className="d-flex gap-2">
+            {isAdditionalIcon && (
+              <CloseButton
+                type="button"
+                icon={additionalIcon}
+                onClick={onAdditionalIconClick}
+              />
+            )}
+            {closeIcon && (
+              <CloseButton
+                type="button"
+                icon={<CloseIcon />}
+                onClick={onRequestClose}
+              />
+            )}
+          </div>
         </Header>
         <Body noPadding={noPadding} noScroll={noScroll}>
           {children}
