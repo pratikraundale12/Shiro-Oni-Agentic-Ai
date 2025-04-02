@@ -48,8 +48,6 @@ import {
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
-import KeycloakRedirectPage from '../components/KeycloakRedirectPage.jsx';
-import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import License from '../pages/Licensing/License.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
