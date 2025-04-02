@@ -545,6 +545,10 @@ export const ListControllerService = () => {
               style={{
                 opacity: 1,
                 minWidth: '37px',
+                cursor:
+                  selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                    ? 'pointer'
+                    : 'not-allowed',
               }}
               data-tooltip-id={`tooltip-group-namespace-refresh`}
             >
