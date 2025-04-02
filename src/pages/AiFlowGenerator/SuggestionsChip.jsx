@@ -79,6 +79,9 @@ const GenerateButton = styled.div`
 `;
 
 const StyledSlider = styled(Slider)`
+  .slick-slider {
+    margin-bottom: 10px;
+  }
   .slick-prev,
   .slick-next {
     width: 40px;
