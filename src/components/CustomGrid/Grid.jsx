@@ -232,6 +232,8 @@ export const Grid = ({
       return 'status';
     } else if (module === 'scheduler') {
       return 'deployment_status';
+    } else if (module === 'clusters') {
+      return 'status';
     } else {
       return 'is_active';
     }
@@ -299,13 +301,15 @@ export const Grid = ({
 
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
   useEffect(() => {
-    getNamespacesListData();
+    if (selectedCluster?.value) {
+      getNamespacesListData();
+    }
   }, [selectedNamespaceForDetail, selectedCluster]);
 
   useEffect(() => {
     if (isNamespace && currentPage > 0) {
       return;
-    } else {
+    } else if (selectedCluster?.value) {
       getNamespacesListData();
     }
   }, [
