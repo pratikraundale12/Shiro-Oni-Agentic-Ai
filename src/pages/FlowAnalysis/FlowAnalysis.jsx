@@ -1,0 +1,196 @@
+import { isEmpty } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import styled from 'styled-components';
+import { Grid, TextRender } from '../../components';
+import { KDFM, REFRESH_OPTIONS } from '../../constants';
+import { NamespacesActions } from '../../store';
+import { useGlobalContext } from '../../utils';
+import ProcessGroupSorting from '../Namespaces/ProcessGroupSorting';
+
+const StyledButton = styled.button`
+  color: #ff7a00;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: 400;
+  font-size: 15px;
+  display: block;
+  width: 100%;
+  text-align: left;
+
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
+`;
+const FlowNameDiv = styled.div`
+  color: ${props => props.theme.colors.darker};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 16px;
+  font-weight: 400;
+  text-transform: ${props => (props.capitalizeText ? 'capitalize' : 'none')};
+  background: none;
+  border: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
+`;
+const FlowAnalysis = () => {
+  const dispatch = useDispatch();
+  const {
+    state: { search },
+    setState,
+  } = useGlobalContext();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    dispatch(NamespacesActions.resetDeployData());
+  }, []);
+
+  const handleEdit = item => {
+    console.log('Edit clicked', item);
+    // Add your edit logic here
+  };
+
+  const handleDelete = item => {
+    console.log('Delete clicked', item);
+    // Add your delete logic here
+  };
+
+  const state = {
+    sortKey: 'name',
+    reverse: false,
+  };
+
+  const ListForTooltip = item => {
+    return (
+      <>
+        {item?.name && (
+          <>
+            <li>Name : {item?.name}</li>
+            {<li>ID : {item?.id}</li>}
+            {!isEmpty(search) && item?.parent && (
+              <li>Parent : {item.parent}</li>
+            )}
+          </>
+        )}
+      </>
+    );
+  };
+  const COLUMNS = [
+    {
+      label: (
+        <ProcessGroupSorting
+          sortProperty="name"
+          module="namespaces"
+          clickableName={KDFM.NAMESPACE}
+        />
+      ),
+      renderCell: item => (
+        <>
+          <StyledButton
+            data-tooltip-id={`${item?.id}-name`}
+            key={item.flowId}
+            tabIndex="0"
+            onClick={() => {
+              setState(prev => ({ ...prev, search: '' }));
+              dispatch(NamespacesActions.setFlowPath(item.flowId));
+              dispatch(
+                NamespacesActions.setSelectedNamespace({
+                  label: item.name,
+                  value: item.id,
+                })
+              );
+              setCurrentPage(1);
+            }}
+          >
+            {item?.name}
+          </StyledButton>
+          <ReactTooltip
+            id={`${item?.id}-name`}
+            place="right"
+            // effect="solid"
+            content={ListForTooltip(item)}
+            style={{
+              width: 'auto',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        </>
+      ),
+      width: '35%',
+      resize: true,
+    },
+
+    {
+      label: (
+        <ProcessGroupSorting
+          sortProperty="flowName"
+          module="namespaces"
+          clickableName={KDFM.FLOW_NAME}
+        />
+      ),
+      renderCell: item => (
+        <>
+          <FlowNameDiv data-tooltip-id={`tooltip-${item.flowName}1`}>
+            {item.flowName || KDFM.NA}
+          </FlowNameDiv>
+          <ReactTooltip
+            id={`tooltip-${item?.flowName}1`}
+            place="right"
+            content={item?.flowName}
+            style={{
+              width: 'auto',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
+        </>
+      ),
+      width: '35%',
+      resize: true,
+    },
+    {
+      label: KDFM.VERSION,
+      renderCell: item => <TextRender text={item.version || KDFM.NA} />,
+      width: '10%',
+      resize: true,
+    },
+    {
+      label: KDFM.ACTIONS,
+      renderCell: item => (
+        <div>
+          <button onClick={() => handleEdit(item)}></button>
+          <button onClick={() => handleDelete(item)}>Delete</button>
+        </div>
+      ),
+      width: '20%',
+      resize: true,
+    },
+  ];
+
+  return (
+    <Grid
+      isNamespace={true}
+      module="namespaces"
+      title={KDFM.NAMESPACE_LIST}
+      columns={COLUMNS}
+      refreshOptions={REFRESH_OPTIONS}
+      placeholder={KDFM.SEARCH_NAMESPACE_FLOW_BUCKET_NAME}
+      state={state}
+      currentPage={currentPage}
+      setCurrentPage={setCurrentPage}
+    />
+  );
+};
+export default FlowAnalysis;

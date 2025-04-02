@@ -48,6 +48,7 @@ import {
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
+import FlowAnalysis from '../pages/FlowAnalysis/FlowAnalysis.jsx';
 import License from '../pages/Licensing/License.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
@@ -138,6 +139,18 @@ export const ROUTES_MENU = [
       },
     ],
     permission: 'view_namespace',
+  },
+  {
+    name: 'Flow Analysis',
+    path: 'flow-analysis',
+    icon: BookIcon,
+    pages: [
+      {
+        path: '',
+        component: <FlowAnalysis />,
+      },
+    ],
+    permission: 'view_controller_services',
   },
   {
     name: 'Deployment Schedule',
