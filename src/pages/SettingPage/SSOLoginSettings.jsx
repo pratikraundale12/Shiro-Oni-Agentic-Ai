@@ -139,6 +139,7 @@ export const SSOLoginSettings = () => {
     register,
     watch,
     setValue,
+    reset,
     formState: { errors, dirtyFields },
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
@@ -429,6 +430,10 @@ export const SSOLoginSettings = () => {
               type="cancel"
               loading={loading}
               disabled={!isChanged}
+              onClick={() => {
+                reset(settingData);
+                setIsChanged(false);
+              }}
             >
               <ButtonText>Cancel</ButtonText>
             </StyledCancelButton>

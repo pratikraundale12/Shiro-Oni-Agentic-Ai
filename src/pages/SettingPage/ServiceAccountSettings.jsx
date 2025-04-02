@@ -67,6 +67,7 @@ export const ServiceAccountSettings = () => {
     register,
     watch,
     setValue,
+    reset,
     formState: { errors, dirtyFields },
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
@@ -135,8 +136,8 @@ export const ServiceAccountSettings = () => {
         value.username !== settingData?.username ||
         value.password !== settingData?.password ||
         value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
-        setIsChanged(isModified);
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh); // Direct comparison to the original value
+      setIsChanged(isModified);
     });
 
     return () => subscription.unsubscribe();
@@ -199,6 +200,10 @@ export const ServiceAccountSettings = () => {
               type="cancel"
               loading={loading}
               disabled={!isChanged}
+              onClick={() => {
+                reset(settingData);
+                setIsChanged(false);
+              }}
             >
               <ButtonText>Cancel</ButtonText>
             </StyledCancelButton>

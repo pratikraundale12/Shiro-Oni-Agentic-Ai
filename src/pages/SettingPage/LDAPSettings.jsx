@@ -79,6 +79,7 @@ export const LDAPSettings = () => {
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors, dirtyFields },
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
@@ -289,6 +290,11 @@ export const LDAPSettings = () => {
               type="cancel"
               loading={loading}
               disabled={!isChanged}
+              onClick={() => {
+                reset(settingData);
+                setIsChanged(false);
+                setLdapInitialConfig(settingData?.ldapEnabled);
+              }}
             >
               <ButtonText>Cancel</ButtonText>
             </StyledCancelButton>

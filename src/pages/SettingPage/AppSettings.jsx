@@ -80,6 +80,7 @@ export const AppSettings = () => {
     register,
     watch,
     setValue,
+    reset,
     formState: { errors, dirtyFields },
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
@@ -248,9 +249,13 @@ export const AppSettings = () => {
           <ButtonDiv>
             <StyledCancelButton
               variant="secondary"
-              type="cancel"
+              type="button"
               loading={loading}
               disabled={!isChanged}
+              onClick={() => {
+                reset(settingData);
+                setIsChanged(false);
+              }}
             >
               <ButtonText>Cancel</ButtonText>
             </StyledCancelButton>
