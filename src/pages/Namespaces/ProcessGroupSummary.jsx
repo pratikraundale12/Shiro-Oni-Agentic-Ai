@@ -3,7 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets';
+import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
+import { history } from '../../helpers/history';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
@@ -17,8 +19,6 @@ import ListControllerService from './ListControllerServiceNamespace';
 import ListVariables from './Listvariables';
 import ParameterContext from './ParameterContext';
 import SummaryDetails from './SummaryDetails';
-import { history } from '../../helpers/history';
-import { FullPageLoader } from '../../components';
 
 const TopTitleBar = styled.div`
   height: 37px;

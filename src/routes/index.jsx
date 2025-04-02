@@ -41,7 +41,7 @@ import {
   ReadyFlowGallary,
   Reset,
   SessionExpired,
-  Setting,
+  // Setting,
   Success,
   UserLogin,
 } from '../pages';
@@ -57,6 +57,7 @@ import ProcessGroupSummary from '../pages/Namespaces/ProcessGroupSummary';
 import Summary from '../pages/Namespaces/Summary';
 import Upgrade from '../pages/Namespaces/Upgrade';
 import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
+import SettingTab from '../pages/SettingPage/SettingTab.jsx';
 import {
   AuthenticationActions,
   AuthenticationSelectors,
@@ -249,7 +250,7 @@ export const ROUTES_MENU = [
     pages: [
       {
         path: '',
-        component: <Setting />,
+        component: <SettingTab />,
       },
     ],
     permission: 'view_setting',
