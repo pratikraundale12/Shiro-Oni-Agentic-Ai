@@ -13,6 +13,7 @@ import { schedularReducer } from './schedular';
 import { settingsReducer } from './settings';
 import { rolesReducer } from './roles/redux';
 import { usersReducer } from './users';
+import { aiFlowGeneratorReducer } from './aiFlowGenerator';
 
 const resettable = resettableReducer('RESET');
 
@@ -35,4 +36,5 @@ export default combineReducers({
   schedular: resettable(schedularReducer),
   settings: resettable(settingsReducer),
   activityHistory: resettable(activityHistoryReducer),
+  aiFlowGenerator: resettable(aiFlowGeneratorReducer),
 });

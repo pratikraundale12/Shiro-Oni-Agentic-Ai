@@ -5,7 +5,7 @@ export * from './Users';
 export * from './Clusters';
 export * from './Namespaces';
 export * from './ReadyFlowGallary';
-export * from './GenrateFlow';
+export * from './AiFlowGenerator';
 export * from './Role&Permission';
 export * from './Icons';
 export * from './LdapConfig';

@@ -121,7 +121,7 @@ export const Modal = ({
   const handleKeyDown = e => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      onSubmit(); // Prevent the default action when Enter is pressed
+      onSubmit(e); // Prevent the default action when Enter is pressed
     }
   };
 
@@ -130,19 +130,24 @@ export const Modal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={styleObject}
+      shouldCloseOnOverlayClick={false}
     >
       <form
         className="d-flex flex-column overflow-auto"
         onSubmit={e => {
           e.preventDefault();
-          onSubmit();
+          onSubmit(e);
         }}
         onKeyDown={handleKeyDown}
       >
         <Header>
           <Title className="mb-0">{title}</Title>
           {closeIcon && (
-            <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
+            <CloseButton
+              type="button"
+              icon={<CloseIcon />}
+              onClick={onRequestClose}
+            />
           )}
         </Header>
         <Body noPadding={noPadding} noScroll={noScroll}>
@@ -169,7 +174,7 @@ export const Modal = ({
                 type="button"
                 variant={thirdVarint ? 'tertiary' : 'secondary'}
                 onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
-                disabled={tertiaryButtonConfig.disabled}
+                disabled={tertiaryButtonConfig.tertiaryButtonDisable}
                 loading={tertiaryButtonConfig.tertiaryButtonLoading}
                 {...tertiaryButtonConfig}
               >

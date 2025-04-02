@@ -1099,7 +1099,12 @@ export function* fetchNamespacesForDestiationCluster(api, { payload }) {
   }
 }
 
-export function* fetchRegistryData(api) {
+export function* fetchRegistryData(api, { payload }) {
+  let registryId = '';
+  if (payload) {
+    const { registriesId } = payload;
+    registryId = registriesId;
+  }
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const gridData = yield select(
     GridSelectors.getNamespaceGridRegistry,
@@ -1120,7 +1125,7 @@ export function* fetchRegistryData(api) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        registriesId: gridData?.id,
+        registriesId: gridData?.id || registryId,
       },
     ],
   });

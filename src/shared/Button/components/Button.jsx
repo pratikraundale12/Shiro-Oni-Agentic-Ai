@@ -95,6 +95,9 @@ const StyledButton = styled.button.withConfig({
         : props.variant === 'secondary'
           ? props.theme.colors.lightGrey3
           : props.theme.colors.lightGrey3};
+    path {
+      fill: ${props => props.theme.colors.lightGrey3};
+    }
   }
 
   svg {
