@@ -1035,13 +1035,23 @@ const Summary = () => {
   const isScheduled = scheduleDeploymentFlow || scheduleUpgradeFromList;
 
   const getDeploymentAction = () => {
-    if (deployByRegistryFlow) return KDFM.DEPLOY;
+    if (deployByRegistryFlow) {
     return checkDestCluster?.version <= versionSelected.version
       ? KDFM.UPGRADE
       : KDFM.DOWNGRADE;
+    } else return KDFM.DEPLOY;
   };
 
   const deploymentAction = getDeploymentAction();
+  // const deploymentType =
+  // checkDestCluster?.version <= versionSelected.version
+  //   ? KDFM.UPGRADE
+  //   : KDFM.DOWNGRADE;
+
+  
+  // const deploymentAction = deployByRegistryFlow
+  // ? deploymentType
+  // : KDFM.DEPLOY;
 
   const providePrimaryTextForFlowConfirmationModal = () => {
     return checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy
