@@ -29,6 +29,14 @@ export const ClustersActions = {
   ),
   setHostIpList: createAction(`${prefix}setHostIpList`),
   setActiveTabClusterSetup: createAction(`${prefix}setActiveTabClusterSetup`),
+  fetchHostNodesList: createAction(`${prefix}fetchHostNodesList`),
+  setAddHostBtnDisable: createAction(`${prefix}setAddHostBtnDisable`),
+  setAddHostIndividualData: createAction(`${prefix}setAddHostIndividualData`),
+  addIndividualHost: createAction(`${prefix}addIndividualHost`),
+  deleteIndividualHost: createAction(`${prefix}deleteIndividualHost`),
+  updateIndividualHost: createAction(`${prefix}updateIndividualHost`),
+  getConfigList: createAction(`${prefix}getConfigList`),
+  setConfigNameList: createAction(`${prefix}setConfigNameList`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -45,6 +53,9 @@ export const CLUSTERS_INITIAL_STATE = {
   nifiVersions: [],
   hostIpList: [],
   activeTabClusterSetup: 'getting_started',
+  addHostBtnDisable: true,
+  addHostIndividualData: {},
+  configNameList: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -63,6 +74,9 @@ export const ClustersSelectors = {
   getNifiVersions: state => state.clusters.nifiVersions,
   getHostIpList: state => state.clusters.hostIpList,
   getActiveTabClusterSetup: state => state.clusters.activeTabClusterSetup,
+  getAddHostBtnDisable: state => state.clusters.addHostBtnDisable,
+  getAddHostIndividualData: state => state.clusters.addHostIndividualData,
+  getConfigNameList: state => state.clusters.configNameList,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -151,6 +165,24 @@ const setActiveTabClusterSetup = (state, { payload }) => {
     activeTabClusterSetup: payload,
   };
 };
+const setAddHostBtnDisable = (state, { payload }) => {
+  return {
+    ...state,
+    addHostBtnDisable: payload,
+  };
+};
+const setAddHostIndividualData = (state, { payload }) => {
+  return {
+    ...state,
+    addHostIndividualData: payload,
+  };
+};
+const setConfigNameList = (state, { payload }) => {
+  return {
+    ...state,
+    configNameList: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -183,6 +215,13 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setActiveTabClusterSetup,
         setActiveTabClusterSetup
-      );
+      )
+      .addCase(ClustersActions.setAddHostBtnDisable, setAddHostBtnDisable)
+      .addCase(
+        ClustersActions.setAddHostIndividualData,
+        setAddHostIndividualData
+      )
+      .addCase(ClustersActions.setConfigNameList, setConfigNameList);
   }
 );
+

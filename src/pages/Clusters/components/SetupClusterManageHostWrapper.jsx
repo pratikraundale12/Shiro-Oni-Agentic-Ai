@@ -1,18 +1,32 @@
 /* eslint-disable */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
-import { Button } from '../../../shared';
+import { Button, ModalWithIcon } from '../../../shared';
 import { KDFM } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { ClustersActions } from '../../../store';
-import { useDispatch } from 'react-redux';
-import { IconButton, StatusRender, Table } from '../../../components';
-import { DeleteSmallIcon, PencilIcon, PlusCircleIcon } from '../../../assets';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  LoadingSelectors,
+} from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  FullPageLoader,
+  IconButton,
+  StatusRender,
+  Table,
+} from '../../../components';
+import {
+  DeleteDustbinIcon,
+  DeleteSmallIcon,
+  PencilIcon,
+  PlusCircleIcon,
+} from '../../../assets';
 import { AddHostIPModal } from './AddHostIPModal';
 
 const Wrapper = styled.div`
@@ -46,11 +60,20 @@ const ActionTd = styled.div`
   padding-right: 10px;
 `;
 const SetupClusterManageHostWrapper = ({ activeTab }) => {
+  const [hostToDelete, setHostToDelete] = useState({});
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [hostToEdit, setHostToEdit] = useState({});
   const dispatch = useDispatch();
+  const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
   const schema = yup.object().shape({
     clusterName: yup.string().required('Cluster Name is required'),
     nifi_version: yup.string().required('Port is required'),
   });
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchHostNodesList')
+  );
+  console.log(hostToDelete, 'hostToDelete');
+
   const {
     register,
     handleSubmit,
@@ -176,7 +199,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       label: 'Status',
       renderCell: item => (
         <StatusRender
-          status={item?.status ? 'Active' : 'Inactive'}
+          status={item?.status === 'Active' ? 'Active' : 'Inactive'}
           redColor="#FF0000"
         />
       ),
@@ -187,8 +210,8 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       renderCell: item => (
         <ActionTd>
           <IconButton
-            onClick={event => {
-              console.log(event);
+            onClick={() => {
+              setHostToEdit(item);
               dispatch(ClustersActions.setIsAddHostIPModalOpen(true));
             }}
             className="pencil-icon-schedule-list"
@@ -197,7 +220,8 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           </IconButton>
           <IconButton
             onClick={event => {
-              console.log(event);
+              setIsDeleteModalOpen(true);
+              setHostToDelete(item);
             }}
             className="pencil-icon-schedule-list"
           >
@@ -208,9 +232,13 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       resize: true,
     },
   ];
+  useEffect(() => {
+    dispatch(ClustersActions.fetchHostNodesList({ selected: true }));
+  }, [dispatch]);
   return (
     <Wrapper>
-      <Title title={'Add New Cluster Details'} />
+      <FullPageLoader loading={loading} />
+      <Title title={'Add New Cluster'} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <TableContainer>
@@ -236,12 +264,29 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           </div>
 
           <Table
-            data={mockData}
+            data={listHostIpData || mockData}
             columns={COLUMNS}
             customNoDataText="No Host IP Available"
             tableWithFullHeight={true}
           />
         </TableContainer>
+        <ModalWithIcon
+          title={'Delete Host IP'}
+          primaryButtonText={'Delete'}
+          secondaryButtonText={'Cancel'}
+          icon={<DeleteDustbinIcon />}
+          isOpen={isDeleteModalOpen}
+          onSubmit={() => {
+            dispatch(
+              ClustersActions.deleteIndividualHost({ hostId: hostToDelete?.id })
+            );
+            setIsDeleteModalOpen(false);
+          }}
+          onRequestClose={() => {
+            setIsDeleteModalOpen(false);
+          }}
+          primaryText={`Are you sure you want to delete Host IP`}
+        />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
@@ -268,7 +313,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           </Button>
         </BottomButtonDiv>
       </BottomButton>
-      <AddHostIPModal />
+      <AddHostIPModal hostToEdit={hostToEdit} setHostToEdit={setHostToEdit} />
     </Wrapper>
   );
 };

@@ -169,7 +169,7 @@ export const Modal = ({
                 type="button"
                 variant={thirdVarint ? 'tertiary' : 'secondary'}
                 onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
-                disabled={tertiaryButtonConfig.disabled}
+                disabled={tertiaryButtonConfig.tertiaryButtonDisable}
                 loading={tertiaryButtonConfig.tertiaryButtonLoading}
                 {...tertiaryButtonConfig}
               >

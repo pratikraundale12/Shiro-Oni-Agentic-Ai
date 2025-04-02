@@ -34,7 +34,7 @@ const SetupClusterGettingStartedWrapper = ({ activeTab }) => {
   const dispatch = useDispatch();
   return (
     <Wrapper>
-      <Title title={'Add New Cluster Details'} />
+      <Title title={'Add New Cluster'} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <ClusterSetupGettingStartedTab />

@@ -98,6 +98,19 @@ const BottomButton = styled.div`
   align-items: center;
   justify-content: space-between !important;
 `;
+const TitleTab = styled.h3`
+  font-family: Noto Sans;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 27.24px;
+  text-align: left;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+`;
+const TitleTabWrapper = styled.div`
+  border-bottom: 2px solid #dde4f0;
+  padding-bottom: 12px;
+`;
 const ClusterSetupNewConfigDetailsPage = () => {
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
 
@@ -108,33 +121,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
       icon: CheckListIcon,
     },
     {
-      name: 'Authorizers.xml',
-      path: 'authorizers',
-      icon: CheckListIcon,
-    },
-    {
       name: 'Bootstrap.config',
       path: 'bootstrap_config',
       icon: CheckListIcon,
     },
     {
-      name: 'Logback.xml',
-      path: 'logback',
-      icon: CheckListIcon,
-    },
-    {
       name: 'Login-identity-providers.xml',
       path: 'login_identity_provider',
-      icon: CheckListIcon,
-    },
-    {
-      name: 'State-Management.xml',
-      path: 'state_management',
-      icon: CheckListIcon,
-    },
-    {
-      name: 'Zookeeper.properties',
-      path: 'zookeeper_properties',
       icon: CheckListIcon,
     },
   ];
@@ -234,6 +227,151 @@ const ClusterSetupNewConfigDetailsPage = () => {
           </LeftDisplaySection>
           <RightDisplaySection className="col-9 h-100">
             <SectionHeading>{selectedTitle?.[0]?.name}</SectionHeading>
+            <div>
+              <TitleTabWrapper className="mt-4">
+                <TitleTab className="ms-2">Core Configuration</TitleTab>
+              </TitleTabWrapper>
+              <div className="row mt-4">
+                <div className="col-2">
+                  <RadioSelectField
+                    name="methodForCredentials"
+                    options={OPTIONS}
+                    label="NiFi Cluster Node"
+                    // register={register}
+                    // defaultValue={'password'}
+                  />
+                </div>
+                <div className="col-5">
+                  <LabelSelect className="mb-3">
+                    Protocol Max Threads
+                  </LabelSelect>
+
+                  <InputField
+                    name="config_name"
+                    type="text"
+                    //   label="Config Name"
+                    placeholder="Enter Protocol Max Threads"
+                    required
+                    //   register={register}
+                    //   errors={errors}
+                    icon={<NotePadIcon />}
+                  />
+                </div>
+                <div className="col-5">
+                  <LabelSelect className="mb-3">
+                    Flow Election Max Wait Time
+                  </LabelSelect>
+
+                  <SelectField
+                    name="nifi_version"
+                    icon={<QRIcons />}
+                    //   register={register}
+                    //   errors={errors}
+                    //   control={control}
+                    options={[]}
+                    placeholder="Select Flow Election Max Wait Time"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <TitleTabWrapper className="mt-4">
+                <TitleTab className="ms-2">Zookeeper Configuration</TitleTab>
+              </TitleTabWrapper>
+              <div className="row mt-4">
+                <div className="col-2">
+                  <RadioSelectField
+                    name="methodForCredentials"
+                    options={OPTIONS}
+                    label="NiFi Cluster Node"
+                    // register={register}
+                    // defaultValue={'password'}
+                  />
+                </div>
+                <div className="col-3">
+                  <LabelSelect className="mb-3">
+                    NiFi Cluster Address
+                  </LabelSelect>
+
+                  <InputField
+                    name="config_name"
+                    type="text"
+                    //   label="Config Name"
+                    placeholder="Enter Hostname or IP Address"
+                    required
+                    //   register={register}
+                    //   errors={errors}
+                    icon={<NotePadIcon />}
+                  />
+                </div>
+                <div className="col-3">
+                  <LabelSelect className="mb-3">Port</LabelSelect>
+
+                  <InputField
+                    name="config_name"
+                    type="text"
+                    //   label="Config Name"
+                    placeholder="Enter Port"
+                    required
+                    //   register={register}
+                    //   errors={errors}
+                    icon={<NotePadIcon />}
+                  />
+                </div>
+                <div className="col-3">
+                  <LabelSelect className="mb-3">
+                    Zookeeper Connection Timeout
+                  </LabelSelect>
+
+                  <SelectField
+                    name="nifi_version"
+                    icon={<QRIcons />}
+                    //   register={register}
+                    //   errors={errors}
+                    //   control={control}
+                    options={[]}
+                    placeholder="Select Flow Election Max Wait Time"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <TitleTabWrapper className="mt-4">
+                <TitleTab className="ms-2">Web Server Configuration</TitleTab>
+              </TitleTabWrapper>
+              <div className="row mt-4">
+                <div className="col-5">
+                  <LabelSelect className="mb-3">Web Http Host</LabelSelect>
+
+                  <InputField
+                    name="config_name"
+                    type="text"
+                    //   label="Config Name"
+                    placeholder="Enter Protocol Max Threads"
+                    required
+                    //   register={register}
+                    //   errors={errors}
+                    icon={<NotePadIcon />}
+                  />
+                </div>
+                <div className="col-5">
+                  <LabelSelect className="mb-3">Web Http Port</LabelSelect>
+
+                  <InputField
+                    name="config_name"
+                    type="text"
+                    //   label="Config Name"
+                    placeholder="Enter Protocol Max Threads"
+                    required
+                    //   register={register}
+                    //   errors={errors}
+                    icon={<NotePadIcon />}
+                  />
+                </div>
+              </div>
+            </div>
             <Collapsible
               title="Core Configurations"
               isTableOpen={true}
@@ -440,9 +578,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
             variant="secondary"
             type="button"
             onClick={() => {
-              // dispatch(
-              //   ClustersActions.setActiveTabClusterSetup('getting_started')
-              // );
+              history.push('/clusters/setup-cluster');
             }}
           >
             {KDFM.BACK}

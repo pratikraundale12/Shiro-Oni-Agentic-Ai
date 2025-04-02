@@ -85,15 +85,89 @@ export function* checkCredentialsClusterSetup(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Test success');
-    yield put(ClustersActions.setIsAddHostIPModalOpen(false));
-    const hostIpList = yield select(ClustersSelectors.getHostIpList);
-    const combinedArray = [...hostIpList, payload?.data];
-    yield put(ClustersActions.setHostIpList(combinedArray));
+    yield put(ClustersActions.setAddHostBtnDisable(false));
+    yield put(ClustersActions.setAddHostIndividualData(payload?.data));
+  } else {
+    toast.error(
+      'Unable to establish a connection with the host. Please check your credentials.'
+    );
+  }
+}
+
+export function* fetchHostNodesList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchHostNodesList',
+    loadingSection: 'fetchHostNodesList',
+    apiMethod: api.fetchHostNodesList,
+    apiParams: [{ payload: payload?.selected }],
+    // successAction: ClustersActions.fetchHostNodesList,
+  });
+  if (response.ok) {
+    yield put(ClustersActions.setHostIpList(response?.data));
   } else {
     toast.error(response?.data?.error);
   }
 }
-//
+export function* addIndividualHost(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'addIndividualHost',
+    loadingSection: 'addIndividualHost',
+    apiMethod: api.addIndividualHost,
+    apiParams: [{ payload: payload }],
+  });
+  if (response.ok) {
+    toast.success('Node Added Successfully');
+    yield put(ClustersActions.setIsAddHostIPModalOpen(false));
+    /// list api
+    yield put(ClustersActions.fetchHostNodesList({ selected: true }));
+  } else {
+    toast.error(response?.data?.message);
+    yield put(ClustersActions.setIsAddHostIPModalOpen(false));
+  }
+}
+export function* deleteIndividualHost(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteIndividualHost',
+    loadingSection: 'deleteIndividualHost',
+    apiMethod: api.deleteIndividualHost,
+    apiParams: [{ hostId: payload?.hostId }],
+  });
+  if (response.ok) {
+    toast.success('Deleted Successfully');
+    yield put(ClustersActions.fetchHostNodesList({ selected: true }));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+export function* updateIndividualHost(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'updateIndividualHost',
+    loadingSection: 'updateIndividualHost',
+    apiMethod: api.updateIndividualHost,
+    apiParams: [{ hostId: payload?.hostId, payload: payload?.payload }],
+  });
+  if (response.ok) {
+    toast.success('Node Updated Successfully');
+    yield put(ClustersActions.setIsAddHostIPModalOpen(false));
+    yield put(ClustersActions.fetchHostNodesList({ selected: true }));
+  } else {
+    toast.error(response?.data?.message);
+    yield put(ClustersActions.setIsAddHostIPModalOpen(false));
+  }
+}
+export function* getConfigList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'getConfigList',
+    loadingSection: 'getConfigList',
+    apiMethod: api.getConfigList,
+    apiParams: [{ nifiVersion: payload }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setConfigNameList(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
 export function* clustersSagas(api) {
   yield all([
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
@@ -106,5 +180,10 @@ export function* clustersSagas(api) {
       checkCredentialsClusterSetup,
       api
     ),
+    takeLatest(ClustersActions.fetchHostNodesList, fetchHostNodesList, api),
+    takeLatest(ClustersActions.addIndividualHost, addIndividualHost, api),
+    takeLatest(ClustersActions.deleteIndividualHost, deleteIndividualHost, api),
+    takeLatest(ClustersActions.updateIndividualHost, updateIndividualHost, api),
+    takeLatest(ClustersActions.getConfigList, getConfigList, api),
   ]);
 }

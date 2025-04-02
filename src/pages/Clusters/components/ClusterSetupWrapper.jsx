@@ -44,6 +44,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const {
     register,
     control,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -51,13 +52,14 @@ const SetupClusterWrapper = ({ activeTab }) => {
 
   return (
     <Wrapper>
-      <Title title={'Add New Cluster Details'} />
+      <Title title={'Add New Cluster'} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <ClusterDetailTab
           register={register}
           control={control}
           errors={errors}
+          watch={watch}
         />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">
