@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -16,6 +16,7 @@ import {
 import { ClusterLoginModal } from '../../ClusterLoginModal';
 import { IconButton } from './AtionRender';
 import { isEmpty } from 'lodash';
+import { SchedularSelectors } from '../../../store/schedular';
 
 const EnableClusterText = styled.div`
   display: block;
@@ -36,6 +37,7 @@ const EnableClusterText = styled.div`
 
 export const EnableClusterRender = ({ item }) => {
   const dispatch = useDispatch();
+  const statusData = useSelector(SchedularSelectors.getStatusFilterData);
 
   const handleClusterAction = () => {
     if (item?.status === CLUSTER_STATUS.DISCONNECTED) {
@@ -47,7 +49,17 @@ export const EnableClusterRender = ({ item }) => {
       );
       dispatch(ClustersActions.fetchClusters());
     } else if (item?.status === CLUSTER_STATUS.CONNECTED) {
-      dispatch(GridActions.fetchGrid({ module: 'clusters' }));
+      dispatch(
+        GridActions.fetchGrid({
+          module: 'clusters',
+          params: {
+            page: 1,
+            sort: 'name',
+            limit: 10,
+            ...(statusData !== '' && { status: statusData }),
+          },
+        })
+      );
       dispatch(
         GridActions.fetchGridSuccess({ module: 'namespaces', data: {} })
       );

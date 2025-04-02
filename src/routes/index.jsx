@@ -12,6 +12,7 @@ import {
   DashboardIcon,
   GenrateFlowIcon,
   LdapConfigIcon,
+  LicenseIcon,
   LockIcon,
   NameSpaceIcon,
   PeopleIcon,
@@ -21,6 +22,7 @@ import {
   SettingSmallIcon,
 } from '../assets';
 import { FullPageLoader } from '../components';
+import KeycloakRedirectPage from '../components/KeyCloak/KeycloakRedirectPage.jsx';
 import {
   ActvityHistory,
   Add,
@@ -43,10 +45,12 @@ import {
   Success,
   UserLogin,
 } from '../pages';
+import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
 import KeycloakRedirectPage from '../components/KeycloakRedirectPage.jsx';
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
+import License from '../pages/Licensing/License.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
 import FlowDetailsPage from '../pages/Namespaces/FlowDetailsPage.jsx';
@@ -263,6 +267,18 @@ export const ROUTES_MENU = [
     permission: 'view_setting',
   },
   {
+    name: 'Licensing',
+    path: 'licensing',
+    icon: LicenseIcon,
+    pages: [
+      {
+        path: '',
+        component: <License />,
+      },
+    ],
+    permission: 'view_setting',
+  },
+  {
     name: 'Help & Support',
     path: 'help-&-support',
     icon: QuestionMarkIcon,
@@ -306,9 +322,11 @@ const Routes = () => {
         '/process-group',
         '/clusters',
         '/dashboard',
+        '/licensing',
       ].includes(location.pathname)
     ) {
       dispatch(SettingsActions.fetchSettings());
+      dispatch(AuthenticationActions.fetchLicenseInfo());
     }
   }, [dispatch, location.pathname]);
 

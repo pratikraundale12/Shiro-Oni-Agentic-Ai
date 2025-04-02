@@ -25,12 +25,13 @@ import {
 } from '../../assets';
 import { CrossIcon } from '../../assets/Icons/CrossIcon';
 import {
+  // AuthenticationSelectors,
   DashboardActions,
   DashboardSelectors,
   LoadingSelectors,
-  NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { SettingsActions } from '../../store/settings';
 
 const TopSection = styled.div`
   display: flex;
@@ -215,6 +216,7 @@ export const Dashboard = () => {
     LoadingSelectors.getLoading(state, 'fetchDashboard')
   );
   const [updatedErrors, setUpdatedErrors] = useState([]);
+  // const settingLogo = useSelector(AuthenticationSelectors.getSettingLogo);
 
   const COLUMNS = [
     {
@@ -294,6 +296,13 @@ export const Dashboard = () => {
       dispatch(NamespacesActions.fetchNamespaces());
     }
   }, [dispatch, selectedCluster]);
+
+  useEffect(() => {
+    const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
+    if (storedConfig) {
+      dispatch(SettingsActions.fetchSettings());
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     if (dashboardData?.errors) {

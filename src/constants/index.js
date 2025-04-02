@@ -26,8 +26,9 @@ export const STATUS_OPTIONS = [
 
 export const Cluster_STATUS_OPTIONS = [
   { value: 'all', label: 'All' },
-  { value: 'true', label: 'Connected/Disconnected' },
-  { value: 'false', label: 'Deactivated' },
+  { value: 'connected', label: 'Connected' },
+  { value: 'disconnected', label: 'Disconnected' },
+  { value: 'deactivated', label: 'Deactivated' },
 ];
 
 export const REFRESH_OPTIONS = [
@@ -249,6 +250,8 @@ export const KDFM = {
   TRIAL: 'Trial',
   PURCHASED: 'Purchased',
   LICENSE: 'License',
+  LICENSE_DETAILS: 'Licensing Details',
+
   TRIAL_EXPIRED_PROMPT: arg =>
     `Trial: Your trial license will expire on ${arg}.`,
   PURCHASED_EXPIRED_PROMPT: arg =>
@@ -272,6 +275,7 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'ldap-configuration', label: 'LDAP Configuration' },
   { path: 'controller-service', label: 'Controller Services' },
   { path: 'setting', label: 'Settings' },
+  { path: 'licensing', label: 'Licensing' },
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];

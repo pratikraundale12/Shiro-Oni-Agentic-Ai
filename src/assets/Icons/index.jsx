@@ -133,3 +133,4 @@ export * from './ManageConfigGearIcon';
 export * from './NotePadIcon';
 export * from './ChecklistIcon';
 export * from './DataFlowInventoryIcon';
+export * from './LicenseIcon';

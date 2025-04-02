@@ -270,7 +270,6 @@ export const Setting = () => {
     { label: '30 minutes', value: 30 },
     { label: '45 minutes', value: 45 },
   ];
-
   const selectedOptions = Number(watch('ldap_auto_sync_time_interval'));
   const onSubmit = async data => {
     setLoading(true);
