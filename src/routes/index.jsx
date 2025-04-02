@@ -49,6 +49,7 @@ import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
 import FlowAnalysis from '../pages/FlowAnalysis/FlowAnalysis.jsx';
+import FlowValidationDetails from '../pages/FlowAnalysis/FlowValidationDetails.jsx';
 import License from '../pages/Licensing/License.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
@@ -148,6 +149,10 @@ export const ROUTES_MENU = [
       {
         path: '',
         component: <FlowAnalysis />,
+      },
+      {
+        path: 'flow-validation',
+        component: <FlowValidationDetails />,
       },
     ],
     permission: 'view_controller_services',

@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
+import { PropertyIcon } from '../../assets';
 import { Grid, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
+import { history } from '../../helpers/history';
 import { NamespacesActions } from '../../store';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from '../Namespaces/ProcessGroupSorting';
@@ -57,6 +59,7 @@ const FlowAnalysis = () => {
   }, []);
 
   const handleEdit = item => {
+    history.push('/flow-analysis/flow-validation');
     console.log('Edit clicked', item);
     // Add your edit logic here
   };
@@ -170,7 +173,9 @@ const FlowAnalysis = () => {
       label: KDFM.ACTIONS,
       renderCell: item => (
         <div>
-          <button onClick={() => handleEdit(item)}></button>
+          <button onClick={() => handleEdit(item)}>
+            <PropertyIcon />
+          </button>
           <button onClick={() => handleDelete(item)}>Delete</button>
         </div>
       ),
