@@ -12,6 +12,7 @@ const DownloadFlowConfirmationModal = ({
     if (e?.preventDefault) e.preventDefault();
     if (e?.stopPropagation) e.stopPropagation();
     handleDownloadFlow();
+    setIsModalOpen(false);
   };
   const handleClose = e => {
     e.preventDefault();

@@ -202,6 +202,7 @@ const MidSection = styled.div`
 `;
 
 const JsonWrapper = styled.div`
+  background-color: #f5f7fa !important;
   #json-editor > * {
     color: #444445 !important;
   }
@@ -425,13 +426,13 @@ export const AiFlowGenerator = () => {
       height: '100%',
       border: 'none',
       borderRadius: '8px',
-      backgroundColor: '#ffffff !important',
+      backgroundColor: '#F5F7FA !important',
     },
     container: {
       height: '100%',
       fontSize: '16px',
       color: '#444443 !important',
-      backgroundColor: '#ffffff !important',
+      backgroundColor: '#F5F7FA !important',
     },
     body: {
       fontSize: '16px',
@@ -648,8 +649,8 @@ export const AiFlowGenerator = () => {
           }}
           footerAlign="start"
           contentStyles={{
-            maxWidth: isFullscreen ? '80%' : '35%',
-            maxHeight: isFullscreen ? '90%' : '60%',
+            maxWidth: isFullscreen ? '80%' : '30%',
+            maxHeight: isFullscreen ? '90%' : '70%',
           }}
         >
           <JsonWrapper>
