@@ -139,6 +139,7 @@ export const LDAPSettings = () => {
         setTimeout(() => {
           dispatch(SettingsActions.fetchSettings());
           history.push('/setting');
+          setIsChanged(false);
         }, 1000);
         changeFavicon(data?.favicon || favicon);
       }
