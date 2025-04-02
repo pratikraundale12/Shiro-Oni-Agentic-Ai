@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Setting } from './Setting';
-import { AppSettings } from './AppSettings';
-import { DeploymentScheduleSettings } from './DeploymentScheduleSettings';
-import { LDAPSettings } from './LDAPSettings';
-import { EmailConfigurationSettings } from './EmailConfigurationSettings';
-import { ServiceAccountSettings } from './ServiceAccountSettings';
-import { SSOLoginSettings } from './SSOLoginSettings';
 import {
   AppIcon,
-  LDAPIcon,
   DeploymentScheduleIcon,
-  ServiceAccountIcon,
   EmailConfigIcon,
+  LDAPIcon,
   SSOLoginIcon,
+  ServiceAccountIcon,
 } from '../../assets';
+import { AppSettings } from './AppSettings';
+import { DeploymentScheduleSettings } from './DeploymentScheduleSettings';
+import { EmailConfigurationSettings } from './EmailConfigurationSettings';
+import FlowValidation from './FlowValidation';
+import { LDAPSettings } from './LDAPSettings';
+import { SSOLoginSettings } from './SSOLoginSettings';
+import { ServiceAccountSettings } from './ServiceAccountSettings';
+import { Setting } from './Setting';
 
 const GreyBoxNamespace = styled.div`
   background-color: #ffffff;
@@ -99,6 +100,8 @@ const SettingTab = () => {
         return <EmailConfigurationSettings />;
       case 'SSOLoginSettings':
         return <SSOLoginSettings />;
+      case 'Flow Validation':
+        return <FlowValidation />;
     }
   };
   return (
@@ -165,6 +168,17 @@ const SettingTab = () => {
                 <SSOLoginIcon />
               </IconContent>
               SSO Login
+            </Tab>
+
+            <Tab
+              active={activeTab === 'Flow Validation'}
+              onClick={() => setActiveTab('Flow Validation')}
+              className="nav-item"
+            >
+              <IconContent className="nav-item">
+                <SSOLoginIcon />
+              </IconContent>
+              Flow Validation
             </Tab>
           </TabWrapper>
         </TabsContainer>

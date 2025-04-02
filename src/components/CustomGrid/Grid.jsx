@@ -301,15 +301,13 @@ export const Grid = ({
 
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
   useEffect(() => {
-    if (selectedCluster?.value) {
-      getNamespacesListData();
-    }
+    getNamespacesListData();
   }, [selectedNamespaceForDetail, selectedCluster]);
 
   useEffect(() => {
     if (isNamespace && currentPage > 0) {
       return;
-    } else if (selectedCluster?.value) {
+    } else {
       getNamespacesListData();
     }
   }, [

@@ -24,7 +24,7 @@ function App() {
       setIsModal(false);
     }
   };
-  if (!ENABLE_CONSOLE_LOGS) {
+  if (ENABLE_CONSOLE_LOGS) {
     disableConsole();
   }
   const handleContinue = () => {

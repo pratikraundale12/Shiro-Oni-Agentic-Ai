@@ -4,6 +4,7 @@ import { activityHistorySagas } from './activityHistory';
 import { authenticationSagas } from './authentication/sagas';
 import { clustersSagas } from './clusters';
 import { dashboardSagas } from './dashboard';
+import { flowValidationSagas } from './flowValidation';
 import { gridSagas } from './grid/sagas';
 import { namespacesSagas } from './namespaces';
 import { policiesSagas } from './policies';
@@ -40,5 +41,7 @@ export default function* root() {
     fork(settingsSagas, api),
     // |---------------------activityHistory-------------------------|
     fork(activityHistorySagas, api),
+    // |---------------------FlowVlidation-------------------------|
+    fork(flowValidationSagas, api),
   ]);
 }

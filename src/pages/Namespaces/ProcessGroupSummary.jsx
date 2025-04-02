@@ -15,6 +15,8 @@ import {
 } from '../../store';
 import AuditLog from './AuditLog';
 import FlowControl from './FlowControl';
+import CompareValidation from './FlowValidation/CompareValidation';
+import FlowValidationDetails from './FlowValidation/FlowValidationDetails';
 import ListControllerService from './ListControllerServiceNamespace';
 import ListVariables from './Listvariables';
 import ParameterContext from './ParameterContext';
@@ -175,6 +177,10 @@ const ConfigDetailsPage = () => {
 
       case 'Audit Log':
         return <AuditLog />;
+      case 'Flow Validation Details':
+        return <FlowValidationDetails />;
+      case 'Compare Validation':
+        return <CompareValidation />;
       default:
         return null;
     }
@@ -258,6 +264,20 @@ const ConfigDetailsPage = () => {
             className="nav-item"
           >
             Audit Log
+          </Tab>
+          <Tab
+            active={activeTab === 'Flow Validation Details'}
+            onClick={() => setActiveTab('Flow Validation Details')}
+            className="nav-item"
+          >
+            Flow Validation Details
+          </Tab>
+          <Tab
+            active={activeTab === 'Compare Validation'}
+            onClick={() => setActiveTab('Compare Validation')}
+            className="nav-item"
+          >
+            Compare Validation
           </Tab>
         </TabWrapper>
         <TabContent>{renderContent()}</TabContent>

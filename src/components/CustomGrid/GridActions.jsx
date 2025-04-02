@@ -339,51 +339,47 @@ export const GridActions = ({
       selectEvent ||
       selectEntity
     ) {
-      if (module === 'namespaces' && selectedCluster?.value === '') {
-        return;
-      } else {
-        dispatch(
-          GridSagsActions.fetchGrid({
-            module,
-            clusterId,
-            params: {
-              page: 1,
-              id: scheduleToken,
-              ...(search && { search: search }),
-              ...(watchStatus &&
-                watchStatus !== 'all' && {
-                  [getModuleBasedStatusKey(module)]: watchStatus,
-                }),
-              ...(selectedRange && {
-                start_date: selectedRange?.[0]?.toISOString(),
-                end_date: selectedRange?.[1]?.toISOString(),
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module,
+          clusterId,
+          params: {
+            page: 1,
+            id: scheduleToken,
+            ...(search && { search: search }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && {
+                [getModuleBasedStatusKey(module)]: watchStatus,
               }),
-              ...(location?.pathname?.includes('user-management') &&
-                selectedRole?.value !== 'all' && {
-                  role_id: selectedRole?.value,
-                }),
-              ...(location?.pathname?.includes('schedule-deployment') &&
-                clusterSelectedValue?.label !== 'All' && {
-                  clusterName: clusterSelectedValue?.label,
-                }),
-              ...(location?.pathname?.includes('activity-history') &&
-                selectEvent?.value !== 'all' && {
-                  event: selectEvent?.value,
-                }),
-              ...(location?.pathname?.includes('activity-history') &&
-                selectEntity?.value !== 'all' && {
-                  entity: selectEntity?.value,
-                }),
-              ...(location?.pathname?.match(
-                /user-management|clusters|schedule-deployment|activity-history/
-              ) &&
-                sortingState && {
-                  sort: sortingState,
-                }),
-            },
-          })
-        );
-      }
+            ...(selectedRange && {
+              start_date: selectedRange?.[0]?.toISOString(),
+              end_date: selectedRange?.[1]?.toISOString(),
+            }),
+            ...(location?.pathname?.includes('user-management') &&
+              selectedRole?.value !== 'all' && {
+                role_id: selectedRole?.value,
+              }),
+            ...(location?.pathname?.includes('schedule-deployment') &&
+              clusterSelectedValue?.label !== 'All' && {
+                clusterName: clusterSelectedValue?.label,
+              }),
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEvent?.value !== 'all' && {
+                event: selectEvent?.value,
+              }),
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEntity?.value !== 'all' && {
+                entity: selectEntity?.value,
+              }),
+            ...(location?.pathname?.match(
+              /user-management|clusters|schedule-deployment|activity-history/
+            ) &&
+              sortingState && {
+                sort: sortingState,
+              }),
+          },
+        })
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
