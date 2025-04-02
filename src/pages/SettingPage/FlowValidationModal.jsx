@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { SettingsActions, SettingsSelectors } from '../../store/settings';
-
 import styled from 'styled-components';
 import {
   AddIcon,
@@ -18,10 +17,8 @@ import {
   RadioField,
   SelectField,
 } from '../../shared';
-import {
-  FlowValidationActions,
-  FlowValidationSelectors,
-} from '../../store/flowValidation';
+import { FlowValidationSelectors } from '../../store/flowValidation';
+import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
 const ModelRightSide = styled.div`
   height: 100%;
@@ -67,8 +64,12 @@ const RadioContainer = styled.div`
 const FlowValidationModal = () => {
   const dispatch = useDispatch();
   const fetchRules = useSelector(FlowValidationSelectors.getRules);
-  const [selectedRuleId, setSelectedRuleId] = useState(null);
-
+  const [selectedRuleId, setSelectedRuleId] = useState(
+    fetchRules?.data?.[0]?.id || null
+  );
+  const fetchPropertyData = useSelector(FlowValidationSelectors.getProperty);
+  const { control } = useForm();
+  console.log(fetchRules?.data?.[0]?.id, 'aaaaaaaaaaaaaaaaaaaaaaaaaaa');
   const handleRuleSelection = id => {
     setSelectedRuleId(id);
   };
@@ -76,7 +77,6 @@ const FlowValidationModal = () => {
   const selectedRule = fetchRules?.data?.find(
     rule => rule.id === selectedRuleId
   );
-  console.log(selectedRule, 'selectedRule');
 
   // ✅ Correct way to get state from Redux
   const isFlowValidationModalOpen = useSelector(
@@ -85,11 +85,6 @@ const FlowValidationModal = () => {
 
   const isClosedFlowValidationModal = () =>
     dispatch(SettingsActions.flowValidationModalOpen(false));
-
-  useEffect(() => {
-    console.log('hiiiiii');
-    dispatch(FlowValidationActions.fetchRules());
-  }, [dispatch]);
 
   return (
     <Modal
@@ -123,45 +118,59 @@ const FlowValidationModal = () => {
             </ConditionIcon>
           </div>
           <div className="row g-2 align-items-center">
-            <div className="col-md-4">
-              <PropertyDiv>
-                <SelectField
-                  name="select_perperty"
-                  icon={<PropertyIcon />}
-                  placeholder="Select Perperty"
-                  options={[
-                    { label: 'Concurrent Task', value: 'concurrent_task' },
-                    { label: 'Independent Task', value: 'independent_task' },
-                    { label: 'Sequential Task', value: 'sequential_task' },
-                  ]}
-                />
-              </PropertyDiv>
-            </div>
-            <div className="col-md">
-              <PropertyDiv>
-                <SelectField
-                  name="condition"
-                  icon={<PropertyIcon />}
-                  placeholder="Condition"
-                  options={[
-                    { label: 'Equal to', value: 'equal_to' },
-                    { label: 'Not equal to', value: 'not_equal_to' },
-                    { label: 'Greater than', value: 'greater_than' },
-                    { label: 'Less than', value: 'less_than' },
-                  ]}
-                />
-              </PropertyDiv>
-            </div>
-            <div className="col-md-3">
-              <InputField
-                name="rule_name"
-                icon={<NewLinkIcon />}
-                value={selectedRule?.output_value || ''}
-              />
-            </div>
-            <div className="col-md-1">
+            {selectedRule?.conditions?.map((condition, index) => (
+              <Fragment key={index}>
+                {console.log(condition?.condition_property)};
+                <div className="col-md-4">
+                  <PropertyDiv>
+                    <SelectField
+                      name="select_property"
+                      icon={<PropertyIcon />}
+                      placeholder="Select Property"
+                      options={fetchPropertyData?.data?.map(property => ({
+                        label: property?.propName,
+                        value: property?.propType,
+                      }))}
+                      defaultValue={condition?.condition_property}
+                      control={control}
+                      disabled={condition?.condition_property}
+                    />
+                  </PropertyDiv>
+                </div>
+                <div className="col-md">
+                  <PropertyDiv>
+                    <SelectField
+                      name="condition"
+                      icon={<PropertyIcon />}
+                      placeholder="Condition"
+                      options={[
+                        { label: '===', value: '===' },
+                        { label: '!==', value: '!==' },
+                        { label: '<', value: '<' },
+                        { label: '>', value: '>' },
+                        { label: '<=', value: '<=' },
+                        { label: '>=', value: '>=' },
+                        { label: 'contains', value: 'contains' },
+                      ]}
+                      defaultValue={condition?.condition_expression}
+                      control={control}
+                      disabled={condition?.condition_expression}
+                    />
+                  </PropertyDiv>
+                </div>
+                <div className="col-md-3">
+                  <InputField
+                    name="rule_name"
+                    icon={<NewLinkIcon />}
+                    value={condition?.condition_value || ''}
+                  />
+                </div>
+              </Fragment>
+            ))}
+
+            {/* <div className="col-md-1">
               <Button>+</Button>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="col-md-4 col-xl-3">
@@ -190,6 +199,7 @@ const FlowValidationModal = () => {
                   <RadioContainer className="d-flex align-items-center gap-2 pe-2">
                     <RadioField
                       className="m-0"
+                      name="rules"
                       checked={selectedRuleId === item.id}
                       onChange={() => handleRuleSelection(item.id)}
                     />

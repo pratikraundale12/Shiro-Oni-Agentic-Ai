@@ -71,25 +71,29 @@ const FlowValidation = () => {
 
     {
       label: FLOWVALIDATION_CONSTANTS.ACTION,
-      renderCell: () => (
+      renderCell: item => (
         <>
           <button
             className="border-0 bg-white me-2"
-            onClick={() =>
-              dispatch(SettingsActions.flowValidationModalOpen(true))
-            }
+            onClick={() => {
+              console.log('flow validation modal open', item);
+              dispatch(SettingsActions.flowValidationModalOpen(true));
+              dispatch(FlowValidationActions.fetchRules(item?.id));
+              dispatch(FlowValidationActions.fetchProperty(item?.scope_type));
+            }}
           >
             <FlowValidationIcon />
           </button>
-
-          <button
-            className="border-0 bg-white"
-            onClick={() =>
-              dispatch(SettingsActions.addNewValidationModalOpen(true))
-            }
-          >
-            <NewEditIcon />
-          </button>
+          {item?.deletable === false && (
+            <button
+              className="border-0 bg-white"
+              onClick={() =>
+                dispatch(SettingsActions.addNewValidationModalOpen(true))
+              }
+            >
+              <NewEditIcon />
+            </button>
+          )}
         </>
       ),
       width: '10%',

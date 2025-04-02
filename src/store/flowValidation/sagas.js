@@ -29,10 +29,20 @@ export function* addRuleScope(api, { payload }) {
     successAction: FlowValidationActions.addRuleScopeSuccess,
   });
 }
+export function* fetchProperty(api, { payload }) {
+  yield call(requestSaga, {
+    errorSection: 'fetchProperty',
+    loadingSection: 'fetchProperty',
+    apiMethod: api.fetchPropertyApi, // Correctly calling the API method for fetching properties
+    apiParams: [payload], // No parameters needed for this API call
+    successAction: FlowValidationActions.fetchPropertySuccess, // Action to dispatch on success
+  });
+}
 export function* flowValidationSagas(api) {
   yield all([
     takeLatest(FlowValidationActions.ruleScopeFetch, ruleScopeFetch, api),
     takeLatest(FlowValidationActions.fetchRules, fetchRules, api),
     takeLatest(FlowValidationActions.addRuleScope, addRuleScope, api),
+    takeLatest(FlowValidationActions.fetchProperty, fetchProperty, api),
   ]);
 }
