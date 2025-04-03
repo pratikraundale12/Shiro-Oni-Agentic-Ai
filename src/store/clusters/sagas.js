@@ -180,11 +180,13 @@ export function* addConfigClusterSetup(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Config Added Successfully');
+    yield put(ClustersActions.updateConfigClusterSetup({}));
     yield call(history.push, '/clusters/setup-cluster');
   } else {
     toast.error(response?.data?.message);
   }
 }
+
 export function* deleteConfig(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'deleteConfig',

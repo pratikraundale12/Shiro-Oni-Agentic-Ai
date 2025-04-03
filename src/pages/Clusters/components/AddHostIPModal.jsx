@@ -17,7 +17,7 @@ import {
 import { KDFM } from '../../../constants';
 import { KeyIcons, LinkIcon, QRIcons } from '../../../assets';
 import { UploadFile } from '../UploadFile';
-import { isEmpty } from 'lodash';
+import { isEmpty, set } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
@@ -82,8 +82,10 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
 
   useEffect(() => {
     if (!isEmpty(hostToEdit)) {
+      console.log({hostToEdit});
       setValue('host_ip', hostToEdit?.host_ip);
       setValue('port', hostToEdit?.port);
+      setValue('username', hostToEdit?.username);
     }
   }, [hostToEdit]);
   const watchMethodCredentials = watch('methodForCredentials');

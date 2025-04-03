@@ -16,7 +16,7 @@ import {
   SelectField,
 } from '../../../shared';
 import { theme } from '../../../styles';
-import { ACCESS_CONTROL_OPTIONS, FLOW_ELECTION_MAX_WAIT_OPTIONS, KDFM, TRUE_FALSE_OPTIONS, ALWAYS_SYNC_OPTIONS, ZOOOKEEPER_EMBEDED_OPTIONS } from '../../../constants';
+import { ACCESS_CONTROL_OPTIONS, FLOW_ELECTION_MAX_WAIT_OPTIONS, KDFM, TRUE_FALSE_OPTIONS } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -219,7 +219,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
     setValue('nifi_cluster_is_node', nifiProps.nifi_cluster_is_node);
     setValue('nifi_cluster_node_protocol_max_threads', nifiProps.nifi_cluster_node_protocol_max_threads);
     setValue('nifi_cluster_flow_election_max_wait_time', nifiProps.nifi_cluster_flow_election_max_wait_time);
-    setValue('nifi_state_management_embedded_zookeeper_start', nifiProps.nifi_state_management_embedded_zookeeper_start === 'true');
+    setValue(
+      'nifi_state_management_embedded_zookeeper_start',
+      nifiProps.nifi_state_management_embedded_zookeeper_start,
+    );
     setValue('nifi_zookeeper_connect_timeout', nifiProps.nifi_zookeeper_connect_timeout);
     setValue('nifi_web_https_port', nifiProps.nifi_web_https_port);
     
@@ -291,13 +294,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
     if(isEmpty(configToEdit)) {
       dispatch(ClustersActions.addConfigClusterSetup(payload));
     }else {
-      // TO DO
-      // Call update config api by adding config id in the payload
-      // After api response reset the configToEdit redux state but do it in the generator.
+      payload.append('configVersion', configToEdit.config_version + 1);
+      dispatch(ClustersActions.addConfigClusterSetup(payload));
       console.log({UpdatedData: data});
-      // dispatch(ClustersActions.updateConfigClusterSetup({}));
     }
-    
   };
 
   useEffect(() => {
@@ -470,10 +470,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <div className="col-2">
                       <RadioSelectField
                         name="nifi_state_management_embedded_zookeeper_start"
-                        options={ZOOOKEEPER_EMBEDED_OPTIONS}
+                        options={TRUE_FALSE_OPTIONS}
                         label="Embedded  Node"
                         register={register}
-                        defaultValue={true}
+                        defaultValue={'true'}
                       />
                     </div>
                   </div>
@@ -636,7 +636,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <div className="col-2">
                       <RadioSelectField
                         name="always_sync"
-                        options={ALWAYS_SYNC_OPTIONS}
+                        options={TRUE_FALSE_OPTIONS}
                         label="Always Sync"
                         register={register}
                         defaultValue={'false'}
