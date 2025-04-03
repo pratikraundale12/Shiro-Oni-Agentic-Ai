@@ -285,18 +285,6 @@ export const SSOLoginSettings = () => {
 
   const selectedSSO = watch('selected_sso');
   const ssoEnabled = watch('sso_enabled');
-  useEffect(() => {
-    if (ssoEnabled === false) {
-      setValue('selected_sso', null);
-      setValue('azure_client_id', null);
-      setValue('azure_client_secret', null);
-      setValue('azure_tenant_id', null);
-      setValue('azure_redirect_uri', null);
-      setValue('keycloak_client_id', null);
-      setValue('keycloak_url', null);
-      setValue('keycloak_realm', null);
-    }
-  }, [ssoEnabled, setValue, selectedSSO]);
 
   return (
     <Wrapper>
