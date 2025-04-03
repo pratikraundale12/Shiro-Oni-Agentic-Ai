@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const QRIcons = ({ width = 20, height = 18, color = '#444445' }) => (
+export const QRIcons = ({ width = 20, height = 20, color = '#444445' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={width}
