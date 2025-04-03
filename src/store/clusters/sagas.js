@@ -5,6 +5,7 @@ import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { ClustersActions } from './redux';
 import { toast } from 'react-toastify';
+import { history } from '../../helpers/history';
 
 export function* fetchClusterList(api, { payload: { params } = {} }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -179,8 +180,7 @@ export function* addConfigClusterSetup(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Config Added Successfully');
-    // /// list api
-    // yield put(ClustersActions.fetchHostNodesList({ selected: true }));
+    yield call(history.push, '/clusters/setup-cluster');
   } else {
     toast.error(response?.data?.message);
   }

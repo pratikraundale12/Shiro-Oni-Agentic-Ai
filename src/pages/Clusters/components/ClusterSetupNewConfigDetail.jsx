@@ -16,7 +16,6 @@ import {
   SelectField,
 } from '../../../shared';
 import { theme } from '../../../styles';
-import Collapsible from '../../Namespaces/Collapsible';
 import { KDFM } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -129,9 +128,9 @@ const ClusterSetupNewConfigDetailsPage = () => {
     }));
 
   const schema = yup.object().shape({
-    config_name: yup.string().required('Config Name is required'),
-    nifi_version: yup.string().required('NiFi version is required'),
-    comment: yup.string().required('Comment is required'),
+    configName: yup.string().required('Config Name is required'),
+    nifiVersion: yup.string().required('NiFi version is required'),
+    comments: yup.string().required('Comment is required'),
     nifi_cluster_node_protocol_max_threads: yup
       .number()
       .typeError('Protocol Max thread must be a number')
@@ -159,9 +158,14 @@ const ClusterSetupNewConfigDetailsPage = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      nifi_cluster_flow_election_max_wait_time: '5',
-      nifi_zookeeper_connect_timeout: '10',
+      nifi_cluster_flow_election_max_wait_time: '5 mins',
+      nifi_zookeeper_connect_timeout: '10 secs',
       nifi_web_https_port: 8443,
+      directory: './state/local',
+      partitions: 16,
+      root_node: '/nifi',
+      session_timeout: '10 seconds',
+      checkpoint_interval: '2 mins',
     },
   });
 
@@ -181,6 +185,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
       path: 'login_identity_provider',
       icon: CheckListIcon,
     },
+    {
+      name: 'state-management.xml',
+      path: 'state_management_xml',
+      icon: CheckListIcon,
+    },
   ];
   const selectedTitle = sidebarItems.filter(
     element => element?.path === selectedProperty
@@ -193,13 +202,58 @@ const ClusterSetupNewConfigDetailsPage = () => {
     { id: 1, value: true, label: 'True' },
     { id: 2, value: false, label: 'False' },
   ];
+  const ALWAYS_SYNC_OPTIONS = [
+    { id: 1, value: 'true', label: 'True' },
+    { id: 2, value: 'false', label: 'False' },
+  ];
   const FLOW_ELECTION_MAX_WAIT_OPTIONS = [
-    { label: '2 Min', value: '2' },
-    { label: '5 Min', value: '5' },
-    { label: '10 Min', value: '10' },
+    { label: '2 Min', value: '2 mins' },
+    { label: '5 Min', value: '5 mins' },
+    { label: '10 Min', value: '10 mins' },
+  ];
+  const ACCESS_CONTROL_OPTIONS = [
+    { label: 'Open', value: 'Open' },
+    { label: 'CreatorOnly', value: 'CreatorOnly' },
   ];
   const handleAddConfig = data => {
-    dispatch(ClustersActions.addConfigClusterSetup(data));
+    const nifiPropertyPayload = {
+      nifi_cluster_is_node: data?.nifi_cluster_is_node,
+      nifi_cluster_node_protocol_max_threads:
+        data?.nifi_cluster_node_protocol_max_threads,
+      nifi_cluster_flow_election_max_wait_time:
+        data?.nifi_cluster_flow_election_max_wait_time,
+      nifi_state_management_embedded_zookeeper_start:
+        data?.nifi_state_management_embedded_zookeeper_start,
+      nifi_zookeeper_connect_timeout: data?.nifi_zookeeper_connect_timeout,
+      nifi_web_https_port: data?.nifi_web_https_port,
+    };
+    const bootstrapPayload = {
+      java_arg_2: data?.java_arg_2,
+      java_arg_3: data?.java_arg_3,
+    };
+    const loginPayload = {
+      username: data?.username,
+      password: data?.password,
+    };
+    const statePayload = {
+      directory: data?.directory,
+      always_sync: data?.always_sync,
+      partitions: data?.partitions,
+      checkpoint_interval: data?.checkpoint_interval,
+      root_node: data?.root_node,
+      session_timeout: data?.session_timeout,
+      access_control: data?.access_control?.value || data?.access_control,
+    };
+    const payload = new FormData();
+    payload.append('configName', data?.configName);
+    payload.append('nifiVersion', data?.nifiVersion);
+    payload.append('comments', data?.comments);
+    payload.append('nifi_properties', JSON.stringify(nifiPropertyPayload));
+    payload.append('bootstrap_configuration', JSON.stringify(bootstrapPayload));
+    payload.append('login_identity_provider', JSON.stringify(loginPayload));
+    payload.append('state_management', JSON.stringify(statePayload));
+
+    dispatch(ClustersActions.addConfigClusterSetup(payload));
   };
   useEffect(() => {
     dispatch(ClustersActions.getNiFiVersions());
@@ -218,7 +272,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
           <div className="col-4">
             <LabelSelect className="mb-3">Config Name</LabelSelect>
             <InputField
-              name="config_name"
+              name="configName"
               type="text"
               placeholder="Enter Config Name"
               required
@@ -230,7 +284,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
           <div className="col-4">
             <LabelSelect className="mb-3">NiFi Version</LabelSelect>
             <SelectField
-              name="nifi_version"
+              name="nifiVersion"
               icon={<QRIcons />}
               register={register}
               errors={errors}
@@ -264,7 +318,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   onClick={() => {
                     setSelectedProperty(item.path);
                   }}
-                  // path={item.path}
                 >
                   <div>
                     <item.icon
@@ -305,7 +358,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <InputField
                         name="nifi_cluster_node_protocol_max_threads"
                         type="text"
-                        //   label="Config Name"
                         placeholder="Enter Protocol Max Threads"
                         required
                         register={register}
@@ -322,7 +374,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <SelectField
                         name="nifi_cluster_flow_election_max_wait_time"
                         icon={<QRIcons />}
-                        // register={register}
                         errors={errors}
                         control={control}
                         options={FLOW_ELECTION_MAX_WAIT_OPTIONS}
@@ -358,7 +409,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <InputField
                         name="nifi_zookeeper_connect_timeout"
                         type="text"
-                        //   label="Config Name"
                         placeholder="Enter Zookeeper Connection Timeout"
                         required
                         register={register}
@@ -391,7 +441,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <InputField
                         name="nifi_web_https_port"
                         type="text"
-                        //   label="Config Name"
                         placeholder="Enter Http Port"
                         required
                         register={register}
@@ -412,13 +461,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   <div className="row mt-4">
                     <div className="col-5">
                       <LabelSelect className="mb-3">
-                        -Xms1g (Initial Heap Size)
+                        java_arg_2 (Initial Heap Size)
                       </LabelSelect>
 
                       <InputField
                         name="java_arg_2"
                         type="text"
-                        //   label="Config Name"
                         placeholder="Enter Protocol Max Threads"
                         required
                         register={register}
@@ -428,13 +476,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     </div>
                     <div className="col-5">
                       <LabelSelect className="mb-3">
-                        -Xms1g (Maximum Heap Size)
+                        java_arg_3 (Maximum Heap Size)
                       </LabelSelect>
 
                       <InputField
                         name="java_arg_3"
                         type="text"
-                        //   label="Config Name"
                         placeholder="Enter Protocol Max Threads"
                         required
                         register={register}
@@ -461,7 +508,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <InputField
                         name="username"
                         type="text"
-                        //   label="Config Name"
                         placeholder="Enter Protocol Max Threads"
                         required
                         register={register}
@@ -475,12 +521,126 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <InputField
                         name="password"
                         type="text"
-                        //   label="Config Name"
                         placeholder="Enter Protocol Max Threads"
                         required
                         register={register}
                         errors={errors}
                         icon={<NotePadIcon />}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {selectedProperty === 'state_management_xml' && (
+              <div>
+                <div>
+                  <TitleTabWrapper className="mt-4">
+                    <TitleTab className="ms-2">Local State Provider</TitleTab>
+                  </TitleTabWrapper>
+                  <div className="row mt-4">
+                    <div className="col-4">
+                      <LabelSelect className="mb-3">Directory</LabelSelect>
+
+                      <InputField
+                        name="directory"
+                        type="text"
+                        placeholder="Enter Directory"
+                        required
+                        register={register}
+                        errors={errors}
+                        defaultValue={50}
+                        icon={<NotePadIcon />}
+                      />
+                    </div>
+                    <div className="col-3">
+                      <LabelSelect className="mb-3">Partitions</LabelSelect>
+
+                      <InputField
+                        name="partitions"
+                        type="text"
+                        placeholder="Enter Partitions"
+                        required
+                        register={register}
+                        errors={errors}
+                        defaultValue={16}
+                        icon={<NotePadIcon />}
+                      />
+                    </div>
+                    <div className="col-3">
+                      <LabelSelect className="mb-3">
+                        Checkpoint Intervalitions (eg. 5 min)
+                      </LabelSelect>
+
+                      <InputField
+                        name="checkpoint_interval"
+                        type="text"
+                        placeholder="Enter Checkpoint Interval"
+                        required
+                        register={register}
+                        errors={errors}
+                        icon={<NotePadIcon />}
+                      />
+                    </div>
+                    <div className="col-2">
+                      <RadioSelectField
+                        name="always_sync"
+                        options={ALWAYS_SYNC_OPTIONS}
+                        label="Always Sync"
+                        register={register}
+                        defaultValue={'false'}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <TitleTabWrapper className="mt-4">
+                    <TitleTab className="ms-2">
+                      ZooKeeper Cluster State Provider
+                    </TitleTab>
+                  </TitleTabWrapper>
+                  <div className="row mt-4">
+                    <div className="col-4">
+                      <LabelSelect className="mb-3">Root Node</LabelSelect>
+
+                      <InputField
+                        name="root_node"
+                        type="text"
+                        placeholder="Enter Root Node"
+                        required
+                        register={register}
+                        errors={errors}
+                        icon={<NotePadIcon />}
+                      />
+                    </div>{' '}
+                    <div className="col-4">
+                      <LabelSelect className="mb-3">
+                        Session Timeout (eg. 5 seconds)
+                      </LabelSelect>
+
+                      <InputField
+                        name="session_timeout"
+                        type="text"
+                        placeholder="Enter Session Timeout"
+                        required
+                        register={register}
+                        errors={errors}
+                        icon={<NotePadIcon />}
+                      />
+                    </div>{' '}
+                    <div className="col-4">
+                      <LabelSelect className="mb-3">Access Control</LabelSelect>
+
+                      <SelectField
+                        name="access_control"
+                        icon={<QRIcons />}
+                        errors={errors}
+                        control={control}
+                        options={ACCESS_CONTROL_OPTIONS}
+                        placeholder="Select Access Control "
+                        sortAlphabetically={false}
+                        defaultValue="Open"
                       />
                     </div>
                   </div>
