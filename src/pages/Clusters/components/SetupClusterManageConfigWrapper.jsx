@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
@@ -10,8 +10,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { history } from '../../../helpers/history';
-import { ClustersActions } from '../../../store';
-import { useDispatch } from 'react-redux';
+import { ClustersActions, ClustersSelectors } from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
 import { IconButton, Table } from '../../../components';
 import {
   CopyIcon,
@@ -52,6 +52,8 @@ const ActionTd = styled.div`
 `;
 const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   const dispatch = useDispatch();
+  const congigListData = useSelector(ClustersSelectors.getConfigNameList);
+  // to delet just call   dispatch(ClustersActions.deleteConfig(id))
   const schema = yup.object().shape({
     clusterName: yup.string().required('Cluster Name is required'),
     nifi_version: yup.string().required('Port is required'),
@@ -69,47 +71,21 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   const handleContinue = data => {
     console.log(data);
   };
-  const mockData = [
-    {
-      name: 'System Config',
-      version: 'NiFi V12',
-      comment: 'Configuration updated successfully',
-    },
-    {
-      name: 'Network Settings',
-      version: 'NiFi V3',
-      comment: 'Performance improvements',
-    },
-    {
-      name: 'Security Patch',
-      version: 'NiFi V8',
-      comment: 'Security patches included',
-    },
-    {
-      name: 'Database Config',
-      version: 'NiFi V15',
-      comment: 'Minor bug fixes applied',
-    },
-    {
-      name: 'User Preferences',
-      version: 'NiFi V6',
-      comment: 'Updated dependencies',
-    },
-  ];
+
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => <>{item.name}</>,
+      renderCell: item => <>{item.config_name}</>,
       resize: true,
     },
     {
       label: 'Config Version',
-      renderCell: item => <>{item.version}</>,
+      renderCell: item => <>{item.config_version}</>,
       resize: true,
     },
     {
       label: 'Comments',
-      renderCell: item => <>{item.comment}</>,
+      renderCell: item => <>{item.comments}</>,
       resize: true,
     },
     {
@@ -145,6 +121,9 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
       resize: true,
     },
   ];
+  useEffect(() => {
+    dispatch(ClustersActions.getConfigList());
+  }, [dispatch]);
   return (
     <Wrapper>
       <Title title={'Add New Cluster'} />
@@ -173,7 +152,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
           </div>
 
           <Table
-            data={mockData}
+            data={congigListData}
             columns={COLUMNS}
             customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
             tableWithFullHeight={true}

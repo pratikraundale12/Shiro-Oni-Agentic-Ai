@@ -101,7 +101,6 @@ export function* fetchHostNodesList(api, { payload }) {
     loadingSection: 'fetchHostNodesList',
     apiMethod: api.fetchHostNodesList,
     apiParams: [{ payload: payload?.selected }],
-    // successAction: ClustersActions.fetchHostNodesList,
   });
   if (response.ok) {
     yield put(ClustersActions.setHostIpList(response?.data));
@@ -169,6 +168,8 @@ export function* getConfigList(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
+
+
 export function* addConfigClusterSetup(api, { payload }) {
   console.log(payload, 'payload');
 
@@ -181,6 +182,20 @@ export function* addConfigClusterSetup(api, { payload }) {
   if (response.ok) {
     toast.success('Config Added Successfully');
     yield call(history.push, '/clusters/setup-cluster');
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+export function* deleteConfig(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteConfig',
+    loadingSection: 'deleteConfig',
+    apiMethod: api.deleteConfig,
+    apiParams: [{ configId: payload?.configId }],
+  });
+  if (response.ok) {
+    toast.success('Deleted Successfully');
+    // yield put(ClustersActions.fetchHostNodesList({ selected: true }));
   } else {
     toast.error(response?.data?.message);
   }
@@ -207,5 +222,6 @@ export function* clustersSagas(api) {
       addConfigClusterSetup,
       api
     ),
+    takeLatest(ClustersActions.deleteConfig, deleteConfig, api),
   ]);
 }

@@ -38,6 +38,7 @@ export const ClustersActions = {
   getConfigList: createAction(`${prefix}getConfigList`),
   setConfigNameList: createAction(`${prefix}setConfigNameList`),
   addConfigClusterSetup: createAction(`${prefix}addConfigClusterSetup`),
+  deleteConfig: createAction(`${prefix}deleteConfig`),
 };
 
 /* ------------- INITIAL STATE ------------- */

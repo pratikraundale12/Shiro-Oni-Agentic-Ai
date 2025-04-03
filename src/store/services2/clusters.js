@@ -29,10 +29,16 @@ export const clustersAPI = api => {
     api.delete(`/clusters/delete-node/${hostId}`);
   const updateIndividualHost = ({ hostId, payload }) =>
     api.patch(`/clusters/update-node/${hostId}/node-private-keys`, payload);
-  const getConfigList = ({ nifiVersion }) =>
-    api.get(`/get-list-configs?nifi_version=${nifiVersion}`);
+  const getConfigList = ({ nifiVersion }) => {
+    const url = nifiVersion
+      ? `/get-list-configs?nifi_version=${nifiVersion}`
+      : `/get-list-configs`;
+    return api.get(url);
+  };
   const addConfigClusterSetup = ({ payload }) =>
     api.post(`/clusters/add-config/configuration-files`, payload);
+  const deleteConfig = ({ configId }) =>
+    api.delete(`/clusters/delete-config/${configId}`);
   return {
     fetchClusters,
     fetchClusterList,
@@ -47,5 +53,6 @@ export const clustersAPI = api => {
     updateIndividualHost,
     getConfigList,
     addConfigClusterSetup,
+    deleteConfig,
   };
 };
