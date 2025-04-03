@@ -69,10 +69,10 @@ export const AddOrEditClusterModal = () => {
   };
   const { handleSubmit } = useForm();
   const handleContinueSubmit = () => {
-    if (selectedFlow === 'ManageCluster') {
+    if (selectedFlow === KDFM.MANAGE_CLUSTER_FLOW) {
       history.push(`/clusters/add`);
       onRequestClose();
-    } else if (selectedFlow === 'CreateCluster') {
+    } else if (selectedFlow === KDFM.CREATE_CLUSTER_FLOW) {
       history.push(`/clusters/setup-cluster`);
       onRequestClose();
     }
@@ -98,21 +98,21 @@ export const AddOrEditClusterModal = () => {
       <Container>
         <BulletContainer
           onClick={() => {
-            setSelectedFlow('CreateCluster');
+            setSelectedFlow(KDFM.CREATE_CLUSTER_FLOW);
           }}
-          borderSelected={selectedFlow === 'CreateCluster'}
+          borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
         >
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-3 align-items-center justify-content-center h-100 ">
               <IconContainer
                 className=" d-flex align-items-center justify-content-center h-100"
-                borderSelected={selectedFlow === 'CreateCluster'}
+                borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
               >
                 <CreateClusterIcon
                   height="60"
                   width="60"
                   color={
-                    selectedFlow === 'CreateCluster'
+                    selectedFlow === KDFM.CREATE_CLUSTER_FLOW
                       ? theme.colors.primary
                       : 'black'
                   }
@@ -122,13 +122,13 @@ export const AddOrEditClusterModal = () => {
             <RightHolder className="col-9 h-100 row">
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <HighLightText>Create New Cluster</HighLightText>
+                  <HighLightText>{KDFM.CREATE_NEW_CLUSTER_TITLE}</HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <BottomText>Set up a new DFM cluster from scratch</BottomText>
+                  <BottomText>{KDFM.CREATE_NEW_CLUSTER_DESCRIPTION}</BottomText>
                 </div>
               </div>
-              {selectedFlow === 'CreateCluster' && (
+              {selectedFlow === KDFM.CREATE_CLUSTER_FLOW && (
                 <div className="col-2  d-flex align-items-center justify-content-center ">
                   <SelectedTickIconOrange height="25" width="25" />
                 </div>
@@ -138,21 +138,21 @@ export const AddOrEditClusterModal = () => {
         </BulletContainer>
         <BulletContainer
           onClick={() => {
-            setSelectedFlow('ManageCluster');
+            setSelectedFlow(KDFM.MANAGE_CLUSTER_FLOW);
           }}
-          borderSelected={selectedFlow === 'ManageCluster'}
+          borderSelected={selectedFlow === KDFM.MANAGE_CLUSTER_FLOW}
         >
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-3 align-items-center justify-content-center h-100 ">
               <IconContainer
                 className=" d-flex align-items-center justify-content-center h-100"
-                borderSelected={selectedFlow === 'ManageCluster'}
+                borderSelected={selectedFlow === KDFM.MANAGE_CLUSTER_FLOW}
               >
                 <ManageClusterIcon
                   height="50"
                   width="50"
                   color={
-                    selectedFlow === 'ManageCluster'
+                    selectedFlow === KDFM.MANAGE_CLUSTER_FLOW
                       ? theme.colors.primary
                       : 'black'
                   }
@@ -162,13 +162,13 @@ export const AddOrEditClusterModal = () => {
             <RightHolder className="col-9 h-100 row">
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <HighLightText>Manage Existing Cluster</HighLightText>
+                  <HighLightText>{KDFM.MANAGE_EXISTING_CLUSTER_TITLE}</HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <BottomText>Manage an existing DFM cluster</BottomText>
+                  <BottomText>{KDFM.MANAGE_EXISTING_CLUSTER_DESCRIPTION}</BottomText>
                 </div>
               </div>
-              {selectedFlow === 'ManageCluster' && (
+              {selectedFlow === KDFM.MANAGE_CLUSTER_FLOW && (
                 <div className="col-2  d-flex align-items-center justify-content-center ">
                   <SelectedTickIconOrange height="25" width="25" />
                 </div>

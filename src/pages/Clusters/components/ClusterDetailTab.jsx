@@ -31,6 +31,7 @@ import {
 import { AddHostIPModal } from './AddHostIPModal';
 import { isEmpty } from 'lodash';
 import { history } from '../../../helpers/history';
+import { KDFM } from '../../../constants';
 const LabelSelect = styled.div`
   font-size: 14px;
   font-weight: 600;
@@ -169,12 +170,12 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
       <div className="row mt-2 ms-2 me-2">
         {' '}
         <div className="col-6">
-          <LabelSelect className="mb-3">Cluster Name</LabelSelect>
+          <LabelSelect className="mb-3">{KDFM.CLUSTER_NAME}</LabelSelect>
           <InputField
             name="clusterName"
             type="text"
             // label="Cluster Name"
-            placeholder="Enter your Cluster Name"
+            placeholder={KDFM.ENTER_YOUR_CLUSTER_NAME}
             required
             register={register}
             errors={errors}
@@ -185,7 +186,7 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
       </div>
       <div className="row mt-2 ms-2 me-2 mb-4">
         <div className="col-4">
-          <LabelSelect className="mb-3">NiFi Version</LabelSelect>
+          <LabelSelect className="mb-3">{KDFM.NIFI_VERSION}</LabelSelect>
           <SelectField
             name="nifi_version"
             icon={<QRIcons />}
@@ -194,11 +195,11 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
             control={control}
             options={nifiVerionsOptions || []}
             // options={[]}
-            placeholder="Select NiFi Version"
+            placeholder={KDFM.SELECT_NIFI_VERSION}
           />
         </div>
         <div className="col-4">
-          <LabelSelect className="mb-3">Config Name</LabelSelect>
+          <LabelSelect className="mb-3">{KDFM.CONFIG_NAME}</LabelSelect>
           <SelectField
             name="nifi_version"
             icon={<QRIcons />}
@@ -206,11 +207,11 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
             errors={errors}
             control={control}
             options={[]}
-            placeholder="Select Config Name"
+            placeholder={KDFM.SELECT_CONFIG_NAME}
           />
         </div>
         <div className="col-4">
-          <LabelSelect className="mb-3">Config Version</LabelSelect>
+          <LabelSelect className="mb-3">{KDFM.CONFIG_VERSION}</LabelSelect>
           <SelectField
             name="nifi_version"
             icon={<QRIcons />}
@@ -218,7 +219,7 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
             errors={errors}
             control={control}
             options={[]}
-            placeholder="Select Config Version"
+            placeholder={KDFM.SELECT_CONFIG_VERSION}
           />
         </div>
       </div>
@@ -237,7 +238,7 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
             style={{ fontSize: '14px', fontWeight: '750' }}
           >
             <PlusIcon height={19} width={19} color={'#fff'} />
-            Manage Host
+            {KDFM.MANAGE_HOST}
           </div>
         </Button>
       </div>
@@ -248,7 +249,7 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
         <Table
           data={listHostIpData || []}
           columns={COLUMNS}
-          customNoDataText="No Host IP Available"
+          customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
           tableWithFullHeight={true}
         />
       </div>
