@@ -37,6 +37,7 @@ export const ClustersActions = {
   updateIndividualHost: createAction(`${prefix}updateIndividualHost`),
   getConfigList: createAction(`${prefix}getConfigList`),
   setConfigNameList: createAction(`${prefix}setConfigNameList`),
+  addConfigClusterSetup: createAction(`${prefix}addConfigClusterSetup`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -224,4 +225,3 @@ export const clustersReducer = createReducer(
       .addCase(ClustersActions.setConfigNameList, setConfigNameList);
   }
 );
-

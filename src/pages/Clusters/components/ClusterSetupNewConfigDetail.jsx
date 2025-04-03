@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
   CheckListIcon,
@@ -21,6 +21,9 @@ import { KDFM } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { ClustersActions, ClustersSelectors } from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -115,12 +118,36 @@ const TitleTabWrapper = styled.div`
   padding-bottom: 12px;
 `;
 const ClusterSetupNewConfigDetailsPage = () => {
+  const dispatch = useDispatch();
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
+  const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
+  const nifiVerionsOptions =
+    !isEmpty(nifiVersionsData) &&
+    nifiVersionsData?.map(ele => ({
+      label: ele?.nifi_version,
+      value: ele?.nifi_version,
+    }));
+
   const schema = yup.object().shape({
     config_name: yup.string().required('Config Name is required'),
-    config_version: yup.string().required('Config version is required'),
+    nifi_version: yup.string().required('NiFi version is required'),
     comment: yup.string().required('Comment is required'),
-    // nifi_version: yup.string().required('Port is required'),
+    nifi_cluster_node_protocol_max_threads: yup
+      .number()
+      .typeError('Protocol Max thread must be a number')
+      .integer('Protocol Max thread must be an integer')
+      .positive('Protocol Max thread must be a positive number')
+      .required('Protocol Max thread is required'),
+    nifi_web_https_port: yup
+      .number()
+      .typeError('Web http port must be a number')
+      .integer('Web http port must be an integer')
+      .positive('Web http port must be a positive number')
+      .required('Web http port is required'),
+    username: yup.string().required('Userame is required'),
+    password: yup.string().required('Password is required'),
+    java_arg_2: yup.string().required('Initial heap size is required'),
+    java_arg_3: yup.string().required('Maximum heap size is required'),
   });
   const {
     register,
@@ -132,8 +159,9 @@ const ClusterSetupNewConfigDetailsPage = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      flow_election_max_wait_time: '5',
-      zookeeper_connection_timeout: '10',
+      nifi_cluster_flow_election_max_wait_time: '5',
+      nifi_zookeeper_connect_timeout: '10',
+      nifi_web_https_port: 8443,
     },
   });
 
@@ -170,9 +198,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
     { label: '5 Min', value: '5' },
     { label: '10 Min', value: '10' },
   ];
-  const handleAddConfig = () => {
-    alert('click');
+  const handleAddConfig = data => {
+    dispatch(ClustersActions.addConfigClusterSetup(data));
   };
+  useEffect(() => {
+    dispatch(ClustersActions.getNiFiVersions());
+  }, [dispatch]);
   return (
     <Wrapper>
       <Title
@@ -197,22 +228,22 @@ const ClusterSetupNewConfigDetailsPage = () => {
             />
           </div>
           <div className="col-4">
-            <LabelSelect className="mb-3">Config Version</LabelSelect>
+            <LabelSelect className="mb-3">NiFi Version</LabelSelect>
             <SelectField
-              name="config_version"
+              name="nifi_version"
               icon={<QRIcons />}
               register={register}
               errors={errors}
               control={control}
-              options={[]}
-              placeholder="Select Config Version"
+              options={nifiVerionsOptions || []}
+              placeholder="Select NiFi Version"
             />
           </div>
           <div className="col-4">
             <LabelSelect className="mb-3">Comments</LabelSelect>
 
             <InputField
-              name="comment"
+              name="comments"
               type="text"
               placeholder="Enter your Comments"
               required
@@ -266,22 +297,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <TitleTab className="ms-2">Core Configuration</TitleTab>
                   </TitleTabWrapper>
                   <div className="row mt-4">
-                    <div className="col-2">
-                      <RadioSelectField
-                        name="nifi_cluster_node"
-                        options={OPTIONS}
-                        label="NiFi Cluster Node"
-                        register={register}
-                        defaultValue={'false'}
-                      />
-                    </div>
                     <div className="col-5">
                       <LabelSelect className="mb-3">
                         Protocol Max Threads
                       </LabelSelect>
 
                       <InputField
-                        name="protocol_max_thread"
+                        name="nifi_cluster_node_protocol_max_threads"
                         type="text"
                         //   label="Config Name"
                         placeholder="Enter Protocol Max Threads"
@@ -298,7 +320,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       </LabelSelect>
 
                       <SelectField
-                        name="flow_election_max_wait_time"
+                        name="nifi_cluster_flow_election_max_wait_time"
                         icon={<QRIcons />}
                         // register={register}
                         errors={errors}
@@ -307,6 +329,15 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         placeholder="Select Flow Election Max Wait Time"
                         sortAlphabetically={false}
                         defaultValue="5"
+                      />
+                    </div>
+                    <div className="col-2">
+                      <RadioSelectField
+                        name="nifi_cluster_is_node"
+                        options={OPTIONS}
+                        label="NiFi Cluster Node"
+                        register={register}
+                        defaultValue={'false'}
                       />
                     </div>
                   </div>
@@ -319,52 +350,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     </TitleTab>
                   </TitleTabWrapper>
                   <div className="row mt-4">
-                    <div className="col-2">
-                      <RadioSelectField
-                        name="zookeeper_embedded_config"
-                        options={ZOOOKEEPER_EMBEDED_OPTIONS}
-                        label="Embedded  Node"
-                        register={register}
-                        defaultValue={true}
-                      />
-                    </div>
-                    <div className="col-3">
-                      <LabelSelect className="mb-3">
-                        NiFi Cluster Address
-                      </LabelSelect>
-
-                      <InputField
-                        name="nifi_cluster_address"
-                        type="text"
-                        //   label="Config Name"
-                        placeholder="Enter NiFi Cluster Address"
-                        required
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                    <div className="col-3">
-                      <LabelSelect className="mb-3">Port</LabelSelect>
-
-                      <InputField
-                        name="port"
-                        type="text"
-                        //   label="Config Name"
-                        placeholder="Enter Port"
-                        required
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                    <div className="col-4">
+                    <div className="col-5">
                       <LabelSelect className="mb-3">
                         Zookeeper Connection Timeout (In Seconds)
                       </LabelSelect>
 
                       <InputField
-                        name="zookeeper_connection_timeout"
+                        name="nifi_zookeeper_connect_timeout"
                         type="text"
                         //   label="Config Name"
                         placeholder="Enter Zookeeper Connection Timeout"
@@ -372,6 +364,15 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         register={register}
                         errors={errors}
                         icon={<NotePadIcon />}
+                      />
+                    </div>{' '}
+                    <div className="col-2">
+                      <RadioSelectField
+                        name="nifi_state_management_embedded_zookeeper_start"
+                        options={ZOOOKEEPER_EMBEDED_OPTIONS}
+                        label="Embedded  Node"
+                        register={register}
+                        defaultValue={true}
                       />
                     </div>
                   </div>
@@ -385,30 +386,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-4">
                     <div className="col-5">
-                      <LabelSelect className="mb-3">Web Http Host</LabelSelect>
-
-                      <InputField
-                        name="web_http_host"
-                        type="text"
-                        //   label="Config Name"
-                        placeholder="Enter Http Host"
-                        required
-                          register={register}
-                          errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                    <div className="col-5">
                       <LabelSelect className="mb-3">Web Http Port</LabelSelect>
 
                       <InputField
-                        name="web_http_port"
+                        name="nifi_web_https_port"
                         type="text"
                         //   label="Config Name"
                         placeholder="Enter Http Port"
                         required
-                          register={register}
-                          errors={errors}
+                        register={register}
+                        errors={errors}
                         icon={<NotePadIcon />}
                       />
                     </div>
@@ -429,13 +416,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       </LabelSelect>
 
                       <InputField
-                        name="config_name"
+                        name="java_arg_2"
                         type="text"
                         //   label="Config Name"
                         placeholder="Enter Protocol Max Threads"
                         required
-                        //   register={register}
-                        //   errors={errors}
+                        register={register}
+                        errors={errors}
                         icon={<NotePadIcon />}
                       />
                     </div>
@@ -445,13 +432,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       </LabelSelect>
 
                       <InputField
-                        name="config_name"
+                        name="java_arg_3"
                         type="text"
                         //   label="Config Name"
                         placeholder="Enter Protocol Max Threads"
                         required
-                        //   register={register}
-                        //   errors={errors}
+                        register={register}
+                        errors={errors}
                         icon={<NotePadIcon />}
                       />
                     </div>
@@ -472,13 +459,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <LabelSelect className="mb-3">Username</LabelSelect>
 
                       <InputField
-                        name="config_name"
+                        name="username"
                         type="text"
                         //   label="Config Name"
                         placeholder="Enter Protocol Max Threads"
                         required
-                        //   register={register}
-                        //   errors={errors}
+                        register={register}
+                        errors={errors}
                         icon={<NotePadIcon />}
                       />
                     </div>
@@ -486,13 +473,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <LabelSelect className="mb-3">Password</LabelSelect>
 
                       <InputField
-                        name="config_name"
+                        name="password"
                         type="text"
                         //   label="Config Name"
                         placeholder="Enter Protocol Max Threads"
                         required
-                        //   register={register}
-                        //   errors={errors}
+                        register={register}
+                        errors={errors}
                         icon={<NotePadIcon />}
                       />
                     </div>

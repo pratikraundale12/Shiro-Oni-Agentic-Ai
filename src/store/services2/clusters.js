@@ -31,6 +31,8 @@ export const clustersAPI = api => {
     api.patch(`/clusters/update-node/${hostId}/node-private-keys`, payload);
   const getConfigList = ({ nifiVersion }) =>
     api.get(`/get-list-configs?nifi_version=${nifiVersion}`);
+  const addConfigClusterSetup = ({ payload }) =>
+    api.post(`/clusters/add-config/configuration-files`, payload);
   return {
     fetchClusters,
     fetchClusterList,
@@ -44,5 +46,6 @@ export const clustersAPI = api => {
     deleteIndividualHost,
     updateIndividualHost,
     getConfigList,
+    addConfigClusterSetup,
   };
 };

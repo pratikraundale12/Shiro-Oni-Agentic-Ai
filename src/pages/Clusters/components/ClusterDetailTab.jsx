@@ -104,7 +104,6 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
       dispatch(ClustersActions.getConfigList(nifiVersion));
     }
   }, [nifiVersion]);
-  console.log(nifiVersion, 'nifiVersion');
 
   useEffect(() => {
     dispatch(ClustersActions.fetchHostNodesList({ selected: false }));

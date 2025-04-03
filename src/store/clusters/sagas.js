@@ -3,7 +3,7 @@ import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
-import { ClustersActions, ClustersSelectors } from './redux';
+import { ClustersActions } from './redux';
 import { toast } from 'react-toastify';
 
 export function* fetchClusterList(api, { payload: { params } = {} }) {
@@ -168,6 +168,23 @@ export function* getConfigList(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
+export function* addConfigClusterSetup(api, { payload }) {
+  console.log(payload, 'payload');
+
+  const response = yield call(requestSaga, {
+    errorSection: 'addConfigClusterSetup',
+    loadingSection: 'addConfigClusterSetup',
+    apiMethod: api.addConfigClusterSetup,
+    apiParams: [{ payload: payload }],
+  });
+  if (response.ok) {
+    toast.success('Config Added Successfully');
+    // /// list api
+    // yield put(ClustersActions.fetchHostNodesList({ selected: true }));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
 export function* clustersSagas(api) {
   yield all([
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
@@ -185,5 +202,10 @@ export function* clustersSagas(api) {
     takeLatest(ClustersActions.deleteIndividualHost, deleteIndividualHost, api),
     takeLatest(ClustersActions.updateIndividualHost, updateIndividualHost, api),
     takeLatest(ClustersActions.getConfigList, getConfigList, api),
+    takeLatest(
+      ClustersActions.addConfigClusterSetup,
+      addConfigClusterSetup,
+      api
+    ),
   ]);
 }
