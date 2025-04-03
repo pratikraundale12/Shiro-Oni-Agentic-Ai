@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ModalWithIcon } from '../../shared';
-import { DeleteDustbinIcon } from '../../assets';
+import { DownloadImageIcon } from '../../assets';
 
 const DownloadFlowConfirmationModal = ({
   isModalOpen,
@@ -23,12 +23,13 @@ const DownloadFlowConfirmationModal = ({
     <div>
       <ModalWithIcon
         title="Download the flow JSON"
-        primaryButtonText={'Download'}
-        secondaryButtonText="Back"
-        icon={<DeleteDustbinIcon />}
+        primaryButtonText={'Confirm'}
+        secondaryButtonText="Cancel"
+        icon={<DownloadImageIcon />}
         isOpen={isModalOpen}
         onRequestClose={handleClose}
-        primaryText={`Are you sure you want to discard the flow JSON?`}
+        primaryText={`Are you sure you want to Proceed with the Download?`}
+        secondaryText="If Yes, Please click on the Confirm Button"
         onSubmit={handleSubmit}
       />
     </div>

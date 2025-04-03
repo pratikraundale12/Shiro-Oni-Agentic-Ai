@@ -137,3 +137,4 @@ export * from './SquareBoxIcon';
 export * from './DescIcon';
 export * from './FullScreenIcon';
 export * from './MicroSoftIcon';
+export * from './DownloadImageIcon';
