@@ -47,7 +47,7 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('manage_config'));
         }}
       >
-        Manage Config
+        {KDFM.MANAGE_CONFIG}
       </NavButton>
       <NavButton
         active={activeTab === 'manage_host'}
@@ -55,7 +55,7 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
         }}
       >
-        Manage Host
+        {KDFM.MANAGE_HOST}
       </NavButton>
       <NavButton
         active={activeTab === 'cluster_details'}

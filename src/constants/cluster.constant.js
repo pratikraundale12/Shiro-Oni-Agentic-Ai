@@ -74,4 +74,36 @@ export const CLUSTER_CONSTANTS = {
   HARD_DELETE_CLUSTER_WARNING: 'Are you sure you want to delete this cluster?',
   NEW_CLUSTER: 'New Cluster',
   GETTING_STARTED: 'Getting Started',
+  GETTING_STARTED_SUBTEXT: 'This is demo text which will be updated',
+
+  GETTING_STARTED_MANAGE_CONFIG_TITLE: 'Manage Config Profile',
+  GETTING_STARTED_MANAGE_CONFIG_DESCRIPTION: 'Manage & Create Config file',
+  MANAGE_CONFIG: 'Manage Config',
+
+  GETTING_STARTED_MANAGE_HOST_TITLE: 'Manage Host',
+  GETTING_STARTED_MANAGE_HOST_DESCRIPTION: "Manage Host IP's",
+  MANAGE_HOST: 'Manage Host',
+
+  GETTING_STARTED_CLUSTER_DETAILS_TITLE: 'Cluster & Node Details',
+  GETTING_STARTED_CLUSTER_DETAILS_DESCRIPTION: 'Add Cluster & Node Details',
+
+  CREATE_NEW_CLUSTER_TITLE: 'Create New Cluster',
+  CREATE_NEW_CLUSTER_DESCRIPTION: 'Set up a new DFM cluster from scratch',
+
+  MANAGE_EXISTING_CLUSTER_TITLE: 'Manage Existing Cluster',
+  MANAGE_EXISTING_CLUSTER_DESCRIPTION: 'Manage an existing DFM cluster',
+
+  MANAGE_CLUSTER_FLOW: 'ManageCluster',
+  CREATE_CLUSTER_FLOW: 'CreateCluster',
+
+  NIFI_VERSION: 'NiFi Version',
+  CONFIG_NAME: 'Config Name',
+  CONFIG_VERSION: 'Config Version',
+  HOST_IP_NOT_AVAILABLE: 'No Host IP Available',
+  SELECT_NIFI_VERSION: 'Select NiFi Version',
+  SELECT_CONFIG_NAME: 'Select Config Name',
+  SELECT_CONFIG_VERSION: 'Select Config Version',
+  ENTER_YOUR_CLUSTER_NAME: 'Enter your Cluster Name',
+
+  ADD_NEW_CONFIG: 'Add New Config',
 };

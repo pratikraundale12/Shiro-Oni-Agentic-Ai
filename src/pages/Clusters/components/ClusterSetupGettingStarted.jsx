@@ -7,6 +7,7 @@ import {
 } from '../../../assets';
 import { useDispatch } from 'react-redux';
 import { ClustersActions } from '../../../store';
+import { KDFM } from '../../../constants';
 const Container = styled.div`
   height: calc(100% - 57px);
 `;
@@ -55,10 +56,10 @@ const ClusterSetupGettingStartedTab = () => {
       <div className="d-flex justify-content-center w-100 mb-3">
         <div className="col-md-8 d-flex flex-column justify-content-center text-center">
           <div>
-            <HighlightTextTop>Getting Started</HighlightTextTop>
+            <HighlightTextTop>{KDFM.GETTING_STARTED}</HighlightTextTop>
           </div>
           <div>
-            <HeadingText>This is demo text which will be updated</HeadingText>
+            <HeadingText>{KDFM.GETTING_STARTED_SUBTEXT}</HeadingText>
           </div>
         </div>
       </div>
@@ -72,10 +73,14 @@ const ClusterSetupGettingStartedTab = () => {
             <RightHolder className="col h-100 row">
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <HighLightText>Manage Config Profile</HighLightText>
+                  <HighLightText>
+                    {KDFM.GETTING_STARTED_MANAGE_CONFIG_TITLE}
+                  </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <BottomText>Manage & Create Config file</BottomText>
+                  <BottomText>
+                    {KDFM.GETTING_STARTED_MANAGE_CONFIG_DESCRIPTION}
+                  </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <BottomText
@@ -89,7 +94,7 @@ const ClusterSetupGettingStartedTab = () => {
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    Manage Config
+                    {KDFM.MANAGE_CONFIG}
                   </BottomText>
                 </div>
               </div>
@@ -104,10 +109,14 @@ const ClusterSetupGettingStartedTab = () => {
             <RightHolder className="col h-100 row">
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <HighLightText>Manage Host</HighLightText>
+                  <HighLightText>
+                    {KDFM.GETTING_STARTED_MANAGE_HOST_TITLE}
+                  </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <BottomText>Manage Host IP&apos;s</BottomText>
+                  <BottomText>
+                    {KDFM.GETTING_STARTED_MANAGE_HOST_DESCRIPTION}
+                  </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <BottomText
@@ -119,7 +128,7 @@ const ClusterSetupGettingStartedTab = () => {
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    Manage Host
+                    {KDFM.MANAGE_HOST}
                   </BottomText>
                 </div>
               </div>
@@ -134,10 +143,14 @@ const ClusterSetupGettingStartedTab = () => {
             <RightHolder className="col h-100 row">
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <HighLightText>Cluster & Node Details</HighLightText>
+                  <HighLightText>
+                    {KDFM.GETTING_STARTED_CLUSTER_DETAILS_TITLE}
+                  </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <BottomText>Add Cluster & Node Details</BottomText>
+                  <BottomText>
+                    {KDFM.GETTING_STARTED_CLUSTER_DETAILS_DESCRIPTION}
+                  </BottomText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
                   <BottomText
@@ -151,7 +164,7 @@ const ClusterSetupGettingStartedTab = () => {
                     }
                     style={{ cursor: 'pointer' }}
                   >
-                    Add Cluster
+                    {KDFM.ADD_NEW_CLUSTER}
                   </BottomText>
                 </div>
               </div>

@@ -166,7 +166,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
                   style={{ fontSize: '14px', fontWeight: '750' }}
                 >
                   <PlusCircleIcon height={19} width={19} color={'#fff'} />
-                  Add New Config
+                  {KDFM.ADD_NEW_CONFIG}
                 </div>
               </Button>
             </div>
@@ -175,7 +175,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
           <Table
             data={mockData}
             columns={COLUMNS}
-            customNoDataText="No Host IP Available"
+            customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
             tableWithFullHeight={true}
           />
         </TableContainer>
