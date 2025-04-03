@@ -146,7 +146,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
         isOpen={isModalOpen}
         onRequestClose={onRequestClose}
         onSubmit={e => addIndividualHost(e)}
-        title={'Add Host Details'}
+        title={`${isEmpty(hostToEdit) ? 'Add' : 'Edit'} Host Details`}
         primaryButtonText="Add Host"
         secondaryButtonText="Back"
         primaryButtonDisabled={isPrimaryBtnDisable}
