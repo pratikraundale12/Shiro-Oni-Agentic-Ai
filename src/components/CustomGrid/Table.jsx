@@ -59,6 +59,12 @@ const LoaderOverlay = styled.div`
   z-index: 10; /* Ensure the loader is on top of the table */
 `;
 
+const TableWithoutHeader = styled.div`
+  thead {
+    display: none;
+  }
+`;
+
 export const Table = ({
   data,
   columns,
@@ -157,16 +163,23 @@ export const Table = ({
         csList={csList}
         deployTable={deployTable}
       >
-        {' '}
+        <CompactTable
+          data={{ nodes: [] }}
+          columns={columns}
+          theme={tableTheme}
+          layout={{ custom: true }}
+        />{' '}
         {pageLoading || loading || isEmpty(DATA.nodes) ? (
           getLoader()
         ) : (
-          <CompactTable
-            data={{ nodes: showPagination ? currentItems : DATA.nodes }}
-            columns={columns}
-            theme={tableTheme}
-            layout={{ custom: true }}
-          />
+          <TableWithoutHeader>
+            <CompactTable
+              data={{ nodes: showPagination ? currentItems : DATA.nodes }}
+              columns={columns}
+              theme={tableTheme}
+              layout={{ custom: true }}
+            />
+          </TableWithoutHeader>
         )}
       </TableContainer>
       {/* Pagination */}
