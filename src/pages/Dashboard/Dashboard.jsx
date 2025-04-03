@@ -338,7 +338,15 @@ export const Dashboard = () => {
           <QuickInsightHeadingText>Quick Insights</QuickInsightHeadingText>
         </QuickInsightHeading>
         <DropdownWrapper>
-          <DropdownContainer disabled={!ClusterActivated}>
+          <DropdownContainer
+            disabled={!ClusterActivated}
+            style={{
+              cursor:
+                selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                  ? 'pointer'
+                  : 'not-allowed',
+            }}
+          >
             <SelectField
               options={
                 Array.isArray(namespaces)
@@ -364,6 +372,12 @@ export const Dashboard = () => {
           <RefreshIocn
             onClick={handleRefresh}
             data-tooltip-id={`tooltip-group-dashboard-refresh`}
+            style={{
+              cursor:
+                selectedCluster?.value && !isEmpty(selectedCluster?.value)
+                  ? 'pointer'
+                  : 'not-allowed',
+            }}
           >
             {' '}
             <RefreshIcon

@@ -146,6 +146,10 @@ const ConfigDetailsPage = () => {
   } else {
     type = 'downgrade';
   }
+
+  const formattedType =
+    type.charAt(0).toUpperCase() + type.slice(1) + ' Process Group';
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     dispatch(NamespacesActions.setSelectedNamespace({}));
@@ -307,7 +311,7 @@ const ConfigDetailsPage = () => {
             {scheduleDeploymentFlow || scheduleUpgradeFromList
               ? 'Schedule '
               : ''}
-            {!isUpgrade ? KDFM.UPGRADE_NAMESPACE : KDFM.DEPLOY_NAMESPACE}
+            {!isUpgrade ? formattedType : KDFM.DEPLOY_NAMESPACE}
           </MainTitleHfour>{' '}
           :
           <MainTitleHfour className="mb-0">

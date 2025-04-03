@@ -117,6 +117,8 @@ export const ACTIVITY_EVENTS = [
   { label: 'Logout', value: 'Logout' },
   { label: 'Reschedule', value: 'Reschedule' },
   { label: 'Approve', value: 'Approve' },
+  { label: 'Enable', value: 'Enable' },
+  { label: 'Disable', value: 'Disable' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },

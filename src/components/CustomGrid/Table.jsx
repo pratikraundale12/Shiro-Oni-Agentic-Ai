@@ -157,7 +157,6 @@ export const Table = ({
         csList={csList}
         deployTable={deployTable}
       >
-        {' '}
         {pageLoading || loading || isEmpty(DATA.nodes) ? (
           getLoader()
         ) : (

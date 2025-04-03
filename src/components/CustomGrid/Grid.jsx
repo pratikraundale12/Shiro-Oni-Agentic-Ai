@@ -253,6 +253,52 @@ export const Grid = ({
   };
 
   const getNamespacesListData = () => {
+    if (module === 'namespaces' && selectedCluster?.value) {
+      dispatch(
+        GridActions.fetchGrid({
+          module,
+          clusterId,
+          params: {
+            page: currentPage,
+            limit: itemsPerPage,
+            ...(scheduleToken && { id: scheduleToken }),
+            ...(search && { search }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && {
+                [getModuleBasedStatusKey(module)]: watchStatus,
+              }),
+
+            ...(selectedRange && {
+              start_date: selectedRange?.[0]?.toISOString(),
+              end_date: selectedRange?.[1]?.toISOString(),
+            }),
+            ...(location?.pathname?.includes('user-management') &&
+              selectedRole?.value !== 'all' && {
+                role_id: selectedRole?.value,
+              }),
+            ...(location?.pathname?.includes('schedule-deployment') &&
+              clusterSelectedValue?.label !== 'All' && {
+                clusterName: clusterSelectedValue?.label,
+              }),
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEvent?.value !== 'all' && {
+                event: selectEvent?.value,
+              }),
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEntity?.value !== 'all' && {
+                entity: selectEntity?.value,
+              }),
+
+            ...(location?.pathname?.match(
+              /user-management|clusters|schedule-deployment|activity-history/
+            ) &&
+              sortingState && {
+                sort: sortingState,
+              }),
+          },
+        })
+      );
+    }
     dispatch(
       GridActions.fetchGrid({
         module,
@@ -301,17 +347,13 @@ export const Grid = ({
 
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
   useEffect(() => {
-    if (selectedCluster?.value) {
-      getNamespacesListData();
-    }
+    getNamespacesListData();
   }, [selectedNamespaceForDetail, selectedCluster]);
 
   useEffect(() => {
     if (isNamespace && currentPage > 0) {
       return;
-    } else if (selectedCluster?.value) {
-      getNamespacesListData();
-    }
+    } else getNamespacesListData();
   }, [
     setState,
     module,
