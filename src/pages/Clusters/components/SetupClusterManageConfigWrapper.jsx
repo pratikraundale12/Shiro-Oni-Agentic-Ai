@@ -115,14 +115,14 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
           >
             <PencilIcon width={16} height={16} />
           </IconButton>
-          <IconButton
+          {/* <IconButton
             onClick={event => {
               console.log(event);
             }}
             className="pencil-icon-schedule-list"
           >
             <CopyIcon width={16} height={16} color="black" />
-          </IconButton>
+          </IconButton> */}
           <IconButton
             onClick={event => {
               setConfigToDelete(item);
