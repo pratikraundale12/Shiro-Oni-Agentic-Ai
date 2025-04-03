@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { CompareIcon } from '../../assets';
+import { TodoIcon } from '../../assets';
 import { Table } from '../../components';
-import { Button, SelectField } from '../../shared';
+import { Button } from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
+import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
 import { FlowValidationActions } from '../../store/flowValidation';
 import Collapsible from '../Namespaces/Collapsible';
-
-// Styled Components
-const FlowContainer = styled.div`
-  min-height: 58vh;
-`;
 
 const FlowContainerDetail = styled.div`
   padding: 0px;
@@ -29,9 +27,35 @@ const LabelSelectContent = styled.div`
   font-size: 18px;
   font-weight: 500;
 `;
+const HeadingStyle = styled.h3`
+  font-family: 'Nato Sans', sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+`;
+const FlowcompareStyled = styled.div`
+  height: 100%;
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid #e0d3d3;
+  padding: 1rem;
+  margin-top: 1rem;
+  background: #fbfcff;
+`;
 
 const FlowValidationDetails = () => {
+  const { control } = useForm();
   const dispatch = useDispatch();
+  const path = [
+    {
+      label: 'Flow Analysis List',
+      path: '/flow-analysis',
+    },
+    { label: 'Flow Validation' },
+  ];
 
   useEffect(() => {
     dispatch(FlowValidationActions.ruleScopeFetch({}));
@@ -113,31 +137,44 @@ const FlowValidationDetails = () => {
   };
 
   return (
-    <FlowContainer>
-      <div>
-        <div>
-          <LabelSelect>Select Rules To Validate</LabelSelect>
-          <SelectField
-            label="Select Rules"
-            name="select_property"
-            icon={<CompareIcon />}
-            placeholder="Select Property"
-            options={[
-              { label: 'Processor', value: 'Processor' },
-              { label: 'Connection', value: 'Connection' },
-            ]}
-          />
-        </div>
-        <div className="text-center mt-4">
-          <Button
-            // onClick={() => setShowDetail(true)}
-            className="w-auto mx-auto"
-          >
-            Validate Flow
-          </Button>
+    <div>
+      <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-2">
+            <TodoIcon width={22} height={24} />
+            <HeadingStyle>Procress Group Details</HeadingStyle>
+          </div>
         </div>
       </div>
-      <>
+      <Breadcrumb module="path" path={path} />
+      <FlowcompareStyled>
+        <div>
+          <div>
+            <LabelSelect>Select Rules To Validate</LabelSelect>
+            <MultiSelectField
+              enableCheckboxes
+              control={control}
+              name="select_property"
+              placeholder="Select Rules To Validate"
+              options={[
+                { label: 'Processor', value: 'Processor' },
+                { label: 'Connection', value: 'Connection' },
+                { label: 'superadmin', value: 'superadmin' },
+                { label: 'superadmin1', value: 'superadmin1' },
+              ]}
+              customWidth="80%"
+            />
+          </div>
+          <div className="text-center mt-4">
+            <Button
+              // onClick={() => setShowDetail(true)}
+              className="w-auto mx-auto"
+            >
+              Validate Flow
+            </Button>
+          </div>
+        </div>
+
         <FlowContainerDetail>
           <div className="row">
             <div className="col-md-6 mb-4 pb-md-2">
@@ -185,9 +222,9 @@ const FlowValidationDetails = () => {
             <Table columns={COLUMNS} data={section.data} />
           </Collapsible>
         ))}
-        <Button className="w-auto">Back</Button>
-      </>
-    </FlowContainer>
+      </FlowcompareStyled>
+      <Button className="w-auto mt-2">Back</Button>
+    </div>
   );
 };
 

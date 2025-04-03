@@ -1,11 +1,18 @@
-import React, { useState } from 'react'; // ✅ Add useState
+import React from 'react'; // ✅ Add useState
 import styled from 'styled-components';
-import { CompareFlowIcon, CompareIcon } from '../../../assets';
-import { Table } from '../../../components';
-import { Button, SelectField } from '../../../shared';
+import { CompareIcon, TodoIcon } from '../../assets';
+import { Table } from '../../components';
+import { Button, SelectField } from '../../shared';
+import Breadcrumb from '../../shared/Breadcrumb';
 
-const CompareConteinter = styled.div`
-  min-height: 58vh;
+const HeadingStyle = styled.h3`
+  font-family: 'Nato Sans', sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
 `;
 const LabelSelect = styled.div`
   font-size: 14px;
@@ -13,6 +20,15 @@ const LabelSelect = styled.div`
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
   margin-bottom: 14px;
+`;
+const FlowcompareStyled = styled.div`
+  height: 100%;
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid #e0d3d3;
+  padding: 1rem;
+  margin-top: 1rem;
+  background: #fbfcff;
 `;
 
 const LabelSelectContent = styled.div`
@@ -27,6 +43,13 @@ const CompareDifferencesTitle = styled.div`
 `;
 
 const CompareValidation = () => {
+  const path = [
+    {
+      label: 'Flow Analysis List',
+      path: '/flow-analysis',
+    },
+    { label: 'Flow Comparison' },
+  ];
   const COLUMNS = [
     {
       label: 'Type',
@@ -78,111 +101,69 @@ const CompareValidation = () => {
     { label: 'V3', value: '3.0' },
     { label: 'V4', value: '4.0' },
   ];
-  const [isCompared, setIsCompared] = useState(false); // ✅ ADD STATE
 
   return (
-    <CompareConteinter>
-      {!isCompared && ( // ✅ Show first block when false
-        <div>
-          <div className="text-center py-4">
-            <CompareFlowIcon />
-          </div>
-
-          <div className="row justify-content-center col-md-4 mx-auto">
-            <div className="col-12">
-              <LabelSelect>Compare Versions</LabelSelect>
-            </div>
-            <div className="col-6">
-              <SelectField
-                label="Select Version"
-                name="select_version"
-                icon={<CompareIcon />}
-                placeholder="Select Version"
-                options={versionOptions}
-              />
-            </div>
-            <div className="col-6">
-              <SelectField
-                label="Select Version"
-                name="select_version"
-                icon={<CompareIcon />}
-                placeholder="Select Version"
-                options={versionOptions}
-              />
-            </div>
-          </div>
-          <div className="text-center mt-4">
-            {/* <button
-              className="btn btn-primary"
-              onClick={() => setIsCompared(true)}
-            >
-              Validate Flow
-            </button> */}
-            <Button
-              onClick={() => setIsCompared(true)}
-              className="w-auto mx-auto"
-            >
-              Validate Flow
-            </Button>
+    <div>
+      <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-2">
+            <TodoIcon width={22} height={24} />
+            <HeadingStyle>Procress Group Details</HeadingStyle>
           </div>
         </div>
-      )}
-
-      {isCompared && ( // ✅ Show second block when true
-        <div className="">
-          <div className="col-12">
-            <LabelSelect>Compare Versions</LabelSelect>
-          </div>
-          <div className="row align-items-center mb-4 mb-lg-5">
-            <div className="col-md-3">
-              <SelectField
-                label="Select Version"
-                name="select_version"
-                icon={<CompareIcon />}
-                placeholder="Select Version"
-                options={versionOptions}
-              />
-            </div>
-            <div className="col-md-3">
-              <SelectField
-                label="Select Version"
-                name="select_version"
-                icon={<CompareIcon />}
-                placeholder="Select Version"
-                options={versionOptions}
-              />
-            </div>
-            <div className="col-md-auto pt-2">
-              <Button>Compare</Button>
-            </div>
-          </div>
-          <div className="row align-items-center  mb-4 mb-lg-5">
-            <div className="col-md-3">
-              <LabelSelect>Latest Author</LabelSelect>
-              <LabelSelectContent>Anonymous</LabelSelectContent>
-            </div>
-            <div className="col-md-3">
-              <LabelSelect>Last commit comments</LabelSelect>
-              <LabelSelectContent>New Processor added</LabelSelectContent>
-            </div>
-            <div className="col-md-3">
-              <LabelSelect>Compared version</LabelSelect>
-              <LabelSelectContent>1 to 3</LabelSelectContent>
-            </div>
-            <div className="col-md-3">
-              <Button className="w-auto">Compare</Button>
-            </div>
-          </div>
-          <CompareDifferencesTitle className="mb-3">
-            Differences
-          </CompareDifferencesTitle>
-          <Table columns={COLUMNS} data={DATA} />
-          <Button onClick={() => setIsCompared(false)} className="w-auto mt-2">
-            Back
-          </Button>
+      </div>
+      <Breadcrumb module="path" path={path} />
+      <FlowcompareStyled>
+        <div className="col-12">
+          <LabelSelect>Compare Versions</LabelSelect>
         </div>
-      )}
-    </CompareConteinter>
+        <div className="row align-items-center mb-4 mb-lg-5">
+          <div className="col-md-3">
+            <SelectField
+              label="Select Version"
+              name="select_version"
+              icon={<CompareIcon />}
+              placeholder="Select Version"
+              options={versionOptions}
+            />
+          </div>
+          <div className="col-md-3">
+            <SelectField
+              label="Select Version"
+              name="select_version"
+              icon={<CompareIcon />}
+              placeholder="Select Version"
+              options={versionOptions}
+            />
+          </div>
+          <div className="col-md-auto pt-2">
+            <Button>Compare</Button>
+          </div>
+        </div>
+        <div className="row align-items-center  mb-4 mb-lg-5">
+          <div className="col-md-3">
+            <LabelSelect>Latest Author</LabelSelect>
+            <LabelSelectContent>Anonymous</LabelSelectContent>
+          </div>
+          <div className="col-md-3">
+            <LabelSelect>Last commit comments</LabelSelect>
+            <LabelSelectContent>New Processor added</LabelSelectContent>
+          </div>
+          <div className="col-md-3">
+            <LabelSelect>Compared version</LabelSelect>
+            <LabelSelectContent>1 to 3</LabelSelectContent>
+          </div>
+          <div className="col-md-3">
+            <Button className="w-auto">Compare</Button>
+          </div>
+        </div>
+        <CompareDifferencesTitle className="mb-3">
+          Differences
+        </CompareDifferencesTitle>
+        <Table columns={COLUMNS} data={DATA} />
+      </FlowcompareStyled>
+      <Button className="w-auto mt-2">Back</Button>
+    </div>
   );
 };
 

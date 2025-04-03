@@ -48,6 +48,7 @@ import {
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
+import CompareValidation from '../pages/FlowAnalysis/CompareValidation.jsx';
 import FlowAnalysis from '../pages/FlowAnalysis/FlowAnalysis.jsx';
 import FlowValidationDetails from '../pages/FlowAnalysis/FlowValidationDetails.jsx';
 import License from '../pages/Licensing/License.jsx';
@@ -153,6 +154,10 @@ export const ROUTES_MENU = [
       {
         path: 'flow-validation',
         component: <FlowValidationDetails />,
+      },
+      {
+        path: 'flow-compare',
+        component: <CompareValidation />,
       },
     ],
     permission: 'view_controller_services',

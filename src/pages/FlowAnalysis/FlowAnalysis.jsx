@@ -65,6 +65,7 @@ const FlowAnalysis = () => {
   };
 
   const handleDelete = item => {
+    history.push('/flow-analysis/flow-compare');
     console.log('Delete clicked', item);
     // Add your delete logic here
   };
@@ -188,7 +189,7 @@ const FlowAnalysis = () => {
     <Grid
       isNamespace={true}
       module="namespaces"
-      title={KDFM.NAMESPACE_LIST}
+      title="Flow Analysis List"
       columns={COLUMNS}
       refreshOptions={REFRESH_OPTIONS}
       placeholder={KDFM.SEARCH_NAMESPACE_FLOW_BUCKET_NAME}
