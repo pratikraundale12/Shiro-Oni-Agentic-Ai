@@ -355,7 +355,10 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
         })
       );
     }
-    if (location.pathname !== '/role-&-permission') {
+    if (
+      location.pathname !== '/role-&-permission' &&
+      location.pathname !== '/role-&-permission/cluster-access'
+    ) {
       dispatch(RolesActions.setSelectedRole({}));
       dispatch(PoliciesActions.fetchPoliciesRolesSuccess({}));
     }
