@@ -280,3 +280,29 @@ export const SIDE_MENUS_DISPLAY = [
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];
 export const SEARCH_INPUT_ERROR = 'Please enter atleast 2 characters to search';
+
+export const TRUE_FALSE_OPTIONS = [
+  { id: 1, value: 'true', label: 'True' },
+  { id: 2, value: 'false', label: 'False' },
+];
+
+export const ZOOOKEEPER_EMBEDED_OPTIONS = [
+  { id: 1, value: true, label: 'True' },
+  { id: 2, value: false, label: 'False' },
+];
+
+export const ALWAYS_SYNC_OPTIONS = [
+  { id: 1, value: 'true', label: 'True' },
+  { id: 2, value: 'false', label: 'False' },
+];
+
+export const FLOW_ELECTION_MAX_WAIT_OPTIONS = [
+  { label: '2 Min', value: '2 mins' },
+  { label: '5 Min', value: '5 mins' },
+  { label: '10 Min', value: '10 mins' },
+];
+
+export const ACCESS_CONTROL_OPTIONS = [
+  { label: 'Open', value: 'Open' },
+  { label: 'CreatorOnly', value: 'CreatorOnly' },
+];

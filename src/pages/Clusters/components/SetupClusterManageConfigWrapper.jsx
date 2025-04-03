@@ -82,6 +82,11 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
     console.log(data);
   };
 
+  const handleEditConfig = ({configItem}) =>{
+    dispatch(ClustersActions.updateConfigClusterSetup(configItem));
+    history.push('/clusters/new-config-details');
+  }
+
   const COLUMNS = [
     {
       label: 'Name',
@@ -104,7 +109,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
         <ActionTd>
           <IconButton
             onClick={event => {
-              console.log(event);
+              handleEditConfig({configItem:item});
             }}
             className="pencil-icon-schedule-list"
           >
@@ -125,7 +130,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
             }}
             className="pencil-icon-schedule-list"
           >
-            <DeleteSmallIcon width={16} height={16} color="black" />
+            <DeleteSmallIcon width={16} height={16} color="red" />
           </IconButton>
         </ActionTd>
       ),
