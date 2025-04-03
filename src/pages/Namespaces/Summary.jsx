@@ -41,6 +41,7 @@ import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDepl
 import AddParameterContext from './AddParameterContext';
 import { DuplicateScheduleModal } from './DuplicateScheduleModal';
 import NamespaceDeploy from './NamespaceDeploy';
+import Upgrade from './Upgrade';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -1035,23 +1036,19 @@ const Summary = () => {
   const isScheduled = scheduleDeploymentFlow || scheduleUpgradeFromList;
 
   const getDeploymentAction = () => {
-    if (deployByRegistryFlow) {
-    return checkDestCluster?.version <= versionSelected.version
-      ? KDFM.UPGRADE
-      : KDFM.DOWNGRADE;
-    } else return KDFM.DEPLOY;
+    // return KDFM.DEPLOY;
+    // if (deployByRegistryFlow)
+    // return checkDestCluster?.version <= versionSelected.version
+    //   ? KDFM.UPGRADE
+    //   : KDFM.DOWNGRADE;
+    if(!isUpgrade){
+      return type;
+    }
+    else return KDFM.DEPLOY;
   };
+  
 
   const deploymentAction = getDeploymentAction();
-  // const deploymentType =
-  // checkDestCluster?.version <= versionSelected.version
-  //   ? KDFM.UPGRADE
-  //   : KDFM.DOWNGRADE;
-
-  
-  // const deploymentAction = deployByRegistryFlow
-  // ? deploymentType
-  // : KDFM.DEPLOY;
 
   const providePrimaryTextForFlowConfirmationModal = () => {
     return checkFlowControlAfterUpgrade || checkFlowControlAfterDeploy
