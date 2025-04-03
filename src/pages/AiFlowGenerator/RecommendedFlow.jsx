@@ -10,7 +10,7 @@ import { KDFM } from '../../constants';
 const FlowsWrapper = styled.div`
   max-height: 20vh;
   overflow: auto;
-  height: 22vh;
+  height: auto;
   width: 100%;
   display: flex;
   flex-wrap: wrap;

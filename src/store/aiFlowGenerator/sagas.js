@@ -25,6 +25,7 @@ export function* fetchDefaultRecentFlows(api) {
 }
 
 export function* generateFlowAPI(api, { payload }) {
+  yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
   const { refresh } = payload;
   yield put(AiFlowGeneratorActions.setNewBucket({}));
   yield put(AiFlowGeneratorActions.setGenFlowError(''));
@@ -135,6 +136,7 @@ export function* fetchRegistry(api) {
 }
 
 export function* addFlowToRegistry(api, { payload }) {
+  yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -151,7 +153,9 @@ export function* addFlowToRegistry(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Flow is added to the registry');
+    yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(true));
   } else {
+    yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
     yield put(AiFlowGeneratorActions.setAddFlowError(response?.data)); // Dispatch error action
     toast.error(
       response?.message ||

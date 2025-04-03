@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import Slider from 'react-slick';
 import PropTypes from 'prop-types';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { AiFlowSuggestionsIcon } from '../../assets/Icons/AiFlowSuggestionsIcon';
-import { LessArrowIcon } from '../../assets';
+import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
 import { v4 as uuidv4 } from 'uuid';
 import { KDFM } from '../../constants';
 import { toast } from 'react-toastify';
@@ -11,29 +12,18 @@ import { validatePayload } from './utils';
 import { AiFlowGeneratorActions } from '../../store';
 import { useDispatch } from 'react-redux';
 import { GENAI_CONFIG } from '../../constants/aiFlowGenerator.constant';
-
-const ChipWrapper = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 15px;
-  overflow-x: auto;
-  width: 100%;
-  padding: 8px;
-  width: 100%;
-  margin-bottom: 5px;
-  @media (max-width: 768px) {
-    max-width: 90vw;
-  }
-`;
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const ChatWindowBg = styled.div`
   min-width: 205px;
-  min-height: 140px;
+  min-height: 160px;
   background: #f5f7fa;
   overflow: hidden;
   border-radius: 20px;
-  display: flex;
+  display: flex !important;
   flex-direction: column;
+  margin: 0 10px;
 `;
 
 const Header = styled.div`
@@ -88,6 +78,77 @@ const GenerateButton = styled.div`
   font-weight: 700;
 `;
 
+const StyledSlider = styled(Slider)`
+  .slick-slider {
+    margin-bottom: 10px;
+  }
+  .slick-prev,
+  .slick-next {
+    width: 40px;
+    height: 40px;
+    z-index: 10;
+    background: #b7bec6;
+    border-radius: 13px;
+  }
+  .slick-track {
+    display: flex;
+    gap: 20px;
+  }
+
+  .slick-prev:before,
+  .slick-next:before {
+    font-size: 0px;
+    color: transparent;
+  }
+
+  .slick-prev,
+  .slick-next {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+`;
+
+const ArrowButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: ${({ disabled }) =>
+    disabled ? 0.3 : 1}; // Reduce opacity when disabled
+  cursor: ${({ disabled }) =>
+    disabled ? 'not-allowed' : 'pointer'}; // Disable interaction
+`;
+
+const CustomPrevArrow = ({ onClick, currentSlide }) => (
+  <ArrowButton
+    className="slick-prev"
+    disabled={currentSlide <= 0}
+    onClick={onClick}
+  >
+    <GreaterArrowIcon color="#ffffff" />
+  </ArrowButton>
+);
+
+const CustomNextArrow = ({ onClick, currentSlide, slideCount }) => (
+  <ArrowButton
+    className="slick-next"
+    onClick={onClick}
+    disabled={currentSlide >= slideCount - 4}
+  >
+    <LessArrowIcon color="#ffffff" />
+  </ArrowButton>
+);
+CustomPrevArrow.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  currentSlide: PropTypes.number,
+};
+
+CustomNextArrow.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  currentSlide: PropTypes.number,
+  slideCount: PropTypes.number,
+};
 const SuggetionsChip = ({
   SuggetionsArray,
   setOpenConversation,
@@ -99,6 +160,8 @@ const SuggetionsChip = ({
   setIsPromptInputDisabled,
 }) => {
   const dispatch = useDispatch();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
   const handleGenerateFLowClick = flow => {
     if (!generateFlowPermission) {
       if (!toast.isActive('permission-error')) {
@@ -107,43 +170,88 @@ const SuggetionsChip = ({
         });
       }
       return;
-    } else {
-      setIsPromptInputDisabled(true);
-      setisInputEmpty(true);
-      setQueryText(flow?.query);
-      setQueryLable(flow?.name);
-      setOpenConversation(true);
-      const payload = {
-        session_id: uuidv4(),
-        is_audio: false,
-        query: flow?.query,
-        embedding_model: GENAI_CONFIG.EMBEDDING_MODEL,
-        engine: GENAI_CONFIG.APP_ENGINE,
-        dept_id: GENAI_CONFIG.DEPT_ID,
-        org_id: GENAI_CONFIG.ORG_ID,
-        user_id: GENAI_CONFIG.USER_ID,
-        type: GENAI_CONFIG.APP_TYPE,
-        short_name: flow?.name || '',
-        refresh: refresh,
-      };
-      const requiredFields = [
-        'session_id',
-        'query',
-        'embedding_model',
-        'engine',
-        'dept_id',
-        'org_id',
-        'user_id',
-        'type',
-      ];
-      if (validatePayload(payload, requiredFields)) {
-        dispatch(AiFlowGeneratorActions.generateFlowAPI(payload));
-      }
+    }
+    setIsPromptInputDisabled(true);
+    setisInputEmpty(true);
+    setQueryText(flow?.query);
+    setQueryLable(flow?.name);
+    setOpenConversation(true);
+    const payload = {
+      session_id: uuidv4(),
+      is_audio: false,
+      query: flow?.query,
+      embedding_model: GENAI_CONFIG.EMBEDDING_MODEL,
+      engine: GENAI_CONFIG.APP_ENGINE,
+      dept_id: GENAI_CONFIG.DEPT_ID,
+      org_id: GENAI_CONFIG.ORG_ID,
+      user_id: GENAI_CONFIG.USER_ID,
+      type: GENAI_CONFIG.APP_TYPE,
+      short_name: flow?.name || '',
+      refresh: refresh,
+    };
+    const requiredFields = [
+      'session_id',
+      'query',
+      'embedding_model',
+      'engine',
+      'dept_id',
+      'org_id',
+      'user_id',
+      'type',
+    ];
+    if (validatePayload(payload, requiredFields)) {
+      dispatch(AiFlowGeneratorActions.generateFlowAPI(payload));
     }
   };
+
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    prevArrow: (
+      <CustomPrevArrow
+        currentSlide={currentSlide}
+        onClick={() => setCurrentSlide(prev => Math.max(0, prev - 1))}
+      />
+    ),
+    nextArrow: (
+      <CustomNextArrow
+        currentSlide={currentSlide}
+        slideCount={SuggetionsArray.length}
+        onClick={() => setCurrentSlide(prev => prev + 1)}
+      />
+    ),
+    beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex),
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   return (
-    <ChipWrapper>
-      {SuggetionsArray?.slice(0, 4)?.map((item, index) => (
+    <StyledSlider {...settings}>
+      {SuggetionsArray?.map((item, index) => (
         <ChatWindowBg key={index}>
           <Header>
             <Frame>
@@ -173,7 +281,7 @@ const SuggetionsChip = ({
           </Footer>
         </ChatWindowBg>
       ))}
-    </ChipWrapper>
+    </StyledSlider>
   );
 };
 

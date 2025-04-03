@@ -28,6 +28,9 @@ export const AiFlowGeneratorActions = {
   setAddFlowError: createAction(`${prefix}setAddFlowError`),
   setRegistry: createAction(`${prefix}setRegistry`),
   setNewBucket: createAction(`${prefix}setNewBucket`),
+  setIsFlowAddedSuccessFully: createAction(
+    `${prefix}setIsFlowAddedSuccessFully`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -38,6 +41,7 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   registry: [],
   newBucket: {},
   addFlowError: {},
+  isFlowAddedSuccessFully: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -49,6 +53,8 @@ export const AiFlowGeneratorSelectors = {
   getRegistry: state => state.aiFlowGenerator.registry,
   getNewBucket: state => state.aiFlowGenerator.newBucket,
   getAddNewFlowError: state => state.aiFlowGenerator.addFlowError,
+  getIsFlowAddedSuccessFully: state =>
+    state.aiFlowGenerator.isFlowAddedSuccessFully,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -115,6 +121,19 @@ const setRegistry = (state, { payload }) => {
   };
 };
 
+const setIsFlowAddedSuccessFully = (state, { payload }) => {
+  return {
+    ...state,
+    isFlowAddedSuccessFully: payload,
+  };
+};
+
+const setNewBucket = (state, { payload }) => {
+  return {
+    ...state,
+    newBucket: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const aiFlowGeneratorReducer = createReducer(
   AI_FLOW_GENERATOR_INITIAL_STATE,
@@ -140,6 +159,11 @@ export const aiFlowGeneratorReducer = createReducer(
         AiFlowGeneratorActions.addNewBucketToRegistrySuccess,
         addNewBucketToRegistrySuccess
       )
-      .addCase(AiFlowGeneratorActions.setAddFlowError, setAddFlowError);
+      .addCase(AiFlowGeneratorActions.setAddFlowError, setAddFlowError)
+      .addCase(
+        AiFlowGeneratorActions.setIsFlowAddedSuccessFully,
+        setIsFlowAddedSuccessFully
+      )
+      .addCase(AiFlowGeneratorActions.setNewBucket, setNewBucket);
   }
 );

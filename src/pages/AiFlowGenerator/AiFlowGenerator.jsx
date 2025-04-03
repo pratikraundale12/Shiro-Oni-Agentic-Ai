@@ -42,6 +42,9 @@ import SuggetionsChip from './SuggestionsChip';
 import { DEFAULT_FLOW_JSON } from '../../constants/aiFlowGenerator.constant';
 import { FlowAddToRegistryModal } from './FlowAddToRegistryModal';
 import { AddNewBucketModal } from './AddNewBucketModal';
+import DownloadFlowConfirmationModal from './DownLoadFlowConfirmationModal';
+import { FullScreenIcon } from '../../assets/Icons/FullScreenIcon';
+import { MiniScreenIcon } from '../../assets/Icons/MiniScreenIcon';
 
 const Container = styled.div`
   display: flex;
@@ -199,9 +202,24 @@ const MidSection = styled.div`
 `;
 
 const JsonWrapper = styled.div`
+  background-color: #f5f7fa !important;
   #json-editor > * {
     color: #444445 !important;
   }
+`;
+
+const FullScreen = styled(FullScreenIcon)`
+  padding: 5px;
+  border-radius: 50%;
+  border: 1px solid #dde4f0;
+  background: #ffffff;
+`;
+
+const MiniScreen = styled(MiniScreenIcon)`
+  padding: 5px;
+  border-radius: 50%;
+  border: 1px solid #dde4f0;
+  background: #ffffff;
 `;
 
 export const AiFlowGenerator = () => {
@@ -278,7 +296,7 @@ export const AiFlowGenerator = () => {
   };
 
   const onAddToRegistryClick = e => {
-    if (e.keyCode == 13) {
+    if (e?.keyCode == 13) {
       e.preventDefault();
       return false;
     }
@@ -302,7 +320,6 @@ export const AiFlowGenerator = () => {
       flowJson: flowJson,
     };
     dispatch(AiFlowGeneratorActions.addFlowToRegistry(payload));
-    handleRefresh();
     if (isFlowUpdated) {
       dispatch(
         AiFlowGeneratorActions.updateGeneratedFlow({
@@ -311,10 +328,9 @@ export const AiFlowGenerator = () => {
         })
       );
     }
-    setOpenAddToRegistryModal(false);
   };
 
-  const handleDownloadClick = () => {
+  const handleFlowDownload = () => {
     setIsFLowDownloaded(true);
     downloadJsonFile(flowJson, 'demo.json');
     if (isFlowUpdated) {
@@ -327,6 +343,10 @@ export const AiFlowGenerator = () => {
     }
     setOpenPreviewModal(false);
     handleRefresh();
+  };
+
+  const handleDownloadClick = () => {
+    setIsDownloadModalOpen(true);
   };
 
   const handlePreviewClick = () => {
@@ -355,6 +375,11 @@ export const AiFlowGenerator = () => {
   );
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const [isInputEmpty, setisInputEmpty] = useState(false);
+  const [isClickedFromPreviewModal, setIsClickedFromPreviewModal] =
+    useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
   useEffect(() => {
     setFlowError(error);
   }, [error]);
@@ -374,7 +399,7 @@ export const AiFlowGenerator = () => {
 
         repaired = jsonrepair(parsedJson?.response);
       } catch (error) {
-        console.error('Error repairing JSON:', error);
+        toast.error('Error repairing JSON:', error);
         return;
       }
       setFlowJson(JSON.parse(repaired));
@@ -401,13 +426,13 @@ export const AiFlowGenerator = () => {
       height: '100%',
       border: 'none',
       borderRadius: '8px',
-      backgroundColor: '#ffffff !important',
+      backgroundColor: '#F5F7FA !important',
     },
     container: {
       height: '100%',
       fontSize: '16px',
       color: '#444443 !important',
-      backgroundColor: '#ffffff !important',
+      backgroundColor: '#F5F7FA !important',
     },
     body: {
       fontSize: '16px',
@@ -430,6 +455,18 @@ export const AiFlowGenerator = () => {
     setOpenAddToRegistryModal(false);
   };
 
+  useEffect(() => {
+    if (!loading && isEmpty(flowError) && openConversation) {
+      setIsFullscreen(false);
+      setOpenPreviewModal(true);
+    } else {
+      setOpenPreviewModal(false);
+    }
+  }, [loading, flowError]);
+
+  const toggleFullScreen = () => {
+    setIsFullscreen(prev => !prev);
+  };
   return isArrayEmpty(clusters) ? (
     getLoginToClusterPopup()
   ) : (
@@ -530,7 +567,13 @@ export const AiFlowGenerator = () => {
                     </div>
                     <div className="d-flex gap-2">
                       <div className="add-to-registry-btn">
-                        <Button onClick={onAddToRegistryClick} size="sm">
+                        <Button
+                          onClick={() => {
+                            setIsClickedFromPreviewModal(false);
+                            onAddToRegistryClick();
+                          }}
+                          size="sm"
+                        >
                           {KDFM.ADD_TO_REGSITRY}
                         </Button>
                       </div>
@@ -579,18 +622,20 @@ export const AiFlowGenerator = () => {
           />
         </PromptSection>
         <Modal
-          title={flowJson?.flowContents?.name || 'Preview Json'}
+          title={flowJson?.flowContents?.name || 'Preview Flow Json'}
           isOpen={openPreviewModal}
+          isAdditionalIcon={true}
+          additionalIcon={isFullscreen ? <MiniScreen /> : <FullScreen />}
+          onAdditionalIconClick={toggleFullScreen}
           onRequestClose={() => {
-            if (!isFlowDownloaded && !addedToRegistry) {
-              setIsDiscardFlowModalOpen(true);
-            } else {
-              setIsDiscardFlowModalOpen(false);
-              setOpenPreviewModal(false);
-            }
+            setIsFullscreen(false);
+            setOpenPreviewModal(false);
+          }}
+          onSecondarySubmit={() => {
+            setIsDiscardFlowModalOpen(true);
           }}
           size="sm"
-          secondaryButtonText="Close"
+          secondaryButtonText="Discard"
           primaryButtonText={'Add to Registry'}
           tertiaryButton={true}
           tertiaryButtonConfig={{
@@ -598,9 +643,15 @@ export const AiFlowGenerator = () => {
             tertiaryButtonDisable: isJsonInvalid,
           }}
           primaryButtonDisabled={isJsonInvalid}
-          onSubmit={onAddToRegistryClick}
+          onSubmit={e => {
+            setIsClickedFromPreviewModal(true);
+            onAddToRegistryClick(e);
+          }}
           footerAlign="start"
-          contentStyles={{ maxWidth: '50%', maxHeight: '80%' }}
+          contentStyles={{
+            maxWidth: isFullscreen ? '80%' : '30%',
+            maxHeight: isFullscreen ? '90%' : '70%',
+          }}
         >
           <JsonWrapper>
             <JSONInput
@@ -629,15 +680,28 @@ export const AiFlowGenerator = () => {
             defaultFlowName={queryLable || 'AI Generated Nifi Flow'}
             handleAddToRegistry={handleAddToRegistry}
             handleClose={() => {
-              setIsDiscardFlowModalOpen(true);
+              if (isClickedFromPreviewModal) {
+                setOpenAddToRegistryModal(false);
+                setOpenPreviewModal(true);
+              } else {
+                setOpenAddToRegistryModal(false);
+              }
             }}
             setIsAddNewBucketModalOpen={setIsAddNewBucketModalOpen}
+            refresh={handleRefresh}
           />
         )}
         {isAddNewBucketModalOpen && (
           <AddNewBucketModal
             isModalOpen={isAddNewBucketModalOpen}
             setIsModalOpen={setIsAddNewBucketModalOpen}
+          />
+        )}
+        {isDownloadModalOpen && (
+          <DownloadFlowConfirmationModal
+            isModalOpen={isDownloadModalOpen}
+            setIsModalOpen={setIsDownloadModalOpen}
+            handleDownloadFlow={handleFlowDownload}
           />
         )}
       </Container>

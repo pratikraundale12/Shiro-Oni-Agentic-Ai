@@ -14,7 +14,7 @@ import {
   AiFlowGeneratorSelectors,
   LoadingSelectors,
 } from '../../store';
-import { dispatch } from 'd3';
+import { useDispatch } from 'react-redux';
 
 const bucketSchema = yup.object().shape({
   bucket: yup.string().required('Bucket is required'),
@@ -66,8 +66,13 @@ export const FlowAddToRegistryModal = ({
   handleAddToRegistry,
   showAddNewBucket = true,
   handleClose,
+  refresh,
 }) => {
   const newBucketData = useSelector(AiFlowGeneratorSelectors.getNewBucket);
+  const isFlowAddedSuccessfully = useSelector(
+    AiFlowGeneratorSelectors.getIsFlowAddedSuccessFully
+  );
+  const dispatch = useDispatch();
   const defaultBucket = bucketList?.filter(bucket =>
     bucket.name.toLowerCase().includes('genai')
   );
@@ -92,6 +97,14 @@ export const FlowAddToRegistryModal = ({
   const flow = watch('flow_name');
 
   useEffect(() => {
+    if (isFlowAddedSuccessfully) {
+      reset(DEFAULT_fORM_DATA);
+      setIsModalOpen(false);
+      refresh();
+    }
+  }, [isFlowAddedSuccessfully]);
+
+  useEffect(() => {
     reset(DEFAULT_fORM_DATA);
   }, []);
 
@@ -102,10 +115,10 @@ export const FlowAddToRegistryModal = ({
       flow_desc: '',
     });
   }, [newBucketData, reset, bucketList]);
+
   const onSubmit = data => {
     handleAddToRegistry(data);
-    reset(DEFAULT_fORM_DATA);
-    setIsModalOpen(false);
+    // setIsModalOpen(false);
     dispatch(AiFlowGeneratorActions.setNewBucket({}));
   };
 
@@ -125,7 +138,7 @@ export const FlowAddToRegistryModal = ({
         onRequestClose={onClose}
         size="sm"
         loading={loading}
-        secondaryButtonText="Cancel"
+        secondaryButtonText="Back"
         primaryButtonText="Save"
         primaryButtonDisabled={isEmpty(bucket) || isEmpty(flow)}
         onSubmit={handleSubmit(onSubmit)}
@@ -194,4 +207,5 @@ FlowAddToRegistryModal.propTypes = {
   showAddNewBucket: PropTypes.bool,
   handleClose: PropTypes.func,
   setIsAddNewBucketModalOpen: PropTypes.func,
+  refresh: PropTypes.func,
 };
