@@ -261,11 +261,13 @@ const ProfileDropdown = () => {
       label: 'Logout',
       icon: <LogoutIcon />,
       onClick: async () => {
+        if (localStorage.getItem('keycloak_access_token')) {
+          await logoutFromKeycloak();
+        }
         localStorage.clear();
         const loginUrl =
           currentUser?.role === 'superadmin' ? '/admin/login' : '/login';
         dispatch(AuthenticationActions.logout({ url: loginUrl }));
-        await logoutFromKeycloak();
         dispatch(AuthenticationActions.fetchSettingLogo());
       },
     },
