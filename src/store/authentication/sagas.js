@@ -194,7 +194,6 @@ export function* ssoUserLogin(api, { payload }) {
       history.push('/dashboard');
     }
   } else {
-    toast.error(response.data.message, { toastId: 'login-toast-error1' });
     const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
     const idToken = localStorage.getItem('keycloak_id_token');
     const keycloakUrl = storedConfig?.keycloak_url;
@@ -216,6 +215,7 @@ export function* ssoUserLogin(api, { payload }) {
 
     window.location.href = logoutUrl;
     history.push('/login');
+    toast.error(response.data.message, { toastId: 'login-toast-error1' });
   }
 }
 
