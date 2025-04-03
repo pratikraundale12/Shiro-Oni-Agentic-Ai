@@ -106,4 +106,10 @@ export const CLUSTER_CONSTANTS = {
   ENTER_YOUR_CLUSTER_NAME: 'Enter your Cluster Name',
 
   ADD_NEW_CONFIG: 'Add New Config',
+
+  NEW_CONFIG_DETAILS: 'New Config Details',
+  EDIT_CONFIG_DETAILS: 'Edit Config Details',
+  COMMENTS: 'Comments',
+  ENTER_CONFIG_NAME: 'Enter Config Name',
+  ENTER_YOUR_COMMENTS: 'Enter your Comments',
 };

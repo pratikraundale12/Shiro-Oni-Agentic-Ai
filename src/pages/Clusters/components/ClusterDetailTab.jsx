@@ -104,7 +104,6 @@ const ClusterDetailTab = ({
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
 
-
   const configVersionOptions =
     !isEmpty(configVerionListData) &&
     configVerionListData.map(ele => ({
@@ -216,9 +215,7 @@ const ClusterDetailTab = ({
   }, [dispatch]);
 
   useEffect(() => {
-    if (!isEmpty(listHostIpData)) {
-      setHostList(listHostIpData);
-    }
+    setHostList(listHostIpData);
   }, [listHostIpData]);
 
   return (

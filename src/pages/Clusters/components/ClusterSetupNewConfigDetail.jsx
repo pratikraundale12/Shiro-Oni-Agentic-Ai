@@ -16,13 +16,14 @@ import {
   SelectField,
 } from '../../../shared';
 import { theme } from '../../../styles';
-import { KDFM } from '../../../constants';
+import { ACCESS_CONTROL_OPTIONS, FLOW_ELECTION_MAX_WAIT_OPTIONS, KDFM, TRUE_FALSE_OPTIONS, ALWAYS_SYNC_OPTIONS, ZOOOKEEPER_EMBEDED_OPTIONS } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { ClustersActions, ClustersSelectors } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
+import { safeParseJSON } from '../../../helpers';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -120,6 +121,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
   const dispatch = useDispatch();
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
+  const configToEdit = useSelector(ClustersSelectors.getUpdateConfigClusterSetupData);
+
   const nifiVerionsOptions =
     !isEmpty(nifiVersionsData) &&
     nifiVersionsData?.map(ele => ({
@@ -148,10 +151,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
     java_arg_2: yup.string().required('Initial heap size is required'),
     java_arg_3: yup.string().required('Maximum heap size is required'),
   });
+
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     reset,
     control,
     formState: { errors },
@@ -191,30 +196,61 @@ const ClusterSetupNewConfigDetailsPage = () => {
       icon: CheckListIcon,
     },
   ];
+
   const selectedTitle = sidebarItems.filter(
     element => element?.path === selectedProperty
   );
-  const OPTIONS = [
-    { id: 1, value: 'true', label: 'True' },
-    { id: 2, value: 'false', label: 'False' },
-  ];
-  const ZOOOKEEPER_EMBEDED_OPTIONS = [
-    { id: 1, value: true, label: 'True' },
-    { id: 2, value: false, label: 'False' },
-  ];
-  const ALWAYS_SYNC_OPTIONS = [
-    { id: 1, value: 'true', label: 'True' },
-    { id: 2, value: 'false', label: 'False' },
-  ];
-  const FLOW_ELECTION_MAX_WAIT_OPTIONS = [
-    { label: '2 Min', value: '2 mins' },
-    { label: '5 Min', value: '5 mins' },
-    { label: '10 Min', value: '10 mins' },
-  ];
-  const ACCESS_CONTROL_OPTIONS = [
-    { label: 'Open', value: 'Open' },
-    { label: 'CreatorOnly', value: 'CreatorOnly' },
-  ];
+
+  const populateFormWithConfigData = () => {
+    if (isEmpty(configToEdit)) return;
+    
+    // Base fields
+    const { config_name, nifi_version, comments } = configToEdit;
+    setValue('configName', config_name);
+    setValue('nifiVersion', nifi_version);
+    setValue('comments', comments);
+
+    const nifiProps = safeParseJSON(configToEdit.nifi_properties);
+    const bootstrap = safeParseJSON(configToEdit.bootstrap);
+    const loginProviders = safeParseJSON(configToEdit.login_identity_providers);
+    const stateManagement = safeParseJSON(configToEdit.state_management);
+    
+    // Set NiFi properties
+    setValue('nifi_cluster_is_node', nifiProps.nifi_cluster_is_node);
+    setValue('nifi_cluster_node_protocol_max_threads', nifiProps.nifi_cluster_node_protocol_max_threads);
+    setValue('nifi_cluster_flow_election_max_wait_time', nifiProps.nifi_cluster_flow_election_max_wait_time);
+    setValue('nifi_state_management_embedded_zookeeper_start', nifiProps.nifi_state_management_embedded_zookeeper_start === 'true');
+    setValue('nifi_zookeeper_connect_timeout', nifiProps.nifi_zookeeper_connect_timeout);
+    setValue('nifi_web_https_port', nifiProps.nifi_web_https_port);
+    
+    // Set Bootstrap values
+    setValue('java_arg_2', bootstrap.java_arg_2);
+    setValue('java_arg_3', bootstrap.java_arg_3);
+    
+    // Set Login Provider values
+    setValue('username', loginProviders.username);
+    setValue('password', loginProviders.password);
+    
+    // Set State Management values
+    setValue('directory', stateManagement.directory);
+    setValue('always_sync', stateManagement.always_sync);
+    setValue('partitions', stateManagement.partitions);
+    setValue('checkpoint_interval', stateManagement.checkpoint_interval);
+    setValue('root_node', stateManagement.root_node);
+    setValue('session_timeout', stateManagement.session_timeout);
+
+    // Handle select field
+    if (stateManagement.access_control) {
+      const accessControlOption = ACCESS_CONTROL_OPTIONS.find(
+        option => option.value === stateManagement.access_control
+      );
+      setValue('access_control', accessControlOption || {
+        value: stateManagement.access_control,
+        label: stateManagement.access_control
+      });
+    }
+  };
+
   const handleAddConfig = data => {
     const nifiPropertyPayload = {
       nifi_cluster_is_node: data?.nifi_cluster_is_node,
@@ -252,17 +288,32 @@ const ClusterSetupNewConfigDetailsPage = () => {
     payload.append('bootstrap_configuration', JSON.stringify(bootstrapPayload));
     payload.append('login_identity_provider', JSON.stringify(loginPayload));
     payload.append('state_management', JSON.stringify(statePayload));
-
-    dispatch(ClustersActions.addConfigClusterSetup(payload));
+    if(isEmpty(configToEdit)) {
+      dispatch(ClustersActions.addConfigClusterSetup(payload));
+    }else {
+      // TO DO
+      // Call update config api by adding config id in the payload
+      // After api response reset the configToEdit redux state but do it in the generator.
+      console.log({UpdatedData: data});
+      // dispatch(ClustersActions.updateConfigClusterSetup({}));
+    }
+    
   };
+
+  useEffect(() => {
+    populateFormWithConfigData();
+  }, [configToEdit]);
+
   useEffect(() => {
     dispatch(ClustersActions.getNiFiVersions());
   }, [dispatch]);
+
   return (
     <Wrapper>
       <Title
-        title={'New Config Details'}
+        title={!isEmpty(configToEdit) ? KDFM.EDIT_CONFIG_DETAILS : KDFM.NEW_CONFIG_DETAILS}
         handleBackClick={() => {
+          !isEmpty(configToEdit) && dispatch(ClustersActions.updateConfigClusterSetup({}));
           history.push('/clusters/setup-cluster');
         }}
         displayBackButton={true}
@@ -270,11 +321,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
       <OuterContainer>
         <div className="row px-3">
           <div className="col-4">
-            <LabelSelect className="mb-3">Config Name</LabelSelect>
+            <LabelSelect className="mb-3">{KDFM.CONFIG_NAME}</LabelSelect>
             <InputField
               name="configName"
               type="text"
-              placeholder="Enter Config Name"
+              placeholder={KDFM.ENTER_CONFIG_NAME}
               required
               register={register}
               errors={errors}
@@ -282,7 +333,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
             />
           </div>
           <div className="col-4">
-            <LabelSelect className="mb-3">NiFi Version</LabelSelect>
+            <LabelSelect className="mb-3">{KDFM.NIFI_VERSION}</LabelSelect>
             <SelectField
               name="nifiVersion"
               icon={<QRIcons />}
@@ -290,16 +341,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
               errors={errors}
               control={control}
               options={nifiVerionsOptions || []}
-              placeholder="Select NiFi Version"
+              placeholder={KDFM.SELECT_NIFI_VERSION}
             />
           </div>
           <div className="col-4">
-            <LabelSelect className="mb-3">Comments</LabelSelect>
+            <LabelSelect className="mb-3">{KDFM.COMMENTS}</LabelSelect>
 
             <InputField
               name="comments"
               type="text"
-              placeholder="Enter your Comments"
+              placeholder={KDFM.ENTER_YOUR_COMMENTS}
               required
               register={register}
               errors={errors}
@@ -385,7 +436,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <div className="col-2">
                       <RadioSelectField
                         name="nifi_cluster_is_node"
-                        options={OPTIONS}
+                        options={TRUE_FALSE_OPTIONS}
                         label="NiFi Cluster Node"
                         register={register}
                         defaultValue={'false'}
@@ -657,6 +708,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
             variant="secondary"
             type="button"
             onClick={() => {
+              !isEmpty(configToEdit) && dispatch(ClustersActions.updateConfigClusterSetup({}));
               history.push('/clusters/setup-cluster');
             }}
           >
@@ -665,7 +717,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
 
           {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button type="submit" onClick={handleSubmit(handleAddConfig)}>
-            Add Config
+          {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
           </Button>
         </BottomButtonDiv>
       </BottomButton>
