@@ -649,7 +649,7 @@ export const AiFlowGenerator = () => {
           }}
           footerAlign="start"
           contentStyles={{
-            maxWidth: isFullscreen ? '80%' : '30%',
+            maxWidth: isFullscreen ? '80%' : '35%',
             maxHeight: isFullscreen ? '90%' : '70%',
           }}
         >
