@@ -285,7 +285,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           onRequestClose={() => {
             setIsDeleteModalOpen(false);
           }}
-          primaryText={`Are you sure you want to delete Host IP`}
+          primaryText={`Are you sure you want to delete Host IP !`}
         />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">

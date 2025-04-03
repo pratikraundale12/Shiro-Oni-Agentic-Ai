@@ -169,7 +169,6 @@ export function* getConfigList(api, { payload }) {
   }
 }
 
-
 export function* addConfigClusterSetup(api, { payload }) {
   console.log(payload, 'payload');
 
@@ -195,7 +194,7 @@ export function* deleteConfig(api, { payload }) {
   });
   if (response.ok) {
     toast.success('Deleted Successfully');
-    // yield put(ClustersActions.fetchHostNodesList({ selected: true }));
+    yield put(ClustersActions.getConfigList());
   } else {
     toast.error(response?.data?.message);
   }

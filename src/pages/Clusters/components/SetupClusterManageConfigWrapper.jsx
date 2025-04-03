@@ -1,20 +1,25 @@
 /* eslint-disable */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
-import { Button } from '../../../shared';
+import { Button, ModalWithIcon } from '../../../shared';
 import { KDFM } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { history } from '../../../helpers/history';
-import { ClustersActions, ClustersSelectors } from '../../../store';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  LoadingSelectors,
+} from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { IconButton, Table } from '../../../components';
+import { FullPageLoader, IconButton, Table } from '../../../components';
 import {
   CopyIcon,
+  DeleteDustbinIcon,
   DeleteSmallIcon,
   PencilIcon,
   PlusCircleIcon,
@@ -53,7 +58,12 @@ const ActionTd = styled.div`
 const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   const dispatch = useDispatch();
   const congigListData = useSelector(ClustersSelectors.getConfigNameList);
-  // to delet just call   dispatch(ClustersActions.deleteConfig(id))
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [configToDelete, setConfigToDelete] = useState({});
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'getConfigList')
+  );
+
   const schema = yup.object().shape({
     clusterName: yup.string().required('Cluster Name is required'),
     nifi_version: yup.string().required('Port is required'),
@@ -90,7 +100,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
     },
     {
       label: 'Actions',
-      renderCell: () => (
+      renderCell: item => (
         <ActionTd>
           <IconButton
             onClick={event => {
@@ -110,7 +120,8 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
           </IconButton>
           <IconButton
             onClick={event => {
-              console.log(event);
+              setConfigToDelete(item);
+              setIsDeleteModalOpen(true);
             }}
             className="pencil-icon-schedule-list"
           >
@@ -126,6 +137,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   }, [dispatch]);
   return (
     <Wrapper>
+      <FullPageLoader loading={loading} />
       <Title title={'Add New Cluster'} />
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
@@ -158,6 +170,24 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
             tableWithFullHeight={true}
           />
         </TableContainer>
+        <ModalWithIcon
+          title={'Delete Config'}
+          primaryButtonText={'Delete'}
+          secondaryButtonText={'Cancel'}
+          icon={<DeleteDustbinIcon />}
+          isOpen={isDeleteModalOpen}
+          onSubmit={() => {
+            dispatch(
+              ClustersActions.deleteConfig({ configId: configToDelete?.id })
+            );
+            setIsDeleteModalOpen(false);
+          }}
+          onRequestClose={() => {
+            setIsDeleteModalOpen(false);
+            setConfigToDelete({});
+          }}
+          primaryText={`Are you sure you want to delete config !`}
+        />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
