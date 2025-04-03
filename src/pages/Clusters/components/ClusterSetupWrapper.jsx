@@ -13,6 +13,8 @@ import { ClustersActions } from '../../../store';
 import { useDispatch } from 'react-redux';
 import { GreenRightCircleIcon } from '../../../assets';
 import { history } from '../../../helpers/history';
+import { isEmpty } from 'lodash';
+import { toast } from 'react-toastify';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -37,18 +39,34 @@ const BottomButton = styled.div`
 const SetupClusterWrapper = ({ activeTab }) => {
   const dispatch = useDispatch();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [hostList, setHostList] = useState([]);
   const schema = yup.object().shape({
     clusterName: yup.string().required('Cluster Name is required'),
-    nifi_version: yup.string().required('Port is required'),
+    nifiVersion: yup.string().required('NiFi is required'),
+    configName: yup.string().required('Config name is required'),
+    configVersion: yup.string().required('Config version is required'),
   });
   const {
     register,
     control,
     watch,
+    handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
+  const handleCreateCluster = data => {
+    const hosts = hostList
+      .filter(item => item.is_selected)
+      .map(item => item?.id);
+
+    const payload = { ...data, ...{ hosts: hosts } };
+    if (isEmpty(hosts)) {
+      toast.error('Select Host IP');
+    } else {
+      dispatch(ClustersActions.createCluster(payload));
+    }
+  };
 
   return (
     <Wrapper>
@@ -60,6 +78,8 @@ const SetupClusterWrapper = ({ activeTab }) => {
           control={control}
           errors={errors}
           watch={watch}
+          hostList={hostList}
+          setHostList={setHostList}
         />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">
@@ -77,12 +97,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
           </Button>
 
           {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
-          <Button
-            type="submit"
-            onClick={() => {
-              setIsSuccessModalOpen(true);
-            }}
-          >
+          <Button type="submit" onClick={handleSubmit(handleCreateCluster)}>
             Create Cluster
           </Button>
         </BottomButtonDiv>

@@ -39,6 +39,13 @@ export const clustersAPI = api => {
     api.post(`/clusters/add-config/configuration-files`, payload);
   const deleteConfig = ({ configId }) =>
     api.delete(`/clusters/delete-config/${configId}`);
+
+  const getConfigVersions = ({ configName }) => {
+    return api.get(`get-config-version?config_name=${configName}`);
+  };
+  const createCluster = ({ payload }) =>
+    api.post(`/clusters/ansible/create-cluster`, payload);
+
   return {
     fetchClusters,
     fetchClusterList,
@@ -54,5 +61,7 @@ export const clustersAPI = api => {
     getConfigList,
     addConfigClusterSetup,
     deleteConfig,
+    getConfigVersions,
+    createCluster,
   };
 };

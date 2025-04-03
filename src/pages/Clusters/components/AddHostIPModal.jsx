@@ -45,7 +45,6 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
   );
-  console.log(hostToEdit, 'hostToEdit');
 
   const onRequestClose = () => {
     dispatch(ClustersActions.setIsAddHostIPModalOpen(false));

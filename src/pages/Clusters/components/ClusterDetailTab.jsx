@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   CheckboxField,
@@ -81,7 +81,14 @@ const ActiveButtonDiv = styled.div`
   }
 `;
 
-const ClusterDetailTab = ({ control, errors, register, watch }) => {
+const ClusterDetailTab = ({
+  control,
+  errors,
+  register,
+  watch,
+  hostList,
+  setHostList,
+}) => {
   const dispatch = useDispatch();
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getNiFiVersions')
@@ -89,9 +96,28 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
   const loadingAddAPI = useSelector(state =>
     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
   );
+  const configListData = useSelector(ClustersSelectors.getConfigNameList);
+  const configVerionListData = useSelector(
+    ClustersSelectors.getConfigVersionList
+  );
 
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
+
+
+  const configVersionOptions =
+    !isEmpty(configVerionListData) &&
+    configVerionListData.map(ele => ({
+      label: String(ele?.config_version),
+      value: String(ele?.config_version),
+    }));
+
+  const configNameOptions =
+    !isEmpty(configListData) &&
+    configListData.map(ele => ({
+      label: ele?.config_name,
+      value: ele?.config_name,
+    }));
 
   const nifiVerionsOptions =
     !isEmpty(nifiVersionsData) &&
@@ -99,29 +125,50 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
       label: ele?.nifi_version,
       value: ele?.nifi_version,
     }));
-  const nifiVersion = watch('nifi_version');
+  const nifiVersion = watch('nifiVersion');
+  const configName = watch('configName');
+
   useEffect(() => {
     if (nifiVersion) {
       dispatch(ClustersActions.getConfigList(nifiVersion));
     }
   }, [nifiVersion]);
+  useEffect(() => {
+    if (configName) {
+      dispatch(ClustersActions.getConfigVersions(configName));
+    }
+  }, [configName]);
 
   useEffect(() => {
     dispatch(ClustersActions.fetchHostNodesList({ selected: false }));
     dispatch(ClustersActions.getNiFiVersions());
   }, [dispatch]);
 
+  const handleCheck = ele => {
+    setHostList(prevData =>
+      prevData.map(item =>
+        item.id === ele?.id ? { ...item, is_selected: !item.is_selected } : item
+      )
+    );
+  };
+
+  // const handleCheckAll = () => {
+  //   setHostList(prevData =>
+  //     prevData.map(item => ({ ...item, is_selected: !item.is_selected }))
+  //   );
+  // };
+
   const COLUMNS = [
     {
       label: (
         <>
           {' '}
-          <CheckboxField
+          {/* <CheckboxField
             name="check"
-            // label="Need approval for the deployment schedule?"
-            // checked={approverEnable}
-            onChange={() => {}}
-          />
+            onChange={() => {
+              handleCheckAll();
+            }}
+          /> */}
         </>
       ),
       renderCell: item => (
@@ -129,9 +176,10 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
           {' '}
           <CheckboxField
             name="check"
-            // label="Need approval for the deployment schedule?"
-            // checked={approverEnable}
-            onChange={() => {}}
+            checked={item?.is_selected}
+            onChange={() => {
+              handleCheck(item);
+            }}
           />
         </>
       ),
@@ -163,6 +211,15 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
       resize: true,
     },
   ];
+  useEffect(() => {
+    dispatch(ClustersActions.setConfigNameList([]));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!isEmpty(listHostIpData)) {
+      setHostList(listHostIpData);
+    }
+  }, [listHostIpData]);
 
   return (
     <>
@@ -188,7 +245,7 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
         <div className="col-4">
           <LabelSelect className="mb-3">{KDFM.NIFI_VERSION}</LabelSelect>
           <SelectField
-            name="nifi_version"
+            name="nifiVersion"
             icon={<QRIcons />}
             register={register}
             errors={errors}
@@ -201,24 +258,24 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
         <div className="col-4">
           <LabelSelect className="mb-3">{KDFM.CONFIG_NAME}</LabelSelect>
           <SelectField
-            name="nifi_version"
+            name="configName"
             icon={<QRIcons />}
             register={register}
             errors={errors}
             control={control}
-            options={[]}
+            options={configNameOptions || []}
             placeholder={KDFM.SELECT_CONFIG_NAME}
           />
         </div>
         <div className="col-4">
           <LabelSelect className="mb-3">{KDFM.CONFIG_VERSION}</LabelSelect>
           <SelectField
-            name="nifi_version"
+            name="configVersion"
             icon={<QRIcons />}
             register={register}
             errors={errors}
             control={control}
-            options={[]}
+            options={configVersionOptions || []}
             placeholder={KDFM.SELECT_CONFIG_VERSION}
           />
         </div>
@@ -247,7 +304,7 @@ const ClusterDetailTab = ({ control, errors, register, watch }) => {
         style={{ height: 'calc(100% - 360px)', overflow: 'auto' }}
       >
         <Table
-          data={listHostIpData || []}
+          data={hostList || []}
           columns={COLUMNS}
           customNoDataText={KDFM.HOST_IP_NOT_AVAILABLE}
           tableWithFullHeight={true}

@@ -199,6 +199,35 @@ export function* deleteConfig(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
+export function* getConfigVersions(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'getConfigVersions',
+    loadingSection: 'getConfigVersions',
+    apiMethod: api.getConfigVersions,
+    apiParams: [{ configName: payload }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setConfigVersionList(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
+export function* createCluster(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'createCluster',
+    loadingSection: 'createCluster',
+    apiMethod: api.createCluster,
+    apiParams: [{ payload: payload }],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield call(history.push, '/clusters');
+  } else {
+    toast.error(response?.data?.message);
+    yield call(history.push, '/clusters');
+  }
+}
 export function* clustersSagas(api) {
   yield all([
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
@@ -222,5 +251,7 @@ export function* clustersSagas(api) {
       api
     ),
     takeLatest(ClustersActions.deleteConfig, deleteConfig, api),
+    takeLatest(ClustersActions.getConfigVersions, getConfigVersions, api),
+    takeLatest(ClustersActions.createCluster, createCluster, api),
   ]);
 }

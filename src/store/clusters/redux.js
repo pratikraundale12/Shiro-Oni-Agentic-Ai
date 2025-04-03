@@ -39,6 +39,9 @@ export const ClustersActions = {
   setConfigNameList: createAction(`${prefix}setConfigNameList`),
   addConfigClusterSetup: createAction(`${prefix}addConfigClusterSetup`),
   deleteConfig: createAction(`${prefix}deleteConfig`),
+  getConfigVersions: createAction(`${prefix}getConfigVersions`),
+  setConfigVersionList: createAction(`${prefix}setConfigVersionList`),
+  createCluster: createAction(`${prefix}createCluster`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -58,6 +61,7 @@ export const CLUSTERS_INITIAL_STATE = {
   addHostBtnDisable: true,
   addHostIndividualData: {},
   configNameList: [],
+  configVersionList: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -79,6 +83,7 @@ export const ClustersSelectors = {
   getAddHostBtnDisable: state => state.clusters.addHostBtnDisable,
   getAddHostIndividualData: state => state.clusters.addHostIndividualData,
   getConfigNameList: state => state.clusters.configNameList,
+  getConfigVersionList: state => state.clusters.configVersionList,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -185,6 +190,12 @@ const setConfigNameList = (state, { payload }) => {
     configNameList: payload,
   };
 };
+const setConfigVersionList = (state, { payload }) => {
+  return {
+    ...state,
+    configVersionList: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -223,6 +234,7 @@ export const clustersReducer = createReducer(
         ClustersActions.setAddHostIndividualData,
         setAddHostIndividualData
       )
-      .addCase(ClustersActions.setConfigNameList, setConfigNameList);
+      .addCase(ClustersActions.setConfigNameList, setConfigNameList)
+      .addCase(ClustersActions.setConfigVersionList, setConfigVersionList);
   }
 );
