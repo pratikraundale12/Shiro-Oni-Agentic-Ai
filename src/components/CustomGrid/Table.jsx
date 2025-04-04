@@ -125,10 +125,18 @@ export const Table = ({
     }
     if (isEmpty(DATA.nodes)) {
       return (
-        <LoaderContainer>
-          <NoDataIcon width={140} />
-          <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
-        </LoaderContainer>
+        <>
+          <CompactTable
+            data={{ nodes: [] }} // Empty data
+            columns={columns}
+            theme={tableTheme}
+            layout={{ custom: true }}
+          />
+          <LoaderContainer>
+            <NoDataIcon width={140} />
+            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+          </LoaderContainer>
+        </>
       );
     }
     return null;
