@@ -65,12 +65,6 @@ const LoaderOverlay = styled.div`
   z-index: 10; /* Ensure the loader is on top of the table */
 `;
 
-const TableWithoutHeader = styled.div`
-  thead {
-    display: none;
-  }
-`;
-
 export const Table = ({
   data,
   columns,
@@ -139,12 +133,18 @@ export const Table = ({
     }
     if (isEmpty(DATA.nodes)) {
       return (
-        <LoaderContainer>
-          <NoDataIcon width={140} />
-          <NoDataText>
-            {customNoDataText ? customNoDataText : KDFM.NO_DATA_FOUND}
-          </NoDataText>
-        </LoaderContainer>
+        <>
+          <CompactTable
+            data={{ nodes: [] }} // Empty data
+            columns={columns}
+            theme={tableTheme}
+            layout={{ custom: true }}
+          />
+          <LoaderContainer>
+            <NoDataIcon width={140} />
+            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+          </LoaderContainer>
+        </>
       );
     }
     return null;
@@ -174,23 +174,15 @@ export const Table = ({
         deployTable={deployTable}
         tableWithFullHeight={tableWithFullHeight}
       >
-        <CompactTable
-          data={{ nodes: [] }}
-          columns={columns}
-          theme={tableTheme}
-          layout={{ custom: true }}
-        />{' '}
         {pageLoading || loading || isEmpty(DATA.nodes) ? (
           getLoader()
         ) : (
-          <TableWithoutHeader>
-            <CompactTable
-              data={{ nodes: showPagination ? currentItems : DATA.nodes }}
-              columns={columns}
-              theme={tableTheme}
-              layout={{ custom: true }}
-            />
-          </TableWithoutHeader>
+          <CompactTable
+            data={{ nodes: showPagination ? currentItems : DATA.nodes }}
+            columns={columns}
+            theme={tableTheme}
+            layout={{ custom: true }}
+          />
         )}
       </TableContainer>
       {/* Pagination */}
