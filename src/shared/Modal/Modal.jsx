@@ -65,6 +65,9 @@ export const Modal = ({
   children,
   isOpen,
   closeIcon = true,
+  isAdditionalIcon = false,
+  additionalIcon,
+  onAdditionalIconClick = () => null,
   onRequestClose,
   loading = false,
   secondaryButtonText = '',
@@ -121,7 +124,7 @@ export const Modal = ({
   const handleKeyDown = e => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      onSubmit(); // Prevent the default action when Enter is pressed
+      onSubmit(e); // Prevent the default action when Enter is pressed
     }
   };
 
@@ -130,20 +133,34 @@ export const Modal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={styleObject}
+      shouldCloseOnOverlayClick={false}
     >
       <form
         className="d-flex flex-column overflow-auto"
         onSubmit={e => {
           e.preventDefault();
-          onSubmit();
+          onSubmit(e);
         }}
         onKeyDown={handleKeyDown}
       >
         <Header>
           <Title className="mb-0">{title}</Title>
-          {closeIcon && (
-            <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
-          )}
+          <div className="d-flex gap-2">
+            {isAdditionalIcon && (
+              <CloseButton
+                type="button"
+                icon={additionalIcon}
+                onClick={onAdditionalIconClick}
+              />
+            )}
+            {closeIcon && (
+              <CloseButton
+                type="button"
+                icon={<CloseIcon />}
+                onClick={onRequestClose}
+              />
+            )}
+          </div>
         </Header>
         <Body noPadding={noPadding} noScroll={noScroll}>
           {children}

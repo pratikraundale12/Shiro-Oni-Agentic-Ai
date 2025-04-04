@@ -12,6 +12,7 @@ import { schedularSagas } from './schedular';
 import API from './services2/api';
 import { settingsSagas } from './settings';
 import { usersSagas } from './users';
+import { aiFlowGeneratorSagas } from './aiFlowGenerator';
 
 /* ------------- API ------------- */
 export const api = API.create();
@@ -40,5 +41,7 @@ export default function* root() {
     fork(settingsSagas, api),
     // |---------------------activityHistory-------------------------|
     fork(activityHistorySagas, api),
+    // |---------------------aiFlowGenerator-------------------------|
+    fork(aiFlowGeneratorSagas, api),
   ]);
 }

@@ -120,7 +120,6 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
         hostId: hostToEdit?.id,
       };
       dispatch(ClustersActions.updateIndividualHost(payloadData));
-      alert('called');
     }
   };
 

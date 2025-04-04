@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
+import { AI_FLOW_GENERATOR_CONSTANTS } from './aiFlowGenerator.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
 import { USER_CONSTANTS } from './user.constant';
@@ -264,6 +265,7 @@ export const KDFM = {
   ...NAMESPACE_CONSTANTS,
   ...ACTIVITY_HISTORY_CONSTANTS,
   ...USER_CONSTANTS,
+  ...AI_FLOW_GENERATOR_CONSTANTS,
 };
 
 export const SIDE_MENUS_DISPLAY = [
@@ -278,6 +280,7 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'controller-service', label: 'Controller Services' },
   { path: 'setting', label: 'Settings' },
   { path: 'licensing', label: 'Licensing' },
+  { path: 'ai-flow-generator', label: 'AI-Powered Data Flow' },
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];
