@@ -477,7 +477,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   <div className="row mt-4">
                     <div className="col-5">
                       <LabelSelect className="mb-3">
-                        Zookeeper Connection Timeout (In Seconds)
+                        Zookeeper Connection Timeout (eg. 5 secs)
                       </LabelSelect>
 
                       <InputField
