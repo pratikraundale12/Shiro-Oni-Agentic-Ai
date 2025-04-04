@@ -541,7 +541,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <InputField
                         name="java_arg_2"
                         type="text"
-                        placeholder="Enter Protocol Max Threads"
+                        placeholder="Enter java.arg.2"
                         required
                         register={register}
                         errors={errors}
@@ -556,7 +556,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <InputField
                         name="java_arg_3"
                         type="text"
-                        placeholder="Enter Protocol Max Threads"
+                        placeholder="Enter java.arg.3"
                         required
                         register={register}
                         errors={errors}
@@ -582,7 +582,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <InputField
                         name="username"
                         type="text"
-                        placeholder="Enter Protocol Max Threads"
+                        placeholder="Enter Username"
                         required
                         register={register}
                         errors={errors}
@@ -595,7 +595,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       <InputField
                         name="password"
                         type="text"
-                        placeholder="Enter Protocol Max Threads"
+                        placeholder="Enter Password"
                         required
                         register={register}
                         errors={errors}
