@@ -315,7 +315,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
     } else {
       payload.append('configVersion', configToEdit?.max_version + 1);
       dispatch(ClustersActions.addConfigClusterSetup(payload));
-      console.log({ UpdatedData: data });
     }
   };
 

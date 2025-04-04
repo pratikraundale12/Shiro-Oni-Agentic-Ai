@@ -170,8 +170,6 @@ export function* getConfigList(api, { payload }) {
 }
 
 export function* addConfigClusterSetup(api, { payload }) {
-  console.log(payload, 'payload');
-
   const response = yield call(requestSaga, {
     errorSection: 'addConfigClusterSetup',
     loadingSection: 'addConfigClusterSetup',

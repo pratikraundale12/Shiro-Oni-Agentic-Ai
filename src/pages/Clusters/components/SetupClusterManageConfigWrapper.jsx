@@ -15,7 +15,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { FullPageLoader, IconButton, Table } from '../../../components';
 import {
-  CopyIcon,
   DeleteDustbinIcon,
   DeleteSmallIcon,
   PencilIcon,

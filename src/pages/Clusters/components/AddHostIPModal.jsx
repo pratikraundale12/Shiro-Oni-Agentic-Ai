@@ -82,7 +82,6 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
 
   useEffect(() => {
     if (!isEmpty(hostToEdit)) {
-      console.log({hostToEdit});
       setValue('host_ip', hostToEdit?.host_ip);
       setValue('port', hostToEdit?.port);
       setValue('username', hostToEdit?.username);

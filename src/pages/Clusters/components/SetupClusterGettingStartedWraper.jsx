@@ -51,7 +51,6 @@ const SetupClusterGettingStartedWrapper = ({ activeTab }) => {
             {KDFM.BACK}
           </Button>
 
-          {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button
             type="submit"
             onClick={() => {
