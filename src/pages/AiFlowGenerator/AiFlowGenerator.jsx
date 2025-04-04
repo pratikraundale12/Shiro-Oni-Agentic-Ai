@@ -410,8 +410,9 @@ export const AiFlowGenerator = () => {
         toast.error('Error repairing JSON:', error);
         return;
       }
-      setFlowJson(JSON.parse(repaired));
-      setOriginalFlow(JSON.parse(repaired));
+      const jsonType = typeof JSON.parse(repaired);
+      setFlowJson(jsonType === 'object' ? JSON.parse(repaired) : {});
+      setOriginalFlow(jsonType === 'object' ? JSON.parse(repaired) : {});
     }
   }, [generatedFlow]);
 

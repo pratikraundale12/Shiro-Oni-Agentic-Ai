@@ -160,6 +160,12 @@ export const PromptInputBox = ({
           setQueryText(value);
           setIsSendBtnDisabled(value.length === 0);
         }}
+        onKeyDown={e => {
+          if (e.key === 'Enter' && !isSendBtnDisabled) {
+            e.preventDefault();
+            handleGenerateFLowClick();
+          }
+        }}
       />
       <GenerateFLowButton
         disabled={isSendBtnDisabled}
