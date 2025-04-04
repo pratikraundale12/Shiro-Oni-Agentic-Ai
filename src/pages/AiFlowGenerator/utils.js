@@ -49,14 +49,29 @@ export const formattedTime = () => {
 
   return `${hours}:${minutes} ${period} ${day}-${month}-${year}`;
 };
-export const downloadJsonFile = (jsonData, fileName = 'demo.json') => {
-  const blob = new Blob([JSON.stringify(jsonData, null, 2)], {
-    type: 'application/json',
-  });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = fileName;
-  link.click();
-  URL.revokeObjectURL(url);
+export const downloadJsonFile = (jsonData, fileName = 'demo.json', refresh) => {
+  try {
+    const blob = new Blob([JSON.stringify(jsonData, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+
+    toast.success('Flow downloaded successfully!', {
+      toastId: 'download-success',
+    });
+    refresh();
+  } catch (error) {
+    toast.error('Failed to download the flow. Please try again.', {
+      toastId: 'download-error',
+    });
+  }
 };

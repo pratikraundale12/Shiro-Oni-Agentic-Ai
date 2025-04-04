@@ -292,6 +292,7 @@ export const AiFlowGenerator = () => {
       setIsFlowUpdated(false);
       setIsFLowDownloaded(false);
       setAddedToRegistry(false);
+      setOpenPreviewModal(false);
       setOpenConversation(false);
       setQueryText('');
       setFlowJson({});
@@ -340,7 +341,7 @@ export const AiFlowGenerator = () => {
 
   const handleFlowDownload = () => {
     setIsFLowDownloaded(true);
-    downloadJsonFile(flowJson, 'demo.json');
+    downloadJsonFile(flowJson, 'demo.json', handleRefresh);
     if (isFlowUpdated) {
       dispatch(
         AiFlowGeneratorActions.updateGeneratedFlow({
@@ -350,7 +351,6 @@ export const AiFlowGenerator = () => {
       );
     }
     setOpenPreviewModal(false);
-    handleRefresh();
   };
 
   const handleDownloadClick = () => {
@@ -569,7 +569,7 @@ export const AiFlowGenerator = () => {
                         isEmpty(flowError) &&
                         !isEmpty(Object.keys(flowJson))
                       ? 'Here is the JSON File generated as per your prompt....'
-                      : `${flowError} please refresh to generate flow again, we are unable to proceed your query at this time...`}
+                      : `${flowError} we are unable to proceed your query at this time, please refresh to generate flow again...`}
                 </p>
                 {!loading &&
                   isEmpty(flowError) &&
@@ -580,7 +580,7 @@ export const AiFlowGenerator = () => {
                           <div className="data-flow-thum-img mb-1">
                             <img src={fileImage} alt="" className="img-fluid" />
                           </div>
-                          <div className="data-flow-thum-text">demo.json</div>
+                          <div className="data-flow-thum-text">Flow.json</div>
                         </div>
                       </div>
                       <div className="d-flex gap-2">
