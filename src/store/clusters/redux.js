@@ -43,6 +43,7 @@ export const ClustersActions = {
   getConfigVersions: createAction(`${prefix}getConfigVersions`),
   setConfigVersionList: createAction(`${prefix}setConfigVersionList`),
   createCluster: createAction(`${prefix}createCluster`),
+  getSingleConfigData: createAction(`${prefix}getSingleConfigData`),
 };
 
 /* ------------- INITIAL STATE ------------- */

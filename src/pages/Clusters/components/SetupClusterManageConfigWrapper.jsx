@@ -6,9 +6,6 @@ import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
 import { Button, ModalWithIcon } from '../../../shared';
 import { KDFM } from '../../../constants';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { history } from '../../../helpers/history';
 import {
   ClustersActions,
@@ -64,28 +61,10 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
     LoadingSelectors.getLoading(state, 'getConfigList')
   );
 
-  const schema = yup.object().shape({
-    clusterName: yup.string().required('Cluster Name is required'),
-    nifi_version: yup.string().required('Port is required'),
-  });
-  const {
-    register,
-    handleSubmit,
-    watch,
-    reset,
-    control,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
-  const handleContinue = data => {
-    console.log(data);
-  };
-
-  const handleEditConfig = ({configItem}) =>{
-    dispatch(ClustersActions.updateConfigClusterSetup(configItem));
+  const handleEditConfig = ({ configItem }) => {
+    dispatch(ClustersActions.getSingleConfigData(configItem?.id));
     history.push('/clusters/new-config-details');
-  }
+  };
 
   const COLUMNS = [
     {
@@ -108,23 +87,15 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
       renderCell: item => (
         <ActionTd>
           <IconButton
-            onClick={event => {
-              handleEditConfig({configItem:item});
+            onClick={() => {
+              handleEditConfig({ configItem: item });
             }}
             className="pencil-icon-schedule-list"
           >
             <PencilIcon width={16} height={16} />
           </IconButton>
-          {/* <IconButton
-            onClick={event => {
-              console.log(event);
-            }}
-            className="pencil-icon-schedule-list"
-          >
-            <CopyIcon width={16} height={16} color="black" />
-          </IconButton> */}
           <IconButton
-            onClick={event => {
+            onClick={() => {
               setConfigToDelete(item);
               setIsDeleteModalOpen(true);
             }}
@@ -208,11 +179,10 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
             {KDFM.BACK}
           </Button>
 
-          {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button
             type="submit"
             onClick={() => {
-              //   history.push(`/clusters/manage-configuration-details`);
+              dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
             }}
           >
             {KDFM.CONTINUE}

@@ -295,18 +295,19 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
             type="button"
             onClick={() => {
               dispatch(
-                ClustersActions.setActiveTabClusterSetup('getting_started')
+                ClustersActions.setActiveTabClusterSetup('manage_config')
               );
             }}
           >
             {KDFM.BACK}
           </Button>
 
-          {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button
             type="submit"
             onClick={() => {
-              // history.push(`/clusters/manage-configuration-details`);
+              dispatch(
+                ClustersActions.setActiveTabClusterSetup('cluster_details')
+              );
             }}
           >
             {KDFM.CONTINUE}

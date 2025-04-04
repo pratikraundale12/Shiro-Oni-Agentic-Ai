@@ -45,7 +45,9 @@ export const clustersAPI = api => {
   };
   const createCluster = ({ payload }) =>
     api.post(`/clusters/ansible/create-cluster`, payload);
-
+  const getSingleConfigData = ({ configId }) => {
+    return api.get(`/cluter-configs/${configId}`);
+  };
   return {
     fetchClusters,
     fetchClusterList,
@@ -63,5 +65,6 @@ export const clustersAPI = api => {
     deleteConfig,
     getConfigVersions,
     createCluster,
+    getSingleConfigData,
   };
 };

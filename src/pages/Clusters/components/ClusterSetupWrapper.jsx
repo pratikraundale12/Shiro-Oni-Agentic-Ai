@@ -46,6 +46,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
     configName: yup.string().required('Config name is required'),
     configVersion: yup.string().required('Config version is required'),
   });
+
   const {
     register,
     control,
@@ -88,15 +89,12 @@ const SetupClusterWrapper = ({ activeTab }) => {
             variant="secondary"
             type="button"
             onClick={() => {
-              dispatch(
-                ClustersActions.setActiveTabClusterSetup('getting_started')
-              );
+              dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
             }}
           >
             {KDFM.BACK}
           </Button>
 
-          {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button type="submit" onClick={handleSubmit(handleCreateCluster)}>
             Create Cluster
           </Button>
@@ -105,16 +103,12 @@ const SetupClusterWrapper = ({ activeTab }) => {
       <ModalWithIcon
         title={'Cluster Created Successfully'}
         primaryButtonText={'Navigate'}
-        // secondaryButtonText={KDFM.CANCEL}
         icon={<GreenRightCircleIcon />}
         isOpen={isSuccessModalOpen}
         onSubmit={() => {
           setIsSuccessModalOpen(false);
           history.push(`/clusters`);
         }}
-        // onRequestClose={() => {
-        //   setIsSuccessModalOpen(false);
-        // }}
         primaryText={'Cluster Created Successfully'}
         secondaryText={
           'Your Cluster was Added Successfully.You can now proceed to the next steps'

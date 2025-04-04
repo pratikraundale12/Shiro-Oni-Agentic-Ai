@@ -16,7 +16,12 @@ import {
   SelectField,
 } from '../../../shared';
 import { theme } from '../../../styles';
-import { ACCESS_CONTROL_OPTIONS, FLOW_ELECTION_MAX_WAIT_OPTIONS, KDFM, TRUE_FALSE_OPTIONS } from '../../../constants';
+import {
+  ACCESS_CONTROL_OPTIONS,
+  FLOW_ELECTION_MAX_WAIT_OPTIONS,
+  KDFM,
+  TRUE_FALSE_OPTIONS,
+} from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -121,7 +126,9 @@ const ClusterSetupNewConfigDetailsPage = () => {
   const dispatch = useDispatch();
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
-  const configToEdit = useSelector(ClustersSelectors.getUpdateConfigClusterSetupData);
+  const configToEdit = useSelector(
+    ClustersSelectors.getUpdateConfigClusterSetupData
+  );
 
   const nifiVerionsOptions =
     !isEmpty(nifiVersionsData) &&
@@ -203,7 +210,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
 
   const populateFormWithConfigData = () => {
     if (isEmpty(configToEdit)) return;
-    
+
     // Base fields
     const { config_name, nifi_version, comments } = configToEdit;
     setValue('configName', config_name);
@@ -214,26 +221,35 @@ const ClusterSetupNewConfigDetailsPage = () => {
     const bootstrap = safeParseJSON(configToEdit.bootstrap);
     const loginProviders = safeParseJSON(configToEdit.login_identity_providers);
     const stateManagement = safeParseJSON(configToEdit.state_management);
-    
+
     // Set NiFi properties
     setValue('nifi_cluster_is_node', nifiProps.nifi_cluster_is_node);
-    setValue('nifi_cluster_node_protocol_max_threads', nifiProps.nifi_cluster_node_protocol_max_threads);
-    setValue('nifi_cluster_flow_election_max_wait_time', nifiProps.nifi_cluster_flow_election_max_wait_time);
+    setValue(
+      'nifi_cluster_node_protocol_max_threads',
+      nifiProps.nifi_cluster_node_protocol_max_threads
+    );
+    setValue(
+      'nifi_cluster_flow_election_max_wait_time',
+      nifiProps.nifi_cluster_flow_election_max_wait_time
+    );
     setValue(
       'nifi_state_management_embedded_zookeeper_start',
-      nifiProps.nifi_state_management_embedded_zookeeper_start,
+      nifiProps.nifi_state_management_embedded_zookeeper_start
     );
-    setValue('nifi_zookeeper_connect_timeout', nifiProps.nifi_zookeeper_connect_timeout);
+    setValue(
+      'nifi_zookeeper_connect_timeout',
+      nifiProps.nifi_zookeeper_connect_timeout
+    );
     setValue('nifi_web_https_port', nifiProps.nifi_web_https_port);
-    
+
     // Set Bootstrap values
     setValue('java_arg_2', bootstrap.java_arg_2);
     setValue('java_arg_3', bootstrap.java_arg_3);
-    
+
     // Set Login Provider values
     setValue('username', loginProviders.username);
     setValue('password', loginProviders.password);
-    
+
     // Set State Management values
     setValue('directory', stateManagement.directory);
     setValue('always_sync', stateManagement.always_sync);
@@ -247,10 +263,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
       const accessControlOption = ACCESS_CONTROL_OPTIONS.find(
         option => option.value === stateManagement.access_control
       );
-      setValue('access_control', accessControlOption || {
-        value: stateManagement.access_control,
-        label: stateManagement.access_control
-      });
+      setValue(
+        'access_control',
+        accessControlOption || {
+          value: stateManagement.access_control,
+          label: stateManagement.access_control,
+        }
+      );
     }
   };
 
@@ -291,12 +310,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
     payload.append('bootstrap_configuration', JSON.stringify(bootstrapPayload));
     payload.append('login_identity_provider', JSON.stringify(loginPayload));
     payload.append('state_management', JSON.stringify(statePayload));
-    if(isEmpty(configToEdit)) {
+    if (isEmpty(configToEdit)) {
       dispatch(ClustersActions.addConfigClusterSetup(payload));
-    }else {
-      payload.append('configVersion', configToEdit.config_version + 1);
+    } else {
+      payload.append('configVersion', configToEdit?.max_version + 1);
       dispatch(ClustersActions.addConfigClusterSetup(payload));
-      console.log({UpdatedData: data});
+      console.log({ UpdatedData: data });
     }
   };
 
@@ -311,9 +330,14 @@ const ClusterSetupNewConfigDetailsPage = () => {
   return (
     <Wrapper>
       <Title
-        title={!isEmpty(configToEdit) ? KDFM.EDIT_CONFIG_DETAILS : KDFM.NEW_CONFIG_DETAILS}
+        title={
+          !isEmpty(configToEdit)
+            ? KDFM.EDIT_CONFIG_DETAILS
+            : KDFM.NEW_CONFIG_DETAILS
+        }
         handleBackClick={() => {
-          !isEmpty(configToEdit) && dispatch(ClustersActions.updateConfigClusterSetup({}));
+          !isEmpty(configToEdit) &&
+            dispatch(ClustersActions.updateConfigClusterSetup({}));
           history.push('/clusters/setup-cluster');
         }}
         displayBackButton={true}
@@ -512,7 +536,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   <div className="row mt-4">
                     <div className="col-5">
                       <LabelSelect className="mb-3">
-                        java_arg_2 (Initial Heap Size)
+                        java.arg.2 (Initial Heap Size)
                       </LabelSelect>
 
                       <InputField
@@ -527,7 +551,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     </div>
                     <div className="col-5">
                       <LabelSelect className="mb-3">
-                        java_arg_3 (Maximum Heap Size)
+                        java.arg.3 (Maximum Heap Size)
                       </LabelSelect>
 
                       <InputField
@@ -708,16 +732,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
             variant="secondary"
             type="button"
             onClick={() => {
-              !isEmpty(configToEdit) && dispatch(ClustersActions.updateConfigClusterSetup({}));
+              !isEmpty(configToEdit) &&
+                dispatch(ClustersActions.updateConfigClusterSetup({}));
               history.push('/clusters/setup-cluster');
             }}
           >
             {KDFM.BACK}
           </Button>
 
-          {/* <Button type="submit" onClick={handleSubmit(handleContinue)}> */}
           <Button type="submit" onClick={handleSubmit(handleAddConfig)}>
-          {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
+            {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
           </Button>
         </BottomButtonDiv>
       </BottomButton>
