@@ -156,25 +156,9 @@ const ClusterDetailTab = ({
     );
   };
 
-  // const handleCheckAll = () => {
-  //   setHostList(prevData =>
-  //     prevData.map(item => ({ ...item, is_selected: !item.is_selected }))
-  //   );
-  // };
-
   const COLUMNS = [
     {
-      label: (
-        <>
-          {' '}
-          {/* <CheckboxField
-            name="check"
-            onChange={() => {
-              handleCheckAll();
-            }}
-          /> */}
-        </>
-      ),
+      label: <></>,
       renderCell: item => (
         <>
           {' '}
@@ -233,13 +217,11 @@ const ClusterDetailTab = ({
           <InputField
             name="clusterName"
             type="text"
-            // label="Cluster Name"
             placeholder={KDFM.ENTER_YOUR_CLUSTER_NAME}
             required
             register={register}
             errors={errors}
             icon={<QRIcons />}
-            // rightIcon={getRightIcon(watch, errors, setValue)}
           />
         </div>
       </div>
@@ -253,7 +235,6 @@ const ClusterDetailTab = ({
             errors={errors}
             control={control}
             options={nifiVerionsOptions || []}
-            // options={[]}
             placeholder={KDFM.SELECT_NIFI_VERSION}
           />
         </div>

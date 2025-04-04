@@ -1,6 +1,5 @@
 /*eslint-disable*/
 import React, { useEffect, useState } from 'react';
-// import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -162,10 +161,14 @@ export const AddOrEditClusterModal = () => {
             <RightHolder className="col-9 h-100 row">
               <div className="col-10 h-100">
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <HighLightText>{KDFM.MANAGE_EXISTING_CLUSTER_TITLE}</HighLightText>
+                  <HighLightText>
+                    {KDFM.MANAGE_EXISTING_CLUSTER_TITLE}
+                  </HighLightText>
                 </div>
                 <div className="h-50 d-flex align-items-center justify-content-start">
-                  <BottomText>{KDFM.MANAGE_EXISTING_CLUSTER_DESCRIPTION}</BottomText>
+                  <BottomText>
+                    {KDFM.MANAGE_EXISTING_CLUSTER_DESCRIPTION}
+                  </BottomText>
                 </div>
               </div>
               {selectedFlow === KDFM.MANAGE_CLUSTER_FLOW && (
@@ -180,14 +183,3 @@ export const AddOrEditClusterModal = () => {
     </Modal>
   );
 };
-
-// AddOrEditClusterModal.propTypes = {
-//   icon: PropTypes.elementType.isRequired,
-//   primaryText: PropTypes.string,
-//   secondaryText: PropTypes.string,
-//   setValue: PropTypes.func.isRequired,
-//   control: PropTypes.object.isRequired,
-//   errors: PropTypes.object.isRequired,
-//   register: PropTypes.object.isRequired,
-//   loadingButton: PropTypes.bool,
-// };
