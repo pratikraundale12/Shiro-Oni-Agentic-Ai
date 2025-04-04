@@ -53,6 +53,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
     watch,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -81,6 +82,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
           watch={watch}
           hostList={hostList}
           setHostList={setHostList}
+          setValue={setValue}
         />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">

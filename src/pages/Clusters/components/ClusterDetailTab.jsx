@@ -88,6 +88,7 @@ const ClusterDetailTab = ({
   watch,
   hostList,
   setHostList,
+  setValue,
 }) => {
   const dispatch = useDispatch();
   const loading = useSelector(state =>
@@ -130,11 +131,15 @@ const ClusterDetailTab = ({
   useEffect(() => {
     if (nifiVersion) {
       dispatch(ClustersActions.getConfigList(nifiVersion));
+      setValue('configName', '');
+      setValue('configVersion', '');
     }
   }, [nifiVersion]);
+
   useEffect(() => {
     if (configName) {
       dispatch(ClustersActions.getConfigVersions(configName));
+      setValue('configVersion', '');
     }
   }, [configName]);
 
