@@ -4,11 +4,17 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { LoginIcon, OpenLinkIcon, UserIcon } from '../../assets';
+import { OpenLinkIcon, SSOLoginIcon2, UserIcon } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { KDFM, SSO_LOGIN_TYPE } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, CheckboxField, InputField, SelectField } from '../../shared';
+import {
+  Button,
+  CheckboxField,
+  InputField,
+  SelectField,
+  SwitchButton,
+} from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
 const Wrapper = styled.div`
@@ -299,6 +305,13 @@ export const SSOLoginSettings = () => {
         <>
           <InputFields className="row mb-4 align-items-center">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+              <SwitchButton
+                id="openModalInput1"
+                name="SSO Enabled"
+                checked={register}
+                onChange={register}
+                isDisabled={false}
+              />
               <CheckboxField
                 name="sso_enabled"
                 label="SSO Enabled"
@@ -311,11 +324,13 @@ export const SSOLoginSettings = () => {
             <>
               <InputFields className="row mb-4">
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                  <LabelSelect className="mb-3">{KDFM.LOGIN_TYPE}</LabelSelect>
+                  <LabelSelect className="mb-3">
+                    {KDFM.SSO_LOGIN_TYPE} *
+                  </LabelSelect>
                   <SelectField
                     name="selected_sso"
                     control={control}
-                    icon={<LoginIcon />}
+                    icon={<SSOLoginIcon2 />}
                     errors={errors}
                     options={SSO_LOGIN_TYPE}
                     placeholder="Select SSO Login Type"
@@ -331,7 +346,7 @@ export const SSOLoginSettings = () => {
                         name="azure_client_id"
                         register={register}
                         icon={<UserIcon />}
-                        label="Azure Client ID"
+                        label="Azure Client ID *"
                         placeholder="Enter Client ID"
                         errors={errors}
                       />
@@ -341,7 +356,7 @@ export const SSOLoginSettings = () => {
                         name="azure_client_secret"
                         register={register}
                         icon={<UserIcon />}
-                        label="Azure Client Secret"
+                        label="Azure Client Secret *"
                         placeholder="Enter Client Secret"
                         errors={errors}
                       />
@@ -351,7 +366,7 @@ export const SSOLoginSettings = () => {
                         name="azure_tenant_id"
                         register={register}
                         icon={<UserIcon />}
-                        label="Azure Tenant ID"
+                        label="Azure Tenant ID *"
                         placeholder="Enter Tenant ID"
                         errors={errors}
                       />
@@ -364,7 +379,7 @@ export const SSOLoginSettings = () => {
                         name="azure_redirect_uri"
                         register={register}
                         icon={<OpenLinkIcon color="#444445" />}
-                        label="Azure Redirect URI"
+                        label="Azure Redirect URI *"
                         placeholder="Enter Redirect URI"
                         errors={errors}
                       />
@@ -380,7 +395,7 @@ export const SSOLoginSettings = () => {
                         name="keycloak_client_id"
                         register={register}
                         icon={<UserIcon />}
-                        label="Client ID"
+                        label="Client ID *"
                         placeholder="Enter Client ID"
                         errors={errors}
                       />
@@ -390,7 +405,7 @@ export const SSOLoginSettings = () => {
                         name="keycloak_url"
                         register={register}
                         icon={<OpenLinkIcon color="#444445" />}
-                        label="URL"
+                        label="URL *"
                         placeholder="Enter URL"
                         errors={errors}
                       />
@@ -400,7 +415,7 @@ export const SSOLoginSettings = () => {
                         name="keycloak_realm"
                         register={register}
                         icon={<OpenLinkIcon color="#444445" />}
-                        label="Realm"
+                        label="Realm *"
                         placeholder="Enter Realm"
                         errors={errors}
                       />

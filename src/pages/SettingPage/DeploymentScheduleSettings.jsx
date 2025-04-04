@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { CalendarIcon, MailIcon, QRIcons } from '../../assets';
+import { CalendarIcon, EmailSmsTrackingIcon, QRIcons } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import {
   EMAIL_REGEX,
@@ -42,14 +42,14 @@ const LabelSelect = styled.div`
   text-overflow: ellipsis; /* Adds "..." if text overflows */
 `;
 
-const EmphasisText = styled.em`
-  font-style: italic;
-  font-size: 13px !important;
-  font-weight: 500;
-  white-space: nowrap; /* Prevents text from wrapping */
-  overflow: hidden; /* Hides overflowing text */
-  text-overflow: ellipsis; /* Adds "..." if text overflows */
-`;
+// const EmphasisText = styled.em`
+//   font-style: italic;
+//   font-size: 13px !important;
+//   font-weight: 500;
+//   white-space: nowrap; /* Prevents text from wrapping */
+//   overflow: hidden; /* Hides overflowing text */
+//   text-overflow: ellipsis; /* Adds "..." if text overflows */
+// `;
 
 const ButtonText = styled.div`
   font-size: 18px;
@@ -251,8 +251,8 @@ export const DeploymentScheduleSettings = () => {
               <InputField
                 name="group_email_id"
                 register={register}
-                icon={<MailIcon />}
-                label={KDFM.GROUP_EMAIL}
+                icon={<EmailSmsTrackingIcon />}
+                label={`${KDFM.GROUP_EMAIL} *`}
                 placeholder={KDFM.ENTER_GROUP_EMAIL}
                 errors={errors}
               />
@@ -261,8 +261,8 @@ export const DeploymentScheduleSettings = () => {
             {/* Second middle field - adjust to 50% width */}
             <div className="col-6 mb-1">
               <LabelSelect className="mb-3">
-                {KDFM.EMAIL_REMINDER}
-                <EmphasisText> ({KDFM.REMINDER_EMPHASISED_TEXT})</EmphasisText>
+                {`${KDFM.EMAIL_REMINDER} *`}
+                {/* <EmphasisText> ({KDFM.REMINDER_EMPHASISED_TEXT})</EmphasisText> */}
               </LabelSelect>
               <SelectField
                 name="email_reminder_time"

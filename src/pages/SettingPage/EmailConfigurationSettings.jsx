@@ -260,7 +260,7 @@ export const EmailConfigurationSettings = () => {
               name="smtp_service"
               register={register}
               icon={<QRIcons />}
-              label={KDFM.SMTP_SERVICE}
+              label={`${KDFM.SMTP_SERVICE} *`}
               placeholder={KDFM.ENTER_SMTP_SERVICE}
               errors={errors}
             />
@@ -270,7 +270,7 @@ export const EmailConfigurationSettings = () => {
               name="smtp_host"
               register={register}
               icon={<QRIcons />}
-              label={KDFM.SMTP_HOST}
+              label={`${KDFM.SMTP_HOST} *`}
               placeholder={KDFM.ENTER_SMTP_HOST}
               errors={errors}
             />
@@ -280,7 +280,7 @@ export const EmailConfigurationSettings = () => {
               name="smtp_port"
               register={register}
               icon={<QRIcons />}
-              label={KDFM.SMTP_PORT}
+              label={`${KDFM.SMTP_PORT} *`}
               placeholder={KDFM.ENTER_SMTP_PORT}
               errors={errors}
             />
@@ -292,7 +292,7 @@ export const EmailConfigurationSettings = () => {
               name="smtp_user"
               register={register}
               icon={<QRIcons />}
-              label={KDFM.SMTP_USER}
+              label={`${KDFM.SMTP_USER} *`}
               placeholder={KDFM.ENTER_SMTP_USER}
               errors={errors}
             />
@@ -302,7 +302,7 @@ export const EmailConfigurationSettings = () => {
               name="smtp_pass"
               register={register}
               watch={watch}
-              label={KDFM.SMTP_PASS}
+              label={`${KDFM.SMTP_PASS} *`}
               placeholder={KDFM.ENTER_SMTP_PASS}
               disableToggle={false}
               errors={errors}
@@ -313,7 +313,7 @@ export const EmailConfigurationSettings = () => {
               name="from_email"
               register={register}
               icon={<MailIcon />}
-              label={KDFM.FROM_EMAIL}
+              label={`${KDFM.FROM_EMAIL} *`}
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
             />

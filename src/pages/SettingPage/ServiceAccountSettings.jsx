@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { UserIcon } from '../../assets';
+import { LockIcon2, ProfileIcon2 } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -173,11 +173,11 @@ export const ServiceAccountSettings = () => {
               <InputField
                 name="username"
                 type="text"
-                label="Username"
+                label="Username *"
                 placeholder="Enter your Username"
                 register={register}
                 errors={errors}
-                icon={<UserIcon />}
+                icon={<ProfileIcon2 />}
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -186,9 +186,10 @@ export const ServiceAccountSettings = () => {
                 register={register}
                 errors={errors}
                 watch={watch}
-                label="Password"
+                label="Password *"
                 disableToggle={false}
                 placeholder="Enter your Password"
+                icon={<LockIcon2 />}
               />
             </div>
           </InputFields>
