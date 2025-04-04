@@ -1,7 +1,7 @@
 export const aiFlowGeneratorAPI = api => {
-  const fetchDefaultRecentFlows = async () => {
+  const fetchDefaultRecentFlows = async payload => {
     try {
-      return await api.get(`/recent-flows`);
+      return await api.post(`/recent-flows`, payload);
     } catch (error) {
       return error?.response?.data;
     }

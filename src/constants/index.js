@@ -91,6 +91,7 @@ export const MODULE_LIST_MAP = [
   { label: 'Parameter Context', value: 'Parameter Context' },
   { label: 'Variable', value: 'Variable' },
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
+  { label: 'AI Flows', value: 'AI Flows' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -117,8 +118,9 @@ export const ACTIVITY_EVENTS = [
   { label: 'Logout', value: 'Logout' },
   { label: 'Reschedule', value: 'Reschedule' },
   { label: 'Approve', value: 'Approve' },
-  { label: 'Enable', value: 'Enable' },
-  { label: 'Disable', value: 'Disable' },
+  { label: 'Add Flow', value: 'Add Flow' },
+  { label: 'Add Bucket', value: 'Add Bucket' },
+  { label: 'Generate Flow', value: 'Generate Flow' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },

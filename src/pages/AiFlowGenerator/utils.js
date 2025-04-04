@@ -5,7 +5,6 @@ export const getLoginToClusterPopup = () => {
   if (!toast.isActive('clusterLoginError')) {
     toast.error(KDFM.LOGIN_TO_CLUSTER_TO_GENERATE_FLOWS, {
       toastId: 'clusterLoginError',
-      autoClose: 500,
     });
   }
 };
@@ -20,6 +19,8 @@ export const validatePayload = (payload, requiredFields) => {
     org_id: 'Organization ID',
     user_id: 'User ID',
     type: 'Type',
+    logged_in_user: 'LoggedIn User',
+    user_role: 'Role',
   };
 
   const missingFields = requiredFields

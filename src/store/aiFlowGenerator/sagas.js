@@ -6,11 +6,12 @@ import { CLUSTERS_TOKEN } from '../../constants';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { isEmpty } from 'lodash';
 
-export function* fetchDefaultRecentFlows(api) {
+export function* fetchDefaultRecentFlows(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchDefaultRecentFlows',
     loadingSection: 'fetchDefaultRecentFlows',
     apiMethod: api.fetchDefaultRecentFlows,
+    apiParams: [payload],
     successAction: AiFlowGeneratorActions.fetchDefaultRecentFlowsSuccess,
   });
   if (response.ok) {
@@ -25,6 +26,13 @@ export function* fetchDefaultRecentFlows(api) {
 }
 
 export function* generateFlowAPI(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
   yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
   const { refresh } = payload;
   yield put(AiFlowGeneratorActions.setNewBucket({}));
@@ -33,6 +41,8 @@ export function* generateFlowAPI(api, { payload }) {
     console.error('generateFlowApi is undefined!');
     return;
   }
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: AiFlowGeneratorActions.generateFlowAPIFailure,
     loadingSection: 'generateFlowAPI',
@@ -62,7 +72,7 @@ export function* generateFlowAPI(api, { payload }) {
     const error =
       response?.message ||
       response?.data?.message ||
-      'Unexpected error occurred while generating flow';
+      'Unable process the generation of the flow. Please try again!';
     yield put(AiFlowGeneratorActions.setGenFlowError(error));
     toast.error(error);
     refresh &&
@@ -145,6 +155,8 @@ export function* addFlowToRegistry(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   const clusterId = selectedClusterToken?.id;
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: AiFlowGeneratorActions.addFlowToRegistryFailure,
     loadingSection: 'addFlowToRegistry',
@@ -175,6 +187,8 @@ export function* addNewBucketToRegistry(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   const clusterId = selectedClusterToken?.id;
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'addNewBucketToRegistry',
     loadingSection: 'addNewBucketToRegistry',
@@ -195,7 +209,7 @@ export function* addNewBucketToRegistry(api, { payload }) {
     toast.error(
       response?.message ||
         response?.data?.message ||
-        'Failed to add bucket to registry'
+        'Failed to add bucket to registry, please check Generic user details'
     );
   }
 }

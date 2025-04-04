@@ -9,8 +9,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { KDFM } from '../../constants';
 import { toast } from 'react-toastify';
 import { validatePayload } from './utils';
-import { AiFlowGeneratorActions } from '../../store';
-import { useDispatch } from 'react-redux';
+import { AiFlowGeneratorActions, AuthenticationSelectors } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
 import { GENAI_CONFIG } from '../../constants/aiFlowGenerator.constant';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -161,6 +161,7 @@ const SuggetionsChip = ({
 }) => {
   const dispatch = useDispatch();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
 
   const handleGenerateFLowClick = flow => {
     if (!generateFlowPermission) {
@@ -188,6 +189,8 @@ const SuggetionsChip = ({
       type: GENAI_CONFIG.APP_TYPE,
       short_name: flow?.name || '',
       refresh: refresh,
+      logged_in_user: currentUser?.id,
+      user_role: currentUser?.role,
     };
     const requiredFields = [
       'session_id',
@@ -198,6 +201,8 @@ const SuggetionsChip = ({
       'org_id',
       'user_id',
       'type',
+      'logged_in_user',
+      'user_role',
     ];
     if (validatePayload(payload, requiredFields)) {
       dispatch(AiFlowGeneratorActions.generateFlowAPI(payload));
@@ -250,7 +255,7 @@ const SuggetionsChip = ({
   };
 
   return (
-    <StyledSlider {...settings}>
+    <StyledSlider className="mb-2" {...settings}>
       {SuggetionsArray?.map((item, index) => (
         <ChatWindowBg key={index}>
           <Header>
