@@ -29,8 +29,8 @@ jobs:
           host: ${{ secrets.DEV_SERVER_IP }}
           username: ${{ secrets.DEV_SERVER_USER }}
           key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
-          source: "build/*"
-          target: "/home/ubuntu/dfm-bundle/dist/client"
+          source: 'build/*'
+          target: '/home/ubuntu/dfm-bundle/dist/client'
 
       - name: Restart Staging Backend Service
         uses: appleboy/ssh-action@master

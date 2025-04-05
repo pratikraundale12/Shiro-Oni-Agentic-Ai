@@ -14,7 +14,13 @@ import Pagination from './Pagination';
 const TableContainer = styled.div`
   /* height: 90%; */
   height: ${props =>
-    props.deployTable ? 'calc(100vh - 475px)' : props?.csList ? '77%' : '83%'};
+    props.tableWithFullHeight
+      ? '100%'
+      : props.deployTable
+        ? 'calc(100vh - 475px)'
+        : props?.csList
+          ? '77%'
+          : '83%'};
   /* height: calc(100vh - 475px); */
   overflow-x: auto;
   border-radius: 16px;
@@ -68,6 +74,8 @@ export const Table = ({
   showPagination = false,
   csList = false,
   isResetNotRequired = false,
+  customNoDataText = false,
+  tableWithFullHeight = false,
 }) => {
   const [itemsPerPage, setitemsPerPage] = useState(10);
   const DATA = { nodes: data || [] };
@@ -125,10 +133,18 @@ export const Table = ({
     }
     if (isEmpty(DATA.nodes)) {
       return (
-        <LoaderContainer>
-          <NoDataIcon width={140} />
-          <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
-        </LoaderContainer>
+        <>
+          <CompactTable
+            data={{ nodes: [] }} // Empty data
+            columns={columns}
+            theme={tableTheme}
+            layout={{ custom: true }}
+          />
+          <LoaderContainer>
+            <NoDataIcon width={140} />
+            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+          </LoaderContainer>
+        </>
       );
     }
     return null;
@@ -156,6 +172,7 @@ export const Table = ({
         className={className}
         csList={csList}
         deployTable={deployTable}
+        tableWithFullHeight={tableWithFullHeight}
       >
         {pageLoading || loading || isEmpty(DATA.nodes) ? (
           getLoader()
@@ -196,4 +213,6 @@ Table.propTypes = {
   showPagination: PropTypes.bool,
   csList: PropTypes.bool,
   isResetNotRequired: PropTypes.bool,
+  customNoDataText: PropTypes.string,
+  tableWithFullHeight: PropTypes.bool,
 };

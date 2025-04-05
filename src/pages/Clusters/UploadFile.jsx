@@ -83,7 +83,11 @@ export const UploadFile = ({ name, control, watch }) => {
       render={({ field: { onChange }, fieldState: { error } }) => {
         const handleChange = event => {
           const uploadedFile = event.target.files[0];
-          if (uploadedFile?.type !== 'application/x-pkcs12') {
+          if (
+            uploadedFile?.type !== 'application/x-pkcs12' && // .p12, .pfx
+            uploadedFile?.type !== 'application/x-x509-ca-cert' && // .pem (some browsers)
+            uploadedFile?.type !== 'text/plain'
+          ) {
             toast.error('Invalid file type');
           } else {
             onChange(uploadedFile);
@@ -130,7 +134,7 @@ export const UploadFile = ({ name, control, watch }) => {
             <input
               ref={ref}
               type="file"
-              accept=".p12"
+              accept=".p12, .pem"
               onChange={handleChange}
               hidden
             />

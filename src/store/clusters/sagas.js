@@ -4,6 +4,8 @@ import { CLUSTERS_TOKEN } from '../../constants';
 import { requestSaga } from '../helpers/request_sagas';
 import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { ClustersActions } from './redux';
+import { toast } from 'react-toastify';
+import { history } from '../../helpers/history';
 
 export function* fetchClusterList(api, { payload: { params } = {} }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -62,11 +64,209 @@ export function* clusterLogout(api, { payload }) {
   }
 }
 
+export function* getNiFiVersions(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'getNiFiVersions',
+    loadingSection: 'getNiFiVersions',
+    apiMethod: api.getNiFiVersions,
+    apiParams: [payload],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setNifiVersions(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* checkCredentialsClusterSetup(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'checkCredentialsClusterSetup',
+    loadingSection: 'checkCredentialsClusterSetup',
+    apiMethod: api.checkCredentialsClusterSetup,
+    apiParams: [{ payload: payload?.payload }],
+  });
+  if (response.ok) {
+    toast.success('Test success');
+    yield put(ClustersActions.setAddHostBtnDisable(false));
+    yield put(ClustersActions.setAddHostIndividualData(payload?.data));
+  } else {
+    toast.error(
+      'Unable to establish a connection with the host. Please check your credentials.'
+    );
+  }
+}
+
+export function* fetchHostNodesList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchHostNodesList',
+    loadingSection: 'fetchHostNodesList',
+    apiMethod: api.fetchHostNodesList,
+    apiParams: [{ payload: payload?.selected }],
+  });
+  if (response.ok) {
+    yield put(ClustersActions.setHostIpList(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+export function* addIndividualHost(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'addIndividualHost',
+    loadingSection: 'addIndividualHost',
+    apiMethod: api.addIndividualHost,
+    apiParams: [{ payload: payload }],
+  });
+  if (response.ok) {
+    toast.success('Node Added Successfully');
+    yield put(ClustersActions.setIsAddHostIPModalOpen(false));
+    /// list api
+    yield put(ClustersActions.fetchHostNodesList({ selected: true }));
+  } else {
+    toast.error(response?.data?.message);
+    yield put(ClustersActions.setIsAddHostIPModalOpen(false));
+  }
+}
+export function* deleteIndividualHost(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteIndividualHost',
+    loadingSection: 'deleteIndividualHost',
+    apiMethod: api.deleteIndividualHost,
+    apiParams: [{ hostId: payload?.hostId }],
+  });
+  if (response.ok) {
+    toast.success('Deleted Successfully');
+    yield put(ClustersActions.fetchHostNodesList({ selected: true }));
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+export function* updateIndividualHost(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'updateIndividualHost',
+    loadingSection: 'updateIndividualHost',
+    apiMethod: api.updateIndividualHost,
+    apiParams: [{ hostId: payload?.hostId, payload: payload?.payload }],
+  });
+  if (response.ok) {
+    toast.success('Node Updated Successfully');
+    yield put(ClustersActions.setIsAddHostIPModalOpen(false));
+    yield put(ClustersActions.fetchHostNodesList({ selected: true }));
+  } else {
+    toast.error(response?.data?.message);
+    yield put(ClustersActions.setIsAddHostIPModalOpen(false));
+  }
+}
+export function* getConfigList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'getConfigList',
+    loadingSection: 'getConfigList',
+    apiMethod: api.getConfigList,
+    apiParams: [{ nifiVersion: payload }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setConfigNameList(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
+export function* addConfigClusterSetup(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'addConfigClusterSetup',
+    loadingSection: 'addConfigClusterSetup',
+    apiMethod: api.addConfigClusterSetup,
+    apiParams: [{ payload: payload }],
+  });
+  if (response.ok) {
+    toast.success('Config Added Successfully');
+    yield put(ClustersActions.updateConfigClusterSetup({}));
+    yield call(history.push, '/clusters/setup-cluster');
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* deleteConfig(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteConfig',
+    loadingSection: 'deleteConfig',
+    apiMethod: api.deleteConfig,
+    apiParams: [{ configId: payload?.configId }],
+  });
+  if (response.ok) {
+    toast.success('Deleted Successfully');
+    yield put(ClustersActions.getConfigList());
+  } else {
+    toast.error(response?.data?.message);
+  }
+}
+export function* getConfigVersions(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'getConfigVersions',
+    loadingSection: 'getConfigVersions',
+    apiMethod: api.getConfigVersions,
+    apiParams: [{ configName: payload }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setConfigVersionList(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
+export function* createCluster(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'createCluster',
+    loadingSection: 'createCluster',
+    apiMethod: api.createCluster,
+    apiParams: [{ payload: payload }],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield call(history.push, '/clusters');
+  } else {
+    toast.error(response?.data?.message);
+    yield call(history.push, '/clusters');
+  }
+}
+export function* getSingleConfigData(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'getSingleConfigData',
+    loadingSection: 'getSingleConfigData',
+    apiMethod: api.getSingleConfigData,
+    apiParams: [{ configId: payload }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.updateConfigClusterSetup(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
 export function* clustersSagas(api) {
   yield all([
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
     takeLatest(ClustersActions.fetchClusterNodes, fetchClusterNodes, api),
     takeLatest(ClustersActions.fetchClusters, fetchClusters, api),
     takeLatest(ClustersActions.clusterLogout, clusterLogout, api),
+    takeLatest(ClustersActions.getNiFiVersions, getNiFiVersions, api),
+    takeLatest(
+      ClustersActions.checkCredentialsClusterSetup,
+      checkCredentialsClusterSetup,
+      api
+    ),
+    takeLatest(ClustersActions.fetchHostNodesList, fetchHostNodesList, api),
+    takeLatest(ClustersActions.addIndividualHost, addIndividualHost, api),
+    takeLatest(ClustersActions.deleteIndividualHost, deleteIndividualHost, api),
+    takeLatest(ClustersActions.updateIndividualHost, updateIndividualHost, api),
+    takeLatest(ClustersActions.getConfigList, getConfigList, api),
+    takeLatest(
+      ClustersActions.addConfigClusterSetup,
+      addConfigClusterSetup,
+      api
+    ),
+    takeLatest(ClustersActions.deleteConfig, deleteConfig, api),
+    takeLatest(ClustersActions.getConfigVersions, getConfigVersions, api),
+    takeLatest(ClustersActions.createCluster, createCluster, api),
+    takeLatest(ClustersActions.getSingleConfigData, getSingleConfigData, api),
   ]);
 }
