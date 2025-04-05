@@ -734,39 +734,40 @@ export const GridActions = ({
         </ButtonsContainer>
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
-            {module === 'namespaces' && (
-              <>
-                {selectedCluster?.value && (
-                  <Button
-                    size="md"
-                    disabled={isButtonDisabled}
-                    onClick={() => handleScheduleClick()}
-                  >
-                    <div
-                      className="d-flex "
-                      style={{ fontSize: '14px', fontWeight: '750' }}
+            {module === 'namespaces' &&
+              location.pathname === '/process-group' && (
+                <>
+                  {selectedCluster?.value && (
+                    <Button
+                      size="md"
+                      disabled={isButtonDisabled}
+                      onClick={() => handleScheduleClick()}
                     >
-                      <ScheduleDeploymentIcon
-                        height={19}
-                        width={19}
-                        color={'#fff'}
-                      />
-                      Schedule Deployment
-                    </div>
-                  </Button>
-                )}
-                {canWrite && (
-                  <Button
-                    disabled={!canWrite}
-                    size="md"
-                    style={{ width: '84px' }}
-                    onClick={handleClick}
-                  >
-                    {KDFM.DEPLOY}
-                  </Button>
-                )}
-              </>
-            )}
+                      <div
+                        className="d-flex "
+                        style={{ fontSize: '14px', fontWeight: '750' }}
+                      >
+                        <ScheduleDeploymentIcon
+                          height={19}
+                          width={19}
+                          color={'#fff'}
+                        />
+                        Schedule Deployment
+                      </div>
+                    </Button>
+                  )}
+                  {canWrite && (
+                    <Button
+                      disabled={!canWrite}
+                      size="md"
+                      style={{ width: '84px' }}
+                      onClick={handleClick}
+                    >
+                      {KDFM.DEPLOY}
+                    </Button>
+                  )}
+                </>
+              )}
             {['scheduler'].includes(module) && (
               <>
                 <RefreshIocn

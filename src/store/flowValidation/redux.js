@@ -15,6 +15,8 @@ export const FlowValidationActions = {
   compareRules: createAction(`${prefix}compareRules`), // New
   compareRulesSuccess: createAction(`${prefix}compareRulesSuccess`), // New
   setSelectedItem: createAction(`${prefix}setSelectedItem`),
+  addRuleScope: createAction(`${prefix}addRuleScope`),
+  addRuleScopeSuccess: createAction(`${prefix}addRuleScopeSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -25,6 +27,7 @@ export const FlowValidation_INITIAL_STATE = {
   validationResult: null, // New
   compareResult: null,
   selectedItem: null,
+  addedRuleScope: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -35,6 +38,7 @@ export const FlowValidationSelectors = {
   getValidationResult: state => state.flowValidation.validationResult,
   getCompareResult: state => state.flowValidation.compareResult,
   getselectedItem: state => state.flowValidation.selectedItem,
+  getAddedRuleScope: state => state.flowValidation.addedRuleScope,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -64,6 +68,10 @@ const setSelectedItem = (state, { payload }) => ({
   ...state,
   selectedItem: payload,
 });
+const addRuleScopeSuccess = (state, { payload }) => ({
+  ...state,
+  addedRuleScope: payload,
+});
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
@@ -78,6 +86,7 @@ export const flowValidationReducer = createReducer(
       .addCase(FlowValidationActions.fetchPropertySuccess, fetchPropertySuccess)
       .addCase(FlowValidationActions.validateRulesSuccess, validateRulesSuccess)
       .addCase(FlowValidationActions.setSelectedItem, setSelectedItem)
-      .addCase(FlowValidationActions.compareRulesSuccess, compareRulesSuccess);
+      .addCase(FlowValidationActions.compareRulesSuccess, compareRulesSuccess)
+      .addCase(FlowValidationActions.addRuleScopeSuccess, addRuleScopeSuccess);
   }
 );

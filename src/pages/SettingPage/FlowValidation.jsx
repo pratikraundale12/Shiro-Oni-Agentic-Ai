@@ -42,7 +42,7 @@ const FlowValidation = () => {
 
   const ruleScopes = useSelector(FlowValidationSelectors.getRuleScopes);
   useEffect(() => {
-    dispatch(FlowValidationActions.ruleScopeFetch({}));
+    dispatch(FlowValidationActions.ruleScopeFetch());
   }, [dispatch]);
 
   const COLUMNS = [
@@ -84,12 +84,13 @@ const FlowValidation = () => {
           >
             <FlowValidationIcon />
           </button>
-          {item?.deletable === false && (
+          {item?.deletable === true && (
             <button
               className="border-0 bg-white"
-              onClick={() =>
-                dispatch(SettingsActions.addNewValidationModalOpen(true))
-              }
+              onClick={() => {
+                dispatch(SettingsActions.addNewValidationModalOpen(true));
+                dispatch(FlowValidationActions.setSelectedItem(item));
+              }}
             >
               <NewEditIcon />
             </button>
@@ -127,6 +128,7 @@ const FlowValidation = () => {
           columns={COLUMNS}
           data={ruleScopes?.data}
           className="parameter-context-table"
+          showPagination={true}
         />
       </ModalBody>
       <FlowValidationModal />

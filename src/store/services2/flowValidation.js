@@ -1,7 +1,7 @@
 export const flowValidationAPI = api => {
   const ruleScopeApi = () => api.get(`/rule-scopes`);
   const fetchRuleApi = id => api.get(`/rules/${id}`);
-  const addRuleSCope = data => api.post(`/add-rule-scope`, data);
+  const addRuleScope = data => api.post(`/add-rule-scope`, data);
   const fetchPropertyApi = type => api.get(`/rule-properties?type=${type}`);
   const validateRulesApi = (clusterId, namespaceId, data) =>
     api.post(`/clusters/${clusterId}/namespaces/${namespaceId}/validate`, data);
@@ -13,7 +13,7 @@ export const flowValidationAPI = api => {
   return {
     ruleScopeApi,
     fetchRuleApi,
-    addRuleSCope,
+    addRuleScope,
     fetchPropertyApi,
     validateRulesApi,
     compareRulesApi,

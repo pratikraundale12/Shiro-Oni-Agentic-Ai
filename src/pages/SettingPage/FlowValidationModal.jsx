@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -64,12 +64,16 @@ const RadioContainer = styled.div`
 const FlowValidationModal = () => {
   const dispatch = useDispatch();
   const fetchRules = useSelector(FlowValidationSelectors.getRules);
-  const [selectedRuleId, setSelectedRuleId] = useState(
-    fetchRules?.data?.[0]?.id || null
-  );
+  const [selectedRuleId, setSelectedRuleId] = useState(null);
   const fetchPropertyData = useSelector(FlowValidationSelectors.getProperty);
   const { control } = useForm();
-  console.log(fetchRules?.data?.[0]?.id, 'aaaaaaaaaaaaaaaaaaaaaaaaaaa');
+
+  useEffect(() => {
+    if (fetchRules?.data?.length > 0) {
+      setSelectedRuleId(fetchRules.data[0].id);
+    }
+  }, [fetchRules?.data]);
+
   const handleRuleSelection = id => {
     setSelectedRuleId(id);
   };

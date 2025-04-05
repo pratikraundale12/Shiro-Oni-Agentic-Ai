@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -8,7 +8,10 @@ import {
   SCOPE_TYPE_OPTIONS,
 } from '../../constants/flowValidation.constant';
 import { InputField, Modal, SelectField } from '../../shared';
-import { FlowValidationActions } from '../../store/flowValidation';
+import {
+  FlowValidationActions,
+  FlowValidationSelectors,
+} from '../../store/flowValidation';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
 const LabelSelect = styled.div`
@@ -21,32 +24,67 @@ const LabelSelect = styled.div`
 
 const AddNewValidationModal = () => {
   const dispatch = useDispatch();
-  const { handleSubmit, register, control } = useForm();
+  const { handleSubmit, register, control, reset } = useForm();
   const isFlowValidationModalOpen = useSelector(
     SettingsSelectors.getAddNewValidationModalOpen
   );
+  const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
 
-  const isClosedNewAddValidationModal = () =>
+  useEffect(() => {
+    if (isFlowValidationModalOpen && !selectedItem) {
+      reset({
+        scope_type: '',
+        dispaly_value: '',
+        description: '',
+      });
+    }
+  }, [isFlowValidationModalOpen, selectedItem, reset]);
+
+  useEffect(() => {
+    if (selectedItem) {
+      reset({
+        scope_type: selectedItem.scope_type,
+        dispaly_value: selectedItem.header,
+        description: selectedItem.description,
+      });
+    }
+  }, [selectedItem, reset]);
+
+  const isClosedNewAddValidationModal = () => {
     dispatch(SettingsActions.addNewValidationModalOpen(false));
+    dispatch(FlowValidationActions.setSelectedItem(null));
+  };
 
   const onSubmit = data => {
-    const selectedScope = SCOPE_TYPE_OPTIONS.find(
-      option => option.value === data?.scope_type
-    );
-
-    dispatch(
-      FlowValidationActions.addRuleScope({
-        scope_type: selectedScope ? selectedScope.value : data.scope_type,
-        description: data?.description,
-        header: data?.dispaly_value,
-      })
-    );
+    if (selectedItem) {
+      dispatch(
+        FlowValidationActions.updateRuleScope({
+          id: selectedItem.id,
+          scope_type: data.scope_type,
+          description: data.description,
+          header: data.dispaly_value,
+        })
+      );
+    } else {
+      dispatch(
+        FlowValidationActions.addRuleScope({
+          scope_type: data.scope_type,
+          description: data.description,
+          header: data.dispaly_value,
+        })
+      );
+    }
+    isClosedNewAddValidationModal();
   };
 
   return (
     <div>
       <Modal
-        title={FLOWVALIDATION_CONSTANTS.ADD_NEW_VALIDATION}
+        title={
+          selectedItem
+            ? FLOWVALIDATION_CONSTANTS.EDIT_VALIDATION
+            : FLOWVALIDATION_CONSTANTS.ADD_NEW_VALIDATION
+        }
         isOpen={isFlowValidationModalOpen}
         onRequestClose={isClosedNewAddValidationModal}
         size="md"

@@ -1,4 +1,4 @@
-import { all, call, takeLatest } from 'redux-saga/effects';
+import { all, call, put, takeLatest } from 'redux-saga/effects';
 import { requestSaga } from '../helpers/request_sagas';
 import { FlowValidationActions } from './redux';
 
@@ -49,6 +49,19 @@ export function* compareRulesSaga(api, { payload }) {
     successAction: FlowValidationActions.compareRulesSuccess,
   });
 }
+
+export function* addRuleScopeSaga(api, { payload }) {
+  yield call(requestSaga, {
+    errorSection: 'addRuleScope',
+    loadingSection: 'addRuleScope',
+    apiMethod: api.addRuleScope,
+    apiParams: [payload],
+    successAction: FlowValidationActions.addRuleScopeSuccess,
+  });
+
+  // ✅ After successful addition, re-fetch updated list
+  yield put(FlowValidationActions.ruleScopeFetch());
+}
 export function* flowValidationSagas(api) {
   yield all([
     takeLatest(FlowValidationActions.ruleScopeFetch, ruleScopeFetch, api),
@@ -56,5 +69,6 @@ export function* flowValidationSagas(api) {
     takeLatest(FlowValidationActions.fetchProperty, fetchProperty, api),
     takeLatest(FlowValidationActions.validateRules, validateRulesSaga, api),
     takeLatest(FlowValidationActions.compareRules, compareRulesSaga, api),
+    takeLatest(FlowValidationActions.addRuleScope, addRuleScopeSaga, api),
   ]);
 }
