@@ -11,6 +11,8 @@ export const flowValidationAPI = api => {
       `/clusters/${clusterId}/namespaces/${namespaceId}/compare-flow-versions`,
       data
     );
+  const updateRuleApi = (id, data) => api.put(`/rule/${id}`, data);
+
   return {
     ruleScopeApi,
     fetchRuleApi,
@@ -19,5 +21,6 @@ export const flowValidationAPI = api => {
     fetchPropertyApi,
     validateRulesApi,
     compareRulesApi,
+    updateRuleApi,
   };
 };

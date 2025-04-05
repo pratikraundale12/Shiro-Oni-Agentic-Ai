@@ -17,7 +17,10 @@ import {
   RadioField,
   SelectField,
 } from '../../shared';
-import { FlowValidationSelectors } from '../../store/flowValidation';
+import {
+  FlowValidationActions,
+  FlowValidationSelectors,
+} from '../../store/flowValidation';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
 const ModelRightSide = styled.div`
@@ -65,14 +68,25 @@ const FlowValidationModal = () => {
   const dispatch = useDispatch();
   const fetchRules = useSelector(FlowValidationSelectors.getRules);
   const [selectedRuleId, setSelectedRuleId] = useState(null);
+  const [editedConditions, setEditedConditions] = useState([]);
   const fetchPropertyData = useSelector(FlowValidationSelectors.getProperty);
   const { control } = useForm();
-
+  console.log('hi');
   useEffect(() => {
     if (fetchRules?.data?.length > 0) {
       setSelectedRuleId(fetchRules.data[0].id);
+      setEditedConditions(fetchRules.data[0]?.conditions || []);
     }
   }, [fetchRules?.data]);
+
+  useEffect(() => {
+    if (selectedRuleId) {
+      const selectedRule = fetchRules?.data?.find(
+        rule => rule.id === selectedRuleId
+      );
+      setEditedConditions(selectedRule?.conditions || []);
+    }
+  }, [selectedRuleId, fetchRules?.data]);
 
   const handleRuleSelection = id => {
     setSelectedRuleId(id);
@@ -82,23 +96,53 @@ const FlowValidationModal = () => {
     rule => rule.id === selectedRuleId
   );
 
-  // ✅ Correct way to get state from Redux
   const isFlowValidationModalOpen = useSelector(
     SettingsSelectors.getFlowValidationModal
   );
 
-  const isClosedFlowValidationModal = () =>
-    dispatch(SettingsActions.flowValidationModalOpen(false));
+  const handleConditionValueChange = (conditionIndex, value) => {
+    const updatedConditions = [...editedConditions];
+    updatedConditions[conditionIndex] = {
+      ...updatedConditions[conditionIndex],
+      condition_value: value,
+    };
+    setEditedConditions(updatedConditions);
+  };
+
+  const handleSave = () => {
+    if (selectedRule) {
+      const updatedRule = {
+        name: selectedRule.name,
+        conditions: editedConditions.map(condition => ({
+          condition_value: condition.condition_value,
+          condition_property: condition.condition_property,
+          condition_expression: condition.condition_expression,
+        })),
+        output_value: selectedRule.output_value,
+      };
+
+      dispatch(
+        FlowValidationActions.updateRule({
+          ruleId: selectedRule.id,
+          data: updatedRule,
+        })
+      );
+      dispatch(SettingsActions.flowValidationModalOpen(false));
+    }
+  };
 
   return (
     <Modal
       title="Add Flow Rule"
       isOpen={isFlowValidationModalOpen}
-      onRequestClose={isClosedFlowValidationModal}
+      onRequestClose={() =>
+        dispatch(SettingsActions.flowValidationModalOpen(false))
+      }
       size="md"
       primaryButtonText="Save"
       secondaryButtonText="Cancel"
       contentStyles={{ maxWidth: '70%', maxHeight: '80%' }}
+      onSubmit={handleSave}
     >
       <div className="row">
         <div className="col-md-8 col-xl-9">
@@ -108,7 +152,7 @@ const FlowValidationModal = () => {
             label="Rule Name"
             value={selectedRule?.name || ''}
             placeholder="Processor Colors"
-            disabled={selectedRule?.name}
+            disabled={true}
           />
           <InputField
             name="rule_comments"
@@ -116,7 +160,7 @@ const FlowValidationModal = () => {
             label="Output Value"
             value={selectedRule?.output_value || ''}
             placeholder="Rules for Processor Colors"
-            disabled={selectedRule?.output_value}
+            disabled={true}
           />
           <div className="col-12">
             <ConditionIcon className="d-flex align-items-center gap-3">
@@ -124,7 +168,7 @@ const FlowValidationModal = () => {
             </ConditionIcon>
           </div>
           <div className="row g-2 align-items-center">
-            {selectedRule?.conditions?.map((condition, index) => (
+            {editedConditions?.map((condition, index) => (
               <Fragment key={index}>
                 <div className="col-md-4">
                   <PropertyDiv>
@@ -138,7 +182,7 @@ const FlowValidationModal = () => {
                       }))}
                       defaultValue={condition?.condition_property}
                       control={control}
-                      disabled={condition?.condition_property}
+                      disabled={true}
                     />
                   </PropertyDiv>
                 </div>
@@ -159,23 +203,22 @@ const FlowValidationModal = () => {
                       ]}
                       defaultValue={condition?.condition_expression}
                       control={control}
-                      disabled={condition?.condition_expression}
+                      disabled={true}
                     />
                   </PropertyDiv>
                 </div>
                 <div className="col-md-3">
                   <InputField
-                    name="rule_name"
+                    name={`condition_value_${index}`}
                     icon={<NewLinkIcon />}
                     value={condition?.condition_value || ''}
+                    onChange={e =>
+                      handleConditionValueChange(index, e.target.value)
+                    }
                   />
                 </div>
               </Fragment>
             ))}
-
-            {/* <div className="col-md-1">
-              <Button>+</Button>
-            </div> */}
           </div>
         </div>
         <div className="col-md-4 col-xl-3">

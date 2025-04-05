@@ -61,6 +61,7 @@ const AddNewValidationModal = () => {
         FlowValidationActions.updateRuleScope({
           id: selectedItem.id,
           header: data.display_value,
+          description: data.description,
         })
       );
     } else {
@@ -99,7 +100,7 @@ const AddNewValidationModal = () => {
             placeholder={FLOWVALIDATION_CONSTANTS.SELECT_SCOPE_TYPE}
             options={SCOPE_TYPE_OPTIONS}
             control={control}
-            disabled={!!selectedItem}
+            disabled={selectedItem}
           />
         </div>
         <InputField
@@ -117,7 +118,6 @@ const AddNewValidationModal = () => {
           placeholder={FLOWVALIDATION_CONSTANTS.ENTER_DESCRIPTION}
           icon={<NewMessageIcon />}
           register={register}
-          disabled={!!selectedItem}
         />
       </Modal>
     </div>

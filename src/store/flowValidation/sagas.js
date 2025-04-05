@@ -77,6 +77,20 @@ export function* updateRuleScopeSaga(api, { payload }) {
   yield put(FlowValidationActions.ruleScopeFetch());
 }
 
+export function* updateRuleSaga(api, { payload }) {
+  const { ruleId, data } = payload;
+  yield call(requestSaga, {
+    errorSection: 'updateRule',
+    loadingSection: 'updateRule',
+    apiMethod: api.updateRuleApi,
+    apiParams: [ruleId, data],
+    successAction: FlowValidationActions.updateRuleSuccess,
+  });
+
+  // After successful update, re-fetch the rules
+  yield put(FlowValidationActions.fetchRules(ruleId));
+}
+
 export function* flowValidationSagas(api) {
   yield all([
     takeLatest(FlowValidationActions.ruleScopeFetch, ruleScopeFetch, api),
@@ -86,5 +100,6 @@ export function* flowValidationSagas(api) {
     takeLatest(FlowValidationActions.compareRules, compareRulesSaga, api),
     takeLatest(FlowValidationActions.addRuleScope, addRuleScopeSaga, api),
     takeLatest(FlowValidationActions.updateRuleScope, updateRuleScopeSaga, api),
+    takeLatest(FlowValidationActions.updateRule, updateRuleSaga, api),
   ]);
 }

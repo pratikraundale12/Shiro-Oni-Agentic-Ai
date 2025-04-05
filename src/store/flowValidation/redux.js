@@ -19,6 +19,8 @@ export const FlowValidationActions = {
   addRuleScopeSuccess: createAction(`${prefix}addRuleScopeSuccess`),
   updateRuleScope: createAction(`${prefix}updateRuleScope`),
   updateRuleScopeSuccess: createAction(`${prefix}updateRuleScopeSuccess`),
+  updateRule: createAction(`${prefix}updateRule`),
+  updateRuleSuccess: createAction(`${prefix}updateRuleSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -31,6 +33,7 @@ export const FlowValidation_INITIAL_STATE = {
   selectedItem: null,
   addedRuleScope: null,
   updatedRuleScope: null,
+  updatedRule: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -43,6 +46,7 @@ export const FlowValidationSelectors = {
   getselectedItem: state => state.flowValidation.selectedItem,
   getAddedRuleScope: state => state.flowValidation.addedRuleScope,
   getUpdatedRuleScope: state => state.flowValidation.updatedRuleScope,
+  getUpdatedRule: state => state.flowValidation.updatedRule,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -96,6 +100,11 @@ const updateRuleScopeSuccess = (state, { payload }) => {
   };
 };
 
+const updateRuleSuccess = (state, { payload }) => ({
+  ...state,
+  updatedRule: payload,
+});
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
   FlowValidation_INITIAL_STATE,
@@ -114,6 +123,7 @@ export const flowValidationReducer = createReducer(
       .addCase(
         FlowValidationActions.updateRuleScopeSuccess,
         updateRuleScopeSuccess
-      );
+      )
+      .addCase(FlowValidationActions.updateRuleSuccess, updateRuleSuccess);
   }
 );
