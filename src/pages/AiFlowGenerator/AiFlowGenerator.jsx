@@ -20,7 +20,6 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { isEmpty, isEqual } from 'lodash';
-import { fetchDefaultRecentFlowsData } from './services';
 import { RecommendedFlow } from './RecommendedFlow';
 import { PromptInputBox } from './PromptInputBox';
 import {
@@ -241,8 +240,12 @@ export const AiFlowGenerator = () => {
     return arr.length === 0 || arr.every(obj => Object.keys(obj).length === 0);
   };
   useEffect(() => {
-    if (!isArrayEmpty(clusters)) {
-      fetchDefaultRecentFlowsData(dispatch);
+    if (!isArrayEmpty(clusters) && !isEmpty(Object.keys(currentUser))) {
+      const payload = {
+        user_id: currentUser?.id,
+        user_role: currentUser?.role,
+      };
+      dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows(payload));
       dispatch(AiFlowGeneratorActions.fetchRegistry());
     }
   }, []);
@@ -266,7 +269,7 @@ export const AiFlowGenerator = () => {
     if (!isEmpty(bucketListData)) {
       setBuckets(bucketListData?.bucketList);
     }
-  });
+  }, [bucketListData]);
   const registryData = useSelector(AiFlowGeneratorSelectors.getRegistry);
   const [registry, setRegistry] = useState(registryData);
   useEffect(() => {
@@ -281,9 +284,15 @@ export const AiFlowGenerator = () => {
       }
       return;
     } else {
+      const payload = {
+        user_id: currentUser?.id,
+        user_role: currentUser?.role,
+      };
+      setisInputEmpty(false);
       setIsFlowUpdated(false);
       setIsFLowDownloaded(false);
       setAddedToRegistry(false);
+      setOpenPreviewModal(false);
       setOpenConversation(false);
       setQueryText('');
       setFlowJson({});
@@ -291,7 +300,7 @@ export const AiFlowGenerator = () => {
       setIsPromptInputDisabled(!generateFlowPermission);
       dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
       dispatch(AiFlowGeneratorActions.setGenFlowError(''));
-      dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows());
+      dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows(payload));
     }
   };
 
@@ -332,7 +341,7 @@ export const AiFlowGenerator = () => {
 
   const handleFlowDownload = () => {
     setIsFLowDownloaded(true);
-    downloadJsonFile(flowJson, 'demo.json');
+    downloadJsonFile(flowJson, 'demo.json', handleRefresh);
     if (isFlowUpdated) {
       dispatch(
         AiFlowGeneratorActions.updateGeneratedFlow({
@@ -342,7 +351,6 @@ export const AiFlowGenerator = () => {
       );
     }
     setOpenPreviewModal(false);
-    handleRefresh();
   };
 
   const handleDownloadClick = () => {
@@ -402,8 +410,9 @@ export const AiFlowGenerator = () => {
         toast.error('Error repairing JSON:', error);
         return;
       }
-      setFlowJson(JSON.parse(repaired));
-      setOriginalFlow(JSON.parse(repaired));
+      const jsonType = typeof JSON.parse(repaired);
+      setFlowJson(jsonType === 'object' ? JSON.parse(repaired) : {});
+      setOriginalFlow(jsonType === 'object' ? JSON.parse(repaired) : {});
     }
   }, [generatedFlow]);
 
@@ -456,13 +465,18 @@ export const AiFlowGenerator = () => {
   };
 
   useEffect(() => {
-    if (!loading && isEmpty(flowError) && openConversation) {
+    if (
+      !loading &&
+      isEmpty(flowError) &&
+      openConversation &&
+      !isEmpty(Object.keys(flowJson))
+    ) {
       setIsFullscreen(false);
       setOpenPreviewModal(true);
     } else {
       setOpenPreviewModal(false);
     }
-  }, [loading, flowError]);
+  }, [loading, flowError, flowJson]);
 
   const toggleFullScreen = () => {
     setIsFullscreen(prev => !prev);
@@ -551,48 +565,55 @@ export const AiFlowGenerator = () => {
                 >
                   {loading
                     ? 'Generating Flow...'
-                    : !loading && isEmpty(flowError)
+                    : !loading &&
+                        isEmpty(flowError) &&
+                        !isEmpty(Object.keys(flowJson))
                       ? 'Here is the JSON File generated as per your prompt....'
-                      : `${flowError} please refresh...`}
+                      : `${flowError} we are unable to proceed your query at this time, please refresh to generate flow again...`}
                 </p>
-                {!loading && isEmpty(flowError) && (
-                  <>
-                    <div className="d-flex flex-wrap gap-3 mb-3 mt-4">
-                      <div className="data-flow-thum text-center">
-                        <div className="data-flow-thum-img mb-1">
-                          <img src={fileImage} alt="" className="img-fluid" />
+                {!loading &&
+                  isEmpty(flowError) &&
+                  !isEmpty(Object.keys(flowJson)) && (
+                    <>
+                      <div className="d-flex flex-wrap gap-3 mb-3 mt-4">
+                        <div className="data-flow-thum text-center">
+                          <div className="data-flow-thum-img mb-1">
+                            <img src={fileImage} alt="" className="img-fluid" />
+                          </div>
+                          <div className="data-flow-thum-text">Flow.json</div>
                         </div>
-                        <div className="data-flow-thum-text">demo.json</div>
                       </div>
-                    </div>
-                    <div className="d-flex gap-2">
-                      <div className="add-to-registry-btn">
-                        <Button
-                          onClick={() => {
-                            setIsClickedFromPreviewModal(false);
-                            onAddToRegistryClick();
-                          }}
-                          size="sm"
+                      <div className="d-flex gap-2">
+                        <div className="add-to-registry-btn">
+                          <Button
+                            isBtnDisable={isEmpty(Object.keys(flowJson))}
+                            onClick={() => {
+                              setIsClickedFromPreviewModal(false);
+                              onAddToRegistryClick();
+                            }}
+                            size="sm"
+                          >
+                            {KDFM.ADD_TO_REGSITRY}
+                          </Button>
+                        </div>
+                        <div className="flow-download-btn">
+                          <Button
+                            isBtnDisable={isEmpty(Object.keys(flowJson))}
+                            onClick={handleDownloadClick}
+                            variant="secondary"
+                            icon={<DownloadIcon color="#444445" />}
+                          />
+                        </div>
+                        <button
+                          disabled={isEmpty(Object.keys(flowJson))}
+                          onClick={handlePreviewClick}
+                          className="preview-btn d-flex align-items-center justify-content-center"
                         >
-                          {KDFM.ADD_TO_REGSITRY}
-                        </Button>
+                          <OpenEyeIcon width={24} height={18} color="#FF7A00" />
+                        </button>
                       </div>
-                      <div className="flow-download-btn">
-                        <Button
-                          onClick={handleDownloadClick}
-                          variant="secondary"
-                          icon={<DownloadIcon color="#444445" />}
-                        />
-                      </div>
-                      <button
-                        onClick={handlePreviewClick}
-                        className="preview-btn d-flex align-items-center justify-content-center"
-                      >
-                        <OpenEyeIcon width={24} height={18} color="#FF7A00" />
-                      </button>
-                    </div>
-                  </>
-                )}
+                    </>
+                  )}
               </div>
             </DataFlowList>
           </DataFlowContainer>

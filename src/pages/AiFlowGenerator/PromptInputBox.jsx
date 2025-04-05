@@ -5,9 +5,8 @@ import { SendMessageIcon } from '../../assets';
 import { KDFM } from '../../constants';
 import { toast } from 'react-toastify';
 import DOMPurify from 'dompurify';
-import _ from 'lodash';
-import { useDispatch } from 'react-redux';
-import { AiFlowGeneratorActions } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AiFlowGeneratorActions, AuthenticationSelectors } from '../../store';
 import { validatePayload } from './utils';
 import { v4 as uuidv4 } from 'uuid';
 import { GENAI_CONFIG } from '../../constants/aiFlowGenerator.constant';
@@ -83,6 +82,8 @@ export const PromptInputBox = ({
   isInputEmpty,
 }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
+
   useEffect(() => {
     if (queryText?.length !== 0 && !isInputEmpty) {
       setIsSendBtnDisabled(false);
@@ -124,6 +125,8 @@ export const PromptInputBox = ({
         type: GENAI_CONFIG.APP_TYPE,
         short_name: queryLabel || '',
         refresh: refresh,
+        logged_in_user: currentUser?.id,
+        user_role: currentUser?.role,
       };
       const requiredFields = [
         'session_id',
@@ -134,6 +137,8 @@ export const PromptInputBox = ({
         'org_id',
         'user_id',
         'type',
+        'logged_in_user',
+        'user_role',
       ];
       if (validatePayload(payload, requiredFields)) {
         dispatch(AiFlowGeneratorActions.generateFlowAPI(payload));
@@ -152,9 +157,14 @@ export const PromptInputBox = ({
         onChange={e => {
           let value = e.target.value;
           value = DOMPurify.sanitize(value, { ALLOWED_TAGS: [] });
-          value = _.trim(value).replace(/\s+/g, ' ');
           setQueryText(value);
           setIsSendBtnDisabled(value.length === 0);
+        }}
+        onKeyDown={e => {
+          if (e.key === 'Enter' && !isSendBtnDisabled) {
+            e.preventDefault();
+            handleGenerateFLowClick();
+          }
         }}
       />
       <GenerateFLowButton

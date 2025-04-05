@@ -207,7 +207,7 @@ export const Sidebar = ({
   const handleRoute = path => {
     if (flowGenrating) {
       if (!toast.isActive('generating-flow')) {
-        toast.warning('Flow is generating... please wait', {
+        toast.warning('Flow is generating please wait', {
           toastId: 'generating-flow',
         });
       }

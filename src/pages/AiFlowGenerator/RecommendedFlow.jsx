@@ -62,7 +62,7 @@ export const RecommendedFlow = ({
   const handleRecentFlowClick = flow => {
     if (loading) {
       if (!toast.isActive('generating-flow')) {
-        toast.warning('Flow is generating... please wait', {
+        toast.warning('Flow is generating please wait', {
           toastId: 'generating-flow',
         });
       }

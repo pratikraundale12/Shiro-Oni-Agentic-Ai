@@ -1132,7 +1132,9 @@ export function* fetchRegistryData(api, { payload }) {
   if (response.ok) {
     yield put(NamespacesActions.setBucketListDropDownData(response?.data));
   } else {
-    toast.error(response?.message || response?.data?.message);
+    toast.error(
+      response?.message || response?.data?.message || response?.data?.raw?.raw
+    );
   }
 }
 
