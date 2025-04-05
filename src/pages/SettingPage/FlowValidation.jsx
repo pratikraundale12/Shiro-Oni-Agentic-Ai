@@ -80,6 +80,12 @@ const FlowValidation = () => {
               dispatch(SettingsActions.flowValidationModalOpen(true));
               dispatch(FlowValidationActions.fetchRules(item?.id));
               dispatch(FlowValidationActions.fetchProperty(item?.scope_type));
+              dispatch(
+                FlowValidationActions.setSelectedItem({
+                  ...item,
+                  deletable: item?.deletable ?? true,
+                })
+              );
             }}
           >
             <FlowValidationIcon />

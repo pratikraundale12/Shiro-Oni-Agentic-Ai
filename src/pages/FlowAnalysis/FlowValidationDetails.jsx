@@ -77,7 +77,7 @@ const FlowValidationDetails = () => {
         clusterId: selectedCluster?.value,
         namespaceId: selectedItem?.id,
         data: {
-          generate_var_list: true,
+          generateVarList: false,
           rulesForValidation: ruleIds,
         },
       })

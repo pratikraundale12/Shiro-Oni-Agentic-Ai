@@ -67,9 +67,17 @@ const RadioContainer = styled.div`
 const FlowValidationModal = () => {
   const dispatch = useDispatch();
   const fetchRules = useSelector(FlowValidationSelectors.getRules);
+  console.log(fetchRules, 'line no 70');
   const [selectedRuleId, setSelectedRuleId] = useState(null);
   const [editedConditions, setEditedConditions] = useState([]);
+  const [isCreatingNewRule, setIsCreatingNewRule] = useState(false);
+  const [newRule, setNewRule] = useState({
+    name: '',
+    output_value: '',
+    conditions: [],
+  });
   const fetchPropertyData = useSelector(FlowValidationSelectors.getProperty);
+  const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
   const { control } = useForm();
   console.log('hi');
   useEffect(() => {
@@ -95,7 +103,7 @@ const FlowValidationModal = () => {
   const selectedRule = fetchRules?.data?.find(
     rule => rule.id === selectedRuleId
   );
-
+  console.log(newRule.conditions, 'line no 106');
   const isFlowValidationModalOpen = useSelector(
     SettingsSelectors.getFlowValidationModal
   );
@@ -127,99 +135,372 @@ const FlowValidationModal = () => {
           data: updatedRule,
         })
       );
-      dispatch(SettingsActions.flowValidationModalOpen(false));
+      // dispatch(SettingsActions.flowValidationModalOpen(false));
     }
   };
 
+  const handleAddNewRule = () => {
+    setIsCreatingNewRule(true);
+    setNewRule({
+      name: '',
+      output_value: '',
+      conditions: [],
+    });
+  };
+
+  const handleCreateRule = () => {
+    console.log(newRule, 'line no 152');
+    if (newRule.name && newRule.output_value && newRule.conditions.length > 0) {
+      try {
+        console.log('line no 157');
+        dispatch(
+          FlowValidationActions.createRule({
+            ...newRule,
+            priority: fetchRules?.data?.length + 1,
+            scope_id: selectedItem.id,
+            conditions: newRule.conditions.map(condition => ({
+              condition_value: condition.condition_value,
+              condition_property: condition.condition_property,
+              condition_expression: condition.condition_expression,
+            })),
+          })
+        );
+        setIsCreatingNewRule(false);
+        dispatch(SettingsActions.flowValidationModalOpen(false));
+      } catch (error) {
+        console.error('Error creating rule:', error);
+        // You might want to show an error message to the user here
+      }
+    } else {
+      // You might want to show a validation message to the user here
+      console.warn('Please fill in all required fields');
+    }
+  };
+
+  const validateConditionValue = (propertyName, value) => {
+    const property = fetchPropertyData?.data?.find(
+      prop => prop.propName === propertyName
+    );
+
+    if (!property) return true; // If property not found, allow any value
+
+    const propType = property.propType?.toLowerCase();
+
+    switch (propType) {
+      case 'boolean':
+        return (
+          value.toLowerCase() === 'true' || value.toLowerCase() === 'false'
+        );
+      case 'integer':
+        return !isNaN(value) && Number.isInteger(Number(value));
+      case 'string':
+        return typeof value === 'string';
+      default:
+        return true; // For unknown types, allow any value
+    }
+  };
+
+  const handleAddCondition = async e => {
+    // Prevent form submission
+    e.preventDefault();
+    e.stopPropagation();
+
+    console.log(newRule, 'line no 203');
+
+    // If rule already exists or name/output_value not filled, just add condition
+    setNewRule(prev => ({
+      ...prev,
+      conditions: [
+        ...prev.conditions,
+        {
+          condition_property: '',
+          condition_expression: '',
+          condition_value: '',
+        },
+      ],
+    }));
+  };
+
+  const handleNewRuleChange = (field, value) => {
+    setNewRule(prev => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleNewConditionChange = (index, field, value) => {
+    if (field === 'condition_value') {
+      const propertyName = newRule.conditions[index].condition_property;
+      if (!validateConditionValue(propertyName, value)) {
+        // You might want to show an error message to the user here
+        console.warn(`Invalid value for property type`);
+        return;
+      }
+    }
+
+    setNewRule(prev => ({
+      ...prev,
+      conditions: prev.conditions.map((condition, i) =>
+        i === index ? { ...condition, [field]: value } : condition
+      ),
+    }));
+  };
+
+  console.log(selectedItem?.deletable, 'line no 134');
   return (
     <Modal
-      title="Add Flow Rule"
+      title={isCreatingNewRule ? 'Create New Rule' : 'Add Flow Rule'}
       isOpen={isFlowValidationModalOpen}
-      onRequestClose={() =>
-        dispatch(SettingsActions.flowValidationModalOpen(false))
-      }
+      onRequestClose={() => {
+        dispatch(SettingsActions.flowValidationModalOpen(false));
+        setIsCreatingNewRule(false);
+      }}
       size="md"
-      primaryButtonText="Save"
+      primaryButtonText={isCreatingNewRule ? 'Create' : 'Save'}
       secondaryButtonText="Cancel"
       contentStyles={{ maxWidth: '70%', maxHeight: '80%' }}
-      onSubmit={handleSave}
+      onSubmit={isCreatingNewRule ? handleCreateRule : handleSave}
     >
       <div className="row">
         <div className="col-md-8 col-xl-9">
-          <InputField
-            name="rule_name"
-            icon={<NewLinkIcon />}
-            label="Rule Name"
-            value={selectedRule?.name || ''}
-            placeholder="Processor Colors"
-            disabled={true}
-          />
-          <InputField
-            name="rule_comments"
-            icon={<NewMessageIcon />}
-            label="Output Value"
-            value={selectedRule?.output_value || ''}
-            placeholder="Rules for Processor Colors"
-            disabled={true}
-          />
-          <div className="col-12">
-            <ConditionIcon className="d-flex align-items-center gap-3">
-              Condition <InfoIcon />
-            </ConditionIcon>
-          </div>
-          <div className="row g-2 align-items-center">
-            {editedConditions?.map((condition, index) => (
-              <Fragment key={index}>
-                <div className="col-md-4">
-                  <PropertyDiv>
-                    <SelectField
-                      name="select_property"
-                      icon={<PropertyIcon />}
-                      placeholder="Select Property"
-                      options={fetchPropertyData?.data?.map(property => ({
-                        label: property?.propName,
-                        value: property?.propType,
-                      }))}
-                      defaultValue={condition?.condition_property}
-                      control={control}
-                      disabled={true}
-                    />
-                  </PropertyDiv>
+          {isCreatingNewRule ? (
+            <>
+              <InputField
+                name="rule_name"
+                icon={<NewLinkIcon />}
+                label="Rule Name"
+                value={newRule.name}
+                onChange={e => handleNewRuleChange('name', e.target.value)}
+                placeholder="Enter Rule Name"
+              />
+              <InputField
+                name="rule_comments"
+                icon={<NewMessageIcon />}
+                label="Output Value"
+                value={newRule.output_value}
+                onChange={e =>
+                  handleNewRuleChange('output_value', e.target.value)
+                }
+                placeholder="Enter Output Value"
+              />
+              <div className="col-12 d-flex justify-content-between">
+                <ConditionIcon className="d-flex align-items-center gap-3">
+                  Condition <InfoIcon />
+                </ConditionIcon>
+                <div>
+                  <Button onClick={handleAddCondition}>
+                    <AddIcon color="#fff" /> Add Conditionsss
+                  </Button>
                 </div>
-                <div className="col-md">
-                  <PropertyDiv>
-                    <SelectField
-                      name="condition"
-                      icon={<PropertyIcon />}
-                      placeholder="Condition"
-                      options={[
-                        { label: '===', value: '===' },
-                        { label: '!==', value: '!==' },
-                        { label: '<', value: '<' },
-                        { label: '>', value: '>' },
-                        { label: '<=', value: '<=' },
-                        { label: '>=', value: '>=' },
-                        { label: 'contains', value: 'contains' },
-                      ]}
-                      defaultValue={condition?.condition_expression}
-                      control={control}
-                      disabled={true}
-                    />
-                  </PropertyDiv>
-                </div>
-                <div className="col-md-3">
-                  <InputField
-                    name={`condition_value_${index}`}
-                    icon={<NewLinkIcon />}
-                    value={condition?.condition_value || ''}
-                    onChange={e =>
-                      handleConditionValueChange(index, e.target.value)
-                    }
-                  />
-                </div>
-              </Fragment>
-            ))}
-          </div>
+              </div>
+              <div className="row g-2 align-items-center">
+                {newRule.conditions.map((condition, index) => (
+                  <Fragment key={index}>
+                    <div className="col-md-4">
+                      <PropertyDiv>
+                        <SelectField
+                          name={`condition_property_${index}`}
+                          icon={<PropertyIcon />}
+                          placeholder="Select Property"
+                          options={fetchPropertyData?.data?.map(property => ({
+                            label: property?.propName,
+                            value: property?.propName,
+                          }))}
+                          defaultValue={
+                            fetchPropertyData?.data?.find(
+                              property =>
+                                property?.propName ===
+                                condition.condition_property
+                            ) || null
+                          }
+                          onChange={e => {
+                            handleNewConditionChange(
+                              index,
+                              'condition_property',
+                              e?.value
+                            );
+                          }}
+                          control={control}
+                          disabled={!isCreatingNewRule}
+                        />
+                      </PropertyDiv>
+                    </div>
+                    <div className="col-md">
+                      <PropertyDiv>
+                        <SelectField
+                          name={`condition_expression_${index}`}
+                          icon={<PropertyIcon />}
+                          placeholder="Condition"
+                          options={[
+                            { label: '===', value: '===' },
+                            { label: '!==', value: '!==' },
+                            { label: '<', value: '<' },
+                            { label: '>', value: '>' },
+                            { label: '<=', value: '<=' },
+                            { label: '>=', value: '>=' },
+                            { label: 'contains', value: 'contains' },
+                          ]}
+                          value={
+                            isCreatingNewRule
+                              ? condition.condition_expression
+                                ? {
+                                    label: condition.condition_expression,
+                                    value: condition.condition_expression,
+                                  }
+                                : null
+                              : [
+                                  { label: '===', value: '===' },
+                                  { label: '!==', value: '!==' },
+                                  { label: '<', value: '<' },
+                                  { label: '>', value: '>' },
+                                  { label: '<=', value: '<=' },
+                                  { label: '>=', value: '>=' },
+                                  { label: 'contains', value: 'contains' },
+                                ].find(
+                                  option =>
+                                    option.value ===
+                                    condition.condition_expression
+                                )
+                          }
+                          onChange={e => {
+                            handleNewConditionChange(
+                              index,
+                              'condition_expression',
+                              e?.value
+                            );
+                          }}
+                          control={control}
+                          disabled={!isCreatingNewRule}
+                        />
+                      </PropertyDiv>
+                    </div>
+                    <div className="col-md-3">
+                      <InputField
+                        name={`condition_value_${index}`}
+                        icon={<NewLinkIcon />}
+                        value={condition.condition_value}
+                        onChange={e =>
+                          handleNewConditionChange(
+                            index,
+                            'condition_value',
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <InputField
+                name="rule_name"
+                icon={<NewLinkIcon />}
+                label="Rule Name"
+                value={selectedRule?.name || ''}
+                placeholder="Processor Colors"
+                disabled={true}
+              />
+              <InputField
+                name="rule_comments"
+                icon={<NewMessageIcon />}
+                label="Output Value"
+                value={selectedRule?.output_value || ''}
+                placeholder="Rules for Processor Colors"
+                disabled={true}
+              />
+              <div className="col-12">
+                <ConditionIcon className="d-flex align-items-center gap-3">
+                  Condition <InfoIcon />
+                </ConditionIcon>
+              </div>
+              <div className="row g-2 align-items-center">
+                {editedConditions?.map((condition, index) => (
+                  <Fragment key={index}>
+                    <div className="col-md-4">
+                      <PropertyDiv>
+                        <SelectField
+                          name={`condition_property_${index}`}
+                          icon={<PropertyIcon />}
+                          placeholder="Select Property"
+                          options={fetchPropertyData?.data?.map(property => ({
+                            label: property?.propName,
+                            value: property?.propName,
+                          }))}
+                          defaultValue={
+                            fetchPropertyData?.data?.find(
+                              property =>
+                                property?.propName ===
+                                condition.condition_property
+                            ) || null
+                          }
+                          onChange={e => {
+                            handleNewConditionChange(
+                              index,
+                              'condition_property',
+                              e?.value
+                            );
+                          }}
+                          control={control}
+                          disabled={!isCreatingNewRule}
+                        />
+                      </PropertyDiv>
+                    </div>
+                    <div className="col-md">
+                      <PropertyDiv>
+                        <SelectField
+                          name={`condition_expression_${index}`}
+                          icon={<PropertyIcon />}
+                          placeholder="Condition"
+                          options={[
+                            { label: '===', value: '===' },
+                            { label: '!==', value: '!==' },
+                            { label: '<', value: '<' },
+                            { label: '>', value: '>' },
+                            { label: '<=', value: '<=' },
+                            { label: '>=', value: '>=' },
+                            { label: 'contains', value: 'contains' },
+                          ]}
+                          value={[
+                            { label: '===', value: '===' },
+                            { label: '!==', value: '!==' },
+                            { label: '<', value: '<' },
+                            { label: '>', value: '>' },
+                            { label: '<=', value: '<=' },
+                            { label: '>=', value: '>=' },
+                            { label: 'contains', value: 'contains' },
+                          ].find(
+                            option =>
+                              option.value === condition.condition_expression
+                          )}
+                          onChange={e =>
+                            handleNewConditionChange(
+                              index,
+                              'condition_expression',
+                              e?.value
+                            )
+                          }
+                          control={control}
+                          disabled={!isCreatingNewRule}
+                        />
+                      </PropertyDiv>
+                    </div>
+                    <div className="col-md-3">
+                      <InputField
+                        name={`condition_value_${index}`}
+                        icon={<NewLinkIcon />}
+                        value={condition?.condition_value || ''}
+                        onChange={e =>
+                          handleConditionValueChange(index, e.target.value)
+                        }
+                      />
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
+            </>
+          )}
         </div>
         <div className="col-md-4 col-xl-3">
           <ModelRightSide className="p-3">
@@ -228,7 +509,11 @@ const FlowValidationModal = () => {
                 Rules
                 <InfoIcon />
               </span>
-              <Button className="w-auto">
+              <Button
+                className="w-auto"
+                onClick={handleAddNewRule}
+                disabled={selectedItem?.deletable === false}
+              >
                 <AddIcon color="#fff" />
                 Add New Rule
               </Button>

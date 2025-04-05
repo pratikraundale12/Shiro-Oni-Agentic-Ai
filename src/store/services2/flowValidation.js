@@ -12,6 +12,7 @@ export const flowValidationAPI = api => {
       data
     );
   const updateRuleApi = (id, data) => api.put(`/rule/${id}`, data);
+  const createRule = data => api.post(`/add-rule`, data);
 
   return {
     ruleScopeApi,
@@ -22,5 +23,6 @@ export const flowValidationAPI = api => {
     validateRulesApi,
     compareRulesApi,
     updateRuleApi,
+    createRule,
   };
 };

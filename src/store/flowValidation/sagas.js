@@ -86,9 +86,16 @@ export function* updateRuleSaga(api, { payload }) {
     apiParams: [ruleId, data],
     successAction: FlowValidationActions.updateRuleSuccess,
   });
+}
 
-  // After successful update, re-fetch the rules
-  yield put(FlowValidationActions.fetchRules(ruleId));
+export function* createRuleSaga(api, { payload }) {
+  yield call(requestSaga, {
+    errorSection: 'createRule',
+    loadingSection: 'createRule',
+    apiMethod: api.createRule,
+    apiParams: [payload],
+    successAction: FlowValidationActions.createRuleSuccess,
+  });
 }
 
 export function* flowValidationSagas(api) {
@@ -101,5 +108,6 @@ export function* flowValidationSagas(api) {
     takeLatest(FlowValidationActions.addRuleScope, addRuleScopeSaga, api),
     takeLatest(FlowValidationActions.updateRuleScope, updateRuleScopeSaga, api),
     takeLatest(FlowValidationActions.updateRule, updateRuleSaga, api),
+    takeLatest(FlowValidationActions.createRule, createRuleSaga, api),
   ]);
 }
