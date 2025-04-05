@@ -74,7 +74,7 @@ export const Table = ({
   showPagination = false,
   csList = false,
   isResetNotRequired = false,
-  customNoDataText = false,
+  //customNoDataText = false,
   tableWithFullHeight = false,
 }) => {
   const [itemsPerPage, setitemsPerPage] = useState(10);
@@ -213,6 +213,6 @@ Table.propTypes = {
   showPagination: PropTypes.bool,
   csList: PropTypes.bool,
   isResetNotRequired: PropTypes.bool,
-  customNoDataText: PropTypes.string,
+  // customNoDataText: PropTypes.string,
   tableWithFullHeight: PropTypes.bool,
 };
