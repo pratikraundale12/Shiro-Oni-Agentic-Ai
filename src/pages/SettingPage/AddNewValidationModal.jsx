@@ -31,14 +31,14 @@ const AddNewValidationModal = () => {
 
   const onSubmit = data => {
     const selectedScope = SCOPE_TYPE_OPTIONS.find(
-      option => option.value === data.scope_type
+      option => option.value === data?.scope_type
     );
 
     dispatch(
       FlowValidationActions.addRuleScope({
         scope_type: selectedScope ? selectedScope.value : data.scope_type,
-        description: data.description,
-        header: data.dispaly_value,
+        description: data?.description,
+        header: data?.dispaly_value,
       })
     );
   };

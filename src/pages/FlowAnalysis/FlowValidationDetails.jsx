@@ -1,13 +1,19 @@
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets';
-import { Table } from '../../components';
+import { FullPageLoader, Table } from '../../components';
+import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
-import { FlowValidationActions } from '../../store/flowValidation';
+import { LoadingSelectors, NamespacesSelectors } from '../../store';
+import {
+  FlowValidationActions,
+  FlowValidationSelectors,
+} from '../../store/flowValidation';
 import Collapsible from '../Namespaces/Collapsible';
 
 const FlowContainerDetail = styled.div`
@@ -47,8 +53,37 @@ const FlowcompareStyled = styled.div`
 `;
 
 const FlowValidationDetails = () => {
-  const { control } = useForm();
+  const { control, watch } = useForm();
   const dispatch = useDispatch();
+  const ruleScopes = useSelector(FlowValidationSelectors.getRuleScopes);
+  const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const selectedRules = watch('select_property') || [];
+  const ruleIds = selectedRules.map(rule => rule.value);
+  const validationResult = useSelector(
+    FlowValidationSelectors.getValidationResult
+  );
+  console.log(validationResult?.data);
+  const formattedOptions = ruleScopes?.data?.length
+    ? ruleScopes?.data?.map(rule => ({
+        label: rule?.header,
+        value: rule?.id,
+      }))
+    : [];
+
+  const handleValidateFlow = () => {
+    dispatch(
+      FlowValidationActions.validateRules({
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedItem?.id,
+        data: {
+          generate_var_list: true,
+          rulesForValidation: ruleIds,
+        },
+      })
+    );
+  };
+
   const path = [
     {
       label: 'Flow Analysis List',
@@ -59,7 +94,10 @@ const FlowValidationDetails = () => {
 
   useEffect(() => {
     dispatch(FlowValidationActions.ruleScopeFetch({}));
-    dispatch(FlowValidationActions.fetchRules());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(FlowValidationActions.validateRulesSuccess(null));
   }, [dispatch]);
 
   const COLUMNS = [
@@ -80,53 +118,16 @@ const FlowValidationDetails = () => {
     },
   ];
 
-  const sections = [
-    {
-      title: 'Concurrent Task Value',
-      data: [
-        {
-          version: 'v1.0',
-          displayValue: 'ID-001',
-          comments: 'Validation passed successfully',
-        },
-        {
-          version: 'v1.1',
-          displayValue: 'ID-002',
-          comments: 'Missing required field: Email',
-        },
-      ],
-    },
-    {
-      title: 'User Information Validation',
-      data: [
-        {
-          version: 'v2.0',
-          displayValue: 'ID-003',
-          comments: 'Incorrect format in phone number',
-        },
-        {
-          version: 'v2.1',
-          displayValue: 'ID-004',
-          comments: 'All validations passed',
-        },
-      ],
-    },
-    {
-      title: 'System Rules Check',
-      data: [
-        {
-          version: 'v3.0',
-          displayValue: 'ID-005',
-          comments: 'Field length exceeded limit',
-        },
-        {
-          version: 'v3.1',
-          displayValue: 'ID-006',
-          comments: 'Duplicate entry found',
-        },
-      ],
-    },
-  ];
+  const tableBody = validationResult?.data?.tableBody || [];
+
+  const sections = tableBody.map(section => ({
+    title: section.label?.replace(/:$/, '') || 'Unknown Section',
+    data: (section.values || []).map(value => ({
+      version: value?.output_value,
+      displayValue: value?.processor_id,
+      comments: value?.processor_name,
+    })),
+  }));
 
   const [openSections, setOpenSections] = useState(sections.map(() => false));
 
@@ -135,9 +136,16 @@ const FlowValidationDetails = () => {
     updated[index] = !updated[index];
     setOpenSections(updated);
   };
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'validateRules')
+  );
+  const handleBackClick = () => {
+    history.push('/flow-analysis');
+  };
 
   return (
     <div>
+      <FullPageLoader loading={loading} />
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2">
@@ -148,84 +156,104 @@ const FlowValidationDetails = () => {
       </div>
       <Breadcrumb module="path" path={path} />
       <FlowcompareStyled>
-        <div>
-          <div>
+        <div className="d-flex justify-start align-center mb-4">
+          <div style={{ width: '80%' }}>
             <LabelSelect>Select Rules To Validate</LabelSelect>
             <MultiSelectField
               enableCheckboxes
               control={control}
               name="select_property"
               placeholder="Select Rules To Validate"
-              options={[
-                { label: 'Processor', value: 'Processor' },
-                { label: 'Connection', value: 'Connection' },
-                { label: 'superadmin', value: 'superadmin' },
-                { label: 'superadmin1', value: 'superadmin1' },
-              ]}
-              customWidth="80%"
+              options={formattedOptions}
+              // customWidth=""
             />
           </div>
-          <div className="text-center mt-4">
+
+          <div className="mt-4 ml-2 d-flex align-center">
             <Button
-              // onClick={() => setShowDetail(true)}
+              onClick={handleValidateFlow}
               className="w-auto mx-auto"
+              disabled={selectedRules.length === 0}
             >
               Validate Flow
             </Button>
           </div>
         </div>
+        {validationResult?.data &&
+          Object.keys(validationResult.data).length > 0 && (
+            <FlowContainerDetail>
+              <div className="row">
+                <div className="col-md-6 mb-4 pb-md-2">
+                  <LabelSelect>Flow Info</LabelSelect>
+                  <LabelSelectContent>
+                    {validationResult.data.lableBody?.flowInfo || 'N/A'}
+                  </LabelSelectContent>
+                </div>
+                <div className="col-md-6 mb-4 pb-md-2">
+                  <LabelSelect>Invalid Processor Count</LabelSelect>
+                  <LabelSelectContent>
+                    {validationResult.data.lableBody?.InvalidCount || 'N/A'}
+                  </LabelSelectContent>
+                </div>
+                <div className="col-md-6 mb-4 pb-md-2">
+                  <LabelSelect>Registry Flow Info</LabelSelect>
+                  <LabelSelectContent>
+                    {validationResult.data.lableBody?.registryFlowInfo || 'N/A'}
+                  </LabelSelectContent>
+                </div>
+                <div className="col-md-6 mb-4 pb-md-2">
+                  <LabelSelect>Current Version</LabelSelect>
+                  <LabelSelectContent>
+                    {validationResult.data.lableBody?.currentVersion || 'N/A'}
+                  </LabelSelectContent>
+                </div>
+              </div>
 
-        <FlowContainerDetail>
-          <div className="row">
-            <div className="col-md-6 mb-4 pb-md-2">
-              <LabelSelect>Flow Info</LabelSelect>
-              <LabelSelectContent>
-                MYSQL - 70103b83-0195-1000-f97f-a23ed92163e0 - 127.0.0.1
-              </LabelSelectContent>
-            </div>
-            <div className="col-md-6 mb-4 pb-md-2">
-              <LabelSelect>Invalid Processor Count</LabelSelect>
-              <LabelSelectContent>0</LabelSelectContent>
-            </div>
-            <div className="col-md-6 mb-4 pb-md-2">
-              <LabelSelect>Registry Flow Info</LabelSelect>
-              <LabelSelectContent>
-                MySQL (TestBucket) - 52859810-0195-1000-f966-2707d02d1fdd
-              </LabelSelectContent>
-            </div>
-            <div className="col-md-6 mb-4 pb-md-2">
-              <LabelSelect>Current Version</LabelSelect>
-              <LabelSelectContent>V3</LabelSelectContent>
-            </div>
-          </div>
-          <div className="row align-items-center justify-content-between">
-            <div className="col-md-6 mb-4 pb-md-2">
-              <LabelSelect>State</LabelSelect>
-              <LabelSelectContent>
-                LOCALLY_MODIFIED - Local changes have been made
-              </LabelSelectContent>
-            </div>
-            <div className="col-md-auto mb-4">
-              <Button>Send Email Report</Button>
-            </div>
-          </div>
-        </FlowContainerDetail>
+              <div className="row align-items-center justify-content-between">
+                <div className="col-md-6 mb-4 pb-md-2">
+                  <LabelSelect>State</LabelSelect>
+                  <LabelSelectContent>
+                    {validationResult.data.lableBody?.state || 'N/A'}
+                  </LabelSelectContent>
+                </div>
+              </div>
+            </FlowContainerDetail>
+          )}
 
-        {sections.map((section, index) => (
-          <Collapsible
-            key={index}
-            title={section.title}
-            isTableOpen={openSections[index]}
-            toggleCollapsible={() => toggleCollapsible(index)}
-            isAddBtnVisible={false}
-          >
-            <Table columns={COLUMNS} data={section.data} />
-          </Collapsible>
-        ))}
+        {sections.map((section, index) => {
+          if (!section.data || section.data.length === 0) return null;
+
+          return (
+            <Collapsible
+              key={index}
+              title={section.title}
+              isTableOpen={openSections[index]}
+              toggleCollapsible={() => toggleCollapsible(index)}
+              isAddBtnVisible={false}
+            >
+              <Table columns={COLUMNS} data={section.data} />
+            </Collapsible>
+          );
+        })}
       </FlowcompareStyled>
-      <Button className="w-auto mt-2">Back</Button>
+      <div className="d-flex">
+        <Button
+          className="w-auto mt-2 mr-2"
+          variant="secondary"
+          onClick={handleBackClick}
+        >
+          Back
+        </Button>
+        <div className="col-md-auto mb-4 mt-2">
+          <Button>Send Email Report</Button>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default FlowValidationDetails;
+
+FlowValidationDetails.propTypes = {
+  selectedItem: PropTypes.object, // or shape({}) if you want to be more specific
+};

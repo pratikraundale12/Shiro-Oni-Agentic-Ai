@@ -4,10 +4,12 @@ import { useDispatch } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { PropertyIcon } from '../../assets';
-import { Grid, TextRender } from '../../components';
+import { CompareValidationIcon } from '../../assets/Icons/CompareValidationIcon';
+import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { NamespacesActions } from '../../store';
+import { FlowValidationActions } from '../../store/flowValidation';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from '../Namespaces/ProcessGroupSorting';
 
@@ -59,6 +61,7 @@ const FlowAnalysis = () => {
   }, []);
 
   const handleEdit = item => {
+    dispatch(FlowValidationActions.setSelectedItem(item));
     history.push('/flow-analysis/flow-validation');
     console.log('Edit clicked', item);
     // Add your edit logic here
@@ -67,6 +70,13 @@ const FlowAnalysis = () => {
   const handleDelete = item => {
     history.push('/flow-analysis/flow-compare');
     console.log('Delete clicked', item);
+    dispatch(FlowValidationActions.setSelectedItem(item));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: item.bucketId,
+        flowId: item.flowId,
+      })
+    );
     // Add your delete logic here
   };
 
@@ -174,10 +184,38 @@ const FlowAnalysis = () => {
       label: KDFM.ACTIONS,
       renderCell: item => (
         <div>
-          <button onClick={() => handleEdit(item)}>
-            <PropertyIcon />
+          <button
+            onClick={() => handleEdit(item)}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              marginRight: '5px',
+            }}
+          >
+            <IconButton>
+              <PropertyIcon color="#444445" width="16px" height="16px" />
+            </IconButton>
           </button>
-          <button onClick={() => handleDelete(item)}>Delete</button>
+          <button
+            onClick={() => handleDelete(item)}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+            }}
+          >
+            {' '}
+            <IconButton>
+              <CompareValidationIcon
+                color="#444445"
+                width="16px"
+                height="16px"
+              />
+            </IconButton>
+          </button>
         </div>
       ),
       width: '20%',

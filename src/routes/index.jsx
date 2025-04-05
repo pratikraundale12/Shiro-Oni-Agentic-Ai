@@ -16,6 +16,7 @@ import {
   LockIcon,
   NameSpaceIcon,
   PeopleIcon,
+  PropertyIcon,
   QuestionMarkIcon,
   ReadyFlowIcon,
   ScheduleDeploymentIcon,
@@ -145,7 +146,7 @@ export const ROUTES_MENU = [
   {
     name: 'Flow Analysis',
     path: 'flow-analysis',
-    icon: BookIcon,
+    icon: PropertyIcon,
     pages: [
       {
         path: '',

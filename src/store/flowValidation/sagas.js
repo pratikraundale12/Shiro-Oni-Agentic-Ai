@@ -20,15 +20,6 @@ export function* fetchRules(api, { payload }) {
     successAction: FlowValidationActions.fetchRulesSuccess,
   });
 }
-export function* addRuleScope(api, { payload }) {
-  yield call(requestSaga, {
-    errorSection: 'addRuleScope',
-    loadingSection: 'addRuleScope',
-    apiMethod: api.addRuleSCope, // Now correctly sending data
-    apiParams: [payload], // payload is now properly passed
-    successAction: FlowValidationActions.addRuleScopeSuccess,
-  });
-}
 export function* fetchProperty(api, { payload }) {
   yield call(requestSaga, {
     errorSection: 'fetchProperty',
@@ -38,11 +29,32 @@ export function* fetchProperty(api, { payload }) {
     successAction: FlowValidationActions.fetchPropertySuccess, // Action to dispatch on success
   });
 }
+export function* validateRulesSaga(api, { payload }) {
+  const { clusterId, namespaceId, data } = payload;
+  yield call(requestSaga, {
+    errorSection: 'validateRules',
+    loadingSection: 'validateRules',
+    apiMethod: api.validateRulesApi,
+    apiParams: [clusterId, namespaceId, data],
+    successAction: FlowValidationActions.validateRulesSuccess,
+  });
+}
+export function* compareRulesSaga(api, { payload }) {
+  const { clusterId, namespaceId, data } = payload;
+  yield call(requestSaga, {
+    errorSection: 'compareRules',
+    loadingSection: 'compareRules',
+    apiMethod: api.compareRulesApi,
+    apiParams: [clusterId, namespaceId, data],
+    successAction: FlowValidationActions.compareRulesSuccess,
+  });
+}
 export function* flowValidationSagas(api) {
   yield all([
     takeLatest(FlowValidationActions.ruleScopeFetch, ruleScopeFetch, api),
     takeLatest(FlowValidationActions.fetchRules, fetchRules, api),
-    takeLatest(FlowValidationActions.addRuleScope, addRuleScope, api),
     takeLatest(FlowValidationActions.fetchProperty, fetchProperty, api),
+    takeLatest(FlowValidationActions.validateRules, validateRulesSaga, api),
+    takeLatest(FlowValidationActions.compareRules, compareRulesSaga, api),
   ]);
 }

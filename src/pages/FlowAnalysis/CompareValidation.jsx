@@ -1,9 +1,18 @@
-import React from 'react'; // ✅ Add useState
+import { isEmpty } from 'lodash';
+import React, { useEffect } from 'react'; // ✅ Add useState
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CompareIcon, TodoIcon } from '../../assets';
-import { Table } from '../../components';
+import { FullPageLoader, Table } from '../../components';
+import { history } from '../../helpers/history';
 import { Button, SelectField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
+import { LoadingSelectors, NamespacesSelectors } from '../../store';
+import {
+  FlowValidationActions,
+  FlowValidationSelectors,
+} from '../../store/flowValidation';
 
 const HeadingStyle = styled.h3`
   font-family: 'Nato Sans', sans-serif;
@@ -43,6 +52,37 @@ const CompareDifferencesTitle = styled.div`
 `;
 
 const CompareValidation = () => {
+  const dispatch = useDispatch();
+  const { control, watch } = useForm();
+  const versionListData = useSelector(NamespacesSelectors.getVersionListData);
+  const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const versionOptions = Array.isArray(versionListData?.versionList)
+    ? versionListData?.versionList?.map(version => ({
+        label: String(version?.version),
+        value: version?.version,
+      }))
+    : [];
+  const compareResult = useSelector(FlowValidationSelectors.getCompareResult);
+  const selectedVersionA = watch('select_version_A');
+  const selectedVersionB = watch('select_version_B');
+  const handleCompareFlow = () => {
+    dispatch(
+      FlowValidationActions.compareRules({
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedItem?.id,
+        data: {
+          bucket_name: selectedItem?.bucketName,
+          bucket_id: selectedItem?.bucketId,
+          flow_name: selectedItem?.flowName,
+          flow_id: selectedItem?.flowId,
+          versionA: selectedVersionA,
+          versionB: selectedVersionB,
+        },
+      })
+    );
+  };
+
   const path = [
     {
       label: 'Flow Analysis List',
@@ -53,7 +93,7 @@ const CompareValidation = () => {
   const COLUMNS = [
     {
       label: 'Type',
-      renderCell: item => <div>{item.version}</div>,
+      renderCell: item => <div>{item?.componentType}</div>,
       width: '20%',
     },
     {
@@ -63,47 +103,27 @@ const CompareValidation = () => {
     },
     {
       label: 'ID',
-      renderCell: item => <div>{item.displayValue}</div>,
+      renderCell: item => <div>{item?.componentId}</div>,
       width: '30%',
     },
     {
       label: 'Message',
-      renderCell: item => <div>{item.comments}</div>,
+      renderCell: item => <div>{item?.differenceTypeDescription}</div>,
       width: '30%',
     },
   ];
-  // ✅ Dummy data for the table
-  const DATA = [
-    {
-      version: 'Processor',
-      displayValue: 'ID-001',
-      comments: 'Updated validation logic',
-    },
-    {
-      version: 'Task',
-      displayValue: 'ID-002',
-      comments: 'Removed unused parameters',
-    },
-    {
-      version: 'Flow',
-      displayValue: 'ID-003',
-      comments: 'Added new branching condition',
-    },
-    {
-      version: 'Processor',
-      displayValue: 'ID-004',
-      comments: 'Refactored error handler',
-    },
-  ];
-  const versionOptions = [
-    { label: 'V1', value: '1.0' },
-    { label: 'V2', value: '2.0' },
-    { label: 'V3', value: '3.0' },
-    { label: 'V4', value: '4.0' },
-  ];
-
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'compareRules')
+  );
+  useEffect(() => {
+    dispatch(FlowValidationActions.compareRulesSuccess(null));
+  }, [dispatch]);
+  const handleBackClick = () => {
+    history.push('/flow-analysis');
+  };
   return (
     <div>
+      <FullPageLoader loading={loading} />
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2">
@@ -121,48 +141,64 @@ const CompareValidation = () => {
           <div className="col-md-3">
             <SelectField
               label="Select Version"
-              name="select_version"
+              name="select_version_A"
               icon={<CompareIcon />}
               placeholder="Select Version"
               options={versionOptions}
+              control={control}
             />
           </div>
           <div className="col-md-3">
             <SelectField
               label="Select Version"
-              name="select_version"
+              name="select_version_B"
               icon={<CompareIcon />}
               placeholder="Select Version"
               options={versionOptions}
+              control={control}
             />
           </div>
-          <div className="col-md-auto pt-2">
-            <Button>Compare</Button>
+          <div className="col-md-auto pt-2 mt-3">
+            <Button onClick={handleCompareFlow}>Compare</Button>
           </div>
         </div>
-        <div className="row align-items-center  mb-4 mb-lg-5">
-          <div className="col-md-3">
-            <LabelSelect>Latest Author</LabelSelect>
-            <LabelSelectContent>Anonymous</LabelSelectContent>
-          </div>
-          <div className="col-md-3">
-            <LabelSelect>Last commit comments</LabelSelect>
-            <LabelSelectContent>New Processor added</LabelSelectContent>
-          </div>
-          <div className="col-md-3">
-            <LabelSelect>Compared version</LabelSelect>
-            <LabelSelectContent>1 to 3</LabelSelectContent>
-          </div>
-          <div className="col-md-3">
-            <Button className="w-auto">Compare</Button>
-          </div>
-        </div>
-        <CompareDifferencesTitle className="mb-3">
-          Differences
-        </CompareDifferencesTitle>
-        <Table columns={COLUMNS} data={DATA} />
+        {!isEmpty(compareResult?.data) && (
+          <>
+            <div className="row align-items-center mb-4 mb-lg-5">
+              <div className="col-md-3">
+                <LabelSelect>Latest Author</LabelSelect>
+                <LabelSelectContent>
+                  {compareResult?.data?.latest_author || 'N/A'}
+                </LabelSelectContent>
+              </div>
+              <div className="col-md-3">
+                <LabelSelect>Last commit comments</LabelSelect>
+                <LabelSelectContent>
+                  {compareResult?.data?.last_commit || 'N/A'}
+                </LabelSelectContent>
+              </div>
+              <div className="col-md-3">
+                <LabelSelect>Compared version</LabelSelect>
+                <LabelSelectContent>
+                  {compareResult?.data?.versionA || 'N/A'} to{' '}
+                  {compareResult?.data?.versionB || 'N/A'}
+                </LabelSelectContent>
+              </div>
+            </div>
+            <CompareDifferencesTitle className="mb-3">
+              Differences
+            </CompareDifferencesTitle>
+            <Table columns={COLUMNS} data={compareResult?.data?.changes} />
+          </>
+        )}
       </FlowcompareStyled>
-      <Button className="w-auto mt-2">Back</Button>
+      <Button
+        className="w-auto mt-2"
+        variant="secondary"
+        onClick={handleBackClick}
+      >
+        Back
+      </Button>
     </div>
   );
 };
