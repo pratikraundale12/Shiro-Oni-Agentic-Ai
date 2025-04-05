@@ -108,6 +108,7 @@ const FlowValidationModal = () => {
             label="Rule Name"
             value={selectedRule?.name || ''}
             placeholder="Processor Colors"
+            disabled={selectedRule?.name}
           />
           <InputField
             name="rule_comments"
@@ -115,6 +116,7 @@ const FlowValidationModal = () => {
             label="Output Value"
             value={selectedRule?.output_value || ''}
             placeholder="Rules for Processor Colors"
+            disabled={selectedRule?.output_value}
           />
           <div className="col-12">
             <ConditionIcon className="d-flex align-items-center gap-3">
@@ -124,7 +126,6 @@ const FlowValidationModal = () => {
           <div className="row g-2 align-items-center">
             {selectedRule?.conditions?.map((condition, index) => (
               <Fragment key={index}>
-                {console.log(condition?.condition_property)};
                 <div className="col-md-4">
                   <PropertyDiv>
                     <SelectField

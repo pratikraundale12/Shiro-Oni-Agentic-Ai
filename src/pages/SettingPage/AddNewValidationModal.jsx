@@ -34,7 +34,7 @@ const AddNewValidationModal = () => {
     if (isFlowValidationModalOpen && !selectedItem) {
       reset({
         scope_type: '',
-        dispaly_value: '',
+        display_value: '',
         description: '',
       });
     }
@@ -44,7 +44,7 @@ const AddNewValidationModal = () => {
     if (selectedItem) {
       reset({
         scope_type: selectedItem.scope_type,
-        dispaly_value: selectedItem.header,
+        display_value: selectedItem.header,
         description: selectedItem.description,
       });
     }
@@ -60,9 +60,7 @@ const AddNewValidationModal = () => {
       dispatch(
         FlowValidationActions.updateRuleScope({
           id: selectedItem.id,
-          scope_type: data.scope_type,
-          description: data.description,
-          header: data.dispaly_value,
+          header: data.display_value,
         })
       );
     } else {
@@ -70,7 +68,7 @@ const AddNewValidationModal = () => {
         FlowValidationActions.addRuleScope({
           scope_type: data.scope_type,
           description: data.description,
-          header: data.dispaly_value,
+          header: data.display_value,
         })
       );
     }
@@ -101,10 +99,11 @@ const AddNewValidationModal = () => {
             placeholder={FLOWVALIDATION_CONSTANTS.SELECT_SCOPE_TYPE}
             options={SCOPE_TYPE_OPTIONS}
             control={control}
+            disabled={!!selectedItem}
           />
         </div>
         <InputField
-          name="dispaly_value"
+          name="display_value"
           type="text"
           label={FLOWVALIDATION_CONSTANTS.DISPLAY_VALUE}
           placeholder={FLOWVALIDATION_CONSTANTS.ENTER_DISPLAY_VALUE}
@@ -118,6 +117,7 @@ const AddNewValidationModal = () => {
           placeholder={FLOWVALIDATION_CONSTANTS.ENTER_DESCRIPTION}
           icon={<NewMessageIcon />}
           register={register}
+          disabled={!!selectedItem}
         />
       </Modal>
     </div>

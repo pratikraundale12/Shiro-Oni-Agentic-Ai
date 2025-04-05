@@ -62,6 +62,21 @@ export function* addRuleScopeSaga(api, { payload }) {
   // ✅ After successful addition, re-fetch updated list
   yield put(FlowValidationActions.ruleScopeFetch());
 }
+
+export function* updateRuleScopeSaga(api, { payload }) {
+  const { id, ...data } = payload;
+  yield call(requestSaga, {
+    errorSection: 'updateRuleScope',
+    loadingSection: 'updateRuleScope',
+    apiMethod: api.updateRuleScope,
+    apiParams: [id, data],
+    successAction: FlowValidationActions.updateRuleScopeSuccess,
+  });
+
+  // After successful update, re-fetch updated list
+  yield put(FlowValidationActions.ruleScopeFetch());
+}
+
 export function* flowValidationSagas(api) {
   yield all([
     takeLatest(FlowValidationActions.ruleScopeFetch, ruleScopeFetch, api),
@@ -70,5 +85,6 @@ export function* flowValidationSagas(api) {
     takeLatest(FlowValidationActions.validateRules, validateRulesSaga, api),
     takeLatest(FlowValidationActions.compareRules, compareRulesSaga, api),
     takeLatest(FlowValidationActions.addRuleScope, addRuleScopeSaga, api),
+    takeLatest(FlowValidationActions.updateRuleScope, updateRuleScopeSaga, api),
   ]);
 }
