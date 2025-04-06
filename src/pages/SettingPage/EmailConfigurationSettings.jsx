@@ -4,7 +4,13 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { MailIcon, QRIcons } from '../../assets';
+import {
+  DocumentTextIcon2,
+  LockIcon2,
+  // MailIcon,
+  // QRIcons,
+  SmsNotificationIcon,
+} from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -259,7 +265,7 @@ export const EmailConfigurationSettings = () => {
             <InputField
               name="smtp_service"
               register={register}
-              icon={<QRIcons />}
+              icon={<DocumentTextIcon2 />}
               label={`${KDFM.SMTP_SERVICE} *`}
               placeholder={KDFM.ENTER_SMTP_SERVICE}
               errors={errors}
@@ -269,7 +275,7 @@ export const EmailConfigurationSettings = () => {
             <InputField
               name="smtp_host"
               register={register}
-              icon={<QRIcons />}
+              icon={<DocumentTextIcon2 />}
               label={`${KDFM.SMTP_HOST} *`}
               placeholder={KDFM.ENTER_SMTP_HOST}
               errors={errors}
@@ -279,7 +285,7 @@ export const EmailConfigurationSettings = () => {
             <InputField
               name="smtp_port"
               register={register}
-              icon={<QRIcons />}
+              icon={<DocumentTextIcon2 />}
               label={`${KDFM.SMTP_PORT} *`}
               placeholder={KDFM.ENTER_SMTP_PORT}
               errors={errors}
@@ -291,7 +297,7 @@ export const EmailConfigurationSettings = () => {
             <InputField
               name="smtp_user"
               register={register}
-              icon={<QRIcons />}
+              icon={<DocumentTextIcon2 />}
               label={`${KDFM.SMTP_USER} *`}
               placeholder={KDFM.ENTER_SMTP_USER}
               errors={errors}
@@ -303,6 +309,7 @@ export const EmailConfigurationSettings = () => {
               register={register}
               watch={watch}
               label={`${KDFM.SMTP_PASS} *`}
+              icon={<LockIcon2 />}
               placeholder={KDFM.ENTER_SMTP_PASS}
               disableToggle={false}
               errors={errors}
@@ -312,7 +319,7 @@ export const EmailConfigurationSettings = () => {
             <InputField
               name="from_email"
               register={register}
-              icon={<MailIcon />}
+              icon={<SmsNotificationIcon />}
               label={`${KDFM.FROM_EMAIL} *`}
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}

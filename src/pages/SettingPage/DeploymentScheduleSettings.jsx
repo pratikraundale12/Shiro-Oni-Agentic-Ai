@@ -4,7 +4,11 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { CalendarIcon, EmailSmsTrackingIcon, QRIcons } from '../../assets';
+import {
+  DeploymentScheduleIcon2,
+  EmailSmsTrackingIcon,
+  Profile2UserIcon,
+} from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import {
   EMAIL_REGEX,
@@ -231,7 +235,7 @@ export const DeploymentScheduleSettings = () => {
             label="Approver Groups"
             name="approver_groups"
             control={control}
-            icon={<QRIcons />}
+            icon={<Profile2UserIcon />}
             errors={errors}
             options={approverOptions}
             placeholder="Select Approver Groups"
@@ -267,11 +271,12 @@ export const DeploymentScheduleSettings = () => {
               <SelectField
                 name="email_reminder_time"
                 control={control}
-                icon={<CalendarIcon />}
+                icon={<DeploymentScheduleIcon2 />}
                 errors={errors}
                 options={EMAIL_REMINDER_OPTIONS}
                 placeholder="Select Reminder Time"
                 defaultValue={EMAIL_REMINDER_OPTIONS[0]}
+                sortAlphabetically={false}
               />
             </div>
           </div>
@@ -283,7 +288,7 @@ export const DeploymentScheduleSettings = () => {
           <SelectField
             name="refresh"
             control={control}
-            icon={<CalendarIcon />}
+            icon={<DeploymentScheduleIcon2 />}
             errors={errors}
             options={SCHEDULE_LIST_REFRESH_OPTIONS}
             placeholder="Deployment Schedule Refresh Time"

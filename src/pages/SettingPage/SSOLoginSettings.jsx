@@ -1,16 +1,16 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { OpenLinkIcon, SSOLoginIcon2, UserIcon } from '../../assets';
+import { ExportIcon, SSOLoginIcon2, UserIcon } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { KDFM, SSO_LOGIN_TYPE } from '../../constants';
 import { history } from '../../helpers/history';
 import {
   Button,
-  CheckboxField,
+  // CheckboxField,
   InputField,
   SelectField,
   SwitchButton,
@@ -152,6 +152,21 @@ export const SSOLoginSettings = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
+  // const [isSSOEnabled, setSSOInitialConfig] = useState(false);
+  // const handleSSOToggle = () => {
+  //   setSSOInitialConfig(prevState => {
+  //     const newState = !prevState;
+
+  //     if (!newState) {
+  //       // Reset any dependent values here if needed
+  //       setValue('sso_auto_sync', false, { shouldDirty: true });
+  //     }
+
+  //     setIsChanged(true);
+  //     setValue('ssoEnabled', newState, { shouldDirty: true });
+  //     return newState;
+  //   });
+  // };
 
   const onSubmit = async data => {
     setLoading(true);
@@ -305,18 +320,24 @@ export const SSOLoginSettings = () => {
         <>
           <InputFields className="row mb-4 align-items-center">
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-              <SwitchButton
-                id="openModalInput1"
-                name="SSO Enabled"
-                checked={register}
-                onChange={register}
-                isDisabled={false}
+              <Controller
+                name="sso_enabled"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <SwitchButton
+                    id="openModalInput1"
+                    name="SSO"
+                    checked={value}
+                    onChange={() => onChange(!value)}
+                    isDisabled={false}
+                  />
+                )}
               />
-              <CheckboxField
+              {/* <CheckboxField
                 name="sso_enabled"
                 label="SSO Enabled"
                 register={register}
-              />
+              /> */}
             </div>
           </InputFields>
 
@@ -378,7 +399,7 @@ export const SSOLoginSettings = () => {
                       <InputField
                         name="azure_redirect_uri"
                         register={register}
-                        icon={<OpenLinkIcon color="#444445" />}
+                        icon={<ExportIcon color="#444445" />}
                         label="Azure Redirect URI *"
                         placeholder="Enter Redirect URI"
                         errors={errors}
@@ -404,7 +425,7 @@ export const SSOLoginSettings = () => {
                       <InputField
                         name="keycloak_url"
                         register={register}
-                        icon={<OpenLinkIcon color="#444445" />}
+                        icon={<ExportIcon color="#444445" />}
                         label="URL *"
                         placeholder="Enter URL"
                         errors={errors}
@@ -414,7 +435,7 @@ export const SSOLoginSettings = () => {
                       <InputField
                         name="keycloak_realm"
                         register={register}
-                        icon={<OpenLinkIcon color="#444445" />}
+                        icon={<ExportIcon color="#444445" />}
                         label="Realm *"
                         placeholder="Enter Realm"
                         errors={errors}

@@ -262,6 +262,7 @@ export const LDAPSettings = () => {
               icon={<ClockIcon />}
               errors={errors}
               options={Timeoptions}
+              sortAlphabetically={false}
               placeholder="Select LDAP Auto Sync Time"
               value={Timeoptions.find(
                 option =>
