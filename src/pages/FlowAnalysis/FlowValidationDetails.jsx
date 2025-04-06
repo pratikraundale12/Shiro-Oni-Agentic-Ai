@@ -34,6 +34,7 @@ const LabelSelectContent = styled.div`
   font-size: 18px;
   font-weight: 500;
 `;
+
 const HeadingStyle = styled.h3`
   font-family: 'Nato Sans', sans-serif;
   font-weight: 500;
@@ -43,6 +44,7 @@ const HeadingStyle = styled.h3`
   gap: 0.5rem;
   margin: 0;
 `;
+
 const FlowcompareStyled = styled.div`
   height: 100%;
   overflow-x: auto;
@@ -68,7 +70,7 @@ const FlowValidationDetails = () => {
   const randomFlowValidationResult = useSelector(
     FlowValidationSelectors.getRandomFlowValidationResult
   );
-  console.log('validationResult', randomFlowValidationResult);
+
   const formattedOptions = ruleScopes?.data?.length
     ? ruleScopes?.data?.map(rule => ({
         label: rule?.header,
@@ -149,9 +151,11 @@ const FlowValidationDetails = () => {
     updated[index] = !updated[index];
     setOpenSections(updated);
   };
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'validateRules')
   );
+
   const handleBackClick = () => {
     history.push('/flow-analysis');
   };
@@ -165,6 +169,9 @@ const FlowValidationDetails = () => {
 
     dispatch(FlowValidationActions.emailReport(payload));
   };
+
+  const currentData =
+    validationResult?.data || randomFlowValidationResult?.data;
 
   return (
     <div>
@@ -192,7 +199,6 @@ const FlowValidationDetails = () => {
               name="select_property"
               placeholder={FLOWVALIDATION_CONSTANTS.SELECT_RULE_TO_VALIDATE}
               options={formattedOptions}
-              // customWidth=""
             />
           </div>
 
@@ -202,74 +208,54 @@ const FlowValidationDetails = () => {
             </Button>
           </div>
         </div>
-        {validationResult?.data ||
-          (randomFlowValidationResult?.data &&
-            Object.keys(
-              validationResult?.data || randomFlowValidationResult?.data
-            ).length > 0 && (
-              <FlowContainerDetail>
-                <div className="row">
-                  <div className="col-md-6 mb-4 pb-md-2">
-                    <LabelSelect>
-                      {FLOWVALIDATION_CONSTANTS.FLOW_INFO}
-                    </LabelSelect>
-                    <LabelSelectContent>
-                      {validationResult?.data?.lableBody?.flowInfo ||
-                        randomFlowValidationResult?.data?.lableBody?.flowInfo ||
-                        'N/A'}
-                    </LabelSelectContent>
-                  </div>
-                  <div className="col-md-6 mb-4 pb-md-2">
-                    <LabelSelect>
-                      {FLOWVALIDATION_CONSTANTS.INVALID_PROCESSOR_COUNT}
-                    </LabelSelect>
-                    <LabelSelectContent>
-                      {validationResult?.data?.lableBody?.InvalidCount ||
-                        randomFlowValidationResult?.data?.lableBody
-                          ?.InvalidCount ||
-                        'N/A'}
-                    </LabelSelectContent>
-                  </div>
-                  <div className="col-md-6 mb-4 pb-md-2">
-                    <LabelSelect>
-                      {FLOWVALIDATION_CONSTANTS.REGISTRY_FLOW_INFO}
-                    </LabelSelect>
-                    <LabelSelectContent>
-                      {validationResult?.data.lableBody?.registryFlowInfo ||
-                        randomFlowValidationResult?.data?.lableBody
-                          ?.registryFlowInfo ||
-                        'N/A'}
-                    </LabelSelectContent>
-                  </div>
-                  <div className="col-md-6 mb-4 pb-md-2">
-                    <LabelSelect>
-                      {FLOWVALIDATION_CONSTANTS.CURRENT_VERSION}
-                    </LabelSelect>
-                    <LabelSelectContent>
-                      {validationResult?.data?.lableBody?.currentVersion ||
-                        randomFlowValidationResult?.data?.lableBody
-                          ?.currentVersion ||
-                        'N/A'}
-                    </LabelSelectContent>
-                  </div>
-                </div>
 
-                <div className="row align-items-center justify-content-between">
-                  <div className="col-md-6 mb-4 pb-md-2">
-                    <LabelSelect>{FLOWVALIDATION_CONSTANTS.STATE}</LabelSelect>
-                    <LabelSelectContent>
-                      {validationResult?.data?.lableBody?.state ||
-                        randomFlowValidationResult?.data?.lableBody?.state ||
-                        'N/A'}
-                    </LabelSelectContent>
-                  </div>
-                </div>
-              </FlowContainerDetail>
-            ))}
+        {currentData && Object.keys(currentData).length > 0 && (
+          <FlowContainerDetail>
+            <div className="row">
+              <div className="col-md-6 mb-4 pb-md-2">
+                <LabelSelect>{FLOWVALIDATION_CONSTANTS.FLOW_INFO}</LabelSelect>
+                <LabelSelectContent>
+                  {currentData?.lableBody?.flowInfo || 'N/A'}
+                </LabelSelectContent>
+              </div>
+              <div className="col-md-6 mb-4 pb-md-2">
+                <LabelSelect>
+                  {FLOWVALIDATION_CONSTANTS.INVALID_PROCESSOR_COUNT}
+                </LabelSelect>
+                <LabelSelectContent>
+                  {currentData?.lableBody?.InvalidCount || 'N/A'}
+                </LabelSelectContent>
+              </div>
+              <div className="col-md-6 mb-4 pb-md-2">
+                <LabelSelect>
+                  {FLOWVALIDATION_CONSTANTS.REGISTRY_FLOW_INFO}
+                </LabelSelect>
+                <LabelSelectContent>
+                  {currentData?.lableBody?.registryFlowInfo || 'N/A'}
+                </LabelSelectContent>
+              </div>
+              <div className="col-md-6 mb-4 pb-md-2">
+                <LabelSelect>
+                  {FLOWVALIDATION_CONSTANTS.CURRENT_VERSION}
+                </LabelSelect>
+                <LabelSelectContent>
+                  {currentData?.lableBody?.currentVersion || 'N/A'}
+                </LabelSelectContent>
+              </div>
+            </div>
+            <div className="row align-items-center justify-content-between">
+              <div className="col-md-6 mb-4 pb-md-2">
+                <LabelSelect>{FLOWVALIDATION_CONSTANTS.STATE}</LabelSelect>
+                <LabelSelectContent>
+                  {currentData?.lableBody?.state || 'N/A'}
+                </LabelSelectContent>
+              </div>
+            </div>
+          </FlowContainerDetail>
+        )}
 
         {sections.map((section, index) => {
           if (!section.data || section.data.length === 0) return null;
-
           return (
             <Collapsible
               key={index}
@@ -283,6 +269,7 @@ const FlowValidationDetails = () => {
           );
         })}
       </FlowcompareStyled>
+
       <div className="d-flex">
         <Button
           className="w-auto mt-2 mr-2"
@@ -301,8 +288,8 @@ const FlowValidationDetails = () => {
   );
 };
 
-export default FlowValidationDetails;
-
 FlowValidationDetails.propTypes = {
-  selectedItem: PropTypes.object, // or shape({}) if you want to be more specific
+  selectedItem: PropTypes.object,
 };
+
+export default FlowValidationDetails;
