@@ -1,5 +1,6 @@
 import { toast } from 'react-toastify';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { history } from '../../helpers/history';
 import { requestSaga } from '../helpers/request_sagas';
 import { FlowValidationActions } from './redux';
 
@@ -176,7 +177,22 @@ export function* emailReportSaga(api, { payload }) {
     toast.error(response?.data?.message || 'Failed to send email report');
   }
 }
+export function* validateRandomFlowSaga(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'validateRandomFlow',
+    loadingSection: 'validateRandomFlow',
+    apiMethod: api.validateRandomFlowApi,
+    apiParams: [payload],
+    successAction: FlowValidationActions.validateRandomFlowSuccess,
+  });
 
+  if (!response?.ok) {
+    toast.error(response?.data?.message || 'Failed to validate random flow');
+  } else {
+    history.push('/flow-analysis/flow-validation');
+    toast.success('Random flow validated successfully!');
+  }
+}
 export function* flowValidationSagas(api) {
   yield all([
     takeLatest(FlowValidationActions.ruleScopeFetch, ruleScopeFetch, api),
@@ -191,5 +207,10 @@ export function* flowValidationSagas(api) {
     takeLatest(FlowValidationActions.deleteRuleScope, deleteRuleScopeSaga, api),
     takeLatest(FlowValidationActions.deleteRule, deleteRuleSaga, api),
     takeLatest(FlowValidationActions.emailReport, emailReportSaga, api),
+    takeLatest(
+      FlowValidationActions.validateRandomFlow,
+      validateRandomFlowSaga,
+      api
+    ),
   ]);
 }

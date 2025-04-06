@@ -6,6 +6,7 @@ export const FLOWVALIDATION_CONSTANTS = {
   ACTION: 'Action',
   FLOW_VALIDATION_SETTINGS: 'Flow Validation Settings',
   ADD_NEW_VALIDATION: 'Add New Validation',
+  EDIT_NEW_VALIDATION: 'Edit Validation',
   SAVE: 'Save',
   CANCEL: 'Cancel',
   SELECT_SCOPE: 'Select Scope',
@@ -40,6 +41,14 @@ export const FLOWVALIDATION_CONSTANTS = {
   RULE_NAME: 'Rule Name',
   EDIT_NEW_RULE: 'Edit New Rule',
   SEARCH_DISPLAY_VALUE: 'Search Display Value',
+  ANALYZE_NEW_FLOW: 'Analyze New Flow',
+  NIFI_CLUSTER_URL: 'Nifi Cluster URL',
+  ENTER_YOUR_CLUSTER_URL: 'Enter Your Cluster URL',
+  USERNAME: 'Username',
+  ENTER_YOUR_USERNAME: 'Enter Your Username',
+  PASSWORD: 'Password',
+  PROCESS_GROUP_ID: 'Process Group ID',
+  ENTER_YOUR_PROCESS_GROUP_ID: 'Enter Your Process Group ID',
 };
 
 export const SCOPE_TYPE_OPTIONS = [

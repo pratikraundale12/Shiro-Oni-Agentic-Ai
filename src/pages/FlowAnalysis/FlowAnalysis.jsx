@@ -12,6 +12,7 @@ import { NamespacesActions } from '../../store';
 import { FlowValidationActions } from '../../store/flowValidation';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from '../Namespaces/ProcessGroupSorting';
+import AnalyzeNewFlow from './AnalyzeNewFlow';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -221,17 +222,20 @@ const FlowAnalysis = () => {
   ];
 
   return (
-    <Grid
-      isNamespace={true}
-      module="namespaces"
-      title="Flow Analysis List"
-      columns={COLUMNS}
-      refreshOptions={REFRESH_OPTIONS}
-      placeholder={KDFM.SEARCH_NAMESPACE_FLOW_BUCKET_NAME}
-      state={state}
-      currentPage={currentPage}
-      setCurrentPage={setCurrentPage}
-    />
+    <>
+      <Grid
+        isNamespace={true}
+        module="namespaces"
+        title="Flow Analysis List"
+        columns={COLUMNS}
+        refreshOptions={REFRESH_OPTIONS}
+        placeholder={KDFM.SEARCH_NAMESPACE_FLOW_BUCKET_NAME}
+        state={state}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
+      <AnalyzeNewFlow />
+    </>
   );
 };
 export default FlowAnalysis;

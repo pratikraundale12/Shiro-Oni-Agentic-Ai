@@ -81,7 +81,7 @@ const AddNewValidationModal = () => {
       <Modal
         title={
           selectedItem
-            ? FLOWVALIDATION_CONSTANTS.EDIT_VALIDATION
+            ? FLOWVALIDATION_CONSTANTS.EDIT_NEW_VALIDATION
             : FLOWVALIDATION_CONSTANTS.ADD_NEW_VALIDATION
         }
         isOpen={isFlowValidationModalOpen}

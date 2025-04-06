@@ -29,6 +29,9 @@ export const FlowValidationActions = {
   deleteRuleSuccess: createAction(`${prefix}deleteRuleSuccess`),
   emailReport: createAction(`${prefix}emailReport`),
   emailReportSuccess: createAction(`${prefix}emailReportSuccess`),
+  addNewAnalysisModalOpen: createAction(`${prefix}addNewAnalysisModalOpen`),
+  validateRandomFlow: createAction(`${prefix}validateRandomFlow`),
+  validateRandomFlowSuccess: createAction(`${prefix}validateRandomFlowSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -44,6 +47,8 @@ export const FlowValidation_INITIAL_STATE = {
   updatedRule: null,
   createdRule: null,
   emailReportResponse: null,
+  addNewAnalysisModalOpen: false,
+  randomFlowValidationResult: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -59,6 +64,8 @@ export const FlowValidationSelectors = {
   getUpdatedRule: state => state.flowValidation.updatedRule,
   getCreatedRule: state => state.flowValidation.createdRule,
   getEmailReportResponse: state => state.flowValidation.emailReportResponse,
+  getAddNewAnalysisModalOpen: state =>
+    state.flowValidation.addNewAnalysisModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -155,6 +162,14 @@ const emailReportSuccess = (state, { payload }) => ({
   emailReportResponse: payload,
 });
 
+const addNewAnalysisModalOpen = (state, { payload }) => ({
+  ...state,
+  addNewAnalysisModalOpen: payload,
+});
+const validateRandomFlowSuccess = (state, { payload }) => ({
+  ...state,
+  randomFlowValidationResult: payload,
+});
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
   FlowValidation_INITIAL_STATE,
@@ -181,6 +196,14 @@ export const flowValidationReducer = createReducer(
         deleteRuleScopeSuccess
       )
       .addCase(FlowValidationActions.deleteRuleSuccess, deleteRuleSuccess)
-      .addCase(FlowValidationActions.emailReportSuccess, emailReportSuccess);
+      .addCase(FlowValidationActions.emailReportSuccess, emailReportSuccess)
+      .addCase(
+        FlowValidationActions.addNewAnalysisModalOpen,
+        addNewAnalysisModalOpen
+      )
+      .addCase(
+        FlowValidationActions.validateRandomFlowSuccess,
+        validateRandomFlowSuccess
+      );
   }
 );
