@@ -1,7 +1,6 @@
 import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -121,9 +120,7 @@ export const ListScheduleDeployment = () => {
   );
   const selctedStatus = useSelector(SchedularSelectors.getSelectedStatusState);
   const search = useSelector(SchedularSelectors.getSearchText);
-  const location = useLocation();
   const settingData = useSelector(SettingsSelectors.getSettings);
-  const params = new URLSearchParams(location.search);
   const [sortingState, setSortingState] = useState('');
   const menuRef = useRef(null);
   const toggleSorting = column => {
@@ -134,10 +131,7 @@ export const ListScheduleDeployment = () => {
       return column;
     });
   };
-  const tokenId = params.get('id');
-  if (tokenId) {
-    window.localStorage.setItem('scheduleTokenid', tokenId);
-  }
+
   useEffect(() => {
     history.push('/schedule-deployment');
   }, []);
