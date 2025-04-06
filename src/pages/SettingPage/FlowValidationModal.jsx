@@ -335,6 +335,13 @@ const FlowValidationModal = () => {
         dispatch(SettingsActions.flowValidationModalOpen(false));
         setIsCreatingNewRule(false);
         setHasChanges(false);
+        setNewRule({
+          name: '',
+          output_value: '',
+          conditions: [],
+        });
+        setEditedRule(null);
+        setEditedConditions([]);
       }}
       size="md"
       primaryButtonText={isCreatingNewRule ? 'Create' : 'Save'}
