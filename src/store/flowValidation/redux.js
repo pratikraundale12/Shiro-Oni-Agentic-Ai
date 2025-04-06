@@ -27,6 +27,8 @@ export const FlowValidationActions = {
   deleteRuleScopeSuccess: createAction(`${prefix}deleteRuleScopeSuccess`),
   deleteRule: createAction(`${prefix}deleteRule`),
   deleteRuleSuccess: createAction(`${prefix}deleteRuleSuccess`),
+  emailReport: createAction(`${prefix}emailReport`),
+  emailReportSuccess: createAction(`${prefix}emailReportSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -41,6 +43,7 @@ export const FlowValidation_INITIAL_STATE = {
   updatedRuleScope: null,
   updatedRule: null,
   createdRule: null,
+  emailReportResponse: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -55,6 +58,7 @@ export const FlowValidationSelectors = {
   getUpdatedRuleScope: state => state.flowValidation.updatedRuleScope,
   getUpdatedRule: state => state.flowValidation.updatedRule,
   getCreatedRule: state => state.flowValidation.createdRule,
+  getEmailReportResponse: state => state.flowValidation.emailReportResponse,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -146,6 +150,10 @@ const deleteRuleSuccess = (state, { payload }) => {
     },
   };
 };
+const emailReportSuccess = (state, { payload }) => ({
+  ...state,
+  emailReportResponse: payload,
+});
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
@@ -172,6 +180,7 @@ export const flowValidationReducer = createReducer(
         FlowValidationActions.deleteRuleScopeSuccess,
         deleteRuleScopeSuccess
       )
-      .addCase(FlowValidationActions.deleteRuleSuccess, deleteRuleSuccess);
+      .addCase(FlowValidationActions.deleteRuleSuccess, deleteRuleSuccess)
+      .addCase(FlowValidationActions.emailReportSuccess, emailReportSuccess);
   }
 );

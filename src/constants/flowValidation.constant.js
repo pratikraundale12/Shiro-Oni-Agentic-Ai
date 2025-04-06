@@ -39,6 +39,7 @@ export const FLOWVALIDATION_CONSTANTS = {
   ENTER_RULE_NAME: 'Enter Rule Name',
   RULE_NAME: 'Rule Name',
   EDIT_NEW_RULE: 'Edit New Rule',
+  SEARCH_DISPLAY_VALUE: 'Search Display Value',
 };
 
 export const SCOPE_TYPE_OPTIONS = [

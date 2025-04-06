@@ -161,6 +161,21 @@ export function* deleteRuleSaga(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
+export function* emailReportSaga(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'emailReport',
+    loadingSection: 'emailReport',
+    apiMethod: api.emailReportApi,
+    apiParams: [payload],
+    successAction: FlowValidationActions.emailReportSuccess,
+  });
+
+  if (response.ok) {
+    toast.success('Email report triggered successfully!');
+  } else {
+    toast.error(response?.data?.message || 'Failed to send email report');
+  }
+}
 
 export function* flowValidationSagas(api) {
   yield all([
@@ -175,5 +190,6 @@ export function* flowValidationSagas(api) {
     takeLatest(FlowValidationActions.createRule, createRuleSaga, api),
     takeLatest(FlowValidationActions.deleteRuleScope, deleteRuleScopeSaga, api),
     takeLatest(FlowValidationActions.deleteRule, deleteRuleSaga, api),
+    takeLatest(FlowValidationActions.emailReport, emailReportSaga, api),
   ]);
 }

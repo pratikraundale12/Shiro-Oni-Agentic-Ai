@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -6,6 +6,7 @@ import {
   DeleteSmallIcon,
   FlowValidationIcon,
   NewEditIcon,
+  SmallSearchIcon,
 } from '../../assets';
 import { IconButton, Table, TextRender } from '../../components';
 import {
@@ -18,6 +19,7 @@ import {
   FlowValidationSelectors,
 } from '../../store/flowValidation';
 import { SettingsActions } from '../../store/settings';
+import { theme } from '../../styles';
 import AddNewValidationModal from './AddNewValidationModal';
 import FlowValidationModal from './FlowValidationModal';
 
@@ -29,6 +31,34 @@ const HeadingStyle = styled.h3`
   align-items: center;
   gap: 0.5rem;
   margin: 0;
+`;
+const SearchContainer = styled.div`
+  position: relative;
+  flex: 1;
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+  }
+`;
+
+const Search = styled.input`
+  width: 100%;
+  border-radius: 2px;
+  padding: 12px 12px 12px 40px;
+  font-size: 16px;
+  margin: 14px 0;
+  font-family: ${props => props.theme.fontRedHat};
+  border: 1px solid ${props => props.theme.colors.border};
+  background-color: ${props => props.theme.colors.lightGrey};
+
+  &:focus-visible {
+    outline: none;
+  }
+  @media screen and (max-width: 1400px) {
+    font-size: 14px !important;
+  }
 `;
 
 const ModalBody = styled.div`
@@ -44,11 +74,18 @@ const ModalBody = styled.div`
 
 const FlowValidation = () => {
   const dispatch = useDispatch();
+  const [searchText, setSearchText] = useState('');
 
   const ruleScopes = useSelector(FlowValidationSelectors.getRuleScopes);
   useEffect(() => {
     dispatch(FlowValidationActions.ruleScopeFetch());
   }, [dispatch]);
+  const handleSearch = e => {
+    setSearchText(e.target.value);
+  };
+  const filteredData = (ruleScopes?.data || []).filter(item =>
+    item?.header?.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   const COLUMNS = [
     {
@@ -144,11 +181,25 @@ const FlowValidation = () => {
           </Button>
         </div>
       </div>
-
+      <div className="w-100">
+        <SearchContainer>
+          <SmallSearchIcon
+            width={18}
+            height={18}
+            color={theme.colors.darkGrey1}
+          />
+          <Search
+            type="search"
+            placeholder={FLOWVALIDATION_CONSTANTS.SEARCH_DISPLAY_VALUE}
+            onChange={handleSearch}
+            value={searchText}
+          />
+        </SearchContainer>
+      </div>
       <ModalBody className="modal-body">
         <Table
           columns={COLUMNS}
-          data={ruleScopes?.data}
+          data={filteredData}
           className="parameter-context-table"
           showPagination={true}
         />

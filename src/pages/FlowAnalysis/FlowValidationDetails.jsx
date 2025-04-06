@@ -143,6 +143,16 @@ const FlowValidationDetails = () => {
     history.push('/flow-analysis');
   };
 
+  const handleSendEmail = () => {
+    const payload = {
+      namespaceName: selectedItem?.name,
+      namespaceId: selectedItem?.id,
+      clusterId: selectedCluster?.value,
+    };
+
+    dispatch(FlowValidationActions.emailReport(payload));
+  };
+
   return (
     <div>
       <FullPageLoader loading={loading} />
@@ -253,7 +263,9 @@ const FlowValidationDetails = () => {
           {FLOWVALIDATION_CONSTANTS.BACK}
         </Button>
         <div className="col-md-auto mb-4 mt-2">
-          <Button>{FLOWVALIDATION_CONSTANTS.SEND_EMAIL_REPORT}</Button>
+          <Button onClick={handleSendEmail}>
+            {FLOWVALIDATION_CONSTANTS.SEND_EMAIL_REPORT}
+          </Button>
         </div>
       </div>
     </div>

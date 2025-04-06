@@ -15,6 +15,7 @@ export const flowValidationAPI = api => {
   const createRule = data => api.post(`/add-rule`, data);
   const deleteRuleScope = id => api.delete(`/rule-scope/${id}`);
   const deleteRule = id => api.delete(`/rule/${id}`);
+  const emailReportApi = data => api.post(`/namespace/email-report`, data);
 
   return {
     ruleScopeApi,
@@ -28,5 +29,6 @@ export const flowValidationAPI = api => {
     createRule,
     deleteRuleScope,
     deleteRule,
+    emailReportApi,
   };
 };
