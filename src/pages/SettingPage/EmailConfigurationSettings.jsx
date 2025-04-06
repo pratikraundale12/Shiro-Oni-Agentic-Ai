@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import {
   DocumentTextIcon2,
   LockIcon2,
+  ProfileIcon2,
   // MailIcon,
   // QRIcons,
   SmsNotificationIcon,
@@ -297,7 +298,7 @@ export const EmailConfigurationSettings = () => {
             <InputField
               name="smtp_user"
               register={register}
-              icon={<DocumentTextIcon2 />}
+              icon={<ProfileIcon2 />}
               label={`${KDFM.SMTP_USER} *`}
               placeholder={KDFM.ENTER_SMTP_USER}
               errors={errors}
