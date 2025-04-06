@@ -139,6 +139,7 @@ export const SSOLoginSettings = () => {
     register,
     watch,
     setValue,
+    reset,
     formState: { errors, dirtyFields },
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
@@ -217,6 +218,7 @@ export const SSOLoginSettings = () => {
         setTimeout(() => {
           dispatch(SettingsActions.fetchSettings());
           history.push('/setting');
+          setIsChanged(false);
         }, 1000);
         changeFavicon(data?.favicon || favicon);
       }
@@ -283,18 +285,6 @@ export const SSOLoginSettings = () => {
 
   const selectedSSO = watch('selected_sso');
   const ssoEnabled = watch('sso_enabled');
-  useEffect(() => {
-    if (ssoEnabled === false) {
-      setValue('selected_sso', null);
-      setValue('azure_client_id', null);
-      setValue('azure_client_secret', null);
-      setValue('azure_tenant_id', null);
-      setValue('azure_redirect_uri', null);
-      setValue('keycloak_client_id', null);
-      setValue('keycloak_url', null);
-      setValue('keycloak_realm', null);
-    }
-  }, [ssoEnabled, setValue, selectedSSO]);
 
   return (
     <Wrapper>
@@ -429,6 +419,10 @@ export const SSOLoginSettings = () => {
               type="cancel"
               loading={loading}
               disabled={!isChanged}
+              onClick={() => {
+                reset(settingData);
+                setIsChanged(false);
+              }}
             >
               <ButtonText>Cancel</ButtonText>
             </StyledCancelButton>

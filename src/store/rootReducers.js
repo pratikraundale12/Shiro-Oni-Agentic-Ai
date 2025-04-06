@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import { resettableReducer } from 'reduxsauce';
 // import { errorsReducer } from './helpers/error_redux';
 import { activityHistoryReducer } from './activityHistory/redux';
+import { aiFlowGeneratorReducer } from './aiFlowGenerator';
 import { authenticationReducer } from './authentication';
 import { clustersReducer } from './clusters';
 import { dashboardReducer } from './dashboard';
@@ -37,4 +38,5 @@ export default combineReducers({
   settings: resettable(settingsReducer),
   activityHistory: resettable(activityHistoryReducer),
   flowValidation: resettable(flowValidationReducer),
+  aiFlowGenerator: resettable(aiFlowGeneratorReducer),
 });

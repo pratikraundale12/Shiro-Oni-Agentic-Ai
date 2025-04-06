@@ -122,6 +122,7 @@ const InputField = ({
         error,
         [className]: className,
       })}
+      defaultValue={defaultValue}
     >
       {label && (
         <label>

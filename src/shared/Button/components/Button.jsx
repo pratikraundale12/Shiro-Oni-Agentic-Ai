@@ -48,13 +48,13 @@ const StyledButton = styled.button.withConfig({
       ? props.theme.colors.white
       : props.variant === 'secondary'
         ? props.theme.colors.darker
-        : props.theme.colors.darker}; /* Tertiary text color */
+        : props.theme.colors.white}; /* Tertiary text color */
   background-color: ${props =>
     props.variant === 'primary'
       ? props.theme.colors.primary
       : props.variant === 'secondary'
         ? props.theme.colors.white
-        : '#F5F7FA'}; /* Tertiary background color */
+        : props.theme.colors.darker}; /* Tertiary background color */
   transition:
     background 0.3s ease-in-out,
     color 0.3s ease-in-out;
@@ -62,14 +62,14 @@ const StyledButton = styled.button.withConfig({
   &:hover {
     color: ${props =>
       props.variant === 'tertiary'
-        ? 'props.theme.colors.darker'
+        ? props.theme.colors.darker
         : props.theme.colors.white};
     background: ${props =>
       props.variant === 'primary'
         ? props.theme.colors.primaryActive
         : props.variant === 'secondary'
           ? props.theme.colors.darker
-          : '#DDE4F0'};
+          : props.theme.colors.white};
     path {
       fill: ${props => props.theme.colors.white};
     }
@@ -95,6 +95,9 @@ const StyledButton = styled.button.withConfig({
         : props.variant === 'secondary'
           ? props.theme.colors.lightGrey3
           : props.theme.colors.lightGrey3};
+    path {
+      fill: ${props => props.theme.colors.lightGrey3};
+    }
   }
 
   svg {

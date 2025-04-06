@@ -1,6 +1,7 @@
 import { all, fork } from 'redux-saga/effects';
 
 import { activityHistorySagas } from './activityHistory';
+import { aiFlowGeneratorSagas } from './aiFlowGenerator';
 import { authenticationSagas } from './authentication/sagas';
 import { clustersSagas } from './clusters';
 import { dashboardSagas } from './dashboard';
@@ -43,5 +44,7 @@ export default function* root() {
     fork(activityHistorySagas, api),
     // |---------------------FlowVlidation-------------------------|
     fork(flowValidationSagas, api),
+    // |---------------------aiFlowGenerator-------------------------|
+    fork(aiFlowGeneratorSagas, api),
   ]);
 }

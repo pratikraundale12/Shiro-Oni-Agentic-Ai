@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
+import { AI_FLOW_GENERATOR_CONSTANTS } from './aiFlowGenerator.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
 import { USER_CONSTANTS } from './user.constant';
@@ -90,6 +91,7 @@ export const MODULE_LIST_MAP = [
   { label: 'Parameter Context', value: 'Parameter Context' },
   { label: 'Variable', value: 'Variable' },
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
+  { label: 'AI Flows', value: 'AI Flows' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -116,6 +118,9 @@ export const ACTIVITY_EVENTS = [
   { label: 'Logout', value: 'Logout' },
   { label: 'Reschedule', value: 'Reschedule' },
   { label: 'Approve', value: 'Approve' },
+  { label: 'Add Flow', value: 'Add Flow' },
+  { label: 'Add Bucket', value: 'Add Bucket' },
+  { label: 'Generate Flow', value: 'Generate Flow' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
@@ -262,6 +267,7 @@ export const KDFM = {
   ...NAMESPACE_CONSTANTS,
   ...ACTIVITY_HISTORY_CONSTANTS,
   ...USER_CONSTANTS,
+  ...AI_FLOW_GENERATOR_CONSTANTS,
 };
 
 export const SIDE_MENUS_DISPLAY = [
@@ -276,7 +282,34 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'controller-service', label: 'Controller Services' },
   { path: 'setting', label: 'Settings' },
   { path: 'licensing', label: 'Licensing' },
+  { path: 'ai-flow-generator', label: 'AI-Powered Data Flow' },
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];
 export const SEARCH_INPUT_ERROR = 'Please enter atleast 2 characters to search';
+
+export const TRUE_FALSE_OPTIONS = [
+  { id: 1, value: 'true', label: 'True' },
+  { id: 2, value: 'false', label: 'False' },
+];
+
+export const ZOOOKEEPER_EMBEDED_OPTIONS = [
+  { id: 1, value: true, label: 'True' },
+  { id: 2, value: false, label: 'False' },
+];
+
+export const ALWAYS_SYNC_OPTIONS = [
+  { id: 1, value: 'true', label: 'True' },
+  { id: 2, value: 'false', label: 'False' },
+];
+
+export const FLOW_ELECTION_MAX_WAIT_OPTIONS = [
+  { label: '2 Min', value: '2 mins' },
+  { label: '5 Min', value: '5 mins' },
+  { label: '10 Min', value: '10 mins' },
+];
+
+export const ACCESS_CONTROL_OPTIONS = [
+  { label: 'Open', value: 'Open' },
+  { label: 'CreatorOnly', value: 'CreatorOnly' },
+];

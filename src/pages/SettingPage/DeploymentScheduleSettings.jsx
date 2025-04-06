@@ -104,6 +104,7 @@ export const DeploymentScheduleSettings = () => {
     register,
     watch,
     setValue,
+    reset,
     formState: { errors, dirtyFields },
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
@@ -162,6 +163,7 @@ export const DeploymentScheduleSettings = () => {
         setTimeout(() => {
           dispatch(SettingsActions.fetchSettings());
           history.push('/setting');
+          setIsChanged(false);
         }, 1000);
         changeFavicon(data?.favicon || favicon);
       }
@@ -233,11 +235,11 @@ export const DeploymentScheduleSettings = () => {
             errors={errors}
             options={approverOptions}
             placeholder="Select Approver Groups"
-            value={approverOptions.find(
-              option =>
-                option.value ===
-                (watch('approver_groups') || settingData?.approver_groups)
-            )}
+            value={
+              approverOptions.find(
+                option => option.value === watch('approver_groups')
+              ) || null
+            }
           />
         </div>
 
@@ -293,9 +295,22 @@ export const DeploymentScheduleSettings = () => {
           <ButtonDiv>
             <StyledCancelButton
               variant="secondary"
-              type="cancel"
+              type="button"
               loading={loading}
               disabled={!isChanged}
+              onClick={() => {
+                reset({
+                  refresh:
+                    settingData?.refresh === 0
+                      ? 'Off'
+                      : String(settingData?.refresh),
+                  email_reminder_time: settingData?.email_reminder_time,
+                  group_email_id: settingData?.group_email_id,
+                  approver_groups: '', // Ensure this resets properly
+                });
+                reset(settingData);
+                setIsChanged(false);
+              }}
             >
               <ButtonText>Cancel</ButtonText>
             </StyledCancelButton>
