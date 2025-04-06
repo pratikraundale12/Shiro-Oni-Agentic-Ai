@@ -63,6 +63,7 @@ export const CONDITION_OPERATORS = [
   { label: '<=', value: '<=' },
   { label: '>=', value: '>=' },
   { label: 'contains', value: 'contains' },
+  { label: 'not contains', value: 'not contains' },
 ];
 
 export const convertDateTime = dateString => {
