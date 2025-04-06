@@ -153,7 +153,13 @@ const FlowValidationDetails = () => {
   };
 
   const loading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'validateRules')
+    LoadingSelectors.getLoading(state, 'validateRules', 'emailReport')
+  );
+  const isloading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'emailReport')
+  );
+  const isRandomloading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'validateRandomFlow')
   );
 
   const handleBackClick = () => {
@@ -176,6 +182,8 @@ const FlowValidationDetails = () => {
   return (
     <div>
       <FullPageLoader loading={loading} />
+      <FullPageLoader loading={isloading} />
+      <FullPageLoader loading={isRandomloading} />
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2">
