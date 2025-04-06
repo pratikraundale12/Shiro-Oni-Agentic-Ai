@@ -5,6 +5,7 @@ import {
   DeploymentScheduleIcon,
   EmailConfigIcon,
   LDAPIcon,
+  PropertyIcon,
   SSOLoginIcon,
   ServiceAccountIcon,
 } from '../../assets';
@@ -173,10 +174,10 @@ const SettingTab = () => {
             <Tab
               active={activeTab === 'Flow Validation'}
               onClick={() => setActiveTab('Flow Validation')}
-              className="nav-item"
+              className="nav-item d-flex"
             >
               <IconContent className="nav-item">
-                <SSOLoginIcon />
+                <PropertyIcon color="#444445" height="18" width="18" />
               </IconContent>
               Flow Validation
             </Tab>

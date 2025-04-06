@@ -63,13 +63,11 @@ const FlowAnalysis = () => {
   const handleEdit = item => {
     dispatch(FlowValidationActions.setSelectedItem(item));
     history.push('/flow-analysis/flow-validation');
-    console.log('Edit clicked', item);
     // Add your edit logic here
   };
 
   const handleDelete = item => {
     history.push('/flow-analysis/flow-compare');
-    console.log('Delete clicked', item);
     dispatch(FlowValidationActions.setSelectedItem(item));
     dispatch(
       NamespacesActions.fetchVersionData({
@@ -77,7 +75,6 @@ const FlowAnalysis = () => {
         flowId: item.flowId,
       })
     );
-    // Add your delete logic here
   };
 
   const state = {

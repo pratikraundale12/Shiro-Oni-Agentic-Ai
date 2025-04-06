@@ -13,6 +13,8 @@ export const flowValidationAPI = api => {
     );
   const updateRuleApi = (id, data) => api.put(`/rule/${id}`, data);
   const createRule = data => api.post(`/add-rule`, data);
+  const deleteRuleScope = id => api.delete(`/rule-scope/${id}`);
+  const deleteRule = id => api.delete(`/rule/${id}`);
 
   return {
     ruleScopeApi,
@@ -24,5 +26,7 @@ export const flowValidationAPI = api => {
     compareRulesApi,
     updateRuleApi,
     createRule,
+    deleteRuleScope,
+    deleteRule,
   };
 };

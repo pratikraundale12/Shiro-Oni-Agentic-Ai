@@ -67,8 +67,10 @@ const RadioContainer = styled.div`
 const FlowValidationModal = () => {
   const dispatch = useDispatch();
   const fetchRules = useSelector(FlowValidationSelectors.getRules);
-  console.log(fetchRules, 'line no 70');
   const [selectedRuleId, setSelectedRuleId] = useState(null);
+  const selectedRule = fetchRules?.data?.find(
+    rule => rule.id === selectedRuleId
+  );
   const [editedConditions, setEditedConditions] = useState([]);
   const [isCreatingNewRule, setIsCreatingNewRule] = useState(false);
   const [newRule, setNewRule] = useState({
@@ -76,14 +78,24 @@ const FlowValidationModal = () => {
     output_value: '',
     conditions: [],
   });
+  const [editedRule, setEditedRule] = useState(null);
+  const [hasChanges, setHasChanges] = useState(false);
   const fetchPropertyData = useSelector(FlowValidationSelectors.getProperty);
   const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
   const { control } = useForm();
-  console.log('hi');
+
+  useEffect(() => {
+    if (selectedRule) {
+      setEditedRule(selectedRule);
+      setHasChanges(false);
+    }
+  }, [selectedRule]);
+
   useEffect(() => {
     if (fetchRules?.data?.length > 0) {
       setSelectedRuleId(fetchRules.data[0].id);
       setEditedConditions(fetchRules.data[0]?.conditions || []);
+      setHasChanges(false);
     }
   }, [fetchRules?.data]);
 
@@ -93,66 +105,124 @@ const FlowValidationModal = () => {
         rule => rule.id === selectedRuleId
       );
       setEditedConditions(selectedRule?.conditions || []);
+      setHasChanges(false);
     }
   }, [selectedRuleId, fetchRules?.data]);
 
   const handleRuleSelection = id => {
     setSelectedRuleId(id);
+    setHasChanges(false);
   };
 
-  const selectedRule = fetchRules?.data?.find(
-    rule => rule.id === selectedRuleId
-  );
-  console.log(newRule.conditions, 'line no 106');
   const isFlowValidationModalOpen = useSelector(
     SettingsSelectors.getFlowValidationModal
   );
 
-  const handleConditionValueChange = (conditionIndex, value) => {
-    const updatedConditions = [...editedConditions];
-    updatedConditions[conditionIndex] = {
-      ...updatedConditions[conditionIndex],
-      condition_value: value,
-    };
-    setEditedConditions(updatedConditions);
-  };
-
-  const handleSave = () => {
-    if (selectedRule) {
-      const updatedRule = {
-        name: selectedRule.name,
-        conditions: editedConditions.map(condition => ({
-          condition_value: condition.condition_value,
-          condition_property: condition.condition_property,
-          condition_expression: condition.condition_expression,
-        })),
-        output_value: selectedRule.output_value,
-      };
-
-      dispatch(
-        FlowValidationActions.updateRule({
-          ruleId: selectedRule.id,
-          data: updatedRule,
-        })
-      );
-      // dispatch(SettingsActions.flowValidationModalOpen(false));
+  const handleRuleNameChange = value => {
+    if (isCreatingNewRule) {
+      setNewRule(prev => ({
+        ...prev,
+        name: value,
+      }));
+      setHasChanges(true);
+    } else {
+      setEditedRule(prev => ({
+        ...prev,
+        name: value,
+      }));
+      setHasChanges(true);
     }
   };
 
-  const handleAddNewRule = () => {
-    setIsCreatingNewRule(true);
-    setNewRule({
-      name: '',
-      output_value: '',
-      conditions: [],
-    });
+  const handleOutputValueChange = value => {
+    if (isCreatingNewRule) {
+      setNewRule(prev => ({
+        ...prev,
+        output_value: value,
+      }));
+      setHasChanges(true);
+    } else {
+      setEditedRule(prev => ({
+        ...prev,
+        output_value: value,
+      }));
+      setHasChanges(true);
+    }
   };
 
-  const handleCreateRule = () => {
-    console.log(newRule, 'line no 152');
-    if (newRule.name && newRule.output_value && newRule.conditions.length > 0) {
-      try {
-        console.log('line no 157');
+  const handleConditionValueChange = (conditionIndex, value) => {
+    if (isCreatingNewRule) {
+      setNewRule(prev => ({
+        ...prev,
+        conditions: prev.conditions.map((condition, i) =>
+          i === conditionIndex
+            ? { ...condition, condition_value: value }
+            : condition
+        ),
+      }));
+      setHasChanges(true);
+    } else {
+      const updatedConditions = [...editedConditions];
+      updatedConditions[conditionIndex] = {
+        ...updatedConditions[conditionIndex],
+        condition_value: value,
+      };
+      setEditedConditions(updatedConditions);
+      setHasChanges(true);
+    }
+  };
+
+  const handleConditionPropertyChange = (conditionIndex, value) => {
+    if (isCreatingNewRule) {
+      setNewRule(prev => ({
+        ...prev,
+        conditions: prev.conditions.map((condition, i) =>
+          i === conditionIndex
+            ? { ...condition, condition_property: value }
+            : condition
+        ),
+      }));
+      setHasChanges(true);
+    } else {
+      const updatedConditions = [...editedConditions];
+      updatedConditions[conditionIndex] = {
+        ...updatedConditions[conditionIndex],
+        condition_property: value,
+      };
+      setEditedConditions(updatedConditions);
+      setHasChanges(true);
+    }
+  };
+
+  const handleConditionExpressionChange = (conditionIndex, value) => {
+    if (isCreatingNewRule) {
+      setNewRule(prev => ({
+        ...prev,
+        conditions: prev.conditions.map((condition, i) =>
+          i === conditionIndex
+            ? { ...condition, condition_expression: value }
+            : condition
+        ),
+      }));
+      setHasChanges(true);
+    } else {
+      const updatedConditions = [...editedConditions];
+      updatedConditions[conditionIndex] = {
+        ...updatedConditions[conditionIndex],
+        condition_expression: value,
+      };
+      setEditedConditions(updatedConditions);
+      setHasChanges(true);
+    }
+  };
+
+  const handleSave = () => {
+    if (isCreatingNewRule) {
+      if (
+        newRule.name &&
+        newRule.output_value &&
+        newRule.conditions.length > 0
+      ) {
         dispatch(
           FlowValidationActions.createRule({
             ...newRule,
@@ -167,58 +237,64 @@ const FlowValidationModal = () => {
         );
         setIsCreatingNewRule(false);
         dispatch(SettingsActions.flowValidationModalOpen(false));
-      } catch (error) {
-        console.error('Error creating rule:', error);
-        // You might want to show an error message to the user here
       }
-    } else {
-      // You might want to show a validation message to the user here
-      console.warn('Please fill in all required fields');
+    } else if (editedRule) {
+      dispatch(
+        FlowValidationActions.updateRule({
+          ruleId: editedRule.id,
+          data: {
+            name: editedRule.name,
+            output_value: editedRule.output_value,
+            conditions: editedConditions.map(condition => ({
+              condition_value: condition.condition_value,
+              condition_property: condition.condition_property,
+              condition_expression: condition.condition_expression,
+            })),
+          },
+        })
+      );
+      dispatch(SettingsActions.flowValidationModalOpen(false));
     }
   };
 
-  const validateConditionValue = (propertyName, value) => {
-    const property = fetchPropertyData?.data?.find(
-      prop => prop.propName === propertyName
-    );
-
-    if (!property) return true; // If property not found, allow any value
-
-    const propType = property.propType?.toLowerCase();
-
-    switch (propType) {
-      case 'boolean':
-        return (
-          value.toLowerCase() === 'true' || value.toLowerCase() === 'false'
-        );
-      case 'integer':
-        return !isNaN(value) && Number.isInteger(Number(value));
-      case 'string':
-        return typeof value === 'string';
-      default:
-        return true; // For unknown types, allow any value
-    }
+  const handleAddNewRule = () => {
+    setIsCreatingNewRule(true);
+    setNewRule({
+      name: '',
+      output_value: '',
+      conditions: [],
+    });
+    setHasChanges(true);
   };
 
   const handleAddCondition = async e => {
-    // Prevent form submission
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(newRule, 'line no 203');
-
-    // If rule already exists or name/output_value not filled, just add condition
-    setNewRule(prev => ({
-      ...prev,
-      conditions: [
-        ...prev.conditions,
+    if (isCreatingNewRule) {
+      setNewRule(prev => ({
+        ...prev,
+        conditions: [
+          ...prev.conditions,
+          {
+            condition_property: '',
+            condition_expression: '',
+            condition_value: '',
+          },
+        ],
+      }));
+      setHasChanges(true);
+    } else {
+      setEditedConditions(prev => [
+        ...prev,
         {
           condition_property: '',
           condition_expression: '',
           condition_value: '',
         },
-      ],
-    }));
+      ]);
+      setHasChanges(true);
+    }
   };
 
   const handleNewRuleChange = (field, value) => {
@@ -228,38 +304,49 @@ const FlowValidationModal = () => {
     }));
   };
 
-  const handleNewConditionChange = (index, field, value) => {
-    if (field === 'condition_value') {
-      const propertyName = newRule.conditions[index].condition_property;
-      if (!validateConditionValue(propertyName, value)) {
-        // You might want to show an error message to the user here
-        console.warn(`Invalid value for property type`);
-        return;
-      }
+  const handleDelete = id => {
+    console.log('Deleting rule:', id);
+    dispatch(FlowValidationActions.deleteRule(id));
+    // Update local state immediately
+    if (fetchRules?.data) {
+      const updatedRules = fetchRules.data.filter(rule => rule.id !== id);
+      dispatch(FlowValidationActions.fetchRulesSuccess({ data: updatedRules }));
     }
-
-    setNewRule(prev => ({
-      ...prev,
-      conditions: prev.conditions.map((condition, i) =>
-        i === index ? { ...condition, [field]: value } : condition
-      ),
-    }));
   };
 
-  console.log(selectedItem?.deletable, 'line no 134');
+  const handleDeleteCondition = index => {
+    if (isCreatingNewRule) {
+      setNewRule(prev => ({
+        ...prev,
+        conditions: prev.conditions.filter((_, i) => i !== index),
+      }));
+      setHasChanges(true);
+    } else {
+      setEditedConditions(prev => prev.filter((_, i) => i !== index));
+      setHasChanges(true);
+    }
+  };
+
   return (
     <Modal
-      title={isCreatingNewRule ? 'Create New Rule' : 'Add Flow Rule'}
+      title={isCreatingNewRule ? 'Create New Rule' : 'Edit Flow Rule'}
       isOpen={isFlowValidationModalOpen}
       onRequestClose={() => {
         dispatch(SettingsActions.flowValidationModalOpen(false));
         setIsCreatingNewRule(false);
+        setHasChanges(false);
       }}
       size="md"
       primaryButtonText={isCreatingNewRule ? 'Create' : 'Save'}
       secondaryButtonText="Cancel"
       contentStyles={{ maxWidth: '70%', maxHeight: '80%' }}
-      onSubmit={isCreatingNewRule ? handleCreateRule : handleSave}
+      onSubmit={handleSave}
+      primaryButtonDisabled={
+        !hasChanges ||
+        (isCreatingNewRule
+          ? newRule.conditions.length === 0
+          : editedConditions.length === 0)
+      }
     >
       <div className="row">
         <div className="col-md-8 col-xl-9">
@@ -287,43 +374,49 @@ const FlowValidationModal = () => {
                 <ConditionIcon className="d-flex align-items-center gap-3">
                   Condition <InfoIcon />
                 </ConditionIcon>
-                <div>
-                  <Button onClick={handleAddCondition}>
-                    <AddIcon color="#fff" /> Add Conditionsss
-                  </Button>
-                </div>
+                {selectedItem?.deletable && (
+                  <div>
+                    <Button
+                      onClick={e => {
+                        console.log('Button clicked');
+                        handleAddCondition(e);
+                      }}
+                    >
+                      <AddIcon color="#fff" /> Add Conditions
+                    </Button>
+                  </div>
+                )}
               </div>
               <div className="row g-2 align-items-center">
                 {newRule.conditions.map((condition, index) => (
                   <Fragment key={index}>
+                    {console.log(
+                      condition.condition_property,
+                      '<<< condition_property'
+                    )}
                     <div className="col-md-4">
-                      <PropertyDiv>
-                        <SelectField
-                          name={`condition_property_${index}`}
-                          icon={<PropertyIcon />}
-                          placeholder="Select Property"
-                          options={fetchPropertyData?.data?.map(property => ({
-                            label: property?.propName,
-                            value: property?.propName,
-                          }))}
-                          defaultValue={
-                            fetchPropertyData?.data?.find(
-                              property =>
-                                property?.propName ===
-                                condition.condition_property
-                            ) || null
-                          }
-                          onChange={e => {
-                            handleNewConditionChange(
-                              index,
-                              'condition_property',
-                              e?.value
-                            );
-                          }}
-                          control={control}
-                          disabled={!isCreatingNewRule}
-                        />
-                      </PropertyDiv>
+                      <SelectField
+                        name={`condition_property_${index}`}
+                        icon={<PropertyIcon />}
+                        placeholder="Select Property"
+                        options={fetchPropertyData?.data?.map(property => ({
+                          label: property?.propName,
+                          value: property?.propName,
+                        }))}
+                        value={
+                          condition.condition_property
+                            ? {
+                                label: condition.condition_property,
+                                value: condition.condition_property,
+                              }
+                            : null
+                        }
+                        onChange={e => {
+                          handleConditionPropertyChange(index, e?.value);
+                        }}
+                        control={control}
+                        disabled={!isCreatingNewRule}
+                      />
                     </div>
                     <div className="col-md">
                       <PropertyDiv>
@@ -363,11 +456,7 @@ const FlowValidationModal = () => {
                                 )
                           }
                           onChange={e => {
-                            handleNewConditionChange(
-                              index,
-                              'condition_expression',
-                              e?.value
-                            );
+                            handleConditionExpressionChange(index, e?.value);
                           }}
                           control={control}
                           disabled={!isCreatingNewRule}
@@ -380,14 +469,20 @@ const FlowValidationModal = () => {
                         icon={<NewLinkIcon />}
                         value={condition.condition_value}
                         onChange={e =>
-                          handleNewConditionChange(
-                            index,
-                            'condition_value',
-                            e.target.value
-                          )
+                          handleConditionValueChange(index, e.target.value)
                         }
                       />
                     </div>
+                    {selectedItem?.deletable && (
+                      <div className="col-md-1 d-flex align-items-center">
+                        <button
+                          onClick={() => handleDeleteCondition(index)}
+                          className="btn btn-link p-0"
+                        >
+                          <DeleteSmallIcon color="#FF7A00" />
+                        </button>
+                      </div>
+                    )}
                   </Fragment>
                 ))}
               </div>
@@ -398,54 +493,69 @@ const FlowValidationModal = () => {
                 name="rule_name"
                 icon={<NewLinkIcon />}
                 label="Rule Name"
-                value={selectedRule?.name || ''}
+                value={
+                  isCreatingNewRule ? newRule.name : editedRule?.name || ''
+                }
                 placeholder="Processor Colors"
-                disabled={true}
+                disabled={!selectedItem?.deletable}
+                onChange={e => handleRuleNameChange(e.target.value)}
               />
               <InputField
                 name="rule_comments"
                 icon={<NewMessageIcon />}
                 label="Output Value"
-                value={selectedRule?.output_value || ''}
+                value={
+                  isCreatingNewRule
+                    ? newRule.output_value
+                    : editedRule?.output_value || ''
+                }
                 placeholder="Rules for Processor Colors"
-                disabled={true}
+                disabled={!selectedItem?.deletable}
+                onChange={e => handleOutputValueChange(e.target.value)}
               />
-              <div className="col-12">
+              <div className="col-12 d-flex justify-content-between">
                 <ConditionIcon className="d-flex align-items-center gap-3">
                   Condition <InfoIcon />
                 </ConditionIcon>
+                {selectedItem?.deletable && (
+                  <div>
+                    <Button
+                      onClick={e => {
+                        console.log('Button clicked');
+                        handleAddCondition(e);
+                      }}
+                    >
+                      <AddIcon color="#fff" /> Add Conditions
+                    </Button>
+                  </div>
+                )}
               </div>
               <div className="row g-2 align-items-center">
                 {editedConditions?.map((condition, index) => (
                   <Fragment key={index}>
                     <div className="col-md-4">
-                      <PropertyDiv>
-                        <SelectField
-                          name={`condition_property_${index}`}
-                          icon={<PropertyIcon />}
-                          placeholder="Select Property"
-                          options={fetchPropertyData?.data?.map(property => ({
-                            label: property?.propName,
-                            value: property?.propName,
-                          }))}
-                          defaultValue={
-                            fetchPropertyData?.data?.find(
-                              property =>
-                                property?.propName ===
-                                condition.condition_property
-                            ) || null
-                          }
-                          onChange={e => {
-                            handleNewConditionChange(
-                              index,
-                              'condition_property',
-                              e?.value
-                            );
-                          }}
-                          control={control}
-                          disabled={!isCreatingNewRule}
-                        />
-                      </PropertyDiv>
+                      <SelectField
+                        name={`condition_property_${index}`}
+                        icon={<PropertyIcon />}
+                        placeholder="Select Property"
+                        options={fetchPropertyData?.data?.map(property => ({
+                          label: property?.propName,
+                          value: property?.propName,
+                        }))}
+                        value={
+                          condition.condition_property
+                            ? {
+                                label: condition.condition_property,
+                                value: condition.condition_property,
+                              }
+                            : null
+                        }
+                        onChange={e => {
+                          handleConditionPropertyChange(index, e?.value);
+                        }}
+                        control={control}
+                        disabled={!selectedItem?.deletable}
+                      />
                     </div>
                     <div className="col-md">
                       <PropertyDiv>
@@ -475,14 +585,10 @@ const FlowValidationModal = () => {
                               option.value === condition.condition_expression
                           )}
                           onChange={e =>
-                            handleNewConditionChange(
-                              index,
-                              'condition_expression',
-                              e?.value
-                            )
+                            handleConditionExpressionChange(index, e?.value)
                           }
                           control={control}
-                          disabled={!isCreatingNewRule}
+                          disabled={!selectedItem?.deletable}
                         />
                       </PropertyDiv>
                     </div>
@@ -496,6 +602,16 @@ const FlowValidationModal = () => {
                         }
                       />
                     </div>
+                    {selectedItem?.deletable && (
+                      <div className="col-md-1 d-flex align-items-center">
+                        <button
+                          onClick={() => handleDeleteCondition(index)}
+                          className="btn btn-link p-0"
+                        >
+                          <DeleteSmallIcon color="#FF7A00" />
+                        </button>
+                      </div>
+                    )}
                   </Fragment>
                 ))}
               </div>
@@ -538,11 +654,11 @@ const FlowValidationModal = () => {
                     />
                     {item?.name}
                   </RadioContainer>
-                  <span>
-                    {fetchRules?.data?.deletable === false && (
+                  <button onClick={() => handleDelete(item.id)}>
+                    {selectedItem?.deletable === true && (
                       <DeleteSmallIcon color="#FF7A00" />
                     )}
-                  </span>
+                  </button>
                 </li>
               ))}
             </ul>

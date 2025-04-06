@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { AddIcon, FlowValidationIcon, NewEditIcon } from '../../assets';
-import { Table, TextRender } from '../../components';
+import {
+  AddIcon,
+  DeleteSmallIcon,
+  FlowValidationIcon,
+  NewEditIcon,
+} from '../../assets';
+import { IconButton, Table, TextRender } from '../../components';
 import {
   FLOWVALIDATION_CONSTANTS,
   convertDateTime,
@@ -92,13 +97,26 @@ const FlowValidation = () => {
           </button>
           {item?.deletable === true && (
             <button
-              className="border-0 bg-white"
+              className="border-0 bg-white mr-2"
               onClick={() => {
                 dispatch(SettingsActions.addNewValidationModalOpen(true));
                 dispatch(FlowValidationActions.setSelectedItem(item));
               }}
             >
               <NewEditIcon />
+            </button>
+          )}
+          {item?.deletable === true && (
+            <button
+              className="border-none bg-white"
+              onClick={() => {
+                console.log('flow validation modal open', item);
+                dispatch(FlowValidationActions.deleteRuleScope(item.id));
+              }}
+            >
+              <IconButton>
+                <DeleteSmallIcon color="#444445" height="12" width="12" />
+              </IconButton>
             </button>
           )}
         </>

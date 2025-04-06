@@ -134,7 +134,7 @@ const SelectField = ({
   sortAlphabetically = true,
   ...props
 }) => {
-  console.log(defaultValue, name, label, options, props);
+  console.log(defaultValue, name, label, options, props, 'line no 137');
   const animatedComponents = makeAnimated();
   const error = hasError(errors, name);
 

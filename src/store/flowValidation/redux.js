@@ -23,6 +23,10 @@ export const FlowValidationActions = {
   updateRuleSuccess: createAction(`${prefix}updateRuleSuccess`),
   createRule: createAction(`${prefix}createRule`),
   createRuleSuccess: createAction(`${prefix}createRuleSuccess`),
+  deleteRuleScope: createAction(`${prefix}deleteRuleScope`),
+  deleteRuleScopeSuccess: createAction(`${prefix}deleteRuleScopeSuccess`),
+  deleteRule: createAction(`${prefix}deleteRule`),
+  deleteRuleSuccess: createAction(`${prefix}deleteRuleSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -103,6 +107,19 @@ const updateRuleScopeSuccess = (state, { payload }) => {
     },
   };
 };
+const deleteRuleScopeSuccess = (state, { payload }) => {
+  const updatedList = (state.ruleScopes.data || []).filter(
+    scope => scope.id !== payload
+  );
+
+  return {
+    ...state,
+    ruleScopes: {
+      ...state.ruleScopes,
+      data: updatedList,
+    },
+  };
+};
 
 const updateRuleSuccess = (state, { payload }) => ({
   ...state,
@@ -117,6 +134,18 @@ const createRuleSuccess = (state, { payload }) => ({
     data: [...(state.rules.data || []), payload],
   },
 });
+const deleteRuleSuccess = (state, { payload }) => {
+  const updatedRules = (state.rules.data || []).filter(
+    rule => rule.id !== payload
+  );
+  return {
+    ...state,
+    rules: {
+      ...state.rules,
+      data: updatedRules,
+    },
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
@@ -138,6 +167,11 @@ export const flowValidationReducer = createReducer(
         updateRuleScopeSuccess
       )
       .addCase(FlowValidationActions.updateRuleSuccess, updateRuleSuccess)
-      .addCase(FlowValidationActions.createRuleSuccess, createRuleSuccess);
+      .addCase(FlowValidationActions.createRuleSuccess, createRuleSuccess)
+      .addCase(
+        FlowValidationActions.deleteRuleScopeSuccess,
+        deleteRuleScopeSuccess
+      )
+      .addCase(FlowValidationActions.deleteRuleSuccess, deleteRuleSuccess);
   }
 );
