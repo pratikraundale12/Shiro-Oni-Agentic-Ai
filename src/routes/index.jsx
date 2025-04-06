@@ -161,7 +161,7 @@ export const ROUTES_MENU = [
         component: <CompareValidation />,
       },
     ],
-    permission: 'view_controller_services',
+    permission: 'view_namespace',
   },
   {
     name: 'Deployment Schedule',

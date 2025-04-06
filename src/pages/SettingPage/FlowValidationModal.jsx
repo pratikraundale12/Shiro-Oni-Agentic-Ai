@@ -11,6 +11,10 @@ import {
   PropertyIcon,
 } from '../../assets';
 import {
+  CONDITION_OPERATORS,
+  FLOWVALIDATION_CONSTANTS,
+} from '../../constants/flowValidation.constant';
+import {
   Button,
   InputField,
   Modal,
@@ -305,7 +309,6 @@ const FlowValidationModal = () => {
   };
 
   const handleDelete = id => {
-    console.log('Deleting rule:', id);
     dispatch(FlowValidationActions.deleteRule(id));
     // Update local state immediately
     if (fetchRules?.data) {
@@ -329,7 +332,11 @@ const FlowValidationModal = () => {
 
   return (
     <Modal
-      title={isCreatingNewRule ? 'Create New Rule' : 'Edit Flow Rule'}
+      title={
+        isCreatingNewRule
+          ? FLOWVALIDATION_CONSTANTS.ADD_NEW_RULE
+          : FLOWVALIDATION_CONSTANTS.EDIT_NEW_RULE
+      }
       isOpen={isFlowValidationModalOpen}
       onRequestClose={() => {
         dispatch(SettingsActions.flowValidationModalOpen(false));
@@ -344,7 +351,7 @@ const FlowValidationModal = () => {
         setEditedConditions([]);
       }}
       size="md"
-      primaryButtonText={isCreatingNewRule ? 'Create' : 'Save'}
+      primaryButtonText={FLOWVALIDATION_CONSTANTS.SAVE}
       secondaryButtonText="Cancel"
       contentStyles={{ maxWidth: '70%', maxHeight: '80%' }}
       onSubmit={handleSave}
@@ -362,34 +369,33 @@ const FlowValidationModal = () => {
               <InputField
                 name="rule_name"
                 icon={<NewLinkIcon />}
-                label="Rule Name"
+                label={FLOWVALIDATION_CONSTANTS.RULE_NAME}
                 value={newRule.name}
                 onChange={e => handleNewRuleChange('name', e.target.value)}
-                placeholder="Enter Rule Name"
+                placeholder={FLOWVALIDATION_CONSTANTS.ENTER_RULE_NAME}
               />
               <InputField
                 name="rule_comments"
                 icon={<NewMessageIcon />}
-                label="Output Value"
+                label={FLOWVALIDATION_CONSTANTS.OUTPUT_VALUE}
                 value={newRule.output_value}
                 onChange={e =>
                   handleNewRuleChange('output_value', e.target.value)
                 }
-                placeholder="Enter Output Value"
+                placeholder={FLOWVALIDATION_CONSTANTS.ENTER_OUPUT_VALUE}
               />
               <div className="col-12 d-flex justify-content-between">
                 <ConditionIcon className="d-flex align-items-center gap-3">
-                  Condition <InfoIcon />
+                  {FLOWVALIDATION_CONSTANTS.CONDITION} <InfoIcon />
                 </ConditionIcon>
                 {selectedItem?.deletable && (
                   <div>
                     <Button
                       onClick={e => {
-                        console.log('Button clicked');
                         handleAddCondition(e);
                       }}
                     >
-                      <AddIcon color="#fff" /> Add Conditions
+                      <AddIcon color="#fff" />
                     </Button>
                   </div>
                 )}
@@ -397,15 +403,11 @@ const FlowValidationModal = () => {
               <div className="row g-2 align-items-center">
                 {newRule.conditions.map((condition, index) => (
                   <Fragment key={index}>
-                    {console.log(
-                      condition.condition_property,
-                      '<<< condition_property'
-                    )}
                     <div className="col-md-4">
                       <SelectField
                         name={`condition_property_${index}`}
                         icon={<PropertyIcon />}
-                        placeholder="Select Property"
+                        placeholder={FLOWVALIDATION_CONSTANTS.SELECT_PROPERTY}
                         options={fetchPropertyData?.data?.map(property => ({
                           label: property?.propName,
                           value: property?.propName,
@@ -430,16 +432,8 @@ const FlowValidationModal = () => {
                         <SelectField
                           name={`condition_expression_${index}`}
                           icon={<PropertyIcon />}
-                          placeholder="Condition"
-                          options={[
-                            { label: '===', value: '===' },
-                            { label: '!==', value: '!==' },
-                            { label: '<', value: '<' },
-                            { label: '>', value: '>' },
-                            { label: '<=', value: '<=' },
-                            { label: '>=', value: '>=' },
-                            { label: 'contains', value: 'contains' },
-                          ]}
+                          placeholder={FLOWVALIDATION_CONSTANTS.CONDITION}
+                          options={CONDITION_OPERATORS}
                           value={
                             isCreatingNewRule
                               ? condition.condition_expression
@@ -448,15 +442,7 @@ const FlowValidationModal = () => {
                                     value: condition.condition_expression,
                                   }
                                 : null
-                              : [
-                                  { label: '===', value: '===' },
-                                  { label: '!==', value: '!==' },
-                                  { label: '<', value: '<' },
-                                  { label: '>', value: '>' },
-                                  { label: '<=', value: '<=' },
-                                  { label: '>=', value: '>=' },
-                                  { label: 'contains', value: 'contains' },
-                                ].find(
+                              : CONDITION_OPERATORS.find(
                                   option =>
                                     option.value ===
                                     condition.condition_expression
@@ -499,40 +485,39 @@ const FlowValidationModal = () => {
               <InputField
                 name="rule_name"
                 icon={<NewLinkIcon />}
-                label="Rule Name"
+                label={FLOWVALIDATION_CONSTANTS.RULE_NAME}
                 value={
                   isCreatingNewRule ? newRule.name : editedRule?.name || ''
                 }
-                placeholder="Processor Colors"
+                placeholder={FLOWVALIDATION_CONSTANTS.ENTER_RULE_NAME}
                 disabled={!selectedItem?.deletable}
                 onChange={e => handleRuleNameChange(e.target.value)}
               />
               <InputField
                 name="rule_comments"
                 icon={<NewMessageIcon />}
-                label="Output Value"
+                label={FLOWVALIDATION_CONSTANTS.OUTPUT_VALUE}
                 value={
                   isCreatingNewRule
                     ? newRule.output_value
                     : editedRule?.output_value || ''
                 }
-                placeholder="Rules for Processor Colors"
+                placeholder={FLOWVALIDATION_CONSTANTS.ENTER_OUPUT_VALUE}
                 disabled={!selectedItem?.deletable}
                 onChange={e => handleOutputValueChange(e.target.value)}
               />
               <div className="col-12 d-flex justify-content-between">
                 <ConditionIcon className="d-flex align-items-center gap-3">
-                  Condition <InfoIcon />
+                  {FLOWVALIDATION_CONSTANTS.CONDITION} <InfoIcon />
                 </ConditionIcon>
                 {selectedItem?.deletable && (
                   <div>
                     <Button
                       onClick={e => {
-                        console.log('Button clicked');
                         handleAddCondition(e);
                       }}
                     >
-                      <AddIcon color="#fff" /> Add Conditions
+                      <AddIcon color="#fff" />
                     </Button>
                   </div>
                 )}
@@ -544,7 +529,7 @@ const FlowValidationModal = () => {
                       <SelectField
                         name={`condition_property_${index}`}
                         icon={<PropertyIcon />}
-                        placeholder="Select Property"
+                        placeholder={FLOWVALIDATION_CONSTANTS.SELECT_PROPERTY}
                         options={fetchPropertyData?.data?.map(property => ({
                           label: property?.propName,
                           value: property?.propName,
@@ -569,25 +554,9 @@ const FlowValidationModal = () => {
                         <SelectField
                           name={`condition_expression_${index}`}
                           icon={<PropertyIcon />}
-                          placeholder="Condition"
-                          options={[
-                            { label: '===', value: '===' },
-                            { label: '!==', value: '!==' },
-                            { label: '<', value: '<' },
-                            { label: '>', value: '>' },
-                            { label: '<=', value: '<=' },
-                            { label: '>=', value: '>=' },
-                            { label: 'contains', value: 'contains' },
-                          ]}
-                          value={[
-                            { label: '===', value: '===' },
-                            { label: '!==', value: '!==' },
-                            { label: '<', value: '<' },
-                            { label: '>', value: '>' },
-                            { label: '<=', value: '<=' },
-                            { label: '>=', value: '>=' },
-                            { label: 'contains', value: 'contains' },
-                          ].find(
+                          placeholder={FLOWVALIDATION_CONSTANTS.CONDITION}
+                          options={CONDITION_OPERATORS}
+                          value={CONDITION_OPERATORS.find(
                             option =>
                               option.value === condition.condition_expression
                           )}
@@ -629,7 +598,7 @@ const FlowValidationModal = () => {
           <ModelRightSide className="p-3">
             <div className="d-flex justify-content-between mb-3">
               <span className="d-flex align-items-center gap-2">
-                Rules
+                {FLOWVALIDATION_CONSTANTS.RULES}
                 <InfoIcon />
               </span>
               <Button
@@ -638,7 +607,7 @@ const FlowValidationModal = () => {
                 disabled={selectedItem?.deletable === false}
               >
                 <AddIcon color="#fff" />
-                Add New Rule
+                {FLOWVALIDATION_CONSTANTS.ADD_NEW_RULE}
               </Button>
             </div>
             <ul className="list-group">

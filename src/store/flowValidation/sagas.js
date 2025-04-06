@@ -4,51 +4,66 @@ import { requestSaga } from '../helpers/request_sagas';
 import { FlowValidationActions } from './redux';
 
 export function* ruleScopeFetch(api, { payload }) {
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'ruleScopeApi',
     loadingSection: 'ruleScopeApi',
     apiMethod: api.ruleScopeApi,
     apiParams: [payload],
     successAction: FlowValidationActions.fetchRuleScopeSuccess,
   });
+  if (!response?.ok) {
+    toast.error(response?.data?.message);
+  }
 }
 export function* fetchRules(api, { payload }) {
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'fetchRuleApi',
     loadingSection: 'fetchRuleApi',
     apiMethod: api.fetchRuleApi,
     apiParams: [payload],
     successAction: FlowValidationActions.fetchRulesSuccess,
   });
+  if (!response?.ok) {
+    toast.error(response?.data?.message);
+  }
 }
 export function* fetchProperty(api, { payload }) {
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'fetchProperty',
     loadingSection: 'fetchProperty',
     apiMethod: api.fetchPropertyApi,
     apiParams: [payload],
     successAction: FlowValidationActions.fetchPropertySuccess,
   });
+  if (!response?.ok) {
+    toast.error(response?.data?.message);
+  }
 }
 export function* validateRulesSaga(api, { payload }) {
   const { clusterId, namespaceId, data } = payload;
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'validateRules',
     loadingSection: 'validateRules',
     apiMethod: api.validateRulesApi,
     apiParams: [clusterId, namespaceId, data],
     successAction: FlowValidationActions.validateRulesSuccess,
   });
+  if (!response?.ok) {
+    toast.error(response?.data?.message);
+  }
 }
 export function* compareRulesSaga(api, { payload }) {
   const { clusterId, namespaceId, data } = payload;
-  yield call(requestSaga, {
+  const response = yield call(requestSaga, {
     errorSection: 'compareRules',
     loadingSection: 'compareRules',
     apiMethod: api.compareRulesApi,
     apiParams: [clusterId, namespaceId, data],
     successAction: FlowValidationActions.compareRulesSuccess,
   });
+  if (!response?.ok) {
+    toast.error(response?.data?.message);
+  }
 }
 
 export function* addRuleScopeSaga(api, { payload }) {
@@ -63,7 +78,7 @@ export function* addRuleScopeSaga(api, { payload }) {
     yield put(FlowValidationActions.ruleScopeFetch());
     toast.success('Rule Scope added successfully!');
   } else {
-    toast.error(response?.message);
+    toast.error(response?.data?.message);
   }
 }
 
@@ -80,7 +95,7 @@ export function* updateRuleScopeSaga(api, { payload }) {
     yield put(FlowValidationActions.ruleScopeFetch());
     toast.success('Rule Scope updated successfully!');
   } else {
-    toast.error(response?.message);
+    toast.error(response?.data?.message);
   }
 }
 
@@ -97,7 +112,7 @@ export function* updateRuleSaga(api, { payload }) {
     yield put(FlowValidationActions.ruleScopeFetch());
     toast.success('Rule updated successfully!');
   } else {
-    toast.error(response?.message);
+    toast.error(response?.data?.message);
   }
 }
 
@@ -112,7 +127,7 @@ export function* createRuleSaga(api, { payload }) {
   if (response.ok) {
     toast.success('Rule created successfully!');
   } else {
-    toast.error(response?.message);
+    toast.error(response?.data?.message);
   }
 }
 export function* deleteRuleScopeSaga(api, { payload }) {
@@ -128,7 +143,7 @@ export function* deleteRuleScopeSaga(api, { payload }) {
     yield put(FlowValidationActions.ruleScopeFetch());
     toast.success('Rule Scope deleted successfully!');
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 
@@ -137,13 +152,13 @@ export function* deleteRuleSaga(api, { payload }) {
     errorSection: 'deleteRule',
     loadingSection: 'deleteRule',
     apiMethod: api.deleteRule,
-    apiParams: [payload], // payload should be rule ID
+    apiParams: [payload],
     successAction: FlowValidationActions.deleteRuleSuccess,
   });
   if (response.ok) {
     toast.success('Rule deleted successfully!');
   } else {
-    toast.error(response?.message || 'Failed to delete rule');
+    toast.error(response?.data?.message);
   }
 }
 

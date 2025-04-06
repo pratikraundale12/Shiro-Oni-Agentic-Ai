@@ -81,7 +81,6 @@ const FlowValidation = () => {
           <button
             className="border-0 bg-white me-2"
             onClick={() => {
-              console.log('flow validation modal open', item);
               dispatch(SettingsActions.flowValidationModalOpen(true));
               dispatch(FlowValidationActions.fetchRules(item?.id));
               dispatch(FlowValidationActions.fetchProperty(item?.scope_type));
@@ -110,7 +109,6 @@ const FlowValidation = () => {
             <button
               className="border-none bg-white"
               onClick={() => {
-                console.log('flow validation modal open', item);
                 dispatch(FlowValidationActions.deleteRuleScope(item.id));
               }}
             >

@@ -12,11 +12,47 @@ export const FLOWVALIDATION_CONSTANTS = {
   SELECT_SCOPE_TYPE: 'Select Scope Type',
   ENTER_DISPLAY_VALUE: 'Enter Display Value',
   ENTER_DESCRIPTION: 'Enter Description',
+  PROCESS_GROUP_DETAILS: 'Procress Group Details',
+  SELECT_RULE_TO_VALIDATE: 'Select Rules To Validate',
+  VALIDATE_FLOW: 'Validate Flow',
+  FLOW_INFO: 'Flow Info',
+  INVALID_PROCESSOR_COUNT: 'Invalid Processor Count',
+  REGISTRY_FLOW_INFO: 'Registry Flow Info',
+  CURRENT_VERSION: 'Current Version',
+  STATE: 'State',
+  SEND_EMAIL_REPORT: 'Send Email Report',
+  BACK: 'Back',
+  DIFFERENCES: 'Differences',
+  COMPARED_VERSION: 'Compared version',
+  LAST_COMMIT_COMMENT: 'Last commit comments',
+  LATEST_AUTHOR: 'Latest Author',
+  COMPARE: 'Compare',
+  SELECT_VERSION: 'Select Version',
+  COMPARE_VERSION: 'Compare Versions',
+  FLOW_ANALYSIS_LIST: 'Flow Analysis List',
+  ADD_NEW_RULE: 'Add New Rule',
+  RULES: 'Rules',
+  CONDITION: 'Condition',
+  SELECT_PROPERTY: 'Select Property',
+  ENTER_OUPUT_VALUE: 'Enter Output Value',
+  OUTPUT_VALUE: 'Output Value',
+  ENTER_RULE_NAME: 'Enter Rule Name',
+  RULE_NAME: 'Rule Name',
+  EDIT_NEW_RULE: 'Edit New Rule',
 };
 
 export const SCOPE_TYPE_OPTIONS = [
   { label: 'Processor', value: 'PROCESSOR' },
   { label: 'Connection', value: 'CONNECTION' },
+];
+export const CONDITION_OPERATORS = [
+  { label: '===', value: '===' },
+  { label: '!==', value: '!==' },
+  { label: '<', value: '<' },
+  { label: '>', value: '>' },
+  { label: '<=', value: '<=' },
+  { label: '>=', value: '>=' },
+  { label: 'contains', value: 'contains' },
 ];
 
 export const convertDateTime = dateString => {

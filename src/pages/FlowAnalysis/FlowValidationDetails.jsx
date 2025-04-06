@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { TodoIcon } from '../../assets';
 import { FullPageLoader, Table } from '../../components';
+import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
@@ -63,7 +64,6 @@ const FlowValidationDetails = () => {
   const validationResult = useSelector(
     FlowValidationSelectors.getValidationResult
   );
-  console.log(validationResult?.data);
   const formattedOptions = ruleScopes?.data?.length
     ? ruleScopes?.data?.map(rule => ({
         label: rule?.header,
@@ -150,7 +150,9 @@ const FlowValidationDetails = () => {
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2">
             <TodoIcon width={22} height={24} />
-            <HeadingStyle>Procress Group Details</HeadingStyle>
+            <HeadingStyle>
+              {FLOWVALIDATION_CONSTANTS.PROCESS_GROUP_DETAILS}
+            </HeadingStyle>
           </div>
         </div>
       </div>
@@ -158,24 +160,22 @@ const FlowValidationDetails = () => {
       <FlowcompareStyled>
         <div className="d-flex justify-start align-center mb-4">
           <div style={{ width: '80%' }}>
-            <LabelSelect>Select Rules To Validate</LabelSelect>
+            <LabelSelect>
+              {FLOWVALIDATION_CONSTANTS.SELECT_RULE_TO_VALIDATE}
+            </LabelSelect>
             <MultiSelectField
               enableCheckboxes
               control={control}
               name="select_property"
-              placeholder="Select Rules To Validate"
+              placeholder={FLOWVALIDATION_CONSTANTS.SELECT_RULE_TO_VALIDATE}
               options={formattedOptions}
               // customWidth=""
             />
           </div>
 
           <div className="mt-4 ml-2 d-flex align-center">
-            <Button
-              onClick={handleValidateFlow}
-              className="w-auto mx-auto"
-              disabled={selectedRules.length === 0}
-            >
-              Validate Flow
+            <Button onClick={handleValidateFlow} className="w-auto mx-auto">
+              {FLOWVALIDATION_CONSTANTS.VALIDATE_FLOW}
             </Button>
           </div>
         </div>
@@ -184,25 +184,33 @@ const FlowValidationDetails = () => {
             <FlowContainerDetail>
               <div className="row">
                 <div className="col-md-6 mb-4 pb-md-2">
-                  <LabelSelect>Flow Info</LabelSelect>
+                  <LabelSelect>
+                    {FLOWVALIDATION_CONSTANTS.FLOW_INFO}
+                  </LabelSelect>
                   <LabelSelectContent>
                     {validationResult.data.lableBody?.flowInfo || 'N/A'}
                   </LabelSelectContent>
                 </div>
                 <div className="col-md-6 mb-4 pb-md-2">
-                  <LabelSelect>Invalid Processor Count</LabelSelect>
+                  <LabelSelect>
+                    {FLOWVALIDATION_CONSTANTS.INVALID_PROCESSOR_COUNT}
+                  </LabelSelect>
                   <LabelSelectContent>
                     {validationResult.data.lableBody?.InvalidCount || 'N/A'}
                   </LabelSelectContent>
                 </div>
                 <div className="col-md-6 mb-4 pb-md-2">
-                  <LabelSelect>Registry Flow Info</LabelSelect>
+                  <LabelSelect>
+                    {FLOWVALIDATION_CONSTANTS.REGISTRY_FLOW_INFO}
+                  </LabelSelect>
                   <LabelSelectContent>
                     {validationResult.data.lableBody?.registryFlowInfo || 'N/A'}
                   </LabelSelectContent>
                 </div>
                 <div className="col-md-6 mb-4 pb-md-2">
-                  <LabelSelect>Current Version</LabelSelect>
+                  <LabelSelect>
+                    {FLOWVALIDATION_CONSTANTS.CURRENT_VERSION}
+                  </LabelSelect>
                   <LabelSelectContent>
                     {validationResult.data.lableBody?.currentVersion || 'N/A'}
                   </LabelSelectContent>
@@ -211,7 +219,7 @@ const FlowValidationDetails = () => {
 
               <div className="row align-items-center justify-content-between">
                 <div className="col-md-6 mb-4 pb-md-2">
-                  <LabelSelect>State</LabelSelect>
+                  <LabelSelect>{FLOWVALIDATION_CONSTANTS.STATE}</LabelSelect>
                   <LabelSelectContent>
                     {validationResult.data.lableBody?.state || 'N/A'}
                   </LabelSelectContent>
@@ -242,10 +250,10 @@ const FlowValidationDetails = () => {
           variant="secondary"
           onClick={handleBackClick}
         >
-          Back
+          {FLOWVALIDATION_CONSTANTS.BACK}
         </Button>
         <div className="col-md-auto mb-4 mt-2">
-          <Button>Send Email Report</Button>
+          <Button>{FLOWVALIDATION_CONSTANTS.SEND_EMAIL_REPORT}</Button>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CompareIcon, TodoIcon } from '../../assets';
 import { FullPageLoader, Table } from '../../components';
+import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
 import { history } from '../../helpers/history';
 import { Button, SelectField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
@@ -135,50 +136,58 @@ const CompareValidation = () => {
       <Breadcrumb module="path" path={path} />
       <FlowcompareStyled>
         <div className="col-12">
-          <LabelSelect>Compare Versions</LabelSelect>
+          <LabelSelect>{FLOWVALIDATION_CONSTANTS.COMPARE_VERSION}</LabelSelect>
         </div>
         <div className="row align-items-center mb-4 mb-lg-5">
           <div className="col-md-3">
             <SelectField
-              label="Select Version"
+              label={FLOWVALIDATION_CONSTANTS.SELECT_VERSION}
               name="select_version_A"
               icon={<CompareIcon />}
-              placeholder="Select Version"
+              placeholder={FLOWVALIDATION_CONSTANTS.SELECT_VERSION}
               options={versionOptions}
               control={control}
             />
           </div>
           <div className="col-md-3">
             <SelectField
-              label="Select Version"
+              label={FLOWVALIDATION_CONSTANTS.SELECT_VERSION}
               name="select_version_B"
               icon={<CompareIcon />}
-              placeholder="Select Version"
+              placeholder={FLOWVALIDATION_CONSTANTS.SELECT_VERSION}
               options={versionOptions}
               control={control}
             />
           </div>
           <div className="col-md-auto pt-2 mt-3">
-            <Button onClick={handleCompareFlow}>Compare</Button>
+            <Button onClick={handleCompareFlow}>
+              {FLOWVALIDATION_CONSTANTS.COMPARE}
+            </Button>
           </div>
         </div>
         {!isEmpty(compareResult?.data) && (
           <>
             <div className="row align-items-center mb-4 mb-lg-5">
               <div className="col-md-3">
-                <LabelSelect>Latest Author</LabelSelect>
+                <LabelSelect>
+                  {FLOWVALIDATION_CONSTANTS.LATEST_AUTHOR}
+                </LabelSelect>
                 <LabelSelectContent>
                   {compareResult?.data?.latest_author || 'N/A'}
                 </LabelSelectContent>
               </div>
               <div className="col-md-3">
-                <LabelSelect>Last commit comments</LabelSelect>
+                <LabelSelect>
+                  {FLOWVALIDATION_CONSTANTS.LAST_COMMIT_COMMENT}
+                </LabelSelect>
                 <LabelSelectContent>
                   {compareResult?.data?.last_commit || 'N/A'}
                 </LabelSelectContent>
               </div>
               <div className="col-md-3">
-                <LabelSelect>Compared version</LabelSelect>
+                <LabelSelect>
+                  {FLOWVALIDATION_CONSTANTS.COMPARED_VERSION}
+                </LabelSelect>
                 <LabelSelectContent>
                   {compareResult?.data?.versionA || 'N/A'} to{' '}
                   {compareResult?.data?.versionB || 'N/A'}
@@ -186,7 +195,7 @@ const CompareValidation = () => {
               </div>
             </div>
             <CompareDifferencesTitle className="mb-3">
-              Differences
+              {FLOWVALIDATION_CONSTANTS.DIFFERENCES}
             </CompareDifferencesTitle>
             <Table columns={COLUMNS} data={compareResult?.data?.changes} />
           </>
@@ -197,7 +206,7 @@ const CompareValidation = () => {
         variant="secondary"
         onClick={handleBackClick}
       >
-        Back
+        {FLOWVALIDATION_CONSTANTS.BACK}
       </Button>
     </div>
   );

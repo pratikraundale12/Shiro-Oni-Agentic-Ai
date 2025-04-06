@@ -259,20 +259,6 @@ const ConfigDetailsPage = () => {
           >
             Audit Log
           </Tab>
-          <Tab
-            active={activeTab === 'Flow Validation Details'}
-            onClick={() => setActiveTab('Flow Validation Details')}
-            className="nav-item"
-          >
-            Flow Validation Details
-          </Tab>
-          <Tab
-            active={activeTab === 'Compare Validation'}
-            onClick={() => setActiveTab('Compare Validation')}
-            className="nav-item"
-          >
-            Compare Validation
-          </Tab>
         </TabWrapper>
         <TabContent>{renderContent()}</TabContent>
       </GreyBoxNamespace>
