@@ -1,13 +1,23 @@
-import React from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import * as yup from 'yup';
 import { OpenLinkIcon } from '../../assets';
 import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
+import { history } from '../../helpers/history';
 import { InputField, Modal, PasswordField } from '../../shared';
 import {
   FlowValidationActions,
   FlowValidationSelectors,
 } from '../../store/flowValidation';
+
+const anaLysisSchema = yup.object().shape({
+  cluster_url: yup.string().required('Cluster URL is required'),
+  username: yup.string().required('Username is required'),
+  password: yup.string().required('Password is required'),
+  namespaceId: yup.string().required('Namespace is required'),
+});
 
 const AnalyzeNewFlow = () => {
   const dispatch = useDispatch();
@@ -20,7 +30,18 @@ const AnalyzeNewFlow = () => {
     dispatch(FlowValidationActions.addNewAnalysisModalOpen(false));
   };
 
-  const { register, handleSubmit, watch } = useForm();
+  useEffect(() => {
+    dispatch(FlowValidationActions.savePayload(null));
+  }, [dispatch]);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(anaLysisSchema),
+  });
 
   const onSubmit = data => {
     const payload = {
@@ -30,9 +51,10 @@ const AnalyzeNewFlow = () => {
       password: data.password,
       namespaceId: data.namespaceId,
     };
-    dispatch(FlowValidationActions.validateRandomFlow(payload));
-  };
 
+    dispatch(FlowValidationActions.savePayload(payload));
+    history.push('/flow-analysis/flow-validation');
+  };
   return (
     <div>
       <Modal
@@ -52,6 +74,8 @@ const AnalyzeNewFlow = () => {
           placeholder={FLOWVALIDATION_CONSTANTS.ENTER_YOUR_CLUSTER_URL}
           icon={<OpenLinkIcon color="#444445" />}
           register={register}
+          required
+          errors={errors}
         />
         <InputField
           name="username"
@@ -60,12 +84,16 @@ const AnalyzeNewFlow = () => {
           placeholder={FLOWVALIDATION_CONSTANTS.ENTER_YOUR_USERNAME}
           icon={<OpenLinkIcon color="#444445" />}
           register={register}
+          required
+          errors={errors}
         />
         <PasswordField
           name="password"
           register={register}
           watch={watch}
           label={FLOWVALIDATION_CONSTANTS.PASSWORD}
+          required
+          errors={errors}
         />
         <InputField
           name="namespaceId"
@@ -74,6 +102,8 @@ const AnalyzeNewFlow = () => {
           placeholder={FLOWVALIDATION_CONSTANTS.ENTER_YOUR_PROCESS_GROUP_ID}
           icon={<OpenLinkIcon color="#444445" />}
           register={register}
+          required
+          errors={errors}
         />
       </Modal>
     </div>

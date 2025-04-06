@@ -59,11 +59,16 @@ const FlowValidationDetails = () => {
   const ruleScopes = useSelector(FlowValidationSelectors.getRuleScopes);
   const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
   const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const savedPayload = useSelector(FlowValidationSelectors.getSavedPayload);
   const selectedRules = watch('select_property') || [];
   const ruleIds = selectedRules.map(rule => rule.value);
   const validationResult = useSelector(
     FlowValidationSelectors.getValidationResult
   );
+  const randomFlowValidationResult = useSelector(
+    FlowValidationSelectors.getRandomFlowValidationResult
+  );
+  console.log('validationResult', randomFlowValidationResult);
   const formattedOptions = ruleScopes?.data?.length
     ? ruleScopes?.data?.map(rule => ({
         label: rule?.header,
@@ -72,16 +77,21 @@ const FlowValidationDetails = () => {
     : [];
 
   const handleValidateFlow = () => {
-    dispatch(
-      FlowValidationActions.validateRules({
-        clusterId: selectedCluster?.value,
-        namespaceId: selectedItem?.id,
-        data: {
-          generateVarList: false,
-          rulesForValidation: ruleIds,
-        },
-      })
-    );
+    if (!savedPayload) {
+      dispatch(
+        FlowValidationActions.validateRules({
+          clusterId: selectedCluster?.value,
+          namespaceId: selectedItem?.id,
+          data: {
+            generateVarList: false,
+            rulesForValidation: ruleIds,
+          },
+        })
+      );
+    } else {
+      dispatch(FlowValidationActions.addNewAnalysisModalOpen(false));
+      dispatch(FlowValidationActions.validateRandomFlow(savedPayload));
+    }
   };
 
   const path = [
@@ -118,14 +128,17 @@ const FlowValidationDetails = () => {
     },
   ];
 
-  const tableBody = validationResult?.data?.tableBody || [];
+  const tableBody =
+    validationResult?.data?.tableBody ||
+    randomFlowValidationResult?.data?.tableBody ||
+    [];
 
   const sections = tableBody.map(section => ({
     title: section.label?.replace(/:$/, '') || 'Unknown Section',
     data: (section.values || []).map(value => ({
-      version: value?.output_value,
-      displayValue: value?.processor_id,
-      comments: value?.processor_name,
+      version: value?.component_name,
+      displayValue: value?.component_id,
+      comments: value?.output_value,
     })),
   }));
 
@@ -189,54 +202,70 @@ const FlowValidationDetails = () => {
             </Button>
           </div>
         </div>
-        {validationResult?.data &&
-          Object.keys(validationResult.data).length > 0 && (
-            <FlowContainerDetail>
-              <div className="row">
-                <div className="col-md-6 mb-4 pb-md-2">
-                  <LabelSelect>
-                    {FLOWVALIDATION_CONSTANTS.FLOW_INFO}
-                  </LabelSelect>
-                  <LabelSelectContent>
-                    {validationResult.data.lableBody?.flowInfo || 'N/A'}
-                  </LabelSelectContent>
+        {validationResult?.data ||
+          (randomFlowValidationResult?.data &&
+            Object.keys(
+              validationResult?.data || randomFlowValidationResult?.data
+            ).length > 0 && (
+              <FlowContainerDetail>
+                <div className="row">
+                  <div className="col-md-6 mb-4 pb-md-2">
+                    <LabelSelect>
+                      {FLOWVALIDATION_CONSTANTS.FLOW_INFO}
+                    </LabelSelect>
+                    <LabelSelectContent>
+                      {validationResult?.data?.lableBody?.flowInfo ||
+                        randomFlowValidationResult?.data?.lableBody?.flowInfo ||
+                        'N/A'}
+                    </LabelSelectContent>
+                  </div>
+                  <div className="col-md-6 mb-4 pb-md-2">
+                    <LabelSelect>
+                      {FLOWVALIDATION_CONSTANTS.INVALID_PROCESSOR_COUNT}
+                    </LabelSelect>
+                    <LabelSelectContent>
+                      {validationResult?.data?.lableBody?.InvalidCount ||
+                        randomFlowValidationResult?.data?.lableBody
+                          ?.InvalidCount ||
+                        'N/A'}
+                    </LabelSelectContent>
+                  </div>
+                  <div className="col-md-6 mb-4 pb-md-2">
+                    <LabelSelect>
+                      {FLOWVALIDATION_CONSTANTS.REGISTRY_FLOW_INFO}
+                    </LabelSelect>
+                    <LabelSelectContent>
+                      {validationResult?.data.lableBody?.registryFlowInfo ||
+                        randomFlowValidationResult?.data?.lableBody
+                          ?.registryFlowInfo ||
+                        'N/A'}
+                    </LabelSelectContent>
+                  </div>
+                  <div className="col-md-6 mb-4 pb-md-2">
+                    <LabelSelect>
+                      {FLOWVALIDATION_CONSTANTS.CURRENT_VERSION}
+                    </LabelSelect>
+                    <LabelSelectContent>
+                      {validationResult?.data?.lableBody?.currentVersion ||
+                        randomFlowValidationResult?.data?.lableBody
+                          ?.currentVersion ||
+                        'N/A'}
+                    </LabelSelectContent>
+                  </div>
                 </div>
-                <div className="col-md-6 mb-4 pb-md-2">
-                  <LabelSelect>
-                    {FLOWVALIDATION_CONSTANTS.INVALID_PROCESSOR_COUNT}
-                  </LabelSelect>
-                  <LabelSelectContent>
-                    {validationResult.data.lableBody?.InvalidCount || 'N/A'}
-                  </LabelSelectContent>
-                </div>
-                <div className="col-md-6 mb-4 pb-md-2">
-                  <LabelSelect>
-                    {FLOWVALIDATION_CONSTANTS.REGISTRY_FLOW_INFO}
-                  </LabelSelect>
-                  <LabelSelectContent>
-                    {validationResult.data.lableBody?.registryFlowInfo || 'N/A'}
-                  </LabelSelectContent>
-                </div>
-                <div className="col-md-6 mb-4 pb-md-2">
-                  <LabelSelect>
-                    {FLOWVALIDATION_CONSTANTS.CURRENT_VERSION}
-                  </LabelSelect>
-                  <LabelSelectContent>
-                    {validationResult.data.lableBody?.currentVersion || 'N/A'}
-                  </LabelSelectContent>
-                </div>
-              </div>
 
-              <div className="row align-items-center justify-content-between">
-                <div className="col-md-6 mb-4 pb-md-2">
-                  <LabelSelect>{FLOWVALIDATION_CONSTANTS.STATE}</LabelSelect>
-                  <LabelSelectContent>
-                    {validationResult.data.lableBody?.state || 'N/A'}
-                  </LabelSelectContent>
+                <div className="row align-items-center justify-content-between">
+                  <div className="col-md-6 mb-4 pb-md-2">
+                    <LabelSelect>{FLOWVALIDATION_CONSTANTS.STATE}</LabelSelect>
+                    <LabelSelectContent>
+                      {validationResult?.data?.lableBody?.state ||
+                        randomFlowValidationResult?.data?.lableBody?.state ||
+                        'N/A'}
+                    </LabelSelectContent>
+                  </div>
                 </div>
-              </div>
-            </FlowContainerDetail>
-          )}
+              </FlowContainerDetail>
+            ))}
 
         {sections.map((section, index) => {
           if (!section.data || section.data.length === 0) return null;

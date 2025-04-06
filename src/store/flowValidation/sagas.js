@@ -1,6 +1,5 @@
 import { toast } from 'react-toastify';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
-import { history } from '../../helpers/history';
 import { requestSaga } from '../helpers/request_sagas';
 import { FlowValidationActions } from './redux';
 
@@ -189,7 +188,6 @@ export function* validateRandomFlowSaga(api, { payload }) {
   if (!response?.ok) {
     toast.error(response?.data?.message || 'Failed to validate random flow');
   } else {
-    history.push('/flow-analysis/flow-validation');
     toast.success('Random flow validated successfully!');
   }
 }

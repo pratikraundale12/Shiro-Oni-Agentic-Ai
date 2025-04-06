@@ -329,14 +329,9 @@ const FlowValidationModal = () => {
       setHasChanges(true);
     }
   };
-
   return (
     <Modal
-      title={
-        isCreatingNewRule
-          ? FLOWVALIDATION_CONSTANTS.ADD_NEW_RULE
-          : FLOWVALIDATION_CONSTANTS.EDIT_NEW_RULE
-      }
+      title={selectedItem?.header}
       isOpen={isFlowValidationModalOpen}
       onRequestClose={() => {
         dispatch(SettingsActions.flowValidationModalOpen(false));

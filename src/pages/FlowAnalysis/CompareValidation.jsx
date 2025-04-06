@@ -99,7 +99,7 @@ const CompareValidation = () => {
     },
     {
       label: 'Name',
-      renderCell: item => <div>{item.version}</div>,
+      renderCell: item => <div>{item.componentName}</div>,
       width: '20%',
     },
     {
