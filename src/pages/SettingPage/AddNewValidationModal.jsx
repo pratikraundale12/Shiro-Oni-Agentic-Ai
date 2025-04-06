@@ -1,7 +1,9 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import * as yup from 'yup';
 import { NewLinkIcon, NewMessageIcon } from '../../assets';
 import {
   FLOWVALIDATION_CONSTANTS,
@@ -21,10 +23,22 @@ const LabelSelect = styled.div`
   color: ${props => props.theme.colors.darker};
   margin-bottom: 14px;
 `;
+const addNewValidationSchema = yup.object().shape({
+  scope_type: yup.string().required('Scope Type is required'),
+  display_value: yup.string().required('Display Value is required'),
+});
 
 const AddNewValidationModal = () => {
   const dispatch = useDispatch();
-  const { handleSubmit, register, control, reset } = useForm();
+  const {
+    handleSubmit,
+    register,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(addNewValidationSchema),
+  });
   const isFlowValidationModalOpen = useSelector(
     SettingsSelectors.getAddNewValidationModalOpen
   );
@@ -101,6 +115,7 @@ const AddNewValidationModal = () => {
             options={SCOPE_TYPE_OPTIONS}
             control={control}
             disabled={selectedItem}
+            errors={errors}
           />
         </div>
         <InputField
@@ -110,6 +125,8 @@ const AddNewValidationModal = () => {
           placeholder={FLOWVALIDATION_CONSTANTS.ENTER_DISPLAY_VALUE}
           icon={<NewMessageIcon />}
           register={register}
+          errors={errors}
+          required
         />
         <InputField
           name="description"

@@ -8,6 +8,7 @@ import {
   InfoIcon,
   NewLinkIcon,
   NewMessageIcon,
+  NoDataIcon,
   PropertyIcon,
 } from '../../assets';
 import {
@@ -61,6 +62,13 @@ const ConditionIcon = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: #444445;
+`;
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
 `;
 const RadioContainer = styled.div`
   > div {
@@ -477,115 +485,142 @@ const FlowValidationModal = () => {
             </>
           ) : (
             <>
-              <InputField
-                name="rule_name"
-                icon={<NewLinkIcon />}
-                label={FLOWVALIDATION_CONSTANTS.RULE_NAME}
-                value={
-                  isCreatingNewRule ? newRule.name : editedRule?.name || ''
-                }
-                placeholder={FLOWVALIDATION_CONSTANTS.ENTER_RULE_NAME}
-                disabled={!selectedItem?.deletable}
-                onChange={e => handleRuleNameChange(e.target.value)}
-              />
-              <InputField
-                name="rule_comments"
-                icon={<NewMessageIcon />}
-                label={FLOWVALIDATION_CONSTANTS.OUTPUT_VALUE}
-                value={
-                  isCreatingNewRule
-                    ? newRule.output_value
-                    : editedRule?.output_value || ''
-                }
-                placeholder={FLOWVALIDATION_CONSTANTS.ENTER_OUPUT_VALUE}
-                disabled={!selectedItem?.deletable}
-                onChange={e => handleOutputValueChange(e.target.value)}
-              />
-              <div className="col-12 d-flex justify-content-between">
-                <ConditionIcon className="d-flex align-items-center gap-3">
-                  {FLOWVALIDATION_CONSTANTS.CONDITION} <InfoIcon />
-                </ConditionIcon>
-                {selectedItem?.deletable && (
-                  <div>
-                    <Button
-                      onClick={e => {
-                        handleAddCondition(e);
-                      }}
-                    >
-                      <AddIcon color="#fff" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <div className="row g-2 align-items-center">
-                {editedConditions?.map((condition, index) => (
-                  <Fragment key={index}>
-                    <div className="col-md-4">
-                      <SelectField
-                        name={`condition_property_${index}`}
-                        icon={<PropertyIcon />}
-                        placeholder={FLOWVALIDATION_CONSTANTS.SELECT_PROPERTY}
-                        options={fetchPropertyData?.data?.map(property => ({
-                          label: property?.propName,
-                          value: property?.propName,
-                        }))}
-                        value={
-                          condition.condition_property
-                            ? {
-                                label: condition.condition_property,
-                                value: condition.condition_property,
+              {fetchRules?.data?.length === 0 ? (
+                <>
+                  <div className="d-flex flex-column align-items-center mt-5">
+                    <NoDataIcon width={130} />
+                    <NoDataText>No Data Found!!</NoDataText>
+                  </div>{' '}
+                </>
+              ) : (
+                <>
+                  <>
+                    <InputField
+                      name="rule_name"
+                      icon={<NewLinkIcon />}
+                      label={FLOWVALIDATION_CONSTANTS.RULE_NAME}
+                      value={
+                        isCreatingNewRule
+                          ? newRule.name
+                          : editedRule?.name || ''
+                      }
+                      placeholder={FLOWVALIDATION_CONSTANTS.ENTER_RULE_NAME}
+                      disabled={!selectedItem?.deletable}
+                      onChange={e => handleRuleNameChange(e.target.value)}
+                    />
+
+                    <InputField
+                      name="rule_comments"
+                      icon={<NewMessageIcon />}
+                      label={FLOWVALIDATION_CONSTANTS.OUTPUT_VALUE}
+                      value={
+                        isCreatingNewRule
+                          ? newRule.output_value
+                          : editedRule?.output_value || ''
+                      }
+                      placeholder={FLOWVALIDATION_CONSTANTS.ENTER_OUPUT_VALUE}
+                      disabled={!selectedItem?.deletable}
+                      onChange={e => handleOutputValueChange(e.target.value)}
+                    />
+                    <div className="col-12 d-flex justify-content-between">
+                      <ConditionIcon className="d-flex align-items-center gap-3">
+                        {FLOWVALIDATION_CONSTANTS.CONDITION} <InfoIcon />
+                      </ConditionIcon>
+                      {selectedItem?.deletable && (
+                        <div>
+                          <Button
+                            onClick={e => {
+                              handleAddCondition(e);
+                            }}
+                          >
+                            <AddIcon color="#fff" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    <div className="row g-2 align-items-center">
+                      {editedConditions?.map((condition, index) => (
+                        <Fragment key={index}>
+                          <div className="col-md-4">
+                            <SelectField
+                              name={`condition_property_${index}`}
+                              icon={<PropertyIcon />}
+                              placeholder={
+                                FLOWVALIDATION_CONSTANTS.SELECT_PROPERTY
                               }
-                            : null
-                        }
-                        onChange={e => {
-                          handleConditionPropertyChange(index, e?.value);
-                        }}
-                        control={control}
-                        disabled={!selectedItem?.deletable}
-                      />
-                    </div>
-                    <div className="col-md">
-                      <PropertyDiv>
-                        <SelectField
-                          name={`condition_expression_${index}`}
-                          icon={<PropertyIcon />}
-                          placeholder={FLOWVALIDATION_CONSTANTS.CONDITION}
-                          options={CONDITION_OPERATORS}
-                          value={CONDITION_OPERATORS.find(
-                            option =>
-                              option.value === condition.condition_expression
+                              options={fetchPropertyData?.data?.map(
+                                property => ({
+                                  label: property?.propName,
+                                  value: property?.propName,
+                                })
+                              )}
+                              value={
+                                condition.condition_property
+                                  ? {
+                                      label: condition.condition_property,
+                                      value: condition.condition_property,
+                                    }
+                                  : null
+                              }
+                              onChange={e => {
+                                handleConditionPropertyChange(index, e?.value);
+                              }}
+                              control={control}
+                              disabled={!selectedItem?.deletable}
+                            />
+                          </div>
+                          <div className="col-md">
+                            <PropertyDiv>
+                              <SelectField
+                                name={`condition_expression_${index}`}
+                                icon={<PropertyIcon />}
+                                placeholder={FLOWVALIDATION_CONSTANTS.CONDITION}
+                                options={CONDITION_OPERATORS}
+                                value={CONDITION_OPERATORS.find(
+                                  option =>
+                                    option.value ===
+                                    condition.condition_expression
+                                )}
+                                onChange={e =>
+                                  handleConditionExpressionChange(
+                                    index,
+                                    e?.value
+                                  )
+                                }
+                                control={control}
+                                disabled={!selectedItem?.deletable}
+                              />
+                            </PropertyDiv>
+                          </div>
+                          <div className="col-md-3">
+                            <InputField
+                              name={`condition_value_${index}`}
+                              icon={<NewLinkIcon />}
+                              value={condition?.condition_value || ''}
+                              onChange={e =>
+                                handleConditionValueChange(
+                                  index,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                          {selectedItem?.deletable && (
+                            <div className="col-md-1 d-flex align-items-center">
+                              <button
+                                onClick={() => handleDeleteCondition(index)}
+                                className="btn btn-link p-0"
+                              >
+                                <DeleteSmallIcon color="#FF7A00" />
+                              </button>
+                            </div>
                           )}
-                          onChange={e =>
-                            handleConditionExpressionChange(index, e?.value)
-                          }
-                          control={control}
-                          disabled={!selectedItem?.deletable}
-                        />
-                      </PropertyDiv>
+                        </Fragment>
+                      ))}
                     </div>
-                    <div className="col-md-3">
-                      <InputField
-                        name={`condition_value_${index}`}
-                        icon={<NewLinkIcon />}
-                        value={condition?.condition_value || ''}
-                        onChange={e =>
-                          handleConditionValueChange(index, e.target.value)
-                        }
-                      />
-                    </div>
-                    {selectedItem?.deletable && (
-                      <div className="col-md-1 d-flex align-items-center">
-                        <button
-                          onClick={() => handleDeleteCondition(index)}
-                          className="btn btn-link p-0"
-                        >
-                          <DeleteSmallIcon color="#FF7A00" />
-                        </button>
-                      </div>
-                    )}
-                  </Fragment>
-                ))}
-              </div>
+                  </>
+                </>
+              )}{' '}
             </>
           )}
         </div>

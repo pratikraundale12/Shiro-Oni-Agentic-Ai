@@ -64,7 +64,6 @@ const FlowAnalysis = () => {
   const handleEdit = item => {
     dispatch(FlowValidationActions.setSelectedItem(item));
     history.push('/flow-analysis/flow-validation');
-    // Add your edit logic here
   };
 
   const handleDelete = item => {
