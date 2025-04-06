@@ -14,9 +14,13 @@ import { ModalWithIcon } from './shared';
 import store from './store/configureStore';
 import { GlobalStyles, theme } from './styles';
 import { GlobalProvider } from './utils';
+import { useLocation } from 'react-router-dom';
 
 function App() {
   const [isModal, setIsModal] = useState(false);
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
   const updateNetworkStatus = () => {
     if (!navigator.onLine) {
       setIsModal(true);
@@ -24,6 +28,17 @@ function App() {
       setIsModal(false);
     }
   };
+
+  if (
+    !params.keys().next().done &&
+    location.pathname === '/schedule-deployment'
+  ) {
+    const tokenId = params.get('id');
+    if (tokenId) {
+      window.localStorage.setItem('scheduleTokenid', tokenId);
+    }
+  }
+
   if (!ENABLE_CONSOLE_LOGS) {
     disableConsole();
   }
