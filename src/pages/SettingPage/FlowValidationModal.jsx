@@ -12,6 +12,7 @@ import {
   PropertyIcon,
 } from '../../assets';
 import {
+  CONDITION_JOIN_OPERATORS,
   CONDITION_OPERATORS,
   FLOWVALIDATION_CONSTANTS,
 } from '../../constants/flowValidation.constant';
@@ -27,11 +28,6 @@ import {
   FlowValidationSelectors,
 } from '../../store/flowValidation';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
-
-const CONDITION_JOIN_OPERATORS = [
-  { label: 'OR', value: 'OR' },
-  { label: 'AND', value: 'AND' },
-];
 
 const ModelRightSide = styled.div`
   height: 100%;
@@ -508,7 +504,7 @@ const FlowValidationModal = () => {
                     <div className="col-md-2">
                       <SelectField
                         name={`condition_join_${index}`}
-                        placeholder="Join"
+                        placeholder={FLOWVALIDATION_CONSTANTS.LOGIC_OPERATOR}
                         options={CONDITION_JOIN_OPERATORS}
                         value={CONDITION_JOIN_OPERATORS.find(
                           option => option.value === condition.logic_operator
@@ -658,7 +654,9 @@ const FlowValidationModal = () => {
                           <div className="col-md-2">
                             <SelectField
                               name={`condition_join_${index}`}
-                              placeholder="Join"
+                              placeholder={
+                                FLOWVALIDATION_CONSTANTS.LOGIC_OPERATOR
+                              }
                               options={CONDITION_JOIN_OPERATORS}
                               value={CONDITION_JOIN_OPERATORS.find(
                                 option =>
