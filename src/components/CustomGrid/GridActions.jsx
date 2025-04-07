@@ -24,6 +24,7 @@ import {
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { getButtonPermissions } from '../../helpers/permissions';
+import FlowAnalysis from '../../pages/FlowAnalysis/FlowAnalysis';
 import {
   Button,
   DateRangePickerInput,
@@ -44,6 +45,7 @@ import {
   UsersSelectors,
 } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
+import { FlowValidationActions } from '../../store/flowValidation';
 import { GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
@@ -340,51 +342,47 @@ export const GridActions = ({
       selectEvent ||
       selectEntity
     ) {
-      if (module === 'namespaces' && selectedCluster?.value === '') {
-        return;
-      } else {
-        dispatch(
-          GridSagsActions.fetchGrid({
-            module,
-            clusterId,
-            params: {
-              page: 1,
-              id: scheduleToken,
-              ...(search && { search: search }),
-              ...(watchStatus &&
-                watchStatus !== 'all' && {
-                  [getModuleBasedStatusKey(module)]: watchStatus,
-                }),
-              ...(selectedRange && {
-                start_date: selectedRange?.[0]?.toISOString(),
-                end_date: selectedRange?.[1]?.toISOString(),
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module,
+          clusterId,
+          params: {
+            page: 1,
+            id: scheduleToken,
+            ...(search && { search: search }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && {
+                [getModuleBasedStatusKey(module)]: watchStatus,
               }),
-              ...(location?.pathname?.includes('user-management') &&
-                selectedRole?.value !== 'all' && {
-                  role_id: selectedRole?.value,
-                }),
-              ...(location?.pathname?.includes('schedule-deployment') &&
-                clusterSelectedValue?.label !== 'All' && {
-                  clusterName: clusterSelectedValue?.label,
-                }),
-              ...(location?.pathname?.includes('activity-history') &&
-                selectEvent?.value !== 'all' && {
-                  event: selectEvent?.value,
-                }),
-              ...(location?.pathname?.includes('activity-history') &&
-                selectEntity?.value !== 'all' && {
-                  entity: selectEntity?.value,
-                }),
-              ...(location?.pathname?.match(
-                /user-management|clusters|schedule-deployment|activity-history/
-              ) &&
-                sortingState && {
-                  sort: sortingState,
-                }),
-            },
-          })
-        );
-      }
+            ...(selectedRange && {
+              start_date: selectedRange?.[0]?.toISOString(),
+              end_date: selectedRange?.[1]?.toISOString(),
+            }),
+            ...(location?.pathname?.includes('user-management') &&
+              selectedRole?.value !== 'all' && {
+                role_id: selectedRole?.value,
+              }),
+            ...(location?.pathname?.includes('schedule-deployment') &&
+              clusterSelectedValue?.label !== 'All' && {
+                clusterName: clusterSelectedValue?.label,
+              }),
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEvent?.value !== 'all' && {
+                event: selectEvent?.value,
+              }),
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEntity?.value !== 'all' && {
+                entity: selectEntity?.value,
+              }),
+            ...(location?.pathname?.match(
+              /user-management|clusters|schedule-deployment|activity-history/
+            ) &&
+              sortingState && {
+                sort: sortingState,
+              }),
+          },
+        })
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -579,6 +577,10 @@ export const GridActions = ({
     dispatch(SchedularActions.setSelectedStatusState(watchStatus));
   }, [watchStatus]);
 
+  const handleAnalyzeClick = () => {
+    dispatch(FlowValidationActions.addNewAnalysisModalOpen(true));
+  };
+
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
   return (
@@ -741,39 +743,44 @@ export const GridActions = ({
         </ButtonsContainer>
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
-            {module === 'namespaces' && (
-              <>
-                {selectedCluster?.value && (
-                  <Button
-                    size="md"
-                    disabled={isButtonDisabled}
-                    onClick={() => handleScheduleClick()}
-                  >
-                    <div
-                      className="d-flex "
-                      style={{ fontSize: '14px', fontWeight: '750' }}
+            {module === 'namespaces' &&
+              location.pathname === '/process-group' && (
+                <>
+                  {selectedCluster?.value && (
+                    <Button
+                      size="md"
+                      disabled={isButtonDisabled}
+                      onClick={() => handleScheduleClick()}
                     >
-                      <ScheduleDeploymentIcon
-                        height={19}
-                        width={19}
-                        color={'#fff'}
-                      />
-                      Schedule Deployment
-                    </div>
-                  </Button>
-                )}
-                {canWrite && (
-                  <Button
-                    disabled={!canWrite}
-                    size="md"
-                    style={{ width: '84px' }}
-                    onClick={handleClick}
-                  >
-                    {KDFM.DEPLOY}
-                  </Button>
-                )}
-              </>
-            )}
+                      <div
+                        className="d-flex "
+                        style={{ fontSize: '14px', fontWeight: '750' }}
+                      >
+                        <ScheduleDeploymentIcon
+                          height={19}
+                          width={19}
+                          color={'#fff'}
+                        />
+                        Schedule Deployment
+                      </div>
+                    </Button>
+                  )}
+                  {canWrite && (
+                    <Button
+                      disabled={!canWrite}
+                      size="md"
+                      style={{ width: '84px' }}
+                      onClick={handleClick}
+                    >
+                      {KDFM.DEPLOY}
+                    </Button>
+                  )}
+                </>
+              )}
+            {module === 'namespaces' &&
+              location.pathname === '/flow-analysis' && (
+                <Button onClick={handleAnalyzeClick}>Analyze New Flow</Button>
+              )}
             {['scheduler'].includes(module) && (
               <>
                 <RefreshIocn

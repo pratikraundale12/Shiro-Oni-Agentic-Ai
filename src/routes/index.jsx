@@ -16,6 +16,7 @@ import {
   LockIcon,
   NameSpaceIcon,
   PeopleIcon,
+  PropertyIcon,
   QuestionMarkIcon,
   ReadyFlowIcon,
   ScheduleDeploymentIcon,
@@ -48,6 +49,9 @@ import {
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
 import { ListControllerService } from '../pages/ControllerService';
+import CompareValidation from '../pages/FlowAnalysis/CompareValidation.jsx';
+import FlowAnalysis from '../pages/FlowAnalysis/FlowAnalysis.jsx';
+import FlowValidationDetails from '../pages/FlowAnalysis/FlowValidationDetails.jsx';
 import License from '../pages/Licensing/License.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
@@ -146,6 +150,26 @@ export const ROUTES_MENU = [
       {
         path: 'config-details',
         component: <ConfigDetailsPage />,
+      },
+    ],
+    permission: 'view_namespace',
+  },
+  {
+    name: 'Flow Analysis',
+    path: 'flow-analysis',
+    icon: PropertyIcon,
+    pages: [
+      {
+        path: '',
+        component: <FlowAnalysis />,
+      },
+      {
+        path: 'flow-validation',
+        component: <FlowValidationDetails />,
+      },
+      {
+        path: 'flow-compare',
+        component: <CompareValidation />,
       },
     ],
     permission: 'view_namespace',
