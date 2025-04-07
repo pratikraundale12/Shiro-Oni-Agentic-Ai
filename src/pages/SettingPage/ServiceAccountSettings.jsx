@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { UserIcon } from '../../assets';
+import { CurvedLockIcon, CurvedProfileIcon } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -137,7 +137,7 @@ export const ServiceAccountSettings = () => {
         value.username !== settingData?.username ||
         value.password !== settingData?.password ||
         value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh); // Direct comparison to the original value
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh);
       setIsChanged(isModified);
     });
 
@@ -177,11 +177,13 @@ export const ServiceAccountSettings = () => {
                 placeholder="Enter your Username"
                 register={register}
                 errors={errors}
-                icon={<UserIcon />}
+                icon={<CurvedProfileIcon />}
+                required
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
               <PasswordField
+                required
                 name="password"
                 register={register}
                 errors={errors}
@@ -189,6 +191,7 @@ export const ServiceAccountSettings = () => {
                 label="Password"
                 disableToggle={false}
                 placeholder="Enter your Password"
+                icon={<CurvedLockIcon />}
               />
             </div>
           </InputFields>

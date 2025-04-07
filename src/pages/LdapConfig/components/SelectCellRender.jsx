@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { SelectField } from '../../../shared';
-import AddNewRoleModal from '../../../shared/AddNewRoleModal';
-import { RolesActions, RolesSelectors } from '../../../store';
+import { RolesSelectors } from '../../../store';
 
 const StyledSelectField = styled(SelectField)`
   margin-bottom: 0;
@@ -24,31 +23,16 @@ const StyledSelectField = styled(SelectField)`
 `;
 
 const SelectCellRender = ({ onChange, roles, data }) => {
-  const [openRoleModal, setOpenRoleModal] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
-  const selectedOptionRef = useRef(selectedOption);
   const ldapGroup = useSelector(RolesSelectors.getLdapGroup);
   const existingRole = ldapGroup.find(
     item => item.ldap_group_name === data.name
   );
 
-  const dispatch = useDispatch();
-
   const sortedArray = roles?.map(item => ({
     label: item.name,
     value: item.role_id,
   }));
-  const handleCreateOption = inputValue => {
-    setSelectedOption(inputValue);
-    selectedOptionRef.current = inputValue;
-    setOpenRoleModal(true);
-    dispatch(RolesActions.roleModal());
-  };
 
-  useEffect(() => {
-    // Set the ref value on every render so it persists
-    selectedOptionRef.current = selectedOption;
-  }, [selectedOption]);
   return (
     <>
       <StyledSelectField
@@ -57,18 +41,7 @@ const SelectCellRender = ({ onChange, roles, data }) => {
           option => option.value === existingRole?.role_id
         )}
         onChange={option => onChange(data, option)}
-        ldap={true}
-        handleCreateOption={handleCreateOption}
       />
-
-      {openRoleModal && (
-        <AddNewRoleModal
-          openRoleModal={openRoleModal}
-          setOpenRoleModal={setOpenRoleModal}
-          selectedOption={selectedOptionRef.current}
-          ldapGroupName={data.ldap_group_name}
-        />
-      )}
     </>
   );
 };
