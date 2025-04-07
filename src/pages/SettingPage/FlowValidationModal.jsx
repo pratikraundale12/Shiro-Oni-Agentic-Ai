@@ -12,6 +12,7 @@ import {
   PropertyIcon,
 } from '../../assets';
 import {
+  CONDITION_JOIN_OPERATORS,
   CONDITION_OPERATORS,
   FLOWVALIDATION_CONSTANTS,
 } from '../../constants/flowValidation.constant';
@@ -51,7 +52,6 @@ const ModelRightSide = styled.div`
 `;
 
 const PropertyDiv = styled.div`
-  margin-bottom: 0.75rem;
   .react-select__control {
     padding-top: 10px;
     padding-bottom: 10px;
@@ -75,14 +75,19 @@ const RadioContainer = styled.div`
     margin: 0px;
   }
 `;
+const InputContainer = styled.div`
+  > div {
+    margin: 0px;
+  }
+  > div > div {
+    margin-top: 0px !important;
+  }
+`;
 
 const FlowValidationModal = () => {
   const dispatch = useDispatch();
   const fetchRules = useSelector(FlowValidationSelectors.getRules);
   const [selectedRuleId, setSelectedRuleId] = useState(null);
-  const selectedRule = fetchRules?.data?.find(
-    rule => rule.id === selectedRuleId
-  );
   const [editedConditions, setEditedConditions] = useState([]);
   const [isCreatingNewRule, setIsCreatingNewRule] = useState(false);
   const [newRule, setNewRule] = useState({
@@ -95,6 +100,10 @@ const FlowValidationModal = () => {
   const fetchPropertyData = useSelector(FlowValidationSelectors.getProperty);
   const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
   const { control } = useForm();
+
+  const selectedRule = fetchRules?.data?.find(
+    rule => rule.id === selectedRuleId
+  );
 
   useEffect(() => {
     if (selectedRule) {
@@ -228,6 +237,28 @@ const FlowValidationModal = () => {
     }
   };
 
+  const handleConditionJoinOperatorChange = (conditionIndex, value) => {
+    if (isCreatingNewRule) {
+      setNewRule(prev => ({
+        ...prev,
+        conditions: prev.conditions.map((condition, i) =>
+          i === conditionIndex
+            ? { ...condition, logic_operator: value }
+            : condition
+        ),
+      }));
+      setHasChanges(true);
+    } else {
+      const updatedConditions = [...editedConditions];
+      updatedConditions[conditionIndex] = {
+        ...updatedConditions[conditionIndex],
+        logic_operator: value,
+      };
+      setEditedConditions(updatedConditions);
+      setHasChanges(true);
+    }
+  };
+
   const handleSave = () => {
     if (isCreatingNewRule) {
       if (
@@ -244,6 +275,7 @@ const FlowValidationModal = () => {
               condition_value: condition.condition_value,
               condition_property: condition.condition_property,
               condition_expression: condition.condition_expression,
+              logic_operator: condition.logic_operator,
             })),
           })
         );
@@ -261,6 +293,7 @@ const FlowValidationModal = () => {
               condition_value: condition.condition_value,
               condition_property: condition.condition_property,
               condition_expression: condition.condition_expression,
+              logic_operator: condition.logic_operator,
             })),
           },
         })
@@ -406,7 +439,7 @@ const FlowValidationModal = () => {
               <div className="row g-2 align-items-center">
                 {newRule.conditions.map((condition, index) => (
                   <Fragment key={index}>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                       <SelectField
                         name={`condition_property_${index}`}
                         icon={<PropertyIcon />}
@@ -430,11 +463,10 @@ const FlowValidationModal = () => {
                         disabled={!isCreatingNewRule}
                       />
                     </div>
-                    <div className="col-md">
+                    <div className="col-md-3">
                       <PropertyDiv>
                         <SelectField
                           name={`condition_expression_${index}`}
-                          icon={<PropertyIcon />}
                           placeholder={FLOWVALIDATION_CONSTANTS.CONDITION}
                           options={CONDITION_OPERATORS}
                           value={
@@ -459,7 +491,7 @@ const FlowValidationModal = () => {
                         />
                       </PropertyDiv>
                     </div>
-                    <div className="col-md-3">
+                    <InputContainer className="col-md-3 ">
                       <InputField
                         name={`condition_value_${index}`}
                         icon={<NewLinkIcon />}
@@ -467,6 +499,21 @@ const FlowValidationModal = () => {
                         onChange={e =>
                           handleConditionValueChange(index, e.target.value)
                         }
+                      />
+                    </InputContainer>
+                    <div className="col-md-2">
+                      <SelectField
+                        name={`condition_join_${index}`}
+                        placeholder={FLOWVALIDATION_CONSTANTS.LOGIC_OPERATOR}
+                        options={CONDITION_JOIN_OPERATORS}
+                        value={CONDITION_JOIN_OPERATORS.find(
+                          option => option.value === condition.logic_operator
+                        )}
+                        onChange={e =>
+                          handleConditionJoinOperatorChange(index, e?.value)
+                        }
+                        control={control}
+                        disabled={!selectedItem?.deletable}
                       />
                     </div>
                     {selectedItem?.deletable && (
@@ -541,7 +588,7 @@ const FlowValidationModal = () => {
                     <div className="row g-2 align-items-center">
                       {editedConditions?.map((condition, index) => (
                         <Fragment key={index}>
-                          <div className="col-md-4">
+                          <div className="col-md-3">
                             <SelectField
                               name={`condition_property_${index}`}
                               icon={<PropertyIcon />}
@@ -569,11 +616,10 @@ const FlowValidationModal = () => {
                               disabled={!selectedItem?.deletable}
                             />
                           </div>
-                          <div className="col-md">
+                          <div className="col-md-3">
                             <PropertyDiv>
                               <SelectField
                                 name={`condition_expression_${index}`}
-                                icon={<PropertyIcon />}
                                 placeholder={FLOWVALIDATION_CONSTANTS.CONDITION}
                                 options={CONDITION_OPERATORS}
                                 value={CONDITION_OPERATORS.find(
@@ -592,7 +638,7 @@ const FlowValidationModal = () => {
                               />
                             </PropertyDiv>
                           </div>
-                          <div className="col-md-3">
+                          <InputContainer className="col-md-3">
                             <InputField
                               name={`condition_value_${index}`}
                               icon={<NewLinkIcon />}
@@ -603,6 +649,27 @@ const FlowValidationModal = () => {
                                   e.target.value
                                 )
                               }
+                            />
+                          </InputContainer>
+                          <div className="col-md-2">
+                            <SelectField
+                              name={`condition_join_${index}`}
+                              placeholder={
+                                FLOWVALIDATION_CONSTANTS.LOGIC_OPERATOR
+                              }
+                              options={CONDITION_JOIN_OPERATORS}
+                              value={CONDITION_JOIN_OPERATORS.find(
+                                option =>
+                                  option.value === condition.logic_operator
+                              )}
+                              onChange={e =>
+                                handleConditionJoinOperatorChange(
+                                  index,
+                                  e?.value
+                                )
+                              }
+                              control={control}
+                              disabled={!selectedItem?.deletable}
                             />
                           </div>
                           {selectedItem?.deletable && (
@@ -636,7 +703,6 @@ const FlowValidationModal = () => {
                 onClick={handleAddNewRule}
                 disabled={selectedItem?.deletable === false}
               >
-                <AddIcon color="#fff" />
                 {FLOWVALIDATION_CONSTANTS.ADD_NEW_RULE}
               </Button>
             </div>

@@ -45,7 +45,7 @@ import {
   UsersSelectors,
 } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
-import { FlowValidationActions } from '../../store/flowValidation';
+// import { FlowValidationActions } from '../../store/flowValidation';
 import { GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
@@ -577,9 +577,9 @@ export const GridActions = ({
     dispatch(SchedularActions.setSelectedStatusState(watchStatus));
   }, [watchStatus]);
 
-  const handleAnalyzeClick = () => {
-    dispatch(FlowValidationActions.addNewAnalysisModalOpen(true));
-  };
+  // const handleAnalyzeClick = () => {
+  //   dispatch(FlowValidationActions.addNewAnalysisModalOpen(true));
+  // };
 
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
@@ -777,10 +777,10 @@ export const GridActions = ({
                   )}
                 </>
               )}
-            {module === 'namespaces' &&
+            {/* {module === 'namespaces' &&
               location.pathname === '/flow-analysis' && (
                 <Button onClick={handleAnalyzeClick}>Analyze New Flow</Button>
-              )}
+              )} */}
             {['scheduler'].includes(module) && (
               <>
                 <RefreshIocn

@@ -49,6 +49,7 @@ export const FLOWVALIDATION_CONSTANTS = {
   PASSWORD: 'Password',
   PROCESS_GROUP_ID: 'Process Group ID',
   ENTER_YOUR_PROCESS_GROUP_ID: 'Enter Your Process Group ID',
+  LOGIC_OPERATOR: 'Logic Operator',
 };
 
 export const SCOPE_TYPE_OPTIONS = [
@@ -64,6 +65,11 @@ export const CONDITION_OPERATORS = [
   { label: '>=', value: '>=' },
   { label: 'contains', value: 'contains' },
   { label: 'not contains', value: 'not contains' },
+];
+
+export const CONDITION_JOIN_OPERATORS = [
+  { label: 'OR', value: 'OR' },
+  { label: 'AND', value: 'AND' },
 ];
 
 export const convertDateTime = dateString => {
