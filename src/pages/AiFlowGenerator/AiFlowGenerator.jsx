@@ -235,7 +235,26 @@ export const AiFlowGenerator = () => {
   const [addedToRegistry, setAddedToRegistry] = useState(false);
   const [isFlowDownloaded, setIsFLowDownloaded] = useState(false);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
-  const clusters = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  const [inputError, setInputError] = useState({});
+  const [clusters, setClusters] = useState(() => {
+    return JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const storedClusters = JSON.parse(
+        localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+      );
+      setClusters(prev => {
+        const prevStr = JSON.stringify(prev);
+        const newStr = JSON.stringify(storedClusters);
+        return prevStr !== newStr ? storedClusters : prev;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const isArrayEmpty = arr => {
     return arr.length === 0 || arr.every(obj => Object.keys(obj).length === 0);
   };
@@ -297,6 +316,7 @@ export const AiFlowGenerator = () => {
       setQueryText('');
       setFlowJson({});
       setOriginalFlow({});
+      setInputError({});
       setIsPromptInputDisabled(!generateFlowPermission);
       dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
       dispatch(AiFlowGeneratorActions.setGenFlowError(''));
@@ -569,7 +589,11 @@ export const AiFlowGenerator = () => {
                         isEmpty(flowError) &&
                         !isEmpty(Object.keys(flowJson))
                       ? 'Here is the JSON File generated as per your prompt....'
-                      : `${flowError} we are unable to proceed your query at this time, please refresh to generate flow again...`}
+                      : !loading &&
+                          isEmpty(flowError) &&
+                          isEmpty(Object.keys(flowJson))
+                        ? 'We were unable to generate the requested flow. It appears the query may not meet the required format. Please revise the input and refresh to try again...'
+                        : `${flowError}`}
                 </p>
                 {!loading &&
                   isEmpty(flowError) &&
@@ -628,6 +652,7 @@ export const AiFlowGenerator = () => {
               refresh={handleRefresh}
               setQueryText={setQueryText}
               setisInputEmpty={setisInputEmpty}
+              setInputError={setInputError}
               setIsPromptInputDisabled={setIsPromptInputDisabled}
             />
           )}
@@ -640,6 +665,8 @@ export const AiFlowGenerator = () => {
             queryLabel={queryLable}
             refresh={handleRefresh}
             isInputEmpty={isInputEmpty}
+            inputError={inputError}
+            setInputError={setInputError}
           />
         </PromptSection>
         <Modal
