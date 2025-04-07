@@ -4,7 +4,12 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { MailIcon, QRIcons } from '../../assets';
+import {
+  CurvedDocumentTextIcon,
+  CurvedLockIcon,
+  CurvedProfileIcon,
+  SmsNotificationIcon,
+} from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -218,7 +223,7 @@ export const EmailConfigurationSettings = () => {
     const subscription = watch(value => {
       const isModified =
         value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
         value.from_email !== settingData?.from_email ||
         value.smtp_service !== settingData?.smtp_service ||
         value.smtp_host !== settingData?.smtp_host ||
@@ -259,30 +264,33 @@ export const EmailConfigurationSettings = () => {
             <InputField
               name="smtp_service"
               register={register}
-              icon={<QRIcons />}
+              icon={<CurvedDocumentTextIcon />}
               label={KDFM.SMTP_SERVICE}
               placeholder={KDFM.ENTER_SMTP_SERVICE}
               errors={errors}
+              required={true}
             />
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
             <InputField
               name="smtp_host"
               register={register}
-              icon={<QRIcons />}
+              icon={<CurvedDocumentTextIcon />}
               label={KDFM.SMTP_HOST}
               placeholder={KDFM.ENTER_SMTP_HOST}
               errors={errors}
+              required={true}
             />
           </div>
           <div className="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-6">
             <InputField
               name="smtp_port"
               register={register}
-              icon={<QRIcons />}
+              icon={<CurvedDocumentTextIcon />}
               label={KDFM.SMTP_PORT}
               placeholder={KDFM.ENTER_SMTP_PORT}
               errors={errors}
+              required={true}
             />
           </div>
         </InputFields>
@@ -291,10 +299,11 @@ export const EmailConfigurationSettings = () => {
             <InputField
               name="smtp_user"
               register={register}
-              icon={<QRIcons />}
+              icon={<CurvedProfileIcon />}
               label={KDFM.SMTP_USER}
               placeholder={KDFM.ENTER_SMTP_USER}
               errors={errors}
+              required={true}
             />
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -303,19 +312,22 @@ export const EmailConfigurationSettings = () => {
               register={register}
               watch={watch}
               label={KDFM.SMTP_PASS}
+              icon={<CurvedLockIcon />}
               placeholder={KDFM.ENTER_SMTP_PASS}
               disableToggle={false}
               errors={errors}
+              required
             />
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
             <InputField
               name="from_email"
               register={register}
-              icon={<MailIcon />}
+              icon={<SmsNotificationIcon />}
               label={KDFM.FROM_EMAIL}
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
+              required={true}
             />
           </div>
         </InputFields>

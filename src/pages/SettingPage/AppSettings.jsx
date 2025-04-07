@@ -4,7 +4,11 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { LogoFieldIcon, MailIcon, QRIcons, UploadIcon } from '../../assets';
+import {
+  DocumentTextIcon,
+  EmailSmsTrackingIcon,
+  GalleryIcon,
+} from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -58,6 +62,25 @@ const StyledSaveButton = styled(Button)`
 const ButtonDiv = styled.div`
   display: flex;
   gap: 1rem;
+`;
+
+const UploadWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #444445;
+  margin-bottom: 12px;
+  padding: 5px 12px;
+  background-color: #f5f7fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #e9ecef;
+  }
 `;
 
 export const settingSchema = yup.object().shape({
@@ -160,7 +183,7 @@ export const AppSettings = () => {
         value.favicon !== settingData?.favicon ||
         value.title !== settingData?.title ||
         value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
         value.email !== settingData?.email;
       setIsChanged(isModified);
     });
@@ -196,7 +219,7 @@ export const AppSettings = () => {
             <InputField
               name="email"
               register={register}
-              icon={<MailIcon />}
+              icon={<EmailSmsTrackingIcon />}
               label={KDFM.SUPPORT_EMAIL}
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
@@ -207,7 +230,7 @@ export const AppSettings = () => {
             <InputField
               name="title"
               register={register}
-              icon={<QRIcons />}
+              icon={<DocumentTextIcon />}
               label={KDFM.META_TITLE}
               placeholder={KDFM.ENTER_META_TITLE}
               errors={errors}
@@ -223,8 +246,8 @@ export const AppSettings = () => {
               labelWarning="(allowed: jpeg, jpg, png)"
               control={control}
               watch={watch}
-              icon={<LogoFieldIcon />}
-              rightIcon={<UploadIcon />}
+              icon={<GalleryIcon />}
+              rightIcon={<UploadWrapper>Select File</UploadWrapper>}
               errors={errors}
               register={register}
               image={settingData?.logo}
@@ -237,8 +260,8 @@ export const AppSettings = () => {
               label="Favicon"
               labelWarning="(allowed: ico, png)"
               control={control}
-              icon={<LogoFieldIcon />}
-              rightIcon={<UploadIcon />}
+              icon={<GalleryIcon />}
+              rightIcon={<UploadWrapper>Select File</UploadWrapper>}
               errors={errors}
               register={register}
               image={settingData?.favicon}
