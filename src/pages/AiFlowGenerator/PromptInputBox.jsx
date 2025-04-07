@@ -7,9 +7,10 @@ import { toast } from 'react-toastify';
 import DOMPurify from 'dompurify';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiFlowGeneratorActions, AuthenticationSelectors } from '../../store';
-import { validatePayload } from './utils';
+import { validateInput, validatePayload } from './utils';
 import { v4 as uuidv4 } from 'uuid';
 import { GENAI_CONFIG } from '../../constants/aiFlowGenerator.constant';
+import { FieldErrorMessage } from '../../shared';
 
 const InputContainer = styled.div`
   position: relative;
@@ -80,17 +81,22 @@ export const PromptInputBox = ({
   queryLabel,
   refresh,
   isInputEmpty,
+  inputError,
+  setInputError,
 }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
 
   useEffect(() => {
-    if (queryText?.length !== 0 && !isInputEmpty) {
+    const { isValid } = validateInput(queryText);
+    if (queryText?.length && !isInputEmpty && isValid) {
       setIsSendBtnDisabled(false);
+      setInputError({});
     } else {
       setIsSendBtnDisabled(true);
     }
-  }, [queryText]);
+  }, [queryText, isInputEmpty]);
+
   const dispatch = useDispatch();
   const handleGenerateFLowClick = () => {
     if (disabled) {
@@ -146,35 +152,49 @@ export const PromptInputBox = ({
     }
   };
   return (
-    <InputContainer>
-      <InputBox
-        id="prompt-input-box"
-        name="prompt-input-box"
-        disabled={disabled}
-        type="search"
-        value={disabled || isInputEmpty ? '' : queryText}
-        placeholder={KDFM.PROMPT_INPUT_PLACEHOLDER}
-        onChange={e => {
-          let value = e.target.value;
-          value = DOMPurify.sanitize(value, { ALLOWED_TAGS: [] });
-          setQueryText(value);
-          setIsSendBtnDisabled(value.length === 0);
-        }}
-        onKeyDown={e => {
-          if (e.key === 'Enter' && !isSendBtnDisabled) {
-            e.preventDefault();
-            handleGenerateFLowClick();
-          }
-        }}
-      />
-      <GenerateFLowButton
-        disabled={isSendBtnDisabled}
-        isSendBtnDisabled={isSendBtnDisabled}
-        onClick={handleGenerateFLowClick}
-      >
-        <SendMessageIcon color={isSendBtnDisabled ? '#444443' : '#FFFFFF'} />
-      </GenerateFLowButton>
-    </InputContainer>
+    <>
+      <InputContainer>
+        <InputBox
+          id="prompt-input-box"
+          name="promptInputBox"
+          disabled={disabled}
+          type="textarea"
+          value={disabled || isInputEmpty ? '' : queryText}
+          placeholder={KDFM.PROMPT_INPUT_PLACEHOLDER}
+          onChange={e => {
+            let value = e.target.value;
+            value = DOMPurify.sanitize(value, { ALLOWED_TAGS: [] });
+            let liveValue = value.replace(/\s{2,}/g, ' ').trimStart();
+            setQueryText(liveValue);
+            const { isValid } = validateInput(value);
+            setIsSendBtnDisabled(!isValid && !isInputEmpty);
+            if (!isValid) {
+              setInputError({
+                promptInputBox: {
+                  message: 'Invalid Input',
+                },
+              });
+            } else {
+              setInputError({});
+            }
+          }}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && !isSendBtnDisabled) {
+              e.preventDefault();
+              handleGenerateFLowClick();
+            }
+          }}
+        />
+        <GenerateFLowButton
+          disabled={isSendBtnDisabled}
+          isSendBtnDisabled={isSendBtnDisabled}
+          onClick={handleGenerateFLowClick}
+        >
+          <SendMessageIcon color={isSendBtnDisabled ? '#444443' : '#FFFFFF'} />
+        </GenerateFLowButton>
+      </InputContainer>
+      <FieldErrorMessage errors={inputError} name={'promptInputBox'} />
+    </>
   );
 };
 
@@ -187,4 +207,6 @@ PromptInputBox.propTypes = {
   queryLabel: PropTypes.string,
   refresh: PropTypes.func,
   isInputEmpty: PropTypes.bool,
+  inputError: PropTypes.object,
+  setInputError: PropTypes.func,
 };

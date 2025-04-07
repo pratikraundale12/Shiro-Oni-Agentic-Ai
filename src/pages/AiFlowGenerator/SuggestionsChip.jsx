@@ -158,6 +158,7 @@ const SuggetionsChip = ({
   refresh,
   setisInputEmpty,
   setIsPromptInputDisabled,
+  setInputError,
 }) => {
   const dispatch = useDispatch();
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -172,6 +173,7 @@ const SuggetionsChip = ({
       }
       return;
     }
+    setInputError({});
     setIsPromptInputDisabled(true);
     setisInputEmpty(true);
     setQueryText(flow?.query);
@@ -301,4 +303,5 @@ SuggetionsChip.propTypes = {
   setQueryText: PropTypes.func,
   setisInputEmpty: PropTypes.func,
   setIsPromptInputDisabled: PropTypes.func,
+  setInputError: PropTypes.func,
 };

@@ -34,7 +34,6 @@ export function* generateFlowAPI(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
-  const { refresh } = payload;
   yield put(AiFlowGeneratorActions.setNewBucket({}));
   yield put(AiFlowGeneratorActions.setGenFlowError(''));
   if (!api.generateFlowAPI) {
@@ -75,10 +74,6 @@ export function* generateFlowAPI(api, { payload }) {
       'Unable process the generation of the flow. Please try again!';
     yield put(AiFlowGeneratorActions.setGenFlowError(error));
     toast.error(error);
-    refresh &&
-      setTimeout(() => {
-        refresh();
-      }, 400);
   }
 }
 
