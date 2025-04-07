@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
-  AddIcon,
   DeleteSmallIcon,
   FlowValidationIcon,
   NewEditIcon,
@@ -172,11 +171,11 @@ const FlowValidation = () => {
           <Button
             type="button"
             size={'md'}
-            onClick={() =>
-              dispatch(SettingsActions.addNewValidationModalOpen(true))
-            }
+            onClick={() => {
+              dispatch(SettingsActions.addNewValidationModalOpen(true));
+              dispatch(FlowValidationActions.setSelectedItem(null));
+            }}
           >
-            <AddIcon color="#fff" />{' '}
             {FLOWVALIDATION_CONSTANTS.ADD_NEW_VALIDATION}
           </Button>
         </div>
