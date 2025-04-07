@@ -96,7 +96,7 @@ const AddNewRoleModal = ({ selectedOption, ldapGroupName }) => {
       onRequestClose={() => {
         dispatch(RolesActions.roleModal(false));
         dispatch(RolesActions.setIsRoleListModalOpen(true));
-        reset({ roleName: '' });
+        reset();
       }}
       secondaryButtonText="Back"
       primaryButtonText="Submit"
