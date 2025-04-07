@@ -188,7 +188,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
     useEffect(() => {
       if (!isEmpty(originalValues)) {
         const hasChanged = Object.keys(formValues).some(key => {
-          console.log({formValues, originalValues, key})
           if (typeof formValues[key] === 'object' && formValues[key] !== null) {
             return JSON.stringify(formValues[key]) != JSON.stringify(originalValues[key]);
           }
