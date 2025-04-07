@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   Button,
   CheckboxField,
@@ -7,21 +7,9 @@ import {
   RadioField,
   SelectField,
 } from '../../../shared';
-import {
-  DeleteSmallIcon,
-  NoDataIcon,
-  PencilIcon,
-  PlusIcon,
-  QRIcons,
-} from '../../../assets';
+import { PlusIcon, QRIcons } from '../../../assets';
 import styled from 'styled-components';
-import {
-  FullPageLoader,
-  IconButton,
-  LoaderContainer,
-  StatusRender,
-  Table,
-} from '../../../components';
+import { FullPageLoader, StatusRender, Table } from '../../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   ClustersActions,
@@ -30,55 +18,12 @@ import {
 } from '../../../store';
 import { AddHostIPModal } from './AddHostIPModal';
 import { isEmpty } from 'lodash';
-import { history } from '../../../helpers/history';
 import { KDFM } from '../../../constants';
 const LabelSelect = styled.div`
   font-size: 14px;
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
-`;
-const ActionTd = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  gap: 6px;
-  padding-right: 10px;
-`;
-const ActiveButtonDiv = styled.div`
-  height: 48px;
-  width: 48px;
-  max-width: 48px;
-  max-height: 48px;
-  min-height: 48px;
-  min-width: 48px;
-  border: 1px solid #444445;
-  border-radius: 8px;
-  background-color: #f5f7fa;
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
-
-  & span {
-    position: absolute;
-    top: 0px;
-    right: 2px;
-    font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 23px;
-    color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
-  }
-
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
-  }
 `;
 
 const ClusterDetailTab = ({
@@ -104,6 +49,9 @@ const ClusterDetailTab = ({
 
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
+  const itemsForList = useMemo(() => {
+    return listHostIpData.filter(ele => !ele?.is_selected);
+  }, [listHostIpData]);
 
   const configVersionOptions =
     !isEmpty(configVerionListData) &&
@@ -160,8 +108,7 @@ const ClusterDetailTab = ({
     {
       label: <></>,
       renderCell: item => (
-        <>
-          {' '}
+        <div className="d-flex justify-content-center">
           <CheckboxField
             name="check"
             checked={item?.is_selected}
@@ -169,24 +116,28 @@ const ClusterDetailTab = ({
               handleCheck(item);
             }}
           />
-        </>
+        </div>
       ),
       resize: true,
+      width: '5%',
     },
     {
-      label: 'Host IP',
+      label: 'Available Host IP',
       renderCell: item => <>{item?.host_ip}</>,
       resize: true,
+      width: '30%',
     },
     {
       label: 'Port No.',
       renderCell: item => <>{item?.port}</>,
       resize: true,
+      width: '30%',
     },
     {
       label: 'Username',
       renderCell: item => <>{item?.username}</>,
       resize: true,
+      width: '25%',
     },
     {
       label: 'Status',
@@ -197,6 +148,7 @@ const ClusterDetailTab = ({
         />
       ),
       resize: true,
+      width: '10%',
     },
   ];
   useEffect(() => {
@@ -204,8 +156,8 @@ const ClusterDetailTab = ({
   }, [dispatch]);
 
   useEffect(() => {
-    setHostList(listHostIpData);
-  }, [listHostIpData]);
+    setHostList(itemsForList);
+  }, [itemsForList]);
 
   return (
     <>
@@ -263,7 +215,6 @@ const ClusterDetailTab = ({
           />
         </div>
       </div>
-
       <div className="col-auto ms-3">
         <Button
           size="md"

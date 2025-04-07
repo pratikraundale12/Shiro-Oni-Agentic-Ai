@@ -4,6 +4,12 @@ import { KDFM } from '../../../constants';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { ClustersActions } from '../../../store';
+import {
+  ClusterDetailTabIcon,
+  CubeIcon,
+  ManageHostIcon,
+  SettingSmallIcon,
+} from '../../../assets';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -39,6 +45,9 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('getting_started'));
         }}
       >
+        <CubeIcon
+          color={activeTab === 'getting_started' ? '#FF7A00' : '#444445'}
+        />{' '}
         {KDFM.GETTING_STARTED}
       </NavButton>
       <NavButton
@@ -47,6 +56,11 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('manage_config'));
         }}
       >
+        <SettingSmallIcon
+          color={activeTab === 'manage_config' ? '#FF7A00' : '#444445'}
+          height={18}
+          width={18}
+        />{' '}
         {KDFM.MANAGE_CONFIG}
       </NavButton>
       <NavButton
@@ -55,6 +69,9 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
         }}
       >
+        <ManageHostIcon
+          color={activeTab === 'manage_host' ? '#FF7A00' : '#444445'}
+        />{' '}
         {KDFM.MANAGE_HOST}
       </NavButton>
       <NavButton
@@ -63,6 +80,9 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
           dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
         }}
       >
+        <ClusterDetailTabIcon
+          color={activeTab === 'cluster_details' ? '#FF7A00' : '#444445'}
+        />{' '}
         {KDFM.CLUSTER_DETAILS}
       </NavButton>
     </NavTabs>

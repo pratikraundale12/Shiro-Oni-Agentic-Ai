@@ -157,3 +157,6 @@ export * from './WhiteBoradIcon';
 export * from './ZoomInIcon';
 export * from './ZoomOutIcon';
 export * from './canvasYIcon';
+export * from './CubeIcon';
+export * from './ManageHostIcon';
+export * from './ClusterDetailTabIcon';
