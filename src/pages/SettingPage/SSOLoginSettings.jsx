@@ -4,17 +4,15 @@ import { useForm, Controller } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { ExportIcon, SSOLoginIcon2, UserIcon } from '../../assets';
+import {
+  ExportIcon,
+  CurvedSSOLoginIcon,
+  CurvedProfileIcon,
+} from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { KDFM, SSO_LOGIN_TYPE } from '../../constants';
 import { history } from '../../helpers/history';
-import {
-  Button,
-  // CheckboxField,
-  InputField,
-  SelectField,
-  SwitchButton,
-} from '../../shared';
+import { Button, InputField, SelectField, SwitchButton } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 
 const Wrapper = styled.div`
@@ -34,13 +32,6 @@ const FlexWrapper = styled.div`
   padding-bottom: 20px;
   margin-top: auto;
   bottom: 20px;
-`;
-
-const LabelSelect = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 16px;
-  color: ${props => props.theme.colors.darker};
 `;
 
 const ButtonText = styled.div`
@@ -80,7 +71,7 @@ export const settingSchema = yup.object().shape({
     .string()
     .nullable()
     .when('selected_sso', {
-      is: val => val === 'azure', // Adjust based on the actual value in selected_sso
+      is: val => val === 'azure',
       then: schema => schema.required('Azure Redirect URI is required'),
       otherwise: schema => schema.nullable(),
     }),
@@ -152,21 +143,6 @@ export const SSOLoginSettings = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
-  // const [isSSOEnabled, setSSOInitialConfig] = useState(false);
-  // const handleSSOToggle = () => {
-  //   setSSOInitialConfig(prevState => {
-  //     const newState = !prevState;
-
-  //     if (!newState) {
-  //       // Reset any dependent values here if needed
-  //       setValue('sso_auto_sync', false, { shouldDirty: true });
-  //     }
-
-  //     setIsChanged(true);
-  //     setValue('ssoEnabled', newState, { shouldDirty: true });
-  //     return newState;
-  //   });
-  // };
 
   const onSubmit = async data => {
     setLoading(true);
@@ -275,7 +251,7 @@ export const SSOLoginSettings = () => {
     const subscription = watch(value => {
       const isModified =
         value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
         value.selected_sso !== settingData?.selected_sso ||
         value.azure_client_id !== settingData?.azure_client_id ||
         value.azure_tenant_id !== settingData?.azure_tenant_id ||
@@ -319,7 +295,7 @@ export const SSOLoginSettings = () => {
       >
         <>
           <InputFields className="row mb-4 align-items-center">
-            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
+            <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
               <Controller
                 name="sso_enabled"
                 control={control}
@@ -333,11 +309,6 @@ export const SSOLoginSettings = () => {
                   />
                 )}
               />
-              {/* <CheckboxField
-                name="sso_enabled"
-                label="SSO Enabled"
-                register={register}
-              /> */}
             </div>
           </InputFields>
 
@@ -345,16 +316,15 @@ export const SSOLoginSettings = () => {
             <>
               <InputFields className="row mb-4">
                 <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
-                  <LabelSelect className="mb-3">
-                    {KDFM.SSO_LOGIN_TYPE} *
-                  </LabelSelect>
                   <SelectField
+                    label={KDFM.SSO_LOGIN_TYPE}
                     name="selected_sso"
                     control={control}
-                    icon={<SSOLoginIcon2 />}
+                    icon={<CurvedSSOLoginIcon />}
                     errors={errors}
                     options={SSO_LOGIN_TYPE}
                     placeholder="Select SSO Login Type"
+                    required={true}
                   />
                 </div>
               </InputFields>
@@ -366,30 +336,33 @@ export const SSOLoginSettings = () => {
                       <InputField
                         name="azure_client_id"
                         register={register}
-                        icon={<UserIcon />}
-                        label="Azure Client ID *"
+                        icon={<CurvedProfileIcon />}
+                        label="Azure Client ID"
                         placeholder="Enter Client ID"
                         errors={errors}
+                        required
                       />
                     </div>
                     <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
                       <InputField
                         name="azure_client_secret"
                         register={register}
-                        icon={<UserIcon />}
-                        label="Azure Client Secret *"
+                        icon={<CurvedProfileIcon />}
+                        label="Azure Client Secret"
                         placeholder="Enter Client Secret"
                         errors={errors}
+                        required
                       />
                     </div>
                     <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
                       <InputField
                         name="azure_tenant_id"
                         register={register}
-                        icon={<UserIcon />}
-                        label="Azure Tenant ID *"
+                        icon={<CurvedProfileIcon />}
+                        label="Azure Tenant ID"
                         placeholder="Enter Tenant ID"
                         errors={errors}
+                        required
                       />
                     </div>
                   </InputFields>
@@ -400,9 +373,10 @@ export const SSOLoginSettings = () => {
                         name="azure_redirect_uri"
                         register={register}
                         icon={<ExportIcon color="#444445" />}
-                        label="Azure Redirect URI *"
+                        label="Azure Redirect URI"
                         placeholder="Enter Redirect URI"
                         errors={errors}
+                        required
                       />
                     </div>
                   </InputFields>
@@ -415,10 +389,11 @@ export const SSOLoginSettings = () => {
                       <InputField
                         name="keycloak_client_id"
                         register={register}
-                        icon={<UserIcon />}
-                        label="Client ID *"
+                        icon={<CurvedProfileIcon />}
+                        label="Client ID"
                         placeholder="Enter Client ID"
                         errors={errors}
+                        required
                       />
                     </div>
                     <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
@@ -426,9 +401,10 @@ export const SSOLoginSettings = () => {
                         name="keycloak_url"
                         register={register}
                         icon={<ExportIcon color="#444445" />}
-                        label="URL *"
+                        label="URL"
                         placeholder="Enter URL"
                         errors={errors}
+                        required
                       />
                     </div>
                     <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 mt-1">
@@ -436,9 +412,10 @@ export const SSOLoginSettings = () => {
                         name="keycloak_realm"
                         register={register}
                         icon={<ExportIcon color="#444445" />}
-                        label="Realm *"
+                        label="Realm"
                         placeholder="Enter Realm"
                         errors={errors}
+                        required
                       />
                     </div>
                   </InputFields>

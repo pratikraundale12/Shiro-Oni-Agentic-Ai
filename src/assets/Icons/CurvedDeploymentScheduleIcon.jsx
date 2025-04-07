@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const DeploymentScheduleIcon2 = ({
+export const CurvedDeploymentScheduleIcon = ({
   width = 20,
   height = 20,
   color = '#444445',
@@ -92,7 +92,7 @@ export const DeploymentScheduleIcon2 = ({
   );
 };
 
-DeploymentScheduleIcon2.propTypes = {
+CurvedDeploymentScheduleIcon.propTypes = {
   width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   color: PropTypes.string,

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const DocumentTextIcon2 = ({
+export const CurvedDocumentTextIcon = ({
   width = 20,
   height = 20,
   color = '#444445',
@@ -42,7 +42,7 @@ export const DocumentTextIcon2 = ({
   );
 };
 
-DocumentTextIcon2.propTypes = {
+CurvedDocumentTextIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   color: PropTypes.string,

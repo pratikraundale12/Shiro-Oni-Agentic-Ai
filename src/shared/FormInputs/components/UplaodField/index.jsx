@@ -287,10 +287,7 @@ const UploadField = ({
                 />
                 {isShowRemoveImageIcon && (
                   <button className="remove-icon" onClick={handleRemoveImage}>
-                    <TagCrossIcon
-                      height={name === 'logo' ? 24 : 14}
-                      width={name === 'logo' ? 24 : 14}
-                    />
+                    <TagCrossIcon height={16} width={16} />
                   </button>
                 )}
               </div>

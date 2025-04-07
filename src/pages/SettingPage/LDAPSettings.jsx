@@ -173,7 +173,7 @@ export const LDAPSettings = () => {
     const subscription = watch(value => {
       const isModified =
         value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
         value.ldap_auto_sync_time_interval !==
           settingData?.ldap_auto_sync_time_interval ||
         value.ldap_auto_sync !== settingData?.ldap_auto_sync ||
@@ -236,7 +236,7 @@ export const LDAPSettings = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <InputFields className="d-flex flex-column">
-          <div className="mt-4">
+          <div>
             <SwitchButton
               id="openModalInput1"
               name="LDAP"
@@ -269,7 +269,7 @@ export const LDAPSettings = () => {
                   option.value ===
                   (watch('ldap_auto_sync_time_interval') ||
                     settingData?.ldap_auto_sync_time_interval)
-              )} // Watch the value or use settingData fallback
+              )}
               isDisabled={!ldapAutoSync}
               onChange={selectedOption => {
                 const value = selectedOption?.value || null;

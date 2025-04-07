@@ -8,8 +8,6 @@ import {
   DocumentTextIcon,
   EmailSmsTrackingIcon,
   GalleryIcon,
-  // QRIcons,
-  // UploadIcon,
 } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { EMAIL_REGEX, KDFM } from '../../constants';
@@ -185,7 +183,7 @@ export const AppSettings = () => {
         value.favicon !== settingData?.favicon ||
         value.title !== settingData?.title ||
         value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
         value.email !== settingData?.email;
       setIsChanged(isModified);
     });

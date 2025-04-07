@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const Profile2UserIcon = ({
+export const CurvedProfileDoubleUserIcon = ({
   width = 20,
   height = 20,
   color = '#444445',
@@ -50,7 +50,7 @@ export const Profile2UserIcon = ({
   );
 };
 
-Profile2UserIcon.propTypes = {
+CurvedProfileDoubleUserIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   color: PropTypes.string,
