@@ -7,6 +7,7 @@ import { LDAPSettings } from './LDAPSettings';
 import { EmailConfigurationSettings } from './EmailConfigurationSettings';
 import { ServiceAccountSettings } from './ServiceAccountSettings';
 import { SSOLoginSettings } from './SSOLoginSettings';
+import { ExportLogSettings } from './ExportLogSettings';
 import {
   AppIcon,
   LDAPIcon,
@@ -14,6 +15,7 @@ import {
   ServiceAccountIcon,
   EmailConfigIcon,
   SSOLoginIcon,
+  CurvedDocumentIcon,
 } from '../../assets';
 
 const GreyBoxNamespace = styled.div`
@@ -99,6 +101,8 @@ const SettingTab = () => {
         return <EmailConfigurationSettings />;
       case 'SSOLoginSettings':
         return <SSOLoginSettings />;
+      case 'ExportLogSettings':
+        return <ExportLogSettings />;
     }
   };
   return (
@@ -165,6 +169,16 @@ const SettingTab = () => {
                 <SSOLoginIcon />
               </IconContent>
               SSO Login
+            </Tab>
+            <Tab
+              active={activeTab === 'ExportLogSettings'}
+              onClick={() => setActiveTab('ExportLogSettings')}
+              className="nav-item"
+            >
+              <IconContent className="nav-item">
+                <CurvedDocumentIcon />
+              </IconContent>
+              Export Log
             </Tab>
           </TabWrapper>
         </TabsContainer>
