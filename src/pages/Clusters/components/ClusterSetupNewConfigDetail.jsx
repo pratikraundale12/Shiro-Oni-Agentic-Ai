@@ -123,6 +123,8 @@ const TitleTabWrapper = styled.div`
   padding-bottom: 12px;
 `;
 const ClusterSetupNewConfigDetailsPage = () => {
+  const [originalValues, setOriginalValues] = useState({});
+  const [formChanged, setFormChanged] = useState(false);
   const dispatch = useDispatch();
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
@@ -180,6 +182,22 @@ const ClusterSetupNewConfigDetailsPage = () => {
       checkpoint_interval: '2 mins',
     },
   });
+    // Watch all form values to detect changes
+    const formValues = watch();
+
+    useEffect(() => {
+      if (!isEmpty(originalValues)) {
+        const hasChanged = Object.keys(formValues).some(key => {
+          if (typeof formValues[key] === 'object' && formValues[key] !== null) {
+            return JSON.stringify(formValues[key]) != JSON.stringify(originalValues[key]);
+          }
+          
+          return formValues[key] != originalValues[key];
+        });
+        
+        setFormChanged(hasChanged);
+      } 
+    }, [formValues, originalValues]);
 
   const sidebarItems = [
     {
@@ -271,6 +289,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
         }
       );
     }
+
+    // After all values are set, capture them as original values
+    setTimeout(() => {
+      setOriginalValues({...watch()});
+      setFormChanged(false);
+    }, 0);
   };
 
   const handleAddConfig = data => {
@@ -739,7 +763,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {KDFM.BACK}
           </Button>
 
-          <Button type="submit" onClick={handleSubmit(handleAddConfig)}>
+          <Button 
+            type="submit" 
+            onClick={handleSubmit(handleAddConfig)}  
+            disabled={!isEmpty(configToEdit) && !formChanged}>
             {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
           </Button>
         </BottomButtonDiv>
