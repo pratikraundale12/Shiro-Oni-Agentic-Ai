@@ -160,7 +160,10 @@ const CompareValidation = () => {
             />
           </div>
           <div className="col-md-auto pt-2 mt-3">
-            <Button onClick={handleCompareFlow}>
+            <Button
+              onClick={handleCompareFlow}
+              disabled={!selectedVersionA || !selectedVersionB}
+            >
               {FLOWVALIDATION_CONSTANTS.COMPARE}
             </Button>
           </div>

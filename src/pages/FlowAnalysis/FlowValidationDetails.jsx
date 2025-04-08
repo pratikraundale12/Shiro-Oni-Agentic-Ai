@@ -315,9 +315,11 @@ const FlowValidationDetails = () => {
           {FLOWVALIDATION_CONSTANTS.BACK}
         </Button>
         <div className="col-md-auto mb-4 mt-2">
-          <Button onClick={handleSendEmail}>
-            {FLOWVALIDATION_CONSTANTS.SEND_EMAIL_REPORT}
-          </Button>
+          {validationResult?.data && (
+            <Button onClick={handleSendEmail}>
+              {FLOWVALIDATION_CONSTANTS.SEND_EMAIL_REPORT}
+            </Button>
+          )}
         </div>
       </div>
     </div>
