@@ -67,7 +67,7 @@ const SessionExpiredLabel = ({ closeTab }) => {
           <AlertText>
             {promptMessage[licenseType] || promptMessage[LICENSE_TYPE.TRIAL]}
           </AlertText>
-          <IconContainer onClick={closeTab}>
+          <IconContainer id="license-expiry-popup-close-btn" onClick={closeTab}>
             <CrossIcon width={24} height={24} />
           </IconContainer>
         </AlertContent>

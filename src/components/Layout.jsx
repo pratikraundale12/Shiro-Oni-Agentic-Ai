@@ -385,6 +385,12 @@ export const Layout = ({ children }) => {
 
   useEffect(() => {
     setIsLoading(false);
+
+    const error = localStorage.getItem('keycloakSSOLoginErrorMessage');
+    if (error) {
+      toast.error(error, { toastId: 'login-toast-error1' });
+      localStorage.removeItem('keycloakSSOLoginErrorMessage');
+    }
   }, []);
 
   const handleMSLogin = async () => {
@@ -532,7 +538,10 @@ export const Layout = ({ children }) => {
                 style={btnStyles(isUserLogin)}
                 className={`d-flex align-items-center justify-content-between`}
               >
-                <StyledLoginBox onClick={handleRedirection}>
+                <StyledLoginBox
+                  id="login-switch-role-btn"
+                  onClick={handleRedirection}
+                >
                   <RedirectionSection>
                     <RedirectionText>
                       Login via &nbsp;

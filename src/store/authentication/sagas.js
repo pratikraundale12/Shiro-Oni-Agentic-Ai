@@ -213,9 +213,11 @@ export function* ssoUserLogin(api, { payload }) {
       `id_token_hint=${idToken}&` +
       `post_logout_redirect_uri=${API_URL}/login`;
 
+    window.localStorage.setItem(
+      'keycloakSSOLoginErrorMessage',
+      response.data.message
+    );
     window.location.href = logoutUrl;
-    history.push('/login');
-    toast.error(response.data.message, { toastId: 'login-toast-error1' });
   }
 }
 
