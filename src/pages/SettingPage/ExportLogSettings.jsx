@@ -9,7 +9,7 @@ import { CurvedDocumentIcon, FileDownloadIcon } from '../../assets';
 import { Button, SelectField, ModalWithIcon } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import StyledDateRangePickerInput from '../../shared/FormInputs/components/StyledDateRangePickerInput';
-// import StyledDateRangePickerInput from '../../shared/FormInputs/components/StyledDateRangePickerInput';
+import { toast } from 'react-toastify';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -91,6 +91,10 @@ export const ExportLogSettings = () => {
       );
     };
 
+    if (!logsType) {
+      toast.info('Please select a log type to proceed.');
+    }
+
     const payload = { type: logsType };
 
     if (startDate && endDate) {
@@ -100,7 +104,7 @@ export const ExportLogSettings = () => {
     dispatch(SettingsActions.downloadLogsZip(payload));
     setIsLogsModalOpen(false);
     setSelectedDate([]); // reset date
-    setValue('logs_type', ''); // reset dropdown using react-hook-form
+    setValue('logs_type', ''); // reset dropdown
   };
 
   useEffect(() => {
@@ -135,7 +139,7 @@ export const ExportLogSettings = () => {
                 label="Logs Type"
                 name="logs_type"
                 control={control}
-                icon={<CurvedDocumentIcon />}
+                icon={<CurvedDocumentIcon color="#444445" />}
                 errors={errors}
                 options={approverOptions}
                 placeholder="Select Logs Type"
@@ -144,6 +148,7 @@ export const ExportLogSettings = () => {
                     option => option.value === watch('logs_type')
                   ) || null
                 }
+                required
               />
             </div>
             <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 d-flex align-items-center">
