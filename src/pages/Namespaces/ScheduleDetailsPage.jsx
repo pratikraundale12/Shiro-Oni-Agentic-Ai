@@ -188,6 +188,7 @@ const ScheduleDeploymentTab = ({
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
         <DateField
+          id="process-group-schedule-deploy-time"
           label="Schedule Deploy Time"
           name="scheduled_time"
           placeholder="select schedule deploy time"

@@ -52,7 +52,7 @@ export const InfoModalActivityHistory = () => {
     },
     {
       label: 'Value',
-      renderCell: item => <>{renderItems(item)}</>,
+      renderCell: item => <span id='activity-log-detail-value'>{renderItems(item)}</span>,
       resize: true,
     },
   ];
@@ -76,7 +76,6 @@ export const InfoModalActivityHistory = () => {
         <Table
           data={[
             {
-              id: 'message-row',
               title: 'Message',
               value: selectedItem?.message,
               url: false,

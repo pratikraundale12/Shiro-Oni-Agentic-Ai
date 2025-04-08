@@ -742,6 +742,7 @@ export const GridActions = ({
               <>
                 {selectedCluster?.value && (
                   <Button
+                    id="process-group-list-schdule-deployment"
                     size="md"
                     disabled={isButtonDisabled}
                     onClick={() => handleScheduleClick()}
@@ -761,6 +762,7 @@ export const GridActions = ({
                 )}
                 {canWrite && (
                   <Button
+                    id="process-group-deploy"
                     disabled={!canWrite}
                     size="md"
                     style={{ width: '84px' }}
