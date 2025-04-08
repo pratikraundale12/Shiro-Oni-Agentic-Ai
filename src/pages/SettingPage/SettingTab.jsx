@@ -177,7 +177,13 @@ const SettingTab = () => {
               className="nav-item d-flex"
             >
               <IconContent className="nav-item">
-                <PropertyIcon color="#444445" height="18" width="18" />
+                <PropertyIcon
+                  height="18"
+                  width="18"
+                  color={
+                    activeTab === 'Flow Validation' ? '#FF7A00' : '#444445'
+                  }
+                />
               </IconContent>
               Flow Validation
             </Tab>

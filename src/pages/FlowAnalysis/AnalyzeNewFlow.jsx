@@ -6,16 +6,14 @@ import * as yup from 'yup';
 import { OpenLinkIcon } from '../../assets';
 import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
 import { history } from '../../helpers/history';
-import { InputField, Modal, PasswordField } from '../../shared';
+import { InputField, Modal } from '../../shared';
+import { GridSelectors } from '../../store';
 import {
   FlowValidationActions,
   FlowValidationSelectors,
 } from '../../store/flowValidation';
 
 const anaLysisSchema = yup.object().shape({
-  cluster_url: yup.string().required('Cluster URL is required'),
-  username: yup.string().required('Username is required'),
-  password: yup.string().required('Password is required'),
   namespaceId: yup.string().required('Namespace is required'),
 });
 
@@ -25,6 +23,9 @@ const AnalyzeNewFlow = () => {
   const isAnalysisModalOpen = useSelector(
     FlowValidationSelectors.getAddNewAnalysisModalOpen
   );
+  const getNifiUrl = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
 
   const onCloseModal = () => {
     dispatch(FlowValidationActions.addNewAnalysisModalOpen(false));
@@ -33,11 +34,9 @@ const AnalyzeNewFlow = () => {
   useEffect(() => {
     dispatch(FlowValidationActions.savePayload(null));
   }, [dispatch]);
-
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(anaLysisSchema),
@@ -47,8 +46,6 @@ const AnalyzeNewFlow = () => {
     const payload = {
       generate_var_list: true,
       cluster_url: data.cluster_url,
-      username: data.username,
-      password: data.password,
       namespaceId: data.namespaceId,
     };
 
@@ -74,25 +71,8 @@ const AnalyzeNewFlow = () => {
           placeholder={FLOWVALIDATION_CONSTANTS.ENTER_YOUR_CLUSTER_URL}
           icon={<OpenLinkIcon color="#444445" />}
           register={register}
-          required
-          errors={errors}
-        />
-        <InputField
-          name="username"
-          type="text"
-          label={FLOWVALIDATION_CONSTANTS.USERNAME}
-          placeholder={FLOWVALIDATION_CONSTANTS.ENTER_YOUR_USERNAME}
-          icon={<OpenLinkIcon color="#444445" />}
-          register={register}
-          required
-          errors={errors}
-        />
-        <PasswordField
-          name="password"
-          register={register}
-          watch={watch}
-          label={FLOWVALIDATION_CONSTANTS.PASSWORD}
-          required
+          disabled={getNifiUrl?.nifiUrl}
+          defaultValue={getNifiUrl?.nifiUrl}
           errors={errors}
         />
         <InputField
