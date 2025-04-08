@@ -63,8 +63,6 @@ export const ExportLogSettings = () => {
 
   const dispatch = useDispatch();
   const settingData = useSelector(SettingsSelectors.getSettings);
-
-  // const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState([]);
   const [isLogsModalOpen, setIsLogsModalOpen] = useState(false);
   const isDownloadEnabled = !!watch('logs_type'); // enable when log type is selected
@@ -98,13 +96,13 @@ export const ExportLogSettings = () => {
     const payload = { type: logsType };
 
     if (startDate && endDate) {
-      payload.from = formatDate(startDate); //Apr 01 2025 00:00:00
-      payload.to = formatDate(endDate); //Apr 06 2025 00:00:00
+      payload.from = formatDate(startDate);
+      payload.to = formatDate(endDate);
     }
     dispatch(SettingsActions.downloadLogsZip(payload));
     setIsLogsModalOpen(false);
-    setSelectedDate([]); // reset date
-    setValue('logs_type', ''); // reset dropdown
+    setSelectedDate([]);
+    setValue('logs_type', '');
   };
 
   useEffect(() => {

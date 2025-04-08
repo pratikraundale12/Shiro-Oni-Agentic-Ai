@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 export const CurvedDocumentIcon = ({
   width = 20,
   height = 20,
-  color = 'currentColor',
+  color = '#444445',
 }) => {
   return (
     <svg

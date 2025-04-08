@@ -56,6 +56,9 @@ const Tab = styled.div`
 
     svg {
       stroke: rgba(255, 122, 0, 1);
+      path {
+        stroke: rgba(255, 122, 0, 1) !important ;
+      }
     }
   }
 `;
@@ -176,7 +179,11 @@ const SettingTab = () => {
               className="nav-item"
             >
               <IconContent className="nav-item">
-                <CurvedDocumentIcon />
+                <CurvedDocumentIcon
+                  color={
+                    activeTab === 'ExportLogSettings' ? '#FF7A00' : '#444445'
+                  }
+                />
               </IconContent>
               Export Log
             </Tab>
