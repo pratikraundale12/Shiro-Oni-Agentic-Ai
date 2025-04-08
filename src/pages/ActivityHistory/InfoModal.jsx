@@ -76,6 +76,7 @@ export const InfoModalActivityHistory = () => {
         <Table
           data={[
             {
+              id: 'message-row',
               title: 'Message',
               value: selectedItem?.message,
               url: false,
