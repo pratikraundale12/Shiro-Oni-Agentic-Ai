@@ -53,6 +53,29 @@ const Container = styled.div`
   svg {
     margin: 0px;
   }
+
+  .loader {
+    background-color: transparent;
+    margin-top: 5px;
+    @keyframes blink {
+      50% {
+        fill: transparent;
+      }
+    }
+
+    .dot {
+      animation: blink 1s infinite;
+      fill: grey;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 250ms;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 500ms;
+    }
+  }
 `;
 
 const RefreshIocnPanel = styled.div`
@@ -251,7 +274,6 @@ export const AiFlowGenerator = () => {
         return prevStr !== newStr ? storedClusters : prev;
       });
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -267,7 +289,7 @@ export const AiFlowGenerator = () => {
       dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows(payload));
       dispatch(AiFlowGeneratorActions.fetchRegistry());
     }
-  }, []);
+  }, [clusters]);
 
   const [isJsonInvalid, setIsJsonInvalid] = useState(false);
 
@@ -583,17 +605,26 @@ export const AiFlowGenerator = () => {
                 <p
                   className={`mt-1 d-inline ${!isEmpty(flowError) && !loading ? 'text-danger' : ''}`}
                 >
-                  {loading
-                    ? 'Generating Flow...'
-                    : !loading &&
-                        isEmpty(flowError) &&
-                        !isEmpty(Object.keys(flowJson))
-                      ? 'Here is the JSON File generated as per your prompt....'
-                      : !loading &&
-                          isEmpty(flowError) &&
-                          isEmpty(Object.keys(flowJson))
-                        ? 'We were unable to generate the requested flow. It appears the query may not meet the required format. Please revise the input and refresh to try again...'
-                        : `${flowError}`}
+                  {loading ? (
+                    <span className="d-flex align-items-center">
+                      <span>Generating Flow</span>
+                      <svg height="40" width="100" className="loader">
+                        <circle className="dot" cx="10" cy="20" r="2" />
+                        <circle className="dot" cx="20" cy="20" r="2" />
+                        <circle className="dot" cx="30" cy="20" r="2" />
+                      </svg>
+                    </span>
+                  ) : !loading &&
+                    isEmpty(flowError) &&
+                    !isEmpty(Object.keys(flowJson)) ? (
+                    'Here is the JSON File generated as per your prompt....'
+                  ) : !loading &&
+                    isEmpty(flowError) &&
+                    isEmpty(Object.keys(flowJson)) ? (
+                    'We were unable to generate the requested flow. It appears the query may not meet the required format. Please revise the input and refresh to try again...'
+                  ) : (
+                    `${flowError}`
+                  )}
                 </p>
                 {!loading &&
                   isEmpty(flowError) &&
