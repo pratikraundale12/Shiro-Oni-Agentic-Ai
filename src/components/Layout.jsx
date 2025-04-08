@@ -385,6 +385,12 @@ export const Layout = ({ children }) => {
 
   useEffect(() => {
     setIsLoading(false);
+
+    const error = localStorage.getItem('keycloakSSOLoginErrorMessage');
+    if (error) {
+      toast.error(error, { toastId: 'login-toast-error1' });
+      localStorage.removeItem('keycloakSSOLoginErrorMessage');
+    }
   }, []);
 
   const handleMSLogin = async () => {
