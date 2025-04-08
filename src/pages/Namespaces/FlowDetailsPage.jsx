@@ -738,6 +738,7 @@ const FlowDetailsPage = () => {
             {KDFM.BACK}
           </Button>
           <Button
+            id="process-group-flow-details-continue-btn"
             disabled={isUpgrade ? false : !isStateStale || isButtonDisabled}
             onClick={handleSubmit(handleScrollOnClick)}
           >

@@ -271,7 +271,7 @@ const NamespaceDeploy = ({
             <ModalIcon className="d-flex me-3 ms-2 ">
               {provideIconForModal()}
             </ModalIcon>
-            <ModalHFive>
+            <ModalHFive id="process-group-deploy-modal-header">
               {deployOrUpgradeDetails?.invalidCount > 0 ? (
                 <>
                   Process group&nbsp;
@@ -295,7 +295,7 @@ const NamespaceDeploy = ({
             <ColumnThree className="col-5 mb-3">
               <RowModalDiv className="d-flex  h-100  ">
                 <ActionTitleSet className="mb-0 ">Flow Name</ActionTitleSet>
-                <SubTitleSet className="mb-0 ">{getFlowName()}</SubTitleSet>
+                <SubTitleSet id="process-group-deploy-modal-flow-name" className="mb-0 ">{getFlowName()}</SubTitleSet>
               </RowModalDiv>
             </ColumnThree>
             <ColumnThree className="col-5 mb-3">
@@ -303,7 +303,7 @@ const NamespaceDeploy = ({
                 <ActionTitleSet className="mb-0 ">
                   Current Version
                 </ActionTitleSet>
-                <SubTitleSet className="mb-0 ">
+                <SubTitleSet id="process-group-deploy-modal-current-version" className="mb-0 ">
                   {registryFlowVerion?.version}
                 </SubTitleSet>
               </RowModalDiv>

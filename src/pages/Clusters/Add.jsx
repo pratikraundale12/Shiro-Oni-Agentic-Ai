@@ -788,7 +788,7 @@ export const Add = () => {
             </Button>
           )}
           {showRegistryContiueButton() && (
-            <Button onClick={handleRegistry} disabled={!selectedRegistryId}>
+            <Button id="registry-details-continue-btn" onClick={handleRegistry} disabled={!selectedRegistryId}>
               {KDFM.CONTINUE}
             </Button>
           )}
