@@ -313,3 +313,28 @@ export const ACCESS_CONTROL_OPTIONS = [
   { label: 'Open', value: 'Open' },
   { label: 'CreatorOnly', value: 'CreatorOnly' },
 ];
+
+export const ZOOKEEPER_CONNECTION_TIMEOUT = [
+  { label: '10 secs', value: '10 secs' },
+  { label: '20 secs', value: '20 secs' },
+  { label: '30 secs', value: '30 secs' },
+  { label: '40 secs', value: '40 secs' },
+  { label: '50 secs', value: '50 secs' },
+  { label: '60 secs', value: '60 secs' },
+];
+export const CHECKPOINT_INTERVAL_OPTIONS = [
+  { label: '2 Min', value: '2 mins' },
+  { label: '4 Min', value: '4 mins' },
+  { label: '6 Min', value: '6 mins' },
+  { label: '8 Min', value: '8 mins' },
+  { label: '10 Min', value: '10 mins' },
+];
+
+export const SESSION_TIMEOUT_OPTIONS = [
+  { label: '10 seconds', value: '10 seconds' },
+  { label: '20 seconds', value: '20 seconds' },
+  { label: '30 seconds', value: '30 seconds' },
+  { label: '40 seconds', value: '40 seconds' },
+  { label: '50 seconds', value: '50 seconds' },
+  { label: '60 seconds', value: '60 seconds' },
+];
