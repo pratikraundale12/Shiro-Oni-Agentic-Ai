@@ -44,11 +44,6 @@ const Tab = styled.div`
     props.active ? 'rgba(255, 122, 0, 1)' : 'rgba(68, 68, 69, 1)'};
   border-color: ${props =>
     props.active ? 'rgba(255, 122, 0, 1)' : 'transparent'};
-  svg {
-    stroke: ${props =>
-      props.active ? 'rgba(255, 122, 0, 1)' : 'rgba(68, 68, 69, 1)'};
-    transition: stroke 0.3s;
-  }
   &:hover {
     color: rgba(255, 122, 0, 1);
 
@@ -79,6 +74,14 @@ const TabContent = styled.div`
 const IconContent = styled.div`
   display: inline;
   margin-right: 6px;
+
+  svg path {
+    transition: stroke 0.3s;
+  }
+
+  ${Tab}:hover & svg path {
+    stroke: rgba(255, 122, 0, 1);
+  }
 `;
 
 const SettingTab = () => {
@@ -112,7 +115,9 @@ const SettingTab = () => {
               className="nav-item"
             >
               <IconContent className="nav-item">
-                <AppIcon />
+                <AppIcon
+                  color={activeTab === 'AppSettings' ? '#FF7A00' : '#444445'}
+                />
               </IconContent>
               App
             </Tab>
@@ -122,7 +127,9 @@ const SettingTab = () => {
               className="nav-item"
             >
               <IconContent className="nav-item">
-                <LDAPIcon />
+                <LDAPIcon
+                  color={activeTab === 'LDAPSettings' ? '#FF7A00' : '#444445'}
+                />
               </IconContent>
               LDAP
             </Tab>
@@ -132,7 +139,13 @@ const SettingTab = () => {
               className="nav-item"
             >
               <IconContent className="nav-item">
-                <DeploymentScheduleIcon />
+                <DeploymentScheduleIcon
+                  color={
+                    activeTab === 'DeploymentScheduleSettings'
+                      ? '#FF7A00'
+                      : '#444445'
+                  }
+                />
               </IconContent>
               Deployment Schedule
             </Tab>
@@ -142,7 +155,13 @@ const SettingTab = () => {
               className="nav-item"
             >
               <IconContent className="nav-item">
-                <ServiceAccountIcon />
+                <ServiceAccountIcon
+                  color={
+                    activeTab === 'ServiceAccountSettings'
+                      ? '#FF7A00'
+                      : '#444445'
+                  }
+                />
               </IconContent>
               Service Account
             </Tab>
@@ -152,7 +171,13 @@ const SettingTab = () => {
               className="nav-item"
             >
               <IconContent className="nav-item">
-                <EmailConfigIcon />
+                <EmailConfigIcon
+                  color={
+                    activeTab === 'EmailConfigurationSettings'
+                      ? '#FF7A00'
+                      : '#444445'
+                  }
+                />
               </IconContent>
               Email Configuration
             </Tab>
@@ -162,7 +187,11 @@ const SettingTab = () => {
               className="nav-item"
             >
               <IconContent className="nav-item">
-                <SSOLoginIcon />
+                <SSOLoginIcon
+                  color={
+                    activeTab === 'SSOLoginSettings' ? '#FF7A00' : '#444445'
+                  }
+                />
               </IconContent>
               SSO Login
             </Tab>
