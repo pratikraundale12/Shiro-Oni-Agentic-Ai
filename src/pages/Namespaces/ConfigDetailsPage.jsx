@@ -369,7 +369,12 @@ const ConfigDetailsPage = () => {
           <Button variant="secondary" onClick={handleBackClick}>
             {KDFM.BACK}
           </Button>
-          <Button onClick={handleContinue}>{KDFM.CONTINUE}</Button>
+          <Button
+            id="configuration-details-continue-btn"
+            onClick={handleContinue}
+          >
+            {KDFM.CONTINUE}
+          </Button>
         </BottomButtonDiv>
       </BottomButton>
       <Modal

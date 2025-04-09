@@ -18,9 +18,12 @@ import {
 import { theme } from '../../../styles';
 import {
   ACCESS_CONTROL_OPTIONS,
+  CHECKPOINT_INTERVAL_OPTIONS,
   FLOW_ELECTION_MAX_WAIT_OPTIONS,
   KDFM,
+  SESSION_TIMEOUT_OPTIONS,
   TRUE_FALSE_OPTIONS,
+  ZOOKEEPER_CONNECTION_TIMEOUT,
 } from '../../../constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -182,22 +185,25 @@ const ClusterSetupNewConfigDetailsPage = () => {
       checkpoint_interval: '2 mins',
     },
   });
-    // Watch all form values to detect changes
-    const formValues = watch();
+  // Watch all form values to detect changes
+  const formValues = watch();
 
-    useEffect(() => {
-      if (!isEmpty(originalValues)) {
-        const hasChanged = Object.keys(formValues).some(key => {
-          if (typeof formValues[key] === 'object' && formValues[key] !== null) {
-            return JSON.stringify(formValues[key]) != JSON.stringify(originalValues[key]);
-          }
-          
-          return formValues[key] != originalValues[key];
-        });
-        
-        setFormChanged(hasChanged);
-      } 
-    }, [formValues, originalValues]);
+  useEffect(() => {
+    if (!isEmpty(originalValues)) {
+      const hasChanged = Object.keys(formValues).some(key => {
+        if (typeof formValues[key] === 'object' && formValues[key] !== null) {
+          return (
+            JSON.stringify(formValues[key]) !=
+            JSON.stringify(originalValues[key])
+          );
+        }
+
+        return formValues[key] != originalValues[key];
+      });
+
+      setFormChanged(hasChanged);
+    }
+  }, [formValues, originalValues]);
 
   const sidebarItems = [
     {
@@ -292,7 +298,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
 
     // After all values are set, capture them as original values
     setTimeout(() => {
-      setOriginalValues({...watch()});
+      setOriginalValues({ ...watch() });
       setFormChanged(false);
     }, 0);
   };
@@ -501,17 +507,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   <div className="row mt-4">
                     <div className="col-5">
                       <LabelSelect className="mb-3">
-                        Zookeeper Connection Timeout (eg. 5 secs)
+                        Zookeeper Connection Timeout
                       </LabelSelect>
-
-                      <InputField
+                      <SelectField
                         name="nifi_zookeeper_connect_timeout"
-                        type="text"
-                        placeholder="Enter Zookeeper Connection Timeout"
-                        required
-                        register={register}
+                        icon={<QRIcons />}
                         errors={errors}
-                        icon={<NotePadIcon />}
+                        control={control}
+                        options={ZOOKEEPER_CONNECTION_TIMEOUT}
+                        placeholder="Select Zookeeper Connection Timeout"
+                        sortAlphabetically={false}
                       />
                     </div>{' '}
                     <div className="col-2">
@@ -559,7 +564,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   <div className="row mt-4">
                     <div className="col-5">
                       <LabelSelect className="mb-3">
-                        java.arg.2 (Initial Heap Size)
+                        Java.arg.2 (Initial Heap Size)
                       </LabelSelect>
 
                       <InputField
@@ -574,7 +579,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     </div>
                     <div className="col-5">
                       <LabelSelect className="mb-3">
-                        java.arg.3 (Maximum Heap Size)
+                        Java.arg.3 (Maximum Heap Size)
                       </LabelSelect>
 
                       <InputField
@@ -667,17 +672,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     </div>
                     <div className="col-3">
                       <LabelSelect className="mb-3">
-                        Checkpoint Intervalitions (eg. 5 min)
+                        Checkpoint Interval
                       </LabelSelect>
-
-                      <InputField
+                      <SelectField
                         name="checkpoint_interval"
-                        type="text"
-                        placeholder="Enter Checkpoint Interval"
-                        required
-                        register={register}
+                        icon={<QRIcons />}
                         errors={errors}
-                        icon={<NotePadIcon />}
+                        control={control}
+                        options={CHECKPOINT_INTERVAL_OPTIONS}
+                        placeholder="Select Checkpoint Interval"
+                        sortAlphabetically={false}
                       />
                     </div>
                     <div className="col-2">
@@ -714,17 +718,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     </div>{' '}
                     <div className="col-4">
                       <LabelSelect className="mb-3">
-                        Session Timeout (eg. 5 seconds)
+                        Session Timeout
                       </LabelSelect>
-
-                      <InputField
+                      <SelectField
                         name="session_timeout"
-                        type="text"
-                        placeholder="Enter Session Timeout"
-                        required
-                        register={register}
+                        icon={<QRIcons />}
                         errors={errors}
-                        icon={<NotePadIcon />}
+                        control={control}
+                        options={SESSION_TIMEOUT_OPTIONS}
+                        placeholder="Select Session Timeout"
+                        sortAlphabetically={false}
                       />
                     </div>{' '}
                     <div className="col-4">
@@ -763,10 +766,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {KDFM.BACK}
           </Button>
 
-          <Button 
-            type="submit" 
-            onClick={handleSubmit(handleAddConfig)}  
-            disabled={!isEmpty(configToEdit) && !formChanged}>
+          <Button
+            type="submit"
+            onClick={handleSubmit(handleAddConfig)}
+            disabled={!isEmpty(configToEdit) && !formChanged}
+          >
             {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
           </Button>
         </BottomButtonDiv>
