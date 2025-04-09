@@ -37,46 +37,6 @@ export function* fetchSettings(api) {
   });
 }
 
-export function* downloadLogsZip(api, { payload }) {
-  const response = yield call(api.downloadLogsZip, { payload });
-
-  if (response.ok && response.data) {
-    const noLogs = response.headers?.['x-no-logs'] === 'true';
-
-    if (noLogs) {
-      toast.info('No data available for the given Range.');
-    } else {
-      const blob = new Blob([response.data], {
-        type: 'application/zip',
-      });
-
-      const logsType = Array.isArray(payload.type)
-        ? payload.type.join('_')
-        : payload.type;
-      const fileName = `logs_${logsType}_${Date.now()}.zip`;
-
-      if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-        // For IE
-        window.navigator.msSaveOrOpenBlob(blob, fileName);
-      } else {
-        // For modern browsers
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-      }
-
-      toast.success('Logs downloaded successfully.');
-    }
-  } else {
-    toast.error(response?.data?.error || 'Failed to download logs.');
-  }
-}
-
 export function* refreshSetting(api) {
   yield call(fetchGrid, api, {
     payload: { module: 'namespaces', refresh: true },
@@ -89,6 +49,5 @@ export function* settingsSagas(api) {
     takeLatest(SettingsActions.createSettings, createSettings, api),
     takeLatest(SettingsActions.fetchSettings, fetchSettings, api),
     takeLatest(SettingsActions.refreshSetting, refreshSetting, api),
-    takeLatest(SettingsActions.downloadLogsZip, downloadLogsZip, api),
   ]);
 }
