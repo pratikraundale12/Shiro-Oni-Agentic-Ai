@@ -33,6 +33,8 @@ export const FlowValidationActions = {
   validateRandomFlow: createAction(`${prefix}validateRandomFlow`),
   validateRandomFlowSuccess: createAction(`${prefix}validateRandomFlowSuccess`),
   savePayload: createAction(`${prefix}savePayload`),
+  fetchFlows: createAction(`${prefix}fetchFlows`),
+  fetchFlowsSuccess: createAction(`${prefix}fetchFlowsSuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -51,6 +53,7 @@ export const FlowValidation_INITIAL_STATE = {
   addNewAnalysisModalOpen: false,
   randomFlowValidationResult: null,
   savedPayload: null,
+  flows: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -71,6 +74,7 @@ export const FlowValidationSelectors = {
   getSavedPayload: state => state.flowValidation.savedPayload,
   getRandomFlowValidationResult: state =>
     state.flowValidation.randomFlowValidationResult,
+  getFlows: state => state.flowValidation.flows,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -179,6 +183,11 @@ const savePayload = (state, { payload }) => ({
   ...state,
   savedPayload: payload,
 });
+
+const fetchFlowsSuccess = (state, { payload }) => ({
+  ...state,
+  flows: payload,
+});
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
   FlowValidation_INITIAL_STATE,
@@ -214,6 +223,7 @@ export const flowValidationReducer = createReducer(
         FlowValidationActions.validateRandomFlowSuccess,
         validateRandomFlowSuccess
       )
-      .addCase(FlowValidationActions.savePayload, savePayload);
+      .addCase(FlowValidationActions.savePayload, savePayload)
+      .addCase(FlowValidationActions.fetchFlowsSuccess, fetchFlowsSuccess);
   }
 );

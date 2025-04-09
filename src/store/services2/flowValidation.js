@@ -17,6 +17,105 @@ export const flowValidationAPI = api => {
   const deleteRule = id => api.delete(`/rule/${id}`);
   const emailReportApi = data => api.post(`/namespace/email-report`, data);
   const validateRandomFlowApi = data => api.post(`/validate-random-flow`, data);
+  const getFlows = () => {
+    return new Promise(
+      resolve =>
+        setTimeout(() => {
+          resolve({
+            ok: true,
+            data: [
+              {
+                id: 1,
+                title: 'S3 to Pinecone (Technical Preview)',
+                description:
+                  'Consumed PDF documents from S3, Vectorizes them using an OpenAI model and writes results to Pinecone',
+                version: 1,
+                tags: [
+                  'Generative AI',
+                  'Data Lakes & Data Warehouses',
+                  'Data Lakes & Data Warehouses',
+                  'Data Lakes & Data Warehouses',
+                ],
+                additionalTags: 1,
+                highlighted: true,
+              },
+              {
+                id: 2,
+                title: 'S3 to Pinecone (Technical Preview)',
+                description:
+                  'Consumed PDF documents from S3, Vectorizes them using an OpenAI model and writes results to Pinecone',
+                version: 1,
+                tags: ['Generative AI', 'Data Lakes & Data Warehouses'],
+                additionalTags: 1,
+              },
+              {
+                id: 3,
+                title: 'S3 to Pinecone (Technical Preview)',
+                description:
+                  'Consumed PDF documents from S3, Vectorizes them using an OpenAI model and writes results to Pinecone',
+                version: 1,
+                tags: ['Generative AI', 'Data Lakes & Data Warehouses'],
+                additionalTags: 1,
+              },
+              {
+                id: 4,
+                title: 'S3 to Pinecone (Technical Preview)',
+                description:
+                  'Consumed PDF documents from S3, Vectorizes them using an OpenAI model and writes results to Pinecone',
+                version: 1,
+                tags: ['Generative AI', 'Data Lakes & Data Warehouses'],
+                additionalTags: 1,
+              },
+              {
+                id: 5,
+                title: 'S3 to Pinecone (Technical Preview)',
+                description:
+                  'Consumed PDF documents from S3, Vectorizes them using an OpenAI model and writes results to Pinecone',
+                version: 1,
+                tags: ['Generative AI', 'Data Lakes & Data Warehouses'],
+                additionalTags: 1,
+              },
+              {
+                id: 6,
+                title: 'S3 to Pinecone (Technical Preview)',
+                description:
+                  'Consumed PDF documents from S3, Vectorizes them using an OpenAI model and writes results to Pinecone',
+                version: 1,
+                tags: ['Generative AI', 'Data Lakes & Data Warehouses'],
+                additionalTags: 1,
+              },
+              {
+                id: 7,
+                title: 'S3 to Pinecone (Technical Preview)',
+                description:
+                  'Consumed PDF documents from S3, Vectorizes them using an OpenAI model and writes results to Pinecone',
+                version: 1,
+                tags: ['Generative AI', 'Data Lakes & Data Warehouses'],
+                additionalTags: 1,
+              },
+              {
+                id: 8,
+                title: 'S3 to Pinecone (Technical Preview)',
+                description:
+                  'Consumed PDF documents from S3, Vectorizes them using an OpenAI model and writes results to Pinecone',
+                version: 1,
+                tags: ['Generative AI', 'Data Lakes & Data Warehouses'],
+                additionalTags: 1,
+              },
+              {
+                id: 9,
+                title: 'S3 to Pinecone (Technical Preview)',
+                description:
+                  'Consumed PDF documents from S3, Vectorizes them using an OpenAI model and writes results to Pinecone',
+                version: 1,
+                tags: ['Generative AI', 'Data Lakes & Data Warehouses'],
+                additionalTags: 1,
+              },
+            ],
+          });
+        }, 500) // Simulate network delay
+    );
+  };
 
   return {
     ruleScopeApi,
@@ -32,5 +131,6 @@ export const flowValidationAPI = api => {
     deleteRule,
     emailReportApi,
     validateRandomFlowApi,
+    getFlows,
   };
 };

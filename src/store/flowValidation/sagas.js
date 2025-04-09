@@ -191,6 +191,20 @@ export function* validateRandomFlowSaga(api, { payload }) {
     toast.success('Random flow validated successfully!');
   }
 }
+
+export function* fetchFlowsSaga(api) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchFlows',
+    loadingSection: 'fetchFlows',
+    apiMethod: api.getFlows,
+    apiParams: [],
+    successAction: FlowValidationActions.fetchFlowsSuccess,
+  });
+
+  if (!response?.ok) {
+    toast.error(response?.data?.message || 'Failed to fetch flows');
+  }
+}
 export function* flowValidationSagas(api) {
   yield all([
     takeLatest(FlowValidationActions.ruleScopeFetch, ruleScopeFetch, api),
@@ -210,5 +224,6 @@ export function* flowValidationSagas(api) {
       validateRandomFlowSaga,
       api
     ),
+    takeLatest(FlowValidationActions.fetchFlows, fetchFlowsSaga, api),
   ]);
 }
