@@ -9,7 +9,6 @@ export const SettingsActions = {
   refreshSetting: createAction(`${prefix}refreshSetting`),
   flowValidationModalOpen: createAction(`${prefix}flowValidationModalOpen`),
   addNewValidationModalOpen: createAction(`${prefix}addNewValidationModalOpen`),
-  downloadLogsZip: createAction(`${prefix}downloadLogsZip`),
 };
 
 // /* ------------- INITIAL STATE ------------- */
