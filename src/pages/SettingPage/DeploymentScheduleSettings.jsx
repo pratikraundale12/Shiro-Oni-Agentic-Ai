@@ -8,6 +8,7 @@ import {
   CurvedDeploymentScheduleIcon,
   EmailSmsTrackingIcon,
   CurvedProfileDoubleUserIcon,
+  ClockIcon,
 } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import {
@@ -248,7 +249,7 @@ export const DeploymentScheduleSettings = () => {
                 label={KDFM.EMAIL_REMINDER}
                 name="email_reminder_time"
                 control={control}
-                icon={<CurvedDeploymentScheduleIcon />}
+                icon={<ClockIcon />}
                 errors={errors}
                 options={EMAIL_REMINDER_OPTIONS}
                 placeholder="Select Reminder Time"

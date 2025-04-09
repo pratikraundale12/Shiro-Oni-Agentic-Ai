@@ -1,12 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const LDAPIcon = ({
-  className,
-  width = 21,
-  height = 20,
-  color = 'currentColor',
-}) => {
+export const LDAPIcon = ({ width = 20, height = 20, color = '#444445' }) => {
   return (
     <svg
       width={width}
@@ -14,7 +9,6 @@ export const LDAPIcon = ({
       viewBox="0 0 21 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
     >
       <path
         d="M11.3416 2.43359L16.2583 4.61693C17.6749 5.24193 17.6749 6.27526 16.2583 6.90026L11.3416 9.08359C10.7833 9.33359 9.8666 9.33359 9.30827 9.08359L4.3916 6.90026C2.97493 6.27526 2.97493 5.24193 4.3916 4.61693L9.30827 2.43359C9.8666 2.18359 10.7833 2.18359 11.3416 2.43359Z"
@@ -42,7 +36,6 @@ export const LDAPIcon = ({
 };
 
 LDAPIcon.propTypes = {
-  className: PropTypes.string,
   width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   color: PropTypes.string,

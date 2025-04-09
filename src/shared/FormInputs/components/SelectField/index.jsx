@@ -247,11 +247,8 @@ const SelectField = ({
       '&:hover': {
         borderColor: theme.colors.darker,
       },
-      '.react-select__dropdown-indicator > svg path': {
-        fill: theme.colors.darker,
-      },
       'svg path': {
-        fill: theme.colors.lightGrey2,
+        fill: theme.colors.darker,
       },
     }),
     option: (styles, state) => {

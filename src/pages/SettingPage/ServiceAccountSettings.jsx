@@ -177,7 +177,7 @@ export const ServiceAccountSettings = () => {
                 placeholder="Enter your Username"
                 register={register}
                 errors={errors}
-                icon={<CurvedProfileIcon />}
+                icon={<CurvedProfileIcon height={24} width={24} />}
                 required
               />
             </div>
@@ -191,7 +191,7 @@ export const ServiceAccountSettings = () => {
                 label="Password"
                 disableToggle={false}
                 placeholder="Enter your Password"
-                icon={<CurvedLockIcon />}
+                icon={<CurvedLockIcon height={24} width={24} />}
               />
             </div>
           </InputFields>
