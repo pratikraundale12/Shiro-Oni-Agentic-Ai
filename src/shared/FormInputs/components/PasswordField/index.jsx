@@ -75,6 +75,7 @@ const PasswordInputField = ({
   helperText = '',
   placeholder = '',
   showStrengthMeter = false,
+  required = false,
   icon = <BagIcon />,
   disableToggle = false,
   ...props
@@ -97,6 +98,7 @@ const PasswordInputField = ({
   return (
     <Wrapper>
       <InputField
+        required={required}
         name={name}
         type={show ? 'text' : 'password'}
         {...props}
@@ -131,6 +133,7 @@ PasswordInputField.propTypes = {
   name: PropTypes.string.isRequired,
   watch: PropTypes.func.isRequired,
   errors: PropTypes.shape({}),
+  required: PropTypes.string,
   placeholder: PropTypes.string,
   helperText: PropTypes.string,
   showStrengthMeter: PropTypes.boolean,

@@ -1487,7 +1487,7 @@ const Summary = () => {
                 </Button>
               )}
             {scheduleDeploymentFlow && (
-              <Button size="md" onClick={() => handleScheduleDeploy()}>
+              <Button id="summary-schedule-btn" size="md" onClick={() => handleScheduleDeploy()}>
                 Schedule
               </Button>
             )}
