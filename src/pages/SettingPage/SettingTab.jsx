@@ -8,6 +8,7 @@ import {
   PropertyIcon,
   SSOLoginIcon,
   ServiceAccountIcon,
+  CurvedDocumentIcon,
 } from '../../assets';
 import { AppSettings } from './AppSettings';
 import { DeploymentScheduleSettings } from './DeploymentScheduleSettings';
@@ -17,6 +18,7 @@ import { LDAPSettings } from './LDAPSettings';
 import { SSOLoginSettings } from './SSOLoginSettings';
 import { ServiceAccountSettings } from './ServiceAccountSettings';
 import { Setting } from './Setting';
+import { ExportLogSettings } from './ExportLogSettings';
 
 const GreyBoxNamespace = styled.div`
   background-color: #ffffff;
@@ -106,6 +108,8 @@ const SettingTab = () => {
         return <SSOLoginSettings />;
       case 'Flow Validation':
         return <FlowValidation />;
+      case 'ExportLogSettings':
+        return <ExportLogSettings />;
     }
   };
   return (
@@ -209,6 +213,21 @@ const SettingTab = () => {
                 <PropertyIcon color="#444445" height="18" width="18" />
               </IconContent>
               Flow Validation
+            </Tab>
+
+            <Tab
+              active={activeTab === 'ExportLogSettings'}
+              onClick={() => setActiveTab('ExportLogSettings')}
+              className="nav-item d-flex"
+            >
+              <IconContent className="nav-item">
+                <CurvedDocumentIcon
+                  color={
+                    activeTab === 'ExportLogSettings' ? '#FF7A00' : '#444445'
+                  }
+                />
+              </IconContent>
+              Log Export
             </Tab>
           </TabWrapper>
         </TabsContainer>
