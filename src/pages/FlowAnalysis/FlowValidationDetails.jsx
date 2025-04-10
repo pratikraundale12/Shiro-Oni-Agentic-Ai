@@ -10,7 +10,11 @@ import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
-import { LoadingSelectors, NamespacesSelectors } from '../../store';
+import {
+  GridSelectors,
+  LoadingSelectors,
+  NamespacesSelectors,
+} from '../../store';
 import {
   FlowValidationActions,
   FlowValidationSelectors,
@@ -55,6 +59,15 @@ const FlowcompareStyled = styled.div`
   background: #fbfcff;
 `;
 
+const ClickableId = styled.div`
+  color: ${props => props.theme.colors.primary};
+  cursor: pointer;
+  text-decoration: underline;
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
 const FlowValidationDetails = () => {
   const { control, watch } = useForm();
   const dispatch = useDispatch();
@@ -70,6 +83,9 @@ const FlowValidationDetails = () => {
   const randomFlowValidationResult = useSelector(
     FlowValidationSelectors.getRandomFlowValidationResult
   );
+  const getNifiUrl = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
 
   const formattedOptions = ruleScopes?.data?.length
     ? ruleScopes?.data?.map(rule => ({
@@ -79,21 +95,18 @@ const FlowValidationDetails = () => {
     : [];
 
   const handleValidateFlow = () => {
-    if (!savedPayload) {
-      dispatch(
-        FlowValidationActions.validateRules({
-          clusterId: selectedCluster?.value,
-          namespaceId: selectedItem?.id,
-          data: {
-            generateVarList: false,
-            rulesForValidation: ruleIds,
-          },
-        })
-      );
-    } else {
-      dispatch(FlowValidationActions.addNewAnalysisModalOpen(false));
-      dispatch(FlowValidationActions.validateRandomFlow(savedPayload));
-    }
+    dispatch(
+      FlowValidationActions.validateRules({
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedItem?.id || savedPayload?.namespaceId,
+        data: {
+          generateVarList: false,
+          rulesForValidation: ruleIds,
+        },
+      })
+    );
+
+    dispatch(FlowValidationActions.addNewAnalysisModalOpen(false));
   };
 
   const path = [
@@ -115,17 +128,26 @@ const FlowValidationDetails = () => {
   const COLUMNS = [
     {
       label: 'Name',
-      renderCell: item => <div>{item.version}</div>,
+      renderCell: item => <div>{item?.version || 'N/A'}</div>,
       width: '30%',
     },
     {
       label: 'ID',
-      renderCell: item => <div>{item.displayValue}</div>,
+      renderCell: item => (
+        <ClickableId
+          onClick={e => {
+            e.preventDefault();
+            handleIdClick(item?.displayValue);
+          }}
+        >
+          {item?.displayValue || 'N/A'}
+        </ClickableId>
+      ),
       width: '35%',
     },
     {
       label: 'Message',
-      renderCell: item => <div>{item.comments}</div>,
+      renderCell: item => <div>{item?.comments || 'N/A'}</div>,
       width: '35%',
     },
   ];
@@ -153,23 +175,20 @@ const FlowValidationDetails = () => {
   };
 
   const loading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'validateRules', 'emailReport')
+    LoadingSelectors.getLoading(state, 'validateRules')
   );
   const isloading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'emailReport')
-  );
-  const isRandomloading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'validateRandomFlow')
   );
 
   const handleBackClick = () => {
     history.push('/flow-analysis');
   };
-
   const handleSendEmail = () => {
     const payload = {
-      namespaceName: selectedItem?.name,
-      namespaceId: selectedItem?.id,
+      namespaceName:
+        selectedItem?.name || validationResult?.data?.namespaceName,
+      namespaceId: selectedItem?.id || savedPayload?.namespaceId,
       clusterId: selectedCluster?.value,
     };
 
@@ -179,11 +198,20 @@ const FlowValidationDetails = () => {
   const currentData =
     validationResult?.data || randomFlowValidationResult?.data;
 
+  const handleIdClick = id => {
+    const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
+      ? `${getNifiUrl?.nifiUrl}?processGroupId=${selectedItem?.id}&componentId=${id}`
+      : `${getNifiUrl?.nifiUrl}/nifi?processGroupId=${selectedItem?.id}&componentId=${id}`;
+    window.open(updatedUrl, '_blank');
+    if (updatedUrl) {
+      window.open(updatedUrl, '_blank');
+    }
+  };
+
   return (
     <div>
       <FullPageLoader loading={loading} />
       <FullPageLoader loading={isloading} />
-      <FullPageLoader loading={isRandomloading} />
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2">
@@ -272,7 +300,7 @@ const FlowValidationDetails = () => {
               toggleCollapsible={() => toggleCollapsible(index)}
               isAddBtnVisible={false}
             >
-              <Table columns={COLUMNS} data={section.data} />
+              <Table columns={COLUMNS} data={section?.data} />
             </Collapsible>
           );
         })}
@@ -287,9 +315,11 @@ const FlowValidationDetails = () => {
           {FLOWVALIDATION_CONSTANTS.BACK}
         </Button>
         <div className="col-md-auto mb-4 mt-2">
-          <Button onClick={handleSendEmail}>
-            {FLOWVALIDATION_CONSTANTS.SEND_EMAIL_REPORT}
-          </Button>
+          {validationResult?.data && (
+            <Button onClick={handleSendEmail}>
+              {FLOWVALIDATION_CONSTANTS.SEND_EMAIL_REPORT}
+            </Button>
+          )}
         </div>
       </div>
     </div>

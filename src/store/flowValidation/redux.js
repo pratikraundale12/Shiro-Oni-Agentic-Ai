@@ -33,6 +33,8 @@ export const FlowValidationActions = {
   validateRandomFlow: createAction(`${prefix}validateRandomFlow`),
   validateRandomFlowSuccess: createAction(`${prefix}validateRandomFlowSuccess`),
   savePayload: createAction(`${prefix}savePayload`),
+  setRulePriority: createAction(`${prefix}setRulePriority`),
+  setRulePrioritySuccess: createAction(`${prefix}setRulePrioritySuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -51,6 +53,7 @@ export const FlowValidation_INITIAL_STATE = {
   addNewAnalysisModalOpen: false,
   randomFlowValidationResult: null,
   savedPayload: null,
+  rulePriority: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -71,6 +74,7 @@ export const FlowValidationSelectors = {
   getSavedPayload: state => state.flowValidation.savedPayload,
   getRandomFlowValidationResult: state =>
     state.flowValidation.randomFlowValidationResult,
+  getRulePriority: state => state.flowValidation.rulePriority,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -179,6 +183,17 @@ const savePayload = (state, { payload }) => ({
   ...state,
   savedPayload: payload,
 });
+const setRulePrioritySuccess = (state, { payload }) => ({
+  ...state,
+  ruleScopes: {
+    ...state.ruleScopes,
+    data: (state.ruleScopes.data || []).map(scope =>
+      scope.id === payload.ruleScopeId
+        ? { ...scope, ruleOrder: payload.ruleOrder }
+        : scope
+    ),
+  },
+});
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
   FlowValidation_INITIAL_STATE,
@@ -214,6 +229,10 @@ export const flowValidationReducer = createReducer(
         FlowValidationActions.validateRandomFlowSuccess,
         validateRandomFlowSuccess
       )
-      .addCase(FlowValidationActions.savePayload, savePayload);
+      .addCase(FlowValidationActions.savePayload, savePayload)
+      .addCase(
+        FlowValidationActions.setRulePrioritySuccess,
+        setRulePrioritySuccess
+      );
   }
 );

@@ -94,22 +94,22 @@ const CompareValidation = () => {
   const COLUMNS = [
     {
       label: 'Type',
-      renderCell: item => <div>{item?.componentType}</div>,
+      renderCell: item => <div>{item?.componentType || 'N/A'}</div>,
       width: '20%',
     },
     {
       label: 'Name',
-      renderCell: item => <div>{item.componentName}</div>,
+      renderCell: item => <div>{item.componentName || 'N/A'}</div>,
       width: '20%',
     },
     {
       label: 'ID',
-      renderCell: item => <div>{item?.componentId}</div>,
+      renderCell: item => <div>{item?.componentId || 'N/A'}</div>,
       width: '30%',
     },
     {
       label: 'Message',
-      renderCell: item => <div>{item?.differenceTypeDescription}</div>,
+      renderCell: item => <div>{item?.differenceTypeDescription || 'N/A'}</div>,
       width: '30%',
     },
   ];
@@ -160,7 +160,10 @@ const CompareValidation = () => {
             />
           </div>
           <div className="col-md-auto pt-2 mt-3">
-            <Button onClick={handleCompareFlow}>
+            <Button
+              onClick={handleCompareFlow}
+              disabled={!selectedVersionA || !selectedVersionB}
+            >
               {FLOWVALIDATION_CONSTANTS.COMPARE}
             </Button>
           </div>
