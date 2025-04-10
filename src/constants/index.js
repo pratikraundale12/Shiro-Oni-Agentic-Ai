@@ -92,7 +92,9 @@ export const MODULE_LIST_MAP = [
   { label: 'Variable', value: 'Variable' },
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
   { label: 'AI Flows', value: 'AI Flows' },
-  { label: 'Flow Analysis', value: 'Flow Analysis' },
+  { label: 'Flow Validation', value: 'Flow Validation' },
+  { label: 'Rule scope', value: 'Rule scope' },
+  { label: 'Rule', value: 'Rule' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -124,6 +126,7 @@ export const ACTIVITY_EVENTS = [
   { label: 'Generate Flow', value: 'Generate Flow' },
   { label: 'Comparison', value: 'Comparison' },
   { label: 'Validate', value: 'Validate' },
+  { label: 'Comparison', value: 'Comparison' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
