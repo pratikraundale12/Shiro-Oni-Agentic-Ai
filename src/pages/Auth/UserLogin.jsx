@@ -13,7 +13,7 @@ import {
   FORGOT_PASSWORD,
   LOGIN_TO_YOUR_ACCOUNT,
   SIGN_IN_TO_YOUR_ACCOUNT,
-  WELCOME_BACK,
+  // WELCOME_BACK,
 } from '../../constants';
 import { Button, InputField, PasswordField, TextButton } from '../../shared';
 import { AuthenticationActions, NamespacesActions } from '../../store';
@@ -21,15 +21,15 @@ import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import { useLocation } from 'react-router-dom';
 
-const Title = styled.h3`
-  font-weight: 500;
-  font-size: 25px;
-  text-align: center;
-  color: ${props => props.theme.colors.darker};
-  border-bottom: 1px dashed ${props => props.theme.colors.border};
-  padding-bottom: 5px;
-  /* margin-bottom: 1rem; */
-`;
+// const Title = styled.h3`
+//   font-weight: 500;
+//   font-size: 25px;
+//   text-align: center;
+//   color: ${props => props.theme.colors.darker};
+//   border-bottom: 1px dashed ${props => props.theme.colors.border};
+//   padding-bottom: 5px;
+//   /* margin-bottom: 1rem; */
+// `;
 
 const SubTitle = styled.p`
   font-size: 20px;
@@ -89,7 +89,7 @@ export const UserLogin = () => {
 
   return (
     <Layout>
-      <Title>{`${WELCOME_BACK} 👋`}</Title>
+      {/* <Title>{`${WELCOME_BACK} 👋`}</Title> */}
       <SubTitle>{LOGIN_TO_YOUR_ACCOUNT}</SubTitle>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <div>

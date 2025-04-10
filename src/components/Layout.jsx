@@ -132,7 +132,7 @@ const Content = styled.div`
   min-height: 65vh;
   background-color: ${props => props.theme.colors.lightGrey};
   border: 1px solid ${props => props.theme.colors.border};
-  border-radius: 32px;
+  border-radius: 0 0 32px 32px;
   padding: 25px 32px 32px 32px;
   @media (max-width: 767.98px) {
     padding: 1rem;
@@ -162,6 +162,30 @@ const RedirectionText = styled.button`
   color: ${props => props.theme.colors.primary};
   cursor: pointer;
   margin-left: 5px;
+`;
+
+const UserBtnContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 550px;
+  .user-login {
+    border-radius: 32px 0 0 0;
+    width: 100%;
+    cursor: pointer;
+    &.active {
+      background-color: orange;
+    }
+  }
+  .admin-login {
+    border-radius: 0 32px 0 0;
+    width: 100%;
+    cursor: pointer;
+    &.active {
+      background-color: orange;
+    }
+  }
 `;
 
 const HeadingRightText = styled.h1`
@@ -246,6 +270,7 @@ const StyledLoginBox = styled.div`
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
+  background-color: ${props => (props.active ? '#FF7A00' : 'white')};
 `;
 const ForgotResetHeadingText1 = styled.h1`
   font-family: 'Red Hat Display', sans-serif;
@@ -375,12 +400,20 @@ export const Layout = ({ children }) => {
     customHeight = '60%';
     policyContainerHeight = '12px';
   }
-  const handleRedirection = () => {
-    if (isUserLogin) {
-      history.push('/admin/login');
-    } else if (isAdminLogin) {
-      history.push('/login');
-    }
+  // const handleRedirection = () => {
+  //   if (isUserLogin) {
+  //     history.push('/admin/login');
+  //   } else if (isAdminLogin) {
+  //     history.push('/login');
+  //   }
+  // };
+
+  const handleRedirectionUser = () => {
+    history.push('/login');
+  };
+
+  const handleRedirectionAdmin = () => {
+    history.push('/admin/login');
   };
 
   useEffect(() => {
@@ -498,6 +531,48 @@ export const Layout = ({ children }) => {
             ) : (
               <img src={image} alt="Logo" width={200} height={80} />
             )}
+            <UserBtnContainer>
+              {(isUserLogin || isAdminLogin) && (
+                <LoginBtnContainer
+                  style={btnStyles(isUserLogin)}
+                  className={`d-flex align-items-center justify-content-between`}
+                >
+                  <StyledLoginBox
+                    id="login-switch-role-btn"
+                    onClick={handleRedirectionUser}
+                    className="user-login"
+                    active={isUserLogin}
+                  >
+                    <RedirectionSection>
+                      <RedirectionText>
+                        User
+                        {/* {isUserLogin ? 'Admin' : 'User'} */}
+                      </RedirectionText>
+                    </RedirectionSection>
+                  </StyledLoginBox>
+                </LoginBtnContainer>
+              )}
+              {(isUserLogin || isAdminLogin) && (
+                <LoginBtnContainer
+                  style={btnStyles(isUserLogin)}
+                  className={`d-flex align-items-center justify-content-between`}
+                >
+                  <StyledLoginBox
+                    id="login-switch-role-btn"
+                    onClick={handleRedirectionAdmin}
+                    className="admin-login"
+                    active={isAdminLogin}
+                  >
+                    <RedirectionSection>
+                      <RedirectionText>
+                        Administrator
+                        {/* {isUserLogin ? 'Admin' : 'User'} */}
+                      </RedirectionText>
+                    </RedirectionSection>
+                  </StyledLoginBox>
+                </LoginBtnContainer>
+              )}
+            </UserBtnContainer>
             <Content>
               {children}
               {isUserLogin &&
@@ -533,24 +608,6 @@ export const Layout = ({ children }) => {
                   </>
                 )}
             </Content>
-            {(isUserLogin || isAdminLogin) && (
-              <LoginBtnContainer
-                style={btnStyles(isUserLogin)}
-                className={`d-flex align-items-center justify-content-between`}
-              >
-                <StyledLoginBox
-                  id="login-switch-role-btn"
-                  onClick={handleRedirection}
-                >
-                  <RedirectionSection>
-                    <RedirectionText>
-                      Login via &nbsp;
-                      {isUserLogin ? 'Admin' : 'User'}
-                    </RedirectionText>
-                  </RedirectionSection>
-                </StyledLoginBox>
-              </LoginBtnContainer>
-            )}
             {(isForgotPassword || isReset) && (
               <SignInContainer>
                 {ALREADY_HAVE_AN_ACCOUNT}
