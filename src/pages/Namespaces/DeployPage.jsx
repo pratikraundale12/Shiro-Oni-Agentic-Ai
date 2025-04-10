@@ -567,7 +567,11 @@ function DeployPage() {
             >
               {KDFM.BACK}
             </Button>
-            <Button type="submit" onClick={handleScrollOnClick}>
+            <Button
+              id="registry-flow-continue-btn"
+              type="submit"
+              onClick={handleScrollOnClick}
+            >
               {KDFM.CONTINUE}
             </Button>
           </BottomButtonDiv>

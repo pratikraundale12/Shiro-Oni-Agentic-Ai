@@ -512,6 +512,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                 {!isEmpty(currentUser?.permissions) &&
                   currentUser?.permissions?.includes('view_cluster') && (
                     <IconCusterButton
+                      id="cluster-icon-btn"
                       onClick={() => {
                         dispatch(AuthenticationActions.setClusterLogin(true));
                         dispatch(
