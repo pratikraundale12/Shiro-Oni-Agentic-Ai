@@ -159,7 +159,7 @@ const RedirectionText = styled.button`
   font-weight: 700;
   line-height: 21.17px;
   text-align: left;
-  color: ${props => props.theme.colors.primary};
+  color: ${props => (props.active ? '#FFFFFF' : '#444445')};
   cursor: pointer;
   margin-left: 5px;
 `;
@@ -544,7 +544,7 @@ export const Layout = ({ children }) => {
                     active={isUserLogin}
                   >
                     <RedirectionSection>
-                      <RedirectionText>
+                      <RedirectionText active={isUserLogin}>
                         User
                         {/* {isUserLogin ? 'Admin' : 'User'} */}
                       </RedirectionText>
@@ -564,7 +564,7 @@ export const Layout = ({ children }) => {
                     active={isAdminLogin}
                   >
                     <RedirectionSection>
-                      <RedirectionText>
+                      <RedirectionText active={isAdminLogin}>
                         Administrator
                         {/* {isUserLogin ? 'Admin' : 'User'} */}
                       </RedirectionText>
