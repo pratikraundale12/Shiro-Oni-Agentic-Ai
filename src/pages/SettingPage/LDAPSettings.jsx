@@ -87,6 +87,7 @@ export const LDAPSettings = () => {
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
   const [ldapAutoSync, setLdapAutoSync] = useState(false);
+  const [initialLdapAutoSync, setInitialLdapAutoSync] = useState(false);
   const [isLdapEnabled, setLdapInitialConfig] = useState(false);
 
   const Timeoptions = [
@@ -97,6 +98,7 @@ export const LDAPSettings = () => {
   ];
 
   const selectedOptions = Number(watch('ldap_auto_sync_time_interval'));
+
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
@@ -147,6 +149,7 @@ export const LDAPSettings = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (settingData) {
       if (settingData?.favicon) {
@@ -160,6 +163,8 @@ export const LDAPSettings = () => {
       );
 
       setLdapAutoSync(settingData?.ldap_auto_sync);
+      setInitialLdapAutoSync(settingData?.ldap_auto_sync);
+
       setValue(
         'ldap_auto_sync_time_interval',
         settingData?.ldap_auto_sync_time_interval
@@ -170,19 +175,19 @@ export const LDAPSettings = () => {
   }, [settingData, setValue, dispatch]);
 
   useEffect(() => {
-    const subscription = watch(value => {
+    const subscription = watch(values => {
       const isModified =
-        value.refresh !==
+        values.refresh !==
           (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
-        value.ldap_auto_sync_time_interval !==
+        values.ldap_auto_sync_time_interval !==
           settingData?.ldap_auto_sync_time_interval ||
-        value.ldap_auto_sync !== settingData?.ldap_auto_sync ||
-        value.ldapEnabled !== settingData?.ldapEnabled;
+        values.ldap_auto_sync !== initialLdapAutoSync ||
+        values.ldapEnabled !== settingData?.ldapEnabled;
       setIsChanged(isModified);
     });
 
     return () => subscription.unsubscribe();
-  }, [watch, settingData]);
+  }, [watch, settingData, initialLdapAutoSync]);
 
   const handleLdapToggle = () => {
     setLdapInitialConfig(prevState => {
@@ -193,7 +198,6 @@ export const LDAPSettings = () => {
         setValue('ldap_auto_sync', false, { shouldDirty: true });
       }
 
-      setIsChanged(true);
       setValue('ldapEnabled', newState, { shouldDirty: true });
       return newState;
     });
@@ -207,7 +211,12 @@ export const LDAPSettings = () => {
     setLdapAutoSync(prevState => {
       const newState = !prevState;
       setValue('ldap_auto_sync', newState, { shouldDirty: true });
-      setIsChanged(true);
+
+      if (newState === initialLdapAutoSync) {
+        setIsChanged(false);
+      } else {
+        setIsChanged(true);
+      }
       return newState;
     });
   };
@@ -296,6 +305,8 @@ export const LDAPSettings = () => {
                 reset(settingData);
                 setIsChanged(false);
                 setLdapInitialConfig(settingData?.ldapEnabled);
+                setLdapAutoSync(settingData?.ldap_auto_sync);
+                setInitialLdapAutoSync(settingData?.ldap_auto_sync);
               }}
             >
               <ButtonText>Cancel</ButtonText>
