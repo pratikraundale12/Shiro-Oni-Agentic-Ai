@@ -1475,14 +1475,14 @@ const Summary = () => {
               {KDFM.BACK}
             </Button>
             {isRegistryDeploy && !scheduleDeploymentFlow && (
-              <Button onClick={handledeployByRegistry}>
+              <Button id="process-group-summary-deploy-btn" onClick={handledeployByRegistry}>
                 {provideRegistryFlowBtnText()}
               </Button>
             )}
             {!isRegistryDeploy &&
               !scheduleDeploymentFlow &&
               !scheduleUpgradeFromList && (
-                <Button onClick={handleUpgradeByRegistry}>
+                <Button id="process-group-summary-upgrade-btn" onClick={handleUpgradeByRegistry}>
                   {provideUpgradeBtnText()}
                 </Button>
               )}
@@ -1492,7 +1492,7 @@ const Summary = () => {
               </Button>
             )}
             {scheduleUpgradeFromList && (
-              <Button size="md" onClick={() => handleScheduleUpgrade()}>
+              <Button id="summary-schedule-upgrade-btn" size="md" onClick={() => handleScheduleUpgrade()}>
                 {provideScheduleUpgradeBtnText()}
               </Button>
             )}
