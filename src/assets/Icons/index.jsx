@@ -71,7 +71,6 @@ export * from './FullScreenIcon';
 export * from './GenAiIcon';
 export * from './GeneratedFlowIcon';
 export * from './GalleryIcon';
-// export * from './GenrateFlowIcon';
 export * from './GoogleIcon';
 export * from './GreaterArrowIcon';
 export * from './GreenRightCircleIcon';

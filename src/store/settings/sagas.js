@@ -56,10 +56,8 @@ export function* downloadLogsZip(api, { payload }) {
       const fileName = `logs_${logsType}_${Date.now()}.zip`;
 
       if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-        // For IE
         window.navigator.msSaveOrOpenBlob(blob, fileName);
       } else {
-        // For modern browsers
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;

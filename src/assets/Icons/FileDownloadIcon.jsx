@@ -1,7 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
+export const FileDownloadIcon = ({
+  width = 177,
+  height = 177,
+  color = '#444445',
+}) => {
   return (
     <svg
       width={width}
@@ -39,7 +43,7 @@ export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
         />
         <path
           d="M13.6719 17.1094H48.2068"
-          stroke="#444445"
+          stroke={color}
           strokeWidth="3.42773"
           strokeMiterlimit="10"
           strokeLinecap="round"
@@ -47,7 +51,7 @@ export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
         />
         <path
           d="M13.6719 28.3906H48.2068"
-          stroke="#444445"
+          stroke={color}
           strokeWidth="3.42773"
           strokeMiterlimit="10"
           strokeLinecap="round"
@@ -55,7 +59,7 @@ export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
         />
         <path
           d="M15.041 49.2188H79.4772"
-          stroke="#444445"
+          stroke={color}
           strokeWidth="3.42773"
           strokeMiterlimit="10"
           strokeLinecap="round"
@@ -63,7 +67,7 @@ export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
         />
         <path
           d="M15.041 63.4102H73.98"
-          stroke="#444445"
+          stroke={color}
           strokeWidth="3.42773"
           strokeMiterlimit="10"
           strokeLinecap="round"
@@ -71,7 +75,7 @@ export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
         />
         <path
           d="M15.041 77.6016H73.98"
-          stroke="#444445"
+          stroke={color}
           strokeWidth="3.42773"
           strokeMiterlimit="10"
           strokeLinecap="round"
@@ -79,7 +83,7 @@ export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
         />
         <path
           d="M15.041 91.793H61.1744"
-          stroke="#444445"
+          stroke={color}
           strokeWidth="3.42773"
           strokeMiterlimit="10"
           strokeLinecap="round"
@@ -95,7 +99,7 @@ export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
         />
         <path
           d="M91.9312 28.3906H69.8227C67.2983 28.3906 65.252 26.344 65.252 23.8199V1.71143"
-          stroke="#444445"
+          stroke={color}
           strokeWidth="3.42773"
           strokeMiterlimit="10"
           strokeLinecap="round"
@@ -103,7 +107,7 @@ export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
         />
         <path
           d="M101.735 91.0078V63.3659C101.735 61.3817 100.127 59.7729 98.1426 59.7729H85.7191C83.7349 59.7729 82.1264 61.3817 82.1264 63.3659V91.0078H71.2715C69.66 91.0078 68.8529 92.9562 69.9925 94.0958L90.6519 114.755C91.3582 115.462 92.5038 115.462 93.2099 114.755L113.87 94.0958C115.009 92.9562 114.202 91.0078 112.591 91.0078H101.735Z"
-          stroke="#444445"
+          stroke={color}
           strokeWidth="3.42773"
           strokeMiterlimit="10"
           strokeLinecap="round"
@@ -111,7 +115,7 @@ export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
         />
         <path
           d="M91.9315 51.1865V28.3921L65.2524 1.7129H8.63761C5.29649 1.7129 2.58789 4.4215 2.58789 7.7624V109.236C2.58789 112.577 5.29649 115.285 8.63761 115.285H81.4971"
-          stroke="#444445"
+          stroke={color}
           strokeWidth="3.42773"
           strokeMiterlimit="10"
           strokeLinecap="round"
@@ -125,6 +129,7 @@ export const FileDownloadIcon = ({ width = 177, height = 177 }) => {
 FileDownloadIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
+  color: PropTypes.string,
 };
 
 export default FileDownloadIcon;

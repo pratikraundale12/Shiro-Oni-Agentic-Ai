@@ -3,7 +3,7 @@ export const settingsAPI = api => {
   const createSettings = ({ payload = {} }) => api.patch('/settings', payload);
   const downloadLogsZip = ({ payload = {} }) =>
     api.post('/logs/download-zip', payload, {
-      responseType: 'blob', //saga response change here
+      responseType: 'blob',
     });
   return {
     createSettings,

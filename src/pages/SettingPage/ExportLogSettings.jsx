@@ -67,7 +67,7 @@ export const ExportLogSettings = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [selectedDate, setSelectedDate] = useState([]);
   const [isLogsModalOpen, setIsLogsModalOpen] = useState(false);
-  const isDownloadEnabled = !!watch('logs_type'); // enable when log type is selected
+  const isDownloadEnabled = !!watch('logs_type');
 
   const approverOptions = [
     { label: 'All', value: 'all' },
@@ -81,7 +81,7 @@ export const ExportLogSettings = () => {
   };
 
   const handleDownloadLogs = () => {
-    const logsType = watch('logs_type'); //"debug"
+    const logsType = watch('logs_type');
     const [startDate, endDate] = selectedDate || [];
 
     const formatDate = date => {
@@ -168,7 +168,7 @@ export const ExportLogSettings = () => {
         title="Confirm Download"
         primaryButtonText="Confirm"
         secondaryButtonText="Cancel"
-        icon={<FileDownloadIcon height={125} width={125} />}
+        icon={<FileDownloadIcon height={125} width={125} color="#444445" />}
         primaryText="Are you sure you want to Proceed with the Download?"
         secondaryText="If Yes, Please click on the Confirm Button."
         isOpen={isLogsModalOpen}
