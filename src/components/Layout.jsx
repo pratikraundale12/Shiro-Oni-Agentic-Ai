@@ -170,6 +170,7 @@ const UserBtnContainer = styled.div`
   justify-content: center;
   width: 100%;
   max-width: 550px;
+
   .user-login {
     border-radius: 30px 0 0 0;
     width: 100%;
@@ -186,6 +187,11 @@ const UserBtnContainer = styled.div`
     cursor: pointer;
     &.active {
       background-color: #ff7a00;
+    }
+    @media (max-width: 768px) {
+      flex-direction: column;
+      max-width: 100%;
+      gap: 8px;
     }
   }
 `;
@@ -357,6 +363,8 @@ const SSOButton = styled.div`
 `;
 
 const LoginBtnContainer = styled.div`
+  flex: 1;
+
   @media (max-width: 768px) {
     width: 82% !important;
   }
@@ -474,10 +482,6 @@ export const Layout = ({ children }) => {
     dispatch(SettingsActions.fetchSettingsSuccess());
   }, [dispatch]);
 
-  const btnStyles = isUserLogin => ({
-    width: isUserLogin ? '64%' : 'auto',
-  });
-
   useEffect(() => {
     if (settingLogo?.selected_sso === 'keycloak' && settingLogo?.sso_enabled) {
       dispatch(AuthenticationActions.fetchKeycloakConfig());
@@ -529,8 +533,7 @@ export const Layout = ({ children }) => {
             <UserBtnContainer>
               {(isUserLogin || isAdminLogin) && (
                 <LoginBtnContainer
-                  style={btnStyles(isUserLogin)}
-                  className={`d-flex align-items-center justify-content-between`}
+                  className={`d-flex align-items-center justify-content-between user-container`}
                 >
                   <StyledLoginBox
                     id="login-switch-role-btn"
@@ -548,8 +551,7 @@ export const Layout = ({ children }) => {
               )}
               {(isUserLogin || isAdminLogin) && (
                 <LoginBtnContainer
-                  style={btnStyles(isUserLogin)}
-                  className={`d-flex align-items-center justify-content-between`}
+                  className={`d-flex align-items-center justify-content-between admin-container`}
                 >
                   <StyledLoginBox
                     id="login-switch-role-btn"
