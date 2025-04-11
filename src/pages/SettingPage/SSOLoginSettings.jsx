@@ -143,6 +143,8 @@ export const SSOLoginSettings = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
+  const [ssoEnabledState, setSsoEnabledState] = useState(false);
+  const initialSsoEnabled = settingData?.sso_enabled || false;
 
   const onSubmit = async data => {
     setLoading(true);
@@ -241,6 +243,7 @@ export const SSOLoginSettings = () => {
       setValue('azure_client_secret', settingData?.azure_client_secret);
       setValue('azure_tenant_id', settingData?.azure_tenant_id);
       setValue('sso_enabled', settingData?.sso_enabled);
+      setSsoEnabledState(settingData?.sso_enabled || false);
       setValue('keycloak_realm', settingData?.keycloak_realm);
       setValue('keycloak_url', settingData?.keycloak_url);
       setValue('keycloak_client_id', settingData?.keycloak_client_id);
@@ -283,6 +286,21 @@ export const SSOLoginSettings = () => {
   const selectedSSO = watch('selected_sso');
   const ssoEnabled = watch('sso_enabled');
 
+  const toggleSsoEnabled = () => {
+    setSsoEnabledState(prevState => {
+      const newState = !prevState;
+      setValue('sso_enabled', newState, { shouldDirty: true });
+
+      if (newState === initialSsoEnabled) {
+        setIsChanged(false);
+      } else {
+        setIsChanged(true);
+      }
+
+      return newState;
+    });
+  };
+
   return (
     <Wrapper>
       <form
@@ -299,12 +317,12 @@ export const SSOLoginSettings = () => {
               <Controller
                 name="sso_enabled"
                 control={control}
-                render={({ field: { value, onChange } }) => (
+                render={() => (
                   <SwitchButton
                     id="openModalInput1"
                     name="SSO"
-                    checked={value}
-                    onChange={() => onChange(!value)}
+                    checked={ssoEnabledState}
+                    onChange={toggleSsoEnabled}
                     isDisabled={false}
                   />
                 )}
@@ -434,6 +452,7 @@ export const SSOLoginSettings = () => {
               disabled={!isChanged}
               onClick={() => {
                 reset(settingData);
+                setSsoEnabledState(settingData?.sso_enabled || false);
                 setIsChanged(false);
               }}
             >
