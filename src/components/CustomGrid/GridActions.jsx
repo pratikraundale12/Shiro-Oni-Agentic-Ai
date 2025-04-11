@@ -577,27 +577,25 @@ export const GridActions = ({
     dispatch(SchedularActions.setSelectedStatusState(watchStatus));
   }, [watchStatus]);
 
-  // const handleAnalyzeClick = () => {
-  //   dispatch(FlowValidationActions.addNewAnalysisModalOpen(true));
-  // };
-
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
   return (
     <>
       <Flex className="flex-wrap gap-2">
         <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
-        <Flex>
-          <ImageContainer>
-            <TodoIcon width={22} height={24} />
-          </ImageContainer>
-          <Title>
-            <span>{title}</span>
-            {module === 'namespaces' && Boolean(gridCount) && (
-              <span>({gridCount})</span>
-            )}
-          </Title>
-        </Flex>
+        {title && (
+          <Flex>
+            <ImageContainer>
+              <TodoIcon width={22} height={24} />
+            </ImageContainer>
+            <Title>
+              <span>{title}</span>
+              {module === 'namespaces' && Boolean(gridCount) && (
+                <span>({gridCount})</span>
+              )}
+            </Title>
+          </Flex>
+        )}
         {module === 'scheduler' && (
           <>
             {

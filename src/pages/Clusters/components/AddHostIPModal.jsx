@@ -256,6 +256,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                     label={KDFM.PFX_FILE}
                     placeholder={KDFM.SELECT_PFX_FILE}
                     errors={errors}
+                    fileLable="PEM file"
                   />
                 </ModalContainer>
               </span>

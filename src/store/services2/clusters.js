@@ -48,6 +48,10 @@ export const clustersAPI = api => {
   const getSingleConfigData = ({ configId }) => {
     return api.get(`/cluter-configs/${configId}`);
   };
+  const changeClusterActionState = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/actions`, payload);
+  };
+
   return {
     fetchClusters,
     fetchClusterList,
@@ -66,5 +70,6 @@ export const clustersAPI = api => {
     getConfigVersions,
     createCluster,
     getSingleConfigData,
+    changeClusterActionState,
   };
 };

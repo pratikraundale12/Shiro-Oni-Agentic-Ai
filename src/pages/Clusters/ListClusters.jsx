@@ -210,7 +210,7 @@ export const ListClusters = () => {
     {
       label: KDFM.STATUS,
       renderCell: item => <StatusRender status={item.status} />,
-      width: '15%',
+      width: '10%',
       resize: true,
     },
     {
@@ -308,7 +308,7 @@ export const ListClusters = () => {
         );
       },
       resize: true,
-      width: '12%',
+      width: '17%',
     },
   ];
 

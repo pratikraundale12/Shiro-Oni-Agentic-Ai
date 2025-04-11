@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable */
+import React, { useState } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { ActivityHistoryIcon } from '../../assets';
@@ -7,9 +8,10 @@ import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import { useGlobalContext } from '../../utils';
+import ClusterSummaryNavigationTab from './components/ClusterSummaryNavigationTab';
 
 const Container = styled.div`
-  height: 95%;
+  height: 90%;
 `;
 
 const ActionTd = styled.div`
@@ -21,6 +23,7 @@ const ActionTd = styled.div`
 
 export const ClusterSummary = () => {
   const { state, setState } = useGlobalContext();
+  const [activeTab, setActiveTab] = useState('summary');
 
   const getActionsMenu = item => (
     <div data-tooltip-id={`${item?.nodeId}1`}>
@@ -89,13 +92,20 @@ export const ClusterSummary = () => {
 
   return (
     <Container>
-      <Grid
-        module="nodes"
-        title="Clusters Summary"
-        placeholder={KDFM.SEARCH_NODES}
-        columns={COLUMNS}
-        refreshOptions={REFRESH_OPTIONS}
+      <ClusterSummaryNavigationTab
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
+      {activeTab === 'summary' && (
+        <Grid
+          module="nodes"
+          // title="Clusters Summary"
+          placeholder={KDFM.SEARCH_NODES}
+          columns={COLUMNS}
+          refreshOptions={REFRESH_OPTIONS}
+        />
+      )}
+      {activeTab === 'status' && <div style={{ height: '100%' }}></div>}
       <div style={{ width: '74px', marginTop: '10px' }}>
         <Button variant="secondary" type="button" onClick={handleBackAction}>
           {KDFM.BACK}

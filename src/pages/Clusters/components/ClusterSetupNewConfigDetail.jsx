@@ -162,6 +162,9 @@ const ClusterSetupNewConfigDetailsPage = () => {
     password: yup.string().required('Password is required'),
     java_arg_2: yup.string().required('Initial heap size is required'),
     java_arg_3: yup.string().required('Maximum heap size is required'),
+    directory: yup.string().required('Directory is required'),
+    partitions: yup.string().required('Partitions is required'),
+    root_node: yup.string().required('Root node is required'),
   });
 
   const {
@@ -303,7 +306,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
     }, 0);
   };
 
-  const handleAddConfig = data => {
+  const handleAddConfig = async data => {
     const nifiPropertyPayload = {
       nifi_cluster_is_node: data?.nifi_cluster_is_node,
       nifi_cluster_node_protocol_max_threads:
@@ -355,6 +358,28 @@ const ClusterSetupNewConfigDetailsPage = () => {
   useEffect(() => {
     dispatch(ClustersActions.getNiFiVersions());
   }, [dispatch]);
+
+  const onError = errors => {
+    if (
+      errors?.nifi_cluster_node_protocol_max_threads ||
+      errors?.nifi_web_https_port
+    ) {
+      setSelectedProperty('nifi_properties');
+      return;
+    }
+    if (errors?.java_arg_2 || errors?.java_arg_3) {
+      setSelectedProperty('bootstrap_config');
+      return;
+    }
+    if (errors?.username || errors?.password) {
+      setSelectedProperty('login_identity_provider');
+      return;
+    }
+    if (errors?.directory || errors?.partitions || errors?.root_node) {
+      setSelectedProperty('state_management_xml');
+      return;
+    }
+  };
 
   return (
     <Wrapper>
@@ -768,7 +793,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
 
           <Button
             type="submit"
-            onClick={handleSubmit(handleAddConfig)}
+            onClick={handleSubmit(handleAddConfig, onError)}
             disabled={!isEmpty(configToEdit) && !formChanged}
           >
             {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}
