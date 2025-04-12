@@ -11,7 +11,6 @@ import { toast } from 'react-toastify';
 import { validatePayload } from './utils';
 import { AiFlowGeneratorActions, AuthenticationSelectors } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { GENAI_CONFIG } from '../../constants/aiFlowGenerator.constant';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
@@ -181,14 +180,7 @@ const SuggetionsChip = ({
     setOpenConversation(true);
     const payload = {
       session_id: uuidv4(),
-      is_audio: false,
       query: flow?.query,
-      embedding_model: GENAI_CONFIG.EMBEDDING_MODEL,
-      engine: GENAI_CONFIG.APP_ENGINE,
-      dept_id: GENAI_CONFIG.DEPT_ID,
-      org_id: GENAI_CONFIG.ORG_ID,
-      user_id: GENAI_CONFIG.USER_ID,
-      type: GENAI_CONFIG.APP_TYPE,
       short_name: flow?.name || '',
       refresh: refresh,
       logged_in_user: currentUser?.id,
@@ -197,12 +189,6 @@ const SuggetionsChip = ({
     const requiredFields = [
       'session_id',
       'query',
-      'embedding_model',
-      'engine',
-      'dept_id',
-      'org_id',
-      'user_id',
-      'type',
       'logged_in_user',
       'user_role',
     ];

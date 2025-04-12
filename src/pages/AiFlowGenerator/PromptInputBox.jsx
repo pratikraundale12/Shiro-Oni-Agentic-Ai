@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AiFlowGeneratorActions, AuthenticationSelectors } from '../../store';
 import { validateInput, validatePayload } from './utils';
 import { v4 as uuidv4 } from 'uuid';
-import { GENAI_CONFIG } from '../../constants/aiFlowGenerator.constant';
 import { FieldErrorMessage } from '../../shared';
 
 const InputContainer = styled.div`
@@ -121,14 +120,7 @@ export const PromptInputBox = ({
       setOpenConversation(true);
       const payload = {
         session_id: uuidv4(),
-        is_audio: false,
         query: queryText,
-        embedding_model: GENAI_CONFIG.EMBEDDING_MODEL,
-        engine: GENAI_CONFIG.APP_ENGINE,
-        dept_id: GENAI_CONFIG.DEPT_ID,
-        org_id: GENAI_CONFIG.ORG_ID,
-        user_id: GENAI_CONFIG.USER_ID,
-        type: GENAI_CONFIG.APP_TYPE,
         short_name: queryLabel || '',
         refresh: refresh,
         logged_in_user: currentUser?.id,
@@ -137,12 +129,6 @@ export const PromptInputBox = ({
       const requiredFields = [
         'session_id',
         'query',
-        'embedding_model',
-        'engine',
-        'dept_id',
-        'org_id',
-        'user_id',
-        'type',
         'logged_in_user',
         'user_role',
       ];
@@ -171,7 +157,8 @@ export const PromptInputBox = ({
             if (!isValid) {
               setInputError({
                 promptInputBox: {
-                  message: 'Invalid Input',
+                  message:
+                    'I am here to help, but I need a bit more info. Could you type a proper prompt or question?',
                 },
               });
             } else {
