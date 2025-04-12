@@ -13,12 +13,6 @@ export const validatePayload = (payload, requiredFields) => {
   const fieldLabels = {
     session_id: 'Session ID',
     query: 'Query',
-    embedding_model: 'Embedding Model',
-    engine: 'Engine',
-    dept_id: 'Department ID',
-    org_id: 'Organization ID',
-    user_id: 'User ID',
-    type: 'Type',
     logged_in_user: 'LoggedIn User',
     user_role: 'Role',
   };
