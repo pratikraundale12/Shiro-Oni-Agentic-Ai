@@ -441,20 +441,9 @@ export const AiFlowGenerator = () => {
   useEffect(() => {
     if (Object.keys(generatedFlow).length > 0) {
       let repaired = generatedFlow?.response;
-      try {
-        const parsedJson =
-          typeof generatedFlow?.response === 'string'
-            ? JSON.parse(generatedFlow?.response)
-            : generatedFlow?.response;
-
-        repaired = jsonrepair(parsedJson?.response);
-      } catch (error) {
-        toast.error('Error repairing JSON:', error);
-        return;
-      }
-      const jsonType = typeof JSON.parse(repaired);
-      setFlowJson(jsonType === 'object' ? JSON.parse(repaired) : {});
-      setOriginalFlow(jsonType === 'object' ? JSON.parse(repaired) : {});
+      const jsonType = typeof repaired;
+      setFlowJson(jsonType === 'object' ? repaired : {});
+      setOriginalFlow(jsonType === 'object' ? repaired : {});
     }
   }, [generatedFlow]);
 
@@ -617,11 +606,22 @@ export const AiFlowGenerator = () => {
                   ) : !loading &&
                     isEmpty(flowError) &&
                     !isEmpty(Object.keys(flowJson)) ? (
-                    'Here is the JSON File generated as per your prompt....'
+                    'Here is the JSON File generated as per your prompt.'
                   ) : !loading &&
                     isEmpty(flowError) &&
                     isEmpty(Object.keys(flowJson)) ? (
-                    'We were unable to generate the requested flow. It appears the query may not meet the required format. Please revise the input and refresh to try again...'
+                    <span>
+                      Oops! 😅 <b>We regret the inconvenience.</b>
+                      <br />
+                      Flow generation failed ⚡ due to a possible formatting
+                      issue with the query, and the generated flow might also be
+                      invalid 🚫.
+                      <br />
+                      <b>
+                        Please check your input and refresh 🔄 to try again!
+                      </b>{' '}
+                      👍🙂
+                    </span>
                   ) : (
                     `${flowError}`
                   )}
@@ -701,7 +701,9 @@ export const AiFlowGenerator = () => {
           />
         </PromptSection>
         <Modal
-          title={flowJson?.flowContents?.name || 'Preview Flow Json'}
+          title={
+            `${flowJson?.flowContents?.name} Preview` || 'Preview Flow Json'
+          }
           isOpen={openPreviewModal}
           isAdditionalIcon={true}
           additionalIcon={isFullscreen ? <MiniScreen /> : <FullScreen />}

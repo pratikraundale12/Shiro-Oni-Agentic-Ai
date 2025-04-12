@@ -99,13 +99,13 @@ export const RecommendedFlow = ({
             >
               <GeneratedFlowIcon />
               <FlowName data-tooltip-id={`flow-name-tooltip-${flow.flow_id}`}>
-                {flow.short_name}
+                {flow.short_name || 'AI Generated Nifi Flow'}
               </FlowName>
             </FlowItems>
             <ReactTooltip
               id={`flow-name-tooltip-${flow.flow_id}`}
               place="right"
-              content={flow.short_name}
+              content={flow.short_name || 'AI Generated Nifi Flow'}
               style={{
                 width: 'auto',
                 whiteSpace: 'normal',

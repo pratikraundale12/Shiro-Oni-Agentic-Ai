@@ -49,10 +49,10 @@ export function* generateFlowAPI(api, { payload }) {
     apiParams: [payload],
     successAction: AiFlowGeneratorActions.generateFlowAPISuccess,
   });
-  if (response.ok) {
+  if (response.ok || response?.data?.status) {
     try {
       yield put(AiFlowGeneratorActions.setGenFlowError(''));
-      const rawResponse = response?.data;
+      const rawResponse = response?.data?.data;
       const parsedJson =
         typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
 
