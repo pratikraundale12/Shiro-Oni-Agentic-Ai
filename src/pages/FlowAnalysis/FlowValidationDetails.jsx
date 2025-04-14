@@ -190,6 +190,7 @@ const FlowValidationDetails = () => {
         selectedItem?.name || validationResult?.data?.namespaceName,
       namespaceId: selectedItem?.id || savedPayload?.namespaceId,
       clusterId: selectedCluster?.value,
+      rulesForValidation: ruleIds,
     };
 
     dispatch(FlowValidationActions.emailReport(payload));
