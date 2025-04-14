@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { NoDataIcon, RefreshIcon, SmallSearchIcon } from '../../assets';
@@ -222,9 +222,36 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+`;
+
+const LoadingSpinner = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #fd7e14;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
 const DataFlowInventory = () => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const itemsPerPage = 20;
 
   useEffect(() => {
     dispatch(FlowValidationActions.fetchFlows());
@@ -234,11 +261,37 @@ const DataFlowInventory = () => {
 
   const handleSearch = e => {
     setSearchTerm(e.target.value.toLowerCase());
+    setCurrentPage(1);
   };
 
-  const filteredFlows = flows.filter(flow =>
-    flow.title.toLowerCase().includes(searchTerm)
+  const filteredFlows = flows.filter(
+    flow =>
+      (flow?.title?.toLowerCase() || '').includes(searchTerm) ||
+      (flow?.description?.toLowerCase() || '').includes(searchTerm)
   );
+
+  const handleScroll = useCallback(
+    e => {
+      const { scrollTop, clientHeight, scrollHeight } = e.target;
+      const totalPages = Math.ceil(filteredFlows.length / itemsPerPage);
+
+      if (
+        scrollHeight - scrollTop <= clientHeight + 100 &&
+        !isLoading &&
+        currentPage < totalPages
+      ) {
+        setIsLoading(true);
+        // Simulate loading delay
+        setTimeout(() => {
+          setCurrentPage(prevPage => prevPage + 1);
+          setIsLoading(false);
+        }, 500);
+      }
+    },
+    [currentPage, filteredFlows.length, isLoading]
+  );
+
+  const paginatedFlows = filteredFlows.slice(0, currentPage * itemsPerPage);
 
   return (
     <Container>
@@ -265,69 +318,76 @@ const DataFlowInventory = () => {
             />
           </SearchContainer>
 
-          <GalleryContainer>
-            {filteredFlows.length === 0 ? (
+          <GalleryContainer onScroll={handleScroll}>
+            {paginatedFlows.length === 0 ? (
               <div className="d-flex flex-column align-items-center mt-5">
                 <NoDataIcon width={130} />
                 <NoDataText>No Data Found!!</NoDataText>
               </div>
             ) : (
-              <GridRow>
-                {filteredFlows.map((flow, index) => {
-                  // Calculate row and column position for border styling
-                  const row = Math.floor(index / 3);
-                  const col = index % 3;
-                  const isLastRow =
-                    row === Math.floor((filteredFlows.length - 1) / 3);
-                  const isLastCol =
-                    col === 2 || index === filteredFlows.length - 1;
+              <>
+                <GridRow>
+                  {paginatedFlows.map((flow, index) => {
+                    // Calculate row and column position for border styling
+                    const row = Math.floor(index / 3);
+                    const col = index % 3;
+                    const isLastRow =
+                      row === Math.floor((paginatedFlows.length - 1) / 3);
+                    const isLastCol =
+                      col === 2 || index === paginatedFlows.length - 1;
 
-                  return (
-                    <GridColumn key={flow.id}>
-                      <FlowCard isLastRow={isLastRow} isLastCol={isLastCol}>
-                        <CardHeader>
-                          <IconsContainer>
-                            <IconWrapper>
-                              <IconImage
-                                src={s3Image}
-                                alt="S3"
-                                width="100%"
-                                height="auto"
-                              />
-                            </IconWrapper>
-                            <IconWrapper marginLeft="-18px">
-                              <IconImage
-                                src={PineConeImage}
-                                alt="Pinecone"
-                                width="100%"
-                                height="auto"
-                              />
-                            </IconWrapper>
-                          </IconsContainer>
-                          <VersionText>Version {flow.version}</VersionText>
-                        </CardHeader>
+                    return (
+                      <GridColumn key={flow.id}>
+                        <FlowCard isLastRow={isLastRow} isLastCol={isLastCol}>
+                          <CardHeader>
+                            <IconsContainer>
+                              <IconWrapper>
+                                <IconImage
+                                  src={s3Image}
+                                  alt="S3"
+                                  width="100%"
+                                  height="auto"
+                                />
+                              </IconWrapper>
+                              <IconWrapper marginLeft="-18px">
+                                <IconImage
+                                  src={PineConeImage}
+                                  alt="Pinecone"
+                                  width="100%"
+                                  height="auto"
+                                />
+                              </IconWrapper>
+                            </IconsContainer>
+                            <VersionText>Version {flow?.version}</VersionText>
+                          </CardHeader>
 
-                        <FlowTitle>{flow.title}</FlowTitle>
-                        <FlowDescription>{flow.description}</FlowDescription>
+                          <FlowTitle>{flow?.name}</FlowTitle>
+                          <FlowDescription>{flow?.comments}</FlowDescription>
 
-                        <TagsContainer>
-                          {flow.tags.slice(0, 2).map((tag, idx) => (
-                            <Tag key={idx}>{tag}</Tag>
-                          ))}
+                          <TagsContainer>
+                            {(flow?.tags || []).slice(0, 2).map((tag, idx) => (
+                              <Tag key={idx}>{tag}</Tag>
+                            ))}
 
-                          {flow.tags.length > 2 && (
-                            <Tag>+{flow.tags.length - 2}</Tag>
-                          )}
-                        </TagsContainer>
+                            {flow?.tags?.length > 2 && (
+                              <Tag>+{(flow.tags || []).length - 2}</Tag>
+                            )}
+                          </TagsContainer>
 
-                        <AddButton>
-                          <ButtonText>Add to Registry</ButtonText>
-                        </AddButton>
-                      </FlowCard>
-                    </GridColumn>
-                  );
-                })}
-              </GridRow>
+                          <AddButton>
+                            <ButtonText>Add to Registry</ButtonText>
+                          </AddButton>
+                        </FlowCard>
+                      </GridColumn>
+                    );
+                  })}
+                </GridRow>
+                {isLoading && (
+                  <LoadingContainer>
+                    <LoadingSpinner />
+                  </LoadingContainer>
+                )}
+              </>
             )}
           </GalleryContainer>
         </ContentArea>
