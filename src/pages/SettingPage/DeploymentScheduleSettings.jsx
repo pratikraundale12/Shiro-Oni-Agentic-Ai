@@ -221,6 +221,7 @@ export const DeploymentScheduleSettings = () => {
             icon={<CurvedProfileDoubleUserIcon />}
             errors={errors}
             options={approverOptions}
+            required
             placeholder="Select Approver Groups"
             value={
               approverOptions.find(
