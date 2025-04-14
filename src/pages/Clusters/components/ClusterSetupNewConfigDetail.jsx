@@ -57,14 +57,23 @@ const DisplaySection = styled.div`
 `;
 const RightDisplaySection = styled.div`
   overflow: auto;
+  left: 20%;
 `;
 const LeftDisplaySection = styled.div`
+  border-radius: 20px;
   background-color: #fff;
+  overflow-y: hidden;
+  overflow-x: auto;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-left: 12px;
+  width: 22%;
+  flex: 0 0 22%;
 `;
 const SectionHeading = styled.div`
   font-family: Red Hat Display;
   font-weight: 700;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 24px;
   letter-spacing: 1%;
   color: #ff7a00;
@@ -73,7 +82,6 @@ const SectionHeading = styled.div`
 export const List = styled.ul`
   max-height: calc(100vh - 250px);
   width: 100%;
-  margin-top: 20px;
   padding-left: 0;
   overflow-y: auto;
 `;
@@ -82,7 +90,7 @@ export const Item = styled.li`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 32px;
+  padding: 12px 8px;
   font-size: 16px;
   font-weight: 600;
   color: ${({ theme, active }) =>
@@ -90,7 +98,6 @@ export const Item = styled.li`
   background-color: ${({ theme, active }) =>
     active ? theme.colors.primaryFocus : 'transparent'};
   cursor: pointer;
-  gap: 20px;
 
   ${props =>
     props.path === 'help-&-support' &&
@@ -114,7 +121,7 @@ const BottomButton = styled.div`
 `;
 const TitleTab = styled.h3`
   font-family: Noto Sans;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 600;
   line-height: 27.24px;
   text-align: left;
@@ -125,6 +132,7 @@ const TitleTabWrapper = styled.div`
   border-bottom: 2px solid #dde4f0;
   padding-bottom: 12px;
 `;
+
 const ClusterSetupNewConfigDetailsPage = () => {
   const [originalValues, setOriginalValues] = useState({});
   const [formChanged, setFormChanged] = useState(false);
@@ -222,7 +230,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       icon: CheckListIcon,
     },
     {
-      name: 'state-management.xml',
+      name: 'State-management.xml',
       path: 'state_management_xml',
       icon: CheckListIcon,
     },
@@ -374,8 +382,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
       <OuterContainer>
         <div className="row px-3">
           <div className="col-4">
-            <LabelSelect className="mb-3">{KDFM.CONFIG_NAME}</LabelSelect>
             <InputField
+              label={KDFM.CONFIG_NAME}
               name="configName"
               type="text"
               placeholder={KDFM.ENTER_CONFIG_NAME}
@@ -386,11 +394,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
             />
           </div>
           <div className="col-4">
-            <LabelSelect className="mb-3">{KDFM.NIFI_VERSION}</LabelSelect>
             <SelectField
+              label={KDFM.NIFI_VERSION}
               name="nifiVersion"
               icon={<QRIcons />}
               register={register}
+              required
               errors={errors}
               control={control}
               options={nifiVerionsOptions || []}
@@ -412,7 +421,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
           </div>
         </div>
         <DisplaySection className="px-3 row">
-          <LeftDisplaySection className="col-3 h-100">
+          <LeftDisplaySection className="col-2 h-100">
             <List className="sidebar-navigation">
               {' '}
               {sidebarItems.map(item => (
@@ -431,7 +440,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           : 'black'
                       }
                     />
-                    <span className="nav-text ms-3">{item.name}</span>
+                    <span className="nav-text ms-1">{item.name}</span>
                   </div>
 
                   <LessArrowIcon
@@ -450,10 +459,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {selectedProperty === 'nifi_properties' && (
               <div>
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">Core Configuration</TitleTab>
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">Core Configuration</TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-5">
                       <LabelSelect className="mb-3">
                         Protocol Max Threads
@@ -499,12 +508,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
                 </div>
 
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">
+                  <TitleTabWrapper className="mt-2">
+                    <TitleTab className="ms-3">
                       Zookeeper Configuration
                     </TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-5">
                       <LabelSelect className="mb-3">
                         Zookeeper Connection Timeout
@@ -532,12 +541,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
                 </div>
 
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">
                       Web Server Configuration
                     </TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-5">
                       <LabelSelect className="mb-3">Web Http Port</LabelSelect>
 
@@ -558,10 +567,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {selectedProperty === 'bootstrap_config' && (
               <div>
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">Java Memory Settings</TitleTab>
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">Java Memory Settings</TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-5">
                       <LabelSelect className="mb-3">
                         Java.arg.2 (Initial Heap Size)
@@ -599,12 +608,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {selectedProperty === 'login_identity_provider' && (
               <div>
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">
                       Single User Login Identity Provider
                     </TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-5">
                       <LabelSelect className="mb-3">Username</LabelSelect>
 
@@ -638,10 +647,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {selectedProperty === 'state_management_xml' && (
               <div>
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">Local State Provider</TitleTab>
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">Local State Provider</TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-4">
                       <LabelSelect className="mb-3">Directory</LabelSelect>
 
@@ -697,12 +706,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
                 </div>
 
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">
                       ZooKeeper Cluster State Provider
                     </TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-4">
                       <LabelSelect className="mb-3">Root Node</LabelSelect>
 
