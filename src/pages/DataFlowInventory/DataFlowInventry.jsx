@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RefreshIcon, SmallSearchIcon } from '../../assets';
+import { NoDataIcon, RefreshIcon, SmallSearchIcon } from '../../assets';
 import PineConeImage from '../../assets/images/PineCone.png';
 import s3Image from '../../assets/images/s3logo.png';
 import {
@@ -83,7 +83,8 @@ const GalleryContainer = styled.div`
   border: 1px solid #e2ccff;
   padding: 1rem;
   border-radius: 0.25rem;
-  overflow: hidden;
+  height: calc(100vh - 310px);
+  overflow-y: auto;
 `;
 
 const GridRow = styled.div`
@@ -213,13 +214,32 @@ const ButtonText = styled.span`
   font-size: 0.875rem;
 `;
 
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+`;
+
 const DataFlowInventory = () => {
   const dispatch = useDispatch();
+  const [searchTerm, setSearchTerm] = useState('');
+
   useEffect(() => {
     dispatch(FlowValidationActions.fetchFlows());
   }, [dispatch]);
+
   const flows = useSelector(FlowValidationSelectors.getFlows);
-  console.log(flows, 'flows');
+
+  const handleSearch = e => {
+    setSearchTerm(e.target.value.toLowerCase());
+  };
+
+  const filteredFlows = flows.filter(flow =>
+    flow.title.toLowerCase().includes(searchTerm)
+  );
+
   return (
     <Container>
       <MainContent>
@@ -239,67 +259,76 @@ const DataFlowInventory = () => {
             />
             <Search
               type="search"
-              placeholder="Search"
-              // onChange={handleSearch}
-              // value={searchText}
+              placeholder="Search by title"
+              onChange={handleSearch}
+              value={searchTerm}
             />
           </SearchContainer>
 
           <GalleryContainer>
-            <GridRow>
-              {flows.map((flow, index) => {
-                // Calculate row and column position for border styling
-                const row = Math.floor(index / 3);
-                const col = index % 3;
-                const isLastRow = row === Math.floor((flows.length - 1) / 3);
-                const isLastCol = col === 2 || index === flows.length - 1;
+            {filteredFlows.length === 0 ? (
+              <div className="d-flex flex-column align-items-center mt-5">
+                <NoDataIcon width={130} />
+                <NoDataText>No Data Found!!</NoDataText>
+              </div>
+            ) : (
+              <GridRow>
+                {filteredFlows.map((flow, index) => {
+                  // Calculate row and column position for border styling
+                  const row = Math.floor(index / 3);
+                  const col = index % 3;
+                  const isLastRow =
+                    row === Math.floor((filteredFlows.length - 1) / 3);
+                  const isLastCol =
+                    col === 2 || index === filteredFlows.length - 1;
 
-                return (
-                  <GridColumn key={flow.id}>
-                    <FlowCard isLastRow={isLastRow} isLastCol={isLastCol}>
-                      <CardHeader>
-                        <IconsContainer>
-                          <IconWrapper>
-                            <IconImage
-                              src={s3Image}
-                              alt="S3"
-                              width="100%"
-                              height="auto"
-                            />
-                          </IconWrapper>
-                          <IconWrapper marginLeft="-18px">
-                            <IconImage
-                              src={PineConeImage}
-                              alt="Pinecone"
-                              width="100%"
-                              height="auto"
-                            />
-                          </IconWrapper>
-                        </IconsContainer>
-                        <VersionText>Version {flow.version}</VersionText>
-                      </CardHeader>
+                  return (
+                    <GridColumn key={flow.id}>
+                      <FlowCard isLastRow={isLastRow} isLastCol={isLastCol}>
+                        <CardHeader>
+                          <IconsContainer>
+                            <IconWrapper>
+                              <IconImage
+                                src={s3Image}
+                                alt="S3"
+                                width="100%"
+                                height="auto"
+                              />
+                            </IconWrapper>
+                            <IconWrapper marginLeft="-18px">
+                              <IconImage
+                                src={PineConeImage}
+                                alt="Pinecone"
+                                width="100%"
+                                height="auto"
+                              />
+                            </IconWrapper>
+                          </IconsContainer>
+                          <VersionText>Version {flow.version}</VersionText>
+                        </CardHeader>
 
-                      <FlowTitle>{flow.title}</FlowTitle>
-                      <FlowDescription>{flow.description}</FlowDescription>
+                        <FlowTitle>{flow.title}</FlowTitle>
+                        <FlowDescription>{flow.description}</FlowDescription>
 
-                      <TagsContainer>
-                        {flow.tags.slice(0, 2).map((tag, idx) => (
-                          <Tag key={idx}>{tag}</Tag>
-                        ))}
+                        <TagsContainer>
+                          {flow.tags.slice(0, 2).map((tag, idx) => (
+                            <Tag key={idx}>{tag}</Tag>
+                          ))}
 
-                        {flow.tags.length > 2 && (
-                          <Tag>+{flow.tags.length - 2}</Tag>
-                        )}
-                      </TagsContainer>
+                          {flow.tags.length > 2 && (
+                            <Tag>+{flow.tags.length - 2}</Tag>
+                          )}
+                        </TagsContainer>
 
-                      <AddButton>
-                        <ButtonText>Add to Registry</ButtonText>
-                      </AddButton>
-                    </FlowCard>
-                  </GridColumn>
-                );
-              })}
-            </GridRow>
+                        <AddButton>
+                          <ButtonText>Add to Registry</ButtonText>
+                        </AddButton>
+                      </FlowCard>
+                    </GridColumn>
+                  );
+                })}
+              </GridRow>
+            )}
           </GalleryContainer>
         </ContentArea>
       </MainContent>
