@@ -120,7 +120,7 @@ export const PromptInputBox = ({
       setOpenConversation(true);
       const payload = {
         session_id: uuidv4(),
-        query: queryText,
+        query: queryText.trim(),
         short_name: queryLabel || '',
         refresh: refresh,
         logged_in_user: currentUser?.id,
@@ -150,8 +150,7 @@ export const PromptInputBox = ({
           onChange={e => {
             let value = e.target.value;
             value = DOMPurify.sanitize(value, { ALLOWED_TAGS: [] });
-            let liveValue = value.replace(/\s{2,}/g, ' ').trimStart();
-            setQueryText(liveValue);
+            setQueryText(value);
             const { isValid } = validateInput(value);
             setIsSendBtnDisabled(!isValid && !isInputEmpty);
             if (!isValid) {
