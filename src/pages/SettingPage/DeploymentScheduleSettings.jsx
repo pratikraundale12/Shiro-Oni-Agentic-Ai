@@ -5,10 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
-  CurvedDeploymentScheduleIcon,
-  EmailSmsTrackingIcon,
-  CurvedProfileDoubleUserIcon,
   ClockIcon,
+  CurvedDeploymentScheduleIcon,
+  CurvedProfileDoubleUserIcon,
+  EmailSmsTrackingIcon,
 } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import {
@@ -73,8 +73,19 @@ export const settingSchema = yup.object().shape({
     .string()
     .required('Group email is required')
     .nullable()
-    .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
-    .max(50, 'Email can not be greater than 25 characters'),
+    .test('emails', 'Invalid email addresses', function (value) {
+      if (!value) return true;
+      const emails = value.split(',').map(email => email.trim());
+      return emails.every(email => EMAIL_REGEX.test(email));
+    })
+    .test(
+      'max-length',
+      'Total length of all emails cannot exceed 200 characters',
+      function (value) {
+        if (!value) return true;
+        return value.length <= 200;
+      }
+    ),
 
   approver_groups: yup
     .mixed()
