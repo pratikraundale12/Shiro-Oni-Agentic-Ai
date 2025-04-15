@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { TodoIcon } from '../../assets';
+import { NoDataIcon, TodoIcon } from '../../assets';
 import { FullPageLoader, Table } from '../../components';
 import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
 import { history } from '../../helpers/history';
@@ -50,7 +50,7 @@ const HeadingStyle = styled.h3`
 `;
 
 const FlowcompareStyled = styled.div`
-  height: 100%;
+  height: 700px;
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid #e0d3d3;
@@ -66,6 +66,14 @@ const ClickableId = styled.div`
   &:hover {
     opacity: 0.8;
   }
+`;
+
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
 `;
 
 const FlowValidationDetails = () => {
@@ -95,6 +103,7 @@ const FlowValidationDetails = () => {
     : [];
 
   const handleValidateFlow = () => {
+    dispatch(FlowValidationActions.validateRulesSuccess(null));
     dispatch(
       FlowValidationActions.validateRules({
         clusterId: selectedCluster?.value,
@@ -217,7 +226,8 @@ const FlowValidationDetails = () => {
           <div className="d-flex align-items-center gap-2">
             <TodoIcon width={22} height={24} />
             <HeadingStyle>
-              {FLOWVALIDATION_CONSTANTS.PROCESS_GROUP_DETAILS}
+              {FLOWVALIDATION_CONSTANTS.PROCESS_GROUP_DETAILS} :{' '}
+              {selectedItem?.name}
             </HeadingStyle>
           </div>
         </div>
@@ -245,65 +255,74 @@ const FlowValidationDetails = () => {
           </div>
         </div>
 
-        {currentData && Object.keys(currentData).length > 0 && (
-          <FlowContainerDetail>
-            <div className="row">
-              <div className="col-md-6 mb-4 pb-md-2">
-                <LabelSelect>{FLOWVALIDATION_CONSTANTS.FLOW_INFO}</LabelSelect>
-                <LabelSelectContent>
-                  {currentData?.lableBody?.flowInfo || 'N/A'}
-                </LabelSelectContent>
+        {!currentData || Object.keys(currentData).length === 0 ? (
+          <div className="d-flex flex-column align-items-center mt-5">
+            <NoDataIcon width={130} />
+            <NoDataText>No Data Found!!</NoDataText>
+          </div>
+        ) : (
+          <>
+            <FlowContainerDetail>
+              <div className="row">
+                <div className="col-md-6 mb-4 pb-md-2">
+                  <LabelSelect>
+                    {FLOWVALIDATION_CONSTANTS.FLOW_INFO}
+                  </LabelSelect>
+                  <LabelSelectContent>
+                    {currentData?.lableBody?.flowInfo || 'N/A'}
+                  </LabelSelectContent>
+                </div>
+                <div className="col-md-6 mb-4 pb-md-2">
+                  <LabelSelect>
+                    {FLOWVALIDATION_CONSTANTS.INVALID_PROCESSOR_COUNT}
+                  </LabelSelect>
+                  <LabelSelectContent>
+                    {currentData?.lableBody?.InvalidCount || 'N/A'}
+                  </LabelSelectContent>
+                </div>
+                <div className="col-md-6 mb-4 pb-md-2">
+                  <LabelSelect>
+                    {FLOWVALIDATION_CONSTANTS.REGISTRY_FLOW_INFO}
+                  </LabelSelect>
+                  <LabelSelectContent>
+                    {currentData?.lableBody?.registryFlowInfo || 'N/A'}
+                  </LabelSelectContent>
+                </div>
+                <div className="col-md-6 mb-4 pb-md-2">
+                  <LabelSelect>
+                    {FLOWVALIDATION_CONSTANTS.CURRENT_VERSION}
+                  </LabelSelect>
+                  <LabelSelectContent>
+                    {currentData?.lableBody?.currentVersion || 'N/A'}
+                  </LabelSelectContent>
+                </div>
               </div>
-              <div className="col-md-6 mb-4 pb-md-2">
-                <LabelSelect>
-                  {FLOWVALIDATION_CONSTANTS.INVALID_PROCESSOR_COUNT}
-                </LabelSelect>
-                <LabelSelectContent>
-                  {currentData?.lableBody?.InvalidCount || 'N/A'}
-                </LabelSelectContent>
+              <div className="row align-items-center justify-content-between">
+                <div className="col-md-6 mb-4 pb-md-2">
+                  <LabelSelect>{FLOWVALIDATION_CONSTANTS.STATE}</LabelSelect>
+                  <LabelSelectContent>
+                    {currentData?.lableBody?.state || 'N/A'}
+                  </LabelSelectContent>
+                </div>
               </div>
-              <div className="col-md-6 mb-4 pb-md-2">
-                <LabelSelect>
-                  {FLOWVALIDATION_CONSTANTS.REGISTRY_FLOW_INFO}
-                </LabelSelect>
-                <LabelSelectContent>
-                  {currentData?.lableBody?.registryFlowInfo || 'N/A'}
-                </LabelSelectContent>
-              </div>
-              <div className="col-md-6 mb-4 pb-md-2">
-                <LabelSelect>
-                  {FLOWVALIDATION_CONSTANTS.CURRENT_VERSION}
-                </LabelSelect>
-                <LabelSelectContent>
-                  {currentData?.lableBody?.currentVersion || 'N/A'}
-                </LabelSelectContent>
-              </div>
-            </div>
-            <div className="row align-items-center justify-content-between">
-              <div className="col-md-6 mb-4 pb-md-2">
-                <LabelSelect>{FLOWVALIDATION_CONSTANTS.STATE}</LabelSelect>
-                <LabelSelectContent>
-                  {currentData?.lableBody?.state || 'N/A'}
-                </LabelSelectContent>
-              </div>
-            </div>
-          </FlowContainerDetail>
-        )}
+            </FlowContainerDetail>
 
-        {sections.map((section, index) => {
-          if (!section.data || section.data.length === 0) return null;
-          return (
-            <Collapsible
-              key={index}
-              title={section.title}
-              isTableOpen={openSections[index]}
-              toggleCollapsible={() => toggleCollapsible(index)}
-              isAddBtnVisible={false}
-            >
-              <Table columns={COLUMNS} data={section?.data} />
-            </Collapsible>
-          );
-        })}
+            {sections.map((section, index) => {
+              if (!section.data || section.data.length === 0) return null;
+              return (
+                <Collapsible
+                  key={index}
+                  title={section.title}
+                  isTableOpen={openSections[index]}
+                  toggleCollapsible={() => toggleCollapsible(index)}
+                  isAddBtnVisible={false}
+                >
+                  <Table columns={COLUMNS} data={section?.data} />
+                </Collapsible>
+              );
+            })}
+          </>
+        )}
       </FlowcompareStyled>
 
       <div className="d-flex">
