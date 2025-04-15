@@ -220,6 +220,7 @@ export const GridActions = ({
   setSelectEntity,
   setSortingState,
   setCurrentPage,
+  isClusterLoggedIn = true,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -334,6 +335,9 @@ export const GridActions = ({
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
 
   useEffect(() => {
+    if (module === 'nodes' && !isClusterLoggedIn) {
+      return;
+    }
     if (
       watchStatus ||
       selectedRange ||

@@ -251,10 +251,50 @@ export function* changeClusterActionState(api, { payload }) {
   });
   if (response.ok) {
     toast.success(response?.data?.message);
-    // yield call(history.push, '/clusters');
   } else {
     toast.error(response?.data?.message);
-    // yield call(history.push, '/clusters');
+  }
+}
+
+export function* fetchClusterRegistryNodes(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchClusterRegistryNodes',
+    loadingSection: 'fetchClusterRegistryNodes',
+    apiMethod: api.fetchClusterRegistryNodes,
+    apiParams: [{ clusterId: payload }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setRegistryNodesData(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
+export function* fetchRunningStatusCluster(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchRunningStatusCluster',
+    loadingSection: 'fetchRunningStatusCluster',
+    apiMethod: api.fetchRunningStatusCluster,
+    apiParams: [{ clusterId: payload }],
+  });
+  if (response?.ok) {
+    // yield put(ClustersActions.setRegistryNodesData(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
+export function* fetchClusterMetrics(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchClusterMetrics',
+    loadingSection: 'fetchClusterMetrics',
+    apiMethod: api.fetchClusterMetrics,
+    apiParams: [{ clusterId: payload }],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setHealthMetricsData(response?.data));
+  } else {
+    toast.error(response?.data?.error);
   }
 }
 
@@ -289,5 +329,16 @@ export function* clustersSagas(api) {
       changeClusterActionState,
       api
     ),
+    takeLatest(
+      ClustersActions.fetchClusterRegistryNodes,
+      fetchClusterRegistryNodes,
+      api
+    ),
+    takeLatest(
+      ClustersActions.fetchRunningStatusCluster,
+      fetchRunningStatusCluster,
+      api
+    ),
+    takeLatest(ClustersActions.fetchClusterMetrics, fetchClusterMetrics, api),
   ]);
 }

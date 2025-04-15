@@ -228,13 +228,13 @@ export const ListClusters = () => {
                         <span>{KDFM.EDIT}</span>
                       </Item>
                     )}
+                    {item.edit_cluster && (
+                      <Item onClick={() => handleClick('view', item?.id, item)}>
+                        <OpenEyeIcon width={18} height={18} />
+                        <span>{KDFM.VIEW}</span>
+                      </Item>
+                    )}
                     <>
-                      {item.status !== CLUSTER_STATUS.DISCONNECTED && (
-                        <Item onClick={() => handleClick('view')}>
-                          <OpenEyeIcon width={18} height={18} />
-                          <span>{KDFM.VIEW}</span>
-                        </Item>
-                      )}
                       {item.deactivate_cluster && (
                         <Item onClick={() => handleClick('delete', item.id)}>
                           <LogoutIcon color="black" />
@@ -426,7 +426,7 @@ export const ListClusters = () => {
     }
   };
 
-  const handleClick = (type, id) => {
+  const handleClick = (type, id, item = {}) => {
     handleCloseMenu();
     if (type === 'edit') {
       history.push('/clusters/edit', { state: menuState.row });
@@ -435,6 +435,7 @@ export const ListClusters = () => {
       setState({
         ...state,
         nodeClusterId: menuState.row.id,
+        created_by_ansible: item?.created_by_ansible,
       });
       history.push(`/clusters/${menuState.row.id}`, {
         clusterSummaryPage: true,
@@ -463,6 +464,16 @@ export const ListClusters = () => {
   }, []);
   useEffect(() => {
     dispatch(ClustersActions.setActiveTabClusterSetup('getting_started'));
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(
+      GridActions.fetchGridSuccess({
+        module: 'nodes',
+        nodes: {},
+      })
+    );
+    dispatch(ClustersActions.setRegistryNodesData({}));
   }, [dispatch]);
   return (
     <>

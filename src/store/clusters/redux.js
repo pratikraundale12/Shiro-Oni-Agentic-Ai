@@ -45,6 +45,11 @@ export const ClustersActions = {
   createCluster: createAction(`${prefix}createCluster`),
   getSingleConfigData: createAction(`${prefix}getSingleConfigData`),
   changeClusterActionState: createAction(`${prefix}changeClusterActionState`),
+  fetchClusterRegistryNodes: createAction(`${prefix}fetchClusterRegistryNodes`),
+  setRegistryNodesData: createAction(`${prefix}setRegistryNodesData`),
+  fetchRunningStatusCluster: createAction(`${prefix}fetchRunningStatusCluster`),
+  fetchClusterMetrics: createAction(`${prefix}fetchClusterMetrics`),
+  setHealthMetricsData: createAction(`${prefix}setHealthMetricsData`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -66,6 +71,8 @@ export const CLUSTERS_INITIAL_STATE = {
   configNameList: [],
   configVersionList: [],
   updateConfigClusterSetupData: {},
+  registryNodesData: {},
+  healthMetricsData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -90,6 +97,8 @@ export const ClustersSelectors = {
   getConfigVersionList: state => state.clusters.configVersionList,
   getUpdateConfigClusterSetupData: state =>
     state.clusters.updateConfigClusterSetupData,
+  getRegistryNodesData: state => state.clusters.registryNodesData,
+  getHealthMetricsData: state => state.clusters.healthMetricsData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -210,6 +219,20 @@ const updateConfigClusterSetupData = (state, { payload }) => {
   };
 };
 
+const setRegistryNodesData = (state, { payload }) => {
+  return {
+    ...state,
+    registryNodesData: payload,
+  };
+};
+
+const setHealthMetricsData = (state, { payload }) => {
+  return {
+    ...state,
+    healthMetricsData: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -252,6 +275,8 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.updateConfigClusterSetup,
         updateConfigClusterSetupData
-      );
+      )
+      .addCase(ClustersActions.setRegistryNodesData, setRegistryNodesData)
+      .addCase(ClustersActions.setHealthMetricsData, setHealthMetricsData);
   }
 );

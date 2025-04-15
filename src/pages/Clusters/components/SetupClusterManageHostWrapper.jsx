@@ -105,15 +105,17 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           >
             <PencilIcon width={16} height={16} />
           </IconButton>
-          <IconButton
-            onClick={event => {
-              setIsDeleteModalOpen(true);
-              setHostToDelete(item);
-            }}
-            className="pencil-icon-schedule-list"
-          >
-            <DeleteSmallIcon width={16} height={16} color="red" />
-          </IconButton>
+          {!item?.is_selected && (
+            <IconButton
+              onClick={() => {
+                setIsDeleteModalOpen(true);
+                setHostToDelete(item);
+              }}
+              className="pencil-icon-schedule-list"
+            >
+              <DeleteSmallIcon width={16} height={16} color="red" />
+            </IconButton>
+          )}
         </ActionTd>
       ),
       resize: true,

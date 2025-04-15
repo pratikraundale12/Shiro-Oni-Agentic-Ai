@@ -2,7 +2,12 @@
 import React from 'react';
 import { KDFM } from '../../../constants';
 import styled from 'styled-components';
-import { ClusterDetailTabIcon, CubeIcon } from '../../../assets';
+import {
+  ClusterDetailTabIcon,
+  CubeIcon,
+  ManageHostIcon,
+  NotePadIcon,
+} from '../../../assets';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -28,7 +33,13 @@ const NavButton = styled.button`
     `border-bottom: 1px solid ${props.theme.colors.primaryActive};`}
 `;
 
-const ClusterSummaryNavigationTab = ({ activeTab, setActiveTab }) => {
+const ClusterSummaryNavigationTab = ({
+  activeTab,
+  setActiveTab,
+  createdByAnsible,
+}) => {
+  console.log(createdByAnsible, 'createdByAnsible');
+
   return (
     <NavTabs id="nav-tab" role="tablist">
       <NavButton
@@ -37,24 +48,32 @@ const ClusterSummaryNavigationTab = ({ activeTab, setActiveTab }) => {
           setActiveTab('summary');
         }}
       >
-        <ClusterDetailTabIcon
-          color={activeTab === 'summary' ? '#FF7A00' : '#444445'}
-        />{' '}
-        {KDFM.CLUSTER_SUMMARY}
+        <div className="d-flex align-items-center gap-2">
+          <NotePadIcon
+            color={activeTab === 'summary' ? '#FF7A00' : '#444445'}
+            width={22}
+            height={22}
+          />
+          {KDFM.CLUSTER_SUMMARY}
+        </div>
       </NavButton>
-      <NavButton
-        active={activeTab === 'status'}
-        onClick={() => {
-          setActiveTab('status');
-        }}
-      >
-        <CubeIcon
-          color={activeTab === 'status' ? '#FF7A00' : '#444445'}
-          height={18}
-          width={18}
-        />{' '}
-        {KDFM.STATUS}
-      </NavButton>
+      {createdByAnsible && (
+        <NavButton
+          active={activeTab === 'status'}
+          onClick={() => {
+            setActiveTab('status');
+          }}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <ManageHostIcon
+              color={activeTab === 'status' ? '#FF7A00' : '#444445'}
+              width={22}
+              height={22}
+            />
+            Cluster {KDFM.STATUS}
+          </div>
+        </NavButton>
+      )}
     </NavTabs>
   );
 };

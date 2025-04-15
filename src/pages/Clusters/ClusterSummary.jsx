@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { ActivityHistoryIcon } from '../../assets';
@@ -9,6 +9,11 @@ import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import { useGlobalContext } from '../../utils';
 import ClusterSummaryNavigationTab from './components/ClusterSummaryNavigationTab';
+import ClusterStatusTab from './components/ClusterStatusTab';
+import { dispatch } from 'd3';
+import { useDispatch } from 'react-redux';
+import { ClustersActions } from '../../store';
+import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
   height: 90%;
@@ -22,8 +27,10 @@ const ActionTd = styled.div`
 `;
 
 export const ClusterSummary = () => {
+  const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
   const [activeTab, setActiveTab] = useState('summary');
+  const { id: clusterId } = useParams();
 
   const getActionsMenu = item => (
     <div data-tooltip-id={`${item?.nodeId}1`}>
@@ -89,12 +96,16 @@ export const ClusterSummary = () => {
   const handleBackAction = () => {
     history.push('/clusters');
   };
+  useEffect(() => {
+    dispatch(ClustersActions.fetchClusterRegistryNodes(clusterId));
+  }, [dispatch]);
 
   return (
     <Container>
       <ClusterSummaryNavigationTab
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        createdByAnsible={state?.created_by_ansible}
       />
       {activeTab === 'summary' && (
         <Grid
@@ -105,7 +116,11 @@ export const ClusterSummary = () => {
           refreshOptions={REFRESH_OPTIONS}
         />
       )}
-      {activeTab === 'status' && <div style={{ height: '100%' }}></div>}
+      {activeTab === 'status' && (
+        <div style={{ height: '100%' }}>
+          <ClusterStatusTab />
+        </div>
+      )}
       <div style={{ width: '74px', marginTop: '10px' }}>
         <Button variant="secondary" type="button" onClick={handleBackAction}>
           {KDFM.BACK}

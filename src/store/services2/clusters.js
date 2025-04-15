@@ -51,7 +51,15 @@ export const clustersAPI = api => {
   const changeClusterActionState = ({ clusterId, payload }) => {
     return api.post(`/clusters/${clusterId}/actions`, payload);
   };
-
+  const fetchClusterRegistryNodes = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/nodes-registry`);
+  };
+  const fetchRunningStatusCluster = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/status`);
+  };
+  const fetchClusterMetrics = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/metrics`);
+  };
   return {
     fetchClusters,
     fetchClusterList,
@@ -71,5 +79,8 @@ export const clustersAPI = api => {
     createCluster,
     getSingleConfigData,
     changeClusterActionState,
+    fetchClusterRegistryNodes,
+    fetchRunningStatusCluster,
+    fetchClusterMetrics,
   };
 };
