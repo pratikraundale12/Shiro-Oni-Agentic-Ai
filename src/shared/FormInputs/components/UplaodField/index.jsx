@@ -5,8 +5,7 @@ import styled from 'styled-components';
 import { Controller } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { hasError } from '../../../../helpers';
-import { TagCrossIcon } from '../../../../assets';
-import { theme } from '../../../../styles';
+import { CrossIcon } from '../../../../assets';
 import defaultLogo from '../../../../assets/images/default-logo.png';
 import defaultFavicon from '../../../../assets/images/default-favicon.ico';
 
@@ -94,7 +93,6 @@ const Container = styled.div`
   }
 
   .image-preview {
-    padding-left: 10px;
     margin-top: 10px;
     max-width: 250px;
     max-height: 200px;
@@ -104,8 +102,8 @@ const Container = styled.div`
 
   .remove-icon {
     position: absolute;
-    top: 2px;
-    right: 4px;
+    top: -5px;
+    right: -5px;
     color: ${props => props.theme.colors.white};
     border-radius: 50%;
     display: flex;
@@ -273,21 +271,22 @@ const UploadField = ({
               <div
                 className="image-preview"
                 style={{
-                  height: '100px',
-                  width: name === 'logo' ? '230px' : '150px',
+                  width: name === 'logo' ? '250px' : '60px',
                   marginTop: '20px',
-                  backgroundColor: theme.colors.lightGrey1,
                 }}
               >
                 <img
                   src={imageSrc}
                   alt="Uploaded Preview"
-                  width={name === 'logo' ? 150 : 100}
-                  height={name === 'logo' ? 100 : 100}
+                  width={name === 'logo' ? 200 : 30}
+                  height={name === 'logo' ? 200 : 30}
                 />
                 {isShowRemoveImageIcon && (
                   <button className="remove-icon" onClick={handleRemoveImage}>
-                    <TagCrossIcon height={16} width={16} />
+                    <CrossIcon
+                      height={name === 'logo' ? 24 : 14}
+                      width={name === 'logo' ? 24 : 14}
+                    />
                   </button>
                 )}
               </div>

@@ -19,8 +19,8 @@ import {
   NamespacesSelectors,
 } from '../store';
 import { getClusterToken } from '../store/apis';
-import { FullPageLoader } from './FullPageLoader';
 import { SchedularSelectors } from '../store/schedular';
+import { FullPageLoader } from './FullPageLoader';
 
 const clusterSchema = yup.object().shape({
   cluster_id: yup.string().required('Cluster is required'),
@@ -145,6 +145,10 @@ export const ClusterLoginModal = () => {
           window.location.reload();
           history.push('/process-group');
         }
+        if (window.location.pathname.includes('/flow-analysis')) {
+          window.location.reload();
+          history.push('/flow-analysis');
+        }
       } else {
         toast.error(response.message || 'Error while getting data');
 
@@ -173,6 +177,10 @@ export const ClusterLoginModal = () => {
     if (window.location.pathname.includes('/process-group')) {
       window.location.reload();
       history.push('/process-group');
+    }
+    if (window.location.pathname.includes('/flow-analysis')) {
+      window.location.reload();
+      history.push('/flow-analysis');
     }
 
     const clusterData = JSON.parse(

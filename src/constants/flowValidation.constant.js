@@ -13,7 +13,7 @@ export const FLOWVALIDATION_CONSTANTS = {
   SELECT_SCOPE_TYPE: 'Select Scope Type',
   ENTER_DISPLAY_VALUE: 'Enter Display Value',
   ENTER_DESCRIPTION: 'Enter Description',
-  PROCESS_GROUP_DETAILS: 'Procress Group Details',
+  PROCESS_GROUP_DETAILS: 'Process Group Details',
   SELECT_RULE_TO_VALIDATE: 'Select Rules To Validate',
   VALIDATE_FLOW: 'Validate Flow',
   FLOW_INFO: 'Flow Info',

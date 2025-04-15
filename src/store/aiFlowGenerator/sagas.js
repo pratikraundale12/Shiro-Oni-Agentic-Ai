@@ -159,7 +159,6 @@ export function* addFlowToRegistry(api, { payload }) {
     apiParams: [{ clusterId: clusterId, payload: payload }],
   });
   if (response.ok) {
-    toast.success('Flow is added to the registry');
     yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(true));
   } else {
     yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
@@ -208,6 +207,25 @@ export function* addNewBucketToRegistry(api, { payload }) {
     );
   }
 }
+
+export function* validateFlowJson(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'validateFlowJson',
+    loadingSection: 'validateFlowJson',
+    apiMethod: api.validateFlowJson,
+    apiParams: [payload],
+    successAction: AiFlowGeneratorActions.validateFlowJsonSuccess,
+  });
+  if (response.ok) {
+    console.log('validated flow', response);
+  } else {
+    toast.error(
+      response?.message ||
+        response?.data?.message ||
+        'Failed to validate flow json'
+    );
+  }
+}
 export function* aiFlowGeneratorSagas(api) {
   yield all([
     takeLatest(AiFlowGeneratorActions.fetchDefaultRecentFlows, action =>
@@ -230,6 +248,9 @@ export function* aiFlowGeneratorSagas(api) {
     ),
     takeLatest(AiFlowGeneratorActions.addNewBucketToRegistry, action =>
       addNewBucketToRegistry(api, action)
+    ),
+    takeLatest(AiFlowGeneratorActions.validateFlowJson, action =>
+      validateFlowJson(api, action)
     ),
   ]);
 }

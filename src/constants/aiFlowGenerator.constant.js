@@ -11,6 +11,8 @@ export const AI_FLOW_GENERATOR_CONSTANTS = {
   ADD_TO_REGSITRY: 'Add to Registry',
   DATA_FLOW_MANAGER: 'Data Flow Manager',
   YOU: 'You',
+  RESTART_CONVERSATION: 'Restart Conversation',
+  VALIDATE_FLOW: 'Validate Flow',
 };
 
 export const GENAI_CONFIG = {
