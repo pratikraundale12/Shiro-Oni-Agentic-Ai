@@ -290,6 +290,7 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'setting', label: 'Settings' },
   { path: 'licensing', label: 'Licensing' },
   { path: 'ai-flow-generator', label: 'AI-Powered Data Flow' },
+  { path: 'flow-analysis', label: 'Flow Analysis' },
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];
