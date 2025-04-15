@@ -45,7 +45,7 @@ import {
   UsersSelectors,
 } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
-// import { FlowValidationActions } from '../../store/flowValidation';
+import { FlowValidationActions } from '../../store/flowValidation';
 import { GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
@@ -581,6 +581,10 @@ export const GridActions = ({
     dispatch(SchedularActions.setSelectedStatusState(watchStatus));
   }, [watchStatus]);
 
+  const handleAnalyzeClick = () => {
+    dispatch(FlowValidationActions.addNewAnalysisModalOpen(true));
+  };
+
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
   return (
@@ -750,6 +754,7 @@ export const GridActions = ({
                 <>
                   {selectedCluster?.value && (
                     <Button
+                      id="process-group-list-schdule-deployment"
                       size="md"
                       disabled={isButtonDisabled}
                       onClick={() => handleScheduleClick()}
@@ -769,6 +774,7 @@ export const GridActions = ({
                   )}
                   {canWrite && (
                     <Button
+                      id="process-group-deploy"
                       disabled={!canWrite}
                       size="md"
                       style={{ width: '84px' }}
@@ -779,10 +785,16 @@ export const GridActions = ({
                   )}
                 </>
               )}
-            {/* {module === 'namespaces' &&
-              location.pathname === '/flow-analysis' && (
-                <Button onClick={handleAnalyzeClick}>Analyze New Flow</Button>
-              )} */}
+            {module === 'namespaces' &&
+              location.pathname === '/flow-analysis' &&
+              selectedCluster?.value && (
+                <Button
+                  onClick={handleAnalyzeClick}
+                  disabled={isButtonDisabled}
+                >
+                  Analyze New Flow
+                </Button>
+              )}
             {['scheduler'].includes(module) && (
               <>
                 <RefreshIocn
@@ -808,6 +820,13 @@ export const GridActions = ({
                 <RefreshIocn
                   onClick={handleRefresh}
                   data-tooltip-id={`tooltip-group-namespace-refresh-`}
+                  style={{
+                    cursor:
+                      selectedCluster?.value &&
+                      !isEmpty(selectedCluster?.value)
+                        ? 'pointer'
+                        : 'not-allowed',
+                  }}
                 >
                   <RefreshIcon
                     style={{

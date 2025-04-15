@@ -1,12 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export const AppIcon = ({
-  className,
-  width = 20,
-  height = 20,
-  color = 'currentColor',
-}) => {
+export const AppIcon = ({ width = 20, height = 20, color = '#444445' }) => {
   return (
     <svg
       width={width}
@@ -14,7 +9,6 @@ export const AppIcon = ({
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
     >
       <path
         d="M14.1667 8.33464H15.8334C17.5001 8.33464 18.3334 7.5013 18.3334 5.83464V4.16797C18.3334 2.5013 17.5001 1.66797 15.8334 1.66797H14.1667C12.5001 1.66797 11.6667 2.5013 11.6667 4.16797V5.83464C11.6667 7.5013 12.5001 8.33464 14.1667 8.33464Z"
@@ -53,7 +47,6 @@ export const AppIcon = ({
 };
 
 AppIcon.propTypes = {
-  className: PropTypes.string,
   width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   color: PropTypes.string,

@@ -233,9 +233,11 @@ export const ClusterLoginModal = () => {
         onSubmit={isFieldsDisabled ? onSwitchCluster : handleSubmit(onSubmit)}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}
+        primaryButtonProps={{ id: 'enable-cluster-submit-btn' }}
       >
         <SelectField
           label="Select Cluster"
+          id="select-cluster"
           name="cluster_id"
           control={control}
           icon={<ClusterIcon />}

@@ -89,6 +89,7 @@ export const Modal = ({
   thirdVarint = false,
   noPadding = false,
   noScroll = false,
+  primaryButtonProps = {},
 }) => {
   const styleObject = {
     overlay: {
@@ -200,6 +201,7 @@ export const Modal = ({
                 data-dismiss="modal"
                 disabled={primaryButtonDisabled}
                 size={!secondaryButtonText ? 'lg' : 'md'}
+                {...primaryButtonProps}
               >
                 {primaryButtonText}
               </Button>
