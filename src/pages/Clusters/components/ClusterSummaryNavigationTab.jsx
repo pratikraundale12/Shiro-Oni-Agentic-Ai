@@ -38,8 +38,6 @@ const ClusterSummaryNavigationTab = ({
   setActiveTab,
   createdByAnsible,
 }) => {
-  console.log(createdByAnsible, 'createdByAnsible');
-
   return (
     <NavTabs id="nav-tab" role="tablist">
       <NavButton
