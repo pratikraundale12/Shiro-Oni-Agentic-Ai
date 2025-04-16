@@ -44,6 +44,13 @@ export const ClustersActions = {
   setConfigVersionList: createAction(`${prefix}setConfigVersionList`),
   createCluster: createAction(`${prefix}createCluster`),
   getSingleConfigData: createAction(`${prefix}getSingleConfigData`),
+  changeClusterActionState: createAction(`${prefix}changeClusterActionState`),
+  fetchClusterRegistryNodes: createAction(`${prefix}fetchClusterRegistryNodes`),
+  setRegistryNodesData: createAction(`${prefix}setRegistryNodesData`),
+  fetchRunningStatusCluster: createAction(`${prefix}fetchRunningStatusCluster`),
+  fetchClusterMetrics: createAction(`${prefix}fetchClusterMetrics`),
+  setHealthMetricsData: createAction(`${prefix}setHealthMetricsData`),
+  setRunningStatusData: createAction(`${prefix}setRunningStatusData`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -65,6 +72,9 @@ export const CLUSTERS_INITIAL_STATE = {
   configNameList: [],
   configVersionList: [],
   updateConfigClusterSetupData: {},
+  registryNodesData: {},
+  healthMetricsData: {},
+  runningStatusData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -89,6 +99,9 @@ export const ClustersSelectors = {
   getConfigVersionList: state => state.clusters.configVersionList,
   getUpdateConfigClusterSetupData: state =>
     state.clusters.updateConfigClusterSetupData,
+  getRegistryNodesData: state => state.clusters.registryNodesData,
+  getHealthMetricsData: state => state.clusters.healthMetricsData,
+  getRunningStatusData: state => state.clusters.runningStatusData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -209,6 +222,26 @@ const updateConfigClusterSetupData = (state, { payload }) => {
   };
 };
 
+const setRegistryNodesData = (state, { payload }) => {
+  return {
+    ...state,
+    registryNodesData: payload,
+  };
+};
+
+const setHealthMetricsData = (state, { payload }) => {
+  return {
+    ...state,
+    healthMetricsData: payload,
+  };
+};
+const setRunningStatusData = (state, { payload }) => {
+  return {
+    ...state,
+    runningStatusData: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -251,6 +284,9 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.updateConfigClusterSetup,
         updateConfigClusterSetupData
-      );
+      )
+      .addCase(ClustersActions.setRegistryNodesData, setRegistryNodesData)
+      .addCase(ClustersActions.setHealthMetricsData, setHealthMetricsData)
+      .addCase(ClustersActions.setRunningStatusData, setRunningStatusData);
   }
 );
