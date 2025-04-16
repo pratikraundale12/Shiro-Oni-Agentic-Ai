@@ -140,7 +140,7 @@ const ClusterStatusTab = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchClusterMetrics')
   );
-  //
+
   const handleStartClick = () => {
     setSelectedMethod('start');
     setStartInitiated(true);
