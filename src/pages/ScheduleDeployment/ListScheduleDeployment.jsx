@@ -335,23 +335,43 @@ export const ListScheduleDeployment = () => {
               <>
                 {item?.state === 'PENDING' && (
                   <>
+                    {currentUser?.id === item?.deployer_id && (
+                      <>{editIconRender(item)}</>
+                    )}
                     {RejectIconRender(item)}
                     {ApprovIconRender(item)}
                   </>
                 )}
-                {(item?.state === 'PENDING' ||
-                  item?.state === 'TIME_LAPSED' ||
+                {(item?.state === 'TIME_LAPSED' ||
+                  item?.state === 'STOPPED' ||
+                  item?.state === 'REJECTED' ||
                   item?.state === 'FAILED') &&
                   currentUser?.id === item?.deployer_id && (
                     <>{editIconRender(item)}</>
                   )}
-                {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
+                {item?.state === 'APPROVED' && (
+                  <>
+                    {currentUser?.id === item?.deployer_id && (
+                      <>{editIconRender(item)}</>
+                    )}
+                    {RejectIconRender(item)}
+                    {stopIconRender(item)}
+                  </>
+                )}
               </>
             )}
             {item?.action_by === 'NO_APPROVER_REQUIRED' &&
-              item?.state === 'PENDING' && <>{stopIconRender(item)}</>}
+              item?.state === 'PENDING' && (
+                <>
+                  {currentUser?.id === item?.deployer_id && (
+                    <>{editIconRender(item)}</>
+                  )}
+                  {stopIconRender(item)}
+                </>
+              )}
           </>
         )}
+
         {/* NON SUPERADMIN + SCHEDULAR + NOT IN APPROVER GROUP */}
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id === item?.deployer_id &&
@@ -363,11 +383,14 @@ export const ListScheduleDeployment = () => {
                     item?.state === 'TIME_LAPSED') && (
                     <>{editIconRender(item)}</>
                   )}
+                  {item?.state === 'APPROVED' && <>{editIconRender(item)}</>}
+                  {item?.state === 'REJECTED' && <>{editIconRender(item)}</>}
+                  {item?.state === 'STOPPED' && <>{editIconRender(item)}</>}
+                  {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
                 </>
               )}
               {item?.action_by === 'NO_APPROVER_REQUIRED' &&
                 item?.state === 'PENDING' && <>{editIconRender(item)}</>}
-              {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
             </>
           )}
         {/* NON SUPERADMIN + SCHEDULAR + IN APPROVER GROUP */}
@@ -385,12 +408,20 @@ export const ListScheduleDeployment = () => {
                     </>
                   )}
                   {item?.state === 'TIME_LAPSED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
+                  {item?.state === 'APPROVED' && (
+                    <>
+                      {editIconRender(item)}
+                      {RejectIconRender(item)}
+                      {stopIconRender(item)}
+                    </>
+                  )}
+                  {item?.state === 'STOPPED' && <>{editIconRender(item)}</>}
+                  {item?.state === 'REJECTED' && <>{editIconRender(item)}</>}
+                  {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
                 </>
               )}
               {item?.action_by === 'NO_APPROVER_REQUIRED' &&
                 item?.state === 'PENDING' && <>{editIconRender(item)}</>}
-              {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
             </>
           )}
         {/* NON SUPERADMIN + NON SCHEDULAR + IN APPROVER GROUP */}
@@ -405,7 +436,12 @@ export const ListScheduleDeployment = () => {
                   {ApprovIconRender(item)}
                 </>
               )}
-              {item?.state === 'APPROVED' && <>{stopIconRender(item)}</>}
+              {item?.state === 'APPROVED' && (
+                <>
+                  {RejectIconRender(item)}
+                  {stopIconRender(item)}
+                </>
+              )}
             </>
           )}
         <div className="position-relative">
