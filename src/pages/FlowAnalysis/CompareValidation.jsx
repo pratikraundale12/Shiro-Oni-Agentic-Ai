@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CompareIcon, NoDataIcon, TodoIcon } from '../../assets';
+import { CompareValidationIcon } from '../../assets/Icons/CompareValidationIcon';
 import { FullPageLoader, Table } from '../../components';
 import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
 import { history } from '../../helpers/history';
@@ -169,6 +170,7 @@ const CompareValidation = () => {
               placeholder={FLOWVALIDATION_CONSTANTS.SELECT_VERSION}
               options={getFilteredOptions(selectedVersionA, selectedVersionB)}
               control={control}
+              sortAlphabetically={false}
             />
           </div>
           <div className="col-md-3">
@@ -178,12 +180,20 @@ const CompareValidation = () => {
               placeholder={FLOWVALIDATION_CONSTANTS.SELECT_VERSION}
               options={getFilteredOptions(selectedVersionB, selectedVersionA)}
               control={control}
+              sortAlphabetically={false}
             />
           </div>
           <div className="col-md-auto">
             <Button
               onClick={handleCompareFlow}
               disabled={!selectedVersionA || !selectedVersionB}
+              icon={
+                <CompareValidationIcon
+                  width="18px"
+                  height="18px"
+                  color="#fff"
+                />
+              }
             >
               {FLOWVALIDATION_CONSTANTS.COMPARE}
             </Button>

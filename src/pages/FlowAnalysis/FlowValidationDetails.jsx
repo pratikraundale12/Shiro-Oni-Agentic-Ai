@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { NoDataIcon, TodoIcon } from '../../assets';
+import { NoDataIcon, PropertyIcon, TodoIcon } from '../../assets';
 import { FullPageLoader, Table } from '../../components';
 import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
 import { history } from '../../helpers/history';
@@ -250,7 +250,11 @@ const FlowValidationDetails = () => {
           </div>
 
           <div className="mt-4 ml-2 d-flex align-center">
-            <Button onClick={handleValidateFlow} className="w-auto mx-auto">
+            <Button
+              onClick={handleValidateFlow}
+              className="w-auto mx-auto"
+              icon={<PropertyIcon height={20} width={20} />}
+            >
               {FLOWVALIDATION_CONSTANTS.VALIDATE_FLOW}
             </Button>
           </div>
