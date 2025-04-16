@@ -213,6 +213,17 @@ const ClusterSetupNewConfigDetailsPage = () => {
     }
   }, [formValues, originalValues]);
 
+  useEffect(() => {
+
+    return () => {
+      reset(); 
+      dispatch(ClustersActions.updateConfigClusterSetup({}));
+      setOriginalValues({});
+      setFormChanged(false);
+      setSelectedProperty('nifi_properties');
+    };
+  }, []);
+
   const sidebarItems = [
     {
       name: 'NiFi Properties',
