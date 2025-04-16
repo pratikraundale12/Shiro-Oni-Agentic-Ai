@@ -278,7 +278,7 @@ export function* fetchRunningStatusCluster(api, { payload }) {
     apiParams: [{ clusterId: payload }],
   });
   if (response?.ok) {
-    // yield put(ClustersActions.setRegistryNodesData(response?.data));
+    yield put(ClustersActions.setRunningStatusData(response?.data));
   } else {
     toast.error(response?.data?.error);
   }

@@ -50,6 +50,7 @@ export const ClustersActions = {
   fetchRunningStatusCluster: createAction(`${prefix}fetchRunningStatusCluster`),
   fetchClusterMetrics: createAction(`${prefix}fetchClusterMetrics`),
   setHealthMetricsData: createAction(`${prefix}setHealthMetricsData`),
+  setRunningStatusData: createAction(`${prefix}setRunningStatusData`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -73,6 +74,7 @@ export const CLUSTERS_INITIAL_STATE = {
   updateConfigClusterSetupData: {},
   registryNodesData: {},
   healthMetricsData: {},
+  runningStatusData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -99,6 +101,7 @@ export const ClustersSelectors = {
     state.clusters.updateConfigClusterSetupData,
   getRegistryNodesData: state => state.clusters.registryNodesData,
   getHealthMetricsData: state => state.clusters.healthMetricsData,
+  getRunningStatusData: state => state.clusters.runningStatusData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -232,6 +235,12 @@ const setHealthMetricsData = (state, { payload }) => {
     healthMetricsData: payload,
   };
 };
+const setRunningStatusData = (state, { payload }) => {
+  return {
+    ...state,
+    runningStatusData: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -277,6 +286,7 @@ export const clustersReducer = createReducer(
         updateConfigClusterSetupData
       )
       .addCase(ClustersActions.setRegistryNodesData, setRegistryNodesData)
-      .addCase(ClustersActions.setHealthMetricsData, setHealthMetricsData);
+      .addCase(ClustersActions.setHealthMetricsData, setHealthMetricsData)
+      .addCase(ClustersActions.setRunningStatusData, setRunningStatusData);
   }
 );

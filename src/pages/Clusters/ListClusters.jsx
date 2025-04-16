@@ -222,12 +222,13 @@ export const ListClusters = () => {
               <List ref={menuRef}>
                 {item.is_active ? (
                   <>
-                    {item.edit_cluster && (
+                    {item.edit_cluster && !item?.created_by_ansible && (
                       <Item onClick={() => handleClick('edit')}>
                         <PencilIcon width={16} height={16} />
                         <span>{KDFM.EDIT}</span>
                       </Item>
                     )}
+
                     {item.edit_cluster && (
                       <Item onClick={() => handleClick('view', item?.id, item)}>
                         <OpenEyeIcon width={18} height={18} />

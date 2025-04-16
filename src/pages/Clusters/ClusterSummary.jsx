@@ -16,7 +16,9 @@ import { ClustersActions } from '../../store';
 import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
-  height: 90%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `;
 
 const ActionTd = styled.div`
@@ -121,7 +123,7 @@ export const ClusterSummary = () => {
           <ClusterStatusTab />
         </div>
       )}
-      <div style={{ width: '74px', marginTop: '10px' }}>
+      <div style={{ width: '74px', marginTop: 'auto', paddingTop: '10px' }}>
         <Button variant="secondary" type="button" onClick={handleBackAction}>
           {KDFM.BACK}
         </Button>

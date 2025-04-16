@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { SquareBoxIcon, TriangleIcons } from '../../../assets';
 import { useDispatch, useSelector } from 'react-redux';
-import { ClustersActions, ClustersSelectors } from '../../../store';
+import {
+  ClustersActions,
+  ClustersSelectors,
+  LoadingSelectors,
+} from '../../../store';
 import { useParams } from 'react-router-dom';
-import { Loader } from '../../../components';
+import { FullPageLoader, Loader } from '../../../components';
 import { isEmpty } from 'lodash';
 import { theme } from '../../../styles';
 
@@ -91,11 +95,12 @@ const ActiveButtonDiv = styled.div`
   border: 1px solid #dde4f0;
   border-radius: 8px;
   background-color: #f5f7fa;
-  cursor: pointer;
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: ${props => (props.disabled ? 0.5 : 1)};
   &:hover {
     border: 1px solid
       ${props => (props.isActive ? props.activeColor : '#FF7A00')};
@@ -127,12 +132,18 @@ const TitleText = styled.div`
 const ClusterStatusTab = () => {
   const dispatch = useDispatch();
   const [selectedMethod, setSelectedMethod] = useState();
+  const [startInitiated, setStartInitiated] = useState(false);
+  const [stopInitiaded, setStopInitiated] = useState(false);
   const { id: clusterId } = useParams();
   const healthMetricData = useSelector(ClustersSelectors.getHealthMetricsData);
-  console.log(healthMetricData, 'healthMetricData');
-
+  const runningStatusData = useSelector(ClustersSelectors.getRunningStatusData);
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchClusterMetrics')
+  );
+  //
   const handleStartClick = () => {
     setSelectedMethod('start');
+    setStartInitiated(true);
     dispatch(
       ClustersActions.changeClusterActionState({
         clusterId,
@@ -142,6 +153,7 @@ const ClusterStatusTab = () => {
   };
   const handleStopClick = () => {
     setSelectedMethod('stop');
+    setStopInitiated(true);
     dispatch(
       ClustersActions.changeClusterActionState({
         clusterId,
@@ -150,12 +162,39 @@ const ClusterStatusTab = () => {
     );
   };
   useEffect(() => {
-    dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
     dispatch(ClustersActions.fetchClusterMetrics(clusterId));
+    dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
   }, [dispatch]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [dispatch, clusterId]);
+
+  useEffect(() => {
+    if (runningStatusData?.status?.isRunning) {
+      setSelectedMethod('start');
+    } else {
+      setSelectedMethod('stop');
+    }
+    if (runningStatusData?.status?.startInitiated) {
+      setStartInitiated(true);
+    } else {
+      setStartInitiated(false);
+    }
+    if (runningStatusData?.status?.stopInitiated) {
+      setStopInitiated(true);
+    } else {
+      setStopInitiated(false);
+    }
+  }, [runningStatusData]);
 
   return (
     <DataWrapper className="w-100">
+      <FullPageLoader loading={loading} />
       <TitleText className="mt-4">Cluster Control</TitleText>
       <div className="row mt-4 mb-4">
         <TextsvgDiv className="d-flex col-2">
@@ -166,13 +205,18 @@ const ClusterStatusTab = () => {
               activeColor="#58e715"
               hoverColor="#58e715"
               activeTextColor="#fff"
-              onClick={handleStartClick}
+              onClick={
+                !(startInitiated || stopInitiaded) ? handleStartClick : null
+              }
               data-tooltip-id="start"
+              disabled={startInitiated || stopInitiaded}
             >
               <TriangleIcons color="#B5BDC8" />
             </ActiveButtonDiv>
           </ActiveButtonDiv>
-          <div className="mr-2">Start Cluster</div>
+          <div className="mr-2">
+            {startInitiated ? 'Starting...' : 'Start Cluster'}
+          </div>
         </TextsvgDiv>
         <TextsvgDiv className="d-flex col-2">
           <ActiveButtonDiv className="div-btn-2 mr-2">
@@ -182,18 +226,28 @@ const ClusterStatusTab = () => {
               activeColor="#c52b2b"
               hoverColor="#c52b2b"
               activeTextColor="#fff"
-              onClick={handleStopClick}
+              onClick={
+                !(startInitiated || stopInitiaded) ? handleStopClick : null
+              }
               data-tooltip-id="stop"
+              disabled={startInitiated || stopInitiaded}
             >
               <SquareBoxIcon color="#B5BDC8" />
             </ActiveButtonDiv>
           </ActiveButtonDiv>
-          <div>Stop Cluster</div>
+          <div>{stopInitiaded ? 'Stopping Cluster...' : 'Stop Cluster'}</div>
         </TextsvgDiv>
-        {false && (
-          <TextsvgDiv className=" col-2">
-            <Loader size="lg" />
-          </TextsvgDiv>
+        {(startInitiated || stopInitiaded) && (
+          <div className="col-3">
+            <div className="row">
+              <div className="col-2">
+                <Loader size="lg" />
+              </div>
+              <TextsvgDiv className="col-10">
+                Cluster Status is updating...
+              </TextsvgDiv>
+            </div>
+          </div>
         )}
       </div>
 
@@ -201,7 +255,11 @@ const ClusterStatusTab = () => {
         {healthMetricData &&
           !isEmpty(healthMetricData) &&
           healthMetricData?.data?.map(ele => (
-            <div key={ele?.name}>
+            <div
+              key={ele?.name}
+              style={{ border: '1px solid #dde4f0' }}
+              className="mb-2"
+            >
               <TitleText className="mt-4 ms-3">
                 {' '}
                 <span style={{ color: `${theme.colors.primary}` }}>
@@ -225,7 +283,8 @@ const ClusterStatusTab = () => {
                       Total Disk Utilisation
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {ele?.data?.disk?.used} - {ele?.data?.disk?.utilization}
+                      {ele?.data?.disk?.used} &nbsp;
+                      {`(${ele?.data?.disk?.utilization})`}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
@@ -255,8 +314,9 @@ const ClusterStatusTab = () => {
                       Total Memory Utilisation
                     </SummaryDetailsHFourTag>
                     <SummaryDetailsPtag className="mb-0">
-                      {ele?.data?.memory?.used} -{' '}
-                      {ele?.data?.memory?.utilization}
+                      {ele?.data?.memory?.used}
+                      &nbsp;
+                      {`(${ele?.data?.memory?.utilization})`}
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
