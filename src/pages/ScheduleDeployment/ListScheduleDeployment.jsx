@@ -386,6 +386,7 @@ export const ListScheduleDeployment = () => {
                   {item?.state === 'APPROVED' && <>{editIconRender(item)}</>}
                   {item?.state === 'REJECTED' && <>{editIconRender(item)}</>}
                   {item?.state === 'STOPPED' && <>{editIconRender(item)}</>}
+                  {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
                 </>
               )}
               {item?.action_by === 'NO_APPROVER_REQUIRED' &&
