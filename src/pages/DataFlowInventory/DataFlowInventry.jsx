@@ -1,14 +1,19 @@
+import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { NoDataIcon, RefreshIcon, SmallSearchIcon } from '../../assets';
 import PineConeImage from '../../assets/images/PineCone.png';
 import s3Image from '../../assets/images/s3logo.png';
+import { AiFlowGeneratorActions } from '../../store/aiFlowGenerator';
 import {
   FlowValidationActions,
   FlowValidationSelectors,
 } from '../../store/flowValidation';
+import { NamespacesSelectors } from '../../store/namespaces';
 import { theme } from '../../styles';
+import { AddNewBucketModal } from '../AiFlowGenerator/AddNewBucketModal';
+import { FlowAddToRegistryModal } from '../AiFlowGenerator/FlowAddToRegistryModal';
 
 // Styled Components
 const Container = styled.div`
@@ -251,13 +256,29 @@ const DataFlowInventory = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [openAddToRegistryModal, setOpenAddToRegistryModal] = useState(false);
+  const [isAddNewBucketModalOpen, setIsAddNewBucketModalOpen] = useState(false);
+  const [selectedFlow, setSelectedFlow] = useState(null);
   const itemsPerPage = 20;
 
+  const bucketListData = useSelector(
+    NamespacesSelectors.getBucketListDropDownData
+  );
+  const [buckets, setBuckets] = useState(bucketListData?.bucketList);
+
   useEffect(() => {
+    if (!isEmpty(bucketListData)) {
+      setBuckets(bucketListData?.bucketList);
+    }
+  }, [bucketListData]);
+
+  useEffect(() => {
+    console.log('fetching flows');
     dispatch(FlowValidationActions.fetchFlows());
   }, [dispatch]);
 
   const flows = useSelector(FlowValidationSelectors.getFlows);
+  console.log('flows', flows);
 
   const handleSearch = e => {
     setSearchTerm(e.target.value.toLowerCase());
@@ -293,13 +314,27 @@ const DataFlowInventory = () => {
 
   const paginatedFlows = filteredFlows.slice(0, currentPage * itemsPerPage);
 
+  const handleAddToRegistry = flowData => {
+    const payload = {
+      bucketId: flowData?.bucket,
+      flowName: flowData?.flow_name,
+      flowDesc: flowData?.flow_desc,
+      flowJson: selectedFlow,
+    };
+    dispatch(AiFlowGeneratorActions.addFlowToRegistry(payload));
+    setOpenAddToRegistryModal(false);
+  };
+
+  const handleRefresh = () => {
+    dispatch(FlowValidationActions.fetchFlows());
+  };
   return (
     <Container>
       <MainContent>
         <ContentArea>
           <HeaderContainer>
             <Title>Flow Gallery List</Title>
-            <RefreshButton>
+            <RefreshButton onClick={handleRefresh}>
               <RefreshIcon />
             </RefreshButton>
           </HeaderContainer>
@@ -374,7 +409,12 @@ const DataFlowInventory = () => {
                             )}
                           </TagsContainer>
 
-                          <AddButton>
+                          <AddButton
+                            onClick={() => {
+                              setSelectedFlow(flow);
+                              setOpenAddToRegistryModal(true);
+                            }}
+                          >
                             <ButtonText>Add to Registry</ButtonText>
                           </AddButton>
                         </FlowCard>
@@ -392,6 +432,28 @@ const DataFlowInventory = () => {
           </GalleryContainer>
         </ContentArea>
       </MainContent>
+
+      {openAddToRegistryModal && (
+        <FlowAddToRegistryModal
+          isModalOpen={openAddToRegistryModal}
+          setIsModalOpen={setOpenAddToRegistryModal}
+          bucketList={buckets || []}
+          defaultFlowName={selectedFlow?.name || 'Flow'}
+          handleAddToRegistry={handleAddToRegistry}
+          handleClose={() => {
+            setOpenAddToRegistryModal(false);
+          }}
+          setIsAddNewBucketModalOpen={setIsAddNewBucketModalOpen}
+          refresh={handleRefresh}
+        />
+      )}
+
+      {isAddNewBucketModalOpen && (
+        <AddNewBucketModal
+          isModalOpen={isAddNewBucketModalOpen}
+          setIsModalOpen={setIsAddNewBucketModalOpen}
+        />
+      )}
     </Container>
   );
 };

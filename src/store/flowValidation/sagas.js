@@ -194,12 +194,12 @@ export function* setRulePrioritySaga(api, { payload }) {
   }
 }
 
-export function* fetchFlowsSaga(api) {
+export function* fetchFlowsSaga(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchFlows',
     loadingSection: 'fetchFlows',
     apiMethod: api.getFlows,
-    apiParams: [],
+    apiParams: [payload],
     successAction: FlowValidationActions.fetchFlowsSuccess,
   });
 
@@ -222,5 +222,6 @@ export function* flowValidationSagas(api) {
     takeLatest(FlowValidationActions.deleteRule, deleteRuleSaga, api),
     takeLatest(FlowValidationActions.emailReport, emailReportSaga, api),
     takeLatest(FlowValidationActions.setRulePriority, setRulePrioritySaga, api),
+    takeLatest(FlowValidationActions.fetchFlows, fetchFlowsSaga, api),
   ]);
 }
