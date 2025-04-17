@@ -50,6 +50,7 @@ const LabelSelect = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
+  display: inline;
 `;
 const DisplaySection = styled.div`
   height: calc(100% - 120px) !important;
@@ -131,6 +132,14 @@ const TitleTab = styled.h3`
 const TitleTabWrapper = styled.div`
   border-bottom: 2px solid #dde4f0;
   padding-bottom: 12px;
+`;
+
+const LabelWarning = styled.span`
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+  font-style: italic;
 `;
 
 const ClusterSetupNewConfigDetailsPage = () => {
@@ -655,8 +664,9 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
-                        Java.arg.2 (Initial Heap Size)
+                      <LabelSelect className="mb-3 ms-1 row">
+                        Java.arg.2
+                        <LabelWarning>(Initial Heap Size in GB)</LabelWarning>
                       </LabelSelect>
 
                       <InputField
@@ -670,8 +680,9 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
-                        Java.arg.3 (Maximum Heap Size)
+                      <LabelSelect className="mb-3 row">
+                        Java.arg.3
+                        <LabelWarning>(Maximum Heap Size in GB)</LabelWarning>
                       </LabelSelect>
 
                       <InputField
