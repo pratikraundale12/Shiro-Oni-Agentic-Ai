@@ -50,6 +50,7 @@ const LabelSelect = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
+  display: inline;
 `;
 const DisplaySection = styled.div`
   height: calc(100% - 120px) !important;
@@ -133,9 +134,19 @@ const TitleTabWrapper = styled.div`
   padding-bottom: 12px;
 `;
 
+const LabelWarning = styled.span`
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+  font-style: italic;
+`;
+
 const ClusterSetupNewConfigDetailsPage = () => {
   const [originalValues, setOriginalValues] = useState({});
   const [formChanged, setFormChanged] = useState(false);
+  const [initialHeapSize, setInitialHeapSize] = useState(0);
+
   const dispatch = useDispatch();
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
@@ -151,9 +162,15 @@ const ClusterSetupNewConfigDetailsPage = () => {
     }));
 
   const schema = yup.object().shape({
-    configName: yup.string().required('Config Name is required'),
+    configName: yup
+      .string()
+      .required('Config name is required')
+      .matches(/^\S+$/, 'Config name cannot contain spaces'),
     nifiVersion: yup.string().required('NiFi version is required'),
-    comments: yup.string().required('Comment is required'),
+    comments: yup
+      .string()
+      .transform(value => value?.trim())
+      .required('Comment is required'),
     nifi_cluster_node_protocol_max_threads: yup
       .number()
       .typeError('Protocol Max thread must be a number')
@@ -165,14 +182,43 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .typeError('Web http port must be a number')
       .integer('Web http port must be an integer')
       .positive('Web http port must be a positive number')
-      .required('Web http port is required'),
+      .required('Web http port is required')
+      .test(
+        'len',
+        'Port must be between 4 and 5 digits',
+        val => val && val.toString().length >= 4 && val.toString().length <= 5
+      ),
     username: yup.string().required('Userame is required'),
-    password: yup.string().required('Password is required'),
-    java_arg_2: yup.string().required('Initial heap size is required'),
-    java_arg_3: yup.string().required('Maximum heap size is required'),
-    directory: yup.string().required('Directory is required'),
+    password: yup
+      .string()
+      .required('Password is required')
+      .min(8, 'Password must be minimum 8 in length'),
+    java_arg_2: yup
+      .number()
+      .transform((value, originalValue) =>
+        originalValue === '' ? undefined : value
+      )
+      .typeError('Must be a number')
+      .positive('Must be a positive number')
+      .required('Initial heap size is required'),
+    java_arg_3: yup
+      .number()
+      .typeError('Must be a number')
+      .positive('Must be a positive number')
+      .required('Maximum heap size is required')
+      .min(
+        initialHeapSize,
+        `Maximum heap size must be at least ${initialHeapSize}`
+      ),
+    directory: yup
+      .string()
+      .required('Directory is required')
+      .matches(/^\S+$/, 'Directory cannot contain spaces'),
     partitions: yup.string().required('Partitions is required'),
-    root_node: yup.string().required('Root node is required'),
+    root_node: yup
+      .string()
+      .required('Root node is required')
+      .matches(/^\S+$/, 'Root node cannot contain spaces'),
   });
 
   const {
@@ -194,10 +240,20 @@ const ClusterSetupNewConfigDetailsPage = () => {
       root_node: '/nifi',
       session_timeout: '10 seconds',
       checkpoint_interval: '2 mins',
+      java_arg_2: 0,
+      java_arg_3: 0,
     },
   });
-  // Watch all form values to detect changes
+
   const formValues = watch();
+
+  useEffect(() => {
+    if (formValues?.java_arg_2) {
+      setInitialHeapSize(Number(formValues?.java_arg_2));
+    } else {
+      setInitialHeapSize(0);
+    }
+  }, [formValues?.java_arg_2]);
 
   useEffect(() => {
     if (!isEmpty(originalValues)) {
@@ -217,9 +273,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
   }, [formValues, originalValues]);
 
   useEffect(() => {
-
     return () => {
-      reset(); 
+      reset();
       dispatch(ClustersActions.updateConfigClusterSetup({}));
       setOriginalValues({});
       setFormChanged(false);
@@ -338,9 +393,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifi_web_https_port: data?.nifi_web_https_port,
     };
     const bootstrapPayload = {
-      java_arg_2: data?.java_arg_2,
-      java_arg_3: data?.java_arg_3,
+      java_arg_2: `-Xmx${data?.java_arg_2}g`,
+      java_arg_3: `-Xmx${data?.java_arg_3}g`,
     };
+
     const loginPayload = {
       username: data?.username,
       password: data?.password,
@@ -608,13 +664,14 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
-                        Java.arg.2 (Initial Heap Size)
+                      <LabelSelect className="mb-3 ms-1 row">
+                        Java.arg.2
+                        <LabelWarning>(Initial Heap Size in GB)</LabelWarning>
                       </LabelSelect>
 
                       <InputField
                         name="java_arg_2"
-                        type="text"
+                        type="number"
                         placeholder="Enter java.arg.2"
                         required
                         register={register}
@@ -623,13 +680,14 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
-                        Java.arg.3 (Maximum Heap Size)
+                      <LabelSelect className="mb-3 row">
+                        Java.arg.3
+                        <LabelWarning>(Maximum Heap Size in GB)</LabelWarning>
                       </LabelSelect>
 
                       <InputField
                         name="java_arg_3"
-                        type="text"
+                        type="number"
                         placeholder="Enter java.arg.3"
                         required
                         register={register}
