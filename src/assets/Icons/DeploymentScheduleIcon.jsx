@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export const DeploymentScheduleIcon = ({
-  className,
   width = 20,
   height = 20,
-  color = 'currentColor',
+  color = '#444445',
 }) => {
   return (
     <svg
@@ -14,7 +13,6 @@ export const DeploymentScheduleIcon = ({
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
     >
       <path
         d="M6.66675 1.66797V4.16797"
@@ -95,7 +93,6 @@ export const DeploymentScheduleIcon = ({
 };
 
 DeploymentScheduleIcon.propTypes = {
-  className: PropTypes.string,
   width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   color: PropTypes.string,

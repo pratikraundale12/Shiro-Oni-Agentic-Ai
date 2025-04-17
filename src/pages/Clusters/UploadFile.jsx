@@ -72,7 +72,12 @@ const ErrorText = styled.span`
   display: block;
 `;
 
-export const UploadFile = ({ name, control, watch }) => {
+export const UploadFile = ({
+  name,
+  control,
+  watch,
+  fileLable = 'PFX File',
+}) => {
   const ref = useRef();
   const file = watch(name);
 
@@ -83,11 +88,24 @@ export const UploadFile = ({ name, control, watch }) => {
       render={({ field: { onChange }, fieldState: { error } }) => {
         const handleChange = event => {
           const uploadedFile = event.target.files[0];
-          if (
-            uploadedFile?.type !== 'application/x-pkcs12' && // .p12, .pfx
-            uploadedFile?.type !== 'application/x-x509-ca-cert' && // .pem (some browsers)
-            uploadedFile?.type !== 'text/plain'
-          ) {
+
+          const validTypes = [
+            'application/x-pkcs12',
+            'application/x-x509-ca-cert',
+            'text/plain',
+          ];
+
+          const validExtensions = ['.p12', '.pfx', '.pem'];
+
+          const fileExtension = uploadedFile?.name
+            ?.substring(uploadedFile.name.lastIndexOf('.'))
+            ?.toLowerCase();
+
+          const isValidType =
+            validTypes.includes(uploadedFile?.type) ||
+            validExtensions.includes(fileExtension);
+
+          if (!isValidType) {
             toast.error('Invalid file type');
           } else {
             onChange(uploadedFile);
@@ -107,7 +125,7 @@ export const UploadFile = ({ name, control, watch }) => {
               <FileIcon width={48} height={48} />
               <FileDetailsContainer>
                 <FlexBetween>
-                  <FileLabel>PFX File</FileLabel>
+                  <FileLabel>{fileLable}</FileLabel>
                   {file && (
                     <RemoveButton onClick={handleRemove} icon={<CrossIcon />} />
                   )}
@@ -134,7 +152,7 @@ export const UploadFile = ({ name, control, watch }) => {
             <input
               ref={ref}
               type="file"
-              accept=".p12, .pem"
+              accept=".p12, .pfx, .pem"
               onChange={handleChange}
               hidden
             />
@@ -151,4 +169,5 @@ UploadFile.propTypes = {
   control: PropTypes.object.isRequired,
   watch: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired,
+  fileLable: PropTypes.string,
 };

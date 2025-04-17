@@ -14,34 +14,59 @@ import {
 import { theme } from '../../../styles';
 import { history } from '../../../helpers/history';
 
-const Container = styled.div``;
+const Container = styled.div`
+display: flex;
+gap: 25px`;
+
 const BulletContainer = styled.div`
-  height: 120px;
-  margin-bottom: 10px;
+  width: 100%;
+  max-width: 280px;
+  height: 280px;
   border: 2px solid
     ${({ borderSelected }) =>
       borderSelected ? theme.colors.primary : '#DDE4F0'};
   border-radius: 14px;
-  background-color: #f5f7fa;
+  background-color: ${({ borderSelected }) =>
+      borderSelected ? '#f5f7fa' : '#fff'};
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2px;
+  position: relative; /* Needed for the checkmark icon */
 `;
 
 const IconContainer = styled.div`
   border: 1px solid
     ${({ borderSelected }) =>
-      borderSelected ? theme.colors.primary : '#DDE4F0'};
+      borderSelected ? '#DDE4F0' : theme.colors.primary};
   border-radius: 14px;
   background-color: #ffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100px;
+  margin: 10px auto;
 `;
 const LeftHolder = styled.div`
-  padding: 16px 26px;
-`;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 16px;
+  text-align: center;
+  `;
 const RightHolder = styled.div`
-  padding: 26px 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 16px;
+  text-align: center;
 `;
 const HighLightText = styled.span`
+  white-space: nowrap;
   font-family: Noto Sans;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 20px;
   line-height: 27.24px;
   letter-spacing: 0%;
@@ -54,6 +79,16 @@ const BottomText = styled.span`
   line-height: 21.17px;
   letter-spacing: 0%;
   color: #444445;
+  margin-top:10px;
+  display: flex;
+  justify-content: center;
+  padding: 0px 45px;
+`;
+
+const TickIconStyle = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
 `;
 
 export const AddOrEditClusterModal = () => {
@@ -101,36 +136,31 @@ export const AddOrEditClusterModal = () => {
           }}
           borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
         >
-          <div className="d-flex row align-items-center  h-100 mx-auto">
-            <LeftHolder className="col-3 align-items-center justify-content-center h-100 ">
+          <div>
+            <LeftHolder >
               <IconContainer
-                className=" d-flex align-items-center justify-content-center h-100"
                 borderSelected={selectedFlow === KDFM.CREATE_CLUSTER_FLOW}
               >
                 <CreateClusterIcon
                   height="60"
                   width="60"
-                  color={
-                    selectedFlow === KDFM.CREATE_CLUSTER_FLOW
-                      ? theme.colors.primary
-                      : 'black'
-                  }
+                  color={theme.colors.primary}
                 />
               </IconContainer>
             </LeftHolder>
-            <RightHolder className="col-9 h-100 row">
-              <div className="col-10 h-100">
-                <div className="h-50 d-flex align-items-center justify-content-start">
+            <RightHolder>
+              <div>
+                <div>
                   <HighLightText>{KDFM.CREATE_NEW_CLUSTER_TITLE}</HighLightText>
                 </div>
-                <div className="h-50 d-flex align-items-center justify-content-start">
+                <div>
                   <BottomText>{KDFM.CREATE_NEW_CLUSTER_DESCRIPTION}</BottomText>
                 </div>
               </div>
               {selectedFlow === KDFM.CREATE_CLUSTER_FLOW && (
-                <div className="col-2  d-flex align-items-center justify-content-center ">
+                <TickIconStyle>
                   <SelectedTickIconOrange height="25" width="25" />
-                </div>
+                </TickIconStyle>
               )}
             </RightHolder>
           </div>
@@ -141,40 +171,36 @@ export const AddOrEditClusterModal = () => {
           }}
           borderSelected={selectedFlow === KDFM.MANAGE_CLUSTER_FLOW}
         >
-          <div className="d-flex row align-items-center  h-100 mx-auto">
-            <LeftHolder className="col-3 align-items-center justify-content-center h-100 ">
+          <div>
+            <LeftHolder>
               <IconContainer
-                className=" d-flex align-items-center justify-content-center h-100"
+                
                 borderSelected={selectedFlow === KDFM.MANAGE_CLUSTER_FLOW}
               >
                 <ManageClusterIcon
                   height="50"
                   width="50"
-                  color={
-                    selectedFlow === KDFM.MANAGE_CLUSTER_FLOW
-                      ? theme.colors.primary
-                      : 'black'
-                  }
+                  color={theme.colors.primary}
                 />
               </IconContainer>
             </LeftHolder>
-            <RightHolder className="col-9 h-100 row">
-              <div className="col-10 h-100">
-                <div className="h-50 d-flex align-items-center justify-content-start">
+            <RightHolder>
+              <div>
+                <div>
                   <HighLightText>
                     {KDFM.MANAGE_EXISTING_CLUSTER_TITLE}
                   </HighLightText>
                 </div>
-                <div className="h-50 d-flex align-items-center justify-content-start">
+                <div>
                   <BottomText>
                     {KDFM.MANAGE_EXISTING_CLUSTER_DESCRIPTION}
                   </BottomText>
                 </div>
               </div>
               {selectedFlow === KDFM.MANAGE_CLUSTER_FLOW && (
-                <div className="col-2  d-flex align-items-center justify-content-center ">
+                <TickIconStyle>
                   <SelectedTickIconOrange height="25" width="25" />
-                </div>
+                </TickIconStyle>
               )}
             </RightHolder>
           </div>

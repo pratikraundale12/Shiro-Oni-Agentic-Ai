@@ -176,19 +176,21 @@ export function* emailReportSaga(api, { payload }) {
     toast.error(response?.data?.message || 'Failed to send email report');
   }
 }
-export function* validateRandomFlowSaga(api, { payload }) {
+export function* setRulePrioritySaga(api, { payload }) {
+  const { ruleScopeId, ruleOrder } = payload;
   const response = yield call(requestSaga, {
-    errorSection: 'validateRandomFlow',
-    loadingSection: 'validateRandomFlow',
-    apiMethod: api.validateRandomFlowApi,
-    apiParams: [payload],
-    successAction: FlowValidationActions.validateRandomFlowSuccess,
+    errorSection: 'setRulePriority',
+    loadingSection: 'setRulePriority',
+    apiMethod: api.setRulePriorityApi,
+    apiParams: [ruleScopeId, { ruleOrder }],
+    successAction: FlowValidationActions.setRulePrioritySuccess,
   });
 
-  if (!response?.ok) {
-    toast.error(response?.data?.message || 'Failed to validate random flow');
+  if (response.ok) {
+    yield put(FlowValidationActions.ruleScopeFetch());
+    toast.success('Rule priority updated successfully!');
   } else {
-    toast.success('Random flow validated successfully!');
+    toast.error(response?.data?.message || 'Failed to update rule priority');
   }
 }
 
@@ -219,11 +221,6 @@ export function* flowValidationSagas(api) {
     takeLatest(FlowValidationActions.deleteRuleScope, deleteRuleScopeSaga, api),
     takeLatest(FlowValidationActions.deleteRule, deleteRuleSaga, api),
     takeLatest(FlowValidationActions.emailReport, emailReportSaga, api),
-    takeLatest(
-      FlowValidationActions.validateRandomFlow,
-      validateRandomFlowSaga,
-      api
-    ),
-    takeLatest(FlowValidationActions.fetchFlows, fetchFlowsSaga, api),
+    takeLatest(FlowValidationActions.setRulePriority, setRulePrioritySaga, api),
   ]);
 }

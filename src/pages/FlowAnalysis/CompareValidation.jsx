@@ -3,7 +3,8 @@ import React, { useEffect } from 'react'; // ✅ Add useState
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { CompareIcon, TodoIcon } from '../../assets';
+import { CompareIcon, NoDataIcon, TodoIcon } from '../../assets';
+import { CompareValidationIcon } from '../../assets/Icons/CompareValidationIcon';
 import { FullPageLoader, Table } from '../../components';
 import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
 import { history } from '../../helpers/history';
@@ -32,7 +33,7 @@ const LabelSelect = styled.div`
   margin-bottom: 14px;
 `;
 const FlowcompareStyled = styled.div`
-  height: 100%;
+  height: 700px;
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid #e0d3d3;
@@ -46,10 +47,22 @@ const LabelSelectContent = styled.div`
   font-size: 18px;
   font-weight: 500;
 `;
+const LabelRequiredContent = styled.div`
+  color: #ce0303;
+  margin-left: 3px;
+`;
 const CompareDifferencesTitle = styled.div`
   font-size: 20px;
   color: #444445;
   font-weight: 600;
+`;
+
+const NoDataText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
 `;
 
 const CompareValidation = () => {
@@ -67,7 +80,15 @@ const CompareValidation = () => {
   const compareResult = useSelector(FlowValidationSelectors.getCompareResult);
   const selectedVersionA = watch('select_version_A');
   const selectedVersionB = watch('select_version_B');
+
+  const getFilteredOptions = (currentValue, otherValue) => {
+    return versionOptions.filter(
+      option => !otherValue || option.value !== otherValue
+    );
+  };
+
   const handleCompareFlow = () => {
+    dispatch(FlowValidationActions.compareRulesSuccess(null));
     dispatch(
       FlowValidationActions.compareRules({
         clusterId: selectedCluster?.value,
@@ -94,22 +115,22 @@ const CompareValidation = () => {
   const COLUMNS = [
     {
       label: 'Type',
-      renderCell: item => <div>{item?.componentType}</div>,
+      renderCell: item => <div>{item?.componentType || 'N/A'}</div>,
       width: '20%',
     },
     {
       label: 'Name',
-      renderCell: item => <div>{item.componentName}</div>,
+      renderCell: item => <div>{item.componentName || 'N/A'}</div>,
       width: '20%',
     },
     {
       label: 'ID',
-      renderCell: item => <div>{item?.componentId}</div>,
+      renderCell: item => <div>{item?.componentId || 'N/A'}</div>,
       width: '30%',
     },
     {
       label: 'Message',
-      renderCell: item => <div>{item?.differenceTypeDescription}</div>,
+      renderCell: item => <div>{item?.differenceTypeDescription || 'N/A'}</div>,
       width: '30%',
     },
   ];
@@ -129,43 +150,61 @@ const CompareValidation = () => {
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2">
             <TodoIcon width={22} height={24} />
-            <HeadingStyle>Procress Group Details</HeadingStyle>
+            <HeadingStyle>
+              Procress Group Details : {selectedItem?.name}
+            </HeadingStyle>
           </div>
         </div>
       </div>
       <Breadcrumb module="path" path={path} />
       <FlowcompareStyled>
-        <div className="col-12">
+        <div className="col-12 d-flex">
           <LabelSelect>{FLOWVALIDATION_CONSTANTS.COMPARE_VERSION}</LabelSelect>
+          <LabelRequiredContent>*</LabelRequiredContent>
         </div>
         <div className="row align-items-center mb-4 mb-lg-5">
           <div className="col-md-3">
             <SelectField
-              label={FLOWVALIDATION_CONSTANTS.SELECT_VERSION}
               name="select_version_A"
               icon={<CompareIcon />}
               placeholder={FLOWVALIDATION_CONSTANTS.SELECT_VERSION}
-              options={versionOptions}
+              options={getFilteredOptions(selectedVersionA, selectedVersionB)}
               control={control}
+              sortAlphabetically={false}
             />
           </div>
           <div className="col-md-3">
             <SelectField
-              label={FLOWVALIDATION_CONSTANTS.SELECT_VERSION}
               name="select_version_B"
               icon={<CompareIcon />}
               placeholder={FLOWVALIDATION_CONSTANTS.SELECT_VERSION}
-              options={versionOptions}
+              options={getFilteredOptions(selectedVersionB, selectedVersionA)}
               control={control}
+              sortAlphabetically={false}
             />
           </div>
-          <div className="col-md-auto pt-2 mt-3">
-            <Button onClick={handleCompareFlow}>
+          <div className="col-md-auto">
+            <Button
+              onClick={handleCompareFlow}
+              disabled={!selectedVersionA || !selectedVersionB}
+              icon={
+                <CompareValidationIcon
+                  width="18px"
+                  height="18px"
+                  color="#fff"
+                />
+              }
+            >
               {FLOWVALIDATION_CONSTANTS.COMPARE}
             </Button>
           </div>
         </div>
-        {!isEmpty(compareResult?.data) && (
+        {!selectedVersionA || !selectedVersionB ? (
+          <div className="d-flex flex-column align-items-center mt-5">
+            <NoDataIcon width={130} />
+            <NoDataText>No Data Found!!</NoDataText>
+          </div>
+        ) : !isEmpty(compareResult?.data) ? (
           <>
             <div className="row align-items-center mb-4 mb-lg-5">
               <div className="col-md-3">
@@ -199,7 +238,7 @@ const CompareValidation = () => {
             </CompareDifferencesTitle>
             <Table columns={COLUMNS} data={compareResult?.data?.changes} />
           </>
-        )}
+        ) : null}
       </FlowcompareStyled>
       <Button
         className="w-auto mt-2"

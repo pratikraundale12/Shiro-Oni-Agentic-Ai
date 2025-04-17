@@ -74,6 +74,16 @@ const Container = styled.div`
       background: ${props => props.theme.colors.darkGrey3};
       cursor: not-allowed;
     }
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &[type='number'] {
+      -moz-appearance: textfield;
+    }
   }
 
   .icon {

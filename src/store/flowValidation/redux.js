@@ -35,6 +35,8 @@ export const FlowValidationActions = {
   savePayload: createAction(`${prefix}savePayload`),
   fetchFlows: createAction(`${prefix}fetchFlows`),
   fetchFlowsSuccess: createAction(`${prefix}fetchFlowsSuccess`),
+  setRulePriority: createAction(`${prefix}setRulePriority`),
+  setRulePrioritySuccess: createAction(`${prefix}setRulePrioritySuccess`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -54,6 +56,7 @@ export const FlowValidation_INITIAL_STATE = {
   randomFlowValidationResult: null,
   savedPayload: null,
   flows: [],
+  rulePriority: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -75,6 +78,7 @@ export const FlowValidationSelectors = {
   getRandomFlowValidationResult: state =>
     state.flowValidation.randomFlowValidationResult,
   getFlows: state => state.flowValidation.flows,
+  getRulePriority: state => state.flowValidation.rulePriority,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -188,6 +192,17 @@ const fetchFlowsSuccess = (state, { payload }) => ({
   ...state,
   flows: payload,
 });
+const setRulePrioritySuccess = (state, { payload }) => ({
+  ...state,
+  ruleScopes: {
+    ...state.ruleScopes,
+    data: (state.ruleScopes.data || []).map(scope =>
+      scope.id === payload.ruleScopeId
+        ? { ...scope, ruleOrder: payload.ruleOrder }
+        : scope
+    ),
+  },
+});
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
   FlowValidation_INITIAL_STATE,
@@ -224,6 +239,10 @@ export const flowValidationReducer = createReducer(
         validateRandomFlowSuccess
       )
       .addCase(FlowValidationActions.savePayload, savePayload)
-      .addCase(FlowValidationActions.fetchFlowsSuccess, fetchFlowsSuccess);
+      .addCase(FlowValidationActions.fetchFlowsSuccess, fetchFlowsSuccess)
+      .addCase(
+        FlowValidationActions.setRulePrioritySuccess,
+        setRulePrioritySuccess
+      );
   }
 );

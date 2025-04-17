@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export const ServiceAccountIcon = ({
-  className,
-  width = 21,
+  width = 20,
   height = 20,
-  color = 'currentColor',
+  color = '#444445',
 }) => {
   return (
     <svg
@@ -14,7 +13,6 @@ export const ServiceAccountIcon = ({
       viewBox="0 0 21 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
     >
       <path
         d="M8.83341 3.7513V15.0013C8.83341 15.9013 8.46674 16.7263 7.8834 17.3263L7.85009 17.3596C7.77509 17.4346 7.69176 17.5096 7.61676 17.568C7.36676 17.7846 7.0834 17.9513 6.79174 18.068C6.70007 18.1096 6.60842 18.143 6.51675 18.1763C6.19175 18.2846 5.84175 18.3346 5.50008 18.3346C5.27508 18.3346 5.05009 18.3096 4.83342 18.268C4.72509 18.243 4.61675 18.218 4.50841 18.1846C4.37508 18.143 4.25009 18.1013 4.12509 18.043C4.12509 18.0346 4.12508 18.0346 4.11674 18.043C3.88341 17.9263 3.65842 17.793 3.45009 17.6346L3.44175 17.6263C3.33341 17.543 3.23343 17.4596 3.14176 17.3596C3.05009 17.2596 2.95841 17.1596 2.86674 17.0513C2.70841 16.843 2.57509 16.618 2.45842 16.3846C2.46675 16.3763 2.46675 16.3763 2.45842 16.3763C2.45842 16.3763 2.45841 16.368 2.45008 16.3596C2.40008 16.243 2.35841 16.118 2.31674 15.993C2.28341 15.8846 2.2584 15.7763 2.2334 15.668C2.19174 15.4513 2.16675 15.2263 2.16675 15.0013V3.7513C2.16675 2.5013 3.00008 1.66797 4.25008 1.66797H6.75008C8.00008 1.66797 8.83341 2.5013 8.83341 3.7513Z"
@@ -56,7 +54,6 @@ export const ServiceAccountIcon = ({
 };
 
 ServiceAccountIcon.propTypes = {
-  className: PropTypes.string,
   width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   color: PropTypes.string,

@@ -4,7 +4,12 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { CalendarIcon, MailIcon, QRIcons } from '../../assets';
+import {
+  ClockIcon,
+  CurvedDeploymentScheduleIcon,
+  CurvedProfileDoubleUserIcon,
+  EmailSmsTrackingIcon,
+} from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import {
   EMAIL_REGEX,
@@ -32,24 +37,6 @@ const FlexWrapper = styled.div`
   margin-top: auto;
   bottom: 20px;
 `;
-const LabelSelect = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 16px;
-  color: ${props => props.theme.colors.darker};
-  white-space: nowrap; /* Prevents text from wrapping */
-  overflow: hidden; /* Hides overflowing text */
-  text-overflow: ellipsis; /* Adds "..." if text overflows */
-`;
-
-const EmphasisText = styled.em`
-  font-style: italic;
-  font-size: 13px !important;
-  font-weight: 500;
-  white-space: nowrap; /* Prevents text from wrapping */
-  overflow: hidden; /* Hides overflowing text */
-  text-overflow: ellipsis; /* Adds "..." if text overflows */
-`;
 
 const ButtonText = styled.div`
   font-size: 18px;
@@ -75,6 +62,11 @@ const StyledSaveButton = styled(Button)`
   radius: 8px;
   left: 140px;
 `;
+const GroupEmailInput = styled.div`
+  label {
+    margin-bottom: 6px;
+  }
+`;
 
 const ButtonDiv = styled.div`
   display: flex;
@@ -86,8 +78,11 @@ export const settingSchema = yup.object().shape({
     .string()
     .required('Group email is required')
     .nullable()
-    .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
-    .max(50, 'Email can not be greater than 25 characters'),
+    .test('emails', 'Invalid email addresses', function (value) {
+      if (!value) return true;
+      const emails = value.split(',').map(email => email.trim());
+      return emails.every(email => EMAIL_REGEX.test(email));
+    }),
 
   approver_groups: yup
     .mixed()
@@ -193,7 +188,7 @@ export const DeploymentScheduleSettings = () => {
     const subscription = watch(value => {
       const isModified =
         value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
         value.approver_groups !== settingData?.approver_groups ||
         value.group_email_id !== settingData?.group_email_id ||
         value.email_reminder_time !== settingData?.email_reminder_time;
@@ -231,7 +226,7 @@ export const DeploymentScheduleSettings = () => {
             label="Approver Groups"
             name="approver_groups"
             control={control}
-            icon={<QRIcons />}
+            icon={<CurvedProfileDoubleUserIcon />}
             errors={errors}
             options={approverOptions}
             placeholder="Select Approver Groups"
@@ -243,47 +238,54 @@ export const DeploymentScheduleSettings = () => {
           />
         </div>
 
-        {/* Modified middle rows container to match top row width */}
         <div className="col-xl-6 col-lg-10 col-md-10 col-sm-10 col-6 ">
           <div className="row">
-            {/* First middle field - adjust to 50% width */}
-            <div className="col-6 mb-1">
+            <GroupEmailInput className="col-6 mb-1">
               <InputField
                 name="group_email_id"
                 register={register}
-                icon={<MailIcon />}
-                label={KDFM.GROUP_EMAIL}
+                icon={<EmailSmsTrackingIcon />}
+                label={
+                  <>
+                    {KDFM.GROUP_EMAIL}{' '}
+                    <em>
+                      (Enter one or more email addresses, separated by commas)
+                    </em>
+                  </>
+                }
                 placeholder={KDFM.ENTER_GROUP_EMAIL}
                 errors={errors}
+                required={true}
               />
-            </div>
+            </GroupEmailInput>
 
-            {/* Second middle field - adjust to 50% width */}
             <div className="col-6 mb-1">
-              <LabelSelect className="mb-3">
-                {KDFM.EMAIL_REMINDER}
-                <EmphasisText> ({KDFM.REMINDER_EMPHASISED_TEXT})</EmphasisText>
-              </LabelSelect>
               <SelectField
+                label={
+                  <>
+                    {KDFM.EMAIL_REMINDER}{' '}
+                    <em>(before deployment schedule time)</em>
+                  </>
+                }
                 name="email_reminder_time"
                 control={control}
-                icon={<CalendarIcon />}
+                icon={<ClockIcon />}
                 errors={errors}
                 options={EMAIL_REMINDER_OPTIONS}
                 placeholder="Select Reminder Time"
                 defaultValue={EMAIL_REMINDER_OPTIONS[0]}
+                sortAlphabetically={false}
+                required={true}
               />
             </div>
           </div>
         </div>
         <div className="col-xl-3 col-lg-5 col-md-5 col-sm-5 col-5 mt-1">
-          <LabelSelect className="mb-3">
-            {KDFM.DEPLOYMENT_SCHEDULE_LIST_REFRESH}
-          </LabelSelect>
           <SelectField
+            label={KDFM.DEPLOYMENT_SCHEDULE_LIST_REFRESH}
             name="refresh"
             control={control}
-            icon={<CalendarIcon />}
+            icon={<CurvedDeploymentScheduleIcon />}
             errors={errors}
             options={SCHEDULE_LIST_REFRESH_OPTIONS}
             placeholder="Deployment Schedule Refresh Time"
@@ -306,7 +308,7 @@ export const DeploymentScheduleSettings = () => {
                       : String(settingData?.refresh),
                   email_reminder_time: settingData?.email_reminder_time,
                   group_email_id: settingData?.group_email_id,
-                  approver_groups: '', // Ensure this resets properly
+                  approver_groups: '',
                 });
                 reset(settingData);
                 setIsChanged(false);

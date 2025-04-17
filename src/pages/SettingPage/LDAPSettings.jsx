@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { QRIcons } from '../../assets';
+import { ClockIcon } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
@@ -90,10 +90,10 @@ export const LDAPSettings = () => {
   const [isLdapEnabled, setLdapInitialConfig] = useState(false);
 
   const Timeoptions = [
-    { label: '1 hour', value: 59 },
     { label: '15 minutes', value: 15 },
     { label: '30 minutes', value: 30 },
     { label: '45 minutes', value: 45 },
+    { label: '1 hour', value: 59 },
   ];
 
   const selectedOptions = Number(watch('ldap_auto_sync_time_interval'));
@@ -173,7 +173,7 @@ export const LDAPSettings = () => {
     const subscription = watch(value => {
       const isModified =
         value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) || // Direct comparison to the original value
+          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
         value.ldap_auto_sync_time_interval !==
           settingData?.ldap_auto_sync_time_interval ||
         value.ldap_auto_sync !== settingData?.ldap_auto_sync ||
@@ -236,7 +236,7 @@ export const LDAPSettings = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <InputFields className="d-flex flex-column">
-          <div className="mt-4">
+          <div>
             <SwitchButton
               id="openModalInput1"
               name="LDAP"
@@ -259,16 +259,17 @@ export const LDAPSettings = () => {
               label="LDAP Auto Sync Time"
               name="ldap_auto_sync_time_interval"
               control={control}
-              icon={<QRIcons />}
+              icon={<ClockIcon />}
               errors={errors}
               options={Timeoptions}
+              sortAlphabetically={false}
               placeholder="Select LDAP Auto Sync Time"
               value={Timeoptions.find(
                 option =>
                   option.value ===
                   (watch('ldap_auto_sync_time_interval') ||
                     settingData?.ldap_auto_sync_time_interval)
-              )} // Watch the value or use settingData fallback
+              )}
               isDisabled={!ldapAutoSync}
               onChange={selectedOption => {
                 const value = selectedOption?.value || null;

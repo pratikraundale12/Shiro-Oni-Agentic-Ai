@@ -92,6 +92,9 @@ export const MODULE_LIST_MAP = [
   { label: 'Variable', value: 'Variable' },
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
   { label: 'AI Flows', value: 'AI Flows' },
+  { label: 'Flow Validation', value: 'Flow Validation' },
+  { label: 'Rule scope', value: 'Rule scope' },
+  { label: 'Rule', value: 'Rule' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -121,6 +124,9 @@ export const ACTIVITY_EVENTS = [
   { label: 'Add Flow', value: 'Add Flow' },
   { label: 'Add Bucket', value: 'Add Bucket' },
   { label: 'Generate Flow', value: 'Generate Flow' },
+  { label: 'Comparison', value: 'Comparison' },
+  { label: 'Validate', value: 'Validate' },
+  { label: 'Comparison', value: 'Comparison' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
@@ -234,6 +240,7 @@ export const KDFM = {
   SCHEDULE_DIPLOYMENT: 'Deployment Schedule',
   SERVICE_ACCOUNT: 'Service Account',
   SSO_LoGIN: 'SSO Login',
+  SSO_LOGIN_TYPE: 'Login Type',
   LOGIN_TYPE: 'SSO',
   CONTROLLER_SERVICE_DATA: 'External Controller Services',
   SMTP: 'Email Configuration',
@@ -283,6 +290,7 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'setting', label: 'Settings' },
   { path: 'licensing', label: 'Licensing' },
   { path: 'ai-flow-generator', label: 'AI-Powered Data Flow' },
+  { path: 'flow-analysis', label: 'Flow Analysis' },
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];

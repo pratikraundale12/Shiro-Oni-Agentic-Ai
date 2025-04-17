@@ -77,6 +77,7 @@ export const DuplicateScheduleModal = ({
       primaryButtonText={'Confirm'}
       onSubmit={handleSubmit(onSubmit)}
       contentStyles={{ minWidth: '25%', minHeight: '30%' }}
+      primaryButtonProps={{ id: 'duplicate-schedule-deployment' }}
     >
       <Container>
         <div className="d-flex justify-content-center">

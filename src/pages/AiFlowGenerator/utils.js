@@ -13,12 +13,6 @@ export const validatePayload = (payload, requiredFields) => {
   const fieldLabels = {
     session_id: 'Session ID',
     query: 'Query',
-    embedding_model: 'Embedding Model',
-    engine: 'Engine',
-    dept_id: 'Department ID',
-    org_id: 'Organization ID',
-    user_id: 'User ID',
-    type: 'Type',
     logged_in_user: 'LoggedIn User',
     user_role: 'Role',
   };
@@ -78,10 +72,8 @@ export const downloadJsonFile = (jsonData, fileName = 'demo.json', refresh) => {
 
 export const validateInput = input => {
   const normalizedInput = input.replace(/\s{2,}/g, ' ');
-  const alphabetCount = (normalizedInput.match(/[a-zA-Z]/g) || []).length;
   const cleanedInput = normalizedInput.trim();
-  const isLongEnough = alphabetCount >= 3;
-  const isValid = isLongEnough;
+  const isValid = cleanedInput;
 
   return { isValid, cleanedInput };
 };

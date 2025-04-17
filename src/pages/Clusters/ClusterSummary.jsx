@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable */
+import React, { useEffect, useState } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { ActivityHistoryIcon } from '../../assets';
@@ -7,9 +8,17 @@ import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import { useGlobalContext } from '../../utils';
+import ClusterSummaryNavigationTab from './components/ClusterSummaryNavigationTab';
+import ClusterStatusTab from './components/ClusterStatusTab';
+import { dispatch } from 'd3';
+import { useDispatch } from 'react-redux';
+import { ClustersActions } from '../../store';
+import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
-  height: 95%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `;
 
 const ActionTd = styled.div`
@@ -20,7 +29,10 @@ const ActionTd = styled.div`
 `;
 
 export const ClusterSummary = () => {
+  const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
+  const [activeTab, setActiveTab] = useState('summary');
+  const { id: clusterId } = useParams();
 
   const getActionsMenu = item => (
     <div data-tooltip-id={`${item?.nodeId}1`}>
@@ -86,17 +98,32 @@ export const ClusterSummary = () => {
   const handleBackAction = () => {
     history.push('/clusters');
   };
+  useEffect(() => {
+    dispatch(ClustersActions.fetchClusterRegistryNodes(clusterId));
+  }, [dispatch]);
 
   return (
     <Container>
-      <Grid
-        module="nodes"
-        title="Clusters Summary"
-        placeholder={KDFM.SEARCH_NODES}
-        columns={COLUMNS}
-        refreshOptions={REFRESH_OPTIONS}
+      <ClusterSummaryNavigationTab
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        createdByAnsible={state?.created_by_ansible}
       />
-      <div style={{ width: '74px', marginTop: '10px' }}>
+      {activeTab === 'summary' && (
+        <Grid
+          module="nodes"
+          // title="Clusters Summary"
+          placeholder={KDFM.SEARCH_NODES}
+          columns={COLUMNS}
+          refreshOptions={REFRESH_OPTIONS}
+        />
+      )}
+      {activeTab === 'status' && (
+        <div style={{ height: '100%' }}>
+          <ClusterStatusTab />
+        </div>
+      )}
+      <div style={{ width: '74px', marginTop: 'auto', paddingTop: '10px' }}>
         <Button variant="secondary" type="button" onClick={handleBackAction}>
           {KDFM.BACK}
         </Button>

@@ -500,6 +500,7 @@ function DeployPage() {
                 <div>
                   <BucketDiv className="justify-content-between align-items-center">
                     <SelectField
+                      id="process-group-bucket"
                       label="Bucket"
                       name="bucketId"
                       icon={<QRIcons />}
@@ -518,6 +519,7 @@ function DeployPage() {
             <RowConfig>
               <div className="col-6 p-3 mb-0">
                 <SelectField
+                  id="process-group-flow-name"
                   label="Flow Name"
                   name="flow_name"
                   icon={<QRIcons />}
@@ -565,7 +567,11 @@ function DeployPage() {
             >
               {KDFM.BACK}
             </Button>
-            <Button type="submit" onClick={handleScrollOnClick}>
+            <Button
+              id="registry-flow-continue-btn"
+              type="submit"
+              onClick={handleScrollOnClick}
+            >
               {KDFM.CONTINUE}
             </Button>
           </BottomButtonDiv>
@@ -587,6 +593,7 @@ function DeployPage() {
             setProceedWithDispatch(true);
             handleContinueWithSame();
           }}
+          primaryButtonProps={{ id: 'duplicate-process-form-continue-btn' }}
         >
           <>
             <Icon>

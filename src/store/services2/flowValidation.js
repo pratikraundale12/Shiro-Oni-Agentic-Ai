@@ -18,6 +18,8 @@ export const flowValidationAPI = api => {
   const emailReportApi = data => api.post(`/namespace/email-report`, data);
   const validateRandomFlowApi = data => api.post(`/validate-random-flow`, data);
   const getFlows = () => api.get('/inventry-flow');
+  const setRulePriorityApi = (ruleScopeId, data) =>
+    api.put(`/rule-priority/${ruleScopeId}`, data);
 
   return {
     ruleScopeApi,
@@ -34,5 +36,6 @@ export const flowValidationAPI = api => {
     emailReportApi,
     validateRandomFlowApi,
     getFlows,
+    setRulePriorityApi,
   };
 };

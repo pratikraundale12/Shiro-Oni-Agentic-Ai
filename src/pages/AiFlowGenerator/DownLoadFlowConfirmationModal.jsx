@@ -28,7 +28,7 @@ const DownloadFlowConfirmationModal = ({
         icon={<DownloadImageIcon />}
         isOpen={isModalOpen}
         onRequestClose={handleClose}
-        primaryText={`Are you sure you want to Proceed with the Download?`}
+        primaryText={`Are you sure you want to proceed with the Download?`}
         secondaryText="If Yes, Please click on the Confirm Button"
         onSubmit={handleSubmit}
       />

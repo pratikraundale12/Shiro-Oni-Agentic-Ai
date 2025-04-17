@@ -66,6 +66,8 @@ export const FlowAddToRegistryModal = ({
   handleAddToRegistry,
   showAddNewBucket = true,
   handleClose,
+  setIsFlowAddedSuccessModalOpen,
+  setFlowJson,
   refresh,
 }) => {
   const newBucketData = useSelector(AiFlowGeneratorSelectors.getNewBucket);
@@ -79,6 +81,7 @@ export const FlowAddToRegistryModal = ({
   const DEFAULT_fORM_DATA = {
     bucket: newBucketData?.identifier || defaultBucket[0]?.id || '',
     flow_name: defaultFlowName,
+    pg_name: defaultFlowName,
     flow_desc: '',
   };
 
@@ -95,12 +98,14 @@ export const FlowAddToRegistryModal = ({
   });
   const bucket = watch('bucket');
   const flow = watch('flow_name');
+  const pgName = watch('pg_name');
 
   useEffect(() => {
     if (isFlowAddedSuccessfully) {
       reset(DEFAULT_fORM_DATA);
       setIsModalOpen(false);
       refresh();
+      setIsFlowAddedSuccessModalOpen && setIsFlowAddedSuccessModalOpen(true);
     }
   }, [isFlowAddedSuccessfully]);
 
@@ -112,18 +117,30 @@ export const FlowAddToRegistryModal = ({
     reset({
       bucket: newBucketData?.identifier || defaultBucket[0]?.id || '',
       flow_name: defaultFlowName,
+      pg_name: defaultFlowName,
       flow_desc: '',
     });
   }, [newBucketData, reset, bucketList]);
 
   const onSubmit = data => {
+    if (!isEmpty(data?.pg_name) && setFlowJson) {
+      setFlowJson(prev => {
+        return {
+          ...prev,
+          flowContents: {
+            ...prev?.flowContents,
+            name: data?.pg_name,
+          },
+        };
+      });
+    }
     handleAddToRegistry(data);
-    // setIsModalOpen(false);
     dispatch(AiFlowGeneratorActions.setNewBucket({}));
   };
 
   const onClose = () => {
     handleClose();
+    dispatch(AiFlowGeneratorActions.setNewBucket({}));
   };
 
   const loading = useSelector(state =>
@@ -132,68 +149,83 @@ export const FlowAddToRegistryModal = ({
 
   return (
     <>
-      <Modal
-        title="Add to Registry"
-        isOpen={isModalOpen}
-        onRequestClose={onClose}
-        size="sm"
-        loading={loading}
-        secondaryButtonText="Back"
-        primaryButtonText="Save"
-        primaryButtonDisabled={isEmpty(bucket) || isEmpty(flow)}
-        onSubmit={handleSubmit(onSubmit)}
-        footerAlign="start"
-        contentStyles={{ minWidth: '35%' }}
-      >
-        <Container>
-          {showAddNewBucket && (
-            <BtnConatainer onClick={() => setIsAddNewBucketModalOpen(true)}>
-              <AddNewBucketButton
-                type="button"
-                onClick={() => {
-                  setIsAddNewBucketModalOpen(true);
-                }}
-              >
-                <AddsquareIcon />
-                <span>Add New Bucket</span>
-              </AddNewBucketButton>
-            </BtnConatainer>
-          )}
-          <BucketWrapper>
-            <SelectField
-              label="Bucket"
-              name="bucket"
-              control={control}
-              icon={<BucketIcon />}
-              errors={errors}
+      {isModalOpen && (
+        <Modal
+          title="Add to Registry"
+          isOpen={isModalOpen}
+          onRequestClose={onClose}
+          size="sm"
+          loading={loading}
+          secondaryButtonText="Back"
+          primaryButtonText="Save"
+          primaryButtonDisabled={
+            isEmpty(bucket) || isEmpty(flow) || isEmpty(pgName)
+          }
+          onSubmit={handleSubmit(onSubmit)}
+          footerAlign="start"
+          contentStyles={{ minWidth: '35%' }}
+        >
+          <Container>
+            {showAddNewBucket && (
+              <BtnConatainer onClick={() => setIsAddNewBucketModalOpen(true)}>
+                <AddNewBucketButton
+                  type="button"
+                  onClick={() => {
+                    setIsAddNewBucketModalOpen(true);
+                  }}
+                >
+                  <AddsquareIcon />
+                  <span>Add New Bucket</span>
+                </AddNewBucketButton>
+              </BtnConatainer>
+            )}
+            <BucketWrapper>
+              <SelectField
+                label="Bucket"
+                name="bucket"
+                control={control}
+                icon={<BucketIcon />}
+                errors={errors}
+                register={register}
+                options={bucketList}
+                placeholder="Select Bucket"
+                required
+              />
+            </BucketWrapper>
+            <InputField
+              name="flow_name"
+              type="text"
+              label="Flow Name"
+              placeholder="Enter Flow Name"
               register={register}
-              options={bucketList}
-              placeholder="Select Bucket"
+              errors={errors}
+              icon={<FlowIcon />}
+              required
+              defaultValue={defaultFlowName}
+            />
+            <InputField
+              name="pg_name"
+              type="text"
+              label="Process Group Name"
+              placeholder="Enter Process Group Name"
+              register={register}
+              errors={errors}
+              icon={<FlowIcon />}
+              defaultValue={defaultFlowName}
               required
             />
-          </BucketWrapper>
-          <InputField
-            name="flow_name"
-            type="text"
-            label="Flow Name"
-            placeholder="Enter Flow Name"
-            register={register}
-            errors={errors}
-            icon={<FlowIcon />}
-            required
-            defaultValue={defaultFlowName}
-          />
-          <InputField
-            name="flow_desc"
-            type="text"
-            label="Flow Description"
-            placeholder="Enter Flow Description"
-            register={register}
-            errors={errors}
-            icon={<DescIcon />}
-          />
-        </Container>
-      </Modal>
+            <InputField
+              name="flow_desc"
+              type="text"
+              label="Flow Description"
+              placeholder="Enter Flow Description"
+              register={register}
+              errors={errors}
+              icon={<DescIcon />}
+            />
+          </Container>
+        </Modal>
+      )}
     </>
   );
 };
@@ -207,5 +239,7 @@ FlowAddToRegistryModal.propTypes = {
   showAddNewBucket: PropTypes.bool,
   handleClose: PropTypes.func,
   setIsAddNewBucketModalOpen: PropTypes.func,
+  setIsFlowAddedSuccessModalOpen: PropTypes.func,
+  setFlowJson: PropTypes.func,
   refresh: PropTypes.func,
 };
