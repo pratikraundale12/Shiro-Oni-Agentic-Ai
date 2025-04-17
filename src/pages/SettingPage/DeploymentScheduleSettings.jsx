@@ -62,6 +62,11 @@ const StyledSaveButton = styled(Button)`
   radius: 8px;
   left: 140px;
 `;
+const GroupEmailInput = styled.div`
+  label {
+    margin-bottom: 6px;
+  }
+`;
 
 const ButtonDiv = styled.div`
   display: flex;
@@ -77,15 +82,7 @@ export const settingSchema = yup.object().shape({
       if (!value) return true;
       const emails = value.split(',').map(email => email.trim());
       return emails.every(email => EMAIL_REGEX.test(email));
-    })
-    .test(
-      'max-length',
-      'Total length of all emails cannot exceed 200 characters',
-      function (value) {
-        if (!value) return true;
-        return value.length <= 200;
-      }
-    ),
+    }),
 
   approver_groups: yup
     .mixed()
@@ -243,21 +240,33 @@ export const DeploymentScheduleSettings = () => {
 
         <div className="col-xl-6 col-lg-10 col-md-10 col-sm-10 col-6 ">
           <div className="row">
-            <div className="col-6 mb-1">
+            <GroupEmailInput className="col-6 mb-1">
               <InputField
                 name="group_email_id"
                 register={register}
                 icon={<EmailSmsTrackingIcon />}
-                label={KDFM.GROUP_EMAIL}
+                label={
+                  <>
+                    {KDFM.GROUP_EMAIL}{' '}
+                    <em>
+                      (Enter one or more email addresses, separated by commas)
+                    </em>
+                  </>
+                }
                 placeholder={KDFM.ENTER_GROUP_EMAIL}
                 errors={errors}
                 required={true}
               />
-            </div>
+            </GroupEmailInput>
 
             <div className="col-6 mb-1">
               <SelectField
-                label={KDFM.EMAIL_REMINDER}
+                label={
+                  <>
+                    {KDFM.EMAIL_REMINDER}{' '}
+                    <em>(before deployment schedule time)</em>
+                  </>
+                }
                 name="email_reminder_time"
                 control={control}
                 icon={<ClockIcon />}
