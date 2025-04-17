@@ -82,6 +82,7 @@ export const PromptInputBox = ({
   isInputEmpty,
   inputError,
   setInputError,
+  setConversationalRes,
 }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -116,8 +117,17 @@ export const PromptInputBox = ({
       return;
     } else {
       setIsPromptInputDisabled(true);
+      setQueryText('');
       setIsSendBtnDisabled(true);
       setOpenConversation(true);
+      const newUserMessage = { role: 'user', data: queryText };
+      const tempSystemMessage = { role: 'system', status: 'pending' };
+      setConversationalRes(prev => [
+        ...prev,
+        newUserMessage,
+        tempSystemMessage,
+      ]);
+
       const payload = {
         session_id: uuidv4(),
         query: queryText.trim(),
@@ -195,4 +205,5 @@ PromptInputBox.propTypes = {
   isInputEmpty: PropTypes.bool,
   inputError: PropTypes.object,
   setInputError: PropTypes.func,
+  setConversationalRes: PropTypes.func,
 };
