@@ -151,9 +151,20 @@ const ClusterSetupNewConfigDetailsPage = () => {
     }));
 
   const schema = yup.object().shape({
-    configName: yup.string().required('Config Name is required'),
+    // configName: yup
+    //   .string()
+    //   .transform(value => (typeof value === 'string' ? value.trim() : value))
+    //   .required('Config Name is required')
+    //   .min(1, 'Config Name cannot be empty or only whitespace'),
+    configName: yup
+      .string()
+      .required('Config name is required')
+      .matches(/^\S+$/, 'Config name cannot contain spaces'),
     nifiVersion: yup.string().required('NiFi version is required'),
-    comments: yup.string().required('Comment is required'),
+    comments: yup
+      .string()
+      .required('Comment is required')
+      .matches(/^\S+$/, 'Comment cannot contain spaces'),
     nifi_cluster_node_protocol_max_threads: yup
       .number()
       .typeError('Protocol Max thread must be a number')
