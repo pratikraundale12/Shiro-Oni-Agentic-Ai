@@ -72,10 +72,8 @@ export const downloadJsonFile = (jsonData, fileName = 'demo.json', refresh) => {
 
 export const validateInput = input => {
   const normalizedInput = input.replace(/\s{2,}/g, ' ');
-  const alphabetCount = (normalizedInput.match(/[a-zA-Z]/g) || []).length;
   const cleanedInput = normalizedInput.trim();
-  const isLongEnough = alphabetCount >= 3;
-  const isValid = isLongEnough;
+  const isValid = cleanedInput;
 
   return { isValid, cleanedInput };
 };

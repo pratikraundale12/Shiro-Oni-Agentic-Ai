@@ -187,7 +187,7 @@ const DataFlowList = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    max-height: 240px;
+    max-height: max-content;
   }
   .avatar-img {
     height: 32px;
@@ -352,6 +352,7 @@ export const AiFlowGenerator = () => {
       setOpenConversation(false);
       setQueryText('');
       setFlowJson({});
+      setConversationalRes('');
       setOriginalFlow({});
       setInputError({});
       setIsPromptInputDisabled(!generateFlowPermission);
@@ -451,6 +452,7 @@ export const AiFlowGenerator = () => {
   const generatedFlow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
   const error = useSelector(AiFlowGeneratorSelectors.getGenFlowError);
   const [flowJson, setFlowJson] = useState({});
+  const [conversationalRes, setConversationalRes] = useState('');
   const [flowError, setFlowError] = useState(error || '');
   const [originalFlow, setOriginalFlow] = useState({});
   const [isFlowUpdated, setIsFlowUpdated] = useState(false);
@@ -479,6 +481,15 @@ export const AiFlowGenerator = () => {
     if (Object.keys(generatedFlow).length > 0) {
       let repaired = generatedFlow?.response;
       const jsonType = typeof repaired;
+      let formattedRes = '';
+      if (jsonType === 'string') {
+        formattedRes = repaired
+          .replace(/\\"/g, '"')
+          .replace(/\\n/g, '\n')
+          .replace(/^"/, '')
+          .replace(/"$/, '');
+      }
+      setConversationalRes(jsonType === 'string' ? formattedRes : '');
       setFlowJson(jsonType === 'object' ? repaired : {});
       setOriginalFlow(jsonType === 'object' ? repaired : {});
     }
@@ -641,10 +652,8 @@ export const AiFlowGenerator = () => {
                 <span className="fs-12 ms-auto">{formattedTime()}</span>
               </div>
               <div className="data-flow-content-response p-3">
-                {!isEmpty(flowError) && !loading && (
-                  <TriangleExclamationMarkIcon color="red" />
-                )}{' '}
                 <p
+                  style={{ whiteSpace: 'pre-line' }}
                   className={`mt-1 d-inline ${!isEmpty(flowError) && !loading ? 'text-danger' : ''}`}
                 >
                   {loading ? (
@@ -662,6 +671,19 @@ export const AiFlowGenerator = () => {
                     'Here is the JSON File generated as per your prompt.'
                   ) : !loading &&
                     isEmpty(flowError) &&
+                    !isEmpty(conversationalRes) &&
+                    isEmpty(Object.keys(flowJson)) ? (
+                    <>
+                      {conversationalRes}
+                      <br />
+                      <span className="fw-bold">
+                        Please click on the below button to restart the
+                        conversation
+                      </span>
+                    </>
+                  ) : !loading &&
+                    isEmpty(flowError) &&
+                    isEmpty(conversationalRes) &&
                     isEmpty(Object.keys(flowJson)) ? (
                     <span>
                       Oops! 😅 <b>We regret the inconvenience.</b>
@@ -671,12 +693,16 @@ export const AiFlowGenerator = () => {
                       invalid 🚫.
                       <br />
                       <b>
-                        Please check your input and refresh 🔄 to try again!
+                        Please click on the below button to restart the
+                        conversation
                       </b>{' '}
                       👍🙂
                     </span>
                   ) : (
-                    `${flowError}`
+                    <span className="d-flex align-items-center gap-1">
+                      <TriangleExclamationMarkIcon color="red" />
+                      {flowError}
+                    </span>
                   )}
                 </p>
                 {!loading &&
@@ -743,7 +769,7 @@ export const AiFlowGenerator = () => {
                 {!loading &&
                   isEmpty(flowError) &&
                   isEmpty(Object.keys(flowJson)) && (
-                    <div className="mt-auto add-to-registry-btn">
+                    <div className="mt-2 add-to-registry-btn">
                       <Button
                         onClick={() => {
                           handleRefresh();
