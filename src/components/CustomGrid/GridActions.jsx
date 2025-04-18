@@ -220,6 +220,7 @@ export const GridActions = ({
   setSelectEntity,
   setSortingState,
   setCurrentPage,
+  isClusterLoggedIn = true,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -334,6 +335,9 @@ export const GridActions = ({
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
 
   useEffect(() => {
+    if (module === 'nodes' && !isClusterLoggedIn) {
+      return;
+    }
     if (
       watchStatus ||
       selectedRange ||
@@ -587,17 +591,19 @@ export const GridActions = ({
     <>
       <Flex className="flex-wrap gap-2">
         <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
-        <Flex>
-          <ImageContainer>
-            <TodoIcon width={22} height={24} />
-          </ImageContainer>
-          <Title>
-            <span>{title}</span>
-            {module === 'namespaces' && Boolean(gridCount) && (
-              <span>({gridCount})</span>
-            )}
-          </Title>
-        </Flex>
+        {title && (
+          <Flex>
+            <ImageContainer>
+              <TodoIcon width={22} height={24} />
+            </ImageContainer>
+            <Title>
+              <span>{title}</span>
+              {module === 'namespaces' && Boolean(gridCount) && (
+                <span>({gridCount})</span>
+              )}
+            </Title>
+          </Flex>
+        )}
         {module === 'scheduler' && (
           <>
             {
@@ -814,6 +820,13 @@ export const GridActions = ({
                 <RefreshIocn
                   onClick={handleRefresh}
                   data-tooltip-id={`tooltip-group-namespace-refresh-`}
+                  style={{
+                    cursor:
+                      selectedCluster?.value &&
+                      !isEmpty(selectedCluster?.value)
+                        ? 'pointer'
+                        : 'not-allowed',
+                  }}
                 >
                   <RefreshIcon
                     style={{

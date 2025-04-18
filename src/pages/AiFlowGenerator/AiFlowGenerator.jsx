@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   DownloadIcon,
   OpenEyeIcon,
@@ -44,6 +44,8 @@ import { AddNewBucketModal } from './AddNewBucketModal';
 import DownloadFlowConfirmationModal from './DownLoadFlowConfirmationModal';
 import { FullScreenIcon } from '../../assets/Icons/FullScreenIcon';
 import { MiniScreenIcon } from '../../assets/Icons/MiniScreenIcon';
+import FlowAddedSuccessModal from './FlowAddedSuccessModal';
+import { history } from '../../helpers/history';
 
 const Container = styled.div`
   display: flex;
@@ -147,12 +149,16 @@ const DataFlowList = styled.div`
     font-size: 12px;
   }
   .data-flow-thum {
+    display: flex;
+    flex-direction: column;
+
     .data-flow-thum-img {
       background-color: #fff;
       border-radius: 10px;
       padding: 8px;
       display: inline-flex;
       text-align: center;
+      width: 80px;
     }
     .data-flow-thum-text {
       font-size: 12px;
@@ -177,7 +183,10 @@ const DataFlowList = styled.div`
     background-color: #f5f7fa;
     border-radius: 10px;
     margin-top: -12px;
-    height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-height: max-content;
   }
   .avatar-img {
     height: 32px;
@@ -192,6 +201,9 @@ const DataFlowList = styled.div`
   }
   .add-to-registry-btn {
     width: 159px;
+  }
+  .validate-flow-btn {
+    width: 111px;
   }
   .flow-download-btn {
     width: 39px;
@@ -259,9 +271,17 @@ export const AiFlowGenerator = () => {
   const [isFlowDownloaded, setIsFLowDownloaded] = useState(false);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [inputError, setInputError] = useState({});
+  const [pendingFlowUpdate, setPendingFlowUpdate] = useState(null);
+  const isFlowAddedSuccessfully = useSelector(
+    AiFlowGeneratorSelectors.getIsFlowAddedSuccessFully
+  );
   const [clusters, setClusters] = useState(() => {
     return JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   });
+
+  useEffect(() => {
+    setIsPromptInputDisabled(!generateFlowPermission);
+  }, [generateFlowPermission]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -306,6 +326,8 @@ export const AiFlowGenerator = () => {
     NamespacesSelectors.getBucketListDropDownData
   );
   const [buckets, setBuckets] = useState(bucketListData?.bucketList);
+  const [isFlowAddedSuccessModalOpen, setIsFlowAddedSuccessModalOpen] =
+    useState(false);
   useEffect(() => {
     if (!isEmpty(bucketListData)) {
       setBuckets(bucketListData?.bucketList);
@@ -313,6 +335,7 @@ export const AiFlowGenerator = () => {
   }, [bucketListData]);
   const registryData = useSelector(AiFlowGeneratorSelectors.getRegistry);
   const [registry, setRegistry] = useState(registryData);
+
   useEffect(() => {
     setRegistry(registryData);
   }, [registryData]);
@@ -329,6 +352,7 @@ export const AiFlowGenerator = () => {
         user_id: currentUser?.id,
         user_role: currentUser?.role,
       };
+      setIsValidFlowGenerated(false);
       setisInputEmpty(false);
       setIsFlowUpdated(false);
       setIsFLowDownloaded(false);
@@ -337,6 +361,7 @@ export const AiFlowGenerator = () => {
       setOpenConversation(false);
       setQueryText('');
       setFlowJson({});
+      setConversationalRes([]);
       setOriginalFlow({});
       setInputError({});
       setIsPromptInputDisabled(!generateFlowPermission);
@@ -364,31 +389,51 @@ export const AiFlowGenerator = () => {
   };
 
   const handleAddToRegistry = flowData => {
+    const updatedFlowJson = {
+      ...flowJson,
+      flowContents: {
+        ...flowJson?.flowContents,
+        name: flowData?.pg_name,
+      },
+    };
     const payload = {
       bucketId: flowData?.bucket,
       flowName: flowData?.flow_name,
       flowDesc: flowData?.flow_desc,
-      flowJson: flowJson,
+      flowJson: updatedFlowJson,
     };
     dispatch(AiFlowGeneratorActions.addFlowToRegistry(payload));
+    setOpenPreviewModal(false);
+    if (!isEqual(updatedFlowJson, originalFlow)) {
+      setPendingFlowUpdate(updatedFlowJson);
+    }
     if (isFlowUpdated) {
-      dispatch(
-        AiFlowGeneratorActions.updateGeneratedFlow({
-          data: flowJson,
-          id: generatedFlow?.id,
-        })
-      );
+      setPendingFlowUpdate(updatedFlowJson);
     }
   };
 
+  useEffect(() => {
+    if (isFlowAddedSuccessfully && pendingFlowUpdate) {
+      dispatch(
+        AiFlowGeneratorActions.updateGeneratedFlow({
+          data: pendingFlowUpdate,
+          id: generatedFlowId,
+        })
+      );
+
+      setPendingFlowUpdate(null);
+    }
+  }, [isFlowAddedSuccessfully, pendingFlowUpdate]);
+
   const handleFlowDownload = () => {
+    const fileName = queryLable?.length ? `${queryLable}.json` : 'flow.json';
     setIsFLowDownloaded(true);
-    downloadJsonFile(flowJson, 'demo.json', handleRefresh);
+    downloadJsonFile(flowJson, fileName, handleRefresh);
     if (isFlowUpdated) {
       dispatch(
         AiFlowGeneratorActions.updateGeneratedFlow({
           data: flowJson,
-          id: generatedFlow?.id,
+          id: generatedFlowId,
         })
       );
     }
@@ -412,8 +457,11 @@ export const AiFlowGenerator = () => {
     icon: <DownloadIcon color="#444445" />,
   };
   const generatedFlow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
+  const [generatedFlowId, setGeneratedFlowId] = useState(generatedFlow?.id);
   const error = useSelector(AiFlowGeneratorSelectors.getGenFlowError);
   const [flowJson, setFlowJson] = useState({});
+  const [conversationalRes, setConversationalRes] = useState([]);
+  const [isValidFlowGenerated, setIsValidFlowGenerated] = useState(false);
   const [flowError, setFlowError] = useState(error || '');
   const [originalFlow, setOriginalFlow] = useState({});
   const [isFlowUpdated, setIsFlowUpdated] = useState(false);
@@ -429,6 +477,15 @@ export const AiFlowGenerator = () => {
     useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [conversationalRes]);
 
   useEffect(() => {
     setFlowError(error);
@@ -440,10 +497,58 @@ export const AiFlowGenerator = () => {
 
   useEffect(() => {
     if (Object.keys(generatedFlow).length > 0) {
-      let repaired = generatedFlow?.response;
+      setGeneratedFlowId(generatedFlow?.id);
+      const repaired = generatedFlow?.response;
       const jsonType = typeof repaired;
-      setFlowJson(jsonType === 'object' ? repaired : {});
-      setOriginalFlow(jsonType === 'object' ? repaired : {});
+
+      let newSystemMessage = null;
+      const timestamp = formattedTime();
+
+      if (jsonType === 'string') {
+        const formattedRes = repaired
+          .replace(/\\"/g, '"')
+          .replace(/\\n/g, '\n')
+          .replace(/^"/, '')
+          .replace(/"$/, '');
+
+        newSystemMessage = {
+          role: 'system',
+          type: 'string',
+          status: 'completed',
+          data: formattedRes,
+          time: timestamp,
+        };
+        setIsPromptInputDisabled(false);
+        setIsValidFlowGenerated(false);
+        setOriginalFlow({});
+        setFlowJson({});
+      } else if (jsonType === 'object' && repaired !== null) {
+        newSystemMessage = {
+          role: 'system',
+          type: 'object',
+          status: 'completed',
+          data: repaired,
+          time: timestamp,
+        };
+        setIsPromptInputDisabled(true);
+        setIsValidFlowGenerated(true);
+        setFlowJson(repaired);
+        setOriginalFlow(repaired);
+      }
+
+      if (newSystemMessage) {
+        setConversationalRes(prev => {
+          const updated = [...prev];
+          const lastIndex = updated
+            .map(msg => msg.status)
+            .lastIndexOf('pending');
+
+          if (lastIndex !== -1) {
+            updated[lastIndex] = newSystemMessage;
+          }
+          return updated;
+        });
+      }
     }
   }, [generatedFlow]);
 
@@ -495,6 +600,22 @@ export const AiFlowGenerator = () => {
     setOpenAddToRegistryModal(false);
   };
 
+  // const validateGeneratedFlow = () => {
+  //   // const payload = {
+  //   //   jsonToValidate: flowJson,
+  //   // };
+  //   dispatch(AiFlowGeneratorActions.validateFlowJson(flowJson));
+  // };
+  const handleSuccessModalSuccess = () => {
+    setIsFlowAddedSuccessModalOpen(false);
+    handleRefresh();
+    history.push('/process-group');
+  };
+
+  const handleSuccessModalClose = () => {
+    setIsFlowAddedSuccessModalOpen(false);
+    handleRefresh();
+  };
   useEffect(() => {
     if (
       !loading &&
@@ -549,6 +670,8 @@ export const AiFlowGenerator = () => {
                   setQueryText={setQueryText}
                   loading={loading}
                   setQueryLable={setQueryLable}
+                  isValidFlowGenerated={isValidFlowGenerated}
+                  isJsonEmpty={isEmpty(Object.keys(flowJson))}
                 />
               </RecommendedFlowBox>
             </Flex>
@@ -557,120 +680,170 @@ export const AiFlowGenerator = () => {
         {!openConversation && <MidSection>{KDFM.AI_FLOW_GENERATOR}</MidSection>}{' '}
         {openConversation && (
           <DataFlowContainer>
-            <DataFlowList className="gen-ai-dataflow-sec mb-4">
-              <div className="d-flex gap-2 ps-3">
-                <div className="df-manager-icon">
-                  <img
-                    src={
-                      currentUser?.photo
-                        ? `${API_URL}${currentUser?.photo}`
-                        : userImage
-                    }
-                    alt=""
-                    className="avatar-img"
-                  />
+            {conversationalRes.map((item, index) => (
+              <DataFlowList className="gen-ai-dataflow-sec mb-4" key={index}>
+                <div className="d-flex gap-2 ps-3">
+                  <div className="df-manager-icon">
+                    <img
+                      src={
+                        item.role === 'user'
+                          ? currentUser?.photo
+                            ? `${API_URL}${currentUser?.photo}`
+                            : userImage
+                          : dfmImage
+                      }
+                      alt="user"
+                      className={
+                        item.role === 'user' ? 'avatar-img' : 'dfm-img'
+                      }
+                    />
+                  </div>
+                  <span className="fs-12 fw-medium">
+                    {item.role === 'user' ? KDFM.YOU : KDFM.DATA_FLOW_MANAGER}
+                  </span>
+                  <span className="fs-12 ms-auto">
+                    {item?.time ?? formattedTime()}
+                  </span>
                 </div>
-                <span className="fs-12 fw-medium">{KDFM.YOU}</span>
-                <span className="fs-12 ms-auto">{formattedTime()}</span>
-              </div>
-              <div className="data-flow-content p-3">
-                <p className="mt-1">{queryText}</p>
-              </div>
-            </DataFlowList>
-            <DataFlowList className="gen-ai-dataflow-sec mb-4">
-              <div className="d-flex gap-2 ps-3">
-                <div className="df-manager-icon">
-                  <img src={dfmImage} alt="user" className="dfm-img" />
-                </div>
-                <span className="fs-12 fw-medium">
-                  {KDFM.DATA_FLOW_MANAGER}
-                </span>
-                <span className="fs-12 ms-auto">{formattedTime()}</span>
-              </div>
-              <div className="data-flow-content-response p-3">
-                {!isEmpty(flowError) && !loading && (
-                  <TriangleExclamationMarkIcon color="red" />
-                )}{' '}
-                <p
-                  className={`mt-1 d-inline ${!isEmpty(flowError) && !loading ? 'text-danger' : ''}`}
+
+                <div
+                  className={`data-flow-content${item.role === 'system' ? '-response' : ''} p-3`}
                 >
-                  {loading ? (
-                    <span className="d-flex align-items-center">
-                      <span>Generating Flow</span>
-                      <svg height="40" width="100" className="loader">
-                        <circle className="dot" cx="10" cy="20" r="2" />
-                        <circle className="dot" cx="20" cy="20" r="2" />
-                        <circle className="dot" cx="30" cy="20" r="2" />
-                      </svg>
-                    </span>
-                  ) : !loading &&
-                    isEmpty(flowError) &&
-                    !isEmpty(Object.keys(flowJson)) ? (
-                    'Here is the JSON File generated as per your prompt.'
-                  ) : !loading &&
-                    isEmpty(flowError) &&
-                    isEmpty(Object.keys(flowJson)) ? (
-                    <span>
-                      Oops! 😅 <b>We regret the inconvenience.</b>
-                      <br />
-                      Flow generation failed ⚡ due to a possible formatting
-                      issue with the query, and the generated flow might also be
-                      invalid 🚫.
-                      <br />
-                      <b>
-                        Please check your input and refresh 🔄 to try again!
-                      </b>{' '}
-                      👍🙂
-                    </span>
-                  ) : (
-                    `${flowError}`
-                  )}
-                </p>
-                {!loading &&
-                  isEmpty(flowError) &&
-                  !isEmpty(Object.keys(flowJson)) && (
-                    <>
-                      <div className="d-flex flex-wrap gap-3 mb-3 mt-4">
-                        <div className="data-flow-thum text-center">
-                          <div className="data-flow-thum-img mb-1">
-                            <img src={fileImage} alt="" className="img-fluid" />
-                          </div>
-                          <div className="data-flow-thum-text">Flow.json</div>
-                        </div>
+                  {item.role === 'user' && <p className="mt-1">{item.data}</p>}
+
+                  {item.role === 'system' &&
+                    item.status === 'pending' &&
+                    loading && (
+                      <p className="mt-1 d-flex align-items-center">
+                        <span>Generating Flow</span>
+                        <svg height="40" width="100" className="loader">
+                          <circle className="dot" cx="10" cy="20" r="2" />
+                          <circle className="dot" cx="20" cy="20" r="2" />
+                          <circle className="dot" cx="30" cy="20" r="2" />
+                        </svg>
+                      </p>
+                    )}
+
+                  {item.role === 'system' &&
+                    item.status === 'completed' &&
+                    item.type === 'string' && (
+                      <p style={{ whiteSpace: 'pre-line' }} className="mt-1">
+                        {item.data}
+                      </p>
+                    )}
+                  {item.role === 'system' &&
+                    !isEmpty(flowError) &&
+                    !loading && (
+                      <p
+                        style={{ whiteSpace: 'pre-line' }}
+                        className="mt-1 text-danger"
+                      >
+                        <span className="d-flex align-items-center gap-1">
+                          <TriangleExclamationMarkIcon color="red" />
+                          {flowError}
+                        </span>{' '}
+                      </p>
+                    )}
+                  {item.role === 'system' &&
+                    !isEmpty(flowError) &&
+                    !loading && (
+                      <div className="mt-2 add-to-registry-btn">
+                        <Button
+                          onClick={() => {
+                            handleRefresh();
+                          }}
+                          size="sm"
+                        >
+                          {KDFM.RESTART_CONVERSATION}
+                        </Button>
                       </div>
-                      <div className="d-flex gap-2">
-                        <div className="add-to-registry-btn">
+                    )}
+                  {item.role === 'system' &&
+                    item.status === 'completed' &&
+                    item.type === 'object' &&
+                    isEmpty(flowError) && (
+                      <>
+                        <p className="mt-1">
+                          Here is the JSON generated as per your prompt!
+                        </p>
+                        {!loading &&
+                          isEmpty(flowError) &&
+                          !isEmpty(Object.keys(flowJson)) && (
+                            <>
+                              <div className="d-flex flex-wrap gap-3 mb-3 mt-4">
+                                <div className="data-flow-thum text-center">
+                                  <div className="data-flow-thum-img mb-1">
+                                    <img
+                                      src={fileImage}
+                                      alt="file"
+                                      className="img-fluid"
+                                    />
+                                  </div>
+                                  <div className="data-flow-thum-text">
+                                    {queryLable?.length
+                                      ? `${queryLable}.json`
+                                      : 'Flow.json'}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="d-flex gap-2">
+                                <div className="add-to-registry-btn">
+                                  <Button
+                                    isBtnDisable={isEmpty(
+                                      Object.keys(flowJson)
+                                    )}
+                                    onClick={() => {
+                                      setIsClickedFromPreviewModal(false);
+                                      onAddToRegistryClick();
+                                    }}
+                                    size="sm"
+                                  >
+                                    {KDFM.ADD_TO_REGSITRY}
+                                  </Button>
+                                </div>
+                                <div className="flow-download-btn">
+                                  <Button
+                                    isBtnDisable={isEmpty(
+                                      Object.keys(flowJson)
+                                    )}
+                                    onClick={handleDownloadClick}
+                                    variant="secondary"
+                                    icon={<DownloadIcon color="#444445" />}
+                                  />
+                                </div>
+                                <button
+                                  disabled={isEmpty(Object.keys(flowJson))}
+                                  onClick={handlePreviewClick}
+                                  className="preview-btn d-flex align-items-center justify-content-center"
+                                >
+                                  <OpenEyeIcon
+                                    width={24}
+                                    height={18}
+                                    color="#FF7A00"
+                                  />
+                                </button>
+                                {/* <div className="validate-flow-btn">
                           <Button
+                            variant="secondary"
                             isBtnDisable={isEmpty(Object.keys(flowJson))}
-                            onClick={() => {
-                              setIsClickedFromPreviewModal(false);
-                              onAddToRegistryClick();
-                            }}
+                            onClick={() => validateGeneratedFlow()}
                             size="sm"
                           >
-                            {KDFM.ADD_TO_REGSITRY}
-                          </Button>
-                        </div>
-                        <div className="flow-download-btn">
-                          <Button
-                            isBtnDisable={isEmpty(Object.keys(flowJson))}
-                            onClick={handleDownloadClick}
-                            variant="secondary"
-                            icon={<DownloadIcon color="#444445" />}
-                          />
-                        </div>
-                        <button
-                          disabled={isEmpty(Object.keys(flowJson))}
-                          onClick={handlePreviewClick}
-                          className="preview-btn d-flex align-items-center justify-content-center"
-                        >
-                          <OpenEyeIcon width={24} height={18} color="#FF7A00" />
-                        </button>
-                      </div>
-                    </>
-                  )}
-              </div>
-            </DataFlowList>
+                            {KDFM.VALIDATE_FLOW}
+                          </Button>{' '}
+                        </div> */}
+                              </div>
+                            </>
+                          )}{' '}
+                      </>
+                    )}
+
+                  {}
+                </div>
+              </DataFlowList>
+            ))}
+            {/* Invisible div for auto-scroll */}
+            <div ref={messagesEndRef} />
           </DataFlowContainer>
         )}
         <PromptSection>
@@ -685,6 +858,7 @@ export const AiFlowGenerator = () => {
               setisInputEmpty={setisInputEmpty}
               setInputError={setInputError}
               setIsPromptInputDisabled={setIsPromptInputDisabled}
+              setConversationalRes={setConversationalRes}
             />
           )}
           <PromptInputBox
@@ -698,6 +872,7 @@ export const AiFlowGenerator = () => {
             isInputEmpty={isInputEmpty}
             inputError={inputError}
             setInputError={setInputError}
+            setConversationalRes={setConversationalRes}
           />
         </PromptSection>
         <Modal
@@ -770,6 +945,8 @@ export const AiFlowGenerator = () => {
             }}
             setIsAddNewBucketModalOpen={setIsAddNewBucketModalOpen}
             refresh={handleRefresh}
+            setIsFlowAddedSuccessModalOpen={setIsFlowAddedSuccessModalOpen}
+            setFlowJson={setFlowJson}
           />
         )}
         {isAddNewBucketModalOpen && (
@@ -783,6 +960,13 @@ export const AiFlowGenerator = () => {
             isModalOpen={isDownloadModalOpen}
             setIsModalOpen={setIsDownloadModalOpen}
             handleDownloadFlow={handleFlowDownload}
+          />
+        )}
+        {isFlowAddedSuccessModalOpen && (
+          <FlowAddedSuccessModal
+            isModalOpen={isFlowAddedSuccessModalOpen}
+            handleClose={handleSuccessModalClose}
+            handleSubmit={handleSuccessModalSuccess}
           />
         )}
       </Container>

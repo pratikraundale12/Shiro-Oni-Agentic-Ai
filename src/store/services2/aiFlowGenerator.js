@@ -57,6 +57,13 @@ export const aiFlowGeneratorAPI = api => {
       return error.response.data;
     }
   };
+  const validateFlowJson = async payload => {
+    try {
+      return await api.post(`/namespace/validate-json`, payload);
+    } catch (error) {
+      return error?.response?.data;
+    }
+  };
   return {
     fetchDefaultRecentFlows,
     generateFlowAPI,
@@ -65,5 +72,6 @@ export const aiFlowGeneratorAPI = api => {
     fetchRegistry,
     addFlowToRegistry,
     addNewBucketToRegistry,
+    validateFlowJson,
   };
 };

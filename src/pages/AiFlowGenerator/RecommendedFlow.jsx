@@ -52,7 +52,7 @@ const FlowName = styled.span`
 export const RecommendedFlow = ({
   generateFlowPermission,
   recentFlows = [],
-  openConversation,
+  isJsonEmpty,
   setQueryText,
   loading,
   setQueryLable,
@@ -66,11 +66,11 @@ export const RecommendedFlow = ({
           toastId: 'generating-flow',
         });
       }
-    } else if (generateFlowPermission && !openConversation) {
+    } else if (generateFlowPermission && isJsonEmpty) {
       setQueryText(flow?.prompt);
       setQueryLable(flow?.short_name);
     } else {
-      if (openConversation) {
+      if (!isJsonEmpty) {
         if (!toast.isActive('already-generated')) {
           toast.warning(
             'Please save or discard the already generated flow to generate a new flow',
@@ -126,4 +126,6 @@ RecommendedFlow.propTypes = {
   setQueryText: PropTypes.func,
   loading: PropTypes.bool,
   setQueryLable: PropTypes.func,
+  isValidFlowGenerated: PropTypes.bool,
+  isJsonEmpty: PropTypes.bool,
 };

@@ -50,6 +50,7 @@ const LabelSelect = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
+  display: inline;
 `;
 const DisplaySection = styled.div`
   height: calc(100% - 120px) !important;
@@ -57,14 +58,23 @@ const DisplaySection = styled.div`
 `;
 const RightDisplaySection = styled.div`
   overflow: auto;
+  left: 20%;
 `;
 const LeftDisplaySection = styled.div`
+  border-radius: 20px;
   background-color: #fff;
+  overflow-y: hidden;
+  overflow-x: auto;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-left: 12px;
+  width: 22%;
+  flex: 0 0 22%;
 `;
 const SectionHeading = styled.div`
   font-family: Red Hat Display;
   font-weight: 700;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 24px;
   letter-spacing: 1%;
   color: #ff7a00;
@@ -73,7 +83,6 @@ const SectionHeading = styled.div`
 export const List = styled.ul`
   max-height: calc(100vh - 250px);
   width: 100%;
-  margin-top: 20px;
   padding-left: 0;
   overflow-y: auto;
 `;
@@ -82,7 +91,7 @@ export const Item = styled.li`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 32px;
+  padding: 12px 8px;
   font-size: 16px;
   font-weight: 600;
   color: ${({ theme, active }) =>
@@ -90,7 +99,6 @@ export const Item = styled.li`
   background-color: ${({ theme, active }) =>
     active ? theme.colors.primaryFocus : 'transparent'};
   cursor: pointer;
-  gap: 20px;
 
   ${props =>
     props.path === 'help-&-support' &&
@@ -114,7 +122,7 @@ const BottomButton = styled.div`
 `;
 const TitleTab = styled.h3`
   font-family: Noto Sans;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 600;
   line-height: 27.24px;
   text-align: left;
@@ -125,9 +133,20 @@ const TitleTabWrapper = styled.div`
   border-bottom: 2px solid #dde4f0;
   padding-bottom: 12px;
 `;
+
+const LabelWarning = styled.span`
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+  font-style: italic;
+`;
+
 const ClusterSetupNewConfigDetailsPage = () => {
   const [originalValues, setOriginalValues] = useState({});
   const [formChanged, setFormChanged] = useState(false);
+  const [initialHeapSize, setInitialHeapSize] = useState(0);
+
   const dispatch = useDispatch();
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
@@ -143,9 +162,15 @@ const ClusterSetupNewConfigDetailsPage = () => {
     }));
 
   const schema = yup.object().shape({
-    configName: yup.string().required('Config Name is required'),
+    configName: yup
+      .string()
+      .required('Config name is required')
+      .matches(/^\S+$/, 'Config name cannot contain spaces'),
     nifiVersion: yup.string().required('NiFi version is required'),
-    comments: yup.string().required('Comment is required'),
+    comments: yup
+      .string()
+      .transform(value => value?.trim())
+      .required('Comment is required'),
     nifi_cluster_node_protocol_max_threads: yup
       .number()
       .typeError('Protocol Max thread must be a number')
@@ -157,11 +182,43 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .typeError('Web http port must be a number')
       .integer('Web http port must be an integer')
       .positive('Web http port must be a positive number')
-      .required('Web http port is required'),
+      .required('Web http port is required')
+      .test(
+        'len',
+        'Port must be between 4 and 5 digits',
+        val => val && val.toString().length >= 4 && val.toString().length <= 5
+      ),
     username: yup.string().required('Userame is required'),
-    password: yup.string().required('Password is required'),
-    java_arg_2: yup.string().required('Initial heap size is required'),
-    java_arg_3: yup.string().required('Maximum heap size is required'),
+    password: yup
+      .string()
+      .required('Password is required')
+      .min(8, 'Password must be minimum 8 in length'),
+    java_arg_2: yup
+      .number()
+      .transform((value, originalValue) =>
+        originalValue === '' ? undefined : value
+      )
+      .typeError('Must be a number')
+      .positive('Must be a positive number')
+      .required('Initial heap size is required'),
+    java_arg_3: yup
+      .number()
+      .typeError('Must be a number')
+      .positive('Must be a positive number')
+      .required('Maximum heap size is required')
+      .min(
+        initialHeapSize,
+        `Maximum heap size must be at least ${initialHeapSize}`
+      ),
+    directory: yup
+      .string()
+      .required('Directory is required')
+      .matches(/^\S+$/, 'Directory cannot contain spaces'),
+    partitions: yup.string().required('Partitions is required'),
+    root_node: yup
+      .string()
+      .required('Root node is required')
+      .matches(/^\S+$/, 'Root node cannot contain spaces'),
   });
 
   const {
@@ -183,10 +240,20 @@ const ClusterSetupNewConfigDetailsPage = () => {
       root_node: '/nifi',
       session_timeout: '10 seconds',
       checkpoint_interval: '2 mins',
+      java_arg_2: 0,
+      java_arg_3: 0,
     },
   });
-  // Watch all form values to detect changes
+
   const formValues = watch();
+
+  useEffect(() => {
+    if (formValues?.java_arg_2) {
+      setInitialHeapSize(Number(formValues?.java_arg_2));
+    } else {
+      setInitialHeapSize(0);
+    }
+  }, [formValues?.java_arg_2]);
 
   useEffect(() => {
     if (!isEmpty(originalValues)) {
@@ -205,6 +272,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
     }
   }, [formValues, originalValues]);
 
+  useEffect(() => {
+    return () => {
+      reset();
+      dispatch(ClustersActions.updateConfigClusterSetup({}));
+      setOriginalValues({});
+      setFormChanged(false);
+      setSelectedProperty('nifi_properties');
+    };
+  }, []);
+
   const sidebarItems = [
     {
       name: 'NiFi Properties',
@@ -222,7 +299,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       icon: CheckListIcon,
     },
     {
-      name: 'state-management.xml',
+      name: 'State-management.xml',
       path: 'state_management_xml',
       icon: CheckListIcon,
     },
@@ -303,7 +380,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
     }, 0);
   };
 
-  const handleAddConfig = data => {
+  const handleAddConfig = async data => {
     const nifiPropertyPayload = {
       nifi_cluster_is_node: data?.nifi_cluster_is_node,
       nifi_cluster_node_protocol_max_threads:
@@ -316,9 +393,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifi_web_https_port: data?.nifi_web_https_port,
     };
     const bootstrapPayload = {
-      java_arg_2: data?.java_arg_2,
-      java_arg_3: data?.java_arg_3,
+      java_arg_2: `-Xmx${data?.java_arg_2}g`,
+      java_arg_3: `-Xmx${data?.java_arg_3}g`,
     };
+
     const loginPayload = {
       username: data?.username,
       password: data?.password,
@@ -356,6 +434,28 @@ const ClusterSetupNewConfigDetailsPage = () => {
     dispatch(ClustersActions.getNiFiVersions());
   }, [dispatch]);
 
+  const onError = errors => {
+    if (
+      errors?.nifi_cluster_node_protocol_max_threads ||
+      errors?.nifi_web_https_port
+    ) {
+      setSelectedProperty('nifi_properties');
+      return;
+    }
+    if (errors?.java_arg_2 || errors?.java_arg_3) {
+      setSelectedProperty('bootstrap_config');
+      return;
+    }
+    if (errors?.username || errors?.password) {
+      setSelectedProperty('login_identity_provider');
+      return;
+    }
+    if (errors?.directory || errors?.partitions || errors?.root_node) {
+      setSelectedProperty('state_management_xml');
+      return;
+    }
+  };
+
   return (
     <Wrapper>
       <Title
@@ -374,8 +474,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
       <OuterContainer>
         <div className="row px-3">
           <div className="col-4">
-            <LabelSelect className="mb-3">{KDFM.CONFIG_NAME}</LabelSelect>
             <InputField
+              label={KDFM.CONFIG_NAME}
               name="configName"
               type="text"
               placeholder={KDFM.ENTER_CONFIG_NAME}
@@ -386,11 +486,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
             />
           </div>
           <div className="col-4">
-            <LabelSelect className="mb-3">{KDFM.NIFI_VERSION}</LabelSelect>
             <SelectField
+              label={KDFM.NIFI_VERSION}
               name="nifiVersion"
               icon={<QRIcons />}
               register={register}
+              required
               errors={errors}
               control={control}
               options={nifiVerionsOptions || []}
@@ -412,7 +513,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
           </div>
         </div>
         <DisplaySection className="px-3 row">
-          <LeftDisplaySection className="col-3 h-100">
+          <LeftDisplaySection className="col-2 h-100">
             <List className="sidebar-navigation">
               {' '}
               {sidebarItems.map(item => (
@@ -431,7 +532,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           : 'black'
                       }
                     />
-                    <span className="nav-text ms-3">{item.name}</span>
+                    <span className="nav-text ms-1">{item.name}</span>
                   </div>
 
                   <LessArrowIcon
@@ -450,10 +551,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {selectedProperty === 'nifi_properties' && (
               <div>
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">Core Configuration</TitleTab>
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">Core Configuration</TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-5">
                       <LabelSelect className="mb-3">
                         Protocol Max Threads
@@ -499,12 +600,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
                 </div>
 
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">
+                  <TitleTabWrapper className="mt-2">
+                    <TitleTab className="ms-3">
                       Zookeeper Configuration
                     </TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-5">
                       <LabelSelect className="mb-3">
                         Zookeeper Connection Timeout
@@ -532,12 +633,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
                 </div>
 
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">
                       Web Server Configuration
                     </TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-5">
                       <LabelSelect className="mb-3">Web Http Port</LabelSelect>
 
@@ -558,18 +659,19 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {selectedProperty === 'bootstrap_config' && (
               <div>
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">Java Memory Settings</TitleTab>
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">Java Memory Settings</TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
-                        Java.arg.2 (Initial Heap Size)
+                      <LabelSelect className="mb-3 ms-1 row">
+                        Java.arg.2
+                        <LabelWarning>(Initial Heap Size in GB)</LabelWarning>
                       </LabelSelect>
 
                       <InputField
                         name="java_arg_2"
-                        type="text"
+                        type="number"
                         placeholder="Enter java.arg.2"
                         required
                         register={register}
@@ -578,13 +680,14 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
-                        Java.arg.3 (Maximum Heap Size)
+                      <LabelSelect className="mb-3 row">
+                        Java.arg.3
+                        <LabelWarning>(Maximum Heap Size in GB)</LabelWarning>
                       </LabelSelect>
 
                       <InputField
                         name="java_arg_3"
-                        type="text"
+                        type="number"
                         placeholder="Enter java.arg.3"
                         required
                         register={register}
@@ -599,12 +702,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {selectedProperty === 'login_identity_provider' && (
               <div>
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">
                       Single User Login Identity Provider
                     </TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-5">
                       <LabelSelect className="mb-3">Username</LabelSelect>
 
@@ -638,10 +741,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {selectedProperty === 'state_management_xml' && (
               <div>
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">Local State Provider</TitleTab>
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">Local State Provider</TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-4">
                       <LabelSelect className="mb-3">Directory</LabelSelect>
 
@@ -697,12 +800,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
                 </div>
 
                 <div>
-                  <TitleTabWrapper className="mt-4">
-                    <TitleTab className="ms-2">
+                  <TitleTabWrapper className="mt-3">
+                    <TitleTab className="ms-3">
                       ZooKeeper Cluster State Provider
                     </TitleTab>
                   </TitleTabWrapper>
-                  <div className="row mt-4">
+                  <div className="row mt-3">
                     <div className="col-4">
                       <LabelSelect className="mb-3">Root Node</LabelSelect>
 
@@ -768,7 +871,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
 
           <Button
             type="submit"
-            onClick={handleSubmit(handleAddConfig)}
+            onClick={handleSubmit(handleAddConfig, onError)}
             disabled={!isEmpty(configToEdit) && !formChanged}
           >
             {!isEmpty(configToEdit) ? 'Update Config' : 'Add Config'}

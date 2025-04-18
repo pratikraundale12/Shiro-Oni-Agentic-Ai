@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   DeleteSmallIcon,
@@ -116,7 +117,8 @@ const FlowValidation = () => {
         <>
           <button
             className="border-0 bg-white me-2"
-            onClick={() => {
+            onClick={e => {
+              e.currentTarget.blur();
               dispatch(SettingsActions.flowValidationModalOpen(true));
               dispatch(FlowValidationActions.fetchRules(item?.id));
               dispatch(FlowValidationActions.fetchProperty(item?.scope_type));
@@ -127,32 +129,66 @@ const FlowValidation = () => {
                 })
               );
             }}
+            data-tooltip-id={`tooltip-validation-${item.id}`}
           >
             <FlowValidationIcon />
           </button>
+          <ReactTooltip
+            id={`tooltip-validation-${item.id}`}
+            place="left"
+            content="View Validation Rules"
+            style={{
+              width: '130px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
           {item?.deletable === true && (
             <button
               className="border-0 bg-white mr-2"
-              onClick={() => {
+              onClick={event => {
+                event.currentTarget.blur();
                 dispatch(SettingsActions.addNewValidationModalOpen(true));
                 dispatch(FlowValidationActions.setSelectedItem(item));
               }}
+              data-tooltip-id={`tooltip-edit-${item.id}`}
             >
               <NewEditIcon />
             </button>
           )}
+          <ReactTooltip
+            id={`tooltip-edit-${item.id}`}
+            place="left"
+            content="Edit Validation"
+            style={{
+              width: '130px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
           {item?.deletable === true && (
             <button
               className="border-none bg-white"
               onClick={() => {
                 dispatch(FlowValidationActions.deleteRuleScope(item.id));
               }}
+              data-tooltip-id={`tooltip-delete-${item.id}`}
             >
               <IconButton>
                 <DeleteSmallIcon color="#444445" height="12" width="12" />
               </IconButton>
             </button>
           )}
+          <ReactTooltip
+            id={`tooltip-delete-${item.id}`}
+            place="left"
+            content="Delete Validation"
+            style={{
+              width: '130px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
         </>
       ),
       width: '10%',
