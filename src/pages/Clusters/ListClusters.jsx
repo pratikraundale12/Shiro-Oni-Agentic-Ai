@@ -326,6 +326,7 @@ export const ListClusters = () => {
             page: 1,
             sort: 'name',
             limit: 10,
+            ...(state?.search && { search: state?.search }),
             ...(statusData !== '' && { status: statusData }),
           },
         })
@@ -352,6 +353,7 @@ export const ListClusters = () => {
             page: 1,
             sort: 'name',
             limit: 10,
+            ...(state?.search && { search: state?.search }),
             ...(statusData !== '' && { status: statusData }),
           },
         })
@@ -396,6 +398,7 @@ export const ListClusters = () => {
               page: 1,
               sort: 'name',
               limit: 10,
+              ...(state?.search && { search: state?.search }),
               ...(statusData !== '' && { status: statusData }),
             },
           })
