@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import DOMPurify from 'dompurify';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiFlowGeneratorActions, AuthenticationSelectors } from '../../store';
-import { validateInput, validatePayload } from './utils';
+import { formattedTime, validateInput, validatePayload } from './utils';
 import { v4 as uuidv4 } from 'uuid';
 import { FieldErrorMessage } from '../../shared';
 
@@ -120,8 +120,19 @@ export const PromptInputBox = ({
       setQueryText('');
       setIsSendBtnDisabled(true);
       setOpenConversation(true);
-      const newUserMessage = { role: 'user', data: queryText };
-      const tempSystemMessage = { role: 'system', status: 'pending' };
+      const timestamp = formattedTime();
+      const newUserMessage = {
+        role: 'user',
+        data: queryText,
+        status: 'completed',
+        type: 'string',
+        time: timestamp,
+      };
+      const tempSystemMessage = {
+        role: 'system',
+        status: 'pending',
+        time: timestamp,
+      };
       setConversationalRes(prev => [
         ...prev,
         newUserMessage,

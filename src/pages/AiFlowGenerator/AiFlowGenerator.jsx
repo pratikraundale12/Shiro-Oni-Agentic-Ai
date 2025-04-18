@@ -271,6 +271,10 @@ export const AiFlowGenerator = () => {
   const [isFlowDownloaded, setIsFLowDownloaded] = useState(false);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [inputError, setInputError] = useState({});
+  const [pendingFlowUpdate, setPendingFlowUpdate] = useState(null);
+  const isFlowAddedSuccessfully = useSelector(
+    AiFlowGeneratorSelectors.getIsFlowAddedSuccessFully
+  );
   const [clusters, setClusters] = useState(() => {
     return JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   });
@@ -385,43 +389,41 @@ export const AiFlowGenerator = () => {
   };
 
   const handleAddToRegistry = flowData => {
-    if (
-      !isEmpty(flowData?.pg_name) &&
-      flowData?.pg_name !== originalFlow?.flowContents?.name
-    ) {
-      setFlowJson(prev => {
-        return {
-          ...prev,
-          flowContents: {
-            ...prev?.flowContents,
-            name: flowData?.pg_name,
-          },
-        };
-      });
-      dispatch(
-        AiFlowGeneratorActions.updateGeneratedFlow({
-          data: flowJson,
-          id: generatedFlow?.id,
-        })
-      );
-    }
+    const updatedFlowJson = {
+      ...flowJson,
+      flowContents: {
+        ...flowJson?.flowContents,
+        name: flowData?.pg_name,
+      },
+    };
     const payload = {
       bucketId: flowData?.bucket,
       flowName: flowData?.flow_name,
       flowDesc: flowData?.flow_desc,
-      flowJson: flowJson,
+      flowJson: updatedFlowJson,
     };
     dispatch(AiFlowGeneratorActions.addFlowToRegistry(payload));
     setOpenPreviewModal(false);
+    if (!isEqual(updatedFlowJson, originalFlow)) {
+      setPendingFlowUpdate(updatedFlowJson);
+    }
     if (isFlowUpdated) {
-      dispatch(
-        AiFlowGeneratorActions.updateGeneratedFlow({
-          data: flowJson,
-          id: generatedFlow?.id,
-        })
-      );
+      setPendingFlowUpdate(updatedFlowJson);
     }
   };
+
+  useEffect(() => {
+    if (isFlowAddedSuccessfully && pendingFlowUpdate) {
+      dispatch(
+        AiFlowGeneratorActions.updateGeneratedFlow({
+          data: pendingFlowUpdate,
+          id: generatedFlowId,
+        })
+      );
+
+      setPendingFlowUpdate(null);
+    }
+  }, [isFlowAddedSuccessfully, pendingFlowUpdate]);
 
   const handleFlowDownload = () => {
     const fileName = queryLable?.length ? `${queryLable}.json` : 'flow.json';
@@ -431,7 +433,7 @@ export const AiFlowGenerator = () => {
       dispatch(
         AiFlowGeneratorActions.updateGeneratedFlow({
           data: flowJson,
-          id: generatedFlow?.id,
+          id: generatedFlowId,
         })
       );
     }
@@ -455,6 +457,7 @@ export const AiFlowGenerator = () => {
     icon: <DownloadIcon color="#444445" />,
   };
   const generatedFlow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
+  const [generatedFlowId, setGeneratedFlowId] = useState(generatedFlow?.id);
   const error = useSelector(AiFlowGeneratorSelectors.getGenFlowError);
   const [flowJson, setFlowJson] = useState({});
   const [conversationalRes, setConversationalRes] = useState([]);
@@ -494,10 +497,12 @@ export const AiFlowGenerator = () => {
 
   useEffect(() => {
     if (Object.keys(generatedFlow).length > 0) {
+      setGeneratedFlowId(generatedFlow?.id);
       const repaired = generatedFlow?.response;
       const jsonType = typeof repaired;
 
       let newSystemMessage = null;
+      const timestamp = formattedTime();
 
       if (jsonType === 'string') {
         const formattedRes = repaired
@@ -511,6 +516,7 @@ export const AiFlowGenerator = () => {
           type: 'string',
           status: 'completed',
           data: formattedRes,
+          time: timestamp,
         };
         setIsPromptInputDisabled(false);
         setIsValidFlowGenerated(false);
@@ -522,6 +528,7 @@ export const AiFlowGenerator = () => {
           type: 'object',
           status: 'completed',
           data: repaired,
+          time: timestamp,
         };
         setIsPromptInputDisabled(true);
         setIsValidFlowGenerated(true);
@@ -694,7 +701,9 @@ export const AiFlowGenerator = () => {
                   <span className="fs-12 fw-medium">
                     {item.role === 'user' ? KDFM.YOU : KDFM.DATA_FLOW_MANAGER}
                   </span>
-                  <span className="fs-12 ms-auto">{formattedTime()}</span>
+                  <span className="fs-12 ms-auto">
+                    {item?.time ?? formattedTime()}
+                  </span>
                 </div>
 
                 <div
