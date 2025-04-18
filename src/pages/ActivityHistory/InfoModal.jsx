@@ -63,7 +63,14 @@ export const InfoModalActivityHistory = () => {
 
   const handleRegistryClick = () => {
     if (!selectedItem?.changes_on_action?.user_story_url) return;
-    window.open(selectedItem?.changes_on_action?.user_story_url, '_blank');
+  
+  let url = selectedItem?.changes_on_action?.user_story_url.trim();
+
+  if (!/^https?:\/\//i.test(url)) {
+    url = `https://${url}`;
+  }
+
+  window.open(url, '_blank');
   };
   const modalOpen = useSelector(SchedularSelectors.getIsDiffModalOpen);
   const handleConfigrationDetails = () => {
