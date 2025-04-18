@@ -8,7 +8,7 @@ import { GreaterArrowIcon, LessArrowIcon } from '../../assets';
 import { v4 as uuidv4 } from 'uuid';
 import { KDFM } from '../../constants';
 import { toast } from 'react-toastify';
-import { validatePayload } from './utils';
+import { formattedTime, validatePayload } from './utils';
 import { AiFlowGeneratorActions, AuthenticationSelectors } from '../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import 'slick-carousel/slick/slick.css';
@@ -176,8 +176,19 @@ const SuggetionsChip = ({
     setInputError({});
     setIsPromptInputDisabled(true);
     setisInputEmpty(true);
-    const newUserMessage = { role: 'user', data: flow?.query };
-    const tempSystemMessage = { role: 'system', status: 'pending' };
+    const timestamp = formattedTime();
+    const newUserMessage = {
+      role: 'user',
+      data: flow?.query,
+      status: 'completed',
+      type: 'string',
+      time: timestamp,
+    };
+    const tempSystemMessage = {
+      role: 'system',
+      status: 'pending',
+      time: timestamp,
+    };
     setConversationalRes(prev => [...prev, newUserMessage, tempSystemMessage]);
     setQueryText(flow?.query);
     setQueryLable(flow?.name);

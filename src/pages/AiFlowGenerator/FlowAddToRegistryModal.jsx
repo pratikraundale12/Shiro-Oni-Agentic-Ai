@@ -67,7 +67,6 @@ export const FlowAddToRegistryModal = ({
   showAddNewBucket = true,
   handleClose,
   setIsFlowAddedSuccessModalOpen,
-  setFlowJson,
   refresh,
 }) => {
   const newBucketData = useSelector(AiFlowGeneratorSelectors.getNewBucket);
@@ -123,17 +122,6 @@ export const FlowAddToRegistryModal = ({
   }, [newBucketData, reset, bucketList]);
 
   const onSubmit = data => {
-    if (!isEmpty(data?.pg_name) && setFlowJson) {
-      setFlowJson(prev => {
-        return {
-          ...prev,
-          flowContents: {
-            ...prev?.flowContents,
-            name: data?.pg_name,
-          },
-        };
-      });
-    }
     handleAddToRegistry(data);
     dispatch(AiFlowGeneratorActions.setNewBucket({}));
   };
