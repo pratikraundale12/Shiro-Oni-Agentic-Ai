@@ -28,6 +28,7 @@ import {
   ClustersActions,
   ClustersSelectors,
   GridActions,
+  LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
   PoliciesActions,
@@ -39,6 +40,7 @@ import { SettingsSelectors } from '../store/settings';
 import { useGlobalContext } from '../utils';
 import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';
+import { toast } from 'react-toastify';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -216,7 +218,9 @@ const ProfileDropdown = () => {
   const [showMenu, setShowMenu] = useState(false);
   const { setState } = useGlobalContext();
   const menuRef = useRef(null);
-
+  const flowGenrating = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'generateFlowAPI')
+  );
   const logoutFromKeycloak = async () => {
     const storedConfig = JSON.parse(localStorage.getItem('keycloakConfig'));
     const idToken = localStorage.getItem('keycloak_id_token');
@@ -286,14 +290,22 @@ const ProfileDropdown = () => {
     };
   }, []);
 
+  const onProfileClick = () => {
+    if (flowGenrating) {
+      if (!toast.isActive('generating-flow')) {
+        toast.warning('Flow is generating please wait', {
+          toastId: 'generating-flow',
+        });
+      }
+      return;
+    }
+    setShowMenu(prev => !prev);
+  };
+
   return (
     <ProfileContainer ref={menuRef}>
       <UserModal />
-      <ProfileButton
-        type="button"
-        onClick={() => setShowMenu(prev => !prev)}
-        title="Profile"
-      >
+      <ProfileButton type="button" onClick={onProfileClick} title="Profile">
         <ProfileRender url={currentUser?.photo} />
         <ProfileInfo>
           <Name className="text-truncate">{`${currentUser?.first_name || ''} ${currentUser?.middle_name || ''} ${currentUser?.last_name || ''}`}</Name>
@@ -328,6 +340,10 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   const closeTab = () => {
     setDisplaySessionTab(false);
   };
+
+  const flowGenrating = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'generateFlowAPI')
+  );
   useEffect(() => {
     if (!window.location.pathname.includes('/process-group')) {
       dispatch(
@@ -476,6 +492,14 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   }, [licenseType, licenseExpireDate]);
 
   const handleRoute = path => {
+    if (flowGenrating) {
+      if (!toast.isActive('generating-flow')) {
+        toast.warning('Flow is generating please wait', {
+          toastId: 'generating-flow',
+        });
+      }
+      return;
+    }
     dispatch(AuthenticationActions.setRoute(path));
     history.push(`/${path}`);
   };
@@ -514,6 +538,14 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
                     <IconCusterButton
                       id="cluster-icon-btn"
                       onClick={() => {
+                        if (flowGenrating) {
+                          if (!toast.isActive('generating-flow')) {
+                            toast.warning('Flow is generating please wait', {
+                              toastId: 'generating-flow',
+                            });
+                          }
+                          return;
+                        }
                         dispatch(AuthenticationActions.setClusterLogin(true));
                         dispatch(
                           ClustersActions.fetchClusters({ params: { page: 1 } })

@@ -158,6 +158,7 @@ const SuggetionsChip = ({
   setisInputEmpty,
   setIsPromptInputDisabled,
   setInputError,
+  setConversationalRes,
 }) => {
   const dispatch = useDispatch();
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -175,6 +176,9 @@ const SuggetionsChip = ({
     setInputError({});
     setIsPromptInputDisabled(true);
     setisInputEmpty(true);
+    const newUserMessage = { role: 'user', data: flow?.query };
+    const tempSystemMessage = { role: 'system', status: 'pending' };
+    setConversationalRes(prev => [...prev, newUserMessage, tempSystemMessage]);
     setQueryText(flow?.query);
     setQueryLable(flow?.name);
     setOpenConversation(true);
@@ -290,4 +294,5 @@ SuggetionsChip.propTypes = {
   setisInputEmpty: PropTypes.func,
   setIsPromptInputDisabled: PropTypes.func,
   setInputError: PropTypes.func,
+  setConversationalRes: PropTypes.func,
 };
