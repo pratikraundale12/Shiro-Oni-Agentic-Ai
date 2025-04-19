@@ -38,6 +38,7 @@ export const CLUSTER_CONSTANTS = {
   PFX_FILE: 'PFX File',
   PFX_PASSPHRASE: 'PFX Passphrase',
   SELECT_PFX_FILE: 'Select your PFX File',
+  UPLOAD_PEM_FILE: 'Upload PEM File',
   ENTER_PFX_PASSPHRASE: 'Enter your PFX Passphrase',
   ADD_CREDENTIALS: 'Add Credentials',
   ADD_CERTIFICATE: 'Add Certificate',

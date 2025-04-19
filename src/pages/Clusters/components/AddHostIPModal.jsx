@@ -10,25 +10,45 @@ import {
 } from '../../../store';
 import {
   InputField,
-  Modal,
+  ModalWithRightBtn,
   PasswordField,
   RadioSelectField,
 } from '../../../shared';
 import { KDFM } from '../../../constants';
-import { KeyIcons, LinkIcon, QRIcons } from '../../../assets';
-import { UploadFile } from '../UploadFile';
+import { CurvedLockIcon, CurvedProfileIcon, DocumentTextIcon } from '../../../assets';
 import { isEmpty, set } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
+import PemUploadField from '../PEMUploadFile';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  margin-top: 38px;
-  margin-bottom: 35px;
+  margin-top: 2px;
+  margin-bottom: 0px;
+`;
+
+const UploadWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #FF7A00;
+  margin-bottom: 12px;
+  padding: 5px 12px;
+  background-color: white;
+  font-weight:bold;
+  border: 1px solid #FF7A00;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+
+  &:hover {
+    background-color:rgb(253, 250, 245);
+  }
 `;
 
 export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
@@ -141,7 +161,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
   return (
     <>
       <FullPageLoader loading={loading} />
-      <Modal
+      <ModalWithRightBtn
         isOpen={isModalOpen}
         onRequestClose={onRequestClose}
         onSubmit={e => addIndividualHost(e)}
@@ -174,7 +194,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 required
                 register={register}
                 errors={errors}
-                icon={<LinkIcon />}
+                icon={<DocumentTextIcon />}
                 disabled={!isPrimaryBtnDisable || !isEmpty(hostToEdit)}
               />
             </div>{' '}
@@ -187,7 +207,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 required
                 register={register}
                 errors={errors}
-                icon={<QRIcons />}
+                icon={<DocumentTextIcon />}
                 disabled={!isPrimaryBtnDisable}
               />
             </div>
@@ -218,7 +238,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 required
                 register={register}
                 errors={errors}
-                icon={<LinkIcon />}
+                icon={<CurvedProfileIcon />}
                 disabled={!isPrimaryBtnDisable}
               />
             </div>{' '}
@@ -233,6 +253,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                   register={register}
                   watch={watch}
                   label="Password"
+                  icon={<CurvedLockIcon />}
                   placeholder="Enter Your Password"
                   disableToggle={false}
                   errors={errors}
@@ -249,12 +270,13 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                 }}
               >
                 <ModalContainer>
-                  <UploadFile
+                  <PemUploadField
                     name="pfxFile"
                     watch={watch}
                     control={control}
-                    label={KDFM.PFX_FILE}
-                    placeholder={KDFM.SELECT_PFX_FILE}
+                    required
+                    rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                    placeholder={KDFM.UPLOAD_PEM_FILE}
                     errors={errors}
                     fileLable="PEM file"
                   />
@@ -263,7 +285,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
             </>
           )}
         </Container>
-      </Modal>
+      </ModalWithRightBtn>
     </>
   );
 };
