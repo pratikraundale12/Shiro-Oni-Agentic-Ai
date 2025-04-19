@@ -47,7 +47,10 @@ const create = (baseURL = `${API_URL}/api`) => {
           window.location.reload();
         }
         if (data.raw?.log_out) {
+          const scheduleTokenid = localStorage.getItem('scheduleTokenid');
           localStorage.clear();
+          !!scheduleTokenid &&
+            localStorage.setItem('scheduleTokenid', scheduleTokenid);
           history.push('/login');
         }
       }

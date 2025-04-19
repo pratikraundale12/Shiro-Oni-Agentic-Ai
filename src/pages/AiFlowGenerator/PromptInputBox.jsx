@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import DOMPurify from 'dompurify';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiFlowGeneratorActions, AuthenticationSelectors } from '../../store';
-import { validateInput, validatePayload } from './utils';
+import { formattedTime, validateInput, validatePayload } from './utils';
 import { v4 as uuidv4 } from 'uuid';
 import { FieldErrorMessage } from '../../shared';
 
@@ -82,6 +82,7 @@ export const PromptInputBox = ({
   isInputEmpty,
   inputError,
   setInputError,
+  setConversationalRes,
 }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -116,8 +117,28 @@ export const PromptInputBox = ({
       return;
     } else {
       setIsPromptInputDisabled(true);
+      setQueryText('');
       setIsSendBtnDisabled(true);
       setOpenConversation(true);
+      const timestamp = formattedTime();
+      const newUserMessage = {
+        role: 'user',
+        data: queryText,
+        status: 'completed',
+        type: 'string',
+        time: timestamp,
+      };
+      const tempSystemMessage = {
+        role: 'system',
+        status: 'pending',
+        time: timestamp,
+      };
+      setConversationalRes(prev => [
+        ...prev,
+        newUserMessage,
+        tempSystemMessage,
+      ]);
+
       const payload = {
         session_id: uuidv4(),
         query: queryText.trim(),
@@ -195,4 +216,5 @@ PromptInputBox.propTypes = {
   isInputEmpty: PropTypes.bool,
   inputError: PropTypes.object,
   setInputError: PropTypes.func,
+  setConversationalRes: PropTypes.func,
 };
