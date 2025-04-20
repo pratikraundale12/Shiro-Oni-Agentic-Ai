@@ -32,6 +32,7 @@ export * from './CubeIcon';
 export * from './CurvedDeploymentScheduleIcon';
 export * from './CurvedDocumentIcon';
 export * from './CurvedDocumentTextIcon';
+export * from './CurvedFolderIcon';
 export * from './CurvedLockIcon';
 export * from './CurvedProfileDoubleUserIcon';
 export * from './CurvedProfileIcon';
