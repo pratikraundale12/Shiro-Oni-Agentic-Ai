@@ -1,10 +1,12 @@
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { NoDataIcon, RefreshIcon, SmallSearchIcon } from '../../assets';
 import PineConeImage from '../../assets/images/PineCone.png';
 import s3Image from '../../assets/images/s3logo.png';
+import { history } from '../../helpers/history';
 import {
   AiFlowGeneratorActions,
   AiFlowGeneratorSelectors,
@@ -272,6 +274,7 @@ const DataFlowInventory = () => {
   );
   const [buckets, setBuckets] = useState(bucketListData?.bucketList || []);
   const registryData = useSelector(AiFlowGeneratorSelectors.getRegistry);
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
   const [registry, setRegistry] = useState(registryData);
   const isFlowAddedSuccessfully = useSelector(
     AiFlowGeneratorSelectors.getIsFlowAddedSuccessFully
@@ -295,6 +298,7 @@ const DataFlowInventory = () => {
 
   useEffect(() => {
     dispatch(FlowValidationActions.fetchFlows());
+    dispatch(AiFlowGeneratorActions.fetchRegistry());
   }, [dispatch]);
 
   const flows = useSelector(FlowValidationSelectors.getFlows);
@@ -306,8 +310,9 @@ const DataFlowInventory = () => {
 
   const filteredFlows = flows.filter(
     flow =>
-      (flow?.title?.toLowerCase() || '').includes(searchTerm) ||
-      (flow?.description?.toLowerCase() || '').includes(searchTerm)
+      (flow?.name?.toLowerCase() || '').includes(searchTerm) ||
+      (flow?.comments?.toLowerCase() || '').includes(searchTerm) ||
+      (flow?.tags?.join(' ')?.toLowerCase() || '').includes(searchTerm)
   );
 
   const handleScroll = useCallback(
@@ -334,6 +339,10 @@ const DataFlowInventory = () => {
   const paginatedFlows = filteredFlows.slice(0, currentPage * itemsPerPage);
 
   const onAddToRegistryClick = flow => {
+    if (isEmpty(selectedCluster?.value)) {
+      toast.warning('Please login to your cluster first');
+      return;
+    }
     setSelectedFlow(flow);
     if (!isEmpty(registry)) {
       dispatch(
@@ -358,10 +367,12 @@ const DataFlowInventory = () => {
 
   const handleSuccessModalClose = () => {
     setIsFlowAddedSuccessModalOpen(false);
+    dispatch(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
   };
 
   const handleSuccessModalSuccess = () => {
     setIsFlowAddedSuccessModalOpen(false);
+    dispatch(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
     history.push('/process-group');
   };
 
@@ -369,103 +380,121 @@ const DataFlowInventory = () => {
     <Container>
       <MainContent>
         <ContentArea>
-          <HeaderContainer>
-            <Title>Flow Gallery List</Title>
-            <RefreshButton>
-              <RefreshIcon />
-            </RefreshButton>
-          </HeaderContainer>
+          {isEmpty(selectedCluster?.value) ? (
+            <div className="d-flex flex-column align-items-center justify-content-center h-100">
+              <NoDataIcon width={130} />
+              <NoDataText>Please login to your cluster first</NoDataText>
+            </div>
+          ) : (
+            <>
+              <HeaderContainer>
+                <Title>Flow Gallery List</Title>
+                <RefreshButton>
+                  <RefreshIcon />
+                </RefreshButton>
+              </HeaderContainer>
 
-          <SearchContainer>
-            <SmallSearchIcon
-              width={18}
-              height={18}
-              color={theme.colors.darkGrey1}
-            />
-            <Search
-              type="search"
-              placeholder="Search by title"
-              onChange={handleSearch}
-              value={searchTerm}
-            />
-          </SearchContainer>
+              <SearchContainer>
+                <SmallSearchIcon
+                  width={18}
+                  height={18}
+                  color={theme.colors.darkGrey1}
+                />
+                <Search
+                  type="search"
+                  placeholder="Search by title"
+                  onChange={handleSearch}
+                  value={searchTerm}
+                />
+              </SearchContainer>
 
-          <GalleryContainer onScroll={handleScroll}>
-            {paginatedFlows.length === 0 ? (
-              <div className="d-flex flex-column align-items-center mt-5">
-                <NoDataIcon width={130} />
-                <NoDataText>No Data Found!!</NoDataText>
-              </div>
-            ) : (
-              <>
-                <GridRow>
-                  {paginatedFlows.map((flow, index) => {
-                    // Calculate row and column position for border styling
-                    const row = Math.floor(index / 3);
-                    const col = index % 3;
-                    const isLastRow =
-                      row === Math.floor((paginatedFlows.length - 1) / 3);
-                    const isLastCol =
-                      col === 2 || index === paginatedFlows.length - 1;
+              <GalleryContainer onScroll={handleScroll}>
+                {paginatedFlows.length === 0 ? (
+                  <div className="d-flex flex-column align-items-center mt-5">
+                    <NoDataIcon width={130} />
+                    <NoDataText>No Data Found!!</NoDataText>
+                  </div>
+                ) : (
+                  <>
+                    <GridRow>
+                      {paginatedFlows.map((flow, index) => {
+                        // Calculate row and column position for border styling
+                        const row = Math.floor(index / 3);
+                        const col = index % 3;
+                        const isLastRow =
+                          row === Math.floor((paginatedFlows.length - 1) / 3);
+                        const isLastCol =
+                          col === 2 || index === paginatedFlows.length - 1;
 
-                    return (
-                      <GridColumn key={flow.id}>
-                        <FlowCard isLastRow={isLastRow} isLastCol={isLastCol}>
-                          <CardHeader>
-                            <IconsContainer>
-                              <IconWrapper>
-                                <IconImage
-                                  src={s3Image}
-                                  alt="S3"
-                                  width="100%"
-                                  height="auto"
-                                />
-                              </IconWrapper>
-                              <IconWrapper marginLeft="-18px">
-                                <IconImage
-                                  src={PineConeImage}
-                                  alt="Pinecone"
-                                  width="100%"
-                                  height="auto"
-                                />
-                              </IconWrapper>
-                            </IconsContainer>
-                            <VersionText>Version {flow?.version}</VersionText>
-                          </CardHeader>
+                        return (
+                          <GridColumn key={flow.id}>
+                            <FlowCard
+                              isLastRow={isLastRow}
+                              isLastCol={isLastCol}
+                            >
+                              <CardHeader>
+                                <IconsContainer>
+                                  <IconWrapper>
+                                    <IconImage
+                                      src={s3Image}
+                                      alt="S3"
+                                      width="100%"
+                                      height="auto"
+                                    />
+                                  </IconWrapper>
+                                  <IconWrapper marginLeft="-18px">
+                                    <IconImage
+                                      src={PineConeImage}
+                                      alt="Pinecone"
+                                      width="100%"
+                                      height="auto"
+                                    />
+                                  </IconWrapper>
+                                </IconsContainer>
+                                <VersionText>
+                                  Version {flow?.version}
+                                </VersionText>
+                              </CardHeader>
 
-                          <FlowTitle>{flow?.name}</FlowTitle>
-                          <FlowDescription>{flow?.comments}</FlowDescription>
+                              <FlowTitle>{flow?.name}</FlowTitle>
+                              <FlowDescription>
+                                {flow?.comments}
+                              </FlowDescription>
 
-                          <TagsContainer>
-                            {(flow?.tags || []).slice(0, 2).map((tag, idx) => (
-                              <Tag key={idx}>{tag}</Tag>
-                            ))}
+                              <TagsContainer>
+                                {(flow?.tags || [])
+                                  .slice(0, 2)
+                                  .map((tag, idx) => (
+                                    <Tag key={idx}>{tag}</Tag>
+                                  ))}
 
-                            {flow?.tags?.length > 2 && (
-                              <Tag>+{(flow.tags || []).length - 2}</Tag>
-                            )}
-                          </TagsContainer>
+                                {flow?.tags?.length > 2 && (
+                                  <Tag>+{(flow.tags || []).length - 2}</Tag>
+                                )}
+                              </TagsContainer>
 
-                          <AddButton
-                            onClick={() => {
-                              onAddToRegistryClick(flow);
-                            }}
-                          >
-                            <ButtonText>Add to Registry</ButtonText>
-                          </AddButton>
-                        </FlowCard>
-                      </GridColumn>
-                    );
-                  })}
-                </GridRow>
-                {isLoading && (
-                  <LoadingContainer>
-                    <LoadingSpinner />
-                  </LoadingContainer>
+                              <AddButton
+                                onClick={() => {
+                                  onAddToRegistryClick(flow);
+                                }}
+                              >
+                                <ButtonText>Add to Registry</ButtonText>
+                              </AddButton>
+                            </FlowCard>
+                          </GridColumn>
+                        );
+                      })}
+                    </GridRow>
+                    {isLoading && (
+                      <LoadingContainer>
+                        <LoadingSpinner />
+                      </LoadingContainer>
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </GalleryContainer>
+              </GalleryContainer>
+            </>
+          )}
         </ContentArea>
       </MainContent>
       {openAddToRegistryModal && (
