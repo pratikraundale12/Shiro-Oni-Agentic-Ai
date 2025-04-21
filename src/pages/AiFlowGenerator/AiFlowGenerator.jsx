@@ -388,6 +388,8 @@ export const AiFlowGenerator = () => {
       dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
       dispatch(AiFlowGeneratorActions.setGenFlowError(''));
       dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows(payload));
+      dispatch(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+      dispatch(AiFlowGeneratorActions.setValidatedFlowErrors([]));
     }
   };
 

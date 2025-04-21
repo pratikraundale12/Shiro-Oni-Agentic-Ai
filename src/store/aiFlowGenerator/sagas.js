@@ -33,7 +33,10 @@ export function* generateFlowAPI(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
+  yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
   yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+  yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
+
   yield put(AiFlowGeneratorActions.setNewBucket({}));
   yield put(AiFlowGeneratorActions.setGenFlowError(''));
   if (!api.generateFlowAPI) {
