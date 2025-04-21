@@ -52,6 +52,8 @@ export function* generateFlowAPI(api, { payload }) {
   if (response.ok || response?.data?.status) {
     try {
       yield put(AiFlowGeneratorActions.setGenFlowError(''));
+      yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+      yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
       const rawResponse = response?.data?.data;
       const parsedJson =
         typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
@@ -217,13 +219,17 @@ export function* validateFlowJson(api, { payload }) {
     successAction: AiFlowGeneratorActions.validateFlowJsonSuccess,
   });
   if (response.ok) {
-    console.log('validated flow', response);
-  } else {
-    toast.error(
-      response?.message ||
-        response?.data?.message ||
-        'Failed to validate flow json'
+    yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(true));
+    yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
+    toast.success(
+      `Your ${payload?.flowContents?.name || 'flow'} is validated successfully, you can proceed ahead and upload it on Registry`
     );
+  } else {
+    yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+    yield put(
+      AiFlowGeneratorActions.setValidatedFlowErrors(response?.data?.fieldErrors)
+    );
+    yield put(AiFlowGeneratorActions.setIsFlowErrorModalOpen(true));
   }
 }
 export function* aiFlowGeneratorSagas(api) {

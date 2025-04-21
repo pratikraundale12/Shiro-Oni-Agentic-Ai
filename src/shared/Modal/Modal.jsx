@@ -90,6 +90,9 @@ export const Modal = ({
   noPadding = false,
   noScroll = false,
   primaryButtonProps = {},
+  additionalBtnText = '',
+  additionalBtnDisabled = false,
+  additionalBtnClick = () => null,
 }) => {
   const styleObject = {
     overlay: {
@@ -206,6 +209,17 @@ export const Modal = ({
                 {primaryButtonText}
               </Button>
             )}
+            {additionalBtnText && (
+              <Button
+                style={{ marginRight: 'auto' }}
+                type="button"
+                variant="secondary"
+                disabled={additionalBtnDisabled}
+                onClick={additionalBtnClick}
+              >
+                {additionalBtnText}
+              </Button>
+            )}
           </Footer>
         )}
       </form>
@@ -237,4 +251,7 @@ Modal.propTypes = {
   }),
   noPadding: PropTypes.bool,
   noScroll: PropTypes.bool,
+  additionalBtnText: PropTypes.string,
+  additionalBtnClick: PropTypes.func,
+  additionalBtnDisabled: PropTypes.bool,
 };
