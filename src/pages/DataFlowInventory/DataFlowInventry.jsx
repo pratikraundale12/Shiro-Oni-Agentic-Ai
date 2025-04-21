@@ -5,15 +5,19 @@ import styled from 'styled-components';
 import { NoDataIcon, RefreshIcon, SmallSearchIcon } from '../../assets';
 import PineConeImage from '../../assets/images/PineCone.png';
 import s3Image from '../../assets/images/s3logo.png';
-import { AiFlowGeneratorActions } from '../../store/aiFlowGenerator';
+import {
+  AiFlowGeneratorActions,
+  AiFlowGeneratorSelectors,
+} from '../../store/aiFlowGenerator';
 import {
   FlowValidationActions,
   FlowValidationSelectors,
 } from '../../store/flowValidation';
-import { NamespacesSelectors } from '../../store/namespaces';
+import { NamespacesActions, NamespacesSelectors } from '../../store/namespaces';
 import { theme } from '../../styles';
 import { AddNewBucketModal } from '../AiFlowGenerator/AddNewBucketModal';
 import { FlowAddToRegistryModal } from '../AiFlowGenerator/FlowAddToRegistryModal';
+import { FlowAddedSuccessModal } from '../AiFlowGenerator/FlowAddedSuccessModal';
 
 // Styled Components
 const Container = styled.div`
@@ -258,27 +262,42 @@ const DataFlowInventory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [openAddToRegistryModal, setOpenAddToRegistryModal] = useState(false);
   const [isAddNewBucketModalOpen, setIsAddNewBucketModalOpen] = useState(false);
+  const [isFlowAddedSuccessModalOpen, setIsFlowAddedSuccessModalOpen] =
+    useState(false);
   const [selectedFlow, setSelectedFlow] = useState(null);
   const itemsPerPage = 20;
 
   const bucketListData = useSelector(
     NamespacesSelectors.getBucketListDropDownData
   );
-  const [buckets, setBuckets] = useState(bucketListData?.bucketList);
+  const [buckets, setBuckets] = useState(bucketListData?.bucketList || []);
+  const registryData = useSelector(AiFlowGeneratorSelectors.getRegistry);
+  const [registry, setRegistry] = useState(registryData);
+  const isFlowAddedSuccessfully = useSelector(
+    AiFlowGeneratorSelectors.getIsFlowAddedSuccessFully
+  );
 
   useEffect(() => {
     if (!isEmpty(bucketListData)) {
-      setBuckets(bucketListData?.bucketList);
+      setBuckets(bucketListData?.bucketList || []);
     }
   }, [bucketListData]);
 
   useEffect(() => {
-    console.log('fetching flows');
+    setRegistry(registryData);
+  }, [registryData]);
+
+  useEffect(() => {
+    if (isFlowAddedSuccessfully) {
+      setIsFlowAddedSuccessModalOpen(true);
+    }
+  }, [isFlowAddedSuccessfully]);
+
+  useEffect(() => {
     dispatch(FlowValidationActions.fetchFlows());
   }, [dispatch]);
 
   const flows = useSelector(FlowValidationSelectors.getFlows);
-  console.log('flows', flows);
 
   const handleSearch = e => {
     setSearchTerm(e.target.value.toLowerCase());
@@ -314,27 +333,45 @@ const DataFlowInventory = () => {
 
   const paginatedFlows = filteredFlows.slice(0, currentPage * itemsPerPage);
 
+  const onAddToRegistryClick = flow => {
+    setSelectedFlow(flow);
+    if (!isEmpty(registry)) {
+      dispatch(
+        NamespacesActions.fetchRegistryData({
+          registriesId: registry[0]?.id,
+        })
+      );
+    }
+    setOpenAddToRegistryModal(true);
+  };
+
   const handleAddToRegistry = flowData => {
     const payload = {
       bucketId: flowData?.bucket,
       flowName: flowData?.flow_name,
       flowDesc: flowData?.flow_desc,
-      flowJson: selectedFlow,
+      flowJson: selectedFlow?.jsonData,
     };
     dispatch(AiFlowGeneratorActions.addFlowToRegistry(payload));
     setOpenAddToRegistryModal(false);
   };
 
-  const handleRefresh = () => {
-    dispatch(FlowValidationActions.fetchFlows());
+  const handleSuccessModalClose = () => {
+    setIsFlowAddedSuccessModalOpen(false);
   };
+
+  const handleSuccessModalSuccess = () => {
+    setIsFlowAddedSuccessModalOpen(false);
+    history.push('/process-group');
+  };
+
   return (
     <Container>
       <MainContent>
         <ContentArea>
           <HeaderContainer>
             <Title>Flow Gallery List</Title>
-            <RefreshButton onClick={handleRefresh}>
+            <RefreshButton>
               <RefreshIcon />
             </RefreshButton>
           </HeaderContainer>
@@ -411,8 +448,7 @@ const DataFlowInventory = () => {
 
                           <AddButton
                             onClick={() => {
-                              setSelectedFlow(flow);
-                              setOpenAddToRegistryModal(true);
+                              onAddToRegistryClick(flow);
                             }}
                           >
                             <ButtonText>Add to Registry</ButtonText>
@@ -432,7 +468,6 @@ const DataFlowInventory = () => {
           </GalleryContainer>
         </ContentArea>
       </MainContent>
-
       {openAddToRegistryModal && (
         <FlowAddToRegistryModal
           isModalOpen={openAddToRegistryModal}
@@ -444,14 +479,23 @@ const DataFlowInventory = () => {
             setOpenAddToRegistryModal(false);
           }}
           setIsAddNewBucketModalOpen={setIsAddNewBucketModalOpen}
-          refresh={handleRefresh}
+          refresh={() => {
+            dispatch(FlowValidationActions.fetchFlows());
+          }}
+          setIsFlowAddedSuccessModalOpen={setIsFlowAddedSuccessModalOpen}
         />
       )}
-
       {isAddNewBucketModalOpen && (
         <AddNewBucketModal
           isModalOpen={isAddNewBucketModalOpen}
           setIsModalOpen={setIsAddNewBucketModalOpen}
+        />
+      )}
+      {isFlowAddedSuccessModalOpen && (
+        <FlowAddedSuccessModal
+          isModalOpen={isFlowAddedSuccessModalOpen}
+          handleClose={handleSuccessModalClose}
+          handleSubmit={handleSuccessModalSuccess}
         />
       )}
     </Container>
