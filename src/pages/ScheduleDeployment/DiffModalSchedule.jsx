@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal } from '../../shared';
-import { SchedularActions, SchedularSelectors } from '../../store/schedular';
+import styled from 'styled-components';
 import { KDFM } from '../../constants';
-import DiffScheduleVariables from './DiffScheduleVariables';
-import DiffScheduleParameter from './DiffScheduleParamter';
-import DiffScheduleCS from './DiffScheduleControllerService';
+import { Modal } from '../../shared';
+import { ActivityHistorySelectors } from '../../store/activityHistory';
+import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
+import DiffScheduleCS from './DiffScheduleControllerService';
+import DiffScheduleParameter from './DiffScheduleParamter';
+import DiffScheduleVariables from './DiffScheduleVariables';
 const GreyBoxNamespace = styled.div`
   padding: 5px 10px 0px 10px;
   border-radius: 20px;
@@ -49,6 +50,7 @@ export const DiffModalScheduleList = props => {
   const modalOpen = useSelector(SchedularSelectors.getIsDiffModalOpen);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
+  const selectedItem = useSelector(ActivityHistorySelectors.getSelectedItem);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -71,12 +73,11 @@ export const DiffModalScheduleList = props => {
   const handleSetTab = tab => {
     setActiveTab(tab);
   };
-
   return (
     <div {...props}>
       <Modal
         size="lg"
-        title={`${selectedSchedule?.namespace_name} : Schedule Deployment Changes`}
+        title={`${selectedSchedule?.namespace_name || selectedItem?.namespace} : Schedule Deployment Changes`}
         isOpen={modalOpen}
         onRequestClose={closeModal}
         primaryButtonText="Close"
