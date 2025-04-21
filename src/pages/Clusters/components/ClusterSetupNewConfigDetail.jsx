@@ -309,6 +309,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
     element => element?.path === selectedProperty
   );
 
+  const getMemoryValue = arg => {
+    if (!arg) return '';
+    const match = arg.match(/-Xm[xs](\d+)g/);
+    return match ? match[1] : '';
+  };
+
   const populateFormWithConfigData = () => {
     if (isEmpty(configToEdit)) return;
 
@@ -344,8 +350,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
     setValue('nifi_web_https_port', nifiProps.nifi_web_https_port);
 
     // Set Bootstrap values
-    setValue('java_arg_2', bootstrap.java_arg_2);
-    setValue('java_arg_3', bootstrap.java_arg_3);
+    setValue('java_arg_2', getMemoryValue(bootstrap.java_arg_2));
+    setValue('java_arg_3', getMemoryValue(bootstrap.java_arg_3));
 
     // Set Login Provider values
     setValue('username', loginProviders.username);
@@ -393,7 +399,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifi_web_https_port: data?.nifi_web_https_port,
     };
     const bootstrapPayload = {
-      java_arg_2: `-Xmx${data?.java_arg_2}g`,
+      java_arg_2: `-Xms${data?.java_arg_2}g`,
       java_arg_3: `-Xmx${data?.java_arg_3}g`,
     };
 
