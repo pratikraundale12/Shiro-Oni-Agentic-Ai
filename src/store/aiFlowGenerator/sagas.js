@@ -33,7 +33,7 @@ export function* generateFlowAPI(api, { payload }) {
   const selectedClusterToken = clustersToken.find(
     item => item.id === selectedCluster?.value
   );
-  yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+  yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
   yield put(AiFlowGeneratorActions.setNewBucket({}));
   yield put(AiFlowGeneratorActions.setGenFlowError(''));
   if (!api.generateFlowAPI) {
@@ -52,7 +52,7 @@ export function* generateFlowAPI(api, { payload }) {
   if (response.ok || response?.data?.status) {
     try {
       yield put(AiFlowGeneratorActions.setGenFlowError(''));
-      yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+      yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
       yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
       const rawResponse = response?.data?.data;
       const parsedJson =
