@@ -127,6 +127,7 @@ export const ACTIVITY_EVENTS = [
   { label: 'Comparison', value: 'Comparison' },
   { label: 'Validate', value: 'Validate' },
   { label: 'Comparison', value: 'Comparison' },
+  { label: 'Add Data Flow Inventory', value: 'Add Data Flow Inventory' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },

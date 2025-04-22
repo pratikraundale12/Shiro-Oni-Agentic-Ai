@@ -536,6 +536,7 @@ const DataFlowInventory = () => {
         <AddNewBucketModal
           isModalOpen={isAddNewBucketModalOpen}
           setIsModalOpen={setIsAddNewBucketModalOpen}
+          isDataInventory={true}
         />
       )}
       {isFlowAddedSuccessModalOpen && (
