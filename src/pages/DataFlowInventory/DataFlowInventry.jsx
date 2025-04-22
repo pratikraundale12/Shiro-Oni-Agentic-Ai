@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { NoDataIcon, RefreshIcon, SmallSearchIcon } from '../../assets';
 import PineConeImage from '../../assets/images/PineCone.png';
@@ -52,11 +53,16 @@ const Title = styled.h2`
 `;
 
 const RefreshButton = styled.button`
-  border: none;
-  background: transparent;
-  border-radius: 50%;
-  padding: 0.5rem;
   cursor: pointer;
+  background-color: #f5f7fa;
+  border: 1px solid #dde4f0;
+  width: 37px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  min-width: 37px;
 `;
 
 const SearchContainer = styled.div`
@@ -129,6 +135,8 @@ const FlowCard = styled.div`
   background-color: #f5f7fa;
   ${props => (!props.isLastRow ? 'border-bottom: 1px solid #dee2e6;' : '')}
   ${props => (!props.isLastCol ? 'border-end: 1px solid #dee2e6;' : '')}
+  display: flex;
+  flex-direction: column;
 `;
 
 const CardHeader = styled.div`
@@ -183,6 +191,7 @@ const FlowDescription = styled.p`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  cursor: pointer;
 `;
 
 const TagsContainer = styled.div`
@@ -216,6 +225,7 @@ const AddButton = styled.button`
   font-size: 1rem;
   border-radius: 0.25rem;
   cursor: pointer;
+  margin-top: auto;
 
   &:hover {
     background-color: #fff4ea;
@@ -475,9 +485,26 @@ const DataFlowInventory = () => {
                               </CardHeader>
 
                               <FlowTitle>{flow?.name}</FlowTitle>
-                              <FlowDescription>
+                              <FlowDescription
+                                data-tooltip-id={`tooltip-${flow?.id}`}
+                                data-tooltip-content={flow?.comments}
+                              >
                                 {flow?.comments}
                               </FlowDescription>
+                              <ReactTooltip
+                                id={`tooltip-${flow?.id}`}
+                                place="right"
+                                style={{
+                                  whiteSpace: 'normal',
+                                  zIndex: 9999,
+                                  maxWidth: '300px',
+                                  backgroundColor: '#333',
+                                  color: '#fff',
+                                  padding: '8px',
+                                  borderRadius: '4px',
+                                  fontSize: '14px',
+                                }}
+                              />
 
                               <TagsContainer>
                                 {(flow?.tags || [])
