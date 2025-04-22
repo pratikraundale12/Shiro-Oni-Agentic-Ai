@@ -463,26 +463,33 @@ export const Grid = ({
               nifi_url: registryNodesData?.cluster?.nifi_url,
             }}
           />
-          <RegistryDetail
-            data={{
-              name: registryNodesData?.cluster?.registry?.name,
-              registry_url: registryNodesData?.cluster?.registry?.registry_url,
-            }}
-          />
+          {registryNodesData?.cluster?.registry?.registry_url && (
+            <RegistryDetail
+              data={{
+                name: registryNodesData?.cluster?.registry?.name,
+                registry_url:
+                  registryNodesData?.cluster?.registry?.registry_url,
+              }}
+            />
+          )}
         </ClusterRegistryContainer>
         <ClusterRegistryContainer className="row">
-          <ClusterDetail
-            data={{
-              metrics_url: registryNodesData?.cluster?.metrics_url,
-            }}
-            columns={METRICS_URL_COLUMN}
-          />
-          <ClusterDetail
-            data={{
-              logs_url: registryNodesData?.cluster?.logs_url,
-            }}
-            columns={LOGS_URL_COLUMN}
-          />{' '}
+          {registryNodesData?.cluster?.metrics_url && (
+            <ClusterDetail
+              data={{
+                metrics_url: registryNodesData?.cluster?.metrics_url,
+              }}
+              columns={METRICS_URL_COLUMN}
+            />
+          )}
+          {registryNodesData?.cluster?.logs_url && (
+            <ClusterDetail
+              data={{
+                logs_url: registryNodesData?.cluster?.logs_url,
+              }}
+              columns={LOGS_URL_COLUMN}
+            />
+          )}
         </ClusterRegistryContainer>
         <Modal
           title="Event Log"
