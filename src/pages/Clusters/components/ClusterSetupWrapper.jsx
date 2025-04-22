@@ -43,8 +43,16 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const schema = yup.object().shape({
     clusterName: yup
       .string()
-      .required('Cluster Name is required')
-      .matches(/^\S+$/, 'Cluster name cannot contain spaces'),
+      .required('Cluster name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Cluster name cannot start or end with spaces',
+        value => value === value?.trim()
+      )
+      .matches(
+        /^[A-Za-z0-9_-]+$/,
+        'Cluster name can only contain letters, numbers, underscores, or hyphens'
+      ),
     nifiVersion: yup.string().required('NiFi is required'),
     configName: yup.string().required('Config name is required'),
     configVersion: yup.string().required('Config version is required'),
