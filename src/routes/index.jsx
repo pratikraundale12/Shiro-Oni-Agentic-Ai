@@ -214,7 +214,7 @@ export const ROUTES_MENU = [
         component: <DataFlowInventry />,
       },
     ],
-    permission: 'view_genai',
+    permission: 'view_namespace',
   },
   {
     name: KDFM.AI_FLOW_GENERATOR,
