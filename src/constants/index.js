@@ -95,6 +95,8 @@ export const MODULE_LIST_MAP = [
   { label: 'Flow Validation', value: 'Flow Validation' },
   { label: 'Rule scope', value: 'Rule scope' },
   { label: 'Rule', value: 'Rule' },
+  { label: 'Data Flow Inventory', value: 'Data Flow Inventory' },
+  { label: 'AI Flows', value: 'AI Flows' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
