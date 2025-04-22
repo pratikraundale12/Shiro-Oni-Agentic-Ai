@@ -715,7 +715,7 @@ export const AiFlowGenerator = () => {
                   loading={loading}
                   setQueryLable={setQueryLable}
                   isValidFlowGenerated={isValidFlowGenerated}
-                  isJsonEmpty={isEmpty(Object.keys(flowJson))}
+                  isJsonEmpty={isEmpty(Object.keys(generatedFlow))}
                 />
               </RecommendedFlowBox>
             </Flex>
