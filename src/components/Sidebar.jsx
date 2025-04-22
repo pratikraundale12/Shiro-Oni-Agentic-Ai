@@ -223,6 +223,14 @@ export const Sidebar = ({
 
   const getImage = () => {
     const handleClick = () => {
+      if (flowGenrating) {
+        if (!toast.isActive('generating-flow')) {
+          toast.warning('Flow is generating please wait', {
+            toastId: 'generating-flow',
+          });
+        }
+        return;
+      }
       history.push('/dashboard');
     };
     if (loading)

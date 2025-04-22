@@ -50,7 +50,7 @@ const LabelSelect = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
-  display: inline;
+  display: inline-block;
 `;
 const DisplaySection = styled.div`
   height: calc(100% - 120px) !important;
@@ -165,7 +165,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
     configName: yup
       .string()
       .required('Config name is required')
-      .matches(/^\S+$/, 'Config name cannot contain spaces'),
+      .test(
+        'no-leading-trailing-spaces',
+        'Config name must not start or end with a space',
+        value => value === value?.trim()
+      ),
     nifiVersion: yup.string().required('NiFi version is required'),
     comments: yup
       .string()
@@ -309,6 +313,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
     element => element?.path === selectedProperty
   );
 
+  const getMemoryValue = arg => {
+    if (!arg) return '';
+    const match = arg.match(/-Xm[xs](\d+)g/);
+    return match ? match[1] : '';
+  };
+
   const populateFormWithConfigData = () => {
     if (isEmpty(configToEdit)) return;
 
@@ -344,8 +354,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
     setValue('nifi_web_https_port', nifiProps.nifi_web_https_port);
 
     // Set Bootstrap values
-    setValue('java_arg_2', bootstrap.java_arg_2);
-    setValue('java_arg_3', bootstrap.java_arg_3);
+    setValue('java_arg_2', getMemoryValue(bootstrap.java_arg_2));
+    setValue('java_arg_3', getMemoryValue(bootstrap.java_arg_3));
 
     // Set Login Provider values
     setValue('username', loginProviders.username);
@@ -393,7 +403,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifi_web_https_port: data?.nifi_web_https_port,
     };
     const bootstrapPayload = {
-      java_arg_2: `-Xmx${data?.java_arg_2}g`,
+      java_arg_2: `-Xms${data?.java_arg_2}g`,
       java_arg_3: `-Xmx${data?.java_arg_3}g`,
     };
 
@@ -499,7 +509,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
             />
           </div>
           <div className="col-4">
-            <LabelSelect className="mb-3">{KDFM.COMMENTS}</LabelSelect>
+            <LabelSelect>{KDFM.COMMENTS}</LabelSelect>
 
             <InputField
               name="comments"
@@ -556,7 +566,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
+                      <LabelSelect>
                         Protocol Max Threads
                       </LabelSelect>
 
@@ -640,7 +650,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="mb-3">Web Http Port</LabelSelect>
+                      <LabelSelect>Web Http Port</LabelSelect>
 
                       <InputField
                         name="nifi_web_https_port"
@@ -663,8 +673,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <TitleTab className="ms-3">Java Memory Settings</TitleTab>
                   </TitleTabWrapper>
                   <div className="row mt-3">
-                    <div className="col-5">
-                      <LabelSelect className="mb-3 ms-1 row">
+                    <div className="col-4">
+                      <LabelSelect className="ms-1 row">
                         Java.arg.2
                         <LabelWarning>(Initial Heap Size in GB)</LabelWarning>
                       </LabelSelect>
@@ -679,8 +689,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         icon={<NotePadIcon />}
                       />
                     </div>
-                    <div className="col-5">
-                      <LabelSelect className="mb-3 row">
+                    <div className="col-4">
+                      <LabelSelect className="row">
                         Java.arg.3
                         <LabelWarning>(Maximum Heap Size in GB)</LabelWarning>
                       </LabelSelect>
@@ -708,8 +718,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     </TitleTab>
                   </TitleTabWrapper>
                   <div className="row mt-3">
-                    <div className="col-5">
-                      <LabelSelect className="mb-3">Username</LabelSelect>
+                    <div className="col-4">
+                      <LabelSelect>Username</LabelSelect>
 
                       <InputField
                         name="username"
@@ -721,8 +731,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         icon={<NotePadIcon />}
                       />
                     </div>
-                    <div className="col-5">
-                      <LabelSelect className="mb-3">Password</LabelSelect>
+                    <div className="col-4">
+                      <LabelSelect>Password</LabelSelect>
 
                       <InputField
                         name="password"
@@ -746,7 +756,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-4">
-                      <LabelSelect className="mb-3">Directory</LabelSelect>
+                      <LabelSelect>Directory</LabelSelect>
 
                       <InputField
                         name="directory"
@@ -759,8 +769,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         icon={<NotePadIcon />}
                       />
                     </div>
-                    <div className="col-3">
-                      <LabelSelect className="mb-3">Partitions</LabelSelect>
+                    <div className="col-4">
+                      <LabelSelect>Partitions</LabelSelect>
 
                       <InputField
                         name="partitions"
@@ -773,7 +783,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         icon={<NotePadIcon />}
                       />
                     </div>
-                    <div className="col-3">
+                    <div className="col-4">
                       <LabelSelect className="mb-3">
                         Checkpoint Interval
                       </LabelSelect>
@@ -787,7 +797,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         sortAlphabetically={false}
                       />
                     </div>
-                    <div className="col-2">
+                    <div>
                       <RadioSelectField
                         name="always_sync"
                         options={TRUE_FALSE_OPTIONS}
@@ -807,7 +817,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-4">
-                      <LabelSelect className="mb-3">Root Node</LabelSelect>
+                      <LabelSelect>Root Node</LabelSelect>
 
                       <InputField
                         name="root_node"

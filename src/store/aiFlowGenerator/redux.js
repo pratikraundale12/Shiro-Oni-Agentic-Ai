@@ -18,6 +18,11 @@ export const AiFlowGeneratorActions = {
   addNewBucketToRegistry: createAction(`${prefix}addNewBucketToRegistry`),
   validateFlowJson: createAction(`${prefix}validateFlowJson`),
   validateFlowJsonSuccess: createAction(`${prefix}validateFlowJsonSuccess`),
+  setValidatedFlowErrors: createAction(`${prefix}setValidatedFlowErrors`),
+  setIsFlowValidatedSuccessfully: createAction(
+    `${prefix}setIsFlowValidatedSuccessfully`
+  ),
+  setIsFlowErrorModalOpen: createAction(`${prefix}setIsFlowErrorModalOpen`),
   addNewBucketToRegistrySuccess: createAction(
     `${prefix}addNewBucketToRegistrySuccess`
   ),
@@ -49,6 +54,9 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   isFlowAddedSuccessFully: false,
   isFlowAlreadyAddedSuccessFully: false,
   validatedFlowRes: {},
+  validatedFlowErrors: [],
+  isFlowValidatedSuccessfully: false,
+  isFlowErrorModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -64,6 +72,10 @@ export const AiFlowGeneratorSelectors = {
     state.aiFlowGenerator.isFlowAddedSuccessFully,
   getIsFlowAlreadyAddedSuccessFully: state =>
     state.aiFlowGenerator.isFlowAlreadyAddedSuccessFully,
+  getValidatedFlowErrors: state => state.aiFlowGenerator.validatedFlowErrors,
+  getIsflowValidatedSuccessfully: state =>
+    state.aiFlowGenerator.isFlowValidatedSuccessfully,
+  getIsFlowErrorModalOpen: state => state.aiFlowGenerator.isFlowErrorModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -157,6 +169,27 @@ const validateFlowJsonSuccess = (state, { payload }) => {
     validatedFlowRes: payload,
   };
 };
+
+const setValidatedFlowErrors = (state, { payload }) => {
+  return {
+    ...state,
+    validatedFlowErrors: payload,
+  };
+};
+
+const setIsFlowValidatedSuccessfully = (state, { payload }) => {
+  return {
+    ...state,
+    isFlowValidatedSuccessfully: payload,
+  };
+};
+
+const setIsFlowErrorModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isFlowErrorModalOpen: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const aiFlowGeneratorReducer = createReducer(
   AI_FLOW_GENERATOR_INITIAL_STATE,
@@ -191,6 +224,18 @@ export const aiFlowGeneratorReducer = createReducer(
       .addCase(
         AiFlowGeneratorActions.validateFlowJsonSuccess,
         validateFlowJsonSuccess
+      )
+      .addCase(
+        AiFlowGeneratorActions.setValidatedFlowErrors,
+        setValidatedFlowErrors
+      )
+      .addCase(
+        AiFlowGeneratorActions.setIsFlowValidatedSuccessfully,
+        setIsFlowValidatedSuccessfully
+      )
+      .addCase(
+        AiFlowGeneratorActions.setIsFlowErrorModalOpen,
+        setIsFlowErrorModalOpen
       )
       .addCase(
         AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully,
