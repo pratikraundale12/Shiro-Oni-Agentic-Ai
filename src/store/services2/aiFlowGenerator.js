@@ -40,6 +40,7 @@ export const aiFlowGeneratorAPI = api => {
       flowName: payload?.flowName,
       flowDesc: payload?.flowDesc,
       flowJson: payload?.flowJson,
+      isDataInventory: payload?.isDataInventory,
     };
     try {
       return await api.post(
