@@ -7,6 +7,7 @@ import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { isEmpty } from 'lodash';
 
 export function* fetchDefaultRecentFlows(api, { payload }) {
+  yield put(AiFlowGeneratorActions.setGeneratedFlow({}));
   const response = yield call(requestSaga, {
     errorSection: 'fetchDefaultRecentFlows',
     loadingSection: 'fetchDefaultRecentFlows',

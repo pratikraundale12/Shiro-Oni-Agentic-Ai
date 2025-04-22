@@ -282,10 +282,6 @@ export const AiFlowGenerator = () => {
   });
 
   useEffect(() => {
-    setIsPromptInputDisabled(!generateFlowPermission);
-  }, [generateFlowPermission]);
-
-  useEffect(() => {
     const interval = setInterval(() => {
       const storedClusters = JSON.parse(
         localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -302,6 +298,7 @@ export const AiFlowGenerator = () => {
   const isArrayEmpty = arr => {
     return arr.length === 0 || arr.every(obj => Object.keys(obj).length === 0);
   };
+
   useEffect(() => {
     if (!isArrayEmpty(clusters) && !isEmpty(Object.keys(currentUser))) {
       const payload = {
@@ -520,7 +517,9 @@ export const AiFlowGenerator = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
+  useEffect(() => {
+    setIsPromptInputDisabled(!generateFlowPermission);
+  }, [generateFlowPermission, generatedFlow]);
   useEffect(() => {
     scrollToBottom();
   }, [conversationalRes]);
