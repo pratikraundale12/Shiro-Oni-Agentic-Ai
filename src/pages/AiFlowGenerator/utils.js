@@ -77,3 +77,13 @@ export const validateInput = input => {
 
   return { isValid, cleanedInput };
 };
+
+export const formatMissingValues = data => {
+  return data.map(item => {
+    const [key] = Object.keys(item);
+    return {
+      jsonkey: key,
+      missingValue: item[key].replace(/\./g, ' > '),
+    };
+  });
+};
