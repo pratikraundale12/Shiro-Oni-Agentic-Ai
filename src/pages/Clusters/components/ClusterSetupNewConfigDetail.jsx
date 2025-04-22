@@ -167,7 +167,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .required('Config name is required')
       .test(
         'no-leading-trailing-spaces',
-        'Config name cannot start or end with spaces',
+        'Config name must not start or end with a space',
         value => value === value?.trim()
       ),
     nifiVersion: yup.string().required('NiFi version is required'),

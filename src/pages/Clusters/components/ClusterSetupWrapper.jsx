@@ -46,12 +46,12 @@ const SetupClusterWrapper = ({ activeTab }) => {
       .required('Cluster name is required')
       .test(
         'no-leading-trailing-spaces',
-        'Cluster name cannot start or end with spaces',
+        'Cluster name must not start or end with a space.',
         value => value === value?.trim()
       )
       .matches(
         /^[A-Za-z0-9_-]+$/,
-        'Cluster name can only contain letters, numbers, underscores, or hyphens'
+        'Cluster name must contain only letters, numbers, underscores, or hyphens.'
       ),
     nifiVersion: yup.string().required('NiFi is required'),
     configName: yup.string().required('Config name is required'),
