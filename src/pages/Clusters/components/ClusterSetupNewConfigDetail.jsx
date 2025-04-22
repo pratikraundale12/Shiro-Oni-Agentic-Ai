@@ -505,7 +505,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
             />
           </div>
           <div className="col-4">
-            <LabelSelect className="">{KDFM.COMMENTS}</LabelSelect>
+            <LabelSelect>{KDFM.COMMENTS}</LabelSelect>
 
             <InputField
               name="comments"
@@ -562,7 +562,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="">
+                      <LabelSelect>
                         Protocol Max Threads
                       </LabelSelect>
 
@@ -646,7 +646,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="">Web Http Port</LabelSelect>
+                      <LabelSelect>Web Http Port</LabelSelect>
 
                       <InputField
                         name="nifi_web_https_port"
@@ -715,7 +715,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-4">
-                      <LabelSelect className="">Username</LabelSelect>
+                      <LabelSelect>Username</LabelSelect>
 
                       <InputField
                         name="username"
@@ -728,7 +728,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-4">
-                      <LabelSelect className="">Password</LabelSelect>
+                      <LabelSelect>Password</LabelSelect>
 
                       <InputField
                         name="password"
@@ -752,7 +752,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-4">
-                      <LabelSelect className="">Directory</LabelSelect>
+                      <LabelSelect>Directory</LabelSelect>
 
                       <InputField
                         name="directory"
@@ -766,7 +766,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-4">
-                      <LabelSelect className="">Partitions</LabelSelect>
+                      <LabelSelect>Partitions</LabelSelect>
 
                       <InputField
                         name="partitions"
@@ -793,7 +793,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         sortAlphabetically={false}
                       />
                     </div>
-                    <div className="">
+                    <div>
                       <RadioSelectField
                         name="always_sync"
                         options={TRUE_FALSE_OPTIONS}
@@ -813,7 +813,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-4">
-                      <LabelSelect className="">Root Node</LabelSelect>
+                      <LabelSelect>Root Node</LabelSelect>
 
                       <InputField
                         name="root_node"
