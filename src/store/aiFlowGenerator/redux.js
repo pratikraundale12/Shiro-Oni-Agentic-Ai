@@ -33,6 +33,9 @@ export const AiFlowGeneratorActions = {
   setIsFlowAddedSuccessFully: createAction(
     `${prefix}setIsFlowAddedSuccessFully`
   ),
+  setIsFlowAlreadyAddedSuccessFully: createAction(
+    `${prefix}setIsFlowAlreadyAddedSuccessFully`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -44,6 +47,7 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   newBucket: {},
   addFlowError: {},
   isFlowAddedSuccessFully: false,
+  isFlowAlreadyAddedSuccessFully: false,
   validatedFlowRes: {},
 };
 
@@ -58,6 +62,8 @@ export const AiFlowGeneratorSelectors = {
   getAddNewFlowError: state => state.aiFlowGenerator.addFlowError,
   getIsFlowAddedSuccessFully: state =>
     state.aiFlowGenerator.isFlowAddedSuccessFully,
+  getIsFlowAlreadyAddedSuccessFully: state =>
+    state.aiFlowGenerator.isFlowAlreadyAddedSuccessFully,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -131,6 +137,13 @@ const setIsFlowAddedSuccessFully = (state, { payload }) => {
   };
 };
 
+const setIsFlowAlreadyAddedSuccessFully = (state, { payload }) => {
+  return {
+    ...state,
+    isFlowAlreadyAddedSuccessFully: payload,
+  };
+};
+
 const setNewBucket = (state, { payload }) => {
   return {
     ...state,
@@ -178,6 +191,10 @@ export const aiFlowGeneratorReducer = createReducer(
       .addCase(
         AiFlowGeneratorActions.validateFlowJsonSuccess,
         validateFlowJsonSuccess
+      )
+      .addCase(
+        AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully,
+        setIsFlowAlreadyAddedSuccessFully
       );
   }
 );

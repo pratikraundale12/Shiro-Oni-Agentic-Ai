@@ -20,6 +20,7 @@ import { theme } from '../../styles';
 import { AddNewBucketModal } from '../AiFlowGenerator/AddNewBucketModal';
 import { FlowAddToRegistryModal } from '../AiFlowGenerator/FlowAddToRegistryModal';
 import { FlowAddedSuccessModal } from '../AiFlowGenerator/FlowAddedSuccessModal';
+import FlowAlreadyExistModal from '../AiFlowGenerator/FlowAlreadyExistModal';
 
 // Styled Components
 const Container = styled.div`
@@ -279,6 +280,9 @@ const DataFlowInventory = () => {
   const isFlowAddedSuccessfully = useSelector(
     AiFlowGeneratorSelectors.getIsFlowAddedSuccessFully
   );
+  const isFlowAlreadyAddedSuccessFully = useSelector(
+    AiFlowGeneratorSelectors.getIsFlowAlreadyAddedSuccessFully
+  );
 
   useEffect(() => {
     if (!isEmpty(bucketListData)) {
@@ -299,6 +303,10 @@ const DataFlowInventory = () => {
   useEffect(() => {
     dispatch(FlowValidationActions.fetchFlows());
     dispatch(AiFlowGeneratorActions.fetchRegistry());
+  }, [dispatch]);
+  useEffect(() => {
+    setIsFlowAddedSuccessModalOpen(false);
+    dispatch(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
   }, [dispatch]);
 
   const flows = useSelector(FlowValidationSelectors.getFlows);
@@ -360,6 +368,7 @@ const DataFlowInventory = () => {
       flowName: flowData?.flow_name,
       flowDesc: flowData?.flow_desc,
       flowJson: selectedFlow?.jsonData,
+      isDataInventory: true,
     };
     dispatch(AiFlowGeneratorActions.addFlowToRegistry(payload));
     setOpenAddToRegistryModal(false);
@@ -369,11 +378,18 @@ const DataFlowInventory = () => {
     setIsFlowAddedSuccessModalOpen(false);
     dispatch(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
   };
-
   const handleSuccessModalSuccess = () => {
     setIsFlowAddedSuccessModalOpen(false);
     dispatch(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
     history.push('/process-group');
+  };
+  const hadleFlowAlreadyAdded = () => {
+    dispatch(AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully(false));
+    history.push('/process-group');
+  };
+  const handleAlreadyAddedModalClose = () => {
+    setIsFlowAddedSuccessModalOpen(false);
+    dispatch(AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully(false));
   };
 
   return (
@@ -389,7 +405,9 @@ const DataFlowInventory = () => {
             <>
               <HeaderContainer>
                 <Title>Flow Gallery List</Title>
-                <RefreshButton>
+                <RefreshButton
+                  onClick={() => dispatch(FlowValidationActions.fetchFlows())}
+                >
                   <RefreshIcon />
                 </RefreshButton>
               </HeaderContainer>
@@ -402,7 +420,7 @@ const DataFlowInventory = () => {
                 />
                 <Search
                   type="search"
-                  placeholder="Search by title"
+                  placeholder="Search by Title, Description"
                   onChange={handleSearch}
                   value={searchTerm}
                 />
@@ -527,6 +545,11 @@ const DataFlowInventory = () => {
           handleSubmit={handleSuccessModalSuccess}
         />
       )}
+      <FlowAlreadyExistModal
+        isModalOpen={isFlowAlreadyAddedSuccessFully}
+        handleClose={handleAlreadyAddedModalClose}
+        handleSubmit={hadleFlowAlreadyAdded}
+      />
     </Container>
   );
 };

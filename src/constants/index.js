@@ -291,6 +291,7 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'licensing', label: 'Licensing' },
   { path: 'ai-flow-generator', label: 'AI-Powered Data Flow' },
   { path: 'flow-analysis', label: 'Flow Analysis' },
+  { path: 'data-flow-inventory', label: 'Data Flow Inventory' },
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];

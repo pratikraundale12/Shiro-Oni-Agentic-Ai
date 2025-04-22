@@ -1,10 +1,10 @@
-import { all, takeLatest, put, call, select } from 'redux-saga/effects';
-import { AiFlowGeneratorActions, AiFlowGeneratorSelectors } from './redux';
-import { requestSaga } from '../helpers/request_sagas';
-import { toast } from 'react-toastify';
-import { CLUSTERS_TOKEN } from '../../constants';
-import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { isEmpty } from 'lodash';
+import { toast } from 'react-toastify';
+import { all, call, put, select, takeLatest } from 'redux-saga/effects';
+import { CLUSTERS_TOKEN } from '../../constants';
+import { requestSaga } from '../helpers/request_sagas';
+import { NamespacesActions, NamespacesSelectors } from '../namespaces';
+import { AiFlowGeneratorActions, AiFlowGeneratorSelectors } from './redux';
 
 export function* fetchDefaultRecentFlows(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -161,13 +161,21 @@ export function* addFlowToRegistry(api, { payload }) {
   if (response.ok) {
     yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(true));
   } else {
-    yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
-    yield put(AiFlowGeneratorActions.setAddFlowError(response?.data)); // Dispatch error action
-    toast.error(
-      response?.message ||
-        response?.data?.message ||
-        'Failed to add flow to registry'
-    );
+    if (
+      window.location.pathname !== '/ai-flow-generator' &&
+      response?.status === 500
+    ) {
+      yield put(AiFlowGeneratorActions.setAddFlowError(response?.data)); // Dispatch error actio
+      yield put(AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully(true));
+    } else {
+      yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+      yield put(AiFlowGeneratorActions.setAddFlowError(response?.data)); // Dispatch error action
+      toast.error(
+        response?.message ||
+          response?.data?.message ||
+          'Failed to add flow to registry'
+      );
+    }
   }
 }
 
