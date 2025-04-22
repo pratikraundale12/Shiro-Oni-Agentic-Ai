@@ -39,6 +39,7 @@ import RegistryFormSection from './components/RegistryFormSection';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
+import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -281,6 +282,8 @@ export const Add = () => {
       setNewRegistry(false);
     } else if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
       history.push('/clusters');
+    } else if (activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT) {
+      setActiveTab(CLUSTER_MODULE_TABS.SERVICE_ACCOUNT);
     } else {
       setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
     }
@@ -631,8 +634,13 @@ export const Add = () => {
   const hasValidationErrors = () => Object.keys(errors).length > 0;
 
   const showSubmitButtonOnCluster = () => {
-    return activeTab === 'cluster' || newRegistry;
+    return activeTab === 'cluster' || newRegistry || 'service account';
   };
+
+  const showTestCredentialsButton = () => {
+    return activeTab === 'service account';
+  }
+
   const showRegistryContiueButton = () => {
     return !newRegistry && activeTab === 'registry';
   };
@@ -774,6 +782,11 @@ export const Add = () => {
               activeTab={activeTab}
               clusterId={clusterId}
             />
+          </FormContainer>
+        )}
+        {activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT && (
+          <FormContainer>
+            <ClusterServiceAccountModal />
           </FormContainer>
         )}
       </Container>

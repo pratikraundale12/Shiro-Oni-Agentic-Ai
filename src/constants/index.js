@@ -69,6 +69,7 @@ export const RESPONSE_DATA_CODE = {
 export const CLUSTER_MODULE_TABS = {
   CLUSTER: 'cluster',
   REGISTRY: 'registry',
+  SERVICE_ACCOUNT: 'service account',
 };
 
 export const CLUSTER_STATUS = {

@@ -75,6 +75,18 @@ const ClusterNavigationTab = ({
           />
         )}
       </>
+      <NavButton
+          active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
+          onClick={() =>
+            Object.keys(data || {})?.length
+              ? setActiveTab(CLUSTER_MODULE_TABS.SERVICE_ACCOUNT)
+              : {}
+          }
+          disabled={isRegistryDetailDisable}
+          data-tooltip-id="navButtonTooltip"
+        >
+          {KDFM.SERVICE_ACCOUNT}
+        </NavButton>
     </NavTabs>
   );
 };

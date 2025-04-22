@@ -27,7 +27,6 @@ const ModalContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  margin-top: 2px;
   margin-bottom: 0px;
 `;
 
@@ -155,31 +154,14 @@ export const ClusterServiceAccountModal = ({ onOpen, onClose ,hostToEdit, setHos
   return (
     <>
       <FullPageLoader loading={loading} />
-      <ModalWithRightBtn
-        isOpen={onOpen}
-        onRequestClose={onClose}
-        onSubmit={e => addIndividualHost(e)}
-        title={`Service Account Details`}
-        primaryButtonText="Add Host"
-        secondaryButtonText="Back"
-        primaryButtonDisabled={isPrimaryBtnDisable}
-        contentStyles={{ minWidth: '30%' }}
-        footerAlign="start"
-        tertiaryButton={true}
-        tertiaryButtonConfig={{
-          tertiaryButtonTest: 'Test Credentials',
-          tertiaryButtonSubmit: handleSubmit(handleTestSubmit),
-          tertiaryButtonDisable: !isPrimaryBtnDisable,
-        }}
-      >
         <Container
           style={{
             // pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
             cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
           }}
         >
-          <div
-            className=" d-flex justify-content-end "
+             <div
+            className="d-flex"
             style={{
               pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
               cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
@@ -193,9 +175,8 @@ export const ClusterServiceAccountModal = ({ onOpen, onClose ,hostToEdit, setHos
               disabled={!isPrimaryBtnDisable}
             />
           </div>
-
-          <div className="row">
-            <div className="">
+            <div className="row">
+            <div className="col-4">
               <InputField
                 name="username"
                 type="text"
@@ -208,15 +189,15 @@ export const ClusterServiceAccountModal = ({ onOpen, onClose ,hostToEdit, setHos
                 disabled={!isPrimaryBtnDisable}
               />
             </div>{' '}
-          </div>
-          {(isEmpty(watchMethodCredentials) ||
+            {(isEmpty(watchMethodCredentials) ||
             watchMethodCredentials === 'password') && (
             <>
               {' '}
-              <div className="row">
+              <div className="col-4">
                 <PasswordField
                   name="password"
                   register={register}
+                  required
                   watch={watch}
                   label="Password"
                   icon={<CurvedLockIcon />}
@@ -229,7 +210,7 @@ export const ClusterServiceAccountModal = ({ onOpen, onClose ,hostToEdit, setHos
           )}
           {watchMethodCredentials === 'privatekey' && (
             <>
-              <span
+              <div className="col-4"
                 style={{
                   pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
                   cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
@@ -247,11 +228,11 @@ export const ClusterServiceAccountModal = ({ onOpen, onClose ,hostToEdit, setHos
                     fileLable="PEM file"
                   />
                 </ModalContainer>
-              </span>
+              </div>
             </>
           )}
+          </div>
         </Container>
-      </ModalWithRightBtn>
     </>
   );
 };
