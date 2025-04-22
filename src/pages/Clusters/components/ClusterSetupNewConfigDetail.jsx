@@ -165,7 +165,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
     configName: yup
       .string()
       .required('Config name is required')
-      .matches(/^\S+$/, 'Config name cannot contain spaces'),
+      .test(
+        'no-leading-trailing-spaces',
+        'Config name must not start or end with a space',
+        value => value === value?.trim()
+      ),
     nifiVersion: yup.string().required('NiFi version is required'),
     comments: yup
       .string()

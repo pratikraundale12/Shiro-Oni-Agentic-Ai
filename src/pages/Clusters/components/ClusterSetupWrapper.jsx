@@ -41,7 +41,18 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [hostList, setHostList] = useState([]);
   const schema = yup.object().shape({
-    clusterName: yup.string().required('Cluster Name is required'),
+    clusterName: yup
+      .string()
+      .required('Cluster name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Cluster name must not start or end with a space.',
+        value => value === value?.trim()
+      )
+      .matches(
+        /^[A-Za-z0-9_-]+$/,
+        'Cluster name must contain only letters, numbers, underscores, or hyphens.'
+      ),
     nifiVersion: yup.string().required('NiFi is required'),
     configName: yup.string().required('Config name is required'),
     configVersion: yup.string().required('Config version is required'),
