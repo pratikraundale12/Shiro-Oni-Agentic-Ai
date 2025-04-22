@@ -38,6 +38,7 @@ import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
 import { AddOrEditClusterModal } from './components/AddOrEditClusterSetupModal';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
+import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
 
 const List = styled.div`
   position: absolute;
@@ -60,7 +61,6 @@ const List = styled.div`
 `;
 
 const Item = styled.div`
-  width: 8rem;
   position: relative;
   cursor: pointer;
   display: flex;
@@ -118,6 +118,8 @@ const MetricsIconContainer = styled.div`
 
 export const ListClusters = () => {
   const dispatch = useDispatch();
+  const [modalOpen, setModalOpen] = useState(false);
+  const onClose = () => setModalOpen(false);
   const { state, setState } = useGlobalContext();
   const [deactiveId, setDeactiveId] = useState(null);
   const [deleteHardId, setDeleteHardId] = useState(null);
@@ -233,6 +235,12 @@ export const ListClusters = () => {
                       <Item onClick={() => handleClick('view', item?.id, item)}>
                         <OpenEyeIcon width={18} height={18} />
                         <span>{KDFM.VIEW}</span>
+                      </Item>
+                    )}
+                    {item.edit_cluster && (
+                      <Item onClick={() => setModalOpen(true)}>
+                        <OpenEyeIcon width={18} height={18} />
+                        <span>{KDFM.SERVICE_ACCOUNT}</span>
                       </Item>
                     )}
                     <>
@@ -518,6 +526,9 @@ export const ListClusters = () => {
         sortingState={sortingState}
       />
       <ClusterSuccessModal />
+      {modalOpen && (
+        <ClusterServiceAccountModal onOpen={modalOpen} onClose={onClose} />
+      )}
     </>
   );
 };
