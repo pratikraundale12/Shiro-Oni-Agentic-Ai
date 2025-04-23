@@ -1167,6 +1167,7 @@ export function* fetchFlowNameList(api, { payload }) {
 
 export function* fetchVersionData(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedSchedule = yield select(SchedularSelectors.getSelectedSchedule);
   const gridData = yield select(
     GridSelectors.getNamespaceGridRegistry,
     'namespaces'
@@ -1191,7 +1192,7 @@ export function* fetchVersionData(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        registriesId: gridData?.id,
+        registriesId: gridData?.id || selectedSchedule?.registry_id,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,
         namespaceId:

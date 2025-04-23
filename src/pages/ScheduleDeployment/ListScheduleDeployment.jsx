@@ -23,6 +23,7 @@ import {
   AuthenticationSelectors,
   ClustersActions,
   GridActions,
+  NamespacesActions,
 } from '../../store';
 import {
   SchedularActions,
@@ -139,6 +140,12 @@ export const ListScheduleDeployment = () => {
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setScheduleModal(true));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: item?.bucket_id,
+        flowId: item?.flow_id,
+      })
+    );
   };
 
   const handleCancelModel = item => {

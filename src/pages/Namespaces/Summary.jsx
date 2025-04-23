@@ -771,7 +771,6 @@ const Summary = () => {
 
     dispatch(NamespacesActions.deployNamespaceByRegistryFlow(payload));
   };
-
   const handleUpgradeByRegistry = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -780,6 +779,8 @@ const Summary = () => {
     const payload = {
       version: versionSelected?.version,
       namespaceId: checkDestCluster?.id,
+      bucketId: checkDestCluster?.bucketId,
+      registryId: registryData?.id,
       namespaceStatus: flowControlState,
       payload: {
         namespaceId: checkDestCluster?.value,
@@ -1041,12 +1042,10 @@ const Summary = () => {
     // return checkDestCluster?.version <= versionSelected.version
     //   ? KDFM.UPGRADE
     //   : KDFM.DOWNGRADE;
-    if(!isUpgrade){
+    if (!isUpgrade) {
       return type;
-    }
-    else return KDFM.DEPLOY;
+    } else return KDFM.DEPLOY;
   };
-  
 
   const deploymentAction = getDeploymentAction();
 
@@ -1475,24 +1474,38 @@ const Summary = () => {
               {KDFM.BACK}
             </Button>
             {isRegistryDeploy && !scheduleDeploymentFlow && (
-              <Button id="process-group-summary-deploy-btn" onClick={handledeployByRegistry}>
+              <Button
+                id="process-group-summary-deploy-btn"
+                onClick={handledeployByRegistry}
+              >
                 {provideRegistryFlowBtnText()}
               </Button>
             )}
             {!isRegistryDeploy &&
               !scheduleDeploymentFlow &&
               !scheduleUpgradeFromList && (
-                <Button id="process-group-summary-upgrade-btn" onClick={handleUpgradeByRegistry}>
+                <Button
+                  id="process-group-summary-upgrade-btn"
+                  onClick={handleUpgradeByRegistry}
+                >
                   {provideUpgradeBtnText()}
                 </Button>
               )}
             {scheduleDeploymentFlow && (
-              <Button id="summary-schedule-btn" size="md" onClick={() => handleScheduleDeploy()}>
+              <Button
+                id="summary-schedule-btn"
+                size="md"
+                onClick={() => handleScheduleDeploy()}
+              >
                 Schedule
               </Button>
             )}
             {scheduleUpgradeFromList && (
-              <Button id="summary-schedule-upgrade-btn" size="md" onClick={() => handleScheduleUpgrade()}>
+              <Button
+                id="summary-schedule-upgrade-btn"
+                size="md"
+                onClick={() => handleScheduleUpgrade()}
+              >
                 {provideScheduleUpgradeBtnText()}
               </Button>
             )}
