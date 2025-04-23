@@ -16,13 +16,14 @@ import {
   ThreedotsIcon,
   TickIconWithCircle,
 } from '../../assets';
-import { Grid, IconButton, TextRender } from '../../components';
+import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
   ClustersActions,
   GridActions,
+  LoadingSelectors,
   NamespacesActions,
 } from '../../store';
 import {
@@ -123,6 +124,7 @@ export const ListScheduleDeployment = () => {
   const search = useSelector(SchedularSelectors.getSearchText);
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [sortingState, setSortingState] = useState('');
+  const [activeButton, setActiveButton] = useState(null);
   const menuRef = useRef(null);
   const toggleSorting = column => {
     setSortingState(prevState => {
@@ -140,6 +142,7 @@ export const ListScheduleDeployment = () => {
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setScheduleModal(true));
+    setActiveButton(null);
     dispatch(
       NamespacesActions.fetchVersionData({
         bucketId: item?.bucket_id,
@@ -147,6 +150,10 @@ export const ListScheduleDeployment = () => {
       })
     );
   };
+
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchVersionData')
+  );
 
   const handleCancelModel = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
@@ -162,6 +169,7 @@ export const ListScheduleDeployment = () => {
   const RejectIconRender = item => {
     return (
       <>
+        <FullPageLoader loading={loading} />
         <IconButton
           onClick={event => {
             handleCancelModel(item);
@@ -833,7 +841,10 @@ export const ListScheduleDeployment = () => {
         }
         onSubmit={handleApproveClick}
       />
-      <ScheduleDeploymentModal />
+      <ScheduleDeploymentModal
+        setActiveButton={setActiveButton}
+        activeButton={activeButton}
+      />
       <RejectScheduleModal />
       <TokenScheduleDeploymentModal />
       <UserStoryModal />
