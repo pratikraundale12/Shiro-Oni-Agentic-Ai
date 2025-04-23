@@ -124,7 +124,6 @@ export const ListScheduleDeployment = () => {
   const search = useSelector(SchedularSelectors.getSearchText);
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [sortingState, setSortingState] = useState('');
-  const [activeButton, setActiveButton] = useState(null);
   const menuRef = useRef(null);
   const toggleSorting = column => {
     setSortingState(prevState => {
@@ -142,7 +141,6 @@ export const ListScheduleDeployment = () => {
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setScheduleModal(true));
-    setActiveButton(null);
     dispatch(
       NamespacesActions.fetchVersionData({
         bucketId: item?.bucket_id,
@@ -841,10 +839,7 @@ export const ListScheduleDeployment = () => {
         }
         onSubmit={handleApproveClick}
       />
-      <ScheduleDeploymentModal
-        setActiveButton={setActiveButton}
-        activeButton={activeButton}
-      />
+      <ScheduleDeploymentModal />
       <RejectScheduleModal />
       <TokenScheduleDeploymentModal />
       <UserStoryModal />

@@ -87,7 +87,7 @@ const SchemaWithoutApprover = yup.object().shape({
   scheduled_time: yup.string().required('Schedule deploy time is required'),
 });
 
-export const ScheduleDeploymentModal = ({ setActiveButton, activeButton }) => {
+export const ScheduleDeploymentModal = () => {
   const dispatch = useDispatch();
   const scheduleModal = useSelector(SchedularSelectors.getScheduleModal);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
@@ -95,6 +95,12 @@ export const ScheduleDeploymentModal = ({ setActiveButton, activeButton }) => {
     LoadingSelectors.getLoading(state, 'editScheduleDeployment')
   );
   const [scheduleErrors, setScheduleErrors] = useState({});
+  const [activeButton, setActiveButton] = useState(
+    selectedSchedule?.deployment_status &&
+      selectedSchedule.deployment_status !== ''
+      ? selectedSchedule.deployment_status.toUpperCase()
+      : null
+  );
 
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -114,6 +120,16 @@ export const ScheduleDeploymentModal = ({ setActiveButton, activeButton }) => {
     dispatch(SchedularActions.setSelectedSchedule({}));
     setScheduleErrors({});
   };
+  useEffect(() => {
+    if (
+      selectedSchedule?.deployment_status &&
+      selectedSchedule.deployment_status !== ''
+    ) {
+      setActiveButton(selectedSchedule.deployment_status.toUpperCase());
+    } else {
+      setActiveButton(null);
+    }
+  }, [selectedSchedule]);
   const handleUpdateStatus = status => {
     setActiveButton(status);
   };
@@ -147,6 +163,7 @@ export const ScheduleDeploymentModal = ({ setActiveButton, activeButton }) => {
         approver_ids: selectedSchedule?.approvers?.map(
           item => item.approver_id
         ),
+        select_version: selectedSchedule?.version,
       });
     } else {
       reset({
