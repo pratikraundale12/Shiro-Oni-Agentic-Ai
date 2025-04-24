@@ -897,6 +897,8 @@ const Summary = () => {
         version: versionSelected?.version,
         flowId: selectedNameSpace?.flowId,
         namespaceId: checkDestCluster?.id,
+        registryId: registryData?.id,
+        bucketId: selectedNameSpace?.bucketId,
         namespaceStatus: flowControlSelectedScheduleStored,
         payload: {
           namespaceId: checkDestCluster?.value,
@@ -941,6 +943,8 @@ const Summary = () => {
       version: versionSelected?.version,
       flowId: selectedNameSpace?.flowId,
       namespaceId: checkDestCluster?.id,
+      registryId: registryData?.id,
+      bucketId: selectedNameSpace?.bucketId,
       namespaceStatus: flowControlSelectedScheduleStored,
       payload: {
         namespaceId: checkDestCluster?.value,
