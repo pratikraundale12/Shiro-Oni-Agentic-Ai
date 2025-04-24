@@ -178,10 +178,17 @@ export const ScheduleDeploymentModal = () => {
   const approver_ids = watch('approver_ids');
 
   const versionOptions = Array.isArray(versionListData?.versionList)
-    ? versionListData?.versionList?.map(version => ({
-        label: String(version?.version),
-        value: version?.version,
-      }))
+    ? versionListData.versionList
+        .slice()
+        .sort((a, b) =>
+          String(a.version).localeCompare(String(b.version), undefined, {
+            numeric: true,
+          })
+        )
+        .map(version => ({
+          label: String(version.version),
+          value: version.version,
+        }))
     : [];
 
   return (
