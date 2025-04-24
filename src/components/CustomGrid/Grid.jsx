@@ -14,7 +14,11 @@ import ClusterDetail from '../../pages/Clusters/components/ClusterDetail';
 import RegistryDetail from '../../pages/Clusters/components/RegistryDetail';
 import { InputField, Modal } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import { LoadingSelectors, NamespacesSelectors } from '../../store';
+import {
+  ClustersSelectors,
+  LoadingSelectors,
+  NamespacesSelectors,
+} from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
 import { GridActions, GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
@@ -120,6 +124,13 @@ export const Grid = ({
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
+  const ClusterActivated = localStorage.getItem('clusters');
+  const parsedClusterActivated = JSON.parse(ClusterActivated);
+  const isClusterLoggedIn =
+    clusterId &&
+    Array.isArray(parsedClusterActivated) &&
+    parsedClusterActivated.some(ele => ele?.id === clusterId);
+
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchGrid')
   );
@@ -144,6 +155,7 @@ export const Grid = ({
   const [clusterSelectedValue, setClusterSelectedValue] = useState(null);
   const [selectEvent, setSelectEvent] = useState(null);
   const [selectEntity, setSelectEntity] = useState(null);
+  const registryNodesData = useSelector(ClustersSelectors.getRegistryNodesData);
 
   const { watch, control, setValue } = useForm();
   const watchStatus = watch('is_active');
@@ -158,6 +170,7 @@ export const Grid = ({
     state: { search, page, eventModal, selectedNode },
     setState,
   } = useGlobalContext();
+
   useEffect(() => {
     if (search) {
       dispatch(SchedularActions.setSearchText(search));
@@ -225,6 +238,7 @@ export const Grid = ({
     users: 'No User Available',
     activityHistory: 'No Activity History Available',
     scheduler: 'No Schedulers Available',
+    nodes: 'No Nodes Available Login to Cluster First',
   };
 
   const getModuleBasedStatusKey = module => {
@@ -253,6 +267,9 @@ export const Grid = ({
   };
 
   const getNamespacesListData = () => {
+    if (module === 'nodes' && !isClusterLoggedIn) {
+      return;
+    }
     if (module === 'namespaces' && selectedCluster?.value) {
       dispatch(
         GridActions.fetchGrid({
@@ -435,6 +452,86 @@ export const Grid = ({
       width: '100%',
     },
   ];
+
+  const getRegistryNodesData = () => {
+    return (
+      <>
+        <ClusterRegistryContainer className="row">
+          <ClusterDetail
+            data={{
+              name: registryNodesData?.cluster?.name,
+              nifi_url: registryNodesData?.cluster?.nifi_url,
+            }}
+          />
+          {registryNodesData?.cluster?.registry?.registry_url && (
+            <RegistryDetail
+              data={{
+                name: registryNodesData?.cluster?.registry?.name,
+                registry_url:
+                  registryNodesData?.cluster?.registry?.registry_url,
+              }}
+            />
+          )}
+        </ClusterRegistryContainer>
+        <ClusterRegistryContainer className="row">
+          {registryNodesData?.cluster?.metrics_url && (
+            <ClusterDetail
+              data={{
+                metrics_url: registryNodesData?.cluster?.metrics_url,
+              }}
+              columns={METRICS_URL_COLUMN}
+            />
+          )}
+          {registryNodesData?.cluster?.logs_url && (
+            <ClusterDetail
+              data={{
+                logs_url: registryNodesData?.cluster?.logs_url,
+              }}
+              columns={LOGS_URL_COLUMN}
+            />
+          )}
+        </ClusterRegistryContainer>
+        <Modal
+          title="Event Log"
+          isOpen={eventModal}
+          onRequestClose={() =>
+            setState(prevState => ({ ...prevState, eventModal: false }))
+          }
+          size="md"
+          primaryButtonText={KDFM.CONTINUE}
+          onSubmit={() =>
+            setState(prevState => ({ ...prevState, eventModal: false }))
+          }
+          contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
+        >
+          <FLexWrapper>
+            <InputField
+              label="Address"
+              disabled={true}
+              icon={<QRIcons />}
+              value={selectedNode?.address}
+            />
+            <InputField
+              label="Node ID"
+              disabled={true}
+              icon={<QRIcons />}
+              value={selectedNode?.nodeId}
+            />
+          </FLexWrapper>
+          <Table
+            data={
+              selectedNode?.events?.slice(0, 10).map(item => ({
+                address: selectedNode?.address,
+                nodeId: selectedNode?.nodeId,
+                ...item,
+              })) || []
+            }
+            columns={EVENTCOLUMNS}
+          />
+        </Modal>
+      </>
+    );
+  };
   return (
     <Container>
       <GridActionsComponent
@@ -463,72 +560,13 @@ export const Grid = ({
         setSelectEntity={setSelectEntity}
         setSortingState={setSortingState}
         setCurrentPage={setCurrentPage}
+        isClusterLoggedIn={isClusterLoggedIn}
       />
-      {module === 'nodes' && !loading && !isEmpty(clusterSummary?.nodes) && (
-        <>
-          <ClusterRegistryContainer className="row">
-            <ClusterDetail
-              data={{
-                name: clusterSummary?.name,
-                nifi_url: clusterSummary?.nifi_url,
-              }}
-            />
-            <RegistryDetail data={clusterSummary?.registry} />
-          </ClusterRegistryContainer>
-          <ClusterRegistryContainer className="row">
-            <ClusterDetail
-              data={{
-                metrics_url: clusterSummary?.metrics_url,
-              }}
-              columns={METRICS_URL_COLUMN}
-            />
-            <ClusterDetail
-              data={{
-                logs_url: clusterSummary?.logs_url,
-              }}
-              columns={LOGS_URL_COLUMN}
-            />{' '}
-          </ClusterRegistryContainer>
-          <Modal
-            title="Event Log"
-            isOpen={eventModal}
-            onRequestClose={() =>
-              setState(prevState => ({ ...prevState, eventModal: false }))
-            }
-            size="md"
-            primaryButtonText={KDFM.CONTINUE}
-            onSubmit={() =>
-              setState(prevState => ({ ...prevState, eventModal: false }))
-            }
-            contentStyles={{ maxWidth: '45%', maxHeight: '65%' }}
-          >
-            <FLexWrapper>
-              <InputField
-                label="Address"
-                disabled={true}
-                icon={<QRIcons />}
-                value={selectedNode?.address}
-              />
-              <InputField
-                label="Node ID"
-                disabled={true}
-                icon={<QRIcons />}
-                value={selectedNode?.nodeId}
-              />
-            </FLexWrapper>
-            <Table
-              data={
-                selectedNode?.events?.slice(0, 10).map(item => ({
-                  address: selectedNode?.address,
-                  nodeId: selectedNode?.nodeId,
-                  ...item,
-                })) || []
-              }
-              columns={EVENTCOLUMNS}
-            />
-          </Modal>
-        </>
-      )}
+      {module === 'nodes' &&
+        !loading &&
+        !isEmpty(registryNodesData?.cluster?.name) && (
+          <>{getRegistryNodesData()}</>
+        )}
       <div className="mb-2 ps-1">
         <Breadcrumb module={module} />
       </div>

@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { ACTIVITY_HISTORY_CONSTANTS } from './activityHistory.constant';
+import { AI_FLOW_GENERATOR_CONSTANTS } from './aiFlowGenerator.constant';
 import { CLUSTER_CONSTANTS } from './cluster.constant';
 import { NAMESPACE_CONSTANTS } from './namespace.constant';
 import { USER_CONSTANTS } from './user.constant';
@@ -90,6 +91,11 @@ export const MODULE_LIST_MAP = [
   { label: 'Parameter Context', value: 'Parameter Context' },
   { label: 'Variable', value: 'Variable' },
   { label: 'Schedule Deployment', value: 'Schedule Deployment' },
+  { label: 'AI Flows', value: 'AI Flows' },
+  { label: 'Flow Validation', value: 'Flow Validation' },
+  { label: 'Rule scope', value: 'Rule scope' },
+  { label: 'Rule', value: 'Rule' },
+  { label: 'Data Flow Inventory', value: 'Data Flow Inventory' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -116,8 +122,13 @@ export const ACTIVITY_EVENTS = [
   { label: 'Logout', value: 'Logout' },
   { label: 'Reschedule', value: 'Reschedule' },
   { label: 'Approve', value: 'Approve' },
-  { label: 'Enable', value: 'Enable' },
-  { label: 'Disable', value: 'Disable' },
+  { label: 'Add Flow', value: 'Add Flow' },
+  { label: 'Add Bucket', value: 'Add Bucket' },
+  { label: 'Generate Flow', value: 'Generate Flow' },
+  { label: 'Comparison', value: 'Comparison' },
+  { label: 'Validate', value: 'Validate' },
+  { label: 'Comparison', value: 'Comparison' },
+  { label: 'Add Data Flow Inventory', value: 'Add Data Flow Inventory' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
@@ -265,6 +276,7 @@ export const KDFM = {
   ...NAMESPACE_CONSTANTS,
   ...ACTIVITY_HISTORY_CONSTANTS,
   ...USER_CONSTANTS,
+  ...AI_FLOW_GENERATOR_CONSTANTS,
 };
 
 export const SIDE_MENUS_DISPLAY = [
@@ -279,7 +291,61 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'controller-service', label: 'Controller Services' },
   { path: 'setting', label: 'Settings' },
   { path: 'licensing', label: 'Licensing' },
+  { path: 'ai-flow-generator', label: 'AI-Powered Data Flow' },
+  { path: 'flow-analysis', label: 'Flow Analysis' },
+  { path: 'data-flow-inventory', label: 'Data Flow Inventory' },
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];
 export const SEARCH_INPUT_ERROR = 'Please enter atleast 2 characters to search';
+
+export const TRUE_FALSE_OPTIONS = [
+  { id: 1, value: 'true', label: 'True' },
+  { id: 2, value: 'false', label: 'False' },
+];
+
+export const ZOOOKEEPER_EMBEDED_OPTIONS = [
+  { id: 1, value: true, label: 'True' },
+  { id: 2, value: false, label: 'False' },
+];
+
+export const ALWAYS_SYNC_OPTIONS = [
+  { id: 1, value: 'true', label: 'True' },
+  { id: 2, value: 'false', label: 'False' },
+];
+
+export const FLOW_ELECTION_MAX_WAIT_OPTIONS = [
+  { label: '2 Min', value: '2 mins' },
+  { label: '5 Min', value: '5 mins' },
+  { label: '10 Min', value: '10 mins' },
+];
+
+export const ACCESS_CONTROL_OPTIONS = [
+  { label: 'Open', value: 'Open' },
+  { label: 'CreatorOnly', value: 'CreatorOnly' },
+];
+
+export const ZOOKEEPER_CONNECTION_TIMEOUT = [
+  { label: '10 secs', value: '10 secs' },
+  { label: '20 secs', value: '20 secs' },
+  { label: '30 secs', value: '30 secs' },
+  { label: '40 secs', value: '40 secs' },
+  { label: '50 secs', value: '50 secs' },
+  { label: '60 secs', value: '60 secs' },
+];
+export const CHECKPOINT_INTERVAL_OPTIONS = [
+  { label: '2 Min', value: '2 mins' },
+  { label: '4 Min', value: '4 mins' },
+  { label: '6 Min', value: '6 mins' },
+  { label: '8 Min', value: '8 mins' },
+  { label: '10 Min', value: '10 mins' },
+];
+
+export const SESSION_TIMEOUT_OPTIONS = [
+  { label: '10 seconds', value: '10 seconds' },
+  { label: '20 seconds', value: '20 seconds' },
+  { label: '30 seconds', value: '30 seconds' },
+  { label: '40 seconds', value: '40 seconds' },
+  { label: '50 seconds', value: '50 seconds' },
+  { label: '60 seconds', value: '60 seconds' },
+];

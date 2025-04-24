@@ -24,6 +24,7 @@ import {
 } from '../../constants';
 import { history } from '../../helpers/history';
 import { getButtonPermissions } from '../../helpers/permissions';
+import FlowAnalysis from '../../pages/FlowAnalysis/FlowAnalysis';
 import {
   Button,
   DateRangePickerInput,
@@ -32,6 +33,7 @@ import {
 } from '../../shared';
 import {
   AuthenticationSelectors,
+  ClustersActions,
   ClustersSelectors,
   DashboardActions,
   GridActions as GridSagsActions,
@@ -43,6 +45,7 @@ import {
   UsersSelectors,
 } from '../../store';
 import { ActivityHistoryActions } from '../../store/activityHistory/redux';
+import { FlowValidationActions } from '../../store/flowValidation';
 import { GridSelectors } from '../../store/grid';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
@@ -217,6 +220,7 @@ export const GridActions = ({
   setSelectEntity,
   setSortingState,
   setCurrentPage,
+  isClusterLoggedIn = true,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -331,6 +335,9 @@ export const GridActions = ({
   const scheduleToken = window.localStorage.getItem('scheduleTokenid');
 
   useEffect(() => {
+    if (module === 'nodes' && !isClusterLoggedIn) {
+      return;
+    }
     if (
       watchStatus ||
       selectedRange ||
@@ -339,51 +346,47 @@ export const GridActions = ({
       selectEvent ||
       selectEntity
     ) {
-      if (module === 'namespaces' && selectedCluster?.value === '') {
-        return;
-      } else {
-        dispatch(
-          GridSagsActions.fetchGrid({
-            module,
-            clusterId,
-            params: {
-              page: 1,
-              id: scheduleToken,
-              ...(search && { search: search }),
-              ...(watchStatus &&
-                watchStatus !== 'all' && {
-                  [getModuleBasedStatusKey(module)]: watchStatus,
-                }),
-              ...(selectedRange && {
-                start_date: selectedRange?.[0]?.toISOString(),
-                end_date: selectedRange?.[1]?.toISOString(),
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module,
+          clusterId,
+          params: {
+            page: 1,
+            id: scheduleToken,
+            ...(search && { search: search }),
+            ...(watchStatus &&
+              watchStatus !== 'all' && {
+                [getModuleBasedStatusKey(module)]: watchStatus,
               }),
-              ...(location?.pathname?.includes('user-management') &&
-                selectedRole?.value !== 'all' && {
-                  role_id: selectedRole?.value,
-                }),
-              ...(location?.pathname?.includes('schedule-deployment') &&
-                clusterSelectedValue?.label !== 'All' && {
-                  clusterName: clusterSelectedValue?.label,
-                }),
-              ...(location?.pathname?.includes('activity-history') &&
-                selectEvent?.value !== 'all' && {
-                  event: selectEvent?.value,
-                }),
-              ...(location?.pathname?.includes('activity-history') &&
-                selectEntity?.value !== 'all' && {
-                  entity: selectEntity?.value,
-                }),
-              ...(location?.pathname?.match(
-                /user-management|clusters|schedule-deployment|activity-history/
-              ) &&
-                sortingState && {
-                  sort: sortingState,
-                }),
-            },
-          })
-        );
-      }
+            ...(selectedRange && {
+              start_date: selectedRange?.[0]?.toISOString(),
+              end_date: selectedRange?.[1]?.toISOString(),
+            }),
+            ...(location?.pathname?.includes('user-management') &&
+              selectedRole?.value !== 'all' && {
+                role_id: selectedRole?.value,
+              }),
+            ...(location?.pathname?.includes('schedule-deployment') &&
+              clusterSelectedValue?.label !== 'All' && {
+                clusterName: clusterSelectedValue?.label,
+              }),
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEvent?.value !== 'all' && {
+                event: selectEvent?.value,
+              }),
+            ...(location?.pathname?.includes('activity-history') &&
+              selectEntity?.value !== 'all' && {
+                entity: selectEntity?.value,
+              }),
+            ...(location?.pathname?.match(
+              /user-management|clusters|schedule-deployment|activity-history/
+            ) &&
+              sortingState && {
+                sort: sortingState,
+              }),
+          },
+        })
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -578,23 +581,29 @@ export const GridActions = ({
     dispatch(SchedularActions.setSelectedStatusState(watchStatus));
   }, [watchStatus]);
 
+  const handleAnalyzeClick = () => {
+    dispatch(FlowValidationActions.addNewAnalysisModalOpen(true));
+  };
+
   const [searchErrorMsg, setSearchErrorMsg] = useState({});
 
   return (
     <>
       <Flex className="flex-wrap gap-2">
         <FullPageLoader loading={loadingNamespaces}></FullPageLoader>
-        <Flex>
-          <ImageContainer>
-            <TodoIcon width={22} height={24} />
-          </ImageContainer>
-          <Title>
-            <span>{title}</span>
-            {module === 'namespaces' && Boolean(gridCount) && (
-              <span>({gridCount})</span>
-            )}
-          </Title>
-        </Flex>
+        {title && (
+          <Flex>
+            <ImageContainer>
+              <TodoIcon width={22} height={24} />
+            </ImageContainer>
+            <Title>
+              <span>{title}</span>
+              {module === 'namespaces' && Boolean(gridCount) && (
+                <span>({gridCount})</span>
+              )}
+            </Title>
+          </Flex>
+        )}
         {module === 'scheduler' && (
           <>
             {
@@ -727,7 +736,9 @@ export const GridActions = ({
             userPermissions.includes(getButtonPermissions(module)) && (
               <Button
                 icon={<PlusCircleIcon width={16} height={16} color="white" />}
-                onClick={() => history.push(`/${module}/add`)}
+                onClick={() =>
+                  dispatch(ClustersActions.setIsAddorEditClusterModalOpen(true))
+                }
                 size="sm"
               >
                 {buttonText}
@@ -738,41 +749,52 @@ export const GridActions = ({
         </ButtonsContainer>
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
-            {module === 'namespaces' && (
-              <>
-                {selectedCluster?.value && (
-                  <Button
-                    id="process-group-list-schdule-deployment"
-                    size="md"
-                    disabled={isButtonDisabled}
-                    onClick={() => handleScheduleClick()}
-                  >
-                    <div
-                      className="d-flex "
-                      style={{ fontSize: '14px', fontWeight: '750' }}
+            {module === 'namespaces' &&
+              location.pathname === '/process-group' && (
+                <>
+                  {selectedCluster?.value && (
+                    <Button
+                      id="process-group-list-schdule-deployment"
+                      size="md"
+                      disabled={isButtonDisabled}
+                      onClick={() => handleScheduleClick()}
                     >
-                      <ScheduleDeploymentIcon
-                        height={19}
-                        width={19}
-                        color={'#fff'}
-                      />
-                      Schedule Deployment
-                    </div>
-                  </Button>
-                )}
-                {canWrite && (
-                  <Button
-                    id="process-group-deploy"
-                    disabled={!canWrite}
-                    size="md"
-                    style={{ width: '84px' }}
-                    onClick={handleClick}
-                  >
-                    {KDFM.DEPLOY}
-                  </Button>
-                )}
-              </>
-            )}
+                      <div
+                        className="d-flex "
+                        style={{ fontSize: '14px', fontWeight: '750' }}
+                      >
+                        <ScheduleDeploymentIcon
+                          height={19}
+                          width={19}
+                          color={'#fff'}
+                        />
+                        Schedule Deployment
+                      </div>
+                    </Button>
+                  )}
+                  {canWrite && (
+                    <Button
+                      id="process-group-deploy"
+                      disabled={!canWrite}
+                      size="md"
+                      style={{ width: '84px' }}
+                      onClick={handleClick}
+                    >
+                      {KDFM.DEPLOY}
+                    </Button>
+                  )}
+                </>
+              )}
+            {module === 'namespaces' &&
+              location.pathname === '/flow-analysis' &&
+              selectedCluster?.value && (
+                <Button
+                  onClick={handleAnalyzeClick}
+                  disabled={isButtonDisabled}
+                >
+                  Analyze New Flow
+                </Button>
+              )}
             {['scheduler'].includes(module) && (
               <>
                 <RefreshIocn
@@ -798,6 +820,13 @@ export const GridActions = ({
                 <RefreshIocn
                   onClick={handleRefresh}
                   data-tooltip-id={`tooltip-group-namespace-refresh-`}
+                  style={{
+                    cursor:
+                      selectedCluster?.value &&
+                      !isEmpty(selectedCluster?.value)
+                        ? 'pointer'
+                        : 'not-allowed',
+                  }}
                 >
                   <RefreshIcon
                     style={{

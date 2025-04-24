@@ -10,12 +10,14 @@ import {
   BookIcon,
   ClusterIcon,
   DashboardIcon,
-  GenrateFlowIcon,
+  DataFlowInventoryIcon,
+  GenAiIcon,
   LdapConfigIcon,
   LicenseIcon,
   LockIcon,
   NameSpaceIcon,
   PeopleIcon,
+  PropertyIcon,
   QuestionMarkIcon,
   ReadyFlowIcon,
   ScheduleDeploymentIcon,
@@ -23,13 +25,14 @@ import {
 } from '../assets';
 import { FullPageLoader } from '../components';
 import KeycloakRedirectPage from '../components/KeyCloak/KeycloakRedirectPage.jsx';
+import { KDFM } from '../constants/index.js';
 import {
   ActvityHistory,
   Add,
+  AiFlowGenerator,
   ClusterAccess,
   Dashboard,
   Forgot,
-  GenrateFlow,
   HelpAndSupport,
   LdapConfig,
   ListClusters,
@@ -47,7 +50,13 @@ import {
 } from '../pages';
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
+import ClusterSetupNewConfigDetailsPage from '../pages/Clusters/components/ClusterSetupNewConfigDetail.jsx';
+import SetupClusterPage from '../pages/Clusters/components/setupClusterPage.jsx';
 import { ListControllerService } from '../pages/ControllerService';
+import DataFlowInventry from '../pages/DataFlowInventory/DataFlowInventry.jsx';
+import CompareValidation from '../pages/FlowAnalysis/CompareValidation.jsx';
+import FlowAnalysis from '../pages/FlowAnalysis/FlowAnalysis.jsx';
+import FlowValidationDetails from '../pages/FlowAnalysis/FlowValidationDetails.jsx';
 import License from '../pages/Licensing/License.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
@@ -91,6 +100,14 @@ export const ROUTES_MENU = [
       {
         path: ['add', 'edit'],
         component: <Add />,
+      },
+      {
+        path: ['setup-cluster'],
+        component: <SetupClusterPage />,
+      },
+      {
+        path: ['new-config-details'],
+        component: <ClusterSetupNewConfigDetailsPage />,
       },
       {
         path: [':id'],
@@ -140,6 +157,26 @@ export const ROUTES_MENU = [
     permission: 'view_namespace',
   },
   {
+    name: 'Flow Analysis',
+    path: 'flow-analysis',
+    icon: PropertyIcon,
+    pages: [
+      {
+        path: '',
+        component: <FlowAnalysis />,
+      },
+      {
+        path: 'flow-validation',
+        component: <FlowValidationDetails />,
+      },
+      {
+        path: 'flow-compare',
+        component: <CompareValidation />,
+      },
+    ],
+    permission: 'view_namespace',
+  },
+  {
     name: 'Deployment Schedule',
     path: 'schedule-deployment',
     icon: ScheduleDeploymentIcon,
@@ -168,16 +205,28 @@ export const ROUTES_MENU = [
     hidden: true,
   },
   {
-    name: 'Generate Flow',
-    path: 'generate-flow',
-    icon: GenrateFlowIcon,
+    name: 'Data Flow Inventory',
+    path: 'data-flow-inventory',
+    icon: DataFlowInventoryIcon,
     pages: [
       {
         path: '',
-        component: <GenrateFlow />,
+        component: <DataFlowInventry />,
       },
     ],
-    hidden: true,
+    permission: 'view_namespace',
+  },
+  {
+    name: KDFM.AI_FLOW_GENERATOR,
+    path: 'ai-flow-generator',
+    icon: GenAiIcon,
+    pages: [
+      {
+        path: '',
+        component: <AiFlowGenerator />,
+      },
+    ],
+    permission: 'view_genai',
   },
   {
     name: 'User Management',
@@ -312,6 +361,7 @@ const Routes = () => {
         '/clusters',
         '/dashboard',
         '/licensing',
+        '/ai-flow-generator',
       ].includes(location.pathname)
     ) {
       dispatch(SettingsActions.fetchSettings());

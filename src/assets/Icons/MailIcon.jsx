@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export const MailIcon = ({
   width = 20,
-  height = 18,
+  height = 20,
   color = '#444445',
   ...rest
 }) => (

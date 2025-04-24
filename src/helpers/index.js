@@ -80,3 +80,15 @@ export const formatDateStringToLocal = dateString => {
   // Format the complete date string
   return `${month} ${day}, ${year} at ${time}`;
 };
+
+export const safeParseJSON = jsonString => {
+  try {
+    return typeof jsonString === 'string' ? JSON.parse(jsonString) : jsonString;
+  } catch (error) {
+    console.error(
+      `Error parsing JSON: ${jsonString?.substring(0, 50)}...`,
+      error
+    );
+    return {};
+  }
+};

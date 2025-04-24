@@ -2,9 +2,11 @@ import apisauce from 'apisauce';
 import { ACCESS_TOKEN, API_URL } from '../../constants';
 import { history } from '../../helpers/history';
 import { activityHistoryAPI } from './activityHistory';
+import { aiFlowGeneratorAPI } from './aiFlowGenerator';
 import { authenticationAPI } from './auth';
 import { clustersAPI } from './clusters';
 import { dashboardAPI } from './dashboard';
+import { flowValidationAPI } from './flowValidation';
 import { namespacesAPI } from './namespaces';
 import { policiesAPI } from './policies';
 import { rolesAPI } from './roles';
@@ -81,6 +83,10 @@ const create = (baseURL = `${API_URL}/api`) => {
     ...settingsAPI(api),
     // Activity History
     ...activityHistoryAPI(api),
+    // Flow Validation
+    ...flowValidationAPI(api),
+    // AI Flow Generator
+    ...aiFlowGeneratorAPI(api),
   };
 };
 

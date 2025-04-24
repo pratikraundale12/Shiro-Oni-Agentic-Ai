@@ -36,6 +36,7 @@ import {
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
+import { AddOrEditClusterModal } from './components/AddOrEditClusterSetupModal';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 
 const List = styled.div`
@@ -209,7 +210,7 @@ export const ListClusters = () => {
     {
       label: KDFM.STATUS,
       renderCell: item => <StatusRender status={item.status} />,
-      width: '15%',
+      width: '10%',
       resize: true,
     },
     {
@@ -221,19 +222,20 @@ export const ListClusters = () => {
               <List ref={menuRef}>
                 {item.is_active ? (
                   <>
-                    {item.edit_cluster && (
+                    {item.edit_cluster && !item?.created_by_ansible && (
                       <Item onClick={() => handleClick('edit')}>
                         <PencilIcon width={16} height={16} />
                         <span>{KDFM.EDIT}</span>
                       </Item>
                     )}
+
+                    {item.edit_cluster && (
+                      <Item onClick={() => handleClick('view', item?.id, item)}>
+                        <OpenEyeIcon width={18} height={18} />
+                        <span>{KDFM.VIEW}</span>
+                      </Item>
+                    )}
                     <>
-                      {item.status !== CLUSTER_STATUS.DISCONNECTED && (
-                        <Item onClick={() => handleClick('view')}>
-                          <OpenEyeIcon width={18} height={18} />
-                          <span>{KDFM.VIEW}</span>
-                        </Item>
-                      )}
                       {item.deactivate_cluster && (
                         <Item onClick={() => handleClick('delete', item.id)}>
                           <LogoutIcon color="black" />
@@ -307,7 +309,7 @@ export const ListClusters = () => {
         );
       },
       resize: true,
-      width: '12%',
+      width: '17%',
     },
   ];
 
@@ -325,6 +327,7 @@ export const ListClusters = () => {
             page: 1,
             sort: 'name',
             limit: 10,
+            ...(state?.search && { search: state?.search }),
             ...(statusData !== '' && { status: statusData }),
           },
         })
@@ -351,6 +354,7 @@ export const ListClusters = () => {
             page: 1,
             sort: 'name',
             limit: 10,
+            ...(state?.search && { search: state?.search }),
             ...(statusData !== '' && { status: statusData }),
           },
         })
@@ -395,6 +399,7 @@ export const ListClusters = () => {
               page: 1,
               sort: 'name',
               limit: 10,
+              ...(state?.search && { search: state?.search }),
               ...(statusData !== '' && { status: statusData }),
             },
           })
@@ -425,7 +430,7 @@ export const ListClusters = () => {
     }
   };
 
-  const handleClick = (type, id) => {
+  const handleClick = (type, id, item = {}) => {
     handleCloseMenu();
     if (type === 'edit') {
       history.push('/clusters/edit', { state: menuState.row });
@@ -434,6 +439,7 @@ export const ListClusters = () => {
       setState({
         ...state,
         nodeClusterId: menuState.row.id,
+        created_by_ansible: item?.created_by_ansible,
       });
       history.push(`/clusters/${menuState.row.id}`, {
         clusterSummaryPage: true,
@@ -460,9 +466,23 @@ export const ListClusters = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    dispatch(ClustersActions.setActiveTabClusterSetup('getting_started'));
+  }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(
+      GridActions.fetchGridSuccess({
+        module: 'nodes',
+        nodes: {},
+      })
+    );
+    dispatch(ClustersActions.setRegistryNodesData({}));
+  }, [dispatch]);
   return (
     <>
+      {' '}
+      <AddOrEditClusterModal />
       <ModalWithIcon
         title={KDFM.DEACTIVATE_CLUSTER}
         primaryButtonText={KDFM.DEACTIVATE}

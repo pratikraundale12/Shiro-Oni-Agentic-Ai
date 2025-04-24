@@ -57,7 +57,8 @@ const Content = styled.div`
   gap: 0px;
   border-radius: 0px 0px 10px 10px;
   opacity: 0px;
-  background: rgba(224, 241, 241, 1);
+  background: ${({ isOpenBackgroundWhite }) =>
+    isOpenBackgroundWhite ? `#fff` : `rgba(224, 241, 241, 1)`};
 
   padding: 10px;
   animation: fadeIn 0.3s ease;
@@ -81,6 +82,7 @@ const Collapsible = ({
   toggleCollapsible,
   isAddBtnVisible = true,
   isAddBtnDisable = false,
+  isOpenBackgroundWhite = false,
 }) => {
   return (
     <CollapsibleWrapper>
@@ -110,7 +112,11 @@ const Collapsible = ({
           </ToggleButton>
         </div>
       </Header>
-      {isTableOpen && <Content>{children}</Content>}
+      {isTableOpen && (
+        <Content isOpenBackgroundWhite={isOpenBackgroundWhite}>
+          {children}
+        </Content>
+      )}
     </CollapsibleWrapper>
   );
 };
@@ -124,6 +130,7 @@ Collapsible.propTypes = {
   toggleCollapsible: PropTypes.func,
   isAddBtnVisible: PropTypes.bool,
   isAddBtnDisable: PropTypes.bool,
+  isOpenBackgroundWhite: PropTypes.bool,
 };
 
 export default Collapsible;

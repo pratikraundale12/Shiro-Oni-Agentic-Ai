@@ -1,0 +1,88 @@
+export const FLOWVALIDATION_CONSTANTS = {
+  SCOPE_TYPE: 'Scope Type',
+  DISPLAY_VALUE: 'Display Value',
+  DESCRIPTION: 'Description',
+  LASTUPDATE: 'Last Update',
+  ACTION: 'Action',
+  FLOW_VALIDATION_SETTINGS: 'Flow Validation Settings',
+  ADD_NEW_VALIDATION: 'Add New Validation',
+  EDIT_NEW_VALIDATION: 'Edit Validation',
+  SAVE: 'Save',
+  CANCEL: 'Cancel',
+  SELECT_SCOPE: 'Select Scope',
+  SELECT_SCOPE_TYPE: 'Select Scope Type',
+  ENTER_DISPLAY_VALUE: 'Enter Display Value',
+  ENTER_DESCRIPTION: 'Enter Description',
+  PROCESS_GROUP_DETAILS: 'Process Group Details',
+  SELECT_RULE_TO_VALIDATE: 'Select Rules To Validate',
+  VALIDATE_FLOW: 'Validate Flow',
+  FLOW_INFO: 'Flow Info',
+  INVALID_PROCESSOR_COUNT: 'Invalid Processor Count',
+  REGISTRY_FLOW_INFO: 'Registry Flow Info',
+  CURRENT_VERSION: 'Current Version',
+  STATE: 'State',
+  SEND_EMAIL_REPORT: 'Send Email Report',
+  BACK: 'Back',
+  DIFFERENCES: 'Differences',
+  COMPARED_VERSION: 'Compared version',
+  LAST_COMMIT_COMMENT: 'Last commit comments',
+  LATEST_AUTHOR: 'Latest Author',
+  COMPARE: 'Compare',
+  SELECT_VERSION: 'Select Version',
+  COMPARE_VERSION: 'Compare Versions',
+  FLOW_ANALYSIS_LIST: 'Flow Analysis List',
+  ADD_NEW_RULE: 'Add New Rule',
+  RULES: 'Rules',
+  CONDITION: 'Condition',
+  SELECT_PROPERTY: 'Select Property',
+  ENTER_OUPUT_VALUE: 'Enter Output Value',
+  OUTPUT_VALUE: 'Output Value',
+  ENTER_RULE_NAME: 'Enter Rule Name',
+  RULE_NAME: 'Rule Name',
+  EDIT_NEW_RULE: 'Edit New Rule',
+  SEARCH_DISPLAY_VALUE: 'Search Display Value',
+  ANALYZE_NEW_FLOW: 'Analyze New Flow',
+  NIFI_CLUSTER_URL: 'Nifi Cluster URL',
+  ENTER_YOUR_CLUSTER_URL: 'Enter Your Cluster URL',
+  USERNAME: 'Username',
+  ENTER_YOUR_USERNAME: 'Enter Your Username',
+  PASSWORD: 'Password',
+  PROCESS_GROUP_ID: 'Process Group ID',
+  ENTER_YOUR_PROCESS_GROUP_ID: 'Enter Your Process Group ID',
+  LOGIC_OPERATOR: 'Logic Operator',
+};
+
+export const SCOPE_TYPE_OPTIONS = [
+  { label: 'Processor', value: 'PROCESSOR' },
+  { label: 'Connection', value: 'CONNECTION' },
+];
+export const CONDITION_OPERATORS = [
+  { label: '===', value: '===' },
+  { label: '!==', value: '!==' },
+  { label: '<', value: '<' },
+  { label: '>', value: '>' },
+  { label: '<=', value: '<=' },
+  { label: '>=', value: '>=' },
+  { label: 'contains', value: 'contains' },
+  { label: 'not contains', value: 'not contains' },
+];
+
+export const CONDITION_JOIN_OPERATORS = [
+  { label: 'OR', value: 'OR' },
+  { label: 'AND', value: 'AND' },
+];
+
+export const convertDateTime = dateString => {
+  if (!dateString) return 'No date provided';
+
+  const date = new Date(dateString);
+  return date.toLocaleString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+  });
+};

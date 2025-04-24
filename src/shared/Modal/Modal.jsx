@@ -65,6 +65,9 @@ export const Modal = ({
   children,
   isOpen,
   closeIcon = true,
+  isAdditionalIcon = false,
+  additionalIcon,
+  onAdditionalIconClick = () => null,
   onRequestClose,
   loading = false,
   secondaryButtonText = '',
@@ -87,6 +90,9 @@ export const Modal = ({
   noPadding = false,
   noScroll = false,
   primaryButtonProps = {},
+  additionalBtnText = '',
+  additionalBtnDisabled = false,
+  additionalBtnClick = () => null,
 }) => {
   const styleObject = {
     overlay: {
@@ -122,7 +128,7 @@ export const Modal = ({
   const handleKeyDown = e => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      onSubmit(); // Prevent the default action when Enter is pressed
+      onSubmit(e); // Prevent the default action when Enter is pressed
     }
   };
 
@@ -131,20 +137,34 @@ export const Modal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={styleObject}
+      shouldCloseOnOverlayClick={false}
     >
       <form
         className="d-flex flex-column overflow-auto"
         onSubmit={e => {
           e.preventDefault();
-          onSubmit();
+          onSubmit(e);
         }}
         onKeyDown={handleKeyDown}
       >
         <Header>
           <Title className="mb-0">{title}</Title>
-          {closeIcon && (
-            <CloseButton icon={<CloseIcon />} onClick={onRequestClose} />
-          )}
+          <div className="d-flex gap-2">
+            {isAdditionalIcon && (
+              <CloseButton
+                type="button"
+                icon={additionalIcon}
+                onClick={onAdditionalIconClick}
+              />
+            )}
+            {closeIcon && (
+              <CloseButton
+                type="button"
+                icon={<CloseIcon />}
+                onClick={onRequestClose}
+              />
+            )}
+          </div>
         </Header>
         <Body noPadding={noPadding} noScroll={noScroll}>
           {children}
@@ -170,7 +190,7 @@ export const Modal = ({
                 type="button"
                 variant={thirdVarint ? 'tertiary' : 'secondary'}
                 onClick={tertiaryButtonConfig.tertiaryButtonSubmit}
-                disabled={tertiaryButtonConfig.disabled}
+                disabled={tertiaryButtonConfig.tertiaryButtonDisable}
                 loading={tertiaryButtonConfig.tertiaryButtonLoading}
                 {...tertiaryButtonConfig}
               >
@@ -187,6 +207,17 @@ export const Modal = ({
                 {...primaryButtonProps}
               >
                 {primaryButtonText}
+              </Button>
+            )}
+            {additionalBtnText && (
+              <Button
+                style={{ marginRight: 'auto' }}
+                type="button"
+                variant="secondary"
+                disabled={additionalBtnDisabled}
+                onClick={additionalBtnClick}
+              >
+                {additionalBtnText}
               </Button>
             )}
           </Footer>
@@ -220,4 +251,7 @@ Modal.propTypes = {
   }),
   noPadding: PropTypes.bool,
   noScroll: PropTypes.bool,
+  additionalBtnText: PropTypes.string,
+  additionalBtnClick: PropTypes.func,
+  additionalBtnDisabled: PropTypes.bool,
 };

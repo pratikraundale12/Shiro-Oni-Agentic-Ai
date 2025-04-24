@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -177,6 +178,9 @@ export const Sidebar = ({
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'createSettings')
   );
+  const flowGenrating = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'generateFlowAPI')
+  );
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const getFiltered = item => {
     if (item.path === 'dashboard') return true;
@@ -201,15 +205,32 @@ export const Sidebar = ({
   }, [pathname, dispatch, route]);
 
   const handleRoute = path => {
-    dispatch(AuthenticationActions.setRoute(path));
-    history.push(`/${path}`);
-    if (path === 'process-group') {
-      dispatch(NamespacesActions.setSelectedNamespace({}));
+    if (flowGenrating) {
+      if (!toast.isActive('generating-flow')) {
+        toast.warning('Flow is generating please wait', {
+          toastId: 'generating-flow',
+        });
+      }
+      return;
+    } else {
+      dispatch(AuthenticationActions.setRoute(path));
+      history.push(`/${path}`);
+      if (path === 'process-group') {
+        dispatch(NamespacesActions.setSelectedNamespace({}));
+      }
     }
   };
 
   const getImage = () => {
     const handleClick = () => {
+      if (flowGenrating) {
+        if (!toast.isActive('generating-flow')) {
+          toast.warning('Flow is generating please wait', {
+            toastId: 'generating-flow',
+          });
+        }
+        return;
+      }
       history.push('/dashboard');
     };
     if (loading)

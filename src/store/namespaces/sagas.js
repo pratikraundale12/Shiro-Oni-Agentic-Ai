@@ -1099,7 +1099,12 @@ export function* fetchNamespacesForDestiationCluster(api, { payload }) {
   }
 }
 
-export function* fetchRegistryData(api) {
+export function* fetchRegistryData(api, { payload }) {
+  let registryId = '';
+  if (payload) {
+    const { registriesId } = payload;
+    registryId = registriesId;
+  }
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const gridData = yield select(
     GridSelectors.getNamespaceGridRegistry,
@@ -1120,14 +1125,16 @@ export function* fetchRegistryData(api) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        registriesId: gridData?.id,
+        registriesId: gridData?.id || registryId,
       },
     ],
   });
   if (response.ok) {
     yield put(NamespacesActions.setBucketListDropDownData(response?.data));
   } else {
-    toast.error(response?.message || response?.data?.message);
+    toast.error(
+      response?.message || response?.data?.message || response?.data?.raw?.raw
+    );
   }
 }
 
