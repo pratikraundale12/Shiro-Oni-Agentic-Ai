@@ -9,6 +9,7 @@ import {
   getPoliciesAccess,
   getUsersList,
 } from '../apis';
+import { fetchRegistry } from '../registry';
 
 const fetchListData = {
   users: getUsersList,
@@ -18,6 +19,7 @@ const fetchListData = {
   nodeList: getNodeList,
   clustersAccess: getClustersAccess,
   policiesAccess: getPoliciesAccess,
+  registry: fetchRegistry,
 };
 
 export const fetchGridData = debounce(

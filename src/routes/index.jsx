@@ -19,6 +19,7 @@ import {
   PropertyIcon,
   QuestionMarkIcon,
   ReadyFlowIcon,
+  RegistryIcon,
   ScheduleDeploymentIcon,
   SettingSmallIcon,
 } from '../assets';
@@ -73,6 +74,7 @@ import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
 import SetupClusterPage from '../pages/Clusters/components/setupClusterPage.jsx';
 import ClusterSetupNewConfigDetailsPage from '../pages/Clusters/components/ClusterSetupNewConfigDetail.jsx';
 import { KDFM } from '../constants/index.js';
+import RegistryManagementPage from '../pages/Registry/ListRegistryManagement.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -213,6 +215,18 @@ export const ROUTES_MENU = [
       },
     ],
     permission: 'view_genai',
+  },
+  {
+    name: 'Registry',
+    path: 'registry-management',
+    icon: RegistryIcon,
+    pages: [
+      {
+        path: '',
+        component: <RegistryManagementPage />,
+      },
+    ],
+    permission: 'view_cluster',
   },
   {
     name: 'User Management',
