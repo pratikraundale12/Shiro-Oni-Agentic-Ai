@@ -8,7 +8,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
 
-import { LinkIcon, SquareBoxIcon, TriangleIcons } from '../../assets';
+import {
+  CrossIcon,
+  LinkIcon,
+  SquareBoxIcon,
+  TriangleIcons,
+} from '../../assets';
 import { FullPageLoader, UserSelect } from '../../components';
 import { KDFM } from '../../constants';
 import { Button, DateField, Modal, SelectField } from '../../shared';
@@ -269,6 +274,22 @@ export const ScheduleDeploymentModal = () => {
                 </ActiveButtonDiv>
                 <div>{KDFM.STOPPED_FLOW}</div>
               </TextsvgDiv>
+
+              {activeButton && (
+                <TextsvgDiv className="d-flex ml-4">
+                  <ActiveButtonDiv className="div-btn-2 mr-2">
+                    <ActiveButtonDiv
+                      className="div-btn-1"
+                      onClick={() => {
+                        setActiveButton(null);
+                      }}
+                    >
+                      <CrossIcon color="#B5BDC8" />
+                    </ActiveButtonDiv>
+                  </ActiveButtonDiv>
+                  <div>Reset Flow</div>
+                </TextsvgDiv>
+              )}
             </div>
           </div>
         </Container>
