@@ -16,15 +16,13 @@ import {
   ThreedotsIcon,
   TickIconWithCircle,
 } from '../../assets';
-import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
+import { Grid, IconButton, TextRender } from '../../components';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
   ClustersActions,
   GridActions,
-  LoadingSelectors,
-  NamespacesActions,
 } from '../../store';
 import {
   SchedularActions,
@@ -141,17 +139,7 @@ export const ListScheduleDeployment = () => {
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setScheduleModal(true));
-    dispatch(
-      NamespacesActions.fetchVersionData({
-        bucketId: item?.bucket_id,
-        flowId: item?.flow_id,
-      })
-    );
   };
-
-  const loading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'fetchVersionData')
-  );
 
   const handleCancelModel = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
@@ -167,7 +155,6 @@ export const ListScheduleDeployment = () => {
   const RejectIconRender = item => {
     return (
       <>
-        <FullPageLoader loading={loading} />
         <IconButton
           onClick={event => {
             handleCancelModel(item);

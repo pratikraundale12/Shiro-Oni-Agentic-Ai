@@ -1,17 +1,15 @@
 /* eslint-disable no-unused-vars */
-import { yupResolver } from '@hookform/resolvers/yup';
+import React, { useEffect, useState } from 'react';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { useForm, useWatch } from 'react-hook-form';
 import styled from 'styled-components';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { LinkIcon, SquareBoxIcon, TriangleIcons } from '../../assets';
-import { FullPageLoader, UserSelect } from '../../components';
-import { KDFM } from '../../constants';
-import { Button, DateField, Modal, SelectField } from '../../shared';
+import { UserSelect } from '../../components';
+import { Button, DateField, Modal } from '../../shared';
 import {
   AuthenticationSelectors,
   ClustersActions,
@@ -23,55 +21,10 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
+import { KDFM } from '../../constants';
 
 const Container = styled.div`
   height: 350px;
-`;
-const ActiveButtonDiv = styled.div`
-  height: 48px;
-  width: 48px;
-  max-width: 48px;
-  max-height: 48px;
-  min-height: 48px;
-  min-width: 48px;
-  border: 1px solid #dde4f0;
-  border-radius: 8px;
-  background-color: #f5f7fa;
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  &:hover {
-    border: 1px solid
-      ${props => (props.isActive ? props.activeColor : '#FF7A00')};
-  }
-
-  & span {
-    position: absolute;
-    top: 0px;
-    right: 2px;
-    font-family: ${props => props.theme.fontNato};
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 23px;
-    color: ${props => (props.isActive ? '#fff' : '#b5bdc8')};
-  }
-
-  svg path {
-    fill: ${props => (props.isActive ? props.activeColor : '#b5bdc8')};
-  }
-`;
-const TextsvgDiv = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const FlowControlDiv = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 16px;
-  color: #444445;
 `;
 
 const DEFAULT_VALUES = {
@@ -95,14 +48,6 @@ export const ScheduleDeploymentModal = () => {
     LoadingSelectors.getLoading(state, 'editScheduleDeployment')
   );
   const [scheduleErrors, setScheduleErrors] = useState({});
-  const [activeButton, setActiveButton] = useState(
-    selectedSchedule?.deployment_status &&
-      selectedSchedule.deployment_status !== ''
-      ? selectedSchedule.deployment_status.toUpperCase()
-      : null
-  );
-
-  const versionListData = useSelector(NamespacesSelectors.getVersionListData);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const {
     control,
@@ -120,26 +65,10 @@ export const ScheduleDeploymentModal = () => {
     dispatch(SchedularActions.setSelectedSchedule({}));
     setScheduleErrors({});
   };
-  useEffect(() => {
-    if (
-      selectedSchedule?.deployment_status &&
-      selectedSchedule.deployment_status !== ''
-    ) {
-      setActiveButton(selectedSchedule.deployment_status.toUpperCase());
-    } else {
-      setActiveButton(null);
-    }
-  }, [selectedSchedule]);
-  const handleUpdateStatus = status => {
-    setActiveButton(status);
-  };
-
   const onSubmit = data => {
     const payload = {
       schedularId: selectedSchedule?.id,
       scheduled_time: new Date(data?.scheduled_time).toISOString(),
-      version: data?.select_version,
-      deployment_status: activeButton,
     };
     const currentTime = new Date();
     const scheduledTime = new Date(data?.scheduled_time);
@@ -163,7 +92,6 @@ export const ScheduleDeploymentModal = () => {
         approver_ids: selectedSchedule?.approvers?.map(
           item => item.approver_id
         ),
-        select_version: selectedSchedule?.version,
       });
     } else {
       reset({
@@ -176,97 +104,42 @@ export const ScheduleDeploymentModal = () => {
     item => item.approver_id === currentUser?.id
   );
   const approver_ids = watch('approver_ids');
-
-  const versionOptions = Array.isArray(versionListData?.versionList)
-    ? versionListData?.versionList?.map(version => ({
-        label: String(version?.version),
-        value: version?.version,
-      }))
-    : [];
-
   return (
-    <>
-      <FullPageLoader loading={loading} />
-      <Modal
-        size="md"
-        title={
-          !isEmpty(selectedSchedule)
-            ? 'Re-Schedule Deployment Schedule'
-            : 'Deployment Schedule'
-        }
-        isOpen={scheduleModal}
-        onRequestClose={onRequestClose}
-        secondaryButtonText="Cancel"
-        primaryButtonText={!isEmpty(selectedSchedule) ? 'Update' : 'Continue'}
-        // primaryButtonDisabled={showApprover && isEmpty(approver_ids)}
-        onSubmit={handleSubmit(onSubmit)}
-        footerAlign="start"
-        contentStyles={{ minWidth: '45%', minHeight: '40%' }}
-        loading={loading}
-      >
-        <Container>
-          <div className="row">
-            <div className="col-12">
-              <DateField
-                label="Schedule Deploy Time"
-                name="scheduled_time"
-                placeholder="select schedule deploy time"
-                onChange={() => setScheduleErrors({})}
-                control={control}
-                errors={
-                  Object.keys(scheduleErrors).length ? scheduleErrors : errors
-                }
-                required
-              />
-            </div>
-            <div className="col-12">
-              <SelectField
-                name="select_version"
-                label="Version"
-                icon={<LinkIcon />}
-                placeholder="Select Version"
-                options={versionOptions}
-                control={control}
-                sortAlphabetically={false}
-              />
-            </div>
-            <FlowControlDiv className="mt-4">Flow Control</FlowControlDiv>
-            <div className="d-flex mt-3">
-              <TextsvgDiv className="d-flex mr-4">
-                <ActiveButtonDiv className="div-btn-1 mr-2">
-                  <ActiveButtonDiv
-                    className="div-btn-1 "
-                    isActive={activeButton === 'RUNNING'}
-                    activeColor="#58e715"
-                    hoverColor="#58e715"
-                    activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('RUNNING')}
-                  >
-                    <TriangleIcons color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
-                <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-              </TextsvgDiv>
-              <TextsvgDiv className="d-flex">
-                <ActiveButtonDiv className="div-btn-2 mr-2">
-                  <ActiveButtonDiv
-                    className="div-btn-1"
-                    isActive={activeButton === 'STOPPED'}
-                    activeColor="#c52b2b"
-                    hoverColor="#c52b2b"
-                    activeTextColor="#fff"
-                    onClick={() => handleUpdateStatus('STOPPED')}
-                  >
-                    <SquareBoxIcon color="#B5BDC8" />
-                  </ActiveButtonDiv>
-                </ActiveButtonDiv>
-                <div>{KDFM.STOPPED_FLOW}</div>
-              </TextsvgDiv>
-            </div>
+    <Modal
+      size="md"
+      title={
+        !isEmpty(selectedSchedule)
+          ? 'Re-Schedule Deployment Schedule'
+          : 'Deployment Schedule'
+      }
+      isOpen={scheduleModal}
+      onRequestClose={onRequestClose}
+      secondaryButtonText="Cancel"
+      primaryButtonText={!isEmpty(selectedSchedule) ? 'Update' : 'Continue'}
+      // primaryButtonDisabled={showApprover && isEmpty(approver_ids)}
+      onSubmit={handleSubmit(onSubmit)}
+      footerAlign="start"
+      contentStyles={{ minWidth: '45%', minHeight: '40%' }}
+      loading={loading}
+    >
+      <Container>
+        <div className="row">
+          <div className="col-12">
+            <DateField
+              label="Schedule Deploy Time"
+              name="scheduled_time"
+              placeholder="select schedule deploy time"
+              onChange={() => setScheduleErrors({})}
+              control={control}
+              errors={
+                Object.keys(scheduleErrors).length ? scheduleErrors : errors
+              }
+              required
+            />
           </div>
-        </Container>
-      </Modal>
-    </>
+        </div>
+      </Container>
+    </Modal>
   );
 };
 ScheduleDeploymentModal.propTypes = {
@@ -279,6 +152,4 @@ ScheduleDeploymentModal.propTypes = {
   setStartDate: PropTypes.func.isRequired,
   showButton: PropTypes.bool,
   loadingButton: PropTypes.bool,
-  setActiveButton: PropTypes.func,
-  activeButton: PropTypes.string,
 };
