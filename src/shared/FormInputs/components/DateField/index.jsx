@@ -36,7 +36,7 @@ const Container = styled.div`
 
   .icon-placeholder {
     width: 34px;
-    height: 38px;
+    height: 39px;
     top: 11px;
     left: 1px;
     z-index: 1;
