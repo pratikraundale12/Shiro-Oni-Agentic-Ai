@@ -28,6 +28,7 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
+import { toast } from 'react-toastify';
 
 const Container = styled.div`
   height: 350px;
@@ -148,6 +149,10 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
     };
     const currentTime = new Date();
     const scheduledTime = new Date(data?.scheduled_time);
+    if (data?.select_version === selectedSchedule?.prev_version) {
+      toast.info('The selected version is already deployed.');
+      return;
+    }
     if (scheduledTime.getTime() > currentTime.getTime()) {
       setScheduleErrors({});
       dispatch(SchedularActions.editScheduleDeployment(payload));
@@ -190,11 +195,6 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
           String(a.version).localeCompare(String(b.version), undefined, {
             numeric: true,
           })
-        )
-        .filter(version =>
-          selectedSchedule?.prev_version != null
-            ? version.version !== selectedSchedule.prev_version
-            : true
         )
         .map(version => ({
           label: String(version.version),
