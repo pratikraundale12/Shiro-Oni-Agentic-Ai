@@ -190,12 +190,16 @@ export const ScheduleDeploymentModal = () => {
             numeric: true,
           })
         )
+        .filter(version =>
+          selectedSchedule?.prev_version != null
+            ? version.version !== selectedSchedule.prev_version
+            : true
+        )
         .map(version => ({
           label: String(version.version),
           value: version.version,
         }))
     : [];
-
   return (
     <>
       <FullPageLoader loading={loading} />

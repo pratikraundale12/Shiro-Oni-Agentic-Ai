@@ -145,6 +145,7 @@ export const ListScheduleDeployment = () => {
       NamespacesActions.fetchVersionData({
         bucketId: item?.bucket_id,
         flowId: item?.flow_id,
+        isFromSchedule: true,
       })
     );
   };
