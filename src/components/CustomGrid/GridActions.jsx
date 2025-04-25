@@ -268,6 +268,7 @@ export const GridActions = ({
     setSearchValue('');
     setSearchErrorMsg({});
     inputRef.current.value = '';
+    setCurrentPage(1);
 
     if (module === 'namespaces') {
       dispatch(
@@ -285,6 +286,7 @@ export const GridActions = ({
           clusterId,
           params: {
             page: 1,
+            limit: 10,
             ...(selectedRange && {
               start_date: selectedRange?.[0]?.toISOString(),
               end_date: selectedRange?.[1]?.toISOString(),

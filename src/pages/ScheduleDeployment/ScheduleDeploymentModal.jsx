@@ -92,7 +92,7 @@ const SchemaWithoutApprover = yup.object().shape({
   scheduled_time: yup.string().required('Schedule deploy time is required'),
 });
 
-export const ScheduleDeploymentModal = () => {
+export const ScheduleDeploymentModal = ({ onConfirm }) => {
   const dispatch = useDispatch();
   const scheduleModal = useSelector(SchedularSelectors.getScheduleModal);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
@@ -153,6 +153,7 @@ export const ScheduleDeploymentModal = () => {
       dispatch(SchedularActions.editScheduleDeployment(payload));
       dispatch(SchedularActions.setScheduleModal(false));
       reset();
+      if (onConfirm) onConfirm();
     } else {
       setScheduleErrors({
         scheduled_time: {
@@ -302,6 +303,7 @@ export const ScheduleDeploymentModal = () => {
   );
 };
 ScheduleDeploymentModal.propTypes = {
+  onConfirm: PropTypes.func,
   control: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
   scheduleInitialOpen: PropTypes.bool,
