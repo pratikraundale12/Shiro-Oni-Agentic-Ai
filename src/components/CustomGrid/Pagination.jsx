@@ -20,7 +20,7 @@ const Flex = styled.div`
 
 const StyledButton = styled.button`
   height: 2rem;
-  width: 2rem;
+  min-width: 2rem;
   border-radius: 4px;
   border: ${props =>
     props.active
@@ -34,6 +34,10 @@ const StyledButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &:hover {
     background-color: ${theme.colors.primary};

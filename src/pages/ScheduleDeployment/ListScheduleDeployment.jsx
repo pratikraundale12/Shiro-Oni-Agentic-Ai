@@ -723,6 +723,7 @@ export const ListScheduleDeployment = () => {
       schedularId: selectedSchedule.id,
     };
     dispatch(SchedularActions.editScheduleByRegistry(payload));
+    setCurrentPage(1);
   };
   const handleApproveClick = () => {
     const payload = {
@@ -730,6 +731,7 @@ export const ListScheduleDeployment = () => {
       schedularId: selectedSchedule.id,
     };
     dispatch(SchedularActions.editScheduleByRegistry(payload));
+    setCurrentPage(1);
   };
   const handleRejectCrossClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
@@ -840,8 +842,16 @@ export const ListScheduleDeployment = () => {
         }
         onSubmit={handleApproveClick}
       />
-      <ScheduleDeploymentModal />
-      <RejectScheduleModal />
+      <ScheduleDeploymentModal
+        onConfirm={() => {
+          setCurrentPage(1);
+        }}
+      />{' '}
+      <RejectScheduleModal
+        onConfirm={() => {
+          setCurrentPage(1);
+        }}
+      />{' '}
       <TokenScheduleDeploymentModal />
       <UserStoryModal />
       <GroupListModal />

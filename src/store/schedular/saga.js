@@ -69,6 +69,8 @@ export function* editScheduleDeployment(api, { payload }) {
       GridActions.fetchGrid({
         module: 'scheduler',
         params: {
+          page: 1,
+          limit: 10,
           ...(search && { search }),
           ...(statusData &&
             statusData !== 'all' && {
@@ -101,6 +103,8 @@ export function* editScheduleByRegistry(api, { payload }) {
       GridActions.fetchGrid({
         module: 'scheduler',
         params: {
+          page: 1,
+          limit: 10,
           ...(search && { search }),
           ...(statusData &&
             statusData !== 'all' && {
@@ -139,6 +143,8 @@ export function* rejectScheduleDeployment(api, { payload }) {
       GridActions.fetchGrid({
         module: 'scheduler',
         params: {
+          page: 1,
+          limit: 10,
           ...(search && { search }),
           ...(statusData &&
             statusData !== 'all' && {
