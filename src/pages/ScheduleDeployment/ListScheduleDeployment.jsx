@@ -16,13 +16,15 @@ import {
   ThreedotsIcon,
   TickIconWithCircle,
 } from '../../assets';
-import { Grid, IconButton, TextRender } from '../../components';
+import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
 import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
   ClustersActions,
   GridActions,
+  LoadingSelectors,
+  NamespacesActions,
 } from '../../store';
 import {
   SchedularActions,
@@ -139,7 +141,18 @@ export const ListScheduleDeployment = () => {
   const handleEditClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
     dispatch(SchedularActions.setScheduleModal(true));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: item?.bucket_id,
+        flowId: item?.flow_id,
+        isFromSchedule: true,
+      })
+    );
   };
+
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchVersionData')
+  );
 
   const handleCancelModel = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
@@ -155,6 +168,7 @@ export const ListScheduleDeployment = () => {
   const RejectIconRender = item => {
     return (
       <>
+        <FullPageLoader loading={loading} />
         <IconButton
           onClick={event => {
             handleCancelModel(item);
@@ -709,6 +723,7 @@ export const ListScheduleDeployment = () => {
       schedularId: selectedSchedule.id,
     };
     dispatch(SchedularActions.editScheduleByRegistry(payload));
+    setCurrentPage(1);
   };
   const handleApproveClick = () => {
     const payload = {
@@ -716,6 +731,7 @@ export const ListScheduleDeployment = () => {
       schedularId: selectedSchedule.id,
     };
     dispatch(SchedularActions.editScheduleByRegistry(payload));
+    setCurrentPage(1);
   };
   const handleRejectCrossClick = item => {
     dispatch(SchedularActions.setSelectedSchedule(item));
@@ -826,8 +842,16 @@ export const ListScheduleDeployment = () => {
         }
         onSubmit={handleApproveClick}
       />
-      <ScheduleDeploymentModal />
-      <RejectScheduleModal />
+      <ScheduleDeploymentModal
+        onConfirm={() => {
+          setCurrentPage(1);
+        }}
+      />{' '}
+      <RejectScheduleModal
+        onConfirm={() => {
+          setCurrentPage(1);
+        }}
+      />{' '}
       <TokenScheduleDeploymentModal />
       <UserStoryModal />
       <GroupListModal />
