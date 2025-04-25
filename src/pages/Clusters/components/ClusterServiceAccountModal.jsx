@@ -66,11 +66,7 @@ export const ClusterServiceAccountModal = ({ onOpen, onClose ,hostToEdit, setHos
     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
   );
 
-  const onRequestClose = () => {
-    dispatch(ClustersActions.setIsAddHostIPModalOpen(false));
-    setHostToEdit({});
-    onClose(); 
-  };
+  
   const OPTIONS = [
     { id: 1, value: 'password', label: 'Password' },
     { id: 2, value: 'privatekey', label: 'Private Key' },
@@ -104,34 +100,34 @@ export const ClusterServiceAccountModal = ({ onOpen, onClose ,hostToEdit, setHos
   }, [hostToEdit]);
   const watchMethodCredentials = watch('methodForCredentials');
 
-  const handleTestSubmit = data => {
-    const payload = new FormData();
-    payload.append('username', data?.username);
-    payload.append('file', data?.pfxFile);
-    payload.append('isPassword', false);
+  // const handleTestSubmit = data => {
+  //   const payload = new FormData();
+  //   payload.append('username', data?.username);
+  //   payload.append('file', data?.pfxFile);
+  //   payload.append('isPassword', false);
 
-    const payloadData = { payload, data };
-    dispatch(ClustersActions.checkCredentialsClusterSetup(payloadData));
-  };
+  //   const payloadData = { payload, data };
+  //   dispatch(ClustersActions.checkCredentialsClusterSetup(payloadData));
+  // };
 
-  const addIndividualHost = e => {
-    const payload = new FormData();
+  // const addIndividualHost = e => {
+  //   const payload = new FormData();
 
-    payload.append('username', getIndividualHostData?.username);
-    payload.append('file', getIndividualHostData?.pfxFile);
-    payload.append(
-      'isPassword',
-      getIndividualHostData?.methodForCredentials === 'password'
-    );
-    if (isEmpty(hostToEdit)) {
-      dispatch(ClustersActions.addIndividualHost(payload));
-    } else {
-      const payloadData = {
-        payload,
-      };
-      dispatch(ClustersActions.updateIndividualHost(payloadData));
-    }
-  };
+  //   payload.append('username', getIndividualHostData?.username);
+  //   payload.append('file', getIndividualHostData?.pfxFile);
+  //   payload.append(
+  //     'isPassword',
+  //     getIndividualHostData?.methodForCredentials === 'password'
+  //   );
+  //   if (isEmpty(hostToEdit)) {
+  //     dispatch(ClustersActions.addIndividualHost(payload));
+  //   } else {
+  //     const payloadData = {
+  //       payload,
+  //     };
+  //     dispatch(ClustersActions.updateIndividualHost(payloadData));
+  //   }
+  // };
 
   useEffect(() => {
     if (watchMethodCredentials) {
