@@ -38,6 +38,7 @@ import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
 import { AddOrEditClusterModal } from './components/AddOrEditClusterSetupModal';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
+import { ClusterRegistryAssociationModal } from './components/ClusterRegistryAssociationModal';
 
 const List = styled.div`
   position: absolute;
@@ -233,6 +234,20 @@ export const ListClusters = () => {
                       <Item onClick={() => handleClick('view', item?.id, item)}>
                         <OpenEyeIcon width={18} height={18} />
                         <span>{KDFM.VIEW}</span>
+                      </Item>
+                    )}
+                    {item.edit_cluster && (
+                      <Item
+                        onClick={() =>
+                          dispatch(
+                            ClustersActions.setIsRegitryAssociationModalOpen(
+                              true
+                            )
+                          )
+                        }
+                      >
+                        <PencilIcon width={18} height={18} />
+                        <span>{KDFM.REGISTRY}</span>
                       </Item>
                     )}
                     <>
@@ -483,6 +498,7 @@ export const ListClusters = () => {
     <>
       {' '}
       <AddOrEditClusterModal />
+      <ClusterRegistryAssociationModal />
       <ModalWithIcon
         title={KDFM.DEACTIVATE_CLUSTER}
         primaryButtonText={KDFM.DEACTIVATE}

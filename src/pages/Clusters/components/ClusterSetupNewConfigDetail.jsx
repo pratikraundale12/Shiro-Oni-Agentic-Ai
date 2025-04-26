@@ -12,6 +12,7 @@ import { history } from '../../../helpers/history';
 import {
   Button,
   InputField,
+  PasswordField,
   RadioSelectField,
   SelectField,
 } from '../../../shared';
@@ -192,11 +193,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Port must be between 4 and 5 digits',
         val => val && val.toString().length >= 4 && val.toString().length <= 5
       ),
-    username: yup.string().required('Userame is required'),
+    username: yup.string().trim().required('Username is required'),
     password: yup
       .string()
+      .trim()
       .required('Password is required')
-      .min(8, 'Password must be minimum 8 in length'),
+      .min(10, 'Password must be minimum 10 in length'),
     java_arg_2: yup
       .number()
       .transform((value, originalValue) =>
@@ -732,13 +734,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-4">
-                      <LabelSelect>Password</LabelSelect>
 
-                      <InputField
+                      <PasswordField
                         name="password"
-                        type="text"
+                        label="Password"
                         placeholder="Enter Password"
                         required
+                        watch={watch}
                         register={register}
                         errors={errors}
                         icon={<NotePadIcon />}

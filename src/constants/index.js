@@ -162,6 +162,7 @@ export const LICENSE_EXPIRE_PROMPT_DAYS = 30;
 
 export const KDFM = {
   // Generic constants
+  UPLOAD_FILE: 'Upload File',
   NIFI: 'NiFi',
   ADD: 'Add',
   ADD_NEW: 'Add New',
