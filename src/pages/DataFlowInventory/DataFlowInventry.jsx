@@ -5,9 +5,12 @@ import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { NoDataIcon, RefreshIcon, SmallSearchIcon } from '../../assets';
+import { AddsquareIcon } from '../../assets/Icons/AddSquareIcon';
 import PineConeImage from '../../assets/images/PineCone.png';
 import s3Image from '../../assets/images/s3logo.png';
+import { FullPageLoader } from '../../components';
 import { history } from '../../helpers/history';
+import { AuthenticationSelectors, LoadingSelectors } from '../../store';
 import {
   AiFlowGeneratorActions,
   AiFlowGeneratorSelectors,
@@ -214,7 +217,7 @@ const Tag = styled.span`
 `;
 
 const AddButton = styled.button`
-  width: 40%;
+  width: 35%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -293,6 +296,7 @@ const DataFlowInventory = () => {
   const isFlowAlreadyAddedSuccessFully = useSelector(
     AiFlowGeneratorSelectors.getIsFlowAlreadyAddedSuccessFully
   );
+  const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
 
   useEffect(() => {
     if (!isEmpty(bucketListData)) {
@@ -401,11 +405,41 @@ const DataFlowInventory = () => {
     setIsFlowAddedSuccessModalOpen(false);
     dispatch(AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully(false));
   };
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchFlows')
+  );
 
   return (
     <Container>
+      <FullPageLoader loading={loading} />
       <MainContent>
         <ContentArea>
+          <HeaderContainer>
+            <Title>Flow Gallery List</Title>
+            <RefreshButton
+              onClick={() => {
+                dispatch(FlowValidationActions.fetchFlows());
+                setSearchTerm('');
+              }}
+            >
+              <RefreshIcon />
+            </RefreshButton>
+          </HeaderContainer>
+
+          <SearchContainer>
+            <SmallSearchIcon
+              width={18}
+              height={18}
+              color={theme.colors.darkGrey1}
+            />
+            <Search
+              type="search"
+              placeholder="Search by Title, Description"
+              onChange={handleSearch}
+              value={searchTerm}
+            />
+          </SearchContainer>
+
           {isEmpty(selectedCluster?.value) ? (
             <div className="d-flex flex-column align-items-center justify-content-center h-100">
               <NoDataIcon width={130} />
@@ -413,34 +447,11 @@ const DataFlowInventory = () => {
             </div>
           ) : (
             <>
-              <HeaderContainer>
-                <Title>Flow Gallery List</Title>
-                <RefreshButton
-                  onClick={() => dispatch(FlowValidationActions.fetchFlows())}
-                >
-                  <RefreshIcon />
-                </RefreshButton>
-              </HeaderContainer>
-
-              <SearchContainer>
-                <SmallSearchIcon
-                  width={18}
-                  height={18}
-                  color={theme.colors.darkGrey1}
-                />
-                <Search
-                  type="search"
-                  placeholder="Search by Title, Description"
-                  onChange={handleSearch}
-                  value={searchTerm}
-                />
-              </SearchContainer>
-
               <GalleryContainer onScroll={handleScroll}>
-                {paginatedFlows.length === 0 ? (
+                {paginatedFlows?.length === 0 ? (
                   <div className="d-flex flex-column align-items-center mt-5">
                     <NoDataIcon width={130} />
-                    <NoDataText>No Data Found!!</NoDataText>
+                    <NoDataText>No ReadyFlow Gallery Available!!</NoDataText>
                   </div>
                 ) : (
                   <>
@@ -518,13 +529,20 @@ const DataFlowInventory = () => {
                                 )}
                               </TagsContainer>
 
-                              <AddButton
-                                onClick={() => {
-                                  onAddToRegistryClick(flow);
-                                }}
-                              >
-                                <ButtonText>Add to Registry</ButtonText>
-                              </AddButton>
+                              {currentUser?.permissions?.includes(
+                                'add_data_inventory'
+                              ) && (
+                                <AddButton
+                                  onClick={() => {
+                                    onAddToRegistryClick(flow);
+                                  }}
+                                >
+                                  <AddsquareIcon />
+                                  <ButtonText className="ml-2">
+                                    Add to Registry
+                                  </ButtonText>
+                                </AddButton>
+                              )}
                             </FlowCard>
                           </GridColumn>
                         );
