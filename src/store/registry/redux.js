@@ -9,6 +9,11 @@ export const RegistryActions = {
   setIsAddRegistryModalOpen: createAction(`${prefix}setIsAddRegistryModalOpen`),
   testRegistry: createAction(`${prefix}testRegistry`),
   createRegistryAfterTest: createAction(`${prefix}createRegistryAfterTest`),
+  setRegistryTestSuccess: createAction(`${prefix}setRegistryTestSuccess`),
+  deleteRegistry: createAction(`${prefix}deleteRegistry`),
+  setIsDeleteModalOpen: createAction(`${prefix}setIsDeleteModalOpen`),
+  editRegistry: createAction(`${prefix}editRegistry`),
+  setRegistrySelectedData: createAction(`${prefix}setRegistrySelectedData`),
 };
 /* ------------- INITIAL STATE ------------- */
 export const REGISTRY_INITIAL_STATE = {
@@ -18,11 +23,17 @@ export const REGISTRY_INITIAL_STATE = {
   next: null,
   isUserModalOpen: false,
   isAddRegistryModalOpen: false,
+  registryTestSuccess: false,
+  isDeleteModalOpen: false,
+  registrySelectedData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
 export const RegistrySelectors = {
   getIsAddRegistryModalOpen: state => state.registry.isAddRegistryModalOpen,
+  getRegistryTestSuccess: state => state.registry.registryTestSuccess,
+  getIsDeleteModalOpen: state => state.registry.isDeleteModalOpen,
+  getRegistrySelectedData: state => state.registry.registrySelectedData,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -38,7 +49,25 @@ const setIsAddRegistryModalOpen = (state, { payload }) => {
     isAddRegistryModalOpen: payload,
   };
 };
+const setRegistryTestSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    registryTestSuccess: payload,
+  };
+};
+const setIsDeleteModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isDeleteModalOpen: payload,
+  };
+};
 
+const setRegistrySelectedData = (state, { payload }) => {
+  return {
+    ...state,
+    registrySelectedData: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const registryReducer = createReducer(
   REGISTRY_INITIAL_STATE,
@@ -48,6 +77,12 @@ export const registryReducer = createReducer(
       .addCase(
         RegistryActions.setIsAddRegistryModalOpen,
         setIsAddRegistryModalOpen
+      )
+      .addCase(RegistryActions.setRegistryTestSuccess, setRegistryTestSuccess)
+      .addCase(RegistryActions.setIsDeleteModalOpen, setIsDeleteModalOpen)
+      .addCase(
+        RegistryActions.setRegistrySelectedData,
+        setRegistrySelectedData
       );
   }
 );

@@ -56,44 +56,45 @@ const UploadWrapper = styled.div`
   }
 `;
 
-export const AddRegistryModal = ({ hostToEdit, setHostToEdit }) => {
+export const AddRegistryModal = ({ hostToEdit }) => {
   const dispatch = useDispatch();
   const [method, setMethod] = useState('password');
   const isModalOpen = useSelector(RegistrySelectors.getIsAddRegistryModalOpen);
-  const isPrimaryBtnDisable = true;
-  //    useSelector(
-  //     ClustersSelectors.getAddHostBtnDisable
-  //   );
-  //   const getIndividualHostData = useSelector(
-  //     ClustersSelectors.getAddHostIndividualData
-  //   );
+  const testSuccess = useSelector(RegistrySelectors.getRegistryTestSuccess);
+  const selectedRegistry = useSelector(
+    RegistrySelectors.getRegistrySelectedData
+  );
 
-  //   const loading = useSelector(state =>
-  //     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
-  //   );
-  const loading = false;
-  const onRequestClose = () => {
-    dispatch(RegistryActions.setIsAddRegistryModalOpen(false));
-    setHostToEdit({});
-  };
+  const isPrimaryBtnDisable = !testSuccess;
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'testRegistry')
+  );
+
   const OPTIONS = [
     { id: 1, value: 'password', label: 'Password' },
     { id: 2, value: 'privatekey', label: 'Private Key' },
   ];
 
   const schemaPasswrd = yup.object().shape({
-    name: yup.string().required('Host IP is required'),
-    nifi_url: yup.string().required('Port is required'),
+    name: yup.string().required('Name is required'),
+    nifi_url: yup.string().required('URL is required'),
     username: yup.string().required('Username is required'),
     password: yup.string().required('Password is required'),
   });
   const schemaPrivateKey = yup.object().shape({
-    host_ip: yup.string().required('Host IP is required'),
-    port: yup.string().required('Port is required'),
-    username: yup.string().required('Username is required'),
+    name: yup.string().required('Name is required'),
+    nifi_url: yup.string().required('URL is required'),
+    password: yup.string().required('Password is required'),
     pfxFile: yup.mixed().required('File is required'),
   });
-  const schema = method === 'password' ? schemaPasswrd : schemaPrivateKey;
+  const editSchema = yup.object().shape({
+    name: yup.string().required('Name is required'),
+  });
+  const schema = !isEmpty(selectedRegistry)
+    ? editSchema
+    : method === 'password'
+      ? schemaPasswrd
+      : schemaPrivateKey;
   const {
     register,
     handleSubmit,
@@ -106,27 +107,62 @@ export const AddRegistryModal = ({ hostToEdit, setHostToEdit }) => {
     resolver: yupResolver(schema),
   });
 
+  const onRequestClose = () => {
+    dispatch(RegistryActions.setIsAddRegistryModalOpen(false));
+    dispatch(RegistryActions.setRegistryTestSuccess(false));
+    reset();
+  };
+
   useEffect(() => {
-    if (!isEmpty(hostToEdit)) {
-      setValue('host_ip', hostToEdit?.host_ip);
-      setValue('port', hostToEdit?.port);
-      setValue('username', hostToEdit?.username);
+    if (!isModalOpen) {
+      reset();
+      dispatch(RegistryActions.setRegistrySelectedData({}));
     }
-  }, [hostToEdit]);
+  }, [isModalOpen]);
+  useEffect(() => {
+    if (!isEmpty(selectedRegistry)) {
+      setValue('name', selectedRegistry?.name);
+      setValue('nifi_url', selectedRegistry?.registry_url);
+    }
+  }, [selectedRegistry]);
   const watchMethodCredentials = watch('methodForCredentials');
+  const formData = watch();
 
   const handleTestSubmit = data => {
-
     const payload = new FormData();
     payload.append('name', data?.name);
     payload.append('nifi_url', data?.nifi_url);
-    payload.append('username', data?.username);
-    // payload.append('password', data?.pfxFile);
-    payload.append('password', data?.password);
 
+    if (method === 'password') {
+      payload.append('username', data?.username);
+      payload.append('password', data?.password);
+    } else {
+      payload.append('file', data?.pfxFile);
+      payload.append('passphrase', data?.password);
+    }
     dispatch(RegistryActions.testRegistry(payload));
-    //
   };
+  const addIndividualRegistry = () => {
+    if (!isEmpty(selectedRegistry)) {
+      dispatch(
+        RegistryActions.editRegistry({
+          name: formData?.name,
+          registryId: selectedRegistry?.id,
+        })
+      );
+    } else {
+      const data = {
+        name: formData?.name,
+        registry_url: formData?.nifi_url,
+      };
+      dispatch(RegistryActions.createRegistryAfterTest(data));
+    }
+  };
+  useEffect(() => {
+    if (watchMethodCredentials) {
+      setMethod(watchMethodCredentials);
+    }
+  }, [watchMethodCredentials]);
 
   return (
     <>
@@ -134,23 +170,23 @@ export const AddRegistryModal = ({ hostToEdit, setHostToEdit }) => {
       <ModalWithRightBtn
         isOpen={isModalOpen}
         onRequestClose={onRequestClose}
-        onSubmit={e => addIndividualHost(e)}
-        title={`${isEmpty(hostToEdit) ? 'Add' : 'Edit'} Registry`}
-        primaryButtonText="Add Registry"
+        onSubmit={() => addIndividualRegistry()}
+        title={`${isEmpty(selectedRegistry) ? 'Add' : 'Edit'} Registry`}
+        primaryButtonText={`${isEmpty(selectedRegistry) ? 'Add' : 'Edit'} Registry`}
         secondaryButtonText="Back"
-        primaryButtonDisabled={isPrimaryBtnDisable}
+        primaryButtonDisabled={isPrimaryBtnDisable && isEmpty(selectedRegistry)}
         contentStyles={{ minWidth: '40%', height: '60%' }}
         footerAlign="start"
         tertiaryButton={true}
         tertiaryButtonConfig={{
           tertiaryButtonTest: 'Test Credentials',
           tertiaryButtonSubmit: handleSubmit(handleTestSubmit),
-          tertiaryButtonDisable: !isPrimaryBtnDisable,
+          tertiaryButtonDisable:
+            !isPrimaryBtnDisable || !isEmpty(selectedRegistry),
         }}
       >
         <Container
           style={{
-            // pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
             cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
           }}
         >
@@ -164,7 +200,7 @@ export const AddRegistryModal = ({ hostToEdit, setHostToEdit }) => {
               register={register}
               errors={errors}
               icon={<DocumentTextIcon />}
-              disabled={!isPrimaryBtnDisable || !isEmpty(hostToEdit)}
+              disabled={!isPrimaryBtnDisable}
             />
           </div>
           <div className="row">
@@ -177,81 +213,97 @@ export const AddRegistryModal = ({ hostToEdit, setHostToEdit }) => {
               register={register}
               errors={errors}
               icon={<DocumentTextIcon />}
-              disabled={!isPrimaryBtnDisable}
+              disabled={!isPrimaryBtnDisable || !isEmpty(selectedRegistry)}
             />
           </div>
           <div
-            className=" d-flex justify-content-end "
             style={{
-              pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
-              cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
+              cursor: !isEmpty(selectedRegistry) ? 'not-allowed' : 'pointer',
+              pointerEvents: !isEmpty(selectedRegistry) ? 'none' : 'auto',
             }}
           >
-            <RadioSelectField
-              name="methodForCredentials"
-              options={OPTIONS}
-              register={register}
-              defaultValue={'password'}
-              disabled={!isPrimaryBtnDisable}
-            />
-          </div>
-
-          <div className="row">
-            <div className="">
-              <InputField
-                name="username"
-                type="text"
-                label="User Name"
-                placeholder="Enter Your User Name"
-                required
+            <div
+              className=" d-flex justify-content-end "
+              style={{
+                pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
+                cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
+              }}
+            >
+              <RadioSelectField
+                name="methodForCredentials"
+                options={OPTIONS}
                 register={register}
-                errors={errors}
-                icon={<CurvedProfileIcon />}
-                disabled={!isPrimaryBtnDisable}
+                defaultValue={'password'}
+                disabled={!isPrimaryBtnDisable || !isEmpty(selectedRegistry)}
               />
-            </div>{' '}
-          </div>
-          {(isEmpty(watchMethodCredentials) ||
-            watchMethodCredentials === 'password') && (
-            <>
-              {' '}
-              <div className="row">
-                <PasswordField
-                  name="password"
-                  register={register}
-                  watch={watch}
-                  label="Password"
-                  icon={<CurvedLockIcon />}
-                  placeholder="Enter Your Password"
-                  disableToggle={false}
-                  errors={errors}
-                />
-              </div>
-            </>
-          )}
-          {watchMethodCredentials === 'privatekey' && (
-            <>
-              <span
-                style={{
-                  pointerEvents: !isPrimaryBtnDisable ? 'none' : 'auto',
-                  cursor: !isPrimaryBtnDisable ? 'not-allowed' : 'pointer',
-                }}
-              >
-                <ModalContainer>
-                  <PemUploadField
-                    name="pfxFile"
-                    watch={watch}
-                    control={control}
+            </div>
+
+            {(isEmpty(watchMethodCredentials) ||
+              watchMethodCredentials === 'password') && (
+              <>
+                {' '}
+                <div className="row">
+                  <InputField
+                    name="username"
+                    type="text"
+                    label="User Name"
+                    placeholder="Enter Your User Name"
                     required
-                    rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                    placeholder={KDFM.UPLOAD_PEM_FILE}
+                    register={register}
                     errors={errors}
-                    fileLable="PEM file"
+                    icon={<CurvedProfileIcon />}
+                    disabled={
+                      !isPrimaryBtnDisable || !isEmpty(selectedRegistry)
+                    }
                   />
-                </ModalContainer>
-              </span>
-            </>
-          )}
+                </div>
+              </>
+            )}
+
+            <div className="row">
+              <PasswordField
+                name="password"
+                register={register}
+                watch={watch}
+                label="Password"
+                icon={<CurvedLockIcon />}
+                placeholder="Enter Your Password"
+                disableToggle={false}
+                errors={errors}
+                disabled={!isPrimaryBtnDisable || !isEmpty(selectedRegistry)}
+              />{' '}
+            </div>
+
+            {watchMethodCredentials === 'privatekey' && (
+              <>
+                <span
+                  style={{
+                    pointerEvents:
+                      !isPrimaryBtnDisable || !isEmpty(selectedRegistry)
+                        ? 'none'
+                        : 'auto',
+                    cursor:
+                      !isPrimaryBtnDisable || !isEmpty(selectedRegistry)
+                        ? 'not-allowed'
+                        : 'pointer',
+                  }}
+                >
+                  <ModalContainer>
+                    <PemUploadField
+                      name="pfxFile"
+                      watch={watch}
+                      control={control}
+                      required
+                      rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                      placeholder={'Upload PFX file'}
+                      errors={errors}
+                      label="PFX file"
+                    />
+                  </ModalContainer>
+                </span>
+              </>
+            )}
+          </div>
         </Container>
       </ModalWithRightBtn>
     </>

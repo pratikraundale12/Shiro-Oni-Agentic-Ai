@@ -150,6 +150,7 @@ const PemUploadField = ({
   control,
   setValue,
   onKeyDown,
+  placeholder = 'Upload PEM file',
   ...props
 }) => {
   const [fileName, setFileName] = useState('');
@@ -194,14 +195,14 @@ const PemUploadField = ({
         const handleFileUpload = event => {
           const file = event.target.files[0];
           if (file) {
-            const validExtensions = ['.pem'];
+            const validExtensions = ['.pem', '.pfx', '.p12'];
             const fileExtension = file.name
               .substring(file.name.lastIndexOf('.'))
               .toLowerCase();
 
             if (!validExtensions.includes(fileExtension)) {
-              setFileError('Please upload a valid PEM file');
-              toast.error('Please upload a valid PEM file');
+              setFileError('Please upload a valid PEM or PFX file');
+              toast.error('Please upload a valid PEM or PFX  file');
               return;
             }
 
@@ -224,7 +225,7 @@ const PemUploadField = ({
               <input
                 name={name}
                 aria-invalid={!!errors[name]}
-                placeholder="Upload PEM file"
+                placeholder={placeholder}
                 value={fileName || ''}
                 readOnly
                 onKeyDown={handleKeyDown}
@@ -249,7 +250,7 @@ const PemUploadField = ({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".pem"
+                accept=".pem,.pfx,.p12"
                 style={{ display: 'none' }}
                 onChange={handleFileUpload}
               />
