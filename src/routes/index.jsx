@@ -214,7 +214,7 @@ export const ROUTES_MENU = [
         component: <DataFlowInventry />,
       },
     ],
-    permission: 'view_namespace',
+    permission: 'view_data_inventory',
   },
   {
     name: KDFM.AI_FLOW_GENERATOR,
@@ -362,6 +362,7 @@ const Routes = () => {
         '/dashboard',
         '/licensing',
         '/ai-flow-generator',
+        '/data-flow-inventory',
       ].includes(location.pathname)
     ) {
       dispatch(SettingsActions.fetchSettings());
