@@ -25,12 +25,38 @@ import { FullPageLoader } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
 
 const Container = styled.div``;
+const StyledSelectField = styled(SelectField)`
+  & > div {
+    margin-bottom: ${props => props.marginBottom || '1rem'};
+  }
+
+  & label {
+    margin-bottom: ${props => props.labelMargin || '2px'} !important;
+  }
+
+  & .react-select__control {
+    height: ${props => props.height || '55px'};
+    border-radius: ${props => props.borderRadius || '4px'};
+  }
+
+  & .react-select__value-container {
+    padding: ${props => props.innerPadding || props.padding || '0 8px'};
+  }
+
+  & .react-select__menu {
+    border-radius: ${props => props.menuBorderRadius || '4px'};
+  }
+
+  & .react-select__option {
+    padding: ${props => props.optionPadding || '8px 12px'};
+    font-size: ${props => props.fontSize || '14px'};
+  }
+`;
+
 const ModalContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  margin-top: 2px;
-  margin-bottom: 0px;
 `;
 
 const UploadWrapper = styled.div`
@@ -134,6 +160,19 @@ export const ClusterRegistryAssociationModal = () => {
           }}
         >
           <div className="row">
+            <StyledSelectField
+              name="registry-type"
+              control={control}
+              register={register}
+              watch={watch}
+              label="Registry Type"
+              icon={<DocumentTextIcon />}
+              placeholder="Enter Your type"
+              disableToggle={false}
+              errors={errors}
+            />
+          </div>
+          <div className="row mt-2">
             <div className="col-6">
               <InputField
                 name="keystore-filename"
@@ -173,7 +212,7 @@ export const ClusterRegistryAssociationModal = () => {
               />
             </div>
             <div className="col-6">
-              <SelectField
+              <StyledSelectField
                 label="Keystore Type"
                 id="keystore-type"
                 name="keystore-type"
@@ -185,7 +224,7 @@ export const ClusterRegistryAssociationModal = () => {
               />
             </div>
           </div>
-          <div className="row mt-3">
+          <div className="row mt-2">
             <div className="col-6">
               <ModalContainer>
                 <PemUploadField
@@ -214,7 +253,7 @@ export const ClusterRegistryAssociationModal = () => {
             </div>
           </div>
           <div className="row mt-3">
-            <SelectField
+            <StyledSelectField
               name="truststore-type"
               control={control}
               register={register}

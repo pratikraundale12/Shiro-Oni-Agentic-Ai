@@ -193,12 +193,22 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Port must be between 4 and 5 digits',
         val => val && val.toString().length >= 4 && val.toString().length <= 5
       ),
-    username: yup.string().trim().required('Username is required'),
+    username: yup.string().required('Username is required')
+    .test(
+      'no-leading-trailing-spaces',
+      'Username must not start or end with a space',
+      value => value === value?.trim()
+    ),
     password: yup
       .string()
-      .trim()
       .required('Password is required')
-      .min(10, 'Password must be minimum 10 in length'),
+      .test(
+        'no-leading-trailing-spaces',
+        'Password must not start or end with a space',
+        value => value === value?.trim()
+      )
+      .min(10, 'Password must be minimum 10 in length')
+      ,
     java_arg_2: yup
       .number()
       .transform((value, originalValue) =>
