@@ -125,13 +125,29 @@ const ConditionRow = React.memo(
     conditionsErrors,
     control,
     fetchPropertyData,
-    // isCreatingNewRule,
     handleSubConditionProperty,
+    totalConditions,
   }) => {
-    console.log(condition);
+    // Show join operator if:
+    // 1. There are 2 conditions and this is the first one
+    // 2. There are 3+ conditions and this is not the last one
+    const showJoinOperator =
+      totalConditions > 1 &&
+      ((totalConditions === 2 && index === 0) ||
+        (totalConditions > 2 && index < totalConditions - 1));
+
     return (
       <Fragment>
-        <div className="col-md-3">
+        <div
+          className={
+            condition.condition_property &&
+            fetchPropertyData?.data?.find(
+              prop => prop.propName === condition.condition_property
+            )?.dynamic_input
+              ? 'col-md-2'
+              : 'col-md-3'
+          }
+        >
           <SelectField
             name={`condition_property_${index}`}
             icon={<PropertyIcon />}
@@ -245,36 +261,38 @@ const ConditionRow = React.memo(
             }
           />
         </InputContainer>
-        <div
-          className={
-            condition.condition_property &&
-            fetchPropertyData?.data?.find(
-              prop => prop.propName === condition.condition_property
-            )?.dynamic_input
-              ? 'col-md-2'
-              : 'col-md-3'
-          }
-        >
-          <SelectField
-            name={`condition_join_${index}`}
-            placeholder={FLOWVALIDATION_CONSTANTS.LOGIC_OPERATOR}
-            options={CONDITION_JOIN_OPERATORS}
-            value={CONDITION_JOIN_OPERATORS.find(
-              option => option.value === condition.logic_operator
-            )}
-            onChange={e => handleConditionJoinOperatorChange(index, e?.value)}
-            control={control}
-            disabled={!selectedItem?.deletable}
-            errors={
-              conditionsErrors[index]
-                ? {
-                    [`condition_join_${index}`]:
-                      conditionsErrors[index]?.condition_join,
-                  }
-                : {}
+        {showJoinOperator && (
+          <div
+            className={
+              condition.condition_property &&
+              fetchPropertyData?.data?.find(
+                prop => prop.propName === condition.condition_property
+              )?.dynamic_input
+                ? 'col-md-2'
+                : 'col-md-2'
             }
-          />
-        </div>
+          >
+            <SelectField
+              name={`condition_join_${index}`}
+              placeholder={FLOWVALIDATION_CONSTANTS.LOGIC_OPERATOR}
+              options={CONDITION_JOIN_OPERATORS}
+              value={CONDITION_JOIN_OPERATORS.find(
+                option => option.value === condition.logic_operator
+              )}
+              onChange={e => handleConditionJoinOperatorChange(index, e?.value)}
+              control={control}
+              disabled={!selectedItem?.deletable}
+              errors={
+                conditionsErrors[index]
+                  ? {
+                      [`condition_join_${index}`]:
+                        conditionsErrors[index]?.condition_join,
+                    }
+                  : {}
+              }
+            />
+          </div>
+        )}
         {selectedItem?.deletable && (
           <div className="col-md-1 d-flex align-items-center">
             <button
@@ -321,6 +339,7 @@ ConditionRow.propTypes = {
       })
     ),
   }),
+  totalConditions: PropTypes.number.isRequired,
 };
 
 const FlowValidationModal = () => {
@@ -337,7 +356,6 @@ const FlowValidationModal = () => {
   const [editedRule, setEditedRule] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
   const fetchPropertyData = useSelector(FlowValidationSelectors.getProperty);
-  console.log(fetchPropertyData, 'fetchPropertyData');
   const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
   const isFlowValidationModalOpen = useSelector(
     SettingsSelectors.getFlowValidationModal
@@ -434,7 +452,6 @@ const FlowValidationModal = () => {
 
   const handleConditionPropertyChange = useCallback(
     (conditionIndex, value) => {
-      console.log(value, newRule, 'conditionIndex');
       if (isCreatingNewRule) {
         setNewRule(prev => ({
           ...prev,
@@ -717,7 +734,6 @@ const FlowValidationModal = () => {
   );
 
   const handleSave = useCallback(() => {
-    console.log(newRule, 'newRule');
     handleSubmit(onFormSubmit)();
   }, [handleSubmit, onFormSubmit]);
 
@@ -891,6 +907,7 @@ const FlowValidationModal = () => {
                     control={control}
                     fetchPropertyData={fetchPropertyData}
                     isCreatingNewRule={isCreatingNewRule}
+                    totalConditions={newRule?.conditions?.length || 0}
                   />
                 ))}
               </div>
@@ -960,6 +977,8 @@ const FlowValidationModal = () => {
                         conditionsErrors={conditionsErrors}
                         control={control}
                         fetchPropertyData={fetchPropertyData}
+                        isCreatingNewRule={isCreatingNewRule}
+                        totalConditions={editedConditions?.length || 0}
                       />
                     ))}
                   </div>
