@@ -184,7 +184,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button
-            data-tooltip-id="tooltip-manage-host"
+            data-tooltip-id="tooltip-manage-config"
             variant="secondary"
             type="button"
             onClick={() => {
@@ -196,7 +196,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
             {KDFM.BACK}
           </Button>
           <ReactTooltip
-                      id={`tooltip-manage-host`}
+                      id={`tooltip-manage-config`}
                       place="top"
                       content={'Back to Manage Config'}
                       style={{

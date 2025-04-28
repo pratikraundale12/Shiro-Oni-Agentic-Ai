@@ -169,7 +169,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
         <BottomButtonDiv className="btn-div d-flex">
           <Button
             variant="secondary"
-            data-tooltip-id="tooltip-manage-config"
+            data-tooltip-id="tooltip-getting-started"
             type="button"
             onClick={() => {
               dispatch(
@@ -180,7 +180,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
             {KDFM.BACK}
           </Button>
           <ReactTooltip
-                      id={`tooltip-manage-config`}
+                      id={`tooltip-getting-started`}
                       place="top"
                       content={'Back to Getting Started'}
                       style={{
