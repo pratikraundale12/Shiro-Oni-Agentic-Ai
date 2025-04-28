@@ -642,6 +642,10 @@ const FlowValidationModal = () => {
                 condition_expression: condition.condition_expression,
                 logic_operator: condition.logic_operator,
                 sub_condition_property: condition.sub_condition_property,
+                dynamic_input:
+                  fetchPropertyData?.data?.find(
+                    prop => prop.propName === condition.condition_property
+                  )?.dynamic_input || false,
               })),
             })
           );
@@ -661,6 +665,10 @@ const FlowValidationModal = () => {
                 condition_expression: condition.condition_expression,
                 logic_operator: condition.logic_operator,
                 sub_condition_property: condition.sub_condition_property,
+                dynamic_input:
+                  fetchPropertyData?.data?.find(
+                    prop => prop.propName === condition.condition_property
+                  )?.dynamic_input || false,
               })),
             },
           })
@@ -677,6 +685,7 @@ const FlowValidationModal = () => {
       selectedItem?.id,
       editedRule,
       editedConditions,
+      fetchPropertyData?.data,
     ]
   );
 
