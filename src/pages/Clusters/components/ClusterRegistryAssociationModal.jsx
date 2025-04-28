@@ -152,13 +152,13 @@ export const ClusterRegistryAssociationModal = () => {
         >
           <div className="row">
             <StyledSelectField
-              name="registry-type"
+              name="registry"
               control={control}
               register={register}
               watch={watch}
-              label="Registry Type"
+              label="Registry"
               icon={<DocumentTextIcon />}
-              placeholder="Enter Your type"
+              placeholder="Select Option"
               disableToggle={false}
               errors={errors}
             />
@@ -167,17 +167,33 @@ export const ClusterRegistryAssociationModal = () => {
             <div className="col-6">
               <ModalContainer>
                 <PemUploadField
-                  label="Keystore Filename"
-                  name="keystore-filename"
+                  label="Keystore File"
+                  name="keystore-file"
                   watch={watch}
                   control={control}
                   rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
                   placeholder={KDFM.UPLOAD_FILE}
                   errors={errors}
-                  fileLable="Keystore Filename"
+                  fileLable="Keystore File"
                 />
               </ModalContainer>
             </div>{' '}
+            <div className="col-6">
+              <ModalContainer>
+                <PemUploadField
+                  label="Truststore File"
+                  name="truststore-file"
+                  watch={watch}
+                  control={control}
+                  rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                  placeholder={KDFM.UPLOAD_FILE}
+                  errors={errors}
+                  fileLable="Truststore File"
+                />
+              </ModalContainer>
+            </div>
+          </div>
+          <div className="row mt-3">
             <div className="col-6">
               <PasswordField
                 name="keystore-password"
@@ -185,25 +201,25 @@ export const ClusterRegistryAssociationModal = () => {
                 watch={watch}
                 label="Keystore Password"
                 icon={<CurvedLockIcon />}
-                placeholder="Enter Your Password"
+                placeholder="Enter Password"
+                disableToggle={false}
+                errors={errors}
+              />
+            </div>
+            <div className="col-6">
+              <PasswordField
+                name="truststore-password"
+                register={register}
+                watch={watch}
+                label="Truststore Password"
+                icon={<CurvedLockIcon />}
+                placeholder="Enter Password"
                 disableToggle={false}
                 errors={errors}
               />
             </div>
           </div>
-          <div className="row">
-            <div className="col-6">
-              <PasswordField
-                name="key-password"
-                register={register}
-                watch={watch}
-                label="Key Password"
-                icon={<CurvedLockIcon />}
-                placeholder="Enter Your Password"
-                disableToggle={false}
-                errors={errors}
-              />
-            </div>
+          <div className="row mt-2">
             <div className="col-6">
               <StyledSelectField
                 label="Keystore Type"
@@ -216,44 +232,28 @@ export const ClusterRegistryAssociationModal = () => {
                 showCircleIcon={true}
               />
             </div>
-          </div>
-          <div className="row mt-2">
             <div className="col-6">
-              <ModalContainer>
-                <PemUploadField
-                  label="Truststore Filename"
-                  name="truststore-filename"
-                  watch={watch}
-                  control={control}
-                  rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                  placeholder={KDFM.UPLOAD_FILE}
-                  errors={errors}
-                  fileLable="Truststore Filename"
-                />
-              </ModalContainer>
-            </div>
-            <div className="col-6">
-              <PasswordField
-                name="truststore-password"
+              <StyledSelectField
+                name="truststore-type"
+                control={control}
                 register={register}
                 watch={watch}
-                label="Truststore Password"
-                icon={<CurvedLockIcon />}
-                placeholder="Enter Your Password"
+                label="Truststore Type"
+                icon={<DocumentTextIcon />}
+                placeholder="Select Option"
                 disableToggle={false}
                 errors={errors}
               />
             </div>
           </div>
-          <div className="row mt-3">
-            <StyledSelectField
-              name="truststore-type"
-              control={control}
+          <div className="row">
+            <PasswordField
+              name="key-password"
               register={register}
               watch={watch}
-              label="Truststore Type"
-              icon={<DocumentTextIcon />}
-              placeholder="Enter Your type"
+              label="Key Password"
+              icon={<CurvedLockIcon />}
+              placeholder="Enter Password"
               disableToggle={false}
               errors={errors}
             />
