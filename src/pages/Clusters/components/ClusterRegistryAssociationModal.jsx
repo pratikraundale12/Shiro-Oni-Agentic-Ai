@@ -7,18 +7,9 @@ import {
   ClustersSelectors,
   LoadingSelectors,
 } from '../../../store';
-import {
-  InputField,
-  ModalWithRightBtn,
-  PasswordField,
-  SelectField,
-} from '../../../shared';
+import { ModalWithRightBtn, PasswordField, SelectField } from '../../../shared';
 import { KDFM } from '../../../constants';
-import {
-  CurvedLockIcon,
-  CurvedProfileIcon,
-  DocumentTextIcon,
-} from '../../../assets';
+import { CurvedLockIcon, DocumentTextIcon } from '../../../assets';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
@@ -174,16 +165,18 @@ export const ClusterRegistryAssociationModal = () => {
           </div>
           <div className="row mt-2">
             <div className="col-6">
-              <InputField
-                name="keystore-filename"
-                type="text"
-                label="Keystore Filename"
-                placeholder="Upload File"
-                register={register}
-                errors={errors}
-                icon={<CurvedProfileIcon />}
-                disabled={!isPrimaryBtnDisable}
-              />
+              <ModalContainer>
+                <PemUploadField
+                  label="Keystore Filename"
+                  name="keystore-filename"
+                  watch={watch}
+                  control={control}
+                  rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                  placeholder={KDFM.UPLOAD_FILE}
+                  errors={errors}
+                  fileLable="Keystore Filename"
+                />
+              </ModalContainer>
             </div>{' '}
             <div className="col-6">
               <PasswordField
