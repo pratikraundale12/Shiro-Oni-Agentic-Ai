@@ -25,7 +25,6 @@ import {
   CurvedProfileIcon,
   DocumentTextIcon,
 } from '../../assets';
-import { KDFM } from '../../constants';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
