@@ -174,8 +174,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
     nifiVersion: yup.string().required('NiFi version is required'),
     comments: yup
       .string()
-      .transform(value => value?.trim())
-      .required('Comment is required'),
+      .required('Comment is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Username must not start or end with a space',
+        value => value === value?.trim()
+      ),
     nifi_cluster_node_protocol_max_threads: yup
       .number()
       .typeError('Protocol Max thread must be a number')
@@ -198,7 +202,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       'no-leading-trailing-spaces',
       'Username must not start or end with a space',
       value => value === value?.trim()
-    ),
+    ).min(3, 'Username must be minimum 3 in length'),
     password: yup
       .string()
       .required('Password is required')
