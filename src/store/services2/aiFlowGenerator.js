@@ -27,7 +27,7 @@ export const aiFlowGeneratorAPI = api => {
       return error.response.data;
     }
   };
-  const fetchRegistry = async () => {
+  const fetchRegistryDetails = async () => {
     try {
       return await api.get(`/get-registry`);
     } catch (error) {
@@ -70,7 +70,7 @@ export const aiFlowGeneratorAPI = api => {
     generateFlowAPI,
     deleteGeneratedFlow,
     updateGeneratedFlow,
-    fetchRegistry,
+    fetchRegistryDetails,
     addFlowToRegistry,
     addNewBucketToRegistry,
     validateFlowJson,
