@@ -75,25 +75,48 @@ export const AddRegistryModal = ({ hostToEdit }) => {
   ];
 
   const schemaPasswrd = yup.object().shape({
-    name: yup.string().required('Name is required'),
+    name: yup
+      .string()
+      .required('Name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Name must not start or end with a space',
+        value => value === value?.trim()
+      ),
     nifi_url: yup.string().required('URL is required'),
     username: yup.string().required('Username is required'),
     password: yup.string().required('Password is required'),
   });
   const schemaPrivateKey = yup.object().shape({
-    name: yup.string().required('Name is required'),
+    name: yup
+      .string()
+      .required('Name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Name must not start or end with a space',
+        value => value === value?.trim()
+      ),
     nifi_url: yup.string().required('URL is required'),
     password: yup.string().required('Password is required'),
     pfxFile: yup.mixed().required('File is required'),
   });
   const editSchema = yup.object().shape({
-    name: yup.string().required('Name is required'),
+    name: yup
+      .string()
+      .required('Name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Name must not start or end with a space',
+        value => value === value?.trim()
+      ),
   });
+
   const schema = !isEmpty(selectedRegistry)
     ? editSchema
     : method === 'password'
       ? schemaPasswrd
       : schemaPrivateKey;
+
   const {
     register,
     handleSubmit,
@@ -169,7 +192,11 @@ export const AddRegistryModal = ({ hostToEdit }) => {
       <ModalWithRightBtn
         isOpen={isModalOpen}
         onRequestClose={onRequestClose}
-        onSubmit={() => addIndividualRegistry()}
+        onSubmit={() =>
+          !isEmpty(selectedRegistry)
+            ? handleSubmit(addIndividualRegistry)()
+            : addIndividualRegistry()
+        }
         title={`${isEmpty(selectedRegistry) ? 'Add' : 'Edit'} Registry`}
         primaryButtonText={`${isEmpty(selectedRegistry) ? 'Add' : 'Edit'} Registry`}
         secondaryButtonText="Back"
