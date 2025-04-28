@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button, ModalWithIcon } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
@@ -183,6 +184,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button
+            data-tooltip-id="tooltip-manage-host"
             variant="secondary"
             type="button"
             onClick={() => {
@@ -193,6 +195,16 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           >
             {KDFM.BACK}
           </Button>
+          <ReactTooltip
+                      id={`tooltip-manage-host`}
+                      place="top"
+                      content={'Back to Manage Config'}
+                      style={{
+                        width: '170px',
+                        whiteSpace: 'normal',
+                        wordWrap: 'break-word',
+                      }}
+                    />
 
           <Button
             type="submit"

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button, ModalWithIcon } from '../../../shared';
 import { KDFM } from '../../../constants';
 import ClusterDetailTab from './ClusterDetailTab';
@@ -100,6 +101,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
         <BottomButtonDiv className="btn-div d-flex">
           <Button
             variant="secondary"
+            data-tooltip-id="tooltip-cluster-details"
             type="button"
             onClick={() => {
               dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
@@ -107,6 +109,16 @@ const SetupClusterWrapper = ({ activeTab }) => {
           >
             {KDFM.BACK}
           </Button>
+          <ReactTooltip
+            id={`tooltip-cluster-details`}
+            place="top"
+            content={'Back to Manage Host'}
+            style={{
+              width: '155px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
 
           <Button type="submit" onClick={handleSubmit(handleCreateCluster)}>
             Create Cluster

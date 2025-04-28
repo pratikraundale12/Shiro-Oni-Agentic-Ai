@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button, ModalWithIcon } from '../../../shared';
 import { KDFM } from '../../../constants';
 import { history } from '../../../helpers/history';
@@ -168,6 +169,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
         <BottomButtonDiv className="btn-div d-flex">
           <Button
             variant="secondary"
+            data-tooltip-id="tooltip-manage-config"
             type="button"
             onClick={() => {
               dispatch(
@@ -177,6 +179,16 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
           >
             {KDFM.BACK}
           </Button>
+          <ReactTooltip
+                      id={`tooltip-manage-config`}
+                      place="top"
+                      content={'Back to Getting Started'}
+                      style={{
+                        width: '170px',
+                        whiteSpace: 'normal',
+                        wordWrap: 'break-word',
+                      }}
+                    />
 
           <Button
             type="submit"
