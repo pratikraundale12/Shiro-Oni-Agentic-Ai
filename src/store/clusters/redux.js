@@ -51,6 +51,9 @@ export const ClustersActions = {
   fetchClusterMetrics: createAction(`${prefix}fetchClusterMetrics`),
   setHealthMetricsData: createAction(`${prefix}setHealthMetricsData`),
   setRunningStatusData: createAction(`${prefix}setRunningStatusData`),
+  setIsRegitryAssociationModalOpen: createAction(
+    `${prefix}setIsRegitryAssociationModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -75,6 +78,7 @@ export const CLUSTERS_INITIAL_STATE = {
   registryNodesData: {},
   healthMetricsData: {},
   runningStatusData: {},
+  isRegitryAssociationModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -102,6 +106,8 @@ export const ClustersSelectors = {
   getRegistryNodesData: state => state.clusters.registryNodesData,
   getHealthMetricsData: state => state.clusters.healthMetricsData,
   getRunningStatusData: state => state.clusters.runningStatusData,
+  getIsRegitryAssociationModalOpen: state =>
+    state.clusters.isRegitryAssociationModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -241,6 +247,12 @@ const setRunningStatusData = (state, { payload }) => {
     runningStatusData: payload,
   };
 };
+const setIsRegitryAssociationModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isRegitryAssociationModalOpen: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -287,6 +299,10 @@ export const clustersReducer = createReducer(
       )
       .addCase(ClustersActions.setRegistryNodesData, setRegistryNodesData)
       .addCase(ClustersActions.setHealthMetricsData, setHealthMetricsData)
-      .addCase(ClustersActions.setRunningStatusData, setRunningStatusData);
+      .addCase(ClustersActions.setRunningStatusData, setRunningStatusData)
+      .addCase(
+        ClustersActions.setIsRegitryAssociationModalOpen,
+        setIsRegitryAssociationModalOpen
+      );
   }
 );

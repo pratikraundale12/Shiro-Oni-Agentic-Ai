@@ -239,6 +239,7 @@ export const Grid = ({
     activityHistory: 'No Activity History Available',
     scheduler: 'No Schedulers Available',
     nodes: 'No Nodes Available Login to Cluster First',
+    registry: 'No Registry Available',
   };
 
   const getModuleBasedStatusKey = module => {

@@ -15,3 +15,4 @@ export {
   AiFlowGeneratorActions,
   AiFlowGeneratorSelectors,
 } from './aiFlowGenerator';
+export { RegistryActions, RegistrySelectors } from './registry';

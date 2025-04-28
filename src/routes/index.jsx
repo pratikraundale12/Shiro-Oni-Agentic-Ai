@@ -20,6 +20,7 @@ import {
   PropertyIcon,
   QuestionMarkIcon,
   ReadyFlowIcon,
+  RegistryIcon,
   ScheduleDeploymentIcon,
   SettingSmallIcon,
 } from '../assets';
@@ -75,6 +76,7 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import RegistryManagementPage from '../pages/Registry/ListRegistryManagement.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -227,6 +229,18 @@ export const ROUTES_MENU = [
       },
     ],
     permission: 'view_genai',
+  },
+  {
+    name: 'Registry',
+    path: 'registry-management',
+    icon: RegistryIcon,
+    pages: [
+      {
+        path: '',
+        component: <RegistryManagementPage />,
+      },
+    ],
+    permission: 'view_cluster',
   },
   {
     name: 'User Management',
