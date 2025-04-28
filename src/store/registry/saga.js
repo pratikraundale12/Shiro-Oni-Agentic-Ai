@@ -99,6 +99,20 @@ export function* editRegistry(api, { payload }) {
     toast.error(response?.data?.message);
   }
 }
+export function* getAllRegistiesList(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'getAllRegistiesList',
+    loadingSection: 'getAllRegistiesList',
+    apiMethod: api.getAllRegistiesList,
+    apiParams: [payload],
+  });
+
+  if (response.ok) {
+    yield put(RegistryActions.setRegistriesList(response.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
 
 export function* registrySagas(api) {
   yield all([
@@ -111,5 +125,6 @@ export function* registrySagas(api) {
       api
     ),
     takeLatest(RegistryActions.editRegistry, editRegistry, api),
+    takeLatest(RegistryActions.getAllRegistiesList, getAllRegistiesList, api),
   ]);
 }

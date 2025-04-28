@@ -14,6 +14,8 @@ export const RegistryActions = {
   setIsDeleteModalOpen: createAction(`${prefix}setIsDeleteModalOpen`),
   editRegistry: createAction(`${prefix}editRegistry`),
   setRegistrySelectedData: createAction(`${prefix}setRegistrySelectedData`),
+  getAllRegistiesList: createAction(`${prefix}getAllRegistiesList`),
+  setRegistriesList: createAction(`${prefix}setRegistriesList`),
 };
 /* ------------- INITIAL STATE ------------- */
 export const REGISTRY_INITIAL_STATE = {
@@ -26,6 +28,7 @@ export const REGISTRY_INITIAL_STATE = {
   registryTestSuccess: false,
   isDeleteModalOpen: false,
   registrySelectedData: {},
+  registriesList: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -34,6 +37,7 @@ export const RegistrySelectors = {
   getRegistryTestSuccess: state => state.registry.registryTestSuccess,
   getIsDeleteModalOpen: state => state.registry.isDeleteModalOpen,
   getRegistrySelectedData: state => state.registry.registrySelectedData,
+  getRegistriesList: state => state.registry.registriesList,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -68,6 +72,13 @@ const setRegistrySelectedData = (state, { payload }) => {
     registrySelectedData: payload,
   };
 };
+const setRegistriesList = (state, { payload }) => {
+  return {
+    ...state,
+    registriesList: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const registryReducer = createReducer(
   REGISTRY_INITIAL_STATE,
@@ -80,9 +91,7 @@ export const registryReducer = createReducer(
       )
       .addCase(RegistryActions.setRegistryTestSuccess, setRegistryTestSuccess)
       .addCase(RegistryActions.setIsDeleteModalOpen, setIsDeleteModalOpen)
-      .addCase(
-        RegistryActions.setRegistrySelectedData,
-        setRegistrySelectedData
-      );
+      .addCase(RegistryActions.setRegistrySelectedData, setRegistrySelectedData)
+      .addCase(RegistryActions.setRegistriesList, setRegistriesList);
   }
 );

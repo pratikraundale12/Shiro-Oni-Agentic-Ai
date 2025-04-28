@@ -12,6 +12,7 @@ import {
   MetricsIcon,
   OpenEyeIcon,
   PencilIcon,
+  RegistryIcon,
   SortDownIcon,
   SortUpIcon,
 } from '../../assets';
@@ -129,6 +130,7 @@ export const ListClusters = () => {
     ClustersSelectors.getIsclusterHardDeleteModalOpen
   );
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
+  const [selectedCluster, setSelectedCluster] = useState({});
   const toggleSorting = column => {
     setSortingState(prevState => {
       if (prevState === column) {
@@ -236,20 +238,25 @@ export const ListClusters = () => {
                         <span>{KDFM.VIEW}</span>
                       </Item>
                     )}
-                    {item.edit_cluster && (
-                      <Item
-                        onClick={() =>
-                          dispatch(
-                            ClustersActions.setIsRegitryAssociationModalOpen(
-                              true
-                            )
-                          )
-                        }
-                      >
-                        <PencilIcon width={18} height={18} />
-                        <span>{KDFM.REGISTRY}</span>
-                      </Item>
-                    )}
+                    {item?.edit_cluster &&
+                      item?.created_by_ansible &&
+                      item?.status !== CLUSTER_STATUS.DISCONNECTED &&
+                      !item?.registry_id && (
+                        <Item
+                          onClick={() => {
+                            handleCloseMenu();
+                            setSelectedCluster(item);
+                            dispatch(
+                              ClustersActions.setIsRegitryAssociationModalOpen(
+                                true
+                              )
+                            );
+                          }}
+                        >
+                          <RegistryIcon width={18} height={18} color="black" />
+                          <span>{KDFM.REGISTRY}</span>
+                        </Item>
+                      )}
                     <>
                       {item.deactivate_cluster && (
                         <Item onClick={() => handleClick('delete', item.id)}>
@@ -498,7 +505,10 @@ export const ListClusters = () => {
     <>
       {' '}
       <AddOrEditClusterModal />
-      <ClusterRegistryAssociationModal />
+      <ClusterRegistryAssociationModal
+        selectedCluster={selectedCluster}
+        setSelectedCluster={setSelectedCluster}
+      />
       <ModalWithIcon
         title={KDFM.DEACTIVATE_CLUSTER}
         primaryButtonText={KDFM.DEACTIVATE}

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+/*eslint-disable*/
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -6,6 +7,8 @@ import {
   ClustersActions,
   ClustersSelectors,
   LoadingSelectors,
+  RegistryActions,
+  RegistrySelectors,
 } from '../../../store';
 import { ModalWithRightBtn, PasswordField, SelectField } from '../../../shared';
 import { KDFM } from '../../../constants';
@@ -70,78 +73,113 @@ const UploadWrapper = styled.div`
   }
 `;
 
-export const ClusterRegistryAssociationModal = () => {
+export const ClusterRegistryAssociationModal = ({
+  selectedCluster,
+  setSelectedCluster,
+}) => {
   const dispatch = useDispatch();
-  const [method, setMethod] = useState('password');
   const isModalOpen = useSelector(
     ClustersSelectors.getIsRegitryAssociationModalOpen
   );
   const isPrimaryBtnDisable = useSelector(
     ClustersSelectors.getAddHostBtnDisable
   );
+  console.log(selectedCluster, 'selectedCluster??????????????????');
 
   const loading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
+    LoadingSelectors.getLoading(state, 'getAllRegistiesList')
   );
+  const registries = useSelector(RegistrySelectors.getRegistriesList);
+  const registryOption = registries?.map(ele => ({
+    label: ele?.name,
+    value: ele?.id,
+  }));
 
   const onRequestClose = () => {
     dispatch(ClustersActions.setIsRegitryAssociationModalOpen(false));
+    setSelectedCluster({});
   };
 
   const schemaPasswrd = yup.object().shape({
-    host_ip: yup.string().required('Host IP is required'),
-    port: yup.string().required('Port is required'),
-    username: yup.string().required('Username is required'),
-    password: yup.string().required('Password is required'),
+    registryId: yup.string().required('Registry is required'),
+    truststoreFile: yup.string().required('Truststore file is required'),
+    keystorePassword: yup.string().required('Keystore password is required'),
+    truststorePassword: yup
+      .string()
+      .required('Truststore password is required'),
+    keystoreFile: yup.string().required('Keystore file is required'),
+    keyPassword: yup.string().required('Key password file is required'),
   });
-  const schemaPrivateKey = yup.object().shape({
-    host_ip: yup.string().required('Host IP is required'),
-    port: yup.string().required('Port is required'),
-    username: yup.string().required('Username is required'),
-    pfxFile: yup.mixed().required('File is required'),
-  });
-  const schema = method === 'password' ? schemaPasswrd : schemaPrivateKey;
+
+  const schema = schemaPasswrd;
   const {
     register,
     watch,
     reset,
     control,
     formState: { errors },
+    handleSubmit,
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      truststoreType: 'JKS',
+      keystoreType: 'JKS',
+    },
   });
 
-  const watchMethodCredentials = watch('methodForCredentials');
+  const watchValues = watch();
 
-  const addIndividualHost = () => {};
+  const addIndividualHost = data => {
+    const payload = new FormData();
+    payload.append('keyPassword', data?.keyPassword);
+    payload.append('keystoreFile', data?.keystoreFile);
+    payload.append('truststorePassword', data?.truststorePassword);
+    payload.append('keystorePassword', data?.keystorePassword);
+    payload.append('truststoreFile', data?.truststoreFile);
+    payload.append('registryId', data?.registryId);
+    payload.append('truststoreType', data?.truststoreType);
+    payload.append('keystoreType', data?.keystoreType);
 
-  useEffect(() => {
-    if (watchMethodCredentials) {
-      setMethod(watchMethodCredentials);
-    }
-  }, [watchMethodCredentials]);
+    dispatch(
+      ClustersActions.associateClusterWithRegistry({
+        payload,
+        clusterId: selectedCluster?.id,
+      })
+    );
+  };
 
   useEffect(() => {
     if (!isModalOpen) {
       reset();
-      if (dispatch) {
-        dispatch(ClustersActions.setAddHostBtnDisable(true));
-        dispatch(ClustersActions.setAddHostIndividualData({}));
-      }
+      setSelectedCluster({});
+    } else {
+      dispatch(RegistryActions.getAllRegistiesList());
     }
   }, [isModalOpen]);
+
+  const typeOptions = [
+    {
+      label: 'JKS',
+      value: 'JKS',
+    },
+    {
+      label: 'PKCS12',
+      value: 'PKCS12',
+    },
+  ];
+
   return (
     <>
       <FullPageLoader loading={loading} />
       <ModalWithRightBtn
         isOpen={isModalOpen}
         onRequestClose={onRequestClose}
-        onSubmit={e => addIndividualHost(e)}
-        title={`Cluster Registry Details`}
+        onSubmit={handleSubmit(addIndividualHost)}
+        title={`Cluster's Registry Details`}
         primaryButtonText="Save"
         secondaryButtonText="Back"
-        primaryButtonDisabled={isPrimaryBtnDisable}
-        contentStyles={{ minWidth: '40%', height: '55%' }}
+        // primaryButtonDisabled={isPrimaryBtnDisable}
+        contentStyles={{ minWidth: '55%', height: '65%' }}
         footerAlign="start"
       >
         <Container
@@ -152,7 +190,7 @@ export const ClusterRegistryAssociationModal = () => {
         >
           <div className="row">
             <StyledSelectField
-              name="registry"
+              name="registryId"
               control={control}
               register={register}
               watch={watch}
@@ -161,34 +199,44 @@ export const ClusterRegistryAssociationModal = () => {
               placeholder="Select Option"
               disableToggle={false}
               errors={errors}
+              options={registryOption || []}
             />
           </div>
           <div className="row mt-2">
             <div className="col-6">
-              <ModalContainer>
-                <PemUploadField
-                  label="Keystore File"
-                  name="keystore-file"
-                  watch={watch}
-                  control={control}
-                  rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                  placeholder={KDFM.UPLOAD_FILE}
-                  errors={errors}
-                  fileLable="Keystore File"
-                />
-              </ModalContainer>
+              <StyledSelectField
+                name="truststoreType"
+                control={control}
+                register={register}
+                watch={watch}
+                label="Truststore Type"
+                options={typeOptions}
+                icon={<DocumentTextIcon />}
+                placeholder="Select Option"
+                disableToggle={false}
+                errors={errors}
+              />
             </div>{' '}
             <div className="col-6">
               <ModalContainer>
                 <PemUploadField
                   label="Truststore File"
-                  name="truststore-file"
+                  name="truststoreFile"
                   watch={watch}
                   control={control}
                   rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
                   placeholder={KDFM.UPLOAD_FILE}
                   errors={errors}
                   fileLable="Truststore File"
+                  validExtensionsArray={
+                    watchValues?.truststoreType === 'JKS' ? ['.jks'] : ['.p12']
+                  }
+                  acceptString={
+                    watchValues?.truststoreType === 'JKS' ? '.jks' : '.p12'
+                  }
+                  errorText={
+                    watchValues?.truststoreType === 'JKS' ? 'JKS' : 'P12'
+                  }
                 />
               </ModalContainer>
             </div>
@@ -196,7 +244,7 @@ export const ClusterRegistryAssociationModal = () => {
           <div className="row mt-3">
             <div className="col-6">
               <PasswordField
-                name="keystore-password"
+                name="keystorePassword"
                 register={register}
                 watch={watch}
                 label="Keystore Password"
@@ -208,7 +256,7 @@ export const ClusterRegistryAssociationModal = () => {
             </div>
             <div className="col-6">
               <PasswordField
-                name="truststore-password"
+                name="truststorePassword"
                 register={register}
                 watch={watch}
                 label="Truststore Password"
@@ -224,31 +272,42 @@ export const ClusterRegistryAssociationModal = () => {
               <StyledSelectField
                 label="Keystore Type"
                 id="keystore-type"
-                name="keystore-type"
+                name="keystoreType"
                 control={control}
                 icon={<DocumentTextIcon />}
                 errors={errors}
                 placeholder="Select Option"
                 showCircleIcon={true}
+                options={typeOptions}
               />
             </div>
             <div className="col-6">
-              <StyledSelectField
-                name="truststore-type"
-                control={control}
-                register={register}
-                watch={watch}
-                label="Truststore Type"
-                icon={<DocumentTextIcon />}
-                placeholder="Select Option"
-                disableToggle={false}
-                errors={errors}
-              />
+              <ModalContainer>
+                <PemUploadField
+                  label="Keystore File"
+                  name="keystoreFile"
+                  watch={watch}
+                  control={control}
+                  rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                  placeholder={KDFM.UPLOAD_FILE}
+                  errors={errors}
+                  fileLable="Keystore File"
+                  validExtensionsArray={
+                    watchValues?.keystoreType === 'JKS' ? ['.jks'] : ['.p12']
+                  }
+                  acceptString={
+                    watchValues?.keystoreType === 'JKS' ? '.jks' : '.p12'
+                  }
+                  errorText={
+                    watchValues?.keystoreType === 'JKS' ? 'JKS' : 'P12'
+                  }
+                />
+              </ModalContainer>
             </div>
           </div>
           <div className="row">
             <PasswordField
-              name="key-password"
+              name="keyPassword"
               register={register}
               watch={watch}
               label="Key Password"

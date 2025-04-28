@@ -12,6 +12,7 @@ export const registryAPI = api => {
   const editRegistry = ({ registryId, payload }) => {
     return api.patch(`/registries/${registryId}`, payload);
   };
+  const getAllRegistiesList = () => api.get('/list-registries');
 
   return {
     fetchRegistry,
@@ -19,5 +20,6 @@ export const registryAPI = api => {
     createRegistryAfterTest,
     deleteRegistry,
     editRegistry,
+    getAllRegistiesList,
   };
 };
