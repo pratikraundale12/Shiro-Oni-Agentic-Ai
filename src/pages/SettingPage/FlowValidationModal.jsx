@@ -187,7 +187,16 @@ const ConditionRow = React.memo(
             </InputContainer>
           )}
 
-        <div className="col-md-3">
+        <div
+          className={
+            condition.condition_property &&
+            fetchPropertyData?.data?.find(
+              prop => prop.propName === condition.condition_property
+            )?.dynamic_input
+              ? 'col-md-2'
+              : 'col-md-3'
+          }
+        >
           <PropertyDiv>
             <SelectField
               name={`condition_expression_${index}`}
@@ -210,7 +219,16 @@ const ConditionRow = React.memo(
             />
           </PropertyDiv>
         </div>
-        <InputContainer className="col-md-3">
+        <InputContainer
+          className={
+            condition.condition_property &&
+            fetchPropertyData?.data?.find(
+              prop => prop.propName === condition.condition_property
+            )?.dynamic_input
+              ? 'col-md-2'
+              : 'col-md-3'
+          }
+        >
           <InputField
             name={`condition_value_${index}`}
             icon={<NewLinkIcon />}
@@ -227,7 +245,16 @@ const ConditionRow = React.memo(
             }
           />
         </InputContainer>
-        <div className="col-md-2">
+        <div
+          className={
+            condition.condition_property &&
+            fetchPropertyData?.data?.find(
+              prop => prop.propName === condition.condition_property
+            )?.dynamic_input
+              ? 'col-md-2'
+              : 'col-md-3'
+          }
+        >
           <SelectField
             name={`condition_join_${index}`}
             placeholder={FLOWVALIDATION_CONSTANTS.LOGIC_OPERATOR}
