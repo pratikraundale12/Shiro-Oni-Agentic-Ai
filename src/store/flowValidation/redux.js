@@ -33,6 +33,8 @@ export const FlowValidationActions = {
   validateRandomFlow: createAction(`${prefix}validateRandomFlow`),
   validateRandomFlowSuccess: createAction(`${prefix}validateRandomFlowSuccess`),
   savePayload: createAction(`${prefix}savePayload`),
+  fetchFlows: createAction(`${prefix}fetchFlows`),
+  fetchFlowsSuccess: createAction(`${prefix}fetchFlowsSuccess`),
   setRulePriority: createAction(`${prefix}setRulePriority`),
   setRulePrioritySuccess: createAction(`${prefix}setRulePrioritySuccess`),
 };
@@ -53,6 +55,7 @@ export const FlowValidation_INITIAL_STATE = {
   addNewAnalysisModalOpen: false,
   randomFlowValidationResult: null,
   savedPayload: null,
+  flows: [],
   rulePriority: null,
 };
 
@@ -74,6 +77,7 @@ export const FlowValidationSelectors = {
   getSavedPayload: state => state.flowValidation.savedPayload,
   getRandomFlowValidationResult: state =>
     state.flowValidation.randomFlowValidationResult,
+  getFlows: state => state.flowValidation.flows,
   getRulePriority: state => state.flowValidation.rulePriority,
 };
 
@@ -183,6 +187,11 @@ const savePayload = (state, { payload }) => ({
   ...state,
   savedPayload: payload,
 });
+
+const fetchFlowsSuccess = (state, { payload }) => ({
+  ...state,
+  flows: payload,
+});
 const setRulePrioritySuccess = (state, { payload }) => ({
   ...state,
   ruleScopes: {
@@ -230,6 +239,7 @@ export const flowValidationReducer = createReducer(
         validateRandomFlowSuccess
       )
       .addCase(FlowValidationActions.savePayload, savePayload)
+      .addCase(FlowValidationActions.fetchFlowsSuccess, fetchFlowsSuccess)
       .addCase(
         FlowValidationActions.setRulePrioritySuccess,
         setRulePrioritySuccess

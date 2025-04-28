@@ -10,6 +10,7 @@ import {
   BookIcon,
   ClusterIcon,
   DashboardIcon,
+  DataFlowInventoryIcon,
   GenAiIcon,
   LdapConfigIcon,
   LicenseIcon,
@@ -25,13 +26,14 @@ import {
 } from '../assets';
 import { FullPageLoader } from '../components';
 import KeycloakRedirectPage from '../components/KeyCloak/KeycloakRedirectPage.jsx';
+import { KDFM } from '../constants/index.js';
 import {
   ActvityHistory,
   Add,
+  AiFlowGenerator,
   ClusterAccess,
   Dashboard,
   Forgot,
-  AiFlowGenerator,
   HelpAndSupport,
   LdapConfig,
   ListClusters,
@@ -49,7 +51,10 @@ import {
 } from '../pages';
 import AzureCallbackHandler from '../pages/Auth/AzureCallbackHandler.jsx';
 import { ClusterSummary } from '../pages/Clusters/ClusterSummary';
+import ClusterSetupNewConfigDetailsPage from '../pages/Clusters/components/ClusterSetupNewConfigDetail.jsx';
+import SetupClusterPage from '../pages/Clusters/components/setupClusterPage.jsx';
 import { ListControllerService } from '../pages/ControllerService';
+import DataFlowInventry from '../pages/DataFlowInventory/DataFlowInventry.jsx';
 import CompareValidation from '../pages/FlowAnalysis/CompareValidation.jsx';
 import FlowAnalysis from '../pages/FlowAnalysis/FlowAnalysis.jsx';
 import FlowValidationDetails from '../pages/FlowAnalysis/FlowValidationDetails.jsx';
@@ -71,9 +76,6 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
-import SetupClusterPage from '../pages/Clusters/components/setupClusterPage.jsx';
-import ClusterSetupNewConfigDetailsPage from '../pages/Clusters/components/ClusterSetupNewConfigDetail.jsx';
-import { KDFM } from '../constants/index.js';
 import RegistryManagementPage from '../pages/Registry/ListRegistryManagement.jsx';
 
 export const ROUTES_MENU = [
@@ -203,6 +205,18 @@ export const ROUTES_MENU = [
       },
     ],
     hidden: true,
+  },
+  {
+    name: 'Data Flow Inventory',
+    path: 'data-flow-inventory',
+    icon: DataFlowInventoryIcon,
+    pages: [
+      {
+        path: '',
+        component: <DataFlowInventry />,
+      },
+    ],
+    permission: 'view_data_inventory',
   },
   {
     name: KDFM.AI_FLOW_GENERATOR,
@@ -362,6 +376,7 @@ const Routes = () => {
         '/dashboard',
         '/licensing',
         '/ai-flow-generator',
+        '/data-flow-inventory',
       ].includes(location.pathname)
     ) {
       dispatch(SettingsActions.fetchSettings());

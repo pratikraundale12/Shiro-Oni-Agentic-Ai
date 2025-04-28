@@ -38,6 +38,9 @@ export const AiFlowGeneratorActions = {
   setIsFlowAddedSuccessFully: createAction(
     `${prefix}setIsFlowAddedSuccessFully`
   ),
+  setIsFlowAlreadyAddedSuccessFully: createAction(
+    `${prefix}setIsFlowAlreadyAddedSuccessFully`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -49,6 +52,7 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   newBucket: {},
   addFlowError: {},
   isFlowAddedSuccessFully: false,
+  isFlowAlreadyAddedSuccessFully: false,
   validatedFlowRes: {},
   validatedFlowErrors: [],
   isFlowValidatedSuccessfully: false,
@@ -66,6 +70,8 @@ export const AiFlowGeneratorSelectors = {
   getAddNewFlowError: state => state.aiFlowGenerator.addFlowError,
   getIsFlowAddedSuccessFully: state =>
     state.aiFlowGenerator.isFlowAddedSuccessFully,
+  getIsFlowAlreadyAddedSuccessFully: state =>
+    state.aiFlowGenerator.isFlowAlreadyAddedSuccessFully,
   getValidatedFlowErrors: state => state.aiFlowGenerator.validatedFlowErrors,
   getIsflowValidatedSuccessfully: state =>
     state.aiFlowGenerator.isFlowValidatedSuccessfully,
@@ -140,6 +146,13 @@ const setIsFlowAddedSuccessFully = (state, { payload }) => {
   return {
     ...state,
     isFlowAddedSuccessFully: payload,
+  };
+};
+
+const setIsFlowAlreadyAddedSuccessFully = (state, { payload }) => {
+  return {
+    ...state,
+    isFlowAlreadyAddedSuccessFully: payload,
   };
 };
 
@@ -223,6 +236,10 @@ export const aiFlowGeneratorReducer = createReducer(
       .addCase(
         AiFlowGeneratorActions.setIsFlowErrorModalOpen,
         setIsFlowErrorModalOpen
+      )
+      .addCase(
+        AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully,
+        setIsFlowAlreadyAddedSuccessFully
       );
   }
 );

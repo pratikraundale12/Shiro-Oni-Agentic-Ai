@@ -63,18 +63,19 @@ export const InfoModalActivityHistory = () => {
 
   const handleRegistryClick = () => {
     if (!selectedItem?.changes_on_action?.user_story_url) return;
-  
-  let url = selectedItem?.changes_on_action?.user_story_url.trim();
 
-  if (!/^https?:\/\//i.test(url)) {
-    url = `https://${url}`;
-  }
+    let url = selectedItem?.changes_on_action?.user_story_url.trim();
 
-  window.open(url, '_blank');
+    if (!/^https?:\/\//i.test(url)) {
+      url = `https://${url}`;
+    }
+
+    window.open(url, '_blank');
   };
   const modalOpen = useSelector(SchedularSelectors.getIsDiffModalOpen);
   const handleConfigrationDetails = () => {
     dispatch(SchedularActions.setIsDiffModalOpen(true));
+    dispatch(SchedularActions.setSelectedSchedule(null));
     dispatch(SchedularActions.fetchDiffScheduleData(selectedItem?.schedule_id));
   };
 
