@@ -178,7 +178,7 @@ export const ClusterRegistryAssociationModal = () => {
                 name="keystore-filename"
                 type="text"
                 label="Keystore Filename"
-                placeholder="Enter FileName"
+                placeholder="Upload File"
                 register={register}
                 errors={errors}
                 icon={<CurvedProfileIcon />}
