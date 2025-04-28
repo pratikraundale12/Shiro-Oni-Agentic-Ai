@@ -143,6 +143,10 @@ const MODULES = [
     label: 'AI-Powered Data Flow',
     value: 'genai',
   },
+  {
+    label: 'Data Flow Inventory',
+    value: 'data_inventory',
+  },
 ];
 
 const EXCLUDE_ADD_PERMISSION = ['namespace', 'history', 'user'];
@@ -152,6 +156,7 @@ const EXCLUDE_EDIT_PERMISSION = [
   'history',
   'user',
   'genai',
+  'data_inventory',
 ];
 const EXCLUDE_DELETE_PERMISSION = [
   'cluster',
@@ -161,6 +166,7 @@ const EXCLUDE_DELETE_PERMISSION = [
   'history',
   'user',
   'genai',
+  'data_inventory',
 ];
 
 const CellRender = ({
@@ -291,6 +297,20 @@ export const ModuleAccess = () => {
     policies.length > 0 &&
     policies?.filter(element => ['view_genai'].includes(element?.name));
 
+  const dataInventoryPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['add_data_inventory', 'view_data_inventory'].includes(element?.name)
+    );
+
+  const viewDataInventoryPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      ['view_data_inventory'].includes(element?.name)
+    );
+
   useEffect(() => {
     dispatch(RolesActions.setIsRoleListModalOpen(false));
   }, []);
@@ -419,12 +439,15 @@ export const ModuleAccess = () => {
     const ldapPolicies = ['add_ldap', 'edit_ldap'];
     const rolesPolicies = ['add_permission', 'edit_permission'];
     const genAiPolicies = ['add_genai'];
+    const dataInventoryPolicy = ['add_data_inventory'];
+
     handlePolicyCheck(controllerPolicies, 'view_controller_services');
     handlePolicyCheck(userPolicies, 'view_user');
     handlePolicyCheck(clusterPolicies, 'view_cluster');
     handlePolicyCheck(ldapPolicies, 'view_ldap');
     handlePolicyCheck(rolesPolicies, 'view_permission');
     handlePolicyCheck(genAiPolicies, 'view_genai');
+    handlePolicyCheck(dataInventoryPolicy, 'view_data_inventory');
   };
   const handleChange = (checked, value) => {
     if (isEmpty(selectedRole)) {
@@ -438,6 +461,7 @@ export const ModuleAccess = () => {
       [viewRoleandPermissionPolicy?.[0]?.id]: roleandPermissionPolicy,
       [viewldapPolicy?.[0]?.id]: ldapPolicy,
       [viewGenAiPolicy?.[0]?.id]: genAiPolicy,
+      [viewDataInventoryPolicy?.[0]?.id]: dataInventoryPolicy,
     };
 
     setUpdatedRolePolicies(prev => {

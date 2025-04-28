@@ -1,19 +1,23 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { Modal, InputField, CheckboxField } from '../../shared';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
 import { BucketIcon, DescIcon } from '../../assets';
-import { isEmpty } from 'lodash';
-import { useDispatch } from 'react-redux';
+import { CheckboxField, InputField, Modal } from '../../shared';
 import { AiFlowGeneratorActions } from '../../store';
 
 const bucketSchema = yup.object().shape({
   bucket: yup.string().required('Bucket name is required'),
 });
 
-export const AddNewBucketModal = ({ isModalOpen, setIsModalOpen }) => {
+export const AddNewBucketModal = ({
+  isModalOpen,
+  setIsModalOpen,
+  isDataInventory,
+}) => {
   const dispatch = useDispatch();
   const DEFAULT_fORM_DATA = {
     bucket_name: '',
@@ -42,6 +46,7 @@ export const AddNewBucketModal = ({ isModalOpen, setIsModalOpen }) => {
       bucketName: bucketName,
       bucketDesc: bucketDesc,
       allowPublicRead: check,
+      isDataInventory: isDataInventory || false,
     };
     dispatch(AiFlowGeneratorActions.addNewBucketToRegistry(data));
     reset(DEFAULT_fORM_DATA);
@@ -96,4 +101,5 @@ export const AddNewBucketModal = ({ isModalOpen, setIsModalOpen }) => {
 AddNewBucketModal.propTypes = {
   isModalOpen: PropTypes.bool,
   setIsModalOpen: PropTypes.func,
+  isDataInventory: PropTypes.bool,
 };
