@@ -122,7 +122,7 @@ export function* updateGeneratedFlow(api, { payload }) {
   }
 }
 
-export function* fetchRegistry(api) {
+export function* fetchRegistryDetails(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -133,9 +133,9 @@ export function* fetchRegistry(api) {
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
-    errorSection: 'fetchRegistry',
-    loadingSection: 'fetchRegistry',
-    apiMethod: api.fetchRegistry,
+    errorSection: 'fetchRegistryDetails',
+    loadingSection: 'fetchRegistryDetails',
+    apiMethod: api.fetchRegistryDetails,
   });
   if (response.ok) {
     yield put(AiFlowGeneratorActions.setRegistry(response?.data));
@@ -258,8 +258,8 @@ export function* aiFlowGeneratorSagas(api) {
     takeLatest(AiFlowGeneratorActions.updateGeneratedFlow, action =>
       updateGeneratedFlow(api, action)
     ),
-    takeLatest(AiFlowGeneratorActions.fetchRegistry, action =>
-      fetchRegistry(api, action)
+    takeLatest(AiFlowGeneratorActions.fetchRegistryDetails, action =>
+      fetchRegistryDetails(api, action)
     ),
     takeLatest(AiFlowGeneratorActions.addFlowToRegistry, action =>
       addFlowToRegistry(api, action)

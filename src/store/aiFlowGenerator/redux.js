@@ -12,7 +12,7 @@ export const AiFlowGeneratorActions = {
   ),
   updateGeneratedFlow: createAction(`${prefix}updateGeneratedFlow`),
   deleteGeneratedFlow: createAction(`${prefix}deleteGeneratedFlow`),
-  fetchRegistry: createAction(`${prefix}fetchRegistry`),
+  fetchRegistryDetails: createAction(`${prefix}fetchRegistryDetails`),
   addFlowToRegistry: createAction(`${prefix}addFlowToRegistry`),
   addFlowToRegistryFailure: createAction(`${prefix}addFlowToRegistryFailure`),
   addNewBucketToRegistry: createAction(`${prefix}addNewBucketToRegistry`),

@@ -310,7 +310,7 @@ export const AiFlowGenerator = () => {
         user_role: currentUser?.role,
       };
       dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows(payload));
-      dispatch(AiFlowGeneratorActions.fetchRegistry());
+      dispatch(AiFlowGeneratorActions.fetchRegistryDetails());
     }
   }, [clusters]);
 

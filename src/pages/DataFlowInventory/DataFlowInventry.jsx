@@ -316,7 +316,7 @@ const DataFlowInventory = () => {
 
   useEffect(() => {
     dispatch(FlowValidationActions.fetchFlows());
-    dispatch(AiFlowGeneratorActions.fetchRegistry());
+    dispatch(AiFlowGeneratorActions.fetchRegistryDetails());
   }, [dispatch]);
   useEffect(() => {
     setIsFlowAddedSuccessModalOpen(false);
