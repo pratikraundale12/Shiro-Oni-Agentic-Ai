@@ -297,6 +297,28 @@ export function* fetchClusterMetrics(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
+export function* associateClusterWithRegistry(api, { payload }) {
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item?.id === payload?.clusterId
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'associateClusterWithRegistry',
+    loadingSection: 'associateClusterWithRegistry',
+    apiMethod: api.associateClusterWithRegistry,
+    apiParams: [{ clusterId: payload?.clusterId, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message);
+    yield put(ClustersActions.setIsRegitryAssociationModalOpen(false));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
 
 export function* clustersSagas(api) {
   yield all([
@@ -340,5 +362,11 @@ export function* clustersSagas(api) {
       api
     ),
     takeLatest(ClustersActions.fetchClusterMetrics, fetchClusterMetrics, api),
+
+    takeLatest(
+      ClustersActions.associateClusterWithRegistry,
+      associateClusterWithRegistry,
+      api
+    ),
   ]);
 }

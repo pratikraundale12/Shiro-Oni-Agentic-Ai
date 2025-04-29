@@ -60,6 +60,9 @@ export const clustersAPI = api => {
   const fetchClusterMetrics = ({ clusterId }) => {
     return api.get(`/clusters/${clusterId}/metrics`);
   };
+  const associateClusterWithRegistry = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/associate-registry`, payload);
+  };
   return {
     fetchClusters,
     fetchClusterList,
@@ -82,5 +85,6 @@ export const clustersAPI = api => {
     fetchClusterRegistryNodes,
     fetchRunningStatusCluster,
     fetchClusterMetrics,
+    associateClusterWithRegistry,
   };
 };

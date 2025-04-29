@@ -12,6 +12,7 @@ import { history } from '../../../helpers/history';
 import {
   Button,
   InputField,
+  PasswordField,
   RadioSelectField,
   SelectField,
 } from '../../../shared';
@@ -173,8 +174,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
     nifiVersion: yup.string().required('NiFi version is required'),
     comments: yup
       .string()
-      .transform(value => value?.trim())
-      .required('Comment is required'),
+      .required('Comment is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Username must not start or end with a space',
+        value => value === value?.trim()
+      ),
     nifi_cluster_node_protocol_max_threads: yup
       .number()
       .typeError('Protocol Max thread must be a number')
@@ -192,11 +197,22 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Port must be between 4 and 5 digits',
         val => val && val.toString().length >= 4 && val.toString().length <= 5
       ),
-    username: yup.string().required('Userame is required'),
+    username: yup.string().required('Username is required')
+    .test(
+      'no-leading-trailing-spaces',
+      'Username must not start or end with a space',
+      value => value === value?.trim()
+    ).min(3, 'Username must be minimum 3 in length'),
     password: yup
       .string()
       .required('Password is required')
-      .min(8, 'Password must be minimum 8 in length'),
+      .test(
+        'no-leading-trailing-spaces',
+        'Password must not start or end with a space',
+        value => value === value?.trim()
+      )
+      .min(10, 'Password must be minimum 10 in length')
+      ,
     java_arg_2: yup
       .number()
       .transform((value, originalValue) =>
@@ -732,13 +748,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-4">
-                      <LabelSelect>Password</LabelSelect>
 
-                      <InputField
+                      <PasswordField
                         name="password"
-                        type="text"
+                        label="Password"
                         placeholder="Enter Password"
                         required
+                        watch={watch}
                         register={register}
                         errors={errors}
                         icon={<NotePadIcon />}

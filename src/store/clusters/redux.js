@@ -54,6 +54,9 @@ export const ClustersActions = {
   setIsRegitryAssociationModalOpen: createAction(
     `${prefix}setIsRegitryAssociationModalOpen`
   ),
+  associateClusterWithRegistry: createAction(
+    `${prefix}associateClusterWithRegistry`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
