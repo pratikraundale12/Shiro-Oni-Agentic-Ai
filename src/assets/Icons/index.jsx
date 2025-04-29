@@ -177,3 +177,4 @@ export * from './WhiteBoradIcon';
 export * from './ZoomInIcon';
 export * from './ZoomOutIcon';
 export * from './canvasYIcon';
+export * from './RegistryIcon';

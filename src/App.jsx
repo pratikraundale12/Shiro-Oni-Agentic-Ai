@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import React, { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -14,7 +15,6 @@ import { ModalWithIcon } from './shared';
 import store from './store/configureStore';
 import { GlobalStyles, theme } from './styles';
 import { GlobalProvider } from './utils';
-import { useLocation } from 'react-router-dom';
 
 function App() {
   const [isModal, setIsModal] = useState(false);

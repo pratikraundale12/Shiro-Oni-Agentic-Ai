@@ -1,12 +1,13 @@
-import { all, takeLatest, put, call, select } from 'redux-saga/effects';
-import { AiFlowGeneratorActions, AiFlowGeneratorSelectors } from './redux';
-import { requestSaga } from '../helpers/request_sagas';
-import { toast } from 'react-toastify';
-import { CLUSTERS_TOKEN } from '../../constants';
-import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { isEmpty } from 'lodash';
+import { toast } from 'react-toastify';
+import { all, call, put, select, takeLatest } from 'redux-saga/effects';
+import { CLUSTERS_TOKEN } from '../../constants';
+import { requestSaga } from '../helpers/request_sagas';
+import { NamespacesActions, NamespacesSelectors } from '../namespaces';
+import { AiFlowGeneratorActions, AiFlowGeneratorSelectors } from './redux';
 
 export function* fetchDefaultRecentFlows(api, { payload }) {
+  yield put(AiFlowGeneratorActions.setGeneratedFlow({}));
   const response = yield call(requestSaga, {
     errorSection: 'fetchDefaultRecentFlows',
     loadingSection: 'fetchDefaultRecentFlows',
@@ -34,6 +35,9 @@ export function* generateFlowAPI(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+  yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+  yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
+
   yield put(AiFlowGeneratorActions.setNewBucket({}));
   yield put(AiFlowGeneratorActions.setGenFlowError(''));
   if (!api.generateFlowAPI) {
@@ -52,6 +56,8 @@ export function* generateFlowAPI(api, { payload }) {
   if (response.ok || response?.data?.status) {
     try {
       yield put(AiFlowGeneratorActions.setGenFlowError(''));
+      yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+      yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
       const rawResponse = response?.data?.data;
       const parsedJson =
         typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
@@ -116,7 +122,7 @@ export function* updateGeneratedFlow(api, { payload }) {
   }
 }
 
-export function* fetchRegistry(api) {
+export function* fetchRegistryDetails(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
@@ -127,9 +133,9 @@ export function* fetchRegistry(api) {
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
-    errorSection: 'fetchRegistry',
-    loadingSection: 'fetchRegistry',
-    apiMethod: api.fetchRegistry,
+    errorSection: 'fetchRegistryDetails',
+    loadingSection: 'fetchRegistryDetails',
+    apiMethod: api.fetchRegistryDetails,
   });
   if (response.ok) {
     yield put(AiFlowGeneratorActions.setRegistry(response?.data));
@@ -150,24 +156,36 @@ export function* addFlowToRegistry(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   const clusterId = selectedClusterToken?.id;
+  const registryData = yield select(AiFlowGeneratorSelectors.getRegistry);
+  const registryId = registryData[0]?.id;
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: AiFlowGeneratorActions.addFlowToRegistryFailure,
     loadingSection: 'addFlowToRegistry',
     apiMethod: api.addFlowToRegistry,
-    apiParams: [{ clusterId: clusterId, payload: payload }],
+    apiParams: [
+      { clusterId: clusterId, payload: payload, registryId: registryId },
+    ],
   });
   if (response.ok) {
     yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(true));
   } else {
-    yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
-    yield put(AiFlowGeneratorActions.setAddFlowError(response?.data)); // Dispatch error action
-    toast.error(
-      response?.message ||
-        response?.data?.message ||
-        'Failed to add flow to registry'
-    );
+    if (
+      window.location.pathname !== '/ai-flow-generator' &&
+      response?.status === 500
+    ) {
+      yield put(AiFlowGeneratorActions.setAddFlowError(response?.data)); // Dispatch error actio
+      yield put(AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully(true));
+    } else {
+      yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+      yield put(AiFlowGeneratorActions.setAddFlowError(response?.data)); // Dispatch error action
+      toast.error(
+        response?.message ||
+          response?.data?.message ||
+          'Failed to add flow to registry'
+      );
+    }
   }
 }
 
@@ -217,13 +235,17 @@ export function* validateFlowJson(api, { payload }) {
     successAction: AiFlowGeneratorActions.validateFlowJsonSuccess,
   });
   if (response.ok) {
-    console.log('validated flow', response);
-  } else {
-    toast.error(
-      response?.message ||
-        response?.data?.message ||
-        'Failed to validate flow json'
+    yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(true));
+    yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
+    toast.success(
+      `Your ${payload?.flowContents?.name || 'flow'} is validated successfully, you can proceed ahead and upload it on Registry`
     );
+  } else {
+    yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+    yield put(
+      AiFlowGeneratorActions.setValidatedFlowErrors(response?.data?.fieldErrors)
+    );
+    yield put(AiFlowGeneratorActions.setIsFlowErrorModalOpen(true));
   }
 }
 export function* aiFlowGeneratorSagas(api) {
@@ -240,8 +262,8 @@ export function* aiFlowGeneratorSagas(api) {
     takeLatest(AiFlowGeneratorActions.updateGeneratedFlow, action =>
       updateGeneratedFlow(api, action)
     ),
-    takeLatest(AiFlowGeneratorActions.fetchRegistry, action =>
-      fetchRegistry(api, action)
+    takeLatest(AiFlowGeneratorActions.fetchRegistryDetails, action =>
+      fetchRegistryDetails(api, action)
     ),
     takeLatest(AiFlowGeneratorActions.addFlowToRegistry, action =>
       addFlowToRegistry(api, action)

@@ -96,6 +96,7 @@ export const MODULE_LIST_MAP = [
   { label: 'Flow Validation', value: 'Flow Validation' },
   { label: 'Rule scope', value: 'Rule scope' },
   { label: 'Rule', value: 'Rule' },
+  { label: 'Data Flow Inventory', value: 'Data Flow Inventory' },
 ];
 
 export const ACTIVITY_STATUS_OPTIONS = [
@@ -128,6 +129,7 @@ export const ACTIVITY_EVENTS = [
   { label: 'Comparison', value: 'Comparison' },
   { label: 'Validate', value: 'Validate' },
   { label: 'Comparison', value: 'Comparison' },
+  { label: 'Add Data Flow Inventory', value: 'Add Data Flow Inventory' },
 ];
 export const EMAIL_REMINDER_OPTIONS = [
   { label: '5 mins', value: '300000' },
@@ -163,6 +165,7 @@ export const LICENSE_EXPIRE_PROMPT_DAYS = 30;
 
 export const KDFM = {
   // Generic constants
+  UPLOAD_FILE: 'Upload File',
   NIFI: 'NiFi',
   ADD: 'Add',
   ADD_NEW: 'Add New',
@@ -292,6 +295,7 @@ export const SIDE_MENUS_DISPLAY = [
   { path: 'licensing', label: 'Licensing' },
   { path: 'ai-flow-generator', label: 'AI-Powered Data Flow' },
   { path: 'flow-analysis', label: 'Flow Analysis' },
+  { path: 'data-flow-inventory', label: 'Data Flow Inventory' },
 ];
 
 export const PAGINATION_ITEM_OPTIONS = [10, 15, 20, 25, 50];

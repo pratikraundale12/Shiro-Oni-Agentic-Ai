@@ -12,6 +12,7 @@ import { history } from '../../../helpers/history';
 import {
   Button,
   InputField,
+  PasswordField,
   RadioSelectField,
   SelectField,
 } from '../../../shared';
@@ -50,7 +51,7 @@ const LabelSelect = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
-  display: inline;
+  display: inline-block;
 `;
 const DisplaySection = styled.div`
   height: calc(100% - 120px) !important;
@@ -165,12 +166,20 @@ const ClusterSetupNewConfigDetailsPage = () => {
     configName: yup
       .string()
       .required('Config name is required')
-      .matches(/^\S+$/, 'Config name cannot contain spaces'),
+      .test(
+        'no-leading-trailing-spaces',
+        'Config name must not start or end with a space',
+        value => value === value?.trim()
+      ),
     nifiVersion: yup.string().required('NiFi version is required'),
     comments: yup
       .string()
-      .transform(value => value?.trim())
-      .required('Comment is required'),
+      .required('Comment is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Username must not start or end with a space',
+        value => value === value?.trim()
+      ),
     nifi_cluster_node_protocol_max_threads: yup
       .number()
       .typeError('Protocol Max thread must be a number')
@@ -188,11 +197,22 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Port must be between 4 and 5 digits',
         val => val && val.toString().length >= 4 && val.toString().length <= 5
       ),
-    username: yup.string().required('Userame is required'),
+    username: yup.string().required('Username is required')
+    .test(
+      'no-leading-trailing-spaces',
+      'Username must not start or end with a space',
+      value => value === value?.trim()
+    ).min(3, 'Username must be minimum 3 in length'),
     password: yup
       .string()
       .required('Password is required')
-      .min(8, 'Password must be minimum 8 in length'),
+      .test(
+        'no-leading-trailing-spaces',
+        'Password must not start or end with a space',
+        value => value === value?.trim()
+      )
+      .min(10, 'Password must be minimum 10 in length')
+      ,
     java_arg_2: yup
       .number()
       .transform((value, originalValue) =>
@@ -242,6 +262,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
       checkpoint_interval: '2 mins',
       java_arg_2: 0,
       java_arg_3: 0,
+      always_sync: 'false',
+      access_control: 'Open',
     },
   });
 
@@ -505,7 +527,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
             />
           </div>
           <div className="col-4">
-            <LabelSelect className="mb-3">{KDFM.COMMENTS}</LabelSelect>
+            <LabelSelect>{KDFM.COMMENTS}</LabelSelect>
 
             <InputField
               name="comments"
@@ -562,7 +584,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
+                      <LabelSelect>
                         Protocol Max Threads
                       </LabelSelect>
 
@@ -646,7 +668,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="mb-3">Web Http Port</LabelSelect>
+                      <LabelSelect>Web Http Port</LabelSelect>
 
                       <InputField
                         name="nifi_web_https_port"
@@ -669,8 +691,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <TitleTab className="ms-3">Java Memory Settings</TitleTab>
                   </TitleTabWrapper>
                   <div className="row mt-3">
-                    <div className="col-5">
-                      <LabelSelect className="mb-3 ms-1 row">
+                    <div className="col-4">
+                      <LabelSelect className="ms-1 row">
                         Java.arg.2
                         <LabelWarning>(Initial Heap Size in GB)</LabelWarning>
                       </LabelSelect>
@@ -685,8 +707,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         icon={<NotePadIcon />}
                       />
                     </div>
-                    <div className="col-5">
-                      <LabelSelect className="mb-3 row">
+                    <div className="col-4">
+                      <LabelSelect className="row">
                         Java.arg.3
                         <LabelWarning>(Maximum Heap Size in GB)</LabelWarning>
                       </LabelSelect>
@@ -714,8 +736,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     </TitleTab>
                   </TitleTabWrapper>
                   <div className="row mt-3">
-                    <div className="col-5">
-                      <LabelSelect className="mb-3">Username</LabelSelect>
+                    <div className="col-4">
+                      <LabelSelect>Username</LabelSelect>
 
                       <InputField
                         name="username"
@@ -727,14 +749,14 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         icon={<NotePadIcon />}
                       />
                     </div>
-                    <div className="col-5">
-                      <LabelSelect className="mb-3">Password</LabelSelect>
+                    <div className="col-4">
 
-                      <InputField
+                      <PasswordField
                         name="password"
-                        type="text"
+                        label="Password"
                         placeholder="Enter Password"
                         required
+                        watch={watch}
                         register={register}
                         errors={errors}
                         icon={<NotePadIcon />}
@@ -752,7 +774,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-4">
-                      <LabelSelect className="mb-3">Directory</LabelSelect>
+                      <LabelSelect>Directory</LabelSelect>
 
                       <InputField
                         name="directory"
@@ -765,8 +787,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         icon={<NotePadIcon />}
                       />
                     </div>
-                    <div className="col-3">
-                      <LabelSelect className="mb-3">Partitions</LabelSelect>
+                    <div className="col-4">
+                      <LabelSelect>Partitions</LabelSelect>
 
                       <InputField
                         name="partitions"
@@ -779,7 +801,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         icon={<NotePadIcon />}
                       />
                     </div>
-                    <div className="col-3">
+                    <div className="col-4">
                       <LabelSelect className="mb-3">
                         Checkpoint Interval
                       </LabelSelect>
@@ -793,7 +815,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         sortAlphabetically={false}
                       />
                     </div>
-                    <div className="col-2">
+                    <div>
                       <RadioSelectField
                         name="always_sync"
                         options={TRUE_FALSE_OPTIONS}
@@ -813,7 +835,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-4">
-                      <LabelSelect className="mb-3">Root Node</LabelSelect>
+                      <LabelSelect>Root Node</LabelSelect>
 
                       <InputField
                         name="root_node"

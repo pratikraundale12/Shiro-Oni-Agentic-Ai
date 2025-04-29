@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export const DataFlowInventoryIcon = ({
-  width = 18,
-  height = 19,
-  color = '#fff',
+export const RegistryIcon = ({
+  width = 24,
+  height = 24,
+  color = '#0CBF59',
 }) => (
   <svg
     width={width}
@@ -14,28 +14,47 @@ export const DataFlowInventoryIcon = ({
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M22 10.9V4.1C22 2.6 21.36 2 19.77 2H15.73C14.14 2 13.5 2.6 13.5 4.1V10.9C13.5 12.4 14.14 13 15.73 13H19.77C21.36 13 22 12.4 22 10.9Z"
+      d="M8 2V5"
       stroke={color}
       strokeWidth="1.5"
+      strokeMiterlimit={10}
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M22 19.9V18.1C22 16.6 21.36 16 19.77 16H15.73C14.14 16 13.5 16.6 13.5 18.1V19.9C13.5 21.4 14.14 22 15.73 22H19.77C21.36 22 22 21.4 22 19.9Z"
+      d="M16 2V5"
       stroke={color}
       strokeWidth="1.5"
+      strokeMiterlimit={10}
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M10.5 13.1V19.9C10.5 21.4 9.86 22 8.27 22H4.23C2.64 22 2 21.4 2 19.9V13.1C2 11.6 2.64 11 4.23 11H8.27C9.86 11 10.5 11.6 10.5 13.1Z"
+      d="M7 11H15"
       stroke={color}
       strokeWidth="1.5"
+      strokeMiterlimit={10}
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M10.5 4.1V5.9C10.5 7.4 9.86 8 8.27 8H4.23C2.64 8 2 7.4 2 5.9V4.1C2 2.6 2.64 2 4.23 2H8.27C9.86 2 10.5 2.6 10.5 4.1Z"
+      d="M7 15H12"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeMiterlimit={10}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M15 22H9C4 22 3 19.94 3 15.82V9.65C3 4.95 4.67 3.69 8 3.5H16C19.33 3.68 21 4.95 21 9.65V16"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeMiterlimit={10}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21 16L15 22V19C15 17 16 16 18 16H21Z"
       stroke={color}
       strokeWidth="1.5"
       strokeLinecap="round"
@@ -44,7 +63,7 @@ export const DataFlowInventoryIcon = ({
   </svg>
 );
 
-DataFlowInventoryIcon.propTypes = {
+RegistryIcon.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   color: PropTypes.string,

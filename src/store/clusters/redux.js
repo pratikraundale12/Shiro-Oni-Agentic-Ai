@@ -83,6 +83,12 @@ export const ClustersActions = {
   updateServiceAccountHostFailure: createAction(
     `${prefix}updateServiceAccountHostFailure`
   ),
+  setIsRegitryAssociationModalOpen: createAction(
+    `${prefix}setIsRegitryAssociationModalOpen`
+  ),
+  associateClusterWithRegistry: createAction(
+    `${prefix}associateClusterWithRegistry`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -118,6 +124,7 @@ export const CLUSTERS_INITIAL_STATE = {
   // Update-host
   updatingServiceAccountHost: false,
   updateServiceAccountHostError: null,
+  isRegitryAssociationModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -159,6 +166,8 @@ export const ClustersSelectors = {
     state.clusters.updatingServiceAccountHost,
   getUpdateServiceAccountHostError: state =>
     state.clusters.updateServiceAccountHostError,
+  getIsRegitryAssociationModalOpen: state =>
+    state.clusters.isRegitryAssociationModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -298,6 +307,12 @@ const setRunningStatusData = (state, { payload }) => {
     runningStatusData: payload,
   };
 };
+const setIsRegitryAssociationModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isRegitryAssociationModalOpen: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -399,6 +414,10 @@ export const clustersReducer = createReducer(
           state.updatingServiceAccountHost = false;
           state.updateServiceAccountHostError = payload;
         }
+      )
+      .addCase(
+        ClustersActions.setIsRegitryAssociationModalOpen,
+        setIsRegitryAssociationModalOpen
       );
   }
 );

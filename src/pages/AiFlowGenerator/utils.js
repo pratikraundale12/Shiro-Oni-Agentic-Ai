@@ -15,6 +15,7 @@ export const validatePayload = (payload, requiredFields) => {
     query: 'Query',
     logged_in_user: 'LoggedIn User',
     user_role: 'Role',
+    nifi_version: 'NiFi Version',
   };
 
   const missingFields = requiredFields
@@ -76,4 +77,14 @@ export const validateInput = input => {
   const isValid = cleanedInput;
 
   return { isValid, cleanedInput };
+};
+
+export const formatMissingValues = data => {
+  return data.map(item => {
+    const [key] = Object.keys(item);
+    return {
+      jsonkey: key,
+      missingValue: item[key].replace(/\./g, ' > '),
+    };
+  });
 };

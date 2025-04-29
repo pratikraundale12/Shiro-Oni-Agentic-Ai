@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button, ModalWithIcon } from '../../../shared';
 import { KDFM } from '../../../constants';
 import ClusterDetailTab from './ClusterDetailTab';
@@ -41,7 +42,18 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [hostList, setHostList] = useState([]);
   const schema = yup.object().shape({
-    clusterName: yup.string().required('Cluster Name is required'),
+    clusterName: yup
+      .string()
+      .required('Cluster name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Cluster name must not start or end with a space.',
+        value => value === value?.trim()
+      )
+      .matches(
+        /^[A-Za-z0-9_-]+$/,
+        'Cluster name must contain only letters, numbers, underscores, or hyphens.'
+      ),
     nifiVersion: yup.string().required('NiFi is required'),
     configName: yup.string().required('Config name is required'),
     configVersion: yup.string().required('Config version is required'),
@@ -89,6 +101,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
         <BottomButtonDiv className="btn-div d-flex">
           <Button
             variant="secondary"
+            data-tooltip-id="tooltip-manage-host"
             type="button"
             onClick={() => {
               dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
@@ -96,6 +109,16 @@ const SetupClusterWrapper = ({ activeTab }) => {
           >
             {KDFM.BACK}
           </Button>
+          <ReactTooltip
+            id={`tooltip-manage-host`}
+            place="top"
+            content={'Back to Manage Host'}
+            style={{
+              width: '155px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
 
           <Button type="submit" onClick={handleSubmit(handleCreateCluster)}>
             Create Cluster

@@ -24,13 +24,14 @@ import { RecommendedFlow } from './RecommendedFlow';
 import { PromptInputBox } from './PromptInputBox';
 import {
   downloadJsonFile,
+  formatMissingValues,
   formattedTime,
   getLoginToClusterPopup,
 } from './utils';
 import userImage from '../../assets/images/avatar.png';
 import dfmImage from '../../assets/images/dfm.png';
 import fileImage from '../../assets/images/folder (1) 1.png';
-import { Button, Modal } from '../../shared';
+import { Button, Modal, SelectField } from '../../shared';
 import { toast } from 'react-toastify';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
@@ -38,7 +39,10 @@ import DiscardFlowConfirmationModal from './DiscardFlowConfirmationModal';
 import { jsonrepair } from 'jsonrepair';
 import { FullPageLoader } from '../../components';
 import SuggetionsChip from './SuggestionsChip';
-import { DEFAULT_FLOW_JSON } from '../../constants/aiFlowGenerator.constant';
+import {
+  DEFAULT_FLOW_JSON,
+  NIFI_VERSIONS,
+} from '../../constants/aiFlowGenerator.constant';
 import { FlowAddToRegistryModal } from './FlowAddToRegistryModal';
 import { AddNewBucketModal } from './AddNewBucketModal';
 import DownloadFlowConfirmationModal from './DownLoadFlowConfirmationModal';
@@ -46,6 +50,8 @@ import { FullScreenIcon } from '../../assets/Icons/FullScreenIcon';
 import { MiniScreenIcon } from '../../assets/Icons/MiniScreenIcon';
 import FlowAddedSuccessModal from './FlowAddedSuccessModal';
 import { history } from '../../helpers/history';
+import { FlowValidationErrorModal } from './FlowValidationErrorModal';
+import { useForm } from 'react-hook-form';
 
 const Container = styled.div`
   display: flex;
@@ -84,8 +90,8 @@ const RefreshIocnPanel = styled.div`
   cursor: pointer;
   background-color: #f5f7fa;
   border: 1px solid #dde4f0;
-  width: 37px;
-  height: 38px;
+  width: 40px;
+  height: 47px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -275,13 +281,10 @@ export const AiFlowGenerator = () => {
   const isFlowAddedSuccessfully = useSelector(
     AiFlowGeneratorSelectors.getIsFlowAddedSuccessFully
   );
+  const [flowName, setFlowName] = useState('');
   const [clusters, setClusters] = useState(() => {
     return JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   });
-
-  useEffect(() => {
-    setIsPromptInputDisabled(!generateFlowPermission);
-  }, [generateFlowPermission]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -300,6 +303,7 @@ export const AiFlowGenerator = () => {
   const isArrayEmpty = arr => {
     return arr.length === 0 || arr.every(obj => Object.keys(obj).length === 0);
   };
+
   useEffect(() => {
     if (!isArrayEmpty(clusters) && !isEmpty(Object.keys(currentUser))) {
       const payload = {
@@ -307,7 +311,7 @@ export const AiFlowGenerator = () => {
         user_role: currentUser?.role,
       };
       dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows(payload));
-      dispatch(AiFlowGeneratorActions.fetchRegistry());
+      dispatch(AiFlowGeneratorActions.fetchRegistryDetails());
     }
   }, [clusters]);
 
@@ -318,6 +322,9 @@ export const AiFlowGenerator = () => {
   );
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'generateFlowAPI')
+  );
+  const flowValidationLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'validateFlowJson')
   );
   const [isDiscardFlowModalOpen, setIsDiscardFlowModalOpen] = useState(false);
   const [openAddToRegistryModal, setOpenAddToRegistryModal] = useState(false);
@@ -335,7 +342,22 @@ export const AiFlowGenerator = () => {
   }, [bucketListData]);
   const registryData = useSelector(AiFlowGeneratorSelectors.getRegistry);
   const [registry, setRegistry] = useState(registryData);
-
+  const validationError = useSelector(
+    AiFlowGeneratorSelectors.getValidatedFlowErrors
+  );
+  const [flowValidationError, setFlowValidationError] =
+    useState(validationError);
+  const isFlowErrorModalOpen = useSelector(
+    AiFlowGeneratorSelectors.getIsFlowErrorModalOpen
+  );
+  const isFlowValidatedSuccessfully = useSelector(
+    AiFlowGeneratorSelectors.getIsflowValidatedSuccessfully
+  );
+  useEffect(() => {
+    if (!isEmpty(validationError)) {
+      setFlowValidationError(validationError);
+    }
+  }, [validationError]);
   useEffect(() => {
     setRegistry(registryData);
   }, [registryData]);
@@ -352,6 +374,7 @@ export const AiFlowGenerator = () => {
         user_id: currentUser?.id,
         user_role: currentUser?.role,
       };
+      reset(DEFAULT_VERSION);
       setIsValidFlowGenerated(false);
       setisInputEmpty(false);
       setIsFlowUpdated(false);
@@ -368,6 +391,8 @@ export const AiFlowGenerator = () => {
       dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
       dispatch(AiFlowGeneratorActions.setGenFlowError(''));
       dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows(payload));
+      dispatch(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+      dispatch(AiFlowGeneratorActions.setValidatedFlowErrors([]));
     }
   };
 
@@ -389,6 +414,17 @@ export const AiFlowGenerator = () => {
   };
 
   const handleAddToRegistry = flowData => {
+    if (!isFlowValidatedSuccessfully) {
+      if (!toast.isActive('validate-flow')) {
+        toast.warning('Please validate the flow json to proceed further', {
+          toastId: 'validate-flow',
+        });
+      }
+      return;
+    }
+    if (originalFlow?.flowContents?.name !== flowData?.flow_name) {
+      setFlowName(flowData?.flow_name);
+    }
     const updatedFlowJson = {
       ...flowJson,
       flowContents: {
@@ -413,17 +449,18 @@ export const AiFlowGenerator = () => {
   };
 
   useEffect(() => {
-    if (isFlowAddedSuccessfully && pendingFlowUpdate) {
+    if (isFlowAddedSuccessfully && (pendingFlowUpdate || !isEmpty(flowName))) {
       dispatch(
         AiFlowGeneratorActions.updateGeneratedFlow({
-          data: pendingFlowUpdate,
+          data: { json: pendingFlowUpdate || flowJson, flowName: flowName },
           id: generatedFlowId,
         })
       );
 
       setPendingFlowUpdate(null);
+      setFlowName('');
     }
-  }, [isFlowAddedSuccessfully, pendingFlowUpdate]);
+  }, [isFlowAddedSuccessfully, pendingFlowUpdate, flowName]);
 
   const handleFlowDownload = () => {
     const fileName = queryLable?.length ? `${queryLable}.json` : 'flow.json';
@@ -432,7 +469,7 @@ export const AiFlowGenerator = () => {
     if (isFlowUpdated) {
       dispatch(
         AiFlowGeneratorActions.updateGeneratedFlow({
-          data: flowJson,
+          data: { json: flowJson, flowName: flowName },
           id: generatedFlowId,
         })
       );
@@ -441,6 +478,14 @@ export const AiFlowGenerator = () => {
   };
 
   const handleDownloadClick = () => {
+    if (!isFlowValidatedSuccessfully) {
+      if (!toast.isActive('validate-flow')) {
+        toast.warning('Please validate the flow json to proceed further', {
+          toastId: 'validate-flow',
+        });
+      }
+      return;
+    }
     setIsDownloadModalOpen(true);
   };
 
@@ -482,7 +527,9 @@ export const AiFlowGenerator = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
+  useEffect(() => {
+    setIsPromptInputDisabled(!generateFlowPermission);
+  }, [generateFlowPermission, generatedFlow]);
   useEffect(() => {
     scrollToBottom();
   }, [conversationalRes]);
@@ -560,6 +607,12 @@ export const AiFlowGenerator = () => {
         setIsFlowUpdated(false);
       }
       setFlowJson(content.jsObject);
+      dispatch(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+      if (!toast.isActive('validate-flow')) {
+        toast.warning('Please validate the flow json to proceed further', {
+          toastId: 'validate-flow',
+        });
+      }
       setIsJsonInvalid(false);
     } else if (content.error) {
       setIsJsonInvalid(true);
@@ -600,12 +653,9 @@ export const AiFlowGenerator = () => {
     setOpenAddToRegistryModal(false);
   };
 
-  // const validateGeneratedFlow = () => {
-  //   // const payload = {
-  //   //   jsonToValidate: flowJson,
-  //   // };
-  //   dispatch(AiFlowGeneratorActions.validateFlowJson(flowJson));
-  // };
+  const validateGeneratedFlow = () => {
+    dispatch(AiFlowGeneratorActions.validateFlowJson(flowJson));
+  };
   const handleSuccessModalSuccess = () => {
     setIsFlowAddedSuccessModalOpen(false);
     handleRefresh();
@@ -623,7 +673,6 @@ export const AiFlowGenerator = () => {
       openConversation &&
       !isEmpty(Object.keys(flowJson))
     ) {
-      setIsFullscreen(false);
       setOpenPreviewModal(true);
     } else {
       setOpenPreviewModal(false);
@@ -633,12 +682,29 @@ export const AiFlowGenerator = () => {
   const toggleFullScreen = () => {
     setIsFullscreen(prev => !prev);
   };
+
+  const sortedNifiVersions = NIFI_VERSIONS?.map(item => ({
+    label: item,
+    value: item,
+  }));
+  const DEFAULT_VERSION = {
+    nifiVersion: '1.26.0',
+  };
+  const { register, control, watch, reset } = useForm({
+    defaultValues: DEFAULT_VERSION,
+  });
+  const nifiVersion = watch('nifiVersion');
   return isArrayEmpty(clusters) ? (
     getLoginToClusterPopup()
   ) : (
     <>
       <FullPageLoader
-        loading={recentFlowLoading || bucketLoading || flowAddedLoading}
+        loading={
+          recentFlowLoading ||
+          bucketLoading ||
+          flowAddedLoading ||
+          flowValidationLoading
+        }
       />
       <Container>
         <Flex className="flex-column align-items-start w-100">
@@ -648,6 +714,19 @@ export const AiFlowGenerator = () => {
               <HeadingStyle>{KDFM.RECENT_GENERATED_FLOWS}</HeadingStyle>
             </HeadingWrapper>
             <div className="mb-2 d-flex align-items-center">
+              <div>
+                <SelectField
+                  id="nifi-version"
+                  name="nifiVersion"
+                  options={sortedNifiVersions || []}
+                  placeholder="Select Nifi Version"
+                  backgroundColor={'#f5f7fa'}
+                  control={control}
+                  isDisabled={loading}
+                  register={register}
+                  isNifiVersion={true}
+                />
+              </div>
               <RefreshIocnPanel
                 onClick={handleRefresh}
                 style={{
@@ -656,7 +735,11 @@ export const AiFlowGenerator = () => {
                 }}
                 data-tooltip-id={`tooltip-group-generate-flow-refresh`}
               >
-                <RefreshIcon style={{ cursor: 'pointer' }} />
+                <RefreshIcon
+                  style={{ cursor: 'pointer' }}
+                  height={20}
+                  width={20}
+                />
               </RefreshIocnPanel>
             </div>
           </Flex>
@@ -671,7 +754,7 @@ export const AiFlowGenerator = () => {
                   loading={loading}
                   setQueryLable={setQueryLable}
                   isValidFlowGenerated={isValidFlowGenerated}
-                  isJsonEmpty={isEmpty(Object.keys(flowJson))}
+                  isJsonEmpty={isEmpty(Object.keys(generatedFlow))}
                 />
               </RecommendedFlowBox>
             </Flex>
@@ -789,9 +872,7 @@ export const AiFlowGenerator = () => {
                               <div className="d-flex gap-2">
                                 <div className="add-to-registry-btn">
                                   <Button
-                                    isBtnDisable={isEmpty(
-                                      Object.keys(flowJson)
-                                    )}
+                                    isBtnDisable={!isFlowValidatedSuccessfully}
                                     onClick={() => {
                                       setIsClickedFromPreviewModal(false);
                                       onAddToRegistryClick();
@@ -803,9 +884,7 @@ export const AiFlowGenerator = () => {
                                 </div>
                                 <div className="flow-download-btn">
                                   <Button
-                                    isBtnDisable={isEmpty(
-                                      Object.keys(flowJson)
-                                    )}
+                                    isBtnDisable={!isFlowValidatedSuccessfully}
                                     onClick={handleDownloadClick}
                                     variant="secondary"
                                     icon={<DownloadIcon color="#444445" />}
@@ -822,16 +901,16 @@ export const AiFlowGenerator = () => {
                                     color="#FF7A00"
                                   />
                                 </button>
-                                {/* <div className="validate-flow-btn">
-                          <Button
-                            variant="secondary"
-                            isBtnDisable={isEmpty(Object.keys(flowJson))}
-                            onClick={() => validateGeneratedFlow()}
-                            size="sm"
-                          >
-                            {KDFM.VALIDATE_FLOW}
-                          </Button>{' '}
-                        </div> */}
+                                <div className="validate-flow-btn">
+                                  <Button
+                                    variant="secondary"
+                                    isBtnDisable={isFlowValidatedSuccessfully}
+                                    onClick={() => validateGeneratedFlow()}
+                                    size="sm"
+                                  >
+                                    {KDFM.VALIDATE_FLOW}
+                                  </Button>{' '}
+                                </div>
                               </div>
                             </>
                           )}{' '}
@@ -859,6 +938,7 @@ export const AiFlowGenerator = () => {
               setInputError={setInputError}
               setIsPromptInputDisabled={setIsPromptInputDisabled}
               setConversationalRes={setConversationalRes}
+              nifiVersion={nifiVersion}
             />
           )}
           <PromptInputBox
@@ -873,11 +953,13 @@ export const AiFlowGenerator = () => {
             inputError={inputError}
             setInputError={setInputError}
             setConversationalRes={setConversationalRes}
+            nifiVersion={nifiVersion}
           />
         </PromptSection>
         <Modal
           title={
-            `${flowJson?.flowContents?.name} Preview` || 'Preview Flow Json'
+            `${`${flowJson?.flowContents?.name ? flowJson?.flowContents?.name : 'Flow Json'}`}` +
+            ' Preview'
           }
           isOpen={openPreviewModal}
           isAdditionalIcon={true}
@@ -896,9 +978,13 @@ export const AiFlowGenerator = () => {
           tertiaryButton={true}
           tertiaryButtonConfig={{
             ...config,
-            tertiaryButtonDisable: isJsonInvalid,
+            tertiaryButtonDisable:
+              isJsonInvalid || !isFlowValidatedSuccessfully,
           }}
-          primaryButtonDisabled={isJsonInvalid}
+          primaryButtonDisabled={isJsonInvalid || !isFlowValidatedSuccessfully}
+          additionalBtnText={KDFM.VALIDATE_FLOW}
+          additionalBtnDisabled={isFlowValidatedSuccessfully}
+          additionalBtnClick={validateGeneratedFlow}
           onSubmit={e => {
             setIsClickedFromPreviewModal(true);
             onAddToRegistryClick(e);
@@ -967,6 +1053,15 @@ export const AiFlowGenerator = () => {
             isModalOpen={isFlowAddedSuccessModalOpen}
             handleClose={handleSuccessModalClose}
             handleSubmit={handleSuccessModalSuccess}
+          />
+        )}
+        {isFlowErrorModalOpen && (
+          <FlowValidationErrorModal
+            isModalOpen={isFlowErrorModalOpen}
+            handleClose={() => {
+              dispatch(AiFlowGeneratorActions.setIsFlowErrorModalOpen(false));
+            }}
+            errorData={formatMissingValues(flowValidationError) || []}
           />
         )}
       </Container>

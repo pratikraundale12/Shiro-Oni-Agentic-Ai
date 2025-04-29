@@ -35,6 +35,7 @@ export function* fetchGrid(
     clustersRolesAccess: api.fetchClustersRolesAccess,
     policiesRolesAccess: api.fetchPoliciesRolesAccess,
     scheduler: api.fetchSchedular,
+    registry: api.fetchRegistry,
   };
   let payload;
   if (module === 'clusters') {

@@ -320,6 +320,30 @@ const ClusterStatusTab = () => {
                     </SummaryDetailsPtag>
                   </div>
                 </UseColXl>
+                {ele?.data?.nifi?.heap_used && (
+                  <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                    <div>
+                      <SummaryDetailsHFourTag className="mb-2">
+                        NiFi Heap Used
+                      </SummaryDetailsHFourTag>
+                      <SummaryDetailsPtag className="mb-0">
+                        {ele?.data?.nifi?.heap_used}
+                      </SummaryDetailsPtag>
+                    </div>
+                  </UseColXl>
+                )}
+                {ele?.data?.nifi?.heap_assigned && (
+                  <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                    <div>
+                      <SummaryDetailsHFourTag className="mb-2">
+                        NiFi Heap Assigned
+                      </SummaryDetailsHFourTag>
+                      <SummaryDetailsPtag className="mb-0">
+                        {ele?.data?.nifi?.heap_assigned}
+                      </SummaryDetailsPtag>
+                    </div>
+                  </UseColXl>
+                )}
               </RowConfig>
             </div>
           ))}
