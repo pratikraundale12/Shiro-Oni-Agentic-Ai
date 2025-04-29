@@ -125,111 +125,187 @@ const ConditionRow = React.memo(
     conditionsErrors,
     control,
     fetchPropertyData,
-  }) => (
-    <Fragment>
-      <div className="col-md-3">
-        <SelectField
-          name={`condition_property_${index}`}
-          icon={<PropertyIcon />}
-          placeholder={FLOWVALIDATION_CONSTANTS.SELECT_PROPERTY}
-          options={fetchPropertyData?.data?.map(property => ({
-            label: property?.propName,
-            value: property?.propName,
-          }))}
-          value={
-            condition.condition_property
-              ? {
-                  label: condition.condition_property,
-                  value: condition.condition_property,
-                }
-              : null
+    handleSubConditionProperty,
+    totalConditions,
+  }) => {
+    // Show join operator if:
+    // 1. There are 2 conditions and this is the first one
+    // 2. There are 3+ conditions and this is not the last one
+    const showJoinOperator =
+      totalConditions > 1 &&
+      ((totalConditions === 2 && index === 0) ||
+        (totalConditions > 2 && index < totalConditions - 1));
+
+    return (
+      <Fragment>
+        <div
+          className={
+            condition.condition_property &&
+            fetchPropertyData?.data?.find(
+              prop => prop.propName === condition.condition_property
+            )?.dynamic_input
+              ? 'col-md-2'
+              : 'col-md-3'
           }
-          onChange={e => handleConditionPropertyChange(index, e?.value)}
-          control={control}
-          disabled={!selectedItem?.deletable}
-          errors={
-            conditionsErrors[index]
-              ? {
-                  [`condition_property_${index}`]:
-                    conditionsErrors[index]?.condition_property,
-                }
-              : {}
-          }
-        />
-      </div>
-      <div className="col-md-3">
-        <PropertyDiv>
+        >
           <SelectField
-            name={`condition_expression_${index}`}
-            placeholder={FLOWVALIDATION_CONSTANTS.CONDITION}
-            options={CONDITION_OPERATORS}
-            value={CONDITION_OPERATORS.find(
-              option => option.value === condition.condition_expression
-            )}
-            onChange={e => handleConditionExpressionChange(index, e?.value)}
+            name={`condition_property_${index}`}
+            icon={<PropertyIcon />}
+            placeholder={FLOWVALIDATION_CONSTANTS.SELECT_PROPERTY}
+            options={fetchPropertyData?.data?.map(property => ({
+              label: property?.propName,
+              value: property?.propName,
+              dynamic_input: property?.dynamic_input,
+            }))}
+            value={
+              condition.condition_property
+                ? {
+                    label: condition.condition_property,
+                    value: condition.condition_property,
+                  }
+                : null
+            }
+            onChange={e => handleConditionPropertyChange(index, e?.value)}
             control={control}
             disabled={!selectedItem?.deletable}
             errors={
               conditionsErrors[index]
                 ? {
-                    [`condition_expression_${index}`]:
-                      conditionsErrors[index]?.condition_expression,
+                    [`condition_property_${index}`]:
+                      conditionsErrors[index]?.condition_property,
                   }
                 : {}
             }
           />
-        </PropertyDiv>
-      </div>
-      <InputContainer className="col-md-3">
-        <InputField
-          name={`condition_value_${index}`}
-          icon={<NewLinkIcon />}
-          value={condition?.condition_value || ''}
-          onChange={e => handleConditionValueChange(index, e.target.value)}
-          control={control}
-          errors={
-            conditionsErrors[index]
-              ? {
-                  [`condition_value_${index}`]:
-                    conditionsErrors[index]?.condition_value,
-                }
-              : {}
-          }
-        />
-      </InputContainer>
-      <div className="col-md-2">
-        <SelectField
-          name={`condition_join_${index}`}
-          placeholder={FLOWVALIDATION_CONSTANTS.LOGIC_OPERATOR}
-          options={CONDITION_JOIN_OPERATORS}
-          value={CONDITION_JOIN_OPERATORS.find(
-            option => option.value === condition.logic_operator
-          )}
-          onChange={e => handleConditionJoinOperatorChange(index, e?.value)}
-          control={control}
-          disabled={!selectedItem?.deletable}
-          errors={
-            conditionsErrors[index]
-              ? {
-                  [`condition_join_${index}`]:
-                    conditionsErrors[index]?.condition_join,
-                }
-              : {}
-          }
-        />
-      </div>
-      {selectedItem?.deletable && (
-        <div className="col-md-1 d-flex align-items-center">
-          <button
-            onClick={() => handleDeleteCondition(index)}
-            className="btn btn-link p-0"
-          >
-            <DeleteSmallIcon color="#FF7A00" />
-          </button>
         </div>
-      )}
-    </Fragment>
-  )
+        {condition.condition_property &&
+          fetchPropertyData?.data?.find(
+            prop => prop.propName === condition.condition_property
+          )?.dynamic_input && (
+            <InputContainer className="col-md-2">
+              <InputField
+                name={`sub_condition_property${index}`}
+                icon={<NewLinkIcon />}
+                value={condition?.sub_condition_property || ''}
+                onChange={e =>
+                  handleSubConditionProperty(index, e.target.value)
+                }
+                control={control}
+                errors={
+                  conditionsErrors[index]
+                    ? {
+                        [`sub_condition_property_${index}`]:
+                          conditionsErrors[index]?.sub_condition_property,
+                      }
+                    : {}
+                }
+              />
+            </InputContainer>
+          )}
+
+        <div
+          className={
+            condition.condition_property &&
+            fetchPropertyData?.data?.find(
+              prop => prop.propName === condition.condition_property
+            )?.dynamic_input
+              ? 'col-md-2'
+              : 'col-md-3'
+          }
+        >
+          <PropertyDiv>
+            <SelectField
+              name={`condition_expression_${index}`}
+              placeholder={FLOWVALIDATION_CONSTANTS.CONDITION}
+              options={CONDITION_OPERATORS}
+              value={CONDITION_OPERATORS.find(
+                option => option.value === condition.condition_expression
+              )}
+              onChange={e => handleConditionExpressionChange(index, e?.value)}
+              control={control}
+              disabled={!selectedItem?.deletable}
+              errors={
+                conditionsErrors[index]
+                  ? {
+                      [`condition_expression_${index}`]:
+                        conditionsErrors[index]?.condition_expression,
+                    }
+                  : {}
+              }
+            />
+          </PropertyDiv>
+        </div>
+        <InputContainer
+          className={
+            condition.condition_property &&
+            fetchPropertyData?.data?.find(
+              prop => prop.propName === condition.condition_property
+            )?.dynamic_input
+              ? 'col-md-2'
+              : 'col-md-3'
+          }
+        >
+          <InputField
+            name={`condition_value_${index}`}
+            icon={<NewLinkIcon />}
+            value={condition?.condition_value || ''}
+            onChange={e => handleConditionValueChange(index, e.target.value)}
+            control={control}
+            errors={
+              conditionsErrors[index]
+                ? {
+                    [`condition_value_${index}`]:
+                      conditionsErrors[index]?.condition_value,
+                  }
+                : {}
+            }
+          />
+        </InputContainer>
+        {showJoinOperator && (
+          <div
+            className={
+              condition.condition_property &&
+              fetchPropertyData?.data?.find(
+                prop => prop.propName === condition.condition_property
+              )?.dynamic_input
+                ? 'col-md-2'
+                : 'col-md-2'
+            }
+          >
+            <SelectField
+              name={`condition_join_${index}`}
+              placeholder={FLOWVALIDATION_CONSTANTS.LOGIC_OPERATOR}
+              options={CONDITION_JOIN_OPERATORS}
+              value={CONDITION_JOIN_OPERATORS.find(
+                option => option.value === condition.logic_operator
+              )}
+              onChange={e => handleConditionJoinOperatorChange(index, e?.value)}
+              control={control}
+              disabled={!selectedItem?.deletable}
+              errors={
+                conditionsErrors[index]
+                  ? {
+                      [`condition_join_${index}`]:
+                        conditionsErrors[index]?.condition_join,
+                    }
+                  : {}
+              }
+            />
+          </div>
+        )}
+        {selectedItem?.deletable && (
+          <div className="col-md-1 d-flex align-items-center">
+            <button
+              onClick={() => handleDeleteCondition(index)}
+              className="btn btn-link p-0"
+            >
+              <DeleteSmallIcon color="#FF7A00" />
+            </button>
+          </div>
+        )}
+      </Fragment>
+    );
+  }
 );
 
 ConditionRow.displayName = 'ConditionRow';
@@ -240,6 +316,8 @@ ConditionRow.propTypes = {
     condition_expression: PropTypes.string,
     condition_value: PropTypes.string,
     logic_operator: PropTypes.string,
+    sub_condition_property: PropTypes.string,
+    dynamic_input: PropTypes.bool,
   }).isRequired,
   index: PropTypes.number.isRequired,
   selectedItem: PropTypes.shape({
@@ -248,10 +326,12 @@ ConditionRow.propTypes = {
   handleConditionPropertyChange: PropTypes.func.isRequired,
   handleConditionExpressionChange: PropTypes.func.isRequired,
   handleConditionValueChange: PropTypes.func.isRequired,
+  handleSubConditionProperty: PropTypes.func.isRequired,
   handleConditionJoinOperatorChange: PropTypes.func.isRequired,
   handleDeleteCondition: PropTypes.func.isRequired,
   conditionsErrors: PropTypes.arrayOf(PropTypes.object),
   control: PropTypes.object.isRequired,
+  isCreatingNewRule: PropTypes.bool,
   fetchPropertyData: PropTypes.shape({
     data: PropTypes.arrayOf(
       PropTypes.shape({
@@ -259,6 +339,7 @@ ConditionRow.propTypes = {
       })
     ),
   }),
+  totalConditions: PropTypes.number.isRequired,
 };
 
 const FlowValidationModal = () => {
@@ -447,6 +528,32 @@ const FlowValidationModal = () => {
     [isCreatingNewRule, editedConditions, setValue, trigger]
   );
 
+  const handleSubConditionProperty = useCallback(
+    (conditionIndex, value) => {
+      if (isCreatingNewRule) {
+        setNewRule(prev => ({
+          ...prev,
+          conditions: prev?.conditions?.map((condition, i) =>
+            i === conditionIndex
+              ? { ...condition, sub_condition_property: value }
+              : condition
+          ),
+        }));
+      } else {
+        const updatedConditions = [...(editedConditions || [])];
+        updatedConditions[conditionIndex] = {
+          ...updatedConditions[conditionIndex],
+          sub_condition_property: value,
+        };
+        setEditedConditions(updatedConditions);
+      }
+      setHasChanges(true);
+      setValue(`sub_condition_property_${conditionIndex}`, value);
+      trigger(`sub_condition_property_${conditionIndex}`);
+    },
+    [isCreatingNewRule, editedConditions, setValue, trigger]
+  );
+
   const handleDeleteCondition = useCallback(
     index => {
       if (isCreatingNewRule) {
@@ -505,6 +612,7 @@ const FlowValidationModal = () => {
               condition_expression: '',
               condition_value: '',
               logic_operator: 'AND',
+              sub_condition_property: '',
             },
           ],
         }));
@@ -516,6 +624,7 @@ const FlowValidationModal = () => {
             condition_expression: '',
             condition_value: '',
             logic_operator: 'AND',
+            sub_condition_property: '',
           },
         ]);
       }
@@ -576,6 +685,11 @@ const FlowValidationModal = () => {
                 condition_property: condition.condition_property,
                 condition_expression: condition.condition_expression,
                 logic_operator: condition.logic_operator,
+                sub_condition_property: condition.sub_condition_property,
+                dynamic_input:
+                  fetchPropertyData?.data?.find(
+                    prop => prop.propName === condition.condition_property
+                  )?.dynamic_input || false,
               })),
             })
           );
@@ -594,6 +708,11 @@ const FlowValidationModal = () => {
                 condition_property: condition.condition_property,
                 condition_expression: condition.condition_expression,
                 logic_operator: condition.logic_operator,
+                sub_condition_property: condition.sub_condition_property,
+                dynamic_input:
+                  fetchPropertyData?.data?.find(
+                    prop => prop.propName === condition.condition_property
+                  )?.dynamic_input || false,
               })),
             },
           })
@@ -610,6 +729,7 @@ const FlowValidationModal = () => {
       selectedItem?.id,
       editedRule,
       editedConditions,
+      fetchPropertyData?.data,
     ]
   );
 
@@ -778,6 +898,7 @@ const FlowValidationModal = () => {
                       handleConditionExpressionChange
                     }
                     handleConditionValueChange={handleConditionValueChange}
+                    handleSubConditionProperty={handleSubConditionProperty}
                     handleConditionJoinOperatorChange={
                       handleConditionJoinOperatorChange
                     }
@@ -785,6 +906,8 @@ const FlowValidationModal = () => {
                     conditionsErrors={conditionsErrors}
                     control={control}
                     fetchPropertyData={fetchPropertyData}
+                    isCreatingNewRule={isCreatingNewRule}
+                    totalConditions={newRule?.conditions?.length || 0}
                   />
                 ))}
               </div>
@@ -846,6 +969,7 @@ const FlowValidationModal = () => {
                           handleConditionExpressionChange
                         }
                         handleConditionValueChange={handleConditionValueChange}
+                        handleSubConditionProperty={handleSubConditionProperty}
                         handleConditionJoinOperatorChange={
                           handleConditionJoinOperatorChange
                         }
@@ -853,6 +977,8 @@ const FlowValidationModal = () => {
                         conditionsErrors={conditionsErrors}
                         control={control}
                         fetchPropertyData={fetchPropertyData}
+                        isCreatingNewRule={isCreatingNewRule}
+                        totalConditions={editedConditions?.length || 0}
                       />
                     ))}
                   </div>
