@@ -147,9 +147,18 @@ const MODULES = [
     label: 'Data Flow Inventory',
     value: 'data_inventory',
   },
+  {
+    label: 'Flow Analysis',
+    value: 'flow_validation',
+  },
 ];
 
-const EXCLUDE_ADD_PERMISSION = ['namespace', 'history', 'user'];
+const EXCLUDE_ADD_PERMISSION = [
+  'namespace',
+  'history',
+  'user',
+  'flow_validation',
+];
 const EXCLUDE_EDIT_PERMISSION = [
   'cluster',
   'namespace',
@@ -157,6 +166,7 @@ const EXCLUDE_EDIT_PERMISSION = [
   'user',
   'genai',
   'data_inventory',
+  'flow_validation',
 ];
 const EXCLUDE_DELETE_PERMISSION = [
   'cluster',
@@ -167,6 +177,7 @@ const EXCLUDE_DELETE_PERMISSION = [
   'user',
   'genai',
   'data_inventory',
+  'flow_validation',
 ];
 
 const CellRender = ({
