@@ -476,7 +476,7 @@ const DataFlowInventory = () => {
                                 <IconsContainer>
                                   <IconWrapper>
                                     <IconImage
-                                      src={`${API_URL}${flow?.iconA}`}
+                                      src={`${API_URL}/${flow?.source_icon}`}
                                       alt="image"
                                       width="100%"
                                       height="auto"
@@ -484,7 +484,7 @@ const DataFlowInventory = () => {
                                   </IconWrapper>
                                   <IconWrapper marginLeft="-18px">
                                     <IconImage
-                                      src={`${API_URL}${flow?.iconB}`}
+                                      src={`${API_URL}/${flow?.destination_icon}`}
                                       alt="image"
                                       width="100%"
                                       height="auto"
