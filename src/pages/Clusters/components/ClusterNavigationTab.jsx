@@ -1,8 +1,10 @@
-/*eslint-disable*/
+/* eslint-disable */
 import React from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import styled from 'styled-components';
+import { AuthenticationSelectors } from '../../../store';
+import { useSelector } from 'react-redux';
 
 const NavTabs = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.border};
@@ -35,6 +37,11 @@ const ClusterNavigationTab = ({
   isRegistryDetailDisable,
   data,
 }) => {
+
+  const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
+  const isSuperAdmin = currentUserData?.role === 'superadmin';
+
+
   return (
     <NavTabs id="nav-tab" role="tablist">
       <NavButton
@@ -75,6 +82,7 @@ const ClusterNavigationTab = ({
           />
         )}
       </>
+      {isSuperAdmin && (
       <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
           onClick={() =>
@@ -87,6 +95,7 @@ const ClusterNavigationTab = ({
         >
           {KDFM.SERVICE_ACCOUNT}
         </NavButton>
+        )}
     </NavTabs>
   );
 };
