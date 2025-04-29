@@ -51,6 +51,38 @@ export const ClustersActions = {
   fetchClusterMetrics: createAction(`${prefix}fetchClusterMetrics`),
   setHealthMetricsData: createAction(`${prefix}setHealthMetricsData`),
   setRunningStatusData: createAction(`${prefix}setRunningStatusData`),
+  // — Service-Account Credentials Check —
+  checkServiceAccountCredentialsRequest: createAction(
+    `${prefix}checkServiceAccountCredentialsRequest`
+  ),
+  checkServiceAccountCredentialsSuccess: createAction(
+    `${prefix}checkServiceAccountCredentialsSuccess`
+  ),
+  checkServiceAccountCredentialsFailure: createAction(
+    `${prefix}checkServiceAccountCredentialsFailure`
+  ),
+
+  // — Add Service-Account Host —
+  addServiceAccountHostRequest: createAction(
+    `${prefix}addServiceAccountHostRequest`
+  ),
+  addServiceAccountHostSuccess: createAction(
+    `${prefix}addServiceAccountHostSuccess`
+  ),
+  addServiceAccountHostFailure: createAction(
+    `${prefix}addServiceAccountHostFailure`
+  ),
+
+  // — Update Service-Account Host —
+  updateServiceAccountHostRequest: createAction(
+    `${prefix}updateServiceAccountHostRequest`
+  ),
+  updateServiceAccountHostSuccess: createAction(
+    `${prefix}updateServiceAccountHostSuccess`
+  ),
+  updateServiceAccountHostFailure: createAction(
+    `${prefix}updateServiceAccountHostFailure`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -75,6 +107,17 @@ export const CLUSTERS_INITIAL_STATE = {
   registryNodesData: {},
   healthMetricsData: {},
   runningStatusData: {},
+  // Service-account credential check
+  checkingServiceAccount: false,
+  checkServiceAccountError: null,
+
+  // Add-host
+  addingServiceAccountHost: false,
+  addServiceAccountHostError: null,
+
+  // Update-host
+  updatingServiceAccountHost: false,
+  updateServiceAccountHostError: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -102,6 +145,20 @@ export const ClustersSelectors = {
   getRegistryNodesData: state => state.clusters.registryNodesData,
   getHealthMetricsData: state => state.clusters.healthMetricsData,
   getRunningStatusData: state => state.clusters.runningStatusData,
+  // service-account credential check
+  isCheckingServiceAccount: state => state.clusters.checkingServiceAccount,
+  getServiceAccountCheckError: state => state.clusters.checkServiceAccountError,
+
+  // add-host
+  isAddingServiceAccountHost: state => state.clusters.addingServiceAccountHost,
+  getAddServiceAccountHostError: state =>
+    state.clusters.addServiceAccountHostError,
+
+  // update-host
+  isUpdatingServiceAccountHost: state =>
+    state.clusters.updatingServiceAccountHost,
+  getUpdateServiceAccountHostError: state =>
+    state.clusters.updateServiceAccountHostError,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -287,6 +344,61 @@ export const clustersReducer = createReducer(
       )
       .addCase(ClustersActions.setRegistryNodesData, setRegistryNodesData)
       .addCase(ClustersActions.setHealthMetricsData, setHealthMetricsData)
-      .addCase(ClustersActions.setRunningStatusData, setRunningStatusData);
+      .addCase(ClustersActions.setRunningStatusData, setRunningStatusData)
+      // Check service-account credentials
+      .addCase(ClustersActions.checkServiceAccountCredentialsRequest, state => {
+        state.checkingServiceAccount = true;
+        state.checkServiceAccountError = null;
+      })
+      .addCase(ClustersActions.checkServiceAccountCredentialsSuccess, state => {
+        state.checkingServiceAccount = false;
+      })
+      .addCase(
+        ClustersActions.checkServiceAccountCredentialsFailure,
+        (state, { payload }) => {
+          state.checkingServiceAccount = false;
+          state.checkServiceAccountError = payload;
+        }
+      )
+
+      // Add service-account host
+      .addCase(ClustersActions.addServiceAccountHostRequest, state => {
+        state.addingServiceAccountHost = true;
+        state.addServiceAccountHostError = null;
+      })
+      .addCase(
+        ClustersActions.addServiceAccountHostSuccess,
+        (state /*, { payload } */) => {
+          state.addingServiceAccountHost = false;
+          // you can optionally update hostIpList here if payload includes the new host
+        }
+      )
+      .addCase(
+        ClustersActions.addServiceAccountHostFailure,
+        (state, { payload }) => {
+          state.addingServiceAccountHost = false;
+          state.addServiceAccountHostError = payload;
+        }
+      )
+
+      // Update service-account host
+      .addCase(ClustersActions.updateServiceAccountHostRequest, state => {
+        state.updatingServiceAccountHost = true;
+        state.updateServiceAccountHostError = null;
+      })
+      .addCase(
+        ClustersActions.updateServiceAccountHostSuccess,
+        (state /*, { payload } */) => {
+          state.updatingServiceAccountHost = false;
+          // you can optionally update hostIpList here if payload includes the updated host
+        }
+      )
+      .addCase(
+        ClustersActions.updateServiceAccountHostFailure,
+        (state, { payload }) => {
+          state.updatingServiceAccountHost = false;
+          state.updateServiceAccountHostError = payload;
+        }
+      );
   }
 );
