@@ -217,7 +217,6 @@ const FlowValidationDetails = () => {
       window.open(updatedUrl, '_blank');
     }
   };
-
   return (
     <div>
       <FullPageLoader loading={loading} />
@@ -310,6 +309,17 @@ const FlowValidationDetails = () => {
                   </LabelSelectContent>
                 </div>
               </div>
+              {!validationResult?.data?.tableBody?.length > 0 && (
+                <div className="row align-items-center justify-content-between">
+                  <div className="col-md-6 mb-4 pb-md-2">
+                    <LabelSelect>Result</LabelSelect>
+                    <LabelSelectContent>
+                      Flow successfully reviewed, no rule violated from the
+                      selected rules. Please perform manual checks now.
+                    </LabelSelectContent>
+                  </div>
+                </div>
+              )}
             </FlowContainerDetail>
 
             {sections.map((section, index) => {
@@ -339,7 +349,7 @@ const FlowValidationDetails = () => {
           {FLOWVALIDATION_CONSTANTS.BACK}
         </Button>
         <div className="col-md-auto mb-4 mt-2">
-          {validationResult?.data && (
+          {validationResult?.data?.tableBody?.length > 0 && (
             <Button onClick={handleSendEmail}>
               {FLOWVALIDATION_CONSTANTS.SEND_EMAIL_REPORT}
             </Button>
