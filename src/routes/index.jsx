@@ -174,7 +174,7 @@ export const ROUTES_MENU = [
         component: <CompareValidation />,
       },
     ],
-    permission: 'view_namespace',
+    permission: 'view_flow_validation',
   },
   {
     name: 'Deployment Schedule',
@@ -363,6 +363,7 @@ const Routes = () => {
         '/licensing',
         '/ai-flow-generator',
         '/data-flow-inventory',
+        '/flow-analysis',
       ].includes(location.pathname)
     ) {
       dispatch(SettingsActions.fetchSettings());
