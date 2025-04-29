@@ -262,6 +262,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
       checkpoint_interval: '2 mins',
       java_arg_2: 0,
       java_arg_3: 0,
+      always_sync: 'false',
+      access_control: 'Open',
     },
   });
 
