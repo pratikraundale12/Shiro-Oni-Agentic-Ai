@@ -13,6 +13,7 @@ import { rolesAPI } from './roles';
 import { schedularAPI } from './schedular';
 import { settingsAPI } from './setting';
 import { usersAPI } from './users';
+import { registryAPI } from './registry';
 
 const create = (baseURL = `${API_URL}/api`) => {
   const api = apisauce.create({
@@ -87,6 +88,8 @@ const create = (baseURL = `${API_URL}/api`) => {
     ...flowValidationAPI(api),
     // AI Flow Generator
     ...aiFlowGeneratorAPI(api),
+    // Registry Management
+    ...registryAPI(api),
   };
 };
 

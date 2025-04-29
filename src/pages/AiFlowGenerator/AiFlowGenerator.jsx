@@ -31,7 +31,7 @@ import {
 import userImage from '../../assets/images/avatar.png';
 import dfmImage from '../../assets/images/dfm.png';
 import fileImage from '../../assets/images/folder (1) 1.png';
-import { Button, Modal } from '../../shared';
+import { Button, Modal, SelectField } from '../../shared';
 import { toast } from 'react-toastify';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
@@ -39,7 +39,10 @@ import DiscardFlowConfirmationModal from './DiscardFlowConfirmationModal';
 import { jsonrepair } from 'jsonrepair';
 import { FullPageLoader } from '../../components';
 import SuggetionsChip from './SuggestionsChip';
-import { DEFAULT_FLOW_JSON } from '../../constants/aiFlowGenerator.constant';
+import {
+  DEFAULT_FLOW_JSON,
+  NIFI_VERSIONS,
+} from '../../constants/aiFlowGenerator.constant';
 import { FlowAddToRegistryModal } from './FlowAddToRegistryModal';
 import { AddNewBucketModal } from './AddNewBucketModal';
 import DownloadFlowConfirmationModal from './DownLoadFlowConfirmationModal';
@@ -48,6 +51,7 @@ import { MiniScreenIcon } from '../../assets/Icons/MiniScreenIcon';
 import FlowAddedSuccessModal from './FlowAddedSuccessModal';
 import { history } from '../../helpers/history';
 import { FlowValidationErrorModal } from './FlowValidationErrorModal';
+import { useForm } from 'react-hook-form';
 
 const Container = styled.div`
   display: flex;
@@ -86,8 +90,8 @@ const RefreshIocnPanel = styled.div`
   cursor: pointer;
   background-color: #f5f7fa;
   border: 1px solid #dde4f0;
-  width: 37px;
-  height: 38px;
+  width: 40px;
+  height: 47px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -306,7 +310,7 @@ export const AiFlowGenerator = () => {
         user_role: currentUser?.role,
       };
       dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows(payload));
-      dispatch(AiFlowGeneratorActions.fetchRegistry());
+      dispatch(AiFlowGeneratorActions.fetchRegistryDetails());
     }
   }, [clusters]);
 
@@ -369,6 +373,7 @@ export const AiFlowGenerator = () => {
         user_id: currentUser?.id,
         user_role: currentUser?.role,
       };
+      reset(DEFAULT_VERSION);
       setIsValidFlowGenerated(false);
       setisInputEmpty(false);
       setIsFlowUpdated(false);
@@ -672,6 +677,18 @@ export const AiFlowGenerator = () => {
   const toggleFullScreen = () => {
     setIsFullscreen(prev => !prev);
   };
+
+  const sortedNifiVersions = NIFI_VERSIONS?.map(item => ({
+    label: item,
+    value: item,
+  }));
+  const DEFAULT_VERSION = {
+    nifiVersion: '1.26.0',
+  };
+  const { register, control, watch, reset } = useForm({
+    defaultValues: DEFAULT_VERSION,
+  });
+  const nifiVersion = watch('nifiVersion');
   return isArrayEmpty(clusters) ? (
     getLoginToClusterPopup()
   ) : (
@@ -692,6 +709,19 @@ export const AiFlowGenerator = () => {
               <HeadingStyle>{KDFM.RECENT_GENERATED_FLOWS}</HeadingStyle>
             </HeadingWrapper>
             <div className="mb-2 d-flex align-items-center">
+              <div>
+                <SelectField
+                  id="nifi-version"
+                  name="nifiVersion"
+                  options={sortedNifiVersions || []}
+                  placeholder="Select Nifi Version"
+                  backgroundColor={'#f5f7fa'}
+                  control={control}
+                  isDisabled={loading}
+                  register={register}
+                  isNifiVersion={true}
+                />
+              </div>
               <RefreshIocnPanel
                 onClick={handleRefresh}
                 style={{
@@ -700,7 +730,11 @@ export const AiFlowGenerator = () => {
                 }}
                 data-tooltip-id={`tooltip-group-generate-flow-refresh`}
               >
-                <RefreshIcon style={{ cursor: 'pointer' }} />
+                <RefreshIcon
+                  style={{ cursor: 'pointer' }}
+                  height={20}
+                  width={20}
+                />
               </RefreshIocnPanel>
             </div>
           </Flex>
@@ -899,6 +933,7 @@ export const AiFlowGenerator = () => {
               setInputError={setInputError}
               setIsPromptInputDisabled={setIsPromptInputDisabled}
               setConversationalRes={setConversationalRes}
+              nifiVersion={nifiVersion}
             />
           )}
           <PromptInputBox
@@ -913,6 +948,7 @@ export const AiFlowGenerator = () => {
             inputError={inputError}
             setInputError={setInputError}
             setConversationalRes={setConversationalRes}
+            nifiVersion={nifiVersion}
           />
         </PromptSection>
         <Modal

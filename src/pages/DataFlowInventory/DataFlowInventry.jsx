@@ -317,7 +317,7 @@ const DataFlowInventory = () => {
   useEffect(() => {
     dispatch(FlowValidationActions.fetchFlows());
     if (selectedCluster?.value) {
-      dispatch(AiFlowGeneratorActions.fetchRegistry());
+      dispatch(AiFlowGeneratorActions.fetchRegistryDetails());
     }
   }, [dispatch, selectedCluster]);
   useEffect(() => {

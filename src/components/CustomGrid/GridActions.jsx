@@ -40,6 +40,7 @@ import {
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
+  RegistryActions,
   RolesActions,
   RolesSelectors,
   UsersSelectors,
@@ -692,6 +693,24 @@ export const GridActions = ({
               />
             </DropdownContainer>
           )}
+          {/*  */}
+          {module === 'registry' && (
+            <Button
+              size="md"
+              onClick={() =>
+                dispatch(RegistryActions.setIsAddRegistryModalOpen(true))
+              }
+            >
+              <div
+                className="d-flex "
+                style={{ fontSize: '14px', fontWeight: '750' }}
+              >
+                <PlusCircleIcon height={20} width={20} color={'#fff'} />
+                Add Registry
+              </div>
+            </Button>
+          )}
+
           {module === 'users' && (
             <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
           )}
@@ -822,8 +841,7 @@ export const GridActions = ({
                   data-tooltip-id={`tooltip-group-namespace-refresh-`}
                   style={{
                     cursor:
-                      selectedCluster?.value &&
-                      !isEmpty(selectedCluster?.value)
+                      selectedCluster?.value && !isEmpty(selectedCluster?.value)
                         ? 'pointer'
                         : 'not-allowed',
                   }}

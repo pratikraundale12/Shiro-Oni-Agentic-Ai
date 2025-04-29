@@ -15,6 +15,7 @@ export const validatePayload = (payload, requiredFields) => {
     query: 'Query',
     logged_in_user: 'LoggedIn User',
     user_role: 'Role',
+    nifi_version: 'NiFi Version',
   };
 
   const missingFields = requiredFields
