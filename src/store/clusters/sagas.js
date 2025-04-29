@@ -298,8 +298,16 @@ export function* fetchClusterMetrics(api, { payload }) {
   }
 }
 export function* associateClusterWithRegistry(api, { payload }) {
-  console.log(payload, 'payload');
-
+  // const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  // console.log(selectedCluster, 'selectedCluster');
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item?.id === payload?.clusterId
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: 'associateClusterWithRegistry',
     loadingSection: 'associateClusterWithRegistry',
@@ -308,6 +316,7 @@ export function* associateClusterWithRegistry(api, { payload }) {
   });
   if (response?.ok) {
     toast.success(response?.data?.message);
+    yield put(ClustersActions.setIsRegitryAssociationModalOpen(false));
   } else {
     toast.error(response?.data?.error);
   }

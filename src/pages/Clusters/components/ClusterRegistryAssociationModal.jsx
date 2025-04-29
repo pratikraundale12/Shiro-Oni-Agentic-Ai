@@ -84,10 +84,12 @@ export const ClusterRegistryAssociationModal = ({
   const isPrimaryBtnDisable = useSelector(
     ClustersSelectors.getAddHostBtnDisable
   );
-  console.log(selectedCluster, 'selectedCluster??????????????????');
 
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getAllRegistiesList')
+  );
+  const associationAPILoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'associateClusterWithRegistry')
   );
   const registries = useSelector(RegistrySelectors.getRegistriesList);
   const registryOption = registries?.map(ele => ({
@@ -102,12 +104,12 @@ export const ClusterRegistryAssociationModal = ({
 
   const schemaPasswrd = yup.object().shape({
     registryId: yup.string().required('Registry is required'),
-    truststoreFile: yup.string().required('Truststore file is required'),
+    truststoreFile: yup.mixed().required('Truststore file is required'),
     keystorePassword: yup.string().required('Keystore password is required'),
     truststorePassword: yup
       .string()
       .required('Truststore password is required'),
-    keystoreFile: yup.string().required('Keystore file is required'),
+    keystoreFile: yup.mixed().required('Keystore file is required'),
     keyPassword: yup.string().required('Key password file is required'),
   });
 
@@ -170,7 +172,7 @@ export const ClusterRegistryAssociationModal = ({
 
   return (
     <>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || associationAPILoading} />
       <ModalWithRightBtn
         isOpen={isModalOpen}
         onRequestClose={onRequestClose}
