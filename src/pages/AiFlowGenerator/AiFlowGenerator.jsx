@@ -281,6 +281,7 @@ export const AiFlowGenerator = () => {
   const isFlowAddedSuccessfully = useSelector(
     AiFlowGeneratorSelectors.getIsFlowAddedSuccessFully
   );
+  const [flowName, setFlowName] = useState('');
   const [clusters, setClusters] = useState(() => {
     return JSON.parse(localStorage.getItem(CLUSTERS_TOKEN) || '[]');
   });
@@ -421,6 +422,9 @@ export const AiFlowGenerator = () => {
       }
       return;
     }
+    if (originalFlow?.flowContents?.name !== flowData?.flow_name) {
+      setFlowName(flowData?.flow_name);
+    }
     const updatedFlowJson = {
       ...flowJson,
       flowContents: {
@@ -445,17 +449,18 @@ export const AiFlowGenerator = () => {
   };
 
   useEffect(() => {
-    if (isFlowAddedSuccessfully && pendingFlowUpdate) {
+    if (isFlowAddedSuccessfully && (pendingFlowUpdate || !isEmpty(flowName))) {
       dispatch(
         AiFlowGeneratorActions.updateGeneratedFlow({
-          data: pendingFlowUpdate,
+          data: { json: pendingFlowUpdate || flowJson, flowName: flowName },
           id: generatedFlowId,
         })
       );
 
       setPendingFlowUpdate(null);
+      setFlowName('');
     }
-  }, [isFlowAddedSuccessfully, pendingFlowUpdate]);
+  }, [isFlowAddedSuccessfully, pendingFlowUpdate, flowName]);
 
   const handleFlowDownload = () => {
     const fileName = queryLable?.length ? `${queryLable}.json` : 'flow.json';
@@ -464,7 +469,7 @@ export const AiFlowGenerator = () => {
     if (isFlowUpdated) {
       dispatch(
         AiFlowGeneratorActions.updateGeneratedFlow({
-          data: flowJson,
+          data: { json: flowJson, flowName: flowName },
           id: generatedFlowId,
         })
       );

@@ -34,13 +34,14 @@ export const aiFlowGeneratorAPI = api => {
       return error.response.data;
     }
   };
-  const addFlowToRegistry = async ({ clusterId, payload }) => {
+  const addFlowToRegistry = async ({ clusterId, payload, registryId }) => {
     const { bucketId } = payload;
     const payloaDdata = {
       flowName: payload?.flowName,
       flowDesc: payload?.flowDesc,
       flowJson: payload?.flowJson,
       isDataInventory: payload?.isDataInventory,
+      registryId: registryId,
     };
     try {
       return await api.post(

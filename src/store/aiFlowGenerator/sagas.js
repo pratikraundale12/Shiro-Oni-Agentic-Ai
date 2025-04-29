@@ -156,13 +156,17 @@ export function* addFlowToRegistry(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   const clusterId = selectedClusterToken?.id;
+  const registryData = yield select(AiFlowGeneratorSelectors.getRegistry);
+  const registryId = registryData[0]?.id;
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
   const response = yield call(requestSaga, {
     errorSection: AiFlowGeneratorActions.addFlowToRegistryFailure,
     loadingSection: 'addFlowToRegistry',
     apiMethod: api.addFlowToRegistry,
-    apiParams: [{ clusterId: clusterId, payload: payload }],
+    apiParams: [
+      { clusterId: clusterId, payload: payload, registryId: registryId },
+    ],
   });
   if (response.ok) {
     yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(true));
