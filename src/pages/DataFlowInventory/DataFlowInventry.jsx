@@ -6,9 +6,8 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import { NoDataIcon, RefreshIcon, SmallSearchIcon } from '../../assets';
 import { AddsquareIcon } from '../../assets/Icons/AddSquareIcon';
-import PineConeImage from '../../assets/images/PineCone.png';
-import s3Image from '../../assets/images/s3logo.png';
 import { FullPageLoader } from '../../components';
+import { API_URL } from '../../constants';
 import { history } from '../../helpers/history';
 import { AuthenticationSelectors, LoadingSelectors } from '../../store';
 import {
@@ -477,16 +476,16 @@ const DataFlowInventory = () => {
                                 <IconsContainer>
                                   <IconWrapper>
                                     <IconImage
-                                      src={s3Image}
-                                      alt="S3"
+                                      src={`${API_URL}/${flow?.source_icon}`}
+                                      alt="image"
                                       width="100%"
                                       height="auto"
                                     />
                                   </IconWrapper>
                                   <IconWrapper marginLeft="-18px">
                                     <IconImage
-                                      src={PineConeImage}
-                                      alt="Pinecone"
+                                      src={`${API_URL}/${flow?.destination_icon}`}
+                                      alt="image"
                                       width="100%"
                                       height="auto"
                                     />
