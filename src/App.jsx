@@ -39,7 +39,7 @@ function App() {
     }
   }
 
-  if (ENABLE_CONSOLE_LOGS) {
+  if (!ENABLE_CONSOLE_LOGS) {
     disableConsole();
   }
   const handleContinue = () => {
