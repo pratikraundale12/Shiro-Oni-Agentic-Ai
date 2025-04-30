@@ -66,7 +66,6 @@ export const FlowAddToRegistryModal = ({
   showAddNewBucket = true,
   handleClose,
   setIsFlowAddedSuccessModalOpen,
-  refresh,
 }) => {
   const newBucketData = useSelector(AiFlowGeneratorSelectors.getNewBucket);
   const isFlowAddedSuccessfully = useSelector(
@@ -110,7 +109,6 @@ export const FlowAddToRegistryModal = ({
     if (isFlowAddedSuccessfully) {
       reset(DEFAULT_fORM_DATA);
       setIsModalOpen(false);
-      refresh();
       setIsFlowAddedSuccessModalOpen && setIsFlowAddedSuccessModalOpen(true);
     }
   }, [isFlowAddedSuccessfully]);

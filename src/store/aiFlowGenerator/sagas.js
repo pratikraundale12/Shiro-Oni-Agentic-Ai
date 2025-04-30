@@ -35,6 +35,8 @@ export function* generateFlowAPI(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+  yield put(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
+
   yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
   yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
 
