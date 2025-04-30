@@ -57,7 +57,6 @@ const SetupClusterWrapper = ({ activeTab }) => {
         value => value === value?.trim()
       )
       .matches(
-        // /^[A-Za-z0-9_-]+$/,
         /^[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*$/,
         'Cluster name must contain only letters, numbers, underscores, or hyphens.'
       ),
