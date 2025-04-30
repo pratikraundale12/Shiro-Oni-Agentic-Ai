@@ -111,8 +111,7 @@ const ClusterStatusTab = () => {
   return (
     <DataWrapper className="w-100">
       <FullPageLoader loading={loading} />
-      <TitleText className="mt-4">Cluster Control</TitleText>
-      <ScrollSetGrey className="scroll-set-grey pe-1">
+      <ScrollSetGrey className="mt-4 scroll-set-grey pe-1">
         {healthMetricData &&
           !isEmpty(healthMetricData) &&
           healthMetricData?.data?.map(ele => (

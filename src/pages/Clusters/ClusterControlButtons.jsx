@@ -8,12 +8,9 @@ import styled from 'styled-components';
 
 const DataWrapper = styled.div`
   width: 100%;
-  height: 596px;
-  top: 273px;
-  left: 290px;
-  gap: 0px;
-  opacity: 0px;
-  border: Mixed solid rgba(221, 228, 240, 1);
+  padding-top: 0px;
+  margin-top: 0px;
+  padding-left: 15px;
 `;
 
 const TitleText = styled.div`
@@ -135,7 +132,7 @@ const ClusterControlButtons = () => {
   return (
     <>
       <DataWrapper className="w-100">
-        <TitleText className="mt-4">Cluster Control</TitleText>
+        <TitleText>Cluster Control</TitleText>
         <div className="row mt-4 mb-4">
           <TextsvgDiv className="d-flex col-2">
             <ActiveButtonDiv className="div-btn-1 mr-2">
