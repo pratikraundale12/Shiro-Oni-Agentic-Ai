@@ -16,10 +16,12 @@ export const clustersAPI = api => {
   const checkCredentialsClusterSetup = ({ payload }) =>
     api.post(`/test-host-credentials/test-private-keys`, payload);
 
-  const fetchHostNodesList = ({ payload }) => {
+  const fetchHostNodesList = ({ clusterId, payload }) => {
     const url = payload
       ? `cluster-nodes/list-nodes`
-      : `cluster-nodes/list-nodes?is_selected=false`;
+      : clusterId
+        ? `cluster-nodes/list-nodes?cluster_id=${clusterId}`
+        : `cluster-nodes/list-nodes?is_selected=false`;
     return api.get(url);
   };
   const addIndividualHost = ({ payload }) =>
@@ -63,6 +65,12 @@ export const clustersAPI = api => {
   const associateClusterWithRegistry = ({ clusterId, payload }) => {
     return api.post(`/clusters/${clusterId}/associate-registry`, payload);
   };
+  const fetchAnsibleClusterData = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/get-edit-details`);
+  };
+  const upgradeAnsibleCluster = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/ansible/upgrade-cluster`, payload);
+  };
   return {
     fetchClusters,
     fetchClusterList,
@@ -86,5 +94,7 @@ export const clustersAPI = api => {
     fetchRunningStatusCluster,
     fetchClusterMetrics,
     associateClusterWithRegistry,
+    fetchAnsibleClusterData,
+    upgradeAnsibleCluster,
   };
 };

@@ -57,6 +57,10 @@ export const ClustersActions = {
   associateClusterWithRegistry: createAction(
     `${prefix}associateClusterWithRegistry`
   ),
+  setansibleClucterToEdit: createAction(`${prefix}setansibleClucterToEdit`),
+  fetchAnsibleClusterData: createAction(`${prefix}fetchAnsibleClusterData`),
+  setAnsibleClusterData: createAction(`${prefix}setAnsibleClusterData`),
+  upgradeAnsibleCluster: createAction(`${prefix}upgradeAnsibleCluster`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -82,6 +86,8 @@ export const CLUSTERS_INITIAL_STATE = {
   healthMetricsData: {},
   runningStatusData: {},
   isRegitryAssociationModalOpen: false,
+  ansibleClucterToEdit: '',
+  ansibleClusterData: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -111,6 +117,8 @@ export const ClustersSelectors = {
   getRunningStatusData: state => state.clusters.runningStatusData,
   getIsRegitryAssociationModalOpen: state =>
     state.clusters.isRegitryAssociationModalOpen,
+  getAnsibleClusterData: state => state.clusters.ansibleClusterData,
+  getansibleClucterToEdit: state => state.clusters.ansibleClucterToEdit,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -256,6 +264,18 @@ const setIsRegitryAssociationModalOpen = (state, { payload }) => {
     isRegitryAssociationModalOpen: payload,
   };
 };
+const setansibleClucterToEdit = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClucterToEdit: payload,
+  };
+};
+const setAnsibleClusterData = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterData: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -306,6 +326,8 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setIsRegitryAssociationModalOpen,
         setIsRegitryAssociationModalOpen
-      );
+      )
+      .addCase(ClustersActions.setansibleClucterToEdit, setansibleClucterToEdit)
+      .addCase(ClustersActions.setAnsibleClusterData, setAnsibleClusterData);
   }
 );

@@ -19,6 +19,7 @@ import {
 import { AddHostIPModal } from './AddHostIPModal';
 import { isEmpty } from 'lodash';
 import { KDFM } from '../../../constants';
+import { toast } from 'react-toastify';
 const LabelSelect = styled.div`
   font-size: 14px;
   font-weight: 600;
@@ -43,6 +44,30 @@ const ClusterDetailTab = ({
     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
   );
   const configListData = useSelector(ClustersSelectors.getConfigNameList);
+  const clusterIdForAnsible = useSelector(
+    ClustersSelectors.getansibleClucterToEdit
+  );
+  const ansibleClusterDataForEdit = useSelector(
+    ClustersSelectors.getAnsibleClusterData
+  );
+
+  const handleSetValue = () => {
+    if (ansibleClusterDataForEdit) {
+      setValue('clusterName', ansibleClusterDataForEdit?.name);
+    }
+  };
+  useEffect(() => {
+    if (!isEmpty(ansibleClusterDataForEdit) && !isEmpty(clusterIdForAnsible)) {
+      handleSetValue();
+      dispatch(
+        ClustersActions.fetchHostNodesList({
+          selected: false,
+          clusterId: clusterIdForAnsible,
+        })
+      );
+    }
+  }, [ansibleClusterDataForEdit]);
+
   const configVerionListData = useSelector(
     ClustersSelectors.getConfigVersionList
   );
@@ -53,34 +78,56 @@ const ClusterDetailTab = ({
     return listHostIpData.filter(ele => !ele?.is_selected);
   }, [listHostIpData]);
 
-  const configVersionOptions =
-    !isEmpty(configVerionListData) &&
-    configVerionListData.map(ele => ({
+  useEffect(() => {
+    if (!isEmpty(listHostIpData) && !isEmpty(clusterIdForAnsible)) {
+      setHostList(listHostIpData);
+    }
+  }, [listHostIpData]);
+
+  const configVersionOptions = useMemo(() => {
+    if (isEmpty(configVerionListData)) return [];
+
+    return configVerionListData.map(ele => ({
       label: String(ele?.config_version),
       value: String(ele?.config_version),
     }));
+  }, [configVerionListData]);
 
-  const configNameOptions =
-    !isEmpty(configListData) &&
-    configListData.map(ele => ({
+  const configNameOptions = useMemo(() => {
+    if (isEmpty(configListData)) return [];
+
+    return configListData.map(ele => ({
       label: ele?.config_name,
       value: ele?.config_name,
     }));
+  }, [configListData]);
 
-  const nifiVerionsOptions =
-    !isEmpty(nifiVersionsData) &&
-    nifiVersionsData?.map(ele => ({
+  const nifiVerionsOptions = useMemo(() => {
+    if (isEmpty(nifiVersionsData)) return [];
+
+    return nifiVersionsData.map(ele => ({
       label: ele?.nifi_version,
       value: ele?.nifi_version,
     }));
+  }, [nifiVersionsData]);
+
   const nifiVersion = watch('nifiVersion');
   const configName = watch('configName');
 
   useEffect(() => {
     if (nifiVersion) {
-      dispatch(ClustersActions.getConfigList(nifiVersion));
-      setValue('configName', '');
-      setValue('configVersion', '');
+      if (
+        !isEmpty(clusterIdForAnsible) &&
+        parseFloat(nifiVersion) <
+          parseFloat(ansibleClusterDataForEdit?.nifi_version)
+      ) {
+        toast.error('Please select upper version');
+        setValue('nifiVersion', ansibleClusterDataForEdit?.nifi_version);
+      } else {
+        dispatch(ClustersActions.getConfigList(nifiVersion));
+        setValue('configName', '');
+        setValue('configVersion', '');
+      }
     }
   }, [nifiVersion]);
 
@@ -92,7 +139,12 @@ const ClusterDetailTab = ({
   }, [configName]);
 
   useEffect(() => {
-    dispatch(ClustersActions.fetchHostNodesList({ selected: false }));
+    if (isEmpty(clusterIdForAnsible)) {
+      dispatch(
+        ClustersActions.fetchHostNodesList({ selected: false, clusterId: null })
+      );
+    }
+
     dispatch(ClustersActions.getNiFiVersions());
   }, [dispatch]);
 
@@ -109,13 +161,17 @@ const ClusterDetailTab = ({
       label: <></>,
       renderCell: item => (
         <div className="d-flex justify-content-center">
-          <CheckboxField
-            name="check"
-            checked={item?.is_selected}
-            onChange={() => {
-              handleCheck(item);
-            }}
-          />
+          {isEmpty(clusterIdForAnsible) ? (
+            <CheckboxField
+              name="check"
+              checked={item?.is_selected}
+              onChange={() => {
+                handleCheck(item);
+              }}
+            />
+          ) : (
+            <></>
+          )}
         </div>
       ),
       resize: true,
@@ -156,8 +212,66 @@ const ClusterDetailTab = ({
   }, [dispatch]);
 
   useEffect(() => {
-    setHostList(itemsForList);
+    if (isEmpty(clusterIdForAnsible)) {
+      setHostList(itemsForList);
+    }
   }, [itemsForList]);
+
+  useEffect(() => {
+    if (
+      ansibleClusterDataForEdit?.config_version &&
+      !isEmpty(configVersionOptions) &&
+      !isEmpty(clusterIdForAnsible) &&
+      configVersionOptions.some(
+        user => user?.value == ansibleClusterDataForEdit?.config_version
+      )
+    ) {
+      setValue(
+        'configVersion',
+        String(ansibleClusterDataForEdit?.config_version)
+      );
+    }
+  }, [configVersionOptions, ansibleClusterDataForEdit]);
+
+  useEffect(() => {
+    if (
+      ansibleClusterDataForEdit?.config_name &&
+      !isEmpty(configNameOptions) &&
+      !isEmpty(clusterIdForAnsible) &&
+      configNameOptions.some(
+        user => user?.value === ansibleClusterDataForEdit?.config_name
+      )
+    ) {
+      setValue('configName', ansibleClusterDataForEdit?.config_name);
+      dispatch(
+        ClustersActions.getConfigVersions(
+          ansibleClusterDataForEdit?.config_name
+        )
+      );
+    }
+  }, [configNameOptions, ansibleClusterDataForEdit]);
+
+  useEffect(() => {
+    if (
+      ansibleClusterDataForEdit?.nifi_version &&
+      !isEmpty(clusterIdForAnsible)
+    ) {
+      setValue('nifiVersion', ansibleClusterDataForEdit?.nifi_version);
+      dispatch(
+        ClustersActions.getConfigList(ansibleClusterDataForEdit.nifi_version)
+      );
+    }
+  }, [nifiVerionsOptions, ansibleClusterDataForEdit]);
+
+  useEffect(() => {
+    if (!isEmpty(clusterIdForAnsible)) {
+      dispatch(ClustersActions.fetchAnsibleClusterData(clusterIdForAnsible));
+    }
+  }, [clusterIdForAnsible]);
+  const handleNiFiVersionChange = () => {
+    setValue('configName', '');
+    setValue('configVersion', '');
+  };
 
   return (
     <>
@@ -174,6 +288,7 @@ const ClusterDetailTab = ({
             register={register}
             errors={errors}
             icon={<QRIcons />}
+            disabled={!isEmpty(clusterIdForAnsible)}
           />
         </div>
       </div>
@@ -188,6 +303,7 @@ const ClusterDetailTab = ({
             control={control}
             options={nifiVerionsOptions || []}
             placeholder={KDFM.SELECT_NIFI_VERSION}
+            onChange={handleNiFiVersionChange}
           />
         </div>
         <div className="col-4">
