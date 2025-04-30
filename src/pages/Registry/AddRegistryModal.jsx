@@ -68,6 +68,15 @@ export const AddRegistryModal = ({ hostToEdit }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'testRegistry')
   );
+  const [initialValues, setInitialValues] = useState({});
+
+  const hasChanges = () => {
+    if (isEmpty(selectedRegistry)) return true;
+    return (
+      initialValues.name !== formData.name?.trim() ||
+      initialValues.nifi_url !== formData.nifi_url?.trim()
+    );
+  };
 
   const OPTIONS = [
     { id: 1, value: 'password', label: 'Password' },
@@ -143,6 +152,11 @@ export const AddRegistryModal = ({ hostToEdit }) => {
   }, [isModalOpen]);
   useEffect(() => {
     if (!isEmpty(selectedRegistry)) {
+      const initial = {
+        name: selectedRegistry?.name || '',
+        nifi_url: selectedRegistry?.registry_url || '',
+      };
+      setInitialValues(initial);
       setValue('name', selectedRegistry?.name);
       setValue('nifi_url', selectedRegistry?.registry_url);
     }
@@ -200,7 +214,11 @@ export const AddRegistryModal = ({ hostToEdit }) => {
         title={`${isEmpty(selectedRegistry) ? 'Add' : 'Edit'} Registry`}
         primaryButtonText={`${isEmpty(selectedRegistry) ? 'Add' : 'Edit'} Registry`}
         secondaryButtonText="Back"
-        primaryButtonDisabled={isPrimaryBtnDisable && isEmpty(selectedRegistry)}
+        primaryButtonDisabled={
+          isEmpty(selectedRegistry)
+            ? isPrimaryBtnDisable
+            : !hasChanges()
+        }
         contentStyles={{ minWidth: '40%', height: '60%' }}
         footerAlign="start"
         tertiaryButton={true}

@@ -385,7 +385,7 @@ const DataFlowInventory = () => {
       flowJson: selectedFlow?.jsonData,
       isDataInventory: true,
     };
-    dispatch(AiFlowGeneratorActions.addFlowToRegistry(payload));
+    dispatch(AiFlowGeneratorActions.addFlowToRegistryInventory(payload));
     setOpenAddToRegistryModal(false);
   };
 
@@ -416,7 +416,7 @@ const DataFlowInventory = () => {
       <MainContent>
         <ContentArea>
           <HeaderContainer>
-            <Title>Flow Gallery List</Title>
+            <Title>Data Flow Inventory</Title>
             <RefreshButton
               onClick={() => {
                 dispatch(FlowValidationActions.fetchFlows());
