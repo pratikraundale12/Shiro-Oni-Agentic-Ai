@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -16,6 +16,8 @@ import { CollapseSidebarIconRight } from '../assets/Icons/CollapseSidebarIconRig
 import { history } from '../helpers/history';
 import { ROUTES_MENU } from '../routes';
 import {
+  AiFlowGeneratorActions,
+  AiFlowGeneratorSelectors,
   AuthenticationActions,
   AuthenticationSelectors,
   LoadingSelectors,
@@ -24,6 +26,8 @@ import {
 import { SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
 import { Loader } from './Loader';
+import DiscardFlowConfirmationModal from '../pages/AiFlowGenerator/DiscardFlowConfirmationModal';
+import { isEmpty } from 'lodash';
 
 export const Container = styled.div`
   height: 100%;
@@ -181,6 +185,15 @@ export const Sidebar = ({
   const flowGenrating = useSelector(state =>
     LoadingSelectors.getLoading(state, 'generateFlowAPI')
   );
+  const isAIFlowSaved = useSelector(
+    AiFlowGeneratorSelectors.getIsflowJsonSaved
+  );
+  const generatedFlow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
+
+  const [isAiFlowWarningModalOpen, setIsAiFlowWarningModalOpen] =
+    useState(false);
+  const [currentPathClicked, setCurrentPathClicked] = useState('');
+  const [logoClicked, setLogoClicked] = useState(false);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const getFiltered = item => {
     if (item.path === 'dashboard') return true;
@@ -204,7 +217,13 @@ export const Sidebar = ({
     }
   }, [pathname, dispatch, route]);
 
-  const handleRoute = path => {
+  useEffect(() => {
+    if (pathname === '/dashboard') {
+      setLogoClicked(false);
+    }
+  }, [pathname]);
+
+  const handleRoute = (path, skipWarning = false) => {
     if (flowGenrating) {
       if (!toast.isActive('generating-flow')) {
         toast.warning('Flow is generating please wait', {
@@ -212,17 +231,35 @@ export const Sidebar = ({
         });
       }
       return;
+    } else if (
+      !isAIFlowSaved &&
+      !skipWarning &&
+      !isEmpty(Object.keys(generatedFlow)) &&
+      typeof generatedFlow?.response === 'object'
+    ) {
+      setIsAiFlowWarningModalOpen(true);
+      setCurrentPathClicked(path);
     } else {
-      dispatch(AuthenticationActions.setRoute(path));
-      history.push(`/${path}`);
-      if (path === 'process-group') {
-        dispatch(NamespacesActions.setSelectedNamespace({}));
+      if (logoClicked) {
+        setIsAiFlowWarningModalOpen(false);
+        history.push('/dashboard');
+      } else {
+        setLogoClicked(false);
+        setIsAiFlowWarningModalOpen(false);
+        dispatch(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
+        dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
+        dispatch(AuthenticationActions.setRoute(path));
+        history.push(`/${path}`);
+        if (path === 'process-group') {
+          dispatch(NamespacesActions.setSelectedNamespace({}));
+        }
       }
     }
   };
 
   const getImage = () => {
     const handleClick = () => {
+      setLogoClicked(true);
       if (flowGenrating) {
         if (!toast.isActive('generating-flow')) {
           toast.warning('Flow is generating please wait', {
@@ -230,8 +267,13 @@ export const Sidebar = ({
           });
         }
         return;
-      }
-      history.push('/dashboard');
+      } else if (
+        !isAIFlowSaved &&
+        !isEmpty(Object.keys(generatedFlow)) &&
+        typeof generatedFlow?.response === 'object'
+      ) {
+        setIsAiFlowWarningModalOpen(true);
+      } else history.push('/dashboard');
     };
     if (loading)
       return (
@@ -346,6 +388,13 @@ export const Sidebar = ({
         {/* FIX_ME: Later will come from API */}
         <span className="version-content">{`V${collapsed ? '' : 'ersion'} 2.1.14`}</span>
       </KDFMVersion>
+      {isAiFlowWarningModalOpen && (
+        <DiscardFlowConfirmationModal
+          isDiscardFlowModalOpen={isAiFlowWarningModalOpen}
+          setIsDiscardFlowModalOpen={setIsAiFlowWarningModalOpen}
+          handleDiscardFlow={() => handleRoute(currentPathClicked, true)}
+        />
+      )}
     </Container>
   );
 };

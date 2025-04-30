@@ -7,12 +7,11 @@ const DiscardFlowConfirmationModal = ({
   isDiscardFlowModalOpen,
   setIsDiscardFlowModalOpen,
   handleDiscardFlow,
-  generatedFlow,
 }) => {
   const handleSubmit = e => {
     if (e?.preventDefault) e.preventDefault();
     if (e?.stopPropagation) e.stopPropagation();
-    handleDiscardFlow(generatedFlow);
+    handleDiscardFlow();
   };
   const handleClose = e => {
     e.preventDefault(); // Ensure closing doesn't trigger form submission
@@ -22,13 +21,14 @@ const DiscardFlowConfirmationModal = ({
   return (
     <div>
       <ModalWithIcon
-        title="Discard the flow JSON"
-        primaryButtonText={'Discard'}
-        secondaryButtonText="Cancel"
+        title="Flow will get lost"
+        primaryButtonText={'Navigate away'}
+        secondaryButtonText="Stay here"
         icon={<DeleteDustbinIcon />}
         isOpen={isDiscardFlowModalOpen}
         onRequestClose={handleClose}
-        primaryText={`Are you sure you want to discard the flow JSON?`}
+        primaryText={`Any unsaved changes may be lost if you navigate away from this page or switch tabs !!!`}
+        secondaryText="Please make sure to download or save flow to registry before proceeding"
         onSubmit={handleSubmit}
       />
     </div>
