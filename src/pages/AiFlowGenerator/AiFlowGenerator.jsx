@@ -35,7 +35,6 @@ import { Button, Modal, SelectField } from '../../shared';
 import { toast } from 'react-toastify';
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
-import DiscardFlowConfirmationModal from './DiscardFlowConfirmationModal';
 import { jsonrepair } from 'jsonrepair';
 import { FullPageLoader } from '../../components';
 import SuggetionsChip from './SuggestionsChip';
@@ -326,7 +325,6 @@ export const AiFlowGenerator = () => {
   const flowValidationLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'validateFlowJson')
   );
-  const [isDiscardFlowModalOpen, setIsDiscardFlowModalOpen] = useState(false);
   const [openAddToRegistryModal, setOpenAddToRegistryModal] = useState(false);
   const [isAddNewBucketModalOpen, setIsAddNewBucketModalOpen] = useState(false);
   const bucketListData = useSelector(
@@ -393,6 +391,7 @@ export const AiFlowGenerator = () => {
       dispatch(AiFlowGeneratorActions.fetchDefaultRecentFlows(payload));
       dispatch(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
       dispatch(AiFlowGeneratorActions.setValidatedFlowErrors([]));
+      dispatch(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
     }
   };
 
@@ -410,7 +409,6 @@ export const AiFlowGenerator = () => {
     }
     setOpenPreviewModal(false);
     setOpenAddToRegistryModal(true);
-    setAddedToRegistry(true);
   };
 
   const handleAddToRegistry = flowData => {
@@ -447,7 +445,11 @@ export const AiFlowGenerator = () => {
       setPendingFlowUpdate(updatedFlowJson);
     }
   };
-
+  useEffect(() => {
+    if (isFlowAddedSuccessfully || isFlowDownloaded) {
+      dispatch(AiFlowGeneratorActions.setIsFlowJsonSaved(true));
+    }
+  }, [isFlowAddedSuccessfully, isFlowDownloaded]);
   useEffect(() => {
     if (isFlowAddedSuccessfully && (pendingFlowUpdate || !isEmpty(flowName))) {
       dispatch(
@@ -491,7 +493,6 @@ export const AiFlowGenerator = () => {
 
   const handlePreviewClick = () => {
     setOpenPreviewModal(true);
-    setIsDiscardFlowModalOpen(false);
     setIsJsonInvalid(false);
     handleChange(generatedFlow);
   };
@@ -645,26 +646,17 @@ export const AiFlowGenerator = () => {
       color: '#444443 !important',
     },
   };
-  const handleDiscardFlow = flow => {
-    dispatch(AiFlowGeneratorActions.deleteGeneratedFlow(flow?.id));
-    handleRefresh();
-    setIsDiscardFlowModalOpen(false);
-    setOpenPreviewModal(false);
-    setOpenAddToRegistryModal(false);
-  };
 
   const validateGeneratedFlow = () => {
     dispatch(AiFlowGeneratorActions.validateFlowJson(flowJson));
   };
   const handleSuccessModalSuccess = () => {
     setIsFlowAddedSuccessModalOpen(false);
-    handleRefresh();
     history.push('/process-group');
   };
 
   const handleSuccessModalClose = () => {
     setIsFlowAddedSuccessModalOpen(false);
-    handleRefresh();
   };
   useEffect(() => {
     if (
@@ -969,11 +961,7 @@ export const AiFlowGenerator = () => {
             setIsFullscreen(false);
             setOpenPreviewModal(false);
           }}
-          onSecondarySubmit={() => {
-            setIsDiscardFlowModalOpen(true);
-          }}
           size="sm"
-          secondaryButtonText="Discard"
           primaryButtonText={'Add to Registry'}
           tertiaryButton={true}
           tertiaryButtonConfig={{
@@ -982,6 +970,7 @@ export const AiFlowGenerator = () => {
               isJsonInvalid || !isFlowValidatedSuccessfully,
           }}
           primaryButtonDisabled={isJsonInvalid || !isFlowValidatedSuccessfully}
+          primaryBtnSize={'md'}
           additionalBtnText={KDFM.VALIDATE_FLOW}
           additionalBtnDisabled={isFlowValidatedSuccessfully}
           additionalBtnClick={validateGeneratedFlow}
@@ -1006,14 +995,6 @@ export const AiFlowGenerator = () => {
             />
           </JsonWrapper>
         </Modal>
-        {isDiscardFlowModalOpen && (
-          <DiscardFlowConfirmationModal
-            isDiscardFlowModalOpen={isDiscardFlowModalOpen}
-            setIsDiscardFlowModalOpen={setIsDiscardFlowModalOpen}
-            handleDiscardFlow={handleDiscardFlow}
-            generatedFlow={generatedFlow}
-          />
-        )}
         {openAddToRegistryModal && (
           <FlowAddToRegistryModal
             isModalOpen={openAddToRegistryModal}

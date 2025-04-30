@@ -93,7 +93,13 @@ export const Modal = ({
   additionalBtnText = '',
   additionalBtnDisabled = false,
   additionalBtnClick = () => null,
+  primaryBtnSize,
 }) => {
+  const primaryButtonSize = primaryBtnSize
+    ? primaryBtnSize
+    : !secondaryButtonText
+      ? 'lg'
+      : 'md';
   const styleObject = {
     overlay: {
       position: 'fixed',
@@ -203,7 +209,7 @@ export const Modal = ({
                 loading={loading}
                 data-dismiss="modal"
                 disabled={primaryButtonDisabled}
-                size={!secondaryButtonText ? 'lg' : 'md'}
+                size={primaryButtonSize || 'md'}
                 {...primaryButtonProps}
               >
                 {primaryButtonText}
@@ -254,4 +260,5 @@ Modal.propTypes = {
   additionalBtnText: PropTypes.string,
   additionalBtnClick: PropTypes.func,
   additionalBtnDisabled: PropTypes.bool,
+  primaryBtnSize: PropTypes.string,
 };
