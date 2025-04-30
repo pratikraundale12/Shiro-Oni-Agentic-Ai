@@ -15,6 +15,12 @@ export const AiFlowGeneratorActions = {
   fetchRegistryDetails: createAction(`${prefix}fetchRegistryDetails`),
   addFlowToRegistry: createAction(`${prefix}addFlowToRegistry`),
   addFlowToRegistryFailure: createAction(`${prefix}addFlowToRegistryFailure`),
+  addFlowToRegistryInventory: createAction(
+    `${prefix}addFlowToRegistryInventory`
+  ),
+  addFlowToRegistryInventoryFailure: createAction(
+    `${prefix}addFlowToRegistryInventoryFailure`
+  ),
   addNewBucketToRegistry: createAction(`${prefix}addNewBucketToRegistry`),
   validateFlowJson: createAction(`${prefix}validateFlowJson`),
   validateFlowJsonSuccess: createAction(`${prefix}validateFlowJsonSuccess`),

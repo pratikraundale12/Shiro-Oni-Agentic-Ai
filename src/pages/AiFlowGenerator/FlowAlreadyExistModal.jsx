@@ -17,7 +17,7 @@ export const FlowAlreadyExistModal = ({
         icon={<RightCircleIcon />}
         isOpen={isModalOpen}
         onRequestClose={handleClose}
-        primaryText="The flow you are trying to add already exists to the registry."
+        primaryText="The flow you are trying to add already exists in the selected bucket and registry."
         secondaryText="If you want to deploy the flow please continue."
         onSubmit={handleSubmit}
       />
