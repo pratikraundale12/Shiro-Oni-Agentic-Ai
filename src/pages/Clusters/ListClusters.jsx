@@ -149,9 +149,18 @@ export const ListClusters = () => {
     row: {},
   });
 
+  const handleEditAnsibleCluster = item => {
+    dispatch(ClustersActions.setansibleClucterToEdit(item?.id));
+    dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
+
+    history.push(`/clusters/setup-cluster`);
+  };
+
   useEffect(() => {
     dispatch(SchedularActions.setStatusFilterData(''));
-  }, []);
+    dispatch(ClustersActions.setansibleClucterToEdit(''));
+    dispatch(ClustersActions.setAnsibleClusterData({}));
+  }, [dispatch]);
 
   const COLUMNS = [
     {
@@ -236,6 +245,12 @@ export const ListClusters = () => {
                       <Item onClick={() => handleClick('view', item?.id, item)}>
                         <OpenEyeIcon width={18} height={18} />
                         <span>{KDFM.VIEW}</span>
+                      </Item>
+                    )}
+                    {item.edit_cluster && item?.created_by_ansible && (
+                      <Item onClick={() => handleEditAnsibleCluster(item)}>
+                        <PencilIcon width={16} height={16} />
+                        <span>Upgrade</span>
                       </Item>
                     )}
                     {item?.edit_cluster &&

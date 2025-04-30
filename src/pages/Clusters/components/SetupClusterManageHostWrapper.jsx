@@ -123,7 +123,9 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
     },
   ];
   useEffect(() => {
-    dispatch(ClustersActions.fetchHostNodesList({ selected: true }));
+    dispatch(
+      ClustersActions.fetchHostNodesList({ selected: true, clusterId: null })
+    );
     return () => {
       ClustersActions.setHostIpList([]);
     };
@@ -196,15 +198,15 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
             {KDFM.BACK}
           </Button>
           <ReactTooltip
-                      id={`tooltip-manage-config`}
-                      place="top"
-                      content={'Back to Manage Config'}
-                      style={{
-                        width: '170px',
-                        whiteSpace: 'normal',
-                        wordWrap: 'break-word',
-                      }}
-                    />
+            id={`tooltip-manage-config`}
+            place="top"
+            content={'Back to Manage Config'}
+            style={{
+              width: '170px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
 
           <Button
             type="submit"
