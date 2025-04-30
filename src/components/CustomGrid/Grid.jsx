@@ -29,6 +29,7 @@ import { UrlRender } from './CellRenders';
 import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
 import { Table } from './Table';
+import ClusterControlButtons from '../../pages/Clusters/ClusterControlButtons';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -458,6 +459,7 @@ export const Grid = ({
     return (
       <>
         <ClusterRegistryContainer className="row">
+          <ClusterControlButtons />
           <ClusterDetail
             data={{
               name: registryNodesData?.cluster?.name,
