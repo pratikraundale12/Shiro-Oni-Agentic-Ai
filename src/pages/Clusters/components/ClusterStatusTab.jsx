@@ -117,7 +117,7 @@ const ClusterStatusTab = () => {
           healthMetricData?.data?.map(ele => (
             <div
               key={ele?.name}
-              style={{ border: '1px solid #dde4f0' }}
+              style={{ border: '1px solid #dde4f0', borderRadius: '16px' }}
               className="mb-2"
             >
               <TitleText className="mt-4 ms-3">
