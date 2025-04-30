@@ -105,7 +105,8 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const disableSubmitOnUpgrade = () => {
     return (
       watchState?.nifiVersion !== ansibleClusterDataForEdit?.nifi_version ||
-      watchState?.configName !== ansibleClusterDataForEdit?.config_name
+      watchState?.configName !== ansibleClusterDataForEdit?.config_name ||
+      watchState?.configVersion != ansibleClusterDataForEdit?.config_version
     );
   };
 
