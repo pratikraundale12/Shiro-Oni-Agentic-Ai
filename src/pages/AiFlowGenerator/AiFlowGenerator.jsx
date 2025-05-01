@@ -652,11 +652,13 @@ export const AiFlowGenerator = () => {
   };
   const handleSuccessModalSuccess = () => {
     setIsFlowAddedSuccessModalOpen(false);
+    dispatch(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
     history.push('/process-group');
   };
 
   const handleSuccessModalClose = () => {
     setIsFlowAddedSuccessModalOpen(false);
+    dispatch(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
   };
   useEffect(() => {
     if (
@@ -896,7 +898,10 @@ export const AiFlowGenerator = () => {
                                 <div className="validate-flow-btn">
                                   <Button
                                     variant="secondary"
-                                    isBtnDisable={isFlowValidatedSuccessfully}
+                                    isBtnDisable={
+                                      isJsonInvalid ||
+                                      isFlowValidatedSuccessfully
+                                    }
                                     onClick={() => validateGeneratedFlow()}
                                     size="sm"
                                   >
@@ -972,7 +977,7 @@ export const AiFlowGenerator = () => {
           primaryButtonDisabled={isJsonInvalid || !isFlowValidatedSuccessfully}
           primaryBtnSize={'md'}
           additionalBtnText={KDFM.VALIDATE_FLOW}
-          additionalBtnDisabled={isFlowValidatedSuccessfully}
+          additionalBtnDisabled={isJsonInvalid || isFlowValidatedSuccessfully}
           additionalBtnClick={validateGeneratedFlow}
           onSubmit={e => {
             setIsClickedFromPreviewModal(true);
