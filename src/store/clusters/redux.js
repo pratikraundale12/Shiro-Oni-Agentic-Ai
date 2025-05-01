@@ -89,6 +89,7 @@ export const ClustersActions = {
   associateClusterWithRegistry: createAction(
     `${prefix}associateClusterWithRegistry`
   ),
+  setTestCredsButtonVisible: createAction(`${prefix}setTestCredsButtonVisible`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -125,6 +126,7 @@ export const CLUSTERS_INITIAL_STATE = {
   updatingServiceAccountHost: false,
   updateServiceAccountHostError: null,
   isRegitryAssociationModalOpen: false,
+  isTestCredsButtonVisible: true,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -168,6 +170,7 @@ export const ClustersSelectors = {
     state.clusters.updateServiceAccountHostError,
   getIsRegitryAssociationModalOpen: state =>
     state.clusters.isRegitryAssociationModalOpen,
+  isTestCredsButtonVisible: state => state.clusters.isTestCredsButtonVisible,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -314,6 +317,80 @@ const setIsRegitryAssociationModalOpen = (state, { payload }) => {
   };
 };
 
+const checkServiceAccountCredentialsRequest = state => {
+  return {
+    ...state,
+    checkingServiceAccount: true,
+    checkServiceAccountError: null,
+  };
+};
+
+const checkServiceAccountCredentialsSuccess = state => {
+  return {
+    ...state,
+    checkingServiceAccount: false,
+  };
+};
+
+const checkServiceAccountCredentialsFailure = (state, { payload }) => {
+  return {
+    ...state,
+    checkingServiceAccount: false,
+    checkServiceAccountError: payload,
+  };
+};
+
+const addServiceAccountHostRequest = state => {
+  return {
+    ...state,
+    addingServiceAccountHost: true,
+    addServiceAccountHostError: null,
+  };
+};
+
+const addServiceAccountHostSuccess = state => {
+  return {
+    ...state,
+    addingServiceAccountHost: false,
+  };
+};
+
+const addServiceAccountHostFailure = (state, { payload }) => {
+  return {
+    ...state,
+    addingServiceAccountHost: false,
+    addServiceAccountHostError: payload,
+  };
+};
+
+const updateServiceAccountHostRequest = state => {
+  return {
+    ...state,
+    updatingServiceAccountHost: true,
+    updateServiceAccountHostError: null,
+  };
+};
+
+const updateServiceAccountHostSuccess = state => {
+  return {
+    ...state,
+    updatingServiceAccountHost: false,
+  };
+};
+
+const updateServiceAccountHostFailure = (state, { payload }) => {
+  return {
+    ...state,
+    updatingServiceAccountHost: false,
+    updateServiceAccountHostError: payload,
+  };
+};
+
+const setTestCredsButtonVisible = (state, { payload }) => ({
+  ...state,
+  isTestCredsButtonVisible: payload, // true or false
+});
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -361,59 +438,49 @@ export const clustersReducer = createReducer(
       .addCase(ClustersActions.setHealthMetricsData, setHealthMetricsData)
       .addCase(ClustersActions.setRunningStatusData, setRunningStatusData)
       // Check service-account credentials
-      .addCase(ClustersActions.checkServiceAccountCredentialsRequest, state => {
-        state.checkingServiceAccount = true;
-        state.checkServiceAccountError = null;
-      })
-      .addCase(ClustersActions.checkServiceAccountCredentialsSuccess, state => {
-        state.checkingServiceAccount = false;
-      })
+      .addCase(
+        ClustersActions.checkServiceAccountCredentialsRequest,
+        checkServiceAccountCredentialsRequest
+      )
+      .addCase(
+        ClustersActions.checkServiceAccountCredentialsSuccess,
+        checkServiceAccountCredentialsSuccess
+      )
       .addCase(
         ClustersActions.checkServiceAccountCredentialsFailure,
-        (state, { payload }) => {
-          state.checkingServiceAccount = false;
-          state.checkServiceAccountError = payload;
-        }
+        checkServiceAccountCredentialsFailure
       )
 
       // Add service-account host
-      .addCase(ClustersActions.addServiceAccountHostRequest, state => {
-        state.addingServiceAccountHost = true;
-        state.addServiceAccountHostError = null;
-      })
+      .addCase(
+        ClustersActions.addServiceAccountHostRequest,
+        addServiceAccountHostRequest
+      )
       .addCase(
         ClustersActions.addServiceAccountHostSuccess,
-        (state /*, { payload } */) => {
-          state.addingServiceAccountHost = false;
-          // you can optionally update hostIpList here if payload includes the new host
-        }
+        addServiceAccountHostSuccess
       )
       .addCase(
         ClustersActions.addServiceAccountHostFailure,
-        (state, { payload }) => {
-          state.addingServiceAccountHost = false;
-          state.addServiceAccountHostError = payload;
-        }
+        addServiceAccountHostFailure
       )
 
       // Update service-account host
-      .addCase(ClustersActions.updateServiceAccountHostRequest, state => {
-        state.updatingServiceAccountHost = true;
-        state.updateServiceAccountHostError = null;
-      })
+      .addCase(
+        ClustersActions.updateServiceAccountHostRequest,
+        updateServiceAccountHostRequest
+      )
       .addCase(
         ClustersActions.updateServiceAccountHostSuccess,
-        (state /*, { payload } */) => {
-          state.updatingServiceAccountHost = false;
-          // you can optionally update hostIpList here if payload includes the updated host
-        }
+        updateServiceAccountHostSuccess
       )
       .addCase(
         ClustersActions.updateServiceAccountHostFailure,
-        (state, { payload }) => {
-          state.updatingServiceAccountHost = false;
-          state.updateServiceAccountHostError = payload;
-        }
+        updateServiceAccountHostFailure
+      )
+      .addCase(
+        ClustersActions.setTestCredsButtonVisible,
+        setTestCredsButtonVisible
       )
       .addCase(
         ClustersActions.setIsRegitryAssociationModalOpen,

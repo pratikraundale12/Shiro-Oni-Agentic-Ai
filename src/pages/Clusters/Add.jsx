@@ -492,6 +492,7 @@ export const Add = () => {
     }
   };
   useEffect(() => {
+    console.log('clusterId', clusterData);
     fetchRegistry();
   }, [activeTab]);
 
@@ -787,7 +788,9 @@ export const Add = () => {
         {isSuperAdmin && activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT && (
           <FormContainer>
             <ClusterServiceAccountModal
-            clusterId={clusterId}
+              tags={tags}
+              clusterData={clusterData}
+              clusterId={clusterId}
             />
           </FormContainer>
         )}
