@@ -151,7 +151,7 @@ const CompareValidation = () => {
           <div className="d-flex align-items-center gap-2">
             <TodoIcon width={22} height={24} />
             <HeadingStyle>
-              Procress Group Details : {selectedItem?.name}
+              Process Group Details : {selectedItem?.name}
             </HeadingStyle>
           </div>
         </div>
