@@ -76,6 +76,9 @@ export const clustersAPI = api => {
   const updateNodesAnsibleCluster = ({ clusterId, payload }) => {
     return api.post(`/clusters/${clusterId}/ansible/update-nodes`, payload);
   };
+
+  const deleteAnsibleClusterHard = ({ clusterId }) =>
+    api.delete(`clusters/${clusterId}/nifi_uninstall`);
   return {
     fetchClusters,
     fetchClusterList,
@@ -102,5 +105,6 @@ export const clustersAPI = api => {
     fetchAnsibleClusterData,
     upgradeAnsibleCluster,
     updateNodesAnsibleCluster,
+    deleteAnsibleClusterHard,
   };
 };

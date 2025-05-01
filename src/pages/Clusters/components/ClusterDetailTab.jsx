@@ -90,22 +90,7 @@ const ClusterDetailTab = ({
 
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
-  const deselectedNodes = listHostIpData.filter(staticItem => {
-    const updatedItem = hostList.find(updated => updated.id === staticItem.id);
-    return (
-      staticItem.is_selected === true && updatedItem?.is_selected === false
-    );
-  });
 
-  console.log('Deselected Nodes:', deselectedNodes);
-  const newlySelectedNodes = listHostIpData.filter(staticItem => {
-    const updatedItem = hostList.find(updated => updated.id === staticItem.id);
-    return (
-      staticItem.is_selected === false && updatedItem?.is_selected === true
-    );
-  });
-
-  console.log('Newly Selected Nodes:', newlySelectedNodes);
   const itemsForList = useMemo(() => {
     return listHostIpData.filter(ele => !ele?.is_selected);
   }, [listHostIpData]);
@@ -115,7 +100,6 @@ const ClusterDetailTab = ({
       setHostList(listHostIpData);
     }
   }, [listHostIpData]);
-  console.log(hostList, 'hostList');
 
   useEffect(() => {
     if (!isEmpty(listHostIpData) && !isEmpty(nodesUpdateAnsbibleClusterId)) {
@@ -192,48 +176,35 @@ const ClusterDetailTab = ({
     dispatch(ClustersActions.getNiFiVersions());
   }, [dispatch]);
 
-  // const handleCheck = ele => {
-  //   setHostList(prevData =>
-  //     prevData.map(item =>
-  //       item.id === ele?.id ? { ...item, is_selected: !item.is_selected } : item
-  //     )
-  //   );
-  // };
-  // ONY ONE LEST
-  // const handleCheck = ele => {
-  //   setHostList(prevData => {
-  //     const updatedData = prevData.map(item =>
-  //       item.id === ele?.id ? { ...item, is_selected: !item.is_selected } : item
-  //     );
-
-  //     const atLeastOneSelected = updatedData.some(item => item.is_selected);
-
-  //     if (!atLeastOneSelected) {
-  //       toast.error('All nodes can not be removed from cluster');
-
-  //       return prevData;
-  //     }
-
-  //     return updatedData;
-  //   });
-  // };
   const handleCheck = ele => {
-    setHostList(prevData => {
-      const updatedData = prevData.map(item =>
-        item.id === ele?.id ? { ...item, is_selected: !item.is_selected } : item
-      );
-      const atLeastOneStillSelected = listHostIpData.some(staticItem => {
-        const updatedItem = updatedData.find(u => u.id === staticItem.id);
-        return staticItem.is_selected && updatedItem?.is_selected;
-      });
-      if (!atLeastOneStillSelected) {
-        toast.error(
-          'At least one previously selected node must remain selected'
+    if (!isEmpty(nodesUpdateAnsbibleClusterId)) {
+      setHostList(prevData => {
+        const updatedData = prevData.map(item =>
+          item.id === ele?.id
+            ? { ...item, is_selected: !item.is_selected }
+            : item
         );
-        return prevData;
-      }
-      return updatedData;
-    });
+        const atLeastOneStillSelected = listHostIpData.some(staticItem => {
+          const updatedItem = updatedData.find(u => u.id === staticItem.id);
+          return staticItem.is_selected && updatedItem?.is_selected;
+        });
+        if (!atLeastOneStillSelected) {
+          toast.error(
+            'At least one previously selected node must remain selected'
+          );
+          return prevData;
+        }
+        return updatedData;
+      });
+    } else {
+      setHostList(prevData =>
+        prevData.map(item =>
+          item.id === ele?.id
+            ? { ...item, is_selected: !item.is_selected }
+            : item
+        )
+      );
+    }
   };
 
   const COLUMNS = [
@@ -328,6 +299,7 @@ const ClusterDetailTab = ({
         'configVersion',
         String(ansibleClusterDataForEdit?.config_version)
       );
+      setHostList(listHostIpData);
     }
   }, [configVersionOptions, ansibleClusterDataForEdit]);
 

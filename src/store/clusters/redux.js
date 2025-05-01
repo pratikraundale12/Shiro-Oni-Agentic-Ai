@@ -65,6 +65,10 @@ export const ClustersActions = {
     `${prefix}setAnsibleClusterNodeUpdate`
   ),
   updateNodesAnsibleCluster: createAction(`${prefix}updateNodesAnsibleCluster`),
+  deleteAnsibleClusterHard: createAction(`${prefix}deleteAnsibleClusterHard`),
+  setisAnsibleClusterDeleteFrimNiFiModalOpen: createAction(
+    `${prefix}setisAnsibleClusterDeleteFrimNiFiModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -93,6 +97,7 @@ export const CLUSTERS_INITIAL_STATE = {
   ansibleClucterToEdit: '',
   ansibleClusterData: {},
   ansibleClusterNodeUpdate: '',
+  isAnsibleClusterDeleteFrimNiFiModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -125,6 +130,8 @@ export const ClustersSelectors = {
   getAnsibleClusterData: state => state.clusters.ansibleClusterData,
   getansibleClucterToEdit: state => state.clusters.ansibleClucterToEdit,
   getAnsibleClusterNodeUpdate: state => state.clusters.ansibleClusterNodeUpdate,
+  getisAnsibleClusterDeleteFrimNiFiModalOpen: state =>
+    state.clusters.isAnsibleClusterDeleteFrimNiFiModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -289,6 +296,12 @@ const setAnsibleClusterNodeUpdate = (state, { payload }) => {
   };
 };
 
+const setisAnsibleClusterDeleteFrimNiFiModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isAnsibleClusterDeleteFrimNiFiModalOpen: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -344,6 +357,10 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setAnsibleClusterNodeUpdate,
         setAnsibleClusterNodeUpdate
+      )
+      .addCase(
+        ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen,
+        setisAnsibleClusterDeleteFrimNiFiModalOpen
       );
   }
 );
