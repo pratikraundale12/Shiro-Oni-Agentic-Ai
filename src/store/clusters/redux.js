@@ -61,6 +61,10 @@ export const ClustersActions = {
   fetchAnsibleClusterData: createAction(`${prefix}fetchAnsibleClusterData`),
   setAnsibleClusterData: createAction(`${prefix}setAnsibleClusterData`),
   upgradeAnsibleCluster: createAction(`${prefix}upgradeAnsibleCluster`),
+  setAnsibleClusterNodeUpdate: createAction(
+    `${prefix}setAnsibleClusterNodeUpdate`
+  ),
+  updateNodesAnsibleCluster: createAction(`${prefix}updateNodesAnsibleCluster`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -88,6 +92,7 @@ export const CLUSTERS_INITIAL_STATE = {
   isRegitryAssociationModalOpen: false,
   ansibleClucterToEdit: '',
   ansibleClusterData: {},
+  ansibleClusterNodeUpdate: '',
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -119,6 +124,7 @@ export const ClustersSelectors = {
     state.clusters.isRegitryAssociationModalOpen,
   getAnsibleClusterData: state => state.clusters.ansibleClusterData,
   getansibleClucterToEdit: state => state.clusters.ansibleClucterToEdit,
+  getAnsibleClusterNodeUpdate: state => state.clusters.ansibleClusterNodeUpdate,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -276,6 +282,12 @@ const setAnsibleClusterData = (state, { payload }) => {
     ansibleClusterData: payload,
   };
 };
+const setAnsibleClusterNodeUpdate = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterNodeUpdate: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -328,6 +340,10 @@ export const clustersReducer = createReducer(
         setIsRegitryAssociationModalOpen
       )
       .addCase(ClustersActions.setansibleClucterToEdit, setansibleClucterToEdit)
-      .addCase(ClustersActions.setAnsibleClusterData, setAnsibleClusterData);
+      .addCase(ClustersActions.setAnsibleClusterData, setAnsibleClusterData)
+      .addCase(
+        ClustersActions.setAnsibleClusterNodeUpdate,
+        setAnsibleClusterNodeUpdate
+      );
   }
 );

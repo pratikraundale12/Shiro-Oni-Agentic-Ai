@@ -44,6 +44,9 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const clusterIdForAnsible = useSelector(
     ClustersSelectors.getansibleClucterToEdit
   );
+  const nodesUpdateAnsbibleClusterId = useSelector(
+    ClustersSelectors.getAnsibleClusterNodeUpdate
+  );
   const ansibleClusterDataForEdit = useSelector(
     ClustersSelectors.getAnsibleClusterData
   );
@@ -155,9 +158,11 @@ const SetupClusterWrapper = ({ activeTab }) => {
               !isEmpty(clusterIdForAnsible) ? !disableSubmitOnUpgrade() : false
             }
           >
-            {!isEmpty(clusterIdForAnsible)
-              ? 'Upgrade Cluster'
-              : 'Create Cluster'}
+            {!isEmpty(nodesUpdateAnsbibleClusterId)
+              ? 'Update Nodes'
+              : !isEmpty(clusterIdForAnsible)
+                ? 'Upgrade Cluster'
+                : 'Create Cluster'}
           </Button>
         </BottomButtonDiv>
       </BottomButton>

@@ -124,7 +124,11 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
   ];
   useEffect(() => {
     dispatch(
-      ClustersActions.fetchHostNodesList({ selected: true, clusterId: null })
+      ClustersActions.fetchHostNodesList({
+        selected: true,
+        clusterId: null,
+        update_node: false,
+      })
     );
     return () => {
       ClustersActions.setHostIpList([]);

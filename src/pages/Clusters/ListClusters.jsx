@@ -9,6 +9,7 @@ import {
   DeleteSmallIcon,
   LogoutIcon,
   LogsIcon,
+  ManageHostIcon,
   MetricsIcon,
   OpenEyeIcon,
   PencilIcon,
@@ -155,11 +156,18 @@ export const ListClusters = () => {
 
     history.push(`/clusters/setup-cluster`);
   };
+  const handleupdateNodesAnsibleCluster = item => {
+    dispatch(ClustersActions.setAnsibleClusterNodeUpdate(item?.id));
+    dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
+
+    history.push(`/clusters/setup-cluster`);
+  };
 
   useEffect(() => {
     dispatch(SchedularActions.setStatusFilterData(''));
     dispatch(ClustersActions.setansibleClucterToEdit(''));
     dispatch(ClustersActions.setAnsibleClusterData({}));
+    dispatch(ClustersActions.setAnsibleClusterNodeUpdate(''));
   }, [dispatch]);
 
   const COLUMNS = [
@@ -251,6 +259,14 @@ export const ListClusters = () => {
                       <Item onClick={() => handleEditAnsibleCluster(item)}>
                         <PencilIcon width={16} height={16} />
                         <span>Upgrade</span>
+                      </Item>
+                    )}
+                    {item.edit_cluster && item?.created_by_ansible && (
+                      <Item
+                        onClick={() => handleupdateNodesAnsibleCluster(item)}
+                      >
+                        <ManageHostIcon width={18} height={18} />
+                        <span>Nodes</span>
                       </Item>
                     )}
                     {item?.edit_cluster &&

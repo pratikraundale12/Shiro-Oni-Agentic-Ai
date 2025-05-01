@@ -50,6 +50,9 @@ const ClusterDetailTab = ({
   const ansibleClusterDataForEdit = useSelector(
     ClustersSelectors.getAnsibleClusterData
   );
+  const nodesUpdateAnsbibleClusterId = useSelector(
+    ClustersSelectors.getAnsibleClusterNodeUpdate
+  );
 
   const handleSetValue = () => {
     if (ansibleClusterDataForEdit) {
@@ -63,10 +66,23 @@ const ClusterDetailTab = ({
         ClustersActions.fetchHostNodesList({
           selected: false,
           clusterId: clusterIdForAnsible,
+          update_node: false,
+        })
+      );
+    } else if (
+      !isEmpty(ansibleClusterDataForEdit) &&
+      !isEmpty(nodesUpdateAnsbibleClusterId)
+    ) {
+      handleSetValue();
+      dispatch(
+        ClustersActions.fetchHostNodesList({
+          selected: false,
+          clusterId: nodesUpdateAnsbibleClusterId,
+          update_node: true,
         })
       );
     }
-  }, [ansibleClusterDataForEdit]);
+  }, [ansibleClusterDataForEdit, nodesUpdateAnsbibleClusterId]);
 
   const configVerionListData = useSelector(
     ClustersSelectors.getConfigVersionList
@@ -74,6 +90,22 @@ const ClusterDetailTab = ({
 
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
+  const deselectedNodes = listHostIpData.filter(staticItem => {
+    const updatedItem = hostList.find(updated => updated.id === staticItem.id);
+    return (
+      staticItem.is_selected === true && updatedItem?.is_selected === false
+    );
+  });
+
+  console.log('Deselected Nodes:', deselectedNodes);
+  const newlySelectedNodes = listHostIpData.filter(staticItem => {
+    const updatedItem = hostList.find(updated => updated.id === staticItem.id);
+    return (
+      staticItem.is_selected === false && updatedItem?.is_selected === true
+    );
+  });
+
+  console.log('Newly Selected Nodes:', newlySelectedNodes);
   const itemsForList = useMemo(() => {
     return listHostIpData.filter(ele => !ele?.is_selected);
   }, [listHostIpData]);
@@ -83,6 +115,14 @@ const ClusterDetailTab = ({
       setHostList(listHostIpData);
     }
   }, [listHostIpData]);
+  console.log(hostList, 'hostList');
+
+  useEffect(() => {
+    if (!isEmpty(listHostIpData) && !isEmpty(nodesUpdateAnsbibleClusterId)) {
+      // HERE
+      setHostList(listHostIpData);
+    }
+  }, [listHostIpData, nodesUpdateAnsbibleClusterId]);
 
   const configVersionOptions = useMemo(() => {
     if (isEmpty(configVerionListData)) return [];
@@ -141,19 +181,59 @@ const ClusterDetailTab = ({
   useEffect(() => {
     if (isEmpty(clusterIdForAnsible)) {
       dispatch(
-        ClustersActions.fetchHostNodesList({ selected: false, clusterId: null })
+        ClustersActions.fetchHostNodesList({
+          selected: false,
+          clusterId: null,
+          update_node: false,
+        })
       );
     }
 
     dispatch(ClustersActions.getNiFiVersions());
   }, [dispatch]);
 
+  // const handleCheck = ele => {
+  //   setHostList(prevData =>
+  //     prevData.map(item =>
+  //       item.id === ele?.id ? { ...item, is_selected: !item.is_selected } : item
+  //     )
+  //   );
+  // };
+  // ONY ONE LEST
+  // const handleCheck = ele => {
+  //   setHostList(prevData => {
+  //     const updatedData = prevData.map(item =>
+  //       item.id === ele?.id ? { ...item, is_selected: !item.is_selected } : item
+  //     );
+
+  //     const atLeastOneSelected = updatedData.some(item => item.is_selected);
+
+  //     if (!atLeastOneSelected) {
+  //       toast.error('All nodes can not be removed from cluster');
+
+  //       return prevData;
+  //     }
+
+  //     return updatedData;
+  //   });
+  // };
   const handleCheck = ele => {
-    setHostList(prevData =>
-      prevData.map(item =>
+    setHostList(prevData => {
+      const updatedData = prevData.map(item =>
         item.id === ele?.id ? { ...item, is_selected: !item.is_selected } : item
-      )
-    );
+      );
+      const atLeastOneStillSelected = listHostIpData.some(staticItem => {
+        const updatedItem = updatedData.find(u => u.id === staticItem.id);
+        return staticItem.is_selected && updatedItem?.is_selected;
+      });
+      if (!atLeastOneStillSelected) {
+        toast.error(
+          'At least one previously selected node must remain selected'
+        );
+        return prevData;
+      }
+      return updatedData;
+    });
   };
 
   const COLUMNS = [
@@ -210,12 +290,30 @@ const ClusterDetailTab = ({
   useEffect(() => {
     dispatch(ClustersActions.setConfigNameList([]));
   }, [dispatch]);
-
+  // USED FOR CREATE CLUSTER
   useEffect(() => {
-    if (isEmpty(clusterIdForAnsible)) {
+    if (isEmpty(clusterIdForAnsible) || isEmpty(nodesUpdateAnsbibleClusterId)) {
       setHostList(itemsForList);
     }
   }, [itemsForList]);
+
+  useEffect(() => {
+    if (
+      ansibleClusterDataForEdit?.config_version &&
+      !isEmpty(configVersionOptions) &&
+      !isEmpty(nodesUpdateAnsbibleClusterId) &&
+      configVersionOptions.some(
+        user => user?.value == ansibleClusterDataForEdit?.config_version
+      )
+    ) {
+      setValue(
+        'configVersion',
+        String(ansibleClusterDataForEdit?.config_version)
+      );
+      // HERE
+      setHostList(listHostIpData);
+    }
+  }, [configVersionOptions, ansibleClusterDataForEdit]);
 
   useEffect(() => {
     if (
@@ -232,6 +330,24 @@ const ClusterDetailTab = ({
       );
     }
   }, [configVersionOptions, ansibleClusterDataForEdit]);
+
+  useEffect(() => {
+    if (
+      ansibleClusterDataForEdit?.config_name &&
+      !isEmpty(configNameOptions) &&
+      !isEmpty(nodesUpdateAnsbibleClusterId) &&
+      configNameOptions.some(
+        user => user?.value === ansibleClusterDataForEdit?.config_name
+      )
+    ) {
+      setValue('configName', ansibleClusterDataForEdit?.config_name);
+      dispatch(
+        ClustersActions.getConfigVersions(
+          ansibleClusterDataForEdit?.config_name
+        )
+      );
+    }
+  }, [configNameOptions, ansibleClusterDataForEdit]);
 
   useEffect(() => {
     if (
@@ -254,20 +370,29 @@ const ClusterDetailTab = ({
   useEffect(() => {
     if (
       ansibleClusterDataForEdit?.nifi_version &&
-      !isEmpty(clusterIdForAnsible)
+      (!isEmpty(clusterIdForAnsible) || !isEmpty(nodesUpdateAnsbibleClusterId))
     ) {
       setValue('nifiVersion', ansibleClusterDataForEdit?.nifi_version);
       dispatch(
         ClustersActions.getConfigList(ansibleClusterDataForEdit.nifi_version)
       );
     }
-  }, [nifiVerionsOptions, ansibleClusterDataForEdit]);
+  }, [
+    nifiVerionsOptions,
+    ansibleClusterDataForEdit,
+    nodesUpdateAnsbibleClusterId,
+  ]);
 
   useEffect(() => {
     if (!isEmpty(clusterIdForAnsible)) {
       dispatch(ClustersActions.fetchAnsibleClusterData(clusterIdForAnsible));
+    } else if (!isEmpty(nodesUpdateAnsbibleClusterId)) {
+      dispatch(
+        ClustersActions.fetchAnsibleClusterData(nodesUpdateAnsbibleClusterId)
+      );
     }
-  }, [clusterIdForAnsible]);
+  }, [clusterIdForAnsible, nodesUpdateAnsbibleClusterId]);
+
   const handleNiFiVersionChange = () => {
     setValue('configName', '');
     setValue('configVersion', '');
@@ -288,7 +413,10 @@ const ClusterDetailTab = ({
             register={register}
             errors={errors}
             icon={<QRIcons />}
-            disabled={!isEmpty(clusterIdForAnsible)}
+            disabled={
+              !isEmpty(clusterIdForAnsible) ||
+              !isEmpty(nodesUpdateAnsbibleClusterId)
+            }
           />
         </div>
       </div>
@@ -304,6 +432,7 @@ const ClusterDetailTab = ({
             options={nifiVerionsOptions || []}
             placeholder={KDFM.SELECT_NIFI_VERSION}
             onChange={handleNiFiVersionChange}
+            disabled={!isEmpty(nodesUpdateAnsbibleClusterId)}
           />
         </div>
         <div className="col-4">
@@ -316,6 +445,7 @@ const ClusterDetailTab = ({
             control={control}
             options={configNameOptions || []}
             placeholder={KDFM.SELECT_CONFIG_NAME}
+            disabled={!isEmpty(nodesUpdateAnsbibleClusterId)}
           />
         </div>
         <div className="col-4">
@@ -328,6 +458,7 @@ const ClusterDetailTab = ({
             control={control}
             options={configVersionOptions || []}
             placeholder={KDFM.SELECT_CONFIG_VERSION}
+            disabled={!isEmpty(nodesUpdateAnsbibleClusterId)}
           />
         </div>
       </div>
