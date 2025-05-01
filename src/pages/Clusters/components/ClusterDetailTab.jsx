@@ -103,7 +103,6 @@ const ClusterDetailTab = ({
 
   useEffect(() => {
     if (!isEmpty(listHostIpData) && !isEmpty(nodesUpdateAnsbibleClusterId)) {
-      // HERE
       setHostList(listHostIpData);
     }
   }, [listHostIpData, nodesUpdateAnsbibleClusterId]);
@@ -261,7 +260,6 @@ const ClusterDetailTab = ({
   useEffect(() => {
     dispatch(ClustersActions.setConfigNameList([]));
   }, [dispatch]);
-  // USED FOR CREATE CLUSTER
   useEffect(() => {
     if (isEmpty(clusterIdForAnsible) || isEmpty(nodesUpdateAnsbibleClusterId)) {
       setHostList(itemsForList);
@@ -281,7 +279,6 @@ const ClusterDetailTab = ({
         'configVersion',
         String(ansibleClusterDataForEdit?.config_version)
       );
-      // HERE
       setHostList(listHostIpData);
     }
   }, [configVersionOptions, ansibleClusterDataForEdit]);
