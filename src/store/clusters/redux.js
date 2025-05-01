@@ -61,6 +61,10 @@ export const ClustersActions = {
   fetchAnsibleClusterData: createAction(`${prefix}fetchAnsibleClusterData`),
   setAnsibleClusterData: createAction(`${prefix}setAnsibleClusterData`),
   upgradeAnsibleCluster: createAction(`${prefix}upgradeAnsibleCluster`),
+  deleteAnsibleClusterHard: createAction(`${prefix}deleteAnsibleClusterHard`),
+  setisAnsibleClusterDeleteFrimNiFiModalOpen: createAction(
+    `${prefix}setisAnsibleClusterDeleteFrimNiFiModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -88,6 +92,7 @@ export const CLUSTERS_INITIAL_STATE = {
   isRegitryAssociationModalOpen: false,
   ansibleClucterToEdit: '',
   ansibleClusterData: {},
+  isAnsibleClusterDeleteFrimNiFiModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -119,6 +124,8 @@ export const ClustersSelectors = {
     state.clusters.isRegitryAssociationModalOpen,
   getAnsibleClusterData: state => state.clusters.ansibleClusterData,
   getansibleClucterToEdit: state => state.clusters.ansibleClucterToEdit,
+  getisAnsibleClusterDeleteFrimNiFiModalOpen: state =>
+    state.clusters.isAnsibleClusterDeleteFrimNiFiModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -277,6 +284,12 @@ const setAnsibleClusterData = (state, { payload }) => {
   };
 };
 
+const setisAnsibleClusterDeleteFrimNiFiModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isAnsibleClusterDeleteFrimNiFiModalOpen: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -328,6 +341,10 @@ export const clustersReducer = createReducer(
         setIsRegitryAssociationModalOpen
       )
       .addCase(ClustersActions.setansibleClucterToEdit, setansibleClucterToEdit)
-      .addCase(ClustersActions.setAnsibleClusterData, setAnsibleClusterData);
+      .addCase(ClustersActions.setAnsibleClusterData, setAnsibleClusterData)
+      .addCase(
+        ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen,
+        setisAnsibleClusterDeleteFrimNiFiModalOpen
+      );
   }
 );

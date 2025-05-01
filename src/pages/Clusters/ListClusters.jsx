@@ -42,6 +42,7 @@ import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { ClusterRegistryAssociationModal } from './components/ClusterRegistryAssociationModal';
 
 const List = styled.div`
+  width: 165px;
   position: absolute;
   top: 25%;
   right: 100%;
@@ -62,7 +63,7 @@ const List = styled.div`
 `;
 
 const Item = styled.div`
-  width: 8rem;
+  width: 10rem;
   position: relative;
   cursor: pointer;
   display: flex;
@@ -129,6 +130,9 @@ export const ListClusters = () => {
   const hardDeleteModalOpen = useSelector(
     ClustersSelectors.getIsclusterHardDeleteModalOpen
   );
+  const ansibleClusterNiFiDeleteOpen = useSelector(
+    ClustersSelectors.getisAnsibleClusterDeleteFrimNiFiModalOpen
+  );
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const [selectedCluster, setSelectedCluster] = useState({});
   const toggleSorting = column => {
@@ -161,6 +165,23 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setansibleClucterToEdit(''));
     dispatch(ClustersActions.setAnsibleClusterData({}));
   }, [dispatch]);
+
+  const handleHardDeleteAnsibleCluster = item => {
+    handleCloseMenu();
+    setSelectedCluster(item);
+    setDeleteHardId(item?.id);
+    dispatch(ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(true));
+  };
+  const handleAnsibleClusterNiFiDeleteConfirmation = () => {
+    handleCloseMenu();
+    dispatch(
+      ClustersActions.deleteAnsibleClusterHard({
+        clusterId: selectedCluster?.id,
+        payload: { deleteType: 'nifi_uninstall' },
+      })
+    );
+    setSelectedCluster({});
+  };
 
   const COLUMNS = [
     {
@@ -328,9 +349,17 @@ export const ListClusters = () => {
                             <span>{KDFM.ACTIVATE}</span>
                           </Item>
                         )}
-                        {item.delete_cluster && (
+                        {item.delete_cluster && !item.created_by_ansible && (
                           <Item
                             onClick={() => handleClick('deleteHard', item.id)}
+                          >
+                            <DeleteSmallIcon width={18} height={18} />
+                            <span> Delete</span>
+                          </Item>
+                        )}
+                        {item.delete_cluster && item.created_by_ansible && (
+                          <Item
+                            onClick={() => handleHardDeleteAnsibleCluster(item)}
                           >
                             <DeleteSmallIcon width={18} height={18} />
                             <span> Delete</span>
@@ -373,6 +402,7 @@ export const ListClusters = () => {
       toast.error(response?.message);
     }
     dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
+    dispatch(ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false));
   };
 
   const updateClusterStatus = async id => {
@@ -493,6 +523,7 @@ export const ListClusters = () => {
     if (type === 'deleteHard') {
       dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(true));
       setDeleteHardId(id);
+      setSelectedCluster({});
     }
   };
 
@@ -520,6 +551,23 @@ export const ListClusters = () => {
     <>
       {' '}
       <AddOrEditClusterModal />
+      <ModalWithIcon
+        title={'Delete Cluster'}
+        primaryButtonText={'Delete from NiFi'}
+        secondaryButtonText={KDFM.CANCEL}
+        icon={<DeleteDustbinIcon />}
+        isOpen={ansibleClusterNiFiDeleteOpen}
+        onSubmit={() => handleAnsibleClusterNiFiDeleteConfirmation()}
+        onRequestClose={() => {
+          dispatch(
+            ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false)
+          );
+          setSelectedCluster({});
+        }}
+        primaryText={KDFM.HARD_DELETE_CLUSTER_WARNING}
+        additionalBtnText={'Delete from DFM'}
+        additionalBtnClick={() => handleDeleteHard()}
+      />
       <ClusterRegistryAssociationModal
         selectedCluster={selectedCluster}
         setSelectedCluster={setSelectedCluster}
@@ -536,7 +584,7 @@ export const ListClusters = () => {
       />
       <ModalWithIcon
         title={'Delete Cluster'}
-        primaryButtonText={'Delete'}
+        primaryButtonText={'Delete from DFM'}
         secondaryButtonText={KDFM.CANCEL}
         icon={<DeleteDustbinIcon />}
         isOpen={hardDeleteModalOpen}

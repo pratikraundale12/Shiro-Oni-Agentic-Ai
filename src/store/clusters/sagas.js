@@ -6,6 +6,7 @@ import { NamespacesActions, NamespacesSelectors } from '../namespaces';
 import { ClustersActions } from './redux';
 import { toast } from 'react-toastify';
 import { history } from '../../helpers/history';
+import { GridActions } from '../grid';
 
 export function* fetchClusterList(api, { payload: { params } = {} }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -353,6 +354,29 @@ export function* upgradeAnsibleCluster(api, { payload }) {
   }
 }
 
+export function* deleteAnsibleClusterHard(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteAnsibleClusterHard',
+    loadingSection: 'deleteAnsibleClusterHard',
+    apiMethod: api.deleteAnsibleClusterHard,
+    apiParams: [{ clusterId: payload?.clusterId }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message);
+    yield put(
+      ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false)
+    );
+    yield put(
+      GridActions.fetchGrid({
+        module: 'clusters',
+        params: {},
+      })
+    );
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
 export function* clustersSagas(api) {
   yield all([
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
@@ -408,6 +432,11 @@ export function* clustersSagas(api) {
     takeLatest(
       ClustersActions.upgradeAnsibleCluster,
       upgradeAnsibleCluster,
+      api
+    ),
+    takeLatest(
+      ClustersActions.deleteAnsibleClusterHard,
+      deleteAnsibleClusterHard,
       api
     ),
   ]);
