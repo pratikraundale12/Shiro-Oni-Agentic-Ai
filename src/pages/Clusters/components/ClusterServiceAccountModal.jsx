@@ -143,7 +143,7 @@ export const ClusterServiceAccountModal = ({
       setMethod('username_password');
     } else {
       reset({
-        service_account_type: data?.service_account_type || 'username_password',
+        service_account_type: data?.service_account_type || '',
         service_username: data?.service_username || '',
         service_password: data?.service_password || '',
         service_account_certificate: data?.service_account_certificate || '',
@@ -151,11 +151,12 @@ export const ClusterServiceAccountModal = ({
           data?.service_account_certificate_password || '',
         change_request_enable: data?.change_request_enable || false,
       });
-      setMethod(data?.service_account_type || 'username_password');
+      setMethod('username_password');
     }
   };
 
   useEffect(() => {
+    console.log('method...................', method);
     if (method === 'username_password') {
       setValue('service_username', data?.service_username || '');
       setValue('service_password', data?.service_password || '');
@@ -287,10 +288,8 @@ export const ClusterServiceAccountModal = ({
             name="service_account_type"
             options={OPTIONS}
             control={control}
-            onChange={e => {
-              setValue('service_account_type', e.target.value);
-              setMethod(e.target.value);
-            }}
+            defaultValue={method}
+            onChange={e => setMethod(e.target.value)}
             disabled={!changeRequestEnabled || loading}
           />
         </div>
