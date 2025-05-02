@@ -90,6 +90,18 @@ export const ClustersActions = {
     `${prefix}associateClusterWithRegistry`
   ),
   setTestCredsButtonVisible: createAction(`${prefix}setTestCredsButtonVisible`),
+  setansibleClucterToEdit: createAction(`${prefix}setansibleClucterToEdit`),
+  fetchAnsibleClusterData: createAction(`${prefix}fetchAnsibleClusterData`),
+  setAnsibleClusterData: createAction(`${prefix}setAnsibleClusterData`),
+  upgradeAnsibleCluster: createAction(`${prefix}upgradeAnsibleCluster`),
+  setAnsibleClusterNodeUpdate: createAction(
+    `${prefix}setAnsibleClusterNodeUpdate`
+  ),
+  updateNodesAnsibleCluster: createAction(`${prefix}updateNodesAnsibleCluster`),
+  deleteAnsibleClusterHard: createAction(`${prefix}deleteAnsibleClusterHard`),
+  setisAnsibleClusterDeleteFrimNiFiModalOpen: createAction(
+    `${prefix}setisAnsibleClusterDeleteFrimNiFiModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -127,6 +139,10 @@ export const CLUSTERS_INITIAL_STATE = {
   updateServiceAccountHostError: null,
   isRegitryAssociationModalOpen: false,
   isTestCredsButtonVisible: true,
+  ansibleClucterToEdit: '',
+  ansibleClusterData: {},
+  ansibleClusterNodeUpdate: '',
+  isAnsibleClusterDeleteFrimNiFiModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -171,6 +187,11 @@ export const ClustersSelectors = {
   getIsRegitryAssociationModalOpen: state =>
     state.clusters.isRegitryAssociationModalOpen,
   isTestCredsButtonVisible: state => state.clusters.isTestCredsButtonVisible,
+  getAnsibleClusterData: state => state.clusters.ansibleClusterData,
+  getansibleClucterToEdit: state => state.clusters.ansibleClucterToEdit,
+  getAnsibleClusterNodeUpdate: state => state.clusters.ansibleClusterNodeUpdate,
+  getisAnsibleClusterDeleteFrimNiFiModalOpen: state =>
+    state.clusters.isAnsibleClusterDeleteFrimNiFiModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -316,6 +337,24 @@ const setIsRegitryAssociationModalOpen = (state, { payload }) => {
     isRegitryAssociationModalOpen: payload,
   };
 };
+const setansibleClucterToEdit = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClucterToEdit: payload,
+  };
+};
+const setAnsibleClusterData = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterData: payload,
+  };
+};
+const setAnsibleClusterNodeUpdate = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterNodeUpdate: payload,
+  };
+};
 
 const checkServiceAccountCredentialsRequest = state => {
   return {
@@ -391,6 +430,12 @@ const setTestCredsButtonVisible = (state, { payload }) => ({
   isTestCredsButtonVisible: payload, // true or false
 });
 
+const setisAnsibleClusterDeleteFrimNiFiModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isAnsibleClusterDeleteFrimNiFiModalOpen: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -485,6 +530,16 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setIsRegitryAssociationModalOpen,
         setIsRegitryAssociationModalOpen
+      )
+      .addCase(ClustersActions.setansibleClucterToEdit, setansibleClucterToEdit)
+      .addCase(ClustersActions.setAnsibleClusterData, setAnsibleClusterData)
+      .addCase(
+        ClustersActions.setAnsibleClusterNodeUpdate,
+        setAnsibleClusterNodeUpdate
+      )
+      .addCase(
+        ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen,
+        setisAnsibleClusterDeleteFrimNiFiModalOpen
       );
   }
 );

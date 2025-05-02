@@ -15,6 +15,12 @@ export const AiFlowGeneratorActions = {
   fetchRegistryDetails: createAction(`${prefix}fetchRegistryDetails`),
   addFlowToRegistry: createAction(`${prefix}addFlowToRegistry`),
   addFlowToRegistryFailure: createAction(`${prefix}addFlowToRegistryFailure`),
+  addFlowToRegistryInventory: createAction(
+    `${prefix}addFlowToRegistryInventory`
+  ),
+  addFlowToRegistryInventoryFailure: createAction(
+    `${prefix}addFlowToRegistryInventoryFailure`
+  ),
   addNewBucketToRegistry: createAction(`${prefix}addNewBucketToRegistry`),
   validateFlowJson: createAction(`${prefix}validateFlowJson`),
   validateFlowJsonSuccess: createAction(`${prefix}validateFlowJsonSuccess`),
@@ -41,6 +47,7 @@ export const AiFlowGeneratorActions = {
   setIsFlowAlreadyAddedSuccessFully: createAction(
     `${prefix}setIsFlowAlreadyAddedSuccessFully`
   ),
+  setIsFlowJsonSaved: createAction(`${prefix}setIsFlowJsonSaved`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -57,6 +64,7 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   validatedFlowErrors: [],
   isFlowValidatedSuccessfully: false,
   isFlowErrorModalOpen: false,
+  isFlowJsonSaved: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -76,6 +84,7 @@ export const AiFlowGeneratorSelectors = {
   getIsflowValidatedSuccessfully: state =>
     state.aiFlowGenerator.isFlowValidatedSuccessfully,
   getIsFlowErrorModalOpen: state => state.aiFlowGenerator.isFlowErrorModalOpen,
+  getIsflowJsonSaved: state => state.aiFlowGenerator.isFlowJsonSaved,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -190,6 +199,13 @@ const setIsFlowErrorModalOpen = (state, { payload }) => {
     isFlowErrorModalOpen: payload,
   };
 };
+
+const setIsFlowJsonSaved = (state, { payload }) => {
+  return {
+    ...state,
+    isFlowJsonSaved: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const aiFlowGeneratorReducer = createReducer(
   AI_FLOW_GENERATOR_INITIAL_STATE,
@@ -240,6 +256,7 @@ export const aiFlowGeneratorReducer = createReducer(
       .addCase(
         AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully,
         setIsFlowAlreadyAddedSuccessFully
-      );
+      )
+      .addCase(AiFlowGeneratorActions.setIsFlowJsonSaved, setIsFlowJsonSaved);
   }
 );

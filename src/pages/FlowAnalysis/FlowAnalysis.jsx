@@ -196,6 +196,7 @@ const FlowAnalysis = () => {
               <PropertyIcon color="#444445" width="16px" height="16px" />
             </IconButton>
           </button>
+
           <ReactTooltip
             id={`tooltip-edit-${item.id}`}
             place="left"
@@ -206,24 +207,26 @@ const FlowAnalysis = () => {
               wordWrap: 'break-word',
             }}
           />
-          <button
-            onClick={() => handleDelete(item)}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-            }}
-            data-tooltip-id={`tooltip-compare-${item.id}`}
-          >
-            <IconButton>
-              <CompareValidationIcon
-                color="#444445"
-                width="16px"
-                height="16px"
-              />
-            </IconButton>
-          </button>
+          {item?.version && (
+            <button
+              onClick={() => handleDelete(item)}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+              }}
+              data-tooltip-id={`tooltip-compare-${item.id}`}
+            >
+              <IconButton>
+                <CompareValidationIcon
+                  color="#444445"
+                  width="16px"
+                  height="16px"
+                />
+              </IconButton>
+            </button>
+          )}
           <ReactTooltip
             id={`tooltip-compare-${item.id}`}
             place="left"

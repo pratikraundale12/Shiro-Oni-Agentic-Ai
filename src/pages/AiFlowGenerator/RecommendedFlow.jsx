@@ -56,11 +56,19 @@ export const RecommendedFlow = ({
   setQueryText,
   loading,
   setQueryLable,
+  allowToGenerate,
+  refresh,
 }) => {
   const flowData = (!isEmpty(recentFlows) ? recentFlows : []).slice(0, 6);
 
   const handleRecentFlowClick = flow => {
-    if (loading) {
+    if (allowToGenerate) {
+      refresh();
+      setQueryText(flow?.prompt);
+      setQueryLable(flow?.short_name);
+      return;
+    }
+    if (loading && !allowToGenerate) {
       if (!toast.isActive('generating-flow')) {
         toast.warning('Flow is generating please wait', {
           toastId: 'generating-flow',
@@ -128,4 +136,6 @@ RecommendedFlow.propTypes = {
   setQueryLable: PropTypes.func,
   isValidFlowGenerated: PropTypes.bool,
   isJsonEmpty: PropTypes.bool,
+  allowToGenerate: PropTypes.bool,
+  refresh: PropTypes.func,
 };

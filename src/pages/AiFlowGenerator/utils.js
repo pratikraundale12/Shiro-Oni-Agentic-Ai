@@ -44,7 +44,7 @@ export const formattedTime = () => {
 
   return `${hours}:${minutes} ${period} ${day}-${month}-${year}`;
 };
-export const downloadJsonFile = (jsonData, fileName = 'demo.json', refresh) => {
+export const downloadJsonFile = (jsonData, fileName = 'demo.json') => {
   try {
     const blob = new Blob([JSON.stringify(jsonData, null, 2)], {
       type: 'application/json',
@@ -63,7 +63,6 @@ export const downloadJsonFile = (jsonData, fileName = 'demo.json', refresh) => {
     toast.success('Flow downloaded successfully!', {
       toastId: 'download-success',
     });
-    refresh();
   } catch (error) {
     toast.error('Failed to download the flow. Please try again.', {
       toastId: 'download-error',
