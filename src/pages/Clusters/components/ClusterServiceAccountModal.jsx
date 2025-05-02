@@ -132,8 +132,6 @@ export const ClusterServiceAccountModal = ({
 
   const handleSave = async () => {
     const formData = new FormData();
-    console.log('clusterId:', clusterId);
-    console.log('clusterData:', clusterData);
     formData.append('name', clusterData.clusterName);
     formData.append('nifi_url', clusterData.nifiUrl);
     if (clusterData.registryId) {
@@ -164,7 +162,7 @@ export const ClusterServiceAccountModal = ({
     if (method === 'password') {
       formData.append('service_username', values.username);
       formData.append('service_password', values.password);
-      formData.append('has_custom_service_account', 'false');
+      formData.append('has_custom_service_account', 'true');
     } else {
       formData.append('has_custom_service_account', 'true');
       formData.append('service_account_certificate_password', values.password);
@@ -174,22 +172,11 @@ export const ClusterServiceAccountModal = ({
       console.error(
         'ClusterServiceAccountModal: Missing clusterId or formData'
       );
-      console.log('clusterId:', clusterId);
-      console.log('formData:', JSON.stringify(formData));
       toast.error('Failed to save: Missing required data');
       return;
     }
 
     if (isEmpty(hostToEdit)) {
-      console.log('Updating host:........................', clusterId);
-      console.log('formData...............:', formData);
-      for (let pair of formData.entries()) {
-        console.log(pair[0], ':', pair[1]);
-      }
-      console.log(
-        '.................................................................................:'
-      );
-      console.log('hostToEdit...............:', hostToEdit);
       dispatch(
         ClustersActions.addServiceAccountHostRequest({
           clusterId,
@@ -197,15 +184,6 @@ export const ClusterServiceAccountModal = ({
         })
       );
     } else {
-      console.log('Updating host:........................', clusterId);
-      console.log('formData...............:', formData);
-      console.log(
-        '.................................................................................:'
-      );
-      console.log('hostToEdit...............:', hostToEdit);
-      for (let pair of formData.entries()) {
-        console.log(pair[0], ':', pair[1]);
-      }
       dispatch(
         ClustersActions.updateServiceAccountHostRequest({
           clusterId,
@@ -298,7 +276,7 @@ export const ClusterServiceAccountModal = ({
               loading={loading}
               onClick={handleSave}
             >
-              {isEmpty(hostToEdit) ? 'Add Host' : 'Update Host'}
+              Save
             </Button>
           </div>
         </FlexWrapper>
@@ -330,6 +308,5 @@ ClusterServiceAccountModal.propTypes = {
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     isPassword: PropTypes.bool,
     username: PropTypes.string,
-    // if you read more fields (e.g. pfxFile), add them here
   }),
 };
