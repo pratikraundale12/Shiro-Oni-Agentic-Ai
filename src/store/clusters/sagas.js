@@ -388,7 +388,7 @@ export function* addServiceAccountHost(api, { payload }) {
 
     if (response.ok) {
       yield put(ClustersActions.addServiceAccountHostSuccess(response.data));
-      toast.success('Host added successfully');
+      toast.success('Saved successfully');
     } else {
       console.error('addServiceAccountHost: API error:', response.data.message);
       yield put(
@@ -402,7 +402,6 @@ export function* addServiceAccountHost(api, { payload }) {
   }
 }
 
-// ——— 3. Update Host ———
 export function* updateServiceAccountHost(api, { payload }) {
   const { clusterId, formData } = payload;
   const response = yield call(requestSaga, {
@@ -416,7 +415,7 @@ export function* updateServiceAccountHost(api, { payload }) {
     yield put(
       ClustersActions.updateServiceAccountHostSuccess(response?.data?.message)
     );
-    toast.success('Host updated successfully');
+    toast.success('Saved successfully');
   } else {
     yield put(
       ClustersActions.updateServiceAccountHostFailure(response?.data?.message)
