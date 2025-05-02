@@ -44,9 +44,13 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const clusterIdForAnsible = useSelector(
     ClustersSelectors.getansibleClucterToEdit
   );
+  const nodesUpdateAnsbibleClusterId = useSelector(
+    ClustersSelectors.getAnsibleClusterNodeUpdate
+  );
   const ansibleClusterDataForEdit = useSelector(
     ClustersSelectors.getAnsibleClusterData
   );
+  const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
   const schema = yup.object().shape({
     clusterName: yup
       .string()
@@ -77,9 +81,38 @@ const SetupClusterWrapper = ({ activeTab }) => {
     resolver: yupResolver(schema),
   });
   const watchState = watch();
+  const deselectedNodes = listHostIpData.filter(staticItem => {
+    const updatedItem = hostList.find(updated => updated.id === staticItem.id);
+    return (
+      staticItem.is_selected === true && updatedItem?.is_selected === false
+    );
+  });
+  const deselectedNodesIds = deselectedNodes.map(ele => ele?.id);
+
+  const newlySelectedNodes = listHostIpData.filter(staticItem => {
+    const updatedItem = hostList.find(updated => updated.id === staticItem.id);
+    return (
+      staticItem.is_selected === false && updatedItem?.is_selected === true
+    );
+  });
+  const newlySelectedNodesIds = newlySelectedNodes.map(ele => ele?.id);
 
   const handleCreateCluster = data => {
-    if (!isEmpty(clusterIdForAnsible)) {
+    if (!isEmpty(nodesUpdateAnsbibleClusterId)) {
+      if (isEmpty(deselectedNodesIds) && isEmpty(newlySelectedNodesIds)) {
+        toast.error('Please update any nodes first');
+      } else {
+        dispatch(
+          ClustersActions.updateNodesAnsibleCluster({
+            clusterId: nodesUpdateAnsbibleClusterId,
+            payload: {
+              nodeIdsToRemove: deselectedNodesIds,
+              nodeIdsToAdd: newlySelectedNodesIds,
+            },
+          })
+        );
+      }
+    } else if (!isEmpty(clusterIdForAnsible)) {
       const { clusterName, ...rest } = data;
       clusterName;
       dispatch(
@@ -155,9 +188,11 @@ const SetupClusterWrapper = ({ activeTab }) => {
               !isEmpty(clusterIdForAnsible) ? !disableSubmitOnUpgrade() : false
             }
           >
-            {!isEmpty(clusterIdForAnsible)
-              ? 'Upgrade Cluster'
-              : 'Create Cluster'}
+            {!isEmpty(nodesUpdateAnsbibleClusterId)
+              ? 'Update Nodes'
+              : !isEmpty(clusterIdForAnsible)
+                ? 'Upgrade Cluster'
+                : 'Create Cluster'}
           </Button>
         </BottomButtonDiv>
       </BottomButton>

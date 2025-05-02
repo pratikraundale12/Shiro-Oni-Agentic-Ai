@@ -61,6 +61,10 @@ export const ClustersActions = {
   fetchAnsibleClusterData: createAction(`${prefix}fetchAnsibleClusterData`),
   setAnsibleClusterData: createAction(`${prefix}setAnsibleClusterData`),
   upgradeAnsibleCluster: createAction(`${prefix}upgradeAnsibleCluster`),
+  setAnsibleClusterNodeUpdate: createAction(
+    `${prefix}setAnsibleClusterNodeUpdate`
+  ),
+  updateNodesAnsibleCluster: createAction(`${prefix}updateNodesAnsibleCluster`),
   deleteAnsibleClusterHard: createAction(`${prefix}deleteAnsibleClusterHard`),
   setisAnsibleClusterDeleteFrimNiFiModalOpen: createAction(
     `${prefix}setisAnsibleClusterDeleteFrimNiFiModalOpen`
@@ -92,6 +96,7 @@ export const CLUSTERS_INITIAL_STATE = {
   isRegitryAssociationModalOpen: false,
   ansibleClucterToEdit: '',
   ansibleClusterData: {},
+  ansibleClusterNodeUpdate: '',
   isAnsibleClusterDeleteFrimNiFiModalOpen: false,
 };
 
@@ -124,6 +129,7 @@ export const ClustersSelectors = {
     state.clusters.isRegitryAssociationModalOpen,
   getAnsibleClusterData: state => state.clusters.ansibleClusterData,
   getansibleClucterToEdit: state => state.clusters.ansibleClucterToEdit,
+  getAnsibleClusterNodeUpdate: state => state.clusters.ansibleClusterNodeUpdate,
   getisAnsibleClusterDeleteFrimNiFiModalOpen: state =>
     state.clusters.isAnsibleClusterDeleteFrimNiFiModalOpen,
 };
@@ -283,6 +289,12 @@ const setAnsibleClusterData = (state, { payload }) => {
     ansibleClusterData: payload,
   };
 };
+const setAnsibleClusterNodeUpdate = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterNodeUpdate: payload,
+  };
+};
 
 const setisAnsibleClusterDeleteFrimNiFiModalOpen = (state, { payload }) => {
   return {
@@ -342,6 +354,10 @@ export const clustersReducer = createReducer(
       )
       .addCase(ClustersActions.setansibleClucterToEdit, setansibleClucterToEdit)
       .addCase(ClustersActions.setAnsibleClusterData, setAnsibleClusterData)
+      .addCase(
+        ClustersActions.setAnsibleClusterNodeUpdate,
+        setAnsibleClusterNodeUpdate
+      )
       .addCase(
         ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen,
         setisAnsibleClusterDeleteFrimNiFiModalOpen

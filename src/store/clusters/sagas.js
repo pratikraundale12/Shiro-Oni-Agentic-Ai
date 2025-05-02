@@ -101,7 +101,13 @@ export function* fetchHostNodesList(api, { payload }) {
     errorSection: 'fetchHostNodesList',
     loadingSection: 'fetchHostNodesList',
     apiMethod: api.fetchHostNodesList,
-    apiParams: [{ clusterId: payload?.clusterId, payload: payload?.selected }],
+    apiParams: [
+      {
+        clusterId: payload?.clusterId,
+        update_node: payload?.update_node,
+        payload: payload?.selected,
+      },
+    ],
   });
   if (response.ok) {
     yield put(ClustersActions.setHostIpList(response?.data));
@@ -120,7 +126,11 @@ export function* addIndividualHost(api, { payload }) {
     toast.success('Node Added Successfully');
     yield put(ClustersActions.setIsAddHostIPModalOpen(false));
     yield put(
-      ClustersActions.fetchHostNodesList({ selected: true, clusterId: null })
+      ClustersActions.fetchHostNodesList({
+        selected: true,
+        clusterId: null,
+        update_node: false,
+      })
     );
   } else {
     toast.error(response?.data?.message);
@@ -137,7 +147,11 @@ export function* deleteIndividualHost(api, { payload }) {
   if (response.ok) {
     toast.success('Deleted Successfully');
     yield put(
-      ClustersActions.fetchHostNodesList({ selected: true, clusterId: null })
+      ClustersActions.fetchHostNodesList({
+        selected: true,
+        clusterId: null,
+        update_node: false,
+      })
     );
   } else {
     toast.error(response?.data?.message);
@@ -154,7 +168,11 @@ export function* updateIndividualHost(api, { payload }) {
     toast.success('Node Updated Successfully');
     yield put(ClustersActions.setIsAddHostIPModalOpen(false));
     yield put(
-      ClustersActions.fetchHostNodesList({ selected: true, clusterId: null })
+      ClustersActions.fetchHostNodesList({
+        selected: true,
+        clusterId: null,
+        update_node: false,
+      })
     );
   } else {
     toast.error(response?.data?.message);
@@ -353,6 +371,20 @@ export function* upgradeAnsibleCluster(api, { payload }) {
     toast.error(response?.data?.error);
   }
 }
+export function* updateNodesAnsibleCluster(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'updateNodesAnsibleCluster',
+    loadingSection: 'updateNodesAnsibleCluster',
+    apiMethod: api.updateNodesAnsibleCluster,
+    apiParams: [{ clusterId: payload?.clusterId, payload: payload?.payload }],
+  });
+  if (response?.ok) {
+    toast.success(response?.data?.message);
+    yield call(history.push, '/clusters');
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
 
 export function* deleteAnsibleClusterHard(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -432,6 +464,11 @@ export function* clustersSagas(api) {
     takeLatest(
       ClustersActions.upgradeAnsibleCluster,
       upgradeAnsibleCluster,
+      api
+    ),
+    takeLatest(
+      ClustersActions.updateNodesAnsibleCluster,
+      updateNodesAnsibleCluster,
       api
     ),
     takeLatest(

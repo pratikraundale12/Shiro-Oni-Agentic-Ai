@@ -9,6 +9,7 @@ import {
   DeleteSmallIcon,
   LogoutIcon,
   LogsIcon,
+  ManageHostIcon,
   MetricsIcon,
   OpenEyeIcon,
   PencilIcon,
@@ -159,11 +160,18 @@ export const ListClusters = () => {
 
     history.push(`/clusters/setup-cluster`);
   };
+  const handleupdateNodesAnsibleCluster = item => {
+    dispatch(ClustersActions.setAnsibleClusterNodeUpdate(item?.id));
+    dispatch(ClustersActions.setActiveTabClusterSetup('cluster_details'));
+
+    history.push(`/clusters/setup-cluster`);
+  };
 
   useEffect(() => {
     dispatch(SchedularActions.setStatusFilterData(''));
     dispatch(ClustersActions.setansibleClucterToEdit(''));
     dispatch(ClustersActions.setAnsibleClusterData({}));
+    dispatch(ClustersActions.setAnsibleClusterNodeUpdate(''));
   }, [dispatch]);
 
   const handleHardDeleteAnsibleCluster = item => {
@@ -250,128 +258,157 @@ export const ListClusters = () => {
       label: KDFM.ACTIONS,
       renderCell: item => {
         return (
-          <ActionRender handleMenuClick={handleMenuClick} item={item}>
-            {menuState.isVisible && item.id === menuState.row.id && (
-              <List ref={menuRef}>
-                {item.is_active ? (
-                  <>
-                    {item.edit_cluster && !item?.created_by_ansible && (
-                      <Item onClick={() => handleClick('edit')}>
-                        <PencilIcon width={16} height={16} />
-                        <span>{KDFM.EDIT}</span>
-                      </Item>
-                    )}
-
-                    {item.edit_cluster && (
-                      <Item onClick={() => handleClick('view', item?.id, item)}>
-                        <OpenEyeIcon width={18} height={18} />
-                        <span>{KDFM.VIEW}</span>
-                      </Item>
-                    )}
-                    {item.edit_cluster && item?.created_by_ansible && (
-                      <Item onClick={() => handleEditAnsibleCluster(item)}>
-                        <PencilIcon width={16} height={16} />
-                        <span>Upgrade</span>
-                      </Item>
-                    )}
-                    {item?.edit_cluster &&
-                      item?.created_by_ansible &&
-                      item?.status !== CLUSTER_STATUS.DISCONNECTED &&
-                      !item?.registry_id && (
-                        <Item
-                          onClick={() => {
-                            handleCloseMenu();
-                            setSelectedCluster(item);
-                            dispatch(
-                              ClustersActions.setIsRegitryAssociationModalOpen(
-                                true
-                              )
-                            );
-                          }}
-                        >
-                          <RegistryIcon width={18} height={18} color="black" />
-                          <span>{KDFM.REGISTRY}</span>
-                        </Item>
-                      )}
-                    <>
-                      {item.deactivate_cluster && (
-                        <Item onClick={() => handleClick('delete', item.id)}>
-                          <LogoutIcon color="black" />
-                          <span>{KDFM.DEACTIVATE}</span>
-                        </Item>
-                      )}
-                      {!isEmpty(item?.metrics_url) && (
-                        <StyledLink
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href={item?.metrics_url}
-                        >
-                          <MetricsIconContainer>
-                            <MetricsIcon />
-                          </MetricsIconContainer>
-                          <a
-                            href={item?.metrics_url}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            {KDFM.METRICS}
-                          </a>
-                        </StyledLink>
-                      )}
-                      {!isEmpty(item?.logs_url) && (
-                        <StyledLink
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href={item?.logs_url}
-                        >
-                          <MetricsIconContainer>
-                            {' '}
-                            <LogsIcon />
-                          </MetricsIconContainer>
-                          <a
-                            href={item?.logs_url}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            {KDFM.LOGS}
-                          </a>
-                        </StyledLink>
-                      )}
-                    </>
-                  </>
-                ) : (
-                  <>
-                    {item.status === CLUSTER_STATUS.DISCONNECTED ? null : (
+          <>
+            {item?.state !== 'DRAFT' && (
+              <ActionRender handleMenuClick={handleMenuClick} item={item}>
+                {menuState.isVisible && item.id === menuState.row.id && (
+                  <List ref={menuRef}>
+                    {item.is_active ? (
                       <>
-                        {item?.deactivate_cluster && (
-                          <Item onClick={() => handleClick('active', item.id)}>
-                            <ActiveIcon />
-                            <span>{KDFM.ACTIVATE}</span>
+                        {item.edit_cluster && !item?.created_by_ansible && (
+                          <Item onClick={() => handleClick('edit')}>
+                            <PencilIcon width={16} height={16} />
+                            <span>{KDFM.EDIT}</span>
                           </Item>
                         )}
-                        {item.delete_cluster && !item.created_by_ansible && (
+
+                        {item.edit_cluster && (
                           <Item
-                            onClick={() => handleClick('deleteHard', item.id)}
+                            onClick={() => handleClick('view', item?.id, item)}
                           >
-                            <DeleteSmallIcon width={18} height={18} />
-                            <span> Delete</span>
+                            <OpenEyeIcon width={18} height={18} />
+                            <span>{KDFM.VIEW}</span>
                           </Item>
                         )}
-                        {item.delete_cluster && item.created_by_ansible && (
-                          <Item
-                            onClick={() => handleHardDeleteAnsibleCluster(item)}
-                          >
-                            <DeleteSmallIcon width={18} height={18} />
-                            <span> Delete</span>
+                        {item.edit_cluster && item?.created_by_ansible && (
+                          <Item onClick={() => handleEditAnsibleCluster(item)}>
+                            <PencilIcon width={16} height={16} />
+                            <span>Upgrade</span>
                           </Item>
+                        )}
+                        {item.edit_cluster && item?.created_by_ansible && (
+                          <Item
+                            onClick={() =>
+                              handleupdateNodesAnsibleCluster(item)
+                            }
+                          >
+                            <ManageHostIcon width={18} height={18} />
+                            <span>Nodes</span>
+                          </Item>
+                        )}
+                        {item?.edit_cluster &&
+                          item?.created_by_ansible &&
+                          item?.status !== CLUSTER_STATUS.DISCONNECTED &&
+                          !item?.registry_id && (
+                            <Item
+                              onClick={() => {
+                                handleCloseMenu();
+                                setSelectedCluster(item);
+                                dispatch(
+                                  ClustersActions.setIsRegitryAssociationModalOpen(
+                                    true
+                                  )
+                                );
+                              }}
+                            >
+                              <RegistryIcon
+                                width={18}
+                                height={18}
+                                color="black"
+                              />
+                              <span>{KDFM.REGISTRY}</span>
+                            </Item>
+                          )}
+                        <>
+                          {item.deactivate_cluster && (
+                            <Item
+                              onClick={() => handleClick('delete', item.id)}
+                            >
+                              <LogoutIcon color="black" />
+                              <span>{KDFM.DEACTIVATE}</span>
+                            </Item>
+                          )}
+                          {!isEmpty(item?.metrics_url) && (
+                            <StyledLink
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              href={item?.metrics_url}
+                            >
+                              <MetricsIconContainer>
+                                <MetricsIcon />
+                              </MetricsIconContainer>
+                              <a
+                                href={item?.metrics_url}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                {KDFM.METRICS}
+                              </a>
+                            </StyledLink>
+                          )}
+                          {!isEmpty(item?.logs_url) && (
+                            <StyledLink
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              href={item?.logs_url}
+                            >
+                              <MetricsIconContainer>
+                                {' '}
+                                <LogsIcon />
+                              </MetricsIconContainer>
+                              <a
+                                href={item?.logs_url}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                {KDFM.LOGS}
+                              </a>
+                            </StyledLink>
+                          )}
+                        </>
+                      </>
+                    ) : (
+                      <>
+                        {item.status === CLUSTER_STATUS.DISCONNECTED ? null : (
+                          <>
+                            {item?.deactivate_cluster && (
+                              <Item
+                                onClick={() => handleClick('active', item.id)}
+                              >
+                                <ActiveIcon />
+                                <span>{KDFM.ACTIVATE}</span>
+                              </Item>
+                            )}
+                            {item.delete_cluster &&
+                              !item.created_by_ansible && (
+                                <Item
+                                  onClick={() =>
+                                    handleClick('deleteHard', item.id)
+                                  }
+                                >
+                                  <DeleteSmallIcon width={18} height={18} />
+                                  <span> Delete</span>
+                                </Item>
+                              )}
+                            {item.delete_cluster && item.created_by_ansible && (
+                              <Item
+                                onClick={() =>
+                                  handleHardDeleteAnsibleCluster(item)
+                                }
+                              >
+                                <DeleteSmallIcon width={18} height={18} />
+                                <span> Delete</span>
+                              </Item>
+                            )}
+                          </>
                         )}
                       </>
                     )}
-                  </>
+                  </List>
                 )}
-              </List>
+              </ActionRender>
             )}
-          </ActionRender>
+          </>
         );
       },
       resize: true,
@@ -553,7 +590,7 @@ export const ListClusters = () => {
       <AddOrEditClusterModal />
       <ModalWithIcon
         title={'Delete Cluster'}
-        primaryButtonText={'Delete from NiFi'}
+        primaryButtonText={'Delete NiFi Cluster'}
         secondaryButtonText={KDFM.CANCEL}
         icon={<DeleteDustbinIcon />}
         isOpen={ansibleClusterNiFiDeleteOpen}
