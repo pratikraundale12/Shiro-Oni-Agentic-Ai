@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   DownloadIcon,
   OpenEyeIcon,
@@ -19,7 +19,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { isEmpty, isEqual } from 'lodash';
+import { debounce, isEmpty, isEqual } from 'lodash';
 import { RecommendedFlow } from './RecommendedFlow';
 import { PromptInputBox } from './PromptInputBox';
 import {
@@ -33,9 +33,6 @@ import dfmImage from '../../assets/images/dfm.png';
 import fileImage from '../../assets/images/folder (1) 1.png';
 import { Button, Modal, SelectField } from '../../shared';
 import { toast } from 'react-toastify';
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
-import { jsonrepair } from 'jsonrepair';
 import { FullPageLoader } from '../../components';
 import SuggetionsChip from './SuggestionsChip';
 import {
@@ -51,6 +48,7 @@ import FlowAddedSuccessModal from './FlowAddedSuccessModal';
 import { history } from '../../helpers/history';
 import { FlowValidationErrorModal } from './FlowValidationErrorModal';
 import { useForm } from 'react-hook-form';
+import Editor from '@monaco-editor/react';
 
 const Container = styled.div`
   display: flex;
@@ -245,6 +243,28 @@ const JsonWrapper = styled.div`
   #json-editor > * {
     color: #444445 !important;
   }
+  position: relative;
+  .monaco-editor {
+    max-height: unset !important;
+    overflow: visible !important;
+  }
+
+  .monaco-scrollable-element {
+    overflow: visible !important;
+  }
+`;
+
+const ErrorBanner = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid #f44336;
+  max-height: 120px;
+  overflow-y: auto;
 `;
 
 const FullScreen = styled(FullScreenIcon)`
@@ -430,11 +450,15 @@ export const AiFlowGenerator = () => {
         name: flowData?.pg_name,
       },
     };
+    const bucketName = buckets?.filter(
+      bucket => bucket?.id === flowData?.bucket
+    )[0]?.name;
     const payload = {
       bucketId: flowData?.bucket,
       flowName: flowData?.flow_name,
       flowDesc: flowData?.flow_desc,
       flowJson: updatedFlowJson,
+      bucketName: bucketName || '',
     };
     dispatch(AiFlowGeneratorActions.addFlowToRegistry(payload));
     setOpenPreviewModal(false);
@@ -494,7 +518,6 @@ export const AiFlowGenerator = () => {
   const handlePreviewClick = () => {
     setOpenPreviewModal(true);
     setIsJsonInvalid(false);
-    handleChange(generatedFlow);
   };
 
   const config = {
@@ -524,7 +547,7 @@ export const AiFlowGenerator = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const messagesEndRef = useRef(null);
-
+  const [jsonErrors, setJsonErrors] = useState([]);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -600,51 +623,62 @@ export const AiFlowGenerator = () => {
     }
   }, [generatedFlow]);
 
-  const handleChange = content => {
-    if (content.jsObject) {
-      if (!isEqual(content.jsObject, originalFlow)) {
-        setIsFlowUpdated(true);
-      } else {
-        setIsFlowUpdated(false);
-      }
-      setFlowJson(content.jsObject);
-      dispatch(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
-      if (!toast.isActive('validate-flow')) {
-        toast.warning('Please validate the flow json to proceed further', {
-          toastId: 'validate-flow',
-        });
-      }
+  const onJsonChange = useCallback(
+    debounce(value => {
+      const parsed = JSON.parse(value);
+      const hasChanged = !isEqual(parsed, originalFlow);
+      setIsFlowUpdated(hasChanged);
+      setFlowJson(parsed);
       setIsJsonInvalid(false);
-    } else if (content.error) {
+      dispatch(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
+      if (hasChanged) {
+        if (!toast.isActive('validate-flow')) {
+          toast.warning('Please validate the flow JSON to proceed further', {
+            toastId: 'validate-flow',
+          });
+        }
+      }
+    }, 300),
+    [originalFlow, dispatch, toast]
+  );
+
+  const onJsonValidate = error => {
+    setJsonErrors(error);
+    if (isEmpty(error)) {
+      setIsJsonInvalid(false);
+    } else {
       setIsJsonInvalid(true);
     }
   };
 
-  const customStyles = {
-    outerBox: {
-      height: '100%',
-      border: 'none',
-      borderRadius: '8px',
-      backgroundColor: '#F5F7FA !important',
-    },
-    container: {
-      height: '100%',
-      fontSize: '16px',
-      color: '#444443 !important',
-      backgroundColor: '#F5F7FA !important',
-    },
-    body: {
-      fontSize: '16px',
-      color: '#444443',
-      fontWeight: 400,
-      backgroundColor: '#ffffff !important',
-    },
-    errorMessage: {
-      color: '#ff4d4f',
-    },
-    labelColumn: {
-      color: '#444443 !important',
-    },
+  const handleEditorDidMount = (editor, monaco) => {
+    editor.onKeyDown(e => {
+      const isEnter = e.keyCode === monaco.KeyCode.Enter;
+      const noModifiers = !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey;
+      if (isEnter && noModifiers) {
+        if (!toast.isActive('enter-press')) {
+          toast.info('Please press ctrl+enter to jump into new line.', {
+            toastId: 'enter-press',
+          });
+        }
+      }
+    });
+    monaco.editor.defineTheme('customTheme', {
+      base: 'vs',
+      inherit: false,
+      rules: [{ token: '', foreground: '444445' }],
+      colors: {
+        'editor.background': '#ffffff',
+        'editor.foreground': '#444445',
+        'editorLineNumber.foreground': '#888888',
+        'editorCursor.foreground': '#444445',
+        'scrollbarSlider.background': '#E4842B',
+        'scrollbarSlider.hoverBackground': '#E4842B',
+        'scrollbarSlider.activeBackground': '#E4842B',
+      },
+    });
+
+    monaco.editor.setTheme('customTheme');
   };
 
   const validateGeneratedFlow = () => {
@@ -990,13 +1024,40 @@ export const AiFlowGenerator = () => {
           }}
         >
           <JsonWrapper>
-            <JSONInput
-              id="json-editor"
-              locale={locale}
-              placeholder={flowJson}
+            {!isEmpty(jsonErrors) && (
+              <ErrorBanner>
+                {jsonErrors.map((err, idx) => (
+                  <div key={idx}>
+                    <strong>
+                      Line {err.startLineNumber}, Column {err.startColumn}:
+                    </strong>{' '}
+                    {err.message}
+                  </div>
+                ))}
+              </ErrorBanner>
+            )}
+            <Editor
+              height="2000px"
               width="100%"
-              onChange={handleChange}
-              style={customStyles}
+              language="json"
+              value={JSON.stringify(flowJson, null, 2)}
+              onMount={handleEditorDidMount}
+              onChange={onJsonChange}
+              options={{
+                minimap: { enabled: false },
+                readOnly: false,
+                wordWrap: 'on',
+                scrollBeyondLastLine: false,
+                padding: { top: 0, bottom: 0 },
+                lineNumbers: 'on',
+                overviewRulerLanes: 0,
+                scrollbar: {
+                  verticalScrollbarSize: 4,
+                  horizontalScrollbarSize: 4,
+                  arrowSize: 4,
+                },
+              }}
+              onValidate={onJsonValidate}
             />
           </JsonWrapper>
         </Modal>

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ModalWithIcon } from '../../shared';
-import { DeleteDustbinIcon } from '../../assets';
+import { WarningImageIcon } from '../../assets/Icons/WarningImageIcon';
 
 const DiscardFlowConfirmationModal = ({
   isDiscardFlowModalOpen,
@@ -24,7 +24,7 @@ const DiscardFlowConfirmationModal = ({
         title="Flow will get lost"
         primaryButtonText={'Navigate away'}
         secondaryButtonText="Stay here"
-        icon={<DeleteDustbinIcon />}
+        icon={<WarningImageIcon />}
         isOpen={isDiscardFlowModalOpen}
         onRequestClose={handleClose}
         primaryText={`Any unsaved changes may be lost if you navigate away from this page or switch tabs !!!`}
