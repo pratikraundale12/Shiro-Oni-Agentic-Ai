@@ -244,14 +244,7 @@ const JsonWrapper = styled.div`
     color: #444445 !important;
   }
   position: relative;
-  .monaco-editor {
-    max-height: unset !important;
-    overflow: visible !important;
-  }
-
-  .monaco-scrollable-element {
-    overflow: visible !important;
-  }
+  height: 100%;
 `;
 
 const ErrorBanner = styled.div`
@@ -370,6 +363,9 @@ export const AiFlowGenerator = () => {
   );
   const isFlowValidatedSuccessfully = useSelector(
     AiFlowGeneratorSelectors.getIsflowValidatedSuccessfully
+  );
+  const isAIFlowSaved = useSelector(
+    AiFlowGeneratorSelectors.getIsflowJsonSaved
   );
   useEffect(() => {
     if (!isEmpty(validationError)) {
@@ -625,6 +621,9 @@ export const AiFlowGenerator = () => {
 
   const onJsonChange = useCallback(
     debounce(value => {
+      if (value === '') {
+        setIsJsonInvalid(true);
+      }
       const parsed = JSON.parse(value);
       const hasChanged = !isEqual(parsed, originalFlow);
       setIsFlowUpdated(hasChanged);
@@ -637,6 +636,9 @@ export const AiFlowGenerator = () => {
             toastId: 'validate-flow',
           });
         }
+      }
+      if (!hasChanged) {
+        setIsJsonInvalid(false);
       }
     }, 300),
     [originalFlow, dispatch, toast]
@@ -783,6 +785,8 @@ export const AiFlowGenerator = () => {
                   setQueryLable={setQueryLable}
                   isValidFlowGenerated={isValidFlowGenerated}
                   isJsonEmpty={isEmpty(Object.keys(generatedFlow))}
+                  allowToGenerate={isAIFlowSaved || isFlowDownloaded}
+                  refresh={handleRefresh}
                 />
               </RecommendedFlowBox>
             </Flex>
@@ -1020,8 +1024,10 @@ export const AiFlowGenerator = () => {
           footerAlign="start"
           contentStyles={{
             maxWidth: isFullscreen ? '80%' : '35%',
-            maxHeight: isFullscreen ? '90%' : '70%',
+            maxHeight: isFullscreen ? '820px' : '70%',
+            height: '100%',
           }}
+          formClass={'h-100'}
         >
           <JsonWrapper>
             {!isEmpty(jsonErrors) && (
@@ -1037,7 +1043,6 @@ export const AiFlowGenerator = () => {
               </ErrorBanner>
             )}
             <Editor
-              height="2000px"
               width="100%"
               language="json"
               value={JSON.stringify(flowJson, null, 2)}

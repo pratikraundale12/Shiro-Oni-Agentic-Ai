@@ -94,6 +94,7 @@ export const Modal = ({
   additionalBtnDisabled = false,
   additionalBtnClick = () => null,
   primaryBtnSize,
+  formClass,
 }) => {
   const primaryButtonSize = primaryBtnSize
     ? primaryBtnSize
@@ -146,7 +147,7 @@ export const Modal = ({
       shouldCloseOnOverlayClick={false}
     >
       <form
-        className="d-flex flex-column overflow-auto"
+        className={`d-flex flex-column overflow-auto ${formClass ? formClass : ''}`}
         onSubmit={e => {
           e.preventDefault();
           onSubmit(e);
@@ -261,4 +262,5 @@ Modal.propTypes = {
   additionalBtnClick: PropTypes.func,
   additionalBtnDisabled: PropTypes.bool,
   primaryBtnSize: PropTypes.string,
+  formClass: PropTypes.string,
 };
