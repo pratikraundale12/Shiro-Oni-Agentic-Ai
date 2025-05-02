@@ -64,8 +64,8 @@ export const clustersAPI = api => {
     return api.post(`/clusters/${clusterId}/associate-registry`, payload);
   };
 
-  const createClusterServiceAcc = ({ clusterId, payload }) => {
-    return api.patch(`/clusters/${clusterId}`, payload);
+  const createClusterServiceAcc = ({ payload }) => {
+    return api.post(`/clusters`, payload);
   };
 
   const updateClusterServiceAcc = ({ clusterId, payload }) => {

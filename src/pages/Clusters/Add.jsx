@@ -156,6 +156,8 @@ export const Add = () => {
     return item?.nifi_url !== data?.nifi_url;
   });
 
+  const hostToEdit = clusterData?.clusterName || clusterId;
+
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
   const isSuperAdmin = currentUserData?.role === 'superadmin';
 
@@ -306,6 +308,7 @@ export const Add = () => {
         notification_enable: notificationEnable,
         approver_enable: approverEnable,
         change_request_enable: changeRequestEnable,
+        has_custom_service_account: false,
       };
 
       const id = clusterId;
@@ -727,6 +730,7 @@ export const Add = () => {
           </FormContainer>
         )}
 
+
         {activeTab === CLUSTER_MODULE_TABS.REGISTRY && !newRegistry && (
           <FormContainer>
             <SelectField
@@ -789,6 +793,7 @@ export const Add = () => {
           <FormContainer>
             <ClusterServiceAccountModal
               tags={tags}
+              hostToEdit={hostToEdit}
               clusterData={clusterData}
               clusterId={clusterId}
             />

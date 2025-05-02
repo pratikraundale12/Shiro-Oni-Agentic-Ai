@@ -15,7 +15,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -50,13 +50,11 @@ const FlexWrapper = styled.div`
 
 export const ClusterServiceAccountModal = ({
   tags,
+  hostToEdit,
   clusterData,
   clusterId,
 }) => {
-  const { state } = useLocation();
   const navigate = useNavigate();
-
-  const hostToEdit = state?.hostToEdit;
 
   const dispatch = useDispatch();
   const [method, setMethod] = useState('password');
@@ -188,6 +186,10 @@ export const ClusterServiceAccountModal = ({
       for (let pair of formData.entries()) {
         console.log(pair[0], ':', pair[1]);
       }
+      console.log(
+        '.................................................................................:'
+      );
+      console.log('hostToEdit...............:', hostToEdit);
       dispatch(
         ClustersActions.addServiceAccountHostRequest({
           clusterId,
@@ -197,6 +199,10 @@ export const ClusterServiceAccountModal = ({
     } else {
       console.log('Updating host:........................', clusterId);
       console.log('formData...............:', formData);
+      console.log(
+        '.................................................................................:'
+      );
+      console.log('hostToEdit...............:', hostToEdit);
       for (let pair of formData.entries()) {
         console.log(pair[0], ':', pair[1]);
       }
@@ -320,4 +326,10 @@ ClusterServiceAccountModal.propTypes = {
   }).isRequired,
   clusterId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
     .isRequired,
+  hostToEdit: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    isPassword: PropTypes.bool,
+    username: PropTypes.string,
+    // if you read more fields (e.g. pfxFile), add them here
+  }),
 };
