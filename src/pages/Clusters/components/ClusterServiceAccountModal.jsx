@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-// import { updateCluster } from '../../../store/apis';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { Button } from '../../../shared';
+import { Button, SwitchButton } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { InputField, PasswordField, RadioSelectField } from '../../../shared';
@@ -53,11 +52,18 @@ export const ClusterServiceAccountModal = ({
   hostToEdit,
   clusterData,
   clusterId,
+  data,
 }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const dispatch = useDispatch();
-  const [method, setMethod] = useState('password');
+  // Initialize state
+  const [method, setMethod] = useState(
+    data?.service_account_type || 'username_password'
+  );
+  const [changeRequestEnabled, setChangeRequestEnabled] = useState(
+    data?.has_custom_service_account || false
+  );
 
   const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
   const checkError = useSelector(ClustersSelectors.getServiceAccountCheckError);
@@ -73,19 +79,23 @@ export const ClusterServiceAccountModal = ({
   const loading = isChecking || isAdding || isUpdating;
 
   const OPTIONS = [
-    { id: 1, value: 'password', label: 'Username' },
-    { id: 2, value: 'pem', label: 'P12 File' },
+    { id: 1, value: 'username_password', label: 'Username' },
+    { id: 2, value: 'p12', label: 'P12 File' },
   ];
 
   const schemaPassword = yup.object({
-    username: yup.string().required('Username is required'),
-    password: yup.string().required('Password is required'),
+    service_username: yup.string().required('Username is required'),
+    service_password: yup.string().required('Password is required'),
   });
+
   const schemaPEM = yup.object({
-    password: yup.string().required('Password is required'),
-    pfxFile: yup.mixed().required('PEM file is required'),
+    service_account_certificate_password: yup
+      .string()
+      .required('Password is required'),
+    service_account_certificate: yup.mixed().required('P12 file is required'),
   });
-  const schema = method === 'password' ? schemaPassword : schemaPEM;
+
+  const schema = method === 'username_password' ? schemaPassword : schemaPEM;
 
   const {
     register,
@@ -94,46 +104,77 @@ export const ClusterServiceAccountModal = ({
     reset,
     control,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      service_account_type: data?.service_account_type || 'username_password',
+      service_username: data?.service_username || '',
+      service_password: data?.service_password || '',
+      service_account_certificate: data?.service_account_certificate || '',
+      service_account_certificate_password:
+        data?.service_account_certificate_password || '',
+      change_request_enable: data?.change_request_enable || false,
+    },
+  });
+
+  const handleChangeRequestToggle = () => {
+    const newState = !changeRequestEnabled;
+    setChangeRequestEnabled(newState);
+
+    if (!newState) {
+      reset({
+        service_account_type: data?.service_account_type,
+        service_username: data?.service_username || '',
+        service_password: data?.service_password || '',
+        service_account_certificate: data?.service_account_certificate || '',
+        service_account_certificate_password:
+          data?.service_account_certificate_password || '',
+        change_request_enable: false,
+      });
+      setMethod(data?.service_account_type);
+    } else {
+      reset({
+        service_account_type: data?.service_account_type,
+        service_username: data?.service_username || '',
+        service_password: data?.service_password || '',
+        service_account_certificate: data?.service_account_certificate || '',
+        service_account_certificate_password:
+          data?.service_account_certificate_password || '',
+        change_request_enable: data?.change_request_enable || false,
+      });
+      setMethod(data?.service_account_type || 'username_password');
+    }
+  };
 
   useEffect(() => {
-    reset();
-    if (!isEmpty(hostToEdit)) {
-      if (hostToEdit.isPassword) {
-        setMethod('password');
-        setValue('username', hostToEdit.username);
-      } else {
-        setMethod('pem');
-      }
+    if (method === 'username_password') {
+      setValue('service_username', data?.service_username || '');
+      setValue('service_password', data?.service_password || '');
+    } else if (method === 'p12') {
+      setValue(
+        'service_account_certificate',
+        data?.service_account_certificate || ''
+      );
+      setValue(
+        'service_account_certificate_password',
+        data?.service_account_certificate_password || ''
+      );
     }
-  }, [hostToEdit]);
+  }, [method, data, setValue]);
 
-  const watchedMethod = watch('methodForCredentials');
+  const watchedMethod = watch('service_account_type');
+
   useEffect(() => {
     if (watchedMethod) {
       setMethod(watchedMethod);
-
-      if (watchedMethod === 'password') {
-        setValue('pfxFile', null);
-      } else if (watchedMethod === 'pem') {
-        setValue('username', '');
-      }
     }
   }, [watchedMethod]);
-
-  const values = watch();
-  const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    if (submitted && !isAdding && !addError) {
-      navigate(-1);
-    }
-  }, [submitted, isAdding, addError]);
 
   const handleSave = async () => {
     const formData = new FormData();
     formData.append('name', clusterData.clusterName);
     formData.append('nifi_url', clusterData.nifiUrl);
+
     if (clusterData.registryId) {
       formData.append('registry_id', clusterData.registryId);
     }
@@ -145,6 +186,7 @@ export const ClusterServiceAccountModal = ({
     if (clusterData.metrics_url) {
       formData.append('metrics_url', clusterData.metrics_url);
     }
+
     formData.append('tag', tags);
     formData.append(
       'notification_enable',
@@ -156,18 +198,39 @@ export const ClusterServiceAccountModal = ({
       clusterData.change_request_enable || false
     );
 
-    const saType = method === 'password' ? 'username_password' : 'pem';
-    formData.append('service_account_type', saType);
+    if (changeRequestEnabled) {
+      const saType =
+        method === 'username_password' ? 'username_password' : 'p12';
+      formData.append('service_account_type', saType);
 
-    if (method === 'password') {
-      formData.append('service_username', values.username);
-      formData.append('service_password', values.password);
-      formData.append('has_custom_service_account', 'true');
+      if (method === 'username_password') {
+        formData.append('service_username', watch('service_username'));
+        formData.append('service_password', watch('service_password'));
+        formData.append('has_custom_service_account', 'true');
+        formData.append('service_account_certificate_password', '');
+        formData.append('service_account_certificate', '');
+      } else {
+        formData.append('service_username', '');
+        formData.append('service_password', '');
+        formData.append('has_custom_service_account', 'true');
+        formData.append(
+          'service_account_certificate_password',
+          watch('service_account_certificate_password')
+        );
+        formData.append(
+          'service_account_certificate',
+          watch('service_account_certificate')
+        );
+      }
     } else {
-      formData.append('has_custom_service_account', 'true');
-      formData.append('service_account_certificate_password', values.password);
-      formData.append('service_account_certificate', values.pfxFile);
+      formData.append('has_custom_service_account', 'false');
+      formData.append('service_account_type', 'username_password');
+      formData.append('service_username', '');
+      formData.append('service_password', '');
+      formData.append('service_account_certificate_password', '');
+      formData.append('service_account_certificate', '');
     }
+
     if (!clusterId || !formData) {
       console.error(
         'ClusterServiceAccountModal: Missing clusterId or formData'
@@ -192,80 +255,101 @@ export const ClusterServiceAccountModal = ({
       );
     }
 
-    setSubmitted(true);
+    navigate(-1);
   };
-
-  useEffect(() => {
-    const shouldDisable =
-      (method === 'password' && !values.username) ||
-      !values.password ||
-      (method === 'pem' && !values.pfxFile) ||
-      loading;
-
-    dispatch(ClustersActions.setTestCredsButtonVisible(shouldDisable));
-  }, [values.username, values.password, values.pfxFile, method, loading]);
 
   return (
     <>
       <FullPageLoader loading={loading} />
 
       <Container>
-        <div className="d-flex mb-3">
+        <div>
+          <h5 className="mb-3">Do You Want Custom Service Account? </h5>
+          <SwitchButton
+            id="changeServiceAccountToggle"
+            name=""
+            checked={changeRequestEnabled}
+            onChange={handleChangeRequestToggle}
+            isDisabled={loading}
+          />
+        </div>
+        <div className="d-flex mt-3 mb-1">
           <RadioSelectField
-            name="methodForCredentials"
+            name="service_account_type"
             options={OPTIONS}
-            register={register}
-            defaultValue="password"
-            disabled={loading}
+            control={control}
+            defaultValue={method}
+            onChange={e => setMethod(e.target.value)}
+            disabled={!changeRequestEnabled || loading}
           />
         </div>
 
         <div className="row mb-3">
-          {method === 'password' && (
-            <div className="col-4">
-              <InputField
-                name="username"
-                type="text"
-                label="Username"
-                placeholder="Enter Your User Name"
-                register={register}
-                errors={errors}
-                icon={<CurvedProfileIcon />}
-                disabled={loading}
-              />
-            </div>
-          )}
-          {method === 'pem' && (
-            <div className="col-4">
-              <ModalContainer>
-                <PemUploadField
-                  name="pfxFile"
-                  label="P12 File"
-                  watch={watch}
-                  control={control}
+          {method === 'username_password' && (
+            <>
+              <div className="col-4">
+                <InputField
+                  name="service_username"
+                  type="text"
+                  label="Username"
+                  placeholder="Enter Your User Name"
                   required
-                  rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
-                  placeholder={KDFM.UPLOAD_P12_FILE}
+                  register={register}
                   errors={errors}
-                  fileLable="P12 file"
-                  disabled={loading}
+                  icon={<CurvedProfileIcon />}
+                  disabled={!changeRequestEnabled || loading}
                 />
-              </ModalContainer>
-            </div>
+              </div>
+              <div className="col-4">
+                <PasswordField
+                  name="service_password"
+                  register={register}
+                  watch={watch}
+                  label="Password"
+                  required
+                  icon={<CurvedLockIcon />}
+                  placeholder="Enter Your Password"
+                  disableToggle={false}
+                  errors={errors}
+                  disabled={!changeRequestEnabled || loading}
+                />
+              </div>
+            </>
           )}
-          <div className="col-4">
-            <PasswordField
-              name="password"
-              register={register}
-              watch={watch}
-              label="Password"
-              icon={<CurvedLockIcon />}
-              placeholder="Enter Your Password"
-              disableToggle={false}
-              errors={errors}
-              disabled={loading}
-            />
-          </div>
+          {method === 'p12' && (
+            <>
+              <div className="col-4">
+                <ModalContainer>
+                  <PemUploadField
+                    name="service_account_certificate"
+                    label="P12 File"
+                    watch={watch}
+                    control={control}
+                    required
+                    rightIcon={<UploadWrapper>Upload File</UploadWrapper>}
+                    placeholder={KDFM.UPLOAD_P12_FILE}
+                    errors={errors}
+                    fileLable="P12 file"
+                    disabled={!changeRequestEnabled || loading}
+                  />
+                </ModalContainer>
+              </div>
+              <div className="col-4">
+                <PasswordField
+                  name="service_account_certificate_password"
+                  register={register}
+                  watch={watch}
+                  label="Password"
+                  required
+                  icon={<CurvedLockIcon />}
+                  placeholder="Enter Your Password"
+                  disableToggle={false}
+                  errors={errors}
+                  disabled={!changeRequestEnabled || loading}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         <FlexWrapper>
@@ -297,10 +381,19 @@ ClusterServiceAccountModal.propTypes = {
     nifiUrl: PropTypes.string,
     metrics_url: PropTypes.string,
     logs_url: PropTypes.string,
-    registryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // Added registryId validation
+    registryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     notification_enable: PropTypes.bool,
     approver_enable: PropTypes.bool,
     change_request_enable: PropTypes.bool,
+    service_account_type: PropTypes.oneOf(['username_password', 'p12']),
+    service_username: PropTypes.string,
+    service_password: PropTypes.string,
+    service_account_certificate: PropTypes.string,
+    service_account_certificate_password: PropTypes.string,
+    has_custom_service_account: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.bool,
+    ]),
   }).isRequired,
   clusterId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
     .isRequired,
@@ -308,5 +401,26 @@ ClusterServiceAccountModal.propTypes = {
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     isPassword: PropTypes.bool,
     username: PropTypes.string,
+    password: PropTypes.string,
+    service_account_certificate_password: PropTypes.string,
+  }),
+  data: PropTypes.shape({
+    clusterName: PropTypes.string,
+    nifiUrl: PropTypes.string,
+    metrics_url: PropTypes.string,
+    logs_url: PropTypes.string,
+    registryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    notification_enable: PropTypes.bool,
+    approver_enable: PropTypes.bool,
+    change_request_enable: PropTypes.bool,
+    service_account_type: PropTypes.oneOf(['username_password', 'p12']),
+    service_username: PropTypes.string,
+    service_password: PropTypes.string,
+    service_account_certificate: PropTypes.string,
+    service_account_certificate_password: PropTypes.string,
+    has_custom_service_account: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.bool,
+    ]),
   }),
 };

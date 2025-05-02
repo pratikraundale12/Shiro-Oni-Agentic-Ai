@@ -495,7 +495,6 @@ export const Add = () => {
     }
   };
   useEffect(() => {
-    console.log('clusterId', clusterData);
     fetchRegistry();
   }, [activeTab]);
 
@@ -796,6 +795,7 @@ export const Add = () => {
               hostToEdit={hostToEdit}
               clusterData={clusterData}
               clusterId={clusterId}
+              data={data}
             />
           </FormContainer>
         )}

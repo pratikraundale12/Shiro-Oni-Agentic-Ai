@@ -82,7 +82,7 @@ const ClusterNavigationTab = ({
           />
         )}
       </>
-      {isSuperAdmin && (
+      {isSuperAdmin && data && (
       <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
           onClick={() =>
