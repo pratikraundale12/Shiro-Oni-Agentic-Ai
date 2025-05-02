@@ -144,7 +144,16 @@ const SetupClusterWrapper = ({ activeTab }) => {
 
   return (
     <Wrapper>
-      <Title title={'Add New Cluster'} />
+      <Title
+        title={
+          !isEmpty(nodesUpdateAnsbibleClusterId)
+            ? 'Update Nodes'
+            : !isEmpty(clusterIdForAnsible)
+              ? 'Upgrade Cluster'
+              : 'Add New Cluster'
+        }
+      />
+
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <ClusterDetailTab
