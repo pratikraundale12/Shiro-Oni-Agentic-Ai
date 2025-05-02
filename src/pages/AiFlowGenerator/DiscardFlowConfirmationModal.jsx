@@ -1,18 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ModalWithIcon } from '../../shared';
-import { DeleteDustbinIcon } from '../../assets';
+import { WarningImageIcon } from '../../assets/Icons/WarningImageIcon';
 
 const DiscardFlowConfirmationModal = ({
   isDiscardFlowModalOpen,
   setIsDiscardFlowModalOpen,
   handleDiscardFlow,
-  generatedFlow,
 }) => {
   const handleSubmit = e => {
     if (e?.preventDefault) e.preventDefault();
     if (e?.stopPropagation) e.stopPropagation();
-    handleDiscardFlow(generatedFlow);
+    handleDiscardFlow();
   };
   const handleClose = e => {
     e.preventDefault(); // Ensure closing doesn't trigger form submission
@@ -22,13 +21,14 @@ const DiscardFlowConfirmationModal = ({
   return (
     <div>
       <ModalWithIcon
-        title="Discard the flow JSON"
-        primaryButtonText={'Discard'}
-        secondaryButtonText="Cancel"
-        icon={<DeleteDustbinIcon />}
+        title="Flow will get lost"
+        primaryButtonText={'Navigate away'}
+        secondaryButtonText="Stay here"
+        icon={<WarningImageIcon />}
         isOpen={isDiscardFlowModalOpen}
         onRequestClose={handleClose}
-        primaryText={`Are you sure you want to discard the flow JSON?`}
+        primaryText={`Any unsaved changes may be lost if you navigate away from this page or switch tabs !!!`}
+        secondaryText="Please make sure to download or save flow to registry before proceeding"
         onSubmit={handleSubmit}
       />
     </div>

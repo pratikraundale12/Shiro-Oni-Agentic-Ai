@@ -72,7 +72,7 @@ export const updateRegistry = async (id, payload) => {
 
 export const deleteCluster = async id => {
   try {
-    return await API.delete(`${API_URL}/api/clusters/${id}`);
+    return await API.delete(`${API_URL}/api/clusters/${id}/db_only`);
   } catch (error) {
     return error.response.data;
   }

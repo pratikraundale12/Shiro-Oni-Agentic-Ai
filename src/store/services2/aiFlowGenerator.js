@@ -42,10 +42,33 @@ export const aiFlowGeneratorAPI = api => {
       flowJson: payload?.flowJson,
       isDataInventory: payload?.isDataInventory,
       registryId: registryId,
+      bucketName: payload?.bucketName,
     };
     try {
       return await api.post(
         `/clusters/${clusterId}/buckets/${bucketId}/add-flows`,
+        payloaDdata
+      );
+    } catch (error) {
+      return error.response.data;
+    }
+  };
+  const addFlowToRegistryInventory = async ({
+    clusterId,
+    payload,
+    registryId,
+  }) => {
+    const { bucketId } = payload;
+    const payloaDdata = {
+      flowName: payload?.flowName,
+      flowDesc: payload?.flowDesc,
+      flowJson: payload?.flowJson,
+      isDataInventory: payload?.isDataInventory,
+      registryId: registryId,
+    };
+    try {
+      return await api.post(
+        `/clusters/${clusterId}/buckets/${bucketId}/add-flows-inventory`,
         payloaDdata
       );
     } catch (error) {
@@ -73,6 +96,7 @@ export const aiFlowGeneratorAPI = api => {
     updateGeneratedFlow,
     fetchRegistryDetails,
     addFlowToRegistry,
+    addFlowToRegistryInventory,
     addNewBucketToRegistry,
     validateFlowJson,
   };

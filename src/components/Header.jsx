@@ -23,6 +23,8 @@ import { history } from '../helpers/history';
 import { AddUserModal } from '../pages/Users/AddUserModal';
 import SessionExpiredLabel from '../shared/SessionExpiredLabel';
 import {
+  AiFlowGeneratorActions,
+  AiFlowGeneratorSelectors,
   AuthenticationActions,
   AuthenticationSelectors,
   ClustersActions,
@@ -41,6 +43,7 @@ import { useGlobalContext } from '../utils';
 import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';
 import { toast } from 'react-toastify';
+import DiscardFlowConfirmationModal from '../pages/AiFlowGenerator/DiscardFlowConfirmationModal';
 
 const Container = styled.header`
   height: ${props => props.theme.header};
@@ -344,6 +347,13 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
   const flowGenrating = useSelector(state =>
     LoadingSelectors.getLoading(state, 'generateFlowAPI')
   );
+  const isAIFlowSaved = useSelector(
+    AiFlowGeneratorSelectors.getIsflowJsonSaved
+  );
+  const generatedFlow = useSelector(AiFlowGeneratorSelectors.getGeneratedFlow);
+
+  const [isAiFlowWarningModalOpen, setIsAiFlowWarningModalOpen] =
+    useState(false);
   useEffect(() => {
     if (!window.location.pathname.includes('/process-group')) {
       dispatch(
@@ -491,7 +501,7 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
     return () => clearTimeout(timer);
   }, [licenseType, licenseExpireDate]);
 
-  const handleRoute = path => {
+  const handleRoute = (path, skipWarning = false) => {
     if (flowGenrating) {
       if (!toast.isActive('generating-flow')) {
         toast.warning('Flow is generating please wait', {
@@ -499,9 +509,20 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
         });
       }
       return;
+    } else if (
+      !isAIFlowSaved &&
+      !skipWarning &&
+      !isEmpty(Object.keys(generatedFlow)) &&
+      typeof generatedFlow?.response === 'object'
+    ) {
+      setIsAiFlowWarningModalOpen(true);
+    } else {
+      setIsAiFlowWarningModalOpen(false);
+      dispatch(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
+      dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
+      dispatch(AuthenticationActions.setRoute(path));
+      history.push(`/${path}`);
     }
-    dispatch(AuthenticationActions.setRoute(path));
-    history.push(`/${path}`);
   };
 
   const displayTitle = routeVal => {
@@ -576,6 +597,13 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
       </Container>
       {clusterLogin && <ClusterLoginModal />}
       {displaySessionTab && <SessionExpiredLabel closeTab={closeTab} />}
+      {isAiFlowWarningModalOpen && (
+        <DiscardFlowConfirmationModal
+          isDiscardFlowModalOpen={isAiFlowWarningModalOpen}
+          setIsDiscardFlowModalOpen={setIsAiFlowWarningModalOpen}
+          handleDiscardFlow={() => handleRoute('setting', true)}
+        />
+      )}
     </>
   );
 };

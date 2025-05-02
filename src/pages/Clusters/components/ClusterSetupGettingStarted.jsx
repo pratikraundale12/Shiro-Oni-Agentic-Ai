@@ -18,14 +18,6 @@ const HighlightTextTop = styled.span`
   line-height: 49.03px;
   letter-spacing: 0%;
 `;
-const HeadingText = styled.span`
-  font-family: Red Hat Display;
-  font-weight: 600;
-  font-size: 24px;
-  line-height: 31.75px;
-  letter-spacing: 0%;
-  text-align: center;
-`;
 const LeftHolder = styled.div`
   padding: 35px 16px;
 `;
@@ -57,9 +49,6 @@ const ClusterSetupGettingStartedTab = () => {
         <div className="col-md-8 d-flex flex-column justify-content-center text-center">
           <div>
             <HighlightTextTop>{KDFM.GETTING_STARTED}</HighlightTextTop>
-          </div>
-          <div>
-            <HeadingText>{KDFM.GETTING_STARTED_SUBTEXT}</HeadingText>
           </div>
         </div>
       </div>

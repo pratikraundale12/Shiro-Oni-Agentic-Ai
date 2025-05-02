@@ -35,6 +35,8 @@ export function* generateFlowAPI(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+  yield put(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
+
   yield put(AiFlowGeneratorActions.setIsFlowValidatedSuccessfully(false));
   yield put(AiFlowGeneratorActions.setValidatedFlowErrors([]));
 
@@ -188,6 +190,45 @@ export function* addFlowToRegistry(api, { payload }) {
     }
   }
 }
+export function* addFlowToRegistryInventory(api, { payload }) {
+  yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  const clusterId = selectedClusterToken?.id;
+  const registryData = yield select(AiFlowGeneratorSelectors.getRegistry);
+  const registryId = registryData[0]?.id;
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: AiFlowGeneratorActions.addFlowToRegistryInventoryFailure,
+    loadingSection: 'addFlowToRegistryInventory',
+    apiMethod: api.addFlowToRegistryInventory,
+    apiParams: [
+      { clusterId: clusterId, payload: payload, registryId: registryId },
+    ],
+  });
+  if (response.ok) {
+    yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(true));
+  } else {
+    if (response?.data?.raw?.flow_exists === true) {
+      yield put(AiFlowGeneratorActions.setAddFlowError(response?.data)); // Dispatch error actio
+      yield put(AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully(true));
+    } else {
+      yield put(AiFlowGeneratorActions.setIsFlowAddedSuccessFully(false));
+      yield put(AiFlowGeneratorActions.setAddFlowError(response?.data)); // Dispatch error action
+      toast.error(
+        response?.message ||
+          response?.data?.message ||
+          'Failed to add flow to registry'
+      );
+    }
+  }
+}
 
 export function* addNewBucketToRegistry(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -267,6 +308,9 @@ export function* aiFlowGeneratorSagas(api) {
     ),
     takeLatest(AiFlowGeneratorActions.addFlowToRegistry, action =>
       addFlowToRegistry(api, action)
+    ),
+    takeLatest(AiFlowGeneratorActions.addFlowToRegistryInventory, action =>
+      addFlowToRegistryInventory(api, action)
     ),
     takeLatest(AiFlowGeneratorActions.addNewBucketToRegistry, action =>
       addNewBucketToRegistry(api, action)

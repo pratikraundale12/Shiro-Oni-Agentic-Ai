@@ -16,10 +16,14 @@ export const clustersAPI = api => {
   const checkCredentialsClusterSetup = ({ payload }) =>
     api.post(`/test-host-credentials/test-private-keys`, payload);
 
-  const fetchHostNodesList = ({ payload }) => {
-    const url = payload
-      ? `cluster-nodes/list-nodes`
-      : `cluster-nodes/list-nodes?is_selected=false`;
+  const fetchHostNodesList = ({ clusterId, update_node, payload }) => {
+    const url = update_node
+      ? `cluster-nodes/list-nodes?update_node=${update_node}&cluster_id=${clusterId}`
+      : payload
+        ? `cluster-nodes/list-nodes`
+        : clusterId
+          ? `cluster-nodes/list-nodes?cluster_id=${clusterId}`
+          : `cluster-nodes/list-nodes?is_selected=false`;
     return api.get(url);
   };
   const addIndividualHost = ({ payload }) =>
@@ -63,6 +67,18 @@ export const clustersAPI = api => {
   const associateClusterWithRegistry = ({ clusterId, payload }) => {
     return api.post(`/clusters/${clusterId}/associate-registry`, payload);
   };
+  const fetchAnsibleClusterData = ({ clusterId }) => {
+    return api.get(`/clusters/${clusterId}/get-edit-details`);
+  };
+  const upgradeAnsibleCluster = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/ansible/upgrade-cluster`, payload);
+  };
+  const updateNodesAnsibleCluster = ({ clusterId, payload }) => {
+    return api.post(`/clusters/${clusterId}/ansible/update-nodes`, payload);
+  };
+
+  const deleteAnsibleClusterHard = ({ clusterId }) =>
+    api.delete(`clusters/${clusterId}/nifi_uninstall`);
   return {
     fetchClusters,
     fetchClusterList,
@@ -86,5 +102,9 @@ export const clustersAPI = api => {
     fetchRunningStatusCluster,
     fetchClusterMetrics,
     associateClusterWithRegistry,
+    fetchAnsibleClusterData,
+    upgradeAnsibleCluster,
+    updateNodesAnsibleCluster,
+    deleteAnsibleClusterHard,
   };
 };
