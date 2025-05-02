@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -73,6 +74,9 @@ const ConditionIcon = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: #444445;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const NoDataText = styled.div`
@@ -96,6 +100,12 @@ const InputContainer = styled.div`
   > div > div {
     margin-top: 0px !important;
   }
+`;
+
+const InfoIconDiv = styled.div`
+  position: absolute;
+  left: 90px;
+  top: -4px;
 `;
 
 // Validation Schemas
@@ -144,8 +154,8 @@ const ConditionRow = React.memo(
             fetchPropertyData?.data?.find(
               prop => prop.propName === condition.condition_property
             )?.dynamic_input
-              ? 'col-md-2'
-              : 'col-md-3'
+              ? 'col-xl-3 col-md-4'
+              : 'col-md-4'
           }
         >
           <SelectField
@@ -182,10 +192,11 @@ const ConditionRow = React.memo(
           fetchPropertyData?.data?.find(
             prop => prop.propName === condition.condition_property
           )?.dynamic_input && (
-            <InputContainer className="col-md-2">
+            <InputContainer className="col-xl-2 col-md-4">
               <InputField
                 name={`sub_condition_property${index}`}
                 icon={<NewLinkIcon />}
+                placeholder="Enter value"
                 value={condition?.sub_condition_property || ''}
                 onChange={e =>
                   handleSubConditionProperty(index, e.target.value)
@@ -209,7 +220,7 @@ const ConditionRow = React.memo(
             fetchPropertyData?.data?.find(
               prop => prop.propName === condition.condition_property
             )?.dynamic_input
-              ? 'col-md-2'
+              ? 'col-xl-2 col-md-4'
               : 'col-md-3'
           }
         >
@@ -241,7 +252,7 @@ const ConditionRow = React.memo(
             fetchPropertyData?.data?.find(
               prop => prop.propName === condition.condition_property
             )?.dynamic_input
-              ? 'col-md-2'
+              ? 'col-xl-2 col-md-4'
               : 'col-md-3'
           }
         >
@@ -251,6 +262,7 @@ const ConditionRow = React.memo(
             value={condition?.condition_value || ''}
             onChange={e => handleConditionValueChange(index, e.target.value)}
             control={control}
+            placeholder="Enter value"
             errors={
               conditionsErrors[index]
                 ? {
@@ -268,7 +280,7 @@ const ConditionRow = React.memo(
               fetchPropertyData?.data?.find(
                 prop => prop.propName === condition.condition_property
               )?.dynamic_input
-                ? 'col-md-2'
+                ? 'col-xl-2 col-md-4'
                 : 'col-md-2'
             }
           >
@@ -873,8 +885,22 @@ const FlowValidationModal = () => {
                 control={control}
               />
               <div className="col-12 d-flex justify-content-between">
-                <ConditionIcon className="d-flex align-items-center gap-3">
-                  {FLOWVALIDATION_CONSTANTS.CONDITION} <InfoIcon />
+                <ConditionIcon>
+                  {FLOWVALIDATION_CONSTANTS.CONDITION}
+                  <div data-tooltip-id="condition-tooltip">
+                    <InfoIcon />
+                  </div>
+                  <ReactTooltip
+                    id="condition-tooltip"
+                    place="right"
+                    content="Define conditions for the rule using properties, operators, and values"
+                    style={{
+                      width: '250px',
+                      whiteSpace: 'normal',
+                      wordWrap: 'break-word',
+                      zIndex: 9999,
+                    }}
+                  />
                 </ConditionIcon>
                 {selectedItem?.deletable && (
                   <div>
@@ -932,20 +958,53 @@ const FlowValidationModal = () => {
                     errors={errors}
                     control={control}
                   />
-                  <InputField
-                    name="rule_comments"
-                    icon={<NewMessageIcon />}
-                    label={FLOWVALIDATION_CONSTANTS.OUTPUT_VALUE}
-                    value={editedRule?.output_value || ''}
-                    placeholder={FLOWVALIDATION_CONSTANTS.ENTER_OUPUT_VALUE}
-                    disabled={!selectedItem?.deletable}
-                    onChange={e => handleOutputValueChange(e?.target?.value)}
-                    errors={errors}
-                    control={control}
-                  />
+                  <div className="d-flex position-relative">
+                    <InputField
+                      name="rule_comments"
+                      icon={<NewMessageIcon />}
+                      label={FLOWVALIDATION_CONSTANTS.OUTPUT_VALUE}
+                      value={editedRule?.output_value || ''}
+                      placeholder={FLOWVALIDATION_CONSTANTS.ENTER_OUPUT_VALUE}
+                      disabled={!selectedItem?.deletable}
+                      onChange={e => handleOutputValueChange(e?.target?.value)}
+                      errors={errors}
+                      control={control}
+                    />
+                    <InfoIconDiv data-tooltip-id="condition-tooltip-output">
+                      <InfoIcon />
+                    </InfoIconDiv>
+                    <ReactTooltip
+                      id="condition-tooltip-output"
+                      place="right"
+                      content="output Value:
+                      ${concurrent_task} Concurrent Tasks
+                     for config properties: ${properties['property_name']
+                     "
+                      style={{
+                        width: '250px',
+                        whiteSpace: 'normal',
+                        wordWrap: 'break-word',
+                        zIndex: 9999,
+                      }}
+                    />
+                  </div>
                   <div className="col-12 d-flex justify-content-between">
-                    <ConditionIcon className="d-flex align-items-center gap-3">
-                      {FLOWVALIDATION_CONSTANTS.CONDITION} <InfoIcon />
+                    <ConditionIcon>
+                      {FLOWVALIDATION_CONSTANTS.CONDITION}
+                      <div data-tooltip-id="condition-tooltip">
+                        <InfoIcon />
+                      </div>
+                      <ReactTooltip
+                        id="condition-tooltip"
+                        place="right"
+                        content="Define conditions for the rule using properties, operators, and values example: concurrent_tasks > 5"
+                        style={{
+                          width: '250px',
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
+                          zIndex: 9999,
+                        }}
+                      />
                     </ConditionIcon>
                     {selectedItem?.deletable && (
                       <div>
@@ -989,10 +1048,23 @@ const FlowValidationModal = () => {
         </div>
         <div className="col-md-4 col-xl-3">
           <ModelRightSide className="p-3">
-            <div className="d-flex justify-content-between mb-3">
+            <div className="d-flex justify-content-between mb-3 flex-wrap">
               <span className="d-flex align-items-center gap-2">
                 {FLOWVALIDATION_CONSTANTS.RULES}
-                <InfoIcon />
+                <div data-tooltip-id="rules-tooltip">
+                  <InfoIcon />
+                </div>
+                <ReactTooltip
+                  id="rules-tooltip"
+                  place="right"
+                  content="List of all validation rules. You can add, edit, or delete rules here"
+                  style={{
+                    width: '250px',
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
+                    zIndex: 9999,
+                  }}
+                />
               </span>
               <Button
                 type="button"

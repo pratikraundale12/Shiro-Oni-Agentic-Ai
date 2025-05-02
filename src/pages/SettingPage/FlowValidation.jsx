@@ -114,7 +114,7 @@ const FlowValidation = () => {
     {
       label: FLOWVALIDATION_CONSTANTS.ACTION,
       renderCell: item => (
-        <>
+        <div className="d-flex">
           <button
             className="border-0 bg-white me-2"
             onClick={e => {
@@ -189,9 +189,9 @@ const FlowValidation = () => {
               wordWrap: 'break-word',
             }}
           />
-        </>
+        </div>
       ),
-      width: '10%',
+      width: 'auto',
     },
   ];
 

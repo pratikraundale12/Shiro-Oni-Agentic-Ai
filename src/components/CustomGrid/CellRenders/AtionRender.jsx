@@ -2,14 +2,14 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CircleExclamationMarkIcon, ThreedotsIcon } from '../../../assets';
 import { CLUSTER_STATUS } from '../../../constants';
 import { Tooltip } from '../../../shared/Tooltip';
+import { AuthenticationSelectors } from '../../../store';
 import { theme } from '../../../styles';
 import { EnableClusterRender } from './EnableClusterRender';
-import { useSelector } from 'react-redux';
-import { AuthenticationSelectors } from '../../../store';
 
 const ActionTd = styled.div`
   display: flex;
@@ -33,14 +33,17 @@ export const IconButton = styled.button`
     opacity: 0.4;
     cursor: not-allowed;
   }
-
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
   @media (max-width: 1025px) {
     min-width: 24px;
     min-height: 24px;
     border-width: 0.5px;
     & svg {
-      width: 24px;
-      height: 24px;
+      width: 12px;
+      height: 12px;
     }
   }
   &.pencil-icon-schedule-list {
