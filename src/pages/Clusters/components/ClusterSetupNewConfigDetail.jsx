@@ -197,12 +197,15 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Port must be between 4 and 5 digits',
         val => val && val.toString().length >= 4 && val.toString().length <= 5
       ),
-    username: yup.string().required('Username is required')
-    .test(
-      'no-leading-trailing-spaces',
-      'Username must not start or end with a space',
-      value => value === value?.trim()
-    ).min(3, 'Username must be minimum 3 in length'),
+    username: yup
+      .string()
+      .required('Username is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Username must not start or end with a space',
+        value => value === value?.trim()
+      )
+      .min(3, 'Username must be minimum 3 in length'),
     password: yup
       .string()
       .required('Password is required')
@@ -211,8 +214,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Password must not start or end with a space',
         value => value === value?.trim()
       )
-      .min(10, 'Password must be minimum 10 in length')
-      ,
+      .min(10, 'Password must be minimum 10 in length'),
     java_arg_2: yup
       .number()
       .transform((value, originalValue) =>
@@ -511,6 +513,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
               register={register}
               errors={errors}
               icon={<NotePadIcon />}
+              disabled={!isEmpty(configToEdit)}
             />
           </div>
           <div className="col-4">
@@ -584,9 +587,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect>
-                        Protocol Max Threads
-                      </LabelSelect>
+                      <LabelSelect>Protocol Max Threads</LabelSelect>
 
                       <InputField
                         name="nifi_cluster_node_protocol_max_threads"
@@ -750,7 +751,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-4">
-
                       <PasswordField
                         name="password"
                         label="Password"

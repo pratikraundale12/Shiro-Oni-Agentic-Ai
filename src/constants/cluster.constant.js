@@ -91,8 +91,8 @@ export const CLUSTER_CONSTANTS = {
   CREATE_NEW_CLUSTER_TITLE: 'Create New Cluster',
   CREATE_NEW_CLUSTER_DESCRIPTION: 'Set up a new DFM cluster from scratch',
 
-  MANAGE_EXISTING_CLUSTER_TITLE: 'Manage Existing Cluster',
-  MANAGE_EXISTING_CLUSTER_DESCRIPTION: 'Manage an existing DFM cluster',
+  MANAGE_EXISTING_CLUSTER_TITLE: 'Register Existing Cluster',
+  MANAGE_EXISTING_CLUSTER_DESCRIPTION: 'Register an existing DFM cluster',
 
   MANAGE_CLUSTER_FLOW: 'ManageCluster',
   CREATE_CLUSTER_FLOW: 'CreateCluster',
