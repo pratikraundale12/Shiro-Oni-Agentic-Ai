@@ -33,10 +33,6 @@ export const IconButton = styled.button`
     opacity: 0.4;
     cursor: not-allowed;
   }
-  & svg {
-    width: 16px;
-    height: 16px;
-  }
   @media (max-width: 1025px) {
     min-width: 24px;
     min-height: 24px;
