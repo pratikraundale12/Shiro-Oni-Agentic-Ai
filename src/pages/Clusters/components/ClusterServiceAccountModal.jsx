@@ -159,7 +159,6 @@ export const ClusterServiceAccountModal = ({
   };
 
   useEffect(() => {
-    console.log('method...................', method);
     if (method === 'username_password') {
       setValue('service_username', data?.service_username || '');
       setValue('service_password', data?.service_password || '');
