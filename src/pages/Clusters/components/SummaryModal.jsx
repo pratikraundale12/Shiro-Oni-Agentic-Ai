@@ -152,23 +152,7 @@ export const SummaryModal = ({
     if (clusterData?.metrics_url) {
       formdata.append('metrics_url', clusterData.metrics_url);
     }
-    console.log('formdata', formdata);
-    for (let pair of formdata.entries()) {
-      console.log(pair[0], ':', pair[1]);
-    }
 
-    // const data = {
-    //   name: clusterData?.clusterName,
-    //   nifi_url: clusterData?.nifiUrl,
-    //   registry_id: registry_id,
-    //   tag: tags,
-    //   notification_enable: notificationEnable,
-    //   approver_enable: approverEnable,
-    //   change_request_enable: changeRequestEnable,
-    //   has_custom_service_account: false,
-    //   ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
-    //   ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
-    // };
     const response = await createCluster(formdata);
     if (response?.status === 201) {
       setLoading(false);
@@ -207,16 +191,6 @@ export const SummaryModal = ({
     formdata.append('approver_enable', approverEnable);
     formdata.append('change_request_enable', changeRequestEnable);
     formdata.append('has_custom_service_account', false);
-
-    // const payload = {
-    //   name: clusterData.clusterName,
-    //   nifi_url: clusterData.nifiUrl,
-    //   tag: tags,
-    //   notification_enable: notificationEnable,
-    //   approver_enable: approverEnable,
-    //   change_request_enable: changeRequestEnable,
-    //   has_custom_service_account: false,
-    // };
 
     const id = clusterId;
     const response = await updateCluster(id, formdata);
