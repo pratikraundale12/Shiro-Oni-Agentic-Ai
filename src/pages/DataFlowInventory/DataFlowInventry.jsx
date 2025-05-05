@@ -4,8 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
-import { NoDataIcon, RefreshIcon, SmallSearchIcon } from '../../assets';
+import {
+  DownloadIcon,
+  NoDataIcon,
+  RefreshIcon,
+  SmallSearchIcon,
+} from '../../assets';
 import { AddsquareIcon } from '../../assets/Icons/AddSquareIcon';
+// import { DownloadIcon } from '../../assets/Icons/DownloadIcon';
 import { FullPageLoader } from '../../components';
 import { API_URL } from '../../constants';
 import { history } from '../../helpers/history';
@@ -215,8 +221,14 @@ const Tag = styled.span`
   font-family: 'RED HAT DISPLAY';
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+`;
+
 const AddButton = styled.button`
-  width: 35%;
+  width: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -227,10 +239,24 @@ const AddButton = styled.button`
   font-size: 1rem;
   border-radius: 0.25rem;
   cursor: pointer;
-  margin-top: auto;
 
   &:hover {
     background-color: #fff4ea;
+  }
+`;
+
+const DownloadButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f0f7ff;
   }
 `;
 
@@ -410,6 +436,21 @@ const DataFlowInventory = () => {
     LoadingSelectors.getLoading(state, 'fetchFlows')
   );
 
+  const handleDownloadJson = flow => {
+    const jsonData = flow?.jsonData;
+    const blob = new Blob([JSON.stringify(jsonData, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${flow.name.replace(/\s+/g, '_')}_flow.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Container>
       <FullPageLoader loading={loading} />
@@ -533,16 +574,35 @@ const DataFlowInventory = () => {
                               {currentUser?.permissions?.includes(
                                 'add_data_inventory'
                               ) && (
-                                <AddButton
-                                  onClick={() => {
-                                    onAddToRegistryClick(flow);
-                                  }}
-                                >
-                                  <AddsquareIcon />
-                                  <ButtonText className="ml-2">
-                                    Add to Registry
-                                  </ButtonText>
-                                </AddButton>
+                                <ButtonContainer>
+                                  <AddButton
+                                    onClick={() => {
+                                      onAddToRegistryClick(flow);
+                                    }}
+                                  >
+                                    <AddsquareIcon />
+                                    <ButtonText className="ml-2">
+                                      Add to Registry
+                                    </ButtonText>
+                                  </AddButton>
+                                  <DownloadButton
+                                    onClick={() => handleDownloadJson(flow)}
+                                    data-tooltip-id="download-tooltip"
+                                  >
+                                    <DownloadIcon color="#444445" />
+                                    <ReactTooltip
+                                      id="download-tooltip"
+                                      place="right"
+                                      content="Download JSON "
+                                      style={{
+                                        width: '250px',
+                                        whiteSpace: 'normal',
+                                        wordWrap: 'break-word',
+                                        zIndex: 9999,
+                                      }}
+                                    />
+                                  </DownloadButton>
+                                </ButtonContainer>
                               )}
                             </FlowCard>
                           </GridColumn>
