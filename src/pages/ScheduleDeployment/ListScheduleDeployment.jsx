@@ -1,5 +1,7 @@
+/* eslint-disable */
 import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
@@ -85,13 +87,13 @@ const Item = styled.div`
 const List = styled.div`
   width: 175px;
   position: absolute;
-  top: 25%;
-  right: 100%;
+  top: ${({ posY }) => posY}px;
+  left: ${({ posX }) => posX - 67}px;
   z-index: 1000;
   background: ${props => props.theme.colors.white};
   box-shadow: 0px 0px 5px 0px ${props => props.theme.colors.shadow};
   border-radius: 10px;
-  & > div {
+& > div {
     width: 100%;
   }
 
@@ -103,9 +105,23 @@ const List = styled.div`
   & > div:last-child {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
-    // width: 100%;
   }
 `;
+
+const DropdownPortal = ({ children }) => {
+  return ReactDOM.createPortal(children, document.body);
+};
+
+const adjustDropdownPosition = (x, y, dropdownWidth, dropdownHeight) => {
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  const adjustedX = x + dropdownWidth > viewportWidth ? viewportWidth - dropdownWidth - 10 : x;
+  const adjustedY = y + dropdownHeight > viewportHeight ? viewportHeight - dropdownHeight - 10 : y;
+
+  return { x: adjustedX, y: adjustedY };
+};
+
 export const ListScheduleDeployment = () => {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -298,10 +314,14 @@ export const ListScheduleDeployment = () => {
   });
   const handleMenuClick = (event, item) => {
     event.stopPropagation();
+    const dropdownWidth = 165; // Match the List width
+    const dropdownHeight = 200; // Approximate height of the dropdown
+    const { x, y } = adjustDropdownPosition(event.clientX, event.clientY, dropdownWidth, dropdownHeight);
+
     setMenuState({
       isVisible: true,
-      x: event.clientX,
-      y: event.clientY,
+      x,
+      y,
       row: item,
     });
   };
@@ -449,33 +469,35 @@ export const ListScheduleDeployment = () => {
             <ThreedotsIcon />
           </IconButton>
           {menuState?.isVisible && item?.id === menuState?.row?.id && (
-            <List ref={menuRef}>
-              <Item
-                onClick={event => {
-                  handleUserStoryModal(item);
-                  event.currentTarget.blur();
-                  handleCloseMenu();
-                }}
-              >
-                <IconButton>
-                  <OpenEyeIcon width={16} height={16} />
-                </IconButton>{' '}
-                &nbsp; Change Request
-              </Item>
-              <Item
-                onClick={event => {
-                  getDefSchedule(item);
-                  event.currentTarget.blur();
-                  handleCloseMenu();
-                }}
-                data-tooltip-id={`${`tooltip-group-diff-schedule`}`}
-              >
-                <IconButton>
-                  <DiffIcon />
-                </IconButton>{' '}
-                &nbsp; View Changes
-              </Item>
-            </List>
+            <DropdownPortal>
+              <List ref={menuRef} posX={menuState.x} posY={menuState.y}>
+                <Item
+                  onClick={event => {
+                    handleUserStoryModal(item);
+                    event.currentTarget.blur();
+                    handleCloseMenu();
+                  }}
+                >
+                  <IconButton>
+                    <OpenEyeIcon width={16} height={16} />
+                  </IconButton>{' '}
+                  &nbsp; Change Request
+                </Item>
+                <Item
+                  onClick={event => {
+                    getDefSchedule(item);
+                    event.currentTarget.blur();
+                    handleCloseMenu();
+                  }}
+                  data-tooltip-id={`${`tooltip-group-diff-schedule`}`}
+                >
+                  <IconButton>
+                    <DiffIcon />
+                  </IconButton>{' '}
+                  &nbsp; View Changes
+                </Item>
+              </List>
+            </DropdownPortal>
           )}
         </div>
       </ActionTd>
