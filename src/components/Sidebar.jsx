@@ -242,6 +242,8 @@ export const Sidebar = ({
     } else {
       if (logoClicked) {
         setIsAiFlowWarningModalOpen(false);
+        dispatch(AiFlowGeneratorActions.setIsFlowJsonSaved(false));
+        dispatch(AiFlowGeneratorActions.setGeneratedFlow({}));
         history.push('/dashboard');
       } else {
         setLogoClicked(false);
