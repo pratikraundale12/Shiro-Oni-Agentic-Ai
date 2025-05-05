@@ -20,6 +20,9 @@ import { AddHostIPModal } from './AddHostIPModal';
 import { isEmpty } from 'lodash';
 import { KDFM } from '../../../constants';
 import { toast } from 'react-toastify';
+import CopyToClipboard from '../../../shared/CopyToClipboard';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+
 const LabelSelect = styled.div`
   font-size: 14px;
   font-weight: 600;
@@ -229,15 +232,36 @@ const ClusterDetailTab = ({
     },
     {
       label: 'Available Host IP',
-      renderCell: item => <>{item?.host_ip}</>,
+      renderCell: item => (
+        <>
+          <div className="d-flex gap-2">
+            {item?.host_ip}
+            <span data-tooltip-id={`copy-${item?.host_ip}-host-url`}>
+              <CopyToClipboard copyItem={item?.host_ip} />
+            </span>
+            <ReactTooltip
+              id={`copy-${item?.host_ip}-host-url`}
+              place="bottom"
+              effect="solid"
+              content={'Copy URL'}
+              style={{
+                width: '100px',
+                whiteSpace: 'normal',
+                wordWrap: 'break-word',
+                zIndex: 10000,
+              }}
+            />
+          </div>
+        </>
+      ),
       resize: true,
-      width: '30%',
+      width: '45%',
     },
     {
       label: 'Port No.',
       renderCell: item => <>{item?.port}</>,
       resize: true,
-      width: '30%',
+      width: '15%',
     },
     {
       label: 'Username',

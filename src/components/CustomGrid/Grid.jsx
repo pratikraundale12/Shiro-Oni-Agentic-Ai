@@ -29,6 +29,7 @@ import { UrlRender } from './CellRenders';
 import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
 import { Table } from './Table';
+import ClusterControlButtons from '../../pages/Clusters/ClusterControlButtons';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -122,6 +123,7 @@ export const Grid = ({
   setCurrentPage = () => {},
   sortingState,
   setSortingState,
+  createdByAnsible = false,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -459,6 +461,7 @@ export const Grid = ({
     return (
       <>
         <ClusterRegistryContainer className="row">
+          {createdByAnsible && <ClusterControlButtons />}
           <ClusterDetail
             data={{
               name: registryNodesData?.cluster?.name,
@@ -631,4 +634,5 @@ Grid.propTypes = {
   state: PropTypes.object.isRequired,
   sortingState: PropTypes.string,
   setSortingState: PropTypes.func,
+  createdByAnsible: PropTypes.bool,
 };

@@ -2,7 +2,7 @@ export const AI_FLOW_GENERATOR_CONSTANTS = {
   AI_FLOW_GENERATOR: 'AI-Powered Data Flow',
   RECOMMENDED_FLOWS: 'Recommended Flows',
   RECENT_GENERATED_FLOWS: 'Recent Generated Flows',
-  PROMPT_INPUT_PLACEHOLDER: 'Enter your Prompt here...',
+  PROMPT_INPUT_PLACEHOLDER: 'Enter your prompt here...',
   LOGIN_TO_CLUSTER_TO_GENERATE_FLOWS:
     'Please login to cluster to generate the flows',
   NO_PERMISSION_TO_GENERATE_FLOW:
