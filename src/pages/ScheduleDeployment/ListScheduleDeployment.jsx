@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { isEmpty } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
@@ -93,7 +92,7 @@ const List = styled.div`
   background: ${props => props.theme.colors.white};
   box-shadow: 0px 0px 5px 0px ${props => props.theme.colors.shadow};
   border-radius: 10px;
-& > div {
+  & > div {
     width: 100%;
   }
 
@@ -116,8 +115,12 @@ const adjustDropdownPosition = (x, y, dropdownWidth, dropdownHeight) => {
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
 
-  const adjustedX = x + dropdownWidth > viewportWidth ? viewportWidth - dropdownWidth - 10 : x;
-  const adjustedY = y + dropdownHeight > viewportHeight ? viewportHeight - dropdownHeight - 10 : y;
+  const adjustedX =
+    x + dropdownWidth > viewportWidth ? viewportWidth - dropdownWidth - 10 : x;
+  const adjustedY =
+    y + dropdownHeight > viewportHeight
+      ? viewportHeight - dropdownHeight - 10
+      : y;
 
   return { x: adjustedX, y: adjustedY };
 };
@@ -314,9 +317,14 @@ export const ListScheduleDeployment = () => {
   });
   const handleMenuClick = (event, item) => {
     event.stopPropagation();
-    const dropdownWidth = 165; // Match the List width
-    const dropdownHeight = 200; // Approximate height of the dropdown
-    const { x, y } = adjustDropdownPosition(event.clientX, event.clientY, dropdownWidth, dropdownHeight);
+    const dropdownWidth = 165;
+    const dropdownHeight = 200;
+    const { x, y } = adjustDropdownPosition(
+      event.clientX,
+      event.clientY,
+      dropdownWidth,
+      dropdownHeight
+    );
 
     setMenuState({
       isVisible: true,
