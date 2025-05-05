@@ -26,7 +26,9 @@ export function* testRegistry(api, { payload }) {
     apiParams: [{ payload: payload }],
   });
   if (response.ok) {
-    toast.success('Test Successful');
+    toast.success(
+      'Connection established successfully. The credentials are valid.'
+    );
     yield put(RegistryActions.setRegistryTestSuccess(true));
   } else {
     toast.error(response?.data?.message);
