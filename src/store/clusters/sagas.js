@@ -86,7 +86,9 @@ export function* checkCredentialsClusterSetup(api, { payload }) {
     apiParams: [{ payload: payload?.payload }],
   });
   if (response.ok) {
-    toast.success('Test success');
+    toast.success(
+      'Connection established successfully. The credentials are valid and the host is reachable.'
+    );
     yield put(ClustersActions.setAddHostBtnDisable(false));
     yield put(ClustersActions.setAddHostIndividualData(payload?.data));
   } else {

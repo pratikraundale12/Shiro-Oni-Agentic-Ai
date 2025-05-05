@@ -26,6 +26,7 @@ import {
   PlusCircleIcon,
 } from '../../../assets';
 import { AddHostIPModal } from './AddHostIPModal';
+import CopyToClipboard from '../../../shared/CopyToClipboard';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -70,7 +71,27 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
   const COLUMNS = [
     {
       label: 'Host IP',
-      renderCell: item => <>{item?.host_ip}</>,
+      renderCell: item => (
+        <div className="d-flex gap-2">
+          {item?.host_ip}
+          <span data-tooltip-id={`copy-${item?.host_ip}-host-url`}>
+            <CopyToClipboard copyItem={item?.host_ip} />
+          </span>
+          <ReactTooltip
+            id={`copy-${item?.host_ip}-host-url`}
+            place="bottom"
+            effect="solid"
+            content={'Copy URL'}
+            style={{
+              width: '100px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
+        </div>
+      ),
+
       resize: true,
     },
     {

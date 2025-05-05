@@ -316,7 +316,7 @@ export const ListClusters = () => {
                                 height={18}
                                 color="black"
                               />
-                              <span>{KDFM.REGISTRY}</span>
+                              <span>Add {KDFM.REGISTRY}</span>
                             </Item>
                           )}
                         <>
