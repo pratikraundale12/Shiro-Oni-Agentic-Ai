@@ -54,6 +54,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 99%;
   justify-content: space-between;
   svg {
     margin: 0px;
@@ -439,11 +440,16 @@ export const AiFlowGenerator = () => {
     if (originalFlow?.flowContents?.name !== flowData?.flow_name) {
       setFlowName(flowData?.flow_name);
     }
+    const currentPosition = flowJson?.flowContents?.position || {};
     const updatedFlowJson = {
       ...flowJson,
       flowContents: {
         ...flowJson?.flowContents,
         name: flowData?.pg_name,
+        position: {
+          x: currentPosition.x === 0 ? 616 : currentPosition.x,
+          y: currentPosition.y === 0 ? 144 : currentPosition.y,
+        },
       },
     };
     const bucketName = buckets?.filter(
@@ -1003,6 +1009,8 @@ export const AiFlowGenerator = () => {
           onRequestClose={() => {
             setIsFullscreen(false);
             setOpenPreviewModal(false);
+            setJsonErrors({});
+            setIsJsonInvalid(false);
           }}
           size="sm"
           primaryButtonText={'Add to Registry'}
@@ -1045,7 +1053,7 @@ export const AiFlowGenerator = () => {
             <Editor
               width="100%"
               language="json"
-              value={JSON.stringify(flowJson, null, 2)}
+              defaultValue={JSON.stringify(flowJson, null, 2)}
               onMount={handleEditorDidMount}
               onChange={onJsonChange}
               options={{

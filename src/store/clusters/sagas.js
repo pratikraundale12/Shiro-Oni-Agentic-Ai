@@ -86,7 +86,9 @@ export function* checkCredentialsClusterSetup(api, { payload }) {
     apiParams: [{ payload: payload?.payload }],
   });
   if (response.ok) {
-    toast.success('Test success');
+    toast.success(
+      'Connection established successfully. The credentials are valid and the host is reachable.'
+    );
     yield put(ClustersActions.setAddHostBtnDisable(false));
     yield put(ClustersActions.setAddHostIndividualData(payload?.data));
   } else {
@@ -344,6 +346,85 @@ export function* associateClusterWithRegistry(api, { payload }) {
   }
 }
 
+export function* checkServiceAccountCredentials(api, { payload }) {
+  const { clusterId, formData } = payload;
+  const response = yield call(requestSaga, {
+    errorSection: 'checkServiceAccountCredentials',
+    loadingSection: 'checkServiceAccountCredentials',
+    apiMethod: api.createClusterServiceAcc,
+    apiParams: [{ clusterId, payload: formData }],
+  });
+
+  if (response?.ok) {
+    yield put(ClustersActions.checkServiceAccountCredentialsSuccess());
+    toast.success('Credentials validated');
+  } else {
+    yield put(
+      ClustersActions.checkServiceAccountCredentialsFailure(
+        response?.data?.message
+      )
+    );
+    toast.error(response?.data?.message);
+  }
+}
+
+export function* addServiceAccountHost(api, { payload }) {
+  try {
+    const { clusterId, formData } = payload;
+
+    console.log('addServiceAccountHost: clusterId:', clusterId);
+    console.log('addServiceAccountHost: formData:', formData);
+
+    if (!clusterId || !formData) {
+      console.error('Invalid clusterId or formData');
+      toast.error('Invalid cluster ID or form data');
+      return;
+    }
+
+    const response = yield call(requestSaga, {
+      errorSection: 'addServiceAccountHost',
+      loadingSection: 'addServiceAccountHost',
+      apiMethod: api.createClusterServiceAcc,
+      apiParams: [{ clusterId, payload: formData }],
+    });
+
+    if (response.ok) {
+      yield put(ClustersActions.addServiceAccountHostSuccess(response.data));
+      toast.success('Saved successfully');
+    } else {
+      console.error('addServiceAccountHost: API error:', response.data.message);
+      yield put(
+        ClustersActions.addServiceAccountHostFailure(response.data.message)
+      );
+      toast.error(response.data.message);
+    }
+  } catch (error) {
+    console.error('addServiceAccountHost: Saga error:', error);
+    toast.error('An error occurred while adding the host');
+  }
+}
+
+export function* updateServiceAccountHost(api, { payload }) {
+  const { clusterId, formData } = payload;
+  const response = yield call(requestSaga, {
+    errorSection: 'updateServiceAccountHost',
+    loadingSection: 'updateServiceAccountHost',
+    apiMethod: api.updateClusterServiceAcc,
+    apiParams: [{ clusterId, payload: formData }],
+  });
+
+  if (response?.ok) {
+    yield put(
+      ClustersActions.updateServiceAccountHostSuccess(response?.data?.message)
+    );
+    toast.success('Saved successfully');
+  } else {
+    yield put(
+      ClustersActions.updateServiceAccountHostFailure(response?.data?.message)
+    );
+    toast.error(response?.data?.message);
+  }
+}
 export function* fetchAnsibleClusterData(api, { payload }) {
   const response = yield call(requestSaga, {
     errorSection: 'fetchAnsibleClusterData',
@@ -411,6 +492,21 @@ export function* deleteAnsibleClusterHard(api, { payload }) {
 
 export function* clustersSagas(api) {
   yield all([
+    takeLatest(
+      ClustersActions.checkServiceAccountCredentialsRequest,
+      checkServiceAccountCredentials,
+      api
+    ),
+    takeLatest(
+      ClustersActions.addServiceAccountHostRequest,
+      addServiceAccountHost,
+      api
+    ),
+    takeLatest(
+      ClustersActions.updateServiceAccountHostRequest,
+      updateServiceAccountHost,
+      api
+    ),
     takeLatest(ClustersActions.fetchClusterList, fetchClusterList, api),
     takeLatest(ClustersActions.fetchClusterNodes, fetchClusterNodes, api),
     takeLatest(ClustersActions.fetchClusters, fetchClusters, api),

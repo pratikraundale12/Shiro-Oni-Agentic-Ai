@@ -81,7 +81,7 @@ export const RecommendedFlow = ({
       if (!isJsonEmpty) {
         if (!toast.isActive('already-generated')) {
           toast.warning(
-            'Please save or discard the already generated flow to generate a new flow',
+            'Please save the already generated flow or refresh the conversation to generate a new flow',
             {
               toastId: 'already-generated',
             }
