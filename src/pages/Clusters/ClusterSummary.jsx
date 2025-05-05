@@ -116,6 +116,7 @@ export const ClusterSummary = () => {
           placeholder={KDFM.SEARCH_NODES}
           columns={COLUMNS}
           refreshOptions={REFRESH_OPTIONS}
+          createdByAnsible={state?.created_by_ansible}
         />
       )}
       {activeTab === 'status' && (
