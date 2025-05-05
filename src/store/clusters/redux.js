@@ -51,12 +51,45 @@ export const ClustersActions = {
   fetchClusterMetrics: createAction(`${prefix}fetchClusterMetrics`),
   setHealthMetricsData: createAction(`${prefix}setHealthMetricsData`),
   setRunningStatusData: createAction(`${prefix}setRunningStatusData`),
+  // — Service-Account Credentials Check —
+  checkServiceAccountCredentialsRequest: createAction(
+    `${prefix}checkServiceAccountCredentialsRequest`
+  ),
+  checkServiceAccountCredentialsSuccess: createAction(
+    `${prefix}checkServiceAccountCredentialsSuccess`
+  ),
+  checkServiceAccountCredentialsFailure: createAction(
+    `${prefix}checkServiceAccountCredentialsFailure`
+  ),
+
+  // — Add Service-Account Host —
+  addServiceAccountHostRequest: createAction(
+    `${prefix}addServiceAccountHostRequest`
+  ),
+  addServiceAccountHostSuccess: createAction(
+    `${prefix}addServiceAccountHostSuccess`
+  ),
+  addServiceAccountHostFailure: createAction(
+    `${prefix}addServiceAccountHostFailure`
+  ),
+
+  // — Update Service-Account Host —
+  updateServiceAccountHostRequest: createAction(
+    `${prefix}updateServiceAccountHostRequest`
+  ),
+  updateServiceAccountHostSuccess: createAction(
+    `${prefix}updateServiceAccountHostSuccess`
+  ),
+  updateServiceAccountHostFailure: createAction(
+    `${prefix}updateServiceAccountHostFailure`
+  ),
   setIsRegitryAssociationModalOpen: createAction(
     `${prefix}setIsRegitryAssociationModalOpen`
   ),
   associateClusterWithRegistry: createAction(
     `${prefix}associateClusterWithRegistry`
   ),
+  setTestCredsButtonVisible: createAction(`${prefix}setTestCredsButtonVisible`),
   setansibleClucterToEdit: createAction(`${prefix}setansibleClucterToEdit`),
   fetchAnsibleClusterData: createAction(`${prefix}fetchAnsibleClusterData`),
   setAnsibleClusterData: createAction(`${prefix}setAnsibleClusterData`),
@@ -93,7 +126,19 @@ export const CLUSTERS_INITIAL_STATE = {
   registryNodesData: {},
   healthMetricsData: {},
   runningStatusData: {},
+  // Service-account credential check
+  checkingServiceAccount: false,
+  checkServiceAccountError: null,
+
+  // Add-host
+  addingServiceAccountHost: false,
+  addServiceAccountHostError: null,
+
+  // Update-host
+  updatingServiceAccountHost: false,
+  updateServiceAccountHostError: null,
   isRegitryAssociationModalOpen: false,
+  isTestCredsButtonVisible: true,
   ansibleClucterToEdit: '',
   ansibleClusterData: {},
   ansibleClusterNodeUpdate: '',
@@ -125,8 +170,23 @@ export const ClustersSelectors = {
   getRegistryNodesData: state => state.clusters.registryNodesData,
   getHealthMetricsData: state => state.clusters.healthMetricsData,
   getRunningStatusData: state => state.clusters.runningStatusData,
+  // service-account credential check
+  isCheckingServiceAccount: state => state.clusters.checkingServiceAccount,
+  getServiceAccountCheckError: state => state.clusters.checkServiceAccountError,
+
+  // add-host
+  isAddingServiceAccountHost: state => state.clusters.addingServiceAccountHost,
+  getAddServiceAccountHostError: state =>
+    state.clusters.addServiceAccountHostError,
+
+  // update-host
+  isUpdatingServiceAccountHost: state =>
+    state.clusters.updatingServiceAccountHost,
+  getUpdateServiceAccountHostError: state =>
+    state.clusters.updateServiceAccountHostError,
   getIsRegitryAssociationModalOpen: state =>
     state.clusters.isRegitryAssociationModalOpen,
+  isTestCredsButtonVisible: state => state.clusters.isTestCredsButtonVisible,
   getAnsibleClusterData: state => state.clusters.ansibleClusterData,
   getansibleClucterToEdit: state => state.clusters.ansibleClucterToEdit,
   getAnsibleClusterNodeUpdate: state => state.clusters.ansibleClusterNodeUpdate,
@@ -296,6 +356,80 @@ const setAnsibleClusterNodeUpdate = (state, { payload }) => {
   };
 };
 
+const checkServiceAccountCredentialsRequest = state => {
+  return {
+    ...state,
+    checkingServiceAccount: true,
+    checkServiceAccountError: null,
+  };
+};
+
+const checkServiceAccountCredentialsSuccess = state => {
+  return {
+    ...state,
+    checkingServiceAccount: false,
+  };
+};
+
+const checkServiceAccountCredentialsFailure = (state, { payload }) => {
+  return {
+    ...state,
+    checkingServiceAccount: false,
+    checkServiceAccountError: payload,
+  };
+};
+
+const addServiceAccountHostRequest = state => {
+  return {
+    ...state,
+    addingServiceAccountHost: true,
+    addServiceAccountHostError: null,
+  };
+};
+
+const addServiceAccountHostSuccess = state => {
+  return {
+    ...state,
+    addingServiceAccountHost: false,
+  };
+};
+
+const addServiceAccountHostFailure = (state, { payload }) => {
+  return {
+    ...state,
+    addingServiceAccountHost: false,
+    addServiceAccountHostError: payload,
+  };
+};
+
+const updateServiceAccountHostRequest = state => {
+  return {
+    ...state,
+    updatingServiceAccountHost: true,
+    updateServiceAccountHostError: null,
+  };
+};
+
+const updateServiceAccountHostSuccess = state => {
+  return {
+    ...state,
+    updatingServiceAccountHost: false,
+  };
+};
+
+const updateServiceAccountHostFailure = (state, { payload }) => {
+  return {
+    ...state,
+    updatingServiceAccountHost: false,
+    updateServiceAccountHostError: payload,
+  };
+};
+
+const setTestCredsButtonVisible = (state, { payload }) => ({
+  ...state,
+  isTestCredsButtonVisible: payload, // true or false
+});
+
 const setisAnsibleClusterDeleteFrimNiFiModalOpen = (state, { payload }) => {
   return {
     ...state,
@@ -348,6 +482,51 @@ export const clustersReducer = createReducer(
       .addCase(ClustersActions.setRegistryNodesData, setRegistryNodesData)
       .addCase(ClustersActions.setHealthMetricsData, setHealthMetricsData)
       .addCase(ClustersActions.setRunningStatusData, setRunningStatusData)
+      // Check service-account credentials
+      .addCase(
+        ClustersActions.checkServiceAccountCredentialsRequest,
+        checkServiceAccountCredentialsRequest
+      )
+      .addCase(
+        ClustersActions.checkServiceAccountCredentialsSuccess,
+        checkServiceAccountCredentialsSuccess
+      )
+      .addCase(
+        ClustersActions.checkServiceAccountCredentialsFailure,
+        checkServiceAccountCredentialsFailure
+      )
+
+      // Add service-account host
+      .addCase(
+        ClustersActions.addServiceAccountHostRequest,
+        addServiceAccountHostRequest
+      )
+      .addCase(
+        ClustersActions.addServiceAccountHostSuccess,
+        addServiceAccountHostSuccess
+      )
+      .addCase(
+        ClustersActions.addServiceAccountHostFailure,
+        addServiceAccountHostFailure
+      )
+
+      // Update service-account host
+      .addCase(
+        ClustersActions.updateServiceAccountHostRequest,
+        updateServiceAccountHostRequest
+      )
+      .addCase(
+        ClustersActions.updateServiceAccountHostSuccess,
+        updateServiceAccountHostSuccess
+      )
+      .addCase(
+        ClustersActions.updateServiceAccountHostFailure,
+        updateServiceAccountHostFailure
+      )
+      .addCase(
+        ClustersActions.setTestCredsButtonVisible,
+        setTestCredsButtonVisible
+      )
       .addCase(
         ClustersActions.setIsRegitryAssociationModalOpen,
         setIsRegitryAssociationModalOpen
