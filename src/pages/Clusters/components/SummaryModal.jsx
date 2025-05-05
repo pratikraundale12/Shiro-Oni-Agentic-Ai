@@ -136,24 +136,19 @@ export const SummaryModal = ({
   };
 
   const addCluster = async ({ registry_id }) => {
-    const formdata = new FormData();
+    const data = {
+      name: clusterData?.clusterName,
+      nifi_url: clusterData?.nifiUrl,
+      registry_id: registry_id,
+      tag: tags,
+      notification_enable: notificationEnable,
+      approver_enable: approverEnable,
+      change_request_enable: changeRequestEnable,
+      ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
+      ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
+    };
+    const response = await createCluster(data);
 
-    formdata.append('name', clusterData.clusterName);
-    formdata.append('nifi_url', clusterData.nifiUrl);
-    formdata.append('registry_id', registry_id);
-    formdata.append('tag', tags);
-    formdata.append('notification_enable', notificationEnable);
-    formdata.append('approver_enable', approverEnable);
-    formdata.append('change_request_enable', changeRequestEnable);
-    formdata.append('has_custom_service_account', false);
-    if (clusterData?.logs_url) {
-      formdata.append('logs_url', clusterData.logs_url);
-    }
-    if (clusterData?.metrics_url) {
-      formdata.append('metrics_url', clusterData.metrics_url);
-    }
-
-    const response = await createCluster(formdata);
     if (response?.status === 201) {
       setLoading(false);
       history.push('/clusters');
