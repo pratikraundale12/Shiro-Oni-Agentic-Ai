@@ -122,6 +122,7 @@ export const Grid = ({
   setCurrentPage = () => {},
   sortingState,
   setSortingState,
+  createdByAnsible = false,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -459,7 +460,7 @@ export const Grid = ({
     return (
       <>
         <ClusterRegistryContainer className="row">
-          <ClusterControlButtons />
+          {createdByAnsible && <ClusterControlButtons />}
           <ClusterDetail
             data={{
               name: registryNodesData?.cluster?.name,
@@ -629,4 +630,5 @@ Grid.propTypes = {
   state: PropTypes.object.isRequired,
   sortingState: PropTypes.string,
   setSortingState: PropTypes.func,
+  createdByAnsible: PropTypes.bool,
 };
