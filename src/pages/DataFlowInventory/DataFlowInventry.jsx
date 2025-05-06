@@ -340,9 +340,8 @@ const DataFlowInventory = () => {
   }, [isFlowAddedSuccessfully]);
 
   useEffect(() => {
-    dispatch(FlowValidationActions.fetchFlows());
     if (selectedCluster?.value) {
-      dispatch(AiFlowGeneratorActions.fetchRegistryDetails());
+      dispatch(FlowValidationActions.fetchFlows());
     }
   }, [dispatch, selectedCluster]);
   useEffect(() => {
@@ -407,6 +406,7 @@ const DataFlowInventory = () => {
     const payload = {
       bucketId: flowData?.bucket,
       flowName: flowData?.flow_name,
+      processGroupName: flowData?.pg_name,
       flowDesc: flowData?.flow_desc,
       flowJson: selectedFlow?.jsonData,
       isDataInventory: true,
