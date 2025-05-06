@@ -364,10 +364,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifiProps.nifi_cluster_flow_election_max_wait_time
     );
     setValue(
-      'nifi_state_management_embedded_zookeeper_start',
-      nifiProps.nifi_state_management_embedded_zookeeper_start
-    );
-    setValue(
       'nifi_zookeeper_connect_timeout',
       nifiProps.nifi_zookeeper_connect_timeout
     );
@@ -418,7 +414,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifi_cluster_flow_election_max_wait_time:
         data?.nifi_cluster_flow_election_max_wait_time,
       nifi_state_management_embedded_zookeeper_start:
-        data?.nifi_state_management_embedded_zookeeper_start,
+        data?.nifi_cluster_is_node,
       nifi_zookeeper_connect_timeout: data?.nifi_zookeeper_connect_timeout,
       nifi_web_https_port: data?.nifi_web_https_port,
     };
@@ -649,15 +645,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         sortAlphabetically={false}
                       />
                     </div>{' '}
-                    <div className="col-2">
-                      <RadioSelectField
-                        name="nifi_state_management_embedded_zookeeper_start"
-                        options={TRUE_FALSE_OPTIONS}
-                        label="Embedded  Node"
-                        register={register}
-                        defaultValue={'true'}
-                      />
-                    </div>
                   </div>
                 </div>
 

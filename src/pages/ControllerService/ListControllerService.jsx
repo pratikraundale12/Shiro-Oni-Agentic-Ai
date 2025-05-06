@@ -43,6 +43,10 @@ const SearchContainer = styled.div`
     transform: translateY(-50%);
   }
 `;
+
+const StyledTableWrapper = styled.div`
+  height: auto;
+}`;
 const Search = styled.input`
   width: 100%;
   border-radius: 2px;
@@ -612,15 +616,16 @@ export const ListControllerService = () => {
         className={'mb-1'}
       />
       <AddControllerServiceModal />
-
-      <Table
-        showPagination={true}
-        data={filteredModulesData}
-        columns={COLUMNS}
-        controllerModule={true}
-        csList={true}
-        isResetNotRequired={isResetNotRequired}
-      />
+      <StyledTableWrapper>
+        <Table
+          showPagination={true}
+          data={filteredModulesData}
+          columns={COLUMNS}
+          controllerModule={true}
+          csList={true}
+          isResetNotRequired={isResetNotRequired}
+        />
+      </StyledTableWrapper>
       <ConfigControllerService
         isOpen={isListProprtyModel}
         onClose={handleCloseModal}
