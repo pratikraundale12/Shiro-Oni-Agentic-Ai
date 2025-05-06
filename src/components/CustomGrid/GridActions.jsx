@@ -217,6 +217,7 @@ export const GridActions = ({
   setSelectEntity,
   setSortingState,
   setCurrentPage,
+  onItemsPerPageChange,
 }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -269,6 +270,7 @@ export const GridActions = ({
     setSearchErrorMsg({});
     inputRef.current.value = '';
     setCurrentPage(1);
+    onItemsPerPageChange(10);
 
     if (module === 'namespaces') {
       dispatch(
@@ -350,6 +352,7 @@ export const GridActions = ({
             clusterId,
             params: {
               page: 1,
+              limit: 10,
               id: scheduleToken,
               ...(search && { search: search }),
               ...(watchStatus &&
@@ -895,4 +898,5 @@ GridActions.propTypes = {
   selectedRole: PropTypes.string,
   sortingState: PropTypes.string,
   setValue: PropTypes.func,
+  onItemsPerPageChange: PropTypes.func.isRequired,
 };
