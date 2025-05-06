@@ -39,7 +39,8 @@ const Container = styled.div`
 `;
 
 const TableContainer = styled.div`
-  height: 100%;
+  height: ${({ fullHeight }) => (fullHeight ? '100%' : 'auto')};
+  max-height: 100%;
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
@@ -575,7 +576,10 @@ export const Grid = ({
         <Breadcrumb module={module} />
       </div>
 
-      <TableContainer module={module}>
+      <TableContainer
+        module={module}
+        fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
+      >
         {loading || isEmpty(TABLE_DATA?.nodes) ? (
           getLoader()
         ) : (
