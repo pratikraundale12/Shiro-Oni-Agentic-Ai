@@ -463,6 +463,7 @@ export const Grid = ({
         setSelectEntity={setSelectEntity}
         setSortingState={setSortingState}
         setCurrentPage={setCurrentPage}
+        onItemsPerPageChange={setItemsPerPage}
       />
       {module === 'nodes' && !loading && !isEmpty(clusterSummary?.nodes) && (
         <>
