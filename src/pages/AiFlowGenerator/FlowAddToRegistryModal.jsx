@@ -1,20 +1,19 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { Modal, SelectField, InputField } from '../../shared';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 import * as yup from 'yup';
 import { BucketIcon, DescIcon, FlowIcon } from '../../assets';
-import styled from 'styled-components';
-import { isEmpty } from 'lodash';
 import { AddsquareIcon } from '../../assets/Icons/AddSquareIcon';
-import { useSelector } from 'react-redux';
+import { InputField, Modal, SelectField } from '../../shared';
 import {
   AiFlowGeneratorActions,
   AiFlowGeneratorSelectors,
   LoadingSelectors,
 } from '../../store';
-import { useDispatch } from 'react-redux';
 
 const bucketSchema = yup.object().shape({
   bucket: yup.string().required('Bucket is required'),
@@ -67,16 +66,23 @@ export const FlowAddToRegistryModal = ({
   showAddNewBucket = true,
   handleClose,
   setIsFlowAddedSuccessModalOpen,
-  refresh,
 }) => {
   const newBucketData = useSelector(AiFlowGeneratorSelectors.getNewBucket);
   const isFlowAddedSuccessfully = useSelector(
     AiFlowGeneratorSelectors.getIsFlowAddedSuccessFully
   );
   const dispatch = useDispatch();
-  const defaultBucket = bucketList?.filter(bucket =>
-    bucket.name.toLowerCase().includes('genai')
-  );
+  let defaultBucket = [];
+
+  if (window.location.pathname === '/data-flow-inventory') {
+    defaultBucket = bucketList?.filter(bucket =>
+      bucket.name.toLowerCase().includes('data flow inventory')
+    );
+  } else if (window.location.pathname === '/ai-flow-generator') {
+    defaultBucket = bucketList?.filter(bucket =>
+      bucket.name.toLowerCase().includes('genai')
+    );
+  }
   const DEFAULT_fORM_DATA = {
     bucket: newBucketData?.identifier || defaultBucket[0]?.id || '',
     flow_name: defaultFlowName,
@@ -103,7 +109,6 @@ export const FlowAddToRegistryModal = ({
     if (isFlowAddedSuccessfully) {
       reset(DEFAULT_fORM_DATA);
       setIsModalOpen(false);
-      refresh();
       setIsFlowAddedSuccessModalOpen && setIsFlowAddedSuccessModalOpen(true);
     }
   }, [isFlowAddedSuccessfully]);

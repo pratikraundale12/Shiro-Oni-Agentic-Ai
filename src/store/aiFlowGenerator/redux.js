@@ -12,12 +12,23 @@ export const AiFlowGeneratorActions = {
   ),
   updateGeneratedFlow: createAction(`${prefix}updateGeneratedFlow`),
   deleteGeneratedFlow: createAction(`${prefix}deleteGeneratedFlow`),
-  fetchRegistry: createAction(`${prefix}fetchRegistry`),
+  fetchRegistryDetails: createAction(`${prefix}fetchRegistryDetails`),
   addFlowToRegistry: createAction(`${prefix}addFlowToRegistry`),
   addFlowToRegistryFailure: createAction(`${prefix}addFlowToRegistryFailure`),
+  addFlowToRegistryInventory: createAction(
+    `${prefix}addFlowToRegistryInventory`
+  ),
+  addFlowToRegistryInventoryFailure: createAction(
+    `${prefix}addFlowToRegistryInventoryFailure`
+  ),
   addNewBucketToRegistry: createAction(`${prefix}addNewBucketToRegistry`),
   validateFlowJson: createAction(`${prefix}validateFlowJson`),
   validateFlowJsonSuccess: createAction(`${prefix}validateFlowJsonSuccess`),
+  setValidatedFlowErrors: createAction(`${prefix}setValidatedFlowErrors`),
+  setIsFlowValidatedSuccessfully: createAction(
+    `${prefix}setIsFlowValidatedSuccessfully`
+  ),
+  setIsFlowErrorModalOpen: createAction(`${prefix}setIsFlowErrorModalOpen`),
   addNewBucketToRegistrySuccess: createAction(
     `${prefix}addNewBucketToRegistrySuccess`
   ),
@@ -33,6 +44,10 @@ export const AiFlowGeneratorActions = {
   setIsFlowAddedSuccessFully: createAction(
     `${prefix}setIsFlowAddedSuccessFully`
   ),
+  setIsFlowAlreadyAddedSuccessFully: createAction(
+    `${prefix}setIsFlowAlreadyAddedSuccessFully`
+  ),
+  setIsFlowJsonSaved: createAction(`${prefix}setIsFlowJsonSaved`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -44,7 +59,12 @@ export const AI_FLOW_GENERATOR_INITIAL_STATE = {
   newBucket: {},
   addFlowError: {},
   isFlowAddedSuccessFully: false,
+  isFlowAlreadyAddedSuccessFully: false,
   validatedFlowRes: {},
+  validatedFlowErrors: [],
+  isFlowValidatedSuccessfully: false,
+  isFlowErrorModalOpen: false,
+  isFlowJsonSaved: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -58,6 +78,13 @@ export const AiFlowGeneratorSelectors = {
   getAddNewFlowError: state => state.aiFlowGenerator.addFlowError,
   getIsFlowAddedSuccessFully: state =>
     state.aiFlowGenerator.isFlowAddedSuccessFully,
+  getIsFlowAlreadyAddedSuccessFully: state =>
+    state.aiFlowGenerator.isFlowAlreadyAddedSuccessFully,
+  getValidatedFlowErrors: state => state.aiFlowGenerator.validatedFlowErrors,
+  getIsflowValidatedSuccessfully: state =>
+    state.aiFlowGenerator.isFlowValidatedSuccessfully,
+  getIsFlowErrorModalOpen: state => state.aiFlowGenerator.isFlowErrorModalOpen,
+  getIsflowJsonSaved: state => state.aiFlowGenerator.isFlowJsonSaved,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -131,6 +158,13 @@ const setIsFlowAddedSuccessFully = (state, { payload }) => {
   };
 };
 
+const setIsFlowAlreadyAddedSuccessFully = (state, { payload }) => {
+  return {
+    ...state,
+    isFlowAlreadyAddedSuccessFully: payload,
+  };
+};
+
 const setNewBucket = (state, { payload }) => {
   return {
     ...state,
@@ -142,6 +176,34 @@ const validateFlowJsonSuccess = (state, { payload }) => {
   return {
     ...state,
     validatedFlowRes: payload,
+  };
+};
+
+const setValidatedFlowErrors = (state, { payload }) => {
+  return {
+    ...state,
+    validatedFlowErrors: payload,
+  };
+};
+
+const setIsFlowValidatedSuccessfully = (state, { payload }) => {
+  return {
+    ...state,
+    isFlowValidatedSuccessfully: payload,
+  };
+};
+
+const setIsFlowErrorModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isFlowErrorModalOpen: payload,
+  };
+};
+
+const setIsFlowJsonSaved = (state, { payload }) => {
+  return {
+    ...state,
+    isFlowJsonSaved: payload,
   };
 };
 /* ------------- Hookup Reducers To Types ------------- */
@@ -178,6 +240,23 @@ export const aiFlowGeneratorReducer = createReducer(
       .addCase(
         AiFlowGeneratorActions.validateFlowJsonSuccess,
         validateFlowJsonSuccess
-      );
+      )
+      .addCase(
+        AiFlowGeneratorActions.setValidatedFlowErrors,
+        setValidatedFlowErrors
+      )
+      .addCase(
+        AiFlowGeneratorActions.setIsFlowValidatedSuccessfully,
+        setIsFlowValidatedSuccessfully
+      )
+      .addCase(
+        AiFlowGeneratorActions.setIsFlowErrorModalOpen,
+        setIsFlowErrorModalOpen
+      )
+      .addCase(
+        AiFlowGeneratorActions.setIsFlowAlreadyAddedSuccessFully,
+        setIsFlowAlreadyAddedSuccessFully
+      )
+      .addCase(AiFlowGeneratorActions.setIsFlowJsonSaved, setIsFlowJsonSaved);
   }
 );

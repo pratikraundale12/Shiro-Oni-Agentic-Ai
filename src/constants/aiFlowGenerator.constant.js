@@ -2,7 +2,7 @@ export const AI_FLOW_GENERATOR_CONSTANTS = {
   AI_FLOW_GENERATOR: 'AI-Powered Data Flow',
   RECOMMENDED_FLOWS: 'Recommended Flows',
   RECENT_GENERATED_FLOWS: 'Recent Generated Flows',
-  PROMPT_INPUT_PLACEHOLDER: 'Enter your Prompt here...',
+  PROMPT_INPUT_PLACEHOLDER: 'Enter your prompt here...',
   LOGIN_TO_CLUSTER_TO_GENERATE_FLOWS:
     'Please login to cluster to generate the flows',
   NO_PERMISSION_TO_GENERATE_FLOW:
@@ -79,4 +79,26 @@ export const DEFAULT_FLOW_JSON = [
     nextRun: '2021-08-02',
     flowType: 'Stream',
   },
+];
+
+export const NIFI_VERSIONS = [
+  '1.20.0',
+  '1.21.0',
+  '1.22.0',
+  '1.23.0',
+  '1.23.1',
+  '1.23.2',
+  '1.24.0',
+  '1.25.0',
+  '1.26.0',
+  '1.27.0',
+  '1.28.0',
+  '2.0.0',
+  '2.0.0-M1',
+  '2.0.0-M2',
+  '2.0.0-M3',
+  '2.0.0-M4',
+  '2.1.0',
+  '2.2.0',
+  '2.3.0',
 ];

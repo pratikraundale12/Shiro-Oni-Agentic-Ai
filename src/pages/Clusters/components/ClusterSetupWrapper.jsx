@@ -3,14 +3,15 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Button, ModalWithIcon } from '../../../shared';
 import { KDFM } from '../../../constants';
 import ClusterDetailTab from './ClusterDetailTab';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { ClustersActions } from '../../../store';
-import { useDispatch } from 'react-redux';
+import { ClustersActions, ClustersSelectors } from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
 import { GreenRightCircleIcon } from '../../../assets';
 import { history } from '../../../helpers/history';
 import { isEmpty } from 'lodash';
@@ -40,8 +41,29 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const dispatch = useDispatch();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [hostList, setHostList] = useState([]);
+  const clusterIdForAnsible = useSelector(
+    ClustersSelectors.getansibleClucterToEdit
+  );
+  const nodesUpdateAnsbibleClusterId = useSelector(
+    ClustersSelectors.getAnsibleClusterNodeUpdate
+  );
+  const ansibleClusterDataForEdit = useSelector(
+    ClustersSelectors.getAnsibleClusterData
+  );
+  const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
   const schema = yup.object().shape({
-    clusterName: yup.string().required('Cluster Name is required'),
+    clusterName: yup
+      .string()
+      .required('Cluster name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Cluster name must not start or end with a space.',
+        value => value === value?.trim()
+      )
+      .matches(
+        /^[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*$/,
+        'Cluster name must contain only letters, numbers, underscores, or hyphens.'
+      ),
     nifiVersion: yup.string().required('NiFi is required'),
     configName: yup.string().required('Config name is required'),
     configVersion: yup.string().required('Config version is required'),
@@ -54,25 +76,84 @@ const SetupClusterWrapper = ({ activeTab }) => {
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const handleCreateCluster = data => {
-    const hosts = hostList
-      .filter(item => item.is_selected)
-      .map(item => item?.id);
+  const watchState = watch();
+  const deselectedNodes = listHostIpData.filter(staticItem => {
+    const updatedItem = hostList.find(updated => updated.id === staticItem.id);
+    return (
+      staticItem.is_selected === true && updatedItem?.is_selected === false
+    );
+  });
+  const deselectedNodesIds = deselectedNodes.map(ele => ele?.id);
 
-    const payload = { ...data, ...{ hosts: hosts } };
-    if (isEmpty(hosts)) {
-      toast.error('Select Host IP');
+  const newlySelectedNodes = listHostIpData.filter(staticItem => {
+    const updatedItem = hostList.find(updated => updated.id === staticItem.id);
+    return (
+      staticItem.is_selected === false && updatedItem?.is_selected === true
+    );
+  });
+  const newlySelectedNodesIds = newlySelectedNodes.map(ele => ele?.id);
+
+  const handleCreateCluster = data => {
+    if (!isEmpty(nodesUpdateAnsbibleClusterId)) {
+      if (isEmpty(deselectedNodesIds) && isEmpty(newlySelectedNodesIds)) {
+        toast.error('Please update any nodes first');
+      } else {
+        dispatch(
+          ClustersActions.updateNodesAnsibleCluster({
+            clusterId: nodesUpdateAnsbibleClusterId,
+            payload: {
+              nodeIdsToRemove: deselectedNodesIds,
+              nodeIdsToAdd: newlySelectedNodesIds,
+            },
+          })
+        );
+      }
+    } else if (!isEmpty(clusterIdForAnsible)) {
+      const { clusterName, ...rest } = data;
+      clusterName;
+      dispatch(
+        ClustersActions.upgradeAnsibleCluster({
+          clusterId: clusterIdForAnsible,
+          payload: rest,
+        })
+      );
     } else {
-      dispatch(ClustersActions.createCluster(payload));
+      const hosts = hostList
+        .filter(item => item.is_selected)
+        .map(item => item?.id);
+
+      const payload = { ...data, ...{ hosts: hosts } };
+      if (isEmpty(hosts)) {
+        toast.error('Select Host IP');
+      } else {
+        dispatch(ClustersActions.createCluster(payload));
+      }
     }
+  };
+  const disableSubmitOnUpgrade = () => {
+    return (
+      watchState?.nifiVersion !== ansibleClusterDataForEdit?.nifi_version ||
+      watchState?.configName !== ansibleClusterDataForEdit?.config_name ||
+      watchState?.configVersion != ansibleClusterDataForEdit?.config_version
+    );
   };
 
   return (
     <Wrapper>
-      <Title title={'Add New Cluster'} />
+      <Title
+        title={
+          !isEmpty(nodesUpdateAnsbibleClusterId)
+            ? 'Update Nodes'
+            : !isEmpty(clusterIdForAnsible)
+              ? 'Upgrade Cluster'
+              : 'Add New Cluster'
+        }
+      />
+
       <Container>
         <ClusterSetupNavigationTab activeTab={activeTab} />
         <ClusterDetailTab
@@ -83,12 +164,14 @@ const SetupClusterWrapper = ({ activeTab }) => {
           hostList={hostList}
           setHostList={setHostList}
           setValue={setValue}
+          reset={reset}
         />
       </Container>
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button
             variant="secondary"
+            data-tooltip-id="tooltip-manage-host"
             type="button"
             onClick={() => {
               dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
@@ -96,9 +179,29 @@ const SetupClusterWrapper = ({ activeTab }) => {
           >
             {KDFM.BACK}
           </Button>
+          <ReactTooltip
+            id={`tooltip-manage-host`}
+            place="top"
+            content={'Back to Manage Host'}
+            style={{
+              width: '155px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
 
-          <Button type="submit" onClick={handleSubmit(handleCreateCluster)}>
-            Create Cluster
+          <Button
+            type="submit"
+            onClick={handleSubmit(handleCreateCluster)}
+            disabled={
+              !isEmpty(clusterIdForAnsible) ? !disableSubmitOnUpgrade() : false
+            }
+          >
+            {!isEmpty(nodesUpdateAnsbibleClusterId)
+              ? 'Update Nodes'
+              : !isEmpty(clusterIdForAnsible)
+                ? 'Upgrade Cluster'
+                : 'Create Cluster'}
           </Button>
         </BottomButtonDiv>
       </BottomButton>

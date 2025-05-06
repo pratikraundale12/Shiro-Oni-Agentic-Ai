@@ -90,7 +90,17 @@ export const Modal = ({
   noPadding = false,
   noScroll = false,
   primaryButtonProps = {},
+  additionalBtnText = '',
+  additionalBtnDisabled = false,
+  additionalBtnClick = () => null,
+  primaryBtnSize,
+  formClass,
 }) => {
+  const primaryButtonSize = primaryBtnSize
+    ? primaryBtnSize
+    : !secondaryButtonText
+      ? 'lg'
+      : 'md';
   const styleObject = {
     overlay: {
       position: 'fixed',
@@ -137,7 +147,7 @@ export const Modal = ({
       shouldCloseOnOverlayClick={false}
     >
       <form
-        className="d-flex flex-column overflow-auto"
+        className={`d-flex flex-column overflow-auto ${formClass ? formClass : ''}`}
         onSubmit={e => {
           e.preventDefault();
           onSubmit(e);
@@ -200,10 +210,21 @@ export const Modal = ({
                 loading={loading}
                 data-dismiss="modal"
                 disabled={primaryButtonDisabled}
-                size={!secondaryButtonText ? 'lg' : 'md'}
+                size={primaryButtonSize || 'md'}
                 {...primaryButtonProps}
               >
                 {primaryButtonText}
+              </Button>
+            )}
+            {additionalBtnText && (
+              <Button
+                style={{ marginRight: 'auto' }}
+                type="button"
+                variant="secondary"
+                disabled={additionalBtnDisabled}
+                onClick={additionalBtnClick}
+              >
+                {additionalBtnText}
               </Button>
             )}
           </Footer>
@@ -237,4 +258,9 @@ Modal.propTypes = {
   }),
   noPadding: PropTypes.bool,
   noScroll: PropTypes.bool,
+  additionalBtnText: PropTypes.string,
+  additionalBtnClick: PropTypes.func,
+  additionalBtnDisabled: PropTypes.bool,
+  primaryBtnSize: PropTypes.string,
+  formClass: PropTypes.string,
 };

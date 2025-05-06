@@ -12,6 +12,7 @@ import { history } from '../../../helpers/history';
 import {
   Button,
   InputField,
+  PasswordField,
   RadioSelectField,
   SelectField,
 } from '../../../shared';
@@ -204,12 +205,20 @@ const ClusterSetupNewConfigDetailsPage = () => {
     configName: yup
       .string()
       .required('Config name is required')
-      .matches(/^\S+$/, 'Config name cannot contain spaces'),
+      .test(
+        'no-leading-trailing-spaces',
+        'Config name must not start or end with a space',
+        value => value === value?.trim()
+      ),
     nifiVersion: yup.string().required('NiFi version is required'),
     comments: yup
       .string()
-      .transform(value => value?.trim())
-      .required('Comment is required'),
+      .required('Comment is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Username must not start or end with a space',
+        value => value === value?.trim()
+      ),
     nifi_cluster_node_protocol_max_threads: yup
       .number()
       .typeError('Protocol Max thread must be a number')
@@ -227,11 +236,24 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Port must be between 4 and 5 digits',
         val => val && val.toString().length >= 4 && val.toString().length <= 5
       ),
-    username: yup.string().required('Userame is required'),
+    username: yup
+      .string()
+      .required('Username is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Username must not start or end with a space',
+        value => value === value?.trim()
+      )
+      .min(3, 'Username must be minimum 3 in length'),
     password: yup
       .string()
       .required('Password is required')
-      .min(8, 'Password must be minimum 8 in length'),
+      .test(
+        'no-leading-trailing-spaces',
+        'Password must not start or end with a space',
+        value => value === value?.trim()
+      )
+      .min(10, 'Password must be minimum 10 in length'),
     java_arg_2: yup
       .number()
       .transform((value, originalValue) =>
@@ -281,6 +303,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
       checkpoint_interval: '2 mins',
       java_arg_2: 0,
       java_arg_3: 0,
+      always_sync: 'false',
+      access_control: 'Open',
     },
   });
 
@@ -379,10 +403,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifiProps.nifi_cluster_flow_election_max_wait_time
     );
     setValue(
-      'nifi_state_management_embedded_zookeeper_start',
-      nifiProps.nifi_state_management_embedded_zookeeper_start
-    );
-    setValue(
       'nifi_zookeeper_connect_timeout',
       nifiProps.nifi_zookeeper_connect_timeout
     );
@@ -433,7 +453,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifi_cluster_flow_election_max_wait_time:
         data?.nifi_cluster_flow_election_max_wait_time,
       nifi_state_management_embedded_zookeeper_start:
-        data?.nifi_state_management_embedded_zookeeper_start,
+        data?.nifi_cluster_is_node,
       nifi_zookeeper_connect_timeout: data?.nifi_zookeeper_connect_timeout,
       nifi_web_https_port: data?.nifi_web_https_port,
     };
@@ -528,6 +548,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
               register={register}
               errors={errors}
               icon={<NotePadIcon />}
+              disabled={!isEmpty(configToEdit)}
             />
           </div>
           <div className="col-4">
@@ -603,9 +624,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect>
-                        Protocol Max Threads
-                      </LabelSelect>
+                      <LabelSelect>Protocol Max Threads</LabelSelect>
 
                       <InputField
                         name="nifi_cluster_node_protocol_max_threads"
@@ -674,15 +693,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         labelMargin="0px"
                       />
                     </div>{' '}
-                    <div className="col-2">
-                      <RadioSelectField
-                        name="nifi_state_management_embedded_zookeeper_start"
-                        options={TRUE_FALSE_OPTIONS}
-                        label="Embedded  Node"
-                        register={register}
-                        defaultValue={'true'}
-                      />
-                    </div>
                   </div>
                 </div>
 
@@ -776,13 +786,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-4">
-                      <LabelSelect>Password</LabelSelect>
-
-                      <InputField
+                      <PasswordField
                         name="password"
-                        type="text"
+                        label="Password"
                         placeholder="Enter Password"
                         required
+                        watch={watch}
                         register={register}
                         errors={errors}
                         icon={<NotePadIcon />}

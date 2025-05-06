@@ -29,6 +29,7 @@ import { UrlRender } from './CellRenders';
 import { GridActions as GridActionsComponent } from './GridActions';
 import Pagination from './Pagination';
 import { Table } from './Table';
+import ClusterControlButtons from '../../pages/Clusters/ClusterControlButtons';
 
 const Container = styled.div`
   background-color: ${theme.colors.white};
@@ -38,7 +39,8 @@ const Container = styled.div`
 `;
 
 const TableContainer = styled.div`
-  height: 100%;
+  height: ${({ fullHeight }) => (fullHeight ? '100%' : 'auto')};
+  max-height: 100%;
   overflow-x: auto;
   border-radius: 16px;
   border: 1px solid ${theme.colors.darkGrey};
@@ -121,6 +123,7 @@ export const Grid = ({
   setCurrentPage = () => {},
   sortingState,
   setSortingState,
+  createdByAnsible = false,
 }) => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -239,6 +242,7 @@ export const Grid = ({
     activityHistory: 'No Activity History Available',
     scheduler: 'No Schedulers Available',
     nodes: 'No Nodes Available Login to Cluster First',
+    registry: 'No Registry Available',
   };
 
   const getModuleBasedStatusKey = module => {
@@ -457,32 +461,40 @@ export const Grid = ({
     return (
       <>
         <ClusterRegistryContainer className="row">
+          {createdByAnsible && <ClusterControlButtons />}
           <ClusterDetail
             data={{
               name: registryNodesData?.cluster?.name,
               nifi_url: registryNodesData?.cluster?.nifi_url,
             }}
           />
-          <RegistryDetail
-            data={{
-              name: registryNodesData?.cluster?.registry?.name,
-              registry_url: registryNodesData?.cluster?.registry?.registry_url,
-            }}
-          />
+          {registryNodesData?.cluster?.registry?.registry_url && (
+            <RegistryDetail
+              data={{
+                name: registryNodesData?.cluster?.registry?.name,
+                registry_url:
+                  registryNodesData?.cluster?.registry?.registry_url,
+              }}
+            />
+          )}
         </ClusterRegistryContainer>
         <ClusterRegistryContainer className="row">
-          <ClusterDetail
-            data={{
-              metrics_url: registryNodesData?.cluster?.metrics_url,
-            }}
-            columns={METRICS_URL_COLUMN}
-          />
-          <ClusterDetail
-            data={{
-              logs_url: registryNodesData?.cluster?.logs_url,
-            }}
-            columns={LOGS_URL_COLUMN}
-          />{' '}
+          {registryNodesData?.cluster?.metrics_url && (
+            <ClusterDetail
+              data={{
+                metrics_url: registryNodesData?.cluster?.metrics_url,
+              }}
+              columns={METRICS_URL_COLUMN}
+            />
+          )}
+          {registryNodesData?.cluster?.logs_url && (
+            <ClusterDetail
+              data={{
+                logs_url: registryNodesData?.cluster?.logs_url,
+              }}
+              columns={LOGS_URL_COLUMN}
+            />
+          )}
         </ClusterRegistryContainer>
         <Modal
           title="Event Log"
@@ -564,7 +576,10 @@ export const Grid = ({
         <Breadcrumb module={module} />
       </div>
 
-      <TableContainer module={module}>
+      <TableContainer
+        module={module}
+        fullHeight={loading || isEmpty(TABLE_DATA?.nodes)}
+      >
         {loading || isEmpty(TABLE_DATA?.nodes) ? (
           getLoader()
         ) : (
@@ -619,4 +634,5 @@ Grid.propTypes = {
   state: PropTypes.object.isRequired,
   sortingState: PropTypes.string,
   setSortingState: PropTypes.func,
+  createdByAnsible: PropTypes.bool,
 };

@@ -27,23 +27,48 @@ export const aiFlowGeneratorAPI = api => {
       return error.response.data;
     }
   };
-  const fetchRegistry = async () => {
+  const fetchRegistryDetails = async () => {
     try {
       return await api.get(`/get-registry`);
     } catch (error) {
       return error.response.data;
     }
   };
-  const addFlowToRegistry = async ({ clusterId, payload }) => {
+  const addFlowToRegistry = async ({ clusterId, payload, registryId }) => {
     const { bucketId } = payload;
     const payloaDdata = {
       flowName: payload?.flowName,
       flowDesc: payload?.flowDesc,
       flowJson: payload?.flowJson,
+      isDataInventory: payload?.isDataInventory,
+      registryId: registryId,
+      bucketName: payload?.bucketName,
     };
     try {
       return await api.post(
         `/clusters/${clusterId}/buckets/${bucketId}/add-flows`,
+        payloaDdata
+      );
+    } catch (error) {
+      return error.response.data;
+    }
+  };
+  const addFlowToRegistryInventory = async ({
+    clusterId,
+    payload,
+    registryId,
+  }) => {
+    const { bucketId } = payload;
+    const payloaDdata = {
+      flowName: payload?.flowName,
+      flowDesc: payload?.flowDesc,
+      flowJson: payload?.flowJson,
+      isDataInventory: payload?.isDataInventory,
+      registryId: registryId,
+    };
+    try {
+      return await api.post(
+        `/clusters/${clusterId}/buckets/${bucketId}/add-flows-inventory`,
         payloaDdata
       );
     } catch (error) {
@@ -69,8 +94,9 @@ export const aiFlowGeneratorAPI = api => {
     generateFlowAPI,
     deleteGeneratedFlow,
     updateGeneratedFlow,
-    fetchRegistry,
+    fetchRegistryDetails,
     addFlowToRegistry,
+    addFlowToRegistryInventory,
     addNewBucketToRegistry,
     validateFlowJson,
   };

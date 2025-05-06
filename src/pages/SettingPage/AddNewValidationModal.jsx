@@ -25,7 +25,7 @@ const LabelSelect = styled.div`
 `;
 const addNewValidationSchema = yup.object().shape({
   scope_type: yup.string().required('Scope Type is required'),
-  display_value: yup.string().required('Display Value is required'),
+  display_value: yup.string().trim().required('Display Value is required'),
 });
 
 const AddNewValidationModal = () => {
@@ -70,20 +70,26 @@ const AddNewValidationModal = () => {
   };
 
   const onSubmit = data => {
+    const trimmedData = {
+      ...data,
+      display_value: data.display_value.trim(),
+      description: data.description?.trim() || '',
+    };
+
     if (selectedItem) {
       dispatch(
         FlowValidationActions.updateRuleScope({
-          id: selectedItem.id,
-          header: data.display_value,
-          description: data.description,
+          id: selectedItem?.id,
+          header: trimmedData?.display_value,
+          description: trimmedData?.description,
         })
       );
     } else {
       dispatch(
         FlowValidationActions.addRuleScope({
-          scope_type: data.scope_type,
-          description: data.description,
-          header: data.display_value,
+          scope_type: trimmedData?.scope_type,
+          header: trimmedData?.display_value,
+          description: trimmedData?.description,
         })
       );
     }

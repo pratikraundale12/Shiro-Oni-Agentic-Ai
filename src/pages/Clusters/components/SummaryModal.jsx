@@ -148,6 +148,7 @@ export const SummaryModal = ({
       ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
     };
     const response = await createCluster(data);
+
     if (response?.status === 201) {
       setLoading(false);
       history.push('/clusters');
@@ -177,16 +178,17 @@ export const SummaryModal = ({
   };
 
   const editClusterData = async () => {
-    const payload = {
-      name: clusterData.clusterName,
-      nifi_url: clusterData.nifiUrl,
-      tag: tags,
-      notification_enable: notificationEnable,
-      approver_enable: approverEnable,
-      change_request_enable: changeRequestEnable,
-    };
+    const formdata = new FormData();
+    formdata.append('name', clusterData.clusterName);
+    formdata.append('nifi_url', clusterData.nifiUrl);
+    formdata.append('tag', tags);
+    formdata.append('notification_enable', notificationEnable);
+    formdata.append('approver_enable', approverEnable);
+    formdata.append('change_request_enable', changeRequestEnable);
+    formdata.append('has_custom_service_account', false);
+
     const id = clusterId;
-    const response = await updateCluster(id, payload);
+    const response = await updateCluster(id, formdata);
     if (response?.id) {
       const cluster = localStorage.getItem('selected_cluster');
 

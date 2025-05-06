@@ -15,6 +15,7 @@ export const validatePayload = (payload, requiredFields) => {
     query: 'Query',
     logged_in_user: 'LoggedIn User',
     user_role: 'Role',
+    nifi_version: 'NiFi Version',
   };
 
   const missingFields = requiredFields
@@ -43,7 +44,7 @@ export const formattedTime = () => {
 
   return `${hours}:${minutes} ${period} ${day}-${month}-${year}`;
 };
-export const downloadJsonFile = (jsonData, fileName = 'demo.json', refresh) => {
+export const downloadJsonFile = (jsonData, fileName = 'demo.json') => {
   try {
     const blob = new Blob([JSON.stringify(jsonData, null, 2)], {
       type: 'application/json',
@@ -62,7 +63,6 @@ export const downloadJsonFile = (jsonData, fileName = 'demo.json', refresh) => {
     toast.success('Flow downloaded successfully!', {
       toastId: 'download-success',
     });
-    refresh();
   } catch (error) {
     toast.error('Failed to download the flow. Please try again.', {
       toastId: 'download-error',
@@ -76,4 +76,14 @@ export const validateInput = input => {
   const isValid = cleanedInput;
 
   return { isValid, cleanedInput };
+};
+
+export const formatMissingValues = data => {
+  return data.map(item => {
+    const [key] = Object.keys(item);
+    return {
+      jsonkey: key,
+      missingValue: item[key].replace(/\./g, ' > '),
+    };
+  });
 };

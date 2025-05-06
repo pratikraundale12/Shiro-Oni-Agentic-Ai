@@ -83,6 +83,7 @@ export const PromptInputBox = ({
   inputError,
   setInputError,
   setConversationalRes,
+  nifiVersion,
 }) => {
   const [isSendBtnDisabled, setIsSendBtnDisabled] = useState(true);
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -146,12 +147,14 @@ export const PromptInputBox = ({
         refresh: refresh,
         logged_in_user: currentUser?.id,
         user_role: currentUser?.role,
+        nifi_version: nifiVersion,
       };
       const requiredFields = [
         'session_id',
         'query',
         'logged_in_user',
         'user_role',
+        'nifi_version',
       ];
       if (validatePayload(payload, requiredFields)) {
         dispatch(AiFlowGeneratorActions.generateFlowAPI(payload));
@@ -217,4 +220,5 @@ PromptInputBox.propTypes = {
   inputError: PropTypes.object,
   setInputError: PropTypes.func,
   setConversationalRes: PropTypes.func,
+  nifiVersion: PropTypes.string,
 };
