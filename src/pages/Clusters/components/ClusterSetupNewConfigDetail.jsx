@@ -637,9 +637,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-5">
-                      {/* <LabelSelect className="mb-3">
-                        Flow Election Max Wait Time
-                      </LabelSelect> */}
 
                       <StyledSelectField
                         label="Flow Election Max Wait Time"
@@ -676,9 +673,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      {/* <LabelSelect className="mb-3">
-                        Zookeeper Connection Timeout
-                      </LabelSelect> */}
                       <StyledSelectField
                         label="Zookeeper Connection Timeout"
                         name="nifi_zookeeper_connect_timeout"
@@ -900,8 +894,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>{' '}
                     <div className="col-4">
-                      {/* <LabelSelect className="mb-3">Access Control</LabelSelect> */}
-
                       <StyledSelectField
                         label="Access Control"
                         name="access_control"
