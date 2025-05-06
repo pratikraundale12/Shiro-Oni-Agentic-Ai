@@ -33,6 +33,7 @@ import { ClustersActions, ClustersSelectors } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { safeParseJSON } from '../../../helpers';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 
 const StyledSelectField = styled(SelectField)`
@@ -567,9 +568,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
             />
           </div>
           <div className="col-4">
-            <LabelSelect>{KDFM.COMMENTS}</LabelSelect>
-
             <InputField
+              label={KDFM.COMMENTS}
               name="comments"
               type="text"
               placeholder={KDFM.ENTER_YOUR_COMMENTS}
@@ -624,9 +624,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect>Protocol Max Threads</LabelSelect>
-
                       <InputField
+                        label="Protocol Max Threads"
                         name="nifi_cluster_node_protocol_max_threads"
                         type="text"
                         placeholder="Enter Protocol Max Threads"
@@ -704,9 +703,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect>Web Http Port</LabelSelect>
-
                       <InputField
+                        label="Web Http Port"
                         name="nifi_web_https_port"
                         type="text"
                         placeholder="Enter Http Port"
@@ -730,7 +728,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <div className="col-4">
                       <LabelSelect className="ms-1 row">
                         Java.arg.2
-                        <LabelWarning>(Initial Heap Size in GB)</LabelWarning>
+                        <LabelWarning>(Initial Heap Size in GB)<span className="text-danger">*</span></LabelWarning>
                       </LabelSelect>
 
                       <InputField
@@ -746,7 +744,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <div className="col-4">
                       <LabelSelect className="row">
                         Java.arg.3
-                        <LabelWarning>(Maximum Heap Size in GB)</LabelWarning>
+                        <LabelWarning>(Maximum Heap Size in GB)<span className="text-danger">*</span></LabelWarning>
                       </LabelSelect>
 
                       <InputField
@@ -773,9 +771,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-4">
-                      <LabelSelect>Username</LabelSelect>
-
                       <InputField
+                        label="Username"
                         name="username"
                         type="text"
                         placeholder="Enter Username"
@@ -930,6 +927,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button
+            data-tooltip-id={`tooltip-manage-config-from-add-new-config`}
             variant="secondary"
             type="button"
             onClick={() => {
@@ -940,6 +938,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
           >
             {KDFM.BACK}
           </Button>
+          <ReactTooltip
+                      id={`tooltip-manage-config-from-add-new-config`}
+                      place="top"
+                      content={'Back to Manage Config'}
+                      style={{
+                        width: '170px',
+                        whiteSpace: 'normal',
+                        wordWrap: 'break-word',
+                      }}
+                    />
 
           <Button
             type="submit"
