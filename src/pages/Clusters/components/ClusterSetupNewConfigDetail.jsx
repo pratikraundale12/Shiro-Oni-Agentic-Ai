@@ -33,6 +33,46 @@ import { ClustersActions, ClustersSelectors } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { safeParseJSON } from '../../../helpers';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+
+
+const StyledSelectField = styled(SelectField)`
+  /* Container styling */
+  & > div {
+    margin-bottom: ${props => props.marginBottom || '1rem'};
+  }
+
+  & label {
+    margin-bottom: ${props => props.labelMargin || '2px'} !important;
+  }
+
+  /* Control styling (the main input area) */
+  & .react-select__control {
+    height: ${props => props.height || 'auto'};
+    min-height: ${props => props.height || '40px'};
+    border-radius: ${props => props.borderRadius || '4px'};
+    margin-top: ${props => props.marginTop || '0'};
+    margin-left: ${props => props.marginLeft || '0'};
+    margin-right: ${props => props.marginRight || '0'};
+  }
+
+  /* Value container styling */
+  & .react-select__value-container {
+    padding: ${props => props.innerPadding || props.padding || '0 8px'};
+  }
+
+  
+  /* Menu styling */
+  & .react-select__menu {
+    border-radius: ${props => props.menuBorderRadius || '4px'};
+  }
+
+  /* Option styling */
+  & .react-select__option {
+    padding: ${props => props.optionPadding || '8px 12px'};
+    font-size: ${props => props.fontSize || '14px'};
+  }
+`;
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -513,7 +553,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
             />
           </div>
           <div className="col-4">
-            <SelectField
+            <StyledSelectField
               label={KDFM.NIFI_VERSION}
               name="nifiVersion"
               icon={<QRIcons />}
@@ -523,12 +563,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
               control={control}
               options={nifiVerionsOptions || []}
               placeholder={KDFM.SELECT_NIFI_VERSION}
+              height="54px"
+              labelMargin="0px"
             />
           </div>
           <div className="col-4">
-            <LabelSelect>{KDFM.COMMENTS}</LabelSelect>
-
             <InputField
+              label={KDFM.COMMENTS}
               name="comments"
               type="text"
               placeholder={KDFM.ENTER_YOUR_COMMENTS}
@@ -583,9 +624,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect>Protocol Max Threads</LabelSelect>
-
                       <InputField
+                        label="Protocol Max Threads"
                         name="nifi_cluster_node_protocol_max_threads"
                         type="text"
                         placeholder="Enter Protocol Max Threads"
@@ -597,19 +637,20 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
-                        Flow Election Max Wait Time
-                      </LabelSelect>
 
-                      <SelectField
+                      <StyledSelectField
+                        label="Flow Election Max Wait Time"
                         name="nifi_cluster_flow_election_max_wait_time"
                         icon={<QRIcons />}
+                        size="lg"
                         errors={errors}
                         control={control}
                         options={FLOW_ELECTION_MAX_WAIT_OPTIONS}
                         placeholder="Select Flow Election Max Wait Time"
                         sortAlphabetically={false}
                         defaultValue="5"
+                        height="54px"
+                        labelMargin="0px"
                       />
                     </div>
                     <div className="col-2">
@@ -632,10 +673,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
-                        Zookeeper Connection Timeout
-                      </LabelSelect>
-                      <SelectField
+                      <StyledSelectField
+                        label="Zookeeper Connection Timeout"
                         name="nifi_zookeeper_connect_timeout"
                         icon={<QRIcons />}
                         errors={errors}
@@ -643,6 +682,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         options={ZOOKEEPER_CONNECTION_TIMEOUT}
                         placeholder="Select Zookeeper Connection Timeout"
                         sortAlphabetically={false}
+                        height="54px"
+                        labelMargin="0px"
                       />
                     </div>{' '}
                   </div>
@@ -656,9 +697,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect>Web Http Port</LabelSelect>
-
                       <InputField
+                        label="Web Http Port"
                         name="nifi_web_https_port"
                         type="text"
                         placeholder="Enter Http Port"
@@ -682,7 +722,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <div className="col-4">
                       <LabelSelect className="ms-1 row">
                         Java.arg.2
-                        <LabelWarning>(Initial Heap Size in GB)</LabelWarning>
+                        <LabelWarning>(Initial Heap Size in GB)<span className="text-danger">*</span></LabelWarning>
                       </LabelSelect>
 
                       <InputField
@@ -698,7 +738,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <div className="col-4">
                       <LabelSelect className="row">
                         Java.arg.3
-                        <LabelWarning>(Maximum Heap Size in GB)</LabelWarning>
+                        <LabelWarning>(Maximum Heap Size in GB)<span className="text-danger">*</span></LabelWarning>
                       </LabelSelect>
 
                       <InputField
@@ -725,9 +765,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-4">
-                      <LabelSelect>Username</LabelSelect>
-
                       <InputField
+                        label="Username"
                         name="username"
                         type="text"
                         placeholder="Enter Username"
@@ -789,10 +828,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-4">
-                      <LabelSelect className="mb-3">
+                      {/* <LabelSelect className="mb-3">
                         Checkpoint Interval
-                      </LabelSelect>
-                      <SelectField
+                      </LabelSelect> */}
+                      <StyledSelectField
+                        label="Checkpoint Interval"
                         name="checkpoint_interval"
                         icon={<QRIcons />}
                         errors={errors}
@@ -800,6 +840,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         options={CHECKPOINT_INTERVAL_OPTIONS}
                         placeholder="Select Checkpoint Interval"
                         sortAlphabetically={false}
+                        height="54px"
+                        labelMargin="0px"
                       />
                     </div>
                     <div>
@@ -835,10 +877,11 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>{' '}
                     <div className="col-4">
-                      <LabelSelect className="mb-3">
+                      {/* <LabelSelect className="mb-3">
                         Session Timeout
-                      </LabelSelect>
-                      <SelectField
+                      </LabelSelect> */}
+                      <StyledSelectField
+                        label="Session Timeout"
                         name="session_timeout"
                         icon={<QRIcons />}
                         errors={errors}
@@ -846,12 +889,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         options={SESSION_TIMEOUT_OPTIONS}
                         placeholder="Select Session Timeout"
                         sortAlphabetically={false}
+                        height="54px"
+                        labelMargin="0px"
                       />
                     </div>{' '}
                     <div className="col-4">
-                      <LabelSelect className="mb-3">Access Control</LabelSelect>
-
-                      <SelectField
+                      <StyledSelectField
+                        label="Access Control"
                         name="access_control"
                         icon={<QRIcons />}
                         errors={errors}
@@ -860,6 +904,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         placeholder="Select Access Control "
                         sortAlphabetically={false}
                         defaultValue="Open"
+                        height="54px"
+                        labelMargin="0px"
                       />
                     </div>
                   </div>
@@ -873,6 +919,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button
+            data-tooltip-id={`tooltip-manage-config-from-add-new-config`}
             variant="secondary"
             type="button"
             onClick={() => {
@@ -883,6 +930,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
           >
             {KDFM.BACK}
           </Button>
+          <ReactTooltip
+                      id={`tooltip-manage-config-from-add-new-config`}
+                      place="top"
+                      content={'Back to Manage Config'}
+                      style={{
+                        width: '170px',
+                        whiteSpace: 'normal',
+                        wordWrap: 'break-word',
+                      }}
+                    />
 
           <Button
             type="submit"

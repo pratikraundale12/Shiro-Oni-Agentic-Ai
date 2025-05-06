@@ -151,7 +151,7 @@ const LabelSelect = styled.div`
   font-weight: 600;
   line-height: 16px;
   color: ${props => props.theme.colors.darker};
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 `;
 const TagsInput = styled.input`
   flex-grow: 1;
