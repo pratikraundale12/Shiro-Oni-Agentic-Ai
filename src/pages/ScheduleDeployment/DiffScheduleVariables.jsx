@@ -4,6 +4,7 @@ import { SchedularSelectors } from '../../store/schedular';
 import { useSelector } from 'react-redux';
 import { NoDataIcon } from '../../assets';
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -62,50 +63,73 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-const DiffScheduleVariables = () => {
+const DiffScheduleVariables = ({
+  isFromDeploySummary = false,
+  variablesData,
+}) => {
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
+  const data = isFromDeploySummary
+    ? variablesData
+    : scheduleDiffData?.diffVariables;
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1 pb-2 ">
         {' '}
-        {scheduleDiffData?.diffVariables?.map(element => (
+        {data?.map(element => (
           <div key={element?.pgId} className="mt-4">
             <PgHead className="mb-2">{element?.pgName}</PgHead>
             <GreyBoxNamespace key={element?.pgId}>
               <div className="row mb-3">
                 <div className="d-flex">
                   <TileHeader className="col-3">Name</TileHeader>
-                  <TileHeader className="col-5">New Value</TileHeader>
-                  <TileHeader className="col-4">Current Value</TileHeader>
+                  <TileHeader className="col-5">
+                    {isFromDeploySummary ? 'Value' : 'New Value'}
+                  </TileHeader>
+                  {!isFromDeploySummary && (
+                    <TileHeader className="col-4">Current Value</TileHeader>
+                  )}{' '}
                 </div>
               </div>
-              {element?.variables?.map(item => (
-                <div className="row mt-1" key={item?.name}>
-                  <div className="d-flex">
-                    <TileItem className="col-3 d-flex align-items-center">
-                      {item?.name}
-                    </TileItem>
-                    <TileItem className="col-5">
-                      <div
-                        style={{
-                          backgroundColor: '#E9ECF1',
-                          borderRadius: '12px',
-                        }}
-                        className="p-2 me-2"
-                      >
-                        {item?.new_value || 'N/A'}
-                      </div>
-                    </TileItem>
-                    <TileItem className="col-4 d-flex align-items-center">
-                      {item?.old_value || 'N/A'}
-                    </TileItem>
+              {element?.variables?.map(item => {
+                const value =
+                  item?.value === ''
+                    ? item?.check
+                      ? 'Empty String Set'
+                      : 'No Value set'
+                    : item?.value;
+
+                return (
+                  <div className="row mt-1" key={item?.name}>
+                    <div className="d-flex">
+                      <TileItem className="col-3 d-flex align-items-center">
+                        {item?.name}
+                      </TileItem>
+                      <TileItem className="col-5">
+                        <div
+                          style={{
+                            backgroundColor: '#E9ECF1',
+                            borderRadius: '12px',
+                          }}
+                          className="p-2 me-2"
+                        >
+                          {isFromDeploySummary
+                            ? value
+                            : item?.new_value || 'N/A'}
+                        </div>
+                      </TileItem>
+                      {!isFromDeploySummary && (
+                        <TileItem className="col-4 d-flex align-items-center">
+                          {item?.old_value || 'N/A'}
+                        </TileItem>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </GreyBoxNamespace>
           </div>
         ))}
-        {isEmpty(scheduleDiffData?.diffVariables) && (
+        {isEmpty(data) && (
           <div className="d-flex flex-column align-items-center mt-5">
             <NoDataIcon width={130} />
             <NoDataText>No Data Found!!</NoDataText>
@@ -115,5 +139,8 @@ const DiffScheduleVariables = () => {
     </DataWrapper>
   );
 };
-DiffScheduleVariables.propTypes = {};
+DiffScheduleVariables.propTypes = {
+  variablesData: PropTypes.array,
+  isFromDeploySummary: PropTypes.bool,
+};
 export default DiffScheduleVariables;

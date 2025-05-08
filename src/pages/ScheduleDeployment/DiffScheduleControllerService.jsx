@@ -5,6 +5,7 @@ import { SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { NoDataIcon } from '../../assets';
 import { isEmpty } from 'lodash';
+import PropTypes from 'prop-types';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -64,8 +65,11 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
-const DiffScheduleCS = () => {
+const DiffScheduleCS = ({ csData, isFromDeploySummary = false }) => {
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
+  const data = isFromDeploySummary
+    ? csData
+    : scheduleDiffData?.diffControllerServices;
   return (
     <DataWrapper>
       <ScrollSetGrey className="scroll-set-grey pe-1">
@@ -86,52 +90,71 @@ const DiffScheduleCS = () => {
           </div>
         </div>
 
-        {scheduleDiffData?.diffControllerServices?.map(element => (
-          <div className="mt-4" key={element?.identifier}>
-            <PgHead className="mb-2">{element?.name}</PgHead>
-            <GreyBoxNamespace>
-              <div className="d-flex mb-3">
-                <TileHeader className="col-3"></TileHeader>
-                <TileHeader className="col-5">New</TileHeader>
-                <TileHeader className="col-4">Current</TileHeader>
-              </div>
-              {element?.property_differences?.map(item => (
-                <div className="row  " key={item?.name}>
-                  <TileHeader
-                    style={{
-                      backgroundColor: '#E9ECF1',
-                      height: '30px',
-                      color: theme.colors.primary,
-                    }}
-                    className="d-flex align-items-center mb-1"
-                  >
-                    <span className="">{item?.name}</span>
-                  </TileHeader>
-                  <div className="d-flex mb-1">
-                    <TileHeader className="col-3 d-flex align-items-center">
-                      Value
-                    </TileHeader>
-                    <TileItem className="col-5 me-2">
-                      <div
+        {data?.map(element => {
+          const properties =
+            element?.property_differences || element?.properties;
+          return (
+            <div className="mt-4" key={element?.identifier}>
+              <PgHead className="mb-2">{element?.name}</PgHead>
+              <GreyBoxNamespace>
+                {!isFromDeploySummary && (
+                  <div className="d-flex mb-3">
+                    <TileHeader className="col-3"></TileHeader>
+                    <TileHeader className="col-5">New</TileHeader>
+
+                    <TileHeader className="col-4">Current</TileHeader>
+                  </div>
+                )}
+                {properties?.map(item => {
+                  const value =
+                    item?.value === ''
+                      ? 'Empty String Set'
+                      : item?.value === null
+                        ? 'No Value set'
+                        : item?.value;
+                  return (
+                    <div className="row  " key={item?.name}>
+                      <TileHeader
                         style={{
                           backgroundColor: '#E9ECF1',
-                          borderRadius: '12px',
+                          height: '30px',
+                          color: theme.colors.primary,
                         }}
-                        className="p-2"
+                        className="d-flex align-items-center mb-1"
                       >
-                        {item?.new_value || 'N/A'}
+                        <span className="">{item?.name}</span>
+                      </TileHeader>
+                      <div className="d-flex mb-1">
+                        <TileHeader className="col-3 d-flex align-items-center">
+                          Value
+                        </TileHeader>
+                        <TileItem className="col-5 me-2">
+                          <div
+                            style={{
+                              backgroundColor: '#E9ECF1',
+                              borderRadius: '12px',
+                            }}
+                            className="p-2"
+                          >
+                            {isFromDeploySummary
+                              ? value
+                              : item?.new_value || 'N/A'}
+                          </div>
+                        </TileItem>
+                        {!isFromDeploySummary && (
+                          <TileItem className="col-4 d-flex align-items-center">
+                            {item?.old_value || 'N/A'}
+                          </TileItem>
+                        )}
                       </div>
-                    </TileItem>
-                    <TileItem className="col-4 d-flex align-items-center">
-                      {item?.old_value || 'N/A'}
-                    </TileItem>
-                  </div>
-                </div>
-              ))}
-            </GreyBoxNamespace>
-          </div>
-        ))}
-        {isEmpty(scheduleDiffData?.diffControllerServices) && (
+                    </div>
+                  );
+                })}
+              </GreyBoxNamespace>
+            </div>
+          );
+        })}
+        {isEmpty(data) && (
           <div className="d-flex flex-column align-items-center mt-5">
             <NoDataIcon width={130} />
             <NoDataText>No Data Found!!</NoDataText>
@@ -141,5 +164,8 @@ const DiffScheduleCS = () => {
     </DataWrapper>
   );
 };
-DiffScheduleCS.propTypes = {};
+DiffScheduleCS.propTypes = {
+  isFromDeploySummary: PropTypes.bool,
+  csData: PropTypes.array,
+};
 export default DiffScheduleCS;
