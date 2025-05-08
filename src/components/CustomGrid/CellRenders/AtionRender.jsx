@@ -4,7 +4,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { CircleExclamationMarkIcon, ThreedotsIcon } from '../../../assets';
+import {
+  CircleExclamationMarkIcon,
+  DeleteSmallIcon,
+  ThreedotsIcon,
+} from '../../../assets';
 import { CLUSTER_STATUS } from '../../../constants';
 import { Tooltip } from '../../../shared/Tooltip';
 import { AuthenticationSelectors } from '../../../store';
@@ -100,62 +104,75 @@ const TooltipSecond = styled.div`
   gap: 8px;
 `;
 
-export const ActionRender = ({ handleMenuClick, item, children }) => {
+export const ActionRender = ({
+  handleMenuClick,
+  item,
+  children,
+  handleHardDeleteFailedAnsibleCluster = () => {},
+}) => {
   const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
   return (
     <ActionTd>
-      <IconButton
-        data-tooltip-id={item.id}
-        disabled={
-          item.status === CLUSTER_STATUS.DISCONNECTED || !item.is_active
-        }
-      >
-        <CircleExclamationMarkIcon color={theme.colors.border} />
-      </IconButton>
-
-      {!clusterLogin && <EnableClusterRender item={item} />}
-
-      <div className="position-relative">
-        <IconButton onClick={event => handleMenuClick(event, item)}>
-          <ThreedotsIcon />
+      {!item?.process_intiated && item?.state == 'FAILED' ? (
+        <IconButton onClick={() => handleHardDeleteFailedAnsibleCluster(item)}>
+          <DeleteSmallIcon color="red" />
         </IconButton>
-        {children}
-      </div>
-      {item.status !== CLUSTER_STATUS.DISCONNECTED && item.is_active && (
-        <Tooltip
-          id={item.id}
-          styles={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            padding: '8px 12px',
-            boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
-            zIndex: 10000,
-          }}
-        >
-          <div>
-            <TooltipParent>
-              <ClusterDeatils>Cluster Details</ClusterDeatils>
-              <TooltipSecond>
-                <Connected>
-                  <Span />
-                  <Strong>Connected Nodes:</Strong>
-                </Connected>
-                <Number>
-                  {item.total_nodes === item.connected_nodes
-                    ? item.connected_nodes
-                    : `${item.connected_nodes}`}
-                </Number>
-              </TooltipSecond>
-              <TooltipSecond>
-                <Connected>
-                  <Span color="#A5D6A7" />
-                  <Strong>Total Nodes:</Strong>
-                </Connected>
-                <Number>{item.total_nodes}</Number>
-              </TooltipSecond>
-            </TooltipParent>
+      ) : (
+        <>
+          <IconButton
+            data-tooltip-id={item.id}
+            disabled={
+              item.status === CLUSTER_STATUS.DISCONNECTED || !item.is_active
+            }
+          >
+            <CircleExclamationMarkIcon color={theme.colors.border} />
+          </IconButton>
+
+          {!clusterLogin && <EnableClusterRender item={item} />}
+
+          <div className="position-relative">
+            <IconButton onClick={event => handleMenuClick(event, item)}>
+              <ThreedotsIcon />
+            </IconButton>
+            {children}
           </div>
-        </Tooltip>
+          {item.status !== CLUSTER_STATUS.DISCONNECTED && item.is_active && (
+            <Tooltip
+              id={item.id}
+              styles={{
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+                zIndex: 10000,
+              }}
+            >
+              <div>
+                <TooltipParent>
+                  <ClusterDeatils>Cluster Details</ClusterDeatils>
+                  <TooltipSecond>
+                    <Connected>
+                      <Span />
+                      <Strong>Connected Nodes:</Strong>
+                    </Connected>
+                    <Number>
+                      {item.total_nodes === item.connected_nodes
+                        ? item.connected_nodes
+                        : `${item.connected_nodes}`}
+                    </Number>
+                  </TooltipSecond>
+                  <TooltipSecond>
+                    <Connected>
+                      <Span color="#A5D6A7" />
+                      <Strong>Total Nodes:</Strong>
+                    </Connected>
+                    <Number>{item.total_nodes}</Number>
+                  </TooltipSecond>
+                </TooltipParent>
+              </div>
+            </Tooltip>
+          )}
+        </>
       )}
     </ActionTd>
   );
@@ -170,4 +187,5 @@ ActionRender.propTypes = {
   }).isRequired,
   ref: PropTypes.func,
   children: PropTypes.any,
+  handleHardDeleteFailedAnsibleCluster: PropTypes.func,
 };
