@@ -253,6 +253,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
                   register={register}
                   watch={watch}
                   label="Password"
+                  required
                   icon={<CurvedLockIcon />}
                   placeholder="Enter Your Password"
                   disableToggle={false}
