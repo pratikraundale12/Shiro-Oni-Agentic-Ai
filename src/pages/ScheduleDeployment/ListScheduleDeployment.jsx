@@ -363,9 +363,8 @@ export const ListScheduleDeployment = () => {
               <>
                 {item?.state === 'PENDING' && (
                   <>
-                    {currentUser?.id === item?.deployer_id && (
-                      <>{editIconRender(item)}</>
-                    )}
+                    {(currentUser?.id === item?.deployer_id ||
+                      item?.can_reschedule) && <>{editIconRender(item)}</>}
                     {RejectIconRender(item)}
                     {ApprovIconRender(item)}
                   </>
@@ -374,14 +373,12 @@ export const ListScheduleDeployment = () => {
                   item?.state === 'STOPPED' ||
                   item?.state === 'REJECTED' ||
                   item?.state === 'FAILED') &&
-                  currentUser?.id === item?.deployer_id && (
-                    <>{editIconRender(item)}</>
-                  )}
+                  (currentUser?.id === item?.deployer_id ||
+                    item?.can_reschedule) && <>{editIconRender(item)}</>}
                 {item?.state === 'APPROVED' && (
                   <>
-                    {currentUser?.id === item?.deployer_id && (
-                      <>{editIconRender(item)}</>
-                    )}
+                    {(currentUser?.id === item?.deployer_id ||
+                      item?.can_reschedule) && <>{editIconRender(item)}</>}
                     {RejectIconRender(item)}
                     {stopIconRender(item)}
                   </>
@@ -391,9 +388,8 @@ export const ListScheduleDeployment = () => {
             {item?.action_by === 'NO_APPROVER_REQUIRED' &&
               item?.state === 'PENDING' && (
                 <>
-                  {currentUser?.id === item?.deployer_id && (
-                    <>{editIconRender(item)}</>
-                  )}
+                  {(currentUser?.id === item?.deployer_id ||
+                    item?.can_reschedule) && <>{editIconRender(item)}</>}
                   {stopIconRender(item)}
                 </>
               )}
@@ -408,17 +404,19 @@ export const ListScheduleDeployment = () => {
               {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
                 <>
                   {(item?.state === 'PENDING' ||
-                    item?.state === 'TIME_LAPSED') && (
-                    <>{editIconRender(item)}</>
-                  )}
-                  {item?.state === 'APPROVED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'REJECTED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'STOPPED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
+                    item?.state === 'TIME_LAPSED' ||
+                    item?.state === 'APPROVED' ||
+                    item?.state === 'REJECTED' ||
+                    item?.state === 'STOPPED' ||
+                    item?.state === 'FAILED') &&
+                    (currentUser?.id === item?.deployer_id ||
+                      item?.can_reschedule) && <>{editIconRender(item)}</>}
                 </>
               )}
               {item?.action_by === 'NO_APPROVER_REQUIRED' &&
-                item?.state === 'PENDING' && <>{editIconRender(item)}</>}
+                item?.state === 'PENDING' &&
+                (currentUser?.id === item?.deployer_id ||
+                  item?.can_reschedule) && <>{editIconRender(item)}</>}
             </>
           )}
         {/* NON SUPERADMIN + SCHEDULAR + IN APPROVER GROUP */}
@@ -430,26 +428,31 @@ export const ListScheduleDeployment = () => {
                 <>
                   {item?.state === 'PENDING' && (
                     <>
-                      {editIconRender(item)}
+                      {(currentUser?.id === item?.deployer_id ||
+                        item?.can_reschedule) && <>{editIconRender(item)}</>}
                       {RejectIconRender(item)}
                       {ApprovIconRender(item)}
                     </>
                   )}
-                  {item?.state === 'TIME_LAPSED' && <>{editIconRender(item)}</>}
+                  {(item?.state === 'TIME_LAPSED' ||
+                    item?.state === 'APPROVED' ||
+                    item?.state === 'STOPPED' ||
+                    item?.state === 'REJECTED' ||
+                    item?.state === 'FAILED') &&
+                    (currentUser?.id === item?.deployer_id ||
+                      item?.can_reschedule) && <>{editIconRender(item)}</>}
                   {item?.state === 'APPROVED' && (
                     <>
-                      {editIconRender(item)}
                       {RejectIconRender(item)}
                       {stopIconRender(item)}
                     </>
                   )}
-                  {item?.state === 'STOPPED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'REJECTED' && <>{editIconRender(item)}</>}
-                  {item?.state === 'FAILED' && <>{editIconRender(item)}</>}
                 </>
               )}
               {item?.action_by === 'NO_APPROVER_REQUIRED' &&
-                item?.state === 'PENDING' && <>{editIconRender(item)}</>}
+                item?.state === 'PENDING' &&
+                (currentUser?.id === item?.deployer_id ||
+                  item?.can_reschedule) && <>{editIconRender(item)}</>}
             </>
           )}
         {/* NON SUPERADMIN + NON SCHEDULAR + IN APPROVER GROUP */}
@@ -460,9 +463,17 @@ export const ListScheduleDeployment = () => {
             <>
               {item?.state === 'PENDING' && (
                 <>
+                  {item?.can_reschedule && <>{editIconRender(item)}</>}
                   {RejectIconRender(item)}
                   {ApprovIconRender(item)}
                 </>
+              )}
+              {(item?.state === 'TIME_LAPSED' ||
+                item?.state === 'APPROVED' ||
+                item?.state === 'STOPPED' ||
+                item?.state === 'REJECTED' ||
+                item?.state === 'FAILED') && (
+                <>{item?.can_reschedule && <>{editIconRender(item)}</>}</>
               )}
               {item?.state === 'APPROVED' && (
                 <>
@@ -620,7 +631,7 @@ export const ListScheduleDeployment = () => {
           )}
         </>
       ),
-      width: '14%',
+      width: '13%',
       resize: true,
     },
     {
@@ -642,19 +653,19 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => <TextRender text={item?.cluster_name} />,
-      width: '9%',
+      width: '8%',
       resize: true,
     },
     {
       label: 'Version',
       renderCell: item => <TextRender text={item?.version} />,
-      width: '7%',
+      width: '5%',
       resize: true,
     },
     {
       label: 'Post Deploy State',
       renderCell: item => <TextRender text={item?.deployment_status} />,
-      width: '12%',
+      width: '10%',
       resize: true,
     },
     {
@@ -676,7 +687,31 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => <TextRender text={item?.scheduled_by} />,
-      width: '10%',
+      width: '8%',
+      resize: true,
+    },
+    {
+      label: (
+        <>
+          <button
+            onClick={() => toggleSorting('change_request')}
+            style={{ background: 'none' }}
+          >
+            Change Request{' '}
+            {sortingState === 'change_request' ? (
+              <SortUpIcon />
+            ) : sortingState === '-change_request' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
+      renderCell: item => (
+        <TextRender text={item?.change_request ? item.change_request : 'N/A'} />
+      ),
+      width: '10.2%',
       resize: true,
     },
     {
@@ -712,7 +747,7 @@ export const ListScheduleDeployment = () => {
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
-      width: '14%',
+      width: '13%',
       resize: true,
     },
     {
@@ -723,7 +758,7 @@ export const ListScheduleDeployment = () => {
           item={item}
         />
       ),
-      width: '10%',
+      width: '8%',
       resize: true,
     },
     {

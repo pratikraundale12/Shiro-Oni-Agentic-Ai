@@ -274,6 +274,17 @@ export const GridActions = ({
     setSearchErrorMsg({});
     inputRef.current.value = '';
 
+    if (module === 'clusters') {
+      setValue('is_active', null);
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module: 'clusters',
+          params: { page: 1, limit: 10 },
+        })
+      );
+      return;
+    }
+
     if (module === 'namespaces') {
       dispatch(
         GridSagsActions.fetchGridSuccess({ module: 'namespaces', data: {} })
@@ -659,6 +670,26 @@ export const GridActions = ({
         )}
 
         <ButtonsContainer>
+          {['clusters'].includes(module) && (
+            <>
+              <RefreshIocn
+                onClick={handleRefresh}
+                data-tooltip-id={`tooltip-group-namespace-refresh`}
+              >
+                <RefreshIcon style={{ cursor: 'pointer' }} />
+              </RefreshIocn>
+              <ReactTooltip
+                id={`tooltip-group-namespace-refresh`}
+                place="left"
+                content={'Refresh'}
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
           {module === 'users' && (
             <DropdownContainer>
               <StyledSelectField
@@ -766,6 +797,7 @@ export const GridActions = ({
           {userPermissions.includes(getButtonPermissions(module)) &&
             !userModalOpen && <Modal />}
         </ButtonsContainer>
+
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
             {module === 'namespaces' &&
