@@ -284,6 +284,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
   const [loading, setLoading] = useState(false);
   const [disableLDAPsection, setDisableLDAPsection] = useState(true);
   const [successTest, setSuccessTest] = useState(false);
+  const [ldapConnectionData, setLdapConnectData] = useState({});
   const dispatch = useDispatch();
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
@@ -413,7 +414,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
         'Port must be between 4 and 5 digits',
         val => val && val.toString().length >= 4 && val.toString().length <= 5
       ),
-    baseDn: yup.string().required('Base DN is required'),
     groupDn: yup.string().required('Groups DN is required'),
     userDn: yup.string().required('Users DN is required'),
     userUniqueIdentifier: yup
@@ -462,6 +462,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
     handleSubmit: handleSubmitForm1,
     formState: { errors: errorsForm1 },
     reset: reset1,
+    setValue: setValueForm1,
   } = useForm({
     resolver: yupResolver(schemaConnectionCheck),
   });
@@ -494,6 +495,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       access_control: 'Open',
       loginProvider: 'single-user-provider',
       ldap_login_identity_strategy: 'USE_USERNAME',
+      scope: 'SUBTREE',
     },
   });
   const scopeOptions = [
@@ -520,7 +522,25 @@ const ClusterSetupNewConfigDetailsPage = () => {
       value: 'USE_DN',
     },
   ];
-  const handleKeyDown = e => {};
+  const handleKeyDown = e => {
+    const value = e.target.value.trim();
+
+    if (e.key === 'Enter' || e.key === ',' || (e.type === 'blur' && value)) {
+      if (tags.length >= 5) {
+        toast.error('Maximum 5 tags allowed');
+        e.target.value = '';
+        return;
+      }
+      if (!tags.includes(value)) {
+        setTags([...tags, value]);
+        e.target.value = '';
+      } else {
+        toast.error('Tag already exists');
+      }
+    } else if (e.key === 'Backspace' && !value) {
+      removeTag(tags[tags.length - 1]);
+    }
+  };
   const removeTag = tagToRemove => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
@@ -633,6 +653,39 @@ const ClusterSetupNewConfigDetailsPage = () => {
     setValue('username', loginProviders.username);
     setValue('password', loginProviders.password);
 
+    // for LDAP
+    setValue('userDn', loginProviders.ldap_users_dn);
+    setValue(
+      'usernameIdentifier',
+      loginProviders.ldap_user_username_identifier
+    );
+    setValue(
+      'userUniqueIdentifier',
+      loginProviders.ldap_user_unique_identifier
+    );
+    setValue('groupDn', loginProviders.ldap_groups_dn);
+    setValue('groupObjectClass', loginProviders?.ldap_group_object_class);
+    setValue(
+      'groupUniqueIdentifier',
+      loginProviders.ldap_group_unique_identifier
+    );
+    setValue('filter', loginProviders.ldap_group_filter);
+    setValue(
+      'InitialAdminIdentity',
+      loginProviders.ldap_initial_admin_identity
+    );
+    setValue(
+      'ldap_login_identity_strategy',
+      loginProviders.ldap_login_identity_strategy
+    );
+    setValue('scope', loginProviders.ldap_select_scope);
+    setValue('ldap_login_user_filter', loginProviders.ldap_login_user_filter);
+    setValue('loginProvider', nifiProps?.nifi_user_login_provider);
+    setValueForm1('loginDn', loginProviders?.ldap_login_dn);
+    setValueForm1('password2', loginProviders?.ldap_login_password);
+    setValueForm1('url', loginProviders?.ldap_url);
+    //
+
     // Set State Management values
     setValue('directory', stateManagement.directory);
     setValue('always_sync', stateManagement.always_sync);
@@ -673,16 +726,42 @@ const ClusterSetupNewConfigDetailsPage = () => {
         data?.nifi_cluster_is_node,
       nifi_zookeeper_connect_timeout: data?.nifi_zookeeper_connect_timeout,
       nifi_web_https_port: data?.nifi_web_https_port,
+      nifi_user_login_provider:
+        methodForLoginIdentity === 'single-user-provider'
+          ? 'single-user-provider'
+          : 'ldap-provider',
     };
     const bootstrapPayload = {
       java_arg_2: `-Xms${data?.java_arg_2}g`,
       java_arg_3: `-Xmx${data?.java_arg_3}g`,
     };
+    const loginLDAPdata = {
+      ldap_login_dn: ldapConnectionData?.loginDn,
+      ldap_login_password: ldapConnectionData?.password2,
+      ldap_url: ldapConnectionData?.url,
 
-    const loginPayload = {
+      ldap_users_dn: data?.userDn,
+      ldap_user_username_identifier: data?.usernameIdentifier,
+      ldap_user_unique_identifier: data?.userUniqueIdentifier,
+      ldap_groups_dn: data?.groupDn,
+      ldap_group_object_class: data?.groupObjectClass,
+      ldap_select_scope: data?.scope,
+      ldap_group_unique_identifier: data?.groupUniqueIdentifier,
+      ldap_group_filter: data?.filter,
+      ldap_initial_admin_identity: data?.InitialAdminIdentity,
+      ldap_login_user_filter: data?.ldap_login_user_filter,
+      ldap_login_identity_strategy: data?.ldap_login_identity_strategy,
+    };
+    const loginUserPassData = {
       username: data?.username,
       password: data?.password,
     };
+
+    const loginPayload =
+      methodForLoginIdentity === 'single-user-provider'
+        ? loginUserPassData
+        : loginLDAPdata;
+
     const statePayload = {
       directory: data?.directory,
       always_sync: data?.always_sync,
@@ -692,6 +771,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       session_timeout: data?.session_timeout,
       access_control: data?.access_control?.value || data?.access_control,
     };
+
     const payload = new FormData();
     payload.append('configName', data?.configName);
     payload.append('nifiVersion', data?.nifiVersion);
@@ -744,13 +824,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
       setMethodForLoginIdentity(methodForLogin);
     }
   }, [methodForLogin]);
-  console.log(
-    methodForLoginIdentity,
-    " methodForLoginIdentity('methodForLoginIdentity')"
-  );
+
   const onSubmitConnectionCheck = async data => {
     setLoading(true);
-
+    setLdapConnectData(data);
     const payload = {
       url: data.url,
       password: data.password2,
@@ -1016,43 +1093,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                 </div>
               </div>
             )}
-            {/* {selectedProperty === 'login_identity_provider' && (
-              <div>
-                <div>
-                  <TitleTabWrapper className="mt-3">
-                    <TitleTab className="ms-3">
-                      Single User Login Identity Provider
-                    </TitleTab>
-                  </TitleTabWrapper>
-                  <div className="row mt-3">
-                    <div className="col-4">
-                      <InputField
-                        label="Username"
-                        name="username"
-                        type="text"
-                        placeholder="Enter Username"
-                        required
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                    <div className="col-4">
-                      <PasswordField
-                        name="password"
-                        label="Password"
-                        placeholder="Enter Password"
-                        required
-                        watch={watch}
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )} */}
             {selectedProperty === 'login_identity_provider' && (
               <div>
                 <div>
@@ -1133,7 +1173,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           required
                         />
                       </div>
-
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                         <InputField
                           name="loginDn"
@@ -1146,7 +1185,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           required
                         />
                       </div>
-
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                         <PasswordField
                           name="password2"
@@ -1157,7 +1195,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           label="Password"
                         />
                       </div>
-
                       <ButtonFlex>
                         <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                           <Button
@@ -1169,37 +1206,20 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           </Button>
                         </div>
                       </ButtonFlex>
-
-                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
-                        <InputField
-                          name="baseDn"
-                          type="text"
-                          // register={registerForm2}
-                          label="Base DN"
-                          placeholder="Enter your Base DN"
-                          icon={<QRIcons />}
-                          errors={errors}
-                          // errors={errorsForm2}
-                          required
-                          disabled={disableLDAPsection}
-                        />
-                      </div>
-
+                      {/* /// */}
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                         <InputField
                           name="groupDn"
                           type="text"
-                          // register={registerForm2}
+                          register={register}
                           label="Groups DN"
                           placeholder="Enter your Groups DN"
                           icon={<QRIcons />}
                           errors={errors}
-                          // errors={errorsForm2}
                           required
                           disabled={disableLDAPsection}
                         />
                       </div>
-
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                         <InputField
                           name="userDn"
@@ -1210,12 +1230,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           placeholder="Enter your Users DN"
                           icon={<QRIcons />}
                           errors={errors}
-                          // errors={errorsForm2}
                           required
                           disabled={disableLDAPsection}
                         />
                       </div>
-
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                         <InputField
                           name="userUniqueIdentifier"
@@ -1226,12 +1244,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           label="User Unique Identifier"
                           placeholder="Enter User Identifier"
                           icon={<QRIcons />}
-                          // errors={errorsForm2}
                           required
                           disabled={disableLDAPsection}
                         />
                       </div>
-
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                         <InputField
                           name="groupUniqueIdentifier"
@@ -1242,12 +1258,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           label="Group Unique Identifier"
                           placeholder="Enter Group Identifier"
                           icon={<QRIcons />}
-                          // errors={errorsForm2}
                           required
                           disabled={disableLDAPsection}
                         />
                       </div>
-
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                         <TagLable
                           htmlFor="tags-input"
@@ -1281,10 +1295,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
                             onBlur={handleKeyDown}
                             aria-label="Group Object Class"
                             disabled={disableLDAPsection}
+                            register={register}
                           />
                         </TagsInputContainer>
                       </div>
-
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                         <InputField
                           name="usernameIdentifier"
@@ -1300,7 +1314,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           disabled={disableLDAPsection}
                         />
                       </div>
-
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                         <InputField
                           name="filter"
@@ -1316,11 +1329,9 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           placeholder="Enter Filter"
                           icon={<QRIcons />}
                           errors={errors}
-                          // errors={errorsForm2}
                           disabled={disableLDAPsection}
                         />
                       </div>
-
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
                         <InputField
                           name="InitialAdminIdentity"
@@ -1331,7 +1342,20 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           placeholder="Enter Admin identifier"
                           icon={<QRIcons />}
                           errors={errors}
-                          // errors={errorsForm2}
+                          required
+                          disabled={disableLDAPsection}
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="ldap_login_user_filter"
+                          type="text"
+                          watch={watch}
+                          register={register}
+                          label="Login User search filter"
+                          placeholder="Enter Login User search filter"
+                          icon={<QRIcons />}
+                          errors={errors}
                           required
                           disabled={disableLDAPsection}
                         />
@@ -1346,10 +1370,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           register={register}
                           placeholder="Select Scope"
                           title="Select Scope"
-                          defaultValue={{
-                            label: 'One',
-                            value: 'one',
-                          }}
+                          control={control}
                           disabled={disableLDAPsection}
                         />
                       </div>
@@ -1363,10 +1384,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           register={register}
                           placeholder="Select Login identity strategy"
                           title="Login identity strategy"
-                          // defaultValue={{
-                          //   label: 'USE_USERNAME',
-                          //   value: 'USE_USERNAME',
-                          // }}
+                          control={control}
                           disabled={disableLDAPsection}
                         />
                       </div>
@@ -1418,9 +1436,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-4">
-                      {/* <LabelSelect className="mb-3">
-                        Checkpoint Interval
-                      </LabelSelect> */}
                       <StyledSelectField
                         label="Checkpoint Interval"
                         name="checkpoint_interval"
@@ -1467,9 +1482,6 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>{' '}
                     <div className="col-4">
-                      {/* <LabelSelect className="mb-3">
-                        Session Timeout
-                      </LabelSelect> */}
                       <StyledSelectField
                         label="Session Timeout"
                         name="session_timeout"
