@@ -611,7 +611,6 @@ const Summary = () => {
           const param2 = group2.parameters.find(p => p.name === param1.name);
           return { ...param2 };
         });
-
       if (changedParameters.length > 0) {
         result.push({
           parameterName: group1.parameterName,
@@ -622,7 +621,7 @@ const Summary = () => {
 
     return result;
   };
-  
+
   const getOriginalPcPayload = (obj1, obj2) => {
     const result = [];
 
@@ -656,7 +655,7 @@ const Summary = () => {
     currentParametersData,
     updatedParametersData
   );
-
+   
   const originalPc = getOriginalPcPayload(
     currentParametersData,
     updatedParametersData
@@ -1051,8 +1050,8 @@ const Summary = () => {
       if (!isEmpty(variblesReduxData)) {
         payload.payload.variablesData = variblesReduxData;
       }
-      if (!isEmpty(updatedData)) {
-        payload.payload.parameterData = updatedData;
+      if (!isEmpty(parameterPayload)) {
+        payload.payload.parameterData = parameterPayload;
       }
       if (!isEmpty(newControllerServiceData)) {
         payload.payload.controllerServiceData = newControllerServiceData;
