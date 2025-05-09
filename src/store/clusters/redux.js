@@ -102,6 +102,15 @@ export const ClustersActions = {
   setisAnsibleClusterDeleteFrimNiFiModalOpen: createAction(
     `${prefix}setisAnsibleClusterDeleteFrimNiFiModalOpen`
   ),
+  fetchAnsibleCLusterProcessData: createAction(
+    `${prefix}fetchAnsibleCLusterProcessData`
+  ),
+  setansibleClusterProgressData: createAction(
+    `${prefix}setansibleClusterProgressData`
+  ),
+  setIsFailedClusterDeleteModalOpen: createAction(
+    `${prefix}setIsFailedClusterDeleteModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -143,6 +152,8 @@ export const CLUSTERS_INITIAL_STATE = {
   ansibleClusterData: {},
   ansibleClusterNodeUpdate: '',
   isAnsibleClusterDeleteFrimNiFiModalOpen: false,
+  ansibleClusterProgressData: {},
+  isFailedClusterDeleteModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -192,6 +203,10 @@ export const ClustersSelectors = {
   getAnsibleClusterNodeUpdate: state => state.clusters.ansibleClusterNodeUpdate,
   getisAnsibleClusterDeleteFrimNiFiModalOpen: state =>
     state.clusters.isAnsibleClusterDeleteFrimNiFiModalOpen,
+  getAnsibleClusterProgressData: state =>
+    state.clusters.ansibleClusterProgressData,
+  getIsFailedClusterDeleteModalOpen: state =>
+    state.clusters.isFailedClusterDeleteModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -436,6 +451,19 @@ const setisAnsibleClusterDeleteFrimNiFiModalOpen = (state, { payload }) => {
     isAnsibleClusterDeleteFrimNiFiModalOpen: payload,
   };
 };
+const setansibleClusterProgressData = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterProgressData: payload,
+  };
+};
+const setIsFailedClusterDeleteModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isFailedClusterDeleteModalOpen: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -540,6 +568,14 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen,
         setisAnsibleClusterDeleteFrimNiFiModalOpen
+      )
+      .addCase(
+        ClustersActions.setansibleClusterProgressData,
+        setansibleClusterProgressData
+      )
+      .addCase(
+        ClustersActions.setIsFailedClusterDeleteModalOpen,
+        setIsFailedClusterDeleteModalOpen
       );
   }
 );
