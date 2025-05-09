@@ -605,6 +605,7 @@ const Summary = () => {
     { label: 'Registry & Flow Name', path: '/process-group/deployPage' },
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details', path: '/process-group/config-details' },
+    { label: 'Flow Validation', path: '/process-group/flow-validation' },
     { label: 'Summary' },
   ];
   const breadcrumbDataOnUpgrade = [
@@ -617,6 +618,7 @@ const Summary = () => {
     },
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details', path: '/process-group/config-details' },
+    { label: 'Flow Validation', path: '/process-group/flow-validation' },
     { label: 'Summary' },
   ];
   const [flowControlState, setFlowControlState] = useState(null);
@@ -661,7 +663,7 @@ const Summary = () => {
   };
 
   const handleBackClick = () => {
-    history.push('/process-group/config-details');
+    history.push('/process-group/flow-validation');
   };
 
   const [activeButton, setActiveButton] = useState(null);
@@ -1041,12 +1043,10 @@ const Summary = () => {
     // return checkDestCluster?.version <= versionSelected.version
     //   ? KDFM.UPGRADE
     //   : KDFM.DOWNGRADE;
-    if(!isUpgrade){
+    if (!isUpgrade) {
       return type;
-    }
-    else return KDFM.DEPLOY;
+    } else return KDFM.DEPLOY;
   };
-  
 
   const deploymentAction = getDeploymentAction();
 
@@ -1475,24 +1475,38 @@ const Summary = () => {
               {KDFM.BACK}
             </Button>
             {isRegistryDeploy && !scheduleDeploymentFlow && (
-              <Button id="process-group-summary-deploy-btn" onClick={handledeployByRegistry}>
+              <Button
+                id="process-group-summary-deploy-btn"
+                onClick={handledeployByRegistry}
+              >
                 {provideRegistryFlowBtnText()}
               </Button>
             )}
             {!isRegistryDeploy &&
               !scheduleDeploymentFlow &&
               !scheduleUpgradeFromList && (
-                <Button id="process-group-summary-upgrade-btn" onClick={handleUpgradeByRegistry}>
+                <Button
+                  id="process-group-summary-upgrade-btn"
+                  onClick={handleUpgradeByRegistry}
+                >
                   {provideUpgradeBtnText()}
                 </Button>
               )}
             {scheduleDeploymentFlow && (
-              <Button id="summary-schedule-btn" size="md" onClick={() => handleScheduleDeploy()}>
+              <Button
+                id="summary-schedule-btn"
+                size="md"
+                onClick={() => handleScheduleDeploy()}
+              >
                 Schedule
               </Button>
             )}
             {scheduleUpgradeFromList && (
-              <Button id="summary-schedule-upgrade-btn" size="md" onClick={() => handleScheduleUpgrade()}>
+              <Button
+                id="summary-schedule-upgrade-btn"
+                size="md"
+                onClick={() => handleScheduleUpgrade()}
+              >
                 {provideScheduleUpgradeBtnText()}
               </Button>
             )}

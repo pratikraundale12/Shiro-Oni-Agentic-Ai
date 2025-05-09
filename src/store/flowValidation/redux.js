@@ -37,6 +37,13 @@ export const FlowValidationActions = {
   fetchFlowsSuccess: createAction(`${prefix}fetchFlowsSuccess`),
   setRulePriority: createAction(`${prefix}setRulePriority`),
   setRulePrioritySuccess: createAction(`${prefix}setRulePrioritySuccess`),
+  validateDeploymentFlow: createAction(`${prefix}validateDeploymentFlow`),
+  validateDeploymentFlowSuccess: createAction(
+    `${prefix}validateDeploymentFlowSuccess`
+  ),
+  resetDeploymentFlowValidation: createAction(
+    `${prefix}resetDeploymentFlowValidation`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -57,6 +64,7 @@ export const FlowValidation_INITIAL_STATE = {
   savedPayload: null,
   flows: [],
   rulePriority: null,
+  deploymentFlowValidation: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -79,6 +87,8 @@ export const FlowValidationSelectors = {
     state.flowValidation.randomFlowValidationResult,
   getFlows: state => state.flowValidation.flows,
   getRulePriority: state => state.flowValidation.rulePriority,
+  getDeploymentFlowValidation: state =>
+    state.flowValidation.deploymentFlowValidation,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -203,6 +213,17 @@ const setRulePrioritySuccess = (state, { payload }) => ({
     ),
   },
 });
+
+const validateDeploymentFlowSuccess = (state, { payload }) => ({
+  ...state,
+  deploymentFlowValidation: payload,
+});
+
+const resetDeploymentFlowValidation = state => ({
+  ...state,
+  deploymentFlowValidation: null,
+});
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const flowValidationReducer = createReducer(
   FlowValidation_INITIAL_STATE,
@@ -243,6 +264,14 @@ export const flowValidationReducer = createReducer(
       .addCase(
         FlowValidationActions.setRulePrioritySuccess,
         setRulePrioritySuccess
+      )
+      .addCase(
+        FlowValidationActions.validateDeploymentFlowSuccess,
+        validateDeploymentFlowSuccess
+      )
+      .addCase(
+        FlowValidationActions.resetDeploymentFlowValidation,
+        resetDeploymentFlowValidation
       );
   }
 );
