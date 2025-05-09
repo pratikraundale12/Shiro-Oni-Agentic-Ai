@@ -167,8 +167,13 @@ const AddOrEditParameterContextModal = ({
     );
   }, [formData, isChecked]);
   const handleInputChange = data => {
+    console.log('eeeeeeeeeeeeeeeeeeeeee', data.target.value);
     // setSenstiiveValueChanged(true);
     const { name, value } = data.target;
+    if (name === 'value' && formData.sensitive) {
+      setSenstiiveValueChanged(true);
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: value,
