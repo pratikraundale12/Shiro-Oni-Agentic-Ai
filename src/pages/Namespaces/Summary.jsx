@@ -42,6 +42,7 @@ import AddParameterContext from './AddParameterContext';
 import { DuplicateScheduleModal } from './DuplicateScheduleModal';
 import NamespaceDeploy from './NamespaceDeploy';
 import Upgrade from './Upgrade';
+import { DiffModalScheduleList } from '../ScheduleDeployment/DiffModalSchedule';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -358,6 +359,7 @@ const Summary = () => {
     );
   const userStoryValue = useSelector(NamespacesSelectors.getUserStory);
   const changeRequestValue = useSelector(NamespacesSelectors.getChangeRequest);
+  const [openConfigDetailsModal, setOpenConfigDetailsModal] = useState(false);
   const getChangedVariables = (originalVariables, updatedVariables) => {
     const updatedMap = updatedVariables.reduce((acc, item) => {
       acc[item.name] = item.value;
@@ -540,6 +542,58 @@ const Summary = () => {
     ...(parameterReduxData?.inherited || []),
     ...(parameterReduxData?.parent || []),
   ];
+  const updatedParametersData = paramterDeployArray.map(item => ({
+    parameterName: item.name,
+    parameters: item.parameters,
+  }));
+  const currentParametersData = orignalParameterData.map(item => ({
+    parameterName: item.name,
+    parameters: item.parameters,
+  }));
+
+  const getChangedParameterObjects = (obj1, obj2) => {
+    const result = [];
+
+    obj1.forEach(group1 => {
+      const group2 = obj2.find(g => g.parameterName === group1.parameterName);
+      if (!group2) return;
+
+      const changedParameters = group1.parameters
+        .filter(param1 => {
+          const param2 = group2.parameters.find(p => p.name === param1.name);
+          if (!param2) return false;
+          return (
+            param1.value !== param2.value ||
+            param1.description !== param2.description
+          );
+        })
+        .map(param1 => {
+          const param2 = group2.parameters.find(p => p.name === param1.name);
+          return {
+            ...param2,
+            value: param1.value !== param2.value ? param2.value : 'N/A',
+            description:
+              param1.description !== param2.description
+                ? param2.description
+                : '',
+          };
+        });
+
+      if (changedParameters.length > 0) {
+        result.push({
+          parameterName: group1.parameterName,
+          parameters: changedParameters,
+        });
+      }
+    });
+
+    return result;
+  };
+
+  const newParametersData = getChangedParameterObjects(
+    currentParametersData,
+    updatedParametersData
+  );
 
   const PColdValues = orignalParameterData
     .filter(item1 =>
@@ -1261,6 +1315,26 @@ const Summary = () => {
                       </div>
                     </UseColXl>
                   )}
+                  <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                    <div className="summary-details">
+                      <SummaryDetailsHFourTag className="mb-2">
+                        {KDFM.CONFIGURATION_DETAILS}
+                      </SummaryDetailsHFourTag>
+                      <SummaryDetailsPtag
+                        onClick={() => {
+                          setOpenConfigDetailsModal(true);
+                        }}
+                        className="mb-0"
+                        style={{
+                          cursor: 'pointer',
+                          color: '#FF7A00',
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        View Configurations Details
+                      </SummaryDetailsPtag>
+                    </div>
+                  </UseColXl>
                 </RowConfig>
               </UseColLg>
               {(scheduleUpgradeFromList || scheduleDeploymentFlow) && (
@@ -1591,6 +1665,36 @@ const Summary = () => {
           handleScheduleDeployDuplicate={handleScheduleDeployDuplicate}
           type={type}
         />
+        {openConfigDetailsModal && (
+          <DiffModalScheduleList
+            isModalOpen={openConfigDetailsModal}
+            setIsModalOpen={setOpenConfigDetailsModal}
+            title={`${
+              !isUpgrade
+                ? selectedNameSpace.label
+                : formDataRegistry?.selectedFlowName
+            }: ${
+              isScheduled && isUpgrade
+                ? 'Schedule Deployment'
+                : isScheduled && !isUpgrade
+                  ? `Schedule ${type === 'downgrade' ? 'Downgrade' : 'Upgrade'}`
+                  : !isScheduled && !isUpgrade
+                    ? type === 'downgrade'
+                      ? 'Downgrade'
+                      : 'Upgrade'
+                    : 'Deployment'
+            } Changes`}
+            versionText={`Version: ${
+              isUpgrade
+                ? versionSelected?.version
+                : checkDestCluster?.version || 'N/A'
+            }`}
+            isFromDeploySummary={true}
+            parametersData={newParametersData}
+            variablesData={variblesReduxData}
+            csData={updatedLocalCsPayloadOnDeploy}
+          />
+        )}
       </MainContainer>
     </>
   );
