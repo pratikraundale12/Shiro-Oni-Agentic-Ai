@@ -590,6 +590,77 @@ const Summary = () => {
     return result;
   };
 
+  const getUpdatedPcForPayload = (obj1, obj2) => {
+    const result = [];
+
+    obj1.forEach(group1 => {
+      const group2 = obj2.find(g => g.parameterName === group1.parameterName);
+      if (!group2) return;
+
+      const changedParameters = group1.parameters
+        .filter(param1 => {
+          const param2 = group2.parameters.find(p => p.name === param1.name);
+          if (!param2) return false;
+
+          return (
+            param1.value !== param2.value ||
+            param1.description !== param2.description
+          );
+        })
+        .map(param1 => {
+          const param2 = group2.parameters.find(p => p.name === param1.name);
+          return { ...param2 };
+        });
+      if (changedParameters.length > 0) {
+        result.push({
+          parameterName: group1.parameterName,
+          parameters: changedParameters,
+        });
+      }
+    });
+
+    return result;
+  };
+
+  const getOriginalPcPayload = (obj1, obj2) => {
+    const result = [];
+
+    obj1.forEach(group1 => {
+      const group2 = obj2.find(g => g.parameterName === group1.parameterName);
+      if (!group2) return;
+
+      const changedParameters = group1.parameters
+        .filter(param1 => {
+          const param2 = group2.parameters.find(p => p.name === param1.name);
+          if (!param2) return false;
+
+          return (
+            param1.value !== param2.value ||
+            param1.description !== param2.description
+          );
+        })
+        .map(param1 => ({ ...param1 }));
+
+      if (changedParameters.length > 0) {
+        result.push({
+          parameterName: group1.parameterName,
+          parameters: changedParameters,
+        });
+      }
+    });
+
+    return result;
+  };
+  const parameterPayload = getUpdatedPcForPayload(
+    currentParametersData,
+    updatedParametersData
+  );
+   
+  const originalPc = getOriginalPcPayload(
+    currentParametersData,
+    updatedParametersData
+  );
+
   const newParametersData = getChangedParameterObjects(
     currentParametersData,
     updatedParametersData
@@ -816,8 +887,8 @@ const Summary = () => {
     if (!isEmpty(variblesReduxData)) {
       payload.variablesData = variblesReduxData;
     }
-    if (!isEmpty(updatedData)) {
-      payload.parameterData = updatedData;
+    if (!isEmpty(parameterPayload)) {
+      payload.parameterData = parameterPayload;
     }
     if (!isEmpty(newControllerServiceData)) {
       payload.controllerServiceData = newControllerServiceData;
@@ -851,8 +922,8 @@ const Summary = () => {
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
     }
-    if (!isEmpty(updatedData)) {
-      payload.payload.parameterData = updatedData;
+    if (!isEmpty(parameterPayload)) {
+      payload.payload.parameterData = parameterPayload;
     }
     if (!isEmpty(newControllerServiceData)) {
       payload.payload.controllerServiceData = newControllerServiceData;
@@ -882,7 +953,7 @@ const Summary = () => {
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
       nameSpaceName: registryAllDetails?.processGroupName,
       oldVariablesData: orignalVariables,
-      oldParameterContextData: filteredArrayPCold,
+      oldParameterContextData: originalPc,
       previousControllerServices: { localServicesData: filteredCSArrayDiff },
       ...(userStoryValue && { user_story_url: userStoryValue }),
       ...(changeRequestValue && { change_request: changeRequestValue }),
@@ -893,8 +964,8 @@ const Summary = () => {
     if (!isEmpty(variblesReduxData)) {
       payload.variablesData = variblesReduxData;
     }
-    if (!isEmpty(updatedData)) {
-      payload.parameterData = updatedData;
+    if (!isEmpty(parameterPayload)) {
+      payload.parameterData = parameterPayload;
     }
     if (!isEmpty(newControllerServiceData)) {
       payload.controllerServiceData = newControllerServiceData;
@@ -926,7 +997,7 @@ const Summary = () => {
         namespaceStatus: flowControlSelectedScheduleStored,
         nameSpaceName: registryAllDetails?.processGroupName,
         oldVariablesData: orignalVariables,
-        oldParameterContextData: filteredArrayPCold,
+        oldParameterContextData: originalPc,
         previousControllerServices: { localServicesData: filteredCSArrayDiff },
         ...(userStoryValue && { user_story_url: userStoryValue }),
         ...(changeRequestValue && { change_request: changeRequestValue }),
@@ -934,8 +1005,8 @@ const Summary = () => {
       if (!isEmpty(variblesReduxData)) {
         payload.variablesData = variblesReduxData;
       }
-      if (!isEmpty(updatedData)) {
-        payload.parameterData = updatedData;
+      if (!isEmpty(parameterPayload)) {
+        payload.parameterData = parameterPayload;
       }
       if (!isEmpty(newControllerServiceData)) {
         payload.controllerServiceData = newControllerServiceData;
@@ -957,7 +1028,7 @@ const Summary = () => {
         payload: {
           namespaceId: checkDestCluster?.value,
           oldVariablesData: orignalVariables,
-          oldParameterContextData: filteredArrayPCold,
+          oldParameterContextData: originalPc,
           previousControllerServices: {
             localServicesData: filteredCSArrayDiff,
           },
@@ -979,8 +1050,8 @@ const Summary = () => {
       if (!isEmpty(variblesReduxData)) {
         payload.payload.variablesData = variblesReduxData;
       }
-      if (!isEmpty(updatedData)) {
-        payload.payload.parameterData = updatedData;
+      if (!isEmpty(parameterPayload)) {
+        payload.payload.parameterData = parameterPayload;
       }
       if (!isEmpty(newControllerServiceData)) {
         payload.payload.controllerServiceData = newControllerServiceData;
@@ -1003,7 +1074,7 @@ const Summary = () => {
       payload: {
         namespaceId: checkDestCluster?.value,
         oldVariablesData: orignalVariables,
-        oldParameterContextData: filteredArrayPCold,
+        oldParameterContextData: originalPc,
         previousControllerServices: { localServicesData: filteredCSArrayDiff },
       },
       previousVersion: selectedNameSpace?.version || 1,
@@ -1023,8 +1094,8 @@ const Summary = () => {
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
     }
-    if (!isEmpty(updatedData)) {
-      payload.payload.parameterData = updatedData;
+    if (!isEmpty(parameterPayload)) {
+      payload.payload.parameterData = parameterPayload;
     }
     if (!isEmpty(newControllerServiceData)) {
       payload.payload.controllerServiceData = newControllerServiceData;
