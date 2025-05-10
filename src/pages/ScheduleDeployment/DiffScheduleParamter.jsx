@@ -233,7 +233,7 @@ const DiffScheduleParameter = ({
 
                     {(item?.new_value?.value ||
                       item?.old_value?.value ||
-                      value !== 'N/A') && (
+                      (value && isFromDeploySummary)) && (
                       <ResponsiveRow className="mb-2">
                         <ColumnLabel className="d-flex align-items-center">
                           Value
@@ -257,7 +257,7 @@ const DiffScheduleParameter = ({
 
                     {(item?.new_value?.description ||
                       item?.old_value?.description ||
-                      item?.description) && (
+                      (item?.description && isFromDeploySummary)) && (
                       <ResponsiveRow className="mb-2">
                         <ColumnLabel className="d-flex align-items-center">
                           Description
