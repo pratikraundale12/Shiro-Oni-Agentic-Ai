@@ -20,6 +20,7 @@ import {
   NamespacesActions,
 } from '../../store';
 import {
+  createRegistry,
   getOneRegistry,
   getRegistryList,
   testCluster,
@@ -266,6 +267,11 @@ export const Add = () => {
     mode: 'all',
     reValidateMode: 'onChange',
   });
+  const formStateData = watch();
+  const newRegistryDataFromWatch = {
+    registry: formStateData?.registryName,
+    url: formStateData?.registryUrl,
+  };
 
   const selectedRegistryId = watch('registry');
   const handleBack = () => {
@@ -659,6 +665,20 @@ export const Add = () => {
     return isTestInvalid();
   };
 
+  const handleNewRgistrySave = async () => {
+    const data = {
+      name: formStateData?.registryName,
+      registry_url: formStateData?.registryUrl,
+    };
+    const response = await createRegistry(data);
+    if (response?.status === 201) {
+      fetchRegistry();
+    } else {
+      toast.error(response.message);
+    }
+    handleBack();
+  };
+
   return (
     <Wrapper>
       <Title title={handleTitleProvider(data)} />
@@ -782,14 +802,29 @@ export const Add = () => {
           <Button variant="secondary" onClick={handleBack}>
             {KDFM.BACK}
           </Button>
-          {showSubmitButtonOnCluster() && (
-            <Button onClick={handleSubmit(onSubmit)} disabled={isDisabled()}>
-              {giveSubmitButtonText()}
-            </Button>
-          )}
-          {showRegistryContiueButton() && (
-            <Button id="registry-details-continue-btn" onClick={handleRegistry} disabled={!selectedRegistryId}>
-              {KDFM.CONTINUE}
+          {showSubmitButtonOnCluster() &&
+            !(activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry) && (
+              <Button onClick={handleSubmit(onSubmit)} disabled={isDisabled()}>
+                {giveSubmitButtonText()}
+              </Button>
+            )}
+          {showRegistryContiueButton() &&
+            !(activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry) && (
+              <Button
+                id="registry-details-continue-btn"
+                onClick={handleRegistry}
+                disabled={!selectedRegistryId}
+              >
+                {KDFM.CONTINUE}
+              </Button>
+            )}
+          {activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry && (
+            <Button
+              id="registry-details-continue-btn"
+              onClick={handleNewRgistrySave}
+              disabled={isDisabled()}
+            >
+              {KDFM.SAVE}
             </Button>
           )}
         </div>
@@ -814,6 +849,7 @@ export const Add = () => {
         registryData={registryData}
         setSuccessModal={setSuccessModal}
         setSaveButtonEnable={setSaveButtonEnable}
+        newregistryData={newRegistryDataFromWatch}
       />
       <SummaryModal
         clusterData={clusterData}

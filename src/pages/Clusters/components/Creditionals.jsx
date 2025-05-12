@@ -31,6 +31,7 @@ export const Creditionals = ({
   registryData,
   setSuccessModal,
   setSaveButtonEnable,
+  newregistryData = {},
 }) => {
   const dispatch = useDispatch();
   const [failedModal, setFailedModal] = useState(false);
@@ -72,11 +73,19 @@ export const Creditionals = ({
         setSaveButtonEnable(true);
       }
     } else {
-      payload.append('name', registryData?.registryName || registryData.name);
+      payload.append(
+        'name',
+        newregistryData?.registry ||
+          registryData?.registryName ||
+          registryData.name
+      );
       payload.append(
         'nifi_url',
-        registryData?.registryUrl || registryData.registry_url
+        newregistryData?.url ||
+          registryData?.registryUrl ||
+          registryData.registry_url
       );
+
       payload.append('username', data.username);
       payload.append('password', data.password);
 
@@ -160,4 +169,5 @@ Creditionals.propTypes = {
   activeTab: PropTypes.string,
   setSuccessModal: PropTypes.func,
   setSaveButtonEnable: PropTypes.bool,
+  newregistryData: PropTypes.object,
 };
