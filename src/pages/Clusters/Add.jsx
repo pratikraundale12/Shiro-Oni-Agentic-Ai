@@ -266,6 +266,11 @@ export const Add = () => {
     mode: 'all',
     reValidateMode: 'onChange',
   });
+  const formStateData = watch();
+  const newRegistryDataFromWatch = {
+    registry: formStateData?.registryName,
+    url: formStateData?.registryUrl,
+  };
 
   const selectedRegistryId = watch('registry');
   const handleBack = () => {
@@ -788,7 +793,11 @@ export const Add = () => {
             </Button>
           )}
           {showRegistryContiueButton() && (
-            <Button id="registry-details-continue-btn" onClick={handleRegistry} disabled={!selectedRegistryId}>
+            <Button
+              id="registry-details-continue-btn"
+              onClick={handleRegistry}
+              disabled={!selectedRegistryId}
+            >
               {KDFM.CONTINUE}
             </Button>
           )}
@@ -814,6 +823,7 @@ export const Add = () => {
         registryData={registryData}
         setSuccessModal={setSuccessModal}
         setSaveButtonEnable={setSaveButtonEnable}
+        newregistryData={newRegistryDataFromWatch}
       />
       <SummaryModal
         clusterData={clusterData}
