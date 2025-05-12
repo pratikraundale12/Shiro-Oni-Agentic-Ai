@@ -223,6 +223,21 @@ const FlowValidationPage = () => {
     { label: 'Configuration Details', path: '/process-group/config-details' },
     { label: 'Flow Validation' },
   ];
+
+  const bucketListData = useSelector(
+    NamespacesSelectors.getBucketListDropDownData
+  );
+  const selectedBucketName = bucketListData?.bucketList?.filter(
+    ele => ele?.id === versionSelected?.bucketId
+  );
+  console.log(selectedBucketName, 'selectedBucketName');
+
+  const flowListData = useSelector(NamespacesSelectors.getFlowListRegistry);
+  const selectedFlowName = flowListData?.flowsList?.filter(
+    ele => ele?.flowId === versionSelected?.flowId
+  );
+  console.log(selectedFlowName, 'selectedBucketObj');
+
   const handleValidateFlow = () => {
     dispatch(FlowValidationActions.validateRulesSuccess(null));
     dispatch(
@@ -235,6 +250,9 @@ const FlowValidationPage = () => {
           registryId:
             singleNameSpace?.registryId || versionSelected?.registriesId,
           namespaceId: singleNameSpace?.id,
+          bucketName:
+            singleNameSpace?.bucketName || selectedBucketName[0]?.name,
+          flowName: singleNameSpace?.flowName || selectedFlowName[0]?.flowName,
           rulesForValidation: ruleIds,
         },
       })
