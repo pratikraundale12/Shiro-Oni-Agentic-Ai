@@ -665,6 +665,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
     );
     setValue('groupDn', loginProviders.ldap_groups_dn);
     setValue('groupObjectClass', loginProviders?.ldap_group_object_class);
+    setTags(loginProviders?.ldap_group_object_class);
     setValue(
       'groupUniqueIdentifier',
       loginProviders.ldap_group_unique_identifier
@@ -744,7 +745,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       ldap_user_username_identifier: data?.usernameIdentifier,
       ldap_user_unique_identifier: data?.userUniqueIdentifier,
       ldap_groups_dn: data?.groupDn,
-      ldap_group_object_class: data?.groupObjectClass,
+      ldap_group_object_class: tags,
       ldap_select_scope: data?.scope,
       ldap_group_unique_identifier: data?.groupUniqueIdentifier,
       ldap_group_filter: data?.filter,
@@ -1262,7 +1263,15 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           disabled={disableLDAPsection}
                         />
                       </div>
-                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                      <div
+                        className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele"
+                        style={{
+                          pointerEvents: disableLDAPsection ? 'none' : 'auto',
+                          cursor: disableLDAPsection
+                            ? 'not-allowed'
+                            : 'pointer',
+                        }}
+                      >
                         <TagLable
                           htmlFor="tags-input"
                           className="tags-input-label"
@@ -1273,24 +1282,27 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           <IconTag>
                             <TagIcon />
                           </IconTag>
-                          {tags.map((tag, index) => (
-                            <TagItem key={index}>
-                              <CharacterCount>
-                                {tag.length > 10
-                                  ? `${tag.substring(0, 10)}...`
-                                  : tag}
-                              </CharacterCount>
-                              <CloseButton onClick={() => removeTag(tag)}>
-                                &times;
-                              </CloseButton>
-                            </TagItem>
-                          ))}
+                          {!isEmpty(tags) &&
+                            tags?.map((tag, index) => (
+                              <TagItem key={index}>
+                                <CharacterCount>
+                                  {!isEmpty(tags) && tag?.length > 10
+                                    ? `${tag.substring(0, 10)}...`
+                                    : tag}
+                                </CharacterCount>
+                                <CloseButton onClick={() => removeTag(tag)}>
+                                  &times;
+                                </CloseButton>
+                              </TagItem>
+                            ))}
                           <TagsInput
                             type="text"
                             name="groupObjectClass"
                             onKeyDown={handleKeyDown}
                             placeholder={
-                              tags.length === 0 ? 'Group Object Class' : ''
+                              !isEmpty(tags) && tags?.length === 0
+                                ? 'Group Object Class'
+                                : ''
                             }
                             onBlur={handleKeyDown}
                             aria-label="Group Object Class"
