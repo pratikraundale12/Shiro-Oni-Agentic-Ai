@@ -68,6 +68,7 @@ export const RESPONSE_DATA_CODE = {
 export const CLUSTER_MODULE_TABS = {
   CLUSTER: 'cluster',
   REGISTRY: 'registry',
+  SERVICE_ACCOUNT: 'service account',
 };
 
 export const CLUSTER_STATUS = {
@@ -153,6 +154,7 @@ export const LICENSE_EXPIRE_PROMPT_DAYS = 30;
 
 export const KDFM = {
   // Generic constants
+  UPLOAD_P12_FILE: 'Upload P12 File',
   NIFI: 'NiFi',
   ADD: 'Add',
   ADD_NEW: 'Add New',
