@@ -29,6 +29,7 @@ import {
   ZOOKEEPER_CONNECTION_TIMEOUT,
 } from '../../../constants';
 import { useForm } from 'react-hook-form';
+import { isEqual, sortBy } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { ClustersActions, ClustersSelectors } from '../../../store';
@@ -53,9 +54,9 @@ const StyledSelectField = styled(SelectField)`
   /* Control styling (the main input area) */
   & .react-select__control {
     height: ${props => props.height || 'auto'};
-    min-height: ${props => props.height || '40px'};
+    min-height: ${props => props.height || '54px'};
     border-radius: ${props => props.borderRadius || '4px'};
-    margin-top: ${props => props.marginTop || '0'};
+    margin-top: ${props => props.marginTop || '10px'};
     margin-left: ${props => props.marginLeft || '0'};
     margin-right: ${props => props.marginRight || '0'};
   }
@@ -291,6 +292,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
   const configToEdit = useSelector(
     ClustersSelectors.getUpdateConfigClusterSetupData
   );
+  const [ldapTested, setLdapTested] = useState(false);
+  const [originalLoginValues, setOriginalLoginValues] = useState({});
 
   const nifiVerionsOptions =
     !isEmpty(nifiVersionsData) &&
@@ -425,6 +428,12 @@ const ClusterSetupNewConfigDetailsPage = () => {
     usernameIdentifier: yup
       .string()
       .required('Username Identifier is required'),
+    InitialAdminIdentity: yup
+      .string()
+      .required('Username Identifier is required'),
+    ldap_login_user_filter: yup
+    .string()
+    .required('Username Identifier is required'),
     java_arg_2: yup
       .number()
       .transform((value, originalValue) =>
@@ -498,6 +507,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       scope: 'SUBTREE',
     },
   });
+
   const scopeOptions = [
     {
       label: 'Subtree',
@@ -557,20 +567,31 @@ const ClusterSetupNewConfigDetailsPage = () => {
 
   useEffect(() => {
     if (!isEmpty(originalValues)) {
-      const hasChanged = Object.keys(formValues).some(key => {
-        if (typeof formValues[key] === 'object' && formValues[key] !== null) {
-          return (
-            JSON.stringify(formValues[key]) !=
-            JSON.stringify(originalValues[key])
-          );
+      // Create copies for comparison that exclude loginProvider
+      const formValuesForComparison = { ...formValues }
+      const originalValuesForComparison = { ...originalValues }
+  
+      // Don't consider loginProvider changes when determining if form has changed
+      delete formValuesForComparison.loginProvider
+      delete originalValuesForComparison.loginProvider
+  
+      const hasChanged = Object.keys(formValuesForComparison).some((key) => {
+        // Skip loginProvider comparison
+        if (key === "loginProvider") return false
+  
+        if (typeof formValuesForComparison[key] === "object" && formValuesForComparison[key] !== null) {
+          return JSON.stringify(formValuesForComparison[key]) !== JSON.stringify(originalValuesForComparison[key])
         }
-
-        return formValues[key] != originalValues[key];
-      });
-
-      setFormChanged(hasChanged);
+  
+        return formValuesForComparison[key] !== originalValuesForComparison[key]
+      })
+  
+      // Compare tags separately
+      const isSameTags = isEqual(sortBy(tags), sortBy(originalValues?.groupObjectClass || []))
+  
+      setFormChanged(hasChanged || !isSameTags)
     }
-  }, [formValues, originalValues]);
+  }, [formValues, originalValues, tags])
 
   useEffect(() => {
     return () => {
@@ -629,6 +650,24 @@ const ClusterSetupNewConfigDetailsPage = () => {
     const loginProviders = safeParseJSON(configToEdit.login_identity_providers);
     const stateManagement = safeParseJSON(configToEdit.state_management);
 
+    setOriginalLoginValues({
+      username: loginProviders.username,
+      password: loginProviders.password,
+      userDn: loginProviders.ldap_users_dn,
+      usernameIdentifier: loginProviders.ldap_user_username_identifier,
+      userUniqueIdentifier: loginProviders.ldap_user_unique_identifier,
+      groupDn: loginProviders.ldap_groups_dn,
+      groupObjectClass: loginProviders?.ldap_group_object_class,
+      groupUniqueIdentifier: loginProviders.ldap_group_unique_identifier,
+      filter: loginProviders.ldap_group_filter,
+      InitialAdminIdentity: loginProviders.ldap_initial_admin_identity,
+      ldap_login_identity_strategy: loginProviders.ldap_login_identity_strategy,
+      scope: loginProviders.ldap_select_scope,
+      ldap_login_user_filter: loginProviders.ldap_login_user_filter,
+      loginDn: loginProviders?.ldap_login_dn,
+      password2: loginProviders?.ldap_login_password,
+      url: loginProviders?.ldap_url,
+    })
     // Set NiFi properties
     setValue('nifi_cluster_is_node', nifiProps.nifi_cluster_is_node);
     setValue(
@@ -650,8 +689,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
     setValue('java_arg_3', getMemoryValue(bootstrap.java_arg_3));
 
     // Set Login Provider values
-    setValue('username', loginProviders.username);
-    setValue('password', loginProviders.password);
+    setValue('username', loginProviders.username === '' ? undefined : loginProviders.username);
+  setValue('password', loginProviders.password === '' ? undefined : loginProviders.password);
 
     // for LDAP
     setValue('userDn', loginProviders.ldap_users_dn);
@@ -681,7 +720,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
     );
     setValue('scope', loginProviders.ldap_select_scope);
     setValue('ldap_login_user_filter', loginProviders.ldap_login_user_filter);
-    setValue('loginProvider', nifiProps?.nifi_user_login_provider);
+    setValue('loginProvider', nifiProps?.nifi_user_login_provider || 'single-user-provider');
     setValueForm1('loginDn', loginProviders?.ldap_login_dn);
     setValueForm1('password2', loginProviders?.ldap_login_password);
     setValueForm1('url', loginProviders?.ldap_url);
@@ -711,12 +750,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
 
     // After all values are set, capture them as original values
     setTimeout(() => {
-      setOriginalValues({ ...watch() });
+      setOriginalValues({ ...watch(), groupObjectClass: loginProviders?.ldap_group_object_class || [], });
       setFormChanged(false);
     }, 0);
   };
 
   const handleAddConfig = async data => {
+    if (!isEmpty(configToEdit) && methodForLoginIdentity === 'ldap-provider' && !ldapTested) {
+      toast.error('Please test LDAP credentials before Proceeding');
+      return;
+    }
     const nifiPropertyPayload = {
       nifi_cluster_is_node: data?.nifi_cluster_is_node,
       nifi_cluster_node_protocol_max_threads:
@@ -822,10 +865,60 @@ const ClusterSetupNewConfigDetailsPage = () => {
 
   useEffect(() => {
     if (methodForLogin) {
+      // Store current form state before changing authentication method
+      const currentFormValues = { ...watch() }
+  
+      setMethodForLoginIdentity(methodForLogin)
+  
+      if (methodForLogin === "ldap-provider") {
+        // Reset username/password fields without triggering form changes
+        setValue("username", originalLoginValues.username || undefined, { shouldDirty: false })
+        setValue("password", originalLoginValues.password || undefined, { shouldDirty: false })
+      } else if (methodForLogin === "single-user-provider") {
+        // Reset LDAP fields without triggering form changes
+        setValue("userDn", originalLoginValues.userDn || undefined, { shouldDirty: false })
+        setValue("usernameIdentifier", originalLoginValues.usernameIdentifier || undefined, { shouldDirty: false })
+        setValue("userUniqueIdentifier", originalLoginValues.userUniqueIdentifier || undefined, { shouldDirty: false })
+        setValue("groupDn", originalLoginValues.groupDn || undefined, { shouldDirty: false })
+        setValue("groupUniqueIdentifier", originalLoginValues.groupUniqueIdentifier || undefined, {
+          shouldDirty: false,
+        })
+        setValue("filter", originalLoginValues.filter || undefined, { shouldDirty: false })
+        setValue("InitialAdminIdentity", originalLoginValues.InitialAdminIdentity || undefined, { shouldDirty: false })
+        setValue("ldap_login_user_filter", originalLoginValues.ldap_login_user_filter || undefined, {
+          shouldDirty: false,
+        })
+  
+        // Reset tags to original state
+        setTags(originalLoginValues.groupObjectClass || [])
+      }
+  
+      // After switching, update originalValues to reflect the new authentication method
+      setTimeout(() => {
+        const newFormValues = { ...watch() }
+        setOriginalValues((prev) => ({
+          ...prev,
+          ...newFormValues,
+          loginProvider: methodForLogin,
+        }))
+      }, 0)
+    }
+  }, [methodForLogin, setValue, originalLoginValues])
+
+  useEffect(() => {
+    if (methodForLogin) {
       setMethodForLoginIdentity(methodForLogin);
     }
   }, [methodForLogin]);
-
+  
+  useEffect(() => {
+    if (formValues.username === '') {
+      setValue('username', undefined);
+    }
+    if (formValues.password === '') {
+      setValue('password', undefined);
+    }
+  }, [formValues.username, formValues.password, setValue]);
   const onSubmitConnectionCheck = async data => {
     setLoading(true);
     setLdapConnectData(data);
@@ -840,6 +933,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       if (response?.status === 200) {
         setDisableLDAPsection(false);
         setSuccessTest(true);
+        setLdapTested(true);
         toast.success('LDAP connection successful');
       } else {
         toast.error(
@@ -1172,6 +1266,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           icon={<LinkIcon />}
                           errors={errorsForm1}
                           required
+                          disabled={!disableLDAPsection}
                         />
                       </div>
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -1184,6 +1279,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           icon={<QRIcons />}
                           errors={errorsForm1}
                           required
+                          disabled={!disableLDAPsection}
                         />
                       </div>
                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
@@ -1194,6 +1290,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                           watch={watch}
                           required
                           label="Password"
+                          disabled={!disableLDAPsection}
                         />
                       </div>
                       <ButtonFlex>
@@ -1300,9 +1397,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
                             name="groupObjectClass"
                             onKeyDown={handleKeyDown}
                             placeholder={
-                              !isEmpty(tags) && tags?.length === 0
-                                ? 'Group Object Class'
-                                : ''
+                              tags.length === 0 ? 'Group Object Class' : ''
                             }
                             onBlur={handleKeyDown}
                             aria-label="Group Object Class"
