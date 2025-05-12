@@ -604,7 +604,7 @@ export const ListScheduleDeployment = () => {
           )}
         </>
       ),
-      width: '14%',
+      width: '13%',
       resize: true,
     },
     {
@@ -626,19 +626,19 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => <TextRender text={item?.cluster_name} />,
-      width: '9%',
+      width: '10%',
       resize: true,
     },
     {
       label: 'Version',
       renderCell: item => <TextRender text={item?.version} />,
-      width: '7%',
+      width: '5%',
       resize: true,
     },
     {
       label: 'Post Deploy State',
       renderCell: item => <TextRender text={item?.deployment_status} />,
-      width: '12%',
+      width: '10%',
       resize: true,
     },
     {
@@ -660,6 +660,30 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => <TextRender text={item?.scheduled_by} />,
+      width: '8%',
+      resize: true,
+    },
+    {
+      label: (
+        <>
+          <button
+            onClick={() => toggleSorting('change_request')}
+            style={{ background: 'none' }}
+          >
+            Change Request{' '}
+            {sortingState === 'change_request' ? (
+              <SortUpIcon />
+            ) : sortingState === '-change_request' ? (
+              <SortDownIcon />
+            ) : (
+              <SortDownIcon />
+            )}
+          </button>
+        </>
+      ),
+      renderCell: item => (
+        <TextRender text={item?.change_request ? item.change_request : 'N/A'} />
+      ),
       width: '10%',
       resize: true,
     },
@@ -696,7 +720,7 @@ export const ListScheduleDeployment = () => {
         ) : (
           <ApproverGroupDisplay item={item} />
         ),
-      width: '14%',
+      width: '13%',
       resize: true,
     },
     {
@@ -707,7 +731,7 @@ export const ListScheduleDeployment = () => {
           item={item}
         />
       ),
-      width: '10%',
+      width: '8%',
       resize: true,
     },
     {
