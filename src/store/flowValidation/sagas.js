@@ -1,5 +1,6 @@
 import { toast } from 'react-toastify';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { AiFlowGeneratorActions } from '../aiFlowGenerator';
 import { requestSaga } from '../helpers/request_sagas';
 import { FlowValidationActions } from './redux';
 
@@ -202,8 +203,9 @@ export function* fetchFlowsSaga(api, { payload }) {
     apiParams: [payload],
     successAction: FlowValidationActions.fetchFlowsSuccess,
   });
-
-  if (!response?.ok) {
+  if (response?.ok) {
+    yield put(AiFlowGeneratorActions.fetchRegistryDetails());
+  } else {
     toast.error(response?.data?.message || 'Failed to fetch flows');
   }
 }
