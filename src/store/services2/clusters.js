@@ -11,11 +11,19 @@ export const clustersAPI = api => {
   const getClusterToken = ({ payload }) => api.post(`/clusters/token`, payload);
   const clusterLogout = ({ clusterId, payload = {} }) =>
     api.post(`/clusters/${clusterId}/logout`, payload);
+  const createClusterServiceAcc = ({ payload }) => {
+    return api.post(`/clusters`, payload);
+  };
+  const updateClusterServiceAcc = ({ clusterId, payload }) => {
+    return api.patch(`/clusters/${clusterId}`, payload);
+  };
   return {
     fetchClusters,
     fetchClusterList,
     fetchClusterNodes,
     getClusterToken,
     clusterLogout,
+    createClusterServiceAcc,
+    updateClusterServiceAcc,
   };
 };

@@ -40,6 +40,8 @@ import RegistryFormSection from './components/RegistryFormSection';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
+import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
+import { AuthenticationSelectors } from '../../store/authentication';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -155,6 +157,10 @@ export const Add = () => {
     return item?.nifi_url !== data?.nifi_url;
   });
 
+  const hostToEdit = clusterData?.clusterName || clusterId;
+
+  const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
+  const isSuperAdmin = currentUserData?.role === 'superadmin';
   const ClusterSchema = yup.object().shape({
     clusterName: yup
       .string()
@@ -287,6 +293,8 @@ export const Add = () => {
       setNewRegistry(false);
     } else if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
       history.push('/clusters');
+    } else if (activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT) {
+      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
     } else {
       setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
     }
@@ -306,6 +314,7 @@ export const Add = () => {
         approver_enable: approverEnable,
         change_request_enable: changeRequestEnable,
         registry_id: selectedRegistryId,
+        has_custom_service_account: false,
       };
 
       const id = clusterId;
@@ -794,6 +803,17 @@ export const Add = () => {
               successModal={successModal}
               activeTab={activeTab}
               clusterId={clusterId}
+            />
+          </FormContainer>
+        )}
+        {isSuperAdmin && activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT && (
+          <FormContainer>
+            <ClusterServiceAccountModal
+              tags={tags}
+              hostToEdit={hostToEdit}
+              clusterData={clusterData}
+              clusterId={clusterId}
+              data={data}
             />
           </FormContainer>
         )}

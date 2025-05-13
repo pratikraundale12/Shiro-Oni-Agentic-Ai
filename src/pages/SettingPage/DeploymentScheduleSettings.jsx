@@ -63,9 +63,47 @@ const StyledSaveButton = styled(Button)`
   left: 140px;
 `;
 
+const GroupEmailInput = styled.div`
+  label {
+    margin-bottom: 6px;
+  }
+`;
+
 const ButtonDiv = styled.div`
   display: flex;
   gap: 1rem;
+`;
+
+const StyledSelectField = styled(SelectField)`
+  /* Container styling */
+  & > div {
+    margin-bottom: ${props => props.marginBottom || '4px'};
+  }
+  & label {
+    margin-bottom: ${props => props.labelMargin || '2px'} !important;
+  }
+  /* Control styling (the main input area) */
+  & .react-select__control {
+    height: ${props => props.height || 'auto'};
+    min-height: ${props => props.height || '54px'};
+    border-radius: ${props => props.borderRadius || '4px'};
+    margin-top: ${props => props.marginTop || '14px'};
+    margin-left: ${props => props.marginLeft || '0'};
+    margin-right: ${props => props.marginRight || '0'};
+  }
+  /* Value container styling */
+  & .react-select__value-container {
+    padding: ${props => props.innerPadding || props.padding || '0 8px'};
+  }
+  /* Menu styling */
+  & .react-select__menu {
+    border-radius: ${props => props.menuBorderRadius || '4px'};
+  }
+  /* Option styling */
+  & .react-select__option {
+    padding: ${props => props.optionPadding || '8px 12px'};
+    font-size: ${props => props.fontSize || '14px'};
+  }
 `;
 
 export const settingSchema = yup.object().shape({
@@ -73,8 +111,11 @@ export const settingSchema = yup.object().shape({
     .string()
     .required('Group email is required')
     .nullable()
-    .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
-    .max(50, 'Email can not be greater than 25 characters'),
+    .test('emails', 'Invalid email addresses', function (value) {
+      if (!value) return true;
+      const emails = value.split(',').map(email => email.trim());
+      return emails.every(email => EMAIL_REGEX.test(email));
+    }),
 
   approver_groups: yup
     .mixed()
@@ -214,7 +255,7 @@ export const DeploymentScheduleSettings = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="col-xl-6 col-lg-10 col-md-10 col-sm-10 col-6 mb-4">
-          <SelectField
+          <StyledSelectField
             label="Approver Groups"
             name="approver_groups"
             control={control}
@@ -233,21 +274,33 @@ export const DeploymentScheduleSettings = () => {
 
         <div className="col-xl-6 col-lg-10 col-md-10 col-sm-10 col-6 ">
           <div className="row">
-            <div className="col-6 mb-1">
+            <GroupEmailInput className="col-6">
               <InputField
                 name="group_email_id"
                 register={register}
                 icon={<EmailSmsTrackingIcon />}
-                label={KDFM.GROUP_EMAIL}
+                label={
+                  <>
+                    {KDFM.GROUP_EMAIL}{' '}
+                    <em>
+                      (Enter one or more email addresses, separated by commas)
+                    </em>
+                  </>
+                }
                 placeholder={KDFM.ENTER_GROUP_EMAIL}
                 errors={errors}
                 required={true}
               />
-            </div>
+            </GroupEmailInput>
 
             <div className="col-6 mb-1">
-              <SelectField
-                label={KDFM.EMAIL_REMINDER}
+              <StyledSelectField
+                label={
+                  <>
+                    {KDFM.EMAIL_REMINDER}{' '}
+                    <em>(before deployment schedule time)</em>
+                  </>
+                }
                 name="email_reminder_time"
                 control={control}
                 icon={<ClockIcon />}
@@ -262,7 +315,7 @@ export const DeploymentScheduleSettings = () => {
           </div>
         </div>
         <div className="col-xl-3 col-lg-5 col-md-5 col-sm-5 col-5 mt-1">
-          <SelectField
+          <StyledSelectField
             label={KDFM.DEPLOYMENT_SCHEDULE_LIST_REFRESH}
             name="refresh"
             control={control}
