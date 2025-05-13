@@ -479,12 +479,33 @@ export function* deleteAnsibleClusterHard(api, { payload }) {
     yield put(
       ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false)
     );
+    yield put(ClustersActions.setIsFailedClusterDeleteModalOpen(false));
     yield put(
       GridActions.fetchGrid({
         module: 'clusters',
         params: {},
       })
     );
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
+export function* fetchAnsibleCLusterProcessData(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchAnsibleCLusterProcessData',
+    loadingSection: 'fetchAnsibleCLusterProcessData',
+    apiMethod: api.fetchAnsibleCLusterProcessData,
+    apiParams: [
+      {
+        clusterId: payload?.clusterId,
+        process_id: payload?.process_id,
+        process_name: payload?.process_name,
+      },
+    ],
+  });
+  if (response?.ok) {
+    yield put(ClustersActions.setansibleClusterProgressData(response?.data));
   } else {
     toast.error(response?.data?.error);
   }
@@ -570,6 +591,11 @@ export function* clustersSagas(api) {
     takeLatest(
       ClustersActions.deleteAnsibleClusterHard,
       deleteAnsibleClusterHard,
+      api
+    ),
+    takeLatest(
+      ClustersActions.fetchAnsibleCLusterProcessData,
+      fetchAnsibleCLusterProcessData,
       api
     ),
   ]);

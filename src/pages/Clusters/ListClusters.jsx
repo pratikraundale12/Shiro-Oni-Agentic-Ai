@@ -42,6 +42,9 @@ import ClusterSuccessModal from './components/ClusterSuccessModal';
 import { AddOrEditClusterModal } from './components/AddOrEditClusterSetupModal';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { ClusterRegistryAssociationModal } from './components/ClusterRegistryAssociationModal';
+import { theme } from '../../styles';
+import AnimatedProgressBar from '../../shared/AnimatedProgressBar';
+import { ClusterProcessDisplayModal } from './components/ClusterProcessDisplayModal';
 
 const List = styled.div`
   width: 165px;
@@ -130,6 +133,7 @@ export const ListClusters = () => {
   const { state, setState } = useGlobalContext();
   const [deactiveId, setDeactiveId] = useState(null);
   const [deleteHardId, setDeleteHardId] = useState(null);
+  const [isProcessModalOpen, setIsProcessModalOpen] = useState(false);
   const menuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortingState, setSortingState] = useState('name');
@@ -139,6 +143,10 @@ export const ListClusters = () => {
   const ansibleClusterNiFiDeleteOpen = useSelector(
     ClustersSelectors.getisAnsibleClusterDeleteFrimNiFiModalOpen
   );
+  const failedClusterNiFiDeleteOpen = useSelector(
+    ClustersSelectors.getIsFailedClusterDeleteModalOpen
+  );
+
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const [selectedCluster, setSelectedCluster] = useState({});
   const toggleSorting = column => {
@@ -185,6 +193,12 @@ export const ListClusters = () => {
     setDeleteHardId(item?.id);
     dispatch(ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(true));
   };
+  const handleHardDeleteFailedAnsibleCluster = item => {
+    handleCloseMenu();
+    setSelectedCluster(item);
+    setDeleteHardId(item?.id);
+    dispatch(ClustersActions.setIsFailedClusterDeleteModalOpen(true));
+  };
   const handleAnsibleClusterNiFiDeleteConfirmation = () => {
     handleCloseMenu();
     dispatch(
@@ -196,6 +210,10 @@ export const ListClusters = () => {
     setSelectedCluster({});
   };
 
+  const handleOpenProgressModal = item => {
+    setIsProcessModalOpen(true);
+    setSelectedCluster(item);
+  };
   const COLUMNS = [
     {
       label: (
@@ -243,19 +261,43 @@ export const ListClusters = () => {
     {
       label: KDFM.CLUSTER_STATUS,
       renderCell: item => (
-        <ProgressBarRender
-          is_active={item.is_active}
-          count={item.connected_nodes}
-          maxCount={item.total_nodes}
-          status={item.status}
-        />
+        <>
+          {item?.process_initiated ? (
+            <span onClick={() => handleOpenProgressModal(item)}>
+              <AnimatedProgressBar />
+            </span>
+          ) : (
+            <ProgressBarRender
+              is_active={item.is_active}
+              count={item.connected_nodes}
+              maxCount={item.total_nodes}
+              status={item.status}
+            />
+          )}
+        </>
       ),
       width: '15%',
       resize: true,
     },
     {
       label: KDFM.STATUS,
-      renderCell: item => <StatusRender status={item.status} />,
+      renderCell: item => (
+        <>
+          {!item?.created_by_ansible ? (
+            <StatusRender status={item.status} />
+          ) : (
+            <StatusRender
+              status={
+                item?.process_initiated && item?.state != 'FAILED'
+                  ? 'Inprogress'
+                  : !item?.process_intiated && item?.state == 'FAILED'
+                    ? 'Failed'
+                    : item.status
+              }
+            />
+          )}
+        </>
+      ),
       width: '10%',
       resize: true,
     },
@@ -265,7 +307,13 @@ export const ListClusters = () => {
         return (
           <>
             {item?.state !== 'DRAFT' && (
-              <ActionRender handleMenuClick={handleMenuClick} item={item}>
+              <ActionRender
+                handleMenuClick={handleMenuClick}
+                item={item}
+                handleHardDeleteFailedAnsibleCluster={
+                  handleHardDeleteFailedAnsibleCluster
+                }
+              >
                 {menuState.isVisible && item.id === menuState.row.id && (
                   <DropdownPortal>
                     <List
@@ -457,6 +505,7 @@ export const ListClusters = () => {
     }
     dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
     dispatch(ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false));
+    dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
   };
 
   const updateClusterStatus = async id => {
@@ -622,6 +671,20 @@ export const ListClusters = () => {
         additionalBtnText={'Delete from DFM'}
         additionalBtnClick={() => handleDeleteHard()}
       />
+      <ModalWithIcon
+        title={'Delete Cluster'}
+        primaryButtonText={'Delete NiFi Cluster'}
+        secondaryButtonText={KDFM.CANCEL}
+        icon={<DeleteDustbinIcon />}
+        isOpen={failedClusterNiFiDeleteOpen}
+        onSubmit={() => handleAnsibleClusterNiFiDeleteConfirmation()}
+        onRequestClose={() => {
+          dispatch(ClustersActions.setIsFailedClusterDeleteModalOpen(false));
+          setSelectedCluster({});
+        }}
+        primaryText={KDFM.HARD_DELETE_CLUSTER_WARNING}
+        secondaryText={'This is will clean the hosts of failed cluster'}
+      />
       <ClusterRegistryAssociationModal
         selectedCluster={selectedCluster}
         setSelectedCluster={setSelectedCluster}
@@ -661,6 +724,12 @@ export const ListClusters = () => {
         sortingState={sortingState}
       />
       <ClusterSuccessModal />
+      <ClusterProcessDisplayModal
+        isProcessModalOpen={isProcessModalOpen}
+        setIsProcessModalOpen={setIsProcessModalOpen}
+        setSelectedCluster={setSelectedCluster}
+        selectedCluster={selectedCluster}
+      />
     </>
   );
 };

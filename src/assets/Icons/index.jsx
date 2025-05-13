@@ -178,3 +178,5 @@ export * from './ZoomInIcon';
 export * from './ZoomOutIcon';
 export * from './canvasYIcon';
 export * from './RegistryIcon';
+export * from './CompletedLabelIcon';
+export * from './InprogressLabelIcon';
