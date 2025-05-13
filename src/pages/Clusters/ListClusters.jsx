@@ -269,8 +269,7 @@ export const ListClusters = () => {
                   handleOpenProgressModal(item);
                 }
               }}
-              className="bg-transparent border-0 p-0 w-100 flex cursor-pointer"
-              aria-label="Open progress details"
+              className="bg-transparent border-0 p-0 w-100 flex"
             >
               <AnimatedProgressBar id={item?.id} />
             </button>
