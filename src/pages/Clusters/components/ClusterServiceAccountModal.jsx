@@ -1,6 +1,7 @@
+/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import styled from 'styled-components';
+import styled, { ThemeConsumer } from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Button, SwitchButton } from '../../../shared';
@@ -8,13 +9,19 @@ import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
 import { InputField, PasswordField, RadioSelectField } from '../../../shared';
 import { KDFM } from '../../../constants';
-import { CurvedLockIcon, CurvedProfileIcon } from '../../../assets';
+import {
+  CurvedLockIcon,
+  CurvedProfileIcon,
+  CircleExclamationMarkIcon,
+} from '../../../assets';
 import { isEmpty } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FullPageLoader } from '../../../components';
 import PemUploadField from '../PEMUploadFile';
 import { useNavigate } from 'react-router-dom';
+import { updateCluster } from '../../../store/index1';
+import { theme } from '../../../styles';
 
 const Container = styled.div``;
 const ModalContainer = styled.div`
@@ -114,6 +121,7 @@ export const ClusterServiceAccountModal = ({
       service_account_certificate_password:
         data?.service_account_certificate_password || '',
       change_request_enable: data?.change_request_enable || false,
+      has_custom_service_account: data?.has_custom_service_account || false,
     },
   });
 
@@ -184,6 +192,22 @@ export const ClusterServiceAccountModal = ({
 
   const handleSave = async () => {
     const formData = new FormData();
+    const payloadData = {
+      name: clusterData.clusterName,
+      nifi_url: clusterData.nifiUrl,
+      ...(clusterData.registryId && { registry_id: clusterData.registryId }),
+      ...(clusterData.logs_url && { logs_url: clusterData.logs_url }),
+      ...(clusterData.metrics_url && { metrics_url: clusterData.metrics_url }),
+      tag: tags,
+      notification_enable: clusterData.notification_enable || false,
+      has_custom_service_account: changeRequestEnabled ? true : false,
+      service_account_type: 'username_password',
+      service_username: watch('service_username'),
+      service_password: watch('service_password'),
+    };
+
+    const response = await updateCluster(clusterId, payloadData);
+    console.log('Response:', response);
     formData.append('name', clusterData.clusterName);
     formData.append('nifi_url', clusterData.nifiUrl);
 
@@ -277,6 +301,11 @@ export const ClusterServiceAccountModal = ({
       <Container>
         <div>
           <h5 className="mb-3">Do You Want Custom Service Account? </h5>
+          <div className="mb-3">
+            <CircleExclamationMarkIcon color={theme.colors.primary} />
+            <span className='ml-2' style={{ fontSize: '1rem' }}>If a <span className='font-semibold' style={{ color: theme.colors.primary }}>common service account</span> is defined in the global settings, it
+            will be <span className='font-semibold' style={{ color: theme.colors.primary }}>overridden</span> by the cluster-specific configuration from here.</span>
+          </div>
           <SwitchButton
             id="changeServiceAccountToggle"
             name=""
@@ -285,19 +314,8 @@ export const ClusterServiceAccountModal = ({
             isDisabled={loading}
           />
         </div>
-        <div className="d-flex mt-3 mb-1">
-          <RadioSelectField
-            key={method}
-            name="service_account_type"
-            options={OPTIONS}
-            control={control}
-            defaultValue={method}
-            onChange={e => setMethod(e.target.value)}
-            disabled={!changeRequestEnabled || loading}
-          />
-        </div>
 
-        <div className="row mb-3">
+        <div className="row mb-3 mt-3">
           {method === 'username_password' && (
             <>
               <div className="col-4">
