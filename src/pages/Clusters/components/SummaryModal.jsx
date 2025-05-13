@@ -185,6 +185,7 @@ export const SummaryModal = ({
     formdata.append('approver_enable', approverEnable);
     formdata.append('change_request_enable', changeRequestEnable);
     formdata.append('has_custom_service_account', false);
+    formdata.append('registry_id', registry_id);
     const id = clusterId;
     const response = await updateCluster(id, formdata);
     if (response?.id) {

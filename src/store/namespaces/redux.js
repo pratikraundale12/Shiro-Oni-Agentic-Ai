@@ -212,6 +212,7 @@ export const NamespacesActions = {
   setLocalServiceInUpgrade: createAction(`${prefix}setLocalServiceInUpgrade`),
   setUserStory: createAction(`${prefix}setUserStory`),
   setChangeRequest: createAction(`${prefix}setChangeRequest`),
+  setParameterEditingAction: createAction(`${prefix}setParameterEditingAction`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -319,6 +320,7 @@ export const NAMESPACES_INITIAL_STATE = {
   localServiceInUpgrade: [],
   userStory: '',
   changeRequest: null,
+  parameterEditingAction: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -430,7 +432,9 @@ export const NamespacesSelectors = {
   getLocalServiceInUpgrade: state => state.namespaces.localServiceInUpgrade,
   getUserStory: state => state.namespaces.userStory,
   getChangeRequest: state => state.namespaces.changeRequest,
+  getParameterEditingAction: state => state.namespaces.parameterEditingAction,
 };
+
 /* ------------- REDUCERS ------------------- */
 const setSelectedCluster = (state, { payload }) => {
   return {
@@ -1009,6 +1013,12 @@ const setChangeRequest = (state, { payload }) => {
     changeRequest: payload,
   };
 };
+const setParameterEditingAction = (state, { payload }) => {
+  return {
+    ...state,
+    parameterEditingAction: payload,
+  };
+};
 
 //
 /* ------------- Hookup Reducers To Types ------------- */
@@ -1240,6 +1250,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setLocalServiceInUpgrade,
         setLocalServiceInUpgrade
+      )
+      .addCase(
+        NamespacesActions.setParameterEditingAction,
+        setParameterEditingAction
       );
   }
 );
