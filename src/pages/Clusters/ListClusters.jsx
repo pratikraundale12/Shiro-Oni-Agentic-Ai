@@ -262,17 +262,19 @@ export const ListClusters = () => {
       renderCell: item => (
         <>
           {item?.process_initiated ? (
-            <button
+            <div
               onClick={() => handleOpenProgressModal(item)}
               onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   handleOpenProgressModal(item);
                 }
               }}
-              className="bg-transparent border-0 p-0 w-100 flex"
+              className="bg-transparent p-0 w-100"
+              role="button"
+              tabIndex={0}
             >
               <AnimatedProgressBar id={item?.id} />
-            </button>
+            </div>
           ) : (
             <ProgressBarRender
               is_active={item.is_active}
