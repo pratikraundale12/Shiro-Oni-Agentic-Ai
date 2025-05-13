@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { NoDataIcon, PropertyIcon, TodoIcon } from '../../assets';
+import { TodoIcon } from '../../assets';
 import { FullPageLoader, Table } from '../../components';
 import { KDFM } from '../../constants';
 import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
 import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
-import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
 import {
   LoadingSelectors,
   NamespacesActions,
@@ -20,6 +19,14 @@ import {
   FlowValidationSelectors,
 } from '../../store/flowValidation';
 import { SchedularSelectors } from '../../store/schedular';
+import {
+  FlowcompareStyled,
+  FlowInfoSection,
+  getCommonColumns,
+  NoDataSection,
+  SuccessMessageSection,
+  ValidationFormSection,
+} from '../FlowAnalysis/FlowValidationCommon';
 import Collapsible from './Collapsible';
 
 const TopTitleBar = styled.div`
@@ -72,45 +79,6 @@ const BreadcrumbContainer = styled.div`
   color: #444445;
   align-items: center;
 `;
-const FlowcompareStyled = styled.div`
-  height: calc(100vh - 300px);
-  overflow-x: auto;
-  border-radius: 16px;
-  border: 1px solid #e0d3d3;
-  padding: 1rem;
-  margin-top: 1rem;
-  background: #fbfcff;
-`;
-const LabelSelect = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 16px;
-  color: ${props => props.theme.colors.darker};
-  margin-bottom: 14px;
-`;
-const ClickableId = styled.div`
-  color: ${props => props.theme.colors.primary};
-  cursor: pointer;
-  text-decoration: underline;
-  &:hover {
-    opacity: 0.8;
-  }
-`;
-const FlowContainerDetail = styled.div`
-  padding: 0px;
-`;
-const LabelSelectContent = styled.div`
-  color: #7a7a7a;
-  font-size: 18px;
-  font-weight: 500;
-`;
-const NoDataText = styled.div`
-  color: ${props => props.theme.colors.lightGrey3};
-  font-family: ${props => props.theme.fontNato};
-  font-size: 28px;
-  font-weight: 600;
-  text-align: center;
-`;
 
 const FlowValidationPage = () => {
   const dispatch = useDispatch();
@@ -128,7 +96,6 @@ const FlowValidationPage = () => {
   );
   const currentData =
     validationResult?.data || randomFlowValidationResult?.data;
-  console.log(currentData, 'currentData');
   const tableBody =
     validationResult?.data?.tableBody ||
     randomFlowValidationResult?.data?.tableBody ||
@@ -153,11 +120,10 @@ const FlowValidationPage = () => {
     SchedularSelectors.getScheduleFromList
   );
   const singleNameSpace = useSelector(NamespacesSelectors.getSelectedNamespace);
-  console.log(singleNameSpace, 'line 151');
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
   const savedPayload = useSelector(FlowValidationSelectors.getSavedPayload);
   const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
-  console.log(versionSelected, 'line 153');
+
   let type = '';
   if (versionSelected?.version > singleNameSpace?.version) {
     type = 'upgrade';
@@ -170,33 +136,6 @@ const FlowValidationPage = () => {
   useEffect(() => {
     dispatch(FlowValidationActions.ruleScopeFetch({}));
   }, [dispatch]);
-
-  const COLUMNS = [
-    {
-      label: 'Name',
-      renderCell: item => <div>{item?.version || 'N/A'}</div>,
-      width: '30%',
-    },
-    {
-      label: 'ID',
-      renderCell: item => (
-        <ClickableId
-          onClick={e => {
-            e.preventDefault();
-            // handleIdClick(item?.displayValue);
-          }}
-        >
-          {item?.displayValue || 'N/A'}
-        </ClickableId>
-      ),
-      width: '35%',
-    },
-    {
-      label: 'Message',
-      renderCell: item => <div>{item?.comments || 'N/A'}</div>,
-      width: '35%',
-    },
-  ];
 
   const breadcrumbDataOnDeploy = [
     {
@@ -230,13 +169,11 @@ const FlowValidationPage = () => {
   const selectedBucketName = bucketListData?.bucketList?.filter(
     ele => ele?.id === versionSelected?.bucketId
   );
-  console.log(selectedBucketName, 'selectedBucketName');
 
   const flowListData = useSelector(NamespacesSelectors.getFlowListRegistry);
   const selectedFlowName = flowListData?.flowsList?.filter(
     ele => ele?.flowId === versionSelected?.flowId
   );
-  console.log(selectedFlowName, 'selectedBucketObj');
 
   const handleValidateFlow = () => {
     dispatch(FlowValidationActions.validateRulesSuccess(null));
@@ -267,11 +204,9 @@ const FlowValidationPage = () => {
       }))
     : [];
   const handleBackClick = () => {
-    console.log('handleBackClick');
     history.push('/process-group/config-details');
   };
   const handleContinue = () => {
-    console.log('handleContinue');
     history.push('/process-group/summary');
   };
   const toggleCollapsible = index => {
@@ -297,6 +232,7 @@ const FlowValidationPage = () => {
 
     dispatch(FlowValidationActions.emailReport(payload));
   };
+
   return (
     <div>
       <FullPageLoader loading={loading} />
@@ -329,93 +265,20 @@ const FlowValidationPage = () => {
 
       <GreyBoxNamespace className="w-100  mb-3">
         <FlowcompareStyled>
-          <div className="d-flex justify-start align-center mb-4">
-            <div style={{ width: '80%' }}>
-              <LabelSelect>
-                {FLOWVALIDATION_CONSTANTS.SELECT_RULE_TO_VALIDATE}
-              </LabelSelect>
-              <MultiSelectField
-                enableCheckboxes
-                control={control}
-                name="select_property"
-                placeholder={FLOWVALIDATION_CONSTANTS.SELECT_RULE_TO_VALIDATE}
-                options={formattedOptions}
-              />
-            </div>
-
-            <div className="mt-4 ml-2 d-flex align-center">
-              <Button
-                onClick={handleValidateFlow}
-                className="w-auto mx-auto"
-                icon={<PropertyIcon height={20} width={20} />}
-              >
-                {FLOWVALIDATION_CONSTANTS.VALIDATE_FLOW}
-              </Button>
-            </div>
-          </div>
+          <ValidationFormSection
+            control={control}
+            formattedOptions={formattedOptions}
+            handleValidateFlow={handleValidateFlow}
+          />
 
           {!currentData || Object.keys(currentData).length === 0 ? (
-            <div className="d-flex flex-column align-items-center mt-5">
-              <NoDataIcon width={130} />
-              <NoDataText>No Data Found!!</NoDataText>
-            </div>
+            <NoDataSection />
           ) : (
             <>
-              <FlowContainerDetail>
-                <div className="row">
-                  <div className="col-md-6 mb-4 pb-md-2">
-                    <LabelSelect>
-                      {FLOWVALIDATION_CONSTANTS.FLOW_INFO}
-                    </LabelSelect>
-                    <LabelSelectContent>
-                      {currentData?.lableBody?.flowInfo || 'N/A'}
-                    </LabelSelectContent>
-                  </div>
-                  <div className="col-md-6 mb-4 pb-md-2">
-                    <LabelSelect>
-                      {FLOWVALIDATION_CONSTANTS.INVALID_PROCESSOR_COUNT}
-                    </LabelSelect>
-                    <LabelSelectContent>
-                      {currentData?.lableBody?.InvalidCount || 'N/A'}
-                    </LabelSelectContent>
-                  </div>
-                  <div className="col-md-6 mb-4 pb-md-2">
-                    <LabelSelect>
-                      {FLOWVALIDATION_CONSTANTS.REGISTRY_FLOW_INFO}
-                    </LabelSelect>
-                    <LabelSelectContent>
-                      {currentData?.lableBody?.registryFlowInfo || 'N/A'}
-                    </LabelSelectContent>
-                  </div>
-                  <div className="col-md-6 mb-4 pb-md-2">
-                    <LabelSelect>
-                      {FLOWVALIDATION_CONSTANTS.CURRENT_VERSION}
-                    </LabelSelect>
-                    <LabelSelectContent>
-                      {currentData?.lableBody?.currentVersion || 'N/A'}
-                    </LabelSelectContent>
-                  </div>
-                </div>
-                <div className="row align-items-center justify-content-between">
-                  <div className="col-md-6 mb-4 pb-md-2">
-                    <LabelSelect>{FLOWVALIDATION_CONSTANTS.STATE}</LabelSelect>
-                    <LabelSelectContent>
-                      {currentData?.lableBody?.state || 'N/A'}
-                    </LabelSelectContent>
-                  </div>
-                </div>
-                {!validationResult?.data?.tableBody?.length > 0 && (
-                  <div className="row align-items-center justify-content-between">
-                    <div className="col-md-6 mb-4 pb-md-2">
-                      <LabelSelect>Result</LabelSelect>
-                      <LabelSelectContent>
-                        Flow successfully reviewed, no rule violated from the
-                        selected rules. Please perform manual checks now.
-                      </LabelSelectContent>
-                    </div>
-                  </div>
-                )}
-              </FlowContainerDetail>
+              <FlowInfoSection currentData={currentData} />
+              {!validationResult?.data?.tableBody?.length > 0 && (
+                <SuccessMessageSection />
+              )}
 
               {sections.map((section, index) => {
                 if (!section.data || section.data.length === 0) return null;
@@ -427,7 +290,7 @@ const FlowValidationPage = () => {
                     toggleCollapsible={() => toggleCollapsible(index)}
                     isAddBtnVisible={false}
                   >
-                    <Table columns={COLUMNS} data={section?.data} />
+                    <Table columns={getCommonColumns()} data={section?.data} />
                   </Collapsible>
                 );
               })}
