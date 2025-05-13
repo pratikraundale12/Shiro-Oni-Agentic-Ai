@@ -42,7 +42,6 @@ import ClusterSuccessModal from './components/ClusterSuccessModal';
 import { AddOrEditClusterModal } from './components/AddOrEditClusterSetupModal';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { ClusterRegistryAssociationModal } from './components/ClusterRegistryAssociationModal';
-import { theme } from '../../styles';
 import AnimatedProgressBar from '../../shared/AnimatedProgressBar';
 import { ClusterProcessDisplayModal } from './components/ClusterProcessDisplayModal';
 
@@ -263,9 +262,18 @@ export const ListClusters = () => {
       renderCell: item => (
         <>
           {item?.process_initiated ? (
-            <span onClick={() => handleOpenProgressModal(item)}>
+            <button
+              onClick={() => handleOpenProgressModal(item)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleOpenProgressModal(item);
+                }
+              }}
+              className="bg-transparent border-0 p-0 w-100 flex cursor-pointer"
+              aria-label="Open progress details"
+            >
               <AnimatedProgressBar id={item?.id} />
-            </span>
+            </button>
           ) : (
             <ProgressBarRender
               is_active={item.is_active}
