@@ -661,139 +661,126 @@ useEffect(() => {
     return match ? match[1] : '';
   };
 
-  const populateFormWithConfigData = () => {
-    if (isEmpty(configToEdit)) return;
+const populateFormWithConfigData = () => {
+  if (isEmpty(configToEdit)) return;
 
-    // Base fields
-    const { config_name, nifi_version, comments } = configToEdit;
-    setValue('configName', config_name);
-    setValue('nifiVersion', nifi_version);
-    setValue('comments', comments);
+  const {
+    config_name,
+    nifi_version,
+    comments,
+    nifi_properties,
+    bootstrap,
+    login_identity_providers,
+    state_management,
+  } = configToEdit;
 
-    const nifiProps = safeParseJSON(configToEdit.nifi_properties);
-    const bootstrap = safeParseJSON(configToEdit.bootstrap);
-    const loginProviders = safeParseJSON(configToEdit.login_identity_providers);
-    const stateManagement = safeParseJSON(configToEdit.state_management);
+  const nifiProps = safeParseJSON(nifi_properties) || {};
+  const bootstrapProps = safeParseJSON(bootstrap) || {};
+  const loginProviders = safeParseJSON(login_identity_providers) || {};
+  const stateManagement = safeParseJSON(state_management) || {};
 
-    setOriginalLoginValues({
-      username: loginProviders.username,
-      password: loginProviders.password,
+  setValue('configName', config_name);
+  setValue('nifiVersion', nifi_version);
+  setValue('comments', comments);
+
+  const {
+    nifi_user_login_provider,
+    nifi_cluster_is_node,
+    nifi_cluster_node_protocol_max_threads,
+    nifi_cluster_flow_election_max_wait_time,
+    nifi_zookeeper_connect_timeout,
+    nifi_web_https_port
+  } = nifiProps;
+
+  const isLdapProvider = nifi_user_login_provider === 'ldap-provider';
+
+  setValue('loginProvider', nifi_user_login_provider ?? 'single-user-provider');
+  setValue('nifi_cluster_is_node', nifi_cluster_is_node);
+  setValue('nifi_cluster_node_protocol_max_threads', nifi_cluster_node_protocol_max_threads);
+  setValue('nifi_cluster_flow_election_max_wait_time', nifi_cluster_flow_election_max_wait_time);
+  setValue('nifi_zookeeper_connect_timeout', nifi_zookeeper_connect_timeout);
+  setValue('nifi_web_https_port', nifi_web_https_port);
+
+  setValue('java_arg_2', getMemoryValue(bootstrapProps.java_arg_2));
+  setValue('java_arg_3', getMemoryValue(bootstrapProps.java_arg_3));
+
+  if (isLdapProvider) {
+    const groupObjectClass = loginProviders?.ldap_group_object_class?.split(',') ?? [];
+
+    const ldapFields = {
       userDn: loginProviders.ldap_users_dn,
       usernameIdentifier: loginProviders.ldap_user_username_identifier,
       userUniqueIdentifier: loginProviders.ldap_user_unique_identifier,
       groupDn: loginProviders.ldap_groups_dn,
-      groupObjectClass: loginProviders?.ldap_group_object_class.split(','),
+      groupObjectClass,
       groupUniqueIdentifier: loginProviders.ldap_group_unique_identifier,
       filter: loginProviders.ldap_group_filter,
       InitialAdminIdentity: loginProviders.ldap_initial_admin_identity,
       ldap_login_identity_strategy: loginProviders.ldap_login_identity_strategy,
       scope: loginProviders.ldap_select_scope,
       ldap_login_user_filter: loginProviders.ldap_login_user_filter,
-      loginDn: loginProviders?.ldap_login_dn,
-      password2: loginProviders?.ldap_login_password,
-      url: loginProviders?.ldap_url,
-    });
+    };
 
+    Object.entries(ldapFields).forEach(([key, value]) => setValue(key, value));
+
+    setValueForm1('loginDn', loginProviders.ldap_login_dn);
+    setValueForm1('password2', loginProviders.ldap_login_password);
+    setValueForm1('url', loginProviders.ldap_url);
+
+    setTags(groupObjectClass);
     setLdapConnectData({
-      loginDn: loginProviders?.ldap_login_dn,
-      password2: loginProviders?.ldap_login_password,
-      url: loginProviders?.ldap_url,
+      loginDn: loginProviders.ldap_login_dn,
+      password2: loginProviders.ldap_login_password,
+      url: loginProviders.ldap_url,
     });
-    // Set NiFi properties
-    setValue('nifi_cluster_is_node', nifiProps.nifi_cluster_is_node);
-    setValue(
-      'nifi_cluster_node_protocol_max_threads',
-      nifiProps.nifi_cluster_node_protocol_max_threads
-    );
-    setValue(
-      'nifi_cluster_flow_election_max_wait_time',
-      nifiProps.nifi_cluster_flow_election_max_wait_time
-    );
-    setValue(
-      'nifi_zookeeper_connect_timeout',
-      nifiProps.nifi_zookeeper_connect_timeout
-    );
-    setValue('nifi_web_https_port', nifiProps.nifi_web_https_port);
-
-    // Set Bootstrap values
-    setValue('java_arg_2', getMemoryValue(bootstrap.java_arg_2));
-    setValue('java_arg_3', getMemoryValue(bootstrap.java_arg_3));
-
-    // Set Login Provider values
-    setValue(
-      'username',
-      loginProviders.username === '' ? undefined : loginProviders.username
-    );
-    setValue(
-      'password',
-      loginProviders.password === '' ? undefined : loginProviders.password
-    );
-
-    // for LDAP
-    setValue('userDn', loginProviders.ldap_users_dn);
-    setValue(
-      'usernameIdentifier',
-      loginProviders.ldap_user_username_identifier
-    );
-    setValue(
-      'userUniqueIdentifier',
-      loginProviders.ldap_user_unique_identifier
-    );
-    setValue('groupDn', loginProviders.ldap_groups_dn);
-    setValue('groupObjectClass', loginProviders?.ldap_group_object_class.split(',') || []);
-    setTags(loginProviders?.ldap_group_object_class.split(','));
-    setValue(
-      'groupUniqueIdentifier',
-      loginProviders.ldap_group_unique_identifier
-    );
-    setValue('filter', loginProviders.ldap_group_filter);
-    setValue(
-      'InitialAdminIdentity',
-      loginProviders.ldap_initial_admin_identity
-    );
-    setValue(
-      'ldap_login_identity_strategy',
-      loginProviders.ldap_login_identity_strategy
-    );
-    setValue('scope', loginProviders.ldap_select_scope);
-    setValue('ldap_login_user_filter', loginProviders.ldap_login_user_filter);
-    setValue(
-      'loginProvider',
-      nifiProps?.nifi_user_login_provider || 'single-user-provider'
-    );
-    setValueForm1('loginDn', loginProviders?.ldap_login_dn);
-    setValueForm1('password2', loginProviders?.ldap_login_password);
-    setValueForm1('url', loginProviders?.ldap_url);
-    //
-
-    // Set State Management values
-    setValue('directory', stateManagement.directory);
-    setValue('always_sync', stateManagement.always_sync);
-    setValue('partitions', stateManagement.partitions);
-    setValue('checkpoint_interval', stateManagement.checkpoint_interval);
-    setValue('root_node', stateManagement.root_node);
-    setValue('session_timeout', stateManagement.session_timeout);
     setLdapTested(true);
-    // Handle select field
-    if (stateManagement.access_control) {
-      const accessControlOption = ACCESS_CONTROL_OPTIONS.find(
-        option => option.value === stateManagement.access_control
-      );
-      setValue(
-        'access_control',
-        accessControlOption || {
-          value: stateManagement.access_control,
-          label: stateManagement.access_control,
-        }
-      );
-    }
+  } else {
+    setValue('username', loginProviders.username);
+    setValue('password', loginProviders.password);
+  }
 
-    // After all values are set, capture them as original values
-    setTimeout(() => {
-      setOriginalValues({ ...watch() });
-      setFormChanged(false);
-    }, 0);
-  };
+  const {
+    directory,
+    always_sync,
+    partitions,
+    checkpoint_interval,
+    root_node,
+    session_timeout,
+    access_control
+  } = stateManagement;
+
+  setValue('directory', directory);
+  setValue('always_sync', always_sync);
+  setValue('partitions', partitions);
+  setValue('checkpoint_interval', checkpoint_interval);
+  setValue('root_node', root_node);
+  setValue('session_timeout', session_timeout);
+
+  if (access_control) {
+    const accessControlOption = ACCESS_CONTROL_OPTIONS.find(
+      option => option.value === access_control
+    ) ?? { value: access_control, label: access_control };
+
+    setValue('access_control', accessControlOption);
+  }
+
+  const originalLoginData = isLdapProvider
+    ? {
+        ...loginProviders,
+        groupObjectClass: loginProviders.ldap_group_object_class?.split(',') ?? []
+      }
+    : {
+        username: loginProviders.username,
+        password: loginProviders.password,
+      };
+
+  setOriginalLoginValues(originalLoginData);
+
+  setTimeout(() => {
+    setOriginalValues({ ...watch() });
+    setFormChanged(false);
+  }, 0);
+};
 
   const handleAddConfig = async data => {
     if (!isEmpty(configToEdit) && methodForLoginIdentity === 'ldap-provider' && !ldapTested) {

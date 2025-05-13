@@ -264,7 +264,7 @@ export const ListClusters = () => {
         <>
           {item?.process_initiated ? (
             <span onClick={() => handleOpenProgressModal(item)}>
-              <AnimatedProgressBar />
+              <AnimatedProgressBar id={item?.id} />
             </span>
           ) : (
             <ProgressBarRender
@@ -355,7 +355,7 @@ export const ListClusters = () => {
                               }
                             >
                               <ManageHostIcon width={18} height={18} />
-                              <span>Nodes</span>
+                              <span>Manage Nodes</span>
                             </Item>
                           )}
                           {item?.edit_cluster &&
