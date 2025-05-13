@@ -444,29 +444,52 @@ export const ListScheduleDeployment = () => {
         {/* NON SUPERADMIN + NON SCHEDULAR + IN APPROVER GROUP */}
         {currentUserData?.role !== 'superadmin' &&
           currentUser?.id !== item?.deployer_id &&
-          item?.action_by !== 'NO_APPROVER_REQUIRED' &&
           item?.is_scheduler_in_approver_group && (
             <>
-              {item?.state === 'PENDING' && (
+              {item?.action_by === 'NO_APPROVER_REQUIRED' &&
+                item?.state === 'PENDING' &&
+                item?.can_reschedule && <>{editIconRender(item)}</>}
+              {item?.action_by !== 'NO_APPROVER_REQUIRED' && (
                 <>
-                  {item?.can_reschedule && <>{editIconRender(item)}</>}
-                  {RejectIconRender(item)}
-                  {ApprovIconRender(item)}
+                  {item?.state === 'PENDING' && (
+                    <>
+                      {item?.can_reschedule && <>{editIconRender(item)}</>}
+                      {RejectIconRender(item)}
+                      {ApprovIconRender(item)}
+                    </>
+                  )}
+                  {(item?.state === 'TIME_LAPSED' ||
+                    item?.state === 'APPROVED' ||
+                    item?.state === 'STOPPED' ||
+                    item?.state === 'REJECTED' ||
+                    item?.state === 'FAILED') && (
+                    <>{item?.can_reschedule && <>{editIconRender(item)}</>}</>
+                  )}
+                  {item?.state === 'APPROVED' && (
+                    <>
+                      {RejectIconRender(item)}
+                      {stopIconRender(item)}
+                    </>
+                  )}
                 </>
               )}
-              {(item?.state === 'TIME_LAPSED' ||
-                item?.state === 'APPROVED' ||
-                item?.state === 'STOPPED' ||
-                item?.state === 'REJECTED' ||
-                item?.state === 'FAILED') && (
-                <>{item?.can_reschedule && <>{editIconRender(item)}</>}</>
-              )}
-              {item?.state === 'APPROVED' && (
-                <>
-                  {RejectIconRender(item)}
-                  {stopIconRender(item)}
-                </>
-              )}
+            </>
+          )}
+        {/* Non-superadmin, non-scheduler, not in approver group, but can reschedule */}
+        {currentUserData?.role !== 'superadmin' &&
+          currentUser?.id !== item?.deployer_id &&
+          !item?.is_scheduler_in_approver_group &&
+          item?.can_reschedule && (
+            <>
+              {item?.action_by === 'NO_APPROVER_REQUIRED' &&
+                item?.state === 'PENDING' && <>{editIconRender(item)}</>}
+              {item?.action_by !== 'NO_APPROVER_REQUIRED' &&
+                (item?.state === 'PENDING' ||
+                  item?.state === 'TIME_LAPSED' ||
+                  item?.state === 'APPROVED' ||
+                  item?.state === 'STOPPED' ||
+                  item?.state === 'REJECTED' ||
+                  item?.state === 'FAILED') && <>{editIconRender(item)}</>}
             </>
           )}
         <div className="position-relative">
