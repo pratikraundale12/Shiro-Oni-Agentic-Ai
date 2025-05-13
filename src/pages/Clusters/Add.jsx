@@ -305,6 +305,7 @@ export const Add = () => {
         notification_enable: notificationEnable,
         approver_enable: approverEnable,
         change_request_enable: changeRequestEnable,
+        registry_id: selectedRegistryId,
       };
 
       const id = clusterId;
