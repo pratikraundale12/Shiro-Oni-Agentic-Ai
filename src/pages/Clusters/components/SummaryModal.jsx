@@ -177,16 +177,17 @@ export const SummaryModal = ({
   };
 
   const editClusterData = async () => {
-    const formdata = new FormData();
-    formdata.append('name', clusterData.clusterName);
-    formdata.append('nifi_url', clusterData.nifiUrl);
-    formdata.append('tag', tags);
-    formdata.append('notification_enable', notificationEnable);
-    formdata.append('approver_enable', approverEnable);
-    formdata.append('change_request_enable', changeRequestEnable);
-    formdata.append('has_custom_service_account', false);
+    const payload = {
+      name: clusterData.clusterName,
+      nifi_url: clusterData.nifiUrl,
+      tag: tags,
+      notification_enable: notificationEnable,
+      approver_enable: approverEnable,
+      change_request_enable: changeRequestEnable,
+      registry_id: registry_id,
+    };
     const id = clusterId;
-    const response = await updateCluster(id, formdata);
+    const response = await updateCluster(id, payload);
     if (response?.id) {
       const cluster = localStorage.getItem('selected_cluster');
 

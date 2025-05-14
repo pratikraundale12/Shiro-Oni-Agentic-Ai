@@ -1,13 +1,12 @@
-/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import styled, { ThemeConsumer } from 'styled-components';
+import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Button, SwitchButton } from '../../../shared';
 import PropTypes from 'prop-types';
 import { ClustersActions, ClustersSelectors } from '../../../store/clusters';
-import { InputField, PasswordField, RadioSelectField } from '../../../shared';
+import { InputField, PasswordField } from '../../../shared';
 import { KDFM } from '../../../constants';
 import {
   CurvedLockIcon,
@@ -52,6 +51,7 @@ const FlexWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative; /* Enable positioning context */
 `;
 
 export const ClusterServiceAccountModal = ({
@@ -64,13 +64,13 @@ export const ClusterServiceAccountModal = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Initialize state
   const [method, setMethod] = useState(
     data?.service_account_type || 'username_password'
   );
   const [changeRequestEnabled, setChangeRequestEnabled] = useState(
     data?.has_custom_service_account || false
   );
+  const [hasChanges, setHasChanges] = useState(false);
 
   const isChecking = useSelector(ClustersSelectors.isCheckingServiceAccount);
   const checkError = useSelector(ClustersSelectors.getServiceAccountCheckError);
@@ -85,25 +85,6 @@ export const ClusterServiceAccountModal = ({
 
   const loading = isChecking || isAdding || isUpdating;
 
-  const OPTIONS = [
-    { id: 1, value: 'username_password', label: 'Username' },
-    { id: 2, value: 'p12', label: 'P12 File' },
-  ];
-
-  const schemaPassword = yup.object({
-    service_username: yup.string().required('Username is required'),
-    service_password: yup.string().required('Password is required'),
-  });
-
-  const schemaPEM = yup.object({
-    service_account_certificate_password: yup
-      .string()
-      .required('Password is required'),
-    service_account_certificate: yup.mixed().required('P12 file is required'),
-  });
-
-  const schema = method === 'username_password' ? schemaPassword : schemaPEM;
-
   const {
     register,
     watch,
@@ -111,8 +92,28 @@ export const ClusterServiceAccountModal = ({
     reset,
     control,
     formState: { errors },
+    handleSubmit,
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(
+      yup.object().shape({
+        service_username:
+          changeRequestEnabled && method === 'username_password'
+            ? yup.string().required('Username is required')
+            : yup.string(),
+        service_password:
+          changeRequestEnabled && method === 'username_password'
+            ? yup.string().required('Password is required')
+            : yup.string(),
+        service_account_certificate_password:
+          changeRequestEnabled && method === 'p12'
+            ? yup.string().required('Password is required')
+            : yup.string(),
+        service_account_certificate:
+          changeRequestEnabled && method === 'p12'
+            ? yup.mixed().required('P12 file is required')
+            : yup.mixed(),
+      })
+    ),
     defaultValues: {
       service_account_type: data?.service_account_type || 'username_password',
       service_username: data?.service_username || '',
@@ -124,6 +125,38 @@ export const ClusterServiceAccountModal = ({
       has_custom_service_account: data?.has_custom_service_account || false,
     },
   });
+
+  const checkForChanges = () => {
+    if (changeRequestEnabled !== (data?.has_custom_service_account || false)) {
+      setHasChanges(true);
+      return;
+    }
+
+    if (!changeRequestEnabled) {
+      setHasChanges(false);
+      return;
+    }
+
+    if (method === 'username_password') {
+      const usernameChanged =
+        watch('service_username') !== (data?.service_username || '');
+      const passwordChanged =
+        watch('service_password') !== (data?.service_password || '');
+      setHasChanges(usernameChanged || passwordChanged);
+    } else if (method === 'p12') {
+      const certificateChanged =
+        watch('service_account_certificate') !==
+        (data?.service_account_certificate || '');
+      const certificatePasswordChanged =
+        watch('service_account_certificate_password') !==
+        (data?.service_account_certificate_password || '');
+      setHasChanges(certificateChanged || certificatePasswordChanged);
+    }
+
+    if (method !== (data?.service_account_type || 'username_password')) {
+      setHasChanges(true);
+    }
+  };
 
   useEffect(() => {
     if (!changeRequestEnabled) {
@@ -137,6 +170,8 @@ export const ClusterServiceAccountModal = ({
   const handleChangeRequestToggle = () => {
     const newState = !changeRequestEnabled;
     setChangeRequestEnabled(newState);
+    setValue('has_custom_service_account', newState);
+    setHasChanges(true);
 
     if (!newState) {
       reset({
@@ -147,6 +182,7 @@ export const ClusterServiceAccountModal = ({
         service_account_certificate_password:
           data?.service_account_certificate_password || '',
         change_request_enable: false,
+        has_custom_service_account: false,
       });
       setMethod('username_password');
       setValue('service_account_type', 'username_password');
@@ -159,6 +195,7 @@ export const ClusterServiceAccountModal = ({
         service_account_certificate_password:
           data?.service_account_certificate_password || '',
         change_request_enable: data?.change_request_enable || false,
+        has_custom_service_account: true,
       });
       const updatedMethod = data?.service_account_type || 'username_password';
       setMethod(updatedMethod);
@@ -189,6 +226,11 @@ export const ClusterServiceAccountModal = ({
       setMethod(watchedMethod);
     }
   }, [watchedMethod]);
+
+  const watchAllFields = watch();
+  useEffect(() => {
+    checkForChanges();
+  }, [watchAllFields, changeRequestEnabled, method]);
 
   const handleSave = async () => {
     const formData = new FormData();
@@ -302,9 +344,32 @@ export const ClusterServiceAccountModal = ({
         <div>
           <h5 className="mb-3">Do You Want Custom Service Account? </h5>
           <div className="mb-3">
-            <CircleExclamationMarkIcon color={theme.colors.primary} />
-            <span className='ml-2' style={{ fontSize: '1rem' }}>If a <span className='font-semibold' style={{ color: theme.colors.primary }}>common service account</span> is defined in the global settings, it
-            will be <span className='font-semibold' style={{ color: theme.colors.primary }}>overridden</span> by the cluster-specific configuration from here.</span>
+            <span
+              style={{
+                display: 'inline-block',
+                position: 'relative',
+                top: '-2px',
+              }}
+            >
+              <CircleExclamationMarkIcon color={theme.colors.primary} />
+            </span>
+            <span className="ml-2" style={{ fontSize: '1rem' }}>
+              If a{' '}
+              <span
+                className="font-semibold"
+                style={{ color: theme.colors.primary }}
+              >
+                common service account
+              </span>{' '}
+              is defined in the global settings, it will be{' '}
+              <span
+                className="font-semibold"
+                style={{ color: theme.colors.primary }}
+              >
+                overridden
+              </span>{' '}
+              by the cluster-specific configuration from here.
+            </span>
           </div>
           <SwitchButton
             id="changeServiceAccountToggle"
@@ -389,7 +454,8 @@ export const ClusterServiceAccountModal = ({
               type="button"
               variant="primary"
               loading={loading}
-              onClick={handleSave}
+              onClick={handleSubmit(handleSave)}
+              disabled={!hasChanges || loading}
             >
               Save
             </Button>
