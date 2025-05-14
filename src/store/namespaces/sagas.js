@@ -469,7 +469,7 @@ export function* getStatusAndDeleteParameterContext(
     ],
   });
   if (response.ok && !response.data?.complete && response.data?.requestId) {
-    delay(1000);
+    yield delay(3500);
     yield call(getStatusAndDeleteParameterContext, api, {
       method: 'get',
       additionalData: { requestId: response.data?.requestId },
@@ -482,6 +482,8 @@ export function* getStatusAndDeleteParameterContext(
     yield call(getStatusAndDeleteParameterContext, api, {
       additionalData: { requestId: response.data?.requestId },
     });
+    yield put(NamespacesActions.fetchParameterContext());
+    yield put(NamespacesActions.setParameterEditingAction(false));
   } else {
     yield call(fetchParameterContext, api, {
       initialCall: false,
