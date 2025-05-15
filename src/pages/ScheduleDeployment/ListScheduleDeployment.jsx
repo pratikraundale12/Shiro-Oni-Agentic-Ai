@@ -22,9 +22,11 @@ import { ModalWithIcon } from '../../shared';
 import {
   AuthenticationSelectors,
   ClustersActions,
+  ClustersSelectors,
   GridActions,
   LoadingSelectors,
   NamespacesActions,
+  NamespacesSelectors,
 } from '../../store';
 import {
   SchedularActions,
@@ -134,14 +136,24 @@ export const ListScheduleDeployment = () => {
       return column;
     });
   };
+  const clustersList = useSelector(ClustersSelectors.getAllClustersList);
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const selectedClusterObj = clustersList.filter(
+    item => item?.id === selectedCluster?.value
+  );
   useEffect(() => {
-    if (isEmpty(settingData?.username)) {
+    if (
+      (isEmpty(settingData?.username) && isEmpty(selectedClusterObj)) ||
+      (isEmpty(settingData?.username) &&
+        !isEmpty(selectedClusterObj) &&
+        selectedClusterObj?.[0]?.has_custom_service_account)
+    ) {
       toast.info(
         'The service account has not been configured. Please complete the configuration to proceed.',
         { toastId: 'login-service-account-toast', autoClose: 5000 }
       );
     }
-  }, [settingData?.username]);
+  }, [settingData?.username, selectedClusterObj]);
   useEffect(() => {
     history.push('/schedule-deployment');
   }, []);
