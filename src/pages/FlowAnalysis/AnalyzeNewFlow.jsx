@@ -32,6 +32,12 @@ const AnalyzeNewFlow = () => {
   };
 
   useEffect(() => {
+    return () => {
+      dispatch(FlowValidationActions.addNewAnalysisModalOpen(false));
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
     dispatch(FlowValidationActions.savePayload(null));
   }, [dispatch]);
   const {
