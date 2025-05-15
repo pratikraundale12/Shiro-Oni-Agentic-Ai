@@ -32,6 +32,12 @@ const AnalyzeNewFlow = () => {
   };
 
   useEffect(() => {
+    return () => {
+      dispatch(FlowValidationActions.addNewAnalysisModalOpen(false));
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
     dispatch(FlowValidationActions.savePayload(null));
   }, [dispatch]);
   const {
@@ -55,7 +61,7 @@ const AnalyzeNewFlow = () => {
   return (
     <div>
       <Modal
-        title={FLOWVALIDATION_CONSTANTS.ANALYZE_NEW_FLOW}
+        title={FLOWVALIDATION_CONSTANTS.FLOW_VALIDATION_BY_ID}
         isOpen={isAnalysisModalOpen}
         onRequestClose={onCloseModal}
         size="md"

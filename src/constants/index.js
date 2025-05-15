@@ -108,6 +108,8 @@ export const ACTIVITY_STATUS_OPTIONS = [
 export const ACTIVITY_EVENTS = [
   { label: 'All', value: 'all' },
   { label: 'Add', value: 'Add' },
+  { label: 'Create', value: 'Create' },
+  { label: 'Create Cluster', value: 'Create Cluster' },
   { label: 'Edit', value: 'Edit' },
   { label: 'Delete', value: 'Delete' },
   { label: 'Upgrade', value: 'Upgrade' },

@@ -14,6 +14,7 @@ import { Tooltip } from '../../../shared/Tooltip';
 import { AuthenticationSelectors } from '../../../store';
 import { theme } from '../../../styles';
 import { EnableClusterRender } from './EnableClusterRender';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const ActionTd = styled.div`
   display: flex;
@@ -109,14 +110,57 @@ export const ActionRender = ({
   item,
   children,
   handleHardDeleteFailedAnsibleCluster = () => {},
+  handleOpenProgressModal = () => {},
 }) => {
   const clusterLogin = useSelector(AuthenticationSelectors.getClusterLogin);
   return (
     <ActionTd>
-      {!item?.process_intiated && item?.state == 'FAILED' ? (
-        <IconButton onClick={() => handleHardDeleteFailedAnsibleCluster(item)}>
-          <DeleteSmallIcon color="red" />
-        </IconButton>
+      {!item?.process_intiated &&
+      item?.state == 'FAILED' &&
+      item?.created_by_ansible ? (
+        <>
+          <span className="me-1">
+            <IconButton
+              data-tooltip-id={'ansible-failed-log-option'}
+              onClick={event => {
+                event.currentTarget.blur();
+                handleOpenProgressModal(item);
+              }}
+            >
+              <CircleExclamationMarkIcon color={theme.colors.primary} />
+            </IconButton>
+          </span>
+          <IconButton
+            onClick={() => handleHardDeleteFailedAnsibleCluster(item)}
+            data-tooltip-id={'ansible-failed-delete-option'}
+          >
+            <DeleteSmallIcon color="red" />
+          </IconButton>
+          <ReactTooltip
+            id={`ansible-failed-delete-option`}
+            place="bottom"
+            effect="solid"
+            content={'Delete Cluster'}
+            style={{
+              width: '125px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
+          <ReactTooltip
+            id={`ansible-failed-log-option`}
+            place="bottom"
+            effect="solid"
+            content={'Check Failed Cluster'}
+            style={{
+              width: '170px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
+        </>
       ) : (
         <>
           <IconButton
@@ -188,4 +232,5 @@ ActionRender.propTypes = {
   ref: PropTypes.func,
   children: PropTypes.any,
   handleHardDeleteFailedAnsibleCluster: PropTypes.func,
+  handleOpenProgressModal: PropTypes.func,
 };

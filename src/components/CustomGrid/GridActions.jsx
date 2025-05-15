@@ -843,7 +843,7 @@ export const GridActions = ({
                   onClick={handleAnalyzeClick}
                   disabled={isButtonDisabled}
                 >
-                  Analyze New Flow
+                  Flow Validation by ID
                 </Button>
               )}
             {['scheduler'].includes(module) && (
