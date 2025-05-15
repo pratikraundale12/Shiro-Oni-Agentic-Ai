@@ -14,7 +14,11 @@ import {
 import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { NamespacesActions } from '../../store';
+import {
+  ClustersSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
@@ -87,14 +91,25 @@ export const ListNamespaces = () => {
     reverse: false,
   };
   const settingsData = useSelector(SettingsSelectors.getSettings);
+  const clustersList = useSelector(ClustersSelectors.getAllClustersList);
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const selectedClusterObj = clustersList.filter(
+    item => item?.id === selectedCluster?.value
+  );
+
   useEffect(() => {
-    if (isEmpty(settingsData?.username)) {
+    if (
+      (isEmpty(settingsData?.username) && isEmpty(selectedClusterObj)) ||
+      (isEmpty(settingsData?.username) &&
+        !isEmpty(selectedClusterObj) &&
+        selectedClusterObj?.[0]?.has_custom_service_account)
+    ) {
       toast.info(
         'The service account has not been configured. Please complete the configuration to proceed.',
         { toastId: 'login-service-account-toast', autoClose: 5000 }
       );
     }
-  }, [settingsData?.username]);
+  }, [settingsData?.username, selectedClusterObj]);
   const handleScheduleClick = item => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
