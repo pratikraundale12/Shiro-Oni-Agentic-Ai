@@ -91,18 +91,46 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
               handleEditConfig({ configItem: item });
             }}
             className="pencil-icon-schedule-list"
+            data-tooltip-id={'config-ansible-edit-option'}
           >
             <PencilIcon width={16} height={16} />
           </IconButton>
-          <IconButton
-            onClick={() => {
-              setConfigToDelete(item);
-              setIsDeleteModalOpen(true);
+          <ReactTooltip
+            id={`config-ansible-edit-option`}
+            place="bottom"
+            effect="solid"
+            content={'Edit Config'}
+            style={{
+              width: '105px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
             }}
-            className="pencil-icon-schedule-list"
-          >
-            <DeleteSmallIcon width={16} height={16} color="red" />
-          </IconButton>
+          />
+          {!item?.is_part_of_cluster && (
+            <IconButton
+              onClick={() => {
+                setConfigToDelete(item);
+                setIsDeleteModalOpen(true);
+              }}
+              className="pencil-icon-schedule-list"
+              data-tooltip-id={'config-ansible-delete-option'}
+            >
+              <DeleteSmallIcon width={16} height={16} color="red" />
+            </IconButton>
+          )}
+          <ReactTooltip
+            id={`config-ansible-delete-option`}
+            place="bottom"
+            effect="solid"
+            content={'Delete Config'}
+            style={{
+              width: '125px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
         </ActionTd>
       ),
       resize: true,
@@ -180,15 +208,15 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
             {KDFM.BACK}
           </Button>
           <ReactTooltip
-                      id={`tooltip-getting-started`}
-                      place="top"
-                      content={'Back to Getting Started'}
-                      style={{
-                        width: '170px',
-                        whiteSpace: 'normal',
-                        wordWrap: 'break-word',
-                      }}
-                    />
+            id={`tooltip-getting-started`}
+            place="top"
+            content={'Back to Getting Started'}
+            style={{
+              width: '170px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
 
           <Button
             type="submit"

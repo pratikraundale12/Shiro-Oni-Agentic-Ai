@@ -55,7 +55,7 @@ const AnalyzeNewFlow = () => {
   return (
     <div>
       <Modal
-        title={FLOWVALIDATION_CONSTANTS.ANALYZE_NEW_FLOW}
+        title={FLOWVALIDATION_CONSTANTS.FLOW_VALIDATION_BY_ID}
         isOpen={isAnalysisModalOpen}
         onRequestClose={onCloseModal}
         size="md"

@@ -42,6 +42,7 @@ export const FLOWVALIDATION_CONSTANTS = {
   EDIT_NEW_RULE: 'Edit New Rule',
   SEARCH_DISPLAY_VALUE: 'Search Display Value',
   ANALYZE_NEW_FLOW: 'Analyze New Flow',
+  FLOW_VALIDATION_BY_ID: 'Flow Validation by ID',
   NIFI_CLUSTER_URL: 'Nifi Cluster URL',
   ENTER_YOUR_CLUSTER_URL: 'Enter Your Cluster URL',
   USERNAME: 'Username',
