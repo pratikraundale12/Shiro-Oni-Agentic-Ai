@@ -1246,6 +1246,9 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   });
   if (response.ok) {
     yield put(NamespacesActions.setRegistryAllDetails(response?.data));
+    if (isUpgrade) {
+      history.push('/process-group/flow-details');
+    } else history.push('/process-group/config-details');
   } else {
     toast.error(response?.message || response?.data?.message);
   }
