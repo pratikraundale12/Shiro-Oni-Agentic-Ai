@@ -392,7 +392,7 @@ const AddParameterContext = ({
                   placeholder={
                     isAddParameterContextOpen?.mode === 'add'
                       ? KDFM.ENTER_PARAMETER
-                      : parameterContextItem?.sensitive ||
+                      : parameterContextItem?.sensitive === true ||
                           parameterContextItem?.sensitive === 'true'
                         ? 'Sensitive Value Set'
                         : ''

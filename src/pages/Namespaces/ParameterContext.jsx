@@ -281,7 +281,10 @@ const ParameterContext = ({
                   dispatch(
                     NamespacesActions.setParameterContextItem({
                       ...item,
-                      value: item?.sensitive ? null : item?.value,
+                      value:
+                        item?.sensitive === true || item?.sensitive === 'true'
+                          ? null
+                          : item?.value,
                       check: item?.value === '' ? true : false,
                     })
                   );
