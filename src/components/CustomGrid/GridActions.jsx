@@ -279,9 +279,16 @@ export const GridActions = ({
       dispatch(
         GridSagsActions.fetchGrid({
           module: 'clusters',
-          params: { page: 1, limit: 10 },
+          params: {
+            page: 1,
+            limit: 10,
+            ...(sortingState && {
+              sort: sortingState,
+            }),
+          },
         })
       );
+      setSortingState('name');
       return;
     }
 
