@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +23,6 @@ import {
 } from '../../store/flowValidation';
 import { SchedularSelectors } from '../../store/schedular';
 import Collapsible from './Collapsible';
-import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -135,7 +135,6 @@ const FlowValidationPage = () => {
 
   const currentData =
     validationResult?.data || randomFlowValidationResult?.data;
-  console.log(currentData, 'currentData');
 
   const tableBody =
     validationResult?.data?.tableBody ||
@@ -162,11 +161,9 @@ const FlowValidationPage = () => {
     SchedularSelectors.getScheduleFromList
   );
   const singleNameSpace = useSelector(NamespacesSelectors.getSelectedNamespace);
-  console.log(singleNameSpace, 'line 151');
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
   const savedPayload = useSelector(FlowValidationSelectors.getSavedPayload);
   const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
-  console.log(versionSelected, 'line 153');
   let type = '';
   if (versionSelected?.version > singleNameSpace?.version) {
     type = 'upgrade';
@@ -245,13 +242,11 @@ const FlowValidationPage = () => {
   const selectedBucketName = bucketListData?.bucketList?.filter(
     ele => ele?.id === versionSelected?.bucketId
   );
-  console.log(selectedBucketName, 'selectedBucketName');
 
   const flowListData = useSelector(NamespacesSelectors.getFlowListRegistry);
   const selectedFlowName = flowListData?.flowsList?.filter(
     ele => ele?.flowId === versionSelected?.flowId
   );
-  console.log(selectedFlowName, 'selectedBucketObj');
 
   const handleValidateFlow = () => {
     dispatch(FlowValidationActions.validateRulesSuccess(null));
@@ -282,11 +277,9 @@ const FlowValidationPage = () => {
       }))
     : [];
   const handleBackClick = () => {
-    console.log('handleBackClick');
     history.push('/process-group/config-details');
   };
   const handleContinue = () => {
-    console.log('handleContinue');
     history.push('/process-group/summary');
   };
   const toggleCollapsible = index => {
