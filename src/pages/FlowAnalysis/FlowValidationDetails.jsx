@@ -142,16 +142,18 @@ const FlowValidationDetails = () => {
     },
     {
       label: 'ID',
-      renderCell: item => (
-        <ClickableId
-          onClick={e => {
-            e.preventDefault();
-            handleIdClick(item?.displayValue);
-          }}
-        >
-          {item?.displayValue || 'N/A'}
-        </ClickableId>
-      ),
+      renderCell: item => {
+        return (
+          <ClickableId
+            onClick={e => {
+              e.preventDefault();
+              handleIdClick(item?.link);
+            }}
+          >
+            {item?.displayValue || 'N/A'}
+          </ClickableId>
+        );
+      },
       width: '35%',
     },
     {
@@ -172,6 +174,7 @@ const FlowValidationDetails = () => {
       version: value?.component_name,
       displayValue: value?.component_id,
       comments: value?.output_value,
+      link: value?.link,
     })),
   }));
 
@@ -208,10 +211,10 @@ const FlowValidationDetails = () => {
   const currentData =
     validationResult?.data || randomFlowValidationResult?.data;
 
-  const handleIdClick = id => {
+  const handleIdClick = link => {
     const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
-      ? `${getNifiUrl?.nifiUrl}?processGroupId=${selectedItem?.id}&componentId=${id}`
-      : `${getNifiUrl?.nifiUrl}/nifi?processGroupId=${selectedItem?.id}&componentId=${id}`;
+      ? `${getNifiUrl?.nifiUrl}${link}`
+      : `${getNifiUrl?.nifiUrl}/nifi/${link}`;
     window.open(updatedUrl, '_blank');
     if (updatedUrl) {
       window.open(updatedUrl, '_blank');

@@ -11,6 +11,7 @@ import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
 import {
+  GridSelectors,
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
@@ -21,6 +22,7 @@ import {
 } from '../../store/flowValidation';
 import { SchedularSelectors } from '../../store/schedular';
 import Collapsible from './Collapsible';
+import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -126,9 +128,15 @@ const FlowValidationPage = () => {
   const randomFlowValidationResult = useSelector(
     FlowValidationSelectors.getRandomFlowValidationResult
   );
+
+  const getNifiUrl = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
+
   const currentData =
     validationResult?.data || randomFlowValidationResult?.data;
   console.log(currentData, 'currentData');
+
   const tableBody =
     validationResult?.data?.tableBody ||
     randomFlowValidationResult?.data?.tableBody ||
@@ -138,6 +146,7 @@ const FlowValidationPage = () => {
     data: (section.values || []).map(value => ({
       version: value?.component_name,
       displayValue: value?.component_id,
+      link: value?.link,
       comments: value?.output_value,
     })),
   }));
@@ -179,16 +188,22 @@ const FlowValidationPage = () => {
     },
     {
       label: 'ID',
-      renderCell: item => (
-        <ClickableId
-          onClick={e => {
-            e.preventDefault();
-            // handleIdClick(item?.displayValue);
-          }}
-        >
-          {item?.displayValue || 'N/A'}
-        </ClickableId>
-      ),
+      renderCell: item => {
+        if (!isEmpty(item?.link)) {
+          return (
+            <ClickableId
+              onClick={e => {
+                e.preventDefault();
+                handleIdClick(item?.link);
+              }}
+            >
+              {item?.displayValue || 'N/A'}
+            </ClickableId>
+          );
+        } else {
+          return <div>{item?.displayValue || 'N/A'}</div>;
+        }
+      },
       width: '35%',
     },
     {
@@ -296,6 +311,16 @@ const FlowValidationPage = () => {
     };
 
     dispatch(FlowValidationActions.emailReport(payload));
+  };
+
+  const handleIdClick = link => {
+    const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
+      ? `${getNifiUrl?.nifiUrl}${link}`
+      : `${getNifiUrl?.nifiUrl}/nifi/${link}`;
+    window.open(updatedUrl, '_blank');
+    if (updatedUrl) {
+      window.open(updatedUrl, '_blank');
+    }
   };
   return (
     <div>
