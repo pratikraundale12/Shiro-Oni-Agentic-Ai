@@ -1,8 +1,12 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import { isEmpty } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
+import * as Yup from 'yup';
 import {
   CanvasXIcon,
   CanvasYIcon,
@@ -31,10 +35,6 @@ import { SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
 import RectangleGraph from './birdEyeViewGraph';
-import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
-import { isEmpty } from 'lodash';
 
 const TopTitleBar = styled.div`
   height: 37px;
@@ -344,7 +344,6 @@ const FlowDetailsPage = () => {
             version: selectedVersion,
           })
         );
-        history.push('/process-group/config-details');
       }
     }
   };
