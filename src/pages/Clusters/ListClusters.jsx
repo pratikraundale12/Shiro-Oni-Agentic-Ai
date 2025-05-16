@@ -732,6 +732,7 @@ export const ListClusters = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         sortingState={sortingState}
+        setSortingState={setSortingState}
       />
       <ClusterSuccessModal />
       <ClusterProcessDisplayModal
