@@ -4,6 +4,8 @@ import { theme } from '../../../styles';
 import { CompletedLabelIcon, InprogressLabelIcon } from '../../../assets';
 import { useSelector } from 'react-redux';
 import { ClustersSelectors } from '../../../store';
+import { Loader } from '../../../components';
+import { isEmpty } from 'lodash';
 
 const Container = styled.div`
   display: flex;
@@ -61,38 +63,48 @@ const StepProgress = () => {
   };
   return (
     <Container>
-      <HeaderContainer className="row d-flex">
-        <HeaderText className="col-10">Steps</HeaderText>
-        <HeaderText className="col-2">Action</HeaderText>
-      </HeaderContainer>
-
-      {processData?.data?.steps?.map((ele, index) => (
-        <StepConatiner className="row d-flex" key={ele?.step}>
-          <StepHeaderText
-            className="col-10"
-            onClick={() => handleOpenTab(index)}
-          >
-            {ele?.step}
-          </StepHeaderText>
-          <StepHeaderText
-            className="col-2"
-            onClick={() => handleOpenTab(index)}
-          >
-            {ele?.status === 'completed' ? (
-              <CompletedLabelIcon width={110} height={40} />
-            ) : (
-              <InprogressLabelIcon width={110} height={40} />
-            )}
-          </StepHeaderText>
-          {openTabIndex === index && (
-            <StepContentContainer>
-              {ele?.log?.map(item => (
-                <StepContentItem key={item}>{item}</StepContentItem>
-              ))}
-            </StepContentContainer>
-          )}
-        </StepConatiner>
-      ))}
+      <>
+        <HeaderContainer className="row d-flex">
+          <HeaderText className="col-10">Steps</HeaderText>
+          <HeaderText className="col-2">Action</HeaderText>
+        </HeaderContainer>
+        {isEmpty(processData?.data?.steps) ? (
+          <div className="mt-3">
+            <Loader size="lg" />
+          </div>
+        ) : (
+          <>
+            {' '}
+            {processData?.data?.steps?.map((ele, index) => (
+              <StepConatiner className="row d-flex" key={ele?.step}>
+                <StepHeaderText
+                  className="col-10"
+                  onClick={() => handleOpenTab(index)}
+                >
+                  {ele?.step}
+                </StepHeaderText>
+                <StepHeaderText
+                  className="col-2"
+                  onClick={() => handleOpenTab(index)}
+                >
+                  {ele?.status === 'completed' ? (
+                    <CompletedLabelIcon width={110} height={40} />
+                  ) : (
+                    <InprogressLabelIcon width={110} height={40} />
+                  )}
+                </StepHeaderText>
+                {openTabIndex === index && (
+                  <StepContentContainer>
+                    {ele?.log?.map(item => (
+                      <StepContentItem key={item}>{item}</StepContentItem>
+                    ))}
+                  </StepContentContainer>
+                )}
+              </StepConatiner>
+            ))}
+          </>
+        )}
+      </>
     </Container>
   );
 };
