@@ -243,13 +243,13 @@ export const ClusterRegistryAssociationModal = ({
               </ModalContainer>
             </div>
           </div>
-          <div className="row mt-3">
+          <div className="row mt-1">
             <div className="col-6">
               <PasswordField
-                name="keystorePassword"
+                name="truststorePassword"
                 register={register}
                 watch={watch}
-                label="Keystore Password"
+                label="Truststore Password"
                 icon={<CurvedLockIcon />}
                 placeholder="Enter Password"
                 disableToggle={false}
@@ -258,10 +258,10 @@ export const ClusterRegistryAssociationModal = ({
             </div>
             <div className="col-6">
               <PasswordField
-                name="truststorePassword"
+                name="keystorePassword"
                 register={register}
                 watch={watch}
-                label="Truststore Password"
+                label="Keystore Password"
                 icon={<CurvedLockIcon />}
                 placeholder="Enter Password"
                 disableToggle={false}

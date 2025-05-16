@@ -255,6 +255,9 @@ export const Sidebar = ({
         if (path === 'process-group') {
           dispatch(NamespacesActions.setSelectedNamespace({}));
         }
+        if (path === 'flow-analysis') {
+          dispatch(NamespacesActions.setSelectedNamespace({}));
+        }
       }
     }
   };

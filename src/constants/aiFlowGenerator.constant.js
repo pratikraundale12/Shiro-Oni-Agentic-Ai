@@ -27,54 +27,90 @@ export const GENAI_CONFIG = {
 export const DEFAULT_FLOW_JSON = [
   {
     id: 1,
-    name: 'S3 to PostgreSQL CSV Ingestion',
+    name: 'Local File to SFTP – Unzip and Transfer Flow',
     query:
-      'Create a NiFi flow to read CSV files from an S3 bucket and store them in PostgreSQL',
+      'Generate a data flow which fetches the file from the local file system , and unzip the file and puts it in a SFTP server',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Stream',
   },
   {
     id: 2,
-    name: 'API to MySQL Data Transformation',
+    name: 'SFTP File Fetch → Unzip → SFTP Upload',
     query:
-      'Generate a NiFi pipeline to extract data from an API, transform it, and save it in MySQL',
+      'Generate a data flow which list and fetches the file from the SFTP server , and unzip the file and puts it in a SFTP server',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Batch',
   },
   {
     id: 3,
-    name: 'Local JSON to Kafka Publisher',
+    name: 'Local File Transfer Between Folders',
     query:
-      'Build a NiFi flow to read JSON files from a local directory and push them to Kafka',
+      'Generate a data flow which gets the file from the local file-system and puts it in a different folder',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Stream',
   },
   {
     id: 4,
-    name: 'Remote Logs to HDFS Storage',
+    name: 'S3 Ingestion to Local File System',
     query:
-      'Design a NiFi flow that ingests logs from a remote server and stores them in HDFS',
+      'Generate a data flow which lists and fetch the data from the s3 bucket and puts it in a local folder',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Stream',
   },
   {
     id: 5,
-    name: 'MongoDB to Azure Parquet Upload',
+    name: 'S3 to SFTP Data Transfer Flow',
     query:
-      'Create a NiFi pipeline to fetch data from MongoDB, convert it to Parquet, and upload it to Azure Blob Storage',
+      'Generate a data flow which lists and fetch the data from the s3 bucket and puts it in a SFTP server',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Stream',
   },
   {
     id: 6,
-    name: 'Kafka Content Based Routing',
+    name: 'Cross-Bucket S3 Transfer Flow',
     query:
-      'Generate a flow to route incoming messages from Kafka to different topics based on content.',
+      'Generate a data flow which lists and fetch the data from the s3 bucket and puts it in a different s3 bucket',
+    lastRun: '2021-08-01',
+    nextRun: '2021-08-02',
+    flowType: 'Stream',
+  },
+  {
+    id: 7,
+    name: 'FTP to SFTP File Transfer Flow',
+    query:
+      'Generate a data flow which lists and fetches the data from the FTP server and puts it in a SFTP server',
+    lastRun: '2021-08-01',
+    nextRun: '2021-08-02',
+    flowType: 'Stream',
+  },
+  {
+    id: 8,
+    name: 'Local Files Transfer to FTP Server',
+    query:
+      'Generate a data flow which fetches the files from the local file system and puts it into the FTP server',
+    lastRun: '2021-08-01',
+    nextRun: '2021-08-02',
+    flowType: 'Stream',
+  },
+  {
+    id: 9,
+    name: 'External API Data Ingestion to Local Files',
+    query:
+      'Generate a data flow which gets the data from the external api and then it stores the data to the local filesystem',
+    lastRun: '2021-08-01',
+    nextRun: '2021-08-02',
+    flowType: 'Stream',
+  },
+  {
+    id: 10,
+    name: 'External API Data Ingest with Zipping to Local FS',
+    query:
+      'Generate a data flow which gets the data from the external api and then it zips the data and transfers the data to the local filesystem',
     lastRun: '2021-08-01',
     nextRun: '2021-08-02',
     flowType: 'Stream',
