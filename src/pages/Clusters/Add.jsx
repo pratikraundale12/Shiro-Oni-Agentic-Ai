@@ -487,6 +487,7 @@ export const Add = () => {
         value: item.id,
         registry_url: item?.registry_url,
       }));
+
       setRegistries(names);
     } catch (error) {
       console.error('Failed to fetch registries:', error);
@@ -511,10 +512,7 @@ export const Add = () => {
   }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const handleRegistry = () => {
-    if (
-      registryURLs?.data?.includes(registryData?.registry_url) ||
-      sortRegisrtyURL.includes(registryData?.registry_url)
-    ) {
+    if (registryURLs?.data?.includes(registryData?.registry_url)) {
       setIsCertificateOpen(false);
       setIsCredOpen(false);
       setTestSuccess(false);
