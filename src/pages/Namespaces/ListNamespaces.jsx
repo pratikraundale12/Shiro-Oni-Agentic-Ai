@@ -102,7 +102,7 @@ export const ListNamespaces = () => {
       (isEmpty(settingsData?.username) && isEmpty(selectedClusterObj)) ||
       (isEmpty(settingsData?.username) &&
         !isEmpty(selectedClusterObj) &&
-        selectedClusterObj?.[0]?.has_custom_service_account)
+        !selectedClusterObj?.[0]?.has_custom_service_account)
     ) {
       toast.info(
         'The service account has not been configured. Please complete the configuration to proceed.',

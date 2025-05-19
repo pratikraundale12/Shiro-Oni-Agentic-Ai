@@ -147,6 +147,7 @@ export const ListClusters = () => {
 
   useEffect(() => {
     dispatch(SchedularActions.setStatusFilterData(''));
+    dispatch(ClustersActions.fetchClusters());
   }, []);
 
   const COLUMNS = [
