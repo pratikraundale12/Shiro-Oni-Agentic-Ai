@@ -376,7 +376,7 @@ export const Add = () => {
         if (registryURLs?.data?.includes(new URL(data?.registryUrl)?.origin)) {
           setOpenSummary(true);
         } else {
-          toast.error('This registry do not  exist!');
+          toast.error('This registry does not  exist!');
         }
       }
     }
@@ -519,7 +519,7 @@ export const Add = () => {
       setTest(true);
       setOpenSummary(true);
     } else {
-      toast.error('This registry do not  exist!');
+      toast.error('This registry is not currently associated with the selected NiFi instance.');
     }
   };
   function handleKeyDown(e) {
