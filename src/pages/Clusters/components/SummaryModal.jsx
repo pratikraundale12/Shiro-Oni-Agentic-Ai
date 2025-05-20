@@ -168,7 +168,7 @@ export const SummaryModal = ({
     const response = await updateRegistry(id, payload);
     if (response?.id) {
       setLoading(false);
-      toast.success(response.message);
+      toast.success('Cluster updated successfully');
       history.push('/clusters');
     } else {
       setLoading(false);

@@ -376,7 +376,7 @@ export const Add = () => {
         if (registryURLs?.data?.includes(new URL(data?.registryUrl)?.origin)) {
           setOpenSummary(true);
         } else {
-          toast.error('This registry do not  exist!');
+          toast.error('This registry does not  exist!');
         }
       }
     }
@@ -487,6 +487,7 @@ export const Add = () => {
         value: item.id,
         registry_url: item?.registry_url,
       }));
+
       setRegistries(names);
     } catch (error) {
       console.error('Failed to fetch registries:', error);
@@ -511,17 +512,14 @@ export const Add = () => {
   }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const handleRegistry = () => {
-    if (
-      registryURLs?.data?.includes(registryData?.registry_url) ||
-      sortRegisrtyURL.includes(registryData?.registry_url)
-    ) {
+    if (registryURLs?.data?.includes(registryData?.registry_url)) {
       setIsCertificateOpen(false);
       setIsCredOpen(false);
       setTestSuccess(false);
       setTest(true);
       setOpenSummary(true);
     } else {
-      toast.error('This registry do not  exist!');
+      toast.error('This registry is not currently associated with the selected NiFi instance.');
     }
   };
   function handleKeyDown(e) {
