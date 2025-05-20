@@ -52,44 +52,37 @@ const RegistryFormSection = ({
       />
       {watchedFields?.[7] === true ? (
         <Flex>
-          {test ? (
-            <>
-              <div>
-                <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
-                <Button
-                  onClick={() => setIsCertificateOpen(true)}
-                  disabled={
-                    testSuccess ||
-                    !dataFill ||
-                    checkDuplicateRegistry ||
-                    checkDuplicateRegistryName
-                  }
-                >
-                  {KDFM.ADD_CERTIFICATE}
-                </Button>
-              </div>
-              <ORText>OR</ORText>
-              <div>
-                <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
-                <Button
-                  onClick={() => setIsCredOpen(true)}
-                  disabled={
-                    testSuccess ||
-                    !dataFill ||
-                    checkDuplicateRegistry ||
-                    checkDuplicateRegistryName
-                  }
-                >
-                  {KDFM.ENTER_CREDENTIALS}
-                </Button>
-              </div>
-            </>
-          ) : (
+          <>
             <div>
-              <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
-              <Button onClick={testData}>{KDFM.TEST_REGISTRY}</Button>
+              <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
+              <Button
+                onClick={() => setIsCertificateOpen(true)}
+                disabled={
+                  testSuccess ||
+                  !dataFill ||
+                  checkDuplicateRegistry ||
+                  checkDuplicateRegistryName
+                }
+              >
+                {KDFM.ADD_CERTIFICATE}
+              </Button>
             </div>
-          )}
+            <ORText>OR</ORText>
+            <div>
+              <ButtonLabel>{KDFM.TEST_VIA_CREDENTIALS}</ButtonLabel>
+              <Button
+                onClick={() => setIsCredOpen(true)}
+                disabled={
+                  testSuccess ||
+                  !dataFill ||
+                  checkDuplicateRegistry ||
+                  checkDuplicateRegistryName
+                }
+              >
+                {KDFM.ENTER_CREDENTIALS}
+              </Button>
+            </div>
+          </>
         </Flex>
       ) : null}
       {testSuccess && !successModal && (
