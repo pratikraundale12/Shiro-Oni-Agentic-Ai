@@ -49,59 +49,6 @@ export const Creditionals = ({
     defaultValues: DEFAULT_VALUES,
   });
 
-  const handleSkipTertiaryButton = async () => {
-    setLoading(true);
-    const payload = new FormData();
-    if (activeTab === 'cluster') {
-      payload.append('name', clusterData.clusterName);
-      payload.append('nifi_url', clusterData.nifiUrl);
-      payload.append('skip_credentials', true);
-
-      const response = await testCluster(payload);
-      if (response.status === 200) {
-        setTestSuccess(true);
-        setIsCredOpen(false);
-        setSuccessModal(true);
-        setLoading(false);
-        dispatch(ClustersActions.setClusterFormData(response?.data));
-        setSaveButtonEnable(false);
-      } else {
-        setTestMessage(response.message);
-        setIsCredOpen(false);
-        setFailedModal(true);
-        setLoading(false);
-        setSaveButtonEnable(true);
-      }
-    } else {
-      payload.append(
-        'name',
-        newregistryData?.registry ||
-          registryData?.registryName ||
-          registryData.name
-      );
-      payload.append(
-        'nifi_url',
-        newregistryData?.url ||
-          registryData?.registryUrl ||
-          registryData.registry_url
-      );
-      payload.append('skip_credentials', true);
-
-      const response = await testRegistry(payload);
-      if (response.status === 204) {
-        setTestSuccess(true);
-        setIsCredOpen(false);
-        setSuccessModal(true);
-        setLoading(false);
-      } else {
-        setTestMessage(response.message);
-        setIsCredOpen(false);
-        setFailedModal(true);
-        setLoading(false);
-      }
-    }
-  };
-
   const handleTest = async data => {
     const payload = new FormData();
     if (activeTab === 'cluster') {
@@ -177,16 +124,6 @@ export const Creditionals = ({
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}
-        tertiaryButton={activeTab !== 'cluster'} // ✅ Only show if not 'cluster'
-        tertiaryButtonConfig={
-          activeTab !== 'cluster'
-            ? {
-                tertiaryButtonTest: 'Skip',
-                tertiaryButtonSubmit: handleSkipTertiaryButton,
-                tertiaryButtonDisable: false,
-              }
-            : undefined
-        }
       >
         <form
           onSubmit={handleSubmit(onSubmit)}
