@@ -34,7 +34,7 @@ const ClusterTestSection = ({
   setIsCredOpen,
   watchedFields,
   testData,
-  data
+  data,
 }) => {
   return (
     <Flex>
@@ -75,9 +75,7 @@ const ClusterTestSection = ({
       ) : (
         <div>
           <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
-          <Button onClick={testData}>
-            {KDFM.TEST_CLUSTER}
-          </Button>
+          <Button onClick={testData}>{KDFM.TEST_CLUSTER}</Button>
         </div>
       )}
     </Flex>

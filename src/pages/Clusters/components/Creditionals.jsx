@@ -56,6 +56,7 @@ export const Creditionals = ({
       payload.append('nifi_url', clusterData.nifiUrl);
       payload.append('username', data.username);
       payload.append('password', data.password);
+      payload.append('skip_credentials', false);
 
       const response = await testCluster(payload);
       if (response.status === 200) {

@@ -2,17 +2,17 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import { KeyIcons } from '../../../assets';
+import { FullPageLoader } from '../../../components';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import { Modal, PasswordField } from '../../../shared';
+import { ClustersActions } from '../../../store';
 import { testCluster, testRegistry } from '../../../store/apis/clusters';
 import { UploadFile } from '../UploadFile';
 import { FailedTestModal } from './FailedTestModal';
-import { useDispatch } from 'react-redux';
-import { ClustersActions } from '../../../store';
-import { FullPageLoader } from '../../../components';
 
 const schema = yup.object().shape({
   pfxFile: yup.mixed().required('PFX file is required'),
@@ -76,6 +76,7 @@ export const Certificate = ({
       payload.append('nifi_url', clusterData.nifiUrl);
       payload.append('file', data.pfxFile);
       payload.append('passphrase', data.password);
+      payload.append('skip_credentials', false);
 
       const response = await testCluster(payload);
       if (response.status === 200) {

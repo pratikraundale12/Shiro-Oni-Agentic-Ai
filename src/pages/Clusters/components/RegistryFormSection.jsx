@@ -1,10 +1,10 @@
 /*eslint-disable*/
 import React from 'react';
-import RegistryFormInputs from './RegistryFormInputs';
 import styled from 'styled-components';
 import { KDFM } from '../../../constants';
 import { Button } from '../../../shared';
 import CertificateTextDisplay from './CertificateTextDisplay';
+import RegistryFormInputs from './RegistryFormInputs';
 
 const Flex = styled.div`
   display: flex;
@@ -39,7 +39,10 @@ const RegistryFormSection = ({
   successModal,
   activeTab,
   clusterId,
+  registryData,
+  watchedFields,
 }) => {
+  console.log(registryData?.is_registry_authenticated, 'registryData');
   return (
     <>
       <RegistryFormInputs
@@ -47,8 +50,8 @@ const RegistryFormSection = ({
         errors={errors}
         testSuccess={testSuccess}
       />
-      <Flex>
-        {test ? (
+      {watchedFields?.[7] === true ? (
+        <Flex>
           <>
             <div>
               <ButtonLabel>{KDFM.TEST_VIA_CERTIFICATE}</ButtonLabel>
@@ -80,13 +83,8 @@ const RegistryFormSection = ({
               </Button>
             </div>
           </>
-        ) : (
-          <div>
-            <ButtonLabel>{KDFM.TEST_CLUSTER}</ButtonLabel>
-            <Button onClick={testData}>{KDFM.TEST_REGISTRY}</Button>
-          </div>
-        )}
-      </Flex>
+        </Flex>
+      ) : null}
       {testSuccess && !successModal && (
         <CertificateTextDisplay
           clusterModule={false}

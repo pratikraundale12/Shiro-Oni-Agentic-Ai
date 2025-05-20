@@ -1,8 +1,8 @@
 /*eslint-disable*/
 import React from 'react';
-import { InputField } from '../../../shared';
 import { LinkIcon, QRIcons } from '../../../assets';
 import { KDFM } from '../../../constants';
+import { CheckboxField, InputField } from '../../../shared';
 
 const RegistryFormInputs = ({ register, errors, testSuccess }) => {
   return (
@@ -15,6 +15,14 @@ const RegistryFormInputs = ({ register, errors, testSuccess }) => {
         placeholder={KDFM.ENTER_REGISTRY_NAME}
         errors={errors}
       />
+      <div className="mb-3">
+        <CheckboxField
+          name="is_registry_authenticated"
+          label="Authenticated Registry"
+          register={register}
+          defaultChecked={true}
+        />
+      </div>
       <InputField
         name="registryUrl"
         register={register}
