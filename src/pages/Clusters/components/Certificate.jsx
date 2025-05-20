@@ -2,17 +2,17 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import { KeyIcons } from '../../../assets';
+import { FullPageLoader } from '../../../components';
 import { CLUSTER_MODULE_TABS, KDFM } from '../../../constants';
 import { Modal, PasswordField } from '../../../shared';
+import { ClustersActions } from '../../../store';
 import { testCluster, testRegistry } from '../../../store/apis/clusters';
 import { UploadFile } from '../UploadFile';
 import { FailedTestModal } from './FailedTestModal';
-import { useDispatch } from 'react-redux';
-import { ClustersActions } from '../../../store';
-import { FullPageLoader } from '../../../components';
 
 const schema = yup.object().shape({
   pfxFile: yup.mixed().required('PFX file is required'),
@@ -69,6 +69,50 @@ export const Certificate = ({
     if (isCertificateOpen) reset(DEFAULT_VALUES);
   }, [isCertificateOpen]);
 
+  const handleSkipTertiaryButton = async () => {
+    setLoading(true);
+    const payload = new FormData();
+    if (activeTab === 'cluster') {
+      payload.append('name', clusterData.clusterName);
+      payload.append('nifi_url', clusterData.nifiUrl);
+      payload.append('skip_credentials', true);
+
+      const response = await testCluster(payload);
+      if (response.status === 200) {
+        setTestSuccess(true);
+        setIsCertificateOpen(false);
+        setSuccessModal(true);
+        setLoading(false);
+        dispatch(ClustersActions.setClusterFormData(response?.data));
+      } else {
+        setIsCertificateOpen(false);
+        setFailedModal(true);
+        setTestMessage(response.message);
+        setLoading(false);
+      }
+    } else {
+      payload.append('name', registryData?.registryName || registryData?.name);
+      payload.append(
+        'nifi_url',
+        registryData?.registryUrl || registryData?.registry_url
+      );
+      payload.append('skip_credentials', true);
+
+      const response = await testRegistry(payload);
+      if (response.status === 204) {
+        setTestSuccess(true);
+        setIsCertificateOpen(false);
+        setSuccessModal(true);
+        setLoading(false);
+      } else {
+        setIsCertificateOpen(false);
+        setFailedModal(true);
+        setTestMessage(response.message);
+        setLoading(false);
+      }
+    }
+  };
+
   const handleTest = async data => {
     const payload = new FormData();
     if (activeTab === 'cluster') {
@@ -76,6 +120,7 @@ export const Certificate = ({
       payload.append('nifi_url', clusterData.nifiUrl);
       payload.append('file', data.pfxFile);
       payload.append('passphrase', data.password);
+      payload.append('skip_credentials', false);
 
       const response = await testCluster(payload);
       if (response.status === 200) {
@@ -137,6 +182,12 @@ export const Certificate = ({
         onSubmit={handleSubmit(onSubmit)}
         footerAlign="start"
         contentStyles={{ minWidth: '30%' }}
+        tertiaryButton={true}
+        tertiaryButtonConfig={{
+          tertiaryButtonTest: 'Skip',
+          tertiaryButtonSubmit: handleSkipTertiaryButton,
+          tertiaryButtonDisable: false,
+        }}
       >
         <NifiText>{KDFM.NIFI_CERTIFICATE}</NifiText>
         <ModalContainer>
