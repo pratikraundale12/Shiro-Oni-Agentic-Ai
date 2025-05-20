@@ -72,9 +72,15 @@ export const settingSchema = yup.object().shape({
     .nullable()
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
-
-  smtp_service: yup.string().nullable(),
-
+  smtp_service: yup
+    .string()
+    .nullable()
+    .transform(value => (value === '' ? null : value))
+    .test(
+      'not-empty',
+      'SMTP Service cannot be an empty',
+      value => value === null || value.trim().length > 0
+    ),
   smtp_host: yup
     .string()
     .nullable()
@@ -97,9 +103,25 @@ export const settingSchema = yup.object().shape({
       return true;
     }),
 
-  smtp_user: yup.string().nullable(),
+  smtp_user: yup
+    .string()
+    .nullable()
+    .transform(value => (value === '' ? null : value))
+    .test(
+      'not-empty',
+      'SMTP User cannot be an empty',
+      value => value === null || value.trim().length > 0
+    ),
 
-  smtp_pass: yup.string().nullable(),
+  smtp_pass: yup
+    .string()
+    .nullable()
+    .transform(value => (value === '' ? null : value))
+    .test(
+      'not-empty',
+      'SMTP Password cannot be an empty',
+      value => value === null || value.trim().length > 0
+    ),
 });
 export const EmailConfigurationSettings = () => {
   const {
