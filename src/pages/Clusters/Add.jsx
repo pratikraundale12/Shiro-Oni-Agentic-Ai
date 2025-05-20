@@ -662,7 +662,7 @@ export const Add = () => {
   const isSaveDisabled = () =>
     isFieldValuesUnchanged() && checkEditSave() && saveButtonEnable;
   const isDisabled = () => {
-    if (!watchedFields?.[7]) {
+    if (!watchedFields?.[7] && activeTab === 'registry') {
       return false;
     }
     if (hasValidationErrors()) return true;
@@ -738,8 +738,6 @@ export const Add = () => {
               testData={testData}
               watchedFields={watchedFields}
               data={data}
-              registryData={registryData}
-              activeTab={activeTab}
             />
             {testSuccess && !successModal && (
               <CertificateTextDisplay
@@ -833,11 +831,10 @@ export const Add = () => {
                 {KDFM.CONTINUE}
               </Button>
             )}
-          {console.log('isDisabled', isDisabled() || watchedFields?.[7])}
           {activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry && (
             <Button
               id="registry-details-continue-btn"
-              onClick={handleNewRgistrySave}
+              onClick={handleSubmit(handleNewRgistrySave)}
               disabled={isDisabled()}
             >
               {KDFM.SAVE}
