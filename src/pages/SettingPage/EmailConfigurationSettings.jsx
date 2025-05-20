@@ -68,25 +68,12 @@ const ButtonDiv = styled.div`
 export const settingSchema = yup.object().shape({
   from_email: yup
     .string()
-    .required('From email is required')
+    .transform(value => (value === '' ? null : value))
     .nullable()
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
 
-  smtp_service: yup
-    .string()
-    .nullable()
-    .test(
-      'smtp-service-required',
-      'SMTP Service is required',
-      function (value) {
-        const { smtp_host, smtp_port, smtp_user, smtp_pass } = this.parent;
-        if (smtp_host || smtp_port || smtp_user || smtp_pass) {
-          return value ? true : false;
-        }
-        return true;
-      }
-    ),
+  smtp_service: yup.string().nullable(),
 
   smtp_host: yup
     .string()
@@ -110,27 +97,9 @@ export const settingSchema = yup.object().shape({
       return true;
     }),
 
-  smtp_user: yup
-    .string()
-    .nullable()
-    .test('smtp-user-required', 'SMTP User is required', function (value) {
-      const { smtp_service, smtp_host, smtp_port, smtp_pass } = this.parent;
-      if (smtp_service || smtp_host || smtp_port || smtp_pass) {
-        return value ? true : false;
-      }
-      return true;
-    }),
+  smtp_user: yup.string().nullable(),
 
-  smtp_pass: yup
-    .string()
-    .nullable()
-    .test('smtp-pass-required', 'SMTP Password is required', function (value) {
-      const { smtp_service, smtp_host, smtp_port, smtp_user } = this.parent;
-      if (smtp_service || smtp_host || smtp_port || smtp_user) {
-        return value ? true : false;
-      }
-      return true;
-    }),
+  smtp_pass: yup.string().nullable(),
 });
 export const EmailConfigurationSettings = () => {
   const {
@@ -268,7 +237,6 @@ export const EmailConfigurationSettings = () => {
               label={KDFM.SMTP_SERVICE}
               placeholder={KDFM.ENTER_SMTP_SERVICE}
               errors={errors}
-              required={true}
             />
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -303,7 +271,6 @@ export const EmailConfigurationSettings = () => {
               label={KDFM.SMTP_USER}
               placeholder={KDFM.ENTER_SMTP_USER}
               errors={errors}
-              required={true}
             />
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -316,7 +283,6 @@ export const EmailConfigurationSettings = () => {
               placeholder={KDFM.ENTER_SMTP_PASS}
               disableToggle={false}
               errors={errors}
-              required
             />
           </div>
           <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6">
@@ -327,7 +293,6 @@ export const EmailConfigurationSettings = () => {
               label={KDFM.FROM_EMAIL}
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
-              required={true}
             />
           </div>
         </InputFields>
