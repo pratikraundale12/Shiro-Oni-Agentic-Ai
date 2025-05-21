@@ -120,6 +120,10 @@ const MODULES = [
     value: 'namespace',
   },
   {
+    label: 'Registry',
+    value: 'registry',
+  },
+  {
     label: 'User Management',
     value: 'user',
   },
@@ -245,6 +249,23 @@ export const ModuleAccess = () => {
     policies &&
     policies.length > 0 &&
     policies?.filter(element => ['view_cluster'].includes(element?.name));
+
+  const registryPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element =>
+      [
+        'view_registry',
+        'add_registry',
+        'edit_registry',
+        'delete_registry',
+      ].includes(element?.name)
+    );
+
+  const viewRegistryPolicy =
+    policies &&
+    policies.length > 0 &&
+    policies?.filter(element => ['view_registry'].includes(element?.name));
 
   const controllerServicePolicy =
     policies &&
@@ -451,6 +472,11 @@ export const ModuleAccess = () => {
     const rolesPolicies = ['add_permission', 'edit_permission'];
     const genAiPolicies = ['add_genai'];
     const dataInventoryPolicy = ['add_data_inventory'];
+    const registryPolicies = [
+      'add_registry',
+      'edit_registry',
+      'delete_registry',
+    ];
 
     handlePolicyCheck(controllerPolicies, 'view_controller_services');
     handlePolicyCheck(userPolicies, 'view_user');
@@ -459,6 +485,7 @@ export const ModuleAccess = () => {
     handlePolicyCheck(rolesPolicies, 'view_permission');
     handlePolicyCheck(genAiPolicies, 'view_genai');
     handlePolicyCheck(dataInventoryPolicy, 'view_data_inventory');
+    handlePolicyCheck(registryPolicies, 'view_registry');
   };
   const handleChange = (checked, value) => {
     if (isEmpty(selectedRole)) {
@@ -473,6 +500,7 @@ export const ModuleAccess = () => {
       [viewldapPolicy?.[0]?.id]: ldapPolicy,
       [viewGenAiPolicy?.[0]?.id]: genAiPolicy,
       [viewDataInventoryPolicy?.[0]?.id]: dataInventoryPolicy,
+      [viewRegistryPolicy?.[0]?.id]: registryPolicy,
     };
 
     setUpdatedRolePolicies(prev => {
