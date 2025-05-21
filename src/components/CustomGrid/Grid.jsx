@@ -224,7 +224,7 @@ export const Grid = ({
     clusters: 'No Cluster Available',
     users: 'No User Available',
     activityHistory: 'No Activity History Available',
-    scheduler: 'No Schedulers Available',
+    scheduler: 'No Schedules Available',
   };
 
   const getModuleBasedStatusKey = module => {
