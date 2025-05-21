@@ -13,6 +13,7 @@ export const SettingsActions = {
   downloadLogsRequest: createAction(`${prefix}downloadLogsRequest`),
   downloadLogsSuccess: createAction(`${prefix}downloadLogsSuccess`),
   downloadLogsFailure: createAction(`${prefix}downloadLogsFailure`),
+  verifyEmail: createAction(`${prefix}verifyEmail`),
 };
 
 // /* ------------- INITIAL STATE ------------- */

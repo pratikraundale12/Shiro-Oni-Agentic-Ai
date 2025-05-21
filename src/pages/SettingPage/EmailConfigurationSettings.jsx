@@ -15,6 +15,8 @@ import { EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, InputField, PasswordField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import { FullPageLoader } from '../../components';
+import { LoadingSelectors } from '../../store';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -136,6 +138,7 @@ export const EmailConfigurationSettings = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
+  const fromEmail = watch('from_email');
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
@@ -226,6 +229,9 @@ export const EmailConfigurationSettings = () => {
 
     return () => subscription.unsubscribe();
   }, [watch, settingData]);
+  console.log('settingData---', settingData);
+  console.log('errors---', errors);
+  console.log('fromEmail---', fromEmail);
 
   function changeFavicon(newFaviconURL) {
     const favicon = document.getElementById('dynamic-favicon');
@@ -240,8 +246,16 @@ export const EmailConfigurationSettings = () => {
     }
   }
 
+  const handleVerifyEmail = () => {
+    dispatch(SettingsActions.verifyEmail());
+  };
+
+  const verifyEmailLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'verifyEmail')
+  );
   return (
     <Wrapper>
+      <FullPageLoader loading={verifyEmailLoading} />
       <form
         style={{
           display: 'flex',
@@ -316,6 +330,15 @@ export const EmailConfigurationSettings = () => {
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
             />
+          </div>
+          <div style={{ height: '40px', width: '200px' }}>
+            <Button
+              type="button"
+              onClick={() => handleVerifyEmail()}
+              className="w-100 h-100"
+            >
+              <ButtonText>{'Verify Email'}</ButtonText>
+            </Button>
           </div>
         </InputFields>
 

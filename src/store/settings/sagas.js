@@ -90,11 +90,30 @@ export function* refreshSetting(api) {
   yield call(fetchDashboard, api, { payload: { refresh: true } });
 }
 
+export function* verifyEmail(api) {
+  const response = yield call(requestSaga, {
+    errorSection: 'verifyEmail',
+    loadingSection: 'verifyEmail',
+    apiMethod: api.verifyEmail,
+  });
+
+  if (response.ok) {
+    toast.success(
+      response?.message ||
+        response?.data?.message ||
+        'Verification email sent successfully.'
+    );
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* settingsSagas(api) {
   yield all([
     takeLatest(SettingsActions.createSettings, createSettings, api),
     takeLatest(SettingsActions.fetchSettings, fetchSettings, api),
     takeLatest(SettingsActions.refreshSetting, refreshSetting, api),
     takeLatest(SettingsActions.downloadLogsZip, downloadLogsZip, api),
+    takeLatest(SettingsActions.verifyEmail, verifyEmail, api),
   ]);
 }
