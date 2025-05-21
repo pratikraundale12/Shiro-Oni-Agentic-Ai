@@ -459,7 +459,7 @@ export const Add = () => {
     activeTab,
   ]);
   useEffect(() => {
-    if (data?.registry_id) {
+    if (data?.registry_id || data?.created_by_ansible) {
       reset({
         registry: data?.registry_id || '',
         clusterName: clusterData?.clusterName,
@@ -811,7 +811,11 @@ export const Add = () => {
             </Button>
           )}
           {showRegistryContiueButton() && (
-            <Button id="registry-details-continue-btn" onClick={handleRegistry} disabled={!selectedRegistryId}>
+            <Button
+              id="registry-details-continue-btn"
+              onClick={handleRegistry}
+              disabled={!selectedRegistryId}
+            >
               {KDFM.CONTINUE}
             </Button>
           )}

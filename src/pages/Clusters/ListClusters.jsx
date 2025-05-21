@@ -333,7 +333,7 @@ export const ListClusters = () => {
                     >
                       {item.is_active ? (
                         <>
-                          {item.edit_cluster && !item?.created_by_ansible && (
+                          {item.edit_cluster && (
                             <Item onClick={() => handleClick('edit')}>
                               <PencilIcon width={16} height={16} />
                               <span>{KDFM.EDIT}</span>
