@@ -429,7 +429,6 @@ function DeployPage() {
         })
       );
       dispatch(NamespacesActions.fetchRegistryFlowDetails(versionSelected));
-      history.push('/process-group/flow-details');
     } else {
       toast.error('Please select the version');
     }

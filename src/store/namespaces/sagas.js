@@ -469,7 +469,7 @@ export function* getStatusAndDeleteParameterContext(
     ],
   });
   if (response.ok && !response.data?.complete && response.data?.requestId) {
-    delay(1000);
+    yield delay(3500);
     yield call(getStatusAndDeleteParameterContext, api, {
       method: 'get',
       additionalData: { requestId: response.data?.requestId },
@@ -482,6 +482,8 @@ export function* getStatusAndDeleteParameterContext(
     yield call(getStatusAndDeleteParameterContext, api, {
       additionalData: { requestId: response.data?.requestId },
     });
+    yield put(NamespacesActions.fetchParameterContext());
+    yield put(NamespacesActions.setParameterEditingAction(false));
   } else {
     yield call(fetchParameterContext, api, {
       initialCall: false,
@@ -1244,6 +1246,9 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
   });
   if (response.ok) {
     yield put(NamespacesActions.setRegistryAllDetails(response?.data));
+    if (isUpgrade) {
+      history.push('/process-group/flow-details');
+    } else history.push('/process-group/config-details');
   } else {
     toast.error(response?.message || response?.data?.message);
   }

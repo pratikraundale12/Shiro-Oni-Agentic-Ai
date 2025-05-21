@@ -63,7 +63,11 @@ export const StatusText = ({ text = '', item }) => {
     <>
       <StatusTexts color={color} data-tooltip-id={item.scheduler_id}>
         {capitalizeFirstLetter(
-          item?.state === 'TIME_LAPSED' ? 'Time Lapsed' : text
+          item?.state === 'TIME_LAPSED'
+            ? 'Time Lapsed'
+            : item?.state === 'IN_PROGRESS'
+              ? 'In Progress'
+              : text
         )}
       </StatusTexts>{' '}
       <ReactTooltip

@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -14,11 +14,17 @@ import {
 import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { NamespacesActions } from '../../store';
+import {
+  ClustersSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from './ProcessGroupSorting';
+import { SettingsSelectors } from '../../store/settings';
+import { toast } from 'react-toastify';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -84,7 +90,26 @@ export const ListNamespaces = () => {
     sortKey: 'name',
     reverse: false,
   };
+  const settingsData = useSelector(SettingsSelectors.getSettings);
+  const clustersList = useSelector(ClustersSelectors.getAllClustersList);
+  const selectedCluster = useSelector(NamespacesSelectors.getSelectedCluster);
+  const selectedClusterObj = clustersList.filter(
+    item => item?.id === selectedCluster?.value
+  );
 
+  useEffect(() => {
+    if (
+      (isEmpty(settingsData?.username) && isEmpty(selectedClusterObj)) ||
+      (isEmpty(settingsData?.username) &&
+        !isEmpty(selectedClusterObj) &&
+        !selectedClusterObj?.[0]?.has_custom_service_account)
+    ) {
+      toast.info(
+        'The service account has not been configured. Please complete the configuration to proceed.',
+        { toastId: 'login-service-account-toast', autoClose: 5000 }
+      );
+    }
+  }, [settingsData?.username, selectedClusterObj]);
   const handleScheduleClick = item => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);

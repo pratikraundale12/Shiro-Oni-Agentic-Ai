@@ -40,6 +40,8 @@ import RegistryFormSection from './components/RegistryFormSection';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
+import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
+import { AuthenticationSelectors } from '../../store/authentication';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -155,6 +157,10 @@ export const Add = () => {
     return item?.nifi_url !== data?.nifi_url;
   });
 
+  const hostToEdit = clusterData?.clusterName || clusterId;
+
+  const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
+  const isSuperAdmin = currentUserData?.role === 'superadmin';
   const ClusterSchema = yup.object().shape({
     clusterName: yup
       .string()
@@ -288,6 +294,8 @@ export const Add = () => {
       setNewRegistry(false);
     } else if (activeTab === CLUSTER_MODULE_TABS.CLUSTER) {
       history.push('/clusters');
+    } else if (activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT) {
+      setActiveTab(CLUSTER_MODULE_TABS.REGISTRY);
     } else {
       setActiveTab(CLUSTER_MODULE_TABS.CLUSTER);
     }
@@ -307,6 +315,7 @@ export const Add = () => {
         approver_enable: approverEnable,
         change_request_enable: changeRequestEnable,
         registry_id: selectedRegistryId,
+        has_custom_service_account: false,
       };
 
       const id = clusterId;
@@ -369,7 +378,7 @@ export const Add = () => {
         if (registryURLs?.data?.includes(new URL(data?.registryUrl)?.origin)) {
           setOpenSummary(true);
         } else {
-          toast.error('This registry do not  exist!');
+          toast.error('This registry does not  exist!');
         }
       }
     }
@@ -482,6 +491,7 @@ export const Add = () => {
         value: item.id,
         registry_url: item?.registry_url,
       }));
+
       setRegistries(names);
     } catch (error) {
       console.error('Failed to fetch registries:', error);
@@ -506,17 +516,14 @@ export const Add = () => {
   }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const handleRegistry = () => {
-    if (
-      registryURLs?.data?.includes(registryData?.registry_url) ||
-      sortRegisrtyURL.includes(registryData?.registry_url)
-    ) {
+    if (registryURLs?.data?.includes(registryData?.registry_url)) {
       setIsCertificateOpen(false);
       setIsCredOpen(false);
       setTestSuccess(false);
       setTest(true);
       setOpenSummary(true);
     } else {
-      toast.error('This registry do not  exist!');
+      toast.error('This registry is not currently associated with the selected NiFi instance.');
     }
   };
   function handleKeyDown(e) {
@@ -807,6 +814,17 @@ export const Add = () => {
               clusterId={clusterId}
               registryData={registryData}
               watchedFields={watchedFields}
+            />
+          </FormContainer>
+        )}
+        {isSuperAdmin && activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT && (
+          <FormContainer>
+            <ClusterServiceAccountModal
+              tags={tags}
+              hostToEdit={hostToEdit}
+              clusterData={clusterData}
+              clusterId={clusterId}
+              data={data}
             />
           </FormContainer>
         )}

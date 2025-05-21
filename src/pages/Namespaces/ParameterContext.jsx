@@ -87,6 +87,9 @@ const ParameterContext = ({
   const singleNamespaceData = useSelector(
     NamespacesSelectors.getSingleNamespaceData
   );
+  const pcEditLoading = useSelector(
+    NamespacesSelectors.getParameterEditingAction
+  );
 
   const copyParameterDetailsData =
     parameterDetails?.[deployOrUpgradeDetails?.parameterContextId] ||
@@ -278,7 +281,10 @@ const ParameterContext = ({
                   dispatch(
                     NamespacesActions.setParameterContextItem({
                       ...item,
-                      value: item?.sensitive ? null : item?.value,
+                      value:
+                        item?.sensitive === true || item?.sensitive === 'true'
+                          ? null
+                          : item?.value,
                       check: item?.value === '' ? true : false,
                     })
                   );
@@ -330,13 +336,10 @@ const ParameterContext = ({
         modifiedPayloadData: [...uniqueDataSorted],
       })
     );
+    dispatch(NamespacesActions.setParameterEditingAction(true));
     dispatch(NamespacesActions.setNewlyAddedParameterContext([]));
     setIsParameterContextOpen({ isOpen: false, schedule: false });
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
-    setTimeout(() => {
-      dispatch(NamespacesActions.setNamespaceSummaryLoadingState(false));
-      dispatch(NamespacesActions.fetchParameterContext());
-    }, 1000);
     setSelectedParentContextId('');
     if (isParentEdit?.parent) {
       dispatch(
@@ -426,7 +429,7 @@ const ParameterContext = ({
   };
   return (
     <>
-      <FullPageLoader loading={pcLoading} />
+      <FullPageLoader loading={pcLoading || pcEditLoading} />
       <DataWrapper>
         <ScrollSetGrey className="scroll-set-grey pe-1">
           {tableStateData && tableStateData.length > 0 ? (
