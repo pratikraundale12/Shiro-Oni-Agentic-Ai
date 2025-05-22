@@ -105,9 +105,19 @@ export const ListNamespaces = () => {
         !selectedClusterObj?.[0]?.has_custom_service_account)
     ) {
       toast.info(
-        'The service account has not been configured. Please complete the configuration to proceed.',
+        isEmpty(selectedCluster?.value)
+          ? 'Please login to cluster'
+          : 'The service account has not been configured. Please complete the configuration to proceed.',
         { toastId: 'login-service-account-toast', autoClose: 5000 }
       );
+    } else if (
+      !isEmpty(settingsData?.username) &&
+      isEmpty(selectedCluster?.value)
+    ) {
+      toast.info('Please login to cluster', {
+        toastId: 'login-cluster-toast',
+        autoClose: 5000,
+      });
     }
   }, [settingsData?.username, selectedClusterObj]);
   const handleScheduleClick = item => {
