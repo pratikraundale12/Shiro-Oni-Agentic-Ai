@@ -86,7 +86,14 @@ export const ExportLogSettings = () => {
     const [startDate, endDate] = selectedDate || [];
 
     const now = new Date();
-    if ((startDate && startDate > now) || (endDate && endDate > now)) {
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const normalize = date =>
+      new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    if (
+      (startDate && normalize(startDate) > today) ||
+      (endDate && normalize(endDate) > today)
+    ) {
       toast.error(
         'The selected date range includes future dates. Please choose a valid range.'
       );
