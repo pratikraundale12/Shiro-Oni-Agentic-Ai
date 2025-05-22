@@ -233,6 +233,7 @@ export const Add = () => {
 
   const [registryData, setRegistryData] = useState({
     registryName: '',
+    is_registry_authenticated: true,
     registryUrl: '',
   });
 
@@ -362,6 +363,7 @@ export const Add = () => {
     } else {
       setRegistryData({
         registryName: data.registryName,
+        is_registry_authenticated: data.is_registry_authenticated,
         registryUrl: data.registryUrl,
       });
       setIsCertificateOpen(false);
@@ -390,6 +392,7 @@ export const Add = () => {
     'registryName',
     'registryUrl',
     'tags',
+    'is_registry_authenticated',
   ]);
 
   const checkDuplicate = filteredGridData?.some(
@@ -438,6 +441,7 @@ export const Add = () => {
         setRegistryData({
           registryName: registryName || '',
           registryUrl: registryUrl || '',
+          is_registry_authenticated: watchedFields?.[7] || true,
         });
       }
     }
@@ -583,6 +587,10 @@ export const Add = () => {
       //this code needs to updateee for edit functionality
       payload.append('name', registryData?.registryName || registryData.name);
       payload.append(
+        'is_registry_authenticated',
+        registryData?.is_registry_authenticated
+      );
+      payload.append(
         'nifi_url',
         registryData?.registryUrl || registryData.registry_url
       );
@@ -657,8 +665,10 @@ export const Add = () => {
 
   const isSaveDisabled = () =>
     isFieldValuesUnchanged() && checkEditSave() && saveButtonEnable;
-
   const isDisabled = () => {
+    if (!watchedFields?.[7] && activeTab === 'registry') {
+      return false;
+    }
     if (hasValidationErrors()) return true;
     if (newRegistry) {
       return isTestInvalid();
@@ -672,6 +682,7 @@ export const Add = () => {
   const handleNewRgistrySave = async () => {
     const data = {
       name: formStateData?.registryName,
+      is_registry_authenticated: formStateData?.is_registry_authenticated,
       registry_url: formStateData?.registryUrl,
     };
     const response = await createRegistry(data);
@@ -797,6 +808,8 @@ export const Add = () => {
               successModal={successModal}
               activeTab={activeTab}
               clusterId={clusterId}
+              registryData={registryData}
+              watchedFields={watchedFields}
             />
           </FormContainer>
         )}
@@ -836,7 +849,7 @@ export const Add = () => {
           {activeTab === CLUSTER_MODULE_TABS.REGISTRY && newRegistry && (
             <Button
               id="registry-details-continue-btn"
-              onClick={handleNewRgistrySave}
+              onClick={handleSubmit(handleNewRgistrySave)}
               disabled={isDisabled()}
             >
               {KDFM.SAVE}
@@ -887,6 +900,7 @@ export const Add = () => {
           text="Your configuration test was successful.
            Continue with the next steps."
           title="Testing Successful"
+          activeTab={activeTab}
         />
       )}
       <FailedTestModal
