@@ -1,6 +1,6 @@
 // sagas.js
 import { toast } from 'react-toastify';
-import { all, call, takeLatest } from 'redux-saga/effects';
+import { all, call, takeLatest, put } from 'redux-saga/effects';
 import { changeFavicon } from '../../helpers';
 import { fetchDashboard } from '../dashboard';
 import { fetchGrid } from '../grid';
@@ -38,13 +38,18 @@ export function* fetchSettings(api) {
 }
 
 export function* downloadLogsZip(api, { payload }) {
-  const response = yield call(api.downloadLogsZip, { payload });
+  const { toastId, ...rest } = payload;
+  yield put(SettingsActions.downloadLogsRequest());
+
+  const response = yield call(api.downloadLogsZip, { payload: rest });
 
   if (response.ok && response.data) {
     const noLogs = response.headers?.['x-no-logs'] === 'true';
 
     if (noLogs) {
-      toast.info('No data available for the given Range.');
+      toast.dismiss(toastId);
+      toast.info('No data available for given date range.');
+      yield put(SettingsActions.downloadLogsFailure());
     } else {
       const blob = new Blob([response.data], {
         type: 'application/zip',
@@ -69,9 +74,12 @@ export function* downloadLogsZip(api, { payload }) {
       }
 
       toast.success('Logs downloaded successfully.');
+      yield put(SettingsActions.downloadLogsSuccess());
     }
   } else {
+    toast.dismiss(toastId);
     toast.error(response?.data?.error || 'Failed to download logs.');
+    yield put(SettingsActions.downloadLogsFailure());
   }
 }
 

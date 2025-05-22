@@ -462,9 +462,19 @@ function DeployPage() {
   const loadingVersion = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchVersionData')
   );
+  const loadingfetchRegistryFlowDetails = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchRegistryFlowDetails')
+  );
   return (
     <div>
-      <FullPageLoader loading={loading || loadingFlow || loadingVersion} />
+      <FullPageLoader
+        loading={
+          loading ||
+          loadingFlow ||
+          loadingVersion ||
+          loadingfetchRegistryFlowDetails
+        }
+      />
 
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
