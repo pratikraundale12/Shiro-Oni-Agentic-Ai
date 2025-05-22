@@ -512,15 +512,11 @@ export const Add = () => {
   }, [registries, selectedRegistryId, activeTab, newRegistry]);
 
   const handleRegistry = () => {
-    if (registryURLs?.data?.includes(registryData?.registry_url)) {
-      setIsCertificateOpen(false);
-      setIsCredOpen(false);
-      setTestSuccess(false);
-      setTest(true);
-      setOpenSummary(true);
-    } else {
-      toast.error('This registry is not currently associated with the selected NiFi instance.');
-    }
+    setIsCertificateOpen(false);
+    setIsCredOpen(false);
+    setTestSuccess(false);
+    setTest(true);
+    setOpenSummary(true);
   };
   function handleKeyDown(e) {
     const value = inputValue;
