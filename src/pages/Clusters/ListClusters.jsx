@@ -740,6 +740,7 @@ export const ListClusters = () => {
         setIsProcessModalOpen={setIsProcessModalOpen}
         setSelectedCluster={setSelectedCluster}
         selectedCluster={selectedCluster}
+        sortingState={sortingState}
       />
     </>
   );
