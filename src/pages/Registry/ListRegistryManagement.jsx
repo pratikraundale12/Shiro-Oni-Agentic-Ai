@@ -12,10 +12,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AddRegistryModal } from './AddRegistryModal';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { ModalWithIcon } from '../../shared';
-import { RegistryActions, RegistrySelectors } from '../../store';
+import {
+  AuthenticationSelectors,
+  RegistryActions,
+  RegistrySelectors,
+} from '../../store';
 
 const ListRegistryManagementPage = () => {
   const dispatch = useDispatch();
+  const userPermissions = useSelector(AuthenticationSelectors.getPermissions);
   const [selectedItem, setSelectedItem] = useState({});
   const isDeleteModalOpen = useSelector(RegistrySelectors.getIsDeleteModalOpen);
   const [currentPage, setCurrentPage] = useState(1);
@@ -87,24 +92,26 @@ const ListRegistryManagementPage = () => {
       resize: true,
       renderCell: item => (
         <div className="d-flex align-self-end gap-2">
-          <button
-            onClick={() => {
-              dispatch(RegistryActions.setRegistrySelectedData(item));
-              dispatch(RegistryActions.setIsAddRegistryModalOpen(true));
-              setSelectedItem(item);
-            }}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-            }}
-            data-tooltip-id={`tooltip-group-edit-registry`}
-          >
-            <IconButton>
-              <PencilIcon width={14} height={14} />
-            </IconButton>
-          </button>
+          {userPermissions.includes('edit_registry') && (
+            <button
+              onClick={() => {
+                dispatch(RegistryActions.setRegistrySelectedData(item));
+                dispatch(RegistryActions.setIsAddRegistryModalOpen(true));
+                setSelectedItem(item);
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+              }}
+              data-tooltip-id={`tooltip-group-edit-registry`}
+            >
+              <IconButton>
+                <PencilIcon width={14} height={14} />
+              </IconButton>
+            </button>
+          )}
           <ReactTooltip
             id={`tooltip-group-edit-registry`}
             place="left"
@@ -115,25 +122,26 @@ const ListRegistryManagementPage = () => {
               wordWrap: 'break-word',
             }}
           />
-          {!item?.associated_with_clusters && (
-            <button
-              onClick={() => {
-                setSelectedItem(item);
-                dispatch(RegistryActions.setIsDeleteModalOpen(true));
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-              }}
-              data-tooltip-id={`tooltip-group-delete-registry`}
-            >
-              <IconButton>
-                <DeleteSmallIcon width={14} height={14} color="red" />
-              </IconButton>
-            </button>
-          )}
+          {!item?.associated_with_clusters &&
+            userPermissions.includes('delete_registry') && (
+              <button
+                onClick={() => {
+                  setSelectedItem(item);
+                  dispatch(RegistryActions.setIsDeleteModalOpen(true));
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                }}
+                data-tooltip-id={`tooltip-group-delete-registry`}
+              >
+                <IconButton>
+                  <DeleteSmallIcon width={14} height={14} color="red" />
+                </IconButton>
+              </button>
+            )}
           <ReactTooltip
             id={`tooltip-group-delete-registry`}
             place="left"

@@ -4,6 +4,8 @@ export const getButtonPermissions = module => {
       return 'add_cluster';
     case 'users':
       return 'add_user';
+    case 'registry':
+      return 'add_registry';
     default:
       return '';
   }
