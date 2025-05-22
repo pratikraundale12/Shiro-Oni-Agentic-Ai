@@ -18,10 +18,26 @@ const ModalContent = styled.div`
 
 const ModalText = styled.p`
   text-align: center;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+const ModalTitle = styled.h3`
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 18px;
+  font-weight: 600;
+  color: ${props => props.theme.colors.dark || '#000'};
+`;
+
+const ModalDescription = styled.p`
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 16px;
+  font-family: Red Hat Display;
+  font-weight: 500;
+  line-height: 24px;
 `;
 
 const HighlightedText = styled.span`
@@ -38,14 +54,14 @@ const IconContainer = styled.div`
 
 const ChangesContainer = styled.div`
   width: 100%;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   max-height: 400px;
   overflow-y: auto;
 `;
 
 const TableContainer = styled.div`
   width: 100%;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
 `;
 
 const SearchContainer = styled.div`
@@ -130,14 +146,29 @@ const LocalChangesModal = ({
     }
   };
 
+  const getModalSize = () => {
+    switch (type) {
+      case 'local':
+        return 'sm';
+      case 'show':
+      case 'revert':
+        return 'md';
+      default:
+        return 'sm';
+    }
+  };
+
   const getModalContent = () => {
     switch (type) {
       case 'local':
         return (
-          <ModalText>
-            Committing will ignore available upgrades and commit local changes
-            as the next version. Are you sure you want to proceed?
-          </ModalText>
+          <>
+            <ModalTitle>Are you sure you want to Proceed?</ModalTitle>
+            <ModalDescription>
+              Committing will ignore available Upgrades and commit local changes
+              as the next version
+            </ModalDescription>
+          </>
         );
       case 'show':
         return (
@@ -161,6 +192,16 @@ const LocalChangesModal = ({
         );
       default:
         return <ModalText></ModalText>;
+    }
+  };
+  const getButtonText = type => {
+    switch (type) {
+      case 'local':
+        return 'Confirm';
+      case 'revert':
+        return 'Revert';
+      default:
+        return undefined;
     }
   };
 
@@ -241,11 +282,15 @@ const LocalChangesModal = ({
         title={getModalTitle()}
         isOpen={isOpen}
         onRequestClose={onClose}
-        size="md"
-        primaryButtonText={type === 'local' ? 'Confirm' : undefined}
+        size={getModalSize(type)}
+        primaryButtonText={getButtonText(type)}
         secondaryButtonText="Cancel"
         onSubmit={handleConfirm}
-        contentStyles={{ minWidth: '60%', maxHeight: '80%' }}
+        contentStyles={
+          type === 'local'
+            ? { width: '400px', maxWidth: '90%' }
+            : { width: '800px', maxWidth: '95%', maxHeight: '80vh' }
+        }
       >
         <ModalContent>
           {type === 'local' && (

@@ -9,45 +9,122 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
+  min-height: 400px;
 `;
 
-// const ModalText = styled.p`
-//   text-align: center;
-//   margin-bottom: 1.5rem;
-// `;
+const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+`;
 
 const InfoSection = styled.div`
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Label = styled.div`
   font-weight: 600;
   font-size: 0.875rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  color: #333;
 `;
 
 const Value = styled.div`
   font-size: 0.875rem;
-  color: #555;
-  margin-bottom: 0.75rem;
+  color: #666;
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+  min-height: 20px;
+`;
+
+const TextAreaSection = styled.div`
+  margin-bottom: 1.5rem;
+  flex: 1;
 `;
 
 const TextArea = styled.textarea`
   width: 100%;
-  height: 100px;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
+  min-height: 100px;
+  padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   resize: vertical;
-  background-color: #f5f7f9;
+  font-family: inherit;
+  font-size: 0.875rem;
+  background-color: #fff;
+
+  &::placeholder {
+    color: #999;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  }
 `;
+
+// const ButtonContainer = styled.div`
+//   display: flex;
+//   gap: 0.75rem;
+//   justify-content: flex-start;
+//   margin-top: auto;
+//   padding-top: 1rem;
+//   border-top: 1px solid #e9ecef;
+// `;
+
+// const Button = styled.button`
+//   padding: 0.5rem 1.5rem;
+//   border-radius: 4px;
+//   font-size: 0.875rem;
+//   font-weight: 500;
+//   cursor: pointer;
+//   border: 1px solid;
+//   transition: all 0.2s ease;
+
+//   &:focus {
+//     outline: none;
+//     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+//   }
+// `;
+
+// const CancelButton = styled(Button)`
+//   background-color: #fff;
+//   color: #6c757d;
+//   border-color: #6c757d;
+
+//   &:hover {
+//     background-color: #6c757d;
+//     color: #fff;
+//   }
+// `;
+
+// const SaveButton = styled(Button)`
+//   background-color: #ff7a00;
+//   color: #fff;
+//   border-color: #ff7a00;
+
+//   &:hover {
+//     background-color: #ff7a00;
+//     border-color: #ff7a00;
+//   }
+
+//   &:disabled {
+//     background-color: #ccc;
+//     border-color: #ccc;
+//     cursor: not-allowed;
+//   }
+// `;
 
 const CommitLocalChangesModal = ({
   isOpen,
   onClose,
   onSubmit,
-  flowDescription = 'Empty string set',
+  flowDescription = 'Empty String Set',
 }) => {
   const [versionComments, setVersionComments] = React.useState('');
   const selectedNameSpace = useSelector(
@@ -61,6 +138,11 @@ const CommitLocalChangesModal = ({
     onSubmit({ versionComments });
   };
 
+  // const handleCancel = () => {
+  //   setVersionComments('');
+  //   onClose();
+  // };
+
   return (
     <Modal
       title="Save Flow Version"
@@ -70,37 +152,52 @@ const CommitLocalChangesModal = ({
       primaryButtonText="Commit"
       secondaryButtonText="Cancel"
       onSubmit={handleSubmit}
-      contentStyles={{ minWidth: '60%', maxHeight: '80%' }}
+      contentStyles={{
+        minWidth: '500px',
+        maxWidth: '600px',
+        maxHeight: '80vh',
+      }}
     >
       <ModalContent>
-        <InfoSection>
-          <Label>Registry</Label>
-          <Value>{registryData?.name}</Value>
-        </InfoSection>
+        <InfoGrid>
+          <InfoSection>
+            <Label>Registry</Label>
+            <Value>{registryData?.name || 'Registry'}</Value>
+          </InfoSection>
 
-        <InfoSection>
-          <Label>Bucket</Label>
-          <Value>{selectedNameSpace?.bucketName}</Value>
-        </InfoSection>
+          <InfoSection>
+            <Label>Bucket</Label>
+            <Value>
+              {selectedNameSpace?.bucketName || 'StreamingAnalytics_Bucket'}
+            </Value>
+          </InfoSection>
 
-        <InfoSection>
-          <Label>Flow Name</Label>
-          <Value>{selectedNameSpace?.flowName}</Value>
-        </InfoSection>
+          <InfoSection>
+            <Label>Flow Name</Label>
+            <Value>
+              {selectedNameSpace?.flowName || 'MYSQL-Flow_Test_John'}
+            </Value>
+          </InfoSection>
 
-        <InfoSection>
-          <Label>Flow Description</Label>
-          <Value>{flowDescription}</Value>
-        </InfoSection>
+          <InfoSection>
+            <Label>Flow Description</Label>
+            <Value>{flowDescription}</Value>
+          </InfoSection>
+        </InfoGrid>
 
-        <InfoSection>
+        <TextAreaSection>
           <Label>Version Comments</Label>
           <TextArea
             value={versionComments}
             onChange={e => setVersionComments(e.target.value)}
-            placeholder="Enter version comments here..."
+            placeholder="Enter Version Comments"
           />
-        </InfoSection>
+        </TextAreaSection>
+
+        {/* <ButtonContainer>
+          <CancelButton onClick={handleCancel}>Cancel</CancelButton>
+          <SaveButton onClick={handleSubmit}>Save</SaveButton>
+        </ButtonContainer> */}
       </ModalContent>
     </Modal>
   );
