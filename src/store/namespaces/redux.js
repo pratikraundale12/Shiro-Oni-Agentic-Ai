@@ -10,6 +10,8 @@ export const NamespacesActions = {
   setFlowPath: createAction(`${prefix}setFlowPath`),
   fetchNamespaces: createAction(`${prefix}fetchNamespaces`),
   fetchNamespacesSuccess: createAction(`${prefix}fetchNamespacesSuccess`),
+  fetchLocalChanges: createAction(`${prefix}fetchLocalChanges`),
+  fetchLocalChangesSuccess: createAction(`${prefix}fetchLocalChangesSuccess`),
   setSelectedDestCluster: createAction(`${prefix}setSelectedDestCluster`),
   setSelectedDestNamespace: createAction(`${prefix}setSelectedDestNamespace`),
   fetchDestNamespaces: createAction(`${prefix}fetchDestNamespaces`),
@@ -225,6 +227,7 @@ export const NAMESPACES_INITIAL_STATE = {
     breadcrumb: [],
     data: [],
   },
+  localChanges: [],
   deployByRegistryFlow: true,
   selectedDestCluster: null,
   selectedDestNamespace: null,
@@ -328,6 +331,7 @@ export const NamespacesSelectors = {
   getSelectedCluster: state => state.namespaces.selectedCluster,
   getSelectedNamespace: state => state.namespaces.selectedNamespace,
   getNamespaces: state => state.namespaces.clusterNamespaces.data,
+  getLocalChanges: state => state.namespaces.localChanges,
   getSelectedDestCluster: state => state.namespaces.selectedDestCluster,
   getSelectedDestNamespace: state => state.namespaces.selectedDestNamespace,
   getDestNamespaces: state => state.namespaces.destClusterNamespaces.data,
@@ -1020,6 +1024,13 @@ const setParameterEditingAction = (state, { payload }) => {
   };
 };
 
+const fetchLocalChangesSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    localChanges: payload,
+  };
+};
+
 //
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1034,6 +1045,10 @@ export const namespacesReducer = createReducer(
       .addCase(NamespacesActions.setSelectedNamespace, setSelectedNamespace)
       .addCase(NamespacesActions.setFlowPath, setFlowPath)
       .addCase(NamespacesActions.fetchNamespacesSuccess, fetchNamespacesSuccess)
+      .addCase(
+        NamespacesActions.fetchLocalChangesSuccess,
+        fetchLocalChangesSuccess
+      )
       .addCase(NamespacesActions.setSelectedDestCluster, setSelectedDestCluster)
       .addCase(
         NamespacesActions.setSelectedDestNamespace,

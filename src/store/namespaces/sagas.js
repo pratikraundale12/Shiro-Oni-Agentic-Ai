@@ -1443,7 +1443,40 @@ export function* fetchAddPropertyToAdd(api, { payload }) {
     toast.error(response?.message || response?.data?.message);
   }
 }
-//
+
+export function* fetchLocalChanges(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchLocalChanges',
+    loadingSection: 'fetchLocalChanges',
+    apiMethod: api.fetchLocalChanges,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedNamespace?.value,
+      },
+    ],
+    successAction: NamespacesActions.fetchLocalChangesSuccess,
+  });
+
+  if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -1451,6 +1484,7 @@ export function* namespacesSagas(api) {
     takeLatest(NamespacesActions.fetchDestNamespaces, fetchDestNamespaces, api),
     takeLatest(NamespacesActions.checkDestCluster, checkDestCluster, api),
     takeLatest(NamespacesActions.deployCluster, deployCluster, api),
+    takeLatest(NamespacesActions.fetchLocalChanges, fetchLocalChanges, api),
     takeLatest(
       NamespacesActions.updateNamespaceStatus,
       updateNamespaceStatus,
@@ -1567,4 +1601,3 @@ export function* namespacesSagas(api) {
     ),
   ]);
 }
-//

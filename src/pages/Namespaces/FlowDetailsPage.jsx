@@ -23,7 +23,7 @@ import RightIcon from '../../assets/Icons/RightIcon';
 import { FullPageLoader, Table } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, InputField } from '../../shared';
+import { Button, InputField, SelectField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
@@ -34,6 +34,7 @@ import {
 import { SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
+import LocalChangesModal from './LocalChangesModal';
 import RectangleGraph from './birdEyeViewGraph';
 
 const TopTitleBar = styled.div`
@@ -180,6 +181,18 @@ const BreadcrumbContainer = styled.div`
 const ProcessorIconDiv = styled.div`
   padding-right: 1.5rem;
 `;
+const LabelSelect = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: #444445;
+`;
+
+const localChangesOptions = [
+  { value: 'local', label: 'Commit Local Changes' },
+  { value: 'show', label: 'Show Local Changes' },
+  { value: 'revert', label: 'Revert Local Changes' },
+];
 
 const FlowDetailsPage = () => {
   const dispatch = useDispatch();
@@ -215,6 +228,10 @@ const FlowDetailsPage = () => {
   const [xStateCoordinate, setXStateCoordiate] = useState(null);
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
   const tableRef = useRef(null);
+  const [localChangesModal, setLocalChangesModal] = useState({
+    isOpen: false,
+    type: null,
+  });
 
   useEffect(() => {
     if (isUpgrade) {
@@ -502,6 +519,40 @@ const FlowDetailsPage = () => {
     }
   }, [dispatch, change_request_var]);
 
+  const handleLocalChangesSelect = option => {
+    setLocalChangesModal({
+      isOpen: true,
+      type: option.value,
+    });
+  };
+
+  const handleCloseLocalChangesModal = () => {
+    setLocalChangesModal({
+      isOpen: false,
+      type: null,
+    });
+  };
+
+  const handleLocalChangesAction = () => {
+    switch (localChangesModal.type) {
+      case 'local':
+        // Handle commit local changes
+        console.log('Committing local changes');
+        break;
+      case 'show':
+        // Handle show local changes
+        console.log('Showing local changes');
+        break;
+      case 'revert':
+        // Handle revert local changes
+        console.log('Reverting local changes');
+        break;
+      default:
+        break;
+    }
+    handleCloseLocalChangesModal();
+  };
+
   return (
     <div>
       <FullPageLoader loading={loadingregistry || loadingVersion} />
@@ -569,6 +620,17 @@ const FlowDetailsPage = () => {
                     selectedNameSpace?.stateExplanation ||
                     'No explanation provided'
                   }
+                />
+              </ColXlSix>
+            )}
+            {!isUpgrade && !isStateStale && (
+              <ColXlSix className="col-lg">
+                <LabelSelect className="mb-3">Local Changes</LabelSelect>
+                <SelectField
+                  size="md"
+                  placeholder="Version Commit"
+                  options={localChangesOptions}
+                  onChange={handleLocalChangesSelect}
                 />
               </ColXlSix>
             )}
@@ -745,6 +807,14 @@ const FlowDetailsPage = () => {
           </Button>
         </BottomButtonDiv>
       </BottomButton>
+
+      {/* Add Local Changes Modal */}
+      <LocalChangesModal
+        isOpen={localChangesModal.isOpen}
+        onClose={handleCloseLocalChangesModal}
+        onSubmit={handleLocalChangesAction}
+        type={localChangesModal.type}
+      />
     </div>
   );
 };

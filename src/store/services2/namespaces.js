@@ -312,6 +312,12 @@ export const namespacesAPI = api => {
     );
   };
 
+  const fetchLocalChanges = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/local-changes`
+    );
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -347,5 +353,6 @@ export const namespacesAPI = api => {
     fetchRegistryFlowDetails,
     fetchDuplicateScheduleData,
     fetchAddPropertyToAdd,
+    fetchLocalChanges,
   };
 };
