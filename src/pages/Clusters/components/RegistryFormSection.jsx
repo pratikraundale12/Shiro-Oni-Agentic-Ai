@@ -42,7 +42,7 @@ const RegistryFormSection = ({
   registryData,
   watchedFields,
 }) => {
-  console.log(registryData?.is_registry_authenticated, 'registryData');
+
   return (
     <>
       <RegistryFormInputs
