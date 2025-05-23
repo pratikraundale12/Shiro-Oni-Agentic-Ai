@@ -318,6 +318,12 @@ export const namespacesAPI = api => {
     );
   };
 
+  const revertLocalChanges = ({ clusterId, namespaceId }) => {
+    return api.post(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/revert-local-changes`
+    );
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -354,5 +360,6 @@ export const namespacesAPI = api => {
     fetchDuplicateScheduleData,
     fetchAddPropertyToAdd,
     fetchLocalChanges,
+    revertLocalChanges,
   };
 };

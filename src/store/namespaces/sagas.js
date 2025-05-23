@@ -1477,6 +1477,41 @@ export function* fetchLocalChanges(api) {
   }
 }
 
+export function* revertLocalChanges(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'revertLocalChanges',
+    loadingSection: 'revertLocalChanges',
+    apiMethod: api.revertLocalChanges,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedNamespace?.value,
+      },
+    ],
+    successAction: NamespacesActions.revertLocalChangesSuccess,
+  });
+
+  if (response?.ok) {
+    yield put(NamespacesActions.setSelectedNamespace(response?.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -1599,5 +1634,6 @@ export function* namespacesSagas(api) {
       fetchAddPropertyToAdd,
       api
     ),
+    takeLatest(NamespacesActions.revertLocalChanges, revertLocalChanges, api),
   ]);
 }

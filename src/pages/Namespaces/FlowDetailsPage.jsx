@@ -189,7 +189,7 @@ const LabelSelect = styled.div`
 `;
 
 const localChangesOptions = [
-  { value: 'local', label: 'Commit Local Changes' },
+  // { value: 'local', label: 'Commit Local Changes' },
   { value: 'show', label: 'Show Local Changes' },
   { value: 'revert', label: 'Revert Local Changes' },
 ];
@@ -442,6 +442,10 @@ const FlowDetailsPage = () => {
     LoadingSelectors.getLoading(state, 'fetchVersionData')
   );
 
+  const loadingRevertChanges = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'revertLocalChanges')
+  );
+
   const getIconForState = state => {
     switch (state) {
       case 'LOCALLY_MODIFIED_AND_STALE':
@@ -555,7 +559,9 @@ const FlowDetailsPage = () => {
 
   return (
     <div>
-      <FullPageLoader loading={loadingregistry || loadingVersion} />
+      <FullPageLoader
+        loading={loadingregistry || loadingVersion || loadingRevertChanges}
+      />
 
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">

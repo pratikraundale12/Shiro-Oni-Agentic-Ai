@@ -7,7 +7,7 @@ import { Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { theme } from '../../styles';
-import CommitLocalChangesModal from './CommitLocalChangesModal';
+// import CommitLocalChangesModal from './CommitLocalChangesModal';
 
 const ModalContent = styled.div`
   display: flex;
@@ -101,13 +101,13 @@ const TextDiv = styled.div`
 const LocalChangesModal = ({
   isOpen,
   onClose,
-  onSubmit,
+  // onSubmit,
   type,
-  localChanges,
+  // localChanges,
 }) => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
-  const [isCommitModalOpen, setIsCommitModalOpen] = useState(false);
+  // const [isCommitModalOpen, setIsCommitModalOpen] = useState(false);
   const fetchLocalChanges = useSelector(NamespacesSelectors.getLocalChanges);
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
@@ -119,19 +119,19 @@ const LocalChangesModal = ({
     }
   }, [dispatch, type]);
 
-  const handleConfirm = () => {
-    if (type === 'local') {
-      onClose();
-      setIsCommitModalOpen(true);
-    } else {
-      onSubmit();
-    }
-  };
+  // const handleConfirm = () => {
+  //   if (type === 'local') {
+  //     onClose();
+  //     setIsCommitModalOpen(true);
+  //   } else {
+  //     onSubmit();
+  //   }
+  // };
 
-  const handleCommitSubmit = data => {
-    setIsCommitModalOpen(false);
-    onSubmit(data);
-  };
+  // const handleCommitSubmit = data => {
+  //   setIsCommitModalOpen(false);
+  //   onSubmit(data);
+  // };
 
   const getModalTitle = () => {
     switch (type) {
@@ -241,6 +241,12 @@ const LocalChangesModal = ({
     },
   ];
 
+  const handleRevertChenages = () => {
+    console.log('handleRevertChenages');
+    dispatch(NamespacesActions.revertLocalChanges());
+    onClose();
+  };
+
   const renderTable = () => {
     const filteredData = fetchLocalChanges?.data?.changes?.filter(
       item =>
@@ -285,7 +291,7 @@ const LocalChangesModal = ({
         size={getModalSize(type)}
         primaryButtonText={getButtonText(type)}
         secondaryButtonText="Cancel"
-        onSubmit={handleConfirm}
+        onSubmit={handleRevertChenages}
         contentStyles={
           type === 'local'
             ? { width: '400px', maxWidth: '90%' }
@@ -305,12 +311,12 @@ const LocalChangesModal = ({
         </ModalContent>
       </Modal>
 
-      <CommitLocalChangesModal
+      {/* <CommitLocalChangesModal
         isOpen={isCommitModalOpen}
         onClose={() => setIsCommitModalOpen(false)}
         onSubmit={handleCommitSubmit}
         localChanges={localChanges}
-      />
+      /> */}
     </>
   );
 };
