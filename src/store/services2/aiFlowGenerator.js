@@ -61,6 +61,7 @@ export const aiFlowGeneratorAPI = api => {
     const { bucketId } = payload;
     const payloaDdata = {
       flowName: payload?.flowName,
+      processGroupName: payload?.processGroupName,
       flowDesc: payload?.flowDesc,
       flowJson: payload?.flowJson,
       isDataInventory: payload?.isDataInventory,

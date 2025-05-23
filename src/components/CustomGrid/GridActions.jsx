@@ -274,6 +274,24 @@ export const GridActions = ({
     setSearchErrorMsg({});
     inputRef.current.value = '';
 
+    if (module === 'clusters') {
+      setValue('is_active', null);
+      dispatch(
+        GridSagsActions.fetchGrid({
+          module: 'clusters',
+          params: {
+            page: 1,
+            limit: 10,
+            ...(sortingState && {
+              sort: sortingState,
+            }),
+          },
+        })
+      );
+      setSortingState('name');
+      return;
+    }
+
     if (module === 'namespaces') {
       dispatch(
         GridSagsActions.fetchGridSuccess({ module: 'namespaces', data: {} })
@@ -659,6 +677,26 @@ export const GridActions = ({
         )}
 
         <ButtonsContainer>
+          {['clusters'].includes(module) && (
+            <>
+              <RefreshIocn
+                onClick={handleRefresh}
+                data-tooltip-id={`tooltip-group-namespace-refresh`}
+              >
+                <RefreshIcon style={{ cursor: 'pointer' }} />
+              </RefreshIocn>
+              <ReactTooltip
+                id={`tooltip-group-namespace-refresh`}
+                place="left"
+                content={'Refresh'}
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
+          )}
           {module === 'users' && (
             <DropdownContainer>
               <StyledSelectField
@@ -694,23 +732,23 @@ export const GridActions = ({
             </DropdownContainer>
           )}
           {/*  */}
-          {module === 'registry' && (
-            <Button
-              size="md"
-              onClick={() =>
-                dispatch(RegistryActions.setIsAddRegistryModalOpen(true))
-              }
-            >
-              <div
-                className="d-flex "
-                style={{ fontSize: '14px', fontWeight: '750' }}
+          {module === 'registry' &&
+            userPermissions.includes(getButtonPermissions('registry')) && (
+              <Button
+                size="md"
+                onClick={() =>
+                  dispatch(RegistryActions.setIsAddRegistryModalOpen(true))
+                }
               >
-                <PlusCircleIcon height={20} width={20} color={'#fff'} />
-                Add Registry
-              </div>
-            </Button>
-          )}
-
+                <div
+                  className="d-flex "
+                  style={{ fontSize: '14px', fontWeight: '750' }}
+                >
+                  <PlusCircleIcon height={20} width={20} color={'#fff'} />
+                  Add Registry
+                </div>
+              </Button>
+            )}
           {module === 'users' && (
             <SpanEle onClick={handleClearFilter}>{'Clear Filters'}</SpanEle>
           )}
@@ -766,6 +804,7 @@ export const GridActions = ({
           {userPermissions.includes(getButtonPermissions(module)) &&
             !userModalOpen && <Modal />}
         </ButtonsContainer>
+
         {['scheduler', 'namespaces'].includes(module) && (
           <ButtonsContainer>
             {module === 'namespaces' &&
@@ -811,7 +850,7 @@ export const GridActions = ({
                   onClick={handleAnalyzeClick}
                   disabled={isButtonDisabled}
                 >
-                  Analyze New Flow
+                  Flow Validation by ID
                 </Button>
               )}
             {['scheduler'].includes(module) && (

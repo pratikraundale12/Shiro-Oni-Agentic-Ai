@@ -4,8 +4,10 @@ import styled from 'styled-components';
 import {
   CheckListIcon,
   LessArrowIcon,
+  LinkIcon,
   NotePadIcon,
   QRIcons,
+  TagIcon,
 } from '../../../assets';
 import { Title } from './Title';
 import { history } from '../../../helpers/history';
@@ -27,12 +29,54 @@ import {
   ZOOKEEPER_CONNECTION_TIMEOUT,
 } from '../../../constants';
 import { useForm } from 'react-hook-form';
+import { isEqual, sortBy } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { ClustersActions, ClustersSelectors } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { safeParseJSON } from '../../../helpers';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { testConfigApi } from '../../../store/apis/ldap';
+import { SuccessTestModal } from './SuccessTestModal';
+import { toast } from 'react-toastify';
+
+const StyledSelectField = styled(SelectField)`
+  /* Container styling */
+  & > div {
+    margin-bottom: ${props => props.marginBottom || '1rem'};
+  }
+
+  & label {
+    margin-bottom: ${props => props.labelMargin || '2px'} !important;
+  }
+
+  /* Control styling (the main input area) */
+  & .react-select__control {
+    height: ${props => props.height || 'auto'};
+    min-height: ${props => props.height || '54px'};
+    border-radius: ${props => props.borderRadius || '4px'};
+    margin-top: ${props => props.marginTop || '10px'};
+    margin-left: ${props => props.marginLeft || '0'};
+    margin-right: ${props => props.marginRight || '0'};
+  }
+
+  /* Value container styling */
+  & .react-select__value-container {
+    padding: ${props => props.innerPadding || props.padding || '0 8px'};
+  }
+
+  /* Menu styling */
+  & .react-select__menu {
+    border-radius: ${props => props.menuBorderRadius || '4px'};
+  }
+
+  /* Option styling */
+  & .react-select__option {
+    padding: ${props => props.optionPadding || '8px 12px'};
+    font-size: ${props => props.fontSize || '14px'};
+  }
+`;
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -142,18 +186,113 @@ const LabelWarning = styled.span`
   color: ${props => props.theme.colors.darker};
   font-style: italic;
 `;
+const ButtonFlex = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 25px;
+`;
+
+const TagLable = styled.label`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: #444445;
+`;
+
+const TagsInputContainer = styled.div`
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #ffffff;
+  border-radius: 3px;
+  width: 100%;
+  font-size: 14px;
+  color: #444445;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  gap: 0.5em;
+  margin-bottom: 40px;
+  input::placeholder {
+    color: ${props => props.theme.colors.grey};
+    font-family: ${props => props.theme.fontNato};
+    font-size: 14px;
+  }
+  input:focus-visible {
+    outline: none;
+  }
+  input:focus {
+    border: none;
+  }
+`;
+
+const IconTag = styled.span`
+  position: sticky;
+  top: 2px;
+  left: 2px;
+  bottom: 2px;
+  z-index: 1;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  padding: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f7fa;
+`;
+const TagItem = styled.div`
+  background-color: rgb(218, 216, 216);
+  display: flex;
+  padding: 0.5em 0.75em;
+  border-radius: 20px;
+`;
+const CloseButton = styled.span`
+  padding-top: 3px;
+  height: 20px;
+  width: 20px;
+  background-color: rgb(48, 48, 48);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 0.5em;
+  font-size: 18px;
+  cursor: pointer;
+`;
+const CharacterCount = styled.span`
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+`;
+const TagsInput = styled.input`
+  flex-grow: 1;
+  padding: 0.5em 0;
+  border: none;
+  outline: none;
+`;
 
 const ClusterSetupNewConfigDetailsPage = () => {
   const [originalValues, setOriginalValues] = useState({});
   const [formChanged, setFormChanged] = useState(false);
   const [initialHeapSize, setInitialHeapSize] = useState(0);
-
+  const [tags, setTags] = useState([]);
+  const [methodForLoginIdentity, setMethodForLoginIdentity] = useState(
+    'single-user-provider'
+  );
+  const [loading, setLoading] = useState(false);
+  const [successTest, setSuccessTest] = useState(false);
+  const [ldapConnectionData, setLdapConnectData] = useState({});
   const dispatch = useDispatch();
   const [selectedProperty, setSelectedProperty] = useState('nifi_properties');
   const nifiVersionsData = useSelector(ClustersSelectors.getNifiVersions);
   const configToEdit = useSelector(
     ClustersSelectors.getUpdateConfigClusterSetupData
   );
+  const [ldapTested, setLdapTested] = useState(false);
+  const [originalLoginValues, setOriginalLoginValues] = useState({});
 
   const nifiVerionsOptions =
     !isEmpty(nifiVersionsData) &&
@@ -162,7 +301,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       value: ele?.nifi_version,
     }));
 
-  const schema = yup.object().shape({
+  const schemaUserPassword = yup.object().shape({
     configName: yup
       .string()
       .required('Config name is required')
@@ -242,7 +381,126 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .required('Root node is required')
       .matches(/^\S+$/, 'Root node cannot contain spaces'),
   });
+  const schemaLDAPlogin = yup.object().shape({
+    configName: yup
+      .string()
+      .required('Config name is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Config name must not start or end with a space',
+        value => value === value?.trim()
+      ),
+    nifiVersion: yup.string().required('NiFi version is required'),
+    comments: yup
+      .string()
+      .required('Comment is required')
+      .test(
+        'no-leading-trailing-spaces',
+        'Username must not start or end with a space',
+        value => value === value?.trim()
+      ),
+    nifi_cluster_node_protocol_max_threads: yup
+      .number()
+      .typeError('Protocol Max thread must be a number')
+      .integer('Protocol Max thread must be an integer')
+      .positive('Protocol Max thread must be a positive number')
+      .required('Protocol Max thread is required'),
+    nifi_web_https_port: yup
+      .number()
+      .typeError('Web http port must be a number')
+      .integer('Web http port must be an integer')
+      .positive('Web http port must be a positive number')
+      .required('Web http port is required')
+      .test(
+        'len',
+        'Port must be between 4 and 5 digits',
+        val => val && val.toString().length >= 4 && val.toString().length <= 5
+      ),
+    groupDn: yup.string().required('Groups DN is required'),
+    userDn: yup.string().required('Users DN is required'),
+    userUniqueIdentifier: yup
+      .string()
+      .required('User Unique Identifier is required'),
+    groupUniqueIdentifier: yup
+      .string()
+      .required('Group Unique Identifier is required'),
+    usernameIdentifier: yup
+      .string()
+      .required('Username Identifier is required'),
+    InitialAdminIdentity: yup
+      .string()
+      .required('Username Identifier is required'),
+    ldap_login_user_filter: yup
+    .string()
+    .required('Username Identifier is required'),
+    java_arg_2: yup
+      .number()
+      .transform((value, originalValue) =>
+        originalValue === '' ? undefined : value
+      )
+      .typeError('Must be a number')
+      .positive('Must be a positive number')
+      .required('Initial heap size is required'),
+    java_arg_3: yup
+      .number()
+      .typeError('Must be a number')
+      .positive('Must be a positive number')
+      .required('Maximum heap size is required')
+      .min(
+        initialHeapSize,
+        `Maximum heap size must be at least ${initialHeapSize}`
+      ),
+    directory: yup
+      .string()
+      .required('Directory is required')
+      .matches(/^\S+$/, 'Directory cannot contain spaces'),
+    partitions: yup.string().required('Partitions is required'),
+    root_node: yup
+      .string()
+      .required('Root node is required')
+      .matches(/^\S+$/, 'Root node cannot contain spaces'),
+  });
+  const schemaConnectionCheck = yup.object().shape({
+    url: yup.string().required('LDAP URL is required'),
+    loginDn: yup.string().required('Login DN is required'),
+    password2: yup.string().required('Password is required'),
+  });
+  const {
+    register: registerForm1,
+    handleSubmit: handleSubmitForm1,
+    formState: { errors: errorsForm1 },
+    reset: reset1,
+    setValue: setValueForm1,
+    watch: watchForm1,
+  } = useForm({
+    resolver: yupResolver(schemaConnectionCheck),
+  });
 
+const watchedFields = watchForm1(['url', 'loginDn', 'password2']);
+
+useEffect(() => {
+  const [url, loginDn, password2] = watchedFields;
+
+  const ldapData = safeParseJSON(configToEdit?.login_identity_providers);
+  if (!ldapData) return;
+
+  const { ldap_login_dn, ldap_login_password, ldap_url } = ldapData;
+
+  const isMatch =
+    ldap_login_dn === loginDn &&
+    ldap_login_password === password2 &&
+    ldap_url === url;
+
+  setLdapTested(isMatch);
+  if (!isMatch) {
+    setFormChanged(true);
+  }
+}, [watchedFields[0], watchedFields[1], watchedFields[2], configToEdit?.login_identity_providers]);
+
+  const schema =
+    methodForLoginIdentity === 'single-user-provider'
+      ? schemaUserPassword
+      : schemaLDAPlogin;
   const {
     register,
     handleSubmit,
@@ -266,8 +524,58 @@ const ClusterSetupNewConfigDetailsPage = () => {
       java_arg_3: 0,
       always_sync: 'false',
       access_control: 'Open',
+      loginProvider: 'single-user-provider',
+      ldap_login_identity_strategy: 'USE_USERNAME',
+      scope: 'SUBTREE',
     },
   });
+
+  const scopeOptions = [
+    {
+      label: 'Subtree',
+      value: 'SUBTREE',
+    },
+    {
+      label: 'One Level',
+      value: 'ONE_LEVEL',
+    },
+    {
+      label: 'Object',
+      value: 'OBJECT',
+    },
+  ];
+  const loginIdentityStrategy = [
+    {
+      label: 'USE_USERNAME',
+      value: 'USE_USERNAME',
+    },
+    {
+      label: 'USE_DN',
+      value: 'USE_DN',
+    },
+  ];
+  const handleKeyDown = e => {
+    const value = e.target.value.trim();
+
+    if (e.key === 'Enter' || e.key === ',' || (e.type === 'blur' && value)) {
+      if (tags.length >= 5) {
+        toast.error('Maximum 5 tags allowed');
+        e.target.value = '';
+        return;
+      }
+      if (!tags.includes(value)) {
+        setTags([...tags, value]);
+        e.target.value = '';
+      } else {
+        toast.error('Tag already exists');
+      }
+    } else if (e.key === 'Backspace' && !value) {
+      removeTag(tags[tags.length - 1]);
+    }
+  };
+  const removeTag = tagToRemove => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
 
   const formValues = watch();
 
@@ -281,20 +589,34 @@ const ClusterSetupNewConfigDetailsPage = () => {
 
   useEffect(() => {
     if (!isEmpty(originalValues)) {
-      const hasChanged = Object.keys(formValues).some(key => {
-        if (typeof formValues[key] === 'object' && formValues[key] !== null) {
-          return (
-            JSON.stringify(formValues[key]) !=
-            JSON.stringify(originalValues[key])
-          );
+      // Create copies for comparison that exclude loginProvider
+      const formValuesForComparison = { ...formValues }
+      const originalValuesForComparison = { ...originalValues }
+  
+      // Don't consider loginProvider changes when determining if form has changed
+      delete formValuesForComparison.loginProvider
+      delete originalValuesForComparison.loginProvider
+  
+      const hasChanged = Object.keys(formValuesForComparison).some((key) => {
+        // Skip loginProvider comparison
+        if (key === "loginProvider") return false
+  
+        if (typeof formValuesForComparison[key] === "object" && formValuesForComparison[key] !== null) {
+          return JSON.stringify(formValuesForComparison[key]) !== JSON.stringify(originalValuesForComparison[key])
         }
+  
+        return formValuesForComparison[key] !== originalValuesForComparison[key]
+      })
+  
+      // Compare tags separately
+      const isSameTags = isEqual(
+        sortBy(tags),
+        sortBy(originalValues?.groupObjectClass || [])
+      );
 
-        return formValues[key] != originalValues[key];
-      });
-
-      setFormChanged(hasChanged);
+      setFormChanged(hasChanged || !isSameTags);
     }
-  }, [formValues, originalValues]);
+  }, [formValues, originalValues, tags]);
 
   useEffect(() => {
     return () => {
@@ -339,78 +661,132 @@ const ClusterSetupNewConfigDetailsPage = () => {
     return match ? match[1] : '';
   };
 
-  const populateFormWithConfigData = () => {
-    if (isEmpty(configToEdit)) return;
+const populateFormWithConfigData = () => {
+  if (isEmpty(configToEdit)) return;
 
-    // Base fields
-    const { config_name, nifi_version, comments } = configToEdit;
-    setValue('configName', config_name);
-    setValue('nifiVersion', nifi_version);
-    setValue('comments', comments);
+  const {
+    config_name,
+    nifi_version,
+    comments,
+    nifi_properties,
+    bootstrap,
+    login_identity_providers,
+    state_management,
+  } = configToEdit;
 
-    const nifiProps = safeParseJSON(configToEdit.nifi_properties);
-    const bootstrap = safeParseJSON(configToEdit.bootstrap);
-    const loginProviders = safeParseJSON(configToEdit.login_identity_providers);
-    const stateManagement = safeParseJSON(configToEdit.state_management);
+  const nifiProps = safeParseJSON(nifi_properties) || {};
+  const bootstrapProps = safeParseJSON(bootstrap) || {};
+  const loginProviders = safeParseJSON(login_identity_providers) || {};
+  const stateManagement = safeParseJSON(state_management) || {};
 
-    // Set NiFi properties
-    setValue('nifi_cluster_is_node', nifiProps.nifi_cluster_is_node);
-    setValue(
-      'nifi_cluster_node_protocol_max_threads',
-      nifiProps.nifi_cluster_node_protocol_max_threads
-    );
-    setValue(
-      'nifi_cluster_flow_election_max_wait_time',
-      nifiProps.nifi_cluster_flow_election_max_wait_time
-    );
-    setValue(
-      'nifi_state_management_embedded_zookeeper_start',
-      nifiProps.nifi_state_management_embedded_zookeeper_start
-    );
-    setValue(
-      'nifi_zookeeper_connect_timeout',
-      nifiProps.nifi_zookeeper_connect_timeout
-    );
-    setValue('nifi_web_https_port', nifiProps.nifi_web_https_port);
+  setValue('configName', config_name);
+  setValue('nifiVersion', nifi_version);
+  setValue('comments', comments);
 
-    // Set Bootstrap values
-    setValue('java_arg_2', getMemoryValue(bootstrap.java_arg_2));
-    setValue('java_arg_3', getMemoryValue(bootstrap.java_arg_3));
+  const {
+    nifi_user_login_provider,
+    nifi_cluster_is_node,
+    nifi_cluster_node_protocol_max_threads,
+    nifi_cluster_flow_election_max_wait_time,
+    nifi_zookeeper_connect_timeout,
+    nifi_web_https_port
+  } = nifiProps;
 
-    // Set Login Provider values
+  const isLdapProvider = nifi_user_login_provider === 'ldap-provider';
+
+  setValue('loginProvider', nifi_user_login_provider ?? 'single-user-provider');
+  setValue('nifi_cluster_is_node', nifi_cluster_is_node);
+  setValue('nifi_cluster_node_protocol_max_threads', nifi_cluster_node_protocol_max_threads);
+  setValue('nifi_cluster_flow_election_max_wait_time', nifi_cluster_flow_election_max_wait_time);
+  setValue('nifi_zookeeper_connect_timeout', nifi_zookeeper_connect_timeout);
+  setValue('nifi_web_https_port', nifi_web_https_port);
+
+  setValue('java_arg_2', getMemoryValue(bootstrapProps.java_arg_2));
+  setValue('java_arg_3', getMemoryValue(bootstrapProps.java_arg_3));
+
+  if (isLdapProvider) {
+    const groupObjectClass = loginProviders?.ldap_group_object_class?.split(',') ?? [];
+
+    const ldapFields = {
+      userDn: loginProviders.ldap_users_dn,
+      usernameIdentifier: loginProviders.ldap_user_username_identifier,
+      userUniqueIdentifier: loginProviders.ldap_user_unique_identifier,
+      groupDn: loginProviders.ldap_groups_dn,
+      groupObjectClass,
+      groupUniqueIdentifier: loginProviders.ldap_group_unique_identifier,
+      filter: loginProviders.ldap_group_filter,
+      InitialAdminIdentity: loginProviders.ldap_initial_admin_identity,
+      ldap_login_identity_strategy: loginProviders.ldap_login_identity_strategy,
+      scope: loginProviders.ldap_select_scope,
+      ldap_login_user_filter: loginProviders.ldap_login_user_filter,
+    };
+
+    Object.entries(ldapFields).forEach(([key, value]) => setValue(key, value));
+
+    setValueForm1('loginDn', loginProviders.ldap_login_dn);
+    setValueForm1('password2', loginProviders.ldap_login_password);
+    setValueForm1('url', loginProviders.ldap_url);
+
+    setTags(groupObjectClass);
+    setLdapConnectData({
+      loginDn: loginProviders.ldap_login_dn,
+      password2: loginProviders.ldap_login_password,
+      url: loginProviders.ldap_url,
+    });
+    setLdapTested(true);
+  } else {
     setValue('username', loginProviders.username);
     setValue('password', loginProviders.password);
+  }
 
-    // Set State Management values
-    setValue('directory', stateManagement.directory);
-    setValue('always_sync', stateManagement.always_sync);
-    setValue('partitions', stateManagement.partitions);
-    setValue('checkpoint_interval', stateManagement.checkpoint_interval);
-    setValue('root_node', stateManagement.root_node);
-    setValue('session_timeout', stateManagement.session_timeout);
+  const {
+    directory,
+    always_sync,
+    partitions,
+    checkpoint_interval,
+    root_node,
+    session_timeout,
+    access_control
+  } = stateManagement;
 
-    // Handle select field
-    if (stateManagement.access_control) {
-      const accessControlOption = ACCESS_CONTROL_OPTIONS.find(
-        option => option.value === stateManagement.access_control
-      );
-      setValue(
-        'access_control',
-        accessControlOption || {
-          value: stateManagement.access_control,
-          label: stateManagement.access_control,
-        }
-      );
-    }
+  setValue('directory', directory);
+  setValue('always_sync', always_sync);
+  setValue('partitions', partitions);
+  setValue('checkpoint_interval', checkpoint_interval);
+  setValue('root_node', root_node);
+  setValue('session_timeout', session_timeout);
 
-    // After all values are set, capture them as original values
-    setTimeout(() => {
-      setOriginalValues({ ...watch() });
-      setFormChanged(false);
-    }, 0);
-  };
+  if (access_control) {
+    const accessControlOption = ACCESS_CONTROL_OPTIONS.find(
+      option => option.value === access_control
+    ) ?? { value: access_control, label: access_control };
+
+    setValue('access_control', accessControlOption);
+  }
+
+  const originalLoginData = isLdapProvider
+    ? {
+        ...loginProviders,
+        groupObjectClass: loginProviders.ldap_group_object_class?.split(',') ?? []
+      }
+    : {
+        username: loginProviders.username,
+        password: loginProviders.password,
+      };
+
+  setOriginalLoginValues(originalLoginData);
+
+  setTimeout(() => {
+    setOriginalValues({ ...watch() });
+    setFormChanged(false);
+  }, 0);
+};
 
   const handleAddConfig = async data => {
+    if (!isEmpty(configToEdit) && methodForLoginIdentity === 'ldap-provider' && !ldapTested) {
+      toast.error('Please test LDAP credentials before Proceeding');
+      return;
+    }
     const nifiPropertyPayload = {
       nifi_cluster_is_node: data?.nifi_cluster_is_node,
       nifi_cluster_node_protocol_max_threads:
@@ -418,19 +794,45 @@ const ClusterSetupNewConfigDetailsPage = () => {
       nifi_cluster_flow_election_max_wait_time:
         data?.nifi_cluster_flow_election_max_wait_time,
       nifi_state_management_embedded_zookeeper_start:
-        data?.nifi_state_management_embedded_zookeeper_start,
+        data?.nifi_cluster_is_node,
       nifi_zookeeper_connect_timeout: data?.nifi_zookeeper_connect_timeout,
       nifi_web_https_port: data?.nifi_web_https_port,
+      nifi_user_login_provider:
+        methodForLoginIdentity === 'single-user-provider'
+          ? 'single-user-provider'
+          : 'ldap-provider',
     };
     const bootstrapPayload = {
       java_arg_2: `-Xms${data?.java_arg_2}g`,
       java_arg_3: `-Xmx${data?.java_arg_3}g`,
     };
+    const loginLDAPdata = {
+      ldap_login_dn: ldapConnectionData?.loginDn,
+      ldap_login_password: ldapConnectionData?.password2,
+      ldap_url: ldapConnectionData?.url,
 
-    const loginPayload = {
+      ldap_users_dn: data?.userDn,
+      ldap_user_username_identifier: data?.usernameIdentifier,
+      ldap_user_unique_identifier: data?.userUniqueIdentifier,
+      ldap_groups_dn: data?.groupDn,
+      ldap_group_object_class: tags.join(','),
+      ldap_select_scope: data?.scope,
+      ldap_group_unique_identifier: data?.groupUniqueIdentifier,
+      ldap_group_filter: data?.filter,
+      ldap_initial_admin_identity: data?.InitialAdminIdentity,
+      ldap_login_user_filter: data?.ldap_login_user_filter,
+      ldap_login_identity_strategy: data?.ldap_login_identity_strategy,
+    };
+    const loginUserPassData = {
       username: data?.username,
       password: data?.password,
     };
+
+    const loginPayload =
+      methodForLoginIdentity === 'single-user-provider'
+        ? loginUserPassData
+        : loginLDAPdata;
+
     const statePayload = {
       directory: data?.directory,
       always_sync: data?.always_sync,
@@ -440,6 +842,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       session_timeout: data?.session_timeout,
       access_control: data?.access_control?.value || data?.access_control,
     };
+
     const payload = new FormData();
     payload.append('configName', data?.configName);
     payload.append('nifiVersion', data?.nifiVersion);
@@ -485,6 +888,93 @@ const ClusterSetupNewConfigDetailsPage = () => {
       return;
     }
   };
+  const methodForLogin = watch('loginProvider');
+
+  useEffect(() => {
+    if (methodForLogin) {
+      // Store current form state before changing authentication method
+      const currentFormValues = { ...watch() }
+  
+      setMethodForLoginIdentity(methodForLogin)
+  
+      if (methodForLogin === "ldap-provider") {
+        // Reset username/password fields without triggering form changes
+        setValue("username", originalLoginValues.username || undefined, { shouldDirty: false })
+        setValue("password", originalLoginValues.password || undefined, { shouldDirty: false })
+      } else if (methodForLogin === "single-user-provider") {
+        // Reset LDAP fields without triggering form changes
+        setValue("userDn", originalLoginValues.userDn || undefined, { shouldDirty: false })
+        setValue("usernameIdentifier", originalLoginValues.usernameIdentifier || undefined, { shouldDirty: false })
+        setValue("userUniqueIdentifier", originalLoginValues.userUniqueIdentifier || undefined, { shouldDirty: false })
+        setValue("groupDn", originalLoginValues.groupDn || undefined, { shouldDirty: false })
+        setValue("groupUniqueIdentifier", originalLoginValues.groupUniqueIdentifier || undefined, {
+          shouldDirty: false,
+        })
+        setValue("filter", originalLoginValues.filter || undefined, { shouldDirty: false })
+        setValue("InitialAdminIdentity", originalLoginValues.InitialAdminIdentity || undefined, { shouldDirty: false })
+        setValue("ldap_login_user_filter", originalLoginValues.ldap_login_user_filter || undefined, {
+          shouldDirty: false,
+        })
+  
+        // Reset tags to original state
+        setTags(originalLoginValues.groupObjectClass || [])
+      }
+  
+      // After switching, update originalValues to reflect the new authentication method
+      setTimeout(() => {
+        const newFormValues = { ...watch() }
+        setOriginalValues((prev) => ({
+          ...prev,
+          ...newFormValues,
+          loginProvider: methodForLogin,
+        }))
+      }, 0)
+    }
+  }, [methodForLogin, setValue, originalLoginValues])
+
+  useEffect(() => {
+    if (methodForLogin) {
+      setMethodForLoginIdentity(methodForLogin);
+    }
+  }, [methodForLogin]);
+  
+  useEffect(() => {
+    if (formValues.username === '') {
+      setValue('username', undefined);
+    }
+    if (formValues.password === '') {
+      setValue('password', undefined);
+    }
+  }, [formValues.username, formValues.password, setValue]);
+  const onSubmitConnectionCheck = async data => {
+    setLoading(true);
+    setLdapConnectData(data);
+    const payload = {
+      url: data.url,
+      password: data.password2,
+      loginDn: data.loginDn,
+    };
+
+    try {
+      const response = await testConfigApi(payload);
+      if (response?.status === 200) {
+        setSuccessTest(true);
+        setLdapTested(true);
+        toast.success('LDAP connection successful');
+      } else {
+        toast.error(
+          response?.message ||
+            response?.data?.message ||
+            'LDAP connection failed'
+        );
+      }
+    } catch (error) {
+      toast.error('Failed to connect to LDAP server');
+      console.error('LDAP Connection Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Wrapper>
@@ -517,7 +1007,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
             />
           </div>
           <div className="col-4">
-            <SelectField
+            <StyledSelectField
               label={KDFM.NIFI_VERSION}
               name="nifiVersion"
               icon={<QRIcons />}
@@ -527,12 +1017,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
               control={control}
               options={nifiVerionsOptions || []}
               placeholder={KDFM.SELECT_NIFI_VERSION}
+              height="54px"
+              labelMargin="0px"
             />
           </div>
           <div className="col-4">
-            <LabelSelect>{KDFM.COMMENTS}</LabelSelect>
-
             <InputField
+              label={KDFM.COMMENTS}
               name="comments"
               type="text"
               placeholder={KDFM.ENTER_YOUR_COMMENTS}
@@ -587,9 +1078,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect>Protocol Max Threads</LabelSelect>
-
                       <InputField
+                        label="Protocol Max Threads"
                         name="nifi_cluster_node_protocol_max_threads"
                         type="text"
                         placeholder="Enter Protocol Max Threads"
@@ -601,19 +1091,19 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
-                        Flow Election Max Wait Time
-                      </LabelSelect>
-
-                      <SelectField
+                      <StyledSelectField
+                        label="Flow Election Max Wait Time"
                         name="nifi_cluster_flow_election_max_wait_time"
                         icon={<QRIcons />}
+                        size="lg"
                         errors={errors}
                         control={control}
                         options={FLOW_ELECTION_MAX_WAIT_OPTIONS}
                         placeholder="Select Flow Election Max Wait Time"
                         sortAlphabetically={false}
                         defaultValue="5"
+                        height="54px"
+                        labelMargin="0px"
                       />
                     </div>
                     <div className="col-2">
@@ -636,10 +1126,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect className="mb-3">
-                        Zookeeper Connection Timeout
-                      </LabelSelect>
-                      <SelectField
+                      <StyledSelectField
+                        label="Zookeeper Connection Timeout"
                         name="nifi_zookeeper_connect_timeout"
                         icon={<QRIcons />}
                         errors={errors}
@@ -647,17 +1135,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         options={ZOOKEEPER_CONNECTION_TIMEOUT}
                         placeholder="Select Zookeeper Connection Timeout"
                         sortAlphabetically={false}
+                        height="54px"
+                        labelMargin="0px"
                       />
                     </div>{' '}
-                    <div className="col-2">
-                      <RadioSelectField
-                        name="nifi_state_management_embedded_zookeeper_start"
-                        options={TRUE_FALSE_OPTIONS}
-                        label="Embedded  Node"
-                        register={register}
-                        defaultValue={'true'}
-                      />
-                    </div>
                   </div>
                 </div>
 
@@ -669,9 +1150,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                   </TitleTabWrapper>
                   <div className="row mt-3">
                     <div className="col-5">
-                      <LabelSelect>Web Http Port</LabelSelect>
-
                       <InputField
+                        label="Web Http Port"
                         name="nifi_web_https_port"
                         type="text"
                         placeholder="Enter Http Port"
@@ -695,7 +1175,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <div className="col-4">
                       <LabelSelect className="ms-1 row">
                         Java.arg.2
-                        <LabelWarning>(Initial Heap Size in GB)</LabelWarning>
+                        <LabelWarning>
+                          (Initial Heap Size in GB)
+                          <span className="text-danger">*</span>
+                        </LabelWarning>
                       </LabelSelect>
 
                       <InputField
@@ -711,7 +1194,10 @@ const ClusterSetupNewConfigDetailsPage = () => {
                     <div className="col-4">
                       <LabelSelect className="row">
                         Java.arg.3
-                        <LabelWarning>(Maximum Heap Size in GB)</LabelWarning>
+                        <LabelWarning>
+                          (Maximum Heap Size in GB)
+                          <span className="text-danger">*</span>
+                        </LabelWarning>
                       </LabelSelect>
 
                       <InputField
@@ -731,39 +1217,318 @@ const ClusterSetupNewConfigDetailsPage = () => {
             {selectedProperty === 'login_identity_provider' && (
               <div>
                 <div>
-                  <TitleTabWrapper className="mt-3">
-                    <TitleTab className="ms-3">
-                      Single User Login Identity Provider
-                    </TitleTab>
-                  </TitleTabWrapper>
-                  <div className="row mt-3">
-                    <div className="col-4">
-                      <LabelSelect>Username</LabelSelect>
-
-                      <InputField
-                        name="username"
-                        type="text"
-                        placeholder="Enter Username"
-                        required
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
-                    </div>
-                    <div className="col-4">
-                      <PasswordField
-                        name="password"
-                        label="Password"
-                        placeholder="Enter Password"
-                        required
-                        watch={watch}
-                        register={register}
-                        errors={errors}
-                        icon={<NotePadIcon />}
-                      />
+                  <RadioSelectField
+                    key={`loginProvider-${selectedProperty}-${watch('loginProvider')}`}
+                    name="loginProvider"
+                    register={register}
+                    errors={errors}
+                    defaultValue={
+                      watch('loginProvider') || 'single-user-provider'
+                    }
+                    options={[
+                      {
+                        label: 'Single User Login Identity Provider',
+                        value: 'single-user-provider',
+                      },
+                      {
+                        label: 'LDAP Configuration Provider',
+                        value: 'ldap-provider',
+                      },
+                    ]}
+                  />
+                </div>
+                {watch('loginProvider') === 'single-user-provider' && (
+                  <div>
+                    <TitleTabWrapper className="mt-3">
+                      <TitleTab className="ms-3">
+                        Single User Login Identity Provider
+                      </TitleTab>
+                    </TitleTabWrapper>
+                    <div className="row mt-3">
+                      <div className="col-4">
+                        <InputField
+                          label="Username"
+                          name="username"
+                          type="text"
+                          placeholder="Enter Username"
+                          required
+                          register={register}
+                          errors={errors}
+                          icon={<NotePadIcon />}
+                        />
+                      </div>
+                      <div className="col-4">
+                        <PasswordField
+                          name="password"
+                          label="Password"
+                          placeholder="Enter Password"
+                          required
+                          watch={watch}
+                          register={register}
+                          errors={errors}
+                          icon={<NotePadIcon />}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
+
+                {watch('loginProvider') === 'ldap-provider' && (
+                  <div>
+                    <TitleTabWrapper className="mt-3">
+                      <TitleTab className="ms-3">
+                        LDAP Configuration Provider
+                      </TitleTab>
+                    </TitleTabWrapper>
+
+                    <div className="row mt-3">
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="url"
+                          type="text"
+                          register={registerForm1}
+                          label="LDAP URL"
+                          placeholder="Enter your LDAP URL"
+                          icon={<LinkIcon />}
+                          errors={errorsForm1}
+                          required
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="loginDn"
+                          type="text"
+                          register={registerForm1}
+                          label="Login DN"
+                          placeholder="Enter your Login DN"
+                          icon={<QRIcons />}
+                          errors={errorsForm1}
+                          required
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <PasswordField
+                          name="password2"
+                          register={registerForm1}
+                          errors={errorsForm1}
+                          required
+                          watch={watchForm1}
+                          label="Password"
+                        />
+                      </div>
+                      <ButtonFlex>
+                        <div className="col-xl-2 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                          <Button
+                            size="md"
+                            onClick={handleSubmitForm1(onSubmitConnectionCheck)}
+                            loading={loading}
+                            disabled={ldapTested}
+                          >
+                            Connect
+                          </Button>
+                        </div>
+                      </ButtonFlex>
+                      {/* /// */}
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="groupDn"
+                          type="text"
+                          register={register}
+                          label="Groups DN"
+                          placeholder="Enter your Groups DN"
+                          icon={<QRIcons />}
+                          errors={errors}
+                          required
+                          disabled={!ldapTested}
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="userDn"
+                          type="text"
+                          watch={watch}
+                          register={register}
+                          label="Users DN"
+                          placeholder="Enter your Users DN"
+                          icon={<QRIcons />}
+                          errors={errors}
+                          required
+                          disabled={!ldapTested}
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="userUniqueIdentifier"
+                          type="text"
+                          watch={watch}
+                          register={register}
+                          errors={errors}
+                          label="User Unique Identifier"
+                          placeholder="Enter User Identifier"
+                          icon={<QRIcons />}
+                          required
+                          disabled={!ldapTested}
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="groupUniqueIdentifier"
+                          type="text"
+                          watch={watch}
+                          register={register}
+                          errors={errors}
+                          label="Group Unique Identifier"
+                          placeholder="Enter Group Identifier"
+                          icon={<QRIcons />}
+                          required
+                          disabled={!ldapTested}
+                        />
+                      </div>
+                      <div
+                        className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele"
+                        style={{
+                          pointerEvents: !ldapTested ? 'none' : 'auto',
+                          cursor: !ldapTested
+                            ? 'not-allowed'
+                            : 'pointer',
+                        }}
+                      >
+                        <TagLable
+                          htmlFor="tags-input"
+                          className="tags-input-label"
+                        >
+                          Group Object Class
+                        </TagLable>
+                        <TagsInputContainer>
+                          <IconTag>
+                            <TagIcon />
+                          </IconTag>
+                          {!isEmpty(tags) &&
+                            tags?.map((tag, index) => (
+                              <TagItem key={index}>
+                                <CharacterCount>
+                                  {!isEmpty(tags) && tag?.length > 10
+                                    ? `${tag.substring(0, 10)}...`
+                                    : tag}
+                                </CharacterCount>
+                                <CloseButton onClick={() => removeTag(tag)}>
+                                  &times;
+                                </CloseButton>
+                              </TagItem>
+                            ))}
+                          <TagsInput
+                            type="text"
+                            name="groupObjectClass"
+                            onKeyDown={handleKeyDown}
+                            placeholder={
+                              tags.length === 0 ? 'Group Object Class' : ''
+                            }
+                            onBlur={handleKeyDown}
+                            aria-label="Group Object Class"
+                            disabled={!ldapTested}
+                            register={register}
+                          />
+                        </TagsInputContainer>
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="usernameIdentifier"
+                          type="text"
+                          watch={watch}
+                          register={register}
+                          label="Username identifier"
+                          placeholder="Enter Username identifier"
+                          icon={<QRIcons />}
+                          errors={errors}
+                          // errors={errorsForm2}
+                          required
+                          disabled={!ldapTested}
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="filter"
+                          type="text"
+                          watch={watch}
+                          register={register}
+                          label={
+                            <>
+                              Group Filter{' '}
+                              <em>ex: (|(cn=admin)(cn=developer))</em>
+                            </>
+                          }
+                          placeholder="Enter Filter"
+                          icon={<QRIcons />}
+                          errors={errors}
+                          disabled={!ldapTested}
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="InitialAdminIdentity"
+                          type="text"
+                          watch={watch}
+                          register={register}
+                          label="Initial Admin Identity"
+                          placeholder="Enter Admin identifier"
+                          icon={<QRIcons />}
+                          errors={errors}
+                          required
+                          disabled={!ldapTested}
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele">
+                        <InputField
+                          name="ldap_login_user_filter"
+                          type="text"
+                          watch={watch}
+                          register={register}
+                          label="Login User search filter"
+                          placeholder="Enter Login User search filter"
+                          icon={<QRIcons />}
+                          errors={errors}
+                          required
+                          disabled={!ldapTested}
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mb-2">
+                        <LabelSelect>Select Scope</LabelSelect>
+                        <StyledSelectField
+                          name="scope"
+                          size="sm"
+                          options={scopeOptions || []}
+                          watch={watch}
+                          register={register}
+                          placeholder="Select Scope"
+                          title="Select Scope"
+                          control={control}
+                          disabled={!ldapTested}
+                        />
+                      </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele mb-2">
+                        <LabelSelect>Login identity strategy</LabelSelect>
+                        <StyledSelectField
+                          name="ldap_login_identity_strategy"
+                          size="sm"
+                          options={loginIdentityStrategy || []}
+                          watch={watch}
+                          register={register}
+                          placeholder="Select Login identity strategy"
+                          title="Login identity strategy"
+                          control={control}
+                          disabled={!ldapTested}
+                        />
+                      </div>
+                    </div>
+                    <SuccessTestModal
+                      successTest={successTest}
+                      setSuccessTest={setSuccessTest}
+                      name="Connected with LDAP successfully"
+                      text="Continue with the next steps"
+                      title="Connection Successful"
+                    />
+                  </div>
+                )}
               </div>
             )}
             {selectedProperty === 'state_management_xml' && (
@@ -802,10 +1567,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>
                     <div className="col-4">
-                      <LabelSelect className="mb-3">
-                        Checkpoint Interval
-                      </LabelSelect>
-                      <SelectField
+                      <StyledSelectField
+                        label="Checkpoint Interval"
                         name="checkpoint_interval"
                         icon={<QRIcons />}
                         errors={errors}
@@ -813,6 +1576,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         options={CHECKPOINT_INTERVAL_OPTIONS}
                         placeholder="Select Checkpoint Interval"
                         sortAlphabetically={false}
+                        height="54px"
+                        labelMargin="0px"
                       />
                     </div>
                     <div>
@@ -848,10 +1613,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                       />
                     </div>{' '}
                     <div className="col-4">
-                      <LabelSelect className="mb-3">
-                        Session Timeout
-                      </LabelSelect>
-                      <SelectField
+                      <StyledSelectField
+                        label="Session Timeout"
                         name="session_timeout"
                         icon={<QRIcons />}
                         errors={errors}
@@ -859,12 +1622,13 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         options={SESSION_TIMEOUT_OPTIONS}
                         placeholder="Select Session Timeout"
                         sortAlphabetically={false}
+                        height="54px"
+                        labelMargin="0px"
                       />
                     </div>{' '}
                     <div className="col-4">
-                      <LabelSelect className="mb-3">Access Control</LabelSelect>
-
-                      <SelectField
+                      <StyledSelectField
+                        label="Access Control"
                         name="access_control"
                         icon={<QRIcons />}
                         errors={errors}
@@ -873,6 +1637,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
                         placeholder="Select Access Control "
                         sortAlphabetically={false}
                         defaultValue="Open"
+                        height="54px"
+                        labelMargin="0px"
                       />
                     </div>
                   </div>
@@ -886,6 +1652,7 @@ const ClusterSetupNewConfigDetailsPage = () => {
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button
+            data-tooltip-id={`tooltip-manage-config-from-add-new-config`}
             variant="secondary"
             type="button"
             onClick={() => {
@@ -896,6 +1663,16 @@ const ClusterSetupNewConfigDetailsPage = () => {
           >
             {KDFM.BACK}
           </Button>
+          <ReactTooltip
+            id={`tooltip-manage-config-from-add-new-config`}
+            place="top"
+            content={'Back to Manage Config'}
+            style={{
+              width: '170px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
 
           <Button
             type="submit"
