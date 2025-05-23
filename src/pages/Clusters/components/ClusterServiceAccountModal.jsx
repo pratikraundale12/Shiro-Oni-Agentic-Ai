@@ -104,6 +104,7 @@ export const ClusterServiceAccountModal = ({
     reset,
     control,
     formState: { errors },
+    handleSubmit,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -371,7 +372,7 @@ export const ClusterServiceAccountModal = ({
               type="button"
               variant="primary"
               loading={loading}
-              onClick={handleSave}
+              onClick={handleSubmit(handleSave)}
             >
               Save
             </Button>

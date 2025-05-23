@@ -226,10 +226,16 @@ export const Add = () => {
   });
 
   useEffect(() => {
-    if (clusterData) {
+    const originalData = data || {};
+    if (
+      clusterData.clusterName !== originalData.name ||
+      clusterData.nifiUrl !== originalData.nifi_url ||
+      clusterData.metrics_url !== originalData.metrics_url ||
+      clusterData.logs_url !== originalData.logs_url
+    ) {
       dispatch(ClustersActions.addEditClusterData(clusterData));
     }
-  }, [clusterData]);
+  }, [clusterData, data, dispatch]);
 
   const [registryData, setRegistryData] = useState({
     registryName: '',
@@ -728,7 +734,6 @@ export const Add = () => {
             )}
           </FormContainer>
         )}
-
 
         {activeTab === CLUSTER_MODULE_TABS.REGISTRY && !newRegistry && (
           <FormContainer>
