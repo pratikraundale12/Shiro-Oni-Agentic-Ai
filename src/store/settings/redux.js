@@ -9,6 +9,10 @@ export const SettingsActions = {
   refreshSetting: createAction(`${prefix}refreshSetting`),
   flowValidationModalOpen: createAction(`${prefix}flowValidationModalOpen`),
   addNewValidationModalOpen: createAction(`${prefix}addNewValidationModalOpen`),
+  downloadLogsZip: createAction(`${prefix}downloadLogsZip`),
+  downloadLogsRequest: createAction(`${prefix}downloadLogsRequest`),
+  downloadLogsSuccess: createAction(`${prefix}downloadLogsSuccess`),
+  downloadLogsFailure: createAction(`${prefix}downloadLogsFailure`),
 };
 
 // /* ------------- INITIAL STATE ------------- */
@@ -16,6 +20,7 @@ export const SETTING_INITIAL_STATE = {
   data: {},
   flowValidationModalOpen: false,
   addNewValidationModalOpen: false,
+  isDownloading: false,
 };
 
 // /* ------------- SELECTORS ------------------ */
@@ -24,6 +29,7 @@ export const SettingsSelectors = {
   getFlowValidationModal: state => state.settings.flowValidationModalOpen,
   getAddNewValidationModalOpen: state =>
     state.settings.addNewValidationModalOpen,
+  getIsDownloading: state => state.settings.isDownloading,
 };
 
 // /* ------------- REDUCERS ------------------- */
@@ -57,5 +63,14 @@ export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
     .addCase(
       SettingsActions.addNewValidationModalOpen,
       handleAddNewValidationModalOpen
-    );
+    )
+    .addCase(SettingsActions.downloadLogsRequest, state => {
+      state.isDownloading = true;
+    })
+    .addCase(SettingsActions.downloadLogsSuccess, state => {
+      state.isDownloading = false;
+    })
+    .addCase(SettingsActions.downloadLogsFailure, state => {
+      state.isDownloading = false;
+    });
 });

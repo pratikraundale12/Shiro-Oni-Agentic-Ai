@@ -97,19 +97,38 @@ export const ListNamespaces = () => {
     item => item?.id === selectedCluster?.value
   );
 
+  const selectedClusterString = localStorage.getItem('selected_cluster');
+  const parsedSelectedCluster = JSON.parse(selectedClusterString);
+
   useEffect(() => {
     if (
-      (isEmpty(settingsData?.username) && isEmpty(selectedClusterObj)) ||
-      (isEmpty(settingsData?.username) &&
+      (!isEmpty(settingsData) &&
+        isEmpty(settingsData?.username) &&
+        isEmpty(selectedClusterObj) &&
+        isEmpty(parsedSelectedCluster?.value)) ||
+      (!isEmpty(settingsData) &&
+        isEmpty(settingsData?.username) &&
         !isEmpty(selectedClusterObj) &&
-        !selectedClusterObj?.[0]?.has_custom_service_account)
+        !selectedClusterObj?.[0]?.has_custom_service_account &&
+        !isEmpty(parsedSelectedCluster?.value))
     ) {
       toast.info(
-        'The service account has not been configured. Please complete the configuration to proceed.',
+        isEmpty(selectedCluster?.value)
+          ? 'Please login to cluster'
+          : 'The service account has not been configured. Please complete the configuration to proceed.',
         { toastId: 'login-service-account-toast', autoClose: 5000 }
       );
+    } else if (
+      !isEmpty(settingsData) &&
+      !isEmpty(settingsData?.username) &&
+      isEmpty(parsedSelectedCluster?.value)
+    ) {
+      toast.info('Please login to cluster', {
+        toastId: 'login-cluster-toast',
+        autoClose: 5000,
+      });
     }
-  }, [settingsData?.username, selectedClusterObj]);
+  }, [settingsData?.username, selectedClusterObj, parsedSelectedCluster]);
   const handleScheduleClick = item => {
     dispatch(SchedularActions.setScheduleFromList(true));
     handleSelect(item);
