@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { ClustersSelectors } from '../../../store';
 import { Loader } from '../../../components';
 import { isEmpty } from 'lodash';
+import { FailedLabelIcon } from '../../../assets/Icons/FailedLabelIcon';
 
 const getInProgressSVG = () => {
   return `data:image/svg+xml,<svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5.5" cy="5.5" r="4.75" fill="%23FF7A00" /></svg>`;
@@ -164,6 +165,8 @@ const StepProgress = () => {
                   >
                     {ele?.status === 'completed' ? (
                       <CompletedLabelIcon width={110} height={40} />
+                    ) : ele?.status === 'failed' ? (
+                      <FailedLabelIcon width={110} height={40} />
                     ) : (
                       <InprogressLabelIcon width={110} height={40} />
                     )}

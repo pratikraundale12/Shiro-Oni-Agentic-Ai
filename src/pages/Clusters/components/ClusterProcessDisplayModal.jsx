@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { ClustersActions, LoadingSelectors } from '../../../store';
+import { ClustersActions, GridActions, LoadingSelectors } from '../../../store';
 import { ModalWithRightBtn } from '../../../shared';
 import { FullPageLoader } from '../../../components';
 import StepProgress from './ProgressSteps';
@@ -16,6 +16,7 @@ export const ClusterProcessDisplayModal = ({
   setIsProcessModalOpen,
   setSelectedCluster,
   selectedCluster,
+  sortingState,
 }) => {
   const dispatch = useDispatch();
   const loading = useSelector(state =>
@@ -25,12 +26,15 @@ export const ClusterProcessDisplayModal = ({
   const onRequestClose = () => {
     setIsProcessModalOpen(false);
     setSelectedCluster({});
-    // dispatch(
-    //   GridActions.fetchGrid({
-    //     module: 'clusters',
-    //     params: { page: 1, limit: 10 },
-    //   })
-    // );
+    dispatch(
+      GridActions.fetchGrid({
+        module: 'clusters',
+        params: { page: 1, limit: 10 },
+        ...(sortingState && {
+          sort: sortingState,
+        }),
+      })
+    );
   };
 
   useEffect(() => {
