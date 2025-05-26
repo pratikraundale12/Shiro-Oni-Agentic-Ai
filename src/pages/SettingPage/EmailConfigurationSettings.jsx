@@ -55,7 +55,7 @@ const StyledVerifyEmailBtn = styled(Button)`
   padding-top: 15px;
   padding-bottom: 15px;
   height: 50px;
-  width: 200px;
+  width: 140px;
   gap: 10px;
   radius: 8px;
   left: 140px;
