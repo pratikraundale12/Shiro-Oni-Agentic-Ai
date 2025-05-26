@@ -5,9 +5,13 @@ export const settingsAPI = api => {
     api.post('/logs/download-zip', payload, {
       responseType: 'blob',
     });
+  const verifyEmail = ({ to_email }) =>
+    api.post('/verify-email', { to_email: to_email });
+
   return {
     createSettings,
     fetchSettings,
     downloadLogsZip,
+    verifyEmail,
   };
 };

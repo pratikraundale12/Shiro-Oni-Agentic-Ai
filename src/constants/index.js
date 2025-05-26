@@ -210,6 +210,8 @@ export const KDFM = {
   SMTP_USER: 'SMTP  User',
   SMTP_PASS: 'SMTP  Password',
   FROM_EMAIL: 'From Email',
+  TO_EMAIL: 'To Email',
+  SEND_EMAIL: 'Send Email',
   META_TITLE: 'Meta Title',
   ACTIVATE: 'Activate',
   DEACTIVATE: 'Deactivate',
