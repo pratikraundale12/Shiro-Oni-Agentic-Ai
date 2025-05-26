@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { ClustersActions, ClustersSelectors } from '../../store';
 import { Loader } from '../../components';
-import { TriangleIcons, SquareBoxIcon } from '../../assets';
+import { TriangleIcons, SquareBoxIcon, RefreshIcon } from '../../assets';
 import styled from 'styled-components';
+import { theme } from '../../styles';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -71,6 +72,7 @@ const ClusterControlButtons = () => {
   const [selectedMethod, setSelectedMethod] = useState();
   const [startInitiated, setStartInitiated] = useState(false);
   const [stopInitiated, setStopInitiated] = useState(false);
+  const [restartInitiated, setRestartInitiated] = useState(false);
 
   const runningStatusData = useSelector(ClustersSelectors.getRunningStatusData);
 
@@ -96,6 +98,16 @@ const ClusterControlButtons = () => {
     );
   };
 
+  const handleRestartClick = () => {
+    setSelectedMethod('restart');
+    setRestartInitiated(true);
+    dispatch(
+      ClustersActions.changeClusterActionState({
+        clusterId,
+        data: { action: 'restart' },
+      })
+    );
+  };
   useEffect(() => {
     dispatch(ClustersActions.fetchClusterMetrics(clusterId));
     dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
@@ -127,6 +139,11 @@ const ClusterControlButtons = () => {
     } else {
       setStopInitiated(false);
     }
+    if (runningStatusData?.status?.restartInitiated) {
+      setRestartInitiated(true);
+    } else {
+      setRestartInitiated(false);
+    }
   }, [runningStatusData]);
 
   return (
@@ -143,10 +160,12 @@ const ClusterControlButtons = () => {
                 hoverColor="#58e715"
                 activeTextColor="#fff"
                 onClick={
-                  !(startInitiated || stopInitiated) ? handleStartClick : null
+                  !(startInitiated || stopInitiated || restartInitiated)
+                    ? handleStartClick
+                    : null
                 }
                 data-tooltip-id="start"
-                disabled={startInitiated || stopInitiated}
+                disabled={startInitiated || stopInitiated || restartInitiated}
               >
                 <TriangleIcons color="#B5BDC8" />
               </ActiveButtonDiv>
@@ -164,10 +183,12 @@ const ClusterControlButtons = () => {
                 hoverColor="#c52b2b"
                 activeTextColor="#fff"
                 onClick={
-                  !(startInitiated || stopInitiated) ? handleStopClick : null
+                  !(startInitiated || stopInitiated || restartInitiated)
+                    ? handleStopClick
+                    : null
                 }
                 data-tooltip-id="stop"
-                disabled={startInitiated || stopInitiated}
+                disabled={startInitiated || stopInitiated || restartInitiated}
               >
                 <SquareBoxIcon color="#B5BDC8" />
               </ActiveButtonDiv>
@@ -176,7 +197,29 @@ const ClusterControlButtons = () => {
               {stopInitiated ? 'Stopping...' : 'Stop Cluster'}
             </div>
           </TextsvgDiv>
-          {(startInitiated || stopInitiated) && (
+
+          <TextsvgDiv className="d-flex col-2">
+            <ActiveButtonDiv className="div-btn-2 mr-2">
+              <ActiveButtonDiv
+                className="div-btn-1"
+                activeTextColor="#fff"
+                onClick={() => {
+                  !(startInitiated || stopInitiated || restartInitiated)
+                    ? handleRestartClick()
+                    : null;
+                }}
+                disabled={startInitiated || stopInitiated || restartInitiated}
+              >
+                <RefreshIcon color={theme.colors.primary} />
+              </ActiveButtonDiv>
+            </ActiveButtonDiv>
+            <div>
+              {' '}
+              {restartInitiated ? 'Restarting Cluster...' : 'Restart Cluster'}
+            </div>
+          </TextsvgDiv>
+
+          {(startInitiated || stopInitiated || restartInitiated) && (
             <div className="col-3">
               <div className="row">
                 <div className="col-2">
