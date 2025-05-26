@@ -217,6 +217,7 @@ export const NamespacesActions = {
   setParameterEditingAction: createAction(`${prefix}setParameterEditingAction`),
   revertLocalChanges: createAction(`${prefix}revertLocalChanges`),
   revertLocalChangesSuccess: createAction(`${prefix}revertLocalChangesSuccess`),
+  setShouldRevertChanges: createAction(`${prefix}setShouldRevertChanges`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -327,6 +328,7 @@ export const NAMESPACES_INITIAL_STATE = {
   changeRequest: null,
   parameterEditingAction: false,
   revertLocalChanges: [],
+  shouldRevertChanges: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -441,6 +443,7 @@ export const NamespacesSelectors = {
   getChangeRequest: state => state.namespaces.changeRequest,
   getParameterEditingAction: state => state.namespaces.parameterEditingAction,
   getRevertLoaclChanges: state => state.namespaces.revertLocalChanges,
+  getShouldRevertChanges: state => state.namespaces.shouldRevertChanges,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1042,7 +1045,13 @@ const revertLocalChangesSuccess = (state, { payload }) => {
   };
 };
 
-//
+const setShouldRevertChanges = (state, { payload }) => {
+  return {
+    ...state,
+    shouldRevertChanges: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1284,6 +1293,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.revertLocalChangesSuccess,
         revertLocalChangesSuccess
+      )
+      .addCase(
+        NamespacesActions.setShouldRevertChanges,
+        setShouldRevertChanges
       );
   }
 );

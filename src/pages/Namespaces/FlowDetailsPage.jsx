@@ -23,7 +23,7 @@ import RightIcon from '../../assets/Icons/RightIcon';
 import { FullPageLoader, Table } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, InputField, SelectField } from '../../shared';
+import { Button, CheckboxField, InputField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
@@ -181,18 +181,13 @@ const BreadcrumbContainer = styled.div`
 const ProcessorIconDiv = styled.div`
   padding-right: 1.5rem;
 `;
-const LabelSelect = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 16px;
-  color: #444445;
-`;
 
-const localChangesOptions = [
-  // { value: 'local', label: 'Commit Local Changes' },
-  { value: 'show', label: 'Show Local Changes' },
-  { value: 'revert', label: 'Revert Local Changes' },
-];
+const RevertlocalChangesCheckbox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: fit-content;
+`;
 
 const FlowDetailsPage = () => {
   const dispatch = useDispatch();
@@ -232,6 +227,9 @@ const FlowDetailsPage = () => {
     isOpen: false,
     type: null,
   });
+  const shouldRevertChanges = useSelector(
+    NamespacesSelectors.getShouldRevertChanges
+  );
 
   useEffect(() => {
     if (isUpgrade) {
@@ -523,13 +521,6 @@ const FlowDetailsPage = () => {
     }
   }, [dispatch, change_request_var]);
 
-  const handleLocalChangesSelect = option => {
-    setLocalChangesModal({
-      isOpen: true,
-      type: option.value,
-    });
-  };
-
   const handleCloseLocalChangesModal = () => {
     setLocalChangesModal({
       isOpen: false,
@@ -629,17 +620,7 @@ const FlowDetailsPage = () => {
                 />
               </ColXlSix>
             )}
-            {!isUpgrade && !isStateStale && (
-              <ColXlSix className="col-lg">
-                <LabelSelect className="mb-3">Local Changes</LabelSelect>
-                <SelectField
-                  size="md"
-                  placeholder="Version Commit"
-                  options={localChangesOptions}
-                  onChange={handleLocalChangesSelect}
-                />
-              </ColXlSix>
-            )}
+
             <ColXlTwo className={`${isUpgrade ? 'col-lg-3' : 'col-lg-3'}`}>
               <InputField
                 name="currentVersion"
@@ -806,11 +787,65 @@ const FlowDetailsPage = () => {
           </Button>
           <Button
             id="process-group-flow-details-continue-btn"
-            disabled={isUpgrade ? false : !isStateStale || isButtonDisabled}
+            disabled={
+              isUpgrade
+                ? false
+                : (!isStateStale || isButtonDisabled) &&
+                  (!scheduleUpgradeFromList || !shouldRevertChanges)
+            }
             onClick={handleSubmit(handleScrollOnClick)}
           >
             Continue
           </Button>
+        </BottomButtonDiv>
+        <BottomButtonDiv className="btn-div d-flex">
+          {!isUpgrade && !isStateStale && (
+            <div>
+              <div
+                style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
+              >
+                {scheduleDeploymentFlow || scheduleUpgradeFromList ? (
+                  <RevertlocalChangesCheckbox
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      minWidth: 'fit-content',
+                    }}
+                  >
+                    <CheckboxField
+                      name="check"
+                      label="Revert Local Changes"
+                      checked={shouldRevertChanges}
+                      onChange={e =>
+                        dispatch(
+                          NamespacesActions.setShouldRevertChanges(
+                            e.target.checked
+                          )
+                        )
+                      }
+                    />
+                  </RevertlocalChangesCheckbox>
+                ) : (
+                  <Button
+                    onClick={() =>
+                      setLocalChangesModal({ isOpen: true, type: 'revert' })
+                    }
+                  >
+                    Revert Local Changes
+                  </Button>
+                )}
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    setLocalChangesModal({ isOpen: true, type: 'show' })
+                  }
+                >
+                  Show Local Changes
+                </Button>
+              </div>
+            </div>
+          )}
         </BottomButtonDiv>
       </BottomButton>
 

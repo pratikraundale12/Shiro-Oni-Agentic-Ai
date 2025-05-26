@@ -10,6 +10,7 @@ import { theme } from '../../styles';
 import DiffScheduleCS from './DiffScheduleControllerService';
 import DiffScheduleParameter from './DiffScheduleParamter';
 import DiffScheduleVariables from './DiffScheduleVariables';
+import DiffLocalChanges from './DiffLocalChanges';
 const GreyBoxNamespace = styled.div`
   padding: 5px 10px 0px 10px;
   border-radius: 20px;
@@ -76,6 +77,8 @@ export const DiffModalScheduleList = props => {
             csData={props?.csData}
           />
         );
+      case 'Local Changes':
+        return <DiffLocalChanges />;
       default:
         return null;
     }
@@ -143,6 +146,13 @@ export const DiffModalScheduleList = props => {
               className="nav-item"
             >
               {KDFM.CONTROLLER_SERVICE}{' '}
+            </Tab>
+            <Tab
+              active={activeTab === 'Local Changes'}
+              onClick={() => handleSetTab('Local Changes')}
+              className="nav-item"
+            >
+              Local Changes
             </Tab>
           </TabWrapper>
           <TabContent>{renderContent()}</TabContent>

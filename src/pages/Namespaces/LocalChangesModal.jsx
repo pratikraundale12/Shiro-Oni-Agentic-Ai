@@ -2,10 +2,19 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { ArrowIcon, LocalChangeIcon, SmallSearchIcon } from '../../assets';
+import {
+  CircleArrowIcon,
+  LocalChangeIcon,
+  RevertLocalChangesIcon,
+  SmallSearchIcon,
+} from '../../assets';
 import { Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import {
+  GridSelectors,
+  NamespacesActions,
+  NamespacesSelectors,
+} from '../../store';
 import { theme } from '../../styles';
 // import CommitLocalChangesModal from './CommitLocalChangesModal';
 
@@ -29,6 +38,19 @@ const ModalTitle = styled.h3`
   font-size: 18px;
   font-weight: 600;
   color: ${props => props.theme.colors.dark || '#000'};
+`;
+const ConfirmModalTitle = styled.h3`
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: ${props => props.theme.colors.dark || '#000'};
+`;
+const ConfirmModalDescription = styled.p`
+  text-align: center;
+  font-size: 16px;
+  font-family: Red Hat Display;
+  font-weight: 500;
+  line-height: 24px;
 `;
 
 const ModalDescription = styled.p`
@@ -94,44 +116,40 @@ const Search = styled.input`
   }
 `;
 
-const TextDiv = styled.div`
-  margin-right: 80px;
-`;
-
 const LocalChangesModal = ({
   isOpen,
   onClose,
-  // onSubmit,
+
   type,
-  // localChanges,
 }) => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
-  // const [isCommitModalOpen, setIsCommitModalOpen] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showMainModal, setShowMainModal] = useState(isOpen);
   const fetchLocalChanges = useSelector(NamespacesSelectors.getLocalChanges);
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
+  const getNifiUrl = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
 
   useEffect(() => {
+    setShowMainModal(isOpen);
     if (type === 'show' || type === 'revert') {
       dispatch(NamespacesActions.fetchLocalChanges());
     }
   }, [dispatch, type]);
 
-  // const handleConfirm = () => {
-  //   if (type === 'local') {
-  //     onClose();
-  //     setIsCommitModalOpen(true);
-  //   } else {
-  //     onSubmit();
-  //   }
-  // };
-
-  // const handleCommitSubmit = data => {
-  //   setIsCommitModalOpen(false);
-  //   onSubmit(data);
-  // };
+  const handleIdClick = componentLink => {
+    const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
+      ? `${getNifiUrl?.nifiUrl}${componentLink}`
+      : `${getNifiUrl?.nifiUrl}/nifi/${componentLink}`;
+    window.open(updatedUrl, '_blank');
+    if (updatedUrl) {
+      window.open(updatedUrl, '_blank');
+    }
+  };
 
   const getModalTitle = () => {
     switch (type) {
@@ -172,23 +190,23 @@ const LocalChangesModal = ({
         );
       case 'show':
         return (
-          <TextDiv>
+          <div>
             The following changes have been made to{' '}
             <HighlightedText>
               {selectedNameSpace?.name} (Version {selectedNameSpace?.version})
             </HighlightedText>
             .
-          </TextDiv>
+          </div>
         );
       case 'revert':
         return (
-          <TextDiv>
+          <div>
             The following changes have been made to{' '}
             <HighlightedText>
               {selectedNameSpace?.name} (Version {selectedNameSpace?.version})
             </HighlightedText>
             . Revert will remove all changes.
-          </TextDiv>
+          </div>
         );
       default:
         return <ModalText></ModalText>;
@@ -231,9 +249,9 @@ const LocalChangesModal = ({
           <>
             <button
               className="border-0 bg-white"
-              onClick={() => console.log('Navigate to details', item)}
+              onClick={() => handleIdClick(item?.componentLink)}
             >
-              <ArrowIcon />
+              <CircleArrowIcon />
             </button>
           </>
         </div>
@@ -241,10 +259,25 @@ const LocalChangesModal = ({
     },
   ];
 
-  const handleRevertChenages = () => {
-    console.log('handleRevertChenages');
-    dispatch(NamespacesActions.revertLocalChanges());
+  const handleMainModalClose = () => {
+    setShowMainModal(false);
     onClose();
+  };
+
+  const handleRevertChanges = () => {
+    setShowMainModal(false);
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmRevert = () => {
+    dispatch(NamespacesActions.revertLocalChanges());
+    setShowConfirmation(false);
+    onClose();
+  };
+
+  const handleCancelRevert = () => {
+    setShowConfirmation(false);
+    setShowMainModal(true);
   };
 
   const renderTable = () => {
@@ -286,12 +319,12 @@ const LocalChangesModal = ({
     <>
       <Modal
         title={getModalTitle()}
-        isOpen={isOpen}
-        onRequestClose={onClose}
+        isOpen={showMainModal}
+        onRequestClose={handleMainModalClose}
         size={getModalSize(type)}
         primaryButtonText={getButtonText(type)}
         secondaryButtonText="Cancel"
-        onSubmit={handleRevertChenages}
+        onSubmit={handleRevertChanges}
         contentStyles={
           type === 'local'
             ? { width: '400px', maxWidth: '90%' }
@@ -311,12 +344,29 @@ const LocalChangesModal = ({
         </ModalContent>
       </Modal>
 
-      {/* <CommitLocalChangesModal
-        isOpen={isCommitModalOpen}
-        onClose={() => setIsCommitModalOpen(false)}
-        onSubmit={handleCommitSubmit}
-        localChanges={localChanges}
-      /> */}
+      <Modal
+        title="Confirm Revert Local Changes"
+        isOpen={showConfirmation}
+        onRequestClose={handleCancelRevert}
+        size="sm"
+        primaryButtonText="Confirm"
+        secondaryButtonText="Cancel"
+        onSubmit={handleConfirmRevert}
+        contentStyles={{ width: '400px', maxWidth: '90%' }}
+      >
+        <div>
+          <div className="d-flex justify-center mb-4">
+            <RevertLocalChangesIcon />
+          </div>
+
+          <ConfirmModalTitle>
+            Are you sure you want to revert these changes?
+          </ConfirmModalTitle>
+          <ConfirmModalDescription>
+            All local changes will be reverted to the current version.
+          </ConfirmModalDescription>
+        </div>
+      </Modal>
     </>
   );
 };
