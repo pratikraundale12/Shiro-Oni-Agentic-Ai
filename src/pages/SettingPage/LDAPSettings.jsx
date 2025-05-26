@@ -314,18 +314,16 @@ export const LDAPSettings = () => {
               }}
             />
           </div>
-          <div className="d-flex gap-3">
-            <div className="mt-4">
-              <LinkButton onClick={() => history.push('/ldap-configuration')}>
-                {KDFM.CHANGE_CONFIGURATION}
-              </LinkButton>
-            </div>
-            <div className="mt-4">
-              <Label className="fw-semibold">{KDFM.LAST_SYNC}: </Label>
-              {settingData?.last_auto_sync
-                ? formatDateStringToLocal(settingData?.last_auto_sync)
-                : 'Not Synced'}
-            </div>
+          <div className="mt-4">
+            <Label className="fw-semibold">{KDFM.LAST_SYNC}: </Label>
+            {settingData?.last_auto_sync
+              ? formatDateStringToLocal(settingData?.last_auto_sync)
+              : 'Not Synced'}
+          </div>
+          <div className="mt-4">
+            <LinkButton onClick={() => history.push('/ldap-configuration')}>
+              {KDFM.CHANGE_CONFIGURATION}
+            </LinkButton>
           </div>
         </InputFields>
 
