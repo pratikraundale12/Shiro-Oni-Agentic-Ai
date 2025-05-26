@@ -13,7 +13,7 @@ import {
 import favicon from '../../assets/images/default-favicon.ico';
 import { EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, InputField, PasswordField } from '../../shared';
+import { Button, InputField, Modal, PasswordField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { FullPageLoader } from '../../components';
 import { LoadingSelectors } from '../../store';
@@ -50,6 +50,15 @@ const StyledCancelButton = styled(Button)`
   width: 124px;
   gap: 10px;
   border-radius: 8px;
+`;
+const StyledVerifyEmailBtn = styled(Button)`
+  padding-top: 15px;
+  padding-bottom: 15px;
+  height: 50px;
+  width: 200px;
+  gap: 10px;
+  radius: 8px;
+  left: 140px;
 `;
 
 const StyledSaveButton = styled(Button)`
@@ -138,7 +147,9 @@ export const EmailConfigurationSettings = () => {
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
-  const fromEmail = watch('from_email');
+  const [isVerifyEmailOpen, setIsVerifyEmailOpen] = useState(false);
+  const [toEmail, setToEmail] = useState('');
+  const [emailError, setEmailError] = useState({});
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
@@ -229,9 +240,6 @@ export const EmailConfigurationSettings = () => {
 
     return () => subscription.unsubscribe();
   }, [watch, settingData]);
-  console.log('settingData---', settingData);
-  console.log('errors---', errors);
-  console.log('fromEmail---', fromEmail);
 
   function changeFavicon(newFaviconURL) {
     const favicon = document.getElementById('dynamic-favicon');
@@ -247,9 +255,35 @@ export const EmailConfigurationSettings = () => {
   }
 
   const handleVerifyEmail = () => {
-    dispatch(SettingsActions.verifyEmail());
+    setIsVerifyEmailOpen(true);
   };
 
+  const handleSendEmail = () => {
+    if (!toEmail || !EMAIL_REGEX.test(toEmail)) {
+      setEmailError({
+        to_email: {
+          message: 'Please enter a valid email address.',
+        },
+      });
+      return;
+    } else {
+      dispatch(SettingsActions.verifyEmail({ to_email: toEmail }));
+      setToEmail('');
+      setEmailError({});
+      setIsVerifyEmailOpen(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setToEmail('');
+    setEmailError({});
+    setIsVerifyEmailOpen(false);
+  };
+
+  const handleChange = e => {
+    setToEmail(e.target.value);
+    setEmailError({});
+  };
   const verifyEmailLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'verifyEmail')
   );
@@ -331,15 +365,6 @@ export const EmailConfigurationSettings = () => {
               errors={errors}
             />
           </div>
-          <div style={{ height: '40px', width: '200px' }}>
-            <Button
-              type="button"
-              onClick={() => handleVerifyEmail()}
-              className="w-100 h-100"
-            >
-              <ButtonText>{'Verify Email'}</ButtonText>
-            </Button>
-          </div>
         </InputFields>
 
         <FlexWrapper className="mt-3">
@@ -356,6 +381,13 @@ export const EmailConfigurationSettings = () => {
             >
               <ButtonText>Cancel</ButtonText>
             </StyledCancelButton>
+            <StyledVerifyEmailBtn
+              type="button"
+              onClick={() => handleVerifyEmail()}
+              isBtnDisable={settingData?.from_email === ''}
+            >
+              <ButtonText>{'Verify Email'}</ButtonText>
+            </StyledVerifyEmailBtn>
             <StyledSaveButton
               type="submit"
               loading={loading}
@@ -366,6 +398,29 @@ export const EmailConfigurationSettings = () => {
           </ButtonDiv>
         </FlexWrapper>
       </form>
+      {isVerifyEmailOpen && (
+        <Modal
+          title={'Send Verification Email'}
+          size="sm"
+          onRequestClose={handleCancel}
+          isOpen={isVerifyEmailOpen}
+          primaryButtonText={KDFM.SEND_EMAIL}
+          secondaryButtonText={KDFM.CANCEL}
+          primaryButtonDisabled={!toEmail}
+          onSubmit={handleSendEmail}
+        >
+          <InputField
+            name="to_email"
+            value={toEmail}
+            onChange={handleChange}
+            icon={<SmsNotificationIcon />}
+            label={KDFM.TO_EMAIL}
+            placeholder={KDFM.ENTER_EMAIL}
+            required={true}
+            errors={emailError}
+          />
+        </Modal>
+      )}
     </Wrapper>
   );
 };
