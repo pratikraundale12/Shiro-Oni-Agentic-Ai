@@ -10,6 +10,7 @@ import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, SelectField, SwitchButton, TextButton } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import { formatDateStringToLocal } from '../../helpers';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -72,6 +73,10 @@ const ButtonDiv = styled.div`
   gap: 1rem;
 `;
 
+const Label = styled.span`
+  color: ${props => props.theme.colors.darker};
+  font-size: 14px;
+`;
 export const settingSchema = yup.object().shape({});
 export const LDAPSettings = () => {
   const {
@@ -309,10 +314,18 @@ export const LDAPSettings = () => {
               }}
             />
           </div>
-          <div className="mt-4">
-            <LinkButton onClick={() => history.push('/ldap-configuration')}>
-              {KDFM.CHANGE_CONFIGURATION}
-            </LinkButton>
+          <div className="d-flex gap-3">
+            <div className="mt-4">
+              <LinkButton onClick={() => history.push('/ldap-configuration')}>
+                {KDFM.CHANGE_CONFIGURATION}
+              </LinkButton>
+            </div>
+            <div className="mt-4">
+              <Label className="fw-semibold">{KDFM.LAST_SYNC}: </Label>
+              {settingData?.last_auto_sync
+                ? formatDateStringToLocal(settingData?.last_auto_sync)
+                : 'Not Synced'}
+            </div>
           </div>
         </InputFields>
 
