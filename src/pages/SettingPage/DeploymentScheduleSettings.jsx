@@ -219,9 +219,10 @@ export const DeploymentScheduleSettings = () => {
 
   useEffect(() => {
     const subscription = watch(value => {
+      const refreshSetting =
+        settingData?.refresh === 0 ? 'Off' : String(settingData?.refresh);
       const isModified =
-        value.refresh !==
-          (settingData?.refresh === 0 ? 'Off' : settingData?.refresh) ||
+        String(value.refresh) !== refreshSetting ||
         value.approver_groups !== settingData?.approver_groups ||
         value.group_email_id !== settingData?.group_email_id ||
         value.email_reminder_time !== settingData?.email_reminder_time;
