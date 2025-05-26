@@ -224,7 +224,8 @@ export const Grid = ({
     clusters: 'No Cluster Available',
     users: 'No User Available',
     activityHistory: 'No Activity History Available',
-    scheduler: 'No Schedulers Available',
+    scheduler: 'No Schedules Available',
+    nodes: 'Standalone NiFi',
   };
 
   const getModuleBasedStatusKey = module => {
@@ -465,7 +466,7 @@ export const Grid = ({
         setCurrentPage={setCurrentPage}
         onItemsPerPageChange={setItemsPerPage}
       />
-      {module === 'nodes' && !loading && !isEmpty(clusterSummary?.nodes) && (
+      {module === 'nodes' && !loading && (
         <>
           <ClusterRegistryContainer className="row">
             <ClusterDetail

@@ -210,6 +210,8 @@ export const KDFM = {
   SMTP_USER: 'SMTP  User',
   SMTP_PASS: 'SMTP  Password',
   FROM_EMAIL: 'From Email',
+  TO_EMAIL: 'To Email',
+  SEND_EMAIL: 'Send Email',
   META_TITLE: 'Meta Title',
   ACTIVATE: 'Activate',
   DEACTIVATE: 'Deactivate',
@@ -241,6 +243,7 @@ export const KDFM = {
     'The "Start" and "Stop" buttons will be hidden if all the processors are either invalid or disabled.',
 
   CHANGE_CONFIGURATION: 'Change Configuration',
+  LAST_SYNC: 'Last Sync Time',
   SECHEDULED_TIME: 'Scheduled Time',
   FLOW_STATE_AFTER_DEPLOY: 'Flow state after deploy',
   SCHEDULE_UPGRADE: 'Schedule Upgrade',

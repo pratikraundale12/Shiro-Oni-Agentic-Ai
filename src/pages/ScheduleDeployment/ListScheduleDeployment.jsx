@@ -803,6 +803,7 @@ export const ListScheduleDeployment = () => {
     { value: 'REJECTED', label: 'Rejected' },
     { value: 'STOPPED', label: 'Stopped' },
     { value: 'FAILED', label: 'Failed' },
+    { value: 'IN_PROGRESS', label: 'In Progress' },
     { value: 'TIME_LAPSED', label: 'Time Lapsed' },
   ];
 
