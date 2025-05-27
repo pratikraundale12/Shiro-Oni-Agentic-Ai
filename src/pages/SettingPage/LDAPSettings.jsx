@@ -4,13 +4,14 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { ClockIcon } from '../../assets';
+import { ClockIcon, RefreshIcon } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, SelectField, SwitchButton, TextButton } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { formatDateStringToLocal } from '../../helpers';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -76,6 +77,20 @@ const ButtonDiv = styled.div`
 const Label = styled.span`
   color: ${props => props.theme.colors.darker};
   font-size: 14px;
+`;
+
+const RefreshIconContainer = styled.div`
+  cursor: pointer;
+  background-color: #f5f7fa;
+  border: 1px solid #dde4f0;
+  width: 44px;
+  height: 47px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  min-width: 37px;
+  margin-top: 58px;
 `;
 export const settingSchema = yup.object().shape({});
 export const LDAPSettings = () => {
@@ -261,6 +276,10 @@ export const LDAPSettings = () => {
     }
   }
 
+  const handleRefresh = () => {
+    dispatch(SettingsActions.fetchSettings());
+  };
+
   return (
     <Wrapper>
       <form
@@ -290,29 +309,53 @@ export const LDAPSettings = () => {
               isDisabled={!isLdapEnabled}
             />
           </div>
-          <div className="mt-4 w-25">
-            <SelectField
-              label="LDAP Auto Sync Time"
-              name="ldap_auto_sync_time_interval"
-              control={control}
-              icon={<ClockIcon />}
-              errors={errors}
-              options={Timeoptions}
-              sortAlphabetically={false}
-              placeholder="Select LDAP Auto Sync Time"
-              value={Timeoptions.find(
-                option =>
-                  option.value ===
-                  (watch('ldap_auto_sync_time_interval') ||
-                    settingData?.ldap_auto_sync_time_interval)
-              )}
-              isDisabled={!ldapAutoSync}
-              onChange={selectedOption => {
-                const value = selectedOption?.value || null;
-                setValue('ldap_auto_sync_time_interval', value);
-                setIsChanged(true);
-              }}
-            />
+          <div className="d-flex gap-3">
+            <div className="mt-4 w-25">
+              <SelectField
+                label="LDAP Auto Sync Time"
+                name="ldap_auto_sync_time_interval"
+                control={control}
+                icon={<ClockIcon />}
+                errors={errors}
+                options={Timeoptions}
+                sortAlphabetically={false}
+                placeholder="Select LDAP Auto Sync Time"
+                value={Timeoptions.find(
+                  option =>
+                    option.value ===
+                    (watch('ldap_auto_sync_time_interval') ||
+                      settingData?.ldap_auto_sync_time_interval)
+                )}
+                isDisabled={!ldapAutoSync}
+                onChange={selectedOption => {
+                  const value = selectedOption?.value || null;
+                  setValue('ldap_auto_sync_time_interval', value);
+                  setIsChanged(true);
+                }}
+              />
+            </div>
+            <>
+              <RefreshIconContainer
+                onClick={handleRefresh}
+                data-tooltip-id={`tooltip-settings-refresh`}
+              >
+                <RefreshIcon
+                  height={20}
+                  width={20}
+                  style={{ cursor: 'pointer' }}
+                />
+              </RefreshIconContainer>
+              <ReactTooltip
+                id={`tooltip-settings-refresh`}
+                place="left"
+                content={'Refresh'}
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
           </div>
           <div className="mt-4">
             <Label className="fw-semibold">{KDFM.LAST_SYNC}: </Label>
