@@ -83,14 +83,12 @@ const RefreshIconContainer = styled.div`
   cursor: pointer;
   background-color: #f5f7fa;
   border: 1px solid #dde4f0;
-  width: 44px;
-  height: 47px;
+  width: 35px;
+  height: 33px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  min-width: 37px;
-  margin-top: 58px;
 `;
 export const settingSchema = yup.object().shape({});
 export const LDAPSettings = () => {
@@ -309,41 +307,43 @@ export const LDAPSettings = () => {
               isDisabled={!isLdapEnabled}
             />
           </div>
-          <div className="d-flex gap-3">
-            <div className="mt-4 w-25">
-              <SelectField
-                label="LDAP Auto Sync Time"
-                name="ldap_auto_sync_time_interval"
-                control={control}
-                icon={<ClockIcon />}
-                errors={errors}
-                options={Timeoptions}
-                sortAlphabetically={false}
-                placeholder="Select LDAP Auto Sync Time"
-                value={Timeoptions.find(
-                  option =>
-                    option.value ===
-                    (watch('ldap_auto_sync_time_interval') ||
-                      settingData?.ldap_auto_sync_time_interval)
-                )}
-                isDisabled={!ldapAutoSync}
-                onChange={selectedOption => {
-                  const value = selectedOption?.value || null;
-                  setValue('ldap_auto_sync_time_interval', value);
-                  setIsChanged(true);
-                }}
-              />
+          <div className="mt-4 w-25">
+            <SelectField
+              label="LDAP Auto Sync Time"
+              name="ldap_auto_sync_time_interval"
+              control={control}
+              icon={<ClockIcon />}
+              errors={errors}
+              options={Timeoptions}
+              sortAlphabetically={false}
+              placeholder="Select LDAP Auto Sync Time"
+              value={Timeoptions.find(
+                option =>
+                  option.value ===
+                  (watch('ldap_auto_sync_time_interval') ||
+                    settingData?.ldap_auto_sync_time_interval)
+              )}
+              isDisabled={!ldapAutoSync}
+              onChange={selectedOption => {
+                const value = selectedOption?.value || null;
+                setValue('ldap_auto_sync_time_interval', value);
+                setIsChanged(true);
+              }}
+            />
+          </div>
+          <div className="d-flex gap-3 align-items-center mt-4">
+            <div>
+              <Label className="fw-semibold">{KDFM.LAST_SYNC}: </Label>
+              {settingData?.last_auto_sync
+                ? formatDateStringToLocal(settingData?.last_auto_sync)
+                : 'Not Synced'}
             </div>
             <>
               <RefreshIconContainer
                 onClick={handleRefresh}
                 data-tooltip-id={`tooltip-settings-refresh`}
               >
-                <RefreshIcon
-                  height={20}
-                  width={20}
-                  style={{ cursor: 'pointer' }}
-                />
+                <RefreshIcon style={{ cursor: 'pointer' }} />
               </RefreshIconContainer>
               <ReactTooltip
                 id={`tooltip-settings-refresh`}
@@ -356,12 +356,6 @@ export const LDAPSettings = () => {
                 }}
               />
             </>
-          </div>
-          <div className="mt-4">
-            <Label className="fw-semibold">{KDFM.LAST_SYNC}: </Label>
-            {settingData?.last_auto_sync
-              ? formatDateStringToLocal(settingData?.last_auto_sync)
-              : 'Not Synced'}
           </div>
           <div className="mt-4">
             <LinkButton onClick={() => history.push('/ldap-configuration')}>
