@@ -10,6 +10,8 @@ export const NamespacesActions = {
   setFlowPath: createAction(`${prefix}setFlowPath`),
   fetchNamespaces: createAction(`${prefix}fetchNamespaces`),
   fetchNamespacesSuccess: createAction(`${prefix}fetchNamespacesSuccess`),
+  deleteNamespace: createAction(`${prefix}deleteNamespace`),
+  deleteNamespaceSuccess: createAction(`${prefix}deleteNamespaceSuccess`),
   setSelectedDestCluster: createAction(`${prefix}setSelectedDestCluster`),
   setSelectedDestNamespace: createAction(`${prefix}setSelectedDestNamespace`),
   fetchDestNamespaces: createAction(`${prefix}fetchDestNamespaces`),
@@ -1020,7 +1022,13 @@ const setParameterEditingAction = (state, { payload }) => {
   };
 };
 
-//
+const deleteNamespaceSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    deletedNamespace: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1034,6 +1042,7 @@ export const namespacesReducer = createReducer(
       .addCase(NamespacesActions.setSelectedNamespace, setSelectedNamespace)
       .addCase(NamespacesActions.setFlowPath, setFlowPath)
       .addCase(NamespacesActions.fetchNamespacesSuccess, fetchNamespacesSuccess)
+      .addCase(NamespacesActions.deleteNamespaceSuccess, deleteNamespaceSuccess)
       .addCase(NamespacesActions.setSelectedDestCluster, setSelectedDestCluster)
       .addCase(
         NamespacesActions.setSelectedDestNamespace,

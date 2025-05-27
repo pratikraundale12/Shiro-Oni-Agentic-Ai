@@ -312,6 +312,10 @@ export const namespacesAPI = api => {
     );
   };
 
+  const deleteNamespace = ({ clusterId, namespaceId }) => {
+    return api.delete(`/clusters/${clusterId}/namespace/${namespaceId}`);
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -347,5 +351,6 @@ export const namespacesAPI = api => {
     fetchRegistryFlowDetails,
     fetchDuplicateScheduleData,
     fetchAddPropertyToAdd,
+    deleteNamespace,
   };
 };

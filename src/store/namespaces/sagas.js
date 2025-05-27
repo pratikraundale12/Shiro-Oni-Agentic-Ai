@@ -3,7 +3,7 @@ import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { AuthenticationActions } from '../authentication';
-import { GridSelectors } from '../grid';
+import { GridActions, GridSelectors } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
@@ -1443,10 +1443,49 @@ export function* fetchAddPropertyToAdd(api, { payload }) {
     toast.error(response?.message || response?.data?.message);
   }
 }
-//
+
+export function* deleteNamespace(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteNamespace',
+    loadingSection: 'deleteNamespace',
+    apiMethod: api.deleteNamespace,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: payload,
+      },
+    ],
+  });
+
+  if (response.ok) {
+    toast.success('Process Group deleted successfully');
+    yield put(NamespacesActions.deleteNamespaceSuccess(payload));
+    yield put(
+      GridActions.fetchGrid({
+        module: 'namespaces',
+        params: {},
+      })
+    );
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
+    takeLatest(NamespacesActions.deleteNamespace, deleteNamespace, api),
     takeLatest(NamespacesActions.singleNamespaceData, singleNamespaceData, api),
     takeLatest(NamespacesActions.fetchDestNamespaces, fetchDestNamespaces, api),
     takeLatest(NamespacesActions.checkDestCluster, checkDestCluster, api),
@@ -1567,4 +1606,3 @@ export function* namespacesSagas(api) {
     ),
   ]);
 }
-//
