@@ -27,11 +27,13 @@ import {
   testRegistry,
   updateCluster,
 } from '../../store/apis';
+import { AuthenticationSelectors } from '../../store/authentication';
 import { Certificate } from './components/Certificate';
 import CertificateTextDisplay from './components/CertificateTextDisplay';
 import ClusterCheckBoxSection from './components/ClusterCheckboxSection';
 import ClusterFieldsForm from './components/ClusterFieldsForm';
 import ClusterNavigationTab from './components/ClusterNavigationTab';
+import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
 import ClusterTagInput from './components/ClusterTagInput';
 import ClusterTestSection from './components/ClusterTestSection';
 import { Creditionals } from './components/Creditionals';
@@ -40,8 +42,6 @@ import RegistryFormSection from './components/RegistryFormSection';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
-import { ClusterServiceAccountModal } from './components/ClusterServiceAccountModal';
-import { AuthenticationSelectors } from '../../store/authentication';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -154,9 +154,12 @@ export const Add = () => {
   const [saveButtonEnable, setSaveButtonEnable] = useState(true);
   const [error, setError] = useState('');
   const filteredGridData = gridData.filter(item => {
+    if(location?.pathname === '/clusters/add'){ 
+      return true;
+    }
     return item?.nifi_url !== data?.nifi_url;
   });
-
+  
   const hostToEdit = clusterData?.clusterName || clusterId;
 
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -165,7 +168,7 @@ export const Add = () => {
     clusterName: yup
       .string()
       .min(3, 'Cluster Name must be at least 3 characters long')
-      .max(30, 'Cluster Name must be at most 30 characters long')
+      .max(50, 'Cluster Name must be at most 50 characters long')
       .required('Cluster Name is required')
       .test(
         'unique-cluster-name',
@@ -622,7 +625,7 @@ export const Add = () => {
     }
   }, [data, tags, approverEnable, notificationEnable, changeRequestEnable]);
   const handleTitleProvider = data => {
-    if (data) {
+    if (data && location?.pathname === '/clusters/edit') {
       return `Edit ${isEditDetails ? 'Registry' : 'Cluster'} Details`;
     } else {
       return 'Add New Cluster Details';
