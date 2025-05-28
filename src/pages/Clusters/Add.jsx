@@ -168,7 +168,7 @@ export const Add = () => {
     clusterName: yup
       .string()
       .min(3, 'Cluster Name must be at least 3 characters long')
-      .max(30, 'Cluster Name must be at most 50 characters long')
+      .max(50, 'Cluster Name must be at most 50 characters long')
       .required('Cluster Name is required')
       .test(
         'unique-cluster-name',
