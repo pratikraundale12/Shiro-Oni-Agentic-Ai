@@ -320,7 +320,7 @@ export function* fetchClusterMetrics(api, { payload }) {
   if (response?.ok) {
     yield put(ClustersActions.setHealthMetricsData(response?.data));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* associateClusterWithRegistry(api, { payload }) {

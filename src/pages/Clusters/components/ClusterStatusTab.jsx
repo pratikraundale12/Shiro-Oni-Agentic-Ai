@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -8,10 +8,12 @@ import {
   LoadingSelectors,
 } from '../../../store';
 import { useParams } from 'react-router-dom';
-import { FullPageLoader } from '../../../components';
+import { FullPageLoader, LoaderContainer } from '../../../components';
 import { isEmpty } from 'lodash';
 import { theme } from '../../../styles';
 import Chart from 'react-apexcharts';
+import { NoDataIcon, RefreshIcon } from '../../../assets';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const RowConfig = styled.div`
   display: flex;
@@ -90,16 +92,32 @@ const TitleText = styled.div`
   line-height: 100%;
   letter-spacing: -0.5%;
   text-transform: capitalize;
+  margin: 0 !important;
+  position: relative;
+  z-index: 4;
+  top: -7px;
+  left: 25px;
+  background-color: #fff;
+  width: fit-content;
+  padding: 0 6px;
 `;
 
+const DescriptionText = styled.div`
+  font-family: Red Hat Display;
+  font-weight: 550;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: -0.5%;
+  // text-transform: capitalize;
+`;
 const ChartColumnWrapper = styled.div`
   flex: 0 0 auto;
   width: 50%;
-  
+
   @media screen and (min-width: 1200px) {
     width: 25%;
   }
-  
+
   padding-right: 1rem;
   padding-left: 1rem;
   margin-bottom: 1.5rem;
@@ -111,6 +129,7 @@ const ChartCard = styled.div`
   padding: 20px;
   background-color: #fff;
   height: 250px;
+  cursor: pointer;
 `;
 
 const ChartTitle = styled.h6`
@@ -123,6 +142,9 @@ const ChartTitle = styled.h6`
 const ChartContainer = styled.div`
   height: 150px;
   position: relative;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically (optional) */
 `;
 
 const ChartLabelsContainer = styled.div`
@@ -161,7 +183,26 @@ const NodeCard = styled.div`
 const NodeCardContent = styled.div`
   padding: 1rem;
 `;
-
+const LoadingText = styled.div`
+  color: ${props => props.theme.colors.lightGrey3};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+`;
+const RefreshIoconHolder = styled.div`
+  cursor: pointer;
+  background-color: #f5f7fa;
+  border: 1px solid #dde4f0;
+  width: 37px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  min-width: 37px;
+  margin-right: 5px;
+`;
 const ClusterStatusTab = () => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -172,27 +213,46 @@ const ClusterStatusTab = () => {
 
   useEffect(() => {
     dispatch(ClustersActions.fetchClusterMetrics(clusterId));
-    dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
   }, [dispatch]);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
-    }, 5000);
-
-    return () => clearInterval(intervalId);
-  }, [dispatch, clusterId]);
+  const handleRefreshMetrics = () => {
+    dispatch(ClustersActions.fetchClusterMetrics(clusterId));
+  };
 
   // Helper function to extract percentage value from strings like "24.77%"
   const getPercentageValue = value => {
     if (!value) return 0;
     const numericValue = parseFloat(value.toString().replace('%', ''));
-    return isNaN(numericValue) ? 0 : numericValue;
+    return isNaN(numericValue) ? 0 : parseFloat(numericValue.toFixed(2));
+  };
+  const convertDateTime = dateString => {
+    if (!dateString) return 'No date provided';
+
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
   };
 
-  const RadialChart = ({ title, value, unit, subtitle, percentage, showPercentageSign }) => {
+  const RadialChart = ({
+    title,
+    value,
+    unit,
+    subtitle,
+    percentage,
+    showPercentageSign,
+    contentTotal = '',
+    contentUsed = '',
+    contentUsedPercentage = '',
+  }) => {
     const percentageValue = getPercentageValue(percentage);
-
+    const [displayContent, setDisplayContent] = useState(false);
     const chartOptions = {
       chart: {
         type: 'radialBar',
@@ -251,28 +311,68 @@ const ClusterStatusTab = () => {
 
     return (
       <ChartColumnWrapper className="col-xl-3 col-6 mb-4">
-        <ChartCard>
-          <ChartTitle>
-            {title}
+        <ChartCard
+          onMouseOver={() => setDisplayContent(true)}
+          onMouseOut={() => setDisplayContent(false)}
+        >
+          <ChartTitle className="mb-2">
+            {title} {displayContent ? ' : Description' : ' : Utilization'}
           </ChartTitle>
-          <ChartContainer>
-            <Chart
-              options={chartOptions}
-              series={series}
-              type="radialBar"
-              height={200}
-            />
-            <ChartLabelsContainer>
-              <ChartLabelsWrapper>
-                <ChartUnit>{unit}</ChartUnit>
-                {subtitle && (
-                  <ChartSubtitle>
-                    ({subtitle})
-                  </ChartSubtitle>
-                )}
-              </ChartLabelsWrapper>
-            </ChartLabelsContainer>
-          </ChartContainer>
+          {displayContent ? (
+            <ChartContainer className="">
+              <div className="">
+                <DescriptionText className="row  ">
+                  <div className="w-100">
+                    <span
+                      style={{ color: `${theme.colors.primary}` }}
+                      className="ms-2"
+                    >
+                      Total &nbsp;
+                    </span>
+                    : {contentTotal || 'N/A'}
+                  </div>
+                </DescriptionText>
+
+                <DescriptionText className="row " style={{ marginTop: '8px' }}>
+                  <div>
+                    <span
+                      style={{ color: `${theme.colors.primary}` }}
+                      className="ms-2"
+                    >
+                      Used &nbsp;
+                    </span>
+                    : {contentUsed || 'N/A'}
+                  </div>
+                </DescriptionText>
+                <DescriptionText className="row " style={{ marginTop: '8px' }}>
+                  <div>
+                    <span
+                      style={{ color: `${theme.colors.primary}` }}
+                      className="ms-2"
+                    >
+                      Used Percentage &nbsp;
+                    </span>
+                    : {contentUsedPercentage || 'N/A'}
+                  </div>
+                </DescriptionText>
+              </div>
+            </ChartContainer>
+          ) : (
+            <ChartContainer>
+              <Chart
+                options={chartOptions}
+                series={series}
+                type="radialBar"
+                height={200}
+              />
+              <ChartLabelsContainer>
+                <ChartLabelsWrapper>
+                  <ChartUnit>{unit}</ChartUnit>
+                  {subtitle && <ChartSubtitle>({subtitle})</ChartSubtitle>}
+                </ChartLabelsWrapper>
+              </ChartLabelsContainer>
+            </ChartContainer>
+          )}
         </ChartCard>
       </ChartColumnWrapper>
     );
@@ -281,14 +381,38 @@ const ClusterStatusTab = () => {
   return (
     <DataWrapper className="w-100">
       <FullPageLoader loading={loading} />
-      <ScrollSetGrey className="mt-4 scroll-set-grey pe-1">
+      <div className="d-flex justify-content-end p-2 align-items-center gap-2">
+        {' '}
+        {healthMetricData?.time && (
+          <DescriptionText>
+            Last Update At :{' '}
+            <span style={{ color: `${theme.colors.primary}` }}>
+              {convertDateTime(healthMetricData?.time)}
+            </span>
+          </DescriptionText>
+        )}
+        <RefreshIoconHolder
+          onClick={handleRefreshMetrics}
+          data-tooltip-id={`tooltip-group-hm-refresh`}
+        >
+          <RefreshIcon style={{ cursor: 'pointer' }} />
+        </RefreshIoconHolder>
+        <ReactTooltip
+          id={`tooltip-group-hm-refresh`}
+          place="left"
+          content={'Refresh Metrics'}
+          style={{
+            width: 'auto',
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+          }}
+        />
+      </div>
+      <ScrollSetGrey className="pt-4 scroll-set-grey pe-1">
         {healthMetricData &&
           !isEmpty(healthMetricData) &&
           healthMetricData?.data?.map(ele => (
-            <NodeCard
-              key={ele?.name}
-              className="mb-2"
-            >
+            <NodeCard key={ele?.name} className="mb-4">
               <TitleText className="mt-4 ms-3 mb-3">
                 <span style={{ color: `${theme.colors.primary}` }}>Node</span>:{' '}
                 {ele?.name}
@@ -298,19 +422,62 @@ const ClusterStatusTab = () => {
                 <RowConfig className="row">
                   <RadialChart
                     title="Total Disk"
-                    value={ele?.data?.disk?.total || '0'}
-                    unit="GB"
-                    percentage={0}
-                  />
-
-                  <RadialChart
-                    title="Total Disk Utilisation"
-                    value={ele?.data?.disk?.used || '0'}
-                    unit="GB"
-                    subtitle={ele?.data?.disk?.utilization}
+                    value={
+                      getPercentageValue(ele?.data?.disk?.utilization).toFixed(
+                        2
+                      ) + '%' || '0.00%'
+                    }
+                    unit={ele?.data?.disk?.used}
                     percentage={ele?.data?.disk?.utilization}
+                    showPercentageSign={true}
+                    contentTotal={ele?.data?.disk?.total}
+                    contentUsed={ele?.data?.disk?.used}
+                    contentUsedPercentage={ele?.data?.disk?.utilization}
                   />
-
+                  <RadialChart
+                    title="Total Memory"
+                    value={
+                      getPercentageValue(
+                        ele?.data?.memory?.utilization
+                      ).toFixed(2) + '%' || '0.00%'
+                    }
+                    unit={ele?.data?.memory?.used}
+                    percentage={ele?.data?.memory?.utilization}
+                    showPercentageSign={true}
+                    contentTotal={ele?.data?.memory?.total}
+                    contentUsed={ele?.data?.memory?.used}
+                    contentUsedPercentage={ele?.data?.memory?.utilization}
+                  />
+                  <RadialChart
+                    title="NiFi Heap "
+                    value={
+                      (getPercentageValue(ele?.data?.nifi?.heap_used) /
+                        getPercentageValue(
+                          ele?.data?.nifi?.total_heap_memory
+                        )) *
+                        100 || '0%'
+                    }
+                    unit={ele?.data?.nifi?.heap_used}
+                    percentage={
+                      (getPercentageValue(ele?.data?.nifi?.heap_used) /
+                        getPercentageValue(
+                          ele?.data?.nifi?.total_heap_memory
+                        )) *
+                      100
+                    }
+                    showPercentageSign={true}
+                    contentTotal={ele?.data?.nifi?.total_heap_memory}
+                    contentUsed={ele?.data?.nifi?.heap_used}
+                    contentUsedPercentage={
+                      (
+                        (getPercentageValue(ele?.data?.nifi?.heap_used) /
+                          getPercentageValue(
+                            ele?.data?.nifi?.total_heap_memory
+                          )) *
+                        100
+                      ).toFixed(2) + '%' || '0%'
+                    }
+                  />
                   <RadialChart
                     title="CPU Utilisation"
                     value={
@@ -321,44 +488,22 @@ const ClusterStatusTab = () => {
                     unit=""
                     percentage={ele?.data?.cpu?.utilization}
                     showPercentageSign={true}
+                    contentUsedPercentage={
+                      getPercentageValue(ele?.data?.cpu?.utilization).toFixed(
+                        2
+                      ) + '%' || '0.00%'
+                    }
                   />
-
-                  <RadialChart
-                    title="Total Memory"
-                    value={ele?.data?.memory?.total || '0'}
-                    unit="GB"
-                    percentage={0}
-                  />
-
-                  <RadialChart
-                    title="Total Memory Utilisation"
-                    value={ele?.data?.memory?.used || '0'}
-                    unit="GB"
-                    subtitle={ele?.data?.memory?.utilization}
-                    percentage={ele?.data?.memory?.utilization}
-                  />
-
-                  {ele?.data?.nifi?.heap_used && (
-                    <RadialChart
-                      title="NiFi Heap Used"
-                      value={ele?.data?.nifi?.heap_used || '0'}
-                      unit="MB"
-                      percentage={0}
-                    />
-                  )}
-
-                  {ele?.data?.nifi?.heap_assigned && (
-                    <RadialChart
-                      title="NiFi Heap Assigned"
-                      value={ele?.data?.nifi?.heap_assigned || '0'}
-                      unit="MB"
-                      percentage={0}
-                    />
-                  )}
                 </RowConfig>
               </NodeCardContent>
             </NodeCard>
           ))}
+        {(isEmpty(healthMetricData) || !healthMetricData) && (
+          <LoaderContainer>
+            <NoDataIcon width={140} />
+            <LoadingText>No Health Metrics Data Found!</LoadingText>
+          </LoaderContainer>
+        )}
       </ScrollSetGrey>
     </DataWrapper>
   );
