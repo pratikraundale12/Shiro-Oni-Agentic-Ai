@@ -218,6 +218,11 @@ export const NamespacesActions = {
   revertLocalChanges: createAction(`${prefix}revertLocalChanges`),
   revertLocalChangesSuccess: createAction(`${prefix}revertLocalChangesSuccess`),
   setShouldRevertChanges: createAction(`${prefix}setShouldRevertChanges`),
+  setLocalChangesModalOpen: createAction(`${prefix}setLocalChangesModalOpen`),
+  setLocalChangesModalType: createAction(`${prefix}setLocalChangesModalType`),
+  setRevertConfirmationModalOpen: createAction(
+    `${prefix}setRevertConfirmationModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -329,6 +334,9 @@ export const NAMESPACES_INITIAL_STATE = {
   parameterEditingAction: false,
   revertLocalChanges: [],
   shouldRevertChanges: false,
+  localChangesModalOpen: false,
+  localChangesModalType: null,
+  revertConfirmationModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -444,6 +452,10 @@ export const NamespacesSelectors = {
   getParameterEditingAction: state => state.namespaces.parameterEditingAction,
   getRevertLoaclChanges: state => state.namespaces.revertLocalChanges,
   getShouldRevertChanges: state => state.namespaces.shouldRevertChanges,
+  getLocalChangesModalOpen: state => state.namespaces.localChangesModalOpen,
+  getLocalChangesModalType: state => state.namespaces.localChangesModalType,
+  getRevertConfirmationModalOpen: state =>
+    state.namespaces.revertConfirmationModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1052,6 +1064,27 @@ const setShouldRevertChanges = (state, { payload }) => {
   };
 };
 
+const setLocalChangesModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    localChangesModalOpen: payload,
+  };
+};
+
+const setLocalChangesModalType = (state, { payload }) => {
+  return {
+    ...state,
+    localChangesModalType: payload,
+  };
+};
+
+const setRevertConfirmationModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    revertConfirmationModalOpen: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1294,9 +1327,18 @@ export const namespacesReducer = createReducer(
         NamespacesActions.revertLocalChangesSuccess,
         revertLocalChangesSuccess
       )
+      .addCase(NamespacesActions.setShouldRevertChanges, setShouldRevertChanges)
       .addCase(
-        NamespacesActions.setShouldRevertChanges,
-        setShouldRevertChanges
+        NamespacesActions.setLocalChangesModalOpen,
+        setLocalChangesModalOpen
+      )
+      .addCase(
+        NamespacesActions.setLocalChangesModalType,
+        setLocalChangesModalType
+      )
+      .addCase(
+        NamespacesActions.setRevertConfirmationModalOpen,
+        setRevertConfirmationModalOpen
       );
   }
 );

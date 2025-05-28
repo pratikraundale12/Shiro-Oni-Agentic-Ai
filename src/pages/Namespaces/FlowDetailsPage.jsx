@@ -223,10 +223,6 @@ const FlowDetailsPage = () => {
   const [xStateCoordinate, setXStateCoordiate] = useState(null);
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
   const tableRef = useRef(null);
-  const [localChangesModal, setLocalChangesModal] = useState({
-    isOpen: false,
-    type: null,
-  });
   const shouldRevertChanges = useSelector(
     NamespacesSelectors.getShouldRevertChanges
   );
@@ -521,33 +517,6 @@ const FlowDetailsPage = () => {
     }
   }, [dispatch, change_request_var]);
 
-  const handleCloseLocalChangesModal = () => {
-    setLocalChangesModal({
-      isOpen: false,
-      type: null,
-    });
-  };
-
-  const handleLocalChangesAction = () => {
-    switch (localChangesModal.type) {
-      case 'local':
-        // Handle commit local changes
-        console.log('Committing local changes');
-        break;
-      case 'show':
-        // Handle show local changes
-        console.log('Showing local changes');
-        break;
-      case 'revert':
-        // Handle revert local changes
-        console.log('Reverting local changes');
-        break;
-      default:
-        break;
-    }
-    handleCloseLocalChangesModal();
-  };
-
   return (
     <div>
       <FullPageLoader
@@ -828,18 +797,26 @@ const FlowDetailsPage = () => {
                   </RevertlocalChangesCheckbox>
                 ) : (
                   <Button
-                    onClick={() =>
-                      setLocalChangesModal({ isOpen: true, type: 'revert' })
-                    }
+                    onClick={() => {
+                      dispatch(
+                        NamespacesActions.setLocalChangesModalType('revert')
+                      );
+                      dispatch(
+                        NamespacesActions.setLocalChangesModalOpen(true)
+                      );
+                    }}
                   >
                     Revert Local Changes
                   </Button>
                 )}
                 <Button
                   variant="secondary"
-                  onClick={() =>
-                    setLocalChangesModal({ isOpen: true, type: 'show' })
-                  }
+                  onClick={() => {
+                    dispatch(
+                      NamespacesActions.setLocalChangesModalType('show')
+                    );
+                    dispatch(NamespacesActions.setLocalChangesModalOpen(true));
+                  }}
                 >
                   Show Local Changes
                 </Button>
@@ -850,12 +827,7 @@ const FlowDetailsPage = () => {
       </BottomButton>
 
       {/* Add Local Changes Modal */}
-      <LocalChangesModal
-        isOpen={localChangesModal.isOpen}
-        onClose={handleCloseLocalChangesModal}
-        onSubmit={handleLocalChangesAction}
-        type={localChangesModal.type}
-      />
+      <LocalChangesModal />
     </div>
   );
 };

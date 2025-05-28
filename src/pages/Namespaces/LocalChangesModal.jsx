@@ -116,16 +116,14 @@ const Search = styled.input`
   }
 `;
 
-const LocalChangesModal = ({
-  isOpen,
-  onClose,
-
-  type,
-}) => {
+const LocalChangesModal = () => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [showMainModal, setShowMainModal] = useState(isOpen);
+  const isOpen = useSelector(NamespacesSelectors.getLocalChangesModalOpen);
+  const type = useSelector(NamespacesSelectors.getLocalChangesModalType);
+  const showConfirmation = useSelector(
+    NamespacesSelectors.getRevertConfirmationModalOpen
+  );
   const fetchLocalChanges = useSelector(NamespacesSelectors.getLocalChanges);
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
@@ -135,7 +133,6 @@ const LocalChangesModal = ({
   );
 
   useEffect(() => {
-    setShowMainModal(isOpen);
     if (type === 'show' || type === 'revert') {
       dispatch(NamespacesActions.fetchLocalChanges());
     }
@@ -146,9 +143,6 @@ const LocalChangesModal = ({
       ? `${getNifiUrl?.nifiUrl}${componentLink}`
       : `${getNifiUrl?.nifiUrl}/nifi/${componentLink}`;
     window.open(updatedUrl, '_blank');
-    if (updatedUrl) {
-      window.open(updatedUrl, '_blank');
-    }
   };
 
   const getModalTitle = () => {
@@ -250,6 +244,7 @@ const LocalChangesModal = ({
             <button
               className="border-0 bg-white"
               onClick={() => handleIdClick(item?.componentLink)}
+              type="button"
             >
               <CircleArrowIcon />
             </button>
@@ -260,24 +255,24 @@ const LocalChangesModal = ({
   ];
 
   const handleMainModalClose = () => {
-    setShowMainModal(false);
-    onClose();
+    dispatch(NamespacesActions.setLocalChangesModalOpen(false));
+    dispatch(NamespacesActions.setLocalChangesModalType(null));
   };
 
   const handleRevertChanges = () => {
-    setShowMainModal(false);
-    setShowConfirmation(true);
+    dispatch(NamespacesActions.setLocalChangesModalOpen(false));
+    dispatch(NamespacesActions.setRevertConfirmationModalOpen(true));
   };
 
   const handleConfirmRevert = () => {
     dispatch(NamespacesActions.revertLocalChanges());
-    setShowConfirmation(false);
-    onClose();
+    dispatch(NamespacesActions.setRevertConfirmationModalOpen(false));
+    handleMainModalClose();
   };
 
   const handleCancelRevert = () => {
-    setShowConfirmation(false);
-    setShowMainModal(true);
+    dispatch(NamespacesActions.setRevertConfirmationModalOpen(false));
+    dispatch(NamespacesActions.setLocalChangesModalOpen(true));
   };
 
   const renderTable = () => {
@@ -319,7 +314,7 @@ const LocalChangesModal = ({
     <>
       <Modal
         title={getModalTitle()}
-        isOpen={showMainModal}
+        isOpen={isOpen}
         onRequestClose={handleMainModalClose}
         size={getModalSize(type)}
         primaryButtonText={getButtonText(type)}

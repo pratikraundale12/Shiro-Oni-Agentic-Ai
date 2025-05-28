@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { CircleArrowIcon, SmallSearchIcon, StarInfoIcon } from '../../assets';
-import { theme } from '../../styles';
-import styled from 'styled-components';
-import { Table, TextRender } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
+import styled from 'styled-components';
+import { CircleArrowIcon, SmallSearchIcon, StarInfoIcon } from '../../assets';
+import { Table, TextRender } from '../../components';
+import { theme } from '../../styles';
+// import { NamespacesActions, NamespacesSelectors } from '../../store';
+import { SchedularActions, SchedularSelectors } from '../../store/schedular';
+import { GridSelectors } from '../../store';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -83,11 +85,26 @@ const MessageText = styled.span`
 const DiffLocalChanges = () => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
-  const localChanges = useSelector(NamespacesSelectors.getLocalChanges);
+  const details = useSelector(SchedularSelectors.getScheduleDeploymentDetails);
+  const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
+  const schedularId = selectedSchedule?.id;
+  const getNifiUrl = useSelector(state =>
+    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
+  );
 
   useEffect(() => {
-    dispatch(NamespacesActions.fetchLocalChanges());
+    dispatch(SchedularActions.fetchScheduleDeploymentDetails(schedularId));
   }, [dispatch]);
+
+  const handleIdClick = componentLink => {
+    const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
+      ? `${getNifiUrl?.nifiUrl}${componentLink}`
+      : `${getNifiUrl?.nifiUrl}/nifi/${componentLink}`;
+    window.open(updatedUrl, '_blank');
+    if (updatedUrl) {
+      window.open(updatedUrl, '_blank');
+    }
+  };
 
   const COLUMNS = [
     {
@@ -112,23 +129,28 @@ const DiffLocalChanges = () => {
       label: '',
       renderCell: item => (
         <div className="text-center">
-          <button
-            className="border-0 bg-white"
-            onClick={() => console.log('Navigate to details', item)}
-          >
-            <CircleArrowIcon />
-          </button>
+          <>
+            <button
+              className="border-0 bg-white"
+              onClick={() => handleIdClick(item?.componentLink)}
+            >
+              <CircleArrowIcon />
+            </button>
+          </>
         </div>
       ),
     },
   ];
 
   const filteredData =
-    localChanges?.data?.changes?.filter(item =>
+    details?.local_changes?.changes?.filter(item =>
       [item.componentName, item.componentType, item.difference].some(field =>
         field?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     ) || [];
+  const message =
+    'Action Selected : ' +
+    (details?.revert_local_changes === true ? 'Revert' : 'N/A');
 
   return (
     <div>
@@ -140,7 +162,7 @@ const DiffLocalChanges = () => {
           <MessageText>Local change detected!</MessageText>
         </NotificationContainer>
         <ActionContainer>
-          <MessageText>Action Selected : Revert</MessageText>
+          <MessageText> {message}</MessageText>
         </ActionContainer>
       </div>
       <SearchContainer>
