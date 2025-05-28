@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import {
   ActiveIcon,
+  CopyIcon,
   DeleteDustbinIcon,
   DeleteSmallIcon,
   LogoutIcon,
@@ -31,12 +32,14 @@ import {
   ClustersSelectors,
   DashboardActions,
   GridActions,
+  GridSelectors,
   NamespacesActions,
 } from '../../store';
 import { deleteCluster, updateCluster } from '../../store/index1';
+import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { useGlobalContext } from '../../utils';
 import ClusterSuccessModal from './components/ClusterSuccessModal';
-import { SchedularActions, SchedularSelectors } from '../../store/schedular';
+import { getNextUniqueName } from '../../utils/CheckUniqueString';
 
 const List = styled.div`
   position: absolute;
@@ -228,6 +231,10 @@ export const ListClusters = () => {
                         <span>{KDFM.EDIT}</span>
                       </Item>
                     )}
+                    <Item onClick={handleCopyClusterClick}>
+                      <CopyIcon width={16} height={16} />
+                      <span>Copy Cluster</span>
+                    </Item>
                     <>
                       {item.status !== CLUSTER_STATUS.DISCONNECTED && (
                         <Item onClick={() => handleClick('view')}>
@@ -359,6 +366,19 @@ export const ListClusters = () => {
     } else {
       toast.error('error occured');
     }
+  };
+
+  const gridData = useSelector(state =>
+    GridSelectors.getGridData(state, 'clusters')
+  );
+
+  const handleCopyClusterClick = () => {
+    const copiedData = {
+      ...menuState.row,
+      id: undefined,
+      name: getNextUniqueName(menuState?.row?.name, gridData),
+    };
+    history.push('/clusters/add', { state: copiedData });
   };
 
   const handleMenuClick = (event, item) => {

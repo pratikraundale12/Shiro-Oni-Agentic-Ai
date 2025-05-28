@@ -55,7 +55,7 @@ const StyledVerifyEmailBtn = styled(Button)`
   padding-top: 15px;
   padding-bottom: 15px;
   height: 50px;
-  width: 200px;
+  width: 140px;
   gap: 10px;
   radius: 8px;
   left: 140px;
@@ -79,8 +79,7 @@ const ButtonDiv = styled.div`
 export const settingSchema = yup.object().shape({
   from_email: yup
     .string()
-    .transform(value => (value === '' ? null : value))
-    .nullable()
+    .required('From Email is required')
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
   smtp_service: yup
@@ -363,6 +362,7 @@ export const EmailConfigurationSettings = () => {
               label={KDFM.FROM_EMAIL}
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
+              required
             />
           </div>
         </InputFields>
