@@ -4,13 +4,14 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as yup from 'yup';
-import { ClockIcon } from '../../assets';
+import { ClockIcon, RefreshIcon } from '../../assets';
 import favicon from '../../assets/images/default-favicon.ico';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { Button, SelectField, SwitchButton, TextButton } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
 import { formatDateStringToLocal } from '../../helpers';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -76,6 +77,18 @@ const ButtonDiv = styled.div`
 const Label = styled.span`
   color: ${props => props.theme.colors.darker};
   font-size: 14px;
+`;
+
+const RefreshIconContainer = styled.div`
+  cursor: pointer;
+  background-color: #f5f7fa;
+  border: 1px solid #dde4f0;
+  width: 35px;
+  height: 33px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
 `;
 export const settingSchema = yup.object().shape({});
 export const LDAPSettings = () => {
@@ -261,6 +274,10 @@ export const LDAPSettings = () => {
     }
   }
 
+  const handleRefresh = () => {
+    dispatch(SettingsActions.fetchSettings());
+  };
+
   return (
     <Wrapper>
       <form
@@ -314,11 +331,31 @@ export const LDAPSettings = () => {
               }}
             />
           </div>
-          <div className="mt-4">
-            <Label className="fw-semibold">{KDFM.LAST_SYNC}: </Label>
-            {settingData?.last_auto_sync
-              ? formatDateStringToLocal(settingData?.last_auto_sync)
-              : 'Not Synced'}
+          <div className="d-flex gap-3 align-items-center mt-4">
+            <div>
+              <Label className="fw-semibold">{KDFM.LAST_SYNC}: </Label>
+              {settingData?.last_auto_sync
+                ? formatDateStringToLocal(settingData?.last_auto_sync)
+                : 'Not Synced'}
+            </div>
+            <>
+              <RefreshIconContainer
+                onClick={handleRefresh}
+                data-tooltip-id={`tooltip-settings-refresh`}
+              >
+                <RefreshIcon style={{ cursor: 'pointer' }} />
+              </RefreshIconContainer>
+              <ReactTooltip
+                id={`tooltip-settings-refresh`}
+                place="left"
+                content={'Refresh'}
+                style={{
+                  width: 'auto',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
           </div>
           <div className="mt-4">
             <LinkButton onClick={() => history.push('/ldap-configuration')}>
