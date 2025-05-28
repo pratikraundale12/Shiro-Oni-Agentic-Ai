@@ -10,24 +10,18 @@ import {
 } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
-import {
-  GridSelectors,
-  NamespacesActions,
-  NamespacesSelectors,
-} from '../../store';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { theme } from '../../styles';
 // import CommitLocalChangesModal from './CommitLocalChangesModal';
 
 const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
   padding: 1.5rem;
 `;
 
 const ModalText = styled.p`
   text-align: center;
-  /* margin-bottom: 1rem; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,9 +122,6 @@ const LocalChangesModal = () => {
   const selectedNameSpace = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
-  const getNifiUrl = useSelector(state =>
-    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
-  );
 
   useEffect(() => {
     if (type === 'show' || type === 'revert') {
@@ -139,10 +130,7 @@ const LocalChangesModal = () => {
   }, [dispatch, type]);
 
   const handleIdClick = componentLink => {
-    const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
-      ? `${getNifiUrl?.nifiUrl}${componentLink}`
-      : `${getNifiUrl?.nifiUrl}/nifi/${componentLink}`;
-    window.open(updatedUrl, '_blank');
+    window.open(componentLink, '_blank');
   };
 
   const getModalTitle = () => {

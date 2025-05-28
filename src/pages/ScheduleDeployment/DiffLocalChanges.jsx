@@ -4,9 +4,7 @@ import styled from 'styled-components';
 import { CircleArrowIcon, SmallSearchIcon, StarInfoIcon } from '../../assets';
 import { Table, TextRender } from '../../components';
 import { theme } from '../../styles';
-// import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
-import { GridSelectors } from '../../store';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -88,22 +86,15 @@ const DiffLocalChanges = () => {
   const details = useSelector(SchedularSelectors.getScheduleDeploymentDetails);
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const schedularId = selectedSchedule?.id;
-  const getNifiUrl = useSelector(state =>
-    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
-  );
 
   useEffect(() => {
     dispatch(SchedularActions.fetchScheduleDeploymentDetails(schedularId));
   }, [dispatch]);
 
   const handleIdClick = componentLink => {
-    const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
-      ? `${getNifiUrl?.nifiUrl}${componentLink}`
-      : `${getNifiUrl?.nifiUrl}/nifi/${componentLink}`;
-    window.open(updatedUrl, '_blank');
-    if (updatedUrl) {
-      window.open(updatedUrl, '_blank');
-    }
+    console.log('Component Link:', componentLink);
+
+    window.open(componentLink, '_blank');
   };
 
   const COLUMNS = [
