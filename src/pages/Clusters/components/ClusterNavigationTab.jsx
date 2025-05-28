@@ -79,7 +79,7 @@ const ClusterNavigationTab = ({
           />
         )}
       </>
-      {isSuperAdmin && data && (
+      {isSuperAdmin && data && location?.pathname === '/clusters/edit' && (
         <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
           onClick={() =>
