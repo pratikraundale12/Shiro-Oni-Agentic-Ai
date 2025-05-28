@@ -119,6 +119,18 @@ export const ROUTES_MENU = [
     permission: 'view_cluster',
   },
   {
+    name: 'Registry',
+    path: 'registry-management',
+    icon: RegistryIcon,
+    pages: [
+      {
+        path: '',
+        component: <RegistryManagementPage />,
+      },
+    ],
+    permission: 'view_registry',
+  },
+  {
     name: 'Process Groups',
     path: 'process-group',
     icon: NameSpaceIcon,
@@ -230,18 +242,7 @@ export const ROUTES_MENU = [
     ],
     permission: 'view_genai',
   },
-  {
-    name: 'Registry',
-    path: 'registry-management',
-    icon: RegistryIcon,
-    pages: [
-      {
-        path: '',
-        component: <RegistryManagementPage />,
-      },
-    ],
-    permission: 'view_cluster',
-  },
+
   {
     name: 'User Management',
     path: 'user-management',

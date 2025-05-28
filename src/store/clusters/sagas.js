@@ -342,7 +342,7 @@ export function* associateClusterWithRegistry(api, { payload }) {
     toast.success(response?.data?.message);
     yield put(ClustersActions.setIsRegitryAssociationModalOpen(false));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 
