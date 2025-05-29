@@ -485,9 +485,11 @@ const ClusterStatusTab = () => {
                         2
                       ) + '%' || '0.00%'
                     }
-                    unit=""
+                    unit={ele?.data?.cpu?.used}
                     percentage={ele?.data?.cpu?.utilization}
                     showPercentageSign={true}
+                    contentTotal={ele?.data?.cpu?.total}
+                    contentUsed={ele?.data?.cpu?.used}
                     contentUsedPercentage={
                       getPercentageValue(ele?.data?.cpu?.utilization).toFixed(
                         2
