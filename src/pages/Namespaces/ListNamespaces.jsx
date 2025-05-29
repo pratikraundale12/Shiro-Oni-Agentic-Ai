@@ -17,7 +17,6 @@ import {
 import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
-import { ModalWithIcon } from '../../shared/Modal/ModalWithIcon';
 import {
   ClustersSelectors,
   LoadingSelectors,
@@ -29,6 +28,7 @@ import { SettingsSelectors } from '../../store/settings';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from './ProcessGroupSorting';
+import { InputField, Modal } from '../../shared';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -81,6 +81,18 @@ const StatusDiv = styled.div`
   }
 `;
 
+const DeleteConfirmationText = styled.p`
+  color: ${props => props.theme.colors.darker};
+  font-size: 14px;
+  margin-bottom: 8px;
+  text-align: center;
+`;
+
+const IconWrapper = styled.div`
+  text-align: center;
+  margin-bottom: 16px;
+`;
+
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
   const {
@@ -90,6 +102,7 @@ export const ListNamespaces = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
 
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
@@ -537,16 +550,18 @@ export const ListNamespaces = () => {
   };
 
   const handleConfirmDelete = () => {
-    if (itemToDelete) {
+    if (itemToDelete && deleteConfirmationText === 'DELETE') {
       dispatch(NamespacesActions.deleteNamespace(itemToDelete.id));
       setDeleteModalOpen(false);
       setItemToDelete(null);
+      setDeleteConfirmationText('');
     }
   };
 
   const handleCancelDelete = () => {
     setDeleteModalOpen(false);
     setItemToDelete(null);
+    setDeleteConfirmationText('');
   };
 
   const loading = useSelector(state =>
@@ -568,16 +583,33 @@ export const ListNamespaces = () => {
         setCurrentPage={setCurrentPage}
       />
 
-      <ModalWithIcon
+      <Modal
         title={`Delete : ${itemToDelete?.name}`}
         primaryButtonText="Delete"
         secondaryButtonText="Cancel"
-        icon={<DeleteDustbinIcon />}
         isOpen={deleteModalOpen}
         onRequestClose={handleCancelDelete}
-        primaryText={`Are you sure you want to delete ${itemToDelete?.name} process group?`}
         onSubmit={handleConfirmDelete}
-      />
+        primaryButtonDisabled={deleteConfirmationText !== 'DELETE'}
+        contentStyles={{ width: '400px', maxWidth: '90%' }}
+      >
+        <IconWrapper>
+          <DeleteDustbinIcon />
+        </IconWrapper>
+        <DeleteConfirmationText>
+          Are you sure you want to delete {itemToDelete?.name} process group?
+        </DeleteConfirmationText>
+        <DeleteConfirmationText>
+          Please type &quot;DELETE&quot; to confirm deletion:
+        </DeleteConfirmationText>
+        <InputField
+          icon={<DeleteSmallIcon />}
+          type="text"
+          value={deleteConfirmationText}
+          onChange={e => setDeleteConfirmationText(e.target.value)}
+          placeholder="Type DELETE to confirm"
+        />
+      </Modal>
     </>
   );
 };
