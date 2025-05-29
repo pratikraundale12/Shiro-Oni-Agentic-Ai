@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Setting } from './Setting';
 import { AppSettings } from './AppSettings';
@@ -17,6 +17,8 @@ import {
   SSOLoginIcon,
   CurvedDocumentIcon,
 } from '../../assets';
+import { useDispatch } from 'react-redux';
+import { SettingsActions } from '../../store/settings';
 
 const GreyBoxNamespace = styled.div`
   background-color: #ffffff;
@@ -87,7 +89,13 @@ const IconContent = styled.div`
 `;
 
 const SettingTab = () => {
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('AppSettings');
+  useEffect(() => {
+    if (activeTab !== 'EmailConfigurationSettings') {
+      dispatch(SettingsActions.setIsEmailVerified(false));
+    }
+  });
   const renderContent = () => {
     switch (activeTab) {
       case 'Setting':

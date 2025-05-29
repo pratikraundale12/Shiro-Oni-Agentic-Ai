@@ -17,6 +17,7 @@ export function* createSettings(api, { payload }) {
   });
 
   if (response.ok) {
+    yield put(SettingsActions.setIsEmailVerified(false));
     if (payload.favicon) changeFavicon(URL.createObjectURL(payload.favicon));
     if (payload.title) document.title = payload.title;
     toast.success('Settings updated successfully.');
@@ -96,16 +97,21 @@ export function* verifyEmail(api, payload) {
     errorSection: 'verifyEmail',
     loadingSection: 'verifyEmail',
     apiMethod: api.verifyEmail,
-    apiParams: [{ to_email: payload?.payload?.to_email }],
+    successAction: SettingsActions.verifyEmailSuccess,
+    apiParams: [
+      {
+        to_email: payload?.payload?.to_email,
+        changedSmtpData: payload?.payload?.changedSmtpData,
+      },
+    ],
   });
 
   if (response.ok) {
     toast.success(
-      response?.message ||
-        response?.data?.message ||
-        'Verification email sent successfully.'
+      'Verification email sent successfully. SMTP details are verified, you can proceed with saving the settings.'
     );
   } else {
+    yield put(SettingsActions.setIsEmailVerified(false));
     toast.error(
       response?.message ||
         response?.data?.message ||

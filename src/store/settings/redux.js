@@ -14,6 +14,8 @@ export const SettingsActions = {
   downloadLogsSuccess: createAction(`${prefix}downloadLogsSuccess`),
   downloadLogsFailure: createAction(`${prefix}downloadLogsFailure`),
   verifyEmail: createAction(`${prefix}verifyEmail`),
+  verifyEmailSuccess: createAction(`${prefix}verifyEmailSuccess`),
+  setIsEmailVerified: createAction(`${prefix}setIsEmailVerified`),
 };
 
 // /* ------------- INITIAL STATE ------------- */
@@ -22,6 +24,7 @@ export const SETTING_INITIAL_STATE = {
   flowValidationModalOpen: false,
   addNewValidationModalOpen: false,
   isDownloading: false,
+  emailVerified: false,
 };
 
 // /* ------------- SELECTORS ------------------ */
@@ -31,6 +34,7 @@ export const SettingsSelectors = {
   getAddNewValidationModalOpen: state =>
     state.settings.addNewValidationModalOpen,
   getIsDownloading: state => state.settings.isDownloading,
+  getEmailVerified: state => state.settings.emailVerified,
 };
 
 // /* ------------- REDUCERS ------------------- */
@@ -50,6 +54,20 @@ const handleAddNewValidationModalOpen = (state, { payload }) => {
   return {
     ...state,
     addNewValidationModalOpen: payload,
+  };
+};
+
+const verifyEmailSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    emailVerified: payload?.verified,
+  };
+};
+
+const setIsEmailVerified = (state, { payload }) => {
+  return {
+    ...state,
+    emailVerified: payload,
   };
 };
 
@@ -73,5 +91,7 @@ export const settingsReducer = createReducer(SETTING_INITIAL_STATE, builder => {
     })
     .addCase(SettingsActions.downloadLogsFailure, state => {
       state.isDownloading = false;
-    });
+    })
+    .addCase(SettingsActions.verifyEmailSuccess, verifyEmailSuccess)
+    .addCase(SettingsActions.setIsEmailVerified, setIsEmailVerified);
 });
