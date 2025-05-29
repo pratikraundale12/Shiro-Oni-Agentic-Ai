@@ -1,4 +1,4 @@
-import { createReducer, createAction } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
 const prefix = '@@KDFM-SCHEDULAR/';
 
@@ -30,6 +30,12 @@ export const SchedularActions = {
   setIsGroupListModalOpen: createAction(`${prefix}setIsGroupListModalOpen`),
   fetchGroupUserData: createAction(`${prefix}fetchGroupUserData`),
   setListGroupMembers: createAction(`${prefix}setListGroupMembers`),
+  fetchScheduleDeploymentDetails: createAction(
+    `${prefix}fetchScheduleDeploymentDetails`
+  ),
+  setScheduleDeploymentDetails: createAction(
+    `${prefix}setScheduleDeploymentDetails`
+  ),
 };
 /* ------------- INITIAL STATE ------------- */
 export const SCHEDULAR_INITIAL_STATE = {
@@ -52,6 +58,7 @@ export const SCHEDULAR_INITIAL_STATE = {
   isUserStoryModalOpen: false,
   isGroupListModalOpen: false,
   listGroupMembers: [],
+  scheduleDeploymentDetails: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -75,6 +82,8 @@ export const SchedularSelectors = {
   getIsUserStoryModalOpen: state => state.schedular.isUserStoryModalOpen,
   getisGroupListModalOpen: state => state.schedular.isGroupListModalOpen,
   getListGroupMembers: state => state.schedular.listGroupMembers,
+  getScheduleDeploymentDetails: state =>
+    state.schedular.scheduleDeploymentDetails,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -194,6 +203,13 @@ const setListGroupMembers = (state, { payload }) => {
   };
 };
 
+const setScheduleDeploymentDetails = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleDeploymentDetails: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const schedularReducer = createReducer(
   SCHEDULAR_INITIAL_STATE,
@@ -229,6 +245,10 @@ export const schedularReducer = createReducer(
         SchedularActions.setIsGroupListModalOpen,
         setIsGroupListModalOpen
       )
-      .addCase(SchedularActions.setListGroupMembers, setListGroupMembers);
+      .addCase(SchedularActions.setListGroupMembers, setListGroupMembers)
+      .addCase(
+        SchedularActions.setScheduleDeploymentDetails,
+        setScheduleDeploymentDetails
+      );
   }
 );

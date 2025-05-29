@@ -1444,6 +1444,74 @@ export function* fetchAddPropertyToAdd(api, { payload }) {
   }
 }
 
+export function* fetchLocalChanges(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchLocalChanges',
+    loadingSection: 'fetchLocalChanges',
+    apiMethod: api.fetchLocalChanges,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedNamespace?.value,
+      },
+    ],
+    successAction: NamespacesActions.fetchLocalChangesSuccess,
+  });
+
+  if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
+export function* revertLocalChanges(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'revertLocalChanges',
+    loadingSection: 'revertLocalChanges',
+    apiMethod: api.revertLocalChanges,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedNamespace?.value,
+      },
+    ],
+    successAction: NamespacesActions.revertLocalChangesSuccess,
+  });
+
+  if (response?.ok) {
+    yield put(NamespacesActions.setSelectedNamespace(response?.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* deleteNamespace(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
@@ -1490,6 +1558,7 @@ export function* namespacesSagas(api) {
     takeLatest(NamespacesActions.fetchDestNamespaces, fetchDestNamespaces, api),
     takeLatest(NamespacesActions.checkDestCluster, checkDestCluster, api),
     takeLatest(NamespacesActions.deployCluster, deployCluster, api),
+    takeLatest(NamespacesActions.fetchLocalChanges, fetchLocalChanges, api),
     takeLatest(
       NamespacesActions.updateNamespaceStatus,
       updateNamespaceStatus,
@@ -1604,5 +1673,6 @@ export function* namespacesSagas(api) {
       fetchAddPropertyToAdd,
       api
     ),
+    takeLatest(NamespacesActions.revertLocalChanges, revertLocalChanges, api),
   ]);
 }
