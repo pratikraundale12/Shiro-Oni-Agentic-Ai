@@ -1,20 +1,16 @@
 export const getNextUniqueName = (baseName, items) => {
-  const regex = new RegExp(`^${baseName}(-\\d+)?$`);
+  const regex = new RegExp(`^${baseName}(-\\d+)*$`);
 
-  // Match items with same base name or baseName-N format
   const matchingItems = items.filter(item => regex.test(item.name));
 
-  // Extract existing suffix numbers
   const suffixes = matchingItems.map(item => {
-    const parts = item.name.split('-');
-    const num = parseInt(parts[1]);
-    return isNaN(num) ? 0 : num;
+    const parts = item.name.replace(baseName, '').split('-').filter(Boolean);
+    const nums = parts.map(num => parseInt(num)).filter(n => !isNaN(n));
+    return nums.length ? nums[nums.length - 1] : 0;
   });
 
-  const calculatedNextSuffix = suffixes.length ? Math.max(...suffixes) + 1 : 1;
+  const nextSuffix = suffixes.length ? Math.max(...suffixes) + 1 : 1;
 
-  // Trim base if needed
-  const suffixStr = `-${calculatedNextSuffix}`;
-  const trimmedBase = baseName.slice(0, 30 - suffixStr.length);
-  return `${trimmedBase}${suffixStr}`;
+  const newName = `${baseName}-${nextSuffix}`;
+  return newName;
 };

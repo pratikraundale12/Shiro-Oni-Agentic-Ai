@@ -51,6 +51,8 @@ export const ClustersActions = {
     `${prefix}updateServiceAccountHostFailure`
   ),
   setTestCredsButtonVisible: createAction(`${prefix}setTestCredsButtonVisible`),
+  setCopyClusterModalOpen: createAction(`${prefix}setCopyClusterModalOpen`),
+  setCopyClusterData: createAction(`${prefix}setCopyClusterData`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -62,6 +64,9 @@ export const CLUSTERS_INITIAL_STATE = {
   addEditClusterData: {},
   clusterFormDataResponse: {},
   isclusterHardDeleteModalOpen: false,
+  isCopyClusterModalOpen: false,
+  copyClusterData: null,
+  originalClusterName: null,
   // Service-account credential check
   checkingServiceAccount: false,
   checkServiceAccountError: null,
@@ -86,6 +91,9 @@ export const ClustersSelectors = {
   getClusterFormData: state => state.clusters.clusterFormDataResponse,
   getIsclusterHardDeleteModalOpen: state =>
     state.clusters.isclusterHardDeleteModalOpen,
+  getIsCopyClusterModalOpen: state => state.clusters.isCopyClusterModalOpen,
+  getCopyClusterData: state => state.clusters.copyClusterData,
+  getOriginalClusterName: state => state.clusters.originalClusterName,
   // service-account credential check
   isCheckingServiceAccount: state => state.clusters.checkingServiceAccount,
   getServiceAccountCheckError: state => state.clusters.checkServiceAccountError,
@@ -233,6 +241,25 @@ const setTestCredsButtonVisible = (state, { payload }) => ({
   isTestCredsButtonVisible: payload, // true or false
 });
 
+const setCopyClusterModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isCopyClusterModalOpen: payload,
+    ...(payload === false && {
+      copyClusterData: null,
+      originalClusterName: null,
+    }),
+  };
+};
+
+const setCopyClusterData = (state, { payload }) => {
+  return {
+    ...state,
+    copyClusterData: payload.data,
+    originalClusterName: payload.originalName,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
   CLUSTERS_INITIAL_STATE,
@@ -297,6 +324,8 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setTestCredsButtonVisible,
         setTestCredsButtonVisible
-      );
+      )
+      .addCase(ClustersActions.setCopyClusterModalOpen, setCopyClusterModalOpen)
+      .addCase(ClustersActions.setCopyClusterData, setCopyClusterData);
   }
 );
