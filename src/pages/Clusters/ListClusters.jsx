@@ -38,8 +38,8 @@ import {
 import { deleteCluster, updateCluster } from '../../store/index1';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { useGlobalContext } from '../../utils';
-import ClusterSuccessModal from './components/ClusterSuccessModal';
 import { getNextUniqueName } from '../../utils/CheckUniqueString';
+import ClusterSuccessModal from './components/ClusterSuccessModal';
 
 const List = styled.div`
   position: absolute;
@@ -128,6 +128,13 @@ export const ListClusters = () => {
   const [sortingState, setSortingState] = useState('name');
   const hardDeleteModalOpen = useSelector(
     ClustersSelectors.getIsclusterHardDeleteModalOpen
+  );
+  const isCopyClusterModalOpen = useSelector(
+    ClustersSelectors.getIsCopyClusterModalOpen
+  );
+  const copyClusterData = useSelector(ClustersSelectors.getCopyClusterData);
+  const originalClusterName = useSelector(
+    ClustersSelectors.getOriginalClusterName
   );
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const toggleSorting = column => {
@@ -378,7 +385,20 @@ export const ListClusters = () => {
       id: undefined,
       name: getNextUniqueName(menuState?.row?.name, gridData),
     };
-    history.push('/clusters/add', { state: copiedData });
+    dispatch(
+      ClustersActions.setCopyClusterData({
+        data: copiedData,
+        originalName: menuState.row.name,
+      })
+    );
+    dispatch(ClustersActions.setCopyClusterModalOpen(true));
+    handleCloseMenu();
+  };
+
+  const handleCopyClusterConfirm = () => {
+    history.push('/clusters/add', { state: copyClusterData });
+    dispatch(ClustersActions.setCopyClusterModalOpen(false));
+    dispatch(ClustersActions.setCopyClusterData(null));
   };
 
   const handleMenuClick = (event, item) => {
@@ -505,6 +525,18 @@ export const ListClusters = () => {
           dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false))
         }
         primaryText={KDFM.HARD_DELETE_CLUSTER_WARNING}
+      />
+      <ModalWithIcon
+        title={'Copy Cluster'}
+        primaryButtonText={'Copy'}
+        secondaryButtonText={KDFM.CANCEL}
+        icon={<CopyIcon width={150} height={150} />}
+        isOpen={isCopyClusterModalOpen}
+        onSubmit={handleCopyClusterConfirm}
+        onRequestClose={() => {
+          dispatch(ClustersActions.setCopyClusterModalOpen(false));
+        }}
+        primaryText={`Are you sure you want to copy cluster "${originalClusterName}"?`}
       />
       <Grid
         module="clusters"
