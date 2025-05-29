@@ -12,7 +12,6 @@ import { Table, TextRender } from '../../components';
 import { Modal } from '../../shared';
 import { NamespacesActions, NamespacesSelectors } from '../../store';
 import { theme } from '../../styles';
-// import CommitLocalChangesModal from './CommitLocalChangesModal';
 
 const ModalContent = styled.div`
   display: flex;
@@ -270,7 +269,6 @@ const LocalChangesModal = () => {
         item.componentType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.difference?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    console.log(filteredData, 'filteredData');
 
     return (
       <>

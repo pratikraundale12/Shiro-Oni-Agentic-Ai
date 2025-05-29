@@ -92,8 +92,6 @@ const DiffLocalChanges = () => {
   }, [dispatch]);
 
   const handleIdClick = componentLink => {
-    console.log('Component Link:', componentLink);
-
     window.open(componentLink, '_blank');
   };
 
