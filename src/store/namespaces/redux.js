@@ -12,6 +12,8 @@ export const NamespacesActions = {
   fetchNamespacesSuccess: createAction(`${prefix}fetchNamespacesSuccess`),
   fetchLocalChanges: createAction(`${prefix}fetchLocalChanges`),
   fetchLocalChangesSuccess: createAction(`${prefix}fetchLocalChangesSuccess`),
+  deleteNamespace: createAction(`${prefix}deleteNamespace`),
+  deleteNamespaceSuccess: createAction(`${prefix}deleteNamespaceSuccess`),
   setSelectedDestCluster: createAction(`${prefix}setSelectedDestCluster`),
   setSelectedDestNamespace: createAction(`${prefix}setSelectedDestNamespace`),
   fetchDestNamespaces: createAction(`${prefix}fetchDestNamespaces`),
@@ -1084,6 +1086,12 @@ const setRevertConfirmationModalOpen = (state, { payload }) => {
     revertConfirmationModalOpen: payload,
   };
 };
+const deleteNamespaceSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    deletedNamespace: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1102,6 +1110,7 @@ export const namespacesReducer = createReducer(
         NamespacesActions.fetchLocalChangesSuccess,
         fetchLocalChangesSuccess
       )
+      .addCase(NamespacesActions.deleteNamespaceSuccess, deleteNamespaceSuccess)
       .addCase(NamespacesActions.setSelectedDestCluster, setSelectedDestCluster)
       .addCase(
         NamespacesActions.setSelectedDestNamespace,
