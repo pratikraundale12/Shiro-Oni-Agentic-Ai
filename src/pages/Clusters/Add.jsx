@@ -226,10 +226,16 @@ export const Add = () => {
   });
 
   useEffect(() => {
-    if (clusterData) {
+    const originalData = data || {};
+    if (
+      clusterData.clusterName !== originalData.name ||
+      clusterData.nifiUrl !== originalData.nifi_url ||
+      clusterData.metrics_url !== originalData.metrics_url ||
+      clusterData.logs_url !== originalData.logs_url
+    ) {
       dispatch(ClustersActions.addEditClusterData(clusterData));
     }
-  }, [clusterData]);
+  }, [clusterData, data, dispatch]);
 
   const [registryData, setRegistryData] = useState({
     registryName: '',
@@ -459,7 +465,7 @@ export const Add = () => {
     activeTab,
   ]);
   useEffect(() => {
-    if (data?.registry_id) {
+    if (data?.registry_id || data?.created_by_ansible) {
       reset({
         registry: data?.registry_id || '',
         clusterName: clusterData?.clusterName,
@@ -729,7 +735,6 @@ export const Add = () => {
           </FormContainer>
         )}
 
-
         {activeTab === CLUSTER_MODULE_TABS.REGISTRY && !newRegistry && (
           <FormContainer>
             <SelectField
@@ -811,7 +816,11 @@ export const Add = () => {
             </Button>
           )}
           {showRegistryContiueButton() && (
-            <Button id="registry-details-continue-btn" onClick={handleRegistry} disabled={!selectedRegistryId}>
+            <Button
+              id="registry-details-continue-btn"
+              onClick={handleRegistry}
+              disabled={!selectedRegistryId}
+            >
               {KDFM.CONTINUE}
             </Button>
           )}

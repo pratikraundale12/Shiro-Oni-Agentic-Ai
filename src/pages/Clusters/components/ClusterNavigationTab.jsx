@@ -37,10 +37,8 @@ const ClusterNavigationTab = ({
   isRegistryDetailDisable,
   data,
 }) => {
-
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
   const isSuperAdmin = currentUserData?.role === 'superadmin';
-
 
   return (
     <NavTabs id="nav-tab" role="tablist">
@@ -54,18 +52,20 @@ const ClusterNavigationTab = ({
         {KDFM.CLUSTER_DETAILS}
       </NavButton>
       <>
-        <NavButton
-          active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
-          onClick={() =>
-            Object.keys(data || {})?.length
-              ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
-              : {}
-          }
-          disabled={isRegistryDetailDisable}
-          data-tooltip-id="navButtonTooltip"
-        >
-          {KDFM.REGISTRY_DETAILS}
-        </NavButton>
+        {!data?.created_by_ansible && (
+          <NavButton
+            active={activeTab === CLUSTER_MODULE_TABS.REGISTRY}
+            onClick={() =>
+              Object.keys(data || {})?.length
+                ? setActiveTab(CLUSTER_MODULE_TABS.REGISTRY)
+                : {}
+            }
+            disabled={isRegistryDetailDisable}
+            data-tooltip-id="navButtonTooltip"
+          >
+            {KDFM.REGISTRY_DETAILS}
+          </NavButton>
+        )}
 
         {isRegistryDetailDisable && (
           <ReactTooltip
@@ -83,7 +83,7 @@ const ClusterNavigationTab = ({
         )}
       </>
       {isSuperAdmin && data && (
-      <NavButton
+        <NavButton
           active={activeTab === CLUSTER_MODULE_TABS.SERVICE_ACCOUNT}
           onClick={() =>
             Object.keys(data || {})?.length
@@ -95,7 +95,7 @@ const ClusterNavigationTab = ({
         >
           {KDFM.SERVICE_ACCOUNT}
         </NavButton>
-        )}
+      )}
     </NavTabs>
   );
 };
