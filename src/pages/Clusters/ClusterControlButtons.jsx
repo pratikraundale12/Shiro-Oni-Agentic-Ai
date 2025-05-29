@@ -109,7 +109,6 @@ const ClusterControlButtons = () => {
     );
   };
   useEffect(() => {
-    dispatch(ClustersActions.fetchClusterMetrics(clusterId));
     dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
   }, [dispatch, clusterId]);
 
