@@ -3,7 +3,7 @@ import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
 import { AuthenticationActions } from '../authentication';
-import { GridSelectors } from '../grid';
+import { GridActions, GridSelectors } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
@@ -1443,14 +1443,122 @@ export function* fetchAddPropertyToAdd(api, { payload }) {
     toast.error(response?.message || response?.data?.message);
   }
 }
-//
+
+export function* fetchLocalChanges(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchLocalChanges',
+    loadingSection: 'fetchLocalChanges',
+    apiMethod: api.fetchLocalChanges,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedNamespace?.value,
+      },
+    ],
+    successAction: NamespacesActions.fetchLocalChangesSuccess,
+  });
+
+  if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
+export function* revertLocalChanges(api) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const selectedNamespace = yield select(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'revertLocalChanges',
+    loadingSection: 'revertLocalChanges',
+    apiMethod: api.revertLocalChanges,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: selectedNamespace?.value,
+      },
+    ],
+    successAction: NamespacesActions.revertLocalChangesSuccess,
+  });
+
+  if (response?.ok) {
+    yield put(NamespacesActions.setSelectedNamespace(response?.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
+export function* deleteNamespace(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+
+  const response = yield call(requestSaga, {
+    errorSection: 'deleteNamespace',
+    loadingSection: 'deleteNamespace',
+    apiMethod: api.deleteNamespace,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: payload,
+      },
+    ],
+  });
+
+  if (response.ok) {
+    toast.success('Process Group deleted successfully');
+    yield put(NamespacesActions.deleteNamespaceSuccess(payload));
+    yield put(
+      GridActions.fetchGrid({
+        module: 'namespaces',
+        params: {},
+      })
+    );
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
+    takeLatest(NamespacesActions.deleteNamespace, deleteNamespace, api),
     takeLatest(NamespacesActions.singleNamespaceData, singleNamespaceData, api),
     takeLatest(NamespacesActions.fetchDestNamespaces, fetchDestNamespaces, api),
     takeLatest(NamespacesActions.checkDestCluster, checkDestCluster, api),
     takeLatest(NamespacesActions.deployCluster, deployCluster, api),
+    takeLatest(NamespacesActions.fetchLocalChanges, fetchLocalChanges, api),
     takeLatest(
       NamespacesActions.updateNamespaceStatus,
       updateNamespaceStatus,
@@ -1565,6 +1673,6 @@ export function* namespacesSagas(api) {
       fetchAddPropertyToAdd,
       api
     ),
+    takeLatest(NamespacesActions.revertLocalChanges, revertLocalChanges, api),
   ]);
 }
-//

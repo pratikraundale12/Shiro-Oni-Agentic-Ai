@@ -15,6 +15,8 @@ export const schedularAPI = api => {
     api.get(`/diff-schedule-deployment/${schedularId}`);
   const fetchGroupUserData = ({ groupId }) =>
     api.get(`/group-users/${groupId}`);
+  const fetchScheduleDeploymentDetails = ({ schedularId }) =>
+    api.get(`/schedule-deployment-details/${schedularId}`);
   return {
     fetchSchedular,
     createScheduleDeployment,
@@ -23,5 +25,6 @@ export const schedularAPI = api => {
     rejectScheduleDeployment,
     fetchDiffScheduleData,
     fetchGroupUserData,
+    fetchScheduleDeploymentDetails,
   };
 };

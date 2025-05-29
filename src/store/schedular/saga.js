@@ -2,10 +2,10 @@
 import { toast } from 'react-toastify';
 import { all, call, put, select, takeLatest } from 'redux-saga/effects';
 import { history } from '../../helpers/history';
-import { requestSaga } from '../helpers/request_sagas';
-import { SchedularActions, SchedularSelectors } from './redux';
 import { AuthenticationActions } from '../authentication';
 import { GridActions, fetchGrid } from '../grid';
+import { requestSaga } from '../helpers/request_sagas';
+import { SchedularActions, SchedularSelectors } from './redux';
 
 export function* createScheduleDeployment(api, { payload }) {
   const response = yield call(requestSaga, {
@@ -189,6 +189,20 @@ export function* fetchGroupUserData(api, { payload }) {
   }
 }
 
+export function* fetchScheduleDeploymentDetails(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchScheduleDeploymentDetails',
+    loadingSection: 'fetchScheduleDeploymentDetails',
+    apiMethod: api.fetchScheduleDeploymentDetails,
+    apiParams: [{ schedularId: payload }],
+  });
+  if (response.ok) {
+    yield put(SchedularActions.setScheduleDeploymentDetails(response?.data));
+  } else {
+    toast.error(response?.data?.error);
+  }
+}
+
 export function* schedularSagas(api) {
   yield all([
     takeLatest(
@@ -217,5 +231,10 @@ export function* schedularSagas(api) {
       api
     ),
     takeLatest(SchedularActions.fetchGroupUserData, fetchGroupUserData, api),
+    takeLatest(
+      SchedularActions.fetchScheduleDeploymentDetails,
+      fetchScheduleDeploymentDetails,
+      api
+    ),
   ]);
 }

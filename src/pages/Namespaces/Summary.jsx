@@ -313,6 +313,9 @@ export const scheduleSchema = yup.object().shape({
 
 const Summary = () => {
   const dispatch = useDispatch();
+    const shouldRevertChanges = useSelector(
+      NamespacesSelectors.getShouldRevertChanges
+    );
   const selectedDestCluster =
     useSelector(NamespacesSelectors.getSelectedDestCluster) || [];
   const selectedCluster = useSelector(
@@ -1071,6 +1074,7 @@ const Summary = () => {
       registryId: registryData?.id,
       bucketId: selectedNameSpace?.bucketId,
       namespaceStatus: flowControlSelectedScheduleStored,
+      revert_local_changes:shouldRevertChanges,
       payload: {
         namespaceId: checkDestCluster?.value,
         oldVariablesData: orignalVariables,
@@ -1091,6 +1095,7 @@ const Summary = () => {
       ...(userStoryValue && { user_story_url: userStoryValue }),
       ...(changeRequestValue && { change_request: changeRequestValue }),
     };
+    
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
     }
