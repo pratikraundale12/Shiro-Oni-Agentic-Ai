@@ -252,13 +252,11 @@ const setCopyClusterModalOpen = (state, { payload }) => {
   };
 };
 
-const setCopyClusterData = (state, { payload }) => {
-  return {
-    ...state,
-    copyClusterData: payload.data,
-    originalClusterName: payload.originalName,
-  };
-};
+const setCopyClusterData = (state, { payload }) => ({
+  ...state,
+  copyClusterData: payload?.data ?? null,
+  originalClusterName: payload?.originalName ?? null,
+});
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
