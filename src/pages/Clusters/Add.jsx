@@ -223,8 +223,17 @@ export const Add = () => {
       ),
     registryUrl: yup
       .string()
-      .url('Enter a valid Registry URL')
-      .required('NiFi URL is required')
+      .required('NiFi Registry URL is required')
+      .test('is-valid-url', 'Enter a valid NiFi Registry URL', function (value) {
+        if (!value) return false;
+        const trimmedValue = value.trim();
+        try {
+          new URL(trimmedValue);
+          return true;
+        } catch {
+          return false;
+        }
+      })
       .test(
         'unique-registry-urls',
         'Registry already exists',
