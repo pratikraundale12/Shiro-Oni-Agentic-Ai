@@ -20,7 +20,7 @@ import {
   LoadingSelectors,
   NamespacesActions,
 } from '../store';
-import { SettingsSelectors } from '../store/settings';
+import { SettingsActions, SettingsSelectors } from '../store/settings';
 import { theme } from '../styles';
 import { Loader } from './Loader';
 
@@ -201,6 +201,9 @@ export const Sidebar = ({
   }, [pathname, dispatch, route]);
 
   const handleRoute = path => {
+    if (path === 'setting') {
+      dispatch(SettingsActions.fetchSettings());
+    }
     dispatch(AuthenticationActions.setRoute(path));
     history.push(`/${path}`);
     if (path === 'process-group') {
@@ -323,7 +326,7 @@ export const Sidebar = ({
 
       <KDFMVersion>
         {/* FIX_ME: Later will come from API */}
-        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 2.1.19`}</span>
+        <span className="version-content">{`V${collapsed ? '' : 'ersion'} 2.1.20`}</span>
       </KDFMVersion>
     </Container>
   );

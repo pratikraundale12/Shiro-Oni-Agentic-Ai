@@ -10,6 +10,10 @@ export const NamespacesActions = {
   setFlowPath: createAction(`${prefix}setFlowPath`),
   fetchNamespaces: createAction(`${prefix}fetchNamespaces`),
   fetchNamespacesSuccess: createAction(`${prefix}fetchNamespacesSuccess`),
+  fetchLocalChanges: createAction(`${prefix}fetchLocalChanges`),
+  fetchLocalChangesSuccess: createAction(`${prefix}fetchLocalChangesSuccess`),
+  deleteNamespace: createAction(`${prefix}deleteNamespace`),
+  deleteNamespaceSuccess: createAction(`${prefix}deleteNamespaceSuccess`),
   setSelectedDestCluster: createAction(`${prefix}setSelectedDestCluster`),
   setSelectedDestNamespace: createAction(`${prefix}setSelectedDestNamespace`),
   fetchDestNamespaces: createAction(`${prefix}fetchDestNamespaces`),
@@ -213,6 +217,14 @@ export const NamespacesActions = {
   setUserStory: createAction(`${prefix}setUserStory`),
   setChangeRequest: createAction(`${prefix}setChangeRequest`),
   setParameterEditingAction: createAction(`${prefix}setParameterEditingAction`),
+  revertLocalChanges: createAction(`${prefix}revertLocalChanges`),
+  revertLocalChangesSuccess: createAction(`${prefix}revertLocalChangesSuccess`),
+  setShouldRevertChanges: createAction(`${prefix}setShouldRevertChanges`),
+  setLocalChangesModalOpen: createAction(`${prefix}setLocalChangesModalOpen`),
+  setLocalChangesModalType: createAction(`${prefix}setLocalChangesModalType`),
+  setRevertConfirmationModalOpen: createAction(
+    `${prefix}setRevertConfirmationModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -225,6 +237,7 @@ export const NAMESPACES_INITIAL_STATE = {
     breadcrumb: [],
     data: [],
   },
+  localChanges: [],
   deployByRegistryFlow: true,
   selectedDestCluster: null,
   selectedDestNamespace: null,
@@ -321,6 +334,11 @@ export const NAMESPACES_INITIAL_STATE = {
   userStory: '',
   changeRequest: null,
   parameterEditingAction: false,
+  revertLocalChanges: [],
+  shouldRevertChanges: false,
+  localChangesModalOpen: false,
+  localChangesModalType: null,
+  revertConfirmationModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -328,6 +346,7 @@ export const NamespacesSelectors = {
   getSelectedCluster: state => state.namespaces.selectedCluster,
   getSelectedNamespace: state => state.namespaces.selectedNamespace,
   getNamespaces: state => state.namespaces.clusterNamespaces.data,
+  getLocalChanges: state => state.namespaces.localChanges,
   getSelectedDestCluster: state => state.namespaces.selectedDestCluster,
   getSelectedDestNamespace: state => state.namespaces.selectedDestNamespace,
   getDestNamespaces: state => state.namespaces.destClusterNamespaces.data,
@@ -433,6 +452,12 @@ export const NamespacesSelectors = {
   getUserStory: state => state.namespaces.userStory,
   getChangeRequest: state => state.namespaces.changeRequest,
   getParameterEditingAction: state => state.namespaces.parameterEditingAction,
+  getRevertLoaclChanges: state => state.namespaces.revertLocalChanges,
+  getShouldRevertChanges: state => state.namespaces.shouldRevertChanges,
+  getLocalChangesModalOpen: state => state.namespaces.localChangesModalOpen,
+  getLocalChangesModalType: state => state.namespaces.localChangesModalType,
+  getRevertConfirmationModalOpen: state =>
+    state.namespaces.revertConfirmationModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1020,7 +1045,54 @@ const setParameterEditingAction = (state, { payload }) => {
   };
 };
 
-//
+const fetchLocalChangesSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    localChanges: payload,
+  };
+};
+
+const revertLocalChangesSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    revertLocalChanges: payload,
+  };
+};
+
+const setShouldRevertChanges = (state, { payload }) => {
+  return {
+    ...state,
+    shouldRevertChanges: payload,
+  };
+};
+
+const setLocalChangesModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    localChangesModalOpen: payload,
+  };
+};
+
+const setLocalChangesModalType = (state, { payload }) => {
+  return {
+    ...state,
+    localChangesModalType: payload,
+  };
+};
+
+const setRevertConfirmationModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    revertConfirmationModalOpen: payload,
+  };
+};
+const deleteNamespaceSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    deletedNamespace: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1034,6 +1106,11 @@ export const namespacesReducer = createReducer(
       .addCase(NamespacesActions.setSelectedNamespace, setSelectedNamespace)
       .addCase(NamespacesActions.setFlowPath, setFlowPath)
       .addCase(NamespacesActions.fetchNamespacesSuccess, fetchNamespacesSuccess)
+      .addCase(
+        NamespacesActions.fetchLocalChangesSuccess,
+        fetchLocalChangesSuccess
+      )
+      .addCase(NamespacesActions.deleteNamespaceSuccess, deleteNamespaceSuccess)
       .addCase(NamespacesActions.setSelectedDestCluster, setSelectedDestCluster)
       .addCase(
         NamespacesActions.setSelectedDestNamespace,
@@ -1254,6 +1331,23 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setParameterEditingAction,
         setParameterEditingAction
+      )
+      .addCase(
+        NamespacesActions.revertLocalChangesSuccess,
+        revertLocalChangesSuccess
+      )
+      .addCase(NamespacesActions.setShouldRevertChanges, setShouldRevertChanges)
+      .addCase(
+        NamespacesActions.setLocalChangesModalOpen,
+        setLocalChangesModalOpen
+      )
+      .addCase(
+        NamespacesActions.setLocalChangesModalType,
+        setLocalChangesModalType
+      )
+      .addCase(
+        NamespacesActions.setRevertConfirmationModalOpen,
+        setRevertConfirmationModalOpen
       );
   }
 );

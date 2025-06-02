@@ -1,30 +1,34 @@
 import { isEmpty } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   CalenderIcon2,
+  DeleteDustbinIcon,
+  DeleteSmallIcon,
   OpenEyeIcon,
   SmallNotThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
 } from '../../assets';
-import { Grid, IconButton, TextRender } from '../../components';
+import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import {
   ClustersSelectors,
+  LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
 import { SchedularActions } from '../../store/schedular/redux';
+import { SettingsSelectors } from '../../store/settings';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
 import ProcessGroupSorting from './ProcessGroupSorting';
-import { SettingsSelectors } from '../../store/settings';
-import { toast } from 'react-toastify';
+import { InputField, Modal } from '../../shared';
 
 const StyledButton = styled.button`
   color: #ff7a00;
@@ -46,6 +50,7 @@ const StyledButton = styled.button`
     font-size: 14px !important;
   }
 `;
+
 const FlowNameDiv = styled.div`
   color: ${props => props.theme.colors.darker};
   font-family: ${props => props.theme.fontNato};
@@ -76,6 +81,18 @@ const StatusDiv = styled.div`
   }
 `;
 
+const DeleteConfirmationText = styled.p`
+  color: ${props => props.theme.colors.darker};
+  font-size: 14px;
+  margin-bottom: 8px;
+  text-align: center;
+`;
+
+const IconWrapper = styled.div`
+  text-align: center;
+  margin-bottom: 16px;
+`;
+
 export const ListNamespaces = () => {
   const dispatch = useDispatch();
   const {
@@ -83,6 +100,10 @@ export const ListNamespaces = () => {
     setState,
   } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
+
   useEffect(() => {
     dispatch(NamespacesActions.resetDeployData());
   }, []);
@@ -451,6 +472,31 @@ export const ListNamespaces = () => {
               />
             </>
           )}
+          {item?.permissions?.canWrite && (
+            <button
+              onClick={e => handleDeleteClick(item, e)}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+              }}
+              data-tooltip-id={`tooltip-delete-${item.id}`}
+            >
+              <IconButton>
+                <DeleteSmallIcon width={14} height={14} />
+              </IconButton>
+            </button>
+          )}
+          <ReactTooltip
+            id={`tooltip-delete-${item.id}`}
+            place="right"
+            content={`Delete ${item?.name} Process Group`}
+            style={{
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+            }}
+          />
           {!(!item?.permissions?.canWrite || !item?.version) && (
             <button
               type="button"
@@ -497,8 +543,34 @@ export const ListNamespaces = () => {
     });
   };
 
+  const handleDeleteClick = (item, e) => {
+    setItemToDelete(item);
+    setDeleteModalOpen(true);
+    e.currentTarget.blur();
+  };
+
+  const handleConfirmDelete = () => {
+    if (itemToDelete && deleteConfirmationText === 'DELETE') {
+      dispatch(NamespacesActions.deleteNamespace(itemToDelete.id));
+      setDeleteModalOpen(false);
+      setItemToDelete(null);
+      setDeleteConfirmationText('');
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteModalOpen(false);
+    setItemToDelete(null);
+    setDeleteConfirmationText('');
+  };
+
+  const loading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'deleteNamespace')
+  );
+
   return (
     <>
+      <FullPageLoader loading={loading} />
       <Grid
         isNamespace={true}
         module="namespaces"
@@ -510,6 +582,34 @@ export const ListNamespaces = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
+
+      <Modal
+        title={`Delete : ${itemToDelete?.name}`}
+        primaryButtonText="Delete"
+        secondaryButtonText="Cancel"
+        isOpen={deleteModalOpen}
+        onRequestClose={handleCancelDelete}
+        onSubmit={handleConfirmDelete}
+        primaryButtonDisabled={deleteConfirmationText !== 'DELETE'}
+        contentStyles={{ width: '400px', maxWidth: '90%' }}
+      >
+        <IconWrapper>
+          <DeleteDustbinIcon />
+        </IconWrapper>
+        <DeleteConfirmationText>
+          Are you sure you want to delete {itemToDelete?.name} process group?
+        </DeleteConfirmationText>
+        <DeleteConfirmationText>
+          Please type &quot;DELETE&quot; to confirm deletion:
+        </DeleteConfirmationText>
+        <InputField
+          icon={<DeleteSmallIcon />}
+          type="text"
+          value={deleteConfirmationText}
+          onChange={e => setDeleteConfirmationText(e.target.value)}
+          placeholder="Type DELETE to confirm"
+        />
+      </Modal>
     </>
   );
 };

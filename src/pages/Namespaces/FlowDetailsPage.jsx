@@ -23,7 +23,7 @@ import RightIcon from '../../assets/Icons/RightIcon';
 import { FullPageLoader, Table } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, InputField } from '../../shared';
+import { Button, CheckboxField, InputField } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import {
   GridSelectors,
@@ -34,6 +34,7 @@ import {
 import { SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
 import { VERSION_COLUMNS } from '../ColumnData/namespaceColumns';
+import LocalChangesModal from './LocalChangesModal';
 import RectangleGraph from './birdEyeViewGraph';
 
 const TopTitleBar = styled.div`
@@ -181,6 +182,13 @@ const ProcessorIconDiv = styled.div`
   padding-right: 1.5rem;
 `;
 
+const RevertlocalChangesCheckbox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: fit-content;
+`;
+
 const FlowDetailsPage = () => {
   const dispatch = useDispatch();
   const registryAllDetails = useSelector(
@@ -215,6 +223,9 @@ const FlowDetailsPage = () => {
   const [xStateCoordinate, setXStateCoordiate] = useState(null);
   const [yStateCoordinate, setYStateCoordiate] = useState(null);
   const tableRef = useRef(null);
+  const shouldRevertChanges = useSelector(
+    NamespacesSelectors.getShouldRevertChanges
+  );
 
   useEffect(() => {
     if (isUpgrade) {
@@ -425,6 +436,10 @@ const FlowDetailsPage = () => {
     LoadingSelectors.getLoading(state, 'fetchVersionData')
   );
 
+  const loadingRevertChanges = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'revertLocalChanges')
+  );
+
   const getIconForState = state => {
     switch (state) {
       case 'LOCALLY_MODIFIED_AND_STALE':
@@ -504,7 +519,9 @@ const FlowDetailsPage = () => {
 
   return (
     <div>
-      <FullPageLoader loading={loadingregistry || loadingVersion} />
+      <FullPageLoader
+        loading={loadingregistry || loadingVersion || loadingRevertChanges}
+      />
 
       <TopTitleBar className=" d-flex  mb-3">
         <MainTitleDiv className="d-flex">
@@ -572,6 +589,7 @@ const FlowDetailsPage = () => {
                 />
               </ColXlSix>
             )}
+
             <ColXlTwo className={`${isUpgrade ? 'col-lg-3' : 'col-lg-3'}`}>
               <InputField
                 name="currentVersion"
@@ -738,13 +756,78 @@ const FlowDetailsPage = () => {
           </Button>
           <Button
             id="process-group-flow-details-continue-btn"
-            disabled={isUpgrade ? false : !isStateStale || isButtonDisabled}
+            disabled={
+              isUpgrade
+                ? false
+                : (!isStateStale || isButtonDisabled) &&
+                  (!scheduleUpgradeFromList || !shouldRevertChanges)
+            }
             onClick={handleSubmit(handleScrollOnClick)}
           >
             Continue
           </Button>
         </BottomButtonDiv>
+        <BottomButtonDiv className="btn-div d-flex">
+          {!isUpgrade && !isStateStale && (
+            <div>
+              <div
+                style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
+              >
+                {scheduleDeploymentFlow || scheduleUpgradeFromList ? (
+                  <RevertlocalChangesCheckbox
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      minWidth: 'fit-content',
+                    }}
+                  >
+                    <CheckboxField
+                      name="check"
+                      label="Revert Local Changes"
+                      checked={shouldRevertChanges}
+                      onChange={e =>
+                        dispatch(
+                          NamespacesActions.setShouldRevertChanges(
+                            e.target.checked
+                          )
+                        )
+                      }
+                    />
+                  </RevertlocalChangesCheckbox>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      dispatch(
+                        NamespacesActions.setLocalChangesModalType('revert')
+                      );
+                      dispatch(
+                        NamespacesActions.setLocalChangesModalOpen(true)
+                      );
+                    }}
+                  >
+                    Revert Local Changes
+                  </Button>
+                )}
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    dispatch(
+                      NamespacesActions.setLocalChangesModalType('show')
+                    );
+                    dispatch(NamespacesActions.setLocalChangesModalOpen(true));
+                  }}
+                >
+                  Show Local Changes
+                </Button>
+              </div>
+            </div>
+          )}
+        </BottomButtonDiv>
       </BottomButton>
+
+      {/* Add Local Changes Modal */}
+      <LocalChangesModal />
     </div>
   );
 };

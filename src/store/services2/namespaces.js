@@ -312,6 +312,22 @@ export const namespacesAPI = api => {
     );
   };
 
+  const fetchLocalChanges = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/local-changes`
+    );
+  };
+
+  const revertLocalChanges = ({ clusterId, namespaceId }) => {
+    return api.post(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/revert-local-changes`
+    );
+  };
+
+  const deleteNamespace = ({ clusterId, namespaceId }) => {
+    return api.delete(`/clusters/${clusterId}/namespace/${namespaceId}`);
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -347,5 +363,8 @@ export const namespacesAPI = api => {
     fetchRegistryFlowDetails,
     fetchDuplicateScheduleData,
     fetchAddPropertyToAdd,
+    fetchLocalChanges,
+    revertLocalChanges,
+    deleteNamespace,
   };
 };
