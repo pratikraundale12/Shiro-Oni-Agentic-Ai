@@ -225,6 +225,12 @@ export const NamespacesActions = {
   setRevertConfirmationModalOpen: createAction(
     `${prefix}setRevertConfirmationModalOpen`
   ),
+  fetchInvalidProcessorDetails: createAction(
+    `${prefix}fetchInvalidProcessorDetails`
+  ),
+  fetchInvalidProcessorDetailsSuccess: createAction(
+    `${prefix}fetchInvalidProcessorDetailsSuccess`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -339,6 +345,7 @@ export const NAMESPACES_INITIAL_STATE = {
   localChangesModalOpen: false,
   localChangesModalType: null,
   revertConfirmationModalOpen: false,
+  invalidProcessorDetails: [],
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -458,6 +465,7 @@ export const NamespacesSelectors = {
   getLocalChangesModalType: state => state.namespaces.localChangesModalType,
   getRevertConfirmationModalOpen: state =>
     state.namespaces.revertConfirmationModalOpen,
+  getInvalidProcessorDetails: state => state.namespaces.invalidProcessorDetails,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1093,6 +1101,12 @@ const deleteNamespaceSuccess = (state, { payload }) => {
   };
 };
 
+const fetchInvalidProcessorDetailsSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    invalidProcessorDetails: payload,
+  };
+};
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1348,6 +1362,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setRevertConfirmationModalOpen,
         setRevertConfirmationModalOpen
+      )
+      .addCase(
+        NamespacesActions.fetchInvalidProcessorDetailsSuccess,
+        fetchInvalidProcessorDetailsSuccess
       );
   }
 );

@@ -328,6 +328,12 @@ export const namespacesAPI = api => {
     return api.delete(`/clusters/${clusterId}/namespace/${namespaceId}`);
   };
 
+  const getInvalidProcessorDetails = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespace/${namespaceId}/invalid-processors`
+    );
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -366,5 +372,6 @@ export const namespacesAPI = api => {
     fetchLocalChanges,
     revertLocalChanges,
     deleteNamespace,
+    getInvalidProcessorDetails,
   };
 };
