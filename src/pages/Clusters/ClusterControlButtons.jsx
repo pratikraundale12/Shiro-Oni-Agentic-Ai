@@ -109,7 +109,6 @@ const ClusterControlButtons = () => {
     );
   };
   useEffect(() => {
-    dispatch(ClustersActions.fetchClusterMetrics(clusterId));
     dispatch(ClustersActions.fetchRunningStatusCluster(clusterId));
   }, [dispatch, clusterId]);
 
@@ -219,18 +218,33 @@ const ClusterControlButtons = () => {
             </div>
           </TextsvgDiv>
 
-          {(startInitiated || stopInitiated || restartInitiated) && (
+          {
             <div className="col-3">
-              <div className="row">
-                <div className="col-2">
-                  <Loader size="lg" />
+              {(startInitiated || stopInitiated || restartInitiated) && (
+                <div className="row">
+                  <div className="col-2">
+                    <Loader size="lg" />
+                  </div>
+                  <TextsvgDiv className="col-10">
+                    Cluster Status is updating...
+                  </TextsvgDiv>
                 </div>
-                <TextsvgDiv className="col-10">
-                  Cluster Status is updating...
-                </TextsvgDiv>
-              </div>
+              )}
             </div>
-          )}
+          }
+
+          {/* <div
+            className="col-3 pe-2"
+            style={{
+              backgroundColor: '#F5F7FA',
+              borderRadius: '10px',
+              fontSize: '16px',
+              border: `1px solid ${theme.colors.primary}`,
+              color: '#444445',
+            }}
+          >
+            
+          </div> */}
         </div>
       </DataWrapper>
     </>
