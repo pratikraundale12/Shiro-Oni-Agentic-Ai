@@ -28,7 +28,7 @@ import {
 } from '../../components';
 import { CLUSTER_STATUS, Cluster_STATUS_OPTIONS, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { ModalWithIcon } from '../../shared';
+import { CheckboxField, Modal, ModalWithIcon } from '../../shared';
 import {
   ClustersActions,
   ClustersSelectors,
@@ -127,6 +127,16 @@ const MetricsIconContainer = styled.div`
   }
 `;
 
+const PrimaryText = styled.h5`
+  color: ${props => props.theme.colors.darker};
+  font-family: ${props => props.theme.fontNato};
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 14px;
+`;
+
 export const ListClusters = () => {
   const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
@@ -145,6 +155,7 @@ export const ListClusters = () => {
   const failedClusterNiFiDeleteOpen = useSelector(
     ClustersSelectors.getIsFailedClusterDeleteModalOpen
   );
+  const [unInstallNiFi, setUninstallNiFi] = useState(false);
 
   const statusData = useSelector(SchedularSelectors.getStatusFilterData);
   const [selectedCluster, setSelectedCluster] = useState({});
@@ -207,6 +218,7 @@ export const ListClusters = () => {
       })
     );
     setSelectedCluster({});
+    setUninstallNiFi(false);
   };
 
   const handleOpenProgressModal = item => {
@@ -297,11 +309,15 @@ export const ListClusters = () => {
           ) : (
             <StatusRender
               status={
-                item?.process_initiated && item?.state != 'FAILED'
-                  ? 'Inprogress'
-                  : !item?.process_intiated && item?.state == 'FAILED'
-                    ? 'Failed'
-                    : item.status
+                item?.process_initiated &&
+                item?.state != 'FAILED' &&
+                item?.process_name == 'delete'
+                  ? 'Deleting'
+                  : item?.process_initiated && item?.state != 'FAILED'
+                    ? 'Inprogress'
+                    : !item?.process_intiated && item?.state == 'FAILED'
+                      ? 'Failed'
+                      : item.status
               }
             />
           )}
@@ -315,7 +331,7 @@ export const ListClusters = () => {
       renderCell: item => {
         return (
           <>
-            {item?.state !== 'DRAFT' && (
+            {
               <ActionRender
                 handleMenuClick={handleMenuClick}
                 item={item}
@@ -333,7 +349,7 @@ export const ListClusters = () => {
                     >
                       {item.is_active ? (
                         <>
-                          {item.edit_cluster && !item?.created_by_ansible && (
+                          {item.edit_cluster && (
                             <Item onClick={() => handleClick('edit')}>
                               <PencilIcon width={16} height={16} />
                               <span>{KDFM.EDIT}</span>
@@ -482,7 +498,7 @@ export const ListClusters = () => {
                   </DropdownPortal>
                 )}
               </ActionRender>
-            )}
+            }
           </>
         );
       },
@@ -516,6 +532,7 @@ export const ListClusters = () => {
     dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
     dispatch(ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false));
     dispatch(ClustersActions.setIsclusterHardDeleteModalOpen(false));
+    setUninstallNiFi(false);
   };
 
   const updateClusterStatus = async id => {
@@ -669,23 +686,6 @@ export const ListClusters = () => {
         primaryButtonText={'Delete NiFi Cluster'}
         secondaryButtonText={KDFM.CANCEL}
         icon={<DeleteDustbinIcon />}
-        isOpen={ansibleClusterNiFiDeleteOpen}
-        onSubmit={() => handleAnsibleClusterNiFiDeleteConfirmation()}
-        onRequestClose={() => {
-          dispatch(
-            ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false)
-          );
-          setSelectedCluster({});
-        }}
-        primaryText={KDFM.HARD_DELETE_CLUSTER_WARNING}
-        additionalBtnText={'Delete from DFM'}
-        additionalBtnClick={() => handleDeleteHard()}
-      />
-      <ModalWithIcon
-        title={'Delete Cluster'}
-        primaryButtonText={'Delete NiFi Cluster'}
-        secondaryButtonText={KDFM.CANCEL}
-        icon={<DeleteDustbinIcon />}
         isOpen={failedClusterNiFiDeleteOpen}
         onSubmit={() => handleAnsibleClusterNiFiDeleteConfirmation()}
         onRequestClose={() => {
@@ -721,6 +721,46 @@ export const ListClusters = () => {
         }
         primaryText={KDFM.HARD_DELETE_CLUSTER_WARNING}
       />
+      <Modal
+        isOpen={ansibleClusterNiFiDeleteOpen}
+        title={'Delete Cluster'}
+        secondaryButtonText="Back"
+        primaryButtonText="Delete"
+        primaryButtonDisabled={false}
+        onSubmit={() => {
+          unInstallNiFi
+            ? handleAnsibleClusterNiFiDeleteConfirmation()
+            : handleDeleteHard();
+        }}
+        onSecondarySubmit={() => {
+          dispatch(
+            ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false)
+          );
+          setSelectedCluster({});
+        }}
+        onRequestClose={() => {
+          dispatch(
+            ClustersActions.setisAnsibleClusterDeleteFrimNiFiModalOpen(false)
+          );
+          setSelectedCluster({});
+        }}
+        footerAlign="center"
+      >
+        <div className=" row d-flex justify-content-center">
+          <div style={{ textAlign: 'center' }}>
+            <DeleteDustbinIcon />
+          </div>
+          <PrimaryText>{KDFM.HARD_DELETE_CLUSTER_WARNING}</PrimaryText>
+          <div className="d-flex justify-content-center">
+            <CheckboxField
+              name="check"
+              label="Do you also want to uninstall NiFi and reuse hosts?"
+              checked={unInstallNiFi}
+              onChange={e => setUninstallNiFi(e.target.checked)}
+            />
+          </div>
+        </div>
+      </Modal>
       <Grid
         module="clusters"
         title={KDFM.CLUSTER_LIST}
@@ -740,6 +780,7 @@ export const ListClusters = () => {
         setIsProcessModalOpen={setIsProcessModalOpen}
         setSelectedCluster={setSelectedCluster}
         selectedCluster={selectedCluster}
+        sortingState={sortingState}
       />
     </>
   );

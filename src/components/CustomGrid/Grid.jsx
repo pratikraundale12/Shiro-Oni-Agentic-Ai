@@ -241,7 +241,9 @@ export const Grid = ({
     users: 'No User Available',
     activityHistory: 'No Activity History Available',
     scheduler: 'No Schedulers Available',
-    nodes: 'No Nodes Available Login to Cluster First',
+    nodes: isClusterLoggedIn
+      ? 'No Nodes Available!'
+      : 'No Nodes Available Login to Cluster First',
     registry: 'No Registry Available',
   };
 
