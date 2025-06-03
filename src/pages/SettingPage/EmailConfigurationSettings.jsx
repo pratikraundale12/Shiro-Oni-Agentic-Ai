@@ -13,8 +13,10 @@ import {
 import favicon from '../../assets/images/default-favicon.ico';
 import { EMAIL_REGEX, KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, InputField, PasswordField } from '../../shared';
+import { Button, InputField, Modal, PasswordField } from '../../shared';
 import { SettingsActions, SettingsSelectors } from '../../store/settings';
+import { FullPageLoader } from '../../components';
+import { LoadingSelectors } from '../../store';
 
 const Wrapper = styled.div`
   height: 95%;
@@ -49,6 +51,15 @@ const StyledCancelButton = styled(Button)`
   gap: 10px;
   border-radius: 8px;
 `;
+const StyledVerifyEmailBtn = styled(Button)`
+  padding-top: 15px;
+  padding-bottom: 15px;
+  height: 50px;
+  width: 140px;
+  gap: 10px;
+  radius: 8px;
+  left: 140px;
+`;
 
 const StyledSaveButton = styled(Button)`
   padding-top: 15px;
@@ -68,8 +79,7 @@ const ButtonDiv = styled.div`
 export const settingSchema = yup.object().shape({
   from_email: yup
     .string()
-    .transform(value => (value === '' ? null : value))
-    .nullable()
+    .required('From Email is required')
     .matches(EMAIL_REGEX, 'Invalid email address. Please check & try again')
     .max(50, 'Email can not be greater than 25 characters'),
   smtp_service: yup
@@ -134,8 +144,14 @@ export const EmailConfigurationSettings = () => {
   } = useForm({ resolver: yupResolver(settingSchema) });
   const dispatch = useDispatch();
   const settingData = useSelector(SettingsSelectors.getSettings);
+  const isEmailVerified = useSelector(SettingsSelectors.getEmailVerified);
   const [loading, setLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
+  const [isVerifyEmailOpen, setIsVerifyEmailOpen] = useState(false);
+  const [toEmail, setToEmail] = useState('');
+  const [emailError, setEmailError] = useState({});
+  const [changedData, setChangedData] = useState({});
+  const [disableSaveSetting, setDisableSaveSetting] = useState(true);
   const onSubmit = async data => {
     setLoading(true);
     const payload = new FormData();
@@ -185,6 +201,30 @@ export const EmailConfigurationSettings = () => {
       setLoading(false);
     }
   };
+  const smtpService = watch('smtp_service');
+  const smtpUser = watch('smtp_user');
+  const smtpPass = watch('smtp_pass');
+  const smtpPort = watch('smtp_port');
+  const smtpHost = watch('smtp_host');
+  const fromEmail = watch('from_email');
+  useEffect(() => {
+    if (smtpService === '') {
+      setValue('smtp_service', null);
+    }
+  }, [smtpService, setValue]);
+
+  useEffect(() => {
+    if (smtpUser === '') {
+      setValue('smtp_user', null);
+    }
+  }, [smtpUser, setValue]);
+
+  useEffect(() => {
+    if (smtpPass === '') {
+      setValue('smtp_pass', null);
+    }
+  }, [smtpPass, setValue]);
+
   useEffect(() => {
     if (settingData) {
       if (settingData?.favicon) {
@@ -240,8 +280,90 @@ export const EmailConfigurationSettings = () => {
     }
   }
 
+  const handleVerifyEmail = () => {
+    setIsVerifyEmailOpen(true);
+  };
+
+  useEffect(() => {
+    if (Object.keys(errors).length) {
+      setIsVerifyEmailOpen(false);
+      setToEmail('');
+      setEmailError({});
+    }
+  }, [errors]);
+  const handleSendEmail = () => {
+    const changedSmtpData = {
+      ...(smtpService !== settingData?.smtp_service && {
+        smtp_service: smtpService,
+      }),
+      ...(smtpPass !== settingData?.smtp_pass && { smtp_pass: smtpPass }),
+      ...(smtpUser !== settingData?.smtp_user && { smtp_user: smtpUser }),
+      ...(smtpHost !== settingData?.smtp_host && { smtp_host: smtpHost }),
+      ...(smtpPort !== settingData?.smtp_port && { smtp_port: smtpPort }),
+      ...(fromEmail !== settingData?.from_email && { from_email: fromEmail }),
+    };
+    setChangedData(changedSmtpData);
+    if (!toEmail || !EMAIL_REGEX.test(toEmail)) {
+      setEmailError({
+        to_email: {
+          message: 'Please enter a valid email address.',
+        },
+      });
+      return;
+    } else {
+      dispatch(
+        SettingsActions.verifyEmail({
+          to_email: toEmail,
+          changedSmtpData: changedSmtpData,
+        })
+      );
+      setToEmail('');
+      setEmailError({});
+      setIsVerifyEmailOpen(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setToEmail('');
+    setEmailError({});
+    setIsVerifyEmailOpen(false);
+  };
+
+  useEffect(() => {
+    if (isEmailVerified && changedData) {
+      const isChanged =
+        ('smtp_pass' in changedData && changedData.smtp_pass !== smtpPass) ||
+        ('smtp_user' in changedData && changedData.smtp_user !== smtpUser) ||
+        ('smtp_host' in changedData && changedData.smtp_host !== smtpHost) ||
+        ('smtp_port' in changedData && changedData.smtp_port !== smtpPort) ||
+        ('from_email' in changedData && changedData.from_email !== fromEmail) ||
+        ('smtp_service' in changedData &&
+          changedData.smtp_service !== smtpService);
+      isChanged
+        ? setDisableSaveSetting(isChanged)
+        : setDisableSaveSetting(!isEmailVerified);
+    } else setDisableSaveSetting(!isEmailVerified);
+  }, [
+    isEmailVerified,
+    changedData,
+    smtpPass,
+    smtpUser,
+    smtpHost,
+    smtpPort,
+    fromEmail,
+    smtpService,
+  ]);
+
+  const handleChange = e => {
+    setToEmail(e.target.value);
+    setEmailError({});
+  };
+  const verifyEmailLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'verifyEmail')
+  );
   return (
     <Wrapper>
+      <FullPageLoader loading={verifyEmailLoading} />
       <form
         style={{
           display: 'flex',
@@ -315,6 +437,7 @@ export const EmailConfigurationSettings = () => {
               label={KDFM.FROM_EMAIL}
               placeholder={KDFM.ENTER_EMAIL}
               errors={errors}
+              required
             />
           </div>
         </InputFields>
@@ -333,16 +456,46 @@ export const EmailConfigurationSettings = () => {
             >
               <ButtonText>Cancel</ButtonText>
             </StyledCancelButton>
+            <StyledVerifyEmailBtn
+              type="button"
+              onClick={() => handleVerifyEmail()}
+              isBtnDisable={!isChanged}
+            >
+              <ButtonText>{'Verify Email'}</ButtonText>
+            </StyledVerifyEmailBtn>
             <StyledSaveButton
               type="submit"
               loading={loading}
-              disabled={!isChanged}
+              disabled={disableSaveSetting}
             >
               <ButtonText>{KDFM.SAVE_SETTINGS}</ButtonText>
             </StyledSaveButton>
           </ButtonDiv>
         </FlexWrapper>
       </form>
+      {isVerifyEmailOpen && (
+        <Modal
+          title={'Send Verification Email'}
+          size="sm"
+          onRequestClose={handleCancel}
+          isOpen={isVerifyEmailOpen}
+          primaryButtonText={KDFM.SEND_EMAIL}
+          secondaryButtonText={KDFM.CANCEL}
+          primaryButtonDisabled={!toEmail}
+          onSubmit={handleSubmit(handleSendEmail)}
+        >
+          <InputField
+            name="to_email"
+            value={toEmail}
+            onChange={handleChange}
+            icon={<SmsNotificationIcon />}
+            label={KDFM.TO_EMAIL}
+            placeholder={KDFM.ENTER_EMAIL}
+            required={true}
+            errors={emailError}
+          />
+        </Modal>
+      )}
     </Wrapper>
   );
 };

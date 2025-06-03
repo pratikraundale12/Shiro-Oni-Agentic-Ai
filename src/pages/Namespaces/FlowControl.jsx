@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -5,6 +6,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   SanityCheckIcon,
+  OpenLinkIcon,
   SmallNotThunderIcon,
   // SmallThunderIcon,
   SquareBoxIcon,
@@ -198,6 +200,13 @@ const FlowControl = () => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'updateNamespaceStatus')
   );
+
+  const handleInvalidProcessorsClick = () => {
+    history.push(`/process-group/${id}/invalid-processors`);
+    dispatch(
+      NamespacesActions.fetchInvalidProcessorDetails({ namespaceId: id })
+    );
+  };
   return (
     <DataWrapper>
       <FullPageLoader loading={loading} />
@@ -236,7 +245,24 @@ const FlowControl = () => {
                   <TriangleExclamationMarkIcon color="#B5BDC8" />
                   <span>{sigleNamespaceData?.invalidCount}</span>
                 </CountDiv>
-                <div>{KDFM.INVALID_PROCESSORS}</div>
+                {sigleNamespaceData?.invalidCount > 0 ? (
+                  <div
+                    onClick={() => handleInvalidProcessorsClick()}
+                    style={{
+                      cursor: 'pointer',
+                      color: '#FF7A00',
+                      textDecoration: 'underline',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                    }}
+                  >
+                    {KDFM.INVALID_PROCESSORS}
+                    <OpenLinkIcon />
+                  </div>
+                ) : (
+                  <div>{KDFM.INVALID_PROCESSORS}</div>
+                )}
               </TextDiv>
               <TextDiv className="d-flex">
                 <CountDiv

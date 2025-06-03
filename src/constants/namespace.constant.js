@@ -63,4 +63,9 @@ export const NAMESPACE_CONSTANTS = {
   PARAMETER_ADDED: 'Parameter have been added successfully',
   VARIABLE_EDITED: 'Variable have been updated successfully',
   VARIABLE_ADDED: 'Variable have been added successfully',
+  INVALID_PROCESSOR_DETAILS: 'Invalid Processor Details',
+  PROCESSOR_ID: 'Processor ID',
+  PROCESSOR_NAME: 'Processor Name',
+  ERROR_MESSAGE: 'Error Message',
+  NO_INVALID_PROCESSORS: 'No Invalid Processors Found',
 };

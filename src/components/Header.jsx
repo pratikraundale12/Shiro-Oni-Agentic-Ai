@@ -35,7 +35,7 @@ import {
   UsersActions,
 } from '../store';
 import { SchedularActions } from '../store/schedular';
-import { SettingsSelectors } from '../store/settings';
+import { SettingsActions, SettingsSelectors } from '../store/settings';
 import { useGlobalContext } from '../utils';
 import { ClusterLoginModal } from './ClusterLoginModal';
 import { ProfileRender } from './CustomGrid';
@@ -477,6 +477,9 @@ export const Header = ({ isOpenSidebar, currentRoute }) => {
 
   const handleRoute = path => {
     dispatch(AuthenticationActions.setRoute(path));
+    if (path === 'setting') {
+      dispatch(SettingsActions.fetchSettings());
+    }
     history.push(`/${path}`);
   };
 

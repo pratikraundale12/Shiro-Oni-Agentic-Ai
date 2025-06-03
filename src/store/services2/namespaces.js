@@ -315,6 +315,27 @@ export const namespacesAPI = api => {
   const fetchSanityCheckSummaryData = ({ namespaceId }) => {
     return api.get(`namespace/${namespaceId}/sanity-check`);
   };
+  const fetchLocalChanges = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/local-changes`
+    );
+  };
+
+  const revertLocalChanges = ({ clusterId, namespaceId }) => {
+    return api.post(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/revert-local-changes`
+    );
+  };
+
+  const deleteNamespace = ({ clusterId, namespaceId }) => {
+    return api.delete(`/clusters/${clusterId}/namespace/${namespaceId}`);
+  };
+
+  const getInvalidProcessorDetails = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespace/${namespaceId}/invalid-processors`
+    );
+  };
 
   return {
     fetchNamespaces,
@@ -352,5 +373,9 @@ export const namespacesAPI = api => {
     fetchDuplicateScheduleData,
     fetchAddPropertyToAdd,
     fetchSanityCheckSummaryData,
+    fetchLocalChanges,
+    revertLocalChanges,
+    deleteNamespace,
+    getInvalidProcessorDetails,
   };
 };

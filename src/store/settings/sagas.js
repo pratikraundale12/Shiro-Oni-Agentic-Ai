@@ -17,6 +17,7 @@ export function* createSettings(api, { payload }) {
   });
 
   if (response.ok) {
+    yield put(SettingsActions.setIsEmailVerified(false));
     if (payload.favicon) changeFavicon(URL.createObjectURL(payload.favicon));
     if (payload.title) document.title = payload.title;
     toast.success('Settings updated successfully.');
@@ -90,11 +91,41 @@ export function* refreshSetting(api) {
   yield call(fetchDashboard, api, { payload: { refresh: true } });
 }
 
+export function* verifyEmail(api, payload) {
+  console.log('verifyEmail payload', payload);
+  const response = yield call(requestSaga, {
+    errorSection: 'verifyEmail',
+    loadingSection: 'verifyEmail',
+    apiMethod: api.verifyEmail,
+    successAction: SettingsActions.verifyEmailSuccess,
+    apiParams: [
+      {
+        to_email: payload?.payload?.to_email,
+        changedSmtpData: payload?.payload?.changedSmtpData,
+      },
+    ],
+  });
+
+  if (response.ok) {
+    toast.success(
+      'Verification email sent successfully. SMTP details are verified, you can proceed with saving the settings.'
+    );
+  } else {
+    yield put(SettingsActions.setIsEmailVerified(false));
+    toast.error(
+      response?.message ||
+        response?.data?.message ||
+        'Failed to send verification email.'
+    );
+  }
+}
+
 export function* settingsSagas(api) {
   yield all([
     takeLatest(SettingsActions.createSettings, createSettings, api),
     takeLatest(SettingsActions.fetchSettings, fetchSettings, api),
     takeLatest(SettingsActions.refreshSetting, refreshSetting, api),
     takeLatest(SettingsActions.downloadLogsZip, downloadLogsZip, api),
+    takeLatest(SettingsActions.verifyEmail, verifyEmail, api),
   ]);
 }
