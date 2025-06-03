@@ -312,6 +312,10 @@ export const namespacesAPI = api => {
     );
   };
 
+  const fetchSanityCheckSummaryData = ({ namespaceId }) => {
+    return api.get(`namespace/${namespaceId}/sanity-check`);
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -347,5 +351,6 @@ export const namespacesAPI = api => {
     fetchRegistryFlowDetails,
     fetchDuplicateScheduleData,
     fetchAddPropertyToAdd,
+    fetchSanityCheckSummaryData,
   };
 };

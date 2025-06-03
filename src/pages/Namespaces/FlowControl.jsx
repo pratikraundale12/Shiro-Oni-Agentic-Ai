@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
+  SanityCheckIcon,
   SmallNotThunderIcon,
   // SmallThunderIcon,
   SquareBoxIcon,
@@ -16,12 +17,13 @@ import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
-import { ModalWithIcon } from '../../shared';
+import { Button, ModalWithIcon } from '../../shared';
 import {
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { history } from '../../helpers/history';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -133,7 +135,10 @@ const ScrollSetGrey = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
 `;
-
+const BottomButtonWrapper = styled.div`
+  padding: 1rem;
+  border-top: 1px solid #dde4f0;
+`;
 const FlowControl = () => {
   const dispatch = useDispatch();
   const sigleNamespaceData = useSelector(
@@ -370,6 +375,25 @@ const FlowControl = () => {
           primaryText={`Do you really want to ${confirmDialogue?.text}?`}
           onSubmit={handleConfirmUpdateStatus}
         />
+
+        <BottomButtonWrapper>
+          <div className="col-2 ">
+            {' '}
+            <Button
+              size="md"
+              onClick={() => history.push('/process-group/Sanity-Check')}
+              variant="quaternary"
+            >
+              <div
+                className="d-flex "
+                style={{ fontSize: '14px', fontWeight: '750' }}
+              >
+                <SanityCheckIcon height="24" width="24" />
+                Sanity Check
+              </div>
+            </Button>
+          </div>
+        </BottomButtonWrapper>
       </ScrollSetGrey>
     </DataWrapper>
   );

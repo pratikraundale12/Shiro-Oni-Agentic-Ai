@@ -22,7 +22,7 @@ import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
 import { history } from '../../helpers/history';
-import { Button, Modal, ModalWithIcon } from '../../shared';
+import { Button, CheckboxField, Modal, ModalWithIcon } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import CopyToClipboard from '../../shared/CopyToClipboard';
 import {
@@ -43,6 +43,7 @@ import { DuplicateScheduleModal } from './DuplicateScheduleModal';
 import NamespaceDeploy from './NamespaceDeploy';
 import Upgrade from './Upgrade';
 import { DiffModalScheduleList } from '../ScheduleDeployment/DiffModalSchedule';
+import SanityCheckDeployModal from './SanityCheckDeployModal';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -334,6 +335,9 @@ const Summary = () => {
     NamespacesSelectors.getSelectedCluster
   );
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
+  const sanityCheckAfterDeploy = useSelector(
+    NamespacesSelectors.getSanityCheckAtDeploy
+  );
   let type = '';
   if (versionSelected?.version > selectedNameSpace?.version) {
     type = 'upgrade';
@@ -655,7 +659,7 @@ const Summary = () => {
     currentParametersData,
     updatedParametersData
   );
-   
+
   const originalPc = getOriginalPcPayload(
     currentParametersData,
     updatedParametersData
@@ -882,6 +886,7 @@ const Summary = () => {
         y: YcordUpdated || registryDetailsData?.positions[0]?.y,
       },
       keep_existing_paramter_contexts: formDataRegistry?.keepParameters,
+      performSanity: sanityCheckAfterDeploy,
     };
 
     if (!isEmpty(variblesReduxData)) {
@@ -1406,6 +1411,26 @@ const Summary = () => {
                       </SummaryDetailsPtag>
                     </div>
                   </UseColXl>
+                  {isRegistryDeploy && (
+                    <UseColXl className="col-xl-4 col-6 mb-4 pb-1">
+                      <div className="summary-details">
+                        <SummaryDetailsHFourTag className="mb-2">
+                          <CheckboxField
+                            name="check"
+                            label="Sanity Check when Deploy"
+                            checked={sanityCheckAfterDeploy}
+                            onChange={e =>
+                              dispatch(
+                                NamespacesActions.setSanityCheckAtDeploy(
+                                  e.target.checked
+                                )
+                              )
+                            }
+                          />
+                        </SummaryDetailsHFourTag>
+                      </div>
+                    </UseColXl>
+                  )}
                 </RowConfig>
               </UseColLg>
               {(scheduleUpgradeFromList || scheduleDeploymentFlow) && (
@@ -1766,6 +1791,7 @@ const Summary = () => {
             csData={updatedLocalCsPayloadOnDeploy}
           />
         )}
+        <SanityCheckDeployModal />
       </MainContainer>
     </>
   );

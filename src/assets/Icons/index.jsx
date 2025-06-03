@@ -149,3 +149,4 @@ export * from './ZoomOutIcon';
 export * from './canvasYIcon';
 export * from './LicenseIcon';
 export * from './CurvedFolderIcon';
+export * from './SanityCheckIcon';

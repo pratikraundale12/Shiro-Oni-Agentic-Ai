@@ -66,6 +66,7 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import SummarySanityCheck from '../pages/Namespaces/SummarySanityCheck.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -135,6 +136,10 @@ export const ROUTES_MENU = [
       {
         path: 'config-details',
         component: <ConfigDetailsPage />,
+      },
+      {
+        path: 'Sanity-Check',
+        component: <SummarySanityCheck />,
       },
     ],
     permission: 'view_namespace',

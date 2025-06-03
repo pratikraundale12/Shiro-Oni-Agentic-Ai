@@ -1256,6 +1256,9 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
 
 export function* deployNamespaceByRegistryFlow(api, { payload }) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const isSanityCheckAtDeploy = yield select(
+    NamespacesSelectors.getSanityCheckAtDeploy
+  );
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1284,7 +1287,11 @@ export function* deployNamespaceByRegistryFlow(api, { payload }) {
       yield call(history.push, '/schedule-deployment');
       yield put(AuthenticationActions.setRoute('schedule-deployment'));
     } else {
-      yield put(NamespacesActions.setDeployedModal(true));
+      if (isSanityCheckAtDeploy) {
+        yield put(NamespacesActions.setSanityCheckDeployModalOpen(true));
+      } else {
+        yield put(NamespacesActions.setDeployedModal(true));
+      }
       yield put(
         NamespacesActions.setRegistryDeployResponseData(response?.data)
       );
@@ -1443,6 +1450,26 @@ export function* fetchAddPropertyToAdd(api, { payload }) {
     toast.error(response?.message || response?.data?.message);
   }
 }
+export function* fetchSanityCheckSummaryData(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchSanityCheckSummaryData',
+    loadingSection: 'fetchSanityCheckSummaryData',
+    apiMethod: api.fetchSanityCheckSummaryData,
+    apiParams: [
+      {
+        namespaceId: payload?.id,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield put(
+      NamespacesActions.setSanityCheckDetailSectionData(response?.data?.data)
+    );
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
 //
 export function* namespacesSagas(api) {
   yield all([
@@ -1563,6 +1590,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.fetchAddPropertyToAdd,
       fetchAddPropertyToAdd,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchSanityCheckSummaryData,
+      fetchSanityCheckSummaryData,
       api
     ),
   ]);

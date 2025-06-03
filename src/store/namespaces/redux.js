@@ -213,6 +213,16 @@ export const NamespacesActions = {
   setUserStory: createAction(`${prefix}setUserStory`),
   setChangeRequest: createAction(`${prefix}setChangeRequest`),
   setParameterEditingAction: createAction(`${prefix}setParameterEditingAction`),
+  fetchSanityCheckSummaryData: createAction(
+    `${prefix}fetchSanityCheckSummaryData`
+  ),
+  setSanityCheckDetailSectionData: createAction(
+    `${prefix}setSanityCheckDetailSectionData`
+  ),
+  setSanityCheckAtDeploy: createAction(`${prefix}setSanityCheckAtDeploy`),
+  setSanityCheckDeployModalOpen: createAction(
+    `${prefix}setSanityCheckDeployModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -321,6 +331,9 @@ export const NAMESPACES_INITIAL_STATE = {
   userStory: '',
   changeRequest: null,
   parameterEditingAction: false,
+  sanityCheckDetailSectionData: [],
+  sanityCheckAtDeploy: false,
+  sanityCheckDeployModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -433,6 +446,11 @@ export const NamespacesSelectors = {
   getUserStory: state => state.namespaces.userStory,
   getChangeRequest: state => state.namespaces.changeRequest,
   getParameterEditingAction: state => state.namespaces.parameterEditingAction,
+  getSanityCheckDetailSectionData: state =>
+    state.namespaces.sanityCheckDetailSectionData,
+  getSanityCheckAtDeploy: state => state.namespaces.sanityCheckAtDeploy,
+  getSanityCheckDeployModalOpen: state =>
+    state.namespaces.sanityCheckDeployModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1019,6 +1037,24 @@ const setParameterEditingAction = (state, { payload }) => {
     parameterEditingAction: payload,
   };
 };
+const setSanityCheckDetailSectionData = (state, { payload }) => {
+  return {
+    ...state,
+    sanityCheckDetailSectionData: payload,
+  };
+};
+const setSanityCheckAtDeploy = (state, { payload }) => {
+  return {
+    ...state,
+    sanityCheckAtDeploy: payload,
+  };
+};
+const setSanityCheckDeployModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    sanityCheckDeployModalOpen: payload,
+  };
+};
 
 //
 /* ------------- Hookup Reducers To Types ------------- */
@@ -1254,6 +1290,15 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setParameterEditingAction,
         setParameterEditingAction
+      )
+      .addCase(
+        NamespacesActions.setSanityCheckDetailSectionData,
+        setSanityCheckDetailSectionData
+      )
+      .addCase(NamespacesActions.setSanityCheckAtDeploy, setSanityCheckAtDeploy)
+      .addCase(
+        NamespacesActions.setSanityCheckDeployModalOpen,
+        setSanityCheckDeployModalOpen
       );
   }
 );
