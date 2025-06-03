@@ -66,6 +66,7 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
+import InvalidProcessorDetails from '../pages/Namespaces/InvalidProcessorDetails.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -111,6 +112,10 @@ export const ROUTES_MENU = [
       {
         path: [':id'],
         component: <ProcessGroupSummary />,
+      },
+      {
+        path: [':id/invalid-processors'],
+        component: <InvalidProcessorDetails />,
       },
       {
         path: 'upgrade',

@@ -68,6 +68,7 @@ export const Table = ({
   showPagination = false,
   csList = false,
   isResetNotRequired = false,
+  emptyMessage = KDFM.NO_DATA_FOUND,
 }) => {
   const [itemsPerPage, setitemsPerPage] = useState(10);
   const DATA = { nodes: data || [] };
@@ -134,7 +135,7 @@ export const Table = ({
           />
           <LoaderContainer>
             <NoDataIcon width={140} />
-            <NoDataText>{KDFM.NO_DATA_FOUND}</NoDataText>
+            <NoDataText>{emptyMessage}</NoDataText>
           </LoaderContainer>
         </>
       );
@@ -204,4 +205,5 @@ Table.propTypes = {
   showPagination: PropTypes.bool,
   csList: PropTypes.bool,
   isResetNotRequired: PropTypes.bool,
+  emptyMessage: PropTypes.string,
 };
