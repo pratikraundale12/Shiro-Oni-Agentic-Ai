@@ -62,10 +62,12 @@ import License from '../pages/Licensing/License.jsx';
 import ConfigDetailsPage from '../pages/Namespaces/ConfigDetailsPage.jsx';
 import DeployPage from '../pages/Namespaces/DeployPage.jsx';
 import FlowDetailsPage from '../pages/Namespaces/FlowDetailsPage.jsx';
+import FlowValidationPage from '../pages/Namespaces/FlowValidationPage.jsx';
 import ListControllerServiceNamespace from '../pages/Namespaces/ListControllerServiceNamespace';
 import ProcessGroupSummary from '../pages/Namespaces/ProcessGroupSummary';
 import Summary from '../pages/Namespaces/Summary';
 import Upgrade from '../pages/Namespaces/Upgrade';
+import RegistryManagementPage from '../pages/Registry/ListRegistryManagement.jsx';
 import { ListScheduleDeployment } from '../pages/ScheduleDeployment';
 import SettingTab from '../pages/SettingPage/SettingTab.jsx';
 import {
@@ -76,7 +78,6 @@ import {
 import { SettingsActions, SettingsSelectors } from '../store/settings';
 import RedirectToLogin from './RedirectToLogin.jsx';
 import UnAuthGuard, { UNAUTHROUTES_MENU } from './UnAuthGuard';
-import RegistryManagementPage from '../pages/Registry/ListRegistryManagement.jsx';
 
 export const ROUTES_MENU = [
   {
@@ -166,6 +167,10 @@ export const ROUTES_MENU = [
       {
         path: 'config-details',
         component: <ConfigDetailsPage />,
+      },
+      {
+        path: 'flow-validation',
+        component: <FlowValidationPage />,
       },
     ],
     permission: 'view_namespace',
