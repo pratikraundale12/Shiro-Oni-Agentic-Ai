@@ -8,7 +8,6 @@ import { Table } from '../../components';
 import { FLOWVALIDATION_CONSTANTS } from '../../constants/flowValidation.constant';
 import { Button, RadioSelectField } from '../../shared';
 import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
-import { GridSelectors } from '../../store';
 import {
   FlowValidationActions,
   FlowValidationSelectors,
@@ -125,9 +124,6 @@ const DiffModalFlowValidation = () => {
     FlowValidationSelectors.getValidationResult
   );
   const details = useSelector(SchedularSelectors.getScheduleDeploymentDetails);
-  const getNifiUrl = useSelector(state =>
-    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
-  );
 
   const currentData = validationResult?.data;
   const reportvalidationDetails =
@@ -162,10 +158,7 @@ const DiffModalFlowValidation = () => {
   };
 
   const handleIdClick = link => {
-    const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
-      ? `${getNifiUrl?.nifiUrl}${link}`
-      : `${getNifiUrl?.nifiUrl}/nifi/${link}`;
-    window.open(updatedUrl, '_blank');
+    window.open(link, '_blank');
   };
 
   // Table Configuration
@@ -228,12 +221,12 @@ const DiffModalFlowValidation = () => {
     return (
       <>
         <FlowContainerDetail>
-          <FlowInfoSection data={data.lableBody} />
+          <FlowInfoSection data={data?.lableBody} />
           <div className="row align-items-center justify-content-between">
             <div className="col-md-6 mb-4 pb-md-2">
               <LabelSelect>{FLOWVALIDATION_CONSTANTS.STATE}</LabelSelect>
               <LabelSelectContent>
-                {data.lableBody?.state || 'N/A'}
+                {data?.lableBody?.state || 'N/A'}
               </LabelSelectContent>
             </div>
           </div>
@@ -251,7 +244,7 @@ const DiffModalFlowValidation = () => {
         </FlowContainerDetail>
 
         {sections.map((section, index) => {
-          if (!section.data || section.data.length === 0) return null;
+          if (!section?.data || section?.data?.length === 0) return null;
           return (
             <Collapsible
               key={index}
@@ -260,7 +253,7 @@ const DiffModalFlowValidation = () => {
               toggleCollapsible={() => toggleCollapsible(index)}
               isAddBtnVisible={false}
             >
-              <Table columns={COLUMNS} data={section.data} />
+              <Table columns={COLUMNS} data={section?.data} />
             </Collapsible>
           );
         })}

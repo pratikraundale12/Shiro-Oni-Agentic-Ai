@@ -10,11 +10,7 @@ import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
-import {
-  GridSelectors,
-  LoadingSelectors,
-  NamespacesSelectors,
-} from '../../store';
+import { LoadingSelectors, NamespacesSelectors } from '../../store';
 import {
   FlowValidationActions,
   FlowValidationSelectors,
@@ -90,9 +86,6 @@ const FlowValidationDetails = () => {
   );
   const randomFlowValidationResult = useSelector(
     FlowValidationSelectors.getRandomFlowValidationResult
-  );
-  const getNifiUrl = useSelector(state =>
-    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
 
   const formattedOptions = ruleScopes?.data?.length
@@ -212,13 +205,7 @@ const FlowValidationDetails = () => {
     validationResult?.data || randomFlowValidationResult?.data;
 
   const handleIdClick = link => {
-    const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
-      ? `${getNifiUrl?.nifiUrl}${link}`
-      : `${getNifiUrl?.nifiUrl}/nifi/${link}`;
-    window.open(updatedUrl, '_blank');
-    if (updatedUrl) {
-      window.open(updatedUrl, '_blank');
-    }
+    window.open(link, '_blank');
   };
   return (
     <div>
