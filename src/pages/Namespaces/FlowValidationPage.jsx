@@ -162,8 +162,6 @@ const FlowValidationPage = () => {
   );
   const singleNameSpace = useSelector(NamespacesSelectors.getSelectedNamespace);
   const versionSelected = useSelector(NamespacesSelectors.getVersionSelect);
-  const savedPayload = useSelector(FlowValidationSelectors.getSavedPayload);
-  const selectedItem = useSelector(FlowValidationSelectors.getselectedItem);
   let type = '';
   if (versionSelected?.version > singleNameSpace?.version) {
     type = 'upgrade';
@@ -293,18 +291,6 @@ const FlowValidationPage = () => {
   const isloading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'emailReport')
   );
-
-  const handleSendEmail = () => {
-    const payload = {
-      namespaceName:
-        selectedItem?.name || validationResult?.data?.namespaceName,
-      namespaceId: selectedItem?.id || savedPayload?.namespaceId,
-      clusterId: selectedCluster?.value,
-      rulesForValidation: ruleIds,
-    };
-
-    dispatch(FlowValidationActions.emailReport(payload));
-  };
 
   const handleIdClick = link => {
     const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
@@ -464,11 +450,6 @@ const FlowValidationPage = () => {
           >
             {KDFM.CONTINUE}
           </Button>
-          {validationResult?.data?.tableBody?.length > 0 && (
-            <Button onClick={handleSendEmail}>
-              {FLOWVALIDATION_CONSTANTS.SEND_EMAIL_REPORT}
-            </Button>
-          )}
         </BottomButtonDiv>
       </BottomButton>
     </div>

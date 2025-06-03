@@ -42,6 +42,7 @@ import AddParameterContext from './AddParameterContext';
 import { DuplicateScheduleModal } from './DuplicateScheduleModal';
 import NamespaceDeploy from './NamespaceDeploy';
 import Upgrade from './Upgrade';
+import { FlowValidationSelectors } from '../../store/flowValidation';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -411,6 +412,9 @@ const Summary = () => {
     registryAllDetails?.variablesData,
     variblesReduxData
   );
+    const validationResult = useSelector(
+      FlowValidationSelectors.getDeploymentFlowValidation
+    );
 
   const orignalParameterData = [
     ...(registryAllDetails?.parameterContextData?.inherited || []),
@@ -818,6 +822,7 @@ const Summary = () => {
       bucketId: registryFlowVerion?.bucketId,
       registryId: registryData?.id,
       namespaceId: checkDestCluster?.value,
+      validation_id: validationResult?.data?.validation_id,
       mode: 'deploy',
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       isScheduled: true,
@@ -861,6 +866,7 @@ const Summary = () => {
         bucketId: registryFlowVerion?.bucketId,
         registryId: registryData?.id,
         namespaceId: checkDestCluster?.value,
+        validation_id: validationResult?.data?.validation_id,
         mode: 'deploy',
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
         isScheduled: true,
@@ -899,6 +905,7 @@ const Summary = () => {
         flowId: selectedNameSpace?.flowId,
         namespaceId: checkDestCluster?.id,
         namespaceStatus: flowControlSelectedScheduleStored,
+         validation_id: validationResult?.data?.validation_id,
         payload: {
           namespaceId: checkDestCluster?.value,
           oldVariablesData: orignalVariables,
@@ -943,6 +950,7 @@ const Summary = () => {
       flowId: selectedNameSpace?.flowId,
       namespaceId: checkDestCluster?.id,
       namespaceStatus: flowControlSelectedScheduleStored,
+      validation_id: validationResult?.data?.validation_id,
       payload: {
         namespaceId: checkDestCluster?.value,
         oldVariablesData: orignalVariables,
