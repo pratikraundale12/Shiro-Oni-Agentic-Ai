@@ -83,6 +83,9 @@ const Container = styled.div`
   .customTable {
     height: auto;
   }
+  table {
+    position: static;
+  }
 `;
 const TooltipList = styled.ul`
   padding-left: 8px;
