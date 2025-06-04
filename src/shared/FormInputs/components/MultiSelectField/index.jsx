@@ -95,7 +95,7 @@ const MultiSelectField = ({
     placeholder: provided => ({ ...provided, color: theme.colors.grey }),
     menuPortal: provided => ({
       ...provided,
-      zIndex: theme.zIndex.dropdownIndex,
+      zIndex: 10,
     }),
 
     multiValueRemove: provided => ({

@@ -209,6 +209,26 @@ export function* fetchFlowsSaga(api, { payload }) {
     toast.error(response?.data?.message || 'Failed to fetch flows');
   }
 }
+
+export function* validateDeploymentFlowSaga(api, { payload }) {
+  const { clusterId, data } = payload;
+  const response = yield call(requestSaga, {
+    errorSection: 'validateDeploymentFlow',
+    loadingSection: 'validateDeploymentFlow',
+    apiMethod: api.validateDeploymentFlow,
+    apiParams: [clusterId, data],
+    successAction: FlowValidationActions.validateDeploymentFlowSuccess,
+  });
+
+  if (response.ok) {
+    toast.success('Deployment flow validated successfully!');
+  } else {
+    toast.error(
+      response?.data?.message || 'Failed to validate deployment flow'
+    );
+  }
+}
+
 export function* flowValidationSagas(api) {
   yield all([
     takeLatest(FlowValidationActions.ruleScopeFetch, ruleScopeFetch, api),
@@ -225,5 +245,10 @@ export function* flowValidationSagas(api) {
     takeLatest(FlowValidationActions.emailReport, emailReportSaga, api),
     takeLatest(FlowValidationActions.setRulePriority, setRulePrioritySaga, api),
     takeLatest(FlowValidationActions.fetchFlows, fetchFlowsSaga, api),
+    takeLatest(
+      FlowValidationActions.validateDeploymentFlow,
+      validateDeploymentFlowSaga,
+      api
+    ),
   ]);
 }

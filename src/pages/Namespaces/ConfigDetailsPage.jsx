@@ -214,7 +214,7 @@ const ConfigDetailsPage = () => {
       setActiveTab(KDFM.SCHEDULE_DETAILS);
     } else {
       dispatch(NamespacesActions.setScheduleTimeByRegistry(scheduleDeployTime));
-      history.push('/process-group/summary');
+      history.push('/process-group/flow-validation');
     }
   };
 
@@ -296,7 +296,7 @@ const ConfigDetailsPage = () => {
       setActiveTab(KDFM.SCHEDULE_DETAILS);
     } else {
       dispatch(NamespacesActions.setScheduleTimeByRegistry(scheduleDeployTime));
-      history.push('/process-group/summary');
+      history.push('/process-group/flow-validation');
     }
   };
   return (

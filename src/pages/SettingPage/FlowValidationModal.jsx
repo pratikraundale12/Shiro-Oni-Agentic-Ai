@@ -155,7 +155,7 @@ const ConditionRow = React.memo(
               prop => prop.propName === condition.condition_property
             )?.dynamic_input
               ? 'col-xl-3 col-md-4'
-              : 'col-md-4'
+              : 'col-md-3'
           }
         >
           <SelectField

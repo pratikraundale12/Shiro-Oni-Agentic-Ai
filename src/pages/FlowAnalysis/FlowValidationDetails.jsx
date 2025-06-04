@@ -10,11 +10,7 @@ import { history } from '../../helpers/history';
 import { Button } from '../../shared';
 import Breadcrumb from '../../shared/Breadcrumb';
 import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
-import {
-  GridSelectors,
-  LoadingSelectors,
-  NamespacesSelectors,
-} from '../../store';
+import { LoadingSelectors, NamespacesSelectors } from '../../store';
 import {
   FlowValidationActions,
   FlowValidationSelectors,
@@ -91,9 +87,6 @@ const FlowValidationDetails = () => {
   const randomFlowValidationResult = useSelector(
     FlowValidationSelectors.getRandomFlowValidationResult
   );
-  const getNifiUrl = useSelector(state =>
-    GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
-  );
 
   const formattedOptions = ruleScopes?.data?.length
     ? ruleScopes?.data?.map(rule => ({
@@ -142,16 +135,18 @@ const FlowValidationDetails = () => {
     },
     {
       label: 'ID',
-      renderCell: item => (
-        <ClickableId
-          onClick={e => {
-            e.preventDefault();
-            handleIdClick(item?.displayValue);
-          }}
-        >
-          {item?.displayValue || 'N/A'}
-        </ClickableId>
-      ),
+      renderCell: item => {
+        return (
+          <ClickableId
+            onClick={e => {
+              e.preventDefault();
+              handleIdClick(item?.link);
+            }}
+          >
+            {item?.displayValue || 'N/A'}
+          </ClickableId>
+        );
+      },
       width: '35%',
     },
     {
@@ -172,6 +167,7 @@ const FlowValidationDetails = () => {
       version: value?.component_name,
       displayValue: value?.component_id,
       comments: value?.output_value,
+      link: value?.link,
     })),
   }));
 
@@ -208,14 +204,8 @@ const FlowValidationDetails = () => {
   const currentData =
     validationResult?.data || randomFlowValidationResult?.data;
 
-  const handleIdClick = id => {
-    const updatedUrl = getNifiUrl?.nifiUrl?.endsWith('/nifi')
-      ? `${getNifiUrl?.nifiUrl}?processGroupId=${selectedItem?.id}&componentId=${id}`
-      : `${getNifiUrl?.nifiUrl}/nifi?processGroupId=${selectedItem?.id}&componentId=${id}`;
-    window.open(updatedUrl, '_blank');
-    if (updatedUrl) {
-      window.open(updatedUrl, '_blank');
-    }
+  const handleIdClick = link => {
+    window.open(link, '_blank');
   };
   return (
     <div>
