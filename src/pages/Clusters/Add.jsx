@@ -42,6 +42,7 @@ import RegistryFormSection from './components/RegistryFormSection';
 import { SuccessTestModal } from './components/SuccessTestModal';
 import { SummaryModal } from './components/SummaryModal';
 import { Title } from './components/Title';
+import MultiSelectField from '../../shared/FormInputs/components/MultiSelectField';
 
 const Wrapper = styled.div`
   margin-top: 4px;
@@ -123,7 +124,13 @@ const NoDataText = styled.div`
   font-weight: 600;
   text-align: center;
 `;
-
+const LabelSelect = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: ${props => props.theme.colors.darker};
+  margin-bottom: 14px;
+`;
 export const Add = () => {
   const [activeTab, setActiveTab] = useState(CLUSTER_MODULE_TABS.CLUSTER);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
@@ -154,12 +161,12 @@ export const Add = () => {
   const [saveButtonEnable, setSaveButtonEnable] = useState(true);
   const [error, setError] = useState('');
   const filteredGridData = gridData.filter(item => {
-    if(location?.pathname === '/clusters/add'){ 
+    if (location?.pathname === '/clusters/add') {
       return true;
     }
     return item?.nifi_url !== data?.nifi_url;
   });
-  
+
   const hostToEdit = clusterData?.clusterName || clusterId;
 
   const currentUserData = useSelector(AuthenticationSelectors.getCurrentUser);
@@ -224,16 +231,20 @@ export const Add = () => {
     registryUrl: yup
       .string()
       .required('NiFi Registry URL is required')
-      .test('is-valid-url', 'Enter a valid NiFi Registry URL', function (value) {
-        if (!value) return false;
-        const trimmedValue = value.trim();
-        try {
-          new URL(trimmedValue);
-          return true;
-        } catch {
-          return false;
+      .test(
+        'is-valid-url',
+        'Enter a valid NiFi Registry URL',
+        function (value) {
+          if (!value) return false;
+          const trimmedValue = value.trim();
+          try {
+            new URL(trimmedValue);
+            return true;
+          } catch {
+            return false;
+          }
         }
-      })
+      )
       .test(
         'unique-registry-urls',
         'Registry already exists',
@@ -489,20 +500,31 @@ export const Add = () => {
     setTest,
     activeTab,
   ]);
+
+  const selectedOptions =
+    !isEmpty(registries) &&
+    !isEmpty(data) &&
+    registries
+      ?.filter(item => data?.registry_ids.includes(item.value))
+      .map(item => ({
+        label: item.label,
+        value: item.value,
+      }));
+
   useEffect(() => {
-    if (data?.registry_id) {
+    if (data?.registry_ids && registries && selectedOptions) {
       reset({
-        registry: data?.registry_id || '',
-        clusterName: clusterData?.clusterName,
-        metrics_url: clusterData?.metrics_url || '',
-        logs_url: clusterData?.logs_url || '',
-        nifiUrl: clusterData?.nifiUrl,
+        registry: selectedOptions || data?.registry_id || '',
+        clusterName: clusterData?.clusterName || data?.name,
+        metrics_url: clusterData?.metrics_url || data?.metrics_url || '',
+        logs_url: clusterData?.logs_url || data?.logs_url || '',
+        nifiUrl: clusterData?.nifiUrl || data?.nifi_url,
         registryName: registryData?.name,
         registryUrl: registryData?.registry_url || '',
       });
       setClusterId(data?.id);
     }
-  }, [reset, activeTab, newRegistry]);
+  }, [activeTab, newRegistry, registries, data]);
 
   const fetchRegistry = async () => {
     try {
@@ -518,24 +540,12 @@ export const Add = () => {
       console.error('Failed to fetch registries:', error);
     }
   };
-  const fetchRegistryDetails = async () => {
-    try {
-      const response = await getOneRegistry(selectedRegistryId);
-      setRegistryData(response);
-    } catch (error) {
-      console.error('Failed to fetch registry details:', error);
-    }
-  };
+
   useEffect(() => {
     fetchRegistry();
   }, [activeTab]);
 
-  useEffect(() => {
-    if (selectedRegistryId) {
-      fetchRegistryDetails();
-    }
-  }, [registries, selectedRegistryId, activeTab, newRegistry]);
-
+  
   const handleRegistry = () => {
     setIsCertificateOpen(false);
     setIsCredOpen(false);
@@ -543,6 +553,7 @@ export const Add = () => {
     setTest(true);
     setOpenSummary(true);
   };
+
   function handleKeyDown(e) {
     const value = inputValue;
     if (e.key === 'Backspace') {
@@ -776,13 +787,16 @@ export const Add = () => {
 
         {activeTab === CLUSTER_MODULE_TABS.REGISTRY && !newRegistry && (
           <FormContainer>
-            <SelectField
-              control={control}
-              name="registry"
-              label={KDFM.REGISTRY_NAME}
-              options={registries}
-              icon={<QRIcons />}
-            />
+            <div className="w-100 mb-4">
+              <LabelSelect>Select Registry</LabelSelect>
+              <MultiSelectField
+                enableCheckboxes
+                control={control}
+                name="registry"
+                placeholder={'Select Registry'}
+                options={registries}
+              />
+            </div>
             <ORText style={{ textAlign: 'center' }}>OR</ORText>
             <div>
               <StyledButton
@@ -862,7 +876,7 @@ export const Add = () => {
               <Button
                 id="registry-details-continue-btn"
                 onClick={handleRegistry}
-                disabled={!selectedRegistryId}
+                disabled={isEmpty(selectedRegistryId)}
               >
                 {KDFM.CONTINUE}
               </Button>
@@ -912,6 +926,8 @@ export const Add = () => {
         approverEnable={approverEnable}
         changeRequestEnable={changeRequestEnable}
         tags={tags}
+        selectedRegistriesArray={formStateData?.registry}
+        registries={registries}
       />
       {successModal && (
         <SuccessTestModal

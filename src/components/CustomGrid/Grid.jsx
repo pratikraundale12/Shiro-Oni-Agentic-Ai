@@ -474,8 +474,12 @@ export const Grid = ({
                 name: clusterSummary?.name,
                 nifi_url: clusterSummary?.nifi_url,
               }}
+              displayFullWidth={clusterSummary?.registries?.length > 1}
             />
-            <RegistryDetail data={clusterSummary?.registry} />
+            <RegistryDetail
+              data={clusterSummary?.registries}
+              displayFullWidth={clusterSummary?.registries?.length > 1}
+            />
           </ClusterRegistryContainer>
           <ClusterRegistryContainer className="row">
             <ClusterDetail
