@@ -381,7 +381,7 @@ function DeployPage() {
   }, [selectedValueFlowId]);
 
   useEffect(() => {
-    if (isEmpty(bucketListOptions) && !isEmpty(registrySelectedId)) {
+    if (!isEmpty(registrySelectedId)) {
       dispatch(NamespacesActions.fetchRegistryData(registrySelectedId));
     }
   }, [dispatch, registrySelectedId]);
@@ -436,6 +436,7 @@ function DeployPage() {
   };
 
   const onRegistryChange = value => {
+    dispatch(NamespacesActions.setBucketListDropDownData([]));
     dispatch(NamespacesActions.setSelectedRegistryOnDeploy(value?.value));
   };
 

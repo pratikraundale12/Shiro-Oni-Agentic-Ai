@@ -517,6 +517,10 @@ const FlowDetailsPage = () => {
     }
   }, [dispatch, change_request_var]);
 
+  const localRegistryIdArr = registryData?.filter(
+    item => item?.nifiRegistryId === selectedNameSpace?.registryId
+  );
+
   return (
     <div>
       <FullPageLoader
@@ -725,7 +729,7 @@ const FlowDetailsPage = () => {
                     type="text"
                     label={KDFM.REGISTRY_URL}
                     placeholder={KDFM.ENTER_REGISTRY_URL}
-                    value={registryData?.url}
+                    value={registryData?.url || localRegistryIdArr?.[0]?.url}
                     icon={<LinkIcon />}
                     disabled
                   />
