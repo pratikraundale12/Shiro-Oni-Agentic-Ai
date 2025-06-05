@@ -152,6 +152,7 @@ const DiffModalFlowValidation = () => {
         data: {
           generateVarList: false,
           rulesForValidation: ruleIds,
+          scheduleId: selectedSchedule?.id,
         },
       })
     );
