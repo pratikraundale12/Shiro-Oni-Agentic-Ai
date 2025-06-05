@@ -286,6 +286,7 @@ export const namespacesAPI = api => {
 
   const fetchRegistryFlowDetails = ({
     clusterId,
+    registriesId,
     namespaceId,
     bucketId,
     flowId,
@@ -293,8 +294,8 @@ export const namespacesAPI = api => {
     isUpgrade = false,
   }) => {
     const URL = isUpgrade
-      ? `/upgrade/${clusterId}/namespaceId/${namespaceId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`
-      : `/exports/${clusterId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`;
+      ? `/upgrade/${clusterId}/namespaceId/${namespaceId}/registries/${registriesId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`
+      : `/exports/${clusterId}/registries/${registriesId}/buckets/${bucketId}/flows/${flowId}/versions/${version}`;
     return api.get(URL);
   };
   const fetchDuplicateScheduleData = ({ flowId }) => {

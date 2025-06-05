@@ -174,6 +174,14 @@ function DeployPage() {
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
+  const registrySelectedId = useSelector(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
+  );
+  const registryDropdownOptions = registryData.map(item => ({
+    label: item?.name,
+    value: item?.id,
+  }));
+
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
   const [successTest, setSuccessTest] = useState(false);
   const [proceedWithDispatch, setProceedWithDispatch] = useState(false);
@@ -380,10 +388,10 @@ function DeployPage() {
   }, [selectedValueFlowId]);
 
   useEffect(() => {
-    if (isEmpty(bucketListOptions)) {
-      dispatch(NamespacesActions.fetchRegistryData());
+    if (isEmpty(bucketListOptions) && !isEmpty(registrySelectedId)) {
+      dispatch(NamespacesActions.fetchRegistryData(registrySelectedId));
     }
-  }, [dispatch]);
+  }, [dispatch, registrySelectedId]);
 
   const hasRunOnce = useRef(false);
   useEffect(() => {
@@ -432,6 +440,11 @@ function DeployPage() {
     } else {
       toast.error('Please select the version');
     }
+  };
+
+  const onRegistryChange = value => {
+    dispatch(NamespacesActions.setSelectedRegistryOnDeploy(value?.value));
+    console.log(value);
   };
 
   const onBucketChange = value => {
@@ -494,15 +507,15 @@ function DeployPage() {
           <ScrollSetGrey className="scroll-set-grey pe-1">
             <RowConfig>
               <div className="col-6 p-3">
-                <StyledInputField
-                  name="registry"
-                  type="text"
+                <SelectField
                   label="Registry"
-                  value={registryData?.name || ''}
+                  name="registry"
                   icon={<QRIcons />}
-                  placeholder="Registry Name"
-                  disabled
-                  className="mb-0"
+                  options={registryDropdownOptions || []}
+                  errors={errors}
+                  control={control}
+                  placeholder="Select Registry"
+                  onChange={onRegistryChange}
                 />
               </div>
               <div className="col-6 p-3">

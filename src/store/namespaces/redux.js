@@ -231,6 +231,9 @@ export const NamespacesActions = {
   fetchInvalidProcessorDetailsSuccess: createAction(
     `${prefix}fetchInvalidProcessorDetailsSuccess`
   ),
+  setSelectedRegistryOnDeploy: createAction(
+    `${prefix}setSelectedRegistryOnDeploy`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -346,6 +349,7 @@ export const NAMESPACES_INITIAL_STATE = {
   localChangesModalType: null,
   revertConfirmationModalOpen: false,
   invalidProcessorDetails: [],
+  selectedRegistryOnDeploy: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -466,6 +470,8 @@ export const NamespacesSelectors = {
   getRevertConfirmationModalOpen: state =>
     state.namespaces.revertConfirmationModalOpen,
   getInvalidProcessorDetails: state => state.namespaces.invalidProcessorDetails,
+  getSelectedRegistryOnDeploy: state =>
+    state.namespaces.selectedRegistryOnDeploy,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1107,6 +1113,13 @@ const fetchInvalidProcessorDetailsSuccess = (state, { payload }) => {
     invalidProcessorDetails: payload,
   };
 };
+const setSelectedRegistryOnDeploy = (state, { payload }) => {
+  return {
+    ...state,
+    selectedRegistryOnDeploy: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1366,6 +1379,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.fetchInvalidProcessorDetailsSuccess,
         fetchInvalidProcessorDetailsSuccess
+      )
+      .addCase(
+        NamespacesActions.setSelectedRegistryOnDeploy,
+        setSelectedRegistryOnDeploy
       );
   }
 );
