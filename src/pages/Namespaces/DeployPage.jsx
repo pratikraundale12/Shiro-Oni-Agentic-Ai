@@ -13,7 +13,6 @@ import { history } from '../../helpers/history';
 import {
   Button,
   CheckboxField,
-  InputField,
   Modal,
   RadioField,
   SelectField,
@@ -88,14 +87,7 @@ const BottomButton = styled.div`
   align-items: center;
   justify-content: space-between !important;
 `;
-const StyledInputField = styled(InputField)`
-  input {
-    &:disabled {
-      background-color: #ebf0f7;
-      border-color: #ccc;
-    }
-  }
-`;
+
 const VersionDiv = styled.div`
   margin-bottom: 1rem;
   font-size: 14px;
@@ -179,7 +171,7 @@ function DeployPage() {
   );
   const registryDropdownOptions = registryData.map(item => ({
     label: item?.name,
-    value: item?.id,
+    value: item?.nifiRegistryId,
   }));
 
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
@@ -232,6 +224,7 @@ function DeployPage() {
     handleSubmit,
   } = useForm({
     resolver: yupResolver(registrySchema),
+    defaultValues: { registry: '' },
   });
 
   const convertDate = dateString => {
@@ -444,7 +437,6 @@ function DeployPage() {
 
   const onRegistryChange = value => {
     dispatch(NamespacesActions.setSelectedRegistryOnDeploy(value?.value));
-    console.log(value);
   };
 
   const onBucketChange = value => {
@@ -507,16 +499,22 @@ function DeployPage() {
           <ScrollSetGrey className="scroll-set-grey pe-1">
             <RowConfig>
               <div className="col-6 p-3">
-                <SelectField
-                  label="Registry"
-                  name="registry"
-                  icon={<QRIcons />}
-                  options={registryDropdownOptions || []}
-                  errors={errors}
-                  control={control}
-                  placeholder="Select Registry"
-                  onChange={onRegistryChange}
-                />
+                <div>
+                  <BucketDiv className="justify-content-between align-items-center">
+                    <SelectField
+                      id="process-group-registry"
+                      label="Registry"
+                      name="registry"
+                      icon={<QRIcons />}
+                      options={registryDropdownOptions || []}
+                      errors={errors}
+                      control={control}
+                      placeholder="Select Registry"
+                      onChange={onRegistryChange}
+                      defaultValue={{}}
+                    />
+                  </BucketDiv>
+                </div>
               </div>
               <div className="col-6 p-3">
                 <div>

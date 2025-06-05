@@ -519,6 +519,7 @@ export const ListNamespaces = () => {
   ];
 
   const handleSelect = item => {
+    dispatch(NamespacesActions.setSelectedRegistryOnDeploy(item?.registryId));
     dispatch(NamespacesActions.setFlowPath(item.flowId));
     dispatch(
       NamespacesActions.setSelectedNamespace({
@@ -534,6 +535,7 @@ export const ListNamespaces = () => {
       NamespacesActions.fetchVersionData({
         bucketId: item.bucketId,
         flowId: item.flowId,
+        registryId: item?.registryId,
       })
     );
     history.push('/process-group/flow-details', {

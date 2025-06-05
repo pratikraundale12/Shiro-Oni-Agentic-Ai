@@ -79,6 +79,11 @@ const SummaryDetails = () => {
   const registryData = useSelector(state =>
     GridSelectors.getNamespaceGridRegistry(state, 'namespaces')
   );
+
+  const localRegistryIdArr = registryData?.filter(
+    item => item?.nifiRegistryId === singleNamespaceData?.registryId
+  );
+
   const handleClick = () => {
     if (!singleNamespaceData?.nifiUrl) return;
 
@@ -133,7 +138,7 @@ const SummaryDetails = () => {
                 }}
               >
                 <div>
-                  <span>{registryData?.url || 'N/A'}</span>
+                  <span>{localRegistryIdArr?.[0]?.url || 'N/A'}</span>
                 </div>
               </SummaryDetailsPtag>
             </div>

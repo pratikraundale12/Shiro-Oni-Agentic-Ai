@@ -1134,10 +1134,6 @@ export function* fetchFlowNameList(api, { payload }) {
   const selectedRegistryId = yield select(
     NamespacesSelectors.getSelectedRegistryOnDeploy
   );
-  const gridData = yield select(
-    GridSelectors.getNamespaceGridRegistry,
-    'namespaces'
-  );
   const clustersToken = JSON.parse(
     localStorage.getItem(CLUSTERS_TOKEN) || '[]'
   );
@@ -1197,7 +1193,10 @@ export function* fetchVersionData(api, { payload }) {
         clusterId: isFromSchedule
           ? selectedSchedule?.cluster_id
           : selectedClusterToken?.id,
-        registriesId: selectedRegistryId || selectedSchedule?.registry_id,
+        registriesId:
+          selectedRegistryId ||
+          payload?.registryId ||
+          selectedSchedule?.registry_id,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,
         namespaceId:
@@ -1227,6 +1226,13 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     item => item.id === selectedCluster?.value
   );
   const isUpgrade = yield select(NamespacesSelectors.getDeployRegistryFlow);
+  const gridData = yield select(
+    GridSelectors.getNamespaceGridRegistry,
+    'namespaces'
+  );
+  const localRegistryIdArr = gridData?.filter(
+    item => item?.nifiRegistryId === selectedRegistryId
+  );
 
   api.headers['x-cluster-id'] = selectedClusterToken?.id;
   api.headers['x-cluster-token'] = selectedClusterToken?.token;
@@ -1237,7 +1243,7 @@ export function* fetchRegistryFlowDetails(api, { payload }) {
     apiParams: [
       {
         clusterId: selectedCluster?.value,
-        registriesId: selectedRegistryId,
+        registriesId: localRegistryIdArr?.[0]?.localRegistryId,
         namespaceId: !isUpgrade ? selectedNamespace?.id : null,
         bucketId: payload?.bucketId,
         flowId: payload?.flowId,

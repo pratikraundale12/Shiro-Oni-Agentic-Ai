@@ -49,8 +49,15 @@ const validateAndGetArray = arr =>
     : [];
 
 const CustomOption = ({ children, isSelected, innerProps }) => (
-  <CustomOptionContainer>
-    <CheckboxField checked={isSelected} label={children} {...innerProps} />
+  <CustomOptionContainer
+    {...innerProps}
+    style={{ display: 'flex', alignItems: 'center' }}
+  >
+    <CheckboxField
+      checked={isSelected}
+      label={children}
+      onClick={e => e.stopPropagation()}
+    />
   </CustomOptionContainer>
 );
 

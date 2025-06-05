@@ -313,9 +313,9 @@ export const scheduleSchema = yup.object().shape({
 
 const Summary = () => {
   const dispatch = useDispatch();
-    const shouldRevertChanges = useSelector(
-      NamespacesSelectors.getShouldRevertChanges
-    );
+  const shouldRevertChanges = useSelector(
+    NamespacesSelectors.getShouldRevertChanges
+  );
   const selectedDestCluster =
     useSelector(NamespacesSelectors.getSelectedDestCluster) || [];
   const selectedCluster = useSelector(
@@ -553,6 +553,13 @@ const Summary = () => {
     parameterName: item.name,
     parameters: item.parameters,
   }));
+  const registrySelectedId = useSelector(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
+  );
+
+  const localRegistryIdArr = registryData?.filter(
+    item => item?.nifiRegistryId === registrySelectedId
+  );
 
   const getChangedParameterObjects = (obj1, obj2) => {
     const result = [];
@@ -658,7 +665,7 @@ const Summary = () => {
     currentParametersData,
     updatedParametersData
   );
-   
+
   const originalPc = getOriginalPcPayload(
     currentParametersData,
     updatedParametersData
@@ -877,7 +884,7 @@ const Summary = () => {
       version: registryFlowVerion?.version,
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
-      registryId: registryData?.id,
+      registryId: registrySelectedId || registryData?.id,
       flowName: formDataRegistry?.selectedFlowName,
       namespaceStatus: flowControlState,
       position: {
@@ -908,7 +915,7 @@ const Summary = () => {
       version: versionSelected?.version,
       namespaceId: checkDestCluster?.id,
       bucketId: checkDestCluster?.bucketId,
-      registryId: registryData?.id,
+      registryId: registrySelectedId || registryData?.id,
       namespaceStatus: flowControlState,
       payload: {
         namespaceId: checkDestCluster?.value,
@@ -943,7 +950,7 @@ const Summary = () => {
       version: registryFlowVerion?.version,
       flowId: registryFlowVerion?.flowId,
       bucketId: registryFlowVerion?.bucketId,
-      registryId: registryData?.id,
+      registryId: registrySelectedId || registryData?.id,
       namespaceId: checkDestCluster?.value,
       mode: 'deploy',
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
@@ -986,7 +993,7 @@ const Summary = () => {
         version: registryFlowVerion?.version,
         flowId: registryFlowVerion?.flowId,
         bucketId: registryFlowVerion?.bucketId,
-        registryId: registryData?.id,
+        registryId: registrySelectedId || registryData?.id,
         namespaceId: checkDestCluster?.value,
         mode: 'deploy',
         scheduledTime: timeDeployScheduleDeployment?.toISOString(),
@@ -1025,7 +1032,7 @@ const Summary = () => {
         version: versionSelected?.version,
         flowId: selectedNameSpace?.flowId,
         namespaceId: checkDestCluster?.id,
-        registryId: registryData?.id,
+        registryId: registrySelectedId || registryData?.id,
         bucketId: selectedNameSpace?.bucketId,
         namespaceStatus: flowControlSelectedScheduleStored,
         payload: {
@@ -1071,10 +1078,10 @@ const Summary = () => {
       version: versionSelected?.version,
       flowId: selectedNameSpace?.flowId,
       namespaceId: checkDestCluster?.id,
-      registryId: registryData?.id,
+      registryId: registrySelectedId || registryData?.id,
       bucketId: selectedNameSpace?.bucketId,
       namespaceStatus: flowControlSelectedScheduleStored,
-      revert_local_changes:shouldRevertChanges,
+      revert_local_changes: shouldRevertChanges,
       payload: {
         namespaceId: checkDestCluster?.value,
         oldVariablesData: orignalVariables,
@@ -1095,7 +1102,7 @@ const Summary = () => {
       ...(userStoryValue && { user_story_url: userStoryValue }),
       ...(changeRequestValue && { change_request: changeRequestValue }),
     };
-    
+
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
     }
@@ -1165,8 +1172,8 @@ const Summary = () => {
   };
 
   const handleRegistryClick = () => {
-    if (!registryData?.url) return;
-    window.open(registryData.url, '_blank');
+    if (!localRegistryIdArr?.[0]?.url) return;
+    window.open(localRegistryIdArr?.[0]?.url, '_blank');
   };
   const isScheduled = scheduleDeploymentFlow || scheduleUpgradeFromList;
 
@@ -1298,14 +1305,14 @@ const Summary = () => {
                               textDecoration: 'underline',
                             }}
                           >
-                            {registryData?.url}
+                            {localRegistryIdArr?.[0]?.url}
                           </span>
                           <div
                             data-tooltip-id={`copy-board-namespace-summary1`}
                           >
                             <CopyToClipboard
                               className="summary-clipboard"
-                              copyItem={registryData?.url}
+                              copyItem={localRegistryIdArr?.[0]?.url}
                             />
                           </div>
                           <ReactTooltip
