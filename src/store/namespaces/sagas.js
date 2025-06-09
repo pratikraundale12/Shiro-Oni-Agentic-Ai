@@ -1603,6 +1603,25 @@ export function* fetchSanityCheckSummaryData(api, { payload }) {
     toast.error(response?.message || response?.data?.message);
   }
 }
+export function* fetchSanityReportAuditLog(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchSanityReportAuditLog',
+    loadingSection: 'fetchSanityReportAuditLog',
+    apiMethod: api.fetchSanityReportAuditLog,
+    apiParams: [
+      {
+        recordId: payload,
+      },
+    ],
+  });
+  if (response.ok) {
+    toast.success(response?.data?.message);
+    yield put(NamespacesActions.setSanityReportAuditData(response?.data));
+  } else {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -1735,6 +1754,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.fetchInvalidProcessorDetails,
       fetchInvalidProcessorDetails,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchSanityReportAuditLog,
+      fetchSanityReportAuditLog,
       api
     ),
   ]);

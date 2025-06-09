@@ -1,4 +1,4 @@
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 import { NoDataIcon } from '../../assets';
@@ -6,9 +6,8 @@ import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { isEmpty } from 'lodash';
 import SanityCheckCollapsableItem from './SanityCheckCollapsableItem';
-import { NamespacesActions, NamespacesSelectors } from '../../store';
-import { useDispatch, useSelector } from 'react-redux';
-import { history } from '../../helpers/history';
+import { NamespacesSelectors } from '../../store';
+import { useSelector } from 'react-redux';
 
 const ModalBody = styled.div`
   position: relative;
@@ -23,42 +22,34 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 
-const SanityCheckDeployModal = () => {
-  const dispatch = useDispatch();
+const SanityCheckAuditLogReportModal = ({
+  isSanityCheckModalOpen,
+  setIsSanitCheckModalOpen,
+}) => {
   const responseData = useSelector(
-    NamespacesSelectors.getRegistryDeployResponseData
-  );
-  const isModalOpen = useSelector(
-    NamespacesSelectors.getSanityCheckDeployModalOpen
+    NamespacesSelectors.getSanityReportAuditData
   );
 
   const handleSecondaryClick = () => {
-    dispatch(NamespacesActions.setSanityCheckDeployModalOpen(false));
-    history.push(`/process-group/${responseData?.id}`);
-    dispatch(NamespacesActions.setRegistryAllDetails({}));
-    dispatch(NamespacesActions.setregistryDetailsFlow(true));
+    setIsSanitCheckModalOpen(false);
   };
 
   const handleRequestClose = () => {
-    dispatch(NamespacesActions.setSanityCheckDeployModalOpen(false));
-    dispatch(NamespacesActions.setSelectedNamespace({}));
-    history.push('/process-group');
+    setIsSanitCheckModalOpen(false);
   };
-  const sanityCheckData = responseData?.sanityResult || [];
+  const sanityCheckData = responseData?.data?.sanity_details || [];
 
   return (
     <Modal
       title={'Sanity Check Details'}
-      isOpen={isModalOpen}
+      isOpen={isSanityCheckModalOpen}
       onRequestClose={() => handleRequestClose()}
       size="md"
-      secondaryButtonText={'Process Group Details'}
-      primaryButtonText={KDFM.CONTINUE}
+      primaryButtonText={KDFM.BACK}
       onSecondarySubmit={handleSecondaryClick}
       footerAlign="start"
       onSubmit={() => {
-        dispatch(NamespacesActions.setSanityCheckDeployModalOpen(false));
-        dispatch(NamespacesActions.setDeployedModal(true));
+        setIsSanitCheckModalOpen(false);
       }}
       contentStyles={{ maxWidth: '60%', maxHeight: '60%' }}
     >
@@ -82,8 +73,9 @@ const SanityCheckDeployModal = () => {
   );
 };
 
-// SanityCheckDeployModal.propTypes = {
+SanityCheckAuditLogReportModal.propTypes = {
+  isSanityCheckModalOpen: PropTypes.bool,
+  setIsSanitCheckModalOpen: PropTypes.func,
+};
 
-// };
-
-export default SanityCheckDeployModal;
+export default SanityCheckAuditLogReportModal;

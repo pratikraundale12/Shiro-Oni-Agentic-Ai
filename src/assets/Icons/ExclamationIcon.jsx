@@ -1,9 +1,10 @@
 import React from 'react';
-export const ExclamationIcon = () => {
+import PropTypes from 'prop-types';
+export const ExclamationIcon = ({ height = 58, width = 77 }) => {
   return (
     <svg
-      width={77}
-      height={58}
+      width={width}
+      height={height}
       viewBox="0 0 77 58"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -30,4 +31,8 @@ export const ExclamationIcon = () => {
       />
     </svg>
   );
+};
+ExclamationIcon.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
 };

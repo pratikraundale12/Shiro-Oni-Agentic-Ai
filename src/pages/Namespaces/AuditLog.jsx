@@ -2,9 +2,10 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { SortDownIcon, SortUpIcon } from '../../assets';
+import { OpenEyeIcon, SortDownIcon, SortUpIcon } from '../../assets';
 import {
   FullPageLoader,
+  IconButton,
   StatusRender,
   Table,
   TextRender,
@@ -15,6 +16,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import SanityCheckAuditLogReportModal from './SanityCheckAuditLogReportModal';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -31,6 +33,7 @@ const AuditLog = () => {
   const dispatch = useDispatch();
   const namespaceAuditLog = useSelector(NamespacesSelectors.getNamespaceAudit);
   const [sortingState, setSortingState] = useState('');
+  const [isSanityCheckModalOpen, setIsSanitCheckModalOpen] = useState(false);
   const convertDateTime = dateString => {
     if (!dateString) return 'No date provided';
 
@@ -54,6 +57,12 @@ const AuditLog = () => {
     });
   };
 
+  const handleCheckSanity = item => {
+    dispatch(
+      NamespacesActions.fetchSanityReportAuditLog(item?.sanity_record_id)
+    );
+    setIsSanitCheckModalOpen(true);
+  };
   const COLUMNS = [
     {
       label: (
@@ -74,14 +83,20 @@ const AuditLog = () => {
         </>
       ),
       renderCell: item => <TextRender text={item.event || KDFM.NA} />,
+      width: '10%',
+      resize: true,
     },
     {
       label: KDFM.NAMESPACE,
       renderCell: item => <TextRender text={item.namespace || KDFM.NA} />,
+      width: '8%',
+      resize: true,
     },
     {
       label: KDFM.FLOW_NAME,
       renderCell: item => <TextRender text={item.flow_name || KDFM.NA} />,
+      width: '8%',
+      resize: true,
     },
     {
       label: (
@@ -102,23 +117,30 @@ const AuditLog = () => {
         </>
       ),
       renderCell: item => <TextRender text={item.cluster || KDFM.NA} />,
+      width: '12%',
+      resize: true,
     },
     {
       label: KDFM.MESSAGE,
       renderCell: item => (
         <TextRender text={item.message || KDFM.NA} capitalizeText={false} />
       ),
-      width: '25%',
+      width: '15%',
+      resize: true,
     },
     {
       label: KDFM.VERSION,
       renderCell: item => <TextRender text={item.version || KDFM.NA} />,
+      width: '8%',
+      resize: true,
     },
     {
       label: KDFM.STATUS,
       renderCell: item => (
         <StatusRender status={item.status || KDFM.NA} redColor="#FF0000" />
       ),
+      width: '8%',
+      resize: true,
     },
     {
       label: (
@@ -141,6 +163,8 @@ const AuditLog = () => {
       renderCell: item => (
         <TextRender text={convertDateTime(item.timestamp) || KDFM.NA} />
       ),
+      width: '15%',
+      resize: true,
     },
     {
       label: (
@@ -161,6 +185,23 @@ const AuditLog = () => {
         </>
       ),
       renderCell: item => <TextRender text={item.created_by_name || KDFM.NA} />,
+      width: '10%',
+      resize: true,
+    },
+    {
+      label: KDFM.ACTIONS,
+      renderCell: item => (
+        <>
+          {item?.sanity_record_id && (
+            <IconButton onClick={() => handleCheckSanity(item)}>
+              <OpenEyeIcon width={14} height={14} />
+            </IconButton>
+          )}
+        </>
+      ),
+
+      width: '6%',
+      resize: true,
     },
   ];
 
@@ -171,15 +212,21 @@ const AuditLog = () => {
   const auditLogLoading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchNamespaceAudit')
   );
-
+  const sanityLogLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchSanityReportAuditLog')
+  );
   return (
     <>
-      <FullPageLoader loading={auditLogLoading} />
+      <FullPageLoader loading={auditLogLoading || sanityLogLoading} />
       <DataWrapper>
         <ScrollSetGrey className="scroll-set-grey pe-1">
           <Table data={namespaceAuditLog?.data || []} columns={COLUMNS} />
         </ScrollSetGrey>
       </DataWrapper>
+      <SanityCheckAuditLogReportModal
+        isSanityCheckModalOpen={isSanityCheckModalOpen}
+        setIsSanitCheckModalOpen={setIsSanitCheckModalOpen}
+      />
     </>
   );
 };
