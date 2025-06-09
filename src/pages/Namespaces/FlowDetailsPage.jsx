@@ -226,7 +226,9 @@ const FlowDetailsPage = () => {
   const shouldRevertChanges = useSelector(
     NamespacesSelectors.getShouldRevertChanges
   );
-
+  const registrySelectedId = useSelector(
+    NamespacesSelectors.getSelectedRegistryOnDeploy
+  );
   useEffect(() => {
     if (isUpgrade) {
       if (registryDetailsData?.positions?.[0]?.x !== undefined) {
@@ -518,7 +520,9 @@ const FlowDetailsPage = () => {
   }, [dispatch, change_request_var]);
 
   const localRegistryIdArr = registryData?.filter(
-    item => item?.nifiRegistryId === selectedNameSpace?.registryId
+    item =>
+      item?.nifiRegistryId ===
+      (selectedNameSpace?.registryId || registrySelectedId)
   );
 
   return (
