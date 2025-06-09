@@ -17,6 +17,7 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import SanityCheckAuditLogReportModal from './SanityCheckAuditLogReportModal';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -193,9 +194,24 @@ const AuditLog = () => {
       renderCell: item => (
         <>
           {item?.sanity_record_id && (
-            <IconButton onClick={() => handleCheckSanity(item)}>
-              <OpenEyeIcon width={14} height={14} />
-            </IconButton>
+            <>
+              <IconButton
+                onClick={() => handleCheckSanity(item)}
+                data-tooltip-id={`${`tooltip-group-sanity-audit-icon`}`}
+              >
+                <OpenEyeIcon width={14} height={14} />
+              </IconButton>
+              <ReactTooltip
+                id={`tooltip-group-sanity-audit-icon`}
+                place="left"
+                content={'View Sanity Report'}
+                style={{
+                  width: '180px',
+                  whiteSpace: 'normal',
+                  wordWrap: 'break-word',
+                }}
+              />
+            </>
           )}
         </>
       ),
