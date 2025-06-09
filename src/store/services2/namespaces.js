@@ -336,7 +336,9 @@ export const namespacesAPI = api => {
       `/clusters/${clusterId}/namespace/${namespaceId}/invalid-processors`
     );
   };
-
+  const fetchSanityReportAuditLog = ({ recordId }) => {
+    return api.get(`sanity-report/${recordId}`);
+  };
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -377,5 +379,6 @@ export const namespacesAPI = api => {
     revertLocalChanges,
     deleteNamespace,
     getInvalidProcessorDetails,
+    fetchSanityReportAuditLog,
   };
 };
