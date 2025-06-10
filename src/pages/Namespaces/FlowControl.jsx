@@ -12,6 +12,8 @@ import {
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
+  GreaterArrowIcon,
+  GreenRightCircleIcon,
 } from '../../assets';
 import DisbaleIconImage from '../../assets/images/disable.png';
 import EnableIconImage from '../../assets/images/enable.png';
@@ -26,6 +28,7 @@ import {
   NamespacesSelectors,
 } from '../../store';
 import { history } from '../../helpers/history';
+import { isEmpty } from 'lodash';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -143,8 +146,15 @@ const BottomButtonWrapper = styled.div`
 `;
 const FlowControl = () => {
   const dispatch = useDispatch();
+  const [displayEmptyModalSanity, setDisplayEmptyModalSanity] = useState(false);
   const sigleNamespaceData = useSelector(
     NamespacesSelectors.getFlowControlData
+  );
+  const selectedNamespaceForDetail = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+  const sanityCheckData = useSelector(
+    NamespacesSelectors.getSanityCheckDetailSectionData
   );
   const [activeButton, setActiveButton] = useState(null);
   const [confirmDialogue, setConfirmDialogue] = useState({
@@ -207,9 +217,17 @@ const FlowControl = () => {
       NamespacesActions.fetchInvalidProcessorDetails({ namespaceId: id })
     );
   };
+  const loadingSanity = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'fetchSanityCheckSummaryData')
+  );
+  useEffect(() => {
+    if (!isEmpty(sanityCheckData) && displayEmptyModalSanity) {
+      history.push('/process-group/sanity-check-details');
+    }
+  }, [sanityCheckData]);
   return (
     <DataWrapper>
-      <FullPageLoader loading={loading} />
+      <FullPageLoader loading={loading || loadingSanity} />
       <ScrollSetGrey className="scroll-set-grey pe-1">
         <IconsvgDiv>
           <CustomNine className="col-4 mb-3">
@@ -407,7 +425,16 @@ const FlowControl = () => {
             {' '}
             <Button
               size="md"
-              onClick={() => history.push('/process-group/Sanity-Check')}
+              onClick={() => {
+                dispatch(
+                  NamespacesActions.fetchSanityCheckSummaryData({
+                    id: selectedNamespaceForDetail?.id,
+                  })
+                );
+                setTimeout(() => {
+                  setDisplayEmptyModalSanity(true);
+                }, 1000);
+              }}
               variant="quaternary"
             >
               <div
@@ -420,6 +447,18 @@ const FlowControl = () => {
             </Button>
           </div>
         </BottomButtonWrapper>
+        {isEmpty(sanityCheckData) && displayEmptyModalSanity && (
+          <ModalWithIcon
+            title={'Sanity Check'}
+            primaryButtonText={'Okay'}
+            icon={<GreenRightCircleIcon />}
+            isOpen={displayEmptyModalSanity}
+            primaryText={
+              'Sanity check has been performed successfully, with no issues detected. You can now start the flow.'
+            }
+            onSubmit={() => setDisplayEmptyModalSanity(false)}
+          />
+        )}
       </ScrollSetGrey>
     </DataWrapper>
   );

@@ -51,7 +51,7 @@ const SanityCheckAuditLogReportModal = ({
       onSubmit={() => {
         setIsSanitCheckModalOpen(false);
       }}
-      contentStyles={{ maxWidth: '60%', maxHeight: '60%' }}
+      contentStyles={{ maxWidth: '70%', maxHeight: '60%' }}
     >
       <ModalBody className="modal-body">
         {' '}

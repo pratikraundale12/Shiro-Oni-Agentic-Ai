@@ -10,6 +10,7 @@ import {
   CrossIcon,
   DuplicateIcon,
   ExclamationIcon,
+  InfoIcon,
   SmallNotThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
@@ -886,6 +887,7 @@ const Summary = () => {
   };
 
   const handledeployByRegistry = () => {
+    setIsSanityCheckModalOpen(false);
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
       parameters: item.parameters,
@@ -1432,28 +1434,44 @@ const Summary = () => {
                   </UseColXl>
                   {isRegistryDeploy && (
                     <>
-                      {sanityCheckAfterDeploy ? (
-                        <SanityLabel
-                          style={{ color: theme.colors.primary }}
-                          className="ps-4"
-                        >
-                          Sanity Check will run with Deploy !
-                        </SanityLabel>
-                      ) : (
-                        <UseColXl className="col-xl-2 col-2 mb-4 pb-1">
-                          <div className="summary-details">
-                            <SummaryDetailsHFourTag className="mb-2">
-                              <Button
-                                id="summary-schedule-btn"
-                                size="md"
-                                onClick={() => setIsSanityCheckModalOpen(true)}
-                              >
-                                Sanity Check
-                              </Button>
-                            </SummaryDetailsHFourTag>
+                      <UseColXl className="col-xl-4 col-6 mb-4 pb-1 row">
+                        <div className="summary-details d-flex">
+                          <SummaryDetailsHFourTag className="mb-2">
+                            <CheckboxField
+                              name="check"
+                              label="Sanity Check and Deployment"
+                              checked={sanityCheckAfterDeploy}
+                              onChange={e =>
+                                dispatch(
+                                  NamespacesActions.setSanityCheckAtDeploy(
+                                    e.target.checked
+                                  )
+                                )
+                              }
+                            />
+                          </SummaryDetailsHFourTag>
+                          <div
+                            className="d-flex align-items-center ms-2"
+                            data-tooltip-id={`sanity-check-info`}
+                          >
+                            <InfoIcon color={theme.colors.primary} />
                           </div>
-                        </UseColXl>
-                      )}
+                          <ReactTooltip
+                            id={`sanity-check-info`}
+                            place="bottom"
+                            effect="solid"
+                            content={
+                              'This deployment will be performed using the DFM (Data Flow Manager) UI in NiFi. Also upon deployment, it ensures that all processors remain in the STOPPED state and are not scheduled to run automatically'
+                            }
+                            style={{
+                              width: '400px',
+                              whiteSpace: 'normal',
+                              wordWrap: 'break-word',
+                              zIndex: 10000,
+                            }}
+                          />
+                        </div>
+                      </UseColXl>
                     </>
                   )}
                 </RowConfig>
@@ -1500,7 +1518,7 @@ const Summary = () => {
                     <div className="col-12 p-3">
                       <ConfigTitle className="config-title">
                         <ConfigTitleHTwo className="p-3 mb-0">
-                          <span>{KDFM.FLOW_CONTROL}123</span>
+                          <span>{KDFM.FLOW_CONTROL}</span>
                         </ConfigTitleHTwo>
                       </ConfigTitle>
                     </div>
@@ -1683,7 +1701,11 @@ const Summary = () => {
             {isRegistryDeploy && !scheduleDeploymentFlow && (
               <Button
                 id="process-group-summary-deploy-btn"
-                onClick={handledeployByRegistry}
+                onClick={() => {
+                  sanityCheckAfterDeploy
+                    ? setIsSanityCheckModalOpen(true)
+                    : handledeployByRegistry();
+                }}
               >
                 {provideRegistryFlowBtnText()}
               </Button>
@@ -1835,9 +1857,9 @@ const Summary = () => {
         onRequestClose={() => setIsSanityCheckModalOpen(false)}
         primaryText={'Do you want Sanity Check with Deployment?'}
         secondaryText={
-          'Sanity Check will Stop the Flow and Disable All Local Controller Services'
+          'All components will be deployed in a stopped state and cannot be undone'
         }
-        onSubmit={handleSanityCheckModalSubmit}
+        onSubmit={handledeployByRegistry}
       />
     </>
   );

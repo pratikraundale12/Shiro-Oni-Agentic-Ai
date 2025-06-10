@@ -143,7 +143,7 @@ export const ROUTES_MENU = [
         component: <ConfigDetailsPage />,
       },
       {
-        path: 'Sanity-Check',
+        path: 'sanity-check-details',
         component: <SummarySanityCheck />,
       },
     ],
