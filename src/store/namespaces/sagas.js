@@ -700,13 +700,20 @@ export function* getControllerServiceList(api, action) {
   let namespaceIdentifier = '';
   let use_service_account = false;
   let isFromToggle = false;
+  let isFromPgDetails = false;
   if (action.payload) {
-    const { localOnly, namespaceId, use_service_ac, is_from_toggle } =
-      action.payload;
+    const {
+      localOnly,
+      namespaceId,
+      use_service_ac,
+      is_from_toggle,
+      is_from_pg_details,
+    } = action.payload;
     isLocalOnly = localOnly;
     namespaceIdentifier = namespaceId;
     use_service_account = use_service_ac;
     isFromToggle = is_from_toggle;
+    isFromPgDetails = is_from_pg_details;
   }
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
   const clustersToken = JSON.parse(
@@ -724,11 +731,14 @@ export function* getControllerServiceList(api, action) {
   let namespaceId = '';
   if (use_service_account === true && !isFromToggle) {
     namespaceId = '';
-  } else if (namespaceIdentifier?.length && (isFromToggle || isLocalOnly)) {
+  } else if (
+    namespaceIdentifier?.length &&
+    (isFromToggle || isLocalOnly || isFromPgDetails)
+  ) {
     namespaceId = namespaceIdentifier;
   } else if (
     (selectedNamespaceId?.id || selectedNamespace?.id) &&
-    (isFromToggle || isLocalOnly)
+    (isFromToggle || isLocalOnly || isFromPgDetails)
   ) {
     namespaceId = selectedNamespaceId?.id
       ? selectedNamespaceId?.id
@@ -747,6 +757,7 @@ export function* getControllerServiceList(api, action) {
         localOnly: isLocalOnly,
         use_service_account: use_service_account,
         is_from_toggle: isFromToggle,
+        is_from_pg_details: isFromPgDetails,
       },
     ],
     successAction: NamespacesActions.fetchVariableListSuccess,
