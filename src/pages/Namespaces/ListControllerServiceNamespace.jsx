@@ -191,7 +191,9 @@ export const ListControllerService = () => {
 
   useEffect(() => {
     if (!isEmpty(stateChangeResponse)) {
-      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
+      dispatch(
+        NamespacesActions.getControllerServiceList({ is_from_pg_details: true })
+      );
     }
   }, [stateChangeResponse]);
 
@@ -223,7 +225,9 @@ export const ListControllerService = () => {
       })
     );
     setTimeout(() => {
-      dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
+      dispatch(
+        NamespacesActions.getControllerServiceList({ is_from_pg_details: true })
+      );
     }, 500);
     setIsDeleteModalOpen(false);
     setIsResetNotRequired(true);
@@ -473,7 +477,9 @@ export const ListControllerService = () => {
   ];
 
   useEffect(() => {
-    dispatch(NamespacesActions.getControllerServiceList({ localOnly: true }));
+    dispatch(
+      NamespacesActions.getControllerServiceList({ is_from_pg_details: true })
+    );
     setSearch('');
     setSearchErrorMsg({});
     setSearchText('');

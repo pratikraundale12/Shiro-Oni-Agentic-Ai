@@ -235,17 +235,21 @@ export const NamespacesActions = {
   setRevertConfirmationModalOpen: createAction(
     `${prefix}setRevertConfirmationModalOpen`
   ),
-  fetchInvalidProcessorDetails: createAction(
-    `${prefix}fetchInvalidProcessorDetails`
-  ),
+  fetchInvalidProcessorDetails: createAction('FETCH_INVALID_PROCESSOR_DETAILS'),
   fetchInvalidProcessorDetailsSuccess: createAction(
-    `${prefix}fetchInvalidProcessorDetailsSuccess`
+    'FETCH_INVALID_PROCESSOR_DETAILS_SUCCESS'
   ),
   fetchSanityReportAuditLog: createAction(`${prefix}fetchSanityReportAuditLog`),
   setSanityReportAuditData: createAction(`${prefix}setSanityReportAuditData`),
   setDisplaySanityCheckCleanModal: createAction(
     `${prefix}setDisplaySanityCheckCleanModal`
   ),
+  fetchDeleteNamespaceDetails: createAction('FETCH_DELETE_NAMESPACE_DETAILS'),
+  fetchDeleteNamespaceDetailsSuccess: createAction(
+    'FETCH_DELETE_NAMESPACE_DETAILS_SUCCESS'
+  ),
+  fetchNamespaceDetails: createAction('FETCH_NAMESPACE_DETAILS'),
+  fetchNamespaceDetailsSuccess: createAction('FETCH_NAMESPACE_DETAILS_SUCCESS'),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -366,6 +370,7 @@ export const NAMESPACES_INITIAL_STATE = {
   invalidProcessorDetails: [],
   sanityReportAuditData: {},
   displaySanityCheckCleanModal: false,
+  deleteNamespaceDetails: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -494,6 +499,7 @@ export const NamespacesSelectors = {
   getSanityReportAuditData: state => state.namespaces.sanityReportAuditData,
   getDisplaySanityCheckCleanModal: state =>
     state.namespaces.displaySanityCheckCleanModal,
+  getDeleteNamespaceDetails: state => state.namespaces.deleteNamespaceDetails,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1166,6 +1172,17 @@ const setDisplaySanityCheckCleanModal = (state, { payload }) => {
   };
 };
 
+const fetchDeleteNamespaceDetailsSuccess = (state, { payload }) => {
+  state.deleteNamespaceDetails = payload;
+};
+
+const fetchNamespaceDetailsSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    namespaceDetails: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1442,6 +1459,14 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setDisplaySanityCheckCleanModal,
         setDisplaySanityCheckCleanModal
+      )
+      .addCase(
+        NamespacesActions.fetchDeleteNamespaceDetailsSuccess,
+        fetchDeleteNamespaceDetailsSuccess
+      )
+      .addCase(
+        NamespacesActions.fetchNamespaceDetailsSuccess,
+        fetchNamespaceDetailsSuccess
       );
   }
 );
