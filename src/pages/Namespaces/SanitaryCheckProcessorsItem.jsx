@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Table } from '../../components';
 import { TagCrossIcon } from '../../assets';
 import { theme } from '../../styles';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const SanityCheckProcessorItem = ({ item = [] }) => {
   const [isOpenTab, setIsOpenTab] = useState(false);
@@ -11,7 +12,7 @@ const SanityCheckProcessorItem = ({ item = [] }) => {
     {
       label: 'Processor Name',
       renderCell: item => <div>{item?.processorName}</div>,
-      width: '30%',
+      width: '20%',
       resize: true,
     },
     {
@@ -28,18 +29,36 @@ const SanityCheckProcessorItem = ({ item = [] }) => {
           {item?.processorId}
         </div>
       ),
-      width: '30%',
+      width: '20%',
       resize: true,
     },
     {
       label: 'Error Message',
       renderCell: item => (
-        <div style={{ overflowX: 'auto' }}>
-          <TagCrossIcon width={28} height={24} color="red" />
-          {item?.errorMessage}
-        </div>
+        <>
+          <div
+            style={{ overflowX: 'auto', cursor: 'pointer' }}
+            data-tooltip-id={`sanity-check-processor-info-${item?.processorId}`}
+          >
+            <TagCrossIcon width={28} height={24} color="red" />
+            {item?.errorMessage}
+          </div>
+
+          <ReactTooltip
+            id={`sanity-check-processor-info-${item?.processorId}`}
+            place="bottom"
+            effect="solid"
+            content={item?.errorMessage}
+            style={{
+              width: '400px',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              zIndex: 10000,
+            }}
+          />
+        </>
       ),
-      width: '40%',
+      width: '60%',
       resize: true,
     },
   ];

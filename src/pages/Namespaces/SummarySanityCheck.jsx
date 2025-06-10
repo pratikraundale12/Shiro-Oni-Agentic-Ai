@@ -1,18 +1,12 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
 import styled from 'styled-components';
-import { GreaterArrowIcon, NoDataIcon } from '../../assets';
+import { TodoIcon } from '../../assets';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
-import { history } from '../../helpers/history';
 import Breadcrumb from '../../shared/Breadcrumb';
-import {
-  LoadingSelectors,
-  NamespacesActions,
-  NamespacesSelectors,
-} from '../../store';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { LoadingSelectors, NamespacesSelectors } from '../../store';
 import SanityCheckCollapsableItem from './SanityCheckCollapsableItem';
 import { isEmpty } from 'lodash';
 
@@ -76,7 +70,6 @@ const NoDataText = styled.div`
   text-align: center;
 `;
 const SummarySanityCheck = () => {
-  const dispatch = useDispatch();
   const selectedNamespaceForDetail = useSelector(
     NamespacesSelectors.getSelectedNamespace
   );
@@ -96,38 +89,15 @@ const SummarySanityCheck = () => {
     },
     { label: 'Sanity Check Details' },
   ];
-  useEffect(() => {
-    if (!isEmpty(selectedNamespaceForDetail?.id)) {
-      dispatch(
-        NamespacesActions.fetchSanityCheckSummaryData({
-          id: selectedNamespaceForDetail?.id,
-        })
-      );
-    }
-  }, [selectedNamespaceForDetail?.id]);
+
   return (
     <div>
       <FullPageLoader loading={loading} />
 
       <BackButtonContainer>
         <BackButton>
-          <span
-            onClick={() => history.back()}
-            data-tooltip-id={`tooltip-sanity-back`}
-          >
-            <GreaterArrowIcon />
-          </span>
-          <ReactTooltip
-            id={`tooltip-sanity-back`}
-            place="right"
-            content={'Back'}
-            style={{
-              width: 'auto',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
-          <span>Sanity Check Deatils</span>
+          <TodoIcon />
+          <span>Sanity Check Details</span>
         </BackButton>{' '}
       </BackButtonContainer>
       <BreadcrumbContainer className="d-flex  mb-3">
@@ -146,8 +116,10 @@ const SummarySanityCheck = () => {
               ))}
             {isEmpty(sanityCheckData) && (
               <div className="d-flex flex-column align-items-center mt-5">
-                <NoDataIcon width={130} />
-                <NoDataText>No Data Found!!</NoDataText>
+                <NoDataText>
+                  Sanity check has been performed successfully, with no issues
+                  detected
+                </NoDataText>
               </div>
             )}
           </DataWrapper>
