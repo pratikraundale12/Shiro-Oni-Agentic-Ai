@@ -58,7 +58,8 @@ const AuditLog = () => {
     });
   };
 
-  const handleCheckSanity = item => {
+  const handleCheckSanity = (item, e) => {
+    e.currentTarget.blur();
     dispatch(
       NamespacesActions.fetchSanityReportAuditLog(item?.sanity_record_id)
     );
@@ -193,10 +194,10 @@ const AuditLog = () => {
       label: KDFM.ACTIONS,
       renderCell: item => (
         <>
-          {item?.sanity_record_id && (
+          {item?.sanity_data && (
             <>
               <IconButton
-                onClick={() => handleCheckSanity(item)}
+                onClick={e => handleCheckSanity(item, e)}
                 data-tooltip-id={`${`tooltip-group-sanity-audit-icon`}`}
               >
                 <OpenEyeIcon width={14} height={14} />

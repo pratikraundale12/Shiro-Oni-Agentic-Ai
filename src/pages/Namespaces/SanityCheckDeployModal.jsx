@@ -73,8 +73,10 @@ const SanityCheckDeployModal = () => {
           ))}
         {isEmpty(sanityCheckData) && (
           <div className="d-flex flex-column align-items-center mt-5">
-            <NoDataIcon width={130} />
-            <NoDataText>No Data Found!!</NoDataText>
+            <NoDataText>
+              Sanity check has been performed successfully, with no issues
+              detected. You can now start the flow.
+            </NoDataText>
           </div>
         )}
       </ModalBody>

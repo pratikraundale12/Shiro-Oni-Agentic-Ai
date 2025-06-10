@@ -1613,6 +1613,8 @@ export function* fetchSanityCheckSummaryData(api, { payload }) {
     );
     if (isEmpty(response?.data?.data)) {
       yield put(NamespacesActions.setDisplaySanityCheckCleanModal(true));
+    } else {
+      yield call(history.push, '/process-group/sanity-check-details');
     }
   } else {
     toast.error(response?.message || response?.data?.message);
