@@ -235,14 +235,21 @@ export const NamespacesActions = {
   setRevertConfirmationModalOpen: createAction(
     `${prefix}setRevertConfirmationModalOpen`
   ),
-  fetchInvalidProcessorDetails: createAction(
-    `${prefix}fetchInvalidProcessorDetails`
-  ),
+  fetchInvalidProcessorDetails: createAction('FETCH_INVALID_PROCESSOR_DETAILS'),
   fetchInvalidProcessorDetailsSuccess: createAction(
-    `${prefix}fetchInvalidProcessorDetailsSuccess`
+    'FETCH_INVALID_PROCESSOR_DETAILS_SUCCESS'
   ),
   fetchSanityReportAuditLog: createAction(`${prefix}fetchSanityReportAuditLog`),
   setSanityReportAuditData: createAction(`${prefix}setSanityReportAuditData`),
+  setDisplaySanityCheckCleanModal: createAction(
+    `${prefix}setDisplaySanityCheckCleanModal`
+  ),
+  fetchDeleteNamespaceDetails: createAction('FETCH_DELETE_NAMESPACE_DETAILS'),
+  fetchDeleteNamespaceDetailsSuccess: createAction(
+    'FETCH_DELETE_NAMESPACE_DETAILS_SUCCESS'
+  ),
+  fetchNamespaceDetails: createAction('FETCH_NAMESPACE_DETAILS'),
+  fetchNamespaceDetailsSuccess: createAction('FETCH_NAMESPACE_DETAILS_SUCCESS'),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -362,6 +369,8 @@ export const NAMESPACES_INITIAL_STATE = {
   revertConfirmationModalOpen: false,
   invalidProcessorDetails: [],
   sanityReportAuditData: {},
+  displaySanityCheckCleanModal: false,
+  deleteNamespaceDetails: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -488,6 +497,9 @@ export const NamespacesSelectors = {
     state.namespaces.revertConfirmationModalOpen,
   getInvalidProcessorDetails: state => state.namespaces.invalidProcessorDetails,
   getSanityReportAuditData: state => state.namespaces.sanityReportAuditData,
+  getDisplaySanityCheckCleanModal: state =>
+    state.namespaces.displaySanityCheckCleanModal,
+  getDeleteNamespaceDetails: state => state.namespaces.deleteNamespaceDetails,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1153,6 +1165,23 @@ const setSanityReportAuditData = (state, { payload }) => {
     sanityReportAuditData: payload,
   };
 };
+const setDisplaySanityCheckCleanModal = (state, { payload }) => {
+  return {
+    ...state,
+    displaySanityCheckCleanModal: payload,
+  };
+};
+
+const fetchDeleteNamespaceDetailsSuccess = (state, { payload }) => {
+  state.deleteNamespaceDetails = payload;
+};
+
+const fetchNamespaceDetailsSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    namespaceDetails: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1426,6 +1455,18 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setSanityReportAuditData,
         setSanityReportAuditData
+      )
+      .addCase(
+        NamespacesActions.setDisplaySanityCheckCleanModal,
+        setDisplaySanityCheckCleanModal
+      )
+      .addCase(
+        NamespacesActions.fetchDeleteNamespaceDetailsSuccess,
+        fetchDeleteNamespaceDetailsSuccess
+      )
+      .addCase(
+        NamespacesActions.fetchNamespaceDetailsSuccess,
+        fetchNamespaceDetailsSuccess
       );
   }
 );

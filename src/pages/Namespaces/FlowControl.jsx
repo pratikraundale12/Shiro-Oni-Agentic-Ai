@@ -146,7 +146,6 @@ const BottomButtonWrapper = styled.div`
 `;
 const FlowControl = () => {
   const dispatch = useDispatch();
-  const [displayEmptyModalSanity, setDisplayEmptyModalSanity] = useState(false);
   const sigleNamespaceData = useSelector(
     NamespacesSelectors.getFlowControlData
   );
@@ -156,6 +155,10 @@ const FlowControl = () => {
   const sanityCheckData = useSelector(
     NamespacesSelectors.getSanityCheckDetailSectionData
   );
+  const sanityCheckCleanModalDisplay = useSelector(
+    NamespacesSelectors.getDisplaySanityCheckCleanModal
+  );
+
   const [activeButton, setActiveButton] = useState(null);
   const [confirmDialogue, setConfirmDialogue] = useState({
     state: false,
@@ -221,10 +224,15 @@ const FlowControl = () => {
     LoadingSelectors.getLoading(state, 'fetchSanityCheckSummaryData')
   );
   useEffect(() => {
-    if (!isEmpty(sanityCheckData) && displayEmptyModalSanity) {
+    if (!isEmpty(sanityCheckData)) {
       history.push('/process-group/sanity-check-details');
     }
   }, [sanityCheckData]);
+
+  useEffect(() => {
+    dispatch(NamespacesActions.setDisplaySanityCheckCleanModal(false));
+  }, [dispatch]);
+  
   return (
     <DataWrapper>
       <FullPageLoader loading={loading || loadingSanity} />
@@ -431,9 +439,6 @@ const FlowControl = () => {
                     id: selectedNamespaceForDetail?.id,
                   })
                 );
-                setTimeout(() => {
-                  setDisplayEmptyModalSanity(true);
-                }, 1000);
               }}
               variant="quaternary"
             >
@@ -447,16 +452,18 @@ const FlowControl = () => {
             </Button>
           </div>
         </BottomButtonWrapper>
-        {isEmpty(sanityCheckData) && displayEmptyModalSanity && (
+        {isEmpty(sanityCheckData) && sanityCheckCleanModalDisplay && (
           <ModalWithIcon
             title={'Sanity Check'}
             primaryButtonText={'Okay'}
             icon={<GreenRightCircleIcon />}
-            isOpen={displayEmptyModalSanity}
+            isOpen={sanityCheckCleanModalDisplay}
             primaryText={
               'Sanity check has been performed successfully, with no issues detected. You can now start the flow.'
             }
-            onSubmit={() => setDisplayEmptyModalSanity(false)}
+            onSubmit={() =>
+              dispatch(NamespacesActions.setDisplaySanityCheckCleanModal(false))
+            }
           />
         )}
       </ScrollSetGrey>

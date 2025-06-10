@@ -39,6 +39,7 @@ export const namespacesAPI = api => {
     localOnly,
     use_service_account,
     is_from_toggle,
+    is_from_pg_details = false,
   }) => {
     const url =
       namespaceId &&
@@ -58,7 +59,11 @@ export const namespacesAPI = api => {
                 !is_from_toggle &&
                 window?.location?.pathname != '/controller-service'
               ? `controller-services/${clusterId}/namespace?use_service_account=true`
-              : `controller-services/${clusterId}/namespace`;
+              : is_from_pg_details &&
+                  namespaceId &&
+                  window?.location?.pathname != '/controller-service'
+                ? `controller-services/${clusterId}/namespace/${namespaceId}`
+                : `controller-services/${clusterId}/namespace`;
     return api.get(url);
   };
 
@@ -339,6 +344,13 @@ export const namespacesAPI = api => {
   const fetchSanityReportAuditLog = ({ recordId }) => {
     return api.get(`sanity-report/${recordId}`);
   };
+
+  const getDeleteNamespaceDetails = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/namespace-details`
+    );
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -380,5 +392,6 @@ export const namespacesAPI = api => {
     deleteNamespace,
     getInvalidProcessorDetails,
     fetchSanityReportAuditLog,
+    getDeleteNamespaceDetails,
   };
 };
