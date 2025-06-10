@@ -45,7 +45,7 @@ const SanityCheckAuditLogReportModal = ({
       isOpen={isSanityCheckModalOpen}
       onRequestClose={() => handleRequestClose()}
       size="md"
-      primaryButtonText={KDFM.BACK}
+      primaryButtonText={'Close'}
       onSecondarySubmit={handleSecondaryClick}
       footerAlign="start"
       onSubmit={() => {
