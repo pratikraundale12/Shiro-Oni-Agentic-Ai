@@ -626,7 +626,8 @@ export const Layout = ({ children }) => {
                       Trouble Logging In?
                     </ForgotResetHeadingText1>
                     <ForgotResetHeadingText2>
-                      If you’ve forgotten your password, we can help you <br />
+                      If you&apos;ve forgotten your password, we can help you{' '}
+                      <br />
                       recover access to your account.
                     </ForgotResetHeadingText2>
                   </>
@@ -655,7 +656,8 @@ export const Layout = ({ children }) => {
                       Trouble Logging In?
                     </ForgotResetHeadingText1>
                     <ForgotResetHeadingText2>
-                      If you’ve forgotten your password, we can help you <br />
+                      If you&apos;ve forgotten your password, we can help you{' '}
+                      <br />
                       recover access to your account.
                     </ForgotResetHeadingText2>
                   </>

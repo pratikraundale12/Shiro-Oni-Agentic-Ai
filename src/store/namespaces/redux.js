@@ -225,12 +225,16 @@ export const NamespacesActions = {
   setRevertConfirmationModalOpen: createAction(
     `${prefix}setRevertConfirmationModalOpen`
   ),
-  fetchInvalidProcessorDetails: createAction(
-    `${prefix}fetchInvalidProcessorDetails`
-  ),
+  fetchInvalidProcessorDetails: createAction('FETCH_INVALID_PROCESSOR_DETAILS'),
   fetchInvalidProcessorDetailsSuccess: createAction(
-    `${prefix}fetchInvalidProcessorDetailsSuccess`
+    'FETCH_INVALID_PROCESSOR_DETAILS_SUCCESS'
   ),
+  fetchDeleteNamespaceDetails: createAction('FETCH_DELETE_NAMESPACE_DETAILS'),
+  fetchDeleteNamespaceDetailsSuccess: createAction(
+    'FETCH_DELETE_NAMESPACE_DETAILS_SUCCESS'
+  ),
+  fetchNamespaceDetails: createAction('FETCH_NAMESPACE_DETAILS'),
+  fetchNamespaceDetailsSuccess: createAction('FETCH_NAMESPACE_DETAILS_SUCCESS'),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -346,6 +350,7 @@ export const NAMESPACES_INITIAL_STATE = {
   localChangesModalType: null,
   revertConfirmationModalOpen: false,
   invalidProcessorDetails: [],
+  deleteNamespaceDetails: {},
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -466,6 +471,7 @@ export const NamespacesSelectors = {
   getRevertConfirmationModalOpen: state =>
     state.namespaces.revertConfirmationModalOpen,
   getInvalidProcessorDetails: state => state.namespaces.invalidProcessorDetails,
+  getDeleteNamespaceDetails: state => state.namespaces.deleteNamespaceDetails,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1107,6 +1113,18 @@ const fetchInvalidProcessorDetailsSuccess = (state, { payload }) => {
     invalidProcessorDetails: payload,
   };
 };
+
+const fetchDeleteNamespaceDetailsSuccess = (state, { payload }) => {
+  state.deleteNamespaceDetails = payload;
+};
+
+const fetchNamespaceDetailsSuccess = (state, { payload }) => {
+  return {
+    ...state,
+    namespaceDetails: payload,
+  };
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1366,6 +1384,14 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.fetchInvalidProcessorDetailsSuccess,
         fetchInvalidProcessorDetailsSuccess
+      )
+      .addCase(
+        NamespacesActions.fetchDeleteNamespaceDetailsSuccess,
+        fetchDeleteNamespaceDetailsSuccess
+      )
+      .addCase(
+        NamespacesActions.fetchNamespaceDetailsSuccess,
+        fetchNamespaceDetailsSuccess
       );
   }
 );

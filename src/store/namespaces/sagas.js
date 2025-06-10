@@ -1576,6 +1576,33 @@ export function* fetchInvalidProcessorDetails(api, { payload }) {
   }
 }
 
+export function* fetchDeleteNamespaceDetails(api, { payload }) {
+  const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
+  const clustersToken = JSON.parse(
+    localStorage.getItem(CLUSTERS_TOKEN) || '[]'
+  );
+  const selectedClusterToken = clustersToken.find(
+    item => item.id === selectedCluster?.value
+  );
+  api.headers['x-cluster-id'] = selectedClusterToken?.id;
+  api.headers['x-cluster-token'] = selectedClusterToken?.token;
+  const response = yield call(requestSaga, {
+    errorSection: 'fetchDeleteNamespaceDetails',
+    loadingSection: 'fetchDeleteNamespaceDetails',
+    apiMethod: api.getDeleteNamespaceDetails,
+    apiParams: [
+      {
+        clusterId: selectedCluster?.value,
+        namespaceId: payload?.namespaceId,
+      },
+    ],
+    successAction: NamespacesActions.fetchDeleteNamespaceDetailsSuccess,
+  });
+  if (!response.ok) {
+    toast.error(response?.message || response?.data?.message);
+  }
+}
+
 export function* namespacesSagas(api) {
   yield all([
     takeLatest(NamespacesActions.fetchNamespaces, fetchNamespaces, api),
@@ -1703,6 +1730,11 @@ export function* namespacesSagas(api) {
     takeLatest(
       NamespacesActions.fetchInvalidProcessorDetails,
       fetchInvalidProcessorDetails,
+      api
+    ),
+    takeLatest(
+      NamespacesActions.fetchDeleteNamespaceDetails,
+      fetchDeleteNamespaceDetails,
       api
     ),
   ]);

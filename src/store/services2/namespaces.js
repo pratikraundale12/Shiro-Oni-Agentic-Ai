@@ -334,6 +334,12 @@ export const namespacesAPI = api => {
     );
   };
 
+  const getDeleteNamespaceDetails = ({ clusterId, namespaceId }) => {
+    return api.get(
+      `/clusters/${clusterId}/namespaces/${namespaceId}/namespace-details`
+    );
+  };
+
   return {
     fetchNamespaces,
     checkDestCluster,
@@ -373,5 +379,6 @@ export const namespacesAPI = api => {
     revertLocalChanges,
     deleteNamespace,
     getInvalidProcessorDetails,
+    getDeleteNamespaceDetails,
   };
 };
