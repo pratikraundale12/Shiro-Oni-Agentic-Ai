@@ -7,6 +7,7 @@ import { GridActions, GridSelectors } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
+import { isEmpty } from 'lodash';
 
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -1599,6 +1600,9 @@ export function* fetchSanityCheckSummaryData(api, { payload }) {
     yield put(
       NamespacesActions.setSanityCheckDetailSectionData(response?.data?.data)
     );
+    if (isEmpty(response?.data?.data)) {
+      yield put(NamespacesActions.setDisplaySanityCheckCleanModal(true));
+    }
   } else {
     toast.error(response?.message || response?.data?.message);
   }

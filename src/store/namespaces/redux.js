@@ -243,6 +243,9 @@ export const NamespacesActions = {
   ),
   fetchSanityReportAuditLog: createAction(`${prefix}fetchSanityReportAuditLog`),
   setSanityReportAuditData: createAction(`${prefix}setSanityReportAuditData`),
+  setDisplaySanityCheckCleanModal: createAction(
+    `${prefix}setDisplaySanityCheckCleanModal`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -362,6 +365,7 @@ export const NAMESPACES_INITIAL_STATE = {
   revertConfirmationModalOpen: false,
   invalidProcessorDetails: [],
   sanityReportAuditData: {},
+  displaySanityCheckCleanModal: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -488,6 +492,8 @@ export const NamespacesSelectors = {
     state.namespaces.revertConfirmationModalOpen,
   getInvalidProcessorDetails: state => state.namespaces.invalidProcessorDetails,
   getSanityReportAuditData: state => state.namespaces.sanityReportAuditData,
+  getDisplaySanityCheckCleanModal: state =>
+    state.namespaces.displaySanityCheckCleanModal,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1153,6 +1159,12 @@ const setSanityReportAuditData = (state, { payload }) => {
     sanityReportAuditData: payload,
   };
 };
+const setDisplaySanityCheckCleanModal = (state, { payload }) => {
+  return {
+    ...state,
+    displaySanityCheckCleanModal: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
@@ -1426,6 +1438,10 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.setSanityReportAuditData,
         setSanityReportAuditData
+      )
+      .addCase(
+        NamespacesActions.setDisplaySanityCheckCleanModal,
+        setDisplaySanityCheckCleanModal
       );
   }
 );
