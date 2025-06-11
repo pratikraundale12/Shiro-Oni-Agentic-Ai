@@ -200,9 +200,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
             data-tooltip-id="tooltip-getting-started"
             type="button"
             onClick={() => {
-              dispatch(
-                ClustersActions.setActiveTabClusterSetup('getting_started')
-              );
+              dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
             }}
           >
             {KDFM.BACK}
@@ -210,7 +208,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
           <ReactTooltip
             id={`tooltip-getting-started`}
             place="top"
-            content={'Back to Getting Started'}
+            content={'Back to Manage Host'}
             style={{
               width: '170px',
               whiteSpace: 'normal',
@@ -221,7 +219,9 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
           <Button
             type="submit"
             onClick={() => {
-              dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
+              dispatch(
+                ClustersActions.setActiveTabClusterSetup('cluster_details')
+              );
             }}
           >
             {KDFM.CONTINUE}
