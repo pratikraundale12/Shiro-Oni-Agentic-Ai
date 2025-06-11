@@ -18,12 +18,19 @@ const SanityCheckProcessorItem = ({ item = [] }) => {
       label: 'Processor Id',
       renderCell: item => (
         <div
+          role="button"
+          tabIndex={0}
           style={{
             color: theme.colors.primary,
             textDecoration: 'underline',
             cursor: 'pointer',
           }}
           onClick={() => window.open(item?.link, '_blank')}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              window.open(item?.link, '_blank');
+            }
+          }}
         >
           {item?.processorId}
         </div>

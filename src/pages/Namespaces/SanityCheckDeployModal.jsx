@@ -1,7 +1,7 @@
 // import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import { NoDataIcon } from '../../assets';
+// import { NoDataIcon } from '../../assets';
 import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { isEmpty } from 'lodash';
