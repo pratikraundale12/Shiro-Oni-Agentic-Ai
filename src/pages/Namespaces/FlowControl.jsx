@@ -1,7 +1,7 @@
 /*eslint-disable*/
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
@@ -146,6 +146,19 @@ const BottomButtonWrapper = styled.div`
 `;
 const FlowControl = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  function extractIdFromPath(path) {
+    if (typeof path !== 'string' || path.trim() === '') {
+      return null;
+    }
+    const parts = path.split('/');
+    return parts[parts.length - 1];
+  }
+
+  // Example usage:
+  const path = location?.pathname;
+  const idOfLocation = extractIdFromPath(path);
+
   const sigleNamespaceData = useSelector(
     NamespacesSelectors.getFlowControlData
   );
@@ -223,16 +236,12 @@ const FlowControl = () => {
   const loadingSanity = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchSanityCheckSummaryData')
   );
-  useEffect(() => {
-    if (!isEmpty(sanityCheckData)) {
-      history.push('/process-group/sanity-check-details');
-    }
-  }, [sanityCheckData]);
 
   useEffect(() => {
     dispatch(NamespacesActions.setDisplaySanityCheckCleanModal(false));
+    dispatch(NamespacesActions.setSanityCheckDetailSectionData([]));
   }, [dispatch]);
-  
+
   return (
     <DataWrapper>
       <FullPageLoader loading={loading || loadingSanity} />
@@ -436,7 +445,7 @@ const FlowControl = () => {
               onClick={() => {
                 dispatch(
                   NamespacesActions.fetchSanityCheckSummaryData({
-                    id: selectedNamespaceForDetail?.id,
+                    id: selectedNamespaceForDetail?.id || idOfLocation,
                   })
                 );
               }}

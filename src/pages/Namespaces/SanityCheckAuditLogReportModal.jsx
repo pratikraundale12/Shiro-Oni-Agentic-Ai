@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 import { NoDataIcon } from '../../assets';
-import { KDFM } from '../../constants';
+// import { KDFM } from '../../constants';
 import { Modal } from '../../shared';
 import { isEmpty } from 'lodash';
 import SanityCheckCollapsableItem from './SanityCheckCollapsableItem';
@@ -45,7 +45,7 @@ const SanityCheckAuditLogReportModal = ({
       isOpen={isSanityCheckModalOpen}
       onRequestClose={() => handleRequestClose()}
       size="md"
-      primaryButtonText={KDFM.BACK}
+      primaryButtonText={'Close'}
       onSecondarySubmit={handleSecondaryClick}
       footerAlign="start"
       onSubmit={() => {

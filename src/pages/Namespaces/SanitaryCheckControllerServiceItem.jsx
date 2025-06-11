@@ -3,7 +3,6 @@ import Collapsible from './Collapsible';
 import PropTypes from 'prop-types';
 import { Table } from '../../components';
 import { TagCrossIcon } from '../../assets';
-import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 const SanityCheckControllerServiceItem = ({ item = [] }) => {
   const [isOpenTab, setIsOpenTab] = useState(false);
@@ -24,27 +23,11 @@ const SanityCheckControllerServiceItem = ({ item = [] }) => {
       label: 'Error Message',
       renderCell: item => (
         <>
-          <div
-            style={{ overflowX: 'auto' }}
-            data-tooltip-id={`sanity-check-cs-info-${item?.controllerServiceName}`}
-          >
+          <div style={{ overflowX: 'auto' }}>
             {' '}
             <TagCrossIcon width={28} height={24} color="red" />
             {item?.errorMessage}
           </div>
-
-          <ReactTooltip
-            id={`sanity-check-cs-info-${item?.controllerServiceName}`}
-            place="bottom"
-            effect="solid"
-            content={item?.errorMessage}
-            style={{
-              width: '400px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-              zIndex: 1000000,
-            }}
-          />
         </>
       ),
       width: '60%',
