@@ -330,7 +330,8 @@ const FlowControl = () => {
               sigleNamespaceData?.stoppedCount === 0
             ) ? (
               <>
-                <TextsvgDiv className="d-flex">
+                {sigleNamespaceData?.is_deployed_and_scheduled && (
+                  <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-1 mr-2">
                     <ActiveButtonDiv
                       disabled={
@@ -370,6 +371,7 @@ const FlowControl = () => {
                     )}
                 </TextsvgDiv>
 
+                )}
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-2 mr-2">
                     <ActiveButtonDiv

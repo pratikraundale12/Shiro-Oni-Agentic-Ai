@@ -217,9 +217,7 @@ export function* scheduleSanityAndDeploy(api, { payload }) {
         'Successfully performed sanity check and deployment'
     );
   } else {
-    toast.error(
-      response?.data?.error || 'Failed to perform sanity check and deployment'
-    );
+    toast.error(response?.data?.message);
   }
 }
 
