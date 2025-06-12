@@ -54,9 +54,7 @@ const SetupClusterGettingStartedWrapper = ({ activeTab }) => {
           <Button
             type="submit"
             onClick={() => {
-              dispatch(
-                ClustersActions.setActiveTabClusterSetup('manage_config')
-              );
+              dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
             }}
           >
             {KDFM.CONTINUE}
