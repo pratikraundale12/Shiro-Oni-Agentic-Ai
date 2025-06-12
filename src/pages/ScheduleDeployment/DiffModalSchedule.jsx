@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { KDFM } from '../../constants';
@@ -7,10 +7,11 @@ import { Modal } from '../../shared';
 import { ActivityHistorySelectors } from '../../store/activityHistory';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import { theme } from '../../styles';
+import DiffLocalChanges from './DiffLocalChanges';
+import DiffSanityCheck from './DiffSanityCheck';
 import DiffScheduleCS from './DiffScheduleControllerService';
 import DiffScheduleParameter from './DiffScheduleParamter';
 import DiffScheduleVariables from './DiffScheduleVariables';
-import DiffLocalChanges from './DiffLocalChanges';
 const GreyBoxNamespace = styled.div`
   padding: 5px 10px 0px 10px;
   border-radius: 20px;
@@ -79,6 +80,9 @@ export const DiffModalScheduleList = props => {
         );
       case 'Local Changes':
         return <DiffLocalChanges />;
+
+      case 'Sanity Check':
+        return <DiffSanityCheck />;
       default:
         return null;
     }
@@ -91,7 +95,11 @@ export const DiffModalScheduleList = props => {
     setActiveTab(KDFM.PARAMETER_CONTEXT);
   };
   const handleSetTab = tab => {
-    setActiveTab(tab);
+    if (tab === 'Sanity Check') {
+      setActiveTab(tab);
+    } else {
+      setActiveTab(tab);
+    }
   };
   return (
     <div {...props}>
@@ -154,6 +162,15 @@ export const DiffModalScheduleList = props => {
             >
               Local Changes
             </Tab>
+            {selectedSchedule?.has_sanity_permission && (
+              <Tab
+                active={activeTab === 'Sanity Check'}
+                onClick={() => handleSetTab('Sanity Check')}
+                className="nav-item"
+              >
+                Sanity Check
+              </Tab>
+            )}
           </TabWrapper>
           <TabContent>{renderContent()}</TabContent>
         </GreyBoxNamespace>

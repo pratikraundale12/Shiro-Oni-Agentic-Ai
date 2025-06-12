@@ -1,19 +1,21 @@
 /*eslint-disable*/
-import React, { useState, useEffect } from 'react';
+import { isEmpty } from 'lodash';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
-  SanityCheckIcon,
+  ExclamationIcon,
+  GreaterArrowIcon,
+  GreenRightCircleIcon,
   OpenLinkIcon,
+  SanityCheckIcon,
   SmallNotThunderIcon,
   // SmallThunderIcon,
   SquareBoxIcon,
   TriangleExclamationMarkIcon,
   TriangleIcons,
-  GreaterArrowIcon,
-  GreenRightCircleIcon,
 } from '../../assets';
 import DisbaleIconImage from '../../assets/images/disable.png';
 import EnableIconImage from '../../assets/images/enable.png';
@@ -21,14 +23,13 @@ import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
+import { history } from '../../helpers/history';
 import { Button, ModalWithIcon } from '../../shared';
 import {
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { history } from '../../helpers/history';
-import { isEmpty } from 'lodash';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -242,6 +243,17 @@ const FlowControl = () => {
     dispatch(NamespacesActions.setSanityCheckDetailSectionData([]));
   }, [dispatch]);
 
+  const [isSanityCheckModalOpen, setIsSanityCheckModalOpen] = useState(false);
+
+  const handledeployByRegistry = () => {
+    dispatch(
+      NamespacesActions.fetchSanityCheckSummaryData({
+        id: selectedNamespaceForDetail?.id || idOfLocation,
+      })
+    );
+    setIsSanityCheckModalOpen(false);
+  };
+
   return (
     <DataWrapper>
       <FullPageLoader loading={loading || loadingSanity} />
@@ -442,13 +454,7 @@ const FlowControl = () => {
             {' '}
             <Button
               size="md"
-              onClick={() => {
-                dispatch(
-                  NamespacesActions.fetchSanityCheckSummaryData({
-                    id: selectedNamespaceForDetail?.id || idOfLocation,
-                  })
-                );
-              }}
+              onClick={() => setIsSanityCheckModalOpen(true)}
               variant="quaternary"
             >
               <div
@@ -461,14 +467,27 @@ const FlowControl = () => {
             </Button>
           </div>
         </BottomButtonWrapper>
+        <ModalWithIcon
+          title={'Sanity Check Confirmation'}
+          primaryButtonText={'Confirm'}
+          secondaryButtonText="Cancel"
+          icon={<ExclamationIcon height={120} width={150} />}
+          isOpen={isSanityCheckModalOpen}
+          onRequestClose={() => setIsSanityCheckModalOpen(false)}
+          primaryText={'Do you want Sanity Check during Deployment?'}
+          secondaryText={
+            'Process group will be deployed in a stopped state and cannot be undone'
+          }
+          onSubmit={handledeployByRegistry}
+        />
         {isEmpty(sanityCheckData) && sanityCheckCleanModalDisplay && (
           <ModalWithIcon
             title={'Sanity Check'}
-            primaryButtonText={'Okay'}
+            primaryButtonText={'Continue'}
             icon={<GreenRightCircleIcon />}
             isOpen={sanityCheckCleanModalDisplay}
             primaryText={
-              'Sanity check has been performed successfully, with no issues detected. You can now start the flow.'
+              'Sanity check passed with no issues. Start the flow from the Flow Control tab in the Process Group Details page.'
             }
             onSubmit={() =>
               dispatch(NamespacesActions.setDisplaySanityCheckCleanModal(false))

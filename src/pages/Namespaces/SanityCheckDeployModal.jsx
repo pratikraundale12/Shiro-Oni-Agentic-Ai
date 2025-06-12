@@ -52,7 +52,7 @@ const SanityCheckDeployModal = () => {
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <InvalidProcessorIcon />
-          {'Invalid Component Detected : Sanity Verification Report'}
+          {'Invalid Component(s) Detected : Sanity Verification Report'}
         </div>
       }
       isOpen={isModalOpen}
@@ -80,8 +80,8 @@ const SanityCheckDeployModal = () => {
         {isEmpty(sanityCheckData) && (
           <div className="d-flex flex-column align-items-center mt-5">
             <NoDataText>
-              Sanity check has been performed successfully, with no issues
-              detected. You can now start the flow.
+              Sanity check passed with no issues. Start the flow from the Flow
+              Control tab in the Process Group Details page.
             </NoDataText>
           </div>
         )}

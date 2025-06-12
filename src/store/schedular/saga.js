@@ -203,6 +203,26 @@ export function* fetchScheduleDeploymentDetails(api, { payload }) {
   }
 }
 
+export function* scheduleSanityAndDeploy(api, { payload }) {
+  const response = yield call(requestSaga, {
+    errorSection: 'scheduleSanityAndDeploy',
+    loadingSection: 'scheduleSanityAndDeploy',
+    apiMethod: api.scheduleSanityAndDeploy,
+    apiParams: [{ schedularId: payload }],
+  });
+  if (response.ok) {
+    yield put(SchedularActions.setSanityAndDeployStatus(response?.data));
+    toast.success(
+      response?.data?.message ||
+        'Successfully performed sanity check and deployment'
+    );
+  } else {
+    toast.error(
+      response?.data?.error || 'Failed to perform sanity check and deployment'
+    );
+  }
+}
+
 export function* schedularSagas(api) {
   yield all([
     takeLatest(
@@ -234,6 +254,11 @@ export function* schedularSagas(api) {
     takeLatest(
       SchedularActions.fetchScheduleDeploymentDetails,
       fetchScheduleDeploymentDetails,
+      api
+    ),
+    takeLatest(
+      SchedularActions.scheduleSanityAndDeploy,
+      scheduleSanityAndDeploy,
       api
     ),
   ]);
