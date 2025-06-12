@@ -330,7 +330,7 @@ const FlowControl = () => {
               sigleNamespaceData?.stoppedCount === 0
             ) ? (
               <>
-                {sigleNamespaceData?.is_active_schedule === false && (
+                {selectedNamespaceForDetail?.is_active_schedule === false && (
                   <TextsvgDiv className="d-flex">
                     <ActiveButtonDiv className="div-btn-1 mr-2">
                       <ActiveButtonDiv

@@ -15,6 +15,9 @@ export const SchedularActions = {
   setIsSanityCheckScheduleModalOpen: createAction(
     `${prefix}setIsSanityCheckScheduleModalOpen`
   ),
+  setIsSuccessSanityCheckModalOpen: createAction(
+    `${prefix}setIsSuccessSanityCheckModalOpen`
+  ),
   createScheduleDeployment: createAction(`${prefix}createScheduleDeployment`),
   editScheduleDeployment: createAction(`${prefix}editScheduleDeployment`),
   checkApproverToken: createAction(`${prefix}checkApproverToken`),
@@ -53,6 +56,7 @@ export const SCHEDULAR_INITIAL_STATE = {
   approveScheduleModal: false,
   tokenScheduleModal: false,
   isSanityCheckScheduleModalOpen: false,
+  isSuccessSanityCheckModalOpen: false,
   scheduleFromList: false,
   scheduleSelectRange: [],
   isDiffModalOpen: false,
@@ -80,6 +84,8 @@ export const SchedularSelectors = {
   getTokenScheduleModal: state => state.schedular.tokenScheduleModal,
   getIsSanityCheckModalOpen: state =>
     state.schedular.isSanityCheckScheduleModalOpen,
+  getIsSuccessSanityCheckModalOpen: state =>
+    state.schedular.isSuccessSanityCheckModalOpen,
   getScheduleFromList: state => state.schedular.scheduleFromList,
   getScheduleSelectRange: state => state.schedular.scheduleSelectRange,
   getIsDiffModalOpen: state => state.schedular.isDiffModalOpen,
@@ -227,6 +233,13 @@ const setIsSanityCheckScheduleModalOpen = (state, { payload }) => {
   };
 };
 
+const setIsSuccessSanityCheckModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    isSuccessSanityCheckModalOpen: payload,
+  };
+};
+
 const setSanityAndDeployStatus = (state, { payload }) => {
   return {
     ...state,
@@ -253,6 +266,10 @@ export const schedularReducer = createReducer(
       .addCase(
         SchedularActions.setIsSanityCheckScheduleModalOpen,
         setIsSanityCheckScheduleModalOpen
+      )
+      .addCase(
+        SchedularActions.setIsSuccessSanityCheckModalOpen,
+        setIsSuccessSanityCheckModalOpen
       )
       .addCase(SchedularActions.setScheduleFromList, setScheduleFromList)
       .addCase(SchedularActions.setScheduleSelectRange, setScheduleSelectRange)
