@@ -1855,9 +1855,9 @@ const Summary = () => {
         icon={<ExclamationIcon height={120} width={150} />}
         isOpen={isSanityCheckModalOpen}
         onRequestClose={() => setIsSanityCheckModalOpen(false)}
-        primaryText={'Do you want Sanity Check with Deployment?'}
+        primaryText={'Would you like to perform a Sanity Check ?'}
         secondaryText={
-          'All components will be deployed in a stopped state and cannot be undone'
+          'The process group will be automatically stopped'
         }
         onSubmit={handledeployByRegistry}
       />

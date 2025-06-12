@@ -8,6 +8,7 @@ import {
   CrossWithCircleIcon,
   DeleteDustbinIcon,
   DiffIcon,
+  ExclamationIcon,
   OpenEyeIcon,
   PencilIcon,
   RejectIcon,
@@ -121,6 +122,9 @@ export const ListScheduleDeployment = () => {
     SchedularSelectors.getSelectedClusterState
   );
   const selctedStatus = useSelector(SchedularSelectors.getSelectedStatusState);
+  const isSanityCheckModalOpen = useSelector(
+    SchedularSelectors.getIsSanityCheckModalOpen
+  );
   const search = useSelector(SchedularSelectors.getSearchText);
   const settingData = useSelector(SettingsSelectors.getSettings);
   const [sortingState, setSortingState] = useState('');
@@ -871,6 +875,12 @@ export const ListScheduleDeployment = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleDeployWithSanityCheck = () => {
+    dispatch(SchedularActions.setIsDiffModalOpen(true));
+    dispatch(SchedularActions.scheduleSanityAndDeploy(selectedSchedule?.id));
+  };
+
   return (
     <>
       <ModalWithIcon
@@ -926,6 +936,20 @@ export const ListScheduleDeployment = () => {
         setSortingState={setSortingState}
       />
       <DiffModalScheduleList />
+      <ModalWithIcon
+        title="Sanity Check Confirmation"
+        primaryButtonText="Confirm"
+        secondaryButtonText="Cancel"
+        icon={<ExclamationIcon height={120} width={150} />}
+        isOpen={isSanityCheckModalOpen}
+        onRequestClose={() => {
+          dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+          dispatch(SchedularActions.setIsDiffModalOpen(true));
+        }}
+        primaryText="Do you want to perform a Sanity Check before Scheduled Deployment?"
+        secondaryText="Process Group will be deployed in a stopped state. This action cannot be undone."
+        onSubmit={handleDeployWithSanityCheck}
+      />
     </>
   );
 };

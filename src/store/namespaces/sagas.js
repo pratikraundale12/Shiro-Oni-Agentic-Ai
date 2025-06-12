@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { CLUSTERS_TOKEN, KDFM } from '../../constants';
@@ -7,7 +8,6 @@ import { GridActions, GridSelectors } from '../grid';
 import { requestSaga } from '../helpers/request_sagas';
 import { SchedularSelectors } from '../schedular/redux';
 import { NamespacesActions, NamespacesSelectors } from './redux';
-import { isEmpty } from 'lodash';
 
 export function* fetchNamespaces(api) {
   const selectedCluster = yield select(NamespacesSelectors.getSelectedCluster);
@@ -418,11 +418,19 @@ export function* updateParameterContext(api, { payload }) {
         id: '',
       })
     );
-  } else {
+    toast.success('Parameter context updated successfully');
+  } else if (response.ok) {
     yield call(fetchParameterContext, api, {
       initialCall: false,
       showError: true,
     });
+    toast.success('Parameter context updated successfully');
+  } else {
+    toast.error(
+      response?.message ||
+        response?.data?.message ||
+        'Failed to update parameter context'
+    );
   }
 }
 
@@ -570,6 +578,7 @@ export function* addVariableServices(api, { payload }) {
     ],
   });
   if (response.ok && response.data?.requestId) {
+    toast.success('Variables added successfully');
     yield call(getStatusAndDeleteVariables, api, {
       method: 'get',
       additionalData: { requestId: response.data?.requestId },

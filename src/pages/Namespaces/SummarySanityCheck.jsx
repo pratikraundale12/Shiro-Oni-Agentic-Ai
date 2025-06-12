@@ -87,7 +87,7 @@ const SummarySanityCheck = () => {
       label: 'Process Group Details',
       path: `/process-group/${selectedNamespaceForDetail?.id}`,
     },
-    { label: 'Sanity Check Details' },
+    { label: 'Sanity Verification Report' },
   ];
 
   return (
@@ -97,7 +97,7 @@ const SummarySanityCheck = () => {
       <BackButtonContainer>
         <BackButton>
           <TodoIcon />
-          <span>Sanity Check Details</span>
+          <span>Sanity Verification Report</span>
         </BackButton>{' '}
       </BackButtonContainer>
       <BreadcrumbContainer className="d-flex  mb-3">

@@ -17,6 +17,8 @@ export const schedularAPI = api => {
     api.get(`/group-users/${groupId}`);
   const fetchScheduleDeploymentDetails = ({ schedularId }) =>
     api.get(`/schedule-deployment-details/${schedularId}`);
+  const scheduleSanityAndDeploy = ({ schedularId }) =>
+    api.get(`/schedule-sanity-and-deploy/${schedularId}`);
   return {
     fetchSchedular,
     createScheduleDeployment,
@@ -26,5 +28,6 @@ export const schedularAPI = api => {
     fetchDiffScheduleData,
     fetchGroupUserData,
     fetchScheduleDeploymentDetails,
+    scheduleSanityAndDeploy,
   };
 };
