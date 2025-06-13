@@ -906,8 +906,13 @@ export const ListScheduleDeployment = () => {
     history.push('/process-group/' + sanityCheckData?.namespaceId);
   };
 
+  const statusLoading = useSelector(state =>
+    LoadingSelectors.getLoading(state, 'scheduleSanityAndDeploy')
+  );
+
   return (
     <>
+      <FullPageLoader loading={statusLoading} />;
       <ModalWithIcon
         title={'Disapprove Deployment Schedule'}
         primaryButtonText={'Stop'}

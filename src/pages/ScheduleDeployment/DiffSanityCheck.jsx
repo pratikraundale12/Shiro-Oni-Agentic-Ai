@@ -3,9 +3,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { SanityCheckIcon } from '../../assets';
-import { FullPageLoader } from '../../components';
 import { Button } from '../../shared';
-import { LoadingSelectors } from '../../store';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import SanityCheckCollapsableItem from '../Namespaces/SanityCheckCollapsableItem';
 
@@ -45,15 +43,8 @@ const DiffSanityCheck = () => {
     dispatch(SchedularActions.setIsDiffModalOpen(false));
   };
 
-  //   const isLoading = useSelector(
-  //     SchedularSelectors.getIsSanityCheckScheduleLoading
-  //   );
-  const statusLoading = useSelector(state =>
-    LoadingSelectors.getLoading(state, 'scheduleSanityAndDeploy')
-  );
   return (
     <>
-      <FullPageLoader loading={statusLoading} />
       <DataWrapper>
         <ScrollSetGrey className="scroll-set-grey pe-1">
           <BottomButtonWrapper>
