@@ -12,6 +12,7 @@ import DiffSanityCheck from './DiffSanityCheck';
 import DiffScheduleCS from './DiffScheduleControllerService';
 import DiffScheduleParameter from './DiffScheduleParamter';
 import DiffScheduleVariables from './DiffScheduleVariables';
+import { history } from '../../helpers/history';
 const GreyBoxNamespace = styled.div`
   padding: 5px 10px 0px 10px;
   border-radius: 20px;
@@ -54,6 +55,9 @@ export const DiffModalScheduleList = props => {
   const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
   const scheduleDiffData = useSelector(SchedularSelectors.getDiffAllData);
   const selectedItem = useSelector(ActivityHistorySelectors.getSelectedItem);
+  const sanityCheckData = useSelector(
+    SchedularSelectors.getSanityAndDeployStatus
+  );
 
   const renderContent = () => {
     switch (activeTab) {
@@ -102,6 +106,10 @@ export const DiffModalScheduleList = props => {
       setActiveTab(tab);
     }
   };
+
+  const handleprocessGroupDetails = () => {
+    history.push('/process-group/' + sanityCheckData?.namespaceId);
+  };
   return (
     <div {...props}>
       <Modal
@@ -112,8 +120,11 @@ export const DiffModalScheduleList = props => {
         }
         isOpen={props?.isModalOpen || modalOpen}
         onRequestClose={closeModal}
-        primaryButtonText="Close"
-        onSubmit={() => closeModal()}
+        primaryButtonText={
+          sanityCheckData?.data ? 'Process Group Details' : null
+        }
+        secondaryButtonText="Close"
+        onSubmit={handleprocessGroupDetails}
         footerAlign="start"
         contentStyles={{ minWidth: '65%' }}
         noPadding={true}
