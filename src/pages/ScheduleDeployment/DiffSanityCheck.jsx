@@ -34,7 +34,6 @@ const DiffSanityCheck = () => {
   const sanityCheckData = useSelector(
     SchedularSelectors.getSanityAndDeployStatus
   );
-  console.log('sanityCheckData', sanityCheckData);
 
   // Reset modal state when component mounts
   useEffect(() => {

@@ -93,6 +93,7 @@ export const DiffModalScheduleList = props => {
     dispatch(SchedularActions.setIsDiffModalOpen(false));
     props?.setIsModalOpen && props?.setIsModalOpen(false);
     setActiveTab(KDFM.PARAMETER_CONTEXT);
+    dispatch(SchedularActions.setSanityAndDeployStatus(null));
   };
   const handleSetTab = tab => {
     if (tab === 'Sanity Check') {
