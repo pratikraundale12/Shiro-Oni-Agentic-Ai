@@ -9,6 +9,7 @@ import {
   DeleteDustbinIcon,
   DiffIcon,
   ExclamationIcon,
+  GreenRightCircleIcon,
   OpenEyeIcon,
   PencilIcon,
   RejectIcon,
@@ -124,6 +125,12 @@ export const ListScheduleDeployment = () => {
   const selctedStatus = useSelector(SchedularSelectors.getSelectedStatusState);
   const isSanityCheckModalOpen = useSelector(
     SchedularSelectors.getIsSanityCheckModalOpen
+  );
+  const isSuccessSanityCheckModalOpen = useSelector(
+    SchedularSelectors.getIsSuccessSanityCheckModalOpen
+  );
+  const sanityCheckData = useSelector(
+    SchedularSelectors.getSanityAndDeployStatus
   );
   const search = useSelector(SchedularSelectors.getSearchText);
   const settingData = useSelector(SettingsSelectors.getSettings);
@@ -881,6 +888,24 @@ export const ListScheduleDeployment = () => {
     dispatch(SchedularActions.scheduleSanityAndDeploy(selectedSchedule?.id));
   };
 
+  useEffect(() => {
+    if (sanityCheckData && isEmpty(sanityCheckData?.data)) {
+      dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
+      dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(true));
+      dispatch(SchedularActions.setIsDiffModalOpen(false));
+    }
+  }, [sanityCheckData, dispatch]);
+
+  useEffect(() => {
+    dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
+    dispatch(SchedularActions.setSanityAndDeployStatus(null));
+  }, [dispatch]);
+
+  const hadleSuccessSanityCheck = () => {
+    dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
+    history.push('/process-group/' + sanityCheckData?.namespaceId);
+  };
+
   return (
     <>
       <ModalWithIcon
@@ -950,6 +975,23 @@ export const ListScheduleDeployment = () => {
         secondaryText="Process Group will be deployed in a stopped state. This action cannot be undone."
         onSubmit={handleDeployWithSanityCheck}
       />
+      {isEmpty(sanityCheckData?.data) && (
+        <ModalWithIcon
+          title={'Sanity Check'}
+          primaryButtonText={'Continue'}
+          icon={<GreenRightCircleIcon />}
+          isOpen={isSuccessSanityCheckModalOpen}
+          onRequestClose={() => {
+            dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
+            dispatch(SchedularActions.setIsDiffModalOpen(true));
+            dispatch(SchedularActions.setSanityAndDeployStatus(null));
+          }}
+          primaryText={
+            'Sanity check passed with no issues. Start the flow from the Flow Control tab in the Process Group Details page.'
+          }
+          onSubmit={hadleSuccessSanityCheck}
+        />
+      )}
     </>
   );
 };

@@ -330,47 +330,52 @@ const FlowControl = () => {
               sigleNamespaceData?.stoppedCount === 0
             ) ? (
               <>
-                {sigleNamespaceData?.is_active_schedule === false && (
-                  <TextsvgDiv className="d-flex">
-                    <ActiveButtonDiv className="div-btn-1 mr-2">
-                      <ActiveButtonDiv
-                        disabled={
-                          !canWrite ||
-                          (sigleNamespaceData?.runningCount > 0 &&
-                            sigleNamespaceData?.stoppedCount === 0)
-                        }
-                        className="div-btn-1 "
-                        isActive={activeButton === 'RUNNING'}
-                        activeColor="#58e715"
-                        hoverColor="#58e715"
-                        activeTextColor="#fff"
-                        data-tooltip-id="runningProcessor"
-                        onClick={() => {
-                          if (
-                            !canWrite ||
-                            (sigleNamespaceData?.runningCount > 0 &&
-                              sigleNamespaceData?.stoppedCount === 0)
-                          ) {
-                            return;
-                          }
-                          handleUpdateStatus('RUNNING');
-                        }}
-                      >
-                        <TriangleIcons color="#B5BDC8" />
-                      </ActiveButtonDiv>
-                    </ActiveButtonDiv>
-                    <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                    {sigleNamespaceData?.runningCount > 0 &&
-                      sigleNamespaceData?.stoppedCount === 0 && (
-                        <ReactTooltip
-                          id="runningProcessor"
-                          content="Running Components"
-                          place="right"
-                          positionStrategy="fixed"
-                        />
-                      )}
-                  </TextsvgDiv>
-                )}
+              {selectedNamespaceForDetail?.is_active_schedule === false ? (
+  <TextsvgDiv className="d-flex">
+    <ActiveButtonDiv
+      disabled={
+        !canWrite ||
+        (sigleNamespaceData?.runningCount > 0 &&
+          sigleNamespaceData?.stoppedCount === 0)
+      }
+      className="div-btn-1 mr-2"
+      isActive={activeButton === 'RUNNING'}
+      activeColor="#58e715"
+      hoverColor="#58e715"
+      activeTextColor="#fff"
+      data-tooltip-id="runningProcessor"
+      onClick={() => {
+        if (
+          !canWrite ||
+          (sigleNamespaceData?.runningCount > 0 &&
+            sigleNamespaceData?.stoppedCount === 0)
+        ) {
+          return;
+        }
+        handleUpdateStatus('RUNNING');
+      }}
+    >
+      <TriangleIcons color="#B5BDC8" />
+    </ActiveButtonDiv>
+    <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
+    {sigleNamespaceData?.runningCount > 0 &&
+      sigleNamespaceData?.stoppedCount === 0 && (
+        <ReactTooltip
+          id="runningProcessor"
+          content="Running Components"
+          place="right"
+          positionStrategy="fixed"
+        />
+      )}
+  </TextsvgDiv>
+) : (
+  <div className="text-message mb-3">
+    The process group has been successfully deployed and is scheduled to start automatically at the specified date and time.
+  </div>
+)}
+
+ 
+
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-2 mr-2">
                     <ActiveButtonDiv

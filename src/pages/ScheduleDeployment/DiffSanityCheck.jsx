@@ -1,13 +1,13 @@
+import { isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { SanityCheckIcon } from '../../assets';
+import { FullPageLoader } from '../../components';
 import { Button } from '../../shared';
+import { LoadingSelectors } from '../../store';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import SanityCheckCollapsableItem from '../Namespaces/SanityCheckCollapsableItem';
-import { isEmpty } from 'lodash';
-import { LoadingSelectors } from '../../store';
-import { FullPageLoader } from '../../components';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -34,7 +34,6 @@ const DiffSanityCheck = () => {
   const sanityCheckData = useSelector(
     SchedularSelectors.getSanityAndDeployStatus
   );
-  console.log('sanityCheckData', sanityCheckData);
 
   // Reset modal state when component mounts
   useEffect(() => {
