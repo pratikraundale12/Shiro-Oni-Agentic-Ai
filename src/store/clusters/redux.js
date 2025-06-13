@@ -111,6 +111,12 @@ export const ClustersActions = {
   setIsFailedClusterDeleteModalOpen: createAction(
     `${prefix}setIsFailedClusterDeleteModalOpen`
   ),
+  setAnsibleClusterCreationResponseData: createAction(
+    `${prefix}setAnsibleClusterCreationResponseData`
+  ),
+  setProgressTrackingModalOpen: createAction(
+    `${prefix}setProgressTrackingModalOpen`
+  ),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -154,6 +160,8 @@ export const CLUSTERS_INITIAL_STATE = {
   isAnsibleClusterDeleteFrimNiFiModalOpen: false,
   ansibleClusterProgressData: {},
   isFailedClusterDeleteModalOpen: false,
+  ansibleClusterCreationResponseData: {},
+  progressTrackingModalOpen: false,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -207,6 +215,10 @@ export const ClustersSelectors = {
     state.clusters.ansibleClusterProgressData,
   getIsFailedClusterDeleteModalOpen: state =>
     state.clusters.isFailedClusterDeleteModalOpen,
+  getansibleClusterCreationResponseData: state =>
+    state.clusters.ansibleClusterCreationResponseData,
+  getProgressTrackingModalOpen: state =>
+    state.clusters.progressTrackingModalOpen,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -463,6 +475,19 @@ const setIsFailedClusterDeleteModalOpen = (state, { payload }) => {
     isFailedClusterDeleteModalOpen: payload,
   };
 };
+const setAnsibleClusterCreationResponseData = (state, { payload }) => {
+  return {
+    ...state,
+    ansibleClusterCreationResponseData: payload,
+  };
+};
+
+const setProgressTrackingModalOpen = (state, { payload }) => {
+  return {
+    ...state,
+    progressTrackingModalOpen: payload,
+  };
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const clustersReducer = createReducer(
@@ -576,6 +601,14 @@ export const clustersReducer = createReducer(
       .addCase(
         ClustersActions.setIsFailedClusterDeleteModalOpen,
         setIsFailedClusterDeleteModalOpen
+      )
+      .addCase(
+        ClustersActions.setAnsibleClusterCreationResponseData,
+        setAnsibleClusterCreationResponseData
+      )
+      .addCase(
+        ClustersActions.setProgressTrackingModalOpen,
+        setProgressTrackingModalOpen
       );
   }
 );

@@ -223,6 +223,7 @@ export const ListClusters = () => {
 
   const handleOpenProgressModal = item => {
     setIsProcessModalOpen(true);
+    dispatch(ClustersActions.setProgressTrackingModalOpen(true));
     setSelectedCluster(item);
   };
   const COLUMNS = [

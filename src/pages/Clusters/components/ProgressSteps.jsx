@@ -171,7 +171,8 @@ const StepProgress = () => {
                       <InprogressLabelIcon width={110} height={40} />
                     )}
                   </StepHeaderText>
-                  {openTabIndex === index && (
+                  {(openTabIndex === index ||
+                    processData?.data?.steps?.length == index + 1) && (
                     <StepContentContainer>
                       {ele?.log?.map(item => (
                         <StepContentItem key={item}>{item}</StepContentItem>
