@@ -174,7 +174,9 @@ const SetupClusterWrapper = ({ activeTab }) => {
             data-tooltip-id="tooltip-manage-host"
             type="button"
             onClick={() => {
-              dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
+              dispatch(
+                ClustersActions.setActiveTabClusterSetup('manage_config')
+              );
             }}
           >
             {KDFM.BACK}
@@ -182,7 +184,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
           <ReactTooltip
             id={`tooltip-manage-host`}
             place="top"
-            content={'Back to Manage Host'}
+            content={'Back to Config Details'}
             style={{
               width: '155px',
               whiteSpace: 'normal',

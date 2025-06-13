@@ -57,6 +57,40 @@ const ClusterSetupGettingStartedTab = () => {
         <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
+              <SSHCredentialsPaperIcon height="60" width="60" color={'black'} />
+            </LeftHolder>
+            <RightHolder className="col h-100 row">
+              <div className="col-10 h-100">
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <HighLightText>
+                    {KDFM.GETTING_STARTED_MANAGE_HOST_TITLE}
+                  </HighLightText>
+                </div>
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <BottomText>
+                    {KDFM.GETTING_STARTED_MANAGE_HOST_DESCRIPTION}
+                  </BottomText>
+                </div>
+                <div className="h-50 d-flex align-items-center justify-content-start">
+                  <BottomText
+                    linkColor={true}
+                    onClick={() =>
+                      dispatch(
+                        ClustersActions.setActiveTabClusterSetup('manage_host')
+                      )
+                    }
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {KDFM.MANAGE_HOST}
+                  </BottomText>
+                </div>
+              </div>
+            </RightHolder>
+          </div>
+        </div>
+        <div className="col-md-6 col-xl-4">
+          <div className="d-flex row align-items-center  h-100 mx-auto">
+            <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
               <ManageConfigGearIcon height="60" width="60" color={'black'} />
             </LeftHolder>
             <RightHolder className="col h-100 row">
@@ -90,40 +124,6 @@ const ClusterSetupGettingStartedTab = () => {
             </RightHolder>
           </div>
         </div>{' '}
-        <div className="col-md-6 col-xl-4">
-          <div className="d-flex row align-items-center  h-100 mx-auto">
-            <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">
-              <SSHCredentialsPaperIcon height="60" width="60" color={'black'} />
-            </LeftHolder>
-            <RightHolder className="col h-100 row">
-              <div className="col-10 h-100">
-                <div className="h-50 d-flex align-items-center justify-content-start">
-                  <HighLightText>
-                    {KDFM.GETTING_STARTED_MANAGE_HOST_TITLE}
-                  </HighLightText>
-                </div>
-                <div className="h-50 d-flex align-items-center justify-content-start">
-                  <BottomText>
-                    {KDFM.GETTING_STARTED_MANAGE_HOST_DESCRIPTION}
-                  </BottomText>
-                </div>
-                <div className="h-50 d-flex align-items-center justify-content-start">
-                  <BottomText
-                    linkColor={true}
-                    onClick={() =>
-                      dispatch(
-                        ClustersActions.setActiveTabClusterSetup('manage_host')
-                      )
-                    }
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {KDFM.MANAGE_HOST}
-                  </BottomText>
-                </div>
-              </div>
-            </RightHolder>
-          </div>
-        </div>
         <div className="col-md-6 col-xl-4">
           <div className="d-flex row align-items-center  h-100 mx-auto">
             <LeftHolder className="col-auto align-items-center justify-content-center h-100 ">

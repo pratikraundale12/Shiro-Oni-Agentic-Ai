@@ -15,8 +15,8 @@ export const CompletedLabelIcon = ({
   >
     <path
       d="M86.6367 0.469727L96.4326 15.5L86.6367 30.5303H1.66699L11.2959 15.7568L11.4629 15.5L11.2959 15.2432L1.66699 0.469727H86.6367Z"
-      fill="#FF7A00"
-      stroke="#FF7A00"
+      fill="#06C270"
+      stroke="#06C270"
       strokeWidth="0.939394"
     />
     <path
