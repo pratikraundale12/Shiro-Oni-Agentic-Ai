@@ -14,6 +14,7 @@ import { theme } from '../../../styles';
 import Chart from 'react-apexcharts';
 import { NoDataIcon, RefreshIcon } from '../../../assets';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { SelectField } from '../../../shared';
 
 const RowConfig = styled.div`
   display: flex;
@@ -203,6 +204,53 @@ const RefreshIoconHolder = styled.div`
   min-width: 37px;
   margin-right: 5px;
 `;
+const DropdownContainer = styled.div`
+  min-width: 175px;
+  max-width: 175px;
+  cursor: pointer;
+  & div > div {
+    & > div {
+      min-width: 175px;
+      max-width: 175px;
+      cursor: pointer;
+    }
+  }
+  & div > div {
+    & > div > * {
+      min-width: unset;
+      max-width: unset;
+      cursor: pointer;
+    }
+  }
+`;
+const StyledSelectField = styled(SelectField)`
+  margin-bottom: 0;
+  min-width: 8.5rem;
+
+  &.entity-dropdown {
+    min-width: 10rem;
+  }
+
+  > div {
+    margin-top: 0;
+  }
+  /* Apply fixed width to dropdown options */
+  .react-select__menu {
+    width: 175px;
+  }
+
+  .react-select__menu-list {
+    max-width: 175px;
+    white-space: wrap;
+    text-overflow: ellipsis;
+  }
+
+  .react-select__option {
+    max-width: 175px;
+    word-break: break-all;
+    overflow: hidden;
+  }
+`;
 const ClusterStatusTab = () => {
   const dispatch = useDispatch();
   const { id: clusterId } = useParams();
@@ -240,6 +288,29 @@ const ClusterStatusTab = () => {
     });
   };
 
+  const availableNodes = healthMetricData?.data?.map(data => {
+    return {
+      label: data?.name,
+      value: data?.name
+    };
+  });
+  
+  const [selectedNode, setSelectedNode] = useState({});
+  const selectedNodeData = healthMetricData?.data?.find(
+  ele => ele?.name === selectedNode?.value
+)
+  useEffect(() => {
+    if(!isEmpty(healthMetricData?.data)){
+      setSelectedNode({
+        label: healthMetricData?.data[0]?.name,
+        value: healthMetricData?.data[0]?.name
+      });
+    }
+  },[healthMetricData]);
+  
+  const handleNodeChange = (node) => {
+    setSelectedNode(node)
+  }
   const RadialChart = ({
     title,
     value,
@@ -383,6 +454,17 @@ const ClusterStatusTab = () => {
       <FullPageLoader loading={loading} />
       <div className="d-flex justify-content-end p-2 align-items-center gap-2">
         {' '}
+        <DropdownContainer>
+          <StyledSelectField
+            size="sm"
+            name="nodes"
+            title="Select Node"
+            placeholder="Select Node"
+            value={selectedNode}
+            options={availableNodes}
+            onChange={handleNodeChange}
+          />
+        </DropdownContainer>
         {healthMetricData?.time && (
           <DescriptionText>
             Last Update At :{' '}
@@ -411,11 +493,11 @@ const ClusterStatusTab = () => {
       <ScrollSetGrey className="pt-4 scroll-set-grey pe-1">
         {healthMetricData &&
           !isEmpty(healthMetricData) &&
-          healthMetricData?.data?.map(ele => (
-            <NodeCard key={ele?.name} className="mb-4">
+          selectedNodeData && (
+            <NodeCard key={selectedNodeData?.name} className="mb-4">
               <TitleText className="mt-4 ms-3 mb-3">
                 <span style={{ color: `${theme.colors.primary}` }}>Node</span>:{' '}
-                {ele?.name}
+                {selectedNodeData?.name}
               </TitleText>
 
               <NodeCardContent>
@@ -423,56 +505,56 @@ const ClusterStatusTab = () => {
                   <RadialChart
                     title="Total Disk"
                     value={
-                      getPercentageValue(ele?.data?.disk?.utilization).toFixed(
+                      getPercentageValue(selectedNodeData?.data?.disk?.utilization).toFixed(
                         2
                       ) + '%' || '0.00%'
                     }
-                    unit={ele?.data?.disk?.used}
-                    percentage={ele?.data?.disk?.utilization}
+                    unit={selectedNodeData?.data?.disk?.used}
+                    percentage={selectedNodeData?.data?.disk?.utilization}
                     showPercentageSign={true}
-                    contentTotal={ele?.data?.disk?.total}
-                    contentUsed={ele?.data?.disk?.used}
-                    contentUsedPercentage={ele?.data?.disk?.utilization}
+                    contentTotal={selectedNodeData?.data?.disk?.total}
+                    contentUsed={selectedNodeData?.data?.disk?.used}
+                    contentUsedPercentage={selectedNodeData?.data?.disk?.utilization}
                   />
                   <RadialChart
                     title="Total Memory"
                     value={
                       getPercentageValue(
-                        ele?.data?.memory?.utilization
+                        selectedNodeData?.data?.memory?.utilization
                       ).toFixed(2) + '%' || '0.00%'
                     }
-                    unit={ele?.data?.memory?.used}
-                    percentage={ele?.data?.memory?.utilization}
+                    unit={selectedNodeData?.data?.memory?.used}
+                    percentage={selectedNodeData?.data?.memory?.utilization}
                     showPercentageSign={true}
-                    contentTotal={ele?.data?.memory?.total}
-                    contentUsed={ele?.data?.memory?.used}
-                    contentUsedPercentage={ele?.data?.memory?.utilization}
+                    contentTotal={selectedNodeData?.data?.memory?.total}
+                    contentUsed={selectedNodeData?.data?.memory?.used}
+                    contentUsedPercentage={selectedNodeData?.data?.memory?.utilization}
                   />
                   <RadialChart
                     title="NiFi Heap "
                     value={
-                      (getPercentageValue(ele?.data?.nifi?.heap_used) /
+                      (getPercentageValue(selectedNodeData?.data?.nifi?.heap_used) /
                         getPercentageValue(
-                          ele?.data?.nifi?.total_heap_memory
+                          selectedNodeData?.data?.nifi?.total_heap_memory
                         )) *
                         100 || '0%'
                     }
-                    unit={ele?.data?.nifi?.heap_used}
+                    unit={selectedNodeData?.data?.nifi?.heap_used}
                     percentage={
-                      (getPercentageValue(ele?.data?.nifi?.heap_used) /
+                      (getPercentageValue(selectedNodeData?.data?.nifi?.heap_used) /
                         getPercentageValue(
-                          ele?.data?.nifi?.total_heap_memory
+                          selectedNodeData?.data?.nifi?.total_heap_memory
                         )) *
                       100
                     }
                     showPercentageSign={true}
-                    contentTotal={ele?.data?.nifi?.total_heap_memory}
-                    contentUsed={ele?.data?.nifi?.heap_used}
+                    contentTotal={selectedNodeData?.data?.nifi?.total_heap_memory}
+                    contentUsed={selectedNodeData?.data?.nifi?.heap_used}
                     contentUsedPercentage={
                       (
-                        (getPercentageValue(ele?.data?.nifi?.heap_used) /
+                        (getPercentageValue(selectedNodeData?.data?.nifi?.heap_used) /
                           getPercentageValue(
-                            ele?.data?.nifi?.total_heap_memory
+                            selectedNodeData?.data?.nifi?.total_heap_memory
                           )) *
                         100
                       ).toFixed(2) + '%' || '0%'
@@ -481,17 +563,17 @@ const ClusterStatusTab = () => {
                   <RadialChart
                     title="CPU Utilisation"
                     value={
-                      getPercentageValue(ele?.data?.cpu?.utilization).toFixed(
+                      getPercentageValue(selectedNodeData?.data?.cpu?.utilization).toFixed(
                         2
                       ) + '%' || '0.00%'
                     }
-                    unit={ele?.data?.cpu?.used}
-                    percentage={ele?.data?.cpu?.utilization}
+                    unit={selectedNodeData?.data?.cpu?.used}
+                    percentage={selectedNodeData?.data?.cpu?.utilization}
                     showPercentageSign={true}
-                    contentTotal={ele?.data?.cpu?.total}
-                    contentUsed={ele?.data?.cpu?.used}
+                    contentTotal={selectedNodeData?.data?.cpu?.total}
+                    contentUsed={selectedNodeData?.data?.cpu?.used}
                     contentUsedPercentage={
-                      getPercentageValue(ele?.data?.cpu?.utilization).toFixed(
+                      getPercentageValue(selectedNodeData?.data?.cpu?.utilization).toFixed(
                         2
                       ) + '%' || '0.00%'
                     }
@@ -499,7 +581,7 @@ const ClusterStatusTab = () => {
                 </RowConfig>
               </NodeCardContent>
             </NodeCard>
-          ))}
+          )}
         {(isEmpty(healthMetricData) || !healthMetricData) && (
           <LoaderContainer>
             <NoDataIcon width={140} />
