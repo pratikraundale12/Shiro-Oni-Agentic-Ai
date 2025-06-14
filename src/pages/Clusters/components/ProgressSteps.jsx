@@ -20,6 +20,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
+  height: 100%;
+  overflow: auto;
 `;
 const HeaderText = styled.div`
   font-family: Red Hat Display;

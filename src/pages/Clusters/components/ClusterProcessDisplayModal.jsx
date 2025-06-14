@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -11,11 +11,182 @@ import {
 import { ModalWithRightBtn } from '../../../shared';
 import { FullPageLoader } from '../../../components';
 import StepProgress from './ProgressSteps';
+import { GreenRightCircleIcon } from '../../../assets';
 
 const Container = styled.div`
-  height: 100%;
+  max-height: 50vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 `;
+const StickyProgressBar = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
+  padding-bottom: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+`;
+const FlexRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+const StepHeaderText = styled.div`
+  line-height: 40px;
+  font-family: Red Hat Display;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+`;
+const PercentageHeaderText = styled.div`
+  line-height: 40px;
+  font-family: Red Hat Display;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #06c270;
+`;
+const CreationmodelSteps = [
+  { step: 'Connectivity check', status: 'completed' },
+  { step: 'Certificate preparation', status: 'completed' },
+  { step: 'Host preparation', status: 'completed' },
+  { step: 'CSR generation', status: 'completed' },
+  { step: 'Certificate signing', status: 'completed' },
+  { step: 'Certificate deployment', status: 'completed' },
+  { step: 'NiFi Configuration', status: 'completed' },
+  { step: 'Custom metrics agent', status: 'completed' },
+];
+const deleteModalSteps = [
+  {
+    step: 'Connectivity check',
+    status: 'completed',
+  },
+  {
+    step: 'Service shutdown',
+    status: 'completed',
+  },
+  {
+    step: 'Directory cleanup',
+    status: 'completed',
+  },
+];
+const RestartModalSteps = [
+  {
+    step: 'Connectivity check',
+    status: 'completed',
+  },
+  {
+    step: 'Restart NiFi service',
+    status: 'completed',
+  },
+];
+const StopModalSteps = [
+  {
+    step: 'Connectivity check',
+    status: 'completed',
+  },
+  {
+    step: 'NiFi stop via systemd service',
+    status: 'completed',
+  },
+];
 
+const StartModalSteps = [
+  {
+    step: 'Connectivity check',
+    status: 'completed',
+  },
+  {
+    step: 'NiFi stop via systemd service',
+    status: 'completed',
+  },
+];
+
+const UpgradeModalSteps = [
+  {
+    step: 'Connectivity check',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate preparation',
+    status: 'completed',
+  },
+  {
+    step: 'Host preparation',
+    status: 'completed',
+  },
+  {
+    step: 'CSR generation',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate signing',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate deployment',
+    status: 'completed',
+  },
+  {
+    step: 'NiFi Configuration',
+    status: 'completed',
+  },
+  {
+    step: 'Custom metrics agent',
+    status: 'completed',
+  },
+];
+
+const nodesUpdateModalSteps = [
+  {
+    step: 'Connectivity check',
+    status: 'completed',
+  },
+  {
+    step: 'Service shutdown',
+    status: 'completed',
+  },
+  {
+    step: 'Directory cleanup',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate preparation',
+    status: 'completed',
+  },
+  {
+    step: 'Host preparation',
+    status: 'completed',
+  },
+  {
+    step: 'CSR generation',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate signing',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate deployment',
+    status: 'completed',
+  },
+  {
+    step: 'NiFi Configuration',
+    status: 'completed',
+  },
+  {
+    step: 'Custom metrics',
+    status: 'completed',
+  },
+  {
+    step: 'NiFi cluster deployment',
+    status: 'completed',
+  },
+];
 export const ClusterProcessDisplayModal = ({
   isProcessModalOpen,
   setIsProcessModalOpen,
@@ -24,6 +195,7 @@ export const ClusterProcessDisplayModal = ({
   sortingState,
 }) => {
   const dispatch = useDispatch();
+  const [isCompleted, setIsCompleted] = useState(false);
   const isModalOpen = useSelector(
     ClustersSelectors.getProgressTrackingModalOpen
   );
@@ -33,6 +205,47 @@ export const ClusterProcessDisplayModal = ({
   );
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'checkCredentialsClusterSetup')
+  );
+  const processData = useSelector(
+    ClustersSelectors.getAnsibleClusterProgressData
+  );
+  const currentSteps = processData?.data?.steps?.map(ele => ({
+    status: ele.status,
+    step: ele?.step,
+  }));
+
+  const processExeName =
+    selectedCluster?.process_name || ansibleClusterCreationData?.process_name;
+  const getReferencObjectForComparison = processExeName => {
+    if (processExeName === 'delete') {
+      return deleteModalSteps;
+    } else if (processExeName === 'creation') {
+      return CreationmodelSteps;
+    } else if (processExeName === 'restart') {
+      return RestartModalSteps;
+    } else if (processExeName === 'stop') {
+      return StopModalSteps;
+    } else if (processExeName === 'start') {
+      return StartModalSteps;
+    } else if (processExeName === 'upgrade') {
+      return UpgradeModalSteps;
+    } else if (processExeName === 'update-nodes') {
+      return nodesUpdateModalSteps;
+    }
+  };
+
+  function calculateCompletionPercentage(modelSteps, currentSteps) {
+    const totalSteps = modelSteps?.length;
+    const completedSteps = currentSteps?.filter(
+      step => step?.status === 'completed'
+    ).length;
+
+    const percentage = Math.round((completedSteps / totalSteps) * 100);
+    return percentage;
+  }
+  const progress = calculateCompletionPercentage(
+    getReferencObjectForComparison(processExeName),
+    currentSteps
   );
 
   const onRequestClose = () => {
@@ -67,7 +280,7 @@ export const ClusterProcessDisplayModal = ({
 
   useEffect(() => {
     let intervalId;
-    if (isProcessModalOpen || isModalOpen) {
+    if ((isProcessModalOpen || isModalOpen) && progress < 100) {
       intervalId = setInterval(() => {
         const payload = {
           clusterId:
@@ -88,7 +301,27 @@ export const ClusterProcessDisplayModal = ({
         clearInterval(intervalId);
       }
     };
-  }, [isProcessModalOpen, isModalOpen, dispatch]);
+  }, [isProcessModalOpen, isModalOpen, dispatch, progress]);
+  useEffect(() => {
+    let timeoutId;
+
+    if (progress === 100) {
+      timeoutId = setTimeout(() => {
+        setIsCompleted(true);
+      }, 1000);
+    } else {
+      setIsCompleted(false);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [progress]);
   return (
     <>
       <FullPageLoader loading={loading} />
@@ -96,23 +329,49 @@ export const ClusterProcessDisplayModal = ({
         isOpen={isProcessModalOpen || isModalOpen}
         onRequestClose={onRequestClose}
         onSubmit={() => onRequestClose()}
-        title={` Cluster Details`}
+        title={` Cluster Updation Details`}
         primaryButtonText="Close"
-        contentStyles={{ minWidth: '60%', maxHeight: '60%' }}
+        contentStyles={{ minWidth: '60%' }}
         footerAlign="start"
       >
         <Container>
-          <div className="progress">
-            <div
-              className="progress-bar "
-              role="progressbar"
-              style={{ width: '25%', backgroundColor: '#55D955' }}
-              aria-valuenow={25}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            />
-          </div>
-          <StepProgress progressStageRef={progressStageRef} />
+          {isCompleted ? (
+            <div className="d-flex flex-column align-items-center justify-content-center">
+              <div>
+                <GreenRightCircleIcon width={220} height={220} />
+              </div>
+              <div className="mt-2">
+                <PercentageHeaderText>
+                  Process Completed Successfully
+                </PercentageHeaderText>
+              </div>
+            </div>
+          ) : (
+            <>
+              <StickyProgressBar>
+                <FlexRow>
+                  <StepHeaderText>Progress</StepHeaderText>
+                  <PercentageHeaderText>
+                    {progress}% Complete
+                  </PercentageHeaderText>
+                </FlexRow>
+                <div className="progress">
+                  <div
+                    className="progress-bar"
+                    role="progressbar"
+                    style={{
+                      width: `${progress || 0}%`,
+                      backgroundColor: '#06C270',
+                    }}
+                    aria-valuenow={progress || 0}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                  />
+                </div>
+              </StickyProgressBar>
+              <StepProgress progressStageRef={progressStageRef} />
+            </>
+          )}
         </Container>
       </ModalWithRightBtn>
     </>

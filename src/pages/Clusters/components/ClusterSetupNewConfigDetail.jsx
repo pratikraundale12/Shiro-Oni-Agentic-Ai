@@ -431,8 +431,8 @@ const ClusterSetupNewConfigDetailsPage = () => {
       .string()
       .required('Username Identifier is required'),
     ldap_login_user_filter: yup
-    .string()
-    .required('Username Identifier is required'),
+      .string()
+      .required('Username Identifier is required'),
     java_arg_2: yup
       .number()
       .transform((value, originalValue) =>
@@ -476,26 +476,31 @@ const ClusterSetupNewConfigDetailsPage = () => {
     resolver: yupResolver(schemaConnectionCheck),
   });
 
-const watchedFields = watchForm1(['url', 'loginDn', 'password2']);
+  const watchedFields = watchForm1(['url', 'loginDn', 'password2']);
 
-useEffect(() => {
-  const [url, loginDn, password2] = watchedFields;
+  useEffect(() => {
+    const [url, loginDn, password2] = watchedFields;
 
-  const ldapData = safeParseJSON(configToEdit?.login_identity_providers);
-  if (!ldapData) return;
+    const ldapData = safeParseJSON(configToEdit?.login_identity_providers);
+    if (!ldapData) return;
 
-  const { ldap_login_dn, ldap_login_password, ldap_url } = ldapData;
+    const { ldap_login_dn, ldap_login_password, ldap_url } = ldapData;
 
-  const isMatch =
-    ldap_login_dn === loginDn &&
-    ldap_login_password === password2 &&
-    ldap_url === url;
+    const isMatch =
+      ldap_login_dn === loginDn &&
+      ldap_login_password === password2 &&
+      ldap_url === url;
 
-  setLdapTested(isMatch);
-  if (!isMatch) {
-    setFormChanged(true);
-  }
-}, [watchedFields[0], watchedFields[1], watchedFields[2], configToEdit?.login_identity_providers]);
+    setLdapTested(isMatch);
+    if (!isMatch) {
+      setFormChanged(true);
+    }
+  }, [
+    watchedFields[0],
+    watchedFields[1],
+    watchedFields[2],
+    configToEdit?.login_identity_providers,
+  ]);
 
   const schema =
     methodForLoginIdentity === 'single-user-provider'
@@ -590,24 +595,32 @@ useEffect(() => {
   useEffect(() => {
     if (!isEmpty(originalValues)) {
       // Create copies for comparison that exclude loginProvider
-      const formValuesForComparison = { ...formValues }
-      const originalValuesForComparison = { ...originalValues }
-  
+      const formValuesForComparison = { ...formValues };
+      const originalValuesForComparison = { ...originalValues };
+
       // Don't consider loginProvider changes when determining if form has changed
-      delete formValuesForComparison.loginProvider
-      delete originalValuesForComparison.loginProvider
-  
-      const hasChanged = Object.keys(formValuesForComparison).some((key) => {
+      delete formValuesForComparison.loginProvider;
+      delete originalValuesForComparison.loginProvider;
+
+      const hasChanged = Object.keys(formValuesForComparison).some(key => {
         // Skip loginProvider comparison
-        if (key === "loginProvider") return false
-  
-        if (typeof formValuesForComparison[key] === "object" && formValuesForComparison[key] !== null) {
-          return JSON.stringify(formValuesForComparison[key]) !== JSON.stringify(originalValuesForComparison[key])
+        if (key === 'loginProvider') return false;
+
+        if (
+          typeof formValuesForComparison[key] === 'object' &&
+          formValuesForComparison[key] !== null
+        ) {
+          return (
+            JSON.stringify(formValuesForComparison[key]) !==
+            JSON.stringify(originalValuesForComparison[key])
+          );
         }
-  
-        return formValuesForComparison[key] !== originalValuesForComparison[key]
-      })
-  
+
+        return (
+          formValuesForComparison[key] !== originalValuesForComparison[key]
+        );
+      });
+
       // Compare tags separately
       const isSameTags = isEqual(
         sortBy(tags),
@@ -661,129 +674,147 @@ useEffect(() => {
     return match ? match[1] : '';
   };
 
-const populateFormWithConfigData = () => {
-  if (isEmpty(configToEdit)) return;
+  const populateFormWithConfigData = () => {
+    if (isEmpty(configToEdit)) return;
 
-  const {
-    config_name,
-    nifi_version,
-    comments,
-    nifi_properties,
-    bootstrap,
-    login_identity_providers,
-    state_management,
-  } = configToEdit;
+    const {
+      config_name,
+      nifi_version,
+      comments,
+      nifi_properties,
+      bootstrap,
+      login_identity_providers,
+      state_management,
+    } = configToEdit;
 
-  const nifiProps = safeParseJSON(nifi_properties) || {};
-  const bootstrapProps = safeParseJSON(bootstrap) || {};
-  const loginProviders = safeParseJSON(login_identity_providers) || {};
-  const stateManagement = safeParseJSON(state_management) || {};
+    const nifiProps = safeParseJSON(nifi_properties) || {};
+    const bootstrapProps = safeParseJSON(bootstrap) || {};
+    const loginProviders = safeParseJSON(login_identity_providers) || {};
+    const stateManagement = safeParseJSON(state_management) || {};
 
-  setValue('configName', config_name);
-  setValue('nifiVersion', nifi_version);
-  setValue('comments', comments);
+    setValue('configName', config_name);
+    setValue('nifiVersion', nifi_version);
+    setValue('comments', comments);
 
-  const {
-    nifi_user_login_provider,
-    nifi_cluster_is_node,
-    nifi_cluster_node_protocol_max_threads,
-    nifi_cluster_flow_election_max_wait_time,
-    nifi_zookeeper_connect_timeout,
-    nifi_web_https_port
-  } = nifiProps;
+    const {
+      nifi_user_login_provider,
+      nifi_cluster_is_node,
+      nifi_cluster_node_protocol_max_threads,
+      nifi_cluster_flow_election_max_wait_time,
+      nifi_zookeeper_connect_timeout,
+      nifi_web_https_port,
+    } = nifiProps;
 
-  const isLdapProvider = nifi_user_login_provider === 'ldap-provider';
+    const isLdapProvider = nifi_user_login_provider === 'ldap-provider';
 
-  setValue('loginProvider', nifi_user_login_provider ?? 'single-user-provider');
-  setValue('nifi_cluster_is_node', nifi_cluster_is_node);
-  setValue('nifi_cluster_node_protocol_max_threads', nifi_cluster_node_protocol_max_threads);
-  setValue('nifi_cluster_flow_election_max_wait_time', nifi_cluster_flow_election_max_wait_time);
-  setValue('nifi_zookeeper_connect_timeout', nifi_zookeeper_connect_timeout);
-  setValue('nifi_web_https_port', nifi_web_https_port);
+    setValue(
+      'loginProvider',
+      nifi_user_login_provider ?? 'single-user-provider'
+    );
+    setValue('nifi_cluster_is_node', nifi_cluster_is_node);
+    setValue(
+      'nifi_cluster_node_protocol_max_threads',
+      nifi_cluster_node_protocol_max_threads
+    );
+    setValue(
+      'nifi_cluster_flow_election_max_wait_time',
+      nifi_cluster_flow_election_max_wait_time
+    );
+    setValue('nifi_zookeeper_connect_timeout', nifi_zookeeper_connect_timeout);
+    setValue('nifi_web_https_port', nifi_web_https_port);
 
-  setValue('java_arg_2', getMemoryValue(bootstrapProps.java_arg_2));
-  setValue('java_arg_3', getMemoryValue(bootstrapProps.java_arg_3));
+    setValue('java_arg_2', getMemoryValue(bootstrapProps.java_arg_2));
+    setValue('java_arg_3', getMemoryValue(bootstrapProps.java_arg_3));
 
-  if (isLdapProvider) {
-    const groupObjectClass = loginProviders?.ldap_group_object_class?.split(',') ?? [];
+    if (isLdapProvider) {
+      const groupObjectClass =
+        loginProviders?.ldap_group_object_class?.split(',') ?? [];
 
-    const ldapFields = {
-      userDn: loginProviders.ldap_users_dn,
-      usernameIdentifier: loginProviders.ldap_user_username_identifier,
-      userUniqueIdentifier: loginProviders.ldap_user_unique_identifier,
-      groupDn: loginProviders.ldap_groups_dn,
-      groupObjectClass,
-      groupUniqueIdentifier: loginProviders.ldap_group_unique_identifier,
-      filter: loginProviders.ldap_group_filter,
-      InitialAdminIdentity: loginProviders.ldap_initial_admin_identity,
-      ldap_login_identity_strategy: loginProviders.ldap_login_identity_strategy,
-      scope: loginProviders.ldap_select_scope,
-      ldap_login_user_filter: loginProviders.ldap_login_user_filter,
-    };
-
-    Object.entries(ldapFields).forEach(([key, value]) => setValue(key, value));
-
-    setValueForm1('loginDn', loginProviders.ldap_login_dn);
-    setValueForm1('password2', loginProviders.ldap_login_password);
-    setValueForm1('url', loginProviders.ldap_url);
-
-    setTags(groupObjectClass);
-    setLdapConnectData({
-      loginDn: loginProviders.ldap_login_dn,
-      password2: loginProviders.ldap_login_password,
-      url: loginProviders.ldap_url,
-    });
-    setLdapTested(true);
-  } else {
-    setValue('username', loginProviders.username);
-    setValue('password', loginProviders.password);
-  }
-
-  const {
-    directory,
-    always_sync,
-    partitions,
-    checkpoint_interval,
-    root_node,
-    session_timeout,
-    access_control
-  } = stateManagement;
-
-  setValue('directory', directory);
-  setValue('always_sync', always_sync);
-  setValue('partitions', partitions);
-  setValue('checkpoint_interval', checkpoint_interval);
-  setValue('root_node', root_node);
-  setValue('session_timeout', session_timeout);
-
-  if (access_control) {
-    const accessControlOption = ACCESS_CONTROL_OPTIONS.find(
-      option => option.value === access_control
-    ) ?? { value: access_control, label: access_control };
-
-    setValue('access_control', accessControlOption);
-  }
-
-  const originalLoginData = isLdapProvider
-    ? {
-        ...loginProviders,
-        groupObjectClass: loginProviders.ldap_group_object_class?.split(',') ?? []
-      }
-    : {
-        username: loginProviders.username,
-        password: loginProviders.password,
+      const ldapFields = {
+        userDn: loginProviders.ldap_users_dn,
+        usernameIdentifier: loginProviders.ldap_user_username_identifier,
+        userUniqueIdentifier: loginProviders.ldap_user_unique_identifier,
+        groupDn: loginProviders.ldap_groups_dn,
+        groupObjectClass,
+        groupUniqueIdentifier: loginProviders.ldap_group_unique_identifier,
+        filter: loginProviders.ldap_group_filter,
+        InitialAdminIdentity: loginProviders.ldap_initial_admin_identity,
+        ldap_login_identity_strategy:
+          loginProviders.ldap_login_identity_strategy,
+        scope: loginProviders.ldap_select_scope,
+        ldap_login_user_filter: loginProviders.ldap_login_user_filter,
       };
 
-  setOriginalLoginValues(originalLoginData);
+      Object.entries(ldapFields).forEach(([key, value]) =>
+        setValue(key, value)
+      );
 
-  setTimeout(() => {
-    setOriginalValues({ ...watch() });
-    setFormChanged(false);
-  }, 0);
-};
+      setValueForm1('loginDn', loginProviders.ldap_login_dn);
+      setValueForm1('password2', loginProviders.ldap_login_password);
+      setValueForm1('url', loginProviders.ldap_url);
+
+      setTags(groupObjectClass);
+      setLdapConnectData({
+        loginDn: loginProviders.ldap_login_dn,
+        password2: loginProviders.ldap_login_password,
+        url: loginProviders.ldap_url,
+      });
+      setLdapTested(true);
+    } else {
+      setValue('username', loginProviders.username);
+      setValue('password', loginProviders.password);
+    }
+
+    const {
+      directory,
+      always_sync,
+      partitions,
+      checkpoint_interval,
+      root_node,
+      session_timeout,
+      access_control,
+    } = stateManagement;
+
+    setValue('directory', directory);
+    setValue('always_sync', always_sync);
+    setValue('partitions', partitions);
+    setValue('checkpoint_interval', checkpoint_interval);
+    setValue('root_node', root_node);
+    setValue('session_timeout', session_timeout);
+
+    if (access_control) {
+      const accessControlOption = ACCESS_CONTROL_OPTIONS.find(
+        option => option.value === access_control
+      ) ?? { value: access_control, label: access_control };
+
+      setValue('access_control', accessControlOption);
+    }
+
+    const originalLoginData = isLdapProvider
+      ? {
+          ...loginProviders,
+          groupObjectClass:
+            loginProviders.ldap_group_object_class?.split(',') ?? [],
+        }
+      : {
+          username: loginProviders.username,
+          password: loginProviders.password,
+        };
+
+    setOriginalLoginValues(originalLoginData);
+
+    setTimeout(() => {
+      setOriginalValues({ ...watch() });
+      setFormChanged(false);
+    }, 0);
+  };
 
   const handleAddConfig = async data => {
-    if (!isEmpty(configToEdit) && methodForLoginIdentity === 'ldap-provider' && !ldapTested) {
+    if (
+      !isEmpty(configToEdit) &&
+      methodForLoginIdentity === 'ldap-provider' &&
+      !ldapTested
+    ) {
       toast.error('Please test LDAP credentials before Proceeding');
       return;
     }
@@ -893,51 +924,81 @@ const populateFormWithConfigData = () => {
   useEffect(() => {
     if (methodForLogin) {
       // Store current form state before changing authentication method
-      const currentFormValues = { ...watch() }
-  
-      setMethodForLoginIdentity(methodForLogin)
-  
-      if (methodForLogin === "ldap-provider") {
+      const currentFormValues = { ...watch() };
+
+      setMethodForLoginIdentity(methodForLogin);
+
+      if (methodForLogin === 'ldap-provider') {
         // Reset username/password fields without triggering form changes
-        setValue("username", originalLoginValues.username || undefined, { shouldDirty: false })
-        setValue("password", originalLoginValues.password || undefined, { shouldDirty: false })
-      } else if (methodForLogin === "single-user-provider") {
+        setValue('username', originalLoginValues.username || undefined, {
+          shouldDirty: false,
+        });
+        setValue('password', originalLoginValues.password || undefined, {
+          shouldDirty: false,
+        });
+      } else if (methodForLogin === 'single-user-provider') {
         // Reset LDAP fields without triggering form changes
-        setValue("userDn", originalLoginValues.userDn || undefined, { shouldDirty: false })
-        setValue("usernameIdentifier", originalLoginValues.usernameIdentifier || undefined, { shouldDirty: false })
-        setValue("userUniqueIdentifier", originalLoginValues.userUniqueIdentifier || undefined, { shouldDirty: false })
-        setValue("groupDn", originalLoginValues.groupDn || undefined, { shouldDirty: false })
-        setValue("groupUniqueIdentifier", originalLoginValues.groupUniqueIdentifier || undefined, {
+        setValue('userDn', originalLoginValues.userDn || undefined, {
           shouldDirty: false,
-        })
-        setValue("filter", originalLoginValues.filter || undefined, { shouldDirty: false })
-        setValue("InitialAdminIdentity", originalLoginValues.InitialAdminIdentity || undefined, { shouldDirty: false })
-        setValue("ldap_login_user_filter", originalLoginValues.ldap_login_user_filter || undefined, {
+        });
+        setValue(
+          'usernameIdentifier',
+          originalLoginValues.usernameIdentifier || undefined,
+          { shouldDirty: false }
+        );
+        setValue(
+          'userUniqueIdentifier',
+          originalLoginValues.userUniqueIdentifier || undefined,
+          { shouldDirty: false }
+        );
+        setValue('groupDn', originalLoginValues.groupDn || undefined, {
           shouldDirty: false,
-        })
-  
+        });
+        setValue(
+          'groupUniqueIdentifier',
+          originalLoginValues.groupUniqueIdentifier || undefined,
+          {
+            shouldDirty: false,
+          }
+        );
+        setValue('filter', originalLoginValues.filter || undefined, {
+          shouldDirty: false,
+        });
+        setValue(
+          'InitialAdminIdentity',
+          originalLoginValues.InitialAdminIdentity || undefined,
+          { shouldDirty: false }
+        );
+        setValue(
+          'ldap_login_user_filter',
+          originalLoginValues.ldap_login_user_filter || undefined,
+          {
+            shouldDirty: false,
+          }
+        );
+
         // Reset tags to original state
-        setTags(originalLoginValues.groupObjectClass || [])
+        setTags(originalLoginValues.groupObjectClass || []);
       }
-  
+
       // After switching, update originalValues to reflect the new authentication method
       setTimeout(() => {
-        const newFormValues = { ...watch() }
-        setOriginalValues((prev) => ({
+        const newFormValues = { ...watch() };
+        setOriginalValues(prev => ({
           ...prev,
           ...newFormValues,
           loginProvider: methodForLogin,
-        }))
-      }, 0)
+        }));
+      }, 0);
     }
-  }, [methodForLogin, setValue, originalLoginValues])
+  }, [methodForLogin, setValue, originalLoginValues]);
 
   useEffect(() => {
     if (methodForLogin) {
       setMethodForLoginIdentity(methodForLogin);
     }
   }, [methodForLogin]);
-  
+
   useEffect(() => {
     if (formValues.username === '') {
       setValue('username', undefined);
@@ -1106,6 +1167,8 @@ const populateFormWithConfigData = () => {
                         labelMargin="0px"
                       />
                     </div>
+                  </div>
+                  <div className="row">
                     <div className="col-2">
                       <RadioSelectField
                         name="nifi_cluster_is_node"
@@ -1388,9 +1451,7 @@ const populateFormWithConfigData = () => {
                         className="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-6 form-ele"
                         style={{
                           pointerEvents: !ldapTested ? 'none' : 'auto',
-                          cursor: !ldapTested
-                            ? 'not-allowed'
-                            : 'pointer',
+                          cursor: !ldapTested ? 'not-allowed' : 'pointer',
                         }}
                       >
                         <TagLable
