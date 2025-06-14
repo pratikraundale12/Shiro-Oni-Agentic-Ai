@@ -295,7 +295,7 @@ export const ClusterProcessDisplayModal = ({
 
   function calculateCompletionPercentage(modelSteps, currentSteps) {
     const totalSteps = modelSteps?.length;
-    let filteredSteps = [];
+    let filteredSteps = currentSteps;
     if (processExeName === 'update-nodes') {
       filteredSteps = currentSteps?.filter((step, index) => {
         if (
