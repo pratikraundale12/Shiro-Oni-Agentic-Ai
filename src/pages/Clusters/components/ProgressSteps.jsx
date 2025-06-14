@@ -136,7 +136,7 @@ const StepProgress = () => {
     }
   };
   return (
-    <Container>
+    <Container className="mb-4">
       <>
         <HeaderContainer className="row d-flex">
           <HeaderText className="col-10">Steps</HeaderText>

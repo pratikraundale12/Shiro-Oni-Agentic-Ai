@@ -8,13 +8,15 @@ import {
   GridActions,
   LoadingSelectors,
 } from '../../../store';
-import { ModalWithRightBtn } from '../../../shared';
-import { FullPageLoader } from '../../../components';
+import { Button, ModalWithRightBtn } from '../../../shared';
+import { FullPageLoader, Loader } from '../../../components';
 import StepProgress from './ProgressSteps';
 import { GreenRightCircleIcon } from '../../../assets';
+import { toast } from 'react-toastify';
 
 const Container = styled.div`
   max-height: 50vh;
+  min-height: 30vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -187,6 +189,41 @@ const nodesUpdateModalSteps = [
     status: 'completed',
   },
 ];
+
+const RegistryModalSteps = [
+  {
+    step: 'Connectivity check',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate preparation',
+    status: 'completed',
+  },
+  {
+    step: 'Host preparation',
+    status: 'completed',
+  },
+  {
+    step: 'CSR generation',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate signing',
+    status: 'completed',
+  },
+  {
+    step: 'Certificate deployment',
+    status: 'completed',
+  },
+  {
+    step: 'NiFi Configuration',
+    status: 'completed',
+  },
+  {
+    step: 'Custom metrics agent',
+    status: 'completed',
+  },
+];
 export const ClusterProcessDisplayModal = ({
   isProcessModalOpen,
   setIsProcessModalOpen,
@@ -196,6 +233,7 @@ export const ClusterProcessDisplayModal = ({
 }) => {
   const dispatch = useDispatch();
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isInitialisaitionPhase, setIsInitialisaitionPhase] = useState(false);
   const isModalOpen = useSelector(
     ClustersSelectors.getProgressTrackingModalOpen
   );
@@ -231,6 +269,8 @@ export const ClusterProcessDisplayModal = ({
       return UpgradeModalSteps;
     } else if (processExeName === 'update-nodes') {
       return nodesUpdateModalSteps;
+    } else if (processExeName === 'add-registry') {
+      return RegistryModalSteps;
     }
   };
   const getModalHeading = processExeName => {
@@ -248,6 +288,8 @@ export const ClusterProcessDisplayModal = ({
       return 'Cluster Upgrade Progress';
     } else if (processExeName === 'update-nodes') {
       return 'Cluster Update Nodes Progress';
+    } else if (processExeName === 'add-registry') {
+      return 'Cluster Registry Association';
     }
   };
 
@@ -266,18 +308,22 @@ export const ClusterProcessDisplayModal = ({
   );
 
   const onRequestClose = () => {
-    setIsProcessModalOpen(false);
-    dispatch(ClustersActions.setProgressTrackingModalOpen(false));
-    setSelectedCluster({});
-    dispatch(
-      GridActions.fetchGrid({
-        module: 'clusters',
-        params: { page: 1, limit: 10 },
-        ...(sortingState && {
-          sort: sortingState,
-        }),
-      })
-    );
+    if (!isInitialisaitionPhase && isCompleted) {
+      setIsProcessModalOpen(false);
+      dispatch(ClustersActions.setProgressTrackingModalOpen(false));
+      setSelectedCluster({});
+      dispatch(
+        GridActions.fetchGrid({
+          module: 'clusters',
+          params: { page: 1, limit: 10 },
+          ...(sortingState && {
+            sort: sortingState,
+          }),
+        })
+      );
+    } else {
+      toast.info('Cluster is under process can not close');
+    }
   };
 
   useEffect(() => {
@@ -323,6 +369,10 @@ export const ClusterProcessDisplayModal = ({
     let timeoutId;
 
     if (progress === 100) {
+      setIsInitialisaitionPhase(true);
+      setTimeout(() => {
+        setIsInitialisaitionPhase(false);
+      }, [120000]);
       timeoutId = setTimeout(() => {
         setIsCompleted(true);
       }, 1000);
@@ -332,37 +382,75 @@ export const ClusterProcessDisplayModal = ({
         clearTimeout(timeoutId);
       }
     }
-
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
     };
   }, [progress]);
+  const closeModalDirect = () => {
+    setIsProcessModalOpen(false);
+    dispatch(ClustersActions.setProgressTrackingModalOpen(false));
+    setSelectedCluster({});
+    dispatch(
+      GridActions.fetchGrid({
+        module: 'clusters',
+        params: { page: 1, limit: 10 },
+        ...(sortingState && {
+          sort: sortingState,
+        }),
+      })
+    );
+  };
   return (
     <>
       <FullPageLoader loading={loading} />
       <ModalWithRightBtn
         isOpen={isProcessModalOpen || isModalOpen}
-        onRequestClose={onRequestClose}
+        onRequestClose={closeModalDirect}
         onSubmit={() => onRequestClose()}
         title={getModalHeading(processExeName)}
-        primaryButtonText="Close"
+        primaryButtonText={
+          !isInitialisaitionPhase && isCompleted ? 'Close' : null
+        }
         contentStyles={{ minWidth: '60%' }}
         footerAlign="start"
+        displayCrossIcon={processExeName === 'delete'}
       >
         <Container>
           {isCompleted ? (
-            <div className="d-flex flex-column align-items-center justify-content-center">
-              <div>
-                <GreenRightCircleIcon width={220} height={220} />
-              </div>
-              <div className="mt-2">
-                <PercentageHeaderText>
-                  Process Completed Successfully
-                </PercentageHeaderText>
-              </div>
-            </div>
+            <>
+              {/*&&  */}
+
+              {
+                <>
+                  {' '}
+                  {isInitialisaitionPhase && processExeName !== 'delete' ? (
+                    <div className="d-flex flex-column align-items-center justify-content-center mt-4">
+                      <div className="mt-3">
+                        <Loader size="lg" color="#06c270" />
+                      </div>
+                      <div className="mt-2">
+                        <PercentageHeaderText>
+                          Cluster Is Initialising...
+                        </PercentageHeaderText>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="d-flex flex-column align-items-center justify-content-center mt-4">
+                      <div>
+                        <GreenRightCircleIcon width={220} height={220} />
+                      </div>
+                      <div className="mt-2">
+                        <PercentageHeaderText>
+                          Process Completed Successfully
+                        </PercentageHeaderText>
+                      </div>
+                    </div>
+                  )}
+                </>
+              }
+            </>
           ) : (
             <>
               {progress !== 0 && (

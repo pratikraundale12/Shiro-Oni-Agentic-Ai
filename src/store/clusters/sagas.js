@@ -351,6 +351,39 @@ export function* associateClusterWithRegistry(api, { payload }) {
         params: {},
       })
     );
+
+    //
+    const clusterItem = localStorage.getItem('selected_cluster');
+    const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+
+    const tokenToRemove =
+      !isEmpty(clustersToken) &&
+      clustersToken?.filter(token => token.id === payload?.clusterId);
+    const payloadLogout = {
+      id: payload?.clusterId,
+      token: tokenToRemove?.[0]?.token,
+    };
+
+    yield put(ClustersActions.clusterLogout(payloadLogout));
+    if (clusterItem) {
+      const cluster = JSON.parse(clusterItem);
+      if (cluster.value === payload?.clusterId) {
+        localStorage.removeItem('selected_cluster');
+        yield put(
+          NamespacesActions.setSelectedCluster({
+            label: '',
+            value: '',
+          })
+        );
+      }
+    }
+
+    const updatedClustersToken = clustersToken.filter(
+      token => token.id !== payload?.clusterId
+    );
+    localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(updatedClustersToken));
+
+    //
   } else {
     toast.error(response?.data?.message);
   }

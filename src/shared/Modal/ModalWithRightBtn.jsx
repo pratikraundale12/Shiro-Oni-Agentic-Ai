@@ -98,6 +98,7 @@ export const ModalWithRightBtn = ({
   noPadding = false,
   noScroll = false,
   primaryButtonProps = {},
+  displayCrossIcon = true,
 }) => {
   const styleObject = {
     overlay: {
@@ -162,7 +163,7 @@ export const ModalWithRightBtn = ({
                 onClick={onAdditionalIconClick}
               />
             )}
-            {closeIcon && (
+            {closeIcon && displayCrossIcon && (
               <CloseButton
                 type="button"
                 icon={<CloseIcon />}
@@ -252,4 +253,5 @@ ModalWithRightBtn.propTypes = {
   }),
   noPadding: PropTypes.bool,
   noScroll: PropTypes.bool,
+  displayCrossIcon: PropTypes.bool,
 };
