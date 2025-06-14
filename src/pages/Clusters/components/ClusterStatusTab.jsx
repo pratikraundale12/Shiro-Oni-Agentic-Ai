@@ -80,8 +80,8 @@ const DataWrapper = styled.div`
 `;
 
 const ScrollSetGrey = styled.div`
-  height: calc(100vh - 324px);
-  max-height: calc(100vh - 324px);
+  height: calc(100vh - 285px);
+  max-height: calc(100vh - 285px);
   overflow-x: hidden;
   overflow-y: auto;
 `;
@@ -116,7 +116,7 @@ const ChartColumnWrapper = styled.div`
   width: 50%;
 
   @media screen and (min-width: 1200px) {
-    width: 25%;
+    // width: 25%;
   }
 
   padding-right: 1rem;
