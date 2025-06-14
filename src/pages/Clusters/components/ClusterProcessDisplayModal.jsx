@@ -253,11 +253,26 @@ export const ClusterProcessDisplayModal = ({
 
   function calculateCompletionPercentage(modelSteps, currentSteps) {
     const totalSteps = modelSteps?.length;
-    const completedSteps = currentSteps?.filter(
+    let filteredSteps = [];
+    if (processExeName === 'update-nodes') {
+      filteredSteps = currentSteps?.filter((step, index) => {
+        if (
+          step.step === 'NiFi cluster deployment' &&
+          step.status === 'completed'
+        ) {
+          return index === modelSteps.length - 1;
+        }
+        return true;
+      });
+    }
+    const completedSteps = filteredSteps.filter(
       step => step?.status === 'completed'
     ).length;
 
     const percentage = Math.round((completedSteps / totalSteps) * 100);
+    if (processData?.data?.status === 'completed') {
+      return 100;
+    }
     return percentage;
   }
   const progress = calculateCompletionPercentage(

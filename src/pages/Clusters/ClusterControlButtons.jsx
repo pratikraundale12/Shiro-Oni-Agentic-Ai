@@ -226,7 +226,13 @@ const ClusterControlButtons = () => {
                     <Loader size="lg" />
                   </div>
                   <TextsvgDiv className="col-10">
-                    Cluster Status is updating...
+                    {startInitiated
+                      ? 'Cluster is starting...'
+                      : stopInitiated
+                        ? 'Cluster is stopping...'
+                        : restartInitiated
+                          ? 'Cluster is restarting...'
+                          : 'Cluster is updating...'}
                   </TextsvgDiv>
                 </div>
               )}
