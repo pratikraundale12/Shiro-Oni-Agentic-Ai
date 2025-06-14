@@ -1,11 +1,13 @@
 /*eslint-disable*/
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import styled from 'styled-components';
 import {
   OpenLinkIcon,
+  ScheduleStartIcon,
+  ScheduleStopIcon,
   SmallNotThunderIcon,
   // SmallThunderIcon,
   SquareBoxIcon,
@@ -18,13 +20,14 @@ import StartIconImage from '../../assets/images/start.png';
 import StopIconImage from '../../assets/images/stop.png';
 import { FullPageLoader } from '../../components';
 import { KDFM } from '../../constants';
+import { history } from '../../helpers/history';
 import { ModalWithIcon } from '../../shared';
 import {
   LoadingSelectors,
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
-import { history } from '../../helpers/history';
+import { SchedularActions } from '../../store/schedular';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -203,6 +206,39 @@ const FlowControl = () => {
       NamespacesActions.fetchInvalidProcessorDetails({ namespaceId: id })
     );
   };
+
+  const handleScheduleFlow = type => {
+    dispatch(SchedularActions.setScheduleFromList(true));
+    dispatch(NamespacesActions.setScheduleStartFlow(true));
+    dispatch(NamespacesActions.setScheduleFlowType(type));
+    dispatch(NamespacesActions.setFlowPath(singleNamespaceData1?.flowId));
+    dispatch(
+      NamespacesActions.setSelectedNamespace({
+        label: singleNamespaceData1?.name,
+        value: singleNamespaceData1?.id,
+        ...singleNamespaceData1,
+      })
+    );
+    dispatch(NamespacesActions.setSelectedNameSpaceForDetail({}));
+    dispatch(
+      NamespacesActions.setVersionSelect({
+        version: singleNamespaceData1?.version,
+      })
+    );
+    dispatch(NamespacesActions.setDeployByRegistryFlow(false));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: singleNamespaceData1?.bucketId,
+        flowId: singleNamespaceData1?.flowId,
+      })
+    );
+    history.push('/process-group/flow-details', {
+      state: {
+        id: singleNamespaceData1?.id,
+      },
+    });
+  };
+
   return (
     <DataWrapper>
       <FullPageLoader loading={loading} />
@@ -357,6 +393,44 @@ const FlowControl = () => {
                         positionStrategy="fixed"
                       />
                     )}
+                </TextsvgDiv>
+
+                <TextsvgDiv className="d-flex">
+                  <ActiveButtonDiv className="div-btn-1 mr-2">
+                    <ActiveButtonDiv
+                      data-tooltip-id="runningProcessor"
+                      onClick={() => handleScheduleFlow('RUNNING')}
+                    >
+                      <ScheduleStartIcon />
+                    </ActiveButtonDiv>
+                  </ActiveButtonDiv>
+                  <div className="mr-2">Schedule Start Flow</div>
+                      <ReactTooltip
+                        id="runningProcessor"
+                        content="Schedule Running Components"
+                        place="right"
+                        positionStrategy="fixed"
+                      />
+                </TextsvgDiv>
+
+                <TextsvgDiv className="d-flex">
+                  <ActiveButtonDiv className="div-btn-2 mr-2">
+                    <ActiveButtonDiv
+                      data-tooltip-id="stoppedProcessor"
+                      onClick={() => handleScheduleFlow('STOPPED')}
+                    >
+                      <ScheduleStopIcon  />
+                    </ActiveButtonDiv>
+                  </ActiveButtonDiv>
+                  <div>Schedule Stop Flow</div>
+                  
+                      <ReactTooltip
+                        id="stoppedProcessor"
+                        content="Schedule Stopped Components"
+                        place="right"
+                        positionStrategy="fixed"
+                      />
+                   
                 </TextsvgDiv>
               </>
             ) : (

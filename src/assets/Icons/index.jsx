@@ -154,3 +154,5 @@ export * from './canvasYIcon';
 export * from './RevertLocalChangesIcon';
 export * from './CircleArrowIcon';
 export * from './StarInfoIcon';
+export * from './ScheduleStartIcon';
+export * from './ScheduleStopIcon';

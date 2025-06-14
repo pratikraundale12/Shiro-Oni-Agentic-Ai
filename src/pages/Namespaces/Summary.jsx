@@ -36,13 +36,13 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
+import { DiffModalScheduleList } from '../ScheduleDeployment/DiffModalSchedule';
 import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymentModal';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
 import { DuplicateScheduleModal } from './DuplicateScheduleModal';
 import NamespaceDeploy from './NamespaceDeploy';
 import Upgrade from './Upgrade';
-import { DiffModalScheduleList } from '../ScheduleDeployment/DiffModalSchedule';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -313,9 +313,9 @@ export const scheduleSchema = yup.object().shape({
 
 const Summary = () => {
   const dispatch = useDispatch();
-    const shouldRevertChanges = useSelector(
-      NamespacesSelectors.getShouldRevertChanges
-    );
+  const shouldRevertChanges = useSelector(
+    NamespacesSelectors.getShouldRevertChanges
+  );
   const selectedDestCluster =
     useSelector(NamespacesSelectors.getSelectedDestCluster) || [];
   const selectedCluster = useSelector(
@@ -658,7 +658,7 @@ const Summary = () => {
     currentParametersData,
     updatedParametersData
   );
-   
+
   const originalPc = getOriginalPcPayload(
     currentParametersData,
     updatedParametersData
@@ -711,6 +711,12 @@ const Summary = () => {
   const checkFlowControlAfterDeploy = useSelector(
     NamespacesSelectors.getflowControlAfterDeploy
   );
+    const scheduleStartFlow = useSelector(
+      NamespacesSelectors.getScheduleStartFlow
+    );
+
+  const scheduleFlowType = useSelector(NamespacesSelectors.getScheduleFlowType);
+
   const [isVariablesModalOpen, setVariablesModalOpen] = useState({
     isOpen: false,
     mode: 'add',
@@ -1073,8 +1079,8 @@ const Summary = () => {
       namespaceId: checkDestCluster?.id,
       registryId: registryData?.id,
       bucketId: selectedNameSpace?.bucketId,
-      namespaceStatus: flowControlSelectedScheduleStored,
-      revert_local_changes:shouldRevertChanges,
+      namespaceStatus: flowControlSelectedScheduleStored || scheduleFlowType,
+      revert_local_changes: shouldRevertChanges,
       payload: {
         namespaceId: checkDestCluster?.value,
         oldVariablesData: orignalVariables,
@@ -1095,7 +1101,7 @@ const Summary = () => {
       ...(userStoryValue && { user_story_url: userStoryValue }),
       ...(changeRequestValue && { change_request: changeRequestValue }),
     };
-    
+
     if (!isEmpty(variblesReduxData)) {
       payload.payload.variablesData = variblesReduxData;
     }
@@ -1208,6 +1214,14 @@ const Summary = () => {
   const provideRegistryFlowBtnText = () => {
     return isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE;
   };
+  const provideFlowConfigDetails = () => {
+    if(scheduleFlowType === 'RUNNING') {
+      return 'Scheduled Start Flow';
+    }
+    if(scheduleFlowType === 'STOPPED') {
+      return 'Scheduled Stop Flow';
+    }
+  }
   const getSelectedFlowName = () => {
     if (deployByRegistryFlow) return formDataRegistry?.selectedFlowName;
     return checkDestCluster?.name || formDataRegistry?.selectedFlowName;
@@ -1660,9 +1674,9 @@ const Summary = () => {
                 size="md"
                 onClick={() => handleScheduleUpgrade()}
               >
-                {provideScheduleUpgradeBtnText()}
+               {scheduleStartFlow ? provideFlowConfigDetails() : provideScheduleUpgradeBtnText()}
               </Button>
-            )}
+             )}
           </BottomButtonDiv>
           {isUpgrading && (
             <div className="w-100 mt-3">

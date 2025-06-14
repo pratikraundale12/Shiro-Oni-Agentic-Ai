@@ -147,6 +147,10 @@ const ScheduleDeploymentTab = ({
   setScheduleErrors,
 }) => {
   const dispatch = useDispatch();
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+
   const timeDeployScheduleDeployment = useSelector(
     NamespacesSelectors.getScheduleTimeByRegistry
   );
@@ -274,36 +278,42 @@ const ScheduleDeploymentTab = ({
                 selectedNameSpace?.stoppedCount === 0
               ) ? (
                 <>
-                  <TextsvgDiv className="d-flex">
-                    <ActiveButtonDiv className="div-btn-1 mr-2">
-                      <ActiveButtonDiv
-                        className="div-btn-1 "
-                        isActive={activeButton === 'RUNNING'}
-                        activeColor="#58e715"
-                        hoverColor="#58e715"
-                        activeTextColor="#fff"
-                        onClick={() => handleUpdateStatus('RUNNING')}
-                      >
-                        <TriangleIcons color="#B5BDC8" />
-                      </ActiveButtonDiv>
-                    </ActiveButtonDiv>
-                    <div className="mr-2">{KDFM.RUNNING_FLOW}</div>
-                  </TextsvgDiv>
-                  <TextsvgDiv className="d-flex">
-                    <ActiveButtonDiv className="div-btn-2 mr-2">
-                      <ActiveButtonDiv
-                        className="div-btn-1"
-                        isActive={activeButton === 'STOPPED'}
-                        activeColor="#c52b2b"
-                        hoverColor="#c52b2b"
-                        activeTextColor="#fff"
-                        onClick={() => handleUpdateStatus('STOPPED')}
-                      >
-                        <SquareBoxIcon color="#B5BDC8" />
-                      </ActiveButtonDiv>
-                    </ActiveButtonDiv>
-                    <div>{KDFM.STOPPED_FLOW}</div>
-                  </TextsvgDiv>
+                  <>
+                    {scheduleStartFlow === false && (
+                      <>
+                        {/* RUNNING Button */}
+                        <TextsvgDiv className="d-flex align-items-center mb-2">
+                          <ActiveButtonDiv
+                            className="div-btn-1 mr-2"
+                            isActive={activeButton === 'RUNNING'}
+                            activeColor="#58e715"
+                            hoverColor="#58e715"
+                            activeTextColor="#fff"
+                            onClick={() => handleUpdateStatus('RUNNING')}
+                          >
+                            <TriangleIcons color="#B5BDC8" />
+                          </ActiveButtonDiv>
+                          <div>{KDFM.RUNNING_FLOW}</div>
+                        </TextsvgDiv>
+
+                        {/* STOPPED Button */}
+                        <TextsvgDiv className="d-flex align-items-center">
+                          <ActiveButtonDiv
+                            className="div-btn-2 mr-2"
+                            isActive={activeButton === 'STOPPED'}
+                            activeColor="#c52b2b"
+                            hoverColor="#c52b2b"
+                            activeTextColor="#fff"
+                            onClick={() => handleUpdateStatus('STOPPED')}
+                          >
+                            <SquareBoxIcon color="#B5BDC8" />
+                          </ActiveButtonDiv>
+                          <div>{KDFM.STOPPED_FLOW}</div>
+                        </TextsvgDiv>
+                      </>
+                    )}
+                  </>
+
                   {activeButton && (
                     <TextsvgDiv className="d-flex">
                       <ActiveButtonDiv className="div-btn-2 mr-2">
