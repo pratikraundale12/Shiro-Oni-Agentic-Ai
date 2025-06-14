@@ -233,6 +233,23 @@ export const ClusterProcessDisplayModal = ({
       return nodesUpdateModalSteps;
     }
   };
+  const getModalHeading = processExeName => {
+    if (processExeName === 'delete') {
+      return 'Cluster Deletion Progress';
+    } else if (processExeName === 'creation') {
+      return 'Cluster Creation Progress';
+    } else if (processExeName === 'restart') {
+      return 'Cluster Restart Progress';
+    } else if (processExeName === 'stop') {
+      return 'Cluster Stop Progress';
+    } else if (processExeName === 'start') {
+      return 'Cluster Start Progress';
+    } else if (processExeName === 'upgrade') {
+      return 'Cluster Upgrade Progress';
+    } else if (processExeName === 'update-nodes') {
+      return 'Cluster Update Nodes Progress';
+    }
+  };
 
   function calculateCompletionPercentage(modelSteps, currentSteps) {
     const totalSteps = modelSteps?.length;
@@ -329,7 +346,7 @@ export const ClusterProcessDisplayModal = ({
         isOpen={isProcessModalOpen || isModalOpen}
         onRequestClose={onRequestClose}
         onSubmit={() => onRequestClose()}
-        title={` Cluster Updation Details`}
+        title={getModalHeading(processExeName)}
         primaryButtonText="Close"
         contentStyles={{ minWidth: '60%' }}
         footerAlign="start"
@@ -348,27 +365,29 @@ export const ClusterProcessDisplayModal = ({
             </div>
           ) : (
             <>
-              <StickyProgressBar>
-                <FlexRow>
-                  <StepHeaderText>Progress</StepHeaderText>
-                  <PercentageHeaderText>
-                    {progress}% Complete
-                  </PercentageHeaderText>
-                </FlexRow>
-                <div className="progress">
-                  <div
-                    className="progress-bar"
-                    role="progressbar"
-                    style={{
-                      width: `${progress || 0}%`,
-                      backgroundColor: '#06C270',
-                    }}
-                    aria-valuenow={progress || 0}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                  />
-                </div>
-              </StickyProgressBar>
+              {progress !== 0 && (
+                <StickyProgressBar>
+                  <FlexRow>
+                    <StepHeaderText>Progress</StepHeaderText>
+                    <PercentageHeaderText>
+                      {progress}% Complete
+                    </PercentageHeaderText>
+                  </FlexRow>
+                  <div className="progress">
+                    <div
+                      className="progress-bar"
+                      role="progressbar"
+                      style={{
+                        width: `${progress || 0}%`,
+                        backgroundColor: '#06C270',
+                      }}
+                      aria-valuenow={progress || 0}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                    />
+                  </div>
+                </StickyProgressBar>
+              )}
               <StepProgress progressStageRef={progressStageRef} />
             </>
           )}
