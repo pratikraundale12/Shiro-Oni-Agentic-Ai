@@ -20,6 +20,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 20px;
+  height: 100%;
+  overflow: auto;
 `;
 const HeaderText = styled.div`
   font-family: Red Hat Display;
@@ -134,7 +136,7 @@ const StepProgress = () => {
     }
   };
   return (
-    <Container>
+    <Container className="mb-4">
       <>
         <HeaderContainer className="row d-flex">
           <HeaderText className="col-10">Steps</HeaderText>
@@ -171,7 +173,8 @@ const StepProgress = () => {
                       <InprogressLabelIcon width={110} height={40} />
                     )}
                   </StepHeaderText>
-                  {openTabIndex === index && (
+                  {(openTabIndex === index ||
+                    processData?.data?.steps?.length == index + 1) && (
                     <StepContentContainer>
                       {ele?.log?.map(item => (
                         <StepContentItem key={item}>{item}</StepContentItem>

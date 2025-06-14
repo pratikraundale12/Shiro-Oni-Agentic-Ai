@@ -58,7 +58,7 @@ const Header = styled.div`
   align-items: center;
   padding: 10px 16px;
   background: rgba(255, 255, 255, 1);
-  height: 72px;
+  height: ${props => props.headerHeight};
   top: 273px;
   left: 290px;
   gap: 0px;
@@ -120,10 +120,11 @@ const Collapsible = ({
   isAddBtnVisible = true,
   isAddBtnDisable = false,
   isOpenBackgroundWhite = false,
+  headerHeight = '72px',
 }) => {
   return (
     <CollapsibleWrapper>
-      <Header>
+      <Header headerHeight={headerHeight}>
         <Title>{title}</Title>
         <div className="d-flex gap-3 w-70">
           {isAddBtnVisible && (
@@ -172,6 +173,7 @@ Collapsible.propTypes = {
   isAddBtnVisible: PropTypes.bool,
   isAddBtnDisable: PropTypes.bool,
   isOpenBackgroundWhite: PropTypes.bool,
+  headerHeight: PropTypes.string,
 };
 
 export default Collapsible;

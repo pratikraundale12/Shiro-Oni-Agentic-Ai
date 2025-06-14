@@ -15,7 +15,11 @@ import {
   RadioSelectField,
 } from '../../../shared';
 import { KDFM } from '../../../constants';
-import { CurvedLockIcon, CurvedProfileIcon, DocumentTextIcon } from '../../../assets';
+import {
+  CurvedLockIcon,
+  CurvedProfileIcon,
+  DocumentTextIcon,
+} from '../../../assets';
 import { isEmpty, set } from 'lodash';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -36,18 +40,18 @@ const UploadWrapper = styled.div`
   align-items: center;
   justify-content: center;
   gap: 6px;
-  color: #FF7A00;
+  color: #ff7a00;
   margin-bottom: 12px;
   padding: 5px 12px;
   background-color: white;
-  font-weight:bold;
-  border: 1px solid #FF7A00;
+  font-weight: bold;
+  border: 1px solid #ff7a00;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s ease-in-out;
 
   &:hover {
-    background-color:rgb(253, 250, 245);
+    background-color: rgb(253, 250, 245);
   }
 `;
 
@@ -169,7 +173,7 @@ export const AddHostIPModal = ({ hostToEdit, setHostToEdit }) => {
         primaryButtonText="Add Host"
         secondaryButtonText="Back"
         primaryButtonDisabled={isPrimaryBtnDisable}
-        contentStyles={{ minWidth: '40%', height: '55%' }}
+        contentStyles={{ minWidth: '40%', maxHeight: '65%' }}
         footerAlign="start"
         tertiaryButton={true}
         tertiaryButtonConfig={{
