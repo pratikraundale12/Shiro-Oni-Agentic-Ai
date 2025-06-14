@@ -2,10 +2,15 @@ import { isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { SanityCheckIcon } from '../../assets';
+import {
+  InvalidProcessorIcon,
+  SanityCheckIcon,
+  StarInfoIcon,
+} from '../../assets';
 import { Button } from '../../shared';
 import { SchedularActions, SchedularSelectors } from '../../store/schedular';
 import SanityCheckCollapsableItem from '../Namespaces/SanityCheckCollapsableItem';
+import { NamespacesActions, NamespacesSelectors } from '../../store';
 
 const DataWrapper = styled.div`
   width: 100%;
@@ -24,7 +29,45 @@ const ScrollSetGrey = styled.div`
 `;
 const BottomButtonWrapper = styled.div`
   padding: 1rem;
-  border-top: 1px solid #dde4f0;
+`;
+
+const NotificationContainer = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: rgb(245, 247, 250);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #dde4f0;
+  width: fit-content;
+  font-family: Red Hat Display;
+  font-size: 16px;
+  font-weight: 400;
+`;
+const ActionContainer = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: #fff7ed;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ea580c;
+  width: fit-content;
+  font-family: Red Hat Display;
+  font-size: 16px;
+  font-weight: 400;
+`;
+
+const WarningIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+`;
+
+const MessageText = styled.span`
+  color: #374151;
+  font-size: 14px;
+  white-space: nowrap;
+  margin-right: 16px;
 `;
 
 const DiffSanityCheck = () => {
@@ -32,12 +75,35 @@ const DiffSanityCheck = () => {
   const sanityCheckData = useSelector(
     SchedularSelectors.getSanityAndDeployStatus
   );
+  const selectedSchedule = useSelector(SchedularSelectors.getSelectedSchedule);
+  const responseData = useSelector(
+    NamespacesSelectors.getSanityReportAuditData
+  );
+  const formatDate = isoString => {
+    const date = new Date(isoString);
+    return date.toLocaleString('en-US', {
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
+  };
 
   // Reset modal state when component mounts
   useEffect(() => {
     dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(
+      NamespacesActions.fetchSanityReportAuditLog(
+        sanityCheckData?.id || selectedSchedule?.last_sanity_check_id
+      )
+    );
+  }, [dispatch]);
   const handleSanityCheck = () => {
     dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(true));
     dispatch(SchedularActions.setIsDiffModalOpen(false));
@@ -47,7 +113,27 @@ const DiffSanityCheck = () => {
     <>
       <DataWrapper>
         <ScrollSetGrey className="scroll-set-grey pe-1">
-          <BottomButtonWrapper>
+          <div className="d-flex gap-2">
+            <NotificationContainer>
+              <WarningIcon>
+                <StarInfoIcon />
+              </WarningIcon>
+              <MessageText>Last Sanity Check Report</MessageText>
+            </NotificationContainer>
+            <ActionContainer>
+              <MessageText>
+                {formatDate(responseData?.data?.updated_at)}{' '}
+                <span>
+                  {responseData?.data?.hasError === true
+                    ? 'Last sanity check detected some issues'
+                    : responseData?.data?.hasError === false
+                      ? 'Last sanity check had no issue'
+                      : ''}
+                </span>
+              </MessageText>
+            </ActionContainer>
+          </div>
+          <BottomButtonWrapper className="d-flex">
             <div className="col-2 ">
               {' '}
               <Button
@@ -65,6 +151,12 @@ const DiffSanityCheck = () => {
                 </div>
               </Button>
             </div>
+            {!isEmpty(sanityCheckData?.data) && (
+              <div className="ml-4">
+                <InvalidProcessorIcon />
+                <span>Sanity check detected some issues</span>
+              </div>
+            )}
           </BottomButtonWrapper>
           {sanityCheckData?.data &&
             !isEmpty(sanityCheckData?.data) &&

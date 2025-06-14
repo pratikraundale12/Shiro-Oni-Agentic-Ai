@@ -492,7 +492,7 @@ const FlowControl = () => {
             primaryButtonText={'Continue'}
             icon={<GreenRightCircleIcon />}
             isOpen={sanityCheckCleanModalDisplay}
-            primaryText={
+            secondaryText={
               'Sanity check passed with no issues. Start the flow from the Flow Control tab in the Process Group Details page.'
             }
             onSubmit={() =>
