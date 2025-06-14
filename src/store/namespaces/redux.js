@@ -250,6 +250,8 @@ export const NamespacesActions = {
   ),
   fetchNamespaceDetails: createAction('FETCH_NAMESPACE_DETAILS'),
   fetchNamespaceDetailsSuccess: createAction('FETCH_NAMESPACE_DETAILS_SUCCESS'),
+  setScheduleStartFlow: createAction(`${prefix}setScheduleStartFlow`),
+  setScheduleFlowType: createAction(`${prefix}setScheduleFlowType`),
 };
 
 /* ------------- INITIAL STATE ------------- */
@@ -371,6 +373,8 @@ export const NAMESPACES_INITIAL_STATE = {
   sanityReportAuditData: {},
   displaySanityCheckCleanModal: false,
   deleteNamespaceDetails: {},
+  scheduleStartFlow: false,
+  scheduleFlowType: null,
 };
 
 /* ------------- SELECTORS ------------------ */
@@ -500,6 +504,8 @@ export const NamespacesSelectors = {
   getDisplaySanityCheckCleanModal: state =>
     state.namespaces.displaySanityCheckCleanModal,
   getDeleteNamespaceDetails: state => state.namespaces.deleteNamespaceDetails,
+  getScheduleStartFlow: state => state.namespaces.scheduleStartFlow,
+  getScheduleFlowType: state => state.namespaces.scheduleFlowType,
 };
 
 /* ------------- REDUCERS ------------------- */
@@ -1183,6 +1189,17 @@ const fetchNamespaceDetailsSuccess = (state, { payload }) => {
   };
 };
 
+const setScheduleStartFlow = (state, { payload }) => {
+  return {
+    ...state,
+    scheduleStartFlow: payload,
+  };
+};
+
+const setScheduleFlowType = (state, { payload }) => {
+  state.scheduleFlowType = payload;
+};
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const namespacesReducer = createReducer(
   NAMESPACES_INITIAL_STATE,
@@ -1467,6 +1484,8 @@ export const namespacesReducer = createReducer(
       .addCase(
         NamespacesActions.fetchNamespaceDetailsSuccess,
         fetchNamespaceDetailsSuccess
-      );
+      )
+      .addCase(NamespacesActions.setScheduleStartFlow, setScheduleStartFlow)
+      .addCase(NamespacesActions.setScheduleFlowType, setScheduleFlowType);
   }
 );
