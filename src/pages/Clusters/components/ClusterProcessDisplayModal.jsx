@@ -295,7 +295,7 @@ export const ClusterProcessDisplayModal = ({
 
   function calculateCompletionPercentage(modelSteps, currentSteps) {
     const totalSteps = modelSteps?.length;
-    let filteredSteps = [];
+    let filteredSteps = currentSteps;
     if (processExeName === 'update-nodes') {
       filteredSteps = currentSteps?.filter((step, index) => {
         if (
@@ -307,7 +307,7 @@ export const ClusterProcessDisplayModal = ({
         return true;
       });
     }
-    const completedSteps = filteredSteps.filter(
+    const completedSteps = filteredSteps?.filter(
       step => step?.status === 'completed'
     ).length;
 
@@ -390,7 +390,7 @@ export const ClusterProcessDisplayModal = ({
       }, [120000]);
       timeoutId = setTimeout(() => {
         setIsCompleted(true);
-      }, 1000);
+      }, 500);
     } else {
       setIsCompleted(false);
       if (timeoutId) {

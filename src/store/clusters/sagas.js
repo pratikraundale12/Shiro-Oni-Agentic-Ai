@@ -383,7 +383,10 @@ export function* associateClusterWithRegistry(api, { payload }) {
     );
     localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(updatedClustersToken));
 
-    //
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+    );
   } else {
     toast.error(response?.data?.message);
   }
@@ -491,6 +494,10 @@ export function* upgradeAnsibleCluster(api, { payload }) {
   if (response?.ok) {
     toast.success(response?.data?.message);
     yield call(history.push, '/clusters');
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+    );
   } else {
     toast.error(response?.data?.error);
   }
@@ -505,6 +512,10 @@ export function* updateNodesAnsibleCluster(api, { payload }) {
   if (response?.ok) {
     toast.success(response?.data?.message);
     yield call(history.push, '/clusters');
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+    );
   } else {
     toast.error(response?.data?.error);
   }
@@ -528,6 +539,10 @@ export function* deleteAnsibleClusterHard(api, { payload }) {
         module: 'clusters',
         params: {},
       })
+    );
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
     );
   } else {
     toast.error(response?.data?.error);
