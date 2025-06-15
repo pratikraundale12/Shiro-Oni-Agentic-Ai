@@ -27,7 +27,24 @@ const ActionTd = styled.div`
   justify-content: start;
   gap: 15px;
 `;
-
+const StyledLink = styled.a`
+  width: 8rem;
+  color: ${props => props.theme.colors.primary};
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 14px 15px;
+  text-decoration: none !important;
+  font-family: ${props => props.theme.fontNato};
+  font-size: ${props => props.theme.size.md};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.4 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
+  &:hover {
+    color: ${props => props.theme.colors.primary};
+  }
+`;
 export const ClusterSummary = () => {
   const dispatch = useDispatch();
   const { state, setState } = useGlobalContext();
@@ -65,7 +82,15 @@ export const ClusterSummary = () => {
   const COLUMNS = [
     {
       label: 'Address',
-      renderCell: item => <TextRender text={item.address} />,
+      renderCell: item => (
+        <StyledLink
+          target="_blank"
+          rel="noopener noreferrer"
+          href={item?.nodeUrl}
+        >
+          {item?.nodeUrl}
+        </StyledLink>
+      ),
       width: '20%',
       resize: true,
     },

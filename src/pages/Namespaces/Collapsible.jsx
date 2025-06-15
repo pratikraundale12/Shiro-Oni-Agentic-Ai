@@ -1,10 +1,47 @@
 import React from 'react';
 import styled from 'styled-components';
-import { IconButton } from '../../components';
+// import { IconButton } from '../../components';
 import { DownArrowIcon, UpArrowIcon, PlusCircleIcon } from '../../assets';
 import PropTypes from 'prop-types';
 import { Button } from '../../shared';
 import { KDFM } from '../../constants';
+
+const IconButton = styled.button`
+  min-width: 32px;
+  min-height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  background-color: ${props => props.theme.colors.white};
+  border: 1px solid ${props => props.theme.colors.border};
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  @media (max-width: 1025px) {
+    min-width: 24px;
+    min-height: 24px;
+    border-width: 0.5px;
+    & svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+  &.pencil-icon-schedule-list {
+    @media (max-width: 1025px) {
+      min-width: 24px;
+      min-height: 24px;
+      border-width: 0.5px;
+      & svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+`;
 
 const CollapsibleWrapper = styled.div`
   width: 100%;
@@ -21,7 +58,7 @@ const Header = styled.div`
   align-items: center;
   padding: 10px 16px;
   background: rgba(255, 255, 255, 1);
-  height: 72px;
+  height: ${props => props.headerHeight};
   top: 273px;
   left: 290px;
   gap: 0px;
@@ -83,10 +120,11 @@ const Collapsible = ({
   isAddBtnVisible = true,
   isAddBtnDisable = false,
   isOpenBackgroundWhite = false,
+  headerHeight = '72px',
 }) => {
   return (
     <CollapsibleWrapper>
-      <Header>
+      <Header headerHeight={headerHeight}>
         <Title>{title}</Title>
         <div className="d-flex gap-3 w-70">
           {isAddBtnVisible && (
@@ -99,13 +137,17 @@ const Collapsible = ({
               {btnText}
             </Button>
           )}
-          <ToggleButton aria-expanded={isTableOpen} onClick={toggleCollapsible}>
+          <ToggleButton
+            aria-expanded={isTableOpen}
+            onClick={toggleCollapsible}
+            type="button"
+          >
             {isTableOpen ? (
-              <IconButton>
+              <IconButton type="button">
                 <UpArrowIcon />
               </IconButton>
             ) : (
-              <IconButton>
+              <IconButton type="button">
                 <DownArrowIcon />
               </IconButton>
             )}
@@ -131,6 +173,7 @@ Collapsible.propTypes = {
   isAddBtnVisible: PropTypes.bool,
   isAddBtnDisable: PropTypes.bool,
   isOpenBackgroundWhite: PropTypes.bool,
+  headerHeight: PropTypes.string,
 };
 
 export default Collapsible;

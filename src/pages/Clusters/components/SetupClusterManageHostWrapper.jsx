@@ -216,7 +216,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
             type="button"
             onClick={() => {
               dispatch(
-                ClustersActions.setActiveTabClusterSetup('manage_config')
+                ClustersActions.setActiveTabClusterSetup('getting_started')
               );
             }}
           >
@@ -225,7 +225,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
           <ReactTooltip
             id={`tooltip-manage-config`}
             place="top"
-            content={'Back to Manage Config'}
+            content={'Back to Getting Started'}
             style={{
               width: '170px',
               whiteSpace: 'normal',
@@ -237,7 +237,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
             type="submit"
             onClick={() => {
               dispatch(
-                ClustersActions.setActiveTabClusterSetup('cluster_details')
+                ClustersActions.setActiveTabClusterSetup('manage_config')
               );
             }}
           >

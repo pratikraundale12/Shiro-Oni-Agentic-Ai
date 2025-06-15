@@ -51,6 +51,17 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
         {KDFM.GETTING_STARTED}
       </NavButton>
       <NavButton
+        active={activeTab === 'manage_host'}
+        onClick={() => {
+          dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
+        }}
+      >
+        <ManageHostIcon
+          color={activeTab === 'manage_host' ? '#FF7A00' : '#444445'}
+        />{' '}
+        {KDFM.MANAGE_HOST}
+      </NavButton>
+      <NavButton
         active={activeTab === 'manage_config'}
         onClick={() => {
           dispatch(ClustersActions.setActiveTabClusterSetup('manage_config'));
@@ -63,17 +74,7 @@ const ClusterSetupNavigationTab = ({ activeTab }) => {
         />{' '}
         {KDFM.MANAGE_CONFIG}
       </NavButton>
-      <NavButton
-        active={activeTab === 'manage_host'}
-        onClick={() => {
-          dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
-        }}
-      >
-        <ManageHostIcon
-          color={activeTab === 'manage_host' ? '#FF7A00' : '#444445'}
-        />{' '}
-        {KDFM.MANAGE_HOST}
-      </NavButton>
+
       <NavButton
         active={activeTab === 'cluster_details'}
         onClick={() => {

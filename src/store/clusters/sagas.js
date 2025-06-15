@@ -249,6 +249,10 @@ export function* createCluster(api, { payload }) {
   if (response.ok) {
     toast.success(response?.data?.message);
     yield call(history.push, '/clusters');
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+    );
   } else {
     toast.error(response?.data?.message);
     yield call(history.push, '/clusters');
@@ -320,7 +324,7 @@ export function* fetchClusterMetrics(api, { payload }) {
   if (response?.ok) {
     yield put(ClustersActions.setHealthMetricsData(response?.data));
   } else {
-    toast.error(response?.data?.error);
+    toast.error(response?.data?.message);
   }
 }
 export function* associateClusterWithRegistry(api, { payload }) {
@@ -341,6 +345,48 @@ export function* associateClusterWithRegistry(api, { payload }) {
   if (response?.ok) {
     toast.success(response?.data?.message);
     yield put(ClustersActions.setIsRegitryAssociationModalOpen(false));
+    yield put(
+      GridActions.fetchGrid({
+        module: 'clusters',
+        params: {},
+      })
+    );
+
+    //
+    const clusterItem = localStorage.getItem('selected_cluster');
+    const clustersToken = JSON.parse(localStorage.getItem(CLUSTERS_TOKEN));
+
+    const tokenToRemove =
+      !isEmpty(clustersToken) &&
+      clustersToken?.filter(token => token.id === payload?.clusterId);
+    const payloadLogout = {
+      id: payload?.clusterId,
+      token: tokenToRemove?.[0]?.token,
+    };
+
+    yield put(ClustersActions.clusterLogout(payloadLogout));
+    if (clusterItem) {
+      const cluster = JSON.parse(clusterItem);
+      if (cluster.value === payload?.clusterId) {
+        localStorage.removeItem('selected_cluster');
+        yield put(
+          NamespacesActions.setSelectedCluster({
+            label: '',
+            value: '',
+          })
+        );
+      }
+    }
+
+    const updatedClustersToken = clustersToken.filter(
+      token => token.id !== payload?.clusterId
+    );
+    localStorage.setItem(CLUSTERS_TOKEN, JSON.stringify(updatedClustersToken));
+
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+    );
   } else {
     toast.error(response?.data?.message);
   }
@@ -448,6 +494,10 @@ export function* upgradeAnsibleCluster(api, { payload }) {
   if (response?.ok) {
     toast.success(response?.data?.message);
     yield call(history.push, '/clusters');
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+    );
   } else {
     toast.error(response?.data?.error);
   }
@@ -462,6 +512,10 @@ export function* updateNodesAnsibleCluster(api, { payload }) {
   if (response?.ok) {
     toast.success(response?.data?.message);
     yield call(history.push, '/clusters');
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
+    );
   } else {
     toast.error(response?.data?.error);
   }
@@ -485,6 +539,10 @@ export function* deleteAnsibleClusterHard(api, { payload }) {
         module: 'clusters',
         params: {},
       })
+    );
+    yield put(ClustersActions.setProgressTrackingModalOpen(true));
+    yield put(
+      ClustersActions.setAnsibleClusterCreationResponseData(response?.data)
     );
   } else {
     toast.error(response?.data?.error);

@@ -21,6 +21,9 @@ export const flowValidationAPI = api => {
   const setRulePriorityApi = (ruleScopeId, data) =>
     api.put(`/rule-priority/${ruleScopeId}`, data);
 
+  const validateDeploymentFlow = (clusterId, data) =>
+    api.post(`/clusters/${clusterId}/validate-deployment-flow`, data);
+
   return {
     ruleScopeApi,
     fetchRuleApi,
@@ -37,5 +40,6 @@ export const flowValidationAPI = api => {
     validateRandomFlowApi,
     getFlows,
     setRulePriorityApi,
+    validateDeploymentFlow,
   };
 };

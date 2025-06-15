@@ -15,6 +15,7 @@ import { Grid, IconButton, TextRender } from '../../components';
 import { KDFM, REFRESH_OPTIONS } from '../../constants';
 import { history } from '../../helpers/history';
 import { NamespacesActions } from '../../store';
+import { FlowValidationActions } from '../../store/flowValidation';
 import { SchedularActions } from '../../store/schedular/redux';
 import { theme } from '../../styles';
 import { useGlobalContext } from '../../utils';
@@ -118,6 +119,7 @@ export const ListNamespaces = () => {
     dispatch(NamespacesActions.setVersionListReduxData([]));
     dispatch(NamespacesActions.setAlreadyFetchedLsIdentifierForUpgrade([]));
     dispatch(NamespacesActions.setLocalServiceInUpgrade([]));
+    dispatch(FlowValidationActions.resetDeploymentFlowValidation());
   }, []);
 
   const ListForTooltip = item => {
