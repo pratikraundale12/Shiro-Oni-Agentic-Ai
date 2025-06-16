@@ -6,10 +6,10 @@ import { Title } from './Title';
 import ClusterSetupNavigationTab from './ClusterSetupNavigationTab';
 import ClusterSetupGettingStartedTab from './ClusterSetupGettingStarted';
 import { Button } from '../../../shared';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { KDFM } from '../../../constants';
 import { history } from '../../../helpers/history';
-import { ClustersActions } from '../../../store';
+import { ClustersActions, ClustersSelectors } from '../../../store';
 const Wrapper = styled.div`
   margin-top: 4px;
   height: 95%;
@@ -32,6 +32,8 @@ const BottomButton = styled.div`
 `;
 const SetupClusterGettingStartedWrapper = ({ activeTab }) => {
   const dispatch = useDispatch();
+  const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
+
   return (
     <Wrapper>
       <Title title={'Add New Cluster'} />
@@ -45,7 +47,11 @@ const SetupClusterGettingStartedWrapper = ({ activeTab }) => {
             variant="secondary"
             type="button"
             onClick={() => {
-              history.push(`/clusters`);
+              if (lastVisit === 'cluster') {
+                history.push(`/clusters`);
+              } else {
+                dispatch(ClustersActions.setActiveTabClusterSetup(lastVisit));
+              }
             }}
           >
             {KDFM.BACK}

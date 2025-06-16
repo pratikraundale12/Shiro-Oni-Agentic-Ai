@@ -50,7 +50,16 @@ const PercentageHeaderText = styled.div`
   font-size: 20px;
   letter-spacing: 0%;
   vertical-align: middle;
-  color: #06c270;
+  color: ${prop => (prop.colorBlack ? '#444445' : '#06c270')};
+`;
+const PercentageSubHeaderText = styled.div`
+  // line-height: 40px;
+  font-family: Red Hat Display;
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #444445;
 `;
 const CreationmodelSteps = [
   { step: 'Connectivity check', status: 'completed' },
@@ -277,7 +286,7 @@ export const ClusterProcessDisplayModal = ({
     if (processExeName === 'delete') {
       return 'Cluster Deletion Progress';
     } else if (processExeName === 'creation') {
-      return 'Cluster Creation Progress';
+      return 'Cluster Configuration in Progress';
     } else if (processExeName === 'restart') {
       return 'Cluster Restart Progress';
     } else if (processExeName === 'stop') {
@@ -293,6 +302,45 @@ export const ClusterProcessDisplayModal = ({
     }
   };
 
+  const getFinalText = processExeName => {
+    if (processExeName === 'delete') {
+      return 'Cluster deleted successfully';
+    } else if (processExeName === 'creation') {
+      return 'Cluster successfully created and initialized.';
+    } else if (processExeName === 'restart') {
+      return 'Cluster restarted successfully';
+    } else if (processExeName === 'stop') {
+      return 'Cluster stopped successfully';
+    } else if (processExeName === 'start') {
+      return 'Cluster started successfully';
+    } else if (processExeName === 'upgrade') {
+      return 'Cluster upgraded successfully';
+    } else if (processExeName === 'update-nodes') {
+      return 'Cluster nodes updated successfully';
+    } else if (processExeName === 'add-registry') {
+      return 'Registry successfully associated. You may now Promote Flows and Manage Configurations';
+    }
+  };
+
+  const getInitialingText = processExeName => {
+    if (processExeName === 'delete') {
+      return 'Cluster has been deleted. Initializing cluster components.';
+    } else if (processExeName === 'creation') {
+      return 'Cluster configuration completed. Initializing cluster components.';
+    } else if (processExeName === 'restart') {
+      return 'Cluster has been restarted. Initializing cluster components.';
+    } else if (processExeName === 'stop') {
+      return 'Cluster has been stopped. Initializing cluster components.';
+    } else if (processExeName === 'start') {
+      return 'Cluster has been started. Initializing cluster components.';
+    } else if (processExeName === 'upgrade') {
+      return 'Cluster has been updated. Initializing cluster components.';
+    } else if (processExeName === 'update-nodes') {
+      return 'Cluster nodes has been updated. Initializing cluster components.';
+    } else if (processExeName === 'add-registry') {
+      return 'Cluster registry association completed. Initializing cluster components.';
+    }
+  };
   function calculateCompletionPercentage(modelSteps, currentSteps) {
     const totalSteps = modelSteps?.length;
     let filteredSteps = currentSteps;
@@ -380,6 +428,53 @@ export const ClusterProcessDisplayModal = ({
       }
     };
   }, [isProcessModalOpen, isModalOpen, dispatch, progress]);
+
+  const extractNumberFromTimeString = timeString => {
+    if (typeof timeString !== 'string') {
+      return null;
+    }
+    const match = timeString.match(/\d+/);
+    return match ? parseInt(match[0], 10) : null;
+  };
+
+  const [initialisingTime, setInitialisingTime] = useState(null);
+  const [progressValue, setProgressValue] = useState(0);
+
+  useEffect(() => {
+    const extractedTime = extractNumberFromTimeString(
+      processData?.nifi_cluster_flow_election_max_wait_time || '2 mins'
+    );
+
+    if (extractedTime !== null && !isNaN(extractedTime)) {
+      setInitialisingTime(extractedTime * 60 * 1000);
+    }
+  }, [processData]);
+
+  useEffect(() => {
+    if (!initialisingTime || isNaN(initialisingTime) || !isInitialisaitionPhase)
+      return;
+
+    const startTime = Date.now();
+    const interval = 100;
+
+    const timer = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed, initialisingTime);
+      setProgressValue(progress);
+
+      if (elapsed >= initialisingTime) {
+        clearInterval(timer);
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [initialisingTime, isInitialisaitionPhase]);
+
+  const percentage =
+    initialisingTime && initialisingTime > 0
+      ? Math.round((progressValue / initialisingTime) * 100)
+      : 0;
+
   useEffect(() => {
     let timeoutId;
 
@@ -387,7 +482,7 @@ export const ClusterProcessDisplayModal = ({
       setIsInitialisaitionPhase(true);
       setTimeout(() => {
         setIsInitialisaitionPhase(false);
-      }, [120000]);
+      }, [initialisingTime]);
       timeoutId = setTimeout(() => {
         setIsCompleted(true);
       }, 500);
@@ -430,35 +525,48 @@ export const ClusterProcessDisplayModal = ({
         }
         contentStyles={{ minWidth: '60%' }}
         footerAlign="start"
-        displayCrossIcon={processExeName === 'delete'}
+        displayCrossIcon={
+          processExeName === 'delete' || processData?.data?.status === 'failed'
+        }
       >
         <Container>
           {isCompleted ? (
             <>
-              {/*&&  */}
-
               {
                 <>
                   {' '}
                   {isInitialisaitionPhase && processExeName !== 'delete' ? (
-                    <div className="d-flex flex-column align-items-center justify-content-center mt-4">
-                      <div className="mt-3">
-                        <Loader size="lg" color="#06c270" />
+                    <div className="d-flex flex-column align-items-center justify-content-center mt-4 flex-grow-1">
+                      <PercentageHeaderText colorBlack={false}>
+                        {percentage}%
+                      </PercentageHeaderText>
+                      <div className="progress w-75" style={{ height: '15px' }}>
+                        <div
+                          className="progress-bar progress-bar-striped progress-bar-animated"
+                          role="progressbar"
+                          aria-valuenow={100}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          style={{
+                            width: `${percentage || 0}%`,
+                            backgroundColor: 'green',
+                          }}
+                        />
                       </div>
-                      <div className="mt-2">
-                        <PercentageHeaderText>
-                          Cluster Is Initialising...
+                      <div className="mt-4">
+                        <PercentageHeaderText colorBlack={true}>
+                          {getInitialingText(processExeName)}
                         </PercentageHeaderText>
                       </div>
                     </div>
                   ) : (
                     <div className="d-flex flex-column align-items-center justify-content-center mt-4">
                       <div>
-                        <GreenRightCircleIcon width={220} height={220} />
+                        <GreenRightCircleIcon width={200} height={200} />
                       </div>
                       <div className="mt-2">
-                        <PercentageHeaderText>
-                          Process Completed Successfully
+                        <PercentageHeaderText colorBlack={true}>
+                          {getFinalText(processExeName)}
                         </PercentageHeaderText>
                       </div>
                     </div>

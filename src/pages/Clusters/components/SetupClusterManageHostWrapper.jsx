@@ -67,7 +67,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'fetchHostNodesList')
   );
-
+  const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const COLUMNS = [
     {
       label: 'Host IP',
@@ -153,6 +153,7 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
     );
     return () => {
       ClustersActions.setHostIpList([]);
+      dispatch(ClustersActions.setLastVisitedTab('manage_host'));
     };
   }, [dispatch]);
   return (
@@ -211,27 +212,18 @@ const SetupClusterManageHostWrapper = ({ activeTab }) => {
       <BottomButton className="bottom-button-divs d-flex">
         <BottomButtonDiv className="btn-div d-flex">
           <Button
-            data-tooltip-id="tooltip-manage-config"
             variant="secondary"
             type="button"
             onClick={() => {
-              dispatch(
-                ClustersActions.setActiveTabClusterSetup('getting_started')
-              );
+              if (lastVisit === 'cluster') {
+                history.push(`/clusters`);
+              } else {
+                dispatch(ClustersActions.setActiveTabClusterSetup(lastVisit));
+              }
             }}
           >
             {KDFM.BACK}
           </Button>
-          <ReactTooltip
-            id={`tooltip-manage-config`}
-            place="top"
-            content={'Back to Getting Started'}
-            style={{
-              width: '170px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
 
           <Button
             type="submit"
