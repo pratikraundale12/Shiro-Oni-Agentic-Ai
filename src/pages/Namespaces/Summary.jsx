@@ -38,15 +38,15 @@ import {
   SchedularActions,
   SchedularSelectors,
 } from '../../store/schedular/redux';
+import { theme } from '../../styles';
 import { DiffModalScheduleList } from '../ScheduleDeployment/DiffModalSchedule';
 import { ScheduleDeploymentModal } from '../ScheduleDeployment/ScheduleDeploymentModal';
 import ScheduleNamespaceDeploy from '../ScheduleDeployment/ScheduleNamespaceDeploy';
 import AddParameterContext from './AddParameterContext';
 import { DuplicateScheduleModal } from './DuplicateScheduleModal';
 import NamespaceDeploy from './NamespaceDeploy';
-import Upgrade from './Upgrade';
 import SanityCheckDeployModal from './SanityCheckDeployModal';
-import { theme } from '../../styles';
+import Upgrade from './Upgrade';
 
 const MainContainer = styled.div``;
 const TopTitleBar = styled.div`
@@ -394,6 +394,8 @@ const Summary = () => {
     );
   };
   const getChangedObjects = (originalData, updatedData) => {
+    if (!originalData || !updatedData) return [];
+
     const updatedMap = updatedData.reduce((acc, item) => {
       acc[item.pgId] = item;
       return acc;
@@ -730,9 +732,9 @@ const Summary = () => {
   const checkFlowControlAfterDeploy = useSelector(
     NamespacesSelectors.getflowControlAfterDeploy
   );
-    const scheduleStartFlow = useSelector(
-      NamespacesSelectors.getScheduleStartFlow
-    );
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
 
   const scheduleFlowType = useSelector(NamespacesSelectors.getScheduleFlowType);
 
@@ -1089,6 +1091,12 @@ const Summary = () => {
       dispatch(NamespacesActions.upgradeCluster(payload));
     }
   };
+ const scheduleflowtypeMethod =
+  scheduleFlowType === "STOPPED"
+    ? "schedule_stop"
+    : scheduleFlowType === "RUNNING"
+    ? "schedule_start"
+    : "";
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -1118,7 +1126,7 @@ const Summary = () => {
         x: XcordUpdated || selectedNameSpace?.position?.x,
         y: YcordUpdated || selectedNameSpace?.position?.y,
       },
-      type: type,
+      type:scheduleStartFlow ? scheduleflowtypeMethod : type,
       ...(userStoryValue && { user_story_url: userStoryValue }),
       ...(changeRequestValue && { change_request: changeRequestValue }),
     };
@@ -1236,13 +1244,13 @@ const Summary = () => {
     return isRegistryDeploy ? KDFM.DEPLOY : KDFM.UPGRADE;
   };
   const provideFlowConfigDetails = () => {
-    if(scheduleFlowType === 'RUNNING') {
+    if (scheduleFlowType === 'RUNNING') {
       return 'Scheduled Start Flow';
     }
-    if(scheduleFlowType === 'STOPPED') {
+    if (scheduleFlowType === 'STOPPED') {
       return 'Scheduled Stop Flow';
     }
-  }
+  };
   const getSelectedFlowName = () => {
     if (deployByRegistryFlow) return formDataRegistry?.selectedFlowName;
     return checkDestCluster?.name || formDataRegistry?.selectedFlowName;
@@ -1749,9 +1757,11 @@ const Summary = () => {
                 size="md"
                 onClick={() => handleScheduleUpgrade()}
               >
-               {scheduleStartFlow ? provideFlowConfigDetails() : provideScheduleUpgradeBtnText()}
+                {scheduleStartFlow
+                  ? provideFlowConfigDetails()
+                  : provideScheduleUpgradeBtnText()}
               </Button>
-             )}
+            )}
           </BottomButtonDiv>
           {isUpgrading && (
             <div className="w-100 mt-3">
@@ -1870,9 +1880,7 @@ const Summary = () => {
         isOpen={isSanityCheckModalOpen}
         onRequestClose={() => setIsSanityCheckModalOpen(false)}
         primaryText={'Would you like to perform a Sanity Check ?'}
-        secondaryText={
-          'The process group will be automatically stopped'
-        }
+        secondaryText={'The process group will be automatically stopped'}
         onSubmit={handledeployByRegistry}
       />
     </>

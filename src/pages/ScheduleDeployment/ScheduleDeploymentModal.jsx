@@ -109,6 +109,11 @@ export const ScheduleDeploymentModal = ({ onConfirm }) => {
   );
 
   const versionListData = useSelector(NamespacesSelectors.getVersionListData);
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+  console.log('scheduleStartFlow', scheduleStartFlow);
+
   const currentUser = useSelector(AuthenticationSelectors.getCurrentUser);
   const {
     control,
