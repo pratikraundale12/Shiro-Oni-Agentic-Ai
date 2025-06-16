@@ -898,7 +898,7 @@ export const ListScheduleDeployment = () => {
 
   useEffect(() => {
     dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
-    // dispatch(SchedularActions.setSanityAndDeployStatus(null));
+    dispatch(SchedularActions.setSanityAndDeployStatus(null));
   }, [dispatch]);
 
   const hadleSuccessSanityCheck = () => {
@@ -989,7 +989,7 @@ export const ListScheduleDeployment = () => {
           onRequestClose={() => {
             dispatch(SchedularActions.setIsSuccessSanityCheckModalOpen(false));
             dispatch(SchedularActions.setIsDiffModalOpen(true));
-            // dispatch(SchedularActions.setSanityAndDeployStatus(null));
+            dispatch(SchedularActions.setSanityAndDeployStatus(null));
           }}
           secondaryText={'Sanity check passed with no issues detected.'}
           onSubmit={hadleSuccessSanityCheck}

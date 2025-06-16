@@ -97,13 +97,21 @@ const DiffSanityCheck = () => {
     dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(false));
   }, [dispatch]);
 
+  console.log(
+    sanityCheckData?.id,
+    selectedSchedule?.last_sanity_check_id,
+    'line no. 100'
+  );
+
   useEffect(() => {
-    dispatch(
-      NamespacesActions.fetchSanityReportAuditLog(
-        sanityCheckData?.id || selectedSchedule?.last_sanity_check_id
-      )
-    );
-  }, [dispatch]);
+    if (selectedSchedule?.last_sanity_check_id) {
+      dispatch(
+        NamespacesActions.fetchSanityReportAuditLog(
+          sanityCheckData?.id || selectedSchedule?.last_sanity_check_id
+        )
+      );
+    }
+  }, [dispatch, sanityCheckData?.id, selectedSchedule?.last_sanity_check_id]);
   const handleSanityCheck = () => {
     dispatch(SchedularActions.setIsSanityCheckScheduleModalOpen(true));
     dispatch(SchedularActions.setIsDiffModalOpen(false));
@@ -122,7 +130,7 @@ const DiffSanityCheck = () => {
             </NotificationContainer>
             <ActionContainer>
               <MessageText>
-                {formatDate(responseData?.data?.updated_at)}{' '}
+                {formatDate(responseData?.data?.updated_at) || 'N/A'}{' '}
                 <span>
                   {responseData?.data?.hasError === true
                     ? 'Last sanity check detected some issues'
