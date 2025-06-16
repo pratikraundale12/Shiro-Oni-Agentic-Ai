@@ -218,6 +218,12 @@ export function* scheduleSanityAndDeploy(api, { payload }) {
       response?.data?.message ||
         'Successfully performed sanity check and deployment'
     );
+    console.log(
+      response?.data?.id,
+      selectedSchedule?.last_sanity_check_id,
+      'line no 221'
+    );
+
     yield put(
       NamespacesActions.fetchSanityReportAuditLog(
         response?.data?.id || selectedSchedule?.last_sanity_check_id
