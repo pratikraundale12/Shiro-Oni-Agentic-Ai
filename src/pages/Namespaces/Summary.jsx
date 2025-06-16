@@ -1119,14 +1119,14 @@ const Summary = () => {
       previousVersion: selectedNameSpace?.version || 1,
       flowName: selectedNameSpace?.flowName,
       isScheduled: true,
-      mode: 'upgrade',
+      mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
       nameSpaceName: selectedNameSpace?.name,
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       position: {
         x: XcordUpdated || selectedNameSpace?.position?.x,
         y: YcordUpdated || selectedNameSpace?.position?.y,
       },
-      type:scheduleStartFlow ? scheduleflowtypeMethod : type,
+      type: type,
       ...(userStoryValue && { user_story_url: userStoryValue }),
       ...(changeRequestValue && { change_request: changeRequestValue }),
     };
