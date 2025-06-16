@@ -176,6 +176,9 @@ const ClusterDetailTab = ({
     }
 
     dispatch(ClustersActions.getNiFiVersions());
+    return () => {
+      dispatch(ClustersActions.setLastVisitedTab('cluster_details'));
+    };
   }, [dispatch]);
 
   const handleCheck = ele => {

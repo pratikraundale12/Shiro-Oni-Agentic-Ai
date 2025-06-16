@@ -50,6 +50,7 @@ const SetupClusterWrapper = ({ activeTab }) => {
   const ansibleClusterDataForEdit = useSelector(
     ClustersSelectors.getAnsibleClusterData
   );
+  const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const listHostIpData = useSelector(ClustersSelectors.getHostIpList);
   const schema = yup.object().shape({
     clusterName: yup
@@ -171,26 +172,17 @@ const SetupClusterWrapper = ({ activeTab }) => {
         <BottomButtonDiv className="btn-div d-flex">
           <Button
             variant="secondary"
-            data-tooltip-id="tooltip-manage-host"
             type="button"
             onClick={() => {
-              dispatch(
-                ClustersActions.setActiveTabClusterSetup('manage_config')
-              );
+              if (lastVisit === 'cluster') {
+                history.push(`/clusters`);
+              } else {
+                dispatch(ClustersActions.setActiveTabClusterSetup(lastVisit));
+              }
             }}
           >
             {KDFM.BACK}
           </Button>
-          <ReactTooltip
-            id={`tooltip-manage-host`}
-            place="top"
-            content={'Back to Config Details'}
-            style={{
-              width: '155px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
 
           <Button
             type="submit"

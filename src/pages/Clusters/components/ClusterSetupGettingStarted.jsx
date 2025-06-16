@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import {
   ManageClusterIcon,
@@ -43,6 +43,11 @@ const BottomText = styled.span`
 `;
 const ClusterSetupGettingStartedTab = () => {
   const dispatch = useDispatch();
+  useEffect(() => {
+    return () => {
+      dispatch(ClustersActions.setLastVisitedTab('getting_started'));
+    };
+  }, [dispatch]);
   return (
     <Container className="d-flex flex-column justify-content-center align-items-center w-100 ">
       <div className="d-flex justify-content-center w-100 mb-3">
