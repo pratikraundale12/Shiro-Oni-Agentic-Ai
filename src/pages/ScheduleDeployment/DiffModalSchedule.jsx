@@ -59,6 +59,8 @@ export const DiffModalScheduleList = props => {
     SchedularSelectors.getSanityAndDeployStatus
   );
 
+  const checkMode = selectedSchedule?.mode === 'deploy';
+
   const renderContent = () => {
     switch (activeTab) {
       case KDFM.PARAMETER_CONTEXT:
@@ -97,7 +99,7 @@ export const DiffModalScheduleList = props => {
     dispatch(SchedularActions.setIsDiffModalOpen(false));
     props?.setIsModalOpen && props?.setIsModalOpen(false);
     setActiveTab(KDFM.PARAMETER_CONTEXT);
-    dispatch(SchedularActions.setSanityAndDeployStatus(null));
+    // dispatch(SchedularActions.setSanityAndDeployStatus(null));
   };
   const handleSetTab = tab => {
     if (tab === 'Sanity Check') {
@@ -174,7 +176,7 @@ export const DiffModalScheduleList = props => {
             >
               Local Changes
             </Tab>
-            {selectedSchedule?.has_sanity_permission && (
+            {selectedSchedule?.has_sanity_permission && checkMode && (
               <Tab
                 active={activeTab === 'Sanity Check'}
                 onClick={() => handleSetTab('Sanity Check')}

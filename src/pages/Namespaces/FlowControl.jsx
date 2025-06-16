@@ -11,6 +11,8 @@ import {
   GreenRightCircleIcon,
   OpenLinkIcon,
   SanityCheckIcon,
+  ScheduleStartIcon,
+  ScheduleStopIcon,
   SmallNotThunderIcon,
   // SmallThunderIcon,
   SquareBoxIcon,
@@ -30,6 +32,7 @@ import {
   NamespacesActions,
   NamespacesSelectors,
 } from '../../store';
+import { SchedularActions } from '../../store/schedular';
 
 const CustomNine = styled.div`
   margin-bottom: 1rem !important;
@@ -254,6 +257,39 @@ const FlowControl = () => {
     setIsSanityCheckModalOpen(false);
   };
 
+
+  const handleScheduleFlow = type => {
+    dispatch(SchedularActions.setScheduleFromList(true));
+    dispatch(NamespacesActions.setScheduleStartFlow(true));
+    dispatch(NamespacesActions.setScheduleFlowType(type));
+    dispatch(NamespacesActions.setFlowPath(singleNamespaceData1?.flowId));
+    dispatch(
+      NamespacesActions.setSelectedNamespace({
+        label: singleNamespaceData1?.name,
+        value: singleNamespaceData1?.id,
+        ...singleNamespaceData1,
+      })
+    );
+    dispatch(NamespacesActions.setSelectedNameSpaceForDetail({}));
+    dispatch(
+      NamespacesActions.setVersionSelect({
+        version: singleNamespaceData1?.version,
+      })
+    );
+    dispatch(NamespacesActions.setDeployByRegistryFlow(false));
+    dispatch(
+      NamespacesActions.fetchVersionData({
+        bucketId: singleNamespaceData1?.bucketId,
+        flowId: singleNamespaceData1?.flowId,
+      })
+    );
+    history.push('/process-group/flow-details', {
+      state: {
+        id: singleNamespaceData1?.id,
+      },
+    });
+  };
+
   return (
     <DataWrapper>
       <FullPageLoader loading={loading || loadingSanity} />
@@ -415,6 +451,44 @@ const FlowControl = () => {
                       />
                     )}
                 </TextsvgDiv>
+
+                <TextsvgDiv className="d-flex">
+                  <ActiveButtonDiv className="div-btn-1 mr-2">
+                    <ActiveButtonDiv
+                      data-tooltip-id="runningProcessor"
+                      onClick={() => handleScheduleFlow('RUNNING')}
+                    >
+                      <ScheduleStartIcon />
+                    </ActiveButtonDiv>
+                  </ActiveButtonDiv>
+                  <div className="mr-2">Schedule Start Flow</div>
+                      <ReactTooltip
+                        id="runningProcessor"
+                        content="Schedule Running Components"
+                        place="right"
+                        positionStrategy="fixed"
+                      />
+                </TextsvgDiv>
+
+                <TextsvgDiv className="d-flex">
+                  <ActiveButtonDiv className="div-btn-2 mr-2">
+                    <ActiveButtonDiv
+                      data-tooltip-id="stoppedProcessor"
+                      onClick={() => handleScheduleFlow('STOPPED')}
+                    >
+                      <ScheduleStopIcon  />
+                    </ActiveButtonDiv>
+                  </ActiveButtonDiv>
+                  <div>Schedule Stop Flow</div>
+                  
+                      <ReactTooltip
+                        id="stoppedProcessor"
+                        content="Schedule Stopped Components"
+                        place="right"
+                        positionStrategy="fixed"
+                      />
+                   
+                </TextsvgDiv>
               </>
             ) : (
               <div className="text_info">{KDFM.FLOW_CONTROL_WARNING}</div>
@@ -492,7 +566,7 @@ const FlowControl = () => {
             primaryButtonText={'Continue'}
             icon={<GreenRightCircleIcon />}
             isOpen={sanityCheckCleanModalDisplay}
-            primaryText={
+            secondaryText={
               'Sanity check passed with no issues. Start the flow from the Flow Control tab in the Process Group Details page.'
             }
             onSubmit={() =>
