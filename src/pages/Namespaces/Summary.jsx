@@ -1093,9 +1093,9 @@ const Summary = () => {
   };
  const scheduleflowtypeMethod =
   scheduleFlowType === "STOPPED"
-    ? "schedule_stop"
+    ? "stop"
     : scheduleFlowType === "RUNNING"
-    ? "schedule_start"
+    ? "start"
     : "";
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
@@ -1126,7 +1126,7 @@ const Summary = () => {
         x: XcordUpdated || selectedNameSpace?.position?.x,
         y: YcordUpdated || selectedNameSpace?.position?.y,
       },
-      type: type,
+      type:scheduleStartFlow ? scheduleflowtypeMethod : type,
       ...(userStoryValue && { user_story_url: userStoryValue }),
       ...(changeRequestValue && { change_request: changeRequestValue }),
     };
