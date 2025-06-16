@@ -257,7 +257,6 @@ const FlowControl = () => {
     setIsSanityCheckModalOpen(false);
   };
 
-
   const handleScheduleFlow = type => {
     dispatch(SchedularActions.setScheduleFromList(true));
     dispatch(NamespacesActions.setScheduleStartFlow(true));
@@ -283,7 +282,15 @@ const FlowControl = () => {
         flowId: singleNamespaceData1?.flowId,
       })
     );
-    history.push('/process-group/flow-details', {
+        dispatch(
+          NamespacesActions.fetchRegistryFlowDetails({
+            bucketId: singleNamespaceData1?.bucketId,
+            flowId: singleNamespaceData1?.flowId,
+            version: singleNamespaceData1?.version,
+          })
+        );
+      
+    history.push('/process-group/config-details', {
       state: {
         id: singleNamespaceData1?.id,
       },
@@ -411,7 +418,6 @@ const FlowControl = () => {
                     time.
                   </div>
                 )}
-
                 <TextsvgDiv className="d-flex">
                   <ActiveButtonDiv className="div-btn-2 mr-2">
                     <ActiveButtonDiv
@@ -453,47 +459,48 @@ const FlowControl = () => {
                 </TextsvgDiv>{' '}
                 {singleNamespaceData1?.flowName && (
                   <>
-                  {selectedNamespaceForDetail?.is_active_schedule === false  && (
-                     <>
-                    {/* Schedule Start Flow Button */}
-                    <TextsvgDiv className="d-flex">
-                      <ActiveButtonDiv className="div-btn-1 mr-2">
-                        <ActiveButtonDiv
-                          data-tooltip-id="scheduleStartFlow"
-                          onClick={() => handleScheduleFlow('RUNNING')}
-                        >
-                          <ScheduleStartIcon />
-                        </ActiveButtonDiv>
-                      </ActiveButtonDiv>
-                      <div className="mr-2">Schedule Start Flow</div>
-                      <ReactTooltip
-                        id="scheduleStartFlow"
-                        content="Schedule start flow"
-                        place="right"
-                        positionStrategy="fixed"
-                      />
-                    </TextsvgDiv>
+                    {selectedNamespaceForDetail?.is_active_schedule ===
+                      false && (
+                      <>
+                        {/* Schedule Start Flow Button */}
+                        <TextsvgDiv className="d-flex">
+                          <ActiveButtonDiv className="div-btn-1 mr-2">
+                            <ActiveButtonDiv
+                              data-tooltip-id="scheduleStartFlow"
+                              onClick={() => handleScheduleFlow('RUNNING')}
+                            >
+                              <ScheduleStartIcon />
+                            </ActiveButtonDiv>
+                          </ActiveButtonDiv>
+                          <div className="mr-2">Schedule Start Flow</div>
+                          <ReactTooltip
+                            id="scheduleStartFlow"
+                            content="Schedule start flow"
+                            place="right"
+                            positionStrategy="fixed"
+                          />
+                        </TextsvgDiv>
 
-                    {/* Schedule Stop Flow Button */}
-                    <TextsvgDiv className="d-flex">
-                      <ActiveButtonDiv className="div-btn-2 mr-2">
-                        <ActiveButtonDiv
-                          data-tooltip-id="scheduleStopFlow"
-                          onClick={() => handleScheduleFlow('STOPPED')}
-                        >
-                          <ScheduleStopIcon />
-                        </ActiveButtonDiv>
-                      </ActiveButtonDiv>
-                      <div>Schedule Stop Flow</div>
-                      <ReactTooltip
-                        id="scheduleStopFlow"
-                        content="Schedule stop flow"
-                        place="right"
-                        positionStrategy="fixed"
-                      />
-                    </TextsvgDiv>
-                  </>
-                  )}
+                        {/* Schedule Stop Flow Button */}
+                        <TextsvgDiv className="d-flex">
+                          <ActiveButtonDiv className="div-btn-2 mr-2">
+                            <ActiveButtonDiv
+                              data-tooltip-id="scheduleStopFlow"
+                              onClick={() => handleScheduleFlow('STOPPED')}
+                            >
+                              <ScheduleStopIcon />
+                            </ActiveButtonDiv>
+                          </ActiveButtonDiv>
+                          <div>Schedule Stop Flow</div>
+                          <ReactTooltip
+                            id="scheduleStopFlow"
+                            content="Schedule stop flow"
+                            place="right"
+                            positionStrategy="fixed"
+                          />
+                        </TextsvgDiv>
+                      </>
+                    )}
                   </>
                 )}
               </>
