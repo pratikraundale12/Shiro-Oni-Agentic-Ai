@@ -113,6 +113,7 @@ export const SummaryModal = ({
   edit,
   notificationEnable,
   approverEnable,
+  approverEnableForStartAndStop,
   tags,
   changeRequestEnable,
 }) => {
@@ -143,6 +144,7 @@ export const SummaryModal = ({
       tag: tags,
       notification_enable: notificationEnable,
       approver_enable: approverEnable,
+      start_stop_requires_approval: approverEnableForStartAndStop,
       change_request_enable: changeRequestEnable,
       ...(clusterData?.logs_url && { logs_url: clusterData.logs_url }),
       ...(clusterData?.metrics_url && { metrics_url: clusterData.metrics_url }),
@@ -183,6 +185,7 @@ export const SummaryModal = ({
       tag: tags,
       notification_enable: notificationEnable,
       approver_enable: approverEnable,
+      start_stop_requires_approval: approverEnableForStartAndStop,
       change_request_enable: changeRequestEnable,
       registry_id: registry_id,
     };
