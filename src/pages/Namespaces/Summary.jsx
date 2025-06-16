@@ -1093,9 +1093,9 @@ const Summary = () => {
   };
  const scheduleflowtypeMethod =
   scheduleFlowType === "STOPPED"
-    ? "schedule_stop"
+    ? "stop"
     : scheduleFlowType === "RUNNING"
-    ? "schedule_start"
+    ? "start"
     : "";
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
@@ -1119,7 +1119,7 @@ const Summary = () => {
       previousVersion: selectedNameSpace?.version || 1,
       flowName: selectedNameSpace?.flowName,
       isScheduled: true,
-      mode: 'upgrade',
+      mode: scheduleStartFlow ? scheduleflowtypeMethod : 'upgrade',
       nameSpaceName: selectedNameSpace?.name,
       scheduledTime: timeDeployScheduleDeployment?.toISOString(),
       position: {
