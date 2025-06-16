@@ -60,7 +60,7 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   const loading = useSelector(state =>
     LoadingSelectors.getLoading(state, 'getConfigList')
   );
-
+  const lastVisit = useSelector(ClustersSelectors.getlastVisitedTab);
   const handleEditConfig = ({ configItem }) => {
     dispatch(ClustersActions.getSingleConfigData(configItem?.id));
     history.push('/clusters/new-config-details');
@@ -138,6 +138,9 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
   ];
   useEffect(() => {
     dispatch(ClustersActions.getConfigList());
+    return () => {
+      dispatch(ClustersActions.setLastVisitedTab('manage_config'));
+    };
   }, [dispatch]);
   return (
     <Wrapper>
@@ -197,24 +200,17 @@ const SetupClusterManageConfigWrapper = ({ activeTab }) => {
         <BottomButtonDiv className="btn-div d-flex">
           <Button
             variant="secondary"
-            data-tooltip-id="tooltip-getting-started"
             type="button"
             onClick={() => {
-              dispatch(ClustersActions.setActiveTabClusterSetup('manage_host'));
+              if (lastVisit === 'cluster') {
+                history.push(`/clusters`);
+              } else {
+                dispatch(ClustersActions.setActiveTabClusterSetup(lastVisit));
+              }
             }}
           >
             {KDFM.BACK}
           </Button>
-          <ReactTooltip
-            id={`tooltip-getting-started`}
-            place="top"
-            content={'Back to Manage Host'}
-            style={{
-              width: '170px',
-              whiteSpace: 'normal',
-              wordWrap: 'break-word',
-            }}
-          />
 
           <Button
             type="submit"

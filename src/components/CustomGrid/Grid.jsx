@@ -469,6 +469,9 @@ export const Grid = ({
               name: registryNodesData?.cluster?.name,
               nifi_url: registryNodesData?.cluster?.nifi_url,
             }}
+            displayInFullWidth={isEmpty(
+              registryNodesData?.cluster?.registry?.registry_url
+            )}
           />
           {registryNodesData?.cluster?.registry?.registry_url && (
             <RegistryDetail

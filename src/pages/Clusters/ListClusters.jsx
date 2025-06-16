@@ -677,7 +677,11 @@ export const ListClusters = () => {
       })
     );
     dispatch(ClustersActions.setRegistryNodesData({}));
+    return () => {
+      dispatch(ClustersActions.setLastVisitedTab('cluster'));
+    };
   }, [dispatch]);
+
   return (
     <>
       {' '}
