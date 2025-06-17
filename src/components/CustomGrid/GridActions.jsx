@@ -3,7 +3,20 @@ import { debounce, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { useForm } from 'react-hook-form';
-import { endOfDay, startOfDay } from 'date-fns';
+import {
+  isSameDay,
+  isSameHour,
+  isSameMinute,
+  startOfMinute,
+  endOfMinute,
+  startOfHour,
+  endOfHour,
+  subHours,
+  subMinutes,
+  startOfDay,
+  endOfDay,
+} from 'date-fns';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
@@ -263,6 +276,25 @@ export const GridActions = ({
     NamespacesSelectors.getSelectedNamespace
   );
 
+  function getDynamicRangeStartEnd(start, end) {
+    if (!start || !end) return [null, null];
+
+    if (isSameMinute(start, end)) {
+      return [startOfMinute(start), endOfMinute(end)];
+    }
+
+    if (isSameHour(start, end)) {
+      return [startOfHour(start), endOfHour(end)];
+    }
+
+    if (isSameDay(start, end)) {
+      return [startOfDay(start), endOfDay(end)];
+    }
+
+    // Multi-day range with specific time → keep as is
+    return [start, end];
+  }
+
   const handleRefresh = () => {
     window.localStorage.removeItem('scheduleTokenid');
     setState(prev => ({ ...prev, search: null }));
@@ -427,11 +459,13 @@ export const GridActions = ({
 
   const handleChange = value => {
     setCurrentPage(1);
+    const [dynamicStart, dynamicEnd] = getDynamicRangeStartEnd(
+      value?.[0],
+      value?.[1]
+    );
+
     dispatch(
-      SchedularActions.setScheduleSelectRange([
-        startOfDay(value?.[0]),
-        endOfDay(value?.[1]),
-      ])
+      SchedularActions.setScheduleSelectRange([dynamicStart, dynamicEnd])
     );
     if (!value) {
       dispatch(SchedularActions.setScheduleSelectRange([]));
@@ -489,10 +523,21 @@ export const GridActions = ({
       placement: 'left',
     },
     {
+      label: 'Last 1 hour',
+      value: [subHours(new Date(), 1), new Date()],
+      placement: 'left',
+    },
+    {
+      label: 'Last 10 minutes',
+      value: [subMinutes(new Date(), 10), new Date()],
+      placement: 'left',
+    },
+    {
       label: 'Today',
       value: [startOfDay(new Date()), endOfDay(new Date())],
       placement: 'left',
     },
+
     {
       label: 'Last 7 Days',
       value: [
@@ -627,6 +672,9 @@ export const GridActions = ({
                   value={selectedRange}
                   handleChange={handleChange}
                   customRanges={customRanges}
+                  showTime={{ format: 'HH:mm' }}
+                  format="YYYY-MM-DD HH:mm"
+                  placeholder={['Start Time', 'End Time']}
                 />
                 <DropdownContainer>
                   <StyledSelectField

@@ -39,9 +39,9 @@ const DateRangePickerInput = ({ value, handleChange, customRanges }) => {
           showOneCalendar
           size="md"
           showHeader={false}
-          editable={false}
-          showTime={false}
-          format="MM/dd/yyyy"
+          editable={true}
+          showTime={{ format: 'HH:mm' }}
+          format="MM/dd/yyy HH:mm"
         />
       </ContainerRangePicker>
     </>
