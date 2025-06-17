@@ -4,17 +4,19 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { useForm } from 'react-hook-form';
 import {
+  addHours,
+  addMinutes,
+  endOfDay,
+  endOfHour,
+  endOfMinute,
   isSameDay,
   isSameHour,
   isSameMinute,
-  startOfMinute,
-  endOfMinute,
+  startOfDay,
   startOfHour,
-  endOfHour,
+  startOfMinute,
   subHours,
   subMinutes,
-  startOfDay,
-  endOfDay,
 } from 'date-fns';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -267,6 +269,7 @@ export const GridActions = ({
   const selectedRange = useSelector(SchedularSelectors.getScheduleSelectRange);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const clusters = useSelector(ClustersSelectors.getAllClustersList);
+  const [scheduleType, setScheduleType] = useState(null);
 
   useEffect(() => {
     setIsButtonDisabled(isEmpty(selectedCluster?.value));
@@ -279,19 +282,31 @@ export const GridActions = ({
   function getDynamicRangeStartEnd(start, end) {
     if (!start || !end) return [null, null];
 
+    // Only round if EXACTLY the same minute
     if (isSameMinute(start, end)) {
       return [startOfMinute(start), endOfMinute(end)];
     }
 
-    if (isSameHour(start, end)) {
-      return [startOfHour(start), endOfHour(end)];
-    }
+    // Optional: remove this block if you don't want rounding
+    // if (isSameHour(start, end)) {
+    //   return [startOfHour(start), endOfHour(end)];
+    // }
 
+    // If same day and covering full day, round
     if (isSameDay(start, end)) {
-      return [startOfDay(start), endOfDay(end)];
+      const sameTime =
+        start.getHours() === 0 &&
+        start.getMinutes() === 0 &&
+        start.getSeconds() === 0 &&
+        end.getHours() === 23 &&
+        end.getMinutes() === 59;
+      if (sameTime) {
+        return [startOfDay(start), endOfDay(end)];
+      }
+      return [start, end]; // keep original times
     }
 
-    // Multi-day range with specific time → keep as is
+    // Different days → keep exact
     return [start, end];
   }
 
@@ -373,7 +388,8 @@ export const GridActions = ({
       selectedRole ||
       clusterSelectedValue ||
       selectEvent ||
-      selectEntity
+      selectEntity ||
+      scheduleType
     ) {
       if (module === 'namespaces' && selectedCluster?.value === '') {
         return;
@@ -411,6 +427,10 @@ export const GridActions = ({
                 selectEntity?.value !== 'all' && {
                   entity: selectEntity?.value,
                 }),
+              ...(location?.pathname?.includes('schedule-deployment') &&
+                scheduleType?.value !== 'all' && {
+                  type: scheduleType?.value,
+                }),
               ...(location?.pathname?.match(
                 /user-management|clusters|schedule-deployment|activity-history/
               ) &&
@@ -431,6 +451,7 @@ export const GridActions = ({
     selectedRange,
     selectEvent,
     selectEntity,
+    scheduleType,
   ]);
   const [canWrite, setCanWrite] = useState(false); // State to store canWrite value
   const gridPermissions = useSelector(state =>
@@ -528,8 +549,28 @@ export const GridActions = ({
       placement: 'left',
     },
     {
-      label: 'Last 10 minutes',
-      value: [subMinutes(new Date(), 10), new Date()],
+      label: 'Last 30 minutes',
+      value: [subMinutes(new Date(), 30), new Date()],
+      placement: 'left',
+    },
+    {
+      label: 'Last 15 minutes',
+      value: [subMinutes(new Date(), 15), new Date()],
+      placement: 'left',
+    },
+    {
+      label: 'Next 1 hour',
+      value: [new Date(), addHours(new Date(), 1)],
+      placement: 'left',
+    },
+    {
+      label: 'Next 30 minutes',
+      value: [new Date(), addMinutes(new Date(), 30)],
+      placement: 'left',
+    },
+    {
+      label: 'Next 15 minutes',
+      value: [new Date(), addMinutes(new Date(), 15)],
       placement: 'left',
     },
     {
@@ -604,6 +645,7 @@ export const GridActions = ({
       setClusterSelectedValue(null);
       dispatch(SchedularActions.setSelectedClusterState(null));
       setSortingState(null);
+      setScheduleType(null);
     } else if (module === 'activityHistory') {
       setValue('is_active', null);
       setState(prev => ({ ...prev, search: null }));
@@ -672,8 +714,8 @@ export const GridActions = ({
                   value={selectedRange}
                   handleChange={handleChange}
                   customRanges={customRanges}
-                  showTime={{ format: 'HH:mm' }}
-                  format="YYYY-MM-DD HH:mm"
+                  showTime={{ format: 'hh:mm A' }}
+                  format="YYYY-MM-DD hh:mm A"
                   placeholder={['Start Time', 'End Time']}
                 />
                 <DropdownContainer>
@@ -693,6 +735,22 @@ export const GridActions = ({
                     value={clusterSelectedValue}
                     placeholder="Select Cluster"
                     onChange={handleClusterChange}
+                    backgroundColor={theme.colors.lightGrey}
+                  />
+                </DropdownContainer>
+                <DropdownContainer>
+                  <StyledSelectField
+                    size="sm"
+                    name="scheduleType"
+                    control={control}
+                    options={[
+                      { label: 'All', value: 'all' },
+                      { label: 'Start', value: 'start' },
+                      { label: 'Stop', value: 'stop' },
+                    ]}
+                    value={scheduleType}
+                    placeholder="Schedule Type"
+                    onChange={setScheduleType}
                     backgroundColor={theme.colors.lightGrey}
                   />
                 </DropdownContainer>

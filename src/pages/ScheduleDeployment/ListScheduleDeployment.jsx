@@ -15,8 +15,10 @@ import {
   RejectIcon,
   SortDownIcon,
   SortUpIcon,
+  SquareBoxIcon,
   ThreedotsIcon,
   TickIconWithCircle,
+  TriangleIcons,
 } from '../../assets';
 import { FullPageLoader, Grid, IconButton, TextRender } from '../../components';
 import { history } from '../../helpers/history';
@@ -648,7 +650,7 @@ export const ListScheduleDeployment = () => {
           )}
         </>
       ),
-      width: '13%',
+      width: '12%',
       resize: true,
     },
     {
@@ -670,19 +672,43 @@ export const ListScheduleDeployment = () => {
         </>
       ),
       renderCell: item => <TextRender text={item?.cluster_name} />,
-      width: '10%',
+      width: '8%',
       resize: true,
     },
     {
       label: 'Version',
       renderCell: item => <TextRender text={item?.version} />,
-      width: '5%',
+      width: '4%',
       resize: true,
     },
     {
       label: 'Post Deploy State',
       renderCell: item => <TextRender text={item?.deployment_status} />,
-      width: '10%',
+      width: '8%',
+      resize: true,
+    },
+    {
+      label: 'Scheduled Type',
+      renderCell: item => {
+        if (item.mode === 'start') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <TriangleIcons color="green" />
+              <TextRender text="Start" />
+            </div>
+          );
+        } else if (item.mode === 'stop') {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <SquareBoxIcon color="red" />
+              <TextRender text="Stop" />
+            </div>
+          );
+        } else {
+          return <TextRender text={item?.mode} />;
+        }
+      },
+      width: '8%',
       resize: true,
     },
     {
@@ -728,7 +754,7 @@ export const ListScheduleDeployment = () => {
       renderCell: item => (
         <TextRender text={item?.change_request ? item.change_request : 'N/A'} />
       ),
-      width: '10%',
+      width: '8%',
       resize: true,
     },
     {

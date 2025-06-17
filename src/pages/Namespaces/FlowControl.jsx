@@ -282,14 +282,14 @@ const FlowControl = () => {
         flowId: singleNamespaceData1?.flowId,
       })
     );
-        dispatch(
-          NamespacesActions.fetchRegistryFlowDetails({
-            bucketId: singleNamespaceData1?.bucketId,
-            flowId: singleNamespaceData1?.flowId,
-            version: singleNamespaceData1?.version,
-          })
-        );
-      
+    dispatch(
+      NamespacesActions.fetchRegistryFlowDetails({
+        bucketId: singleNamespaceData1?.bucketId,
+        flowId: singleNamespaceData1?.flowId,
+        version: singleNamespaceData1?.version,
+      })
+    );
+
     history.push('/process-group/config-details', {
       state: {
         id: singleNamespaceData1?.id,
