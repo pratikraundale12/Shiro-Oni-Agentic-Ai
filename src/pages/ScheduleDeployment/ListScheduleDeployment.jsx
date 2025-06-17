@@ -770,10 +770,7 @@ export const ListScheduleDeployment = () => {
     {
       label: 'Status',
       renderCell: item => (
-        <StatusText
-          text={item?.state === 'TIME_LAPSED' ? 'TIME LAPSED' : item?.state}
-          item={item}
-        />
+        <StatusText text={item?.state?.replace(/_/g, ' ')} item={item} />
       ),
       width: '8%',
       resize: true,
