@@ -111,17 +111,33 @@ const ConfigDetailsPage = () => {
     { label: 'Flow Details', path: '/process-group/flow-details' },
     { label: 'Configuration Details' },
   ];
-  const breadcrumbDataOnUpgrade = [
-    {
-      label: KDFM.NIFI_FLOW,
-      path: '/process-group',
-      callback: () => {
-        dispatch(NamespacesActions.setSelectedNamespace({}));
-      },
-    },
-    { label: 'Flow Details', path: '/process-group/flow-details' },
-    { label: 'Configuration Details' },
-  ];
+  const scheduleStartFlow = useSelector(
+    NamespacesSelectors.getScheduleStartFlow
+  );
+  const selectedNameSpace = useSelector(
+    NamespacesSelectors.getSelectedNamespace
+  );
+
+  const breadcrumbDataOnUpgrade = scheduleStartFlow
+    ? [
+        {
+          label: 'Process Group Details',
+          path: `/process-group/${selectedNameSpace?.id}`,
+        },
+        { label: 'Configuration Details' },
+      ]
+    : [
+        {
+          label: KDFM.NIFI_FLOW,
+          path: '/process-group',
+          callback: () => {
+            dispatch(NamespacesActions.setSelectedNamespace({}));
+          },
+        },
+        { label: 'Flow Details', path: '/process-group/flow-details' },
+        { label: 'Configuration Details' },
+      ];
+
   const scheduleDeploymentFlow = useSelector(
     NamespacesSelectors.getScheduleByRegistry
   );
@@ -162,11 +178,13 @@ const ConfigDetailsPage = () => {
   }, [scheduleDeploymentFlow, scheduleUpgradeFromList]);
 
   const formDataRegistry = useSelector(NamespacesSelectors.getDeployFormData);
-  const selectedNameSpace = useSelector(
-    NamespacesSelectors.getSelectedNamespace
-  );
   const handleBackClick = () => {
-    history.push('/process-group/flow-details');
+    if (scheduleStartFlow === true) {
+      history.push(`/process-group/${selectedNameSpace?.id}`);
+    } else {
+      history.push('/process-group/flow-details');
+    }
+
     setScheduleDeployTime(null);
     dispatch(NamespacesActions.setScheduleTimeByRegistry(null));
   };

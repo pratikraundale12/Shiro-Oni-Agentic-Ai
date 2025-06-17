@@ -762,18 +762,35 @@ const Summary = () => {
     { label: 'Configuration Details', path: '/process-group/config-details' },
     { label: 'Summary' },
   ];
-  const breadcrumbDataOnUpgrade = [
-    {
-      label: KDFM.NIFI_FLOW,
-      path: '/process-group',
-      callback: () => {
-        dispatch(NamespacesActions.setSelectedNamespace({}));
-      },
-    },
-    { label: 'Flow Details', path: '/process-group/flow-details' },
-    { label: 'Configuration Details', path: '/process-group/config-details' },
-    { label: 'Summary' },
-  ];
+
+  const breadcrumbDataOnUpgrade = scheduleStartFlow
+    ? [
+        {
+          label: 'Process Group Details',
+          path: `/process-group/${selectedNameSpace?.id}`,
+        },
+        {
+          label: 'Configuration Details',
+          path: '/process-group/config-details',
+        },
+        { label: 'Summary' },
+      ]
+    : [
+        {
+          label: KDFM.NIFI_FLOW,
+          path: '/process-group',
+          callback: () => {
+            dispatch(NamespacesActions.setSelectedNamespace({}));
+          },
+        },
+        { label: 'Flow Details', path: '/process-group/flow-details' },
+        {
+          label: 'Configuration Details',
+          path: '/process-group/config-details',
+        },
+        { label: 'Summary' },
+      ];
+
   const [flowControlState, setFlowControlState] = useState(null);
   const getParamerterContext = async () => {
     dispatch(NamespacesActions.setNamespaceSummaryLoadingState(true));
@@ -1091,12 +1108,12 @@ const Summary = () => {
       dispatch(NamespacesActions.upgradeCluster(payload));
     }
   };
- const scheduleflowtypeMethod =
-  scheduleFlowType === "STOPPED"
-    ? "stop"
-    : scheduleFlowType === "RUNNING"
-    ? "start"
-    : "";
+  const scheduleflowtypeMethod =
+    scheduleFlowType === 'STOPPED'
+      ? 'stop'
+      : scheduleFlowType === 'RUNNING'
+        ? 'start'
+        : '';
   const handleScheduleUpgrade = () => {
     const updatedData = paramterDeployArray.map(item => ({
       parameterName: item.name,
@@ -1126,7 +1143,7 @@ const Summary = () => {
         x: XcordUpdated || selectedNameSpace?.position?.x,
         y: YcordUpdated || selectedNameSpace?.position?.y,
       },
-      type:scheduleStartFlow ? scheduleflowtypeMethod : type,
+      type: scheduleStartFlow ? scheduleflowtypeMethod : type,
       ...(userStoryValue && { user_story_url: userStoryValue }),
       ...(changeRequestValue && { change_request: changeRequestValue }),
     };
