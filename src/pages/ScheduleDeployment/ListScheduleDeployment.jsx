@@ -1005,7 +1005,7 @@ export const ListScheduleDeployment = () => {
 
   return (
     <>
-      <FullPageLoader loading={statusLoading} />;
+      <FullPageLoader loading={statusLoading} />
       <ModalWithIcon
         title={'Disapprove Deployment Schedule'}
         primaryButtonText={'Stop'}
